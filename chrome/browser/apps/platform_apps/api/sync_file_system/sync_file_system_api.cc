@@ -12,13 +12,9 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/apps/platform_apps/api/deprecation_features.h"
-#include "chrome/browser/apps/platform_apps/api/sync_file_system/extension_sync_event_observer.h"
 #include "chrome/browser/apps/platform_apps/api/sync_file_system/sync_file_system_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync_file_system/sync_file_status.h"
-#include "chrome/browser/sync_file_system/sync_file_system_service.h"
-#include "chrome/browser/sync_file_system/sync_file_system_service_factory.h"
+#include "chrome/browser/sync_file_system/sync_status_code.h"
 #include "chrome/browser/sync_file_system/syncable_file_system_util.h"
 #include "chrome/common/apps/platform_apps/api/sync_file_system.h"
 #include "content/public/browser/browser_context.h"
@@ -40,8 +36,6 @@
 using content::BrowserContext;
 using content::BrowserThread;
 using ::sync_file_system::ConflictResolutionPolicy;
-using ::sync_file_system::SyncFileStatus;
-using ::sync_file_system::SyncFileSystemServiceFactory;
 using ::sync_file_system::SyncStatusCode;
 
 namespace chrome_apps {
@@ -54,21 +48,6 @@ const char kErrorMessage[] = "%s (error code: %d).";
 const char kUnsupportedConflictResolutionPolicy[] =
     "Policy %s is not supported.";
 const char kDeprecationError[] = "syncFileSystem API is deprecated";
-
-::sync_file_system::SyncFileSystemService* GetSyncFileSystemService(
-    content::BrowserContext* browser_context) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  ::sync_file_system::SyncFileSystemService* service =
-      SyncFileSystemServiceFactory::GetForProfile(profile);
-  if (!service)
-    return nullptr;
-  ExtensionSyncEventObserver* observer =
-      ExtensionSyncEventObserver::GetFactoryInstance()->Get(profile);
-  if (!observer)
-    return nullptr;
-  observer->InitializeForService(service);
-  return service;
-}
 
 std::string ErrorToString(SyncStatusCode code) {
   return base::StringPrintf(kErrorMessage,
@@ -98,17 +77,6 @@ const char* QuotaStatusCodeToString(blink::mojom::QuotaStatusCode status) {
 
 ExtensionFunction::ResponseAction
 SyncFileSystemRequestFileSystemFunction::Run() {
-  // When enabled, return filesystem but don't initialize sync event observer
-  // API because they should no longer receive events for changes.
-  if (!base::FeatureList::IsEnabled(features::kDeprecateSyncFileSystemApis)) {
-    // SyncFileSystem initialization is done in OpenFileSystem below, but we
-    // call GetSyncFileSystemService here too to initialize sync event observer
-    // for extensions API.
-    if (!GetSyncFileSystemService(browser_context())) {
-      return RespondNow(Error(""));
-    }
-  }
-
   // Initializes sync context for this extension and continue to open
   // a new file system.
   content::GetIOThreadTaskRunner({})->PostTask(
@@ -161,43 +129,8 @@ void SyncFileSystemRequestFileSystemFunction::DidOpenFileSystem(
 }
 
 ExtensionFunction::ResponseAction SyncFileSystemGetFileStatusFunction::Run() {
-  if (base::FeatureList::IsEnabled(features::kDeprecateSyncFileSystemApis)) {
-    return RespondNow(Error(kDeprecationError));
-  }
-  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
-  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
-  const std::string& url = args()[0].GetString();
-
-  scoped_refptr<storage::FileSystemContext> file_system_context =
-      browser_context()
-          ->GetStoragePartition(render_frame_host()->GetSiteInstance())
-          ->GetFileSystemContext();
-  storage::FileSystemURL file_system_url(
-      file_system_context->CrackURLInFirstPartyContext(GURL(url)));
-
-  ::sync_file_system::SyncFileSystemService* sync_file_system_service =
-      GetSyncFileSystemService(browser_context());
-  if (!sync_file_system_service)
-    return RespondNow(Error(""));
-
-  sync_file_system_service->GetFileSyncStatus(
-      file_system_url,
-      BindOnce(&SyncFileSystemGetFileStatusFunction::DidGetFileStatus, this));
-  return RespondLater();
-}
-
-void SyncFileSystemGetFileStatusFunction::DidGetFileStatus(
-    const SyncStatusCode sync_status_code,
-    const SyncFileStatus sync_file_status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (sync_status_code != ::sync_file_system::SYNC_STATUS_OK) {
-    Respond(Error(ErrorToString(sync_status_code)));
-    return;
-  }
-
-  // Convert from C++ to JavaScript enum.
-  Respond(ArgumentList(sync_file_system::GetFileStatus::Results::Create(
-      SyncFileStatusToExtensionEnum(sync_file_status))));
+  // SyncFileSystem is deprecated.
+  return RespondNow(Error(kDeprecationError));
 }
 
 SyncFileSystemGetFileStatusesFunction::SyncFileSystemGetFileStatusesFunction() =
@@ -207,88 +140,8 @@ SyncFileSystemGetFileStatusesFunction::
     ~SyncFileSystemGetFileStatusesFunction() = default;
 
 ExtensionFunction::ResponseAction SyncFileSystemGetFileStatusesFunction::Run() {
-  if (base::FeatureList::IsEnabled(features::kDeprecateSyncFileSystemApis)) {
-    return RespondNow(Error(kDeprecationError));
-  }
-  // All FileEntries converted into array of URL Strings in JS custom bindings.
-  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
-  EXTENSION_FUNCTION_VALIDATE(args()[0].is_list());
-  const base::Value::List& file_entry_urls = args()[0].GetList();
-
-  scoped_refptr<storage::FileSystemContext> file_system_context =
-      browser_context()
-          ->GetStoragePartition(render_frame_host()->GetSiteInstance())
-          ->GetFileSystemContext();
-
-  // Map each file path->SyncFileStatus in the callback map.
-  // TODO(calvinlo): Overload GetFileSyncStatus to take in URL array.
-  num_expected_results_ = file_entry_urls.size();
-  num_results_received_ = 0;
-  file_sync_statuses_.clear();
-  ::sync_file_system::SyncFileSystemService* sync_file_system_service =
-      GetSyncFileSystemService(browser_context());
-  if (!sync_file_system_service)
-    return RespondNow(Error(""));
-
-  for (const auto& entry : file_entry_urls) {
-    std::string url;
-    if (entry.is_string())
-      url = entry.GetString();
-    storage::FileSystemURL file_system_url(
-        file_system_context->CrackURLInFirstPartyContext(GURL(url)));
-
-    sync_file_system_service->GetFileSyncStatus(
-        file_system_url,
-        BindOnce(&SyncFileSystemGetFileStatusesFunction::DidGetFileStatus, this,
-                 file_system_url));
-  }
-
-  return RespondLater();
-}
-
-void SyncFileSystemGetFileStatusesFunction::DidGetFileStatus(
-    const storage::FileSystemURL& file_system_url,
-    SyncStatusCode sync_status_code,
-    SyncFileStatus sync_file_status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  num_results_received_++;
-  DCHECK_LE(num_results_received_, num_expected_results_);
-
-  file_sync_statuses_[file_system_url] =
-      std::make_pair(sync_status_code, sync_file_status);
-
-  // Keep mapping file statuses until all of them have been received.
-  // TODO(calvinlo): Get rid of this check when batch version of
-  // GetFileSyncStatus(GURL urls[]); is added.
-  if (num_results_received_ < num_expected_results_)
-    return;
-
-  // All results received. Dump array of statuses into extension enum values.
-  // Note that the enum types need to be set as strings manually as the
-  // autogenerated Results::Create function thinks the enum values should be
-  // returned as int values.
-  base::Value::List status_array;
-  for (auto it = file_sync_statuses_.begin(); it != file_sync_statuses_.end();
-       ++it) {
-    SyncStatusCode file_error = it->second.first;
-    if (file_error == ::sync_file_system::SYNC_STATUS_OK)
-      continue;
-
-    base::Value::Dict dict;
-
-    const storage::FileSystemURL& url = it->first;
-    sync_file_system::FileStatus file_status =
-        SyncFileStatusToExtensionEnum(it->second.second);
-
-    dict.Set("entry", *CreateDictionaryValueForFileSystemEntry(
-                          url, ::sync_file_system::SYNC_FILE_TYPE_FILE));
-    dict.Set("status", ToString(file_status));
-
-    dict.Set("error", ErrorToString(file_error));
-
-    status_array.Append(std::move(dict));
-  }
-  Respond(WithArguments(std::move(status_array)));
+  // SyncFileSystem is deprecated.
+  return RespondNow(Error(kDeprecationError));
 }
 
 ExtensionFunction::ResponseAction
@@ -371,19 +224,10 @@ SyncFileSystemGetConflictResolutionPolicyFunction::Run() {
 
 ExtensionFunction::ResponseAction
 SyncFileSystemGetServiceStatusFunction::Run() {
-  if (base::FeatureList::IsEnabled(features::kDeprecateSyncFileSystemApis)) {
-    return RespondNow(
-        ArgumentList(sync_file_system::GetServiceStatus::Results::Create(
-            sync_file_system::ServiceStatus::kDisabled)));
-  }
-
-  ::sync_file_system::SyncFileSystemService* service =
-      GetSyncFileSystemService(browser_context());
-  if (!service)
-    return RespondNow(Error(kUnknownErrorDoNotUse));
+  // SyncFileSystem is deprecated.
   return RespondNow(
       ArgumentList(sync_file_system::GetServiceStatus::Results::Create(
-          SyncServiceStateToExtensionEnum(service->GetSyncServiceState()))));
+          sync_file_system::ServiceStatus::kDisabled)));
 }
 
 }  // namespace api

@@ -85,7 +85,7 @@ class AXTreeSourceAuraTest : public ChromeViewsTestBase {
 
     textfield_ = new Textfield();
     textfield_->SetText(u"Value");
-    content_->AddChildView(textfield_.get());
+    content_->AddChildViewRaw(textfield_.get());
     widget_->Show();
   }
 
@@ -190,7 +190,7 @@ TEST_F(AXTreeSourceAuraTest, Serialize) {
 
   // Try removing some child views and re-adding which should fire some events.
   content_->RemoveAllChildViewsWithoutDeleting();
-  content_->AddChildView(textfield_.get());
+  content_->AddChildViewRaw(textfield_.get());
 
   // Grab the textfield since serialization only walks up the tree (not down
   // from root).

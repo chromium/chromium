@@ -221,7 +221,7 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
     }
     this.focusGridUpdateTimeout_ = setTimeout(() => {
       const cards =
-          this.shadowRoot!.querySelectorAll('history-synced-device-card');
+          this.shadowRoot.querySelectorAll('history-synced-device-card');
       Array.from(cards)
           .reduce(
               (prev: FocusRow[], cur: HistorySyncedDeviceCardElement) =>

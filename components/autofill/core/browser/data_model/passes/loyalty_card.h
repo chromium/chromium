@@ -16,7 +16,7 @@ class LoyaltyCard final {
               std::string merchant_name,
               std::string program_name,
               std::string program_logo,
-              std::string loyalty_card_number);
+              std::string unmasked_loyalty_card_suffix);
 
   LoyaltyCard(const LoyaltyCard&);
   LoyaltyCard(LoyaltyCard&&);
@@ -36,8 +36,9 @@ class LoyaltyCard final {
   std::string program_name;
   // The logo icon URL.
   std::string program_logo;
-  // The loyalty card issuer text code.
-  std::string loyalty_card_number;
+  // The unmasked part of the  loyalty card issuer text code. The full number is
+  // not available on the client.
+  std::string unmasked_loyalty_card_suffix;
 };
 
 }  // namespace autofill

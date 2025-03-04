@@ -215,7 +215,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
           'Disclosure State: Cancel label');
 
       // Brings us back to disclosure.
-      cancelButton!.click();
+      cancelButton.click();
       await microtasksFinished();
       assertTrue(
           isChildVisible(app, '#value-prop'),

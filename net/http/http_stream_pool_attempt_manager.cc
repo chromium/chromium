@@ -706,7 +706,7 @@ void HttpStreamPool::AttemptManager::OnJobComplete(Job* job) {
     }
   }
 
-  MaybeComplete();
+  MaybeCompleteLater();
 }
 
 void HttpStreamPool::AttemptManager::CancelJobs(int error) {

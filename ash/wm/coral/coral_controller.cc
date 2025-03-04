@@ -150,6 +150,11 @@ void CoralController::GenerateContentGroups(
   for (size_t i = 0; i < items_in_request; i++) {
     group_request->entities.push_back(request.content()[i]->Clone());
   }
+
+  if (!request.suppression_context().empty()) {
+    group_request->suppression_context =
+        mojo::Clone(request.suppression_context());
+  }
   coral_processor->Group(
       std::move(group_request), std::move(title_observer),
       base::BindOnce(&CoralController::HandleGroupResult,

@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.View.OnClickListener;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.android.whats_new.features.WhatsNewFeature;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -17,6 +18,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for the a feature item in the What's New page. */
+@NullMarked
 public class WhatsNewListItemProperties {
     public static final int DEFAULT_ITEM_TYPE = 0;
 

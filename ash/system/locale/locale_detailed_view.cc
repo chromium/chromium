@@ -57,7 +57,7 @@ class LocaleItemView : public views::Button {
 
     TriView* tri_view = TrayPopupUtils::CreateDefaultRowView(
         /*use_wide_layout=*/false);
-    AddChildView(tri_view);
+    AddChildViewRaw(tri_view);
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
     views::Label* iso_code_label = TrayPopupUtils::CreateDefaultLabel();
@@ -144,7 +144,7 @@ void LocaleDetailedView::CreateItems() {
         Shell::Get()->system_tray_model()->locale()->current_locale_iso_code();
     auto* item =
         new LocaleItemView(this, entry.iso_code, entry.display_name, checked);
-    container->AddChildView(item);
+    container->AddChildViewRaw(item);
     item->SetID(id);
     id_to_locale_[id] = entry.iso_code;
     ++id;

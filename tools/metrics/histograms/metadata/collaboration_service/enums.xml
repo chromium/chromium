@@ -57,6 +57,11 @@ chromium-metrics-reviews@google.com.
   <int value="25" label="Data sharing service ready observed"/>
   <int value="26" label="Tab group sync service ready"/>
   <int value="27" label="All services ready for flow"/>
+  <int value="28" label="Timeout waiting for services to be ready"/>
+  <int value="29" label="Timeout waiting for sync and data sharing group"/>
+  <int value="30" label="Device policy disables signin"/>
+  <int value="31" label="Managed account signed in"/>
+  <int value="32" label="Account info is not ready upon signin"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/collaboration/internal/metrics.h:CollaborationServiceJoinEvent) -->
@@ -87,6 +92,9 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="Data sharing service ready observed"/>
   <int value="21" label="Tab group sync service ready"/>
   <int value="22" label="All services ready for flow"/>
+  <int value="23" label="Device policy disables signin"/>
+  <int value="24" label="Managed account signed in"/>
+  <int value="25" label="Account info is not ready upon signin"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/collaboration/internal/metrics.h:CollaborationServiceShareOrManageEvent) -->

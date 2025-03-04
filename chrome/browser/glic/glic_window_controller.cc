@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/browser_conditions.h"
 #include "chrome/browser/glic/glic.mojom.h"
@@ -60,7 +61,7 @@ namespace {
 constexpr static int kAttachmentBuffer = 20;
 constexpr static int kDetachYDistance = 36;
 
-constexpr static int kAnimationDurationMs = 300;
+constexpr static base::TimeDelta kAnimationDuration = base::Milliseconds(300);
 
 constexpr char kHistogramGlicPanelPresentationTime[] =
     "Glic.PanelPresentationTime";
@@ -718,7 +719,7 @@ void GlicWindowController::Detach() {
   new_position.set_y(new_position.y() + kDetachYDistance);
 
   glic_window_animator_->AnimatePosition(
-      new_position, base::Milliseconds(kAnimationDurationMs),
+      new_position, kAnimationDuration,
       base::BindOnce(&GlicWindowController::DetachFinished, GetWeakPtr()));
 }
 
@@ -930,15 +931,16 @@ void GlicWindowController::HandleWindowDragWithOffset(
     scoped_glic_button_indicator_.reset();
     // Check whether `GetGlicWidget()` is in a position to attach to a
     // browser window.
-    HandleAttachmentToBrowserWindows();
+    OnDragComplete();
   }
 }
 
-void GlicWindowController::HandleAttachmentToBrowserWindows() {
+void GlicWindowController::OnDragComplete() {
   Browser* browser = FindBrowserForAttachment();
   // No browser within attachment range so maybe reparent under an empty holder
   // widget.
   if (!browser) {
+    MaybeAdjustSizeForDisplay(/*animate=*/true);
     MaybeCreateHolderWindowAndReparent();
     return;
   }
@@ -1030,6 +1032,9 @@ void GlicWindowController::MovePositionToBrowserGlicButton(
     return;
   }
 
+  // This will stack with a move animation below.
+  MaybeAdjustSizeForDisplay(animate);
+
   GlicButton* glic_button = GetGlicButton(browser);
   CHECK(glic_button);
   gfx::Point top_right = GetTopRightPositionForAttachedGlicWindow(glic_button);
@@ -1039,8 +1044,8 @@ void GlicWindowController::MovePositionToBrowserGlicButton(
 
   // Avoid conversions between pixels and DIP on non 1.0 scale factor displays
   // changing widget width and height.
-  base::TimeDelta duration = animate ? base::Milliseconds(kAnimationDurationMs)
-                                     : base::Milliseconds(0);
+  base::TimeDelta duration =
+      animate ? kAnimationDuration : base::Milliseconds(0);
   glic_window_animator_->AnimatePosition(target_position, duration,
                                          base::DoNothing());
   NotifyIfPanelStateChanged();
@@ -1214,6 +1219,19 @@ gfx::Size GlicWindowController::GetLastRequestedSizeClamped(
   result.SetToMax(min);
   result.SetToMin(max);
   return result;
+}
+
+void GlicWindowController::MaybeAdjustSizeForDisplay(bool animate) {
+  if (state_ == State::kOpen || state_ == State::kWaitingForGlicToLoad ||
+      state_ == State::kOpenAnimation || state_ == State::kDetaching) {
+    const auto target_size = GetLastRequestedSizeClamped(
+        glic_widget_->GetWorkAreaBoundsInScreen().height());
+    if (target_size != glic_window_animator_->GetCurrentTargetBounds().size()) {
+      glic_window_animator_->AnimateSize(
+          target_size, animate ? kAnimationDuration : base::Milliseconds(0),
+          base::DoNothing());
+    }
+  }
 }
 
 }  // namespace glic

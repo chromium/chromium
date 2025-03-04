@@ -69,6 +69,10 @@ ExecutionContext* EditContext::GetExecutionContext() const {
   return execution_context_;
 }
 
+void EditContext::SetExecutionContext(ExecutionContext* context) {
+  execution_context_ = context;
+}
+
 LocalDOMWindow* EditContext::DomWindow() const {
   return To<LocalDOMWindow>(GetExecutionContext());
 }

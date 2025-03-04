@@ -500,7 +500,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AcceptedSaveUpdateSubmissionIndicatorEvent"
-    enum="SubmissionIndicatorEvent" expires_after="2025-06-29">
+    enum="SubmissionIndicatorEvent" expires_after="2025-08-31">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -594,7 +594,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AccountStoreBlocklistedEntriesAfterOptIn"
-    units="credentials" expires_after="2025-06-29">
+    units="credentials" expires_after="2025-08-31">
   <owner>treib@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
@@ -1060,7 +1060,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.BulkCheck.PasswordCheckReferrerAndroid2"
-    enum="PasswordCheckReferrerAndroid" expires_after="2025-06-22">
+    enum="PasswordCheckReferrerAndroid" expires_after="2025-08-31">
   <owner>ioanap@chromium.org</owner>
   <owner>friedrichh@chromium.org</owner>
   <summary>
@@ -1204,7 +1204,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.ClassificationCorrectness.ConfirmationPassword"
-    enum="PasswordManagerClassificationCorrectness" expires_after="2025-06-29">
+    enum="PasswordManagerClassificationCorrectness" expires_after="2025-08-31">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@google.com</owner>
   <summary>
@@ -1238,7 +1238,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.ClassificationCorrectness.NewPassword"
-    enum="PasswordManagerClassificationCorrectness" expires_after="2025-06-29">
+    enum="PasswordManagerClassificationCorrectness" expires_after="2025-08-31">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@google.com</owner>
   <summary>
@@ -1256,7 +1256,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.ClassificationCorrectness.Username"
-    enum="PasswordManagerClassificationCorrectness" expires_after="2025-06-29">
+    enum="PasswordManagerClassificationCorrectness" expires_after="2025-08-31">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@google.com</owner>
   <summary>
@@ -2060,7 +2060,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram name="PasswordManager.LeakDetection.DialogDismissalReason"
     enum="PasswordLeakDetectionDialogDismissalReason"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2099,7 +2099,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.NotifyIsLeakedTime" units="ms"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2119,7 +2119,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.ReceiveSingleLeakResponseTime"
-    units="ms" expires_after="2025-06-29">
+    units="ms" expires_after="2025-08-31">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2467,7 +2467,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.ParsedFormIsOtpForm2"
-    enum="PasswordVsOtpFormType" expires_after="2025-07-01">
+    enum="PasswordVsOtpFormType" expires_after="2025-08-31">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2489,7 +2489,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.Parsing.PasswordField.IsMasked" enum="Boolean"
-    expires_after="2025-07-01">
+    expires_after="2025-08-31">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -3520,7 +3520,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="PasswordManager.PasswordStoreProxyBackend.PasswordRemovalStatus"
-    enum="BooleanSuccess" expires_after="2025-06-29">
+    enum="BooleanSuccess" expires_after="2025-08-31">
   <owner>vsemeniuk@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>

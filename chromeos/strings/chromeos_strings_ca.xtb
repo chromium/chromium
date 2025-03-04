@@ -1130,7 +1130,6 @@
 <translation id="6325525973963619867">Error</translation>
 <translation id="6327262166342360252">Aquest fons de pantalla s'ha creat amb IA fent servir el text següent: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Tema fosc automàtic</translation>
-<translation id="6335228876613776082">El model s'ha acabat de baixar</translation>
 <translation id="6340526405444716530">Personalització</translation>
 <translation id="6348252528297699679">Pots desactivar la ubicació a Configuració &gt; Privadesa i seguretat &gt; Controls de privadesa &gt; Accés a la ubicació. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Nom d'usuari i contrasenya</translation>
@@ -1674,7 +1673,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Àlbum de Google Fotos</translation>
 <translation id="8775713578693478175">APN del mòdem</translation>
-<translation id="877735394245039557">El model s'està baixant</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Pot ser que aquesta xarxa tingui un portal captiu</translation>
 <translation id="8797082062139985406">Crea un nom amb la IA de Google</translation>

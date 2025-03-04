@@ -460,6 +460,7 @@
 <translation id="1303101771013849280">બુકમાર્ક HTML ફાઇલ</translation>
 <translation id="1303671224831497365">કોઈ Bluetooth ડિવાઇસ મળ્યાં નથી</translation>
 <translation id="130491383855577612">Linux ઍપ અને ફાઇલો સફળતાપૂર્વક બદલી છે</translation>
+<translation id="1306373239538745517">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{1 એક્સ્ટેન્શન અને આ ડિવાઇસ પર તેના દ્વારા સાચવેલો ડેટા કાઢી નાખો}one{{ACCOUNT_EXTENSIONS_COUNT} એક્સ્ટેન્શન અને આ ડિવાઇસ પર તેના દ્વારા સાચવેલો ડેટા કાઢી નાખો}other{{ACCOUNT_EXTENSIONS_COUNT} એક્સ્ટેન્શન અને આ ડિવાઇસ પર તેના દ્વારા સાચવેલો ડેટા કાઢી નાખો}}</translation>
 <translation id="1306518237408758433"><ph name="BOOKMARK_TITLE" /> ખોલો</translation>
 <translation id="1306606229401759371">સેટિંગ બદલો</translation>
 <translation id="1307165550267142340">તમારો પિન બનાવ્યો હતો</translation>
@@ -1204,6 +1205,7 @@
 <translation id="1826192255355608658">તમારા Chrome બ્રાઉઝર બુકમાર્ક, પાસવર્ડ, ઇતિહાસ અને બીજું ઘણું બધું સિંક કરો</translation>
 <translation id="1826516787628120939">તપાસી રહ્યાં છે</translation>
 <translation id="1826657447823925402">રિવર્સ સ્ક્રોલિંગ બંધ કર્યું</translation>
+<translation id="1827416268933303617"><ph name="COLOR_NAME" /> રંગ</translation>
 <translation id="1827504459960247692">હૉટસ્પૉટનું નામ</translation>
 <translation id="1828378091493947763">આ ઉપકરણ પર આ પ્લગ-ઇન સમર્થિત નથી</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{તમામ URLને &amp;ખોલો}=1{બુકમાર્ક &amp;ખોલો}one{તમામ ({COUNT}) URLને &amp;ખોલો}other{તમામ ({COUNT}) URLને &amp;ખોલો}}</translation>
@@ -1704,7 +1706,6 @@
 <translation id="2178545675770638239">પાસવર્ડ પસંદ કરો</translation>
 <translation id="2178585470774851578">તમે ChromeOS Flexની ડિબગીંગની સુવિધાઓ ચાલુ કરી રહ્યાં છો, જે sshd daemonનું સેટઅપ કરશે અને USB ડ્રાઇવમાંથી બૂટ કરવાનું ચાલુ કરશે.</translation>
 <translation id="2178614541317717477">CA સમાધાન</translation>
-<translation id="2179850495466791921">અત્યારે તમારી પાસે <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> અને વધુ છે</translation>
 <translation id="2180620921879609685">કોઈપણ પેજ પરનું કન્ટેન્ટ બ્લૉક કરો</translation>
 <translation id="2181821976797666341">પૉલિસીઓ</translation>
 <translation id="2182058453334755893">તમારા ક્લિપબોર્ડ પર કૉપિ કરવામાં આવ્યું</translation>
@@ -3121,7 +3122,6 @@
 <translation id="3167562202484086668"><ph name="BRAND" />નો તમામ ડેટા ડિલીટ કરો</translation>
 <translation id="3169930038976362151">તમારી જરૂરિયાત પ્રમાણે થીમ પસંદ કરો. તમારી થીમ, વૉલપેપર અને સ્ક્રીન સેવર જેવું બીજું ઘણું બધું બદલવા માટે, ડેસ્કટૉપ પર માત્ર ટચ કરીને થોડીવાર દબાવી રાખો.</translation>
 <translation id="3170072451822350649">તમે સાઇન ઇન કરવાનું છોડી અને <ph name="LINK_START" />અતિથિ તરીકે બ્રાઉઝ<ph name="LINK_END" /> પણ કરી શકો છો.</translation>
-<translation id="3171499217959105722">અત્યારે તમારી પાસે <ph name="NUMBERED_ITEM" /> અને વધુ છે</translation>
 <translation id="3175067642577044620">મુખ્ય ભાગ</translation>
 <translation id="3175862692832442091">જંગલ</translation>
 <translation id="3176347586396987181">માઉસનું બટન દબાવી રાખવા માટે “z”નો ઉપયોગ કરો</translation>
@@ -3933,7 +3933,6 @@
 <translation id="3744219658596020825">તમારા પાસવર્ડ આયાત કરવામાં આવ્યા ન હતા</translation>
 <translation id="3745306754941902605">રસોડું</translation>
 <translation id="3747077776423672805">ઍપને કાઢી નાખવા માટે, સેટિંગ &gt; Google Play Store &gt; Android પસંદગીઓ મેનેજ કરો &gt; ઍપ અથવા ઍપ્લિકેશન મેનેજર પર જાઓ. પછી તમે અનઇન્સ્ટૉલ કરવા માગો છો તે ઍપ પર ટૅપ કરો (ઍપ શોધવા માટે તમારે જમણે અથવા ડાબે સ્વાઇપ કરવું જરૂરી હોય શકે છે). પછી અનઇન્સ્ટૉલ કરો અથવા બંધ કરો પર ટૅપ કરો.</translation>
-<translation id="3747552357646973221">અત્યારે તમારી પાસે <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> અને વધુ છે</translation>
 <translation id="3748424433435232460">આ એકાઉન્ટ માટેનો પાસવર્ડ પહેલેથી જ આ ડિવાઇસમાં સાચવવામાં આવ્યો છે</translation>
 <translation id="3748706263662799310">બગની જાણ કરો</translation>
 <translation id="3749724428455457489">સાઇટ દ્વારા સૂચવવામાં આવેલી જાહેરાતો વિશે વધુ જાણો</translation>
@@ -6719,6 +6718,7 @@
 <translation id="5749214722697335450">વપરાશ અને નિદાનનો ડેટા મોકલો. Googleને નિદાન, ડિવાઇસ અને ઍપના વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલીને તમારા Android અનુભવને બહેતર બનાવવામાં સહાય કરો. સિસ્ટમ અને ઍપની સ્થિરતા તથા અન્ય સુધારણાઓ માટે આ સહાય કરશે. કેટલોક કુલ ડેટા Googleની ઍપ અને પાર્ટનર, જેમ કે Android ડેવલપરને પણ સહાય કરશે. જો તમારું 'વધારાની વેબ અને ઍપ ઍક્ટિવિટી' સેટિંગ ચાલુ હોય, તો આ ડેટા તમારા Google એકાઉન્ટમાં સાચવવામાં આવી શકે છે. <ph name="BEGIN_LINK1" />મેટ્રિક વિશે વધુ જાણો<ph name="BEGIN_LINK1_END" />વધુ જાણો<ph name="END_LINK1" /></translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">ઇન્ટરનેટ શેર કરવાની સુવિધાની ઉપલબ્ધતા ચેક કરો</translation>
+<translation id="5752346055178471785">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{આ એક્સ્ટેન્શન તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યું છે, પરંતુ ફક્ત આ ડિવાઇસ પર તેના દ્વારા સાચવવામાં આવેલો કોઈપણ ડેટા ડિલીટ થઈ શકે છે}one{આ એક્સ્ટેન્શન તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યું છે, પરંતુ ફક્ત આ ડિવાઇસ પર તેના દ્વારા સાચવવામાં આવેલો કોઈપણ ડેટા ડિલીટ થઈ શકે છે}other{આ એક્સ્ટેન્શન તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યા છે, પરંતુ ફક્ત આ ડિવાઇસ પર તેના દ્વારા સાચવવામાં આવેલો કોઈપણ ડેટા ડિલીટ થઈ શકે છે}}</translation>
 <translation id="5753570386948603678">ઇતિહાસમાંથી ડિલીટ કરો</translation>
 <translation id="5756163054456765343">સ&amp;હાય કેન્દ્ર</translation>
 <translation id="5757187557809630523">આગલો ટ્રૅક</translation>

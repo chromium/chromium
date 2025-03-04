@@ -52,12 +52,6 @@ void AvatarFetcher::OnImageFetched(
     ImageCallback callback,
     const gfx::Image& image,
     const image_fetcher::RequestMetadata& metadata) {
-  if (image.IsEmpty()) {
-    // TODO(crbug.com/381288296): Return a filled person icon as fallback. If
-    // Android needs a different style of silhouette, add a signal no_silhoutte
-    // to DataSharingService::GetAvatarImageForURL so this simply returns an
-    // empty image and Android can draw its own default image.
-  }
   std::move(callback).Run(image);
 }
 }  // namespace data_sharing

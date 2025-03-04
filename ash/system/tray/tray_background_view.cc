@@ -293,7 +293,7 @@ TrayBackgroundView::TrayBackgroundView(
   views::HighlightPathGenerator::Install(
       this, std::make_unique<HighlightPathGenerator>(this));
 
-  AddChildView(tray_container_.get());
+  AddChildViewRaw(tray_container_.get());
 
   // Use layer color to provide background color. Note that children views
   // need to have their own layers to be visible.

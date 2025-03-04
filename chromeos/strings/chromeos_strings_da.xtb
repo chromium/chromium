@@ -1130,7 +1130,6 @@
 <translation id="6325525973963619867">Mislykket</translation>
 <translation id="6327262166342360252">Denne baggrund blev oprettet med AI ved hjælp af følgende tekst: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Automatisk Mørkt tema</translation>
-<translation id="6335228876613776082">Download af model er gennemført</translation>
 <translation id="6340526405444716530">Personlig tilpasning</translation>
 <translation id="6348252528297699679">Du kan deaktivere lokation i Indstillinger &gt; Sikkerhed og privatliv &gt; Privatlivsindstillinger &gt; Lokationsadgang. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Brugernavn og adgangskode</translation>
@@ -1674,7 +1673,6 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Fotos-album</translation>
 <translation id="8775713578693478175">Modem-APN</translation>
-<translation id="877735394245039557">Download af model er i gang</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Dette netværk har muligvis en loginportal</translation>
 <translation id="8797082062139985406">Opret et navn ved hjælp af Google AI</translation>

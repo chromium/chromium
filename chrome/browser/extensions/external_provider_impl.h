@@ -69,6 +69,9 @@ class ExternalProviderImpl : public ExternalProviderInterface {
   void ServiceShutdown() override;
   void VisitRegisteredExtension() override;
   bool HasExtension(const std::string& id) const override;
+  bool HasExtensionWithLocation(
+      const std::string& id,
+      mojom::ManifestLocation location) const override;
   bool GetExtensionDetails(
       const std::string& id,
       mojom::ManifestLocation* location,

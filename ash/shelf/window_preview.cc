@@ -48,10 +48,10 @@ WindowPreview::WindowPreview(aura::Window* window, Delegate* delegate)
       &WindowPreview::CloseButtonPressed, base::Unretained(this)));
   close_button_->SetFocusBehavior(FocusBehavior::NEVER);
 
-  AddChildView(preview_container_view_.get());
-  AddChildView(preview_view_.get());
-  AddChildView(title_.get());
-  AddChildView(close_button_.get());
+  AddChildViewRaw(preview_container_view_.get());
+  AddChildViewRaw(preview_view_.get());
+  AddChildViewRaw(title_.get());
+  AddChildViewRaw(close_button_.get());
 }
 
 WindowPreview::~WindowPreview() = default;

@@ -38,12 +38,3 @@ void FakeRegionalCapabilitiesServiceClient::FetchCountryId(
 namespace testing {}  // namespace testing
 
 }  // namespace regional_capabilities
-
-namespace testing::regional_capabilities {
-
-int GetCountryId(
-    ::regional_capabilities::RegionalCapabilitiesService& service) {
-  return service.GetCountryId();
-}
-
-}  // namespace testing::regional_capabilities

@@ -22,18 +22,19 @@ constexpr std::string_view kLoyaltyCardGuid = "guid";
 constexpr std::string_view kLoyaltyCardMerchantName = "merchant_name";
 constexpr std::string_view kLoyaltyCardProgramName = "program_name";
 constexpr std::string_view kLoyaltyCardProgramLogo = "program_logo";
-constexpr std::string_view kLoyaltyCardNumber = "loyalty_card_number";
+constexpr std::string_view kUnmaskedLoyaltyCardSuffix =
+    "unmasked_loyalty_card_suffix";
 
 // Expects that `s` is pointing to a query result containing `kLoyaltyCardGuid`,
 // `kLoyaltyCardMerchantName`, `kLoyaltyCardProgramName`,
-// `kLoyaltyCardProgramLogo` and `kLoyaltyCardNumber` in that order. Constructs
-// a `LoyaltyCard` from that data.
+// `kLoyaltyCardProgramLogo` and `kUnmaskedLoyaltyCardSuffix` in that order.
+// Constructs a `LoyaltyCard` from that data.
 LoyaltyCard LoyaltyCardFromStatement(sql::Statement& s) {
   return LoyaltyCard(/*loyalty_card_id=*/s.ColumnString(0),
                      /*merchant_name=*/s.ColumnString(1),
                      /*program_name=*/s.ColumnString(2),
                      /*program_logo=*/s.ColumnString(3),
-                     /*loyalty_card_number=*/s.ColumnString(4));
+                     /*unmasked_loyalty_card_suffix=*/s.ColumnString(4));
 }
 
 WebDatabaseTable::TypeKey GetKey() {
@@ -67,7 +68,7 @@ bool PassesTable::InitLoyaltyCardsTable() {
        {kLoyaltyCardMerchantName, "TEXT NOT NULL"},
        {kLoyaltyCardProgramName, "TEXT NOT NULL"},
        {kLoyaltyCardProgramLogo, "TEXT NOT NULL"},
-       {kLoyaltyCardNumber, "TEXT NOT NULL"}});
+       {kUnmaskedLoyaltyCardSuffix, "TEXT NOT NULL"}});
 }
 
 bool PassesTable::MigrateToVersion(int version,
@@ -81,7 +82,7 @@ std::vector<LoyaltyCard> PassesTable::GetLoyaltyCards() const {
   SelectBuilder(
       db(), query, kLoyaltyCardsTable,
       {kLoyaltyCardGuid, kLoyaltyCardMerchantName, kLoyaltyCardProgramName,
-       kLoyaltyCardProgramLogo, kLoyaltyCardNumber});
+       kLoyaltyCardProgramLogo, kUnmaskedLoyaltyCardSuffix});
   std::vector<LoyaltyCard> result;
   while (query.Step()) {
     result.emplace_back(LoyaltyCardFromStatement(query));
@@ -95,14 +96,14 @@ bool PassesTable::AddOrUpdateLoyaltyCard(
   InsertBuilder(
       db(), query, kLoyaltyCardsTable,
       {kLoyaltyCardGuid, kLoyaltyCardMerchantName, kLoyaltyCardProgramName,
-       kLoyaltyCardProgramLogo, kLoyaltyCardNumber},
+       kLoyaltyCardProgramLogo, kUnmaskedLoyaltyCardSuffix},
       /*or_replace=*/true);
   int index = 0;
   query.BindString(index++, loyalty_card.loyalty_card_id);
   query.BindString(index++, loyalty_card.merchant_name);
   query.BindString(index++, loyalty_card.program_name);
   query.BindString(index++, loyalty_card.program_logo);
-  query.BindString(index++, loyalty_card.loyalty_card_number);
+  query.BindString(index++, loyalty_card.unmasked_loyalty_card_suffix);
   return query.Run();
 }
 
@@ -112,7 +113,7 @@ std::optional<LoyaltyCard> PassesTable::GetLoyaltyCardById(
   if (SelectByGuid(
           db(), query, kLoyaltyCardsTable,
           {kLoyaltyCardGuid, kLoyaltyCardMerchantName, kLoyaltyCardProgramName,
-           kLoyaltyCardProgramLogo, kLoyaltyCardNumber},
+           kLoyaltyCardProgramLogo, kUnmaskedLoyaltyCardSuffix},
           loyalty_card_id)) {
     return LoyaltyCardFromStatement(query);
   }

@@ -7,7 +7,6 @@
 #include <cstdint>
 #include <optional>
 #include <string>
-#include <variant>
 
 #include "base/barrier_callback.h"
 #include "base/check_deref.h"
@@ -20,6 +19,7 @@
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill::payments {
 
@@ -77,7 +77,7 @@ void BnplManager::InitBnplFlow(
 void BnplManager::NotifyOfSuggestionGeneration(
     const AutofillSuggestionTriggerSource trigger_source) {
   update_suggestions_barrier_callback_ = base::BarrierCallback<
-      std::variant<SuggestionsShownResponse, std::optional<uint64_t>>>(
+      absl::variant<SuggestionsShownResponse, std::optional<uint64_t>>>(
       2U, base::BindOnce(&BnplManager::MaybeUpdateSuggestionsWithBnpl,
                          weak_factory_.GetWeakPtr(), trigger_source));
 }
@@ -156,18 +156,18 @@ void BnplManager::OnVcnDetailsFetched(
 
 void BnplManager::MaybeUpdateSuggestionsWithBnpl(
     const AutofillSuggestionTriggerSource trigger_source,
-    std::vector<std::variant<SuggestionsShownResponse, std::optional<uint64_t>>>
+    std::vector<absl::variant<SuggestionsShownResponse, std::optional<uint64_t>>>
         responses) {
   update_suggestions_barrier_callback_ = std::nullopt;
 
   SuggestionsShownResponse* suggestions_shown_response = nullptr;
   std::optional<uint64_t>* extracted_amount = nullptr;
   for (auto& response : responses) {
-    if (std::holds_alternative<SuggestionsShownResponse>(response)) {
+    if (absl::holds_alternative<SuggestionsShownResponse>(response)) {
       suggestions_shown_response =
-          std::get_if<SuggestionsShownResponse>(&response);
+          absl::get_if<SuggestionsShownResponse>(&response);
     } else {
-      extracted_amount = std::get_if<std::optional<uint64_t>>(&response);
+      extracted_amount = absl::get_if<std::optional<uint64_t>>(&response);
     }
   }
 

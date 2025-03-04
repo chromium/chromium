@@ -319,6 +319,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="5579324208890605088">Erreur de démarrage : veuillez exécuter le programme d'installation en tant qu'utilisateur normal et non en tant qu'administrateur.</translation>
 <translation id="5596627076506792578">Autres options</translation>
 <translation id="5605834417512968703">Sélectionner un élément à rechercher avec la recherche d'images ou appuyer sur Échap pour quitter la recherche d'images</translation>
+<translation id="5618818588972826921">Sélectionnez n'importe quel texte ou image pour effectuer une recherche avec la recherche d'images ou appuyez sur Échap pour quitter la recherche d'images</translation>
 <translation id="5623402015214259806">{0,plural, =0{Une mise à jour de Chromium est proposée}=1{Une mise à jour de Chromium est proposée}one{Une mise à jour de Chromium est proposée depuis # jour}other{Une mise à jour de Chromium est proposée depuis # jours}}</translation>
 <translation id="5643865575100044307">Supprimez toujours les données relatives aux sites sur votre appareil lorsque vous fermez Chromium</translation>
 <translation id="5653831366781983928">Veuillez redémarrer Chromium maintenant</translation>
@@ -594,5 +595,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="983803489796659991">L'installation a échoué, car le serveur de mise à jour ne dispose pas de données de hachage pour cette application.</translation>
 <translation id="985498048907240953">Utiliser Chromium sans compte</translation>
 <translation id="985602178874221306">Les auteurs de Chrome</translation>
+<translation id="989970834842471429">Sélectionnez n'importe quel texte ou image pour effectuer une recherche avec la recherche d'images</translation>
 <translation id="992780518932311116">Pour utiliser votre position, accordez l'accès à Chromium dans les <ph name="BEGIN_LINK" />paramètres système<ph name="END_LINK" /></translation>
 </translationbundle>

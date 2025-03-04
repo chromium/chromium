@@ -4,12 +4,11 @@
 
 import("//ash/ambient/resources/resources.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//chromeos/ash/components/scalable_iph/scalable_iph.gni")
 import("//tools/grit/repack.gni")
 import("//ui/base/ui_features.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 assert(enable_hidpi)
 

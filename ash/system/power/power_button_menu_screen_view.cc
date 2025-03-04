@@ -139,10 +139,10 @@ PowerButtonMenuScreenView::PowerButtonMenuScreenView(
       power_button_offset_percentage_(power_button_offset_percentage) {
   power_button_screen_background_shield_ =
       new PowerButtonMenuBackgroundView(show_animation_done);
-  AddChildView(power_button_screen_background_shield_.get());
+  AddChildViewRaw(power_button_screen_background_shield_.get());
   power_button_menu_view_ =
       new PowerButtonMenuView(shutdown_reason, power_button_position_);
-  AddChildView(power_button_menu_view_.get());
+  AddChildViewRaw(power_button_menu_view_.get());
 
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 }

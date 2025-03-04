@@ -802,7 +802,7 @@ TEST_F(NativeWidgetMacTest, AccessibilityIntegration) {
   const std::u16string test_string = u"Green";
   views::Label* label = new views::Label(test_string);
   label->SetBounds(0, 0, 100, 100);
-  widget->GetContentsView()->AddChildView(label);
+  widget->GetContentsView()->AddChildViewRaw(label);
   widget->Show();
 
   // Accessibility hit tests come in Cocoa screen coordinates.
@@ -2295,7 +2295,7 @@ class NativeWidgetMacViewsOrderTest : public WidgetTest {
         [widget_->GetNativeView().GetNativeNSView().subviews copy];
 
     native_host_parent_ = new View();
-    widget_->GetContentsView()->AddChildView(native_host_parent_.get());
+    widget_->GetContentsView()->AddChildViewRaw(native_host_parent_.get());
 
     const size_t kNativeViewCount = 3;
     for (size_t i = 0; i < kNativeViewCount; ++i) {
@@ -2361,9 +2361,9 @@ TEST_F(NativeWidgetMacViewsOrderTest, ReorderViews) {
 
   View* new_parent = new View();
   native_host_parent_->RemoveChildView(hosts_[1]->host());
-  native_host_parent_->AddChildView(new_parent);
-  new_parent->AddChildView(hosts_[1]->host());
-  new_parent->AddChildView(hosts_[2]->host());
+  native_host_parent_->AddChildViewRaw(new_parent);
+  new_parent->AddChildViewRaw(hosts_[1]->host());
+  new_parent->AddChildViewRaw(hosts_[2]->host());
   EXPECT_NSEQ([GetContentNativeView() subviews],
               ([GetStartingSubviews() arrayByAddingObjectsFromArray:@[
                 hosts_[0]->view(), hosts_[1]->view(), hosts_[2]->view()

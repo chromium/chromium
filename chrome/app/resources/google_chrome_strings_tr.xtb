@@ -348,6 +348,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5727531838415286053">Chrome tarafından etkin bir denemeye rastgele yerleştirildiyseniz tarama geçmişiniz gördüğünüz reklamları ve aşağıdaki şekilde tahmin edilen ilgi alanlarınızı etkiler. Chrome, gizliliğinizi korumak için ilgi alanlarınızı her ay sürekli olarak siler. Kaldırmadığınız sürece ilgi alanlarınız yenilenmeye devam eder.</translation>
 <translation id="5736850870166430177">Chrome, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir</translation>
 <translation id="5756509061973259733">Cihazda bu hesaba sahip bir Chrome profili zaten var</translation>
+<translation id="5759947850379142561">Google Lens ile aramak istediğiniz metni veya resmi seçin ya da Google Lens'ten çıkmak için Escape tuşuna basın</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome başlatılamadı. Tekrar deneyin.</translation>
 <translation id="5809516625706423866">İnternet'e bağlanılamadı. HTTP 401 Yetkisiz. Lütfen proxy yapılandırmanızı kontrol edin.</translation>
@@ -450,6 +451,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="7071827361006050863">Chrome yakında tarama verilerini silecek</translation>
 <translation id="7085332316435785646">Google hizmetlerinde daha fazla kişiselleştirilmiş deneyimden faydalanmak için Chrome geçmişinin eklenip eklenmeyeceğini seçin</translation>
 <translation id="7088681679121566888">Chrome güncel</translation>
+<translation id="7096221564931416126">Google Lens ile aramak istediğiniz metni veya resmi seçin</translation>
 <translation id="7098166902387133879">Google Chrome mikrofonunuzu kullanıyor.</translation>
 <translation id="7099479769133613710">&amp;ChromeOS'i güncellemek için yeniden başlat</translation>
 <translation id="7106741999175697885">Görev Yöneticisi - Google Chrome</translation>

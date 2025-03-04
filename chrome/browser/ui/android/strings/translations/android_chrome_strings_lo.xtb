@@ -107,6 +107,7 @@
 <translation id="1413446866325418126">ບັນທຶກຂໍ້ມູນໃນບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="1414981605391750300">ກຳລັງຕິດຕໍ່ຫາ Google. ນີ້ອາດຈະໃຊ້ເວລາຄາວໜຶ່ງ...</translation>
 <translation id="1416550906796893042">ເວີຊັນ​ແອັບພລິເຄຊັນ</translation>
+<translation id="1416582024052267068">ຮັກສາສິດເຂົ້າເຖິງລະຫັດຜ່ານຂອງທ່ານໄວ້</translation>
 <translation id="1419753403124156396">ຣີສະຕາດ Chrome ບໍ?</translation>
 <translation id="1428770807407000502">ປິດການຊິ້ງຂໍ້ມູນບໍ?</translation>
 <translation id="1430915738399379752">ພິມ</translation>
@@ -515,6 +516,7 @@
 <translation id="342220687432920852">{HOURS,plural, =1{# ຊມ ກ່ອນ}other{# ຊມ ກ່ອນ}}</translation>
 <translation id="3430670036890315772">ການປິດການລັອກໂປຣໄຟລ໌ຂອງທ່ານຈະລຶບຂໍ້ມູນທີ່ທ່ານບັນທຶກໄວ້ອອກນຳ</translation>
 <translation id="3435465986463792564">ມີຫຼາຍໜ້າຈໍບໍ? ທ່ານສາມາດຈັດການພວກມັນໄດ້ຈາກບ່ອນນີ້</translation>
+<translation id="3435575784518354875">ເພື່ອຮັກສາສິດເຂົ້າເຖິງລະຫັດຜ່ານຂອງທ່ານ, ໃຫ້ສົ່ງພວກມັນອອກຕອນນີ້, ອັບເດດການບໍລິການ Google Play ແລ້ວຈາກນັ້ນໃຫ້ນໍາພວກມັນເຂົ້າໄປຫາ ຕົວຈັດການລະຫັດຜ່ານ Google. <ph name="BEGIN_LINK" />ເບິ່ງຄຳແນະນຳໂດຍລະອຽດ<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">ຄວາມ​ປອດ​ໄພ</translation>
 <translation id="3439276997620616816">ທ່ານຈະເຫັນແຖບຫຼ້າສຸດຂອງທ່ານຢູ່ບ່ອນນີ້</translation>
 <translation id="3443221991560634068">ໂຫຼດໜ້າປັດຈຸບັນຄືນໃໝ່</translation>
@@ -524,6 +526,7 @@
 <translation id="3474624961160222204">ສືບຕໍ່ໃຊ້ໃນຊື່ <ph name="NAME" /></translation>
 <translation id="3478363558367712427">ທ່ານສາມາດເລືອກລະບົບການຊອກຫາຂອງທ່ານໄດ້</translation>
 <translation id="3479552764303398839">ບໍ່ແມ່ນດຽວນີ້</translation>
+<translation id="3487903178221457900">ຜູ້ອື່ນ, ຮວມທັງແອັບ, ອາດສາມາດເຂົ້າເຖິງໄຟລ໌ທີ່ສົ່ງອອກ. ເມື່ອທ່ານສົ່ງອອກ, ລະຫັດຜ່ານຂອງທ່ານຈະຖືກລຶບອອກຈາກ Chrome.</translation>
 <translation id="3488199663160411179">ຊື່</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /> ກ່ຽວກັບເນື້ອຫາທີ່ແນະນຳ</translation>
 <translation id="3495219333887281978">ເປີດຊີດລຸ່ມສຸດສຳລັບການເຂົ້າສູ່ລະບົບໃນຄວາມສູງເຄິ່ງໜຶ່ງແລ້ວ.</translation>
@@ -1751,6 +1754,7 @@
 <translation id="8937772741022875483">ລຶບການເຄື່ອນໄຫວໃນ Chrome ຂອງທ່ານອອກຈາກ Digital Wellbeing ບໍ?</translation>
 <translation id="8942627711005830162">ເປີດໃນໜ້າຈໍອື່ນ</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - ບໍ່ສາມາດດາວໂຫຼດພາສານີ້ໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
+<translation id="8957528460562961174">ເພື່ອຮັກສາສິດເຂົ້າເຖິງລະຫັດຜ່ານຂອງທ່ານ, ໃຫ້ສົ່ງພວກມັນອອກຕອນນີ້ແລ້ວຈາກນັ້ນໃຫ້ນໍາພວກມັນເຂົ້າໄປຫາຕົວຈັດການລະຫັດຜ່ານທີ່ທ່ານຕ້ອງການ. ຕົວຈັດການລະຫັດຜ່ານ Google ຢຸດເຮັດວຽກເນື່ອງຈາກບໍລິການ Google Play ບໍ່ພ້ອມນຳໃຊ້.</translation>
 <translation id="8963117664422609631">ໄປຫາການຕັ້ງຄ່າເວັບໄຊ</translation>
 <translation id="8965591936373831584">ຄ້າງຢູ່</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{ແຖບບໍ່ເປີດເຜີຍຕົວຕົນ <ph name="INCOGNITO_TAB_COUNT" /> ແລະ ແຖບອື່ນໆ <ph name="TAB_COUNT_ONE" /> ແຖບຈະຖືກປິດ}other{ແຖບບໍ່ເປີດເຜີຍຕົວຕົນ <ph name="INCOGNITO_TAB_COUNT" /> ແລະ ແຖບອື່ນໆ <ph name="TAB_COUNT_MANY" /> ແຖບຈະຖືກປິດ}}</translation>

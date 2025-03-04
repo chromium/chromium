@@ -92,7 +92,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   enum ResourceProviderType {
     kTexture [[deprecated]] = 0,
     kBitmap = 1,
-    kSharedBitmap = 2,
+    kSharedBitmap [[deprecated]] = 2,
     kTextureGpuMemoryBuffer [[deprecated]] = 3,
     kBitmapGpuMemoryBuffer [[deprecated]] = 4,
     kSharedImage = 5,

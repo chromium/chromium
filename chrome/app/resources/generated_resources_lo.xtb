@@ -1717,7 +1717,6 @@
 <translation id="2178545675770638239">ເລືອກລະຫັດຜ່ານ</translation>
 <translation id="2178585470774851578">ທ່ານກຳລັງເປີດການນຳໃຊ້ຄຸນສົມບັດການດີບັກ ChromeOS Flex ເຊິ່ງຈະຕັ້ງຄ່າ sshd daemon ແລະ ເປີດການນຳໃຊ້ການເປີດຈາກໄດຣຟ໌ USB.</translation>
 <translation id="2178614541317717477">ຜ່ອນຜັນ CA</translation>
-<translation id="2179850495466791921">ຕອນນີ້ທ່ານມີ <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> ແລະ ອື່ນໆ</translation>
 <translation id="2180620921879609685">ບລັອກເນື້ອຫາຢູ່ໜ້າໃດກໍຕາມ</translation>
 <translation id="2181821976797666341">ນະ​ໂຍ​ບາຍ</translation>
 <translation id="2182058453334755893">ອັດສຳເນົາໃສ່ຄລິບບອດຂອງທ່ານແລ້ວ</translation>
@@ -3137,7 +3136,6 @@
 <translation id="3167562202484086668">ລຶບຂໍ້ມູນ <ph name="BRAND" /> ທັງໝົດ</translation>
 <translation id="3169930038976362151">ເລືອກຮູບແບບສີສັນທີ່ເໝາະກັບຄວາມຕ້ອງການຂອງທ່ານ. ເພື່ອປ່ຽນຮູບແບບສີສັນ, ຮູບພື້ນຫຼັງ, ພາບພັກໜ້າຈໍ ແລະ ອື່ນໆຂອງທ່ານ, ພຽງແຕະເດັສທັອບຄ້າງໄວ້.</translation>
 <translation id="3170072451822350649">ທ່ານຍັງອາດຈະຂ້າມການລົງຊື່ເຂົ້າ​ໃຊ້ ແລະ <ph name="LINK_START" />ທ່ອງເນັດເປັນແຂກ<ph name="LINK_END" />.</translation>
-<translation id="3171499217959105722">ຕອນນີ້ທ່ານມີ <ph name="NUMBERED_ITEM" /> ແລະ ອື່ນໆ</translation>
 <translation id="3175067642577044620">ສ່ວນເນື້ອຫາ</translation>
 <translation id="3175862692832442091">ປ່າ</translation>
 <translation id="3176347586396987181">ໃຊ້ປຸ່ມ “z” ເພື່ອກົດປຸ່ມເມົ້າຄ້າງໄວ້</translation>
@@ -3949,7 +3947,6 @@
 <translation id="3744219658596020825">ບໍ່ໄດ້ນຳເຂົ້າລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="3745306754941902605">ເຮືອນຄົວ</translation>
 <translation id="3747077776423672805">ເພື່ອລຶບແອັບອອກ, ກະລຸນາໄປທີ່ ການຕັ້ງຄ່າ &gt; Google Play Store &gt; ຈັດການການຕັ້ງຄ່າ Android &gt; ແອັບ ຫຼື ຕົວຈັດການແອັບພລິເຄຊັນ. ແລ້ວແຕະໃສ່ທີ່ແອັບທີ່ທ່ານຕ້ອງການຖອນການຕິດຕັ້ງ (ທ່ານອາດຈະຈຳເປັນຕ້ອງປັດຂວາ ຫຼື ຊ້າຍເພື່ອຊອກຫາແອັບ). ຈາກນັ້ນແຕະຖອນການຕິດຕັ້ງ ຫຼື ປິດນຳໃຊ້.</translation>
-<translation id="3747552357646973221">ຕອນນີ້ທ່ານມີ <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> ແລະ ອື່ນໆ</translation>
 <translation id="3748424433435232460">ລະຫັດຜ່ານສຳລັບບັນຊີນີ້ແມ່ນຖືກບັນທຶກໄວ້ຢູ່ອຸປະກອນນີ້ໄປກ່ອນແລ້ວ</translation>
 <translation id="3748706263662799310">ລາຍງານຂໍ້ຜິດພາດ</translation>
 <translation id="3749724428455457489">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບໂຄສະນາທີ່ເວັບໄຊແນະນຳ</translation>
@@ -10155,6 +10152,7 @@
 <translation id="8195854162863398249">ປິດການນຳໃຊ້ <ph name="FEATURE_NAME" /></translation>
 <translation id="8195920051450756553">ໜ່ວງເວລາກ່ອນເປີດໃຊ້ປຸ່ມດຽວກັນອີກຄັ້ງ</translation>
 <translation id="8197673340773315084">ເພີ່ມຊື່ ຫຼື ປ້າຍກຳກັບ, ເຊັ່ນ: ບ່ອນເຮັດວຽກ ຫຼື ສ່ວນຕົວ</translation>
+<translation id="8198181050118789419">ຮູບແບບສີສັນ: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">ແຖບການສົ່ງສັນຍານ</translation>
 <translation id="8199300056570174101">ຄຸນລັກສະນະຂອງເຄືອຂ່າຍ (ການບໍລິການ) ແລະ ອຸປະກອນ</translation>
 <translation id="8200772114523450471">ເລີ່ມຕົ້ນປິດເປີດໃໝ່</translation>

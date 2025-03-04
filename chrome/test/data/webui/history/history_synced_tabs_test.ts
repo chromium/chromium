@@ -13,7 +13,7 @@ import {createSession, createWindow} from './test_util.js';
 
 function getCards(manager: HistorySyncedDeviceManagerElement):
     NodeListOf<HistorySyncedDeviceCardElement> {
-  return manager.shadowRoot!.querySelectorAll('history-synced-device-card');
+  return manager.shadowRoot.querySelectorAll('history-synced-device-card');
 }
 
 function numWindowSeparators(card: HistorySyncedDeviceCardElement): number {
@@ -65,7 +65,7 @@ suite('<history-synced-device-manager>', function() {
     await microtasksFinished();
 
     const card =
-        element.shadowRoot!.querySelector('history-synced-device-card')!;
+        element.shadowRoot.querySelector('history-synced-device-card')!;
     assertEquals(
         'http://www.google.com',
         card.shadowRoot.querySelectorAll<HTMLElement>(
@@ -190,8 +190,7 @@ suite('<history-synced-device-manager>', function() {
     cards[0]!.$['menu-button'].click();
     await microtasksFinished();
 
-    element.shadowRoot!.querySelector<HTMLElement>(
-                           '#menuDeleteButton')!.click();
+    element.shadowRoot.querySelector<HTMLElement>('#menuDeleteButton')!.click();
     const deletedSessionTag =
         await testService.whenCalled('deleteForeignSession');
     assertEquals('Nexus 5', deletedSessionTag);

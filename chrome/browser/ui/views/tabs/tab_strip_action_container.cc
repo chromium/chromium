@@ -40,6 +40,7 @@
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_enums.h"
+#include "chrome/browser/glic/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
@@ -348,6 +349,8 @@ std::unique_ptr<glic::GlicButton> TabStripActionContainer::CreateGlicButton(
                               base::Unretained(this)),
           base::BindRepeating(&TabStripActionContainer::OnGlicButtonDismissed,
                               base::Unretained(this)),
+          base::BindRepeating(&TabStripActionContainer::OnGlicButtonHovered,
+                              base::Unretained(this)),
           glic::GlicVectorIconManager::GetVectorIcon(
               IDR_GLIC_BUTTON_VECTOR_ICON),
           l10n_util::GetStringUTF16(IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP));
@@ -433,6 +436,13 @@ void TabStripActionContainer::OnGlicButtonDismissed() {
 
   // Force hide the button when pressed, bypassing locked expansion mode.
   ExecuteHideTabStripNudge(glic_button_);
+}
+
+void TabStripActionContainer::OnGlicButtonHovered() {
+  Profile* profile = tab_strip_controller_->GetProfile();
+  glic::GlicKeyedService* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+  glic_service->window_controller().fre_controller()->MaybePreconnect();
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 

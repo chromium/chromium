@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Thuisnetwerk zonder roaming</translation>
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1328223165223065150">Achtergrondkleur</translation>
+<translation id="1329478709358066995">Transcript:</translation>
 <translation id="1330426557709298164">Jpg</translation>
 <translation id="1337912285145772892">Aanpassen aan scangebied</translation>
 <translation id="1343442362630695901">zoutmeer</translation>
@@ -1129,7 +1130,6 @@
 <translation id="6325525973963619867">Mislukt</translation>
 <translation id="6327262166342360252">Deze achtergrond is gemaakt met AI met de volgende tekst: <ph name="PROMPT" />.</translation>
 <translation id="6331191339300272798">Automatisch donker thema</translation>
-<translation id="6335228876613776082">Model gedownload</translation>
 <translation id="6340526405444716530">Personalisatie</translation>
 <translation id="6348252528297699679">Je kunt de locatie uitzetten via Instellingen &gt; Privacy en beveiliging &gt; Privacyopties &gt; Locatietoegang. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Gebruikersnaam en wachtwoord</translation>
@@ -1274,6 +1274,7 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="6930597342185648547">Over de achtergrond</translation>
 <translation id="6939667434404433010">Naam van opname zoeken</translation>
 <translation id="6939766318048400022">Café</translation>
+<translation id="6942253772720771875">Deel je feedback of beschrijf je probleem</translation>
 <translation id="6943893908656559156">Externe identiteit (optioneel)</translation>
 <translation id="6953137545147683679">goud</translation>
 <translation id="6957231940976260713">Servicenaam</translation>
@@ -1598,6 +1599,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8395584934117017006">Deze <ph name="DEVICE_TYPE" /> wordt zakelijk beheerd</translation>
 <translation id="8398927464629426868">De snelheid waarmee het apparaat op dit moment wordt opgeladen of ontladen</translation>
 <translation id="8403988360557588704">Een schilderij van een <ph name="ART_FEATURE" /> in de stijl <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">Gegenereerde samenvatting:</translation>
 <translation id="8410244574650205435">Automatisch gevonden</translation>
 <translation id="8420955526972171689">Tests uitvoeren en hardwareproblemen oplossen</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1644,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8626489604350149811">Meer acties voor <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Lichtpaars</translation>
 <translation id="8647595191512746911">Audiotranscriptie</translation>
+<translation id="8648578954147795914">Gegenereerde namen:</translation>
 <translation id="8650852232143958317">Je Gmail- en Google Drive-bestanden meenemen</translation>
 <translation id="8651481478098336970">geluid uitzetten</translation>
 <translation id="8655295600908251630">Kanaal</translation>
@@ -1670,7 +1673,6 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Foto's-album</translation>
 <translation id="8775713578693478175">Modem-APN</translation>
-<translation id="877735394245039557">Model wordt gedownload</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Dit netwerk heeft misschien een captive portal</translation>
 <translation id="8797082062139985406">Naam maken met AI van Google</translation>
@@ -1784,6 +1786,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="9218016617214286986">Bekende APN's tonen</translation>
 <translation id="932327136139879170">Homepage</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Zorg dat je microfoon is aangesloten of start je Chromebook opnieuw op</translation>
 <translation id="945522503751344254">Feedback sturen</translation>
 <translation id="950520315903467048">De toets ontbreekt voor <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">De stemmen in de hele opname vergelijken zodat het transcript aangeeft wat elke spreker heeft gezegd en wanneer</translation>

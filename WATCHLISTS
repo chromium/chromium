@@ -899,9 +899,7 @@
     },
     'client_hints': {
       'filepath': 'client_hints|user_agent_utils|'\
-                  'chrome/browser/android/content/content_utils.cc'\
-                  'content/common/user_agent.cc|'\
-                  'content/public/common/user_agent.h'
+                  'chrome/browser/android/content/content_utils.cc'
     },
     'clipboard': {
       'filepath': 'content/browser/renderer/clipboard|' \

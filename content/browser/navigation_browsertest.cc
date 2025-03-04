@@ -22,6 +22,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -9177,7 +9178,7 @@ class DeferSpeculativeRFHCreationRenderProcessTest
   DeferSpeculativeRFHCreationRenderProcessTest()
       : warmup_spare_render_process_(GetParam()) {
     std::map<std::string, std::string> parameters = {
-        {"warmup_spare_process", GetParam() ? "true" : "false"},
+        {"warmup_spare_process", base::ToString(GetParam())},
     };
     defer_rfh_feature_list_.InitAndEnableFeatureWithParameters(
         features::kDeferSpeculativeRFHCreation, parameters);

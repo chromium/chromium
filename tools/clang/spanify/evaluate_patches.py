@@ -191,6 +191,7 @@ except:
     print("Remote exec not available. Disabling.")
     with open("out/linux/args.gn", "w") as f:
         f.write("use_remoteexec = false\n")
+        f.write("use_reclient = false\n")
         f.write("use_siso = true\n")
 
 # Produce a full rewrite, and store individual patches below ~/scratch/patch_*

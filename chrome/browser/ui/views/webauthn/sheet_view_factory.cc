@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_model.h"
@@ -23,12 +22,12 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_priority_mechanism_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_select_account_sheet_view.h"
+#include "chrome/browser/ui/views/webauthn/combined_selector_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/hover_list_view.h"
 #include "chrome/browser/ui/views/webauthn/passkey_detail_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "chrome/browser/ui/webauthn/transport_hover_list_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
@@ -132,8 +131,13 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
   std::unique_ptr<AuthenticatorRequestSheetView> sheet_view;
   switch (dialog_model->step()) {
     case Step::kMechanismSelection:
-      if (dialog_model->request_type ==
-          device::FidoRequestType::kGetAssertion) {
+      if (dialog_model->ui_presentation == UIPresentation::kModalImmediate) {
+        CHECK(dialog_model->request_type ==
+              device::FidoRequestType::kGetAssertion);
+        sheet_view = std::make_unique<CombinedSelectorSheetView>(
+            std::make_unique<CombinedSelectorSheetModel>(dialog_model));
+      } else if (dialog_model->request_type ==
+                 device::FidoRequestType::kGetAssertion) {
         sheet_view = std::make_unique<AuthenticatorMultiSourcePickerSheetView>(
             std::make_unique<AuthenticatorMultiSourcePickerSheetModel>(
                 dialog_model));
@@ -222,10 +226,9 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
           std::make_unique<AuthenticatorPaaskSheetModel>(dialog_model));
       break;
     case Step::kCableV2QRCode:
-      sheet_view =
-          std::make_unique<AuthenticatorHybridAndSecurityKeySheetView>(
-              std::make_unique<AuthenticatorHybridAndSecurityKeySheetModel>(
-                  dialog_model));
+      sheet_view = std::make_unique<AuthenticatorHybridAndSecurityKeySheetView>(
+          std::make_unique<AuthenticatorHybridAndSecurityKeySheetModel>(
+              dialog_model));
       break;
     case Step::kCableV2Connecting:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(

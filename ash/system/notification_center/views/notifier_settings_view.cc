@@ -180,7 +180,7 @@ END_METADATA
 NotifierButtonWrapperView::NotifierButtonWrapperView(views::View* contents)
     : focus_painter_(TrayPopupUtils::CreateFocusPainter()),
       contents_(contents) {
-  AddChildView(contents);
+  AddChildViewRaw(contents);
 
   // We add callbacks so that whenever the a11y attributes of `contents_`
   // change, we update the a11y attributes for `this`.
@@ -422,7 +422,7 @@ class EmptyNotifierView : public views::View {
                                        message_center_style::kEmptyIconSize));
     icon->SetBorder(
         views::CreateEmptyBorder(message_center_style::kEmptyIconPadding));
-    AddChildView(icon);
+    AddChildViewRaw(icon);
 
     views::Label* label = new views::Label(
         l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_NO_NOTIFIERS));
@@ -432,7 +432,7 @@ class EmptyNotifierView : public views::View {
     // "Roboto-Medium, 12sp" is specified in the mock.
     label->SetFontList(
         gfx::FontList().DeriveWithWeight(gfx::Font::Weight::MEDIUM));
-    label_ = AddChildView(label);
+    label_ = AddChildViewRaw(label);
   }
 
   EmptyNotifierView(const EmptyNotifierView&) = delete;
@@ -995,7 +995,7 @@ void NotifierSettingsView::OnNotifiersUpdated(
     NotifierButtonWrapperView* wrapper = new NotifierButtonWrapperView(button);
 
     wrapper->SetFocusBehavior(FocusBehavior::ALWAYS);
-    contents_view->AddChildView(wrapper);
+    contents_view->AddChildViewRaw(wrapper);
     buttons_.insert(button);
   }
 

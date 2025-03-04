@@ -812,22 +812,22 @@
     {
         "name": "room-common",
         "group": "androidx.room",
-        "version": "2.7.0-SNAPSHOT"
+        "version": "2.8.0-SNAPSHOT"
     },
     {
         "name": "room-common-jvm",
         "group": "androidx.room",
-        "version": "2.7.0-SNAPSHOT"
+        "version": "2.8.0-SNAPSHOT"
     },
     {
         "name": "room-runtime",
         "group": "androidx.room",
-        "version": "2.7.0-SNAPSHOT"
+        "version": "2.8.0-SNAPSHOT"
     },
     {
         "name": "room-runtime-android",
         "group": "androidx.room",
-        "version": "2.7.0-SNAPSHOT"
+        "version": "2.8.0-SNAPSHOT"
     },
     {
         "name": "savedstate",
@@ -852,22 +852,22 @@
     {
         "name": "sqlite",
         "group": "androidx.sqlite",
-        "version": "2.5.0-SNAPSHOT"
+        "version": "2.6.0-SNAPSHOT"
     },
     {
         "name": "sqlite-android",
         "group": "androidx.sqlite",
-        "version": "2.5.0-SNAPSHOT"
+        "version": "2.6.0-SNAPSHOT"
     },
     {
         "name": "sqlite-framework",
         "group": "androidx.sqlite",
-        "version": "2.5.0-SNAPSHOT"
+        "version": "2.6.0-SNAPSHOT"
     },
     {
         "name": "sqlite-framework-android",
         "group": "androidx.sqlite",
-        "version": "2.5.0-SNAPSHOT"
+        "version": "2.6.0-SNAPSHOT"
     },
     {
         "name": "startup-runtime",

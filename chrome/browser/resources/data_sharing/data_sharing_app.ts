@@ -354,9 +354,9 @@ export class DataSharingApp extends CustomElement implements Logger {
     if (event.intentType === LoggingIntent.STOP_SHARING) {
       assert(this.tabGroupId_);
       if (event.progress === Progress.STARTED) {
-        this.aboutToUnShareTabGroup(this.tabGroupId_!);
+        this.aboutToUnShareTabGroup(this.tabGroupId_);
       } else if (event.progress === Progress.SUCCEEDED) {
-        this.onTabGroupUnShareComplete(this.tabGroupId_!);
+        this.onTabGroupUnShareComplete(this.tabGroupId_);
       }
     }
   }

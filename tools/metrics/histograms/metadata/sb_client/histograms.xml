@@ -621,7 +621,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SBClientPhishing.HighConfidenceAllowlistMatchOnServerVerdictPhishy{RequestType}"
-    enum="BooleanMatched" expires_after="2025-06-26">
+    enum="BooleanMatched" expires_after="2025-08-31">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -642,7 +642,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.ImageEmbeddingModelLoadTime.FlatbufferScorer"
-    units="ms" expires_after="2025-06-29">
+    units="ms" expires_after="2025-08-31">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

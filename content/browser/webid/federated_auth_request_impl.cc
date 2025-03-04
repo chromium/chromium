@@ -188,7 +188,7 @@ std::string ComputeUrlEncodedTokenPostData(
   // disclosure text is not necessary. This field indicates in the request
   // whether the user has been shown such disclosure text.
   std::string disclosure_text_shown_param =
-      IsRequestingDefaultPermissions(disclosure_shown_for) ? "true" : "false";
+      base::ToString(IsRequestingDefaultPermissions(disclosure_shown_for));
   if (!query.empty()) {
     query += "&";
   }

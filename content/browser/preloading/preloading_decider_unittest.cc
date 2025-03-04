@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
@@ -1064,7 +1065,7 @@ class PreloadingDeciderMLModelTest
   PreloadingDeciderMLModelTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kPreloadingHeuristicsMLModel,
-          {{"enact_candidates", GetParam() ? "true" : "false"}}}},
+          {{"enact_candidates", base::ToString(GetParam())}}}},
         {});
   }
 

@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_network_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/audits.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
+#include "third_party/blink/renderer/platform/image-encoders/image_encoder_utils.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -67,7 +68,8 @@ bool EncodeAsImage(base::span<const uint8_t> body,
 
   String mime_type_name = StringView("image/") + encoding;
   ImageEncodingMimeType mime_type;
-  bool valid_mime_type = ParseImageEncodingMimeType(mime_type_name, mime_type);
+  bool valid_mime_type =
+      ImageEncoderUtils::ParseMimeType(mime_type_name, mime_type);
   DCHECK(valid_mime_type);
   return image_to_encode->EncodeImage(mime_type, quality, output);
 }

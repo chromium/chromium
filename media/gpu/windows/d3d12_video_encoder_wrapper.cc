@@ -46,6 +46,12 @@ bool D3D12VideoEncoderWrapper::Initialize() {
           .pHEVCProfile = &profile_data_.hevc_profile_,
       };
       break;
+    case D3D12_VIDEO_ENCODER_CODEC_AV1:
+      profile_desc = {
+          .DataSize = sizeof(profile_data_.av1_profile_),
+          .pAV1Profile = &profile_data_.av1_profile_,
+      };
+      break;
     default:
       NOTREACHED();
   }

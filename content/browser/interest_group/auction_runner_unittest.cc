@@ -2028,8 +2028,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       enabled_features.push_back(
           {blink::features::kPrivateAggregationApi,
            {{"fledge_extensions_enabled",
-             should_enable_private_aggregation_fledge_extension ? "true"
-                                                                : "false"}}});
+             base::ToString(
+                 should_enable_private_aggregation_fledge_extension)}}});
       enabled_features.push_back(
           {blink::features::
                kPrivateAggregationApiProtectedAudienceAdditionalExtensions,

@@ -61,7 +61,7 @@ TEST_F(PassesTableTest, AddOrUpdateLoyaltyCard) {
   EXPECT_TRUE(passes_table().AddOrUpdateLoyaltyCard(card1));
   EXPECT_THAT(passes_table().GetLoyaltyCards(), UnorderedElementsAre(card1));
   // Update `card1`.
-  card1.loyalty_card_number = "123*321";
+  card1.unmasked_loyalty_card_suffix = "9876";
   EXPECT_TRUE(passes_table().AddOrUpdateLoyaltyCard(card1));
   EXPECT_THAT(passes_table().GetLoyaltyCards(), UnorderedElementsAre(card1));
   // Add `card2`.

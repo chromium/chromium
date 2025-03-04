@@ -6,15 +6,18 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_BNPL_MANAGER_H_
 
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
-#include <variant>
+#include <tuple>
+#include <vector>
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill {
 
@@ -138,7 +141,7 @@ class BnplManager {
   // and try to show card suggestions with buy-now-pay-later suggestion.
   void MaybeUpdateSuggestionsWithBnpl(
       const AutofillSuggestionTriggerSource trigger_source,
-      std::vector<std::variant<SuggestionsShownResponse,
+      std::vector<absl::variant<SuggestionsShownResponse,
                                std::optional<uint64_t>>> responses);
 
   // Callback triggered when the user accepts the ToS dialog. It will first load
@@ -179,7 +182,7 @@ class BnplManager {
   // Callback to collect the current shown suggestion list and checkout
   // amount, and insert BNPL suggestion if the amount is eligible.
   std::optional<base::RepeatingCallback<void(
-      std::variant<SuggestionsShownResponse, std::optional<uint64_t>>)>>
+      absl::variant<SuggestionsShownResponse, std::optional<uint64_t>>)>>
       update_suggestions_barrier_callback_;
 
   base::WeakPtrFactory<BnplManager> weak_factory_{this};

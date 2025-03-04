@@ -72,10 +72,7 @@ export class SummaryConsentCard extends ReactiveLitElement {
       s.summaryEnabled = SummaryEnableState.ENABLED;
     });
     this.platformHandler.perfLogger.start({kind: 'summaryModelDownload'});
-    this.platformHandler.summaryModelLoader.download();
-    // TODO: b/367285755 - Include title suggestion model when reporting the
-    // download progress.
-    this.platformHandler.titleSuggestionModelLoader.download();
+    this.platformHandler.downloadGenAiModel();
   }
 
   private onDisableClick() {

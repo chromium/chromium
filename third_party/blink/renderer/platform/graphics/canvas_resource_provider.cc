@@ -203,7 +203,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
       const gfx::ColorSpace& color_space,
       WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
       CanvasResourceHost* resource_host)
-      : CanvasResourceProvider(kSharedBitmap,
+      : CanvasResourceProvider(kSharedImage,
                                size,
                                format,
                                alpha_type,

@@ -503,6 +503,7 @@
 <translation id="3373141842870501561">Позадина са Земљом</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> позадина са словом <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Ексклузивно</translation>
+<translation id="3395147534045164351">Укључите или искључите локацију поравнања</translation>
 <translation id="3404249063913988450">Омогућите чувар екрана</translation>
 <translation id="3413935475507503304">Да бисте наставили са ажурирањем, кликните на Даље.</translation>
 <translation id="3428551088151258685">отворени</translation>
@@ -652,6 +653,7 @@
 <translation id="4113067922640381334">Сада имате приступ новим <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />позадинама<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Тамни режим</translation>
 <translation id="4126551873361000548">10 секунди уназад</translation>
+<translation id="4128271910628504223">Унесите упит као што је „нацртај шуму у магли“</translation>
 <translation id="4130035430755296270">Наставите да прелазите курсором за још опција изгледа</translation>
 <translation id="4130750466177569591">Прихватам</translation>
 <translation id="4131410914670010031">Црно-бело</translation>
@@ -859,6 +861,7 @@
 <translation id="5050042263972837708">Назив групе</translation>
 <translation id="5051044138948155788">Ово је једина страница. Ово ће вас одвести на почетни екран за скенирање.</translation>
 <translation id="5053233795640754917">Паузирајте</translation>
+<translation id="5056587122125565772">Направи слику</translation>
 <translation id="5078711626843651677">Гласовни модели се привремено чувају на уређају док се означавање говорника не заврши. То увек можете да искључите у Подешавањима.</translation>
 <translation id="5078983345702708852">футуристичка</translation>
 <translation id="5087864757604726239">назад</translation>
@@ -1130,7 +1133,6 @@
 <translation id="6325525973963619867">Неуспешно</translation>
 <translation id="6327262166342360252">Ова позадина је направљена помоћу вештачке интелигенције користећи следећи текст: „<ph name="PROMPT" />“.</translation>
 <translation id="6331191339300272798">Аутоматска тамна тема</translation>
-<translation id="6335228876613776082">Преузимање модела је завршено</translation>
 <translation id="6340526405444716530">Персонализација</translation>
 <translation id="6348252528297699679">Можете да искључите локацију у одељку Подешавања &gt; Приватност и безбедност &gt; Контроле приватности &gt; Приступ локацији. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Корисничко име и лозинка</translation>
@@ -1674,7 +1676,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Албум Google слика</translation>
 <translation id="8775713578693478175">Назив приступне тачке модема</translation>
-<translation id="877735394245039557">Преузимање модела је у току</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Ова мрежа можда има улазни портал</translation>
 <translation id="8797082062139985406">Направите назив помоћу Google вештачке интелигенције</translation>

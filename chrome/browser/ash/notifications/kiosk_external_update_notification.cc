@@ -90,7 +90,7 @@ class KioskExternalUpdateNotificationView : public views::WidgetDelegateView {
     label_->SetEnabledColor(kTextColor);
     label_->SetAutoColorReadabilityEnabled(false);
     label_->SetMultiLine(true);
-    AddChildView(label_.get());
+    AddChildViewRaw(label_.get());
   }
 
   void InformOwnerForDismiss() {

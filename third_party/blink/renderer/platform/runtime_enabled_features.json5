@@ -808,6 +808,13 @@
       status: "test",
     },
     {
+      // Enables clipboardchange event API for listening for changes to the
+      // system clipboard
+      // https://chromestatus.com/feature/5085102657503232
+      name: "ClipboardChangeEvent",
+      base_feature: "none",
+    },
+    {
       // Enables the API for getting a unique token of the system clipboard's
       // current state.
       // https://chromestatus.com/feature/5124993439236096
@@ -1454,12 +1461,6 @@
       origin_trial_allows_third_party: true,
       origin_trial_type: "deprecation",
     },
-    {
-      // Remove this feature when the removal of the WebGPU limit
-      // maxInterStageShaderComponents has been stable long enough.
-      // See https://crbug.com/364338810
-      name: "DeprecateMaxInterStageShaderComponents",
-    },
     // This allows pages to opt out of the unload deprecation. Enabling this
     // allows unload event handers to be used in the frame regardless of any
     // Permissions-Policy setting.
@@ -1489,6 +1490,14 @@
         "ChromeOS": "stable",
         "default": "experimental",
       },
+    },
+    {
+      name: "DeviceBoundSessionCredentials",
+      origin_trial_feature_name: "DeviceBoundSessionCredentials",
+      origin_trial_os: ["win"],
+      status: "experimental",
+      // Killswitch is net::features::kDeviceBoundSessions
+      base_feature: "none",
     },
     {
       name: "DeviceOrientationRequestPermission",
@@ -3662,6 +3671,10 @@
       public: true,
       status: "experimental",
       base_feature: "none",
+    },
+    {
+      name: "RestrictGetBoundingClientRectForHiddenSVGElements",
+      status: "stable",
     },
     {
       // New behavior when line breaker rewinds floats. crbug.com/1499290

@@ -11,10 +11,8 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/host_zoom_map_impl.h"
 #include "content/browser/media/captured_surface_control_permission_manager.h"
-#include "content/common/features.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/test/test_web_contents.h"
@@ -541,28 +539,16 @@ TEST_P(CapturedSurfaceControllerSetZoomLevelTest, SetZoomLevelSuccess) {
   EXPECT_EQ(zoom_level_, capturee_->GetZoomLevel());
 }
 
-class CapturedSurfaceControllerSetZoomTemporarinessTest
-    : public CapturedSurfaceControllerTestBase,
-      public ::testing::WithParamInterface<bool> {
+class CapturedSurfaceControllerSetZoomLevelImpermanenceTest
+    : public CapturedSurfaceControllerTestBase {
  public:
-  CapturedSurfaceControllerSetZoomTemporarinessTest()
-      : is_temporary_(GetParam()) {
-    features_.InitWithFeatureStates(
-        {{features::kCapturedSurfaceControlTemporaryZoom, is_temporary_}});
-  }
-  ~CapturedSurfaceControllerSetZoomTemporarinessTest() override = default;
-
- protected:
-  const bool is_temporary_;
-  base::test::ScopedFeatureList features_;
+  ~CapturedSurfaceControllerSetZoomLevelImpermanenceTest() override = default;
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         CapturedSurfaceControllerSetZoomTemporarinessTest,
-                         ::testing::Bool());
-
-TEST_P(CapturedSurfaceControllerSetZoomTemporarinessTest,
-       TemporarinessDependsOnConfiguration) {
+// Ensure the effect does not extend to other tabs, even if they are dialed
+// to the same origin.
+TEST_F(CapturedSurfaceControllerSetZoomLevelImpermanenceTest,
+       SetZoomLevelOnlyAffectsCapturedTab) {
   ASSERT_EQ(capturee_->GetZoomLevel(), 100);
 
   // Create another tab and navigate it to the same URL as the captured tab.
@@ -579,12 +565,36 @@ TEST_P(CapturedSurfaceControllerSetZoomTemporarinessTest,
   run_loop.Run();
   ASSERT_EQ(capturee_->GetZoomLevel(), 200);
 
-  // In temporary zoom mode, setting the zoom level only affects the
-  // current tab.
-  // In persistent zoom mode, setting the zoom is equivalent to
-  // the user changing it through their interaction with the
-  // browser's UX.
-  EXPECT_EQ(duplicate_tab->GetZoomLevel(), is_temporary_ ? 100 : 200);
+  // Setting the zoom level only affected the captured tab, not the
+  // Chrome-level settings for the origin.
+  EXPECT_EQ(duplicate_tab->GetZoomLevel(), 100);
+}
+
+// Ensure the effect does not get persisted and does not affect newly
+// opened tabs later, even if they are navigated to the same URL.
+TEST_F(CapturedSurfaceControllerSetZoomLevelImpermanenceTest,
+       SetZoomLevelEffectsDoNotPersistAfterClosed) {
+  ASSERT_EQ(capturee_->GetZoomLevel(), 100);
+
+  // Change the zoom-level on the captured tab.
+  permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
+  base::RunLoop run_loop;
+  controller_->SetZoomLevel(
+      200, MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess,
+                                       mock_widget_input_handler_.get()));
+  run_loop.Run();
+  ASSERT_EQ(capturee_->GetZoomLevel(), 200);
+
+  // Close the tab.
+  capturee_.reset();
+
+  // Create another tab and navigate it to the same URL as the captured tab.
+  auto new_tab =
+      std::make_unique<TestTab>(GetBrowserContext(), GURL(kUrlString));
+
+  // Setting the zoom level only affected the captured tab, not the
+  // Chrome-level settings for the origin.
+  EXPECT_EQ(new_tab->GetZoomLevel(), 100);
 }
 
 enum class CapturedSurfaceControlAPI {

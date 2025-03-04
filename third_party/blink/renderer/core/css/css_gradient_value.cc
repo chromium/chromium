@@ -31,6 +31,7 @@
 
 #include "base/memory/values_equivalent.h"
 #include "base/notreached.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
@@ -1124,6 +1125,21 @@ static void EndPointsFromAngle(float angle_deg,
   first_point.SetPoint(half_width - end_x, half_height + end_y);
 }
 
+template <typename CSSGradientType>
+static void CountUseOfRainbowGradientPattern(
+    const Document& document,
+    const CSSGradientType& desc,
+    const Color::HueInterpolationMethod hue_interpolation_method) {
+  if (hue_interpolation_method == Color::HueInterpolationMethod::kLonger &&
+      desc.stops.size() == 2 && desc.stops[0].stop == 0 &&
+      desc.stops[1].stop == 0 && desc.stops[0].color == desc.stops[1].color) {
+    // Tracking usage of rainbow gradients pattern.
+    // See
+    // https://github.com/w3c/csswg-drafts/issues/11381#issuecomment-2659500463
+    document.CountUse(WebFeature::kCSSRainbowGradientPattern);
+  }
+}
+
 scoped_refptr<Gradient> CSSLinearGradientValue::CreateGradient(
     const CSSToLengthConversionData& conversion_data,
     const gfx::SizeF& size,
@@ -1214,6 +1230,8 @@ scoped_refptr<Gradient> CSSLinearGradientValue::CreateGradient(
   gradient->SetColorInterpolationSpace(color_interpolation_space_,
                                        hue_interpolation_method_);
   gradient->AddColorStops(desc.stops);
+
+  CountUseOfRainbowGradientPattern(document, desc, hue_interpolation_method_);
 
   return gradient;
 }
@@ -1688,6 +1706,8 @@ scoped_refptr<Gradient> CSSRadialGradientValue::CreateGradient(
                                        hue_interpolation_method_);
   gradient->AddColorStops(desc.stops);
 
+  CountUseOfRainbowGradientPattern(document, desc, hue_interpolation_method_);
+
   return gradient;
 }
 
@@ -1850,6 +1870,8 @@ scoped_refptr<Gradient> CSSConicGradientValue::CreateGradient(
   gradient->SetColorInterpolationSpace(color_interpolation_space_,
                                        hue_interpolation_method_);
   gradient->AddColorStops(desc.stops);
+
+  CountUseOfRainbowGradientPattern(document, desc, hue_interpolation_method_);
 
   return gradient;
 }

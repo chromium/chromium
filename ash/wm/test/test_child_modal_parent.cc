@@ -88,7 +88,7 @@ TestChildModalParent::TestChildModalParent(aura::Window* context)
   modal_parent_->GetRootView()->SetBackground(
       views::CreateSolidBackground(kModalParentColor));
   auto* modal_parent_textfield = new views::Textfield;
-  modal_parent_->GetRootView()->AddChildView(modal_parent_textfield);
+  modal_parent_->GetRootView()->AddChildViewRaw(modal_parent_textfield);
   modal_parent_textfield->SetBounds(kTextfieldLeft, kTextfieldTop,
                                     kTextfieldWidth, kTextfieldHeight);
   modal_parent_textfield->SetPlaceholderText(u"modal parent window");
@@ -98,8 +98,8 @@ TestChildModalParent::TestChildModalParent(aura::Window* context)
                           base::Unretained(this)),
       u"Show/Hide Child Modal Window");
   button_ = AddChildView(std::move(button));
-  AddChildView(textfield_.get());
-  AddChildView(host_.get());
+  AddChildViewRaw(textfield_.get());
+  AddChildViewRaw(host_.get());
 }
 
 TestChildModalParent::~TestChildModalParent() = default;

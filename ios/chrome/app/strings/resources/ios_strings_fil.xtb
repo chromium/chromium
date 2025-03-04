@@ -288,6 +288,7 @@
 <translation id="2161446265348023004">Lumipat sa nakabukas na window</translation>
 <translation id="2164946989711475905">Mag-sign in…</translation>
 <translation id="2175927920773552910">QR Code</translation>
+<translation id="218350106843433823">I-autofill ang mga password at passkey</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="219283042927675668">Mga tab sa grupo</translation>
 <translation id="2194856509914051091">Mga bagay na dapat isaalang-alang</translation>
@@ -377,6 +378,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2511117522375201202">Mayroon kang <ph name="NUMBER_OF_PASSWORDS" /> (na) nakompromisong password na puwedeng maglagay ng iyong seguridad sa panganib.</translation>
 <translation id="2513103768503127042">Makikita mo rito ang iyong mga grupo ng tab</translation>
 <translation id="251837347827266434">Masa-sign out ka, isasara ang mga tab, ide-delete ang data mula sa pag-browse</translation>
+<translation id="2520787026086861736">Para i-off, pumunta sa <ph name="BEGIN_LINK" />AutoFill &amp; Passwords<ph name="END_LINK" /></translation>
 <translation id="2529021024822217800">Buksan Lahat</translation>
 <translation id="2536991091671391962">Puwede mong gamitin ang mga naka-save na password sa anumang device. Sine-save ang mga ito sa Google Password Manager para sa <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Naka-hide, password</translation>
@@ -651,7 +653,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="385051799172605136">Bumalik</translation>
 <translation id="3851938967634752633">Made-delete ang mga password para sa <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, at <ph name="NUMBER_OF_ACCOUNTS" /> (na) iba pa. Hindi made-delete ang iyong mga account.</translation>
 <translation id="3858860766373142691">Pangalan</translation>
-<translation id="3861908220442487587">Naka-save lang ang address na ito sa device na ito. Para magamit ito sa iba mo pang device, ilipat ito sa iyong Google Account na <ph name="USER_EMAIL" /></translation>
 <translation id="3868495844258915202">Ipakita ang buong URL</translation>
 <translation id="3875783148670536197">Ipakita sa Akin Kung Paano</translation>
 <translation id="3876833929577368454">Tanungin ako sa tuwina</translation>
@@ -672,6 +673,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3940195383040445971">Subaybayan ang mga presyo sa mga tab</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Isara ang {COUNT} tab}one{Isara ang {COUNT} tab}other{Isara ang {COUNT} na tab}}</translation>
 <translation id="3948600256434252210">Puwede kang mag-swipe pakanan para mag-browse sa Incognito.</translation>
+<translation id="3950479158728806902">Awtomatikong gumawa ng passkey para mas mabilis na makapag-sign in</translation>
 <translation id="3950820424414687140">Mag-sign in</translation>
 <translation id="3955740319737378355">Tapos na</translation>
 <translation id="3955822496205734389">Mayroon kang mahihinang password.</translation>
@@ -696,6 +698,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="4018440314314549819">I-autofill ang Mga Naka-save na Password</translation>
 <translation id="4021447724486050609">I-update ang iyong Browser</translation>
 <translation id="4021931095789478915">Idagdag ang ${url} sa listahan ng babasahin</translation>
+<translation id="4026496154402824012">Para i-off, pumunta sa <ph name="BEGIN_LINK" />Password Options<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">I-save sa account…</translation>
 <translation id="4038354071007134711">Walang application sa device ang makakabukas nito.</translation>
 <translation id="4042870976416480368">Hanapin sa Page</translation>
@@ -829,6 +832,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="4619564267100705184">I-verify na ikaw ito</translation>
 <translation id="4619615317237390068">Mga tab mula sa iba pang device</translation>
 <translation id="4624080227980645783">Bagong Incognito window</translation>
+<translation id="4627107755957573804">Payagan ang mga site at app na i-upgrade ang mga kasalukuyang account para gumamit ng mga passkey</translation>
 <translation id="4630212057753624203">Sample na bubble</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> (na) password na ginamit ulit</translation>
 <translation id="4631890462758052414">Bagong tab na Incognito</translation>
@@ -1125,6 +1129,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5859715514067755465">I-forward</translation>
 <translation id="5860033963881614850">Naka-off</translation>
 <translation id="5860491529813859533">I-on</translation>
+<translation id="5868644772996939262">I-autofill ang mga password at passkey</translation>
 <translation id="5869522115854928033">Mga naka-save na password</translation>
 <translation id="5878899964490256268"><ph name="EMAIL" />. Pinapamahalaan ng iyong organisasyon.</translation>
 <translation id="5888889603768021126">Naka-sign in gamit ang</translation>
@@ -1804,7 +1809,6 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8679900250380464358">Idagdag sa Listahan ng Babasahin</translation>
 <translation id="8680786875305615692">Tumulong na pahusayin ang seguridad sa Web para sa lahat</translation>
 <translation id="8680787084697685621">Wala sa panahon ang mga detalye sa pag-sign-in sa account.</translation>
-<translation id="8683563711222071415">Ilipat ang address sa account</translation>
 <translation id="8690752723634292147">Kumpirmahin ang pag-delete</translation>
 <translation id="8692689525339542358">Makakuha ng proteksyon laban sa mga mapanganib na site, download, at extension.</translation>
 <translation id="8694281486652655615">Ipapakita ang item na ito</translation>

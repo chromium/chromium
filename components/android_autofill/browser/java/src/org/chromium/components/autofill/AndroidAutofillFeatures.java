@@ -23,8 +23,6 @@ public class AndroidAutofillFeatures extends Features {
             "AndroidAutofillBottomSheetWorkaround";
     public static final String ANDROID_AUTOFILL_DEPRECATE_ACCESSIBILITY_API_NAME =
             "AndroidAutofillDeprecateAccessibilityApi";
-    public static final String ANDROID_AUTOFILL_PREFILL_REQUEST_FOR_CHANGE_PASSWORD_NAME =
-            "AndroidAutofillPrefillRequestsForChangePassword";
     public static final AndroidAutofillFeatures ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND =
             new AndroidAutofillFeatures(0, ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND_NAME);
     public static final AndroidAutofillFeatures ANDROID_AUTOFILL_DEPRECATE_ACCESSIBILITY_API =

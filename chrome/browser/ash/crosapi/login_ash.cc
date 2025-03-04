@@ -6,8 +6,6 @@
 
 #include <optional>
 
-#include "ash/system/session/guest_session_confirmation_dialog.h"
-#include "base/notreached.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -237,18 +235,6 @@ void LoginAsh::SetDataForNextLoginAttempt(
   std::move(callback).Run();
 }
 
-void LoginAsh::AddLacrosCleanupTriggeredObserver(
-    mojo::PendingRemote<mojom::LacrosCleanupTriggeredObserver> observer) {
-  mojo::Remote<mojom::LacrosCleanupTriggeredObserver> remote(
-      std::move(observer));
-  lacros_cleanup_triggered_observers_.Add(std::move(remote));
-}
-
-mojo::RemoteSet<mojom::LacrosCleanupTriggeredObserver>&
-LoginAsh::GetCleanupTriggeredObservers() {
-  return lacros_cleanup_triggered_observers_;
-}
-
 void LoginAsh::AddExternalLogoutRequestObserver(
     mojo::PendingRemote<mojom::ExternalLogoutRequestObserver> observer) {
   mojo::Remote<mojom::ExternalLogoutRequestObserver> remote(
@@ -276,10 +262,6 @@ void LoginAsh::NotifyOnExternalLogoutDone() {
   for (auto& observer : external_logout_done_observers_) {
     observer.OnExternalLogoutDone();
   }
-}
-
-void LoginAsh::ShowGuestSessionConfirmationDialog() {
-  ash::GuestSessionConfirmationDialog::Show();
 }
 
 void LoginAsh::REMOVED_0(const std::optional<std::string>& password,

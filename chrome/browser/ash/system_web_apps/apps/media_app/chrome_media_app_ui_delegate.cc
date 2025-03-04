@@ -37,6 +37,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/events/event_constants.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 ChromeMediaAppUIDelegate::ChromeMediaAppUIDelegate(content::WebUI* web_ui)
@@ -65,10 +66,9 @@ std::optional<std::string> ChromeMediaAppUIDelegate::OpenFeedbackDialog() {
 }
 
 void ChromeMediaAppUIDelegate::ToggleBrowserFullscreenMode() {
-  Browser* browser = chrome::FindBrowserWithTab(web_ui_->GetWebContents());
-  if (browser) {
-    chrome::ToggleFullscreenMode(browser, /*user_initiated=*/true);
-  }
+  views::Widget* top = views::Widget::GetTopLevelWidgetForNativeView(
+      web_ui_->GetWebContents()->GetNativeView());
+  top->SetFullscreen(!top->IsFullscreen());
 }
 
 void ChromeMediaAppUIDelegate::MaybeTriggerPdfHats() {

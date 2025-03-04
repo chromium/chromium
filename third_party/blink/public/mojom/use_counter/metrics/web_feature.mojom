@@ -4489,8 +4489,8 @@ enum WebFeature {
   kOBSOLETE_V8AIAssistant_CountPromptTokens_Method = 5107,
   kHTMLSearchElement = 5108,
   kHTMLUnsafeMethods = 5109,
-  kV8GPUSupportedLimits_MaxInterStageShaderComponents_AttributeGetter = 5110,
-  kMaxInterStageShaderComponentsRequiredLimit = 5111,
+  kOBSOLETE_V8GPUSupportedLimits_MaxInterStageShaderComponents_AttributeGetter = 5110,
+  kOBSOLETE_MaxInterStageShaderComponentsRequiredLimit = 5111,
   kShowPickerSelect = 5112,
   kAudioContextPlayoutStats = 5113,
   kThirdPartyCookieBlocked = 5114,
@@ -4719,6 +4719,7 @@ enum WebFeature {
   kButtonTypeAttrInvalidWithCommandOrCommandfor = 5333,
   kCSSVarFallbackCycle = 5334,
   kCSSAttrFallbackCycle = 5335,
+  kCSSRainbowGradientPattern = 5336,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

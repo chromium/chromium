@@ -95,7 +95,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.Fullscreen.LocationBarViewScreenY" units="px"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>kerenzhu@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
   <summary>
@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.Fullscreen.OmniboxPopupTargetScreenY" units="px"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>kerenzhu@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
   <summary>
@@ -121,7 +121,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.Fullscreen.OverlayNSWindowScreenY" units="px"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>kerenzhu@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
   <summary>
@@ -134,7 +134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.Fullscreen.OverlayWidgetScreenY" units="px"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>kerenzhu@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
   <summary>

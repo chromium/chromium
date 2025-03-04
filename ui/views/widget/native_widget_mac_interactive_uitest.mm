@@ -366,7 +366,7 @@ TEST_F(NativeWidgetMacInteractiveUITest, GlobalNSTextInputContextUpdates) {
   Widget* widget = CreateTopLevelNativeWidget();
   Textfield* textfield = new Textfield;
   textfield->SetBounds(0, 0, 100, 100);
-  widget->GetContentsView()->AddChildView(textfield);
+  widget->GetContentsView()->AddChildViewRaw(textfield);
   textfield->RequestFocus();
   {
     widget->Show();

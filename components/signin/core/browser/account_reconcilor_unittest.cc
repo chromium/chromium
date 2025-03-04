@@ -17,6 +17,7 @@
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -520,8 +521,7 @@ std::vector<AccountReconcilorTestTableParam> GenerateTestCasesFromParams(
 void PrintTo(const AccountReconcilorTestTableParam& param, ::std::ostream* os) {
   *os << "Tokens: " << param.tokens << ". Cookies: " << param.cookies
       << ". First reconcile: "
-      << (param.is_first_reconcile == IsFirstReconcile::kFirst ? "true"
-                                                               : "false");
+      << base::ToString(param.is_first_reconcile == IsFirstReconcile::kFirst);
 }
 
 class BaseAccountReconcilorTestTable : public AccountReconcilorTest {

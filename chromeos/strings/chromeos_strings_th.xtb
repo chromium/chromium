@@ -1133,7 +1133,6 @@
 <translation id="6325525973963619867">ล้มเหลว</translation>
 <translation id="6327262166342360252">วอลเปเปอร์นี้สร้างด้วย AI โดยใช้ข้อความ "<ph name="PROMPT" />"</translation>
 <translation id="6331191339300272798">ธีมมืดอัตโนมัติ</translation>
-<translation id="6335228876613776082">ดาวน์โหลดโมเดลเสร็จสมบูรณ์</translation>
 <translation id="6340526405444716530">การปรับเปลี่ยนในแบบของคุณ</translation>
 <translation id="6348252528297699679">คุณปิดตำแหน่งได้ในการตั้งค่า &gt; ความเป็นส่วนตัวและความปลอดภัย &gt; การควบคุมความเป็นส่วนตัว &gt; การเข้าถึงตำแหน่ง <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">ชื่อผู้ใช้และรหัสผ่าน</translation>
@@ -1677,7 +1676,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">อัลบั้มใน Google Photos</translation>
 <translation id="8775713578693478175">APN ของโมเด็ม</translation>
-<translation id="877735394245039557">กำลังดาวน์โหลดโมเดล</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">เครือข่ายนี้อาจมีแคพทีฟพอร์ทัล</translation>
 <translation id="8797082062139985406">สร้างชื่อโดยใช้ AI ของ Google</translation>

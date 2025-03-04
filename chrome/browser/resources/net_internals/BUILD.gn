@@ -27,7 +27,7 @@ build_webui("build") {
     "view.js",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     non_web_component_files += [ "chromeos_view.js" ]
   }
 

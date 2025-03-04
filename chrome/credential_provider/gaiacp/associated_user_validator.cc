@@ -132,6 +132,11 @@ bool WaitForQueryResult(const base::win::ScopedHandle& thread_handle,
 HRESULT ModifyUserAccess(const std::unique_ptr<ScopedLsaPolicy>& policy,
                          const std::wstring& sid,
                          bool allow) {
+  if (!policy) {
+    LOGFN(ERROR) << "Invalid pointer to ScopedLsaPolicy";
+    return E_INVALIDARG;
+  }
+
   OSUserManager* manager = OSUserManager::Get();
   wchar_t username[kWindowsUsernameBufferLength];
   wchar_t domain[kWindowsDomainBufferLength];
@@ -362,6 +367,11 @@ bool AssociatedUserValidator::DenySigninForUsersWithInvalidTokenHandles(
   }
 
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
+  if (!policy) {
+    hr = HRESULT_FROM_WIN32(::GetLastError());
+    LOGFN(ERROR) << "ScopedLsaPolicy::Create hr=" << putHR(hr);
+    return false;
+  }
 
   bool user_denied_signin = false;
   OSUserManager* manager = OSUserManager::Get();
@@ -394,6 +404,11 @@ HRESULT AssociatedUserValidator::RestoreUserAccess(const std::wstring& sid) {
 
   if (locked_user_sids_.erase(sid)) {
     auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
+    if (!policy) {
+      HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+      LOGFN(ERROR) << "ScopedLsaPolicy::Create hr=" << putHR(hr);
+      return hr;
+    }
     return ModifyUserAccess(policy, sid, true);
   }
 
@@ -415,8 +430,17 @@ void AssociatedUserValidator::AllowSigninForAllAssociatedUsers(
   }
 
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
-  for (const auto& sid_to_handle : sids_to_handle)
-    ModifyUserAccess(policy, sid_to_handle.first, true);
+  if (!policy) {
+    hr = HRESULT_FROM_WIN32(::GetLastError());
+    LOGFN(ERROR) << "ScopedLsaPolicy::Create hr=" << putHR(hr);
+    return;
+  }
+  for (const auto& sid_to_handle : sids_to_handle) {
+    hr = ModifyUserAccess(policy, sid_to_handle.first, true);
+    if (FAILED(hr)) {
+      LOGFN(ERROR) << "ModifyUserAccess hr=" << putHR(hr);
+    }
+  }
 
   locked_user_sids_.clear();
 }
@@ -426,6 +450,11 @@ void AssociatedUserValidator::AllowSigninForUsersWithInvalidTokenHandles() {
 
   LOGFN(VERBOSE);
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
+  if (!policy) {
+    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+    LOGFN(ERROR) << "ScopedLsaPolicy::Create hr=" << putHR(hr);
+    return;
+  }
   for (auto& sid : locked_user_sids_) {
     HRESULT hr = ModifyUserAccess(policy, sid, true);
     if (FAILED(hr))
@@ -585,6 +614,11 @@ AssociatedUserValidator::GetAuthEnforceReason(const std::wstring& sid) {
   if (PasswordRecoveryEnabled()) {
     std::wstring store_key = GetUserPasswordLsaStoreKey(sid);
     auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
+    if (!policy) {
+      HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+      LOGFN(ERROR) << "ScopedLsaPolicy::Create hr=" << putHR(hr);
+      return AssociatedUserValidator::EnforceAuthReason::NOT_ENFORCED;
+    }
     if (!policy->PrivateDataExists(store_key.c_str())) {
       LOGFN(VERBOSE) << "Enforcing re-auth due to missing password lsa store "
                         "data for user "

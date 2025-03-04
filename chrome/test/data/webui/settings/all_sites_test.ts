@@ -1266,7 +1266,7 @@ suite('EnableRelatedWebsiteSets', function() {
     assertTrue(!!menuItems[0]);
     assertEquals(loadTimeData.getString('allSitesShowRwsButton'),
         menuItems[0].innerText.trim());
-    menuItems[0]!.click();
+    menuItems[0].click();
     // Check the overflow menu is now closed.
     assertFalse(overflowMenu.open);
     // Verify filter is applied in search query.

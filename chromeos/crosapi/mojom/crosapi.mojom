@@ -9,7 +9,6 @@ import "chromeos/components/payments/mojom/payment_app.mojom";
 import "chromeos/components/remote_apps/mojom/remote_apps.mojom";
 import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
 import "chromeos/crosapi/mojom/account_manager.mojom";
-import "chromeos/crosapi/mojom/arc.mojom";
 import "chromeos/crosapi/mojom/audio_service.mojom";
 import "chromeos/crosapi/mojom/guest_os_sk_forwarder.mojom";
 import "chromeos/crosapi/mojom/cert_database.mojom";
@@ -55,7 +54,6 @@ import "chromeos/crosapi/mojom/networking_attributes.mojom";
 import "chromeos/crosapi/mojom/networking_private.mojom";
 import "chromeos/crosapi/mojom/one_drive_notification_service.mojom";
 import "chromeos/crosapi/mojom/one_drive_integration_service.mojom";
-import "chromeos/crosapi/mojom/power.mojom";
 import "chromeos/crosapi/mojom/parent_access.mojom";
 import "chromeos/crosapi/mojom/nonclosable_app_toast_service.mojom";
 import "chromeos/crosapi/mojom/print_preview_cros.mojom";
@@ -74,7 +72,6 @@ import "chromeos/services/machine_learning/public/mojom/machine_learning_service
 import "chromeos/crosapi/mojom/video_capture.mojom";
 import "chromeos/crosapi/mojom/video_conference.mojom";
 import "chromeos/crosapi/mojom/kiosk_session_service.mojom";
-import "chromeos/crosapi/mojom/virtual_keyboard.mojom";
 import "chromeos/crosapi/mojom/web_kiosk_service.mojom";
 import "chromeos/crosapi/mojom/media_ui.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
@@ -108,18 +105,14 @@ interface Crosapi {
   [MinVersion=4]
   BindAccountManager@7(pending_receiver<AccountManager> receiver);
 
-  // Bind ARC.
-  // Added in M98.
-  [MinVersion=59]
-  BindArc@63(pending_receiver<Arc> receiver);
-
   // BindAppServiceProxy@45 was removed.
+  // BindArc@63 was removed.
   // BindAutomationDeprecated@23 was removed.
   // BindAutomationFactory@26 was removed.
-  // BindBrowserServiceHost@20 was removed.
-  // BindBrowserVersionService@50 was removed.
   // BindBrowserAppInstanceRegistry@54 was removed.
+  // BindBrowserServiceHost@20 was removed.
   // BindBrowserShortcutPublisher@125 was removed.
+  // BindBrowserVersionService@50 was removed.
 
   // Binds the BrowserCdmFactory interface for proxying communication to the
   // HWDRM CDM hosted in a ChromeOS daemon process. We need to use a
@@ -349,11 +342,7 @@ interface Crosapi {
       pending_receiver<chromeos.machine_learning.mojom.MachineLearningService> receiver);
 
   // BindMagicBoostController@144 was removed.
-
-  // Binds the mahi browser delegate to the mahi browser client.
-  // Added in M123.
-  [MinVersion=132] BindMahiBrowserDelegate@134(
-      pending_receiver<MahiBrowserDelegate> receiver);
+  // BindMahiBrowserDelegate@134 was removed.
 
   // Binds the MediaUI interface for the Global Media Controls UI.
   // Added in M113.
@@ -483,9 +472,7 @@ interface Crosapi {
   [MinVersion=6] BindMediaSessionAudioFocusDebug@11(
       pending_receiver<media_session.mojom.AudioFocusManagerDebug> receiver);
 
-  // Binds the Power interface for power management.
-  // Added in M93.
-  [MinVersion=35] BindPower@40(pending_receiver<Power> receiver);
+  // BindPower@40 was removed.
 
   // Binds the PrintingMetrics interface for chrome.printingMetrics API.
   [MinVersion=86] BindPrintingMetrics@90(
@@ -538,12 +525,7 @@ interface Crosapi {
       pending_receiver<crosapi.mojom.VideoCaptureDeviceFactory> receiver);
 
   // BindVideoConferenceManager@102 was removed.
-
-  // VirtualKeyboard is a service that allows trusted extensions in Lacros
-  // to control the virtual keyboard. Implemented in Ash.
-  [MinVersion=87] BindVirtualKeyboard@91(
-      pending_receiver<VirtualKeyboard> receiver);
-
+  // BindVirtualKeyboard@91 was removed.
   // BindVpnExtensionObserver@78 was removed.
 
   // Binds the Kiosk session service which sends session status changes from

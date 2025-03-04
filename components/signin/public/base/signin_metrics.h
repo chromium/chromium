@@ -115,9 +115,10 @@ enum class ProfileSignout {
   // Signout as part of the profile deletion procedure, to avoid that deletion
   // of data propagates via sync.
   kSignoutDuringProfileDeletion = 34,
-  // Signout, in the account menu, as part of switching to a new primary
-  // account.
-  kChangeAccountInAccountMenu = 35,
+  // Signout to switch account. This can still happen when switching from a
+  // managed profile to the personal profile, if the personal profile doesn't
+  // have the right primary account.
+  kSignoutForAccountSwitching = 35,
   // User clicked to signout from the account menu view.
   kUserClickedSignoutInAccountMenu = 36,
   // User disabled allow chrome sign-in from google settings page.

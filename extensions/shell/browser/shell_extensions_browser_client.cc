@@ -16,7 +16,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/common/user_agent.h"
 #include "extensions/browser/api/core_extensions_browser_api_provider.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/event_router.h"

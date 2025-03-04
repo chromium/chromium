@@ -7,7 +7,9 @@
 
 #include <memory>
 
-#include "base/memory/weak_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/password_credential_controller.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
@@ -16,12 +18,11 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/document_user_data.h"
-#include "content/public/browser/render_frame_host.h"
 
 namespace webauthn {
 
 using content::AuthenticatorRequestClientDelegate;
-using content::RenderFrameHost;
+using content::GlobalRenderFrameHostId;
 using password_manager::FormFetcher;
 using password_manager::FormFetcherImpl;
 using password_manager::PasswordForm;
@@ -29,10 +30,13 @@ using password_manager::PasswordFormDigest;
 using password_manager::PasswordManagerClient;
 
 class PasswordCredentialControllerImpl
-    : public content::DocumentUserData<PasswordCredentialControllerImpl>,
-      public PasswordCredentialController,
-      public FormFetcher::Consumer {
+    : public PasswordCredentialController,
+      public FormFetcher::Consumer,
+      public AuthenticatorRequestDialogModel::Observer {
  public:
+  explicit PasswordCredentialControllerImpl(
+      GlobalRenderFrameHostId render_frame_host_id,
+      AuthenticatorRequestDialogModel* model);
   ~PasswordCredentialControllerImpl() override;
 
   // PasswordCredentialContainer:
@@ -42,28 +46,29 @@ class PasswordCredentialControllerImpl
   void SetPasswordSelectedCallback(
       AuthenticatorRequestClientDelegate::PasswordSelectedCallback callback)
       override;
-  void OnPasswordSelected(std::u16string username,
-                          std::u16string password) override;
-  base::WeakPtr<PasswordCredentialController> AsWeakPtr() override;
+
+  // AuthenticatorRequestDialogModel::Observer
+  void OnPasswordCredentialSelected(PasswordPair password) override;
 
  private:
-  explicit PasswordCredentialControllerImpl(RenderFrameHost* client);
-  friend DocumentUserData;
-  DOCUMENT_USER_DATA_KEY_DECL();
-
   // FormFetcher::Consumer:
   void OnFetchCompleted() override;
 
   std::unique_ptr<password_manager::FormFetcher> GetFormFetcher(
       const GURL& url);
 
+  content::RenderFrameHost* GetRenderFrameHost() const;
+
+  const content::GlobalRenderFrameHostId render_frame_host_id_;
+  scoped_refptr<AuthenticatorRequestDialogModel> model_;
+
   std::unique_ptr<password_manager::FormFetcher> form_fetcher_;
   PasswordCredentialsReceivedCallback callback_;
   content::AuthenticatorRequestClientDelegate::PasswordSelectedCallback
       password_selected_callback_;
-
-  base::WeakPtrFactory<PasswordCredentialControllerImpl> weak_ptr_factory_{
-      this};
+  base::ScopedObservation<AuthenticatorRequestDialogModel,
+                          AuthenticatorRequestDialogModel::Observer>
+      model_observer_{this};
 };
 
 }  // namespace webauthn

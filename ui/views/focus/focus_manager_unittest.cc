@@ -793,9 +793,9 @@ TEST_F(FocusManagerTest, StoreFocusedViewFullKeyboardAccess) {
   view3->SetFocusBehavior(View::FocusBehavior::ALWAYS);
 
   // Add views to the view hierarchy
-  GetWidget()->GetRootView()->AddChildView(view1);
-  GetWidget()->GetRootView()->AddChildView(view2);
-  GetWidget()->GetRootView()->AddChildView(view3);
+  GetWidget()->GetRootView()->AddChildViewRaw(view1);
+  GetWidget()->GetRootView()->AddChildViewRaw(view2);
+  GetWidget()->GetRootView()->AddChildViewRaw(view3);
 
   view1->RequestFocus();
   EXPECT_EQ(view1, GetFocusManager()->GetFocusedView());
@@ -828,8 +828,8 @@ TEST_F(FocusManagerTest, RequestFocus) {
   view2->SetFocusBehavior(View::FocusBehavior::ACCESSIBLE_ONLY);
 
   // Adds views to the view hierarchy.
-  GetWidget()->GetRootView()->AddChildView(view1);
-  GetWidget()->GetRootView()->AddChildView(view2);
+  GetWidget()->GetRootView()->AddChildViewRaw(view1);
+  GetWidget()->GetRootView()->AddChildViewRaw(view2);
 
   // Verify view1 can always get focus via View::RequestFocus, while view2 can
   // only get focus in full keyboard accessibility mode.

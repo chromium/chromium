@@ -81,6 +81,12 @@ class ExternalProviderInterface {
   // Test if this provider has an extension with id |id| registered.
   virtual bool HasExtension(const std::string& id) const = 0;
 
+  // Test if this provider has an extension with id |id| and location |location|
+  // registered.
+  virtual bool HasExtensionWithLocation(
+      const std::string& id,
+      mojom::ManifestLocation location) const = 0;
+
   // Gets details of an extension by its id.  Output params will be set only
   // if they are not NULL.  If an output parameter is not specified by the
   // provider type, it will not be changed.

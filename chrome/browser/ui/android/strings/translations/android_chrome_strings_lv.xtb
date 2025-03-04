@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">Nepiedāvāt tulkot šīs vietnes</translation>
 <translation id="1145536944570833626">Dzēst esošos datus.</translation>
 <translation id="1150263420752757504">Lietotne <ph name="APP_NAME" /> tiks atvērta pārlūkā Chrome. Turpinot jūs piekrītat <ph name="BEGIN_LINK1" />Google pakalpojumu sniegšanas noteikumiem<ph name="END_LINK1" />, kā arī <ph name="BEGIN_LINK2" />Google Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumiem<ph name="END_LINK2" />.</translation>
+<translation id="1154555449933432029">Google paroļu pārvaldniekā nav saglabāta neviena parole.</translation>
 <translation id="115483310321669804">Izmantot paroli <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Pārdēvēt</translation>
 <translation id="1174479719160874822">Ja ekrāns būs šaurs, Chrome pieprasīs mobilajām ierīcēm paredzēto vietni.</translation>
@@ -1366,10 +1367,12 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7224097611345298931">Tika apvienotas visas paroles, kas saglabātas tikai šajā ierīcē pārlūkā Chrome un <ph name="CHROME_CHANNEL" />. Varēsiet automātiski aizpildīt visas saglabātās paroles abās lietotnēs.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Tiek gaidīta 1 lejupielāde}zero{Tiek gaidītas # lejupielādes}one{Tiek gaidīta # lejupielāde}other{Tiek gaidītas # lejupielādes}}</translation>
 <translation id="7230064152164845085">Pārslēgties uz inkognito režīmu</translation>
+<translation id="7237724030342645845">Tika apturēta Google paroļu pārvaldnieka darbība</translation>
 <translation id="72415438529550637">Paroles ieteikums ir aizvērts.</translation>
 <translation id="7260367682327802201">Android ierīcē var būt līdzīgs iestatījums. Ja pārlūkā Chrome un jūsu Android ierīcē ir ieslēgta reklāmu izvērtēšana, uzņēmumi var izvērtēt reklāmas efektivitāti jūsu apmeklētajās vietnēs un izmantotajās lietotnēs.</translation>
 <translation id="727288900855680735">Vai iesniegt kodu <ph name="ONE_TIME_CODE" /> vietnē <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Bloķēta vietne</translation>
+<translation id="7276868533747677875">Ja iepriekš eksportējāt paroles, meklējiet CSV failu savā ierīcē un importējiet paroles savā izvēlētajā paroļu pārvaldniekā.</translation>
 <translation id="7289049772085228972">Jūs izmantojat Chrome visaugstāko drošības līmeni</translation>
 <translation id="7289303553784750393">Ja esat tiešsaistē, taču šī problēma atkārtojas, varat izmēģināt citus veidus, kā turpināt darbu vietnē <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Pārdēvēšana nav pieejama</translation>
@@ -1544,6 +1547,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8027395186860110042">Drīz var tikt pārtraukta paroļu darbība</translation>
 <translation id="8027863900915310177">Izvēlieties lejupielādes vietu</translation>
 <translation id="8030852056903932865">Apstiprināt</translation>
+<translation id="8031805944372049238">Lai sāktu saglabāt un izmantot paroles Google paroļu pārvaldniekā, atjauniniet Google Play pakalpojumus.</translation>
 <translation id="8032569120109842252">Sekojat</translation>
 <translation id="8037750541064988519">Atlikušas <ph name="DAYS" /> dienas</translation>
 <translation id="8037801708772278989">Pārbaudīts: tikko</translation>

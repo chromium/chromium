@@ -1130,7 +1130,6 @@
 <translation id="6325525973963619867">Mislykket</translation>
 <translation id="6327262166342360252">Denne bakgrunnen er laget med AI ved hjelp av denne teksten: «<ph name="PROMPT" />».</translation>
 <translation id="6331191339300272798">Automatisk mørkt tema</translation>
-<translation id="6335228876613776082">Modellen er lastet ned</translation>
 <translation id="6340526405444716530">Personlig tilpasning</translation>
 <translation id="6348252528297699679">Du kan slå av posisjonen i Innstillinger &gt; Personvern og sikkerhet &gt; Personverninnstillinger &gt; Posisjonstilgang. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Brukernavn og passord</translation>
@@ -1674,7 +1673,6 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Foto-album</translation>
 <translation id="8775713578693478175">APN for modem</translation>
-<translation id="877735394245039557">Modellen lastes ned</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Det kan hende dette nettverket har en obligatorisk side</translation>
 <translation id="8797082062139985406">Opprett et navn med AI fra Google</translation>

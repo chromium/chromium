@@ -140,6 +140,7 @@
 #include "third_party/blink/renderer/platform/geometry/skia_geometry_utils.h"
 #include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/blend_mode.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_deferred_paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -148,7 +149,6 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
@@ -1285,7 +1285,7 @@ void BaseRenderingContext2D::setGlobalCompositeOperation(
   BlendMode blend_mode = BlendMode::kNormal;
   if (!ParseCanvasCompositeAndBlendMode(operation, op, blend_mode))
     return;
-  SkBlendMode sk_blend_mode = WebCoreCompositeToSkiaComposite(op, blend_mode);
+  SkBlendMode sk_blend_mode = ToSkBlendMode(op, blend_mode);
   CanvasRenderingContext2DState& state = GetState();
   if (state.GlobalComposite() == sk_blend_mode) {
     return;

@@ -81,7 +81,7 @@ class NativeViewHostMacTest : public test::NativeViewHostTestBase {
     // Verify the expectation that the NativeViewHostWrapper is only created
     // after the NativeViewHost is added to a widget.
     EXPECT_FALSE(native_host());
-    toplevel()->GetRootView()->AddChildView(host());
+    toplevel()->GetRootView()->AddChildViewRaw(host());
     EXPECT_TRUE(native_host());
 
     host()->Attach(native_view_);
@@ -147,7 +147,7 @@ TEST_F(NativeViewHostMacTest, Attach) {
 TEST_F(NativeViewHostMacTest, CheckNativeViewReferenceOnAttach) {
   CreateTopLevel();
   CreateTestingHost();
-  toplevel()->GetRootView()->AddChildView(host());
+  toplevel()->GetRootView()->AddChildViewRaw(host());
 
   // Create a second widget.
   auto second_widget = std::make_unique<Widget>();
@@ -190,7 +190,7 @@ TEST_F(NativeViewHostMacTest, CheckNoNativeViewReferenceOnDestruct) {
 
   CreateTopLevel();
   CreateTestingHost();
-  toplevel()->GetRootView()->AddChildView(host());
+  toplevel()->GetRootView()->AddChildViewRaw(host());
 
   // Create a second widget.
   auto second_widget = std::make_unique<Widget>();
@@ -286,7 +286,7 @@ TEST_F(NativeViewHostMacTest, NativeViewHidden) {
   EXPECT_TRUE([native_view_ isHidden]);  // Hidden when removed from Widget.
   EXPECT_FALSE([native_view_ superview]);
 
-  toplevel()->GetRootView()->AddChildView(host());
+  toplevel()->GetRootView()->AddChildViewRaw(host());
   EXPECT_FALSE([native_view_ isHidden]);  // And visible when added.
   EXPECT_TRUE([native_view_ superview]);
 

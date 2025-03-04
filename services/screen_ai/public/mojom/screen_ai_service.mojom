@@ -57,8 +57,8 @@ struct LineBox {
   // ID of the text block that this line belongs to.
   int32 block_id;
 
-  // Index within the block that this line belongs to.
-  int32 order_within_block;
+  // ID of the paragraph that this line belongs to.
+  int32 paragraph_id;
 
   // Line bounding box relative to the original image.
   gfx.mojom.Rect bounding_box;
@@ -66,14 +66,6 @@ struct LineBox {
   // Rotation angle (in degrees, clockwise) of the line bounding box about its
   // top-left corner.
   float bounding_box_angle;
-
-  // Line bounding box relative to the original image with bottom edge
-  // representing estimated baseline of text.
-  gfx.mojom.Rect baseline_box;
-
-  // Rotation angle (in degrees, clockwise) of the line baseline box about its
-  // top-left corner.
-  float baseline_box_angle;
 
   // Confidence as computed by the OCR engine. The value is in range [0, 1].
   float confidence;
@@ -83,9 +75,6 @@ struct LineBox {
 struct WordBox {
   // A single word in UTF8 format.
   string word;
-
-  // True if the word passes the internal beamsearch dictionary check.
-  bool dictionary_word;
 
   // Language guess for the word. The format  is the ISO 639-1 two-letter
   // language code if that is defined (e.g. "en"), or else the ISO 639-2

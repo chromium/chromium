@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/starboard/media/cdm/starboard_decryptor_cast.h"
 
 #include <cast_starboard_api_adapter.h>
@@ -16,6 +11,7 @@
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/notreached.h"
@@ -381,10 +377,9 @@ void StarboardDecryptorCast::RejectPendingPromises() {
   }
 }
 
-void StarboardDecryptorCast::SendProvisionRequest(
-    int ticket,
-    const std::string& session_id,
-    const std::vector<uint8_t>& content) {
+void StarboardDecryptorCast::SendProvisionRequest(int ticket,
+                                                  std::string session_id,
+                                                  const std::string& content) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!provision_fetcher_) {
@@ -399,11 +394,10 @@ void StarboardDecryptorCast::SendProvisionRequest(
     return;
   }
   provision_fetcher_->Retrieve(
-      GURL(base::StrCat({kProvisionServerUrlMinusKey, api_key})),
-      std::string(reinterpret_cast<const char*>(content.data()),
-                  content.size()),
+      GURL(base::StrCat({kProvisionServerUrlMinusKey, api_key})), content,
       base::BindOnce(&StarboardDecryptorCast::OnProvisionResponse,
-                     weak_factory_.GetWeakPtr(), ticket, session_id));
+                     weak_factory_.GetWeakPtr(), ticket,
+                     std::move(session_id)));
 }
 
 void StarboardDecryptorCast::ProcessQueuedSessionRequests() {
@@ -429,8 +423,8 @@ void StarboardDecryptorCast::OnSessionUpdateRequest(
     int ticket,
     StarboardDrmStatus status,
     StarboardDrmSessionRequestType type,
-    std::optional<std::string> error_message,
-    std::optional<std::string> session_id,
+    std::string error_message,
+    std::string session_id,
     std::vector<uint8_t> content) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -441,11 +435,14 @@ void StarboardDecryptorCast::OnSessionUpdateRequest(
       base::BindOnce(&StarboardDecryptorCast::ProcessQueuedSessionRequests,
                      weak_factory_.GetWeakPtr()));
 
-  if (status == kStarboardDrmStatusSuccess && session_id &&
+  if (status == kStarboardDrmStatusSuccess && !session_id.empty() &&
       type == kStarboardDrmSessionRequestTypeIndividualizationRequest) {
     // Provision requests need to be sent regardless of whether the ticket is
     // valid, so we send this before checking the ticket map.
-    SendProvisionRequest(ticket, *session_id, content);
+    SendProvisionRequest(
+        ticket, session_id,
+        std::string(reinterpret_cast<const char*>(content.data()),
+                    content.size()));
     return;
   }
 
@@ -453,9 +450,9 @@ void StarboardDecryptorCast::OnSessionUpdateRequest(
 
   if (it == ticket_to_new_session_promise_.end()) {
     LOG(WARNING) << "Bad ticket for DRM session create request: " << ticket;
-    if (session_id) {
+    if (!session_id.empty()) {
       CHECK_NE(type, kStarboardDrmSessionRequestTypeIndividualizationRequest);
-      OnSessionMessage(*session_id, content, ToCdmMessageType(type));
+      OnSessionMessage(session_id, content, ToCdmMessageType(type));
     }
     return;
   }
@@ -464,30 +461,34 @@ void StarboardDecryptorCast::OnSessionUpdateRequest(
   // resolved/rejected and then deleted.
   if (status != kStarboardDrmStatusSuccess) {
     LOG(ERROR) << "Call to StarboardDrmGenerateSessionUpdateRequest for ticket "
-               << it->first << "  failed with error: "
-               << (error_message ? *error_message : "(null)");
+               << it->first << "  failed with error: " << error_message;
     it->second->reject(StarboardDrmErrorStatusToCdmException(status), 0,
-                       error_message ? *error_message : "");
-  } else if (!session_id) {
-    LOG(ERROR) << "Starboard returned a null session_id on success for ticket "
-               << it->first;
+                       error_message);
+  } else if (session_id.empty()) {
+    LOG(ERROR)
+        << "Starboard returned an empty session_id on success for ticket "
+        << it->first;
     it->second->reject(::media::CdmPromise::Exception::INVALID_STATE_ERROR, 0,
                        "");
   } else {
     // Success case.
-    LOG(INFO) << "Created session id " << *session_id << " for ticket "
+    LOG(INFO) << "Created session id " << session_id << " for ticket "
               << it->first;
-    it->second->resolve(*session_id);
+    it->second->resolve(session_id);
   }
   ticket_to_new_session_promise_.erase(it);
-  if (status == kStarboardDrmStatusSuccess && session_id) {
+  if (status == kStarboardDrmStatusSuccess && !session_id.empty()) {
+    base::span<const uint8_t> content_span = base::as_byte_span(content);
     // This function -- defined by the parent class -- should ultimately send
     // the message to the JS app. That will eventually trigger a license
     // request, followed by an update session message being sent to this class.
     // Note that, per the documentation of
     // ContentDecryptionModule::CreateSessionAndGenerateRequest, this must be
     // called AFTER the promise has been resolved.
-    OnSessionMessage(*session_id, content, ToCdmMessageType(type));
+    OnSessionMessage(
+        session_id,
+        std::vector<uint8_t>(content_span.begin(), content_span.end()),
+        ToCdmMessageType(type));
   }
 }
 
@@ -558,18 +559,16 @@ void StarboardDecryptorCast::OnProvisionResponse(int ticket,
 
 // Called by starboard (via CallOnSessionUpdated) once a session has been
 // updated.
-void StarboardDecryptorCast::OnSessionUpdated(
-    void* drm_system,
-    int ticket,
-    StarboardDrmStatus status,
-    std::optional<std::string> error_message,
-    std::optional<std::string> session_id) {
+void StarboardDecryptorCast::OnSessionUpdated(void* drm_system,
+                                              int ticket,
+                                              StarboardDrmStatus status,
+                                              std::string error_message,
+                                              std::string session_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   LOG(INFO) << "StarboardDecryptorCast::OnSessionUpdated, ticket: " << ticket
-            << ", status: " << status
-            << ", session id: " << (session_id ? *session_id : "nullopt")
-            << ", error: " << (error_message ? *error_message : "none");
+            << ", status: " << status << ", session id: " << session_id
+            << ", error: " << error_message;
   auto it = ticket_to_simple_cdm_promise_.find(ticket);
 
   if (it == ticket_to_simple_cdm_promise_.end()) {
@@ -581,18 +580,18 @@ void StarboardDecryptorCast::OnSessionUpdated(
   // resolved/rejected and then deleted.
   if (status != kStarboardDrmStatusSuccess) {
     LOG(ERROR) << "Call to StarboardDrmUpdateSession for ticket " << it->first
-               << "  failed with error: "
-               << (error_message ? *error_message : "(null)");
+               << "  failed with error: " << error_message;
     it->second->reject(StarboardDrmErrorStatusToCdmException(status), 0,
-                       error_message ? *error_message : "");
-  } else if (!session_id) {
-    LOG(ERROR) << "Starboard returned a null session_id on success for ticket "
-               << it->first;
+                       error_message);
+  } else if (session_id.empty()) {
+    LOG(ERROR)
+        << "Starboard returned an empty session_id on success for ticket "
+        << it->first;
     it->second->reject(::media::CdmPromise::Exception::INVALID_STATE_ERROR, 0,
                        "");
   } else {
     // Success case.
-    LOG(INFO) << "Updated session id " << *session_id << " for ticket "
+    LOG(INFO) << "Updated session id " << session_id << " for ticket "
               << it->first;
     it->second->resolve();
   }
@@ -604,31 +603,38 @@ void StarboardDecryptorCast::OnSessionUpdated(
 void StarboardDecryptorCast::OnKeyStatusesChanged(
     void* drm_system,
     std::string session_id,
-    std::vector<std::pair<StarboardDrmKeyId, StarboardDrmKeyStatus>>
-        key_ids_and_statuses) {
+    std::vector<StarboardDrmKeyId> key_ids,
+    std::vector<StarboardDrmKeyStatus> key_statuses) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  CHECK_EQ(key_ids.size(), key_statuses.size());
+
+  if (key_ids.empty()) {
+    LOG(ERROR) << "No keys were provided for session " << session_id;
+    return;
+  }
 
   LOG(INFO) << "StarboardDecryptorCast::OnKeyStatusChanged for "
-            << key_ids_and_statuses.size() << " keys";
+            << key_ids.size() << " keys";
   ::media::CdmKeysInfo keys_info;
   bool usable_keys_exist = false;
-  for (const auto& key_id_and_status : key_ids_and_statuses) {
-    const StarboardDrmKeyId& key_id = key_id_and_status.first;
-    const StarboardDrmKeyStatus status = key_id_and_status.second;
+  for (size_t i = 0; i < key_ids.size(); ++i) {
+    const StarboardDrmKeyId& key_id = key_ids[i];
+    const StarboardDrmKeyStatus status = key_statuses[i];
 
     const std::string key_name(
         reinterpret_cast<const char*>(&key_id.identifier),
         key_id.identifier_size);
     CHECK_GE(key_id.identifier_size, 0);
-    const size_t key_hash = base::FastHash(base::span(
-        key_id.identifier, static_cast<size_t>(key_id.identifier_size)));
+    const base::span identifier_span =
+        base::span(key_id.identifier)
+            .first(static_cast<size_t>(key_id.identifier_size));
+    const size_t key_hash = base::FastHash(identifier_span);
     LOG(INFO) << "DRM key (hash) " << key_hash << " changed status to "
               << DrmKeyStatusToString(status) << " for DRM system with address "
               << drm_system << ", for session " << session_id;
 
     auto key_info = std::make_unique<::media::CdmKeyInformation>();
-    key_info->key_id.assign(key_id.identifier,
-                            key_id.identifier + key_id.identifier_size);
+    key_info->key_id.assign(identifier_span.begin(), identifier_span.end());
     key_info->status = ToMediaKeyStatus(status);
     keys_info.push_back(std::move(key_info));
 
@@ -667,11 +673,10 @@ void StarboardDecryptorCast::OnKeyStatusesChanged(
 
 // Called by starboard (via CallOnCertificateUpdated) when a certificate has
 // been updated.
-void StarboardDecryptorCast::OnCertificateUpdated(
-    void* drm_system,
-    int ticket,
-    StarboardDrmStatus status,
-    std::optional<std::string> error_message) {
+void StarboardDecryptorCast::OnCertificateUpdated(void* drm_system,
+                                                  int ticket,
+                                                  StarboardDrmStatus status,
+                                                  std::string error_message) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto it = ticket_to_simple_cdm_promise_.find(ticket);
@@ -685,10 +690,9 @@ void StarboardDecryptorCast::OnCertificateUpdated(
   // resolved/rejected and then deleted.
   if (status != kStarboardDrmStatusSuccess) {
     LOG(ERROR) << "Call to StarboardDrmUpdateServerCertificate for ticket "
-               << it->first << "  failed with error: "
-               << (error_message ? *error_message : "(null)");
+               << it->first << "  failed with error: " << error_message;
     it->second->reject(StarboardDrmErrorStatusToCdmException(status), 0,
-                       error_message ? *error_message : "");
+                       error_message);
   } else {
     // Success case.
     LOG(INFO) << "Updated DRM certificate for ticket " << it->first;
@@ -726,97 +730,57 @@ void StarboardDecryptorCast::CallOnSessionUpdateRequest(
     int ticket,
     StarboardDrmStatus status,
     StarboardDrmSessionRequestType type,
-    const char* error_message,
-    const void* session_id,
-    int session_id_size,
-    const void* content,
-    int content_size,
-    const char* url) {
-  if (url && strcmp(url, "") != 0) {
+    std::string error_message,
+    std::string session_id,
+    std::vector<uint8_t> content,
+    std::string url) {
+  if (!url.empty()) {
     LOG(ERROR)
         << "Non-empty URL was specified in SessionUpdateRequest callback: "
         << url;
   }
-  std::optional<std::string> error_message_copy;
-  if (error_message) {
-    error_message_copy.emplace(error_message);
-  }
 
-  std::optional<std::string> session_id_copy;
-  std::vector<uint8_t> content_copy;
-  if (session_id) {
-    session_id_copy.emplace(reinterpret_cast<const char*>(session_id),
-                            session_id_size);
-    content_copy.resize(content_size);
-    memcpy(content_copy.data(), content, content_size);
-  }
   auto* decryptor = reinterpret_cast<StarboardDecryptorCast*>(context);
   decryptor->task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&StarboardDecryptorCast::OnSessionUpdateRequest,
                      decryptor->weak_factory_.GetWeakPtr(), drm_system, ticket,
-                     status, type, std::move(error_message_copy),
-                     std::move(session_id_copy), std::move(content_copy)));
+                     status, type, std::move(error_message),
+                     std::move(session_id), std::move(content)));
 }
 
 void StarboardDecryptorCast::CallOnSessionUpdated(void* drm_system,
                                                   void* context,
                                                   int ticket,
                                                   StarboardDrmStatus status,
-                                                  const char* error_message,
-                                                  const void* session_id,
-                                                  int session_id_size) {
-  std::optional<std::string> error_message_copy;
-  if (error_message) {
-    error_message_copy.emplace(error_message);
-  }
-
-  std::optional<std::string> session_id_copy;
-  if (session_id) {
-    session_id_copy.emplace(reinterpret_cast<const char*>(session_id),
-                            session_id_size);
-  }
+                                                  std::string error_message,
+                                                  std::string session_id) {
   auto* decryptor = reinterpret_cast<StarboardDecryptorCast*>(context);
   decryptor->task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&StarboardDecryptorCast::OnSessionUpdated,
                      decryptor->weak_factory_.GetWeakPtr(), drm_system, ticket,
-                     status, std::move(error_message_copy),
-                     std::move(session_id_copy)));
+                     status, std::move(error_message), std::move(session_id)));
 }
 
 void StarboardDecryptorCast::CallOnKeyStatusesChanged(
     void* drm_system,
     void* context,
-    const void* session_id,
-    int session_id_size,
-    int number_of_keys,
-    const StarboardDrmKeyId* key_ids,
-    const StarboardDrmKeyStatus* key_statuses) {
-  if (!session_id) {
+    std::string session_id,
+    std::vector<StarboardDrmKeyId> key_ids,
+    std::vector<StarboardDrmKeyStatus> key_statuses) {
+  if (session_id.empty()) {
     LOG(ERROR) << "StarboardDecryptorCast::CallOnKeyStatusesChanged was called "
-                  "by starboard with a null session_id. Ignoring the call.";
+                  "by starboard with an empty session_id. Ignoring the call.";
     return;
-  }
-  std::string session_id_copy(reinterpret_cast<const char*>(session_id),
-                              session_id_size);
-  if (number_of_keys <= 0) {
-    LOG(ERROR) << "Invalid number of keys (" << number_of_keys
-               << ") for session " << session_id_copy;
-    return;
-  }
-  std::vector<std::pair<StarboardDrmKeyId, StarboardDrmKeyStatus>>
-      key_ids_and_statuses;
-  for (int i = 0; i < number_of_keys; ++i) {
-    key_ids_and_statuses.push_back({key_ids[i], key_statuses[i]});
   }
 
   auto* decryptor = reinterpret_cast<StarboardDecryptorCast*>(context);
   decryptor->task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&StarboardDecryptorCast::OnKeyStatusesChanged,
                                 decryptor->weak_factory_.GetWeakPtr(),
-                                drm_system, std::move(session_id_copy),
-                                std::move(key_ids_and_statuses)));
+                                drm_system, std::move(session_id),
+                                std::move(key_ids), std::move(key_statuses)));
 }
 
 void StarboardDecryptorCast::CallOnCertificateUpdated(
@@ -824,38 +788,23 @@ void StarboardDecryptorCast::CallOnCertificateUpdated(
     void* context,
     int ticket,
     StarboardDrmStatus status,
-    const char* error_message) {
-  std::optional<std::string> error_message_copy;
-  if (error_message) {
-    error_message_copy.emplace(error_message);
-  }
-
+    std::string error_message) {
   auto* decryptor = reinterpret_cast<StarboardDecryptorCast*>(context);
   decryptor->task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&StarboardDecryptorCast::OnCertificateUpdated,
                      decryptor->weak_factory_.GetWeakPtr(), drm_system, ticket,
-                     status, std::move(error_message_copy)));
+                     status, std::move(error_message)));
 }
 
 void StarboardDecryptorCast::CallOnSessionClosed(void* drm_system,
                                                  void* context,
-                                                 const void* session_id,
-                                                 int session_id_size) {
-  if (!session_id) {
-    LOG(ERROR)
-        << "Null session_id was passed to StarboardDrmCloseSession's callback";
-    return;
-  }
-
-  std::string session_id_copy(reinterpret_cast<const char*>(session_id),
-                              session_id_size);
-
+                                                 std::string session_id) {
   auto* decryptor = reinterpret_cast<StarboardDecryptorCast*>(context);
   decryptor->task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&StarboardDecryptorCast::OnSessionClosed,
                                 decryptor->weak_factory_.GetWeakPtr(),
-                                drm_system, std::move(session_id_copy)));
+                                drm_system, std::move(session_id)));
 }
 
 void StarboardDecryptorCast::SetStarboardApiWrapperForTest(

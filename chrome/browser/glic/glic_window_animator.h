@@ -63,6 +63,11 @@ class GlicWindowAnimator : public gfx::AnimationDelegate {
   // GlicWindowOpacityAnimation.
   void FadeComplete();
 
+  // Gets the bounds for the widget's resize animation. If there is an animation
+  // already ongoing, use the target bounds for that animation. Otherwise, use
+  // the widget's current bounds.
+  gfx::Rect GetCurrentTargetBounds();
+
  private:
   // Sets target bounds for the widget (must exist) and creates a
   // GlicWindowResizeAnimation instance to begin a new animation. If a bounds
@@ -77,11 +82,6 @@ class GlicWindowAnimator : public gfx::AnimationDelegate {
   void AnimateOpacity(float start_opacity,
                       float target_opacity,
                       base::TimeDelta duration);
-
-  // Gets the bounds for the widget's resize animation. If there is an animation
-  // already ongoing, use the target bounds for that animation. Otherwise, use
-  // the widget's current bounds.
-  gfx::Rect GetCurrentTargetBounds();
 
   // GlicWindowController owns GlicWindowAnimator and will outlive it
   const raw_ptr<GlicWindowController> window_controller_;

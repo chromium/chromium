@@ -46,8 +46,11 @@ class ASH_EXPORT ScannerController : public SessionObserver {
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // Returns `CanShowUi` for the `ScannerController` on the global singleton
-  // `Shell` instance. If it does not exist, returns false.
+  // Returns whether Scanner-related UI can be shown. This function checks
+  // `CanShowUi` for the `Shell`-global `ScannerController`.
+  //
+  // Do NOT use this method if your feature is using
+  // `SunfishScannerFeatureWatcher`, use its `CanShowScannerUi` method instead.
   static bool CanShowUiForShell();
 
   // SessionObserver:

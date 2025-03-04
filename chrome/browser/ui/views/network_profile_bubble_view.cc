@@ -81,7 +81,7 @@ void NetworkProfileBubbleView::Init() {
   constexpr int kNotificationBubbleWidth = 250;
   label->SizeToFit(kNotificationBubbleWidth);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  AddChildView(label);
+  AddChildViewRaw(label);
 }
 
 bool NetworkProfileBubbleView::Accept() {

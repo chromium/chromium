@@ -867,4 +867,18 @@ class AuthenticatorGPMLockedPinSheetModel : public AuthenticatorSheetModelBase {
   void OnAccept() override;
 };
 
+class CombinedSelectorSheetModel : public AuthenticatorSheetModelBase {
+ public:
+  explicit CombinedSelectorSheetModel(
+      AuthenticatorRequestDialogModel* dialog_model);
+
+ private:
+  // AuthenticatorSheetModelBase:
+  std::u16string GetStepTitle() const override;
+  std::u16string GetStepDescription() const override;
+  bool IsAcceptButtonVisible() const override;
+  bool IsCancelButtonVisible() const override;
+  std::u16string GetAcceptButtonLabel() const override;
+  void OnAccept() override;
+};
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_SHEET_MODELS_H_

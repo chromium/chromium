@@ -845,7 +845,7 @@ class TextureLayerImplWithResourceTest : public TextureLayerTest {
 
   std::unique_ptr<TextureLayerImpl> CreateTextureLayer() {
     auto layer = TextureLayerImpl::Create(host_impl_.active_tree(), 1);
-    layer->set_visible_layer_rect(gfx::Rect(100, 100));
+    layer->SetVisibleLayerRectForTesting(gfx::Rect(100, 100));
     return layer;
   }
 

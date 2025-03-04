@@ -184,6 +184,7 @@
 <translation id="3628308229821498208">Chwiliadau a awgrymir</translation>
 <translation id="3658847490588580244">Taflen waelod porwr diofyn</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> wefan yng ngrŵp gwefannau <ph name="RWS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}zero{<ph name="RWS_MEMBERS_COUNT" /> gwefan yng ngrŵp gwefannau <ph name="RWS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}two{<ph name="RWS_MEMBERS_COUNT" /> wefan yng ngrŵp gwefannau <ph name="RWS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}few{<ph name="RWS_MEMBERS_COUNT" /> gwefan yng ngrŵp gwefannau <ph name="RWS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}many{<ph name="RWS_MEMBERS_COUNT" /> gwefan yng ngrŵp gwefannau <ph name="RWS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}other{<ph name="RWS_MEMBERS_COUNT" /> gwefan yng ngrŵp gwefannau <ph name="RWS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}}</translation>
+<translation id="3676777756440746804">Mae gwefannau'n cael eu rhwystro rhag gofyn i chi ddefnyddio gwybodaeth y maent wedi'i chadw amdanoch chi</translation>
 <translation id="3697164069658504920">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am ddefnyddio dyfeisiau USB. Pan fydd wedi'i ddiffodd, ni all gwefannau ddefnyddio dyfeisiau USB.</translation>
 <translation id="3707034683772193706">Gall gwefan rydych chi'n ymweld â hi gadw ychydig o wybodaeth gyda Chrome, yn bennaf i gadarnhau nad bot ydych chi</translation>
 <translation id="3709818294139939629">Tynnwyd mynediad gwefan at ffeil</translation>
@@ -208,9 +209,11 @@
 <translation id="3922092564198021702">Ar eich ffôn, agorwch y Gosodiadau</translation>
 <translation id="3933121352599513978">Crebachu ceisiadau digroeso (argymhellir)</translation>
 <translation id="3955193568934677022">Caniatáu i wefannau chwarae cynnwys gwarchodedig (argymhellir)</translation>
+<translation id="3965467402665811906">Gall gwefannau ofyn am gael defnyddio gwybodaeth y maent wedi'u cadw amdanoch chi</translation>
 <translation id="3967822245660637423">Lawrlwytho wedi'i gwblhau</translation>
 <translation id="3987993985790029246">Copïo'r ddolen</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
+<translation id="3992308058851451478">Gall <ph name="SITE" /> ddefnyddio eich gwybodaeth wrth i chi bori</translation>
 <translation id="3992684624889376114">Ynghylch y dudalen hon</translation>
 <translation id="4002066346123236978">Teitl</translation>
 <translation id="4046123991198612571">Trac nesaf</translation>
@@ -263,6 +266,7 @@
 <translation id="4883854917563148705">Methu ag ailosod gosodiadau a reolir</translation>
 <translation id="4887024562049524730">Gofyn cyn caniatáu i wefannau ddefnyddio'ch dyfais rhithwirionedd a'ch data (argymhellir)</translation>
 <translation id="4936863036653376783">Byddwch yn gweld eich grwpiau yn yr adran grwpiau tab ar draws eich holl ddyfeisiau</translation>
+<translation id="4945443401464700059">Mae <ph name="SITE" /> wedi'i rhwystro rhag defnyddio eich gwybodaeth ar</translation>
 <translation id="4953688446973710931">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am lawrlwytho mwy nag un ffeil yn awtomatig. Pan fydd wedi'i ddiffodd, ni all gwefannau lawrlwytho mwy nag un ffeil yn awtomatig.</translation>
 <translation id="4962975101802056554">Dirymu pob caniatâd ar gyfer y ddyfais</translation>
 <translation id="497421865427891073">Mynd ymlaen</translation>
@@ -532,9 +536,11 @@
 <translation id="851751545965956758">Rhwystro gwefannau rhag cysylltu â dyfeisiau</translation>
 <translation id="8525306231823319788">Sgrîn lawn</translation>
 <translation id="8541410041357371550">Mae'r wefan hon yn cael eich pynciau hysbysebion gan Chrome er mwyn dangos hysbysebion mwy perthnasol i chi</translation>
+<translation id="854876774113449365">Gall gwefannau rydych yn ymweld â nhw fewnblannu cynnwys o wefannau eraill, er enghraifft lluniau, hysbysebion a thestun. Gall y gwefannau eraill hyn ofyn am ganiatâd i ddefnyddio gwybodaeth y maent wedi'i chadw amdanoch wrth i chi bori'r wefan. <ph name="BEGIN_LINK" />Dysgu rhagor am gynnwys sydd wedi'i fewnblannu<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Sut i ddangos ceisiadau</translation>
 <translation id="8558480467877843976">Gallwch bellach ddefnyddio Chrome unrhyw bryd y byddwch yn pori neu'n tapio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>
 <translation id="857943718398505171">Caniateir (argymhellir)</translation>
+<translation id="8593422116412089302">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am gael defnyddio gwybodaeth y maent wedi'i chadw amdanoch chi. Pan fydd wedi'i ddiffodd, ni all gwefannau ofyn am gael defnyddio gwybodaeth y maent wedi'i chadw amdanoch chi.</translation>
 <translation id="8609465669617005112">Symud i fyny</translation>
 <translation id="8617611086246832542">Pan fydd wedi'i droi ymlaen, dangosir gwedd bwrdd gwaith gwefannau. Pan fydd wedi'i ddiffodd, dangosir gwedd symudol gwefannau.</translation>
 <translation id="8670078035093027626">Taflen waelod porwr diofyn wedi'i hagor ar uchder llawn</translation>

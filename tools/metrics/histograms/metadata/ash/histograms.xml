@@ -550,7 +550,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.AmbientMode.AnimationSmoothness.PhotoTransition" units="%"
-    expires_after="2025-06-30">
+    expires_after="2025-08-31">
   <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -561,7 +561,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.AmbientMode.Enabled" enum="BooleanEnabled"
-    expires_after="2025-06-30">
+    expires_after="2025-08-31">
   <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -605,7 +605,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.AmbientMode.EngagementTime.{TabletOrClamshell}" units="ms"
-    expires_after="2025-06-30">
+    expires_after="2025-08-31">
   <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -676,7 +676,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.AmbientMode.StartupTime.{Settings}" units="ms"
-    expires_after="2025-06-30">
+    expires_after="2025-08-31">
   <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -1305,180 +1305,6 @@ chromium-metrics-reviews@google.com.
     Making sure nobody in the production calls the
     ProfileManager::GetPrimaryUserProfile() in unexpected timing. This entry
     will not have &quot;false&quot; status.
-  </summary>
-</histogram>
-
-<histogram name="Ash.BrowserDataBackMigrator.ElapsedTimeBetweenDataMigrations"
-    units="ms" expires_after="2025-03-09">
-  <owner>janagrill@google.com</owner>
-  <owner>artyomchen@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    The time elapsed from the completion of a successful forward migration to
-    the start of a backward migration, with a maximum of 24 days. Recorded every
-    time backward migration is started, if forward migration was performed prior
-    to it.
-  </summary>
-</histogram>
-
-<histogram name="Ash.BrowserDataBackMigrator.ElapsedTimeDeleteAshItems"
-    units="ms" expires_after="2024-10-01">
-  <owner>janagrill@google.com</owner>
-  <owner>artyomchen@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    The time in ms that elapsed while DeleteAshItems() was run. Recorded once
-    when browser data backward migration happens if the step succeeds.
-  </summary>
-</histogram>
-
-<histogram name="Ash.BrowserDataBackMigrator.ElapsedTimeDeleteLacrosDir"
-    units="ms" expires_after="2024-10-01">
-  <owner>janagrill@google.com</owner>
-  <owner>artyomchen@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    The time in ms that elapsed while DeleteLacrosDir() was run. Recorded once
-    when browser data backward migration happens if the step succeeds.
-  </summary>
-</histogram>
-
-<histogram name="Ash.BrowserDataBackMigrator.ElapsedTimeDeleteTmpDir"
-    units="ms" expires_after="2024-10-01">
-  <owner>janagrill@google.com</owner>
-  <owner>artyomchen@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    The time in ms that elapsed while DeleteTmpDir() was run. Recorded once when
-    browser data backward migration happens if the step succeeds.
-  </summary>
-</histogram>
-
-<histogram name="Ash.BrowserDataBackMigrator.ElapsedTimeMergeSplitItems"
-    units="ms" expires_after="2024-10-01">
-  <owner>janagrill@google.com</owner>
-  <owner>artyomchen@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    The time in ms that elapsed while MergeSplitItems() was run. Recorded once
-    when browser data backward migration happens if the step succeeds.
-  </summary>
-</histogram>
-
-<histogram
-    name="Ash.BrowserDataBackMigrator.ElapsedTimeMoveLacrosItemsToAshDir"
-    units="ms" expires_after="2024-10-01">
-  <owner>janagrill@google.com</owner>
-  <owner>artyomchen@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    The time in ms that elapsed while MoveLacrosItemsToAshDir() was run.
-    Recorded once when browser data backward migration happens if the step
-    succeeds.
-  </summary>
-</histogram>
-
-<histogram
-    name="Ash.BrowserDataBackMigrator.ElapsedTimeMoveMergedItemsBackToAsh"
-    units="ms" expires_after="2024-10-01">
-  <owner>janagrill@google.com</owner>
-  <owner>artyomchen@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    The time in ms that elapsed while MoveMergedItemsBackToAsh() was run.
-    Recorded once when browser data backward migration happens if the step
-    succeeds.
-  </summary>
-</histogram>
-
-<histogram name="Ash.BrowserDataBackMigrator.ElapsedTimePreMigrationCleanUp"
-    units="ms" expires_after="2024-10-01">
-  <owner>janagrill@google.com</owner>
-  <owner>artyomchen@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    The time in ms that elapsed while PreMigrationCleanUp() was run. Recorded
-    once when browser data backward migration happens if the step succeeds.
-  </summary>
-</histogram>
-
-<histogram name="Ash.BrowserDataBackMigrator.FinalStatus"
-    enum="BrowserDataBackMigratorFinalStatus" expires_after="2024-10-01">
-  <owner>janagrill@google.com</owner>
-  <owner>artyomchen@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    The final status of browser data backward migration. Recorded once at the
-    end of the migration process. It is collected to monitor whether backward
-    migration is working, and if it is not to determine which step is failing.
-  </summary>
-</histogram>
-
-<histogram name="Ash.BrowserDataBackMigrator.IsPrecededByForwardMigration"
-    enum="Boolean" expires_after="2024-10-01">
-  <owner>janagrill@google.com</owner>
-  <owner>artyomchen@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Whether forward migration was performed before backward migration. True if
-    the user was first on Ash, then moved to Lacros (forward migration), and
-    then back to Ash (backward migration). False if the user started with Lacros
-    (no forward migration) and then moved to Ash (backward migration). Recorded
-    every time backward migration is started, if forward migration was performed
-    prior to it.
-  </summary>
-</histogram>
-
-<histogram name="Ash.BrowserDataBackMigrator.NumberOfLacrosSecondaryProfiles"
-    units="profiles" expires_after="2025-03-09">
-  <owner>janagrill@google.com</owner>
-  <owner>artyomchen@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    The number of Lacros secondary profiles at the time of starting the backward
-    migration process. Recorded every time migration is started.
-  </summary>
-</histogram>
-
-<histogram name="Ash.BrowserDataBackMigrator.PosixErrno.{TaskStatus}"
-    enum="PopularOSErrno" expires_after="2024-10-01">
-  <owner>janagrill@google.com</owner>
-  <owner>artyomchen@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Recorded when browser data backward migration fails. Records the errno set
-    by the operation that caused the migration to fail. `TaskStatus` is used to
-    determine the step in which the error occurred.
-  </summary>
-  <token key="TaskStatus">
-    <variant name="DeleteAshItemsDeleteExtensionsFailed"/>
-    <variant name="DeleteAshItemsDeleteLacrosItemFailed"/>
-    <variant name="DeleteLacrosDirDeleteFailed"/>
-    <variant name="DeleteTmpDirDeleteFailed"/>
-    <variant name="MergeSplitItemsCopyExtensionsFailed"/>
-    <variant name="MergeSplitItemsCopyExtensionStorageFailed"/>
-    <variant name="MergeSplitItemsCreateDirFailed"/>
-    <variant name="MergeSplitItemsCreateTmpDirFailed"/>
-    <variant name="MergeSplitItemsMergeIndexedDBFailed"/>
-    <variant name="MergeSplitItemsMergeLocalStorageLevelDBFailed"/>
-    <variant name="MergeSplitItemsMergePrefsFailed"/>
-    <variant name="MergeSplitItemsMergeStateStoreLevelDBFailed"/>
-    <variant name="MergeSplitItemsMergeSyncDataFailed"/>
-    <variant name="MoveLacrosItemsToAshDirFailed"/>
-    <variant name="MoveMergedItemsBackToAshCopyDirectoryFailed"/>
-    <variant name="MoveMergedItemsBackToAshMoveFileFailed"/>
-    <variant name="PreMigrationCleanUpDeleteTmpDirFailed"/>
-  </token>
-</histogram>
-
-<histogram name="Ash.BrowserDataBackMigrator.SuccessfulMigrationTime"
-    units="ms" expires_after="2024-10-01">
-  <owner>janagrill@google.com</owner>
-  <owner>artyomchen@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    How long the backward migration took to complete in ms. Only recorded if
-    migration succeeds.
   </summary>
 </histogram>
 
@@ -2783,7 +2609,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.NewDesk2" enum="DesksCreationRemovalSource"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>afakhry@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -4286,7 +4112,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FullRestore.Browser.FirstInputDelay" units="ms"
-    expires_after="2025-07-01">
+    expires_after="2025-08-31">
   <owner>esum@google.com</owner>
   <owner>xiyuan@chromium.org</owner>
   <owner>cros-sw-perf@google.com</owner>
@@ -4355,7 +4181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.GameDashboard.RecordingStartSource"
-    enum="GameDashboardMenu" expires_after="2025-06-29">
+    enum="GameDashboardMenu" expires_after="2025-08-31">
   <owner>cuicuiruan@google.com</owner>
   <owner>phshah@chromium.org</owner>
   <summary>
@@ -4364,7 +4190,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.GameDashboard.ScreenshotTakeSource"
-    enum="GameDashboardMenu" expires_after="2025-06-29">
+    enum="GameDashboardMenu" expires_after="2025-08-31">
   <owner>cuicuiruan@google.com</owner>
   <owner>phshah@chromium.org</owner>
   <summary>
@@ -4402,7 +4228,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.GameDashboard.ToolbarToggleState" enum="BooleanEnabled"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>cuicuiruan@google.com</owner>
   <owner>phshah@chromium.org</owner>
   <summary>Records whether the tool bar is toggled on or off.</summary>
@@ -4993,7 +4819,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Login.ArcUiAvailableAfterLogin.Duration" units="ms"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>xiyuan@chromium.org</owner>
   <owner>junis@google.com</owner>
   <owner>cros-sw-perf@google.com</owner>
@@ -5004,7 +4830,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Login.Lock.AuthMethod.Switched"
-    enum="AuthMethodSwitchType" expires_after="2025-06-29">
+    enum="AuthMethodSwitchType" expires_after="2025-08-31">
   <owner>emaamari@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -5013,7 +4839,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Login.Lock.AuthMethod.Used.ClamShellMode"
-    enum="AuthMethod" expires_after="2025-06-29">
+    enum="AuthMethod" expires_after="2025-08-31">
   <owner>emaamari@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -5024,7 +4850,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Login.Lock.AuthMethod.Used.TabletMode" enum="AuthMethod"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>emaamari@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -5041,7 +4867,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Login.Lock.UserClicks" enum="LockScreenUserClickTarget"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>emaamari@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -5702,7 +5528,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.NightLight.ScheduleType.Initial"
-    enum="AshNightLightScheduleType" expires_after="2025-06-28">
+    enum="AshNightLightScheduleType" expires_after="2025-08-31">
   <owner>dpad@google.com</owner>
   <owner>cambickel@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -5721,7 +5547,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.NightLight.Temperature.Initial" units="%"
-    expires_after="2025-06-28">
+    expires_after="2025-08-31">
   <owner>dpad@google.com</owner>
   <owner>cambickel@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -6710,7 +6536,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Personalization.Ambient.GooglePhotosPreviewsLoadTime"
-    units="ms" expires_after="2025-06-30">
+    units="ms" expires_after="2025-08-31">
   <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -6735,7 +6561,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Personalization.AmbientMode.AlbumsPath"
-    enum="AmbientModeTopicSource" expires_after="2025-06-30">
+    enum="AmbientModeTopicSource" expires_after="2025-08-31">
   <owner>pzliu@chromium.org</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -6759,7 +6585,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Personalization.AmbientMode.OptIn" enum="BooleanHit"
-    expires_after="2025-06-30">
+    expires_after="2025-08-31">
   <owner>jasontt@chromium.org</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -8314,7 +8140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Shelf.DefaultApps.Pinned" enum="DefaultAppName"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>dmblack@google.com</owner>
   <owner>tbarzic@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
@@ -8325,7 +8151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Shelf.Menu.NumItemsEnabledUponSelection" units="Count"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>anasalazar@google.com</owner>
   <owner>mmourgos@google.com</owner>
   <owner>chromeos-launcher@google.com</owner>
@@ -8348,7 +8174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Shelf.NumberOfItems" units="Icons"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>anasalazar@google.com</owner>
   <owner>mmourgos@google.com</owner>
   <owner>chromeos-launcher@google.com</owner>
@@ -9925,7 +9751,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WindowManager.Lock.Success" units="ms"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -9986,7 +9812,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Wm.WindowLayoutState.ActiveWindowAppType"
-    enum="WindowAppType" expires_after="2025-06-29">
+    enum="WindowAppType" expires_after="2025-08-31">
   <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -9996,7 +9822,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Wm.WindowLayoutState.ActiveWindowSize"
-    enum="WindowSizeRange" expires_after="2025-06-29">
+    enum="WindowSizeRange" expires_after="2025-08-31">
   <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -10006,7 +9832,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Wm.WindowLayoutState.ActiveWindowState"
-    enum="WindowStateType" expires_after="2025-06-29">
+    enum="WindowStateType" expires_after="2025-08-31">
   <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -10026,7 +9852,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Wm.WindowLayoutState.AllWindowSizes"
-    enum="WindowSizeRange" expires_after="2025-06-29">
+    enum="WindowSizeRange" expires_after="2025-08-31">
   <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -10036,7 +9862,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Wm.WindowLayoutState.AllWindowStates"
-    enum="WindowStateType" expires_after="2025-06-29">
+    enum="WindowStateType" expires_after="2025-08-31">
   <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -10056,7 +9882,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Wm.WindowLayoutState.WindowNumbers" units="int"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>

@@ -265,7 +265,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.DriveIs{Attribute}Result" enum="OptionalBoolRecord"
-    expires_after="2025-06-28">
+    expires_after="2025-08-31">
   <owner>spvw@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -789,7 +789,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.SeekPenaltyResult.{Implementation}"
-    enum="OptionalBoolRecord" expires_after="2025-06-28">
+    enum="OptionalBoolRecord" expires_after="2025-08-31">
   <owner>spvw@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -945,7 +945,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.TPMMetricsProvider.ReadSuccess" enum="Boolean"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>psarouthakis@google.com</owner>
   <owner>kristianm@google.com</owner>
   <summary>
@@ -955,7 +955,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.TPMMetricsProvider.UnknownID" enum="Boolean"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>psarouthakis@google.com</owner>
   <owner>kristianm@google.com</owner>
   <summary>
@@ -1088,7 +1088,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.UserDemographics.Status" enum="UserDemographicsStatus"
-    expires_after="2025-06-30">
+    expires_after="2025-08-31">
   <owner>rogerm@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>

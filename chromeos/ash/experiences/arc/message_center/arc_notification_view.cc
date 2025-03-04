@@ -101,7 +101,7 @@ ArcNotificationView::ArcNotificationView(
 
   item_->AddObserver(this);
 
-  AddChildView(content_view_.get());
+  AddChildViewRaw(content_view_.get());
 
   AddChildView(CreateCollapsedSummaryBuilder(notification)
                    .CopyAddressTo(&collapsed_summary_view_)

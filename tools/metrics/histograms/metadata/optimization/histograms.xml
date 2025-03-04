@@ -952,7 +952,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.OnDeviceFirstResponseTime.{ModelExecutionFeature}"
-    units="ms" expires_after="2025-06-27">
+    units="ms" expires_after="2025-08-31">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -1072,7 +1072,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.OnDeviceModelValidationResult"
-    enum="OnDeviceModelValidationResult" expires_after="2025-06-05">
+    enum="OnDeviceModelValidationResult" expires_after="2025-08-31">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>

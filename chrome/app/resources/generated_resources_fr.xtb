@@ -460,6 +460,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1303101771013849280">Ajouter le fichier HTML aux favoris</translation>
 <translation id="1303671224831497365">Aucun appareil Bluetooth détecté</translation>
 <translation id="130491383855577612">Les applications et fichiers Linux ont été remplacés</translation>
+<translation id="1306373239538745517">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Supprimer 1 extension et les données qu'elle a enregistrées sur cet appareil}one{Supprimer {ACCOUNT_EXTENSIONS_COUNT} extension et les données qu'elle a enregistrées sur cet appareil}other{Supprimer {ACCOUNT_EXTENSIONS_COUNT} extensions et les données qu'elles ont enregistrées sur cet appareil}}</translation>
 <translation id="1306518237408758433">Ouvrir <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="1306606229401759371">Modifier les paramètres</translation>
 <translation id="1307165550267142340">Votre code a été créé</translation>
@@ -1208,6 +1209,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1826192255355608658">Synchroniser entre autres les favoris, les mots de passe et l'historique de votre navigateur Chrome</translation>
 <translation id="1826516787628120939">Vérification en cours…</translation>
 <translation id="1826657447823925402">Défilement inverse désactivé</translation>
+<translation id="1827416268933303617">Couleur : <ph name="COLOR_NAME" /></translation>
 <translation id="1827504459960247692">Nom du point d'accès</translation>
 <translation id="1828378091493947763">Ce plug-in n'est pas compatible avec cet appareil.</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{Tout &amp;ouvrir}=1{&amp;Ouvrir le favori}one{Tout &amp;ouvrir ({COUNT})}other{Tout &amp;ouvrir ({COUNT})}}</translation>
@@ -1708,7 +1710,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2178545675770638239">Sélectionner un mot de passe</translation>
 <translation id="2178585470774851578">Les fonctionnalités de débogage de ChromeOS Flex que vous activez configurent le daemon sshd et autorisent le démarrage à partir de clés USB.</translation>
 <translation id="2178614541317717477">Autorité de certification compromise</translation>
-<translation id="2179850495466791921">Vous avez actuellement <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> et plus</translation>
 <translation id="2180620921879609685">Bloquer du contenu sur n'importe quelle page</translation>
 <translation id="2181821976797666341">Règles</translation>
 <translation id="2182058453334755893">Copié dans le presse-papiers</translation>
@@ -3124,7 +3125,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3167562202484086668">Supprimer toutes les données du <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Choisissez le thème adapté à vos besoins. Pour changer de thème, de fond d'écran, d'économiseur d'écran, etc., appuyez de manière prolongée sur le bureau.</translation>
 <translation id="3170072451822350649">Vous pouvez également ignorer l'étape de connexion et <ph name="LINK_START" />naviguer en tant qu'invité<ph name="LINK_END" />.</translation>
-<translation id="3171499217959105722">Vous avez actuellement <ph name="NUMBERED_ITEM" /> et plus</translation>
 <translation id="3175067642577044620">Corps</translation>
 <translation id="3175862692832442091">Forêt</translation>
 <translation id="3176347586396987181">Utiliser "Z" pour appuyer de manière prolongée sur un bouton de la souris</translation>
@@ -3934,7 +3934,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3744219658596020825">Vos mots de passe n'ont pas été importés</translation>
 <translation id="3745306754941902605">Cuisine</translation>
 <translation id="3747077776423672805">Pour supprimer des applications, sélectionnez Paramètres &gt; Google Play Store &gt; Gérer les préférences Android &gt; Applications ou Gestionnaire d'applications, puis appuyez sur l'application que vous souhaitez désinstaller. Vous devrez peut-être balayer l'écran vers la droite ou la gauche pour localiser l'application. Ensuite, appuyez sur "Désinstaller" ou "Désactiver".</translation>
-<translation id="3747552357646973221">Vous avez actuellement <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> et plus</translation>
 <translation id="3748424433435232460">Un mot de passe pour ce compte est déjà enregistré sur cet appareil</translation>
 <translation id="3748706263662799310">Signaler un bug</translation>
 <translation id="3749724428455457489">En savoir plus sur les annonces suggérées par les sites</translation>
@@ -6718,6 +6717,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5749214722697335450">Envoyer des données d'utilisation et de diagnostic. Contribuez à l'amélioration de votre expérience sur Android en envoyant automatiquement à Google des données liées aux diagnostics, à l'appareil et à l'utilisation des applis. Ces données nous aideront à améliorer, entre autres, la stabilité du système et des applis. Certaines données globales seront aussi utiles aux développeurs d'applis Google et à nos partenaires tels que les développeurs Android. Si le paramètre "Activité additionnelle sur le Web et les applications" est activé, ces données pourront être enregistrées dans votre compte Google. <ph name="BEGIN_LINK1" />En savoir plus sur les métriques<ph name="BEGIN_LINK1_END" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Vérifier l'aptitude au partage de connexion</translation>
+<translation id="5752346055178471785">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Cette extension est enregistrée dans votre compte Google, mais les données qu'elle a enregistré uniquement sur cet appareil pourront être supprimées}one{Cette extension est enregistrée dans votre compte Google, mais les données qu'elle a enregistrées uniquement sur cet appareil pourront être supprimées}other{Ces extensions sont enregistrées dans votre compte Google, mais les données qu'elles ont enregistrées uniquement sur cet appareil pourront être supprimées}}</translation>
 <translation id="5753570386948603678">Supprimer de l'historique</translation>
 <translation id="5756163054456765343">C&amp;entre d'aide</translation>
 <translation id="5757187557809630523">titre suivant</translation>

@@ -74,7 +74,7 @@ constexpr base::FilePath::CharType kCredentialProviderFolder[] =
 constexpr wchar_t kDefaultMdmUrl[] =
     L"https://deviceenrollmentforwindows.googleapis.com/v1/discovery";
 
-constexpr int kMaxNumConsecutiveUploadDeviceFailures = 3;
+constexpr int kMaxNumConsecutiveUploadDeviceFailures = 7;
 
 // The following staleness time limits are set to 5 days to prevent file fetch
 // operations unnecessarily by GCPW when machine is offline during weekends and
@@ -143,17 +143,17 @@ constexpr base::win::i18n::LanguageSelector::LangToOffset
 };
 
 base::FilePath GetStartupSentinelLocation(const std::wstring& version) {
-  base::FilePath sentienal_path;
-  if (!base::PathService::Get(base::DIR_COMMON_APP_DATA, &sentienal_path)) {
+  base::FilePath sentinel_path;
+  if (!base::PathService::Get(base::DIR_COMMON_APP_DATA, &sentinel_path)) {
     HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "PathService::Get(DIR_COMMON_APP_DATA) hr=" << putHR(hr);
     return base::FilePath();
   }
 
-  sentienal_path = sentienal_path.Append(GetInstallParentDirectoryName())
-                       .Append(kCredentialProviderFolder);
+  sentinel_path = sentinel_path.Append(GetInstallParentDirectoryName())
+                      .Append(kCredentialProviderFolder);
 
-  return sentienal_path.Append(version).AppendASCII(kSentinelFilename);
+  return sentinel_path.Append(version).AppendASCII(kSentinelFilename);
 }
 
 const base::win::i18n::LanguageSelector& GetLanguageSelector() {
@@ -223,7 +223,6 @@ HRESULT GetGCPWDmTokenInternal(const std::wstring& sid,
   std::wstring store_key = kLsaKeyDMTokenPrefix + sid;
 
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
-
   if (!policy) {
     HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "ScopedLsaPolicy::Create hr=" << putHR(hr);
@@ -873,8 +872,10 @@ bool WriteToStartupSentinel() {
   // Each process will only write once to startup sentinel file.
 
   static volatile long sentinel_initialized = 0;
-  if (::InterlockedCompareExchange(&sentinel_initialized, 1, 0))
+  if (::InterlockedCompareExchange(&sentinel_initialized, 1, 0)) {
+    LOGFN(VERBOSE) << "Sentinel already initialized.";
     return true;
+  }
 
   base::FilePath startup_sentinel_path =
       GetStartupSentinelLocation(TEXT(CHROME_VERSION_STRING));

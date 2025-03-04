@@ -244,6 +244,50 @@ public class AwPrefetchTest extends AwParameterizedTest {
     }
 
     @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testPrefetchCancellation() throws Throwable {
+        // Prepare PrefetchParameters
+        AwNoVarySearchData expectedNoVarySearch =
+                new AwNoVarySearchData(false, false, new String[] {"ts", "uid"}, null);
+        AwPrefetchParameters prefetchParameters =
+                new AwPrefetchParameters(null, expectedNoVarySearch, true);
+
+        // Do the prefetch request.
+        TestAwPrefetchCallback callback = startPrefetchingAndWait(mPrefetchUrl, prefetchParameters);
+
+        // Wait for the prefetch success & key for cancellation.
+        callback.mOnStatusUpdatedHelper.waitForNext();
+        Assert.assertEquals(1, callback.getOnStatusUpdatedHelper().getCallCount());
+        Assert.assertEquals(
+                AwPrefetchCallback.StatusCode.PREFETCH_RESPONSE_COMPLETED,
+                callback.getOnStatusUpdatedHelper().getStatusCode());
+        Assert.assertNull(callback.getOnStatusUpdatedHelper().getExtras());
+        Assert.assertNull(callback.getOnErrorHelper().mError);
+
+        AwPrefetchManager prefetchManager =
+                mActivityTestRule.getAwBrowserContext().getPrefetchManager();
+        Assert.assertNotEquals(
+                prefetchManager.getNoPrefetchKeyForTesting(), callback.getPrefetchKey());
+
+        // Test cancellation.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    final int prefetchKey = callback.getPrefetchKey();
+                    Assert.assertTrue(prefetchManager.getIsPrefetchInCacheForTesting(prefetchKey));
+                    mActivityTestRule
+                            .getAwBrowserContext()
+                            .getPrefetchManager()
+                            .cancelPrefetch(prefetchKey);
+
+                    // The prefetch for this key should no longer be in the cache after
+                    // cancellation.
+                    Assert.assertFalse(prefetchManager.getIsPrefetchInCacheForTesting(prefetchKey));
+                });
+    }
+
+    @Test
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testSettingConfigsWithInValidValues() {
@@ -283,12 +327,15 @@ public class AwPrefetchTest extends AwParameterizedTest {
 
         Executor callbackExecutor = Runnable::run;
         ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        mActivityTestRule
-                                .getAwBrowserContext()
-                                .getPrefetchManager()
-                                .startPrefetchRequest(
-                                        url, prefetchParameters, callback, callbackExecutor));
+                () -> {
+                    int prefetchKey =
+                            mActivityTestRule
+                                    .getAwBrowserContext()
+                                    .getPrefetchManager()
+                                    .startPrefetchRequest(
+                                            url, prefetchParameters, callback, callbackExecutor);
+                    callback.setPrefetchKey(prefetchKey);
+                });
 
         return callback;
     }
@@ -338,6 +385,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
 
         private final OnStatusUpdatedHelper mOnStatusUpdatedHelper;
         private final OnErrorHelper mOnErrorHelper;
+        private int mPrefetchKey = -1;
 
         public TestAwPrefetchCallback() {
             mOnStatusUpdatedHelper = new OnStatusUpdatedHelper();
@@ -350,6 +398,14 @@ public class AwPrefetchTest extends AwParameterizedTest {
 
         public OnErrorHelper getOnErrorHelper() {
             return mOnErrorHelper;
+        }
+
+        public void setPrefetchKey(int prefetchKey) {
+            mPrefetchKey = prefetchKey;
+        }
+
+        public int getPrefetchKey() {
+            return mPrefetchKey;
         }
 
         @Override

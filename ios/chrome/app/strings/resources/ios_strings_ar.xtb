@@ -288,6 +288,7 @@
 <translation id="2161446265348023004">التبديل إلى نافذة مفتوحة</translation>
 <translation id="2164946989711475905">تسجيل الدخول…</translation>
 <translation id="2175927920773552910">رمز الاستجابة السريعة</translation>
+<translation id="218350106843433823">الملء التلقائي لكلمات المرور ومفاتيح المرور</translation>
 <translation id="2186206192313702726">‏عدسة Google</translation>
 <translation id="219283042927675668">علامات التبويب في المجموعة</translation>
 <translation id="2194856509914051091">ملاحظات مهمّة</translation>
@@ -377,6 +378,7 @@
 <translation id="2511117522375201202">لديك <ph name="NUMBER_OF_PASSWORDS" /> كلمة مرور محتمَل تعرّضها للاختراق، وقد تسبِّب مشاكل أمنية.</translation>
 <translation id="2513103768503127042">ستظهر لك مجموعات علامات التبويب هنا</translation>
 <translation id="251837347827266434">سيتم تسجيل خروجك من الحساب وإغلاق علامات التبويب وحذف بيانات التصفُّح</translation>
+<translation id="2520787026086861736">‏لإيقاف الميزة، يُرجى الانتقال إلى <ph name="BEGIN_LINK" />الملء التلقائي وكلمات المرور<ph name="END_LINK" /> (AutoFill &amp; Passwords)</translation>
 <translation id="2529021024822217800">فتح الكل</translation>
 <translation id="2536991091671391962">‏يمكنك استخدام كلمات المرور المحفوظة على أي جهاز. تُحفظ كلمات المرور في "مدير كلمات المرور في Google" لدى <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">كلمة المرور مخفية</translation>
@@ -651,7 +653,6 @@
 <translation id="385051799172605136">رجوع</translation>
 <translation id="3851938967634752633">سيتم حذف كلمات المرور المحفوظة في <ph name="WEBSITE" /> و<ph name="SECOND_WEBSITE" /> وكلمات المرور في حسابات أخرى يبلغ عددها <ph name="NUMBER_OF_ACCOUNTS" />. لن يتم حذف حساباتك.</translation>
 <translation id="3858860766373142691">الاسم</translation>
-<translation id="3861908220442487587">‏تم حفظ هذا العنوان على هذا الجهاز فقط. لاستخدام هذا العنوان على أجهزتك الأخرى، عليك نقله إلى حسابك على Google‏ (<ph name="USER_EMAIL" />).</translation>
 <translation id="3868495844258915202">‏عرض عناوين URL بالكامل</translation>
 <translation id="3875783148670536197">الاطّلاع على الإرشادات</translation>
 <translation id="3876833929577368454">الطلب في كل مرة</translation>
@@ -672,6 +673,7 @@
 <translation id="3940195383040445971">تتبُّع الأسعار في علامات التبويب</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{إغلاق علامة تبويب واحدة ({COUNT})}zero{إغلاق {COUNT} علامة تبويب}two{إغلاق علامتَي تبويب ({COUNT})}few{إغلاق {COUNT} علامات تبويب}many{إغلاق {COUNT} علامة تبويب}other{إغلاق {COUNT} علامة تبويب}}</translation>
 <translation id="3948600256434252210">يمكنك التمرير سريعًا إلى اليسار للتصفُّح في "وضع التصفّح المتخفي".</translation>
+<translation id="3950479158728806902">إنشاء مفتاح مرور تلقائيًا لتسجيل الدخول بشكل أسرع</translation>
 <translation id="3950820424414687140">تسجيل الدخول</translation>
 <translation id="3955740319737378355">تم</translation>
 <translation id="3955822496205734389">لديك كلمات مرور ضعيفة.</translation>
@@ -696,6 +698,7 @@
 <translation id="4018440314314549819">الملء التلقائي لكلمات المرور المحفوظة</translation>
 <translation id="4021447724486050609">تحديث المتصفِّح</translation>
 <translation id="4021931095789478915">‏إضافة ${url} إلى "قائمة القراءة"</translation>
+<translation id="4026496154402824012">‏لإيقاف هذه الميزة، يُرجى الانتقال إلى <ph name="BEGIN_LINK" />خيارات كلمة المرور<ph name="END_LINK" /> (Password Options)</translation>
 <translation id="4028871427853484857">الحفظ في الحساب…</translation>
 <translation id="4038354071007134711">لا يمكن فتح هذا الملف بأي تطبيق موجود على هذا الجهاز.</translation>
 <translation id="4042870976416480368">البحث في الصفحة</translation>
@@ -829,6 +832,7 @@
 <translation id="4619564267100705184">إثبات هويّتك</translation>
 <translation id="4619615317237390068">علامات التبويب من الأجهزة الأخرى</translation>
 <translation id="4624080227980645783">نافذة جديدة في وضع التصفّح المتخفي</translation>
+<translation id="4627107755957573804">يمكن السماح للمواقع الإلكترونية والتطبيقات بترقية الحسابات الحالية لاستخدام مفاتيح المرور</translation>
 <translation id="4630212057753624203">فقاعة معلوماتية</translation>
 <translation id="4631335160486397366">هناك <ph name="COUNT" /> كلمة مرور مستخدَمة لحساب آخر</translation>
 <translation id="4631890462758052414">علامة تبويب جديدة في وضع التصفُّح المتخفي</translation>
@@ -1123,6 +1127,7 @@
 <translation id="5859715514067755465">التالي</translation>
 <translation id="5860033963881614850">غير مفعّلة</translation>
 <translation id="5860491529813859533">تفعيل</translation>
+<translation id="5868644772996939262">الملء التلقائي لكلمات المرور ومفاتيح المرور</translation>
 <translation id="5869522115854928033">كلمات المرور المحفوظة</translation>
 <translation id="5878899964490256268">‫<ph name="EMAIL" />. تتم إدارة الحساب من خلال مؤسستك.</translation>
 <translation id="5888889603768021126">تم تسجيل الدخول باستخدام</translation>
@@ -1803,7 +1808,6 @@
 <translation id="8679900250380464358">الإضافة إلى "قائمة القراءة"</translation>
 <translation id="8680786875305615692">المساعدة في تحسين الأمان على الإنترنت من أجل الجميع</translation>
 <translation id="8680787084697685621">تفاصيل تسجيل الدخول إلى الحساب قديمة.</translation>
-<translation id="8683563711222071415">نقل العنوان إلى الحساب</translation>
 <translation id="8690752723634292147">تأكيد الحذف</translation>
 <translation id="8692689525339542358">يمكنك حماية متصفّحك من المواقع الإلكترونية وعمليات التنزيل والإضافات الخطيرة.</translation>
 <translation id="8694281486652655615">يؤدي هذا الإجراء إلى عرض هذا العنصر</translation>

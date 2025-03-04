@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -18,6 +19,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator for the What's New page. */
+@NullMarked
 public class WhatsNewCoordinator {
     private final WhatsNewMediator mMediator;
 

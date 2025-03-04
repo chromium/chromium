@@ -1130,7 +1130,6 @@
 <translation id="6325525973963619867">失败</translation>
 <translation id="6327262166342360252">此壁纸是通过 AI 使用以下文字制作的：“<ph name="PROMPT" />”。</translation>
 <translation id="6331191339300272798">自动深色主题</translation>
-<translation id="6335228876613776082">模型下载完毕</translation>
 <translation id="6340526405444716530">个性化</translation>
 <translation id="6348252528297699679">您可依次前往“设置”&gt;“隐私和安全”&gt;“隐私控制”&gt;“位置信息使用权”，关闭位置信息服务。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">用户名和密码</translation>
@@ -1674,7 +1673,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google 相册中的相册</translation>
 <translation id="8775713578693478175">调制解调器 APN</translation>
-<translation id="877735394245039557">正在下载模型</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">此网络可能有强制门户</translation>
 <translation id="8797082062139985406">使用 Google AI 创建名称</translation>

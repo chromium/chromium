@@ -64,6 +64,8 @@
 
 namespace enterprise_signals {
 
+using SettingValue = device_signals::SettingValue;
+
 namespace {
 
 std::optional<std::string> GetEnterpriseProfileId(Profile* profile) {

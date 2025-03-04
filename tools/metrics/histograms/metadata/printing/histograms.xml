@@ -161,7 +161,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.IppDeviceReachable" enum="BooleanSuccess"
-    expires_after="2025-03-22">
+    expires_after="2025-09-22">
   <owner>bmgordon@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
@@ -171,7 +171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.JobDuration.JobCancelled" units="ms"
-    expires_after="2025-06-30">
+    expires_after="2025-08-31">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -181,7 +181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.JobDuration.JobDone" units="ms"
-    expires_after="2025-06-30">
+    expires_after="2025-08-31">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -220,7 +220,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.NearbyNetworkAutomaticPrintersCount"
-    units="printers" expires_after="2025-06-30">
+    units="printers" expires_after="2025-08-31">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -242,7 +242,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.NearbyNetworkPrintersCount" units="printers"
-    expires_after="2025-06-30">
+    expires_after="2025-08-31">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -253,7 +253,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrintDocumentSize" units="KB"
-    expires_after="2025-04-13">
+    expires_after="2025-09-13">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>

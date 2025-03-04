@@ -2156,7 +2156,7 @@ TEST_F(WindowTreeHostManagerTest,
   views::Widget* widget = views::Widget::CreateWindowWithContext(
       nullptr, root2, gfx::Rect(350, 0, 100, 100));
   views::View* view = new views::View();
-  widget->GetContentsView()->AddChildView(view);
+  widget->GetContentsView()->AddChildViewRaw(view);
   view->SetBounds(0, 0, 100, 100);
   widget->Show();
 

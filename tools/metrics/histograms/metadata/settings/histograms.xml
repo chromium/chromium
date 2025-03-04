@@ -375,7 +375,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.PinUnlockSetup" enum="LockScreenProgress"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>antrim@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <owner>cros-lurs@google.com</owner>
@@ -799,6 +799,19 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   </summary>
 </histogram>
 
+<histogram
+    name="Settings.SafetyHub.DisruptiveNotificationRevocations.RevocationResult"
+    enum="DisruptiveNotificationRevocationResult" expires_after="2026-02-26">
+  <owner>olesiamarukhnno@google.com</owner>
+  <owner>antoniosartori@chromium.org</owner>
+  <summary>
+    Tracks results of the disruptive notification feature. Recorded every time
+    the safety hub check runs (once a day). The metric is recorded per each
+    notification content setting. It indicates whether the notification should
+    be revoked, or the reason why it shouldn't be revoked.
+  </summary>
+</histogram>
+
 <histogram name="Settings.SafetyHub.EntryPointImpression"
     enum="SafetyHubEntryPoint" expires_after="2025-07-27">
   <owner>sideyilmaz@chromium.org</owner>
@@ -921,7 +934,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.SafetyHub.PasswordsCard.StatusOnClick"
-    enum="SafetyHubCardState" expires_after="2025-06-29">
+    enum="SafetyHubCardState" expires_after="2025-08-31">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -932,7 +945,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.SafetyHub.SafeBrowsingCard.StatusOnClick"
-    enum="SafetyHubCardState" expires_after="2025-06-29">
+    enum="SafetyHubCardState" expires_after="2025-08-31">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -1013,20 +1026,6 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   </summary>
 </histogram>
 
-<histogram name="Settings.ShowHomeButton2" enum="BooleanEnabled"
-    expires_after="2025-03-09">
-  <owner>mpearson@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Whether or not the home button is enabled in user preferences when a regular
-    profile is loaded.
-
-    To be explicit: not logged when an Incognito profile is opened because that
-    inherits the settings from its parent profile. As such, it's not necessary
-    to log the Incognito profile's settings.
-  </summary>
-</histogram>
-
 <histogram name="Settings.StartSetAsDefault" enum="BooleanHit"
     expires_after="2025-03-09">
   <owner>pmonette@chromium.org</owner>
@@ -1038,7 +1037,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.StartupPageEngineTypes2"
-    enum="OmniboxSearchEngineType" expires_after="2025-06-30">
+    enum="OmniboxSearchEngineType" expires_after="2025-08-31">
   <owner>mpearson@chromium.org</owner>
   <owner>csharp@chromium.org</owner>
   <summary>

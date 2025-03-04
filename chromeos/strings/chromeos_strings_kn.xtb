@@ -503,6 +503,7 @@
 <translation id="3373141842870501561">ಭೂಮಿಯ ಹರಿವಿನ ವಾಲ್‌ಪೇಪರ್</translation>
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> ಪತ್ರವನ್ನು ಹೊಂದಿರುವ <ph name="LETTERS_COLOR" /> ಹಿನ್ನೆಲೆ</translation>
 <translation id="3383623117265110236">ಎಕ್ಸ್‌ಕ್ಲೂಸಿವ್</translation>
+<translation id="3395147534045164351">ಸ್ನ್ಯಾಪ್ ಸ್ಥಳವನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="3404249063913988450">ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="3413935475507503304">ಅಪ್‌ಡೇಟ್ ಪ್ರಕ್ರಿಯೆಯನ್ನು ಮುಂದುವರಿಸಲು, ಮುಂದಿನದು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="3428551088151258685">ಹೊರಾಂಗಣ</translation>
@@ -652,6 +653,7 @@
 <translation id="4113067922640381334">ನೀವೀಗ ಹೊಸ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ವಾಲ್‌ಪೇಪರ್‌ಗಳಿಗೆ<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ಆ್ಯಕ್ಸೆಸ್ ಹೊಂದಿದ್ದೀರಿ</translation>
 <translation id="4117637339509843559">ಕತ್ತಲೆ ಮೋಡ್</translation>
 <translation id="4126551873361000548">10 ಸೆಕೆಂಡ್‌ಗಳವರೆಗೆ ಬ್ಯಾಕ್‌ವರ್ಡ್ ಮಾಡಿ</translation>
+<translation id="4128271910628504223">"ಒಂದು ಮಂಜಿನ ಅರಣ್ಯವನ್ನು ಬರೆಯಿರಿ" ನಂತಹ ಪ್ರಾಂಪ್ಟ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="4130035430755296270">ಇನ್ನಷ್ಟು ಲೇಔಟ್ ಆಯ್ಕೆಗಳಿಗಾಗಿ ಹೋವರ್ ಮಾಡುತ್ತಿರಿ</translation>
 <translation id="4130750466177569591">ನಾನು ಒಪ್ಪುತ್ತೇನೆ</translation>
 <translation id="4131410914670010031">ಕಪ್ಪು ಮತ್ತು ಬಿಳುಪು</translation>
@@ -859,6 +861,7 @@
 <translation id="5050042263972837708">ಗುಂಪು ಹೆಸರು</translation>
 <translation id="5051044138948155788">ತೆಗೆದುಹಾಕಲು ಇದೊಂದೇ ಪುಟ ಉಳಿದಿದೆ. ಇದು ನಿಮ್ಮನ್ನು ಸ್ಕ್ಯಾನಿಂಗ್ ಪ್ರಾರಂಭದ ಸ್ಕ್ರೀನ್‌ಗೆ ಕರೆದೊಯ್ಯುತ್ತದೆ.</translation>
 <translation id="5053233795640754917">ವಿರಾಮಗೊಳಿಸಿ</translation>
+<translation id="5056587122125565772">ಚಿತ್ರವನ್ನು ರಚಿಸಿ</translation>
 <translation id="5078711626843651677">ಸ್ಪೀಕರ್ ಲೇಬಲಿಂಗ್ ಪೂರ್ಣಗೊಳ್ಳುವವರೆಗೆ ಧ್ವನಿ ಮಾಡಲ್‌ಗಳನ್ನು ಸಾಧನದಲ್ಲಿ ತಾತ್ಕಾಲಿಕವಾಗಿ ಸಂಗ್ರಹಿಸಲಾಗುತ್ತದೆ. ನೀವು ಇದನ್ನು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ಆಫ್ ಮಾಡಬಹುದು.</translation>
 <translation id="5078983345702708852">ಭವಿಷ್ಯದ</translation>
 <translation id="5087864757604726239">ಹಿಂದೆ</translation>
@@ -1130,7 +1133,6 @@
 <translation id="6325525973963619867">ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="6327262166342360252">ಈ ವಾಲ್‌ಪೇಪರ್ ಅನ್ನು AI ಮೂಲಕ ಈ ಕೆಳಗಿನ ಪಠ್ಯವನ್ನು ಬಳಸಿಕೊಂಡು ರಚಿಸಲಾಗಿದೆ: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">ಸ್ವಯಂಚಾಲಿತ ಡಾರ್ಕ್‌ ಥೀಮ್</translation>
-<translation id="6335228876613776082">ಮಾಡಲ್ ಡೌನ್‌ಲೋಡ್ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="6340526405444716530">ವೈಯಕ್ತೀಕರಣ</translation>
 <translation id="6348252528297699679">ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; ಗೌಪ್ಯತೆ ಮತ್ತು ಭದ್ರತೆ &gt; ಗೌಪ್ಯತೆ ನಿಯಂತ್ರಣಗಳು &gt; ಸ್ಥಳದ ಆ್ಯಕ್ಸೆಸ್‌ನಲ್ಲಿ ಸ್ಥಳವನ್ನು ಆಫ್ ಮಾಡಬಹುದು. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">ಬಳಕೆದಾರರ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್</translation>
@@ -1674,7 +1676,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ಆಲ್ಬಮ್‌</translation>
 <translation id="8775713578693478175">ಮೋಡೆಮ್ APN</translation>
-<translation id="877735394245039557">ಮಾಡಲ್ ಡೌನ್‌ಲೋಡ್ ಪ್ರಗತಿಯಲ್ಲಿದೆ</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">ಈ ನೆಟ್‌ವರ್ಕ್ ಕ್ಯಾಪ್ಟಿವ್ ಪೋರ್ಟಲ್ ಹೊಂದಿರಬಹುದು</translation>
 <translation id="8797082062139985406">Google AI ಮೂಲಕ ಹೆಸರನ್ನು ರಚಿಸಿ</translation>

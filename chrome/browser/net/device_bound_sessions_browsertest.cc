@@ -50,10 +50,12 @@ class DeviceBoundSessionAccessObserver : public content::WebContentsObserver {
 class DeviceBoundSessionBrowserTest : public InProcessBrowserTest {
  public:
   DeviceBoundSessionBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {net::features::kDeviceBoundSessions,
-         unexportable_keys::
-             kEnableBoundSessionCredentialsSoftwareKeysForManualTesting},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{net::features::kDeviceBoundSessions,
+          {{"ForceEnableForTesting", "true"}}},
+         {unexportable_keys::
+              kEnableBoundSessionCredentialsSoftwareKeysForManualTesting,
+          {}}},
         {});
 
     EXPECT_TRUE(embedded_test_server()->InitializeAndListen());

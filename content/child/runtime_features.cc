@@ -346,6 +346,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
 #endif
           {"CompressionDictionaryTransport",
            raw_ref(network::features::kCompressionDictionaryTransport)},
+          {"ClipboardChangeEvent", raw_ref(features::kClipboardChangeEvent)},
           {"CompressionDictionaryTransportBackend",
            raw_ref(network::features::kCompressionDictionaryTransportBackend)},
           {"CookieDeprecationFacilitatedTesting",

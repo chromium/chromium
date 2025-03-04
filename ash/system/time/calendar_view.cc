@@ -536,7 +536,7 @@ CalendarView::CalendarView(bool use_glanceables_container_style)
                           kContentHorizontalPadding - kChevronPadding)));
     tri_view->AddView(TriView::Container::START, CreateMonthHeaderContainer());
     tri_view->AddView(TriView::Container::END, CreateButtonContainer());
-    AddChildView(tri_view);
+    AddChildViewRaw(tri_view);
   }
 
   // Add month header.
@@ -669,7 +669,7 @@ views::View* CalendarView::CreateCalendarHeaderRow() {
   calendar_header_view->SetContainerBorder(
       TriView::Container::START, views::CreateEmptyBorder(kHeaderLabelBorder));
   calendar_header_view->SetMinHeight(kHeaderViewHeight);
-  return AddChildView(calendar_header_view);
+  return AddChildViewRaw(calendar_header_view);
 }
 
 void CalendarView::CreateCalendarTitleRow() {

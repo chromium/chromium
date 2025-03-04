@@ -1087,7 +1087,7 @@ const char kNotificationSettingsMenuItemDescription[] =
     "Displays the menu item for the notification controls inside the chrome "
     "settings UI.";
 
-const char kRefactorToolbarsSizeName[] = "Refactor toolbars State";
+const char kRefactorToolbarsSizeName[] = "Refactor toolbars size";
 const char kRefactorToolbarsSizeDescription[] =
     "When enabled, the toolbars size does not use broadcaster but observers.";
 

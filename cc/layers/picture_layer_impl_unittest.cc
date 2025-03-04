@@ -5996,7 +5996,7 @@ TEST_F(LegacySWPictureLayerImplTest, CompositedImageIgnoreIdealContentsScale) {
                                     suggested_ideal_contents_scale,
                                     device_scale_factor, page_scale_factor);
   EXPECT_EQ(1.f, active_layer->tilings()->tiling_at(0)->contents_scale_key());
-  active_layer->set_visible_layer_rect(layer_rect);
+  active_layer->SetVisibleLayerRectForTesting(layer_rect);
 
   // Create resources for the tiles.
   host_impl()->tile_manager()->InitializeTilesWithResourcesForTesting(
@@ -6383,13 +6383,13 @@ TEST_F(LegacySWPictureLayerImplTest, AnimatedImages) {
   // Make only the first image visible and verify that only this image is
   // animated.
   gfx::Rect visible_rect(0, 0, 300, 300);
-  pending_layer()->set_visible_layer_rect(visible_rect);
+  pending_layer()->SetVisibleLayerRectForTesting(visible_rect);
   EXPECT_TRUE(pending_layer()->ShouldAnimate(image1.stable_id()));
   EXPECT_FALSE(pending_layer()->ShouldAnimate(image2.stable_id()));
 
   // Now activate and make sure the active layer is registered as well.
   ActivateTree();
-  active_layer()->set_visible_layer_rect(visible_rect);
+  active_layer()->SetVisibleLayerRectForTesting(visible_rect);
   EXPECT_EQ(controller->GetDriversForTesting(image1.stable_id())
                 .count(active_layer()),
             1u);

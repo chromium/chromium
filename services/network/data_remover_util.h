@@ -5,28 +5,31 @@
 #ifndef SERVICES_NETWORK_DATA_REMOVER_UTIL_H_
 #define SERVICES_NETWORK_DATA_REMOVER_UTIL_H_
 
-#include <set>
 #include <string>
+#include <vector>
 
+#include "base/functional/callback_forward.h"
+#include "net/base/does_url_match_filter.h"
 #include "services/network/public/mojom/clear_data_filter.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace network {
 
-// A utility function to determine if a given |url| must be removed for a
-// dataset.
-// `filter_type` indicates if a given match should be keeped / deleted.
-// `origins` set of url::Origins to match with
-// `domains` set of strings representing registrable domains to match with
-// Returns true if |url| matches any of the origins or domains, and
-// filter_type == DELETE_MATCHES, or |url| doesn't match any of the origins or
-// domains and filter_type == KEEP_MATCHES.
+// Convert the mojom::ClearDataFilter_Type enum to the net::UrlFilterType enum
+// used by net::DoesUrlMatchFilter().
 COMPONENT_EXPORT(NETWORK_SERVICE)
-bool DoesUrlMatchFilter(mojom::ClearDataFilter_Type filter_type,
-                        const std::set<url::Origin>& origins,
-                        const std::set<std::string>& domains,
-                        const GURL& url);
+net::UrlFilterType ConvertClearDataFilterType(
+    mojom::ClearDataFilter_Type filter_type);
+
+// Returns a base::RepeatingClosure which takes a GURL as an argument returns
+// true if net::DoesURLMatchFilter() returns true with the supplied conditions,
+// and false otherwise.
+COMPONENT_EXPORT(NETWORK_SERVICE)
+base::RepeatingCallback<bool(const GURL&)> BindDoesUrlMatchFilter(
+    mojom::ClearDataFilter_Type filter_type,
+    const std::vector<url::Origin>& origins,
+    const std::vector<std::string>& domains);
 
 }  // namespace network
 

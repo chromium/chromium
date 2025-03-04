@@ -320,6 +320,7 @@
 <translation id="5579324208890605088">Produciuse un erro de inicio do sistema: Executa o instalador como un usuario normal, non como persoa administradora.</translation>
 <translation id="5596627076506792578">Máis opcións</translation>
 <translation id="5605834417512968703">Selecciona o que queiras atopar coa busca de imaxes ou preme Escape para saír da función</translation>
+<translation id="5618818588972826921">Selecciona calquera texto ou imaxe que queiras procurar mediante a busca de imaxes ou preme Escape para saír da función</translation>
 <translation id="5623402015214259806">{0,plural, =0{Hai unha actualización de Chromium dispoñible}=1{Hai unha actualización de Chromium dispoñible}other{Hai unha actualización de Chromium que leva dispoñible # días}}</translation>
 <translation id="5643865575100044307">Eliminar sempre do dispositivo os datos dos sitios cando peches Chromium</translation>
 <translation id="5653831366781983928">Reinicia Chromium agora</translation>
@@ -595,5 +596,6 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="983803489796659991">Produciuse un erro na instalación porque o servidor de actualizacións non ten ningún dato de hash para a aplicación.</translation>
 <translation id="985498048907240953">Usar Chromium sen ningunha conta</translation>
 <translation id="985602178874221306">Os autores de Chromium</translation>
+<translation id="989970834842471429">Selecciona calquera texto ou imaxe que queiras procurar mediante a busca de imaxes</translation>
 <translation id="992780518932311116">Para usar a túa localización, concédelle acceso a Chromium na <ph name="BEGIN_LINK" />configuración do sistema<ph name="END_LINK" /></translation>
 </translationbundle>

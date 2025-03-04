@@ -56,7 +56,7 @@ suite('Images', () => {
             '#' + IMAGES_TOGGLE_BUTTON_ID);
     assertTrue(!!imagesToggleButton);
     if (!chrome.readingMode.imagesEnabled) {
-      imagesToggleButton!.click();
+      imagesToggleButton.click();
       return microtasksFinished();
     }
   });

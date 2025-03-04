@@ -1130,7 +1130,6 @@
 <translation id="6325525973963619867">Ni uspelo</translation>
 <translation id="6327262166342360252">To zaslonsko ozadje je bilo ustvarjeno z umetno inteligenco s tem besedilom: »<ph name="PROMPT" />«.</translation>
 <translation id="6331191339300272798">Samodejna temna tema</translation>
-<translation id="6335228876613776082">Prenos modela je končan</translation>
 <translation id="6340526405444716530">Prilagoditev</translation>
 <translation id="6348252528297699679">Lokacijo lahko izklopite v Nastavitve &gt; Zasebnost in varnost &gt; Nastavitve zasebnosti &gt; Dostop do lokacije. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Uporabniško ime in geslo</translation>
@@ -1674,7 +1673,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album v Googlu Foto</translation>
 <translation id="8775713578693478175">APN modema</translation>
-<translation id="877735394245039557">Poteka prenos modela</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">To omrežje ima morda prestrezni portal.</translation>
 <translation id="8797082062139985406">Ustvarjanje imena z Googlovo umetno inteligenco</translation>

@@ -3,6 +3,7 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/prefs",
   "+third_party/jni_zero",
+  "+components/regional_capabilities/access",
 ]
 
 specific_include_rules = {

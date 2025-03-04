@@ -1196,7 +1196,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_room_room_runtime_android_java") {
-    aar_path = "cipd/libs/androidx_room_room_runtime_android/room-runtime-android-2.7.0-SNAPSHOT.aar"
+    aar_path = "cipd/libs/androidx_room_room_runtime_android/room-runtime-android-2.8.0-SNAPSHOT.aar"
     info_path = "cipd/libs/androidx_room_room_runtime_android/androidx_room_room_runtime_android.info"
     enable_bytecode_checks = false
     deps = [
@@ -1237,7 +1237,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_sqlite_sqlite_android_java") {
-    aar_path = "cipd/libs/androidx_sqlite_sqlite_android/sqlite-android-2.5.0-SNAPSHOT.aar"
+    aar_path = "cipd/libs/androidx_sqlite_sqlite_android/sqlite-android-2.6.0-SNAPSHOT.aar"
     info_path = "cipd/libs/androidx_sqlite_sqlite_android/androidx_sqlite_sqlite_android.info"
     enable_bytecode_checks = false
     deps = [
@@ -3102,7 +3102,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_prebuilt("androidx_room_room_common_jvm_java") {
-    jar_path = "cipd/libs/androidx_room_room_common_jvm/room-common-jvm-2.7.0-SNAPSHOT.jar"
+    jar_path = "cipd/libs/androidx_room_room_common_jvm/room-common-jvm-2.8.0-SNAPSHOT.jar"
     output_name = "androidx_room_room_common_jvm"
     supports_android = true
     enable_bytecode_checks = false
@@ -3184,7 +3184,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_sqlite_sqlite_framework_android_java") {
-    aar_path = "cipd/libs/androidx_sqlite_sqlite_framework_android/sqlite-framework-android-2.5.0-SNAPSHOT.aar"
+    aar_path = "cipd/libs/androidx_sqlite_sqlite_framework_android/sqlite-framework-android-2.6.0-SNAPSHOT.aar"
     info_path = "cipd/libs/androidx_sqlite_sqlite_framework_android/androidx_sqlite_sqlite_framework_android.info"
     enable_bytecode_checks = false
 

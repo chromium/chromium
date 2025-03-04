@@ -184,6 +184,7 @@
 <translation id="3628308229821498208">የተጠቆሙ ፍለጋዎች</translation>
 <translation id="3658847490588580244">የነባሪ አሳሽ የግርጌ ሉህ</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{በ<ph name="RWS_OWNER" /> ጣቢያ ቡድን ውስጥ በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ የሚመለከት <ph name="RWS_MEMBERS_COUNT" /> ጣቢያ}one{በ<ph name="RWS_OWNER" /> ጣቢያ ቡድን ውስጥ በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ የሚመለከት <ph name="RWS_MEMBERS_COUNT" /> ጣቢያ}other{በ<ph name="RWS_OWNER" /> ጣቢያዎች ቡድን ውስጥ በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ የሚመለከቱ <ph name="RWS_MEMBERS_COUNT" /> ጣቢያዎች}}</translation>
+<translation id="3676777756440746804">ጣቢያዎች ስለ እርስዎ ያስቀመጡትን መረጃ ለመጠቀም ከመጠየቅ ታግደዋል</translation>
 <translation id="3697164069658504920">ሲበራ፣ ጣቢያዎች የUSB መሳሪያዎችን ለመጠቀም ሊጠይቁ ይችላሉ። ሲጠፋ፣ ጣቢያዎች የUSB መሳሪያዎችን መጠቀም አይችሉም።</translation>
 <translation id="3707034683772193706">እርስዎ የሚጎበኙት ጣቢያ በዋነኛነት እርስዎ ቦት አለመሆንዎን ለማረጋገጥ በChrome ትንሽ መጠን ያለው መረጃ ሊያስቀምጥ ይችላል</translation>
 <translation id="3709818294139939629">የተወገደ የጣቢያው የፋይል መዳረሻ</translation>
@@ -208,9 +209,11 @@
 <translation id="3922092564198021702">በስልክዎ ላይ ቅንብሮችን ይክፈቱ</translation>
 <translation id="3933121352599513978">ያልተፈለጉ ጥያቄዎችን ሰብስብ (የሚመከር)</translation>
 <translation id="3955193568934677022">ጥበቃ የሚደረግበትን ይዘት እንዲያጫውቱ ለጣቢያዎች ፍቀድ (የሚመከር)</translation>
+<translation id="3965467402665811906">ጣቢያዎች ስለ እርስዎ ያስቀመጡትን መረጃ ለመጠቀም ሊጠይቁዎት ይችላሉ</translation>
 <translation id="3967822245660637423">ማውረድ ተጠናቅቋል</translation>
 <translation id="3987993985790029246">አገናኝ ቅዳ</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
+<translation id="3992308058851451478"><ph name="SITE" /> የእርስዎን መረጃ በሚያስሱ ጊዜ መጠቀም ይችላል</translation>
 <translation id="3992684624889376114">ስለዚህ ገፅ</translation>
 <translation id="4002066346123236978">ርዕስ</translation>
 <translation id="4046123991198612571">ቀጣይ ትራክ</translation>
@@ -263,6 +266,7 @@
 <translation id="4883854917563148705">የሚተዳደሩ ቅንብሮች ዳግም ሊጀመሩ አይችሉም</translation>
 <translation id="4887024562049524730">ጣቢያዎች የእርስዎን የምናባዊ እውነታ መሣሪያ እና ውሂብ እንዲጠቀሙ ፈቃድ ከማግኘታቸው በፊት ይጠይቁ (የሚመከር)</translation>
 <translation id="4936863036653376783">በሁሉም መሣሪያዎችዎ ላይ ቡድኖችዎን በትር ቡድን ክፍሉ ውስጥ ያገኛሉ</translation>
+<translation id="4945443401464700059"><ph name="SITE" /> በሚከተለው ላይ መረጃዎን ከመጠቀም ታግዷል</translation>
 <translation id="4953688446973710931">ሲበራ፣ ጣቢያዎች ብዙ ፋይሎችን በራስ ሰር እንዲያወርዱ መጠየቅ ይችላሉ። ሲጠፋ፣ ጣቢያዎች ብዙ ፋይሎችን በራስ-ሰር ማውረድ አይችሉም።</translation>
 <translation id="4962975101802056554">ሁሉንም የመሣሪያ ፈቃዶች ይሻሩ</translation>
 <translation id="497421865427891073">ወደ ፊት ሂድ</translation>
@@ -532,9 +536,11 @@
 <translation id="851751545965956758">ጣቢያዎች ከመሣሪያዎች ጋር እንዳይገናኙ አግድ</translation>
 <translation id="8525306231823319788">ሙሉ ማያ ገፅ</translation>
 <translation id="8541410041357371550">ይህ ጣቢያ ይበልጥ አግባብነት ያላቸው ማስታወቂያዎችን ለእርስዎ ለማሳየት የእርስዎን የማስታወቂያ ርዕሶች ከChrome ያገኛል</translation>
+<translation id="854876774113449365">የሚጎበኟቸው ጣቢያዎች ከሌሎች ጣቢያዎች ይዘት መክተት ይችላሉ፣ ለምሳሌ ምስሎች፣ ማስታወቂያዎች እና ጽሑፍ። እነዚህ ሌሎች ጣቢያዎች እርስዎ ጣቢያውን በሚያስሱበት ጊዜ ስለ እርስዎ ያስቀመጡትን መረጃ ለመጠቀም ፈቃድ መጠየቅ ይችላሉ። <ph name="BEGIN_LINK" />ስለተከተተ ይዘት የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">ጥያቄዎችን እንዴት ማሳየት እንደሚቻል</translation>
 <translation id="8558480467877843976">አሁን በሚያስሱበት ወይም በመልዕክቶች ውስጥ አገናኞችን መታ በሚያደርጉበት በማንኛውም ጊዜ Chromeን እና ሌሎች መተግበሪያዎችን መጠቀም ይችላሉ።</translation>
 <translation id="857943718398505171">ተፈቅዷል (የሚመከር)</translation>
+<translation id="8593422116412089302">በሚበራበት ጊዜ፣ ጣቢያዎች ስለ እርስዎ ያስቀመጡትን መረጃ ለመጠቀም ሊጠይቁ ይችላሉ። በሚጠፋበት ጊዜ፣ ጣቢያዎች ስለ እርስዎ ያስቀመጡትን መረጃ እንዲጠቀሙ ሊጠይቁዎት አይችሉም።</translation>
 <translation id="8609465669617005112">ወደላይ አውጣ</translation>
 <translation id="8617611086246832542">ሲበራ፣ የድር ጣቢያዎች የዴስክቶፕ እይታ ይታያል። ሲጠፋ፣ የድር ጣቢያዎች የሞባይል እይታ ይታያል።</translation>
 <translation id="8670078035093027626">የነባሪ አሳሽ የግርጌ ሉህ በሙሉ ቁመት ላይ ተከፍቷል</translation>

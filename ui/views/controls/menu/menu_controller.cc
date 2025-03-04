@@ -1520,6 +1520,15 @@ void MenuController::OnWidgetDestroying(Widget* widget) {
   ExitMenu();
 }
 
+void MenuController::OnWidgetBoundsChanged(Widget* widget,
+                                           const gfx::Rect& new_bounds) {
+  DCHECK_EQ(owner_, widget);
+
+  // Close all open menus when the browser window is moved or resized (e.g. due
+  // to moving the window with the keyboard).
+  Cancel(ExitType::kAll);
+}
+
 bool MenuController::IsCancelAllTimerRunningForTest() {
   return cancel_all_timer_.IsRunning();
 }

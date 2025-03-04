@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">ଏହି ସାଇଟଗୁଡ଼ିକର ଅନୁବାଦ କରିବାକୁ ଅଫର୍ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="1145536944570833626">ବିଦ୍ୟମାନ ଥିବା ଡାଟାକୁ ଡିଲିଟ୍ କରନ୍ତୁ।</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chromeରେ ଖୋଲିବ। ଜାରି ରଖି, ଆପଣ <ph name="BEGIN_LINK1" />Google ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK1" /> ଏବଂ <ph name="BEGIN_LINK2" />Google Chrome ଏବଂ ChromeOSର ଅତିରିକ୍ତ ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK2" />ରେ ସମ୍ମତ ହୁଅନ୍ତି।</translation>
+<translation id="1154555449933432029">Google Password Managerରେ ଆପଣଙ୍କର ପାସୱାର୍ଡ ସେଭ କରାଯାଇନାହିଁ।</translation>
 <translation id="115483310321669804"><ph name="PASSWORD" /> ପାସୱାର୍ଡ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1173894706177603556">ରିନେମ୍ କରନ୍ତୁ</translation>
 <translation id="1174479719160874822">ସ୍କ୍ରିନ ଛୋଟ ଥିଲେ Chrome ମୋବାଇଲ ସାଇଟ ପାଇଁ ଅନୁରୋଧ କରିବ</translation>
@@ -1366,10 +1367,12 @@
 <translation id="7224097611345298931">Chrome ଏବଂ <ph name="CHROME_CHANNEL" /> ପାଇଁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଇଥିବା ସମସ୍ତ ପାସୱାର୍ଡକୁ ମର୍ଜ କରାଯାଇଛି। ଆପଣ ଉଭୟ ଆପ୍ସରେ ସେଭ କରାଯାଇଥିବା ଆପଣଙ୍କର ସମସ୍ତ ପାସୱାର୍ଡକୁ ଅଟୋଫିଲ କରିପାରିବେ।</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1ଟି ଡାଉନଲୋଡ୍ ବାକି ଅଛି}other{#ଟି ଡାଉନଲୋଡ୍ ବାକି ଅଛି}}</translation>
 <translation id="7230064152164845085">ଇନକଗ୍ନିଟୋକୁ ସୁଇଚ କରନ୍ତୁ</translation>
+<translation id="7237724030342645845">Google Password Manager କାମ କରିବା ବନ୍ଦ କରିଦେଇଛି</translation>
 <translation id="72415438529550637">ପାସୱାର୍ଡ ପରାମର୍ଶକୁ ବନ୍ଦ କରାଯାଇଛି।</translation>
 <translation id="7260367682327802201">ଆପଣଙ୍କ Android ଡିଭାଇସ ଏକ ସମାନ ସେଟିଂ ଅନ୍ତର୍ଭୁକ୍ତ କରିପାରେ। ଯଦି ବିଜ୍ଞାପନ ପରିମାପକୁ Chromeରେ ଓ ଆପଣଙ୍କ Android ଡିଭାଇସରେ ଚାଲୁ କରାଯାଏ, ତେବେ ଗୋଟିଏ କମ୍ପାନୀ ଆପଣ ଭିଜିଟ କରୁଥିବା ସମସ୍ତ ୱେବସାଇଟ ଏବଂ ଆପଣ ବ୍ୟବହାର କରୁଥିବା ଆପ୍ସରେ ଏକ ବିଜ୍ଞାପନର ପ୍ରଭାବ ମାପିବା ପାଇଁ ସକ୍ଷମ ହୋଇପାରେ।</translation>
 <translation id="727288900855680735"><ph name="ORIGIN" />ରେ <ph name="ONE_TIME_CODE" /> ଦାଖଲ କରିବେ?</translation>
 <translation id="7274013316676448362">ବ୍ଲକ୍ କରାଯାଇଥିବା ସାଇଟ୍</translation>
+<translation id="7276868533747677875">ଯଦି ଆପଣ ପୂର୍ବରୁ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଏକ୍ସପୋର୍ଟ କରିଛନ୍ତି, ତେବେ ଆପଣଙ୍କ ଡିଭାଇସରେ ଏକ CSV ଫାଇଲ ଖୋଜନ୍ତୁ ଏବଂ ସେଗୁଡ଼ିକୁ ଆପଣଙ୍କର ପସନ୍ଦର password managerକୁ ଇମ୍ପୋର୍ଟ କରନ୍ତୁ।</translation>
 <translation id="7289049772085228972">ଆପଣଙ୍କ ପାଖରେ Chromeର ସବୁଠାରୁ ଶକ୍ତିଶାଳୀ ସୁରକ୍ଷା ଅଛି</translation>
 <translation id="7289303553784750393">ଯଦି ଆପଣ ଅନଲାଇନ ଅଛନ୍ତି କିନ୍ତୁ ଏହି ସମସ୍ୟା ଲାଗିରହିଛି, ତେବେ <ph name="SITE_ETLD_PLUS_ONE" />ରେ ଜାରି ରଖିବା ପାଇଁ ଆପଣ ଅନ୍ୟ ଉପାୟଗୁଡ଼ିକୁ ବ୍ୟବହାର କରି ଦେଖିପାରିବେ।</translation>
 <translation id="7290209999329137901">ଯାହା ଉପଲବ୍ଧ ନାହିଁ ତା’କୁ ରିନେମ୍ କରନ୍ତୁ</translation>
@@ -1544,6 +1547,7 @@
 <translation id="8027395186860110042">ପାସୱାର୍ଡଗୁଡ଼ିକ କାମ କରିବା ଶୀଘ୍ର ବନ୍ଦ ହୋଇଯାଇପାରେ</translation>
 <translation id="8027863900915310177">କେଉଁଠାରେ ଡାଉନଲୋଡ୍ କରିବେ ତାହା ବାଛନ୍ତୁ</translation>
 <translation id="8030852056903932865">ଅନୁମୋଦନ କରନ୍ତୁ</translation>
+<translation id="8031805944372049238">Google Password Manager ସାହାଯ୍ୟରେ ପାସୱାର୍ଡ ସେଭ କରିବା ଏବଂ ବ୍ୟବହାର କରିବା ଆରମ୍ଭ କରିବାକୁ, Google Play ସେବାଗୁଡ଼ିକୁ ଅପଡେଟ କରନ୍ତୁ।</translation>
 <translation id="8032569120109842252">ଅନୁସରଣ କରୁଛନ୍ତି</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> ଦିନ ବାକି ଅଛି</translation>
 <translation id="8037801708772278989">ଏବେ ଯାଞ୍ଚ କରାଯାଇଛି</translation>

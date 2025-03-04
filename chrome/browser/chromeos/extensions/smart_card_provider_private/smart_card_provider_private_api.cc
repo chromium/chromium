@@ -441,6 +441,13 @@ void SmartCardProviderPrivateAPI::OnMojoConnectionDisconnected() {
         FROM_HERE, disconnect_observer_);
   }
 
+  // Break the watcher pipe.
+  auto it = connection_watchers_per_receiver_.find(
+      connection_receivers_.current_receiver());
+  if (it != connection_watchers_per_receiver_.end()) {
+    connection_watchers_.Remove(it->second);
+  }
+
   auto callback =
       base::BindOnce(&SmartCardProviderPrivateAPI::OnScardHandleDisconnected,
                      weak_ptr_factory_.GetWeakPtr());
@@ -1278,6 +1285,8 @@ void SmartCardProviderPrivateAPI::Disconnect(
   const auto& [context_id, handle] = connection_receivers_.current_context();
   CHECK(context_id);
   CHECK(handle);
+
+  NotifyConnectionUsed();
 
   // Consider the handle no longer valid irrespective of whether the Disconnect
   // PC/SC call actually succeeds in the end as any PC/SC failure of this call

@@ -749,6 +749,11 @@ inline constexpr char kYoutubeIncognitoHasBeenShown[] =
 // A dictionary to store reminders that the user has set.
 inline constexpr char kReminderNotifications[] = "ios.notifications.reminders";
 
+// A bool checking that keys used to add multi-profile support to widgets are
+// set.
+inline constexpr char kMigrateWidgetsPrefs[] =
+    "ios.widgets.update_to_support_mim";
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_

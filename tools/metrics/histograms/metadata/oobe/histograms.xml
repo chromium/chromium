@@ -782,7 +782,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.GaiaScreen.PasswordlessLoginRequests" enum="Boolean"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>yunkez@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>

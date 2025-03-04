@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">Nu oferi traducerea acestor site-uri</translation>
 <translation id="1145536944570833626">Șterge datele existente.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> se va deschide în Chrome. Dacă alegi să continui, ești de acord cu <ph name="BEGIN_LINK1" />Termenii și condițiile Google<ph name="END_LINK1" /> și cu <ph name="BEGIN_LINK2" />Termenii și condițiile suplimentare pentru Google Chrome și ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="1154555449933432029">Nu ai parole salvate în Managerul de parole Google.</translation>
 <translation id="115483310321669804">Folosește parola <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Redenumește</translation>
 <translation id="1174479719160874822">Chrome va solicita site-ul mobil când ecranul este îngust</translation>
@@ -1366,10 +1367,12 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7224097611345298931">Toate parolele salvate numai pe acest dispozitiv pentru Chrome și <ph name="CHROME_CHANNEL" /> au fost îmbinate. Poți în continuare să completezi automat toate parolele salvate în ambele aplicații.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{O descărcare în așteptare}few{# descărcări în așteptare}other{# de descărcări în așteptare}}</translation>
 <translation id="7230064152164845085">Intră în modul incognito</translation>
+<translation id="7237724030342645845">Managerul de parole Google nu mai funcționează</translation>
 <translation id="72415438529550637">Sugestia de parolă se închide.</translation>
 <translation id="7260367682327802201">Dispozitivul tău Android poate avea o setare similară. În cazul în care cuantificarea anunțurilor este activată în Chrome și pe dispozitivul Android, o companie poate măsura eficiența unui anunț pe site-urile pe care le accesezi și în aplicațiile pe care le folosești.</translation>
 <translation id="727288900855680735">Trimiți <ph name="ONE_TIME_CODE" /> către <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Site blocat</translation>
+<translation id="7276868533747677875">Dacă ai exportat anterior parole, caută un fișier CSV pe dispozitiv și importă-l în managerul de parole preferat.</translation>
 <translation id="7289049772085228972">Ai cea mai puternică securitate Chrome</translation>
 <translation id="7289303553784750393">Dacă ești online, dar problema persistă, poți încerca alte metode pentru a accesa <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Nu se poate redenumi</translation>
@@ -1544,6 +1547,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="8027395186860110042">În curând, este posibil ca parolele să nu mai funcționeze</translation>
 <translation id="8027863900915310177">Alege unde vrei să descarci</translation>
 <translation id="8030852056903932865">Aprobă</translation>
+<translation id="8031805944372049238">Pentru a începe să salvezi și să folosești parole cu Managerul de parole Google, actualizează serviciile Google Play.</translation>
 <translation id="8032569120109842252">Urmărești</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> zile rămase</translation>
 <translation id="8037801708772278989">A rulat adineauri</translation>

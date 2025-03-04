@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">Non ofrecer a opción de traducir estes sitios</translation>
 <translation id="1145536944570833626">Elimina os datos existentes.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> abrirase en Chrome. Ao continuar, aceptas as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" />, así como as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Google Chrome e Chrome OS<ph name="END_LINK2" />.</translation>
+<translation id="1154555449933432029">Non tes ningún contrasinal gardado no xestor de contrasinais de Google.</translation>
 <translation id="115483310321669804">Usar contrasinal <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Cambiar o nome</translation>
 <translation id="1174479719160874822">Chrome solicitará abrir o sitio para móbiles cando a pantalla sexa estreita</translation>
@@ -1366,10 +1367,12 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7224097611345298931">Combináronse todos os contrasinais gardados só neste dispositivo para Chrome e <ph name="CHROME_CHANNEL" />. Podes seguir autocompletando os contrasinais gardados en ambas as dúas aplicacións.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 descarga pendente}other{# descargas pendentes}}</translation>
 <translation id="7230064152164845085">Cambiar ao modo de incógnito</translation>
+<translation id="7237724030342645845">O xestor de contrasinais de Google deixou de funcionar</translation>
 <translation id="72415438529550637">A suxestión de contrasinal está pechada.</translation>
 <translation id="7260367682327802201">O teu dispositivo Android pode incluír unha opción de configuración similar. Se activas a medición de anuncios en Chrome e no teu dispositivo Android, as empresas poderán medir a eficacia dos anuncios nos sitios web que visites e nas aplicacións que uses.</translation>
 <translation id="727288900855680735">Queres enviar <ph name="ONE_TIME_CODE" /> a <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Bloqueouse o sitio</translation>
+<translation id="7276868533747677875">Se anteriormente exportaches contrasinais, busca un ficheiro CVS no teu dispositivo e impórtao ao teu xestor de contrasinais preferido.</translation>
 <translation id="7289049772085228972">Contas coa máxima seguranza de Chrome</translation>
 <translation id="7289303553784750393">Se estás en liña, pero o problema persiste, podes probar outras maneiras de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Non está dispoñible a opción de cambiar o nome</translation>
@@ -1544,6 +1547,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8027395186860110042">Os contrasinais poden deixar de funcionar en breve</translation>
 <translation id="8027863900915310177">Escolle onde queres gardar o ficheiro</translation>
 <translation id="8030852056903932865">Aprobar</translation>
+<translation id="8031805944372049238">Para comezar a gardar e usar contrasinais co xestor de contrasinais de Google, actualiza os servizos de Google Play.</translation>
 <translation id="8032569120109842252">Seguindo</translation>
 <translation id="8037750541064988519">Quedan <ph name="DAYS" /> días</translation>
 <translation id="8037801708772278989">A comprobación realizouse agora mesmo</translation>

@@ -897,7 +897,7 @@ TEST_F(KeyboardTest, FocusWithArcOverlay) {
                       .SetBounds(gfx::Rect(200, 200))
                       .BuildOwnedByNativeWidget();
   views::Textfield* textfield1 = new views::Textfield();
-  widget1->GetContentsView()->AddChildView(textfield1);
+  widget1->GetContentsView()->AddChildViewRaw(textfield1);
   textfield1->SetBounds(0, 0, 100, 100);
 
   auto* widget2 = ash::TestWidgetBuilder()

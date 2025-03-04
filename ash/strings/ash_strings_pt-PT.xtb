@@ -22,6 +22,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1058009965971887428">Enviar feedback</translation>
 <translation id="1059120031266247284">Partilhados consigo</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> com botão Remover</translation>
 <translation id="1062407476771304334">Substituir</translation>
 <translation id="1073899992769346247">Substitua ou recarregue a bateria</translation>
 <translation id="1081015718268701546">De momento, as apps para Linux não são suportadas. As outras apps serão guardadas.</translation>
@@ -1229,6 +1230,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="5043679421800073804">Clicar ou tocar no último ícone na prateleira</translation>
 <translation id="504465286040788597">Parágrafo anterior</translation>
 <translation id="5045550434625856497">Palavra-passe incorrecta</translation>
+<translation id="5056587122125565772">Criar imagem</translation>
 <translation id="5058794129231928255">Não foi possível criar um documento do Google Docs</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Vai receber uma notificação se falar enquanto estiver com o som desativado. O áudio nunca sai do seu dispositivo.</translation>
@@ -1277,6 +1279,7 @@ Também pode usar o atalho de teclado. Primeiro, realce o texto e, em seguida, p
 <translation id="5222676887888702881">Terminar sessão</translation>
 <translation id="5228195526683428788">Divisor do ecrã dividido</translation>
 <translation id="5229343007215035173">Ativar/desativar o ecrã de privacidade</translation>
+<translation id="5229860525743792999">Remover <ph name="ITEM_LABEL" /> do grupo sugerido</translation>
 <translation id="5230516054153933099">Janela</translation>
 <translation id="5234764350956374838">Ignorar</translation>
 <translation id="523505283826916779">Definições de acessibilidade</translation>
@@ -1759,6 +1762,7 @@ Nova instalação</translation>
 <translation id="6757237461819837179">Sem multimédia em reprodução</translation>
 <translation id="6760438044935091345">Painel de jogo</translation>
 <translation id="6768043681523654438">armazenamento</translation>
+<translation id="6769195697113506406">Imagem inserida</translation>
 <translation id="6777216307882431711">Ligar os dispositivos USB-C ligados</translation>
 <translation id="6781002679438061620">Espaço de trabalho 9</translation>
 <translation id="6782182743534150858">Espaço de trabalho 13</translation>
@@ -1985,6 +1989,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7571361473021531288">Bateria: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> restante(s)</translation>
 <translation id="7573585051776738856">Janela ativa ancorada à direita.</translation>
 <translation id="7579778809502851308">Captura de ecrã</translation>
+<translation id="7588317312481506627">Copiada para a área de transferência.</translation>
 <translation id="7593891976182323525">Pesquisar ou Shift</translation>
 <translation id="7598054670902114203">Resumo de utilização da CPU, <ph name="CPU_USEAGE" />%. Temperatura a <ph name="TEMPERATURE" /> graus Celsius, velocidade atual: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">A inserir o resultado selecionado</translation>
@@ -2179,6 +2184,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8155628902202578800">Abrir a caixa de diálogo de informações de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">A utilizar <ph name="LOCALE_NAME" />...</translation>
 <translation id="8168435359814927499">Conteúdo</translation>
+<translation id="81817143961839203">Falha ao inserir a imagem</translation>
 <translation id="8185090165691050712">Ativar/desativar o menu para redimensionar o modo bloqueio</translation>
 <translation id="8192727139462702395">Quando desativar o Bluetooth, vai desassociar estes dispositivos externos do dispositivo <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">A transmitir o separador</translation>
@@ -2257,6 +2263,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8473301994082929012">A <ph name="ORGANIZATION_NAME" /> colocou a funcionalidade <ph name="FEATURE_NAME" /> como <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Prima Alt + Pesquisar ou Shift para cancelar.</translation>
 <translation id="8480418399907765580">Mostrar barra de ferramentas</translation>
+<translation id="8487660088084188539">Quando ativa estas funcionalidades, o texto introduzido, o conteúdo do documento e o URL da página Web podem ser enviados para os servidores da Google. Estas informações são usadas para gerar sugestões de escrita, gerar resumos, responder a perguntas e melhorar o produto, sujeito aos <ph name="LINK_TO_SERVICE_TERMS" />. Não inclua informações pessoais nem confidenciais.</translation>
 <translation id="8487699605742506766">Zona Wi-Fi</translation>
 <translation id="8491237443345908933">Abrir o link num novo separador</translation>
 <translation id="8492573885090281069">O <ph name="DISPLAY_NAME" /> não suporta a resolução <ph name="SPECIFIED_RESOLUTION" />. A resolução foi alterada para <ph name="FALLBACK_RESOLUTION" />. Clique em confirmar para manter as alterações. As definições anteriores serão restauradas dentro de <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2326,6 +2333,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8725214031272624704">Mostrar lista de métodos de introdução disponíveis</translation>
 <translation id="8730621377337864115">Concluído</translation>
+<translation id="8731188831050207755">Transferência de <ph name="FILE_NAME" /> sem êxito.</translation>
 <translation id="8731487213223706745">Termina à(s) <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">É possível que esteja a tentar roubar os seus toques de teclas.</translation>
 <translation id="8735678380411481005">Cor da retroiluminação do teclado</translation>

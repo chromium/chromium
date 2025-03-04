@@ -17,8 +17,10 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/webauthn/passkey_upgrade_request_controller.h"
+#include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
+#include "chrome/browser/webauthn/observable_authenticator_list.h"
 #include "chrome/browser/webauthn/password_credential_controller.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
@@ -360,7 +362,7 @@ class AuthenticatorRequestDialogController
 
   content::AuthenticatorRequestClientDelegate::UIPresentation ui_presentation()
       const;
-  void set_ui_presentation(
+  void SetUIPresentation(
       content::AuthenticatorRequestClientDelegate::UIPresentation modality);
 
   void ProvideChallengeUrl(
@@ -537,9 +539,6 @@ class AuthenticatorRequestDialogController
 
   base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
       selection_callback_;
-
-  content::AuthenticatorRequestClientDelegate::UIPresentation ui_presentation_ =
-      content::AuthenticatorRequestClientDelegate::UIPresentation::kModal;
 
   // cable_extension_provided_ indicates whether the request included a caBLE
   // extension.

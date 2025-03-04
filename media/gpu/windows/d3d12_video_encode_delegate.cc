@@ -11,6 +11,7 @@
 #include "media/base/win/mf_helpers.h"
 #include "media/gpu/h264_dpb.h"
 #include "media/gpu/windows/d3d12_helpers.h"
+#include "media/gpu/windows/d3d12_video_encode_av1_delegate.h"
 #include "media/gpu/windows/d3d12_video_encode_h264_delegate.h"
 #include "media/gpu/windows/d3d12_video_encoder_wrapper.h"
 #include "third_party/microsoft_dxheaders/src/include/directx/d3dx12_core.h"
@@ -44,6 +45,7 @@ D3D12VideoEncodeDelegate::GetSupportedProfiles(
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
            D3D12_VIDEO_ENCODER_CODEC_HEVC,
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+           D3D12_VIDEO_ENCODER_CODEC_AV1,
        }) {
     D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC codec_support{.Codec = codec};
     CHECK_FEATURE_SUPPORT(CODEC, codec_support);
@@ -106,6 +108,10 @@ D3D12VideoEncodeDelegate::GetSupportedProfiles(
             D3D12VideoEncodeH265Delegate::GetSupportedProfiles(video_device);
         break;
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+      case D3D12_VIDEO_ENCODER_CODEC_AV1:
+        profiles =
+            D3D12VideoEncodeAV1Delegate::GetSupportedProfiles(video_device);
+        break;
       default:
         NOTREACHED();
     }
@@ -460,5 +466,8 @@ template class D3D12VideoEncodeDecodedPictureBuffers<H264DPB::kDPBMaxSize>;
 static_assert(static_cast<size_t>(H264DPB::kDPBMaxSize) ==
               static_cast<size_t>(/*H265*/ kMaxDpbSize));
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+
+template class D3D12VideoEncodeDecodedPictureBuffers<
+    D3D12VideoEncodeDelegate::kAV1DPBMaxSize>;
 
 }  // namespace media

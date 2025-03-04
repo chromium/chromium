@@ -119,6 +119,8 @@ class CORE_EXPORT EditContext final : public EventTarget,
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
+  void SetExecutionContext(ExecutionContext* context);
+
   LocalDOMWindow* DomWindow() const;
 
   // ActiveScriptWrappable overrides.

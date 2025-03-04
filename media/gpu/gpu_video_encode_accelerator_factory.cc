@@ -4,6 +4,11 @@
 
 #include "media/gpu/gpu_video_encode_accelerator_factory.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "third_party/microsoft_dxheaders/src/include/directx/d3d12video.h"
+// Windows SDK headers should be included after DirectX headers.
+#endif
+
 #include <utility>
 #include <vector>
 

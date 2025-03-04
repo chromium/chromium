@@ -143,10 +143,10 @@ BASE_FEATURE(kDigitalCredentialsHybridLinking,
              "DigitalCredentialsHybridLinking",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Net yet enabled by default.
+// Default enabled in M135. Remove in or after M138.
 BASE_FEATURE(kWebAuthnPasskeyUpgrade,
              "WebAuthenticationPasskeyUpgrade",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Default enabled in M133. Remove in or after M136.
 BASE_FEATURE(kWebAuthnNeverSkipTrustThisComputer,

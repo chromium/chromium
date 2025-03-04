@@ -84,7 +84,7 @@ suite('SignoutConfirmationViewTest', function() {
 
     // The extensions section should now be visible.
     const extensionsSection =
-        signoutConfirmationApp.shadowRoot!
+        signoutConfirmationApp.shadowRoot
             .querySelector<ExtensionsSectionElement>('extensions-section');
 
     assertTrue(!!extensionsSection);

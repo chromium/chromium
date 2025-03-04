@@ -101,7 +101,7 @@ class UserAvatarButton : public views::Button {
       : views::Button(std::move(callback)) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
     SetBorder(views::CreateEmptyBorder(gfx::Insets(0)));
-    AddChildView(CreateUserAvatarView(/*user_index=*/0));
+    AddChildViewRaw(CreateUserAvatarView(/*user_index=*/0));
     SetTooltipText(GetUserItemAccessibleString(/*user_index=*/0));
     SetInstallFocusRingOnFocus(true);
     views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);

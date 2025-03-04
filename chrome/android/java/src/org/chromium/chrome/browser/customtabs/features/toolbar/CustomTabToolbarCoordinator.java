@@ -110,6 +110,7 @@ public class CustomTabToolbarCoordinator {
         assert manager != null : "Toolbar manager not initialized";
         mToolbarManager = manager;
         mToolbarColorController.onToolbarInitialized(manager);
+        mCloseButtonVisibilityManager.setVisibility(mIntentDataProvider.isCloseButtonEnabled());
         mCloseButtonVisibilityManager.onToolbarInitialized(manager);
 
         manager.setShowTitle(

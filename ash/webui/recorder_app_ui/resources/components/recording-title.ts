@@ -131,9 +131,9 @@ export class RecordingTitle extends ReactiveLitElement {
   });
 
   private readonly shouldShowTitleSuggestion = computed(() => {
-    const modelState = this.platformHandler.titleSuggestionModelLoader.state;
+    const modelState = this.platformHandler.getGenAiModelState();
     return (
-      modelState.value.kind === 'installed' &&
+      modelState.kind === 'installed' &&
       settings.value.summaryEnabled === SummaryEnableState.ENABLED &&
       this.transcription.value !== null && !this.transcription.value.isEmpty()
     );

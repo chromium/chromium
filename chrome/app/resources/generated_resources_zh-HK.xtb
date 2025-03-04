@@ -1719,7 +1719,6 @@
 <translation id="2178545675770638239">選取密碼</translation>
 <translation id="2178585470774851578">您即將啟用 ChromeOS Flex 偵錯功能；啟用後，系統會設定 sshd 協助程式，並啟用 USB 記憶體開機功能。</translation>
 <translation id="2178614541317717477">CA 洩露</translation>
-<translation id="2179850495466791921">目前有 <ph name="NUMBERED_ITEM_1" />、<ph name="NUMBERED_ITEM_2" />、<ph name="NUMBERED_ITEM_3" />和其他項目</translation>
 <translation id="2180620921879609685">封鎖任何頁面上的內容</translation>
 <translation id="2181821976797666341">政策</translation>
 <translation id="2182058453334755893">已複製至剪貼簿</translation>
@@ -3137,7 +3136,6 @@
 <translation id="3167562202484086668">刪除所有「<ph name="BRAND" />」資料</translation>
 <translation id="3169930038976362151">選擇切合您需要的主題。如要變更主題、桌布、螢幕保護程式和其他設定，只要輕觸並按住桌面即可。</translation>
 <translation id="3170072451822350649">您也可以略過登入程序，<ph name="LINK_START" />以訪客身分瀏覽<ph name="LINK_END" />。</translation>
-<translation id="3171499217959105722">目前有 <ph name="NUMBERED_ITEM" />和其他項目</translation>
 <translation id="3175067642577044620">內文</translation>
 <translation id="3175862692832442091">森林</translation>
 <translation id="3176347586396987181">按下「z」代表按住滑鼠按鍵</translation>
@@ -3947,7 +3945,6 @@
 <translation id="3744219658596020825">未匯入密碼</translation>
 <translation id="3745306754941902605">廚房</translation>
 <translation id="3747077776423672805">如要移除應用程式，請前往「設定」&gt;「Google Play 商店」&gt;「管理 Android 偏好設定」&gt;「應用程式」或「應用程式管理員」，然後輕按您想解除安裝的應用程式 (您可能需要向右或向左滑動，才能找到應用程式)，再輕按 [解除安裝] 或 [停用]。</translation>
-<translation id="3747552357646973221">目前有 <ph name="NUMBERED_ITEM_1" />、<ph name="NUMBERED_ITEM_2" />和其他項目</translation>
 <translation id="3748424433435232460">此帳戶的密碼已儲存在此裝置上</translation>
 <translation id="3748706263662799310">報告錯誤</translation>
 <translation id="3749724428455457489">進一步了解網站建議嘅廣告</translation>

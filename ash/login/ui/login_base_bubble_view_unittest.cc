@@ -58,7 +58,7 @@ class LoginBaseBubbleViewTest : public LoginTestBase {
     container_ = new views::View();
     container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
-    container_->AddChildView(anchor_.get());
+    container_->AddChildViewRaw(anchor_.get());
 
     SetWidget(CreateWidgetWithContent(container_));
 
@@ -68,9 +68,9 @@ class LoginBaseBubbleViewTest : public LoginTestBase {
                                    views::style::STYLE_PRIMARY);
     bubble_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
-    bubble_->AddChildView(label);
+    bubble_->AddChildViewRaw(label);
 
-    container_->AddChildView(bubble_.get());
+    container_->AddChildViewRaw(bubble_.get());
   }
 
   raw_ptr<LoginBaseBubbleView, DanglingUntriaged> bubble_;

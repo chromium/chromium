@@ -389,9 +389,8 @@ void SyncFileSystemService::CallOnIdleForTesting(base::OnceClosure callback) {
 
 SyncFileSystemService::SyncFileSystemService(Profile* profile)
     : profile_(profile),
-      sync_enabled_(true),
-      promoting_demoted_changes_(false) {
-}
+      sync_enabled_(false),
+      promoting_demoted_changes_(false) {}
 
 void SyncFileSystemService::Initialize(
     std::unique_ptr<LocalFileSyncService> local_service,
@@ -428,12 +427,9 @@ void SyncFileSystemService::Initialize(
 
   ExtensionRegistry::Get(profile_)->AddObserver(this);
 
-  // Don't enable file sync if deprecation flag is enabled.
-  if (base::FeatureList::IsEnabled(
-          chrome_apps::features::kDeprecateSyncFileSystemApis)) {
-    sync_enabled_ = false;
-    remote_service_->SetSyncEnabled(false);
-  }
+  // Don't enable file sync.
+  // TODO(crbug.com/396460818): Cleanup file syncing.
+  remote_service_->SetSyncEnabled(false);
 }
 
 void SyncFileSystemService::DidInitializeFileSystem(const GURL& app_origin,

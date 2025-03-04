@@ -269,9 +269,18 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     /**
      * Extra that specifies the {@link Network} to be bound when launching a custom tab or tabs that
-     * have been pre-created.
+     * have been pre-created. TODO(xiaom): Remove this once the public extra constant defined in
+     * CustomTabsIntent lands.
      */
     public static final String EXTRA_NETWORK = "androidx.browser.customtabs.extra.NETWORK";
+
+    /**
+     * Extra to enable the close button and show it in the toolbar. The close button is enabled by
+     * default, this extra provides a way to disable the close button in the toolbar. TODO(xiaom):
+     * Remove this once the public extra constant defined in CustomTabsIntent lands.
+     */
+    public static final String EXTRA_CLOSE_BUTTON_ENABLED =
+            "androidx.browser.customtabs.extra.CLOSE_BUTTON_ENABLED";
 
     private final Intent mIntent;
     private final SessionHolder<CustomTabsSessionToken> mSession;
@@ -296,6 +305,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private boolean mInteractWithBackground;
     private List<CustomButtonParams> mCustomButtonParams;
     private Drawable mCloseButtonIcon;
+    private boolean mIsCloseButtonEnabled;
     private List<Pair<String, PendingIntent>> mMenuEntries = new ArrayList<>();
     private boolean mShowShareItemInMenu;
     private List<CustomButtonParams> mToolbarButtons = new ArrayList<>(1);
@@ -518,20 +528,24 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 IntentUtils.safeGetBooleanExtra(
                         intent, EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE, false);
 
-        // TODO(crbug.com/393437143): Potentially reuse the close button code from Auth Tab.
-        Bitmap bitmap =
-                IntentUtils.safeGetParcelableExtra(
-                        intent, CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON);
-        if (bitmap != null && !checkCloseButtonSize(context, bitmap)) {
-            IntentUtils.safeRemoveExtra(intent, CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON);
-            bitmap.recycle();
-            bitmap = null;
-        }
-        if (bitmap == null) {
-            mCloseButtonIcon =
-                    TintedDrawable.constructTintedDrawable(context, R.drawable.btn_close);
-        } else {
-            mCloseButtonIcon = new TintedDrawable(context, bitmap);
+        mIsCloseButtonEnabled =
+                IntentUtils.safeGetBooleanExtra(intent, EXTRA_CLOSE_BUTTON_ENABLED, true);
+        if (mIsCloseButtonEnabled) {
+            // TODO(crbug.com/393437143): Potentially reuse the close button code from Auth Tab.
+            Bitmap bitmap =
+                    IntentUtils.safeGetParcelableExtra(
+                            intent, CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON);
+            if (bitmap != null && !checkCloseButtonSize(context, bitmap)) {
+                IntentUtils.safeRemoveExtra(intent, CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON);
+                bitmap.recycle();
+                bitmap = null;
+            }
+            if (bitmap == null) {
+                mCloseButtonIcon =
+                        TintedDrawable.constructTintedDrawable(context, R.drawable.btn_close);
+            } else {
+                mCloseButtonIcon = new TintedDrawable(context, bitmap);
+            }
         }
 
         List<Bundle> menuItems =
@@ -1529,6 +1543,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public @CloseButtonPosition int getCloseButtonPosition() {
+        if (!mIsCloseButtonEnabled) return CLOSE_BUTTON_POSITION_DEFAULT;
         return IntentUtils.safeGetIntExtra(
                 mIntent, EXTRA_CLOSE_BUTTON_POSITION, CLOSE_BUTTON_POSITION_DEFAULT);
     }
@@ -1592,10 +1607,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    public boolean isAuthTab() {
-        // TODO(crbug.com/345627627): Remove this and set this to return true in a new
-        //     intent data provider.
-        boolean isAuthTab = false;
-        return ChromeFeatureList.sCctAuthTab.isEnabled() && isAuthTab;
+    public boolean isCloseButtonEnabled() {
+        return mIsCloseButtonEnabled;
     }
 }

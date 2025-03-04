@@ -194,6 +194,7 @@
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
@@ -557,6 +558,25 @@ const AtomicString& V8ShadowRootModeToString(V8ShadowRootMode::Enum mode) {
   return keywords::kClosed;
 }
 
+bool IsInsideLayoutSVGHiddenContainer(const LayoutObject* object) {
+  if (!RuntimeEnabledFeatures::
+          RestrictGetBoundingClientRectForHiddenSVGElementsEnabled()) {
+    return false;
+  }
+
+  for (; object; object = object->Parent()) {
+    // Check if the Element's LayoutObject or any ancestor is a
+    // LayoutSVGHiddenContainer
+    if (object->IsSVGHiddenContainer()) {
+      return true;
+    }
+
+    if (IsA<LayoutSVGRoot>(*object)) {
+      break;
+    }
+  }
+  return false;
+}
 }  // namespace
 
 Element::Element(const QualifiedName& tag_name,
@@ -2636,7 +2656,8 @@ void Element::ClientQuads(Vector<gfx::QuadF>& quads) const {
     // TODO(pdr): ObjectBoundingBox does not include stroke and the spec is not
     // clear (see: https://github.com/w3c/svgwg/issues/339, crbug.com/529734).
     // If stroke is desired, we can update this to use AbsoluteQuads, below.
-    if (IsA<SVGGraphicsElement>(svg_element)) {
+    if (IsA<SVGGraphicsElement>(svg_element) &&
+        !IsInsideLayoutSVGHiddenContainer(element_layout_object)) {
       quads.push_back(element_layout_object->LocalToAbsoluteQuad(
           gfx::QuadF(element_layout_object->ObjectBoundingBox())));
     }
@@ -3281,6 +3302,11 @@ Node::InsertionNotificationRequest Element::InsertedInto(
     if (GetShadowRoot()) {
       UpdateFocusgroupInShadowRootIfNeeded();
     }
+  }
+
+  EditContext* edit_context = editContext();
+  if (edit_context && edit_context->GetExecutionContext() != context) {
+    edit_context->SetExecutionContext(context);
   }
 
   if (parentElement() && parentElement()->IsInCanvasSubtree()) {

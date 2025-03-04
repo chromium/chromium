@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -34,6 +36,7 @@ namespace glic {
 GlicButton::GlicButton(TabStripController* tab_strip_controller,
                        PressedCallback pressed_callback,
                        PressedCallback close_pressed_callback,
+                       base::RepeatingClosure hovered_callback,
                        const gfx::VectorIcon& icon,
                        const std::u16string& tooltip)
     : TabStripNudgeButton(tab_strip_controller,
@@ -44,7 +47,8 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
                           Edge::kNone,
                           icon),
       menu_model_(CreateMenuModel()),
-      tab_strip_controller_(tab_strip_controller) {
+      tab_strip_controller_(tab_strip_controller),
+      hovered_callback_(std::move(hovered_callback)) {
   SetProperty(views::kElementIdentifierKey, kGlicButtonElementId);
 
   set_context_menu_controller(this);
@@ -107,6 +111,14 @@ gfx::Size GlicButton::CalculatePreferredSize(
   const int width = std::lerp(collapsed_width, full_width, GetWidthFactor());
 
   return gfx::Size(width, height);
+}
+
+void GlicButton::StateChanged(ButtonState old_state) {
+  TabStripNudgeButton::StateChanged(old_state);
+  if (old_state == STATE_NORMAL && GetState() == STATE_HOVERED &&
+      hovered_callback_) {
+    hovered_callback_.Run();
+  }
 }
 
 void GlicButton::SetDropToAttachIndicator(bool indicate) {

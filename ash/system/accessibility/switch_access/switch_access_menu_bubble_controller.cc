@@ -55,7 +55,7 @@ void SwitchAccessMenuBubbleController::ShowMenu(
 
     menu_view_ = new SwitchAccessMenuView();
     menu_view_->SetBorder(views::CreateEmptyBorder(kBubbleMenuPadding));
-    bubble_view_->AddChildView(menu_view_.get());
+    bubble_view_->AddChildViewRaw(menu_view_.get());
 
     widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
     TrayBackgroundView::InitializeBubbleAnimations(widget_);

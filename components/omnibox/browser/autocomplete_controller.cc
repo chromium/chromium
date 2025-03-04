@@ -1155,7 +1155,9 @@ bool AutocompleteController::ShouldRunProvider(
     // aggregator provider suggestions, which can be configured to provide
     // Google Drive suggestions.
     case AutocompleteProvider::TYPE_DOCUMENT:
-      return !should_run_search_aggregator_provider;
+      return !omnibox_feature_configs::SearchAggregatorProvider::Get()
+                  .disable_drive ||
+             !should_run_search_aggregator_provider;
 
     case AutocompleteProvider::TYPE_OPEN_TAB:
       return is_cros_launcher_;

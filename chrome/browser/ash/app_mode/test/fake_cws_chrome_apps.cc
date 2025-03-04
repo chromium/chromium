@@ -103,4 +103,14 @@ KioskMixin::CwsChromeAppOption AppWithSecondaryAppV1() {
       /*crx_version=*/"1.0.0"};
 }
 
+KioskMixin::CwsChromeAppOption EnterpriseKioskAppV1() {
+  constexpr std::string_view kAppId = "gcpjojfkologpegommokeppihdbcnahn";
+
+  return KioskMixin::CwsChromeAppOption{
+      /*account_id=*/"enterprise-kiosk-app@localhost",
+      /*app_id=*/kAppId,
+      /*crx_filename=*/base::StrCat({kAppId, ".crx"}),
+      /*crx_version=*/"1.0.0"};
+}
+
 }  // namespace ash::kiosk::test

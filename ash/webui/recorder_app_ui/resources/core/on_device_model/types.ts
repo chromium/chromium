@@ -4,6 +4,7 @@
 
 import {ReadonlySignal} from '../reactive/signal.js';
 import {LanguageCode} from '../soda/language_info.js';
+import {assertExists} from '../utils/assert.js';
 
 /**
  * Model installation state.
@@ -22,6 +23,24 @@ export type ModelState = {
    */
   progress: number,
 };
+
+/**
+ * Smaller number indicates that the state will appear earlier in the UI states.
+ */
+const uiOrderMap = {
+  unavailable: 0,
+  notInstalled: 1,
+  installing: 2,
+  error: 3,
+  installed: 4,
+};
+
+/**
+ * Maps model state to the UI order.
+ */
+export function getModelUiOrder(state: ModelState): number {
+  return assertExists(uiOrderMap[state.kind]);
+}
 
 /**
  * Possible error types from model responses.

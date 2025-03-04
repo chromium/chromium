@@ -141,7 +141,7 @@ source_set("permissions") {
   }
   allow_circular_includes_from = []
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chrome/browser/ash/app_mode/isolated_web_app",
       "//chrome/browser/ash/app_mode/web_app",
@@ -235,7 +235,7 @@ source_set("unit_tests") {
     deps += [ "//chrome/browser/ui/hats" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chrome/browser/ash/app_mode/web_app",
       "//chrome/browser/ash/login/users:test_support",
@@ -271,7 +271,7 @@ if (!is_android) {
       "//components/optimization_guide/core:test_support",
     ]
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       sources += [ "system/system_permission_settings_chromeos_unittest.cc" ]
       deps += [ "//chrome/browser/ash/privacy_hub" ]
     }

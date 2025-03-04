@@ -196,7 +196,7 @@ BruschettaInstallerView::BruschettaInstallerView(Profile* profile,
       views::kMarginsKey, gfx::Insets::TLBR(kPrimaryMessageHeight, 0, 0, 0));
   primary_message_label_->SetMultiLine(false);
   primary_message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  upper_container_view->AddChildView(primary_message_label_.get());
+  upper_container_view->AddChildViewRaw(primary_message_label_.get());
 
   views::View* secondary_message_container_view =
       AddChildView(std::make_unique<views::View>());
@@ -204,7 +204,7 @@ BruschettaInstallerView::BruschettaInstallerView(Profile* profile,
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical,
           gfx::Insets::TLBR(kSecondaryMessageHeight, 0, 0, 0)));
-  upper_container_view->AddChildView(secondary_message_container_view);
+  upper_container_view->AddChildViewRaw(secondary_message_container_view);
   // The label content will be populated by SetSecondaryMessageLabel shortly.
   secondary_message_label_ =
       new views::Label(u"", views::style::CONTEXT_DIALOG_BODY_TEXT,
@@ -225,14 +225,14 @@ BruschettaInstallerView::BruschettaInstallerView(Profile* profile,
             ash::NewWindowDelegate::Disposition::kNewForegroundTab);
       },
       learn_more_url_));
-  secondary_message_container_view->AddChildView(link_label_.get());
+  secondary_message_container_view->AddChildViewRaw(link_label_.get());
 
   progress_bar_ = new views::ProgressBar();
   progress_bar_->SetPreferredHeight(kProgressBarHeight);
   progress_bar_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(kProgressBarTopMargin - kProgressBarHeight, 0, 0, 0));
-  upper_container_view->AddChildView(progress_bar_.get());
+  upper_container_view->AddChildViewRaw(progress_bar_.get());
 
   // Add list of configs in display order.
   {

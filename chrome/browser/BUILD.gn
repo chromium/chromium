@@ -2291,6 +2291,7 @@ static_library("browser") {
     "//components/safe_browsing/content/browser/notification_content_detection",
     "//components/safe_browsing/content/browser/password_protection",
     "//components/safe_browsing/content/browser/web_ui",
+    "//components/safe_browsing/content/common/proto:download_file_types_proto",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:referring_app_info",
     "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
@@ -3711,7 +3712,6 @@ static_library("browser") {
       "enterprise/signals/context_info_fetcher.h",
       "enterprise/signals/device_info_fetcher.cc",
       "enterprise/signals/device_info_fetcher.h",
-      "enterprise/signals/signals_common.h",
       "first_run/first_run.cc",
       "first_run/first_run.h",
       "first_run/first_run_dialog.h",
@@ -6779,12 +6779,6 @@ static_library("browser") {
     if (use_dbus) {
       deps += [ "//dbus" ]
     }
-
-    # device_info_fetcher uses a "defined(USE_GIO)" macro, so if it's refactored
-    # away from this file make sure gio_config is still added to configs.
-    if (use_gio) {
-      configs += [ "//build/linux:gio_config" ]
-    }
   }
 
   if (is_linux) {
@@ -8141,7 +8135,6 @@ static_library("browser") {
       "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
       "//components/safe_browsing/content/browser/download:download_stats",
       "//components/safe_browsing/content/common:file_type_policies",
-      "//components/safe_browsing/content/common/proto:download_file_types_proto",
     ]
   }
 

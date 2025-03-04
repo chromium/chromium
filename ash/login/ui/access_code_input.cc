@@ -268,7 +268,7 @@ FixedLengthCodeInput::FixedLengthCodeInput(int length,
     // FixedLengthCodeInput object.
     field->GetViewAccessibility().set_propagate_focus_to_ancestor(true);
     input_fields_.push_back(field);
-    AddChildView(field);
+    AddChildViewRaw(field);
     layout->SetFlexForView(field, 1);
   }
   text_value_for_a11y_ = std::u16string(length, ' ');

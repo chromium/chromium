@@ -209,7 +209,7 @@ void TabSlider::AddButtonInternal(TabSliderButton* button) {
 
   // Add the button as a child of the tab slider and insert it in the
   // `buttons_` list.
-  AddChildView(button);
+  AddChildViewRaw(button);
   buttons_.emplace_back(button);
   button->AddedToSlider(this);
 }

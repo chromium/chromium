@@ -43,7 +43,6 @@ class PrintPreviewWebcontentsAdapterAsh;
 
 namespace crosapi {
 
-class ArcAsh;
 class AudioServiceAsh;
 class CertDatabaseAsh;
 class CertProvisioningAsh;
@@ -87,7 +86,6 @@ class OneDriveIntegrationServiceAsh;
 class ParentAccessAsh;
 class PaymentAppInstanceAsh;
 class PolicyServiceAsh;
-class PowerAsh;
 class NonclosableAppToastServiceAsh;
 #if BUILDFLAG(USE_CUPS)
 class PrintingMetricsAsh;
@@ -97,7 +95,6 @@ class ScreenAIDownloaderAsh;
 class StructuredMetricsServiceAsh;
 class VpnServiceAsh;
 class WebKioskServiceAsh;
-class VirtualKeyboardAsh;
 
 // Implementation of Crosapi in Ash. It provides a set of APIs that
 // crosapi clients, such as lacros-chrome, can call into.
@@ -115,7 +112,6 @@ class CrosapiAsh : public mojom::Crosapi {
   // crosapi::mojom::Crosapi:
   void BindAccountManager(
       mojo::PendingReceiver<mojom::AccountManager> receiver) override;
-  void BindArc(mojo::PendingReceiver<mojom::Arc> receiver) override;
   void BindAudioService(
       mojo::PendingReceiver<mojom::AudioService> receiver) override;
   void BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) override;
@@ -204,8 +200,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<
           chromeos::machine_learning::mojom::MachineLearningService> receiver)
       override;
-  void BindMahiBrowserDelegate(
-      mojo::PendingReceiver<mojom::MahiBrowserDelegate> receiver) override;
   void BindMediaUI(mojo::PendingReceiver<mojom::MediaUI> receiver) override;
   void BindMediaSessionAudioFocus(
       mojo::PendingReceiver<media_session::mojom::AudioFocusManager> receiver)
@@ -239,7 +233,6 @@ class CrosapiAsh : public mojom::Crosapi {
           receiver) override;
   void BindPolicyService(
       mojo::PendingReceiver<mojom::PolicyService> receiver) override;
-  void BindPower(mojo::PendingReceiver<mojom::Power> receiver) override;
   void BindPrintPreviewCrosDelegate(
       mojo::PendingReceiver<mojom::PrintPreviewCrosDelegate> receiver) override;
   void BindNonclosableAppToastService(
@@ -273,8 +266,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindVideoCaptureDeviceFactory(
       mojo::PendingReceiver<mojom::VideoCaptureDeviceFactory> receiver)
       override;
-  void BindVirtualKeyboard(
-      mojo::PendingReceiver<mojom::VirtualKeyboard> receiver) override;
   void BindVpnService(
       mojo::PendingReceiver<mojom::VpnService> receiver) override;
   void BindWebKioskService(
@@ -411,17 +402,12 @@ class CrosapiAsh : public mojom::Crosapi {
     return video_conference_manager_ash_.get();
   }
 
-  VirtualKeyboardAsh* virtual_keyboard_ash() {
-    return virtual_keyboard_ash_.get();
-  }
-
   VpnServiceAsh* vpn_service_ash() { return vpn_service_ash_.get(); }
 
  private:
   // Called when a connection is lost.
   void OnDisconnected();
 
-  std::unique_ptr<ArcAsh> arc_ash_;
   std::unique_ptr<AudioServiceAsh> audio_service_ash_;
   std::unique_ptr<CertDatabaseAsh> cert_database_ash_;
   std::unique_ptr<CertProvisioningAsh> cert_provisioning_ash_;
@@ -472,7 +458,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ParentAccessAsh> parent_access_ash_;
   std::unique_ptr<PaymentAppInstanceAsh> payment_app_instance_ash_;
   std::unique_ptr<PolicyServiceAsh> policy_service_ash_;
-  std::unique_ptr<PowerAsh> power_ash_;
   std::unique_ptr<NonclosableAppToastServiceAsh>
       nonclosable_app_toast_service_ash_;
 #if BUILDFLAG(USE_CUPS)
@@ -490,7 +475,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ScreenAIDownloaderAsh> screen_ai_downloader_ash_;
   std::unique_ptr<StructuredMetricsServiceAsh> structured_metrics_service_ash_;
   std::unique_ptr<ash::VideoConferenceManagerAsh> video_conference_manager_ash_;
-  std::unique_ptr<VirtualKeyboardAsh> virtual_keyboard_ash_;
   std::unique_ptr<VpnServiceAsh> vpn_service_ash_;
   std::unique_ptr<WebKioskServiceAsh> web_kiosk_service_ash_;
 

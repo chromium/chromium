@@ -349,7 +349,8 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
          target_ip_address_space == request.target_ip_address_space &&
          shared_dictionary_writer_enabled ==
              request.shared_dictionary_writer_enabled &&
-         socket_tag == request.socket_tag;
+         socket_tag == request.socket_tag &&
+         allows_device_bound_sessions == request.allows_device_bound_sessions;
 }
 
 bool ResourceRequest::SendsCookies() const {

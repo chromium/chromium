@@ -13,12 +13,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/country_codes/country_codes.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
+#include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "regional_capabilities_country_id.h"
+#include "regional_capabilities_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace regional_capabilities {
-
-using testing::regional_capabilities::GetCountryId;
 
 namespace {
 
@@ -67,6 +68,10 @@ constexpr char kBelgiumCountryCode[] = "BE";
 
 constexpr int kBelgiumCountryId =
     country_codes::CountryCharsToCountryID('B', 'E');
+
+int GetCountryId(RegionalCapabilitiesService& service) {
+  return service.GetCountryId().GetForTesting();
+}
 
 }  // namespace
 

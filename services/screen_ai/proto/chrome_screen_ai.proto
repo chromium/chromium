@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,12 @@
 // https://source.chromium.org/chromium/chromium/src/+/main:services/screen_ai/proto/chrome_screen_ai.proto
 // http://google3/chrome/accessibility/machine_intelligence/chrome_screen_ai//chrome_screen_ai.proto
 
-syntax = "proto3";
+edition = "2023";
 
 package chrome_screen_ai;
+
+// Treat all fields as implicit present by default (proto3 behavior).
+option features.field_presence = IMPLICIT;
 
 // Defines a rectangle.
 message Rect {
@@ -49,8 +52,8 @@ message LineBox {
   // ID of the text block that this line belongs to.
   int32 block_id = 5;
 
-  // Index within the block that this line belongs to.
-  int32 order_within_block = 6;
+  reserved 6;  // order_within_block, deprecated in Chrome M135.
+  reserved order_within_block;
 
   // The direction of the script contained in the line.
   Direction direction = 7;
@@ -58,12 +61,15 @@ message LineBox {
   // Content type for this line.
   ContentType content_type = 8;
 
-  // Line bounding box relative to the original image with bottom edge
-  // representing estimated baseline of text.
-  Rect baseline_box = 9;
+  reserved 9;  // baseline_box, deprecated in Chrome M135.
+  reserved baseline_box;
 
   // Confidence as computed by the OCR engine. The value is in range [0, 1].
   float confidence = 10;
+
+  // ID of the paragraph that this line belongs to. Paragraphs are ordered from
+  // zero in each block.
+  int32 paragraph_id = 11;
 }
 
 // Word with associated bounding box.
@@ -79,8 +85,8 @@ message WordBox {
   // Word string in UTF8 format.
   string utf8_string = 3;
 
-  // True if the word passes the internal beamsearch dictionary check.
-  bool dictionary_word = 4;
+  reserved 4;  // dictionary_word, deprecated in Chrome M135.
+  reserved dictionary_word;
 
   // Language guess for the word. The format  is the ISO 639-1 two-letter
   // language code if that is defined (e.g. "en"), or else the ISO 639-2
@@ -113,8 +119,8 @@ message WordBox {
   // Content type for this word.
   ContentType content_type = 13;
 
-  // Detected orientation of the text.
-  Orientation orientation = 14;
+  reserved 14;  // orientation, deprecated in Chrome M135;
+  reserved orientation;
 
   // Confidence as computed by the OCR engine.
   float confidence = 15;
@@ -167,8 +173,8 @@ enum ContentType {
 }
 
 message VisualAnnotation {
-  // `ui_component` deprecated in Chrome M128.
-  reserved 1;
+  reserved 1;  // ui_component, deprecated in Chrome M128.
+  reserved ui_component;
 
   repeated LineBox lines = 2;
 }

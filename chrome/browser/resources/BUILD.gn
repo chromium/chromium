@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//components/compose/features.gni")
@@ -74,12 +73,13 @@ group("resources") {
     }
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     public_deps += [
       "ash/extended_updates:resources",
       "ash/inline_login:resources",
       "ash/settings:resources",
       "chromeos:resources",
+      "chromeos/dlp_internals:resources",
     ]
   }
 
@@ -94,16 +94,11 @@ group("resources") {
     ]
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos_ash) {
-    public_deps += [ "connectors_internals:resources" ]
-  }
-
-  if (is_chromeos) {
-    public_deps += [ "chromeos/dlp_internals:resources" ]
-  }
-
   if (is_win || is_mac || is_linux || is_chromeos) {
-    public_deps += [ "discards:resources" ]
+    public_deps += [
+      "connectors_internals:resources",
+      "discards:resources",
+    ]
   }
 
   if (is_win || is_mac || is_linux) {
@@ -116,7 +111,7 @@ group("resources") {
     ]
   }
 
-  if (!is_android && !is_chromeos_ash) {
+  if (!is_android && !is_chromeos) {
     public_deps += [
       "inline_login:resources",
       "signin/profile_picker:resources",
@@ -167,7 +162,7 @@ group("resources") {
   }
 }
 
-if (is_chromeos_ash && enable_js_type_check) {
+if (is_chromeos && enable_js_type_check) {
   group("closure_compile") {
     deps = [
       "chromeos:closure_compile",
@@ -283,7 +278,7 @@ group("dev_ui_resources") {
     "//content/browser/webrtc/resources",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     public_deps += [ "//chromeos/ash/components/kiosk/vision/webui:resources" ]
   }
 

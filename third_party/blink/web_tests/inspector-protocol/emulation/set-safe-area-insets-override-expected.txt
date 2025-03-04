@@ -1,0 +1,51 @@
+Tests that the safe-area-(max-)inset-* environment variables can be overridden.
+Initial environment:
+safe-area-inset-top: 0
+safe-area-max-inset-top: 0
+safe-area-inset-left: 0
+safe-area-max-inset-left: 0
+safe-area-inset-bottom: 0
+safe-area-max-inset-bottom: 0
+safe-area-inset-right: 0
+safe-area-max-inset-right: 0
+Overriding insets
+New environment:
+safe-area-inset-top: 1
+safe-area-max-inset-top: 2
+safe-area-inset-left: 3
+safe-area-max-inset-left: 4
+safe-area-inset-bottom: 5
+safe-area-max-inset-bottom: 6
+safe-area-inset-right: 7
+safe-area-max-inset-right: 8
+Reloading
+Environment:
+safe-area-inset-top: 1
+safe-area-max-inset-top: 2
+safe-area-inset-left: 3
+safe-area-max-inset-left: 4
+safe-area-inset-bottom: 5
+safe-area-max-inset-bottom: 6
+safe-area-inset-right: 7
+safe-area-max-inset-right: 8
+Unsetting override
+Environment:
+safe-area-inset-top: 0
+safe-area-max-inset-top: 0
+safe-area-inset-left: 0
+safe-area-max-inset-left: 0
+safe-area-inset-bottom: 0
+safe-area-max-inset-bottom: 0
+safe-area-inset-right: 0
+safe-area-max-inset-right: 0
+Overriding and navigating cross-origin
+Environment:
+safe-area-inset-top: 1
+safe-area-max-inset-top: 2
+safe-area-inset-left: 3
+safe-area-max-inset-left: 4
+safe-area-inset-bottom: 5
+safe-area-max-inset-bottom: 6
+safe-area-inset-right: 7
+safe-area-max-inset-right: 8
+

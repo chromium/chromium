@@ -44,16 +44,12 @@ import org.robolectric.shadows.ShadowContentResolver;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.ui.accessibility.AccessibilityState;
-import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.dragdrop.DragAndDropDelegateImpl.DragTargetType;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link DragAndDropDelegateImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({UiAndroidFeatureList.DRAG_DROP_EMPTY})
 public class DragAndDropDelegateImplUnitTest {
     /** Using a window size of 1000*600 for the ease of dp / pixel calculation. */
     private static final int WINDOW_WIDTH = 1000;
@@ -314,24 +310,6 @@ public class DragAndDropDelegateImplUnitTest {
                 mDragAndDropDelegateImpl.startDragAndDrop(
                         mContainerView,
                         shadowImage,
-                        dropData,
-                        mContainerView.getContext(),
-                        /* cursorOffsetX= */ 0,
-                        /* cursorOffsetY= */ 0,
-                        /* dragObjRectWidth= */ 100,
-                        /* dragObjRectHeight= */ 200));
-    }
-
-    @Test
-    @DisableFeatures({UiAndroidFeatureList.DRAG_DROP_EMPTY})
-    public void testStartDragAndDrop_InvalidDropData() {
-        final DropDataAndroid dropData = DropDataAndroid.create(null, null, null, null, null);
-
-        Assert.assertFalse(
-                "Drag and drop should not start.",
-                mDragAndDropDelegateImpl.startDragAndDrop(
-                        mContainerView,
-                        Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888),
                         dropData,
                         mContainerView.getContext(),
                         /* cursorOffsetX= */ 0,

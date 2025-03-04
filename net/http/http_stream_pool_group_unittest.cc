@@ -491,6 +491,7 @@ TEST_F(HttpStreamPoolGroupTest, ComparePausedJobSet) {
   delegate1.reset();
   delegate2.reset();
   delegate3.reset();
+  WaitForAttemptManagerComplete(*GetTestGroup());
   ASSERT_FALSE(GetTestGroup());
 }
 

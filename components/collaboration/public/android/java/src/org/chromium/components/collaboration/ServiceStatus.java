@@ -39,6 +39,7 @@ public class ServiceStatus {
     public boolean isAllowedToJoin() {
         switch (collaborationStatus) {
             case CollaborationStatus.DISABLED:
+            case CollaborationStatus.DISABLED_PENDING:
             case CollaborationStatus.DISABLED_FOR_POLICY:
                 return false;
             case CollaborationStatus.ALLOWED_TO_JOIN:
@@ -55,6 +56,7 @@ public class ServiceStatus {
     public boolean isAllowedToCreate() {
         switch (collaborationStatus) {
             case CollaborationStatus.DISABLED:
+            case CollaborationStatus.DISABLED_PENDING:
             case CollaborationStatus.DISABLED_FOR_POLICY:
             case CollaborationStatus.ALLOWED_TO_JOIN:
             case CollaborationStatus.ENABLED_JOIN_ONLY:

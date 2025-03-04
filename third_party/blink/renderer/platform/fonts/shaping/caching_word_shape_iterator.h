@@ -86,6 +86,9 @@ class PLATFORM_EXPORT CachingWordShapeIterator final {
     return ch == kSpaceCharacter || ch == kTabulationCharacter;
   }
 
+  // TODO(crbug.com/389726691): Move NextWordEndIndex() to a new file because
+  // CachingWordShapeIterator will be removed.
+  friend class PlainTextNode;
   static unsigned NextWordEndIndex(StringView text, unsigned start_index) {
     const unsigned length = text.length();
     if (start_index >= length) {

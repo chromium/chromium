@@ -6,5 +6,6 @@ UNKNOWN focusable has_input_focus
 ++++++++++UNKNOWN label='labeltext '
 ++++++UNKNOWN focusable label='labeltext' actions='{DEFAULT}' value='one'
 ++++++++UNKNOWN hidden
-++++++++++UNKNOWN focusable selected label='one' actions='{DEFAULT}'
-++++++++++UNKNOWN hidden focusable label='two' actions='{DEFAULT}'
+++++++++++UNKNOWN hidden
+++++++++++++UNKNOWN focusable selected label='one' actions='{DEFAULT}'
+++++++++++++UNKNOWN hidden focusable label='two' actions='{DEFAULT}'

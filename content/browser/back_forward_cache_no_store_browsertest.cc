@@ -51,19 +51,19 @@ const char kResponseWithNoCache[] =
     "\r\n"
     "The server speaks HTTP!";
 
-}  // namespace
-
-// TODO(crbug.com/40285326): This fails with the field trial testing config.
-class BackForwardCacheBrowserTestNoTestingConfig
+class BackForwardCacheBrowserTestDisableCCNS
     : public BackForwardCacheBrowserTest {
- public:
+ protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnableFeatureAndSetParams(features::kBackForwardCache, "", "");
+    DisableFeature(features::kCacheControlNoStoreEnterBackForwardCache);
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch("disable-field-trial-config");
   }
 };
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestNoTestingConfig,
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestDisableCCNS,
                        MainFrameWithNoStoreNotCached) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/main_document");
@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestNoTestingConfig,
   delete_observer_rfh_a.WaitUntilDeleted();
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestNoTestingConfig,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestDisableCCNS,
                        SubframeWithNoStoreCached) {
   // iframe will try to load title1.html.
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestNoTestingConfig,
 #else
 #define MAYBE_CCNSAndWebSocketBothRecorded CCNSAndWebSocketBothRecorded
 #endif
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestNoTestingConfig,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestDisableCCNS,
                        MAYBE_CCNSAndWebSocketBothRecorded) {
   net::SpawnedTestServer ws_server(net::SpawnedTestServer::TYPE_WS,
                                    net::GetWebSocketTestDataDirectory());
@@ -785,10 +785,8 @@ class BackForwardCacheWithJsNetworkRequestReceivingCCNSResourceBrowserTest
     }
   }
 
-  // TODO(crbug.com/40285326): This fails with the field trial testing config.
   void SetUpCommandLine(base::CommandLine* command_line) override {
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch("disable-field-trial-config");
   }
 
  protected:
@@ -813,7 +811,7 @@ INSTANTIATE_TEST_SUITE_P(
         DescribeParams);
 
 // Test that a page without CCNS that makes a request that receives CCNS
-// response does not log the
+// response is not evicted and does not log the
 // `kJsNetworkRequestReceivedCacheControlNoStoreResource` reason.
 IN_PROC_BROWSER_TEST_P(
     BackForwardCacheWithJsNetworkRequestReceivingCCNSResourceBrowserTest,
@@ -844,7 +842,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // Test that a page with CCNS that makes a JavaScript network request which
-// receives CCNS response logs the
+// receives CCNS response gets evicted and logs the
 // `kJsNetworkRequestReceivedCacheControlNoStoreResource` reason.
 IN_PROC_BROWSER_TEST_P(
     BackForwardCacheWithJsNetworkRequestReceivingCCNSResourceBrowserTest,
@@ -878,8 +876,8 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // Test that a page with CCNS that makes a request which receives CCNS response
-// in a same-as-root-origin subframe of a cross-origin subframe logs the
-// `kJsNetworkRequestReceivedCacheControlNoStoreResource` reason.
+// in a same-as-root-origin subframe of a cross-origin subframe gets evicted and
+// logs the `kJsNetworkRequestReceivedCacheControlNoStoreResource` reason.
 IN_PROC_BROWSER_TEST_P(
     BackForwardCacheWithJsNetworkRequestReceivingCCNSResourceBrowserTest,
     CCNSResponseSameOriginSubFrameLogged) {
@@ -920,7 +918,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // Test that a page with CCNS that makes a request which receives CCNS response
-// in a same-origin subframe logs the
+// in a same-origin subframe gets evicted and logs the
 // `kJsNetworkRequestReceivedCacheControlNoStoreResource` reason in the correct
 // place in the tree of reasons.
 IN_PROC_BROWSER_TEST_P(
@@ -956,11 +954,16 @@ IN_PROC_BROWSER_TEST_P(
                          kJsNetworkRequestReceivedCacheControlNoStoreResource},
                     {}, {}, {}, FROM_HERE);
 
+  // The not restored reason name for JS network request and CCNS should appear
+  // in the subframe.
   auto subframe_result = MatchesNotRestoredReasons(
       /*id=*/std::nullopt, /*name=*/std::nullopt, /*src=*/url_a_no_store.spec(),
       /*reasons=*/
       {MatchesDetailedReason("response-cache-control-no-store",
-                             /*source=*/std::nullopt)},
+                             /*source=*/std::nullopt),
+       MatchesDetailedReason(
+           "response-cache-control-no-store-with-js-network-request",
+           /*source=*/std::nullopt)},
       MatchesSameOriginDetails(
           /*url=*/url_a_no_store,
           /*children=*/{}));
@@ -969,8 +972,7 @@ IN_PROC_BROWSER_TEST_P(
       MatchesNotRestoredReasons(
           /*id=*/std::nullopt, /*name=*/std::nullopt, /*src=*/std::nullopt,
           /*reasons=*/
-          {MatchesDetailedReason("response-cache-control-no-store",
-                                 /*source=*/std::nullopt)},
+          {},
           MatchesSameOriginDetails(
               /*url=*/url_a_no_store,
               /*children=*/
@@ -978,7 +980,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // Test that a page with CCNS that makes a request which receives CCNS response
-// in a cross-origin subframe does not log the
+// in a cross-origin subframe is not evicted and does not log the
 // `kJsNetworkRequestReceivedCacheControlNoStoreResource` reason.
 IN_PROC_BROWSER_TEST_P(
     BackForwardCacheWithJsNetworkRequestReceivingCCNSResourceBrowserTest,
@@ -1006,15 +1008,12 @@ IN_PROC_BROWSER_TEST_P(
   // Navigate away.
   ASSERT_TRUE(NavigateToURL(shell(), url_b));
 
-  // Wait until the first document has been destroyed.
-  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+  // Check that the document is cached.
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
 
-  // Go back and check that it was not cached and that only CCNS reason is
-  // present.
+  // Go back and check that it was restored.
   ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
-  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
-                    {BlocklistedFeature::kMainResourceHasCacheControlNoStore},
-                    {}, {}, {}, FROM_HERE);
+  ExpectRestored(FROM_HERE);
 }
 
 // A subclass of `ContentBrowserTestContentBrowserClient` for testing the logic
@@ -1969,7 +1968,8 @@ class BackForwardCacheBrowserTestRestoreUnlessDeviceBoundSessionTerminated
     EnableFeatureAndSetParams(features::kBackForwardCache, "", "");
     EnableFeatureAndSetParams(
         features::kDeviceBoundSessionTerminationEvictBackForwardCache, "", "");
-    EnableFeatureAndSetParams(net::features::kDeviceBoundSessions, "", "");
+    EnableFeatureAndSetParams(net::features::kDeviceBoundSessions,
+                              "ForceEnableForTesting", "true");
     EnableFeatureAndSetParams(
         unexportable_keys::
             kEnableBoundSessionCredentialsSoftwareKeysForManualTesting,

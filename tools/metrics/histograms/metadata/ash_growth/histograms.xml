@@ -30,7 +30,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Ash.Growth.CampaignsComponent.DownloadDurationInOobe"
-    units="ms" expires_after="2025-06-29">
+    units="ms" expires_after="2025-08-31">
   <owner>llin@google.com</owner>
   <owner>cros-growth@google.com</owner>
   <summary>
@@ -54,7 +54,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Growth.CampaignsComponent.ParseDuration" units="ms"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>llin@google.com</owner>
   <owner>cros-growth@google.com</owner>
   <summary>
@@ -64,7 +64,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Growth.CampaignsManager.Error"
-    enum="CampaignsManagerError" expires_after="2025-06-29">
+    enum="CampaignsManagerError" expires_after="2025-08-31">
   <owner>llin@google.com</owner>
   <owner>cros-growth@google.com</owner>
   <summary>

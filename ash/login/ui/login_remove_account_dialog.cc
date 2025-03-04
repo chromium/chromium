@@ -166,7 +166,7 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
     container->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical, gfx::Insets(),
         kVerticalMarginUsernameMailDp));
-    AddChildView(container);
+    AddChildViewRaw(container);
     username_label_ =
         container->AddChildView(login_views_utils::CreateThemedBubbleLabel(
             display_username, nullptr,
@@ -229,7 +229,7 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
                             base::Unretained(this)),
         this);
     remove_user_button_->SetID(kRemoveUserButtonIdForTest);
-    AddChildView(remove_user_button_.get());
+    AddChildViewRaw(remove_user_button_.get());
 
     // Traps the focus on the remove user button.
     focus_search_ = std::make_unique<TrappedFocusSearch>(remove_user_button_);

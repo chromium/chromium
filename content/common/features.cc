@@ -65,13 +65,6 @@ BASE_FEATURE(kHidePastePopupOnGSB,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// If enabled, changes to the zoom level are temporary and are forgotten when
-// the tab is closed. If disabled, changes to the zoom level persist, as though
-// the user affected them through the browser's UX.
-BASE_FEATURE(kCapturedSurfaceControlTemporaryZoom,
-             "CapturedSurfaceControlTemporaryZoom",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If Canvas2D Image Chromium is allowed, this feature controls whether it is
 // enabled.
 BASE_FEATURE(kCanvas2DImageChromium,

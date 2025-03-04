@@ -87,9 +87,9 @@ FeaturePodLabelButton::FeaturePodLabelButton(PressedCallback callback)
   detailed_view_arrow_->SetCanProcessEventsWithinSubtree(false);
   detailed_view_arrow_->SetVisible(false);
 
-  AddChildView(label_.get());
-  AddChildView(detailed_view_arrow_.get());
-  AddChildView(sub_label_.get());
+  AddChildViewRaw(label_.get());
+  AddChildViewRaw(detailed_view_arrow_.get());
+  AddChildViewRaw(sub_label_.get());
 
   StyleUtil::SetUpInkDropForButton(this);
 
@@ -241,8 +241,8 @@ FeaturePodButton::FeaturePodButton(FeaturePodControllerBase* controller,
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  AddChildView(icon_button_.get());
-  AddChildView(label_button_.get());
+  AddChildViewRaw(icon_button_.get());
+  AddChildViewRaw(label_button_.get());
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);

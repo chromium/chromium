@@ -34,6 +34,10 @@ class BrowserAccessibilityStateImplAndroid
                                                 int flags_mask,
                                                 int capabilities_mask,
                                                 std::string histogram);
+  AssistiveTech ActiveKnownAssistiveTech() override;
+
+ private:
+  bool is_talkback_active_ = false;
 };
 
 }  // namespace content

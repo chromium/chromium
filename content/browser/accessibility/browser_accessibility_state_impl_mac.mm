@@ -18,8 +18,6 @@ namespace content {
 
 namespace {
 
-bool g_voiceover = false;
-
 void SetUpAccessibilityNotifications() {
   // We need to call into gfx::Animation and WebContentsImpl on the UI thread,
   // so ensure that we setup the notification on the correct thread.
@@ -65,7 +63,10 @@ class BrowserAccessibilityStateImplMac : public BrowserAccessibilityStateImpl {
   void UpdateHistogramsOnOtherThread() override;
   void UpdateUniqueUserHistograms() override;
   void SetKnownScreenReaderAppActive(bool is_active) override;
-  bool IsKnownScreenReaderAppActive() override;
+  AssistiveTech ActiveKnownAssistiveTech() override;
+
+ private:
+  bool is_voiceover_active_ = false;
 };
 
 void BrowserAccessibilityStateImplMac::InitBackgroundTasks() {
@@ -91,24 +92,36 @@ void BrowserAccessibilityStateImplMac::SetKnownScreenReaderAppActive(
       "ax_voiceover", base::debug::CrashKeySize::Size32);
   if (is_active) {
     base::debug::SetCrashKeyString(ax_voiceover_crash_key, "true");
-  } else if (g_voiceover) {
+  } else if (is_voiceover_active_) {
     base::debug::ClearCrashKeyString(ax_voiceover_crash_key);
   }
-  g_voiceover = is_active;
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.Mac.VoiceOver", g_voiceover);
+  is_voiceover_active_ = is_active;
+  awaiting_known_assistive_tech_computation_ = false;
+
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.Mac.VoiceOver", is_voiceover_active_);
 }
 
-bool BrowserAccessibilityStateImplMac::IsKnownScreenReaderAppActive() {
-  return g_voiceover;
+BrowserAccessibilityState::AssistiveTech
+BrowserAccessibilityStateImplMac::ActiveKnownAssistiveTech() {
+  if (awaiting_known_assistive_tech_computation_) {
+    return kUnknown;
+  }
+  return is_voiceover_active_ ? kVoiceOver : kNone;
 }
 
 void BrowserAccessibilityStateImplMac::UpdateUniqueUserHistograms() {
   BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms();
 
   ui::AXMode mode = GetAccessibilityMode();
+  // Old screen reader metric: does not indicate the use of a screen reader,
+  // just kScreenReader mode, which is used by many clients.
+  // Instead of this, use the specific VoiceOver metric.
+  // TODO(accessibility) Remove this, which is redundant with
+  // PerformanceManager.Experimental.HasAccessibilityModeFlag.
   UMA_HISTOGRAM_BOOLEAN("Accessibility.Mac.ScreenReader.EveryReport",
                         mode.has_mode(ui::AXMode::kScreenReader));
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.Mac.VoiceOver.EveryReport", g_voiceover);
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.Mac.VoiceOver.EveryReport",
+                        is_voiceover_active_);
 }
 
 // static

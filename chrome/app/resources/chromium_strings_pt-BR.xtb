@@ -316,6 +316,7 @@
 <translation id="5579324208890605088">Erro de inicialização: execute o instalador como um usuário comum, não como administrador.</translation>
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="5605834417512968703">Selecione o que quiser procurar com a pesquisa por imagens ou pressione Esc para sair</translation>
+<translation id="5618818588972826921">Selecione qualquer texto ou imagem para fazer a pesquisa por imagens ou pressione Esc para sair</translation>
 <translation id="5623402015214259806">{0,plural, =0{Uma atualização do Chromium está disponível}=1{Uma atualização do Chromium está disponível}one{Uma atualização do Chromium está disponível há # dia}other{Uma atualização do Chromium está disponível há # dias}}</translation>
 <translation id="5643865575100044307">Sempre excluir dados do site do seu dispositivo ao fechar o Chromium</translation>
 <translation id="5653831366781983928">Reinicie o Chromium agora</translation>
@@ -587,5 +588,6 @@
 <translation id="983803489796659991">A instalação falhou porque o servidor de atualização não tem o hash dos dados para o aplicativo.</translation>
 <translation id="985498048907240953">Usar o Chromium sem uma conta</translation>
 <translation id="985602178874221306">Autores do Chromium</translation>
+<translation id="989970834842471429">Selecione qualquer texto ou imagem para pesquisar por imagens</translation>
 <translation id="992780518932311116">Para usar a localização, permita o acesso ao Chromium nas <ph name="BEGIN_LINK" />configurações do sistema<ph name="END_LINK" /></translation>
 </translationbundle>

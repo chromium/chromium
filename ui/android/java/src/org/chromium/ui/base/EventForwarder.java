@@ -546,9 +546,7 @@ public class EventForwarder {
         }
 
         if (event.getAction() == DragEvent.ACTION_DRAG_STARTED) {
-            return mIsDragDropEnabled
-                    && ((mimeTypes != null && mimeTypes.length > 0)
-                            || UiAndroidFeatureMap.isEnabled(UiAndroidFeatureList.DRAG_DROP_EMPTY));
+            return mIsDragDropEnabled;
         }
 
         String content = "";

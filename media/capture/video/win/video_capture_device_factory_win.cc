@@ -363,6 +363,8 @@ void FindAndSetDefaultVideoCamera(
 class VideoCaptureDeviceFactoryWin::ComThreadData
     : public base::RefCountedThreadSafe<ComThreadData> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   ComThreadData(base::WeakPtr<VideoCaptureDeviceFactoryWin> device_factory,
                 scoped_refptr<base::SingleThreadTaskRunner> com_thread_runner,
                 scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner)
@@ -394,6 +396,8 @@ class VideoCaptureDeviceFactoryWin::UsageReportHandler
     : public base::RefCountedThreadSafe<UsageReportHandler>,
       public IMFSensorActivitiesReportCallback {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   UsageReportHandler() : my_pid_(base::GetCurrentProcId()) {}
 
   // IUnknown
@@ -524,11 +528,10 @@ class VideoCaptureDeviceFactoryWin::UsageReportHandler
     });
   }
 
- protected:
+ private:
   friend class base::RefCountedThreadSafe<UsageReportHandler>;
   virtual ~UsageReportHandler() = default;
 
- private:
   void UpdateAvailabilityCache(
       const std::map<std::string, CameraAvailability>& report_availabilities) {
     bool should_invoke_system_monitor = false;

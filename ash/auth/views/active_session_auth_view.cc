@@ -166,7 +166,7 @@ void ActiveSessionAuthView::AddHeaderAndCloseButton(
       std::make_unique<AuthHeaderView>(account_id_, title, description));
   header_observation_.Observe(auth_header_);
 
-  header->AddChildView(auth_header_container);
+  header->AddChildViewRaw(auth_header_container);
 
   // Close button position and creation.
   views::View* close_button_view =
@@ -180,7 +180,7 @@ void ActiveSessionAuthView::AddHeaderAndCloseButton(
   close_button_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kEnd);
   close_button_view->SetLayoutManager(std::move(close_button_layout));
-  header->AddChildView(close_button_view);
+  header->AddChildViewRaw(close_button_view);
 
   IconButton::Builder builder;
   builder.SetType(IconButton::Type::kXSmall)

@@ -206,6 +206,7 @@
 <translation id="1827529786398596735">Raak en hou die tuisskerm</translation>
 <translation id="1832848789136765277">Verifieer dis jy om seker te maak dat jy altyd toegang tot jou gesinkroniseerde data het</translation>
 <translation id="1836891464494477513">{count,plural, =1{Boekmerk is in jou Google-rekening, {email}, gestoor}other{Boekmerke is in jou Google-rekening, {email}, gestoor}}</translation>
+<translation id="1838089197478136166">Maak in Wallet oop?</translation>
 <translation id="183878838231635348">Hierdie kaart wys enige privaatheid- of sekuriteitkwessies wat veiligheidskontrole outomaties vir jou bespeur.</translation>
 <translation id="1845230888742614096">Hou groep</translation>
 <translation id="1854463785401910334">Deursoek oop oortjies</translation>
@@ -225,6 +226,7 @@
 <translation id="189531189292803889">Jou iPad is onlangs teruggestel, wat dalk jou verstekblaaier kon verander het.</translation>
 <translation id="1901366738768303267">Hoe gebruik ek hierdie kenmerk?</translation>
 <translation id="1901600657316773839">Hou seleksie</translation>
+<translation id="1902277226107477495">Adresbespeuring is af. Skakel dit weer aan in Instellings.</translation>
 <translation id="1904580727789512086">Die URL'e wat jy besoek, word in jou Google-rekening gestoor</translation>
 <translation id="1911619930368729126">Laai op na Google Drive</translation>
 <translation id="1923342640370224680">Afgelope uur</translation>
@@ -301,6 +303,7 @@
 <translation id="2230173723195178503">Webblad is gelaai</translation>
 <translation id="2236949375853147973">My aktiwiteit</translation>
 <translation id="2240256190924001613">Opstellingprofiel is beskikbaar</translation>
+<translation id="2244080985779413662">Hierdie webwerf wil ’n lêer aflaai en dit in jou Wallet oopmaak.</translation>
 <translation id="2245007488813216650">Vertaal tans …</translation>
 <translation id="2249119578464404734">Tik op die Soek-ikoon boaan die skerm</translation>
 <translation id="2251686759395008410">Kieslys → Geskiedenis</translation>
@@ -648,7 +651,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="385051799172605136">Terug</translation>
 <translation id="3851938967634752633">Wagwoorde vir <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> en <ph name="NUMBER_OF_ACCOUNTS" /> ander sal uitgevee word. Jou rekeninge sal nie uitgevee word nie.</translation>
 <translation id="3858860766373142691">Naam</translation>
-<translation id="3861908220442487587">Hierdie adres word net op hierdie toestel gestoor. Skuif dit na jou Google-rekening, <ph name="USER_EMAIL" />, toe om dit op jou ander toestelle te gebruik.</translation>
 <translation id="3868495844258915202">Wys volle URL</translation>
 <translation id="3875783148670536197">Wys my hoe</translation>
 <translation id="3876833929577368454">Vra my elke keer</translation>
@@ -1361,6 +1363,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="6761393919622941301">Oudio</translation>
 <translation id="6779455296366983087">Jou blaaierdata sal uitgevee word</translation>
 <translation id="6790502149545262384">Jy sal binnekort stories van <ph name="CHANNEL_NAME" /> af sien wanneer jy ’n nuwe oortjie oopmaak.</translation>
+<translation id="6794476726485507147">Kies ’n datum en tyd om ’n onthounotakennisgewing te kry om hierdie bladsy weer te besoek</translation>
 <translation id="681368974849482173">Item is geskep</translation>
 <translation id="6825078212112407882">{count,plural, =1{Boekmerk is gestoor in jou Google-rekening, {email}}other{{count} boekmerke is gestoor in jou Google-rekening, {email}}}</translation>
 <translation id="6830728435402077660">Nie veilig nie</translation>
@@ -1488,6 +1491,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7425053386765766120">Voeg betaalmetode by …</translation>
 <translation id="7425346204213733349">Veranderinge aan jou boekmerke, geskiedenis, wagwoorde en ander instellings sal nie meer met jou Google-rekening gesinkroniseer word nie. Jou bestaande data sal egter in jou Google-rekening geberg bly.</translation>
 <translation id="742664698522525515">Behou groep?</translation>
+<translation id="7431851541687113774">Skakel adresbespeuring af</translation>
 <translation id="7431991332293347422">Beheer hoe jou blaaigeskiedenis gebruik word om Search en meer te personaliseer</translation>
 <translation id="7435356471928173109">Afgeskakel deur jou administrateur</translation>
 <translation id="7438481509621345350">Jy sal nou stories van <ph name="CHANNEL_NAME" /> af sien wanneer jy 'n nuwe oortjie oopmaak.</translation>
@@ -1641,6 +1645,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8023170444051056234">Jy sal onmiddellik toegang tot die “<ph name="GROUP_NAME" />”-oortjiegroep verloor en dit sal van al jou toestelle uitgevee word</translation>
 <translation id="8023878949384262191">Vou hierdie afdeling uit.</translation>
 <translation id="8027581147000338959">Maak in nuwe venster oop</translation>
+<translation id="8029092694585014252">Stel onthounota</translation>
 <translation id="8032569120109842252">Volg tans</translation>
 <translation id="8035133914807600019">Nuwe vouer …</translation>
 <translation id="8035412398498507358">Foto’s</translation>
@@ -1798,7 +1803,6 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8679900250380464358">Voeg by Leeslys</translation>
 <translation id="8680786875305615692">Help om sekuriteit op die web vir almal beter te maak</translation>
 <translation id="8680787084697685621">Rekening se aanmeldbesonderhede is verouderd.</translation>
-<translation id="8683563711222071415">Skuif adres na rekening toe</translation>
 <translation id="8690752723634292147">Bevestig uitvee</translation>
 <translation id="8692689525339542358">Kry beskerming teen gevaarlike werwe, aflaaie en uitbreidings.</translation>
 <translation id="8694281486652655615">Wys hierdie item</translation>

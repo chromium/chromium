@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">La tua password verrà salvata in Gestore delle password di Google per <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Apri nuova scheda in Chrome</translation>
 <translation id="1166460004393506534">Elimina i dati di navigazione in Chrome</translation>
+<translation id="1171255741903316750">Attiva l'opzione "Blocca le schede di navigazione in incognito quando chiudi Chrome"</translation>
 <translation id="1179527450541388808">Accedi più velocemente a Chrome dal dock della schermata Home del tuo iPad.</translation>
 <translation id="1180362651362502943">Continua a usare i dati di Chrome nel tuo Account Google.</translation>
 <translation id="1200396280085622191">Utilizza Chrome ogni volta che tocchi i link in messaggi e altre app.</translation>
@@ -45,6 +46,7 @@ Aspetti da considerare:
 <translation id="1917964099031477364">Questo account e gli eventuali dati non salvati verranno rimossi da Chrome e da altre app Google su questo dispositivo.</translation>
 <translation id="1919130412786645364">Consenti l'accesso a Chrome</translation>
 <translation id="1965935827552890526">Finisci ciò che stavi facendo in un'altra finestra di Chrome aperta.</translation>
+<translation id="1973910962341002002">Dalle impostazioni "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />", attiva "Chrome"</translation>
 <translation id="1984705450038014246">Sincronizza i tuoi dati di Chrome</translation>
 <translation id="1987779152850321833">Completa le azioni suggerite di seguito per usare al meglio Chrome.</translation>
 <translation id="2055826352861631739">Usa Chrome per iPad per impostazione predefinita</translation>
@@ -96,10 +98,13 @@ Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati verr
 <translation id="3282568296779691940">Accedi a Chrome</translation>
 <translation id="3303503998967553377">Usa la funzionalità Azioni di Chrome su iOS</translation>
 <translation id="3348862487678490430">Aggiungi elemento dell'elenco di lettura a Chrome</translation>
+<translation id="3357827134511189025">Accedi con le tue password e passkey salvate da qualsiasi app utilizzando Chrome per la compilazione automatica</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Questo accade quando Chrome non viene utilizzato per {THRESHOLD} minuto}other{Questo accade quando Chrome non viene utilizzato per {THRESHOLD} minuti}}</translation>
 <translation id="3367797402528056312">Completa la configurazione di Chrome</translation>
 <translation id="3371064404604898522">Imposta Chrome come browser predefinito</translation>
 <translation id="3399930248910934354">Apri Impostazioni di Chrome</translation>
+<translation id="3440830787838130530">Condividi in modo semplice e sicuro la copia di una password con il tuo gruppo Famiglia nel Gestore delle password di Google</translation>
+<translation id="3460369101684070455">Scegli Chrome per la compilazione automatica per recuperare facilmente le tue password salvate nelle altre app</translation>
 <translation id="3472587960215700950">Chrome utilizza Google Maps per fornirti indicazioni stradali e informazioni locali sugli indirizzi rilevati.</translation>
 <translation id="3503014945441706099">Attiva la funzionalità Navigazione sicura avanzata anche per questo profilo Chrome</translation>
 <translation id="3522659714780527202">Per visualizzare le tue schede su tutti i dispositivi su cui utilizzi Chrome, attiva la sincronizzazione</translation>
@@ -181,6 +186,7 @@ Prova ad attendere qualche minuto prima di cambiare account. Se cambi account or
 <translation id="5998675059699164418">La tua organizzazione richiede l'accesso per usare Chrome.</translation>
 <translation id="6021312115739110405">Un feed personalizzato creato da Google per te. Include notizie, sport e meteo.</translation>
 <translation id="6022659036123304283">Personalizza il tuo Chrome</translation>
+<translation id="6132075343662013154">Chrome ti proporrà di salvare la password</translation>
 <translation id="6132149203299792222">Accedi con il tuo Account Google per sincronizzare le password, i preferiti e altro.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Cerca in Chrome</translation>
@@ -228,6 +234,7 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="7061455974939528301">Tieni premuta l'icona di Chrome e fai clic su "Modifica la schermata Home"</translation>
 <translation id="7065813315247345131">Sposta Chrome nel dock</translation>
 <translation id="7124339256045485976">Mantieni Chrome aggiornato</translation>
+<translation id="7145599899567697473">Salva e compila automaticamente le password in Chrome</translation>
 <translation id="7161390184744336561">Google Chrome non è aggiornato</translation>
 <translation id="7165736900384873061">Inizia a utilizzare lo scanner QR di Google Chrome</translation>
 <translation id="7175129790242719365">Suggerimento per Chrome: accedi a Chrome</translation>
@@ -261,6 +268,7 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="7693590760643069321">Ora puoi usare Chrome ogni volta che tocchi i link in messaggi, documenti e altre app.</translation>
 <translation id="7698568245838009292">Chrome vorrebbe accedere alla fotocamera</translation>
 <translation id="7707877166818730835">Apri La mia scheda più recente in Chrome</translation>
+<translation id="7747746207470479571">Accedi facilmente a password e passkey con Chrome per la compilazione automatica</translation>
 <translation id="776305366874821582">Accedi più velocemente a Chrome dal dock della schermata Home del tuo iPhone.</translation>
 <translation id="7780154209050837198">Accedi con il tuo Account Google a Chrome per usare al meglio questo browser.</translation>
 <translation id="7787205077729386167">Apri le impostazioni di Chrome in iOS, quindi tocca "App browser predefinita" e seleziona Chrome.</translation>
@@ -281,6 +289,7 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="8136856065410661948">Verranno creati eventi nel tuo Calendario Apple da Chrome e Google Lens.</translation>
 <translation id="8154120522323162874">Continua a configurare il browser per usare al meglio Chrome.</translation>
 <translation id="8160472928944011082">Impossibile aggiornare Chrome</translation>
+<translation id="8245080522851805544">Mantieni privata la tua navigazione con l'autenticazione del dispositivo quando chiudi Chrome</translation>
 <translation id="8248887045858762645">Suggerimento per Chrome</translation>
 <translation id="8265730590513812063">Apri il menu Chrome</translation>
 <translation id="8317674518145175158">I metodi di pagamento e gli indirizzi non verranno criptati. La cronologia di navigazione di Chrome non verrà sincronizzata.

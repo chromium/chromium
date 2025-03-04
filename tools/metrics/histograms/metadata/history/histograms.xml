@@ -2614,7 +2614,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.InMemoryURLHistoryItems" units="items"
-    expires_after="2025-03-09">
+    expires_after="2026-02-09">
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <component>1456716</component>
@@ -2849,7 +2849,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinks.VisitLoggedFromMainFrame" enum="Boolean"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>kyraseevers@chromium.org</owner>
   <owner>janiceliu@chromium.org</owner>
   <summary>
@@ -2860,7 +2860,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinks.VisitLoggedFromTransition"
-    enum="PageTransitionForVisitedLinks" expires_after="2025-06-29">
+    enum="PageTransitionForVisitedLinks" expires_after="2025-08-31">
   <owner>kyraseevers@chromium.org</owner>
   <owner>janiceliu@chromium.org</owner>
   <summary>

@@ -46,7 +46,7 @@ void TestBooleanCustomPropertySetting(ui_devtools::ViewElement* element,
   EXPECT_EQ(ui_props[indices.second].value_, old_value);
 
   // Check the property can be set accordingly.
-  std::string new_value(init_value ? "false" : "true");
+  std::string new_value(base::ToString(!init_value));
   std::string separator(":");
   element->SetPropertiesFromString(property_name + separator + new_value);
   props = element->GetCustomPropertiesForMatchedStyle();

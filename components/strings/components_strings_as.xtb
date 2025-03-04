@@ -661,6 +661,7 @@
 <translation id="2145193671493396738">অৰ্থনীতি সম্পৰ্কীয় বাতৰি</translation>
 <translation id="214556005048008348">পৰিশোধ বাতিল কৰক</translation>
 <translation id="2147117373852943630">বাদ্য যন্ত্ৰ</translation>
+<translation id="2147254250314124496"><ph name="EMBEDDED_URL" />এ আপোনাৰ বিষয়ে ছেভ কৰি ৰখা তথ্য ব্যৱহাৰ কৰিব বিচাৰে</translation>
 <translation id="2148613324460538318">কাৰ্ড যোগ কৰক</translation>
 <translation id="2148716181193084225">আজি</translation>
 <translation id="2149968176347646218">সংযোগটো সুৰক্ষিত নহয়</translation>
@@ -3018,6 +3019,7 @@
 <translation id="6351658970066645919">ব্ৰাউজিঙৰ ডেটা মচক</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{এটাও নাই}=1{১টা পাছৱৰ্ড (<ph name="DOMAIN_LIST" />ৰ বাবে, ছিংক কৰা আছে)}=2{২টা পাছৱৰ্ড (<ph name="DOMAIN_LIST" />ৰ বাবে, ছিংক কৰা আছে)}one{#টা পাছৱৰ্ড (<ph name="DOMAIN_LIST" />ৰ বাবে, ছিংক কৰা আছে)}other{#টা পাছৱৰ্ড (<ph name="DOMAIN_LIST" />ৰ বাবে, ছিংক কৰা আছে)}}</translation>
 <translation id="6355392890578844978">এই ব্ৰাউজাৰটো কোনো কোম্পানী অথবা অন্য প্ৰতিষ্ঠানৰ দ্বাৰা পৰিচালিত। এই ডিভাইচটোৰ কাৰ্যকলাপ Chromiumৰ বাহিৰত পৰিচালনা কৰা হৈ থাকিব পাৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">"<ph name="GROUP_TITLE_1" />" আৰু "<ph name="GROUP_TITLE_2" />" টেবৰ গোট আৰু উপলব্ধ নহয়</translation>
 <translation id="6358088212770985041">পৰিশোধ পদ্ধতি সম্পাদনা কৰক</translation>
 <translation id="6358450015545214790">এইটোৱে কি বুজায়?</translation>
 <translation id="6360213755783740931">মালৱেৰৰ পৰা সুৰক্ষাৰ বিষয়ে অধিক জানক</translation>

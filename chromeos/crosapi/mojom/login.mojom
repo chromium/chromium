@@ -17,14 +17,6 @@ struct SamlUserSessionProperties {
   string oauth_code@3;
 };
 
-// Interface for the cleanup triggered observer. The cleanup is signaled to
-// Lacros from ash-chrome as part of the |endSharedSession()| API call.
-[Uuid="883697b4-1fe3-4144-95ae-84afbea67e5c"]
-interface LacrosCleanupTriggeredObserver {
-  // Triggers a session cleanup for the Lacros browser.
-  OnLacrosCleanupTriggered@0() => (string? error);
-};
-
 // Interface for observers of external logout request events.
 [Uuid="4aee372e-a1f0-482c-bb21-922eac8ba7cc"]
 interface ExternalLogoutRequestObserver {
@@ -65,10 +57,7 @@ interface Login {
   [MinVersion=1]
   LockCurrentSession@11() => (string? error);
 
-  // Adds an observer for the cleanup triggered event.
-  [MinVersion=2]
-  AddLacrosCleanupTriggeredObserver@13(
-      pending_remote<LacrosCleanupTriggeredObserver> observer);
+  // AddLacrosCleanupTriggeredObserver@13 was removed.
 
   // Adds an observer for the external logout request events.
   [MinVersion=3]
@@ -82,12 +71,7 @@ interface Login {
   [MinVersion=3]
   NotifyOnExternalLogoutDone@16();
 
-  // Shows the Guest session confirmation dialog. The dialog explains how to
-  // open a guest session from the login screen. If the user confirms, they
-  // will be logged out of their session, and sent back to the login screen
-  // where they can start a new guest session.
-  [MinVersion=4]
-  ShowGuestSessionConfirmationDialog@17();
+  // ShowGuestSessionConfirmationDialog@17 was removed.
 
   // Removed methods.
   REMOVED_0@0(string? password) => (string? error);

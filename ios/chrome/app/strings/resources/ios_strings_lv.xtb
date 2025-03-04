@@ -226,6 +226,7 @@
 <translation id="189531189292803889">Jūsu iPad planšetdators tika nesen atjaunots, tādēļ, iespējams, tika mainīts jūsu noklusējuma pārlūks.</translation>
 <translation id="1901366738768303267">Kā izmantot šo funkciju?</translation>
 <translation id="1901600657316773839">Saglabāt atlasi</translation>
+<translation id="1902277226107477495">Adreses noteikšana ir izslēgta. Iestatījumos varat to atkal ieslēgt.</translation>
 <translation id="1904580727789512086">Jūsu apmeklētie URL tiek saglabāti Google kontā</translation>
 <translation id="1911619930368729126">Augšupielādēt Google diskā</translation>
 <translation id="1923342640370224680">Pēdējā stunda</translation>
@@ -650,7 +651,6 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="385051799172605136">Atpakaļ</translation>
 <translation id="3851938967634752633">Tiks dzēstas paroles vietnēm <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> un citām vietnēm (vēl <ph name="NUMBER_OF_ACCOUNTS" />). Jūsu konti netiks dzēsti.</translation>
 <translation id="3858860766373142691">Nosaukums</translation>
-<translation id="3861908220442487587">Šī adrese ir saglabāta tikai šajā ierīcē. Lai to izmantotu citās savās ierīcēs, pārvietojiet to uz Google kontu <ph name="USER_EMAIL" />.</translation>
 <translation id="3868495844258915202">Rādīt visu URL</translation>
 <translation id="3875783148670536197">Parādīt, kā</translation>
 <translation id="3876833929577368454">Vaicāt katru reizi</translation>
@@ -1491,6 +1491,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7425053386765766120">Maksājuma veida pievienošana…</translation>
 <translation id="7425346204213733349">Grāmatzīmju, vēstures, paroļu un citu iestatījumu izmaiņas vairs netiks sinhronizētas ar jūsu Google kontu. Tomēr esošie dati joprojām tiks glabāti jūsu Google kontā.</translation>
 <translation id="742664698522525515">Vai paturēt grupu?</translation>
+<translation id="7431851541687113774">Izslēgt adreses noteikšanu</translation>
 <translation id="7431991332293347422">Kontrolējiet, kā jūsu pārlūkošanas vēsture tiek izmantota Meklēšanas un cita satura personalizēšanai</translation>
 <translation id="7435356471928173109">Izslēdza jūsu administrators</translation>
 <translation id="7438481509621345350">Tagad, atverot jaunu cilni, būs redzami raksti no kanāla “<ph name="CHANNEL_NAME" />”.</translation>
@@ -1802,7 +1803,6 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8679900250380464358">Pievienot lasīšanas sarakstam</translation>
 <translation id="8680786875305615692">Palīdziet uzlabot drošību tīmeklī visiem lietotājiem</translation>
 <translation id="8680787084697685621">Konta pierakstīšanās informācija ir novecojusi.</translation>
-<translation id="8683563711222071415">Pārvietot adresi uz kontu</translation>
 <translation id="8690752723634292147">Apstipriniet dzēšanu</translation>
 <translation id="8692689525339542358">Iegūstiet aizsardzību pret bīstamām vietnēm, lejupielādēm un paplašinājumiem.</translation>
 <translation id="8694281486652655615">Tiks rādīts šis vienums</translation>

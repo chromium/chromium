@@ -26,6 +26,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -764,6 +765,8 @@ class VideoCaptureDeviceMFWin::MFVideoCallback final
       public IMFCaptureEngineOnSampleCallback,
       public IMFCaptureEngineOnEventCallback {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   MFVideoCallback(VideoCaptureDeviceMFWin* observer) : observer_(observer) {}
 
   IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
@@ -903,7 +906,7 @@ class VideoCaptureDeviceMFWin::MFVideoCallback final
 
  private:
   friend class base::RefCountedThreadSafe<MFVideoCallback>;
-  ~MFVideoCallback() {}
+  ~MFVideoCallback() = default;
 
   base::TimeTicks last_capture_begin_time_ = base::TimeTicks();
 
@@ -916,6 +919,8 @@ class VideoCaptureDeviceMFWin::MFActivitiesReportCallback final
     : public base::RefCountedThreadSafe<MFActivitiesReportCallback>,
       public IMFSensorActivitiesReportCallback {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   MFActivitiesReportCallback(
       base::WeakPtr<VideoCaptureDeviceMFWin> observer,
       scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
@@ -1416,7 +1421,7 @@ bool VideoCaptureDeviceMFWin::Init() {
     dxgi_device_manager_->RegisterInCaptureEngineAttributes(attributes.Get());
   }
 
-  video_callback_ = new MFVideoCallback(this);
+  video_callback_ = base::MakeRefCounted<MFVideoCallback>(this);
   hr = engine_->Initialize(video_callback_.get(), attributes.Get(), nullptr,
                            source_.Get());
   if (FAILED(hr)) {
@@ -2562,9 +2567,10 @@ void VideoCaptureDeviceMFWin::ProcessEventError(HRESULT hr) {
   if (hr == MF_E_HW_MFT_FAILED_START_STREAMING) {
     // This may indicate that the camera is in use by another application.
     if (!activities_report_callback_) {
-      activities_report_callback_ = new MFActivitiesReportCallback(
-          weak_factory_.GetWeakPtr(), main_thread_task_runner_,
-          device_descriptor_.device_id);
+      activities_report_callback_ =
+          base::MakeRefCounted<MFActivitiesReportCallback>(
+              weak_factory_.GetWeakPtr(), main_thread_task_runner_,
+              device_descriptor_.device_id);
     }
     if (!activity_monitor_) {
       bool created = CreateMFSensorActivityMonitor(

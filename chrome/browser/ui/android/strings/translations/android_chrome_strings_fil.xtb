@@ -107,6 +107,7 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="1413446866325418126">Mag-save ng data sa iyong Google Account</translation>
 <translation id="1414981605391750300">Nakikipag-ugnayan sa Google. Maaari itong umabot nang isang minuto…</translation>
 <translation id="1416550906796893042">Bersyon ng application</translation>
+<translation id="1416582024052267068">Panatilihin ang access sa iyong mga password</translation>
 <translation id="1419753403124156396">I-restart ang Chrome?</translation>
 <translation id="1428770807407000502">I-off ang pag-sync?</translation>
 <translation id="1430915738399379752">I-print</translation>
@@ -515,6 +516,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="342220687432920852">{HOURS,plural, =1{# oras ang nakalipas}one{# oras ang nakalipas}other{# na oras ang nakalipas}}</translation>
 <translation id="3430670036890315772">Kapag in-off ang iyong lock ng profile, maaalis ang naka-save na impormasyon mo</translation>
 <translation id="3435465986463792564">Maraming window? Puwede mong pamahalaan ang mga ito mula rito</translation>
+<translation id="3435575784518354875">Para mapanatili ang access sa iyong mga password, i-export na ngayon ang mga ito, i-update ang Mga Serbisyo ng Google Play, at pagkatapos ay i-import ulit ang mga ito sa Google Password Manager. <ph name="BEGIN_LINK" />Tingnan ang mga kumpletong tagubilin<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="3439276997620616816">Makikita mo rito ang iyong mga kamakailang tab</translation>
 <translation id="3443221991560634068">I-reload ang kasalukuyang page</translation>
@@ -524,6 +526,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3474624961160222204">Magpatuloy bilang si <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Puwede mong piliin ang iyong search engine</translation>
 <translation id="3479552764303398839">Hindi ngayon</translation>
+<translation id="3487903178221457900">Ang na-export na file ay posibleng ma-access ng iba, kabilang ang mga app. Kapag nag-export ka na, made-delete na sa Chrome ang iyong mga password.</translation>
 <translation id="3488199663160411179">pangalan</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /> tungkol sa iminumungkahing content</translation>
 <translation id="3495219333887281978">Nakabukas ang bottom sheet sa pag-sign in nang kalahati ang taas.</translation>
@@ -1751,6 +1754,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8937772741022875483">Alisin sa Digital Wellness ang aktibidad mo sa Chrome?</translation>
 <translation id="8942627711005830162">Buksan sa ibang window</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Hindi ma-download ang wikang ito. Subukan ulit sa ibang pagkakataon.</translation>
+<translation id="8957528460562961174">Para mapanatili ang access sa iyong mga password, i-export na ngayon ang mga ito at pagkatapos ay i-import ang mga ito sa gusto mong password manager. Huminto sa paggana ang Google Password Manager dahil hindi available ang mga serbisyo ng Google Play.</translation>
 <translation id="8963117664422609631">Pumunta sa mga setting ng site</translation>
 <translation id="8965591936373831584">nakabinbin</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Isasara ang <ph name="INCOGNITO_TAB_COUNT" /> tab na incognito at <ph name="TAB_COUNT_ONE" /> pang tab}one{Isasara ang <ph name="INCOGNITO_TAB_COUNT" /> tab na incognito at <ph name="TAB_COUNT_MANY" /> pang tab}other{Isasara ang <ph name="INCOGNITO_TAB_COUNT" /> na tab na incognito at <ph name="TAB_COUNT_MANY" /> pang tab}}</translation>

@@ -50,7 +50,7 @@ TEST(VideoLayerImplTest, Occlusion) {
       &provider, media::VIDEO_ROTATION_0);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
-  video_layer_impl->set_visible_layer_rect(gfx::Rect(layer_size));
+  video_layer_impl->SetVisibleLayerRectForTesting(gfx::Rect(layer_size));
   CopyProperties(impl.root_layer(), video_layer_impl);
 
   impl.CalcDrawProps(viewport_size);
@@ -321,7 +321,7 @@ TEST(VideoLayerImplTest, SoftwareVideoFrameGeneratesYUVQuad) {
       &provider, media::VIDEO_ROTATION_0);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
-  video_layer_impl->set_visible_layer_rect(gfx::Rect(layer_size));
+  video_layer_impl->SetVisibleLayerRectForTesting(gfx::Rect(layer_size));
   CopyProperties(impl.root_layer(), video_layer_impl);
 
   impl.CalcDrawProps(layer_size);
@@ -355,7 +355,7 @@ TEST(VideoLayerImplTest, HibitSoftwareVideoFrameGeneratesYUVQuad) {
       &provider, media::VIDEO_ROTATION_0);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
-  video_layer_impl->set_visible_layer_rect(gfx::Rect(layer_size));
+  video_layer_impl->SetVisibleLayerRectForTesting(gfx::Rect(layer_size));
   CopyProperties(impl.root_layer(), video_layer_impl);
 
   impl.CalcDrawProps(layer_size);
@@ -395,7 +395,7 @@ TEST(VideoLayerImplTest, NativeYUVFrameGeneratesYUVQuad) {
       &provider, media::VIDEO_ROTATION_0);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
-  video_layer_impl->set_visible_layer_rect(gfx::Rect(layer_size));
+  video_layer_impl->SetVisibleLayerRectForTesting(gfx::Rect(layer_size));
   CopyProperties(impl.root_layer(), video_layer_impl);
   impl.CalcDrawProps(layer_size);
 
@@ -435,7 +435,7 @@ TEST(VideoLayerImplTest, NativeARGBFrameGeneratesTextureQuad) {
       &provider, media::VIDEO_ROTATION_0);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
-  video_layer_impl->set_visible_layer_rect(gfx::Rect(layer_size));
+  video_layer_impl->SetVisibleLayerRectForTesting(gfx::Rect(layer_size));
   CopyProperties(impl.root_layer(), video_layer_impl);
 
   impl.CalcDrawProps(layer_size);

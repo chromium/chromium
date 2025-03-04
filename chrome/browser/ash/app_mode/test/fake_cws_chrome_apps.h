@@ -86,6 +86,13 @@ MinimumChromeVersionAppV3WithMinimumVersion999();
 // manifest. See `MinimumChromeVersionAppV1`.
 [[nodiscard]] KioskMixin::CwsChromeAppOption AppWithSecondaryAppV1();
 
+// Corresponds to the Chrome app under:
+// //chrome/test/data/chromeos/app_mode/apps_and_extensions/
+//   enterprise_kiosk_test_app/src
+//
+// This app declares the "identity" permission in the manifest.
+[[nodiscard]] KioskMixin::CwsChromeAppOption EnterpriseKioskAppV1();
+
 }  // namespace ash::kiosk::test
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_TEST_FAKE_CWS_CHROME_APPS_H_

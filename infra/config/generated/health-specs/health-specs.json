@@ -850,47 +850,7 @@
           }
         ]
       },
-      "Comparison Android (reclient)(CQ)": {
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
       "Comparison Mac (reclient)": {
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
-      "Comparison Mac (reclient)(CQ)": {
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -970,26 +930,6 @@
           }
         ]
       },
-      "Comparison Simple Chrome (reclient)(CQ)": {
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
       "Comparison Windows (8 cores) (reclient)": {
         "problem_specs": [
           {
@@ -1030,47 +970,7 @@
           }
         ]
       },
-      "Comparison Windows (reclient)(CQ)": {
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
       "Comparison ios (reclient)": {
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
-      "Comparison ios (reclient)(CQ)": {
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -6831,6 +6731,27 @@
         ]
       },
       "android-15-tablet-x64-dbg-tests": {
+        "contact_team_email": "clank-engprod@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
+      "android-15-tablet-x64-rel": {
         "contact_team_email": "clank-engprod@google.com",
         "problem_specs": [
           {

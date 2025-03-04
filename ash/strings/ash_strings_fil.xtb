@@ -22,6 +22,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1058009965971887428">Iulat ang feedback</translation>
 <translation id="1059120031266247284">Naka-share sa iyo</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> na may button na alisin</translation>
 <translation id="1062407476771304334">Palitan</translation>
 <translation id="1073899992769346247">Palitan o i-recharge ang baterya</translation>
 <translation id="1081015718268701546">Hindi sinusuportahan sa kasalukuyan ang mga Linux app. Mase-save ang iba pang app.</translation>
@@ -1228,6 +1229,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="5043679421800073804">I-click o i-tap ang huling icon sa shelf</translation>
 <translation id="504465286040788597">Nakaraang talata</translation>
 <translation id="5045550434625856497">Hindi wastong password</translation>
+<translation id="5056587122125565772">Gumawa ng larawan</translation>
 <translation id="5058794129231928255">Hindi magawa ang Google Doc</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Aabisuhan ka kung nagsasalita ka habang naka-mute. Hindi naipapadala ang audio mula sa iyong device.</translation>
@@ -1276,6 +1278,7 @@ Puwede mo ring gamitin ang keyboard shortcut. Una, i-highlight ang text, at pagk
 <translation id="5222676887888702881">Mag-sign out</translation>
 <translation id="5228195526683428788">Divider ng split screen</translation>
 <translation id="5229343007215035173">I-on/i-off ang privacy screen</translation>
+<translation id="5229860525743792999">Alisin ang <ph name="ITEM_LABEL" /> sa iminumungkahing grupo</translation>
 <translation id="5230516054153933099">Window</translation>
 <translation id="5234764350956374838">Huwag pansinin</translation>
 <translation id="523505283826916779">Mga setting ng accessibility</translation>
@@ -1758,6 +1761,7 @@ Kaka-install lang</translation>
 <translation id="6757237461819837179">Walang nagpe-play na media</translation>
 <translation id="6760438044935091345">Dashboard ng game</translation>
 <translation id="6768043681523654438">storage</translation>
+<translation id="6769195697113506406">Inilagay ang larawan</translation>
 <translation id="6777216307882431711">Pinapagana ang mga nakakonektang USB-C device</translation>
 <translation id="6781002679438061620">Desk 9</translation>
 <translation id="6782182743534150858">Desk 13</translation>
@@ -1983,6 +1987,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7571361473021531288"><ph name="BATTERY_PERCENTAGE" />% ng baterya | <ph name="TIME" /> na natitira</translation>
 <translation id="7573585051776738856">Naka-dock sa kanan ang aktibong window.</translation>
 <translation id="7579778809502851308">Screen capture</translation>
+<translation id="7588317312481506627">Nakopya sa clipboard.</translation>
 <translation id="7593891976182323525">Search or Shift</translation>
 <translation id="7598054670902114203">Snapshot ng paggamit ng CPU, <ph name="CPU_USEAGE" />%. Temperatura <ph name="TEMPERATURE" /> degrees celsius, kasalukuyang bilis: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="7599378375976398913">Inilalagay ang piniling resulta</translation>
@@ -2177,6 +2182,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8155628902202578800">Buksan ang dialog ng impormasyon para sa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Gamit ang <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Content</translation>
+<translation id="81817143961839203">Hindi nailagay ang larawan</translation>
 <translation id="8185090165691050712">I-on/i-off ang menu para sa resize lock mode</translation>
 <translation id="8192727139462702395">Kapag in-off mo ang Bluetooth, madidiskonekta ang mga external na device na ito sa iyong <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Ikina-cast ang tab</translation>
@@ -2255,6 +2261,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8473301994082929012">Ang <ph name="ORGANIZATION_NAME" /> ay may <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Pindutin ang Alt+Search o Shift upang kanselahin.</translation>
 <translation id="8480418399907765580">Ipakita ang toolbar</translation>
+<translation id="8487660088084188539">Kapag na-on mo ang mga feature na ito, puwedeng ipadala ang text ng input, content ng dokumento, at URL ng web page sa mga server ng Google. Ginagamit ang impormasyong ito para bumuo ng mga writing suggestion, bumuo ng mga buod, sumagot ng mga tanong, at pahusayin ang produkto, nang napapailalim sa <ph name="LINK_TO_SERVICE_TERMS" />. Huwag maglagay ng kahit anong personal, sensitibo, o kumpidensyal.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Buksan ang link sa bagong tab</translation>
 <translation id="8492573885090281069">Hindi sinusuportahan ng <ph name="DISPLAY_NAME" /> ang <ph name="SPECIFIED_RESOLUTION" />. Ginawang <ph name="FALLBACK_RESOLUTION" /> ang resolution. I-click ang kumpirmahin para panatilihin ang mga pagbabago. Ire-restore ang mga dating setting pagkalipas ng <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2324,6 +2331,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8725066075913043281">Subukan ulit</translation>
 <translation id="8725214031272624704">Magpakita ng listahan ng mga available na pamamaraan ng pag-input</translation>
 <translation id="8730621377337864115">Tapos na</translation>
+<translation id="8731188831050207755">Hindi na-download ang <ph name="FILE_NAME" />.</translation>
 <translation id="8731487213223706745">Matatapos nang <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Maaaring sinusubukan nitong nakawin ang iyong mga keystroke</translation>
 <translation id="8735678380411481005">Kulay ng backlight ng keyboard</translation>

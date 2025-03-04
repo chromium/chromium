@@ -12,6 +12,9 @@
 #import "ios/chrome/common/app_group/app_group_constants.h"
 
 #if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/widget_kit/model/model_swift.h"  // nogncheck
 #endif
 
@@ -19,6 +22,7 @@ AccountWidgetUpdater::AccountWidgetUpdater(
     SystemIdentityManager* system_identity_manager)
     : system_identity_manager_(system_identity_manager) {
   system_identity_manager_observation_.Observe(system_identity_manager_);
+  HandleMigrationIfNeeded();
 }
 
 AccountWidgetUpdater::~AccountWidgetUpdater() = default;
@@ -87,5 +91,19 @@ void AccountWidgetUpdater::UpdateLoadedAccounts() {
 
 #if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
   [WidgetTimelinesUpdater reloadAllTimelines];
+#endif
+}
+
+void AccountWidgetUpdater::HandleMigrationIfNeeded() {
+#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
+  PrefService* local_state = GetApplicationContext()->GetLocalState();
+  bool migration_performed =
+      local_state->GetBoolean(prefs::kMigrateWidgetsPrefs);
+  // Don't migrate prefs again if migration was already performed.
+  if (migration_performed) {
+    return;
+  }
+  local_state->SetBoolean(prefs::kMigrateWidgetsPrefs, true);
+  UpdateLoadedAccounts();
 #endif
 }

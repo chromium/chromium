@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">પેજ પછીથી લોડ કરો</translation>
 <translation id="1010225406377140704">નવી લિંક માટે પૂછવા માટે મોકલનારનો સંપર્ક કરો</translation>
 <translation id="1011206368273183593">ફાઇલો તૈયાર કરી રહ્યાં છીએ</translation>
+<translation id="1012264210825687872">તમે તમારો ઑર્ડર રિવ્યૂ કરો તે પછી, તમારે <ph name="BNPL_ISSUER_NAME" />માં સાઇન ઇન કરવું કે તેમાં નવું એકાઉન્ટ બનાવવું આવશ્યક છે. આ એકાઉન્ટ ઑટોમૅટિક રીતે Google Pay સાથે લિંક થશે.</translation>
 <translation id="1014509239502131234">પરિણામમાંનો છેલ્લો ફેરફાર રદ કરી રહ્યાં છીએ</translation>
 <translation id="1015730422737071372">અતિરિક્ત વિગતો પ્રદાન કરો</translation>
 <translation id="1019413721762100891">બંધ</translation>
@@ -692,6 +693,7 @@
 <translation id="2187317261103489799">શોધો (ડિફૉલ્ટ)</translation>
 <translation id="2188375229972301266">નીચેની બાજુએ એકથી વધુ કાણાં પાડો</translation>
 <translation id="2194856509914051091">ધ્યાનમાં લેવા જેવી બાબતો</translation>
+<translation id="2198071643181968308"><ph name="BNPL_ISSUER_NAME" /> વિશે વધુ જાણો</translation>
 <translation id="2200678913752027654">થમ્બ્સ ડાઉન બટન, તમે કેમ આ સૂચન નાપસંદ કરો છો તે વિશેનો વિગતવાર પ્રતિસાદ સબમિટ કરવા ફોર્મ ખોલવા માટે Enter કી દબાવો</translation>
 <translation id="2202627062836089804">તમારા કાર્ડની પાછળનો ભાગ</translation>
 <translation id="2204482073374652408">અપડેટ થવાનું સમાપ્ત થયું!</translation>
@@ -2319,6 +2321,7 @@
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chromeને તમારા ડિવાઇસના <ph name="PERMISSION" />ના ઍક્સેસની જરૂર છે</translation>
 <translation id="510644072453496781">કાર્ડબોર્ડ (અંત)</translation>
+<translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> માટે વર્ચ્યુઅલ કાર્ડ ભરવામાં આવ્યું</translation>
 <translation id="5108881358339761672">સાઇટ સુરક્ષિત નથી</translation>
 <translation id="5109892411553231226">ચુકવણી પદ્ધતિઓ મેનેજ કરો</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2514,6 +2517,7 @@
             <ph name="LIST_ITEM" />ફોર્મમાં દાખલ કરેલી માહિતી
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">ઉલટા ક્રમમાં ઉપર તરફ</translation>
+<translation id="5445340838622821110">જ્યારે તમે સમય જતાં ચુકવણી કરો, ત્યારે એક વખતનો વર્ચ્યુઅલ કાર્ડ નંબર ભરવામાં આવે છે. આ નંબર ફક્ત આ ખરીદી માટે છે. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700"><ph name="SITE" /> દ્વારા તમારા વિશે સાચવવામાં આવેલી માહિતીનો ઉપયોગ કરવાની તેમને મંજૂરી આપો</translation>
 <translation id="5452270690849572955">આ <ph name="HOST_NAME" /> પેજ શોધી શકાતું નથી</translation>
 <translation id="5452923259299906094">ઇ-વૉલેટ અને Pix વડે ચુકવણી કરો</translation>
@@ -3333,6 +3337,7 @@
 <translation id="6917795328362592458">તમે હાલમાં જ ઉપયોગમાં લીધેલો પાસવર્ડ ડેટા ઉલ્લંઘનમાં જોવા મળ્યો છે. તમારા એકાઉન્ટ સુરક્ષિત રાખવા માટે, Password Manager તમારા સાચવેલા પાસવર્ડ ચેક કરવાનો સુઝાવ આપે છે.</translation>
 <translation id="6917873303492266709">ટૅબના ગ્રૂપ શેર કરવા, તેમાં જોડાવા અથવા તેમાં સહયોગ કરવા માટે, સેટિંગ ખોલો અને "Chrome સાઇન ઇન"ને મંજૂરી આપો વિકલ્પ ચાલુ કરો</translation>
 <translation id="6921197121276419421">વેબ ઍપ ઇન્સ્ટૉલ કરવાની મંજૂરી છે</translation>
+<translation id="69238565902785824">તમારા એકાઉન્ટને લિંક કરેલું રાખવાથી તમને <ph name="BNPL_ISSUER_NAME" /> વડે ઝડપથી ચુકવણી કરવામાં સહાય મળે છે, પરંતુ તમે <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /> પર જઈને તેને અનલિંક કરી શકો છો</translation>
 <translation id="6924013822850225188">ચેકઆઉટ વખતે તમને કાર્ડના લાભ દેખાય કે નહીં તે પસંદ કરો (બેંકની શરતો લાગુ થાય છે)</translation>
 <translation id="6925267999184670015">નૉર્થ અમેરિકન બી+</translation>
 <translation id="6926216138694948720">બૉડી આર્ટ</translation>
@@ -3398,6 +3403,7 @@
 <translation id="701757816833614688">વિઝ્યુઅલ આર્ટ અને ડિઝાઇન સંબંધિત શિક્ષણ</translation>
 <translation id="702275896380648118">તમને ગમતી બાબતો વિશે આ સાઇટ અનુમાન લગાવે છે અને પછી અન્ય સાઇટને જાહેરાતો સૂચવે છે. તમને વધુ સંબંધિત જાહેરાતો બતાવવા માટે, આ સાઇટ Chromeમાંથી જાહેરાતના તમારા વિષયોની માહિતી પણ મેળવે છે.</translation>
 <translation id="7023162328967545559">ઍડમિન દ્વારા ચેતવણી</translation>
+<translation id="7023765275461720661">એકાઉન્ટને લિંક કરીને <ph name="BNPL_ISSUER_NAME" /> વડે ચુકવણી કરવી છે?</translation>
 <translation id="7029809446516969842">પાસવર્ડ</translation>
 <translation id="7030164307377592766">ચુકવણી પદ્ધતિઓ ભરવા માટે, સેટિંગમાં ફેરફાર કરો</translation>
 <translation id="7031646650991750659">તમે કઈ Google Play ઍપ ઇન્સ્ટૉલ કરી છે</translation>
@@ -3620,6 +3626,7 @@
 <translation id="741204030948306876">હા, હું સંમત છું</translation>
 <translation id="7416351320495623771">પાસવર્ડ મેનેજ કરો…</translation>
 <translation id="7416898721136759658">અનુદાન, શિષ્યવૃત્તિ અને નાણાકીય સહાય</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">પ્રોગ્રામિંગ</translation>
 <translation id="7419091773564635591">કમ્પ્યૂટર અને ઇલેક્ટ્રોનિક</translation>
 <translation id="7419106976560586862">પ્રોફાઇલ પાથ</translation>
@@ -3666,6 +3673,7 @@
 <translation id="7485085230273446323">વ્યાવસાયિક અને ઔદ્યોગિક</translation>
 <translation id="7485870689360869515">કોઈ ડેટા મળ્યો નથી.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> તમારી યોગ્યતા ચેક કરશે (આનાથી તમારા ક્રેડિટ સ્કોરને કોઈ અસર થશે નહીં). જો મંજૂર થાય, તો <ph name="BNPL_ISSUER_NAME" /> તમને ચુકવણી પ્લાન પસંદ કરીને તમારી ખરીદી પૂર્ણ કરવાની સુવિધા આપશે.</translation>
 <translation id="7489392576326061356">શૅમ્પૂ અને કંડિશનર</translation>
 <translation id="7495528107193238112">આ કન્ટેન્ટ બ્લૉક કરવામાં આવ્યું છે. સમસ્યાનાં નિરાકરણ માટે, સાઇટના માલિકનો સંપર્ક કરો.</translation>
 <translation id="749865518782565832">પ્લમ્બિંગ</translation>

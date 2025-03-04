@@ -151,7 +151,7 @@ class LoginAuthUserViewTestBase : public LoginTestBase {
     container_ = new views::View();
     container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
-    container_->AddChildView(view_.get());
+    container_->AddChildViewRaw(view_.get());
     SetWidget(CreateWidgetWithContent(container_));
   }
 

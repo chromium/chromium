@@ -184,6 +184,7 @@
 <translation id="3628308229821498208">建議搜尋</translation>
 <translation id="3658847490588580244">預設瀏覽器底部功能表</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{在 <ph name="RWS_OWNER" /> 的網站群組中，有 <ph name="RWS_MEMBERS_COUNT" /> 個網站可以查看你在群組中的活動}other{在 <ph name="RWS_OWNER" /> 的網站群組中，有 <ph name="RWS_MEMBERS_COUNT" /> 個網站可以查看你在群組中的活動}}</translation>
+<translation id="3676777756440746804">已禁止網站要求使用與你相關的既有資訊</translation>
 <translation id="3697164069658504920">如果啟用，網站就可以要求使用 USB 裝置。如果停用，網站將無法使用 USB 裝置。</translation>
 <translation id="3707034683772193706">你造訪的網站可將少量資訊儲存在 Chrome，主要用來證明你不是機器人</translation>
 <translation id="3709818294139939629">網站的檔案存取權已移除</translation>
@@ -208,9 +209,11 @@
 <translation id="3922092564198021702">在手機上開啟「設定」</translation>
 <translation id="3933121352599513978">收合不需要的要求 (建議)</translation>
 <translation id="3955193568934677022">允許網站播放受保護的內容 (建議)</translation>
+<translation id="3965467402665811906">網站可以要求使用與你相關的既有資訊</translation>
 <translation id="3967822245660637423">下載完成</translation>
 <translation id="3987993985790029246">複製連結</translation>
 <translation id="3991845972263764475">已下載：<ph name="BYTES_DOWNLOADED_WITH_UNITS" />，總大小：不明</translation>
+<translation id="3992308058851451478"><ph name="SITE" /> 可以在你瀏覽以下網站時使用你的資訊</translation>
 <translation id="3992684624889376114">關於本頁</translation>
 <translation id="4002066346123236978">標題</translation>
 <translation id="4046123991198612571">下一首曲目</translation>
@@ -263,6 +266,7 @@
 <translation id="4883854917563148705">無法重設受管理的設定</translation>
 <translation id="4887024562049524730">系統必須先詢問你，才能允許網站使用你的虛擬實境裝置和資料 (建議設定)</translation>
 <translation id="4936863036653376783">你可以在「分頁群組」專區中查看所有裝置中的群組</translation>
+<translation id="4945443401464700059"><ph name="SITE" /> 已遭封鎖，無法使用你在以下網站的資訊</translation>
 <translation id="4953688446973710931">如果啟用，網站就可以要求自動下載多個檔案。如果停用，網站將無法自動下載多個檔案。</translation>
 <translation id="4962975101802056554">撤銷裝置的所有權限</translation>
 <translation id="497421865427891073">往前</translation>
@@ -532,9 +536,11 @@
 <translation id="851751545965956758">禁止網站連線至裝置</translation>
 <translation id="8525306231823319788">全螢幕</translation>
 <translation id="8541410041357371550">這個網站會從 Chrome 中取得你的廣告主題，為你顯示更貼近需求的廣告</translation>
+<translation id="854876774113449365">你造訪的網站可以嵌入其他網站的內容，例如圖片、廣告和文字。這些嵌入的網站可要求你授予權限，在你瀏覽網站時使用與你相關的既有資訊。<ph name="BEGIN_LINK" />進一步瞭解嵌入的內容<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">如何顯示要求</translation>
 <translation id="8558480467877843976">現在起，每當你瀏覽或點選訊息、文件和其他應用程式中的連結時，都可以直接使用 Chrome 來開啟。</translation>
 <translation id="857943718398505171">已允許 (建議)</translation>
+<translation id="8593422116412089302">如果啟用，網站可以要求使用與你相關的既有資訊；如果停用，網站就無法要求使用這些資訊。</translation>
 <translation id="8609465669617005112">上移</translation>
 <translation id="8617611086246832542">如果啟用，系統將顯示網站的電腦檢視畫面。如果停用，系統將顯示網站的行動裝置檢視畫面。</translation>
 <translation id="8670078035093027626">預設瀏覽器底部功能表已開啟，並顯示在整個畫面</translation>

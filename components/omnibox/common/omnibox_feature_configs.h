@@ -189,6 +189,10 @@ struct SearchAggregatorProvider : Config<SearchAggregatorProvider> {
   // If true, the newer Discovery Engine OAuth scope will be used in suggestions
   // requests.
   bool use_discovery_engine_oauth_scope;
+  // If true, doc provider won't run outside the drive scope. If false, doc
+  // provider will run unscoped. Either way, doc provider won't run when in the
+  // enterprise scope.
+  bool disable_drive;
 
  private:
   // Utility methods and members for setting up a mock search engine via Finch.
@@ -224,6 +228,19 @@ struct SuggestionAnswerMigration : Config<SuggestionAnswerMigration> {
   DECLARE_FEATURE(kOmniboxSuggestionAnswerMigration);
   SuggestionAnswerMigration();
   bool enabled;
+};
+
+// Enables url suggestions when omnibox is focused on Web/SRP.
+struct UrlSuggestionsOnFocus : Config<UrlSuggestionsOnFocus> {
+  DECLARE_FEATURE(kUrlSuggestionsOnFocus);
+  UrlSuggestionsOnFocus();
+  bool enabled;
+  // Max number of zps suggestions to show.
+  size_t max_suggestions;
+  // Max number of search zps suggestions to show.
+  size_t max_search_suggestions;
+  // Max number of url zps suggestions to show.
+  size_t max_url_suggestions;
 };
 
 // Do not add new configs here at the bottom by default. They should be ordered

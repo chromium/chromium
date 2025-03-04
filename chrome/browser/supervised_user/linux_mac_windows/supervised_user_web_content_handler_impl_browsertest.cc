@@ -359,7 +359,7 @@ class SupervisedUserParentAccessViewWithTimeoutTest
     : public SupervisedUserWebContentHandlerImplTest {
  public:
   SupervisedUserParentAccessViewWithTimeoutTest() {
-    // Override PACP timeout to 1 ms.
+    // Override PACP timeout to 10 ms.
     int timeout_ms = 10;
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{supervised_user::kLocalWebApprovals,
@@ -389,7 +389,12 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
       supervised_user::FilteringBehaviorReason::MANUAL,
       /*callback*/ base::DoNothing());
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return handler->GetWeakParentAccessViewForTesting() != nullptr;
+    return handler->GetWeakParentAccessViewForTesting() != nullptr &&
+           handler->GetWeakParentAccessViewForTesting()
+                   ->GetWebViewForTesting() != nullptr &&
+           !handler->GetWeakParentAccessViewForTesting()
+                ->GetWebViewForTesting()
+                ->GetVisible();
   }));
 
   // Check that the PACP dialog content is replaced by the error message

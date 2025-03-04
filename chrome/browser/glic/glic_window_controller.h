@@ -277,9 +277,12 @@ class GlicWindowController : public views::WidgetObserver {
   // to its target position.
   void AttachToBrowser(Browser& browser);
 
-  // If glic is within attachment distance of a browser window's glic
-  // button, attach the glic window to the button's position.
-  void HandleAttachmentToBrowserWindows();
+  // Handles end-of-drag:
+  //  - If glic is within attachment distance of a browser window's glic button,
+  //    attach the glic window to the button's position.
+  //  - If glic is still detached and has moved to a display with a different
+  //    work area size, possibly resize the window.
+  void OnDragComplete();
 
   // Finds a browser within attachment distance of glic to toggle the attachment
   // indicator.
@@ -322,6 +325,10 @@ class GlicWindowController : public views::WidgetObserver {
   // the minimum and maximum sizes (max height is calculated from
   // `work_area_height`).
   gfx::Size GetLastRequestedSizeClamped(int work_area_height) const;
+
+  // Possibly adjusts the size of the window appropriate for the current
+  // display workspace, but only if it's different than the current target size.
+  void MaybeAdjustSizeForDisplay(bool animate);
 
   // Observes the glic widget.
   base::ScopedObservation<views::Widget, views::WidgetObserver>

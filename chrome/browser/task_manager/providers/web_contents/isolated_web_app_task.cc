@@ -70,7 +70,9 @@ void IsolatedWebAppTask::UpdateTitle() {
 }
 
 void IsolatedWebAppTask::UpdateFavicon() {
-  DefaultUpdateFaviconImpl();
+  const gfx::ImageSkia* icon =
+      RendererTask::GetFaviconFromWebContents(web_contents());
+  set_icon(icon ? *icon : gfx::ImageSkia());
 }
 
 }  // namespace task_manager

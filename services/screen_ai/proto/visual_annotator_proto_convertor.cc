@@ -481,23 +481,6 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
     }
   }
 
-  // Each unique `chrome_screen_ai::LineBox::block_id` signifies a different
-  // block of text, and so it creates a new static text node in the
-  // accessibility tree. Each block has a sorted set of line boxes, everyone of
-  // which is turned into one or more inline text box nodes in the accessibility
-  // tree. Line boxes are sorted using their
-  // `chrome_screen_ai::LineBox::order_within_block` member and are identified
-  // by their index in the container of line boxes. Use std::map to sort both
-  // text blocks and the line boxes that belong to each one, both operations
-  // having an O(n * log(n)) complexity.
-  // TODO(accessibility): Determine reading order based on visual positioning of
-  // text blocks, not on the order of their block IDs.
-  std::map<int32_t, std::map<int32_t, int>> blocks_to_lines_map;
-  for (int i = 0; i < visual_annotation.lines_size(); ++i) {
-    const chrome_screen_ai::LineBox& line = visual_annotation.lines(i);
-    blocks_to_lines_map[line.block_id()].emplace(
-        std::make_pair(line.order_within_block(), i));
-  }
 
   // Need four more nodes that convey the disclaimer messages. There are two
   // messages, one before the content and one after. Each message is wrapped
@@ -505,8 +488,25 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
   // reader user and thus not missed.
   formatting_context_count += 4;
 
-  // There are the same number of paragraphs as blocks.
-  size_t paragraph_count = blocks_to_lines_map.size();
+  // Block and pargraph ids are sorted ascendingly in the suggested reading
+  // order. Verify that, and find the number of paragraphs across all blocks.
+  size_t paragraph_count = 0;
+  {
+    int last_block_id = -1;
+    int last_paragraph_id = -1;
+    for (const auto& line : visual_annotation.lines()) {
+      if (line.paragraph_id() != last_paragraph_id ||
+          line.block_id() != last_block_id) {
+        CHECK_GE(line.block_id(), last_block_id);
+        if (line.block_id() == last_block_id) {
+          CHECK_GE(line.paragraph_id(), last_paragraph_id);
+        }
+        paragraph_count++;
+        last_paragraph_id = line.paragraph_id();
+        last_block_id = line.block_id();
+      }
+    }
+  }
 
   std::vector<ui::AXNodeData> nodes(1 +  // Root Node
                                     visual_annotation.lines().size() +
@@ -541,30 +541,33 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
   begin_node.relative_bounds.bounds = begin_node_wrapper.relative_bounds.bounds;
   begin_node_wrapper.child_ids.push_back(begin_node.id);
 
-  for (const auto& block_to_lines_pair : blocks_to_lines_map) {
+  ui::AXNodeData* paragraph_node = nullptr;
+  int block_id = -1;
+  int paragraph_id = -1;
+  for (const auto& line : visual_annotation.lines()) {
     // TODO(crbug.com/347622611): Create separate paragraphs based on the
     // blocks' spacing (e.g. by utilizing heuristics found in
     // PdfAccessibilityTree). Blocks as returned by the OCR engine are still
     // too small.
-    ui::AXNodeData& paragraph_node = nodes[index++];
-    paragraph_node.role = ax::mojom::Role::kParagraph;
-    paragraph_node.id = GetNextNegativeNodeID();
-    page_node.child_ids.push_back(paragraph_node.id);
-
-    for (const auto& line_sequence_number_to_index_pair :
-         block_to_lines_pair.second) {
-      const chrome_screen_ai::LineBox& line_box =
-          visual_annotation.lines(line_sequence_number_to_index_pair.second);
-      // Every line with a textual accessibility role should turn into one or
-      // more inline text boxes, each one  representing a formatting context.
-      // If the line is not of a textual role, only one node is initialized
-      // having a more specific role such as `ax::mojom::Role::kImage`.
-      index += SerializeLineBox(line_box, index, paragraph_node, nodes);
-
-      // Accumulate bounds of all lines for the paragraph.
-      auto& bounding_box = line_box.bounding_box();
-      paragraph_node.relative_bounds.bounds.Union(ToGfxRect(bounding_box));
+    if (block_id != line.block_id() || paragraph_id != line.paragraph_id()) {
+      block_id = line.block_id();
+      paragraph_id = line.paragraph_id();
+      paragraph_node = &nodes[index++];
+      paragraph_node->role = ax::mojom::Role::kParagraph;
+      paragraph_node->id = GetNextNegativeNodeID();
+      page_node.child_ids.push_back(paragraph_node->id);
     }
+
+    // Every line with a textual accessibility role should turn into one or
+    // more inline text boxes, each one  representing a formatting context.
+    // If the line is not of a textual role, only one node is initialized
+    // having a more specific role such as `ax::mojom::Role::kImage`.
+    index += SerializeLineBox(line, index, *paragraph_node, nodes);
+
+    // Accumulate bounds of all lines for the paragraph.
+    auto& bounding_box = line.bounding_box();
+    CHECK(paragraph_node);
+    paragraph_node->relative_bounds.bounds.Union(ToGfxRect(bounding_box));
   }
 
   // Add a disclaimer node informing the user of the end of extracted text,
@@ -606,24 +609,14 @@ mojom::VisualAnnotationPtr ConvertProtoToVisualAnnotation(
     line_box->text_line = line.utf8_string();
     line_box->block_id = line.block_id();
     line_box->language = line.language();
-    line_box->order_within_block = line.order_within_block();
+    line_box->paragraph_id = line.paragraph_id();
     line_box->bounding_box = ProtoToMojo(line.bounding_box());
     line_box->bounding_box_angle = line.bounding_box().angle();
     line_box->confidence = line.confidence();
 
-    // `baseline_box` is not available in ChromeScreenAI library prior to
-    // version 122.1.
-    // If it is not provided by the OCR, the library assigns bounding box's
-    // value to it and it's done the same here.
-    auto baseline_box =
-        line.has_baseline_box() ? line.baseline_box() : line.bounding_box();
-    line_box->baseline_box = ProtoToMojo(baseline_box);
-    line_box->baseline_box_angle = baseline_box.angle();
-
     for (const auto& word : line.words()) {
       auto word_box = screen_ai::mojom::WordBox::New();
       word_box->word = word.utf8_string();
-      word_box->dictionary_word = word.dictionary_word();
       word_box->language = word.language();
       word_box->bounding_box = ProtoToMojo(word.bounding_box());
       word_box->bounding_box_angle = word.bounding_box().angle();

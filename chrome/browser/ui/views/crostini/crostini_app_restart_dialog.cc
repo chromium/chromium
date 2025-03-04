@@ -40,7 +40,7 @@ std::unique_ptr<views::View> MakeCrostiniAppRestartView() {
   views::Label* message_label = new views::Label(message);
   message_label->SetMultiLine(true);
   message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  view->AddChildView(message_label);
+  view->AddChildViewRaw(message_label);
 
   return view;
 }

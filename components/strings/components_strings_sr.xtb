@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">Дугме Управљај преузимањима у Chrome-у, активирајте га да бисте управљали фајловима које сте преузели у Chrome-у</translation>
 <translation id="1420345875188552368">Сачувани начин аутоматског плаћања може да се користи за ово плаћање. Да бисте искључили е-новчанике у Chrome-у, идите у <ph name="BEGIN_LINK1" />подешавања плаћања<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> да бисте омогућили упаривање</translation>
+<translation id="1421484961346698724">Избрисан налог</translation>
 <translation id="14222610277930434">Често посећујете</translation>
 <translation id="1422930527989633628">Може да тражи да открива Bluetooth уређаје у близини</translation>
 <translation id="1426410128494586442">Да</translation>
@@ -3023,6 +3024,7 @@
 <translation id="6351658970066645919">Избриши податке прегледања</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ниједна}=1{1 лозинка (за <ph name="DOMAIN_LIST" />, синхронизовано)}=2{2 лозинке (за <ph name="DOMAIN_LIST" />, синхронизовано)}one{# лозинка (за <ph name="DOMAIN_LIST" />, синхронизовано)}few{# лозинке (за <ph name="DOMAIN_LIST" />, синхронизовано)}other{# лозинки (за <ph name="DOMAIN_LIST" />, синхронизовано)}}</translation>
 <translation id="6355392890578844978">Овим прегледачем не управља компанија нити друга организација. Активностима на овом уређају се можда управља ван Chromium-а. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Групе картица <ph name="GROUP_TITLE_1" /> и <ph name="GROUP_TITLE_2" /> више нису доступне</translation>
 <translation id="6358088212770985041">да измени начине плаћања</translation>
 <translation id="6358450015545214790">Шта ово значи?</translation>
 <translation id="6360213755783740931">Сазнајте више о заштити од малвера</translation>

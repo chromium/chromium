@@ -347,6 +347,7 @@
 <translation id="5727531838415286053">‏אם צורפת באופן אקראי לגרסת ניסיון פעילה ב-Chrome, היסטוריית הגלישה שלך משפיעה על המודעות שמוצגות לך ועל תחומי העניין המשוערים שמופיעים בהמשך. כדי להגן על הפרטיות שלך, מתבצעת ב-Chrome מחיקה של תחומי העניין שלך על בסיס מתחלף מדי חודש. תחומי עניין שלא הוסרו עוברים רענון.</translation>
 <translation id="5736850870166430177">‏אם באתר כלשהו מתבצע ניסיון לגנוב את הסיסמה שלך, או אם המערכת מזהה הורדה של קובץ מזיק, Chrome עשוי גם לשלוח כתובות URL לבדיקה באמצעות 'גלישה בטוחה'. הנתונים שנשלחים לבדיקה כוללים ביטים מתוכן של דפים</translation>
 <translation id="5756509061973259733">‏כבר קיים במכשיר פרופיל Chrome עם החשבון הזה.</translation>
+<translation id="5759947850379142561">‏אפשר לבחור טקסט או תמונה לחיפוש באמצעות Google Lens או ללחוץ על Escape כדי לצאת מ-Google Lens</translation>
 <translation id="5795887333006832406">‏<ph name="PAGE_TITLE" /> - Google Chrome בגרסת Canary</translation>
 <translation id="5804318322022881572">‏לא ניתן היה להפעיל את Chrome. יש לנסות שוב.</translation>
 <translation id="5809516625706423866">‏לא ניתן להתחבר לאינטרנט. HTTP 401: אין הרשאה. צריך לבדוק את ההגדרה של שרת ה-proxy.</translation>
@@ -449,6 +450,7 @@
 <translation id="7071827361006050863">‏נתוני הגלישה ב-Chrome יימחקו בקרוב</translation>
 <translation id="7085332316435785646">‏בוחרים אם לכלול את ההיסטוריה ב-Chrome להתאמה אישית מדויקת יותר בשירותי Google</translation>
 <translation id="7088681679121566888">‏Chrome מעודכן</translation>
+<translation id="7096221564931416126">‏אפשר לבחור טקסט או תמונה לחיפוש באמצעות Google Lens</translation>
 <translation id="7098166902387133879">‏Google Chrome משתמש במיקרופון שלך.</translation>
 <translation id="7099479769133613710">‏הפעלה מחדש לצורך עדכון ‎&amp;ChromeOS</translation>
 <translation id="7106741999175697885">‏מנהל המשימות - Google Chrome</translation>

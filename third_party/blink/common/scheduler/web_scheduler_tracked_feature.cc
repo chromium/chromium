@@ -131,7 +131,7 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
       return {"Dummy", "Dummy for testing"};
     case WebSchedulerTrackedFeature::
         kJsNetworkRequestReceivedCacheControlNoStoreResource:
-      return {"response-cache-control-no-store",
+      return {"response-cache-control-no-store-with-js-network-request",
               "JavaScript network request received Cache-Control: no-store "
               "resource"};
     case WebSchedulerTrackedFeature::kIndexedDBEvent:

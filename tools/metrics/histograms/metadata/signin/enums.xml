@@ -989,8 +989,11 @@ chromium-metrics-reviews@google.com.
     avoid that deletion of data propagates via sync to other devices.
   </int>
   <int value="35" label="Signed out while switching to another primary account">
-    In the account menu, the user switched their primary account. As a first
-    step, they get signed-out of their previous primary account.
+    The user switched their primary account. As a first step, they get
+    signed-out of their previous primary account, for an account switching. For
+    a profile switching, this metric can be recorded when switching to the
+    personal profile, if the personal profile doesn't have the right primary
+    account.
   </int>
   <int value="36" label="Signed out from the account menu">
     In the account menu, the user selected the sign-out button.

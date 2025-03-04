@@ -13,9 +13,7 @@ var testSteps = [
   },
   function (status) {
     chrome.test.getConfig(function(config) {
-      featureEnabled = config.customArg == "enabled";
-      expectedStatus = featureEnabled ? 'authentication_required' : 'disabled';
-      chrome.test.assertEq(expectedStatus, status);
+      chrome.test.assertEq('disabled', status);
     })
   }
 ];

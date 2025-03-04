@@ -117,7 +117,7 @@ TEST_F(AuthenticationFlowPerformerTest, SignoutForSwitch) {
       signin::ConsentLevel::kSignin));
   histogram_tester.ExpectUniqueSample(
       "Signin.SignoutProfile",
-      signin_metrics::ProfileSignout::kChangeAccountInAccountMenu, 1);
+      signin_metrics::ProfileSignout::kSignoutForAccountSwitching, 1);
 }
 
 }  // namespace

@@ -503,6 +503,7 @@
 <translation id="3373141842870501561">خلفية تعرض منظرًا انسيابيًا للأرض</translation>
 <translation id="33736539805963175">خلفية <ph name="LETTERS_COLOR" /> على شكل حرف <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">مجموعة حصرية</translation>
+<translation id="3395147534045164351">تفعيل محاذاة الموقع الجغرافي أو إيقافها</translation>
 <translation id="3404249063913988450">تفعيل شاشة التوقف</translation>
 <translation id="3413935475507503304">لمواصلة عملية التحديث، انقر على "التالي".</translation>
 <translation id="3428551088151258685">خارجي</translation>
@@ -652,6 +653,7 @@
 <translation id="4113067922640381334">يمكنك الآن الوصول إلى <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />خلفيات<ph name="END_LINK_WALLPAPER_SUBPAGE" /> جديدة.</translation>
 <translation id="4117637339509843559">الوضع الداكن</translation>
 <translation id="4126551873361000548">ترجيع بمقدار 10 ثوانٍ</translation>
+<translation id="4128271910628504223">يُرجى إدخال طلب، مثل "رسم غابة مليئة بالضباب"</translation>
 <translation id="4130035430755296270">استمِر في تمرير مؤشر الماوس هنا للاطّلاع على المزيد من خيارات التنسيق.</translation>
 <translation id="4130750466177569591">أوافق</translation>
 <translation id="4131410914670010031">أبيض وأسود</translation>
@@ -859,6 +861,7 @@
 <translation id="5050042263972837708">اسم المجموعة</translation>
 <translation id="5051044138948155788">هذه هي الصفحة الوحيدة وستؤدي إزالتها إلى نقلك إلى شاشة بدء المسح الضوئي.</translation>
 <translation id="5053233795640754917">إيقاف مؤقت</translation>
+<translation id="5056587122125565772">إنشاء صورة</translation>
 <translation id="5078711626843651677">تُخزَّن النماذج الصوتية مؤقتًا على الجهاز إلى أن تكتمل عملية تصنيف المتحدّثين. ويمكنك متى شئت إيقاف هذا الخيار من خلال "الإعدادات".</translation>
 <translation id="5078983345702708852">بتصميم مُبتكر</translation>
 <translation id="5087864757604726239">رجوع</translation>
@@ -1130,7 +1133,6 @@
 <translation id="6325525973963619867">إخفاق</translation>
 <translation id="6327262166342360252">‏تم إنشاء هذه الخلفية بواسطة الذكاء الاصطناعي (AI) باستخدام النص التالي: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">المظهر الداكن التلقائي</translation>
-<translation id="6335228876613776082">اكتمل تنزيل النموذج</translation>
 <translation id="6340526405444716530">التخصيص</translation>
 <translation id="6348252528297699679">لإيقاف إمكانية الوصول إلى الموقع الجغرافي، انتقِل إلى "الإعدادات" &gt; "الخصوصية والأمان" &gt; "عناصر التحكّم في الخصوصية" &gt; "الوصول إلى الموقع الجغرافي". <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">اسم المستخدم وكلمة المرور</translation>
@@ -1674,7 +1676,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">‏ألبوم "صور Google"</translation>
 <translation id="8775713578693478175">اسم نقطة وصول المودم</translation>
-<translation id="877735394245039557">جارٍ تنزيل النموذج</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">قد يكون للشبكة مدخل مشروط الوصول إليه.</translation>
 <translation id="8797082062139985406">‏إنشاء اسم باستخدام الذكاء الاصطناعي من Google</translation>

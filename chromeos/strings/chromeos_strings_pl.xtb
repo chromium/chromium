@@ -1130,7 +1130,6 @@
 <translation id="6325525973963619867">Niepowodzenie</translation>
 <translation id="6327262166342360252">Ta tapeta została utworzona za pomocą AI przy użyciu tego tekstu: „<ph name="PROMPT" />”.</translation>
 <translation id="6331191339300272798">Automatyczny ciemny motyw</translation>
-<translation id="6335228876613776082">Model został pobrany</translation>
 <translation id="6340526405444716530">Personalizacja</translation>
 <translation id="6348252528297699679">Możesz wyłączyć lokalizację, klikając Ustawienia &gt; Prywatność i bezpieczeństwo &gt; Ustawienia prywatności &gt; Dostęp do lokalizacji. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Nazwa użytkownika i hasło</translation>
@@ -1672,7 +1671,6 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Zdjęcia Google</translation>
 <translation id="8775713578693478175">APN modemu</translation>
-<translation id="877735394245039557">Pobieram model</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">W sieci może znajdować się portal przechwytujący</translation>
 <translation id="8797082062139985406">Utwórz nazwę za pomocą AI od Google</translation>

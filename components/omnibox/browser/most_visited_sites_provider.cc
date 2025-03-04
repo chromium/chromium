@@ -15,6 +15,9 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
+#include "components/omnibox/browser/page_classification_functions.h"
+#include "components/omnibox/browser/zero_suggest_provider.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/url_formatter.h"
@@ -86,6 +89,33 @@ AutocompleteMatch BuildMatch(AutocompleteProvider* provider,
 
   match.suggestion_group_id = omnibox::GROUP_MOBILE_MOST_VISITED;
   return match;
+}
+
+bool BuildAutocompleteMatches(AutocompleteProvider* provider,
+                              AutocompleteProviderClient* client,
+                              const history::MostVisitedURLList& urls,
+                              ACMatches& matches) {
+  if (urls.empty()) {
+    return false;
+  }
+  TemplateURLService* const url_service = client->GetTemplateURLService();
+  int relevance = kMostVisitedTilesIndividualHighRelevance;
+  for (const auto& url : urls) {
+    // Skip SRP results from DSP on Desktop. On-focus ZPS suggestions should
+    // be sites.
+    if (url_service->IsSearchResultsPageFromDefaultSearchProvider(url.url)) {
+      continue;
+    }
+    auto match = BuildMatch(provider, client, url.title, url.url, relevance,
+                            AutocompleteMatchType::TILE_MOST_VISITED_SITE);
+    // Override suggestion group id for desktop most visited matches.
+    match.suggestion_group_id = omnibox::GROUP_MOST_VISITED;
+    match.subtypes.emplace(omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_URLS);
+    match.subtypes.emplace(omnibox::SUBTYPE_URL_BASED);
+    matches.emplace_back(std::move(match));
+    --relevance;
+  }
+  return true;
 }
 
 template <typename TileContainer>
@@ -198,6 +228,7 @@ bool BuildTileSuggest(AutocompleteProvider* provider,
 void MostVisitedSitesProvider::Start(const AutocompleteInput& input,
                                      bool minimal_changes) {
   Stop(true, false);
+
   if (!AllowMostVisitedSitesSuggestions(input))
     return;
 
@@ -251,7 +282,12 @@ MostVisitedSitesProvider::~MostVisitedSitesProvider() = default;
 void MostVisitedSitesProvider::OnMostVisitedUrlsAvailable(
     const history::MostVisitedURLList& urls) {
   done_ = true;
-  if (BuildTileSuggest(this, client_, device_form_factor_, urls, matches_)) {
+  if (omnibox_feature_configs::UrlSuggestionsOnFocus::Get().enabled) {
+    if (BuildAutocompleteMatches(this, client_, urls, matches_)) {
+      NotifyListeners(true);
+    }
+  } else if (BuildTileSuggest(this, client_, device_form_factor_, urls,
+                              matches_)) {
     NotifyListeners(true);
   }
 }
@@ -271,9 +307,7 @@ bool MostVisitedSitesProvider::AllowMostVisitedSitesSuggestions(
 
   // Check whether current context is one that supports MV tiles.
   // Any context other than those listed below will be rejected.
-  if (page_class != metrics::OmniboxEventProto::OTHER &&
-      page_class != metrics::OmniboxEventProto::ANDROID_SEARCH_WIDGET &&
-      page_class != metrics::OmniboxEventProto::ANDROID_SHORTCUTS_WIDGET) {
+  if (!omnibox::SupportsMostVisitedSites(page_class)) {
     return false;
   }
 

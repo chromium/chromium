@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">Ngarkoje faqen më vonë</translation>
 <translation id="1010225406377140704">Kontakto me dërguesin për t'i kërkuar një lidhje të re</translation>
 <translation id="1011206368273183593">Skedarët po përgatiten</translation>
+<translation id="1012264210825687872">Pasi të rishikosh porosinë, duhet të identifikohesh ose të krijosh një llogari të <ph name="BNPL_ISSUER_NAME" />. Kjo llogari do të lidhet automatikisht me Google Pay.</translation>
 <translation id="1014509239502131234">Po zhbëhen rezultatet</translation>
 <translation id="1015730422737071372">Jep detaje të tjera</translation>
 <translation id="1019413721762100891">Joaktive</translation>
@@ -660,6 +661,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2145193671493396738">Lajme nga ekonomia</translation>
 <translation id="214556005048008348">Anulo pagesën</translation>
 <translation id="2147117373852943630">Instrumente muzikore</translation>
+<translation id="2147254250314124496"><ph name="EMBEDDED_URL" /> kërkon të përdorë informacionet që ka ruajtur në lidhje me ty</translation>
 <translation id="2148613324460538318">Shto kartë</translation>
 <translation id="2148716181193084225">Sot</translation>
 <translation id="2149968176347646218">Lidhja nuk është e sigurt</translation>
@@ -691,6 +693,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2187317261103489799">Zbulo (parazgjedhja)</translation>
 <translation id="2188375229972301266">Shumë shpime poshtë</translation>
 <translation id="2194856509914051091">Gjëra për t'u pasur parasysh</translation>
+<translation id="2198071643181968308">Mëso më shumë rreth <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="2200678913752027654">Butoni i gishtave poshtë, shtyp tastin Enter për të hapur një formular për të dërguar koment të detajuar se pse nuk të pëlqen ky sugjerim</translation>
 <translation id="2202627062836089804">pjesën e pasme e kartës</translation>
 <translation id="2204482073374652408">Përditësimi përfundoi!</translation>
@@ -2318,6 +2321,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome ka nevojë për qasje te "<ph name="PERMISSION" />" në pajisjen tënde</translation>
 <translation id="510644072453496781">Karton (fundor)</translation>
+<translation id="5106648964679263509">Karta virtuale për <ph name="BNPL_ISSUER_NAME" /> është plotësuar</translation>
 <translation id="5108881358339761672">Sajti nuk është i sigurt</translation>
 <translation id="5109892411553231226">Menaxho mënyrat e pagesës</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2513,6 +2517,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
             <ph name="LIST_ITEM" />Informacionet e futura në formularë
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Renditja e kundërt e kthyer lart</translation>
+<translation id="5445340838622821110">Kur paguan me kalimin e kohës, plotësohet një numër vetëm për një herë i kartës virtuale. Ky numër shërben vetëm për këtë blerje. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Lejo që <ph name="SITE" /> të përdorë informacionet e ruajtura për ty</translation>
 <translation id="5452270690849572955">Kjo faqe e <ph name="HOST_NAME" /> nuk mund të gjendet</translation>
 <translation id="5452923259299906094">Paguaj me "Portofolin elektronik" dhe Pix</translation>
@@ -3331,6 +3336,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6917795328362592458">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. Për të mbrojtur llogaritë e tua, "Menaxheri i fjalëkalimeve" rekomandon që të kontrollosh fjalëkalimet e ruajtura.</translation>
 <translation id="6917873303492266709">Për të ndarë, për t'u bashkuar dhe për të bashkëpunuar në grupet e skedave, hap cilësimet dhe aktivizo "Lejo identifikimin në Chrome"</translation>
 <translation id="6921197121276419421">Instalimi i aplikacioneve të uebit lejohet</translation>
+<translation id="69238565902785824">Mbajtja e llogarisë të lidhur të ndihmon të paguash më shpejt me <ph name="BNPL_ISSUER_NAME" />, por mund ta shkëputësh atë duke shkuar te <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /></translation>
 <translation id="6924013822850225188">Zgjidh nëse do t'i shikosh përfitimet e kartës në përfundim të blerjes (zbatohen kushtet e bankës)</translation>
 <translation id="6925267999184670015">B+ (Amerika e Veriut)</translation>
 <translation id="6926216138694948720">Art trupor</translation>
@@ -3396,6 +3402,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="701757816833614688">Edukim për artet pamore dhe dizajnin</translation>
 <translation id="702275896380648118">Ky sajt përcakton gjërat që të pëlqejnë dhe më pas sugjeron reklama për sajtet e tjera. Ky sajt merr po ashtu temat e tua të reklamave nga Chrome për të të shfaqur reklama më të përshtatshme</translation>
 <translation id="7023162328967545559">Paralajmërim nga administratori</translation>
+<translation id="7023765275461720661">Të lidhet llogaria dhe të paguhet me <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Fjalëkalimet</translation>
 <translation id="7030164307377592766">të modifikojë cilësimet për plotësimin e mënyrave të pagesave</translation>
 <translation id="7031646650991750659">Cilat aplikacione të Google Play ke instaluar</translation>
@@ -3617,6 +3624,7 @@ Detaje shtesë:
 <translation id="741204030948306876">Po, jam dakord</translation>
 <translation id="7416351320495623771">Menaxho fjalëkalimet…</translation>
 <translation id="7416898721136759658">Grantet, bursat dhe ndihma financiare</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">Programimi</translation>
 <translation id="7419091773564635591">Kompjuterë dhe elektronikë</translation>
 <translation id="7419106976560586862">Shtegu i profilit</translation>
@@ -3663,6 +3671,7 @@ Detaje shtesë:
 <translation id="7485085230273446323">Biznes dhe industriale</translation>
 <translation id="7485870689360869515">Nuk u gjetën të dhëna.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> do të kontrollojë kualifikimin tënd (kjo nuk do të ndikojë në vlerësimin tënd të kreditit). Nëse miratohesh, <ph name="BNPL_ISSUER_NAME" /> do të ofrojë plane pagesash nga të cilat ti mund të zgjedhësh për të përfunduar blerjen tënde.</translation>
 <translation id="7489392576326061356">Shampo dhe zbutës flokësh</translation>
 <translation id="7495528107193238112">Kjo përmbajtje është bllokuar. Kontakto me zotëruesin e sajtit për të rregulluar problemin.</translation>
 <translation id="749865518782565832">Hidraulik</translation>

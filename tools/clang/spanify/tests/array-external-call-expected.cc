@@ -67,5 +67,18 @@ void fct4() {
   // const std::string_view buf = "123456789";
   const std::string_view buf = "123456789";
   std::ignore = buf[UnsafeIndex()];
+  // Expected rewrite:
+  // std::ignore = memcmp(buf.data(), "xxx456789", 3);
   std::ignore = memcmp(buf.data(), "xxx456789", 3);
+}
+
+void fct5() {
+  // TODO(crbug.com/400492894): Rewrite the following code to compilable code.
+  // Expected rewrite:
+  // auto buf = std::to_array<char>({"hello, world"});
+  auto buf = std::to_array<char>({"hello, world"});
+  std::ignore = buf[UnsafeIndex()];
+  // Expected rewrite:
+  // std::string s(buf.data());
+  std::string s(buf.data());
 }

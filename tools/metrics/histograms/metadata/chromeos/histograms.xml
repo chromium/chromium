@@ -1541,7 +1541,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.FirmwareUpdateUi.InstallFailedWithStatus"
-    enum="FirmwareUpdateFwupdStatus" expires_after="2025-06-28">
+    enum="FirmwareUpdateFwupdStatus" expires_after="2025-08-31">
   <owner>cambickel@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -1585,7 +1585,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.FirmwareUpdateUi.{Method}Result"
-    enum="FirmwareUpdateMethodResult" expires_after="2025-06-28">
+    enum="FirmwareUpdateMethodResult" expires_after="2025-08-31">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -1604,7 +1604,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.FirmwareUpdateUi.{Source}.DeviceCount"
-    units="devices" expires_after="2025-06-28">
+    units="devices" expires_after="2025-08-31">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -1624,7 +1624,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.FirmwareUpdateUi.{Source}.{Severity}UpdateCount"
-    units="updates" expires_after="2025-06-28">
+    units="updates" expires_after="2025-08-31">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -4841,7 +4841,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.WelcomeExperienceCompanionAppState"
-    enum="CompanionAppState" expires_after="2025-06-30">
+    enum="CompanionAppState" expires_after="2025-08-31">
   <owner>michaelcheco@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>

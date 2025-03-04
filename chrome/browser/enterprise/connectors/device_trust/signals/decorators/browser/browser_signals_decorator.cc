@@ -16,7 +16,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_utils.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
-#include "chrome/browser/enterprise/signals/signals_common.h"
 #include "components/device_signals/core/browser/signals_aggregator.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/common/common_types.h"

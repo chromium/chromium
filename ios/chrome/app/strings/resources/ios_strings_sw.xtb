@@ -226,6 +226,7 @@
 <translation id="189531189292803889">IPad yako ilirejeshwa katika hali yake ya awali hivi karibuni, hatua ambayo huenda imebadilisha kivinjari chako chaguomsingi.</translation>
 <translation id="1901366738768303267">Je, nitatumia kipengele hiki vipi?</translation>
 <translation id="1901600657316773839">Hifadhi chaguo</translation>
+<translation id="1902277226107477495">Umezima kipengele cha kutambua anwani. Kiwashe tena kwenye Mipangilio.</translation>
 <translation id="1904580727789512086">URL unazotembelea huhifadhiwa kwenye Akaunti yako ya Google</translation>
 <translation id="1911619930368729126">Pakia kwenye Hifadhi ya Google</translation>
 <translation id="1923342640370224680">Saa ya Mwisho</translation>
@@ -650,7 +651,6 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="385051799172605136">Rudi nyuma</translation>
 <translation id="3851938967634752633">Manenosiri ya <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> na tovuti zingine <ph name="NUMBER_OF_ACCOUNTS" /> yatafutwa. Akaunti zako hazitafutwa.</translation>
 <translation id="3858860766373142691">Jina</translation>
-<translation id="3861908220442487587">Anwani hii imehifadhiwa tu kwenye kifaa hiki. Ili kuitumia kwenye vifaa vyako vingine, ihamishe kwenye Akaunti yako ya Google, <ph name="USER_EMAIL" /></translation>
 <translation id="3868495844258915202">Onyesha URL kamili</translation>
 <translation id="3875783148670536197">Nionyeshe Jinsi ya Kufanya</translation>
 <translation id="3876833929577368454">Niulize kila mara</translation>
@@ -1491,6 +1491,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="7425053386765766120">Kuweka njia ya kulipa…</translation>
 <translation id="7425346204213733349">Mabadiliko kwenye alamisho, historia, manenosiri na mipangilio yako mingine haitasawazishwa tena kwenye Akaunti yako ya Google. Hata hivyo, data yako iliyopo itaendelea kuhifadhiwa katika Akaunti yako ya Google.</translation>
 <translation id="742664698522525515">Ungependa kuhifadhi kikundi?</translation>
+<translation id="7431851541687113774">Zima kipengele cha kutambua anwani</translation>
 <translation id="7431991332293347422">Dhibiti namna historia yako ya kuvinjari inavyotumika kuweka mapendeleo kwenye huduma ya Tafuta na Google na zaidi</translation>
 <translation id="7435356471928173109">Kimezimwa na msimamizi wako</translation>
 <translation id="7438481509621345350">Sasa utaona habari kutoka <ph name="CHANNEL_NAME" /> unapofungua kichupo kipya.</translation>
@@ -1802,7 +1803,6 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8679900250380464358">Weka kwenye Orodha ya Kusoma</translation>
 <translation id="8680786875305615692">Tusaidie kuboresha usalama kwa kila mtu kwenye Wavuti</translation>
 <translation id="8680787084697685621">Maelezo ya kuingia kwenye akaunti yamechina.</translation>
-<translation id="8683563711222071415">Hamishia anwani kwenye akaunti</translation>
 <translation id="8690752723634292147">Thibitisha ufutaji</translation>
 <translation id="8692689525339542358">Pata ulinzi dhidi ya tovuti, vipakuliwa na viendelezi hatari.</translation>
 <translation id="8694281486652655615">Huonyesha kipengee hiki</translation>

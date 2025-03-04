@@ -317,6 +317,7 @@
 <translation id="5579324208890605088">啟動錯誤：請以一般使用者身分 (非系統管理員) 執行安裝程式。</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5605834417512968703">請選取任何要使用「圖片搜尋」尋找的內容，或按下 Escape 鍵退出「圖片搜尋」</translation>
+<translation id="5618818588972826921">選取要使用「圖片搜尋」尋找的文字或圖片，或按下 Escape 鍵退出「圖片搜尋」</translation>
 <translation id="5623402015214259806">{0,plural, =0{有可用的 Chromium 更新}=1{有可用的 Chromium 更新}other{Chromium 更新已發布 # 天}}</translation>
 <translation id="5643865575100044307">在 Chromium 關閉後一律刪除裝置上的網站資料</translation>
 <translation id="5653831366781983928">請立即重新啟動 Chromium</translation>
@@ -592,5 +593,6 @@ Chromium 無法復原你的設定。</translation>
 <translation id="983803489796659991">更新伺服器沒有應用程式的任何雜湊資料，因此安裝失敗。</translation>
 <translation id="985498048907240953">使用 Chromium 但不登入帳戶</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
+<translation id="989970834842471429">選取要使用「圖片搜尋」尋找的文字或圖片</translation>
 <translation id="992780518932311116">如要使用位置資訊，請在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中授予 Chromium 存取權</translation>
 </translationbundle>

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 
 namespace blink {
@@ -179,8 +180,12 @@ unsigned NthIndexCache::NthChildIndex(
     const SelectorChecker* selector_checker,
     const SelectorChecker::SelectorCheckingContext* context,
     NthIndexData::SiblingOrder sibling_order) {
-  if (element.IsPseudoElement() || !element.parentNode()) {
+  if (!element.parentNode()) {
     return 1;
+  }
+  if (PseudoElement* pseudo_element = DynamicTo<PseudoElement>(element)) {
+    return NthChildIndex(pseudo_element->UltimateOriginatingElement(), filter,
+                         selector_checker, context, sibling_order);
   }
   NthIndexData::SiblingOrder cached_order = sibling_order;
   if (sibling_order == NthIndexData::kFlatTree && !element.AssignedSlot()) {
@@ -219,8 +224,12 @@ unsigned NthIndexCache::NthLastChildIndex(
     const SelectorChecker* selector_checker,
     const SelectorChecker::SelectorCheckingContext* context,
     NthIndexData::SiblingOrder sibling_order) {
-  if (element.IsPseudoElement() && !element.parentNode()) {
+  if (!element.parentNode()) {
     return 1;
+  }
+  if (PseudoElement* pseudo_element = DynamicTo<PseudoElement>(element)) {
+    return NthLastChildIndex(pseudo_element->UltimateOriginatingElement(),
+                             filter, selector_checker, context, sibling_order);
   }
   NthIndexData::SiblingOrder cached_order = sibling_order;
   if (sibling_order == NthIndexData::kFlatTree && !element.AssignedSlot()) {

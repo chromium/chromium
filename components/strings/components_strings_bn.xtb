@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">পৃষ্ঠা পরে দেখার জন্য লোড করে রাখুন</translation>
 <translation id="1010225406377140704">প্রেরকের সাথে যোগাযোগ করে নতুন একটি লিঙ্ক পাঠানোর অনুরোধ করুন</translation>
 <translation id="1011206368273183593">ফাইল তৈরি করা হচ্ছে</translation>
+<translation id="1012264210825687872">আপনার অর্ডার পর্যালোচনা করার পরে, আপনাকে সাইন-ইন করতে হবে অথবা কোনও একটি <ph name="BNPL_ISSUER_NAME" /> অ্যাকাউন্ট তৈরি করতে হবে। এই অ্যাকাউন্টটি Google Pay-এর সাথে অটোমেটিক লিঙ্ক হয়ে যাবে।</translation>
 <translation id="1014509239502131234">ফলাফল আগের অবস্থায় ফিরিয়ে আনা হচ্ছে</translation>
 <translation id="1015730422737071372">অতিরিক্ত বিবরণ দিন</translation>
 <translation id="1019413721762100891">বন্ধ করা আছে</translation>
@@ -251,6 +252,7 @@
 <translation id="1419305130220238697">'Chrome-এ ডাউনলোড ম্যানেজ করুন' বোতাম, Chrome-এ আপনার ডাউনলোড করা ফাইল ম্যানেজ করতে এটি চালু করুন</translation>
 <translation id="1420345875188552368">আপনার সেভ করা অটোমেটিক পেমেন্ট পদ্ধতি এই পেমেন্টের জন্য ব্যবহার করা হতে পারে। Chrome-এ ই-ওয়ালেট বন্ধ করতে, আপনার <ph name="BEGIN_LINK1" />পেমেন্ট সেটিংস<ph name="END_LINK1" /> বিকল্পে যান</translation>
 <translation id="1420920093772172268">যুক্ত হওয়ার জন্য  <ph name="TURN_ON_BLUETOOTH_LINK" /> কে অনুমতি দিতে</translation>
+<translation id="1421484961346698724">মুছে ফেলা অ্যাকাউন্ট</translation>
 <translation id="14222610277930434">আপনি প্রায়ই দেখেন</translation>
 <translation id="1422930527989633628">কাছাকাছি ব্লুটুথ ডিভাইস আছে কিনা তা খুঁজে দেখার জন্য জিজ্ঞাসা করতে পারে</translation>
 <translation id="1426410128494586442">হ্যাঁ</translation>
@@ -661,6 +663,7 @@
 <translation id="2145193671493396738">অর্থনীতির খবর</translation>
 <translation id="214556005048008348">পেমেন্ট বাতিল করুন</translation>
 <translation id="2147117373852943630">বাদ্যযন্ত্র</translation>
+<translation id="2147254250314124496"><ph name="EMBEDDED_URL" /> আপনার সম্পর্কে যে তথ্য সেভ করেছে, সেগুলি ব্যবহার করতে চায়</translation>
 <translation id="2148613324460538318">কার্ড যোগ করুন</translation>
 <translation id="2148716181193084225">আজ</translation>
 <translation id="2149968176347646218">কানেকশন সুরক্ষিত নয়</translation>
@@ -692,6 +695,7 @@
 <translation id="2187317261103489799">শনাক্ত করুন (ডিফল্ট)</translation>
 <translation id="2188375229972301266">নিচে মাল্টিপল পাঞ্চ</translation>
 <translation id="2194856509914051091">যা যা দেখে নেওয়া প্রয়োজন</translation>
+<translation id="2198071643181968308"><ph name="BNPL_ISSUER_NAME" /> সম্পর্কে আরও জানুন</translation>
 <translation id="2200678913752027654">অপছন্দ বোতাম, আপনি কেন এই সাজেশন অপছন্দ করলেন, সেই সম্পর্কে বিস্তারিত মতামত জমা দেওয়ার জন্য কোনও ফর্ম খুলতে Enter প্রেস করুন</translation>
 <translation id="2202627062836089804">আপনার কার্ডের পিছনের দিক</translation>
 <translation id="2204482073374652408">আপডেট প্রসেস সম্পূর্ণ হয়েছে!</translation>
@@ -2319,6 +2323,7 @@
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome-কে আপনার ডিভাইসের <ph name="PERMISSION" /> অ্যাক্সেস করার অনুমতি দিন</translation>
 <translation id="510644072453496781">কার্ডবোর্ড (এন্ড)</translation>
+<translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" />-এর জন্য ভার্চুয়াল কার্ড পূরণ করা হয়েছে</translation>
 <translation id="5108881358339761672">সাইটটি সুরক্ষিত নয়</translation>
 <translation id="5109892411553231226">পেমেন্ট পদ্ধতি ম্যানেজ করুন</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2514,6 +2519,7 @@
             <ph name="LIST_ITEM" />ফর্মে লেখা তথ্য
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">রিভার্স অর্ডার, সামনের দিক উপরে</translation>
+<translation id="5445340838622821110">সময়ের সাথে সাথে পেমেন্ট করলে, একবার ব্যবহার করা যায় এমন ভার্চুয়াল কার্ড নম্বর পূরণ হয়ে যায়। এই নম্বর শুধুমাত্র এই কেনাকাটার জন্য। <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700"><ph name="SITE" />-কে আপনার সম্পর্কে সেভ তথ্য ব্যবহার করার অনুমতি দিন</translation>
 <translation id="5452270690849572955">এই <ph name="HOST_NAME" /> পৃষ্ঠাটি পাওয়া যাচ্ছে না</translation>
 <translation id="5452923259299906094">eWallet ও Pix-এর মাধ্যমে পেমেন্ট করুন</translation>
@@ -3332,6 +3338,7 @@
 <translation id="6917795328362592458">আপনি এইমাত্র যে পাসওয়ার্ড ব্যবহার করলেন, সেটি হ্যাক হওয়া কোনও ডেটাবেসে পাওয়া গেছে। আপনার অ্যাকাউন্ট সুরক্ষিত করতে, Password Manager আপনার সেভ করা পাসওয়ার্ড চেক করার সাজেশন দিচ্ছে।</translation>
 <translation id="6917873303492266709">ট্যাব গ্রুপে শেয়ার করতে, যোগ দিতে এবং কোল্যাবরেট করতে, সেটিংস খুলে 'Chrome-এ সাইন-ইনের অনুমতি দিন' বিকল্প চালু করুন</translation>
 <translation id="6921197121276419421">ওয়েব অ্যাপ ইনস্টল করার অনুমতি দেওয়া হয়েছে</translation>
+<translation id="69238565902785824">অ্যাকাউন্ট লিঙ্ক করা থাকলে <ph name="BNPL_ISSUER_NAME" />-এর সাহায্যে দ্রুত পেমেন্ট করা যাবে তবে, <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" />-এ গিয়ে আপনি এটি আনলিঙ্ক করতে পারবেন</translation>
 <translation id="6924013822850225188">পৃষ্ঠা থেকে বেরিয়ে যাওয়ার সময় কার্ডের সুবিধাগুলি দেখতে চান কিনা তা বেছে নিন (ব্যাঙ্কের শর্তাবলী প্রয়োজ্য)</translation>
 <translation id="6925267999184670015">নর্থ আমেরিকান B+</translation>
 <translation id="6926216138694948720">বডি আর্ট</translation>
@@ -3397,6 +3404,7 @@
 <translation id="701757816833614688">ভিজ্যুয়াল আর্ট ও ডিজাইন সম্পর্কিত প্রশিক্ষণ</translation>
 <translation id="702275896380648118">এই সাইটটি আপনার পছন্দের জিনিসগুলি নির্ধারণ করে এবং তারপরে অন্যান্য সাইটে বিজ্ঞাপন সাজেস্ট করে। এই সাইটটি আপনাকে আরও প্রাসঙ্গিক বিজ্ঞাপন দেখানোর জন্য Chrome থেকে আপনার বিজ্ঞাপনের বিষয় নেয়।</translation>
 <translation id="7023162328967545559">অ্যাডমিন সংক্রান্ত সতর্কতা</translation>
+<translation id="7023765275461720661">অ্যাকাউন্ট লিঙ্ক করে <ph name="BNPL_ISSUER_NAME" />-এর মাধ্যমে পেমেন্ট করতে চান?</translation>
 <translation id="7029809446516969842">পাসওয়ার্ড</translation>
 <translation id="7030164307377592766">পেমেন্ট পদ্ধতি পূরণ করার জন্য সেটিংস পরিবর্তন করুন</translation>
 <translation id="7031646650991750659">কোন কোন Google Play অ্যাপ আপনি ইনস্টল করেছেন</translation>
@@ -3619,6 +3627,7 @@
 <translation id="741204030948306876">হ্যাঁ, আমি রাজি</translation>
 <translation id="7416351320495623771">পাসওয়ার্ডগুলি পরিচালনা করুন…</translation>
 <translation id="7416898721136759658">অনুদান, বৃত্তি এবং আর্থিক সাহায্য</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">প্রোগ্রামিং</translation>
 <translation id="7419091773564635591">কম্পিউটার ও বৈদ্যুতিন</translation>
 <translation id="7419106976560586862">প্রোফাইল পাথ</translation>
@@ -3665,6 +3674,7 @@
 <translation id="7485085230273446323">ব্যবসা ও শিল্প সংক্রান্ত</translation>
 <translation id="7485870689360869515">কোনো ডেটা পাওয়া যায়নি৷</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> আপনার যোগ্যতা যাচাই করবে (এর ফলে আপনার ক্রেডিট স্কোরে কোনও প্রভাব পড়বে না)। অনুমোদন করা হলে, <ph name="BNPL_ISSUER_NAME" /> আপনাকে কিছু পেমেন্ট প্ল্যান দেবে যার মধ্যে থেকে কোনও একটি বেছে নিয়ে আপনি কেনাকাটা সম্পূর্ণ করতে পারবেন।</translation>
 <translation id="7489392576326061356">শ্যাম্পু ও কন্ডিশনার</translation>
 <translation id="7495528107193238112">এই কন্টেন্ট ব্লক করা হয়েছে। এই সমস্যার সমাধান করতে সাইটের মালিকের সাথে যোগাযোগ করুন।</translation>
 <translation id="749865518782565832">প্লাম্বিং</translation>

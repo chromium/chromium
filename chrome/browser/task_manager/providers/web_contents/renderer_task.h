@@ -103,8 +103,6 @@ class RendererTask : public Task,
                                                   bool is_incognito,
                                                   bool is_background);
 
-  void DefaultUpdateFaviconImpl();
-
  private:
   RendererTask(const std::u16string& title,
                const gfx::ImageSkia* icon,
@@ -112,10 +110,10 @@ class RendererTask : public Task,
                content::RenderProcessHost* render_process_host);
 
   // The WebContents of the task this object represents.
-  const raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // The render process host of the task this object represents.
-  const raw_ptr<content::RenderProcessHost> render_process_host_;
+  raw_ptr<content::RenderProcessHost> render_process_host_;
 
   // The Mojo service wrapper that will provide us with the V8 memory usage and
   // the WebCache resource stats of the render process represented by this
@@ -126,8 +124,8 @@ class RendererTask : public Task,
   const int render_process_id_;
 
   // The allocated and used V8 memory (in bytes).
-  int64_t v8_memory_allocated_ = 0;
-  int64_t v8_memory_used_ = 0;
+  int64_t v8_memory_allocated_;
+  int64_t v8_memory_used_;
 
   // The WebKit resource cache statistics for this renderer.
   blink::WebCacheResourceTypeStats webcache_stats_;
@@ -136,9 +134,8 @@ class RendererTask : public Task,
   // host.
   const std::u16string profile_name_;
 
-  base::TerminationStatus termination_status_ =
-      base::TERMINATION_STATUS_STILL_RUNNING;
-  int termination_error_code_ = 0;
+  base::TerminationStatus termination_status_;
+  int termination_error_code_;
 
   base::WeakPtrFactory<RendererTask> weak_ptr_factor_{this};
 };

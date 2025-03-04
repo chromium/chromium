@@ -98,7 +98,6 @@ export class RecordPage extends ReactiveLitElement {
       box-sizing: border-box;
       display: flex;
       flex-flow: column;
-      gap: 4px;
       height: 100%;
       padding: 16px;
       width: 100%;
@@ -1043,8 +1042,8 @@ export class RecordPage extends ReactiveLitElement {
         >
           <cra-icon slot="icon" name="more_vertical"></cra-icon>
         </cra-icon-button>
+        ${this.renderMenu()}
       </div>
-      ${this.renderMenu()}
     `;
   }
 

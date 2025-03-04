@@ -21,7 +21,6 @@
 // Extensions that should not be attempted to be uninstalled and reinstalled.
 const char* const kExemptExtensions[] = {
     app_constants::kChromeAppId,
-    app_constants::kLacrosAppId,
 };
 
 namespace chromeos {

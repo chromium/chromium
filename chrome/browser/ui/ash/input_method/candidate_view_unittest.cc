@@ -68,7 +68,7 @@ class CandidateViewTest : public views::ViewsTestBase {
       ui::CandidateWindow::Entry entry;
       entry.value = base::UTF8ToUTF16(kDummyCandidates[i]);
       candidate->SetEntry(entry);
-      container_->AddChildView(candidate);
+      container_->AddChildViewRaw(candidate);
     }
 
     widget_ = new views::Widget();

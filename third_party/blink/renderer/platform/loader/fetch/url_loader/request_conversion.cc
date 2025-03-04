@@ -425,6 +425,8 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   dest->shared_dictionary_writer_enabled = src.SharedDictionaryWriterEnabled();
 
   dest->is_ad_tagged = src.IsAdResource();
+
+  dest->allows_device_bound_sessions = src.AllowsDeviceBoundSessions();
 }
 
 }  // namespace blink

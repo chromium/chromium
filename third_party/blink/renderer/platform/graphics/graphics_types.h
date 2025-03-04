@@ -28,6 +28,7 @@
 
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/geometry/path_types.h"
+#include "third_party/blink/renderer/platform/graphics/blend_mode.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace WTF {
@@ -43,57 +44,11 @@ enum AlphaDisposition {
   kDontChangeAlpha,
 };
 
-enum ImageEncodingMimeType {
-  kMimeTypePng,
-  kMimeTypeJpeg,
-  kMimeTypeWebp,
-};
-
 enum InterpolationQuality {
   kInterpolationNone = static_cast<int>(cc::PaintFlags::FilterQuality::kNone),
   kInterpolationLow = static_cast<int>(cc::PaintFlags::FilterQuality::kLow),
   kInterpolationMedium =
       static_cast<int>(cc::PaintFlags::FilterQuality::kMedium),
-};
-
-enum CompositeOperator {
-  kCompositeClear,
-  kCompositeCopy,
-  kCompositeSourceOver,
-  kCompositeSourceIn,
-  kCompositeSourceOut,
-  kCompositeSourceAtop,
-  kCompositeDestinationOver,
-  kCompositeDestinationIn,
-  kCompositeDestinationOut,
-  kCompositeDestinationAtop,
-  kCompositeXOR,
-  kCompositePlusLighter
-};
-
-enum class BlendMode : uint8_t {
-  kNormal,
-  kMultiply,
-  kScreen,
-  kOverlay,
-  kDarken,
-  kLighten,
-  kColorDodge,
-  kColorBurn,
-  kHardLight,
-  kSoftLight,
-  kDifference,
-  kExclusion,
-  kHue,
-  kSaturation,
-  kColor,
-  kLuminosity,
-  // The following is only used in CSS mix-blend-mode, and maps to a composite
-  // operator. Canvas uses the same enum but the kPlusLighter is not a valid
-  // canvas value. We should consider splitting the enums.
-  kPlusLighter,
-
-  kMaxBlendMode = kPlusLighter,
 };
 
 enum OpacityMode {
@@ -120,12 +75,6 @@ PLATFORM_EXPORT bool ParseCanvasCompositeAndBlendMode(const WTF::String&,
                                                       CompositeOperator&,
                                                       BlendMode&);
 PLATFORM_EXPORT InterpolationQuality GetDefaultInterpolationQuality();
-
-PLATFORM_EXPORT WTF::String BlendModeToString(BlendMode);
-
-PLATFORM_EXPORT WTF::String ImageEncodingMimeTypeName(ImageEncodingMimeType);
-PLATFORM_EXPORT bool ParseImageEncodingMimeType(const WTF::String&,
-                                                ImageEncodingMimeType&);
 
 PLATFORM_EXPORT WTF::String LineCapName(LineCap);
 PLATFORM_EXPORT bool ParseLineCap(const WTF::String&, LineCap&);

@@ -4346,6 +4346,25 @@ domain Emulation
   depends on Page
   depends on Runtime
 
+  experimental type SafeAreaInsets extends object
+    properties
+      # Overrides safe-area-inset-top.
+      optional integer top
+      # Overrides safe-area-max-inset-top.
+      optional integer topMax
+      # Overrides safe-area-inset-left.
+      optional integer left
+      # Overrides safe-area-max-inset-left.
+      optional integer leftMax
+      # Overrides safe-area-inset-bottom.
+      optional integer bottom
+      # Overrides safe-area-max-inset-bottom.
+      optional integer bottomMax
+      # Overrides safe-area-inset-right.
+      optional integer right
+      # Overrides safe-area-max-inset-right.
+      optional integer rightMax
+
   # Screen orientation.
   type ScreenOrientation extends object
     properties
@@ -4515,6 +4534,12 @@ domain Emulation
       # RGBA of the default background color. If not specified, any existing override will be
       # cleared.
       optional DOM.RGBA color
+
+  # Overrides the values for env(safe-area-inset-*) and env(safe-area-max-inset-*). Unset values will cause the
+  # respective variables to be undefined, even if previously overridden.
+  experimental command setSafeAreaInsetsOverride
+    parameters
+      SafeAreaInsets insets
 
   # Overrides the values of device screen dimensions (window.screen.width, window.screen.height,
   # window.innerWidth, window.innerHeight, and "device-width"/"device-height"-related CSS media

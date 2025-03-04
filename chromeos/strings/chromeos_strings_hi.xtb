@@ -1130,7 +1130,6 @@
 <translation id="6325525973963619867">विफल</translation>
 <translation id="6327262166342360252">इस वॉलपेपर को एआई की मदद से बनाया गया है. इसके लिए, यह टेक्स्ट इस्तेमाल किया गया: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">अपने-आप गहरे रंग वाली थीम</translation>
-<translation id="6335228876613776082">मॉडल डाउनलोड हो गया</translation>
 <translation id="6340526405444716530">मनमुताबिक बनाना</translation>
 <translation id="6348252528297699679">सेटिंग &gt; निजता और सुरक्षा &gt; निजता सेटिंग &gt; जगह की जानकारी का ऐक्सेस पर जाकर, जगह की जानकारी शेयर करने की सुविधा को बंद किया जा सकता है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">उपयोगकर्ता नाम और पासवर्ड</translation>
@@ -1674,7 +1673,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos की एल्बम</translation>
 <translation id="8775713578693478175">मॉडम एपीएन</translation>
-<translation id="877735394245039557">मॉडल डाउनलोड हो रहा है</translation>
 <translation id="877985182522063539">ए4</translation>
 <translation id="879568662008399081">इस नेटवर्क में कैप्टिव पोर्टल हो सकता है</translation>
 <translation id="8797082062139985406">Google के एआई का इस्तेमाल करके रिकॉर्डिंग का नाम तय करें</translation>

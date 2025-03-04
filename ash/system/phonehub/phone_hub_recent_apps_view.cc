@@ -314,9 +314,9 @@ PhoneHubRecentAppsView::LoadingView::LoadingView() {
 
   for (size_t i = 0; i < 5; i++) {
     app_loading_icons_.push_back(
-        AddChildView(new AppLoadingIcon(AppIcon::kSizeNormal)));
+        AddChildViewRaw(new AppLoadingIcon(AppIcon::kSizeNormal)));
   }
-  more_apps_button_ = AddChildView(new PhoneHubMoreAppsButton());
+  more_apps_button_ = AddChildViewRaw(new PhoneHubMoreAppsButton());
 
   StartLoadingAnimation();
 }

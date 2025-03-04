@@ -37,7 +37,6 @@ namespace {
 
 const char* const kExemptExtensions[] = {
     app_constants::kChromeAppId,
-    app_constants::kLacrosAppId,
 };
 
 const char kAccountId[] = "public-session@test";

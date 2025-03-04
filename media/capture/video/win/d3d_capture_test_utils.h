@@ -7,6 +7,7 @@
 
 #include <d3d11_4.h>
 #include <wrl.h>
+
 #include "base/memory/ref_counted.h"
 #include "media/base/win/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -18,6 +19,8 @@ template <class... Interface>
 class MockInterface
     : public base::RefCountedThreadSafe<MockInterface<Interface...>> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // IUnknown
   IFACEMETHODIMP QueryInterface(REFIID riid, void** object) {
     if (riid == __uuidof(IUnknown)) {

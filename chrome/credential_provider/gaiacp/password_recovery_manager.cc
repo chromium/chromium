@@ -439,7 +439,6 @@ PasswordRecoveryManager::~PasswordRecoveryManager() = default;
 HRESULT PasswordRecoveryManager::ClearUserRecoveryPassword(
     const std::wstring& sid) {
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
-
   if (!policy) {
     HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "ScopedLsaPolicy::Create hr=" << putHR(hr);
@@ -467,7 +466,6 @@ HRESULT PasswordRecoveryManager::StoreWindowsPasswordIfNeeded(
   std::string device_id = base::WideToUTF8(machine_guid);
 
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
-
   if (!policy) {
     hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "ScopedLsaPolicy::Create hr=" << putHR(hr);
@@ -523,7 +521,6 @@ HRESULT PasswordRecoveryManager::RecoverWindowsPasswordIfPossible(
   DCHECK(recovered_password);
 
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
-
   if (!policy) {
     HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "ScopedLsaPolicy::Create hr=" << putHR(hr);

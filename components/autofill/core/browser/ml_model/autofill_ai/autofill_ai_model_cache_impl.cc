@@ -13,6 +13,7 @@
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "components/autofill/core/common/signatures.h"
@@ -96,8 +97,7 @@ void AutofillAiModelCacheImpl::TrimEntries() {
     return;
   }
 
-  auto entries_to_save = std::make_unique<
-      leveldb_proto::ProtoDatabase<CacheEntryWithMetadata>::KeyEntryVector>();
+  auto entries_to_save = std::make_unique<Database::KeyEntryVector>();
   auto keys_to_remove = std::make_unique<std::vector<std::string>>();
   keys_to_remove->reserve(deletions_overall);
   for (const auto [_, signature_to_delete] :
@@ -113,11 +113,9 @@ void AutofillAiModelCacheImpl::UpdateInDatabase(
     FormSignature form_signature,
     const CacheEntryWithMetadata& entry) {
   if (!db_initialized_) {
-    // TODO(crbug.com/389631477): Emit metric about error.
     return;
   }
-  auto entries_to_save = std::make_unique<
-      leveldb_proto::ProtoDatabase<CacheEntryWithMetadata>::KeyEntryVector>();
+  auto entries_to_save = std::make_unique<Database::KeyEntryVector>();
   entries_to_save->emplace_back(base::NumberToString(*form_signature), entry);
   auto keys_to_remove = std::make_unique<std::vector<std::string>>();
   db_->UpdateEntries(std::move(entries_to_save), std::move(keys_to_remove),
@@ -126,8 +124,10 @@ void AutofillAiModelCacheImpl::UpdateInDatabase(
 
 void AutofillAiModelCacheImpl::OnDatabaseInit(
     leveldb_proto::Enums::InitStatus status) {
-  if (status != leveldb_proto::Enums::InitStatus::kOK) {
-    // TODO(crbug.com/389631477): Emit metric about error.
+  const bool success = status == leveldb_proto::Enums::InitStatus::kOK;
+  base::UmaHistogramBoolean("Autofill.AutofillAi.ModelCache.InitSuccess",
+                            success);
+  if (!success) {
     return;
   }
   db_initialized_ = true;
@@ -143,13 +143,21 @@ void AutofillAiModelCacheImpl::OnDatabaseLoadKeysAndEntries(
     return;
   }
 
+  std::vector<std::string> malformed_signatures;
   for (auto& [signature_str, entry] : *entries) {
     uint64_t signature_uint64;
     if (!base::StringToUint64(signature_str, &signature_uint64)) {
-      // TODO(crbug.com/389631477): Clean up malformed entries.
+      malformed_signatures.push_back(std::move(signature_str));
       continue;
     }
     in_memory_cache_[FormSignature(signature_uint64)] = std::move(entry);
+  }
+  if (!malformed_signatures.empty()) {
+    auto entries_to_save = std::make_unique<Database::KeyEntryVector>();
+    auto keys_to_remove = std::make_unique<std::vector<std::string>>();
+    *keys_to_remove = std::move(malformed_signatures);
+    db_->UpdateEntries(std::move(entries_to_save), std::move(keys_to_remove),
+                       /*callback=*/base::DoNothing());
   }
   TrimEntries();
 }

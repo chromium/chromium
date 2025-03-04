@@ -317,6 +317,7 @@
 <translation id="5579324208890605088">Fehler beim Starten: Bitte führe das Installationsprogramm als normaler Nutzer statt als Administrator aus.</translation>
 <translation id="5596627076506792578">Weitere Optionen</translation>
 <translation id="5605834417512968703">Wähle ein beliebiges Element für die Bildersuche aus oder drücke die Esc-Taste, um die Bildersuche zu beenden</translation>
+<translation id="5618818588972826921">Wähle einen beliebigen Text oder ein beliebiges Bild für die Bildersuche aus oder drücke die Esc-Taste, um die Bildersuche zu beenden</translation>
 <translation id="5623402015214259806">{0,plural, =0{Ein Chromium-Update ist verfügbar}=1{Ein Chromium-Update ist verfügbar}other{Ein Chromium-Update ist seit # Tagen verfügbar}}</translation>
 <translation id="5643865575100044307">Beim Schließen von Chromium immer die Websitedaten von deinem Gerät löschen</translation>
 <translation id="5653831366781983928">Starte Chromium jetzt neu</translation>
@@ -592,5 +593,6 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="983803489796659991">Die Installation ist fehlgeschlagen, weil der Update-Server keine Hash-Daten für die Anwendung hat.</translation>
 <translation id="985498048907240953">Chromium ohne Konto verwenden</translation>
 <translation id="985602178874221306">Die Chromium-Autoren</translation>
+<translation id="989970834842471429">Wähle einen beliebigen Text oder ein beliebiges Bild aus, um mit der Bildersuche zu suchen</translation>
 <translation id="992780518932311116">Wenn du deinen Standort verwenden möchtest, erlaube Chromium über die <ph name="BEGIN_LINK" />Systemeinstellungen<ph name="END_LINK" /> den Zugriff darauf</translation>
 </translationbundle>

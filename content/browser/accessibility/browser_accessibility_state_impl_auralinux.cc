@@ -14,6 +14,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
+#include "content/public/browser/browser_thread.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace content {
@@ -47,22 +48,19 @@ class BrowserAccessibilityStateImplAuralinux
   BrowserAccessibilityStateImplAuralinux() = default;
 
  protected:
-  void UpdateHistogramsOnOtherThread() override;
   void UpdateUniqueUserHistograms() override;
-  bool IsKnownScreenReaderAppActive() override;
+  void UpdateKnownAssistiveTechSlow() override;
+  BrowserAccessibilityState::AssistiveTech ActiveKnownAssistiveTech() override;
 
  private:
   bool is_orca_active_ = false;
 };
 
-void BrowserAccessibilityStateImplAuralinux::UpdateHistogramsOnOtherThread() {
-  BrowserAccessibilityStateImpl::UpdateHistogramsOnOtherThread();
-
+void BrowserAccessibilityStateImplAuralinux::UpdateKnownAssistiveTechSlow() {
   // NOTE: this method is run from another thread to reduce jank, since
   // there's no guarantee these system calls will return quickly. Code that
   // needs to run in the UI thread can be run in
   // UpdateHistogramsOnUIThread instead.
-
   std::unique_ptr<DIR, decltype(&CloseDir)> proc_dir(opendir("/proc"),
                                                      &CloseDir);
   if (proc_dir == nullptr) {
@@ -105,6 +103,8 @@ void BrowserAccessibilityStateImplAuralinux::UpdateHistogramsOnOtherThread() {
   } else {
     base::debug::ClearCrashKeyString(ax_orca_crash_key);
   }
+
+  awaiting_known_assistive_tech_computation_ = false;
 }
 
 void BrowserAccessibilityStateImplAuralinux::UpdateUniqueUserHistograms() {
@@ -114,8 +114,12 @@ void BrowserAccessibilityStateImplAuralinux::UpdateUniqueUserHistograms() {
                         is_orca_active_);
 }
 
-bool BrowserAccessibilityStateImplAuralinux::IsKnownScreenReaderAppActive() {
-  return is_orca_active_;
+BrowserAccessibilityState::AssistiveTech
+BrowserAccessibilityStateImplAuralinux::ActiveKnownAssistiveTech() {
+  if (awaiting_known_assistive_tech_computation_) {
+    return kUnknown;
+  }
+  return is_orca_active_ ? kOrca : kNone;
 }
 
 // static

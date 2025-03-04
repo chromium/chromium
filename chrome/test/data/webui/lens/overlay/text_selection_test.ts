@@ -87,7 +87,7 @@ suite('TextSelection', function() {
   });
 
   function getTextSelectionLayer(): TextLayerBase {
-    return selectionOverlayElement.getTextSelectionLayerForTesting()!;
+    return selectionOverlayElement.getTextSelectionLayerForTesting();
   }
 
   // Normalizes the given values to the size of selection overlay.

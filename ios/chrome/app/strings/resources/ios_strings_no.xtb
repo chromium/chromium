@@ -651,7 +651,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="385051799172605136">Tilbake</translation>
 <translation id="3851938967634752633">Passord for <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> og <ph name="NUMBER_OF_ACCOUNTS" /> andre slettes. Kontoene dine slettes ikke.</translation>
 <translation id="3858860766373142691">Navn</translation>
-<translation id="3861908220442487587">Denne adressen er bare lagret på denne enheten. For å bruke den på de andre enhetene dine, flytt den til Google-kontoen din, <ph name="USER_EMAIL" /></translation>
 <translation id="3868495844258915202">Vis hele nettadressen</translation>
 <translation id="3875783148670536197">Vis meg hvordan</translation>
 <translation id="3876833929577368454">Spør meg hver gang</translation>
@@ -1804,7 +1803,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8679900250380464358">Legg til på leselisten</translation>
 <translation id="8680786875305615692">Bidra til å gjøre nettet sikrere for alle</translation>
 <translation id="8680787084697685621">Kontoens påloggingsdetaljer er utdaterte.</translation>
-<translation id="8683563711222071415">Flytt adressen til kontoen</translation>
 <translation id="8690752723634292147">Bekreft sletting</translation>
 <translation id="8692689525339542358">Få beskyttelse mot farlige nettsteder, nedlastinger og utvidelser.</translation>
 <translation id="8694281486652655615">Viser dette elementet</translation>

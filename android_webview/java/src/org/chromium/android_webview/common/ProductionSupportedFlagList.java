@@ -240,9 +240,6 @@ public final class ProductionSupportedFlagList {
                 AndroidAutofillFeatures.ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND_NAME,
                 "Enable the workaround for autofill bottom sheet platform bug."),
         Flag.baseFeature(
-                AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUEST_FOR_CHANGE_PASSWORD_NAME,
-                "Enables sending prefill requests for Change Password forms."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ACCEPT_DOM_MUTATION_AFTER_AUTOFILL_SUBMISSION,
                 "Accepts DOM_MUTATION_AFTER_AUTOFILL submissions detected on password forms."),
         Flag.baseFeature(
@@ -792,6 +789,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 MediaFeatures.BUILT_IN_HLS_PLAYER,
                 "Switches the HLS demuxer implementation from MediaPlayer to an internal one"),
+        Flag.baseFeature(
+                MediaFeatures.BUILT_IN_HLS_MP4,
+                "Enabled the playback of HLS renditions which use the mp4 container"),
         Flag.baseFeature(
                 MediaFeatures.LIBVPX_USE_CHROME_THREADS,
                 "Attaches libvpx threads to the chromium thread system."),

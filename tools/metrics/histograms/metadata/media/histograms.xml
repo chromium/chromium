@@ -213,7 +213,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CastStreaming.Sender.Audio.NegotiatedCodec" enum="AudioCodec"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <summary>
@@ -222,7 +222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CastStreaming.Sender.Video.Bitrate" units="kbps"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <summary>
@@ -232,7 +232,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CastStreaming.Sender.Video.NegotiatedCodec" enum="VideoCodec"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <summary>
@@ -413,7 +413,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AImageReaderGLOwner.CodecType"
-    enum="TextureOwnerCodecType" expires_after="2025-06-29">
+    enum="TextureOwnerCodecType" expires_after="2025-08-31">
   <owner>vasilyt@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -818,7 +818,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.CrasInputStreamNotifyStreamError"
-    units="errorcode" expires_after="2025-06-29">
+    units="errorcode" expires_after="2025-08-31">
   <owner>peah@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -851,7 +851,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.CrasUnifiedStreamNotifyStreamError"
-    units="errorcode" expires_after="2025-06-29">
+    units="errorcode" expires_after="2025-08-31">
   <owner>peah@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -873,7 +873,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.CrasUnifiedStreamStartSuccess"
-    enum="CrasUnifiedStreamStartSuccess" expires_after="2025-06-29">
+    enum="CrasUnifiedStreamStartSuccess" expires_after="2025-08-31">
   <owner>peah@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -1098,7 +1098,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.RawProcessingSupportedWin" enum="BooleanSupported"
-    expires_after="2025-06-30">
+    expires_after="2025-08-31">
   <owner>henrika@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1477,7 +1477,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioCapturerMissedReadDeadlineBelow10s" units="misses"
-    expires_after="2025-06-08">
+    expires_after="2025-08-31">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -4248,7 +4248,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.MediaVideoVisibilityTracker.ComputeOcclusion.ComputeOccludingArea.TotalDuration"
-    units="microseconds" expires_after="2025-07-01">
+    units="microseconds" expires_after="2025-08-31">
   <owner>bkeen@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -4339,7 +4339,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.MediaVideoVisibilityTracker.OccludingRectsCount.{BucketSizeIncreases}Histogram.TotalCount"
-    units="rects" expires_after="2025-07-01">
+    units="rects" expires_after="2025-08-31">
   <owner>bkeen@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -4365,7 +4365,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaVideoVisibilityTracker.UpdateTime.TotalDuration"
-    units="ms" expires_after="2025-07-01">
+    units="ms" expires_after="2025-08-31">
   <owner>bkeen@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -4377,7 +4377,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.MediaVideoVisibilityTracker.{NodesCount}.{BucketSizeIncreases}Histogram.TotalCount"
-    units="nodes" expires_after="2025-07-01">
+    units="nodes" expires_after="2025-08-31">
   <owner>bkeen@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -4410,7 +4410,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.MediaVideoVisibilityTracker.{PercentageCategory}.Percentage"
-    units="%" expires_after="2025-07-01">
+    units="%" expires_after="2025-08-31">
   <owner>bkeen@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -4743,7 +4743,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.PictureInPicture.Disallowed"
-    enum="PictureInPictureDisallowedType" expires_after="2025-06-30">
+    enum="PictureInPictureDisallowedType" expires_after="2025-08-31">
   <owner>steimel@chromium.org</owner>
   <owner>liberato@chromium.org</owner>
   <summary>
@@ -4755,7 +4755,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.PictureInPicture.Window.TotalTime" units="ms"
-    expires_after="2025-07-01">
+    expires_after="2025-08-31">
   <owner>bkeen@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -5045,7 +5045,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Remoting.VideoBitrate" units="kbps"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -7034,7 +7034,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaPreviews.UI.Preview.{UiLocation}.Video.Delay" units="ms"
-    expires_after="2025-07-01">
+    expires_after="2025-08-31">
   <owner>ahmedmoussa@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -7079,7 +7079,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MediaPreviews.UI.Preview.{UiLocation}.Video.TimeToActionWithoutPreview"
-    units="ms" expires_after="2025-07-01">
+    units="ms" expires_after="2025-08-31">
   <owner>ahmedmoussa@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -7094,7 +7094,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MediaPreviews.UI.Preview.{UiLocation}.Video.TotalVisibleDuration"
-    units="ms" expires_after="2025-07-01">
+    units="ms" expires_after="2025-08-31">
   <owner>ahmedmoussa@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -7477,7 +7477,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.PresentationRequest.AvailabilityUrlType"
-    enum="PresentationUrlType" expires_after="2025-06-29">
+    enum="PresentationUrlType" expires_after="2025-08-31">
   <owner>muyaoxu@google.com</owner>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -7487,7 +7487,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.PresentationRequest.UrlBySink2"
-    enum="PresentationUrlBySink" expires_after="2025-06-29">
+    enum="PresentationUrlBySink" expires_after="2025-08-31">
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>

@@ -226,6 +226,7 @@
 <translation id="189531189292803889">iPad on palautettu äskettäin, mikä on saattanut vaihtaa oletusselaimesi.</translation>
 <translation id="1901366738768303267">Miten käytän tätä ominaisuutta?</translation>
 <translation id="1901600657316773839">Säilytä valinta</translation>
+<translation id="1902277226107477495">Osoitteentunnistus on pois päältä. Laita se takaisin päälle asetuksista.</translation>
 <translation id="1904580727789512086">Avaamasi URL-osoitteet tallennetaan Google-tilillesi</translation>
 <translation id="1911619930368729126">Lähetä Google Driveen</translation>
 <translation id="1923342640370224680">Viimeinen tunti</translation>
@@ -650,7 +651,6 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="385051799172605136">Takaisin</translation>
 <translation id="3851938967634752633">Näiden salasanat poistetaan: <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ja <ph name="NUMBER_OF_ACCOUNTS" /> muuta. Tilejäsi ei poisteta.</translation>
 <translation id="3858860766373142691">Nimi</translation>
-<translation id="3861908220442487587">Osoite tallennetaan vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteilla, siirrä se Google-tilillesi (<ph name="USER_EMAIL" />)</translation>
 <translation id="3868495844258915202">Näytä täysi URL-osoite</translation>
 <translation id="3875783148670536197">Näytä miten</translation>
 <translation id="3876833929577368454">Kysy aina </translation>
@@ -1491,6 +1491,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7425053386765766120">Lisää maksutapa…</translation>
 <translation id="7425346204213733349">Kirjanmerkkeihin, historiaan, salasanoihin ja muihin asetuksiin tehtäviä muutoksia ei enää synkronoida Google-tilillesi. Olemassa olevia tietojasi säilytetään kuitenkin Google-tililläsi.</translation>
 <translation id="742664698522525515">Säilytetäänkö ryhmä?</translation>
+<translation id="7431851541687113774">Laita osoitteen tunnistus pois päältä</translation>
 <translation id="7431991332293347422">Määritä, miten selaushistoria personoi Hakua ja muita</translation>
 <translation id="7435356471928173109">Järjestelmänvalvojasi on ottanut tämän pois päältä</translation>
 <translation id="7438481509621345350">Näet nyt tarinoita täältä avatessasi uuden välilehden: <ph name="CHANNEL_NAME" />.</translation>
@@ -1802,7 +1803,6 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8679900250380464358">Lisää lukulistalle</translation>
 <translation id="8680786875305615692">Auta lisäämään verkon turvallisuutta kaikille</translation>
 <translation id="8680787084697685621">Tilin kirjautumistiedot ovat vanhentuneet.</translation>
-<translation id="8683563711222071415">Siirrä osoite tilille</translation>
 <translation id="8690752723634292147">Vahvista poistaminen</translation>
 <translation id="8692689525339542358">Suojaudu vaarallisilta sivustoilta, latauksilta ja laajennuksilta.</translation>
 <translation id="8694281486652655615">Näyttää tämän kohteen</translation>

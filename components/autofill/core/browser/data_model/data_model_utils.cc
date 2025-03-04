@@ -47,7 +47,7 @@ int ConsumeNumber(std::u16string_view& input,
     ++offset;
   }
   int num = 0;
-  if ((!allow_zero_padding && input.starts_with(u'0')) ||
+  if ((!allow_zero_padding && input.starts_with(u'0') && offset > 1) ||
       offset < min_num_digits ||
       !base::StringToInt(input.substr(0, offset), &num)) {
     return -1;

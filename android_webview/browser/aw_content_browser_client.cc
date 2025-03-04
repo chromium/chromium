@@ -106,7 +106,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/common/user_agent.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/android/network_library.h"
@@ -221,12 +220,12 @@ std::string GetUserAgent() {
 
   if (base::FeatureList::IsEnabled(
           features::kWebViewReduceUAAndroidVersionDeviceModel)) {
-    return content::BuildUnifiedPlatformUAFromProductAndExtraOs(product,
-                                                                "; wv");
+    return embedder_support::BuildUnifiedPlatformUAFromProductAndExtraOs(
+        product, "; wv");
   }
 
-  return content::BuildUserAgentFromProductAndExtraOSInfo(
-      product, "; wv", content::IncludeAndroidBuildNumber::Include);
+  return embedder_support::BuildUserAgentFromProductAndExtraOSInfo(
+      product, "; wv", embedder_support::IncludeAndroidBuildNumber::Include);
 }
 
 // TODO(yirui): can use similar logic as in PrependToAcceptLanguagesIfNecessary

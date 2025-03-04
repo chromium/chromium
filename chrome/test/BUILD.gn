@@ -1385,7 +1385,6 @@ source_set("platform_browser_tests") {
     "//components/privacy_sandbox/privacy_sandbox_attestations",
     "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
     "//components/qr_code_generator:bitmap_generator",
-    "//components/safe_browsing/content/browser:client_side_detection_service",
     "//components/safe_browsing/content/common:interfaces",
     "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common/proto:client_model_proto",
@@ -1511,6 +1510,10 @@ source_set("platform_browser_tests") {
       "//chrome/test/data/extensions/",
       "//extensions/test/data/",
     ]
+  }
+
+  if (safe_browsing_mode != 0) {
+    deps += [ "//components/safe_browsing/content/browser:client_side_detection_service" ]
   }
 }
 
@@ -1700,7 +1703,6 @@ if (is_android) {
       "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
       "//components/privacy_sandbox/privacy_sandbox_attestations/proto:proto",
       "//components/qr_code_generator:bitmap_generator",
-      "//components/safe_browsing/content/browser:client_side_detection_service",
       "//components/safe_browsing/content/common:interfaces",
       "//components/safe_browsing/content/renderer/phishing_classifier:phishing_classifier",
       "//components/safe_browsing/core/browser/db:v4_database",
@@ -1871,8 +1873,10 @@ if (is_android) {
     }
 
     if (safe_browsing_mode != 0) {
-      deps +=
-          [ "//components/safe_browsing/content/browser:client_side_detection" ]
+      deps += [
+        "//components/safe_browsing/content/browser:client_side_detection",
+        "//components/safe_browsing/content/browser:client_side_detection_service",
+      ]
     }
   }
 
@@ -2403,7 +2407,6 @@ if (!is_android) {
       "//components/safe_browsing:buildflags",
       "//components/safe_browsing/content/browser",
       "//components/safe_browsing/content/browser:client_side_detection_images_cache",
-      "//components/safe_browsing/content/browser:client_side_detection_service",
       "//components/safe_browsing/content/browser:safe_browsing_service",
       "//components/safe_browsing/content/browser/password_protection",
       "//components/safe_browsing/content/browser/password_protection:test_support",
@@ -3585,6 +3588,7 @@ if (!is_android) {
       "//components/live_caption:live_translate",
       "//components/plus_addresses:blocklist_data",
       "//components/policy/core/common:common_constants",
+      "//components/safe_browsing/content/common/proto:download_file_types_proto",
     ]
     if (!is_win || target_cpu != "arm64") {
       # SODA doesn't support Windows on Arm64.
@@ -3741,7 +3745,7 @@ if (!is_android) {
     if (safe_browsing_mode != 0) {
       deps += [
         "//components/safe_browsing/content/browser:client_side_detection",
-        "//components/safe_browsing/content/common/proto:download_file_types_proto",
+        "//components/safe_browsing/content/browser:client_side_detection_service",
       ]
     }
 
@@ -6706,7 +6710,6 @@ test("unit_tests") {
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/browser",
     "//components/safe_browsing/content/browser:client_side_detection_images_cache",
-    "//components/safe_browsing/content/browser:client_side_detection_service",
     "//components/safe_browsing/content/browser/notification_content_detection",
     "//components/safe_browsing/content/browser/notification_content_detection:test_utils",
     "//components/safe_browsing/content/browser/password_protection",
@@ -9323,6 +9326,7 @@ test("unit_tests") {
       "//chrome/common/safe_browsing:binary_feature_extractor",
       "//chrome/common/safe_browsing:download_type_util",
       "//components/file_access:test_support",
+      "//components/safe_browsing/content/browser:client_side_detection_service",
       "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
       "//components/safe_browsing/content/browser:safe_browsing_service",
       "//components/safe_browsing/content/common:file_type_policies",

@@ -405,7 +405,7 @@ SearchBoxViewBase::SearchBoxViewBase()
   content_container_->SetFlexForView(text_container_, 1,
                                      /*use_min_size=*/false);
 
-  text_container_->AddChildView(search_box_.get());
+  text_container_->AddChildViewRaw(search_box_.get());
   ghost_text_container_ =
       text_container_->AddChildView(std::make_unique<views::BoxLayoutView>());
   ghost_text_container_->SetCrossAxisAlignment(

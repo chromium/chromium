@@ -651,7 +651,6 @@
 <translation id="385051799172605136">戻る</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />、<ph name="SECOND_WEBSITE" />、その他 <ph name="NUMBER_OF_ACCOUNTS" /> 件のパスワードが削除されます。アカウントは削除されません。</translation>
 <translation id="3858860766373142691">名前</translation>
-<translation id="3861908220442487587">この住所はこのデバイスにのみ保存されます。他のデバイスで使用するには、Google アカウント（<ph name="USER_EMAIL" />）に移動してください</translation>
 <translation id="3868495844258915202">URL 全体を表示</translation>
 <translation id="3875783148670536197">手順を見る</translation>
 <translation id="3876833929577368454">毎回確認する</translation>
@@ -1804,7 +1803,6 @@
 <translation id="8679900250380464358">リーディング リストに追加</translation>
 <translation id="8680786875305615692">すべてのユーザーのウェブ上のセキュリティ強化に協力する</translation>
 <translation id="8680787084697685621">アカウントのログイン情報が古くなっています。</translation>
-<translation id="8683563711222071415">住所をアカウントに移動</translation>
 <translation id="8690752723634292147">削除の確認</translation>
 <translation id="8692689525339542358">危険性のあるサイト、ダウンロード、拡張機能から保護してください。</translation>
 <translation id="8694281486652655615">このアイテムを表示</translation>

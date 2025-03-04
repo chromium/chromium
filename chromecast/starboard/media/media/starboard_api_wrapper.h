@@ -18,6 +18,8 @@
 #include <cstdint>
 #include <cstring>
 #include <memory>
+#include <string>
+#include <vector>
 
 namespace chromecast {
 namespace media {
@@ -365,31 +367,27 @@ using StarboardDrmSessionUpdateRequestFunc =
              int ticket,
              StarboardDrmStatus status,
              StarboardDrmSessionRequestType type,
-             const char* error_message,
-             const void* session_id,
-             int session_id_size,
-             const void* content,
-             int content_size,
-             const char* url);
+             std::string error_message,
+             std::string session_id,
+             std::vector<uint8_t> content,
+             std::string url);
 
 // Copy of SbDrmSessionUpdatedFunc from starboard.
 using StarboardDrmSessionUpdatedFunc = void (*)(void* drm_system,
                                                 void* context,
                                                 int ticket,
                                                 StarboardDrmStatus status,
-                                                const char* error_message,
-                                                const void* session_id,
-                                                int session_id_size);
+                                                std::string error_message,
+                                                std::string session_id);
 
-// Copy of SbDrmSessionKeyStatusesChangedFunc from starboard.
+// Copy of SbDrmSessionKeyStatusesChangedFunc from starboard. Modified to use
+// std::vector instead of raw ptrs, for data/lifetime safety.
 using StarboardDrmSessionKeyStatusesChangedFunc =
     void (*)(void* drm_system,
              void* context,
-             const void* session_id,
-             int session_id_size,
-             int number_of_keys,
-             const StarboardDrmKeyId* key_ids,
-             const StarboardDrmKeyStatus* key_statuses);
+             std::string session_id,
+             std::vector<StarboardDrmKeyId> key_ids,
+             std::vector<StarboardDrmKeyStatus> key_statuses);
 
 // Copy of SbDrmServerCertificateUpdatedFunc from starboard.
 using StarboardDrmServerCertificateUpdatedFunc =
@@ -397,13 +395,12 @@ using StarboardDrmServerCertificateUpdatedFunc =
              void* context,
              int ticket,
              StarboardDrmStatus status,
-             const char* error_message);
+             std::string error_message);
 
 // Copy of SbDrmSessionClosedFunc from starboard.
 using StarboardDrmSessionClosedFunc = void (*)(void* drm_system,
                                                void* context,
-                                               const void* session_id,
-                                               int session_id_size);
+                                               std::string session_id);
 
 // A wrapper for the player-related callbacks that starboard calls.
 struct StarboardPlayerCallbackHandler {

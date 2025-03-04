@@ -320,6 +320,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="5579324208890605088">Aanskakelingfout: laat loop die installeerder as ’n gereelde gebruiker, nie as administrateur nie.</translation>
 <translation id="5596627076506792578">Meer opsies</translation>
 <translation id="5605834417512968703">Kies enigiets om met Prentsoektog te soek of druk Escape om uit Prentsoektog te gaan</translation>
+<translation id="5618818588972826921">Kies enige teks of prent om met Prentsoektog te soek of druk Escape om die Prentsoektog te verlaat</translation>
 <translation id="5623402015214259806">{0,plural, =0{'n Chromium-opdatering is beskikbaar}=1{'n Chromium-opdatering is beskikbaar}other{'n Chromium-opdatering is al # dae lank beskikbaar}}</translation>
 <translation id="5643865575100044307">Vee altyd werfdata op jou toestel uit wanneer jy Chromium toemaak</translation>
 <translation id="5653831366781983928">Herbegin Chromium asseblief nou</translation>
@@ -595,5 +596,6 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="983803489796659991">Installering het misluk omdat die opdateringbediener nie enige hutsdata vir die app het nie.</translation>
 <translation id="985498048907240953">Gebruik Chromium sonder ’n rekening</translation>
 <translation id="985602178874221306">Die Chromium-outeurs</translation>
+<translation id="989970834842471429">Kies enige teks of prent om met Prentsoektog te soek</translation>
 <translation id="992780518932311116">Jy moet vir Chromium toegang in <ph name="BEGIN_LINK" />stelselinstellings<ph name="END_LINK" /> gee om jou ligging te gebruik</translation>
 </translationbundle>

@@ -350,6 +350,11 @@ extern bool UseWebpageInteractionType();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetScannedPdfCharacterPerPageHeuristic();
 
+// Returns whether to use the new content fields when sending content data
+// in the request payload.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool UseUpdatedContextFields();
+
 // Returns whether to include PDFs from the underlying page in the request to be
 // used as page context.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -366,6 +371,21 @@ extern bool UseInnerTextAsContext();
 // enabled.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseInnerHtmlAsContext();
+
+// Returns whether to include the inner text from the underlying page in
+// the inner HTML requests used as page context. Must also have
+// UseUpdatedContextFields and UseInnerHtmlAsContext enabled.
+// TODO(crbug.com/399721803): Remove and support enabling both
+// UseInnerTextAsContext and UseInnerHtmlAsContext.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IncludeInnerTextWithInnerHtml();
+
+// Returns whether to include the Annotated Page Content from the underlying
+// page in the inner HTML requests used as page context. Must also have
+// UseUpdatedContextFields and UseInnerHtmlAsContext enabled.
+// TODO(crbug.com/399721803): Make independent of inner HTML.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IncludeApcWithInnerHtml();
 
 // Returns whether to include the page URL in the page content upload request.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -675,6 +695,10 @@ extern bool IsSimplifiedSelectionEnabled();
 // upload request is sent.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool PageContentUploadRequestIdFixEnabled();
+
+// Whether to update the viewport on each contextual query.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool UpdateViewportEachQueryEnabled();
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

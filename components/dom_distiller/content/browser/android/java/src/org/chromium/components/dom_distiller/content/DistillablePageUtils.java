@@ -8,10 +8,12 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 
 /** Provides access to the native dom_distiller::IsPageDistillable function. */
 @JNINamespace("dom_distiller::android")
+@NullMarked
 public final class DistillablePageUtils {
     /** Delegate to receive distillability updates. */
     public interface PageDistillableDelegate {

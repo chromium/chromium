@@ -318,6 +318,7 @@
 <translation id="5579324208890605088">Eroare la pornire: rulează programul de instalare ca utilizator obișnuit, nu ca administrator.</translation>
 <translation id="5596627076506792578">Mai multe opțiuni</translation>
 <translation id="5605834417512968703">Selectează orice vrei să cauți cu Căutarea de imagini sau apasă Escape pentru a ieși din Căutarea de imagini</translation>
+<translation id="5618818588972826921">Selectează orice text sau imagine pentru a căuta folosind Căutarea de imagini sau apasă Escape pentru a ieși din Căutarea de imagini</translation>
 <translation id="5623402015214259806">{0,plural, =0{Este disponibilă o actualizare Chromium}=1{Este disponibilă o actualizare Chromium}few{O actualizare Chromium este disponibilă de # zile}other{O actualizare Chromium este disponibilă de # de zile}}</translation>
 <translation id="5643865575100044307">Șterge întotdeauna datele privind site-urile de pe dispozitiv când închizi Chromium</translation>
 <translation id="5653831366781983928">Repornește Chromium acum</translation>
@@ -593,5 +594,6 @@ Chromium nu poate recupera setările.</translation>
 <translation id="983803489796659991">Nu s-a instalat deoarece serverul de actualizare nu are date hash pentru aplicație.</translation>
 <translation id="985498048907240953">Folosește Chromium fără cont</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
+<translation id="989970834842471429">Selectează orice text sau imagine pentru a căuta folosind Căutarea de imagini</translation>
 <translation id="992780518932311116">Pentru a folosi locația, permite accesul Chromium în <ph name="BEGIN_LINK" />setările de sistem<ph name="END_LINK" /></translation>
 </translationbundle>

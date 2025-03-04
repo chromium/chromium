@@ -234,6 +234,11 @@ std::string VitQueryParamValueForMimeType(lens::MimeType mime_type) {
       break;
     case lens::MimeType::kUnknown:
       break;
+    case lens::MimeType::kAnnotatedPageContent:
+      // The APC should only be sent as part of the innerHtml path. Therefore,
+      // the vit should have been kWebpage above. If this path is hit, its a
+      // mistake.
+      NOTREACHED() << "Apc should not be uploaded by itself.";
     case lens::MimeType::kImage:
     case lens::MimeType::kVideo:
     case lens::MimeType::kAudio:
@@ -263,6 +268,10 @@ std::string ContentTypeToString(lens::MimeType content_type) {
       return kPlainTextMimeType;
     case lens::MimeType::kUnknown:
       return "";
+    case lens::MimeType::kAnnotatedPageContent:
+      // Upload annotated page content should only be done in the new request
+      // flow which does not use string for content type.
+      NOTREACHED() << "APC not supported in this flow";
     case lens::MimeType::kImage:
     case lens::MimeType::kVideo:
     case lens::MimeType::kAudio:
@@ -288,6 +297,11 @@ lens::LensOverlayInteractionRequestMetadata::Type ContentTypeToInteractionType(
       break;
     case lens::MimeType::kUnknown:
       break;
+    case lens::MimeType::kAnnotatedPageContent:
+      // The APC should only be sent as part of the innerHtml path. Therefore,
+      // the vit should have been kWebpage above. If this path is hit, its a
+      // mistake.
+      NOTREACHED() << "Apc should not be uploaded by itself.";
     case lens::MimeType::kImage:
     case lens::MimeType::kVideo:
     case lens::MimeType::kAudio:
@@ -296,6 +310,28 @@ lens::LensOverlayInteractionRequestMetadata::Type ContentTypeToInteractionType(
       NOTREACHED() << "Unsupported option in page content upload";
   }
   return lens::LensOverlayInteractionRequestMetadata::CONTEXTUAL_SEARCH_QUERY;
+}
+
+lens::ContentData::ContentType MimeTypeToContentType(
+    lens::MimeType content_type) {
+  switch (content_type) {
+    case lens::MimeType::kPdf:
+      return lens::ContentData::CONTENT_TYPE_PDF;
+    case lens::MimeType::kHtml:
+      return lens::ContentData::CONTENT_TYPE_INNER_HTML;
+    case lens::MimeType::kPlainText:
+      return lens::ContentData::CONTENT_TYPE_INNER_TEXT;
+    case lens::MimeType::kUnknown:
+      return lens::ContentData::CONTENT_TYPE_UNSPECIFIED;
+    case lens::MimeType::kAnnotatedPageContent:
+      return lens::ContentData::CONTENT_TYPE_ANNOTATED_PAGE_CONTENT;
+    case lens::MimeType::kImage:
+    case lens::MimeType::kVideo:
+    case lens::MimeType::kAudio:
+    case lens::MimeType::kJson:
+      // These content types are not supported for the page content upload flow.
+      NOTREACHED() << "Unsupported option in page content upload";
+  }
 }
 
 lens::LensOverlayClientLogs::LensOverlayEntryPoint
@@ -347,11 +383,53 @@ bool ZstdCompressBytes(base::span<const uint8_t> src_bytes,
   return true;
 }
 
+// Returns the lens::Payload using the repeated Content field instead of the
+// deprecated payload fields.
+lens::Payload CreatePageContentPayloadWithUpdatedContentFields(
+    base::span<const lens::PageContent> page_contents,
+    GURL page_url) {
+  lens::Payload payload;
+  auto* content = payload.mutable_content();
+
+  if (!page_url.is_empty() &&
+      lens::features::SendPageUrlForContextualization()) {
+    content->set_webpage_url(page_url.spec());
+  }
+
+  for (const lens::PageContent& page_content : page_contents) {
+    auto* content_data = content->add_content_data();
+    content_data->set_content_type(
+        MimeTypeToContentType(page_content.content_type_));
+
+    if (page_content.content_type_ == lens::MimeType::kPdf &&
+        lens::features::ShouldZstdCompressPdfBytes()) {
+      // If compression is successful, set the compression type and return.
+      // Otherwise, fall back to the original bytes.
+      if (ZstdCompressBytes(page_content.bytes_,
+                            content_data->mutable_data())) {
+        content_data->set_compression_type(lens::CompressionType::ZSTD);
+        continue;
+      }
+    }
+
+    // Add non compressed bytes. This happens if compression fails or its not
+    // a PDF.
+    content_data->mutable_data()->assign(page_content.bytes_.begin(),
+                                         page_content.bytes_.end());
+  }
+
+  return payload;
+}
+
 lens::Payload CreatePageContentPayload(
     base::span<const lens::PageContent> page_content,
     lens::MimeType primary_content_type,
     GURL page_url) {
-  // TODO(crbug.com/398304347): Add support for multiple content data.
+  if (lens::features::UseUpdatedContextFields()) {
+    return CreatePageContentPayloadWithUpdatedContentFields(page_content,
+                                                            page_url);
+  }
+
   CHECK_EQ(page_content.size(), 1u);
   auto content_type = page_content.front().content_type_;
   auto content_bytes = page_content.front().bytes_;
@@ -512,13 +590,19 @@ void LensOverlayQueryController::ResetPageContentData() {
   partial_content_ = base::span<const std::u16string>();
 }
 
-void LensOverlayQueryController::SendPageContentUpdateRequest(
-    base::span<const lens::PageContent> underlying_page_content,
-    lens::MimeType primary_content_type,
-    GURL new_page_url) {
-  underlying_page_contents_ = underlying_page_content;
-  primary_content_type_ = primary_content_type;
-  page_url_ = new_page_url;
+void LensOverlayQueryController::SendUpdatedPageContent(
+    std::optional<base::span<const lens::PageContent>> underlying_page_content,
+    std::optional<lens::MimeType> primary_content_type,
+    std::optional<GURL> new_page_url,
+    const SkBitmap& screenshot) {
+  if (underlying_page_content.has_value()) {
+    underlying_page_contents_ = underlying_page_content.value();
+    primary_content_type_ = primary_content_type.value();
+    page_url_ = new_page_url.value();
+  }
+  if (!screenshot.drawsNothing()) {
+    original_screenshot_ = screenshot;
+  }
 
   suggest_inputs_.set_contextual_visual_input_type(
       VitQueryParamValueForMimeType(primary_content_type_));
@@ -528,11 +612,16 @@ void LensOverlayQueryController::SendPageContentUpdateRequest(
       QueryControllerState::kAwaitingClusterInfoResponse) {
     // If we are waiting for the cluster info response, we should not send the
     // page content update request immediately. Instead, the cluster info
-    // response handler will call PrepareAndFetchPageContentRequest.
+    // response handler will call PrepareAndFetchFullImageRequest and
+    // PrepareAndFetchPageContentRequest.
     return;
   }
-
-  PrepareAndFetchPageContentRequest();
+  if (!screenshot.drawsNothing()) {
+    PrepareAndFetchFullImageRequest();
+  }
+  if (underlying_page_content.has_value()) {
+    PrepareAndFetchPageContentRequest();
+  }
 }
 
 void LensOverlayQueryController::SendPartialPageContentRequest(
@@ -563,7 +652,8 @@ void LensOverlayQueryController::SendContextualTextQuery(
   }
 
   // If the contextual search query shouldn't be sent now, hold it until the
-  // full page content upload is finished.
+  // full page content upload is finished and/or the full image query for an
+  // updated screenshot is finished.
   if (!ShouldSendContextualSearchQuery()) {
     pending_contextual_query_callback_ =
         base::BindOnce(&LensOverlayQueryController::SendContextualTextQuery,
@@ -1259,7 +1349,7 @@ void LensOverlayQueryController::PageContentResponseHandler(
 void LensOverlayQueryController::PageContentUploadProgressHandler(
     uint64_t position,
     uint64_t total) {
-  if(page_content_upload_progress_callback_) {
+  if (page_content_upload_progress_callback_) {
     page_content_upload_progress_callback_.Run(position, total);
   }
 

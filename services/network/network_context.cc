@@ -394,12 +394,8 @@ base::RepeatingCallback<bool(const url::Origin&)> BuildOriginFilter(
 // If |filter| is null, creates an always-true predicate.
 base::RepeatingCallback<bool(const GURL&)> BuildUrlFilter(
     mojom::ClearDataFilterPtr filter) {
-  return filter ? base::BindRepeating(
-                      &DoesUrlMatchFilter, filter->type,
-                      std::set<url::Origin>(filter->origins.begin(),
-                                            filter->origins.end()),
-                      std::set<std::string>(filter->domains.begin(),
-                                            filter->domains.end()))
+  return filter ? BindDoesUrlMatchFilter(filter->type, filter->origins,
+                                         filter->domains)
                 : base::NullCallback();
 }
 

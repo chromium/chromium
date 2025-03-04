@@ -4,7 +4,6 @@
 
 import("//ash/ambient/resources/resources.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//chromeos/ash/components/assistant/ambient.gni")
@@ -16,7 +15,7 @@ import("//ui/base/ui_features.gni")
 
 # Historical note: Ash shipped on Windows for a couple years to support
 # Windows 8 Metro mode. Windows support was removed in 2016.
-assert(is_chromeos_ash)
+assert(is_chromeos)
 assert(use_aura)
 assert(enable_hidpi)
 

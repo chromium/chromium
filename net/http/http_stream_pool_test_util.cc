@@ -258,6 +258,12 @@ HttpStreamKey GroupIdToHttpStreamKey(
                        group_id.disable_cert_network_fetches());
 }
 
+void WaitForAttemptManagerComplete(HttpStreamPool::Group& group) {
+  base::RunLoop run_loop;
+  group.SetOnAttemptManagerCompleteCallbackForTesting(run_loop.QuitClosure());
+  run_loop.Run();
+}
+
 TestJobDelegate::TestJobDelegate(std::optional<HttpStreamKey> stream_key) {
   if (stream_key.has_value()) {
     key_builder_.from_key(*stream_key);

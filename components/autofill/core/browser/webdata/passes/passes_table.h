@@ -23,14 +23,15 @@ namespace autofill {
 // -----------------------------------------------------------------------------
 // loyalty_cards
 //
-//   guid                 Uniquely identifies the loyalty card instance (primary
-//                        key).
-//   merchant_name        The name of the loyalty card provider e.g. "Deutsche
-//                        Bahn".
-//   program_name         The name of the program from the loyalty card provider
-//                        e.g. "BahnBonus".
-//   program_logo         The url of the logo icon for the card.
-//   loyalty_card_number  A string representation of the loyalty card number.
+//   guid                         Uniquely identifies the loyalty card instance
+//                                (primary key).
+//   merchant_name                The name of the loyalty card provider e.g.
+//                                "Deutsche Bahn".
+//   program_name                 The name of the program from the loyalty card
+//                                provider e.g. "BahnBonus".
+//   program_logo                 The url of the logo icon for the card.
+//   unmasked_loyalty_card_suffix A string representation of the unmasked
+//                                loyalty card number suffix.
 class PassesTable : public WebDatabaseTable {
  public:
   PassesTable();

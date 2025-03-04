@@ -107,7 +107,10 @@ template("pkg_config") {
     foreach(include, pkgresult[0]) {
       # We want the system include paths to use -isystem instead of -I to
       # suppress warnings in those headers.
-      if (use_sysroot) {
+      # When building remotely, we make the path relative just as for use_sysroot.
+      # This ensures we are using the header files that match the platform we are
+      # building for.
+      if (use_sysroot || use_remoteexec) {
         include_relativized = rebase_path(include, root_build_dir)
         cflags += [ "-isystem$include_relativized" ]
       } else {

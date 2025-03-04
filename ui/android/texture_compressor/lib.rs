@@ -71,6 +71,60 @@ pub fn interleave_etc1(regs: [UReg; 4]) -> [Simd<u64, QUARTER_WIDTH>; 4] {
     regs
 }
 
+/// Load `SIMD_WIDTH` blocks from a region `4*SIMD_WIDTH` wide and `4` tall,
+/// starting at `base_x` and `base_y`.
+///
+/// Out of bounds pixels are padded with mirroring. For example, `abcdxy`
+/// becomes `abcdxyyx`.
+///
+/// Returns a 3D array of SIMD vectors. Each block is mapped to a SIMD lane
+/// (from left to right), and each pixel in the block is accessed as
+/// `[y][x][channel]`.
+#[inline]
+pub fn load_input_block(
+    src: &[u32],
+    width: u32,
+    height: u32,
+    row_width: u32,
+    base_x: u32,
+    base_y: u32,
+) -> [[[Reg; 3]; 4]; 4] {
+    let mut data = [[[Reg::default(); 3]; 4]; 4];
+    // For now, input load and output store are not vectorized. The main reason is
+    // that efficient loading requires shuffling and is poorly supported
+    // by std::simd and the wide crate (which we plan to use for
+    // supporting stable toolchain). Input load currently accounts for
+    // ~20% of the runtime. If shuffle support improves this would be a
+    // good candidate for optimization.
+    for i in 0..4 {
+        for j in 0..4 {
+            let mut buf = [0u32; SIMD_WIDTH];
+            for block in 0..SIMD_WIDTH as u32 {
+                let x = base_x + block * 4 + j as u32;
+                let y = base_y + i as u32;
+                buf[block as usize] = if x < width && y < height {
+                    // Fast path: load in-bound pixel
+                    src[(y * row_width + x) as usize]
+                } else {
+                    // Slow path: mirror out-of-bound pixels
+                    // If width or height is 1, mirroring can overflow, so make it saturate.
+                    let xm = if x >= width { (width - 1).saturating_sub(x - width) } else { x };
+                    let ym = if y >= height { (height - 1).saturating_sub(y - height) } else { y };
+                    src[(ym * row_width + xm) as usize]
+                };
+            }
+            let rgbx = Simd::from_array(buf);
+            let extract_channel = |x: Simd<u32, SIMD_WIDTH>, shift: u32| {
+                (x >> shift).cast::<i16>() & Simd::splat(0xFF)
+            };
+            data[i][j][0] = extract_channel(rgbx, 0);
+            data[i][j][1] = extract_channel(rgbx, 8);
+            data[i][j][2] = extract_channel(rgbx, 16);
+        }
+    }
+    data
+}
+
 /// Compress RGB pixels to ETC1.
 ///
 /// `src` should be in RGBA.
@@ -89,7 +143,6 @@ pub fn compress_etc1(
 ) {
     let dst_height = height.div_ceil(4);
     let dst_width = width.div_ceil(4);
-    let mut data = [[[Reg::default(); 3]; 4]; 4];
     // Note on vectorization scheme:
     //
     // We process one 4x4 block per SIMD lane, instead of the more common practice
@@ -99,31 +152,7 @@ pub fn compress_etc1(
     // portable SIMD than schemes that heavily shuffles.
     for dst_y in 0..dst_height {
         for dst_x0 in (0..dst_width).step_by(SIMD_WIDTH) {
-            // For now, input load and output store are not vectorized. The main reason is
-            // that efficient loading requires shuffling and is poorly supported
-            // by std::simd and the wide crate (which we plan to use for
-            // supporting stable toolchain). Input load currently accounts for
-            // ~20% of the runtime. If shuffle support improves this would be a
-            // good candidate for optimization.
-            for i in 0..4 {
-                for j in 0..4 {
-                    let mut buf = [0u32; SIMD_WIDTH];
-                    for dst_x1 in 0..SIMD_WIDTH as u32 {
-                        let x = (dst_x0 + dst_x1) * 4 + j as u32;
-                        let y = dst_y * 4 + i as u32;
-                        if x < width && y < height {
-                            buf[dst_x1 as usize] = src[(y * src_row_width + x) as usize];
-                        }
-                    }
-                    let rgbx = Simd::from_array(buf);
-                    let extract_channel = |x: Simd<u32, SIMD_WIDTH>, shift: u32| {
-                        (x >> shift).cast::<i16>() & Simd::splat(0xFF)
-                    };
-                    data[i][j][0] = extract_channel(rgbx, 0);
-                    data[i][j][1] = extract_channel(rgbx, 8);
-                    data[i][j][2] = extract_channel(rgbx, 16);
-                }
-            }
+            let data = load_input_block(src, width, height, src_row_width, dst_x0 * 4, dst_y * 4);
 
             let data = dither(&data);
             let QuantResult { lo: hdr0, hi: hdr1, scaled0: ep0, scaled1: ep1 } =

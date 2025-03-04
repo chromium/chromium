@@ -288,6 +288,7 @@
 <translation id="2161446265348023004">తెరిచి ఉన్న విండోకు స్విచ్ అవ్వండి</translation>
 <translation id="2164946989711475905">సైన్ ఇన్ చేయండి…</translation>
 <translation id="2175927920773552910">QR కోడ్</translation>
+<translation id="218350106843433823">ఆటోఫిల్ పాస్‌వర్డ్‌లు &amp; పాస్-కీలు</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="219283042927675668">గ్రూప్‌లోని ట్యాబ్‌లు</translation>
 <translation id="2194856509914051091">పరిగణించాల్సిన విషయాలు</translation>
@@ -377,6 +378,7 @@
 <translation id="2511117522375201202">మీ సెక్యూరిటీని ప్రమాదంలో ఉంచే <ph name="NUMBER_OF_PASSWORDS" /> చోరీకి గురైన పాస్‌వర్డ్‌లు మీ వద్ద ఉన్నాయి.</translation>
 <translation id="2513103768503127042">మీ ట్యాబ్ గ్రూప్‌లు ఇక్కడ ఉంటాయి</translation>
 <translation id="251837347827266434">మీరు సైన్ అవుట్ అవుతారు, ట్యాబ్‌లు మూసివేయబడతాయి, బ్రౌజింగ్ డేటా తొలగించబడుతుంది</translation>
+<translation id="2520787026086861736">ఆఫ్ చేయడానికి, <ph name="BEGIN_LINK" />ఆటోఫిల్ &amp; పాస్‌వర్డ్‌ల<ph name="END_LINK" />కు వెళ్లండి</translation>
 <translation id="2529021024822217800">అన్నీ తెరువు</translation>
 <translation id="2536991091671391962">మీరు సేవ్ చేసిన పాస్‌వర్డ్‌లను ఏ పరికరంలోనైనా ఉపయోగించవచ్చు. <ph name="EMAIL" /> కోసం అవి Google Password Managerలో సేవ్ చేయబడతాయి.</translation>
 <translation id="2538103551183528357">దాచబడింది, పాస్‌వర్డ్</translation>
@@ -651,7 +653,6 @@
 <translation id="385051799172605136">వెనుకకు</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, మరో <ph name="NUMBER_OF_ACCOUNTS" /> URLలకు సంబంధించిన పాస్‌వర్డ్‌లు తొలగించబడతాయి. మీ ఖాతాలు తొలగించబడవు.</translation>
 <translation id="3858860766373142691">పేరు</translation>
-<translation id="3861908220442487587">ఈ అడ్రస్ ఈ పరికరంలో మాత్రమే సేవ్ చేయబడింది. దీన్ని మీ ఇతర పరికరాలలో ఉపయోగించడానికి, మీ Google ఖాతా, <ph name="USER_EMAIL" />కు దీన్ని తరలించండి.</translation>
 <translation id="3868495844258915202">పూర్తి URLను చూడండి</translation>
 <translation id="3875783148670536197">ఎలా చేయాలో నాకు చూపించు</translation>
 <translation id="3876833929577368454">ప్రతిసారీ నన్ను అడుగు</translation>
@@ -672,6 +673,7 @@
 <translation id="3940195383040445971">ధరలను ట్యాబ్‌లలో ట్రాక్ చేయండి</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} ట్యాబ్‌ను మూసివేయండి}other{{COUNT} ట్యాబ్‌లను మూసివేయండి}}</translation>
 <translation id="3948600256434252210">మీరు అజ్ఞాతంలో బ్రౌజ్ చేయడానికి కుడి వైపునకు స్వైప్ చేయవచ్చు.</translation>
+<translation id="3950479158728806902">వేగంగా సైన్ ఇన్ చేయడానికి పాస్-కీని ఆటోమేటిక్‌గా క్రియేట్ చేయండి</translation>
 <translation id="3950820424414687140">సైన్ ఇన్</translation>
 <translation id="3955740319737378355">పూర్తయింది</translation>
 <translation id="3955822496205734389">మీ వద్ద బలహీనమైన పాస్‌వర్డ్‌లు ఉన్నాయి.</translation>
@@ -696,6 +698,7 @@
 <translation id="4018440314314549819">సేవ్ చేసిన పాస్‌వర్డ్‌లను ఆటోఫిల్ చేయండి</translation>
 <translation id="4021447724486050609">మీ బ్రౌజర్‌ను అప్‌డేట్ చేయండి</translation>
 <translation id="4021931095789478915">చదవాల్సిన లిస్ట్‌కు ${url}ని జోడించండి</translation>
+<translation id="4026496154402824012">ఆఫ్ చేయడానికి, <ph name="BEGIN_LINK" />పాస్‌వర్డ్ ఆప్షన్‌ల<ph name="END_LINK" />కు వెళ్లండి</translation>
 <translation id="4028871427853484857">ఖాతాలో సేవ్ చేయండి…</translation>
 <translation id="4038354071007134711">ఈ పరికరంలోని అప్లికేషన్‌ ఏదీ ఫైల్‌ను తెరవలేదు.</translation>
 <translation id="4042870976416480368">పేజీలో కనుగొనండి</translation>
@@ -829,6 +832,7 @@
 <translation id="4619564267100705184">ఇది మీరే అని వెరిఫై చేయండి</translation>
 <translation id="4619615317237390068">ఇతర పరికరాల్లోని ట్యాబ్‌లు</translation>
 <translation id="4624080227980645783">కొత్త అజ్ఞాత విండో</translation>
+<translation id="4627107755957573804">పాస్-కీలను ఉపయోగించడానికి ఇప్పటికే ఉన్న ఖాతాలను అప్‌గ్రేడ్ చేయడానికి సైట్‌లు, యాప్‌లను అనుమతించండి</translation>
 <translation id="4630212057753624203">శాంపిల్ బబుల్</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> వేరే చోట వాడిన పాస్‌వర్డ్‌లు</translation>
 <translation id="4631890462758052414">కొత్త అజ్ఞాత ట్యాబ్</translation>
@@ -1125,6 +1129,7 @@
 <translation id="5859715514067755465">మందుకు వెళ్లండి</translation>
 <translation id="5860033963881614850">ఆఫ్ అయ్యింది</translation>
 <translation id="5860491529813859533">ఆన్ చేయండి</translation>
+<translation id="5868644772996939262">ఆటోఫిల్ పాస్‌వర్డ్‌లు, పాస్-కీలు</translation>
 <translation id="5869522115854928033">సేవ్  చేసిన పాస్‌వర్డ్‌లు</translation>
 <translation id="5878899964490256268"><ph name="EMAIL" />. మీ సంస్థ మేనేజ్ చేస్తోంది.</translation>
 <translation id="5888889603768021126">దీనితో సైన్ ఇన్ చేశారు</translation>
@@ -1804,7 +1809,6 @@
 <translation id="8679900250380464358">చదవాల్సిన లిస్ట్‌కు జోడించండి</translation>
 <translation id="8680786875305615692">వెబ్‌లో అందరి కోసం సెక్యూరిటీని మెరుగుపరచడంలో సహాయపడండి</translation>
 <translation id="8680787084697685621">ఖాతా సైన్-ఇన్ వివరాల గడువు తేదీ ముగిసింది.</translation>
-<translation id="8683563711222071415">అడ్రస్‌ను ఖాతాకు తరలించండి</translation>
 <translation id="8690752723634292147">తొలగింపును నిర్ధారించండి</translation>
 <translation id="8692689525339542358">ప్రమాదకరమైన సైట్‌లు, డౌన్‌లోడ్‌లు, ఎక్స్‌టెన్షన్‌ల నుండి రక్షణ పొందండి.</translation>
 <translation id="8694281486652655615">ఇది ఈ ఐటెమ్‌ను చూపిస్తుంది</translation>

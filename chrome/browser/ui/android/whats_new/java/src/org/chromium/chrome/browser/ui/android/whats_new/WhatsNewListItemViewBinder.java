@@ -9,10 +9,12 @@ import static org.chromium.chrome.browser.ui.android.whats_new.WhatsNewListItemP
 import static org.chromium.chrome.browser.ui.android.whats_new.WhatsNewListItemProperties.ON_CLICK;
 import static org.chromium.chrome.browser.ui.android.whats_new.WhatsNewListItemProperties.TITLE_ID;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** ViewBinder for an individual line item in the What's New page's feature list. */
+@NullMarked
 public class WhatsNewListItemViewBinder {
     static void bind(PropertyModel model, WhatsNewListItemView view, PropertyKey propertyKey) {
         if (propertyKey.equals(TITLE_ID)) {

@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">ترجمه این سایت‌ها پیشنهاد نشود</translation>
 <translation id="1145536944570833626">حذف داده‌های موجود.</translation>
 <translation id="1150263420752757504">‏<ph name="APP_NAME" /> در Chrome باز می‌شود. درصورت ادامه دادن، با <ph name="BEGIN_LINK1" />شرایط خدمات Google<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />شرایط خدمات تکمیلی Google Chrome و ChromeOS<ph name="END_LINK2" /> موافقت می‌کنید.</translation>
+<translation id="1154555449933432029">‏هیچ گذرواژه‌ای در «مدیر گذرواژه Google» ذخیره نکرده‌اید.</translation>
 <translation id="115483310321669804">استفاده از گذرواژه <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">تغییر نام</translation>
 <translation id="1174479719160874822">‏وقتی صفحه‌نمایش باریک باشد، Chrome سایت ویژه تلفن همراه را درخواست خواهد کرد</translation>
@@ -548,6 +549,7 @@
 <translation id="3566639033325271639">به‌روزرسانی تنظیمات</translation>
 <translation id="3568945271227339929">گذرواژه لورفته‌ای وجود ندارد</translation>
 <translation id="357465026686164600">تلفن به‌عنوان کلید ایمنی</translation>
+<translation id="3575464060651642446">درحال بررسی گذرواژه‌های این دستگاه…</translation>
 <translation id="3577473026931028326">مشکلی پیش آمد. دوباره امتحان کنید.</translation>
 <translation id="3577558748185201054">مدیریت علایق و اولویت‌ها</translation>
 <translation id="3587482841069643663">همه</translation>
@@ -1366,10 +1368,12 @@
 <translation id="7224097611345298931">‏همه گذرواژه‌هایی که فقط در این دستگاه برای Chrome و <ph name="CHROME_CHANNEL" /> ذخیره شده بودند ادغام شدند. می‌توانید همه گذرواژه‌های ذخیره‌شده‌تان را در هر دو برنامه به‌طور خودکار تکمیل کنید.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{۱ بارگیری در انتظار}one{# بارگیری در انتظار}other{# بارگیری در انتظار}}</translation>
 <translation id="7230064152164845085">رفتن به حالت «ناشناس»</translation>
+<translation id="7237724030342645845">‏«مدیر گذرواژه Google» از کار افتاده است</translation>
 <translation id="72415438529550637">پیشنهاد گذرواژه بسته شد.</translation>
 <translation id="7260367682327802201">‏احتمالاً دستگاه Android شما تنظیم مشابهی دارد. اگر «سنجش آگهی» در Chrome و دستگاه Android شما روشن باشد، ممکن است شرکتی بتواند اثربخشی آگهی را در وب‌سایت‌هایی که بازدید می‌کنید و برنامه‌هایی که استفاده می‌کنید بسنجد.</translation>
 <translation id="727288900855680735"><ph name="ONE_TIME_CODE" /> به <ph name="ORIGIN" /> ارسال شود؟</translation>
 <translation id="7274013316676448362">سایت مسدودشده</translation>
+<translation id="7276868533747677875">‏اگر قبلاً گذرواژه‌ها را صادر کرده‌اید، فایل CSV را در دستگاهتان جستجو کنید و گذرواژه‌ها را به مدیر گذرواژه موردنظرتان وارد کنید.</translation>
 <translation id="7289049772085228972">‏شما قوی‌ترین امنیت Chrome را دارید</translation>
 <translation id="7289303553784750393">اگر آنلاین هستید اما این مشکل باز هم اتفاق افتاد، می‌توانید روش‌های دیگر را برای ادامه دادن در <ph name="SITE_ETLD_PLUS_ONE" /> امتحان کنید.</translation>
 <translation id="7290209999329137901">عدم‌دسترسی به تغییر نام</translation>
@@ -1544,6 +1548,7 @@
 <translation id="8027395186860110042">ممکن است «گذرواژه‌ها» به‌زودی ازکار بیفتد</translation>
 <translation id="8027863900915310177">انتخاب مکان بارگیری</translation>
 <translation id="8030852056903932865">تأیید</translation>
+<translation id="8031805944372049238">‏برای ذخیره و استفاده از گذرواژه‌ها در «مدیر گذرواژه Google»، «خدمات Google Play» را به‌روز کنید.</translation>
 <translation id="8032569120109842252">دنبال می‌کنید</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> روز باقی‌مانده است</translation>
 <translation id="8037801708772278989">آخرین بررسی: همین‌حالا</translation>

@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">Não oferecer a opção de traduzir estes sites</translation>
 <translation id="1145536944570833626">Excluir os dados atuais.</translation>
 <translation id="1150263420752757504">O app <ph name="APP_NAME" /> será aberto no Chrome. Ao continuar, você concorda com os <ph name="BEGIN_LINK1" />Termos de Serviço do Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço adicionais do Google Chrome e do ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="1154555449933432029">Você não tem senhas salvas no Gerenciador de senhas do Google.</translation>
 <translation id="115483310321669804">Use a senha <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Renomear</translation>
 <translation id="1174479719160874822">O Chrome solicita o site para dispositivos móveis quando a tela é estreita</translation>
@@ -1367,10 +1368,12 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7224097611345298931">Todas as senhas salvas apenas neste dispositivo para o Chrome e o <ph name="CHROME_CHANNEL" /> foram fundidas. Você pode preencher automaticamente todas as senhas salvas nos dois apps.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download pendente}one{# download pendente}other{# downloads pendentes}}</translation>
 <translation id="7230064152164845085">Mudar para a navegação anônima</translation>
+<translation id="7237724030342645845">O Gerenciador de senhas do Google parou de funcionar</translation>
 <translation id="72415438529550637">A sugestão de senha está fechada.</translation>
 <translation id="7260367682327802201">Seu dispositivo Android pode incluir uma configuração semelhante. Se a medição de anúncios estiver ativada no Chrome e no dispositivo Android, a empresa poderá medir a eficácia de um anúncio nos sites que você acessa e nos apps que usa.</translation>
 <translation id="727288900855680735">Enviar <ph name="ONE_TIME_CODE" /> para <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Site bloqueado</translation>
+<translation id="7276868533747677875">Se você exportou senhas antes, procure um arquivo CSV no dispositivo e use o gerenciador de senhas da sua preferência para importar esse arquivo.</translation>
 <translation id="7289049772085228972">Você tem o nível mais alto de segurança do Chrome</translation>
 <translation id="7289303553784750393">Se você está on-line, mas o problema persiste, tente outras maneiras de continuar no <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Ação de renomear indisponível</translation>
@@ -1545,6 +1548,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8027395186860110042">As senhas vão deixar de funcionar em breve</translation>
 <translation id="8027863900915310177">Escolha um local para fazer o download</translation>
 <translation id="8030852056903932865">Aprovar</translation>
+<translation id="8031805944372049238">Para salvar e usar senhas com o Gerenciador de senhas do Google, atualize o Google Play Services.</translation>
 <translation id="8032569120109842252">Seguindo</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> dias restantes</translation>
 <translation id="8037801708772278989">Verificado agora mesmo</translation>

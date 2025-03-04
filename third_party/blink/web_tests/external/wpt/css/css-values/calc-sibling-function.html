@@ -14,6 +14,7 @@
     #test::before {
       content: "";
       z-index: calc(sibling-index() * 2);
+      widows: calc(sibling-count() * 2);
     }
   </style>
 </head>
@@ -44,6 +45,7 @@ test(() => {
 test(() => {
   let style = getComputedStyle(document.getElementById('test'), '::before');
   assert_equals(style.zIndex, '4');
+  assert_equals(style.widows, '10');
 }, 'sibling-count on pseudo-element');
   </script>
 </body>

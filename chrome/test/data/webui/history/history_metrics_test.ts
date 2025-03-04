@@ -199,7 +199,7 @@ suite('Metrics', function() {
         app.shadowRoot!.querySelector('history-synced-device-manager');
     assertTrue(!!syncedDeviceManager);
 
-    const cards = syncedDeviceManager.shadowRoot!.querySelectorAll(
+    const cards = syncedDeviceManager.shadowRoot.querySelectorAll(
         'history-synced-device-card');
     assertTrue(!!cards[0]);
     cards[0].$['card-heading'].click();
@@ -214,14 +214,14 @@ suite('Metrics', function() {
     menuButton.click();
     await microtasksFinished();
 
-    syncedDeviceManager.shadowRoot!
+    syncedDeviceManager.shadowRoot
         .querySelector<HTMLElement>('#menuOpenButton')!.click();
     assertEquals(1, histogram[SyncedTabsHistogram.OPEN_ALL]);
 
     menuButton.click();
     await microtasksFinished();
 
-    syncedDeviceManager.shadowRoot!
+    syncedDeviceManager.shadowRoot
         .querySelector<HTMLElement>('#menuDeleteButton')!.click();
     assertEquals(1, histogram[SyncedTabsHistogram.HIDE_FOR_NOW]);
   });

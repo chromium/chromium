@@ -7,7 +7,9 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -75,9 +77,14 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
   void ParseEnterpriseSearchAggregatorSearchResults(
       const base::Value::Dict& root_val);
 
-  // Helper method to parse query, people, and content suggestions.
+  // Helper method to parse query, people, and content suggestions and populate
+  // `matches_`.
+  // - `input_words` is used for scoring matches.
+  // - `suggestion_type` is used for selecting which JSON fields to look for,
+  // scoring matches, and creating the match.
+  // - `is_navigation` is used for creating the match.
   // Example:
-  //   Given a response with one query suggestion:
+  //   Given a `results` with one query suggestion:
   //    {
   //     "querySuggestions": [{
   //       "suggestion": "hello",
@@ -93,7 +100,8 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
   //  - `match.image_url` = `icon_url` from EnterpriseSearchAggregatorSettings
   //  policy,
   //  - `match.relevance` = 1001.
-  void ParseResultList(const base::Value::List* results,
+  void ParseResultList(std::set<std::u16string> input_words,
+                       const base::Value::List* results,
                        SuggestionType suggestion_type,
                        bool is_navigation);
 
@@ -112,6 +120,16 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
   // `CreateMatch()`.
   std::string GetMatchContents(const base::Value::Dict& result,
                                SuggestionType suggestion_type) const;
+
+  // Helper method to get user-readable (e.g. 'chromium is awesome document')
+  // fields that can be used to compare input similarity. Non-user-readable
+  // fields (e.g. 'doc_id=123/locations/global') should be excluded because the
+  // input matching that would be a coincidence and not a sign the user wanted
+  // this suggestion. Does not return fields already returned by
+  // `GetMatchDescription()` and `GetMatchContents()`.
+  std::vector<std::string> GetAdditionalScoringFields(
+      const base::Value::Dict& result,
+      SuggestionType suggestion_type) const;
 
   // Helper to create a match.
   AutocompleteMatch CreateMatch(SuggestionType suggestion_type,

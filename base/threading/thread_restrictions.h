@@ -171,7 +171,6 @@ class ScopedAllowInitGLBindings;
 class VizCompositorThreadRunnerWebView;
 }  // namespace android_webview
 namespace ash {
-class BrowserDataBackMigrator;
 class LoginEventRecorder;
 class StartupCustomizationDocument;
 class StartupUtils;
@@ -581,7 +580,6 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class ::WebEngineBrowserMainParts;
   friend class android_webview::AwBrowserContext;
   friend class android_webview::ScopedAllowInitGLBindings;
-  friend class ash::BrowserDataBackMigrator;
   friend class ash::LoginEventRecorder;
   friend class ash::StartupCustomizationDocument;  // http://crosbug.com/11103
   friend class ash::StartupUtils;

@@ -1720,7 +1720,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2178545675770638239">Pumili ng Password</translation>
 <translation id="2178585470774851578">Ie-enable mo ang mga feature para sa pag-debug ng ChromeOS Flex na magse-set up ng sshd daemon at mag-e-enable ng pagbo-boot mula sa mga USB drive.</translation>
 <translation id="2178614541317717477">CA Compromise</translation>
-<translation id="2179850495466791921">Kasalukuyan kang mayroong <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" />, at higit pa</translation>
 <translation id="2180620921879609685">I-block ang content sa anumang page</translation>
 <translation id="2181821976797666341">Mga Patakaran</translation>
 <translation id="2182058453334755893">Kinopya sa Iyong Clipboard</translation>
@@ -3139,7 +3138,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3167562202484086668">I-delete ang lahat ng data sa <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Piliin ang temang tumutugon sa iyong mga pangangailangan. Para baguhin ang iyong tema, wallpaper, screen saver, at higit pa, pumindot lang nang matagal sa desktop.</translation>
 <translation id="3170072451822350649">Maaari mo ring laktawan ang pag-sign in at <ph name="LINK_START" />mag-browse bilang Bisita<ph name="LINK_END" />.</translation>
-<translation id="3171499217959105722">Kasalukuyan kang mayroong <ph name="NUMBERED_ITEM" />, at higit pa</translation>
 <translation id="3175067642577044620">Nilalaman</translation>
 <translation id="3175862692832442091">Gubat</translation>
 <translation id="3176347586396987181">Gamitin ang “z” para pindutin nang matagal ang button ng mouse</translation>
@@ -3951,7 +3949,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3744219658596020825">Hindi in-import ang iyong mga password</translation>
 <translation id="3745306754941902605">Kusina</translation>
 <translation id="3747077776423672805">Para mag-alis ng mga app, pumunta sa Mga Setting &gt; Google Play Store &gt; Pamahalaan ang mga kagustuhan sa Android &gt; Mga App o Application manager. Pagkatapos ay i-tap ang app na gusto mong i-uninstall (maaaring kailanganin mong mag-swipe pakanan o pakaliwa para mahanap ang app). Pagkatapos, i-tap ang I-uninstall o I-disable.</translation>
-<translation id="3747552357646973221">Kasalukuyan kang mayroong <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, at higit pa</translation>
 <translation id="3748424433435232460">Naka-save na sa device na ito ang password para sa account na ito</translation>
 <translation id="3748706263662799310">Mag-ulat ng bug</translation>
 <translation id="3749724428455457489">Matuto pa tungkol sa mga iminumungkahi ng site na ad</translation>
@@ -4085,6 +4082,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Inaprubahan ang isang extension}one{# extension ang inaprubahan}other{# na extension ang inaprubahan}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Hindi bababa sa <ph name="INSTALL_SIZE" /> na espasyo ang inirerekomenda para sa Linux.</translation>
+<translation id="3824203811509979971">Magbuod ng content o magtanong</translation>
 <translation id="3824621460022590830">Invalid ang token sa pag-enroll ng device. Makipag-ugnayan sa may-ari o administrator ng iyong device. Code ng error: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Mag-sign in para makita ang mga tab mula sa iba pang device</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Tandaan ang pinili ko para sa ganitong uri ng file: <ph name="FILE_TYPES" />}one{Tandaan ang pinili ko para sa mga ganitong uri ng file: <ph name="FILE_TYPES" />}other{Tandaan ang pinili ko para sa mga ganitong uri ng file: <ph name="FILE_TYPES" />}}</translation>
@@ -4271,6 +4269,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="3948985214866944547">Bina-block ng karamihan ng mga tao ang pag-share ng eksaktong lokasyon para sa site na ito</translation>
 <translation id="394984172568887996">Nag-import mula sa IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> para gawing mas ligtas ang pag-download ng mga file</translation>
+<translation id="3950479158728806902">Awtomatikong gumawa ng passkey para mas mabilis na makapag-sign in</translation>
 <translation id="3950820424414687140">Mag-sign in</translation>
 <translation id="3950841222883198950">Voice typing</translation>
 <translation id="3953834000574892725">Aking mga account</translation>
@@ -5199,6 +5198,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4624054169152573743">Tema ng kulay</translation>
 <translation id="4625078469366263107">I-enable ang App</translation>
 <translation id="4625905218692741757">Default na kulay na gray</translation>
+<translation id="4627107755957573804">Payagan ang mga site at app na i-upgrade ang mga kasalukuyang account para gumamit ng mga passkey</translation>
 <translation id="4627442949885028695">Magpatuloy mula sa ibang device</translation>
 <translation id="4628762811416793313">Hindi natapos ang pag-set up sa Linux container. Pakisubukang muli.</translation>
 <translation id="4629521233550547305">Buksan ang profile na <ph name="PROFILE_NAME" /></translation>
@@ -5782,6 +5782,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5053233576223592551">Magdagdag ng Username</translation>
 <translation id="505347685865235222">Grupong walang pangalan - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{Dapat mo itong palitan ngayon mismo}one{Dapat mong palitan ang mga ito ngayon mismo}other{Dapat mong palitan ang mga ito ngayon mismo}}</translation>
+<translation id="5056587122125565772">Gumawa ng larawan</translation>
 <translation id="5056950756634735043">Kumokonekta sa container</translation>
 <translation id="5057110919553308744">Kapag iki-click mo ang extension</translation>
 <translation id="5057127674016624293">Mas matagal ang pag-scan kaysa sa inaasahan</translation>
@@ -5892,6 +5893,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="512642543295077915">search + backspace</translation>
 <translation id="5126611267288187364">Tingnan ang mga pagbabago</translation>
 <translation id="5127620150973591153">Secure na connection ID: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">Magbuod ng content o magtanong.</translation>
 <translation id="5127881134400491887">Pamahalaan ang mga koneksyon ng network</translation>
 <translation id="5127934926273826089">Mga bulaklak</translation>
 <translation id="5127986747308934633">Kinokontrol ng iyong administrator ang device mo</translation>
@@ -10164,6 +10166,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8195854162863398249">I-disable ang <ph name="FEATURE_NAME" /></translation>
 <translation id="8195920051450756553">Pagkaantala bago ma-activate ulit ang parehong key</translation>
 <translation id="8197673340773315084">Magdagdag ng pangalan o label, tulad ng Trabaho o Personal</translation>
+<translation id="8198181050118789419">Tema: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Ikina-cast ang tab</translation>
 <translation id="8199300056570174101">Mga property ng Network (Serbisyo) at Device</translation>
 <translation id="8200772114523450471">Resume</translation>
@@ -11423,6 +11426,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Nakakonekta ang USB mouse</translation>
 <translation id="9075413375877487220">Hindi pinagkakatiwalaan ng Pinahusay na Ligtas na Pag-browse ang extension na ito.</translation>
+<translation id="9075985558450420812">Maglagay ng custom na prompt o mag-highlight ng text para gumawa ng larawan.</translation>
 <translation id="9076523132036239772">Paumanhin, hindi ma-verify ang iyong email o password. Subukan munang kumonekta sa network.</translation>
 <translation id="9076821103818989526">Panel sa gilid</translation>
 <translation id="9076977315710973122">Pagbabahagi ng SMB</translation>

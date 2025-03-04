@@ -1516,7 +1516,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Memory.Daemons" units="MiB"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryType" -->
 
   <owner>bgeffon@chromium.org</owner>
@@ -3080,7 +3080,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.{GSC}.MatchingBoardId" enum="Cr50CrosRlzCodes"
-    expires_after="2025-01-26">
+    expires_after="2026-01-26">
   <owner>vbendeb@chromium.org</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>

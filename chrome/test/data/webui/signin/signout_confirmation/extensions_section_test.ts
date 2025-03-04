@@ -57,7 +57,7 @@ suite('SignoutConfirmationViewTest', function() {
 
     // Test that the number of account extensions shown match.
     const accountExtensions =
-        extensionsSection.shadowRoot!.querySelectorAll<HTMLElement>(
+        extensionsSection.shadowRoot.querySelectorAll<HTMLElement>(
             '.account-extension');
     assertEquals(TEST_ACCOUNT_EXTENSIONS.length, accountExtensions.length);
 

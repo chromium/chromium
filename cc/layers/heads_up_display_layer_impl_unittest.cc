@@ -63,7 +63,7 @@ TEST_F(HeadsUpDisplayLayerImplTest, ResourcelessSoftwareDrawAfterResourceLoss) {
   auto* root = EnsureRootLayerInPendingTree();
   auto* layer = AddLayerInPendingTree<HeadsUpDisplayLayerImpl>(std::string());
   layer->SetBounds(gfx::Size(100, 100));
-  layer->set_visible_layer_rect(gfx::Rect(100, 100));
+  layer->SetVisibleLayerRectForTesting(gfx::Rect(100, 100));
   CopyProperties(root, layer);
 
   UpdatePendingTreeDrawProperties();

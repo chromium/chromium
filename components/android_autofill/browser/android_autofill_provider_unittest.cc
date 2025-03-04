@@ -115,33 +115,17 @@ auto SaveSessionId(SessionId* session_id) {
   };
 }
 
-FormData CreateTestBasicForm() {
+FormData CreateTestLoginForm() {
   FormData form;
   form.set_renderer_id(test::MakeFormRendererId());
+  form.set_name(u"login_form");
   form.set_url(GURL("https://foo.com/form.html"));
   form.set_action(GURL("https://foo.com/submit.html"));
   form.set_main_frame_origin(url::Origin::Create(form.url()));
-  return form;
-}
-
-FormData CreateTestLoginForm() {
-  FormData form = CreateTestBasicForm();
-  form.set_name(u"login_form");
   form.set_fields(
       {CreateTestFormField(/*label=*/"Username", /*name=*/"username",
                            /*value=*/"", FormControlType::kInputText),
        CreateTestFormField(/*label=*/"Password", /*name=*/"password",
-                           /*value=*/"", FormControlType::kInputPassword)});
-  return form;
-}
-
-FormData CreateTestChangePasswordForm() {
-  FormData form = CreateTestBasicForm();
-  form.set_name(u"change_password_form");
-  form.set_fields(
-      {CreateTestFormField(/*label=*/"Password", /*name=*/"password1",
-                           /*value=*/"", FormControlType::kInputPassword),
-       CreateTestFormField(/*label=*/"Password", /*name=*/"password2",
                            /*value=*/"", FormControlType::kInputPassword)});
   return form;
 }
@@ -1304,61 +1288,6 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
   // before.
   EXPECT_NE(cache_session_id, pw_form_second_session_id);
   EXPECT_NE(pi_form_session_id, pw_form_second_session_id);
-}
-
-// Tests that the prefill request is sent for a Change Password form.
-TEST_F(AndroidAutofillProviderPrefillRequestTest,
-       PrefillRequestSentForChangePasswordForm) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
-    GTEST_SKIP();
-  }
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAndroidAutofillPrefillRequestsForChangePassword);
-
-  FormData form = CreateFormDataForFrame(CreateTestChangePasswordForm(),
-                                         main_frame_token());
-  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
-  ASSERT_TRUE(android_autofill_manager().FindCachedFormById(form.global_id()));
-
-  EXPECT_CALL(provider_bridge(), SendPrefillRequest(EqualsFormData(form)));
-  android_autofill_manager().SimulatePropagateAutofillPredictions(
-      form.global_id());
-}
-
-// Tests that starting an autofill session for a change password form works.
-TEST_F(AndroidAutofillProviderPrefillRequestTest,
-       SessionStartForChangePasswordForm) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
-    GTEST_SKIP();
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAndroidAutofillPrefillRequestsForChangePassword);
-
-  FormData form = CreateFormDataForFrame(CreateTestChangePasswordForm(),
-                                         main_frame_token());
-  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
-  ASSERT_TRUE(android_autofill_manager().FindCachedFormById(form.global_id()));
-
-  // Upon receiving server predictions a prefill request should be sent.
-  SessionId cache_session_id = SessionId(0);
-  EXPECT_CALL(provider_bridge(), SendPrefillRequest(EqualsFormData(form)))
-      .WillOnce(SaveSessionId(&cache_session_id));
-  android_autofill_manager().SimulatePropagateAutofillPredictions(
-      form.global_id());
-  Mock::VerifyAndClearExpectations(&provider_bridge());
-
-  EXPECT_CALL(
-      provider_bridge(),
-      StartAutofillSession(EqualsFormDataWithSessionId(form, cache_session_id),
-                           EqualsFieldInfo(/*index=*/0),
-                           /*has_server_predictions=*/true));
-  android_autofill_manager().SimulateOnAskForValuesToFill(
-      form, form.fields().front());
 }
 
 // Tests that metrics are emitted when the bottom sheet is shown.

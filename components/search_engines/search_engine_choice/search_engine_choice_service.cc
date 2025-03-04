@@ -31,6 +31,8 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/regional_capabilities/access/country_access_reason.h"
+#include "components/regional_capabilities/regional_capabilities_country_id.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_metrics_service_accessor.h"
@@ -330,7 +332,10 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
 }
 
 int SearchEngineChoiceService::GetCountryId() {
-  return regional_capabilities_service_->GetCountryId();
+  return regional_capabilities_service_->GetCountryId().GetRestricted(
+      regional_capabilities::CountryAccessKey<SearchEngineChoiceService>(
+          regional_capabilities::CountryAccessReason::
+              kSearchEngineChoiceServiceDeprecatedForwardCall));
 }
 
 std::unique_ptr<search_engines::ChoiceScreenData>
@@ -352,7 +357,11 @@ SearchEngineChoiceService::GetChoiceScreenData(
 
   return std::make_unique<search_engines::ChoiceScreenData>(
       std::move(owned_template_urls),
-      regional_capabilities_service_->GetCountryId(), search_terms_data);
+      regional_capabilities_service_->GetCountryId().GetRestricted(
+          regional_capabilities::CountryAccessKey<SearchEngineChoiceService>(
+              regional_capabilities::CountryAccessReason::
+                  kSearchEngineChoiceServiceCacheChoiceScreenData)),
+      search_terms_data);
 }
 
 void SearchEngineChoiceService::RecordChoiceMade(
@@ -379,7 +388,7 @@ void SearchEngineChoiceService::RecordChoiceMade(
 void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
     const ChoiceScreenDisplayState& display_state,
     bool is_from_cached_state) {
-  if (!IsEeaChoiceCountry(display_state.country_id)) {
+  if (!regional_capabilities::IsEeaCountry(display_state.country_id)) {
     // Tests or command line can force this, but we want to avoid polluting the
     // histograms with unwanted country data.
     return;
@@ -514,7 +523,11 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
   }
 
   const base::Version& current_version = version_info::GetVersion();
-  int country_id = GetCountryId();
+  regional_capabilities::CountryId country_id =
+      regional_capabilities_service_->GetCountryId().GetRestricted(
+          regional_capabilities::CountryAccessKey<SearchEngineChoiceService>(
+              regional_capabilities::CountryAccessReason::
+                  kSearchEngineChoiceServiceReprompting));
   const std::string wildcard_string("*");
   // Explicit country key takes precedence over the wildcard.
   for (const std::string& key :

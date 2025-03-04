@@ -9,6 +9,7 @@ import android.util.ArrayMap;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.fast_checkout.R;
 import org.chromium.chrome.browser.ui.suggestion.Icon;
@@ -18,6 +19,7 @@ import org.chromium.url.GURL;
 import java.util.Map;
 
 /** A credit card, similar to the one used by the PersonalDataManager. */
+@NullMarked
 public class FastCheckoutCreditCard {
     // Mappings from name: chrome/browser/ui/autofill/autofill_popup_controller_utils.cc
     // Mappings to resource: chrome/browser/android/resource_id.h

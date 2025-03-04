@@ -296,15 +296,20 @@ void CollaborationControllerDelegateDesktop::MaybeShowSignInAndSyncUi() {
     return;
   }
 
+  Profile* profile = browser_->profile();
   switch (status.signin_status) {
     case collaboration::SigninStatus::kNotSignedIn:
+      ShowSignInAndSyncUi(profile);
+      break;
     case collaboration::SigninStatus::kSignedInPaused:
-      ShowSignInAndSyncUi(browser_->profile());
+      signin_ui_util::ShowReauthForAccount(
+          profile, GetAccountInfoFromProfile(profile).email,
+          signin_metrics::AccessPoint::kCollaborationTabGroup);
       break;
     case collaboration::SigninStatus::kSignedIn:
       switch (status.sync_status) {
         case collaboration::SyncStatus::kNotSyncing:
-          ShowSignInAndSyncUi(browser_->profile());
+          ShowSignInAndSyncUi(profile);
           break;
         case collaboration::SyncStatus::kSyncWithoutTabGroup:
           chrome::ShowSettingsSubPage(browser_, chrome::kSyncSetupSubPage);

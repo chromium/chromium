@@ -206,6 +206,7 @@
 <translation id="1827529786398596735">Touch and hold the home screen</translation>
 <translation id="1832848789136765277">To make sure that you can always access your sync data, verify that it's you</translation>
 <translation id="1836891464494477513">{count,plural, =1{Bookmark saved in your Google Account, {email}}other{Bookmarks saved in your Google Account, {email}}}</translation>
+<translation id="1838089197478136166">Open in Wallet?</translation>
 <translation id="183878838231635348">This card shows any privacy or security issues that Safety Check automatically detects for you.</translation>
 <translation id="1845230888742614096">Keep group</translation>
 <translation id="1854463785401910334">Search open tabs</translation>
@@ -225,6 +226,7 @@
 <translation id="189531189292803889">Your iPad was recently restored, which might have changed your default browser.</translation>
 <translation id="1901366738768303267">How do I use this feature?</translation>
 <translation id="1901600657316773839">Keep selection</translation>
+<translation id="1902277226107477495">Address detection off. Turn it back on in Settings.</translation>
 <translation id="1904580727789512086">The URLs that you visit are saved to your Google Account</translation>
 <translation id="1911619930368729126">Upload to Google Drive</translation>
 <translation id="1923342640370224680">Last hour</translation>
@@ -301,6 +303,7 @@
 <translation id="2230173723195178503">Web page loaded</translation>
 <translation id="2236949375853147973">My Activity</translation>
 <translation id="2240256190924001613">Configuration profile available</translation>
+<translation id="2244080985779413662">This website wants to download a file and open it in your Wallet.</translation>
 <translation id="2245007488813216650">Translating…</translation>
 <translation id="2249119578464404734">At the top of the screen, tap the search icon</translation>
 <translation id="2251686759395008410">Menu → History</translation>
@@ -648,7 +651,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="385051799172605136">Back</translation>
 <translation id="3851938967634752633">Passwords for <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> and <ph name="NUMBER_OF_ACCOUNTS" /> others will be deleted. Your accounts won't be deleted.</translation>
 <translation id="3858860766373142691">Name</translation>
-<translation id="3861908220442487587">This address is only saved on this device. To use it on your other devices, move it to your Google Account, <ph name="USER_EMAIL" /></translation>
 <translation id="3868495844258915202">Show full URL</translation>
 <translation id="3875783148670536197">Show me how</translation>
 <translation id="3876833929577368454">Ask me every time</translation>
@@ -1361,6 +1363,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6779455296366983087">Your browsing data will be deleted</translation>
 <translation id="6790502149545262384">Soon, you’ll see stories from <ph name="CHANNEL_NAME" /> when you open a new tab.</translation>
+<translation id="6794476726485507147">Choose a date and time to receive a reminder notification to revisit this page</translation>
 <translation id="681368974849482173">Item created</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bookmark saved in your Google Account, {email}}other{{count} bookmarks saved in your Google Account, {email}}}</translation>
 <translation id="6830728435402077660">Not secure</translation>
@@ -1488,6 +1491,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7425053386765766120">Add payment method…</translation>
 <translation id="7425346204213733349">Changes to your bookmarks, history, passwords and other settings will no longer be synced to your Google Account. However, your existing data will remain stored in your Google Account.</translation>
 <translation id="742664698522525515">Keep group?</translation>
+<translation id="7431851541687113774">Turn off address detection</translation>
 <translation id="7431991332293347422">Control how your browsing history is used to personalise Search and more</translation>
 <translation id="7435356471928173109">Turned off by your administrator</translation>
 <translation id="7438481509621345350">You'll now see stories from <ph name="CHANNEL_NAME" /> when you open a new tab.</translation>
@@ -1641,6 +1645,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8023170444051056234">You'll immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and it will be deleted from all your devices</translation>
 <translation id="8023878949384262191">Expands the section.</translation>
 <translation id="8027581147000338959">Open in new window</translation>
+<translation id="8029092694585014252">Set reminder</translation>
 <translation id="8032569120109842252">Following</translation>
 <translation id="8035133914807600019">New folder…</translation>
 <translation id="8035412398498507358">Photos</translation>
@@ -1798,7 +1803,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8679900250380464358">Add to reading list</translation>
 <translation id="8680786875305615692">Help improve security on the web for everyone</translation>
 <translation id="8680787084697685621">Account sign-in details are out of date.</translation>
-<translation id="8683563711222071415">Move address to account</translation>
 <translation id="8690752723634292147">Confirm deletion</translation>
 <translation id="8692689525339542358">Get protection from dangerous sites, downloads and extensions.</translation>
 <translation id="8694281486652655615">Shows this item</translation>

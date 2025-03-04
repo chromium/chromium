@@ -371,7 +371,7 @@ ShelfView::ShelfView(ShelfModel* model,
   SetProperty(views::kElementIdentifierKey, kShelfViewElementId);
 
   announcement_view_ = new views::View();
-  AddChildView(announcement_view_.get());
+  AddChildViewRaw(announcement_view_.get());
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kToolbar);
   GetViewAccessibility().SetName(

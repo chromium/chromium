@@ -19,6 +19,9 @@ bool ASH_EXPORT IsSunfishFeatureEnabledWithFeatureKey();
 
 // Returns whether Sunfish-related UI can be shown. This function checks the
 // Sunfish-feature flag, Sunfish prefs and Sunfish policy.
+//
+// Do NOT use this function if your feature is using
+// `SunfishScannerFeatureWatcher`, use its identically named method instead.
 bool ASH_EXPORT CanShowSunfishUi();
 
 // Returns whether Sunfish-related UI or Scanner-related UI can be shown.
@@ -29,6 +32,9 @@ bool ASH_EXPORT CanShowSunfishUi();
 //
 // This function checks whether `CanShowSunfishUi` or
 // `ScannerController::CanShowUiForShell` are true.
+//
+// Do NOT use this function if your feature is using
+// `SunfishScannerFeatureWatcher`, use its identically named method instead.
 bool ASH_EXPORT CanShowSunfishOrScannerUi();
 
 }  // namespace ash

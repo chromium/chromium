@@ -184,6 +184,7 @@
 <translation id="3628308229821498208">Navrhované vyhľadávania</translation>
 <translation id="3658847490588580244">Dolný hárok predvoleného prehliadača</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> web v skupine webov vlastníka <ph name="RWS_OWNER" />, ktorým sa zobrazuje vaša aktivita v nej}few{<ph name="RWS_MEMBERS_COUNT" /> weby v skupine webov vlastníka <ph name="RWS_OWNER" />, ktorým sa zobrazuje vaša aktivita v nej}many{<ph name="RWS_MEMBERS_COUNT" /> sites in <ph name="RWS_OWNER" />'s group of sites that can see your activity in the group}other{<ph name="RWS_MEMBERS_COUNT" /> webov v skupine webov vlastníka <ph name="RWS_OWNER" />, ktorým sa zobrazuje vaša aktivita v nej}}</translation>
+<translation id="3676777756440746804">Weby majú zablokované žiadať vás o používanie informácií, ktoré o vás uložili</translation>
 <translation id="3697164069658504920">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie používať zariadenia s rozhraním USB. Keď je táto možnosť vypnutá, weby nemôžu používať zariadenia s rozhraním USB.</translation>
 <translation id="3707034683772193706">Web, ktorý navštívite, môže v Chrome uložiť malé množstvo informácií, najmä na overenie, že nie ste robot</translation>
 <translation id="3709818294139939629">Odstránený prístup webu k súboru</translation>
@@ -208,9 +209,11 @@
 <translation id="3922092564198021702">Otvorte v telefóne Nastavenia</translation>
 <translation id="3933121352599513978">Zbaliť nechcené požiadavky (odporúčané)</translation>
 <translation id="3955193568934677022">Povoliť webom prehrávať chránený obsah (odporúčané)</translation>
+<translation id="3965467402665811906">Weby môžu žiadať o používanie informácií, ktoré o vás uložili</translation>
 <translation id="3967822245660637423">Sťahovanie dokončené</translation>
 <translation id="3987993985790029246">Kopírovať odkaz</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
+<translation id="3992308058851451478"><ph name="SITE" /> môže pri prehliadaní používať vaše informácie</translation>
 <translation id="3992684624889376114">Táto stránka</translation>
 <translation id="4002066346123236978">Názov</translation>
 <translation id="4046123991198612571">Ďalšia skladba</translation>
@@ -263,6 +266,7 @@
 <translation id="4883854917563148705">Spravované nastavenia sa nedajú resetovať</translation>
 <translation id="4887024562049524730">Pýtať sa, či chcete povoliť webu používať zariadenie a dáta pre virtuálnu realitu (odporúčané)</translation>
 <translation id="4936863036653376783">Skupiny nájdete v sekcii skupín kariet vo všetkých svojich zariadeniach</translation>
+<translation id="4945443401464700059"><ph name="SITE" /> má zablokované používanie vašich informácií na webe</translation>
 <translation id="4953688446973710931">Keď je táto možnosť zapnutá, weby môžu žiadať o automatické sťahovanie viacerých súborov. Keď je táto možnosť vypnutá, weby nemôžu automaticky stiahnuť viacero súborov.</translation>
 <translation id="4962975101802056554">Odvolať všetky povolenia pre zariadenie</translation>
 <translation id="497421865427891073">Ďalej</translation>
@@ -532,9 +536,11 @@
 <translation id="851751545965956758">Brániť webom pripájať sa k zariadeniam</translation>
 <translation id="8525306231823319788">Celá obrazovka</translation>
 <translation id="8541410041357371550">Tento web dostáva aj témy reklám od Chromu, aby vám zobrazoval relevantnejšie reklamy</translation>
+<translation id="854876774113449365">Na weboch, ktoré navštívite, môže byť vložený obsah z iných webov, napríklad obrázky, reklamy a text. Tieto iné weby môžu žiadať o povolenia používať informácie, ktoré o vás uložili, keď ste ich prehliadali. <ph name="BEGIN_LINK" />Ďalšie informácie o vloženom obsahu<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Ako zobrazovať žiadosti</translation>
 <translation id="8558480467877843976">Chrome môžete teraz kedykoľvek použiť pri prehliadaní alebo klepnutí na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>
 <translation id="857943718398505171">Povolené (odporúčané)</translation>
+<translation id="8593422116412089302">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie používať informácie, ktoré o vás uložili. Keď je táto možnosť vypnutá, weby vás nemôžu žiadať o povolenie používať informácie, ktoré o vás uložili.</translation>
 <translation id="8609465669617005112">Presunúť nahor</translation>
 <translation id="8617611086246832542">Keď je táto možnosť zapnutá, je aktívne zobrazenie webov v počítači. Keď je táto možnosť vypnutá, je aktívne zobrazenie webov v mobile.</translation>
 <translation id="8670078035093027626">Dolný hárok predvoleného prehliadača je otvorený na celú výšku</translation>

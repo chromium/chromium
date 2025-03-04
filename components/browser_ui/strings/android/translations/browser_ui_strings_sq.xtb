@@ -184,6 +184,7 @@
 <translation id="3628308229821498208">Kërkimet e sugjeruara</translation>
 <translation id="3658847490588580244">Fleta e poshtme e shfletuesit të parazgjedhur</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sajt në grupin e sajteve të <ph name="RWS_OWNER" /> që mund ta shikojnë aktivitetin tënd në grup}other{<ph name="RWS_MEMBERS_COUNT" /> sajte në grupin e sajteve të <ph name="RWS_OWNER" /> që mund ta shikojnë aktivitetin tënd në këtë grup}}</translation>
+<translation id="3676777756440746804">Sajtet janë bllokuar që të mos të kërkojnë të përdorin informacionet që kanë ruajtur në lidhje me ty</translation>
 <translation id="3697164069658504920">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të përdorin pajisjet USB. Kur cilësimi është joaktiv, sajtet nuk mund të përdorin pajisjet USB.</translation>
 <translation id="3707034683772193706">Një sajt që ti viziton mund të ruajë një sasi të vogël informacionesh me Chrome, kryesisht për të vërtetuar që nuk je një robot</translation>
 <translation id="3709818294139939629">Qasja e sajtit te skedari u hoq</translation>
@@ -208,9 +209,11 @@
 <translation id="3922092564198021702">Në telefon, hap "Cilësimet"</translation>
 <translation id="3933121352599513978">Palos kërkesat e padëshiruara (rekomandohet)</translation>
 <translation id="3955193568934677022">Lejo që sajtet të luajnë përmbajtje të mbrojtur (rekomandohet)</translation>
+<translation id="3965467402665811906">Sajtet mund të kërkojnë që të përdorin informacionet që kanë ruajtur në lidhje me ty</translation>
 <translation id="3967822245660637423">Shkarkimi përfundoi</translation>
 <translation id="3987993985790029246">Kopjo lidhjen</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
+<translation id="3992308058851451478"><ph name="SITE" /> mund të përdorë informacionet e tua kur ti shfleton</translation>
 <translation id="3992684624889376114">Rreth kësaj faqeje</translation>
 <translation id="4002066346123236978">Titulli</translation>
 <translation id="4046123991198612571">Kënga tjetër</translation>
@@ -263,6 +266,7 @@
 <translation id="4883854917563148705">Cilësimet e menaxhuara nuk mund të rivendosen</translation>
 <translation id="4887024562049524730">Pyet përpara se sajtet të lejohen të përdorin pajisjen e realitetit virtual dhe të dhënat e tua (rekomandohet)</translation>
 <translation id="4936863036653376783">Grupet e tua do t'i gjesh te seksioni i grupeve të skedave në të gjitha pajisjet e tua</translation>
+<translation id="4945443401464700059"><ph name="SITE" /> është bllokuar që të mos përdorë informacionet e tua në</translation>
 <translation id="4953688446973710931">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të shkarkojnë automatikisht shumë skedarë. Kur cilësimi është joaktiv, sajtet nuk mund të shkarkojnë automatikisht shumë skedarë.</translation>
 <translation id="4962975101802056554">Anulo të gjitha lejet për pajisjen</translation>
 <translation id="497421865427891073">Vazhdo përpara</translation>
@@ -532,9 +536,11 @@
 <translation id="851751545965956758">Blloko lidhjen e sajteve me pajisjet</translation>
 <translation id="8525306231823319788">Ekrani i plotë</translation>
 <translation id="8541410041357371550">Ky sajt merr temat e tua të reklamave nga Chrome për të të shfaqur reklama më të përshtatshme</translation>
+<translation id="854876774113449365">Sajtet që viziton mund të integrojnë përmbajtje nga sajte të tjera, p.sh. imazhe, reklama dhe tekste. Këto sajte të tjera mund të kërkojnë leje që të përdorin informacionet që kanë ruajtur në lidhje me ty kur ti shfleton në sajt. <ph name="BEGIN_LINK" />Mëso më shumë për përmbajtjet e integruara<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Si të shfaqësh kërkesat</translation>
 <translation id="8558480467877843976">Tani mund të përdorësh Chrome sa herë që shfleton ose troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
 <translation id="857943718398505171">Lejuar (rekomandohet)</translation>
+<translation id="8593422116412089302">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të përdorin informacionet që kanë ruajtur në lidhje me ty. Kur cilësimi është joaktiv, sajtet nuk mund të të kërkojnë që të përdorin informacionet që kanë ruajtur në lidhje me ty.</translation>
 <translation id="8609465669617005112">Lëviz lart</translation>
 <translation id="8617611086246832542">Kur cilësimi është aktiv, shfaqet pamja e uebsajteve për desktop. Kur cilësimi është joaktiv, shfaqet pamja e uebsajteve për celular.</translation>
 <translation id="8670078035093027626">Fleta e poshtme e shfletuesit të parazgjedhur u hap në lartësi të plotë</translation>

@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.ui.android.whats_new;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+@NullMarked
 public class WhatsNewProperties {
     /** View states of What's New page. */
     @IntDef({

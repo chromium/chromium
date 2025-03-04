@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Domácí síť, bez roamingu</translation>
 <translation id="1327977588028644528">Brána</translation>
 <translation id="1328223165223065150">Barva tapety</translation>
+<translation id="1329478709358066995">Přepis:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Přizpůsobit skenované oblasti</translation>
 <translation id="1343442362630695901">slané jezero</translation>
@@ -1129,7 +1130,6 @@
 <translation id="6325525973963619867">Došlo k selhání</translation>
 <translation id="6327262166342360252">Tato tapeta byla vytvořena pomocí umělé inteligence s použitím následujícího textu: „<ph name="PROMPT" />“.</translation>
 <translation id="6331191339300272798">Automatický tmavý motiv</translation>
-<translation id="6335228876613776082">Stažení modelu bylo dokončeno</translation>
 <translation id="6340526405444716530">Personalizace</translation>
 <translation id="6348252528297699679">Přístup k poloze můžete vypnout v Nastavení &gt; Ochrana soukromí a zabezpečení &gt; Nastavení ochrany soukromí &gt; Přístup k poloze. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Uživatelské jméno a heslo</translation>
@@ -1274,6 +1274,7 @@
 <translation id="6930597342185648547">O pozadí</translation>
 <translation id="6939667434404433010">Vyhledat název nahrávky</translation>
 <translation id="6939766318048400022">Kavárna</translation>
+<translation id="6942253772720771875">Sdělte nám svůj názor nebo popište svůj problém</translation>
 <translation id="6943893908656559156">Vzdálená identita (volitelné)</translation>
 <translation id="6953137545147683679">zlatá</translation>
 <translation id="6957231940976260713">Název služby</translation>
@@ -1598,6 +1599,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8395584934117017006">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje podnik</translation>
 <translation id="8398927464629426868">Rychlost, s jakou se zařízení momentálně nabíjí nebo vybíjí</translation>
 <translation id="8403988360557588704">Obraz na téma <ph name="ART_FEATURE" /> ve stylu <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">Vygenerovaný souhrn:</translation>
 <translation id="8410244574650205435">Určeno automaticky</translation>
 <translation id="8420955526972171689">Testování a odstraňování problémů s hardwarem</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1644,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8626489604350149811">Další akce pro <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Světle fialová</translation>
 <translation id="8647595191512746911">Přepis zvuku</translation>
+<translation id="8648578954147795914">Vygenerované názvy:</translation>
 <translation id="8650852232143958317">Vezměte si své soubory z Gmailu a Disku Google s sebou</translation>
 <translation id="8651481478098336970">ztlumit hlasitost</translation>
 <translation id="8655295600908251630">Kanál</translation>
@@ -1670,7 +1673,6 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Fotek Google</translation>
 <translation id="8775713578693478175">APN modemu</translation>
-<translation id="877735394245039557">Probíhá stahování modelu</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Je možné, že tato síť používá captive portál</translation>
 <translation id="8797082062139985406">Vytvořte název pomocí Google AI</translation>
@@ -1784,6 +1786,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="9218016617214286986">Zobrazit známé APN</translation>
 <translation id="932327136139879170">Domovská stránka</translation>
 <translation id="939519157834106403">Identifikátor SSID</translation>
+<translation id="940663759301549538">Zkontrolujte, jestli je připojený mikrofon, nebo zkuste Chromebook restartovat</translation>
 <translation id="945522503751344254">Odeslat zpětnou vazbu</translation>
 <translation id="950520315903467048">Chybí klávesa pro <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Porovnejte hlasy v nahrávce, aby přepis uváděl, co řekl kdo a kdy</translation>

@@ -184,6 +184,7 @@ bool StructTraits<
   out->shared_dictionary_writer_enabled =
       data.shared_dictionary_writer_enabled();
   out->required_ip_address_space = data.required_ip_address_space();
+  out->allows_device_bound_sessions = data.allows_device_bound_sessions();
   return true;
 }
 

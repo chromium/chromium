@@ -12,14 +12,15 @@ LoyaltyCard CreateLoyaltyCard() {
   return LoyaltyCard(
       /*loyalty_card_id=*/"loyalty_card_id_1",
       /*merchant_name=*/"Deutsche Bahn", /*program_name=*/"BahnBonus",
-      /*program_logo=*/"https://empty.url.com", /*loyalty_card_number=*/"1234");
+      /*program_logo=*/"https://empty.url.com",
+      /*unmasked_loyalty_card_suffix=*/"1234");
 }
 
 LoyaltyCard CreateLoyaltyCard2() {
   return LoyaltyCard(/*loyalty_card_id=*/"loyalty_card_id_2",
                      /*merchant_name=*/"Lidl", /*program_name=*/"CustomerCard",
                      /*program_logo=*/"https://empty.url.com",
-                     /*loyalty_card_number=*/"4321");
+                     /*unmasked_loyalty_card_suffix=*/"4321");
 }
 
 }  // namespace autofill::test

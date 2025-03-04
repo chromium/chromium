@@ -6,7 +6,6 @@
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/user_agent.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -26,8 +25,9 @@ static void JNI_ContentUtils_SetUserAgentOverride(
       embedder_support::GetUserAgentMetadata();
 
   blink::UserAgentOverride spoofed_ua;
-  spoofed_ua.ua_string_override = content::BuildUserAgentFromOSAndProduct(
-      kLinuxInfoStr, embedder_support::GetProductAndVersion());
+  spoofed_ua.ua_string_override =
+      embedder_support::BuildUserAgentFromOSAndProduct(
+          kLinuxInfoStr, embedder_support::GetProductAndVersion());
   spoofed_ua.ua_metadata_override = metadata;
   spoofed_ua.ua_metadata_override->platform = "Linux";
   spoofed_ua.ua_metadata_override->platform_version =

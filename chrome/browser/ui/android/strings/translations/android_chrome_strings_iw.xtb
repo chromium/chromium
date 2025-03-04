@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">אין להציג את ההצעה לתרגם את האתרים האלה</translation>
 <translation id="1145536944570833626">מחיקת נתונים קיימים.</translation>
 <translation id="1150263420752757504">‏האפליקציה <ph name="APP_NAME" /> תיפתח ב-Chrome. המשך הפעולה מבטא הסכמה <ph name="BEGIN_LINK1" />לתנאים ולהגבלות של Google<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />לתנאים ולהגבלות הנוספים של Google Chrome ו-ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="1154555449933432029">‏אין לך סיסמאות שמורות במנהל הסיסמאות של Google.</translation>
 <translation id="115483310321669804">שימוש בסיסמה <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">שינוי שם</translation>
 <translation id="1174479719160874822">‏אם המסך צר, Chrome יבקש את האתר לנייד</translation>
@@ -1366,10 +1367,12 @@
 <translation id="7224097611345298931">‏כל הסיסמאות שנשמרו רק במכשיר הזה עבור Chrome ו-<ph name="CHROME_CHANNEL" /> מוזגו. אפשר למלא באופן אוטומטי את כל הסיסמאות השמורות בשתי האפליקציות האלו.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{הורדה אחת בהמתנה}one{# הורדות בהמתנה}two{# הורדות בהמתנה}other{# הורדות בהמתנה}}</translation>
 <translation id="7230064152164845085">מעבר למצב פרטי</translation>
+<translation id="7237724030342645845">‏מנהל הסיסמאות של Google הפסיק לפעול</translation>
 <translation id="72415438529550637">ההצעה לסיסמה נסגרה.</translation>
 <translation id="7260367682327802201">‏במכשיר Android עשויה להופיע הגדרה דומה. אם מדידת המודעות מופעלת ב-Chrome ובמכשיר Android, לחברה מסוימת עשויה להיות הרשאה למדוד את רמת האפקטיביות של מודעה כלשהי באתרים שבהם מבקרים ובאפליקציות שבהן משתמשים.</translation>
 <translation id="727288900855680735">לשלוח את <ph name="ONE_TIME_CODE" /> אל <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">אתר חסום</translation>
+<translation id="7276868533747677875">‏אם ייצאת בעבר סיסמאות, צריך לחפש את קובץ ה-CSV עם הסיסמאות במכשיר שלך ולייבא אותו למנהל הסיסמאות הרלוונטי.</translation>
 <translation id="7289049772085228972">‏במכשיר שלך פועלים אמצעי האבטחה הכי חזקים של Chrome</translation>
 <translation id="7289303553784750393">אם יש חיבור לאינטרנט אבל הבעיה נמשכת, אפשר לנסות להמשיך בדרכים אחרות ב-<ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">לא ניתן היה לשנת את השם מפני שהפריט לא זמין</translation>
@@ -1544,6 +1547,7 @@
 <translation id="8027395186860110042">יכול להיות שהסיסמאות יפסיקו לפעול בקרוב</translation>
 <translation id="8027863900915310177">בחירת המיקום להורדה</translation>
 <translation id="8030852056903932865">אישור</translation>
+<translation id="8031805944372049238">‏צריך לעדכן את Google Play Services כדי להתחיל לשמור סיסמאות ולהשתמש בהן עם מנהל הסיסמאות של Google.</translation>
 <translation id="8032569120109842252">במעקב</translation>
 <translation id="8037750541064988519">נותרו <ph name="DAYS" /> ימים</translation>
 <translation id="8037801708772278989">התבצעה בדיקה עכשיו</translation>

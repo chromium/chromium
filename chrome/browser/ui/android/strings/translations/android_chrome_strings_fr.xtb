@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">Ne pas proposer de traduire ces sites</translation>
 <translation id="1145536944570833626">Supprimez les données existantes</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> va s'ouvrir dans Chrome. En continuant, vous acceptez les <ph name="BEGIN_LINK1" />Conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />Conditions d'utilisation supplémentaires de Google Chrome et Chrome OS<ph name="END_LINK2" />.</translation>
+<translation id="1154555449933432029">Vous n'avez aucun mot de passe enregistré dans le Gestionnaire de mots de passe de Google.</translation>
 <translation id="115483310321669804">Utiliser le mot de passe <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Renommer</translation>
 <translation id="1174479719160874822">Chrome demandera le site mobile si l'écran est étroit</translation>
@@ -1366,10 +1367,12 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7224097611345298931">Tous les mots de passe enregistrés uniquement sur cet appareil pour Chrome et <ph name="CHROME_CHANNEL" /> ont été fusionnés. Vous pouvez saisir automatiquement tous vos mots de passe enregistrés dans les deux applis.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 téléchargement en attente}one{# téléchargement en attente}other{# téléchargements en attente}}</translation>
 <translation id="7230064152164845085">Passer à la navigation privée</translation>
+<translation id="7237724030342645845">Le Gestionnaire de mots de passe de Google a cessé de fonctionner</translation>
 <translation id="72415438529550637">La suggestion de mot de passe est fermée.</translation>
 <translation id="7260367682327802201">Votre appareil Android peut inclure un paramètre similaire. Si la mesure des annonces est activée dans Chrome et sur votre appareil Android, une entreprise peut mesurer l'efficacité d'une annonce sur les sites Web que vous consultez et dans les applis que vous utilisez.</translation>
 <translation id="727288900855680735">Envoyer <ph name="ONE_TIME_CODE" /> à <ph name="ORIGIN" /> ?</translation>
 <translation id="7274013316676448362">Site bloqué</translation>
+<translation id="7276868533747677875">Si vous avez déjà exporté des mots de passe, recherchez un fichier CSV sur votre appareil et importez-les dans le gestionnaire de mots de passe de votre choix.</translation>
 <translation id="7289049772085228972">Vous bénéficiez du plus haut niveau de sécurité de Chrome</translation>
 <translation id="7289303553784750393">Si vous êtes en ligne, mais que le problème persiste, vous pouvez essayer d'autres méthodes pour poursuivre sur <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Option de changement de nom indisponible</translation>
@@ -1544,6 +1547,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8027395186860110042">Il est possible que les mots de passe ne fonctionnent bientôt plus</translation>
 <translation id="8027863900915310177">Choisir l'emplacement du téléchargement</translation>
 <translation id="8030852056903932865">Approuver</translation>
+<translation id="8031805944372049238">Pour commencer à enregistrer et utiliser des mots de passe avec le Gestionnaire de mots de passe de Google, mettez à jour les services Google Play.</translation>
 <translation id="8032569120109842252">Suivi</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> jours restants</translation>
 <translation id="8037801708772278989">Vérification effectuée à l'instant</translation>

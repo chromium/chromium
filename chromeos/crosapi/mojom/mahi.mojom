@@ -15,8 +15,7 @@ struct MahiPageInfo {
   // Id for the delegate to distinguish between different clients.
   mojo_base.mojom.UnguessableToken client_id@0;
 
-  // The id represents a unique identifier for the page. It's
-  // used by `MahiBrowserDelegate` to request the page contents.
+  // The id represents a unique identifier for the page.
   mojo_base.mojom.UnguessableToken page_id@1;
 
   // Url of the web page.
@@ -67,23 +66,6 @@ struct MahiContextMenuRequest {
   gfx.mojom.Rect? mahi_menu_bounds@3;
 };
 
-// Interface between the Ash system and browser (lacros, ash) for Mahi.
-// Implemented in Ash.
-[Uuid="40c4bc35-7592-4cfd-9620-212621daeda2"]
-interface MahiBrowserDelegate {
-  // Registers a mojo client.
-  RegisterMojoClient@0(pending_remote<MahiBrowserClient> client,
-                        mojo_base.mojom.UnguessableToken client_id)
-        => (bool success);
-
-  // Informs the delegate of any changes to the current focused page.
-  OnFocusedPageChanged@1(MahiPageInfo page_info) => (bool success);
-
-  // Informs the delegate of a context menu click action has been triggered.
-  OnContextMenuClicked@2(MahiContextMenuRequest context_menu_request)
-        => (bool success);
-};
-
 // Struct containing the id and the content for the requested page.
 struct MahiPageContent {
   // Id for the delegate to distinguish between different clients.
@@ -94,13 +76,4 @@ struct MahiPageContent {
 
   // The extracted content of the page.
   mojo_base.mojom.String16 page_content@2;
-};
-
-// Client interface implemented by browser (ash or lacros).
-// Empty if the page is not found from this id.
-[Uuid="12ef21cc-18ad-4571-899a-d691c7419ef2"]
-interface MahiBrowserClient {
-  // Requests the contents of this web page.
-  GetContent@0(mojo_base.mojom.UnguessableToken id)
-        => (MahiPageContent? page_content);
 };

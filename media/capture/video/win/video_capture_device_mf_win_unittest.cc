@@ -27,6 +27,7 @@
 #include "base/test/task_environment.h"
 #include "base/win/scoped_handle.h"
 #include "media/base/win/mf_helpers.h"
+#include "media/base/win/test_utils.h"
 #include "media/capture/video/win/d3d_capture_test_utils.h"
 #include "media/capture/video/win/sink_filter_win.h"
 #include "media/capture/video/win/video_capture_device_factory_win.h"
@@ -140,6 +141,8 @@ class MockClient : public VideoCaptureDevice::Client {
 class MockImageCaptureClient
     : public base::RefCountedThreadSafe<MockImageCaptureClient> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // GMock doesn't support move-only arguments, so we use this forward method.
   void DoOnGetPhotoState(mojom::PhotoStatePtr received_state) {
     state = std::move(received_state);
@@ -173,6 +176,8 @@ class MockInterface
     : public base::RefCountedThreadSafe<MockInterface<Interface>>,
       public Interface {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // IUnknown
   IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
     if (riid == __uuidof(this) || riid == __uuidof(IUnknown)) {
@@ -363,7 +368,9 @@ class MockMFExtendedCameraController final
       ULONG property_id,
       IMFExtendedCameraControl** control) override {
     if (stream_index == (DWORD)MF_CAPTURE_ENGINE_MEDIASOURCE) {
-      *control = AddReference(new MockMFExtendedCameraControl(property_id));
+      auto camera_control =
+          base::MakeRefCounted<MockMFExtendedCameraControl>(property_id);
+      *control = AddReference(camera_control.get());
       return S_OK;
     }
     return E_NOINTERFACE;
@@ -380,11 +387,13 @@ class MockMFMediaSource final : public MockInterface<IMFMediaSourceEx>,
   IFACEMETHODIMP_(ULONG) AddRef() override { return MockInterface::AddRef(); }
   IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
     if (riid == __uuidof(IAMCameraControl)) {
-      *object = AddReference(new MockAMCameraControl);
+      auto camera_control = base::MakeRefCounted<MockAMCameraControl>();
+      *object = AddReference(camera_control.get());
       return S_OK;
     }
     if (riid == __uuidof(IAMVideoProcAmp)) {
-      *object = AddReference(new MockAMVideoProcAmp);
+      auto video_proc_amp = base::MakeRefCounted<MockAMVideoProcAmp>();
+      *object = AddReference(video_proc_amp.get());
       return S_OK;
     }
     if (riid == __uuidof(IMFGetService)) {
@@ -446,7 +455,9 @@ class MockMFMediaSource final : public MockInterface<IMFMediaSourceEx>,
                             REFIID riid,
                             void** object) override {
     if (riid == __uuidof(IMFExtendedCameraController)) {
-      *object = AddReference(new MockMFExtendedCameraController);
+      auto camera_controller =
+          base::MakeRefCounted<MockMFExtendedCameraController>();
+      *object = AddReference(camera_controller.get());
       return S_OK;
     }
     return MF_E_UNSUPPORTED_SERVICE;
@@ -1188,22 +1199,7 @@ const int kArbitraryValidPhotoHeight = 2448;
 
 class VideoCaptureDeviceMFWinTest : public ::testing::Test {
  protected:
-  VideoCaptureDeviceMFWinTest()
-      : descriptor_(VideoCaptureDeviceDescriptor()),
-        media_source_(new MockMFMediaSource()),
-        engine_(new MockMFCaptureEngine()),
-        client_(new MockClient()),
-        image_capture_client_(new MockImageCaptureClient()),
-        task_runner_(task_environment_.GetMainThreadTaskRunner()),
-        device_(new VideoCaptureDeviceMFWin(descriptor_,
-                                            media_source_,
-                                            nullptr,
-                                            engine_,
-                                            task_runner_)),
-        capture_source_(new MockMFCaptureSource()),
-        capture_preview_sink_(new MockCapturePreviewSink()),
-        media_foundation_supported_(
-            VideoCaptureDeviceFactoryWin::PlatformSupportsMediaFoundation()) {}
+  VideoCaptureDeviceMFWinTest() = default;
 
   void SetUp() override {
     if (!media_foundation_supported_)
@@ -1257,11 +1253,10 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
           if (media_type_index != 0)
             return MF_E_NO_MORE_TYPES;
 
-          *media_type = new StubMFMediaType(MFMediaType_Video, mf_video_subtype,
-                                            0, kArbitraryValidVideoWidth,
-                                            kArbitraryValidVideoHeight, 30);
-          (*media_type)->AddRef();
-
+          auto stub_media_type = base::MakeRefCounted<StubMFMediaType>(
+              MFMediaType_Video, mf_video_subtype, 0, kArbitraryValidVideoWidth,
+              kArbitraryValidVideoHeight, 30);
+          *media_type = AddReference(stub_media_type.get());
           return S_OK;
         }));
 
@@ -1269,20 +1264,19 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
                 DoGetSink(MF_CAPTURE_ENGINE_SINK_TYPE_PREVIEW, _))
         .WillRepeatedly(Invoke([this](MF_CAPTURE_ENGINE_SINK_TYPE sink_type,
                                       IMFCaptureSink** sink) {
-          *sink = this->capture_preview_sink_.get();
-          this->capture_preview_sink_->AddRef();
+          *sink = AddReference(this->capture_preview_sink_.get());
           return S_OK;
         }));
 
     EXPECT_CALL(*capture_source_, DoGetCurrentDeviceMediaType(_, _))
-        .WillRepeatedly(Invoke([mf_video_subtype](DWORD stream_index,
-                                                  IMFMediaType** media_type) {
-          *media_type = new StubMFMediaType(MFMediaType_Video, mf_video_subtype,
-                                            0, kArbitraryValidVideoWidth,
-                                            kArbitraryValidVideoHeight, 30);
-          (*media_type)->AddRef();
-          return S_OK;
-        }));
+        .WillRepeatedly(Invoke(
+            [mf_video_subtype](DWORD stream_index, IMFMediaType** media_type) {
+              auto stub_media_type = base::MakeRefCounted<StubMFMediaType>(
+                  MFMediaType_Video, mf_video_subtype, 0,
+                  kArbitraryValidVideoWidth, kArbitraryValidVideoHeight, 30);
+              *media_type = AddReference(stub_media_type.get());
+              return S_OK;
+            }));
   }
 
   void PrepareMFDeviceWithVideoStreams(std::vector<GUID> mf_video_subtypes) {
@@ -1305,12 +1299,11 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
           if (media_type_index >= mf_video_subtypes.size())
             return MF_E_NO_MORE_TYPES;
 
-          *media_type = new StubMFMediaType(
+          auto stub_media_type = base::MakeRefCounted<StubMFMediaType>(
               MFMediaType_Video, mf_video_subtypes[media_type_index],
               media_type_index, kArbitraryValidVideoWidth,
               kArbitraryValidVideoHeight, 30);
-          (*media_type)->AddRef();
-
+          *media_type = AddReference(stub_media_type.get());
           return S_OK;
         }));
 
@@ -1326,10 +1319,10 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
     EXPECT_CALL(*capture_source_, DoGetCurrentDeviceMediaType(_, _))
         .WillRepeatedly(Invoke(
             [mf_video_subtypes](DWORD stream_index, IMFMediaType** media_type) {
-              *media_type = new StubMFMediaType(
+              auto stub_media_type = base::MakeRefCounted<StubMFMediaType>(
                   MFMediaType_Video, mf_video_subtypes[0], 0,
                   kArbitraryValidVideoWidth, kArbitraryValidVideoHeight, 30);
-              (*media_type)->AddRef();
+              *media_type = AddReference(stub_media_type.get());
               return S_OK;
             }));
   }
@@ -1357,16 +1350,16 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
     auto get_device_media_type = [mf_video_subtype](DWORD stream_index,
                                                     IMFMediaType** media_type) {
       if (stream_index == 0) {
-        *media_type = new StubMFMediaType(MFMediaType_Video, mf_video_subtype,
-                                          0, kArbitraryValidVideoWidth,
-                                          kArbitraryValidVideoHeight, 30);
-        (*media_type)->AddRef();
+        auto stub_media_type = base::MakeRefCounted<StubMFMediaType>(
+            MFMediaType_Video, mf_video_subtype, 0, kArbitraryValidVideoWidth,
+            kArbitraryValidVideoHeight, 30);
+        *media_type = AddReference(stub_media_type.get());
         return S_OK;
       } else if (stream_index == 1) {
-        *media_type = new StubMFMediaType(
+        auto stub_media_type = base::MakeRefCounted<StubMFMediaType>(
             MFMediaType_Image, GUID_ContainerFormatJpeg, 0,
             kArbitraryValidPhotoWidth, kArbitraryValidPhotoHeight, 0);
-        (*media_type)->AddRef();
+        *media_type = AddReference(stub_media_type.get());
         return S_OK;
       }
       return E_FAIL;
@@ -1385,12 +1378,12 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
         .WillRepeatedly(Invoke([this](MF_CAPTURE_ENGINE_SINK_TYPE sink_type,
                                       IMFCaptureSink** sink) {
           if (sink_type == MF_CAPTURE_ENGINE_SINK_TYPE_PREVIEW) {
-            *sink = this->capture_preview_sink_.get();
-            this->capture_preview_sink_->AddRef();
+            *sink = AddReference(this->capture_preview_sink_.get());
             return S_OK;
           } else if (sink_type == MF_CAPTURE_ENGINE_SINK_TYPE_PHOTO) {
-            *sink = new MockCapturePhotoSink();
-            (*sink)->AddRef();
+            auto capture_photo_sink =
+                base::MakeRefCounted<MockCapturePhotoSink>();
+            *sink = AddReference(capture_photo_sink.get());
             return S_OK;
           }
           return E_FAIL;
@@ -1420,16 +1413,16 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
     auto get_device_media_type = [params](DWORD stream_index,
                                           IMFMediaType** media_type) {
       if (stream_index == 0) {
-        *media_type = new StubMFMediaType(
+        auto stub_media_type = base::MakeRefCounted<StubMFMediaType>(
             MFMediaType_Video, params.depth_video_stream_subtype, 0,
             kArbitraryValidVideoWidth, kArbitraryValidVideoHeight, 30);
-        (*media_type)->AddRef();
+        *media_type = AddReference(stub_media_type.get());
         return S_OK;
       } else if (stream_index == 1 && params.additional_i420_video_stream) {
-        *media_type = new StubMFMediaType(MFMediaType_Video, MFVideoFormat_I420,
-                                          0, kArbitraryValidVideoWidth,
-                                          kArbitraryValidVideoHeight, 30);
-        (*media_type)->AddRef();
+        auto stub_media_type = base::MakeRefCounted<StubMFMediaType>(
+            MFMediaType_Video, MFVideoFormat_I420, 0, kArbitraryValidVideoWidth,
+            kArbitraryValidVideoHeight, 30);
+        *media_type = AddReference(stub_media_type.get());
         return S_OK;
       }
       return E_FAIL;
@@ -1442,10 +1435,10 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
           if (stream_index == 0 &&
               params.additional_i420_formats_in_depth_stream &&
               media_type_index == 1) {
-            *media_type = new StubMFMediaType(
+            auto stub_media_type = base::MakeRefCounted<StubMFMediaType>(
                 MFMediaType_Video, MFVideoFormat_I420, 0,
                 kArbitraryValidVideoWidth, kArbitraryValidVideoHeight, 30);
-            (*media_type)->AddRef();
+            *media_type = AddReference(stub_media_type.get());
             return S_OK;
           }
           if (media_type_index != 0)
@@ -1457,8 +1450,7 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
                 DoGetSink(MF_CAPTURE_ENGINE_SINK_TYPE_PREVIEW, _))
         .WillRepeatedly(Invoke([this](MF_CAPTURE_ENGINE_SINK_TYPE sink_type,
                                       IMFCaptureSink** sink) {
-          *sink = this->capture_preview_sink_.get();
-          this->capture_preview_sink_->AddRef();
+          *sink = AddReference(this->capture_preview_sink_.get());
           return S_OK;
         }));
 
@@ -1467,21 +1459,33 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
   }
 
   VideoCaptureDeviceDescriptor descriptor_;
-  Microsoft::WRL::ComPtr<MockMFMediaSource> media_source_;
-  Microsoft::WRL::ComPtr<MockMFCaptureEngine> engine_;
-  std::unique_ptr<MockClient> client_;
-  scoped_refptr<MockImageCaptureClient> image_capture_client_;
+  Microsoft::WRL::ComPtr<MockMFMediaSource> media_source_ =
+      MakeComPtrFromRefCounted<MockMFMediaSource>();
+  Microsoft::WRL::ComPtr<MockMFCaptureEngine> engine_ =
+      MakeComPtrFromRefCounted<MockMFCaptureEngine>();
+  std::unique_ptr<MockClient> client_ = std::make_unique<MockClient>();
+  scoped_refptr<MockImageCaptureClient> image_capture_client_ =
+      base::MakeRefCounted<MockImageCaptureClient>();
   base::test::TaskEnvironment task_environment_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  std::unique_ptr<VideoCaptureDeviceMFWin> device_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_ =
+      task_environment_.GetMainThreadTaskRunner();
+  std::unique_ptr<VideoCaptureDeviceMFWin> device_ =
+      std::make_unique<VideoCaptureDeviceMFWin>(descriptor_,
+                                                media_source_,
+                                                nullptr,
+                                                engine_,
+                                                task_runner_);
   VideoCaptureFormat last_format_;
 
-  scoped_refptr<MockMFCaptureSource> capture_source_;
-  scoped_refptr<MockCapturePreviewSink> capture_preview_sink_;
+  scoped_refptr<MockMFCaptureSource> capture_source_ =
+      base::MakeRefCounted<MockMFCaptureSource>();
+  scoped_refptr<MockCapturePreviewSink> capture_preview_sink_ =
+      base::MakeRefCounted<MockCapturePreviewSink>();
   scoped_refptr<MockDXGIDeviceManager> dxgi_device_manager_;
 
  private:
-  const bool media_foundation_supported_;
+  const bool media_foundation_supported_ =
+      VideoCaptureDeviceFactoryWin::PlatformSupportsMediaFoundation();
 };
 
 // Expects StartPreview() to be called on AllocateAndStart()
@@ -1543,7 +1547,7 @@ TEST_F(VideoCaptureDeviceMFWinTest, CallClientOnErrorMediaEvent) {
   EXPECT_CALL(*(engine_.Get()), OnStartPreview());
   EXPECT_CALL(*client_, OnStarted());
   EXPECT_CALL(*client_, OnError(_, _, _));
-  scoped_refptr<MockMFMediaEvent> media_event_error = new MockMFMediaEvent();
+  auto media_event_error = base::MakeRefCounted<MockMFMediaEvent>();
   EXPECT_CALL(*media_event_error, DoGetStatus()).WillRepeatedly(Return(E_FAIL));
 
   task_runner_->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
@@ -1565,9 +1569,9 @@ TEST_F(VideoCaptureDeviceMFWinTest, CallClientOnErrorDurringInit) {
 
   VideoCaptureDeviceDescriptor descriptor = VideoCaptureDeviceDescriptor();
   Microsoft::WRL::ComPtr<MockMFMediaSource> media_source =
-      new MockMFMediaSource();
+      MakeComPtrFromRefCounted<MockMFMediaSource>();
   Microsoft::WRL::ComPtr<MockMFCaptureEngine> engine =
-      new MockMFCaptureEngine();
+      MakeComPtrFromRefCounted<MockMFCaptureEngine>();
   std::unique_ptr<VideoCaptureDeviceMFWin> device =
       std::make_unique<VideoCaptureDeviceMFWin>(
           descriptor, media_source,
@@ -1598,9 +1602,9 @@ TEST_F(VideoCaptureDeviceMFWinTest, CallClientOnFireCaptureEngineInitEarly) {
 
   VideoCaptureDeviceDescriptor descriptor = VideoCaptureDeviceDescriptor();
   Microsoft::WRL::ComPtr<MockMFMediaSource> media_source =
-      new MockMFMediaSource();
+      MakeComPtrFromRefCounted<MockMFMediaSource>();
   Microsoft::WRL::ComPtr<MockMFCaptureEngine> engine =
-      new MockMFCaptureEngine();
+      MakeComPtrFromRefCounted<MockMFCaptureEngine>();
   std::unique_ptr<VideoCaptureDeviceMFWin> device =
       std::make_unique<VideoCaptureDeviceMFWin>(
           descriptor, media_source,
@@ -1629,9 +1633,9 @@ TEST_F(VideoCaptureDeviceMFWinTest,
 
   VideoCaptureDeviceDescriptor descriptor = VideoCaptureDeviceDescriptor();
   Microsoft::WRL::ComPtr<MockMFMediaSource> media_source =
-      new MockMFMediaSource();
+      MakeComPtrFromRefCounted<MockMFMediaSource>();
   Microsoft::WRL::ComPtr<MockMFCaptureEngine> engine =
-      new MockMFCaptureEngine();
+      MakeComPtrFromRefCounted<MockMFCaptureEngine>();
   std::unique_ptr<VideoCaptureDeviceMFWin> device =
       std::make_unique<VideoCaptureDeviceMFWin>(
           descriptor, media_source,
@@ -1666,9 +1670,9 @@ TEST_F(VideoCaptureDeviceMFWinTest,
 
   VideoCaptureDeviceDescriptor descriptor = VideoCaptureDeviceDescriptor();
   Microsoft::WRL::ComPtr<MockMFMediaSource> media_source =
-      new MockMFMediaSource();
+      MakeComPtrFromRefCounted<MockMFMediaSource>();
   Microsoft::WRL::ComPtr<MockMFCaptureEngine> engine =
-      new MockMFCaptureEngine();
+      MakeComPtrFromRefCounted<MockMFCaptureEngine>();
   auto device = std::make_unique<VideoCaptureDeviceMFWin>(
       descriptor, media_source,
       /*mf_dxgi_device_manager=*/nullptr, engine, task_runner_);
@@ -1743,11 +1747,10 @@ TEST_F(VideoCaptureDeviceMFWinTest, AllocateAndStartWithFlakyInvalidRequest) {
         if (media_type_index != 0)
           return MF_E_NO_MORE_TYPES;
 
-        *media_type = new StubMFMediaType(MFMediaType_Video, MFVideoFormat_MJPG,
-                                          0, kArbitraryValidVideoWidth,
-                                          kArbitraryValidVideoHeight, 30);
-        (*media_type)->AddRef();
-
+        auto stub_media_type = base::MakeRefCounted<StubMFMediaType>(
+            MFMediaType_Video, MFVideoFormat_MJPG, 0, kArbitraryValidVideoWidth,
+            kArbitraryValidVideoHeight, 30);
+        *media_type = AddReference(stub_media_type.get());
         return S_OK;
       }));
 
@@ -1803,8 +1806,7 @@ TEST_F(VideoCaptureDeviceMFWinTest,
   EXPECT_CALL(*client_, OnStarted()).Times(0);
   EXPECT_CALL(*client_, OnError(_, _, _));
 
-  scoped_refptr<MockMFMediaEvent> media_event_preview_started =
-      new MockMFMediaEvent();
+  auto media_event_preview_started = base::MakeRefCounted<MockMFMediaEvent>();
   ON_CALL(*media_event_preview_started, DoGetStatus())
       .WillByDefault(Return(S_OK));
   ON_CALL(*media_event_preview_started, DoGetType())
@@ -1812,7 +1814,7 @@ TEST_F(VideoCaptureDeviceMFWinTest,
   ON_CALL(*media_event_preview_started, DoGetExtendedType())
       .WillByDefault(Return(MF_CAPTURE_ENGINE_PREVIEW_STARTED));
 
-  scoped_refptr<MockMFMediaEvent> media_event_error = new MockMFMediaEvent();
+  auto media_event_error = base::MakeRefCounted<MockMFMediaEvent>();
   EXPECT_CALL(*media_event_error, DoGetStatus()).WillRepeatedly(Return(E_FAIL));
 
   task_runner_->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
@@ -2267,7 +2269,8 @@ TEST_F(VideoCaptureDeviceMFWinTestWithDXGI, DeliverGMBCaptureBuffers) {
             return VideoCaptureDevice::Client::ReserveResult::kSucceeded;
           }));
 
-  Microsoft::WRL::ComPtr<MockD3D11Device> mock_device(new MockD3D11Device());
+  Microsoft::WRL::ComPtr<MockD3D11Device> mock_device =
+      MakeComPtrFromRefCounted<MockD3D11Device>();
 
   EXPECT_CALL(*dxgi_device_manager_.get(), GetDevice)
       .WillOnce(Return(mock_device));
@@ -2279,16 +2282,18 @@ TEST_F(VideoCaptureDeviceMFWinTestWithDXGI, DeliverGMBCaptureBuffers) {
   mock_desc.Width = expected_size.width();
   mock_desc.Height = expected_size.height();
   Microsoft::WRL::ComPtr<ID3D11Texture2D> mock_source_texture_2d;
-  Microsoft::WRL::ComPtr<MockD3D11Texture2D> mock_source_texture(
-      new MockD3D11Texture2D(mock_desc, mock_device.Get()));
+  Microsoft::WRL::ComPtr<MockD3D11Texture2D> mock_source_texture =
+      MakeComPtrFromRefCounted<MockD3D11Texture2D>(mock_desc,
+                                                   mock_device.Get());
   EXPECT_TRUE(SUCCEEDED(
       mock_source_texture.CopyTo(IID_PPV_ARGS(&mock_source_texture_2d))));
 
   // Create mock target texture with matching dimensions/format
   // (to be provided from the capture device to the capture client)
   Microsoft::WRL::ComPtr<ID3D11Texture2D> mock_target_texture_2d;
-  Microsoft::WRL::ComPtr<MockD3D11Texture2D> mock_target_texture(
-      new MockD3D11Texture2D(mock_desc, mock_device.Get()));
+  Microsoft::WRL::ComPtr<MockD3D11Texture2D> mock_target_texture =
+      MakeComPtrFromRefCounted<MockD3D11Texture2D>(mock_desc,
+                                                   mock_device.Get());
   EXPECT_TRUE(SUCCEEDED(
       mock_target_texture.CopyTo(IID_PPV_ARGS(&mock_target_texture_2d))));
   // Mock OpenSharedResource call on mock D3D device to return target texture

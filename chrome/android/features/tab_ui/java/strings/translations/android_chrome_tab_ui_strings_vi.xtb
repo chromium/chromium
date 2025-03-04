@@ -46,7 +46,9 @@ Nếu bạn xoá, mọi người sẽ lập tức mất quyền truy cập vào 
 <translation id="266935134738038806">Truy cập trang web</translation>
 <translation id="2671423594960767771">Chia sẻ nhóm</translation>
 <translation id="2677748264148917807">Rời khỏi</translation>
+<translation id="2734252994837336591">{NUM_WEEKS,plural, =1{Cập nhật <ph name="NUM_WEEKS_ONE" /> tuần trước}other{Cập nhật <ph name="NUM_WEEKS_MANY" /> tuần trước}}</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{Đã thêm <ph name="ONE_ADDED" /> thẻ, đã thay đổi <ph name="ANY_CHANGED" /> thẻ, đã đóng <ph name="ANY_CLOSED" /> thẻ}other{Đã thêm <ph name="MANY_ADDED" /> thẻ, đã thay đổi <ph name="ANY_CHANGED" /> thẻ, đã đóng <ph name="ANY_CLOSED" /> thẻ}}</translation>
+<translation id="2753877351161418426">{NUM_HOURS,plural, =1{Cập nhật <ph name="NUM_HOURS_ONE" /> giờ trước}other{Cập nhật <ph name="NUM_HOURS_MANY" /> giờ trước}}</translation>
 <translation id="2755485474385016903">Mọi người trong nhóm đều thấy các thay đổi đã thực hiện</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Tạo <ph name="NUM_HOURS_ONE" /> giờ trước}other{Tạo <ph name="NUM_HOURS_MANY" /> giờ trước}}</translation>
 <translation id="2801787514987684416">Xem thông tin cửa hàng?</translation>
@@ -83,6 +85,7 @@ Nếu bạn xoá, mọi người sẽ lập tức mất quyền truy cập vào 
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{Đã thay đổi <ph name="ONE_CHANGED" /> thẻ, đã đóng <ph name="ANY_CLOSED" /> thẻ}other{Đã thay đổi <ph name="MANY_CHANGED" /> thẻ, đã đóng <ph name="ANY_CLOSED" /> thẻ}}</translation>
 <translation id="4371591986692297148">Không hoạt động</translation>
 <translation id="4431937619879060901">Bạn sẽ mất ngay quyền truy cập vào nhóm thẻ "<ph name="GROUP_NAME" />" và nhóm thẻ này sẽ bị xoá khỏi mọi thiết bị của bạn</translation>
+<translation id="4453940245650019914">{NUM_DAYS,plural, =1{Cập nhật <ph name="NUM_DAYS_ONE" /> ngày trước}other{Cập nhật <ph name="NUM_DAYS_MANY" /> ngày trước}}</translation>
 <translation id="4460014764210899310">Tách nhóm</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Đóng 1 thẻ không hoạt động?}other{Đóng <ph name="TAB_COUNT_MANY" /> thẻ không hoạt động?}}</translation>
 <translation id="4686942373615810936">Vừa tạo</translation>
@@ -163,6 +166,7 @@ Nếu bạn xoá, mọi người sẽ lập tức mất quyền truy cập vào 
 <translation id="7658239707568436148">Huỷ</translation>
 <translation id="7688386659311034820">Hộp thoại các thẻ không hoạt động</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Chia sẻ <ph name="TABS_COUNT_ONE" /> thẻ được chọn}other{Chia sẻ <ph name="TABS_COUNT_MANY" /> thẻ được chọn}}</translation>
+<translation id="775668479044571025">{NUM_MONTHS,plural, =1{Cập nhật <ph name="NUM_YEARS_ONE" /> năm trước}other{Cập nhật <ph name="NUM_YEARS_MANY" /> năm trước}}</translation>
 <translation id="7773714564112603605">Loại bỏ thẻ và xoá nhóm</translation>
 <translation id="7792771145871471484">Xem lại các đề xuất.</translation>
 <translation id="7792860826279960128">Thông báo về các thay đổi trong Nhóm thẻ được chia sẻ đã mở trên một nửa màn hình</translation>
@@ -180,10 +184,12 @@ Nếu bạn xoá, mọi người sẽ lập tức mất quyền truy cập vào 
 <translation id="8076492880354921740">Thẻ</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Mở rộng nhóm thẻ <ph name="TITLE_OF_GROUP" /> có <ph name="TABS_COUNT_ONE" /> thẻ, màu <ph name="COLOR_NAME" />.}other{Mở rộng nhóm thẻ <ph name="TITLE_OF_GROUP" /> có <ph name="TABS_COUNT_MANY" /> thẻ, màu <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Chuyển thẻ lên trên</translation>
+<translation id="8207688828622594111">{NUM_MINS,plural, =1{Cập nhật <ph name="NUM_MINS_ONE" /> phút trước}other{Cập nhật <ph name="NUM_MINS_MANY" /> phút trước}}</translation>
 <translation id="8261506727792406068">Xoá</translation>
 <translation id="8338427544764842461">Các nhóm thẻ của bạn được lưu tại đây và cập nhật trên mọi thiết bị bạn đã đăng nhập</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Mở rộng nhóm thẻ được chia sẻ có <ph name="TABS_COUNT_ONE" /> thẻ, màu <ph name="COLOR_NAME" />.}other{Mở rộng nhóm thẻ được chia sẻ có <ph name="TABS_COUNT_MANY" /> thẻ, màu <ph name="COLOR_NAME" />.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Đóng <ph name="TABS_COUNT_ONE" /> thẻ đã chọn}other{Đóng <ph name="TABS_COUNT_MANY" /> thẻ đã chọn}}</translation>
+<translation id="8374451057714760401">{NUM_MONTHS,plural, =1{Cập nhật <ph name="NUM_MONTHS_ONE" /> tháng trước}other{Cập nhật <ph name="NUM_MONTHS_MANY" /> tháng trước}}</translation>
 <translation id="8398929769197326728">Thư mục mới – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Cài đặt</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Đã thêm <ph name="ONE_ADDED" /> thẻ, đã đóng <ph name="ANY_CLOSED" /> thẻ}other{Đã thêm <ph name="MANY_ADDED" /> thẻ, đã đóng <ph name="ANY_CLOSED" /> thẻ}}</translation>

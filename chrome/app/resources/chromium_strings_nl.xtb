@@ -319,6 +319,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="5579324208890605088">Opstartfout: voer het installatieprogramma uit als normale gebruiker, niet als beheerder.</translation>
 <translation id="5596627076506792578">Meer opties</translation>
 <translation id="5605834417512968703">Selecteer iets om te zoeken met Zoeken met afbeelding of druk op Escape om Zoeken met afbeelding te sluiten</translation>
+<translation id="5618818588972826921">Selecteer tekst of een afbeelding om te zoeken met Zoeken met afbeelding of druk op Escape om Zoeken met afbeelding te sluiten</translation>
 <translation id="5623402015214259806">{0,plural, =0{Er is een Chromium-update beschikbaar}=1{Er is een Chromium-update beschikbaar}other{Er is al # dagen een Chromium-update beschikbaar}}</translation>
 <translation id="5643865575100044307">Sitegegevens altijd verwijderen van je apparaat als je Chromium sluit</translation>
 <translation id="5653831366781983928">Chromium nu opnieuw opstarten</translation>
@@ -594,5 +595,6 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="983803489796659991">De installatie is mislukt omdat de updateserver geen hash-gegevens voor de app heeft.</translation>
 <translation id="985498048907240953">Chromium gebruiken zonder account</translation>
 <translation id="985602178874221306">De auteurs van Chromium</translation>
+<translation id="989970834842471429">Selecteer tekst of een afbeelding om te zoeken met Zoeken met afbeelding</translation>
 <translation id="992780518932311116">Geef Chromium toegang via de <ph name="BEGIN_LINK" />systeeminstellingen<ph name="END_LINK" /> om je locatie te gebruiken</translation>
 </translationbundle>

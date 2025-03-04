@@ -48,7 +48,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BookmarkManager.ResultsRenderedTime" units="ms"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>johntlee@chromium.org</owner>
   <owner>dpapad@chromium.org</owner>
   <summary>
@@ -105,7 +105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.BatchUploadDuration" units="ms"
-    expires_after="2025-07-02">
+    expires_after="2025-08-31">
   <owner>mastiz@chromium.org</owner>
   <owner>ljjlee@google.com</owner>
   <summary>
@@ -118,7 +118,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.BatchUploadOutcomeAccountNodes" units="nodes"
-    expires_after="2025-07-02">
+    expires_after="2025-08-31">
   <owner>mastiz@chromium.org</owner>
   <owner>ljjlee@google.com</owner>
   <summary>
@@ -130,7 +130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.BatchUploadOutcomeRatio" units="%"
-    expires_after="2025-07-02">
+    expires_after="2025-08-31">
   <owner>mastiz@chromium.org</owner>
   <owner>ljjlee@google.com</owner>
   <summary>

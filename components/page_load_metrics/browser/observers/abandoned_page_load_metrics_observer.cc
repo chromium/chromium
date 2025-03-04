@@ -556,8 +556,10 @@ void AbandonedPageLoadMetricsObserver::LogLoadingMilestone(
   if (loading_milestones_.contains(milestone)) {
     return;
   }
-  CHECK_GE(milestone, NavigationMilestone::kFirstEssentialLoadingEvent);
-  CHECK_LE(milestone, NavigationMilestone::kLastEssentialLoadingEvent);
+  // Check if we are within the loading milestone for Gws so that we can cover
+  // all the possible loading milestones.
+  CHECK_GE(milestone, NavigationMilestone::kFirstGwsEssentialLoadingEvent);
+  CHECK_LE(milestone, NavigationMilestone::kLastGwsEssentialLoadingEvent);
   LogMilestoneHistogram(milestone, time);
   loading_milestones_[milestone] = time;
 }

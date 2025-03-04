@@ -136,7 +136,7 @@ class BorealisLaunchErrorDialog : public DialogDelegate {
         CONTEXT_IPH_BUBBLE_TITLE, views::style::STYLE_EMPHASIZED);
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     title_label->SetMultiLine(true);
-    view->AddChildView(title_label);
+    view->AddChildViewRaw(title_label);
 
     std::u16string body_string;
     switch (failure_) {
@@ -154,7 +154,7 @@ class BorealisLaunchErrorDialog : public DialogDelegate {
     views::Label* message_label = new views::Label(body_string);
     message_label->SetMultiLine(true);
     message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    view->AddChildView(message_label);
+    view->AddChildViewRaw(message_label);
 
     if (failure_ == FailureType::FAILURE_RETRY) {
       auto checkbox = std::make_unique<views::Checkbox>(

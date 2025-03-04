@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/network_session_configurator/common/network_features.h"
@@ -1155,7 +1156,7 @@ TEST_P(NetworkSessionConfiguratorWithNewAlpsCodepointTest,
        FromFieldTrialParams) {
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["use_new_alps_codepoint"] =
-      use_new_alps_codepoint_field_trial_setting() ? "true" : "false";
+      base::ToString(use_new_alps_codepoint_field_trial_setting());
   base::AssociateFieldTrialParams("QUIC", "Enabled", field_trial_params);
   base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
 

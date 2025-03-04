@@ -401,7 +401,7 @@ DeskPreviewView::DeskPreviewView(
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetMasksToBounds(false);
 
-  AddChildView(wallpaper_preview_.get());
+  AddChildViewRaw(wallpaper_preview_.get());
 
   desk_mirrored_contents_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   ui::Layer* contents_view_layer = desk_mirrored_contents_view_->layer();
@@ -409,7 +409,7 @@ DeskPreviewView::DeskPreviewView(
   contents_view_layer->SetName("Desk mirrored contents view");
   contents_view_layer->SetRoundedCornerRadius(kCornerRadius);
   contents_view_layer->SetIsFastRoundedCorner(true);
-  AddChildView(desk_mirrored_contents_view_.get());
+  AddChildViewRaw(desk_mirrored_contents_view_.get());
 
   highlight_overlay_ = AddChildView(std::make_unique<views::View>());
   highlight_overlay_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);

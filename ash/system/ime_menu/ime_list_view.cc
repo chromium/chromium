@@ -79,7 +79,7 @@ class ImeListItemView : public views::Button {
 
     TriView* tri_view = TrayPopupUtils::CreateDefaultRowView(
         /*use_wide_layout=*/true);
-    AddChildView(tri_view);
+    AddChildViewRaw(tri_view);
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
     // |id_label| contains the IME short name (e.g., 'US', 'GB', 'IT').
@@ -177,7 +177,7 @@ class KeyboardStatusRow : public views::View {
 
     TriView* tri_view = TrayPopupUtils::CreateDefaultRowView(
         /*use_wide_layout=*/true);
-    AddChildView(tri_view);
+    AddChildViewRaw(tri_view);
 
     // The on-screen keyboard image button.
     views::ImageView* keyboard_image =
@@ -309,7 +309,8 @@ void ImeListView::AppendImeListAndProperties(
     // Add the properties, if any, of the currently-selected IME.
     if (selected && !property_list.empty()) {
       // Adds a separator on the top of property items.
-      container_->AddChildView(TrayPopupUtils::CreateListItemSeparator(true));
+      container_->AddChildViewRaw(
+          TrayPopupUtils::CreateListItemSeparator(true));
 
       // Adds the property items.
       for (const auto& property : property_list) {
@@ -324,7 +325,8 @@ void ImeListView::AppendImeListAndProperties(
       // Adds a separator on the bottom of property items if there are still
       // other IMEs under the current one.
       if (i < list.size() - 1) {
-        container_->AddChildView(TrayPopupUtils::CreateListItemSeparator(true));
+        container_->AddChildViewRaw(
+            TrayPopupUtils::CreateListItemSeparator(true));
       }
     }
   }

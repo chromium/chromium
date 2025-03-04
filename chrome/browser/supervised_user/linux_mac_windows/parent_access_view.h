@@ -27,16 +27,15 @@ class WebContents;
 class BrowserContext;
 }  // namespace content
 
-// Helper class that aborts the displaying of the parent approval dialog,
-// if we fail to load the PACP contents that need to be displayed.
-// If the content is loaded successfully, it shows the dialog.
+// Helper class that closes the the parent approval dialog, if we fail
+// to load within a timeout the PACP contents that need to be displayed.
 class DialogContentLoadWithTimeoutObserver
     : public content::WebContentsObserver {
  public:
   DialogContentLoadWithTimeoutObserver(
       content::WebContents* web_contents,
       const GURL& pacp_url,
-      base::OnceClosure show_dialog_callback,
+      base::OnceClosure show_view_and_destroy_timer_callback,
       base::OnceClosure cancel_flow_on_timeout_callback);
   DialogContentLoadWithTimeoutObserver() = delete;
   ~DialogContentLoadWithTimeoutObserver() override;
@@ -52,7 +51,7 @@ class DialogContentLoadWithTimeoutObserver
 
   raw_ref<const GURL> pacp_url_;
   base::OneShotTimer initial_load_timer_;
-  base::OnceClosure show_dialog_callback_;
+  base::OnceClosure show_view_and_destroy_timer_callback_;
 };
 
 using WebContentsObserverCreationCallback =
@@ -97,6 +96,8 @@ class ParentAccessView : public views::View, public views::WidgetObserver {
   content::WebContents* GetWebViewContents();
   // views::WidgetObserver implementation:
   void OnWidgetClosing(views::Widget* widget) override;
+
+  void ShowWebViewAndDestroyTimeoutObserver();
 
   base::OnceClosure dialog_result_reset_callback_;
   base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>

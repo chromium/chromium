@@ -102,6 +102,8 @@ class StubInterface
     : public base::RefCountedThreadSafe<StubInterface<Interface>>,
       public Interface {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // IUnknown
   IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
     if (riid == __uuidof(this) || riid == __uuidof(IUnknown)) {
@@ -389,11 +391,15 @@ class StubMFMediaSource final : public StubDeviceInterface<IMFMediaSourceEx> {
   IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
     if (device_id() != base::SysWideToUTF8(kMFDeviceId0)) {
       if (riid == __uuidof(IAMCameraControl)) {
-        *object = AddReference(new StubAMCameraControl(device_id()));
+        auto camera_control =
+            base::MakeRefCounted<StubAMCameraControl>(device_id());
+        *object = AddReference(camera_control.get());
         return S_OK;
       }
       if (riid == __uuidof(IAMVideoProcAmp)) {
-        *object = AddReference(new StubAMVideoProcAmp(device_id()));
+        auto video_proc_amp =
+            base::MakeRefCounted<StubAMVideoProcAmp>(device_id());
+        *object = AddReference(video_proc_amp.get());
         return S_OK;
       }
     }
@@ -950,12 +956,15 @@ class StubKsTopologyInfo final : public StubDeviceInterface<IKsTopologyInfo> {
       return hr;
     if (node_type == KSNODETYPE_VIDEO_CAMERA_TERMINAL) {
       EXPECT_EQ(iid, __uuidof(ICameraControl));
-      *object = AddReference(new StubCameraControl(device_id()));
+      auto camera_control =
+          base::MakeRefCounted<StubCameraControl>(device_id());
+      *object = AddReference(camera_control.get());
       return S_OK;
     }
     if (node_type == KSNODETYPE_VIDEO_PROCESSING) {
       EXPECT_EQ(iid, __uuidof(IVideoProcAmp));
-      *object = AddReference(new StubVideoProcAmp(device_id()));
+      auto video_proc_amp = base::MakeRefCounted<StubVideoProcAmp>(device_id());
+      *object = AddReference(video_proc_amp.get());
       return S_OK;
     }
     NOTREACHED();
@@ -1012,7 +1021,9 @@ class StubBaseFilter final : public StubDeviceInterface<IBaseFilter> {
   // IUnknown
   IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
     if (riid == __uuidof(IKsTopologyInfo)) {
-      *object = AddReference(new StubKsTopologyInfo(device_id()));
+      auto topology_info =
+          base::MakeRefCounted<StubKsTopologyInfo>(device_id());
+      *object = AddReference(topology_info.get());
       return S_OK;
     }
     return StubDeviceInterface::QueryInterface(riid, object);
@@ -1100,8 +1111,9 @@ class StubMoniker final : public StubInterface<IMoniker> {
                               REFIID riidResult,
                               void** ppvResult) override {
     if (riidResult == __uuidof(IBaseFilter)) {
-      *ppvResult =
-          AddReference(new StubBaseFilter(base::SysWideToUTF8(device_path_)));
+      auto base_filter = base::MakeRefCounted<StubBaseFilter>(
+          base::SysWideToUTF8(device_path_));
+      *ppvResult = AddReference(base_filter.get());
       return S_OK;
     }
     return MK_E_NOOBJECT;
@@ -1110,7 +1122,9 @@ class StubMoniker final : public StubInterface<IMoniker> {
                                IMoniker* pmkToLeft,
                                REFIID riid,
                                void** ppvObj) override {
-    *ppvObj = AddReference(new StubPropertyBag(device_path_, description_));
+    auto property_bag =
+        base::MakeRefCounted<StubPropertyBag>(device_path_, description_);
+    *ppvObj = AddReference(property_bag.get());
     return S_OK;
   }
   IFACEMETHODIMP Reduce(IBindCtx* pbc,
@@ -1216,19 +1230,21 @@ class FakeVideoCaptureDeviceFactoryWin : public VideoCaptureDeviceFactoryWin {
 
  protected:
   bool CreateDeviceEnumMonikerDirectShow(IEnumMoniker** enum_moniker) override {
-    *enum_moniker = AddReference(new StubEnumMoniker(
-        {base::MakeRefCounted<StubMoniker>(kDirectShowDeviceId0,
-                                           kDirectShowDeviceName0),
-         base::MakeRefCounted<StubMoniker>(kDirectShowDeviceId1,
-                                           kDirectShowDeviceName1),
-         base::MakeRefCounted<StubMoniker>(kDirectShowDeviceId3,
-                                           kDirectShowDeviceName3),
-         base::MakeRefCounted<StubMoniker>(kDirectShowDeviceId4,
-                                           kDirectShowDeviceName4),
-         base::MakeRefCounted<StubMoniker>(kDirectShowDeviceId5,
-                                           kDirectShowDeviceName5),
-         base::MakeRefCounted<StubMoniker>(kDirectShowDeviceId6,
-                                           kDirectShowDeviceName6)}));
+    auto stub_enum_moniker = base::MakeRefCounted<StubEnumMoniker>(
+        std::vector<scoped_refptr<StubMoniker>>(
+            {base::MakeRefCounted<StubMoniker>(kDirectShowDeviceId0,
+                                               kDirectShowDeviceName0),
+             base::MakeRefCounted<StubMoniker>(kDirectShowDeviceId1,
+                                               kDirectShowDeviceName1),
+             base::MakeRefCounted<StubMoniker>(kDirectShowDeviceId3,
+                                               kDirectShowDeviceName3),
+             base::MakeRefCounted<StubMoniker>(kDirectShowDeviceId4,
+                                               kDirectShowDeviceName4),
+             base::MakeRefCounted<StubMoniker>(kDirectShowDeviceId5,
+                                               kDirectShowDeviceName5),
+             base::MakeRefCounted<StubMoniker>(kDirectShowDeviceId6,
+                                               kDirectShowDeviceName6)}));
+    *enum_moniker = AddReference(stub_enum_moniker.get());
     return true;
   }
   MFSourceOutcome CreateDeviceSourceMediaFoundation(
@@ -1253,9 +1269,10 @@ class FakeVideoCaptureDeviceFactoryWin : public VideoCaptureDeviceFactoryWin {
         has_dxgi_device_manager) {
       return MFSourceOutcome::kFailed;
     }
-    *source = AddReference(
-        new StubMFMediaSource(base::SysWideToUTF8(symbolic_link),
-                              device_source_native_formats_[symbolic_link]));
+    auto media_source = base::MakeRefCounted<StubMFMediaSource>(
+        base::SysWideToUTF8(symbolic_link),
+        device_source_native_formats_[symbolic_link]);
+    *source = AddReference(media_source.get());
     return MFSourceOutcome::kSuccess;
   }
   bool EnumerateDeviceSourcesMediaFoundation(

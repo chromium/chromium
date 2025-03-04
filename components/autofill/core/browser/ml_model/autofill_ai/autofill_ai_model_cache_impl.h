@@ -51,9 +51,10 @@ class AutofillAiModelCacheImpl : public AutofillAiModelCache {
 
  private:
   using CacheEntryWithMetadata = AutofillAiModelCacheEntryWithMetadata;
+  using Database = leveldb_proto::ProtoDatabase<CacheEntryWithMetadata>;
 
-  // Removes expired cache entries and limits the cache size to `max_cache_size`
-  // by removing the oldest entries.
+  // Removes expired cache entries and limits the cache size to
+  // `max_cache_size_` by removing the oldest entries.
   void TrimEntries();
   void UpdateInDatabase(FormSignature form_signature,
                         const CacheEntryWithMetadata& entry);
@@ -75,7 +76,7 @@ class AutofillAiModelCacheImpl : public AutofillAiModelCache {
   std::map<FormSignature, CacheEntryWithMetadata> in_memory_cache_;
 
   // The database. Use only if `db_initialized_` is `true`.
-  std::unique_ptr<leveldb_proto::ProtoDatabase<CacheEntryWithMetadata>> db_;
+  std::unique_ptr<Database> db_;
 
   // Whether the database has been initialized successfully.
   bool db_initialized_ = false;

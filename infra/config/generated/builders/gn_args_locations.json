@@ -40,6 +40,7 @@
     "android-14-tablet-landscape-arm64-rel": "ci/android-14-tablet-landscape-arm64-rel/gn-args.json",
     "android-14-x64-rel": "ci/android-14-x64-rel/gn-args.json",
     "android-15-tablet-landscape-x64-rel": "ci/android-15-tablet-landscape-x64-rel/gn-args.json",
+    "android-15-tablet-x64-rel": "ci/android-15-tablet-x64-rel/gn-args.json",
     "android-15-x64-rel": "ci/android-15-x64-rel/gn-args.json",
     "android-arm64-proguard-rel": "ci/android-arm64-proguard-rel/gn-args.json",
     "android-bfcache-rel": "ci/android-bfcache-rel/gn-args.json",
@@ -436,7 +437,6 @@
   },
   "chromium.reclient.fyi": {
     "Comparison Linux (reclient)": "reclient/Comparison Linux (reclient)/gn-args.json",
-    "Comparison Linux (reclient)(CQ)": "reclient/Comparison Linux (reclient)(CQ)/gn-args.json",
     "Linux Builder (canonical wd) (reclient compare)": "reclient/Linux Builder (canonical wd) (reclient compare)/gn-args.json",
     "Linux Builder reclient staging": "reclient/Linux Builder reclient staging/gn-args.json",
     "Linux Builder reclient staging untrusted": "reclient/Linux Builder reclient staging untrusted/gn-args.json",
@@ -581,6 +581,7 @@
     "android-15-tablet-landscape-x64-dbg": "try/android-15-tablet-landscape-x64-dbg/gn-args.json",
     "android-15-tablet-landscape-x64-rel": "try/android-15-tablet-landscape-x64-rel/gn-args.json",
     "android-15-tablet-x64-dbg": "try/android-15-tablet-x64-dbg/gn-args.json",
+    "android-15-tablet-x64-rel": "try/android-15-tablet-x64-rel/gn-args.json",
     "android-15-x64-fyi-rel": "try/android-15-x64-fyi-rel/gn-args.json",
     "android-15-x64-rel": "try/android-15-x64-rel/gn-args.json",
     "android-16-x64-fyi-rel": "try/android-16-x64-fyi-rel/gn-args.json",

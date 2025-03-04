@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
@@ -154,6 +155,15 @@ TEST_F(AutofillAiModelCacheImplTest, MaxCacheAge) {
   EXPECT_FALSE(cache().Contains(signature1));
   EXPECT_FALSE(cache().Contains(signature2));
   EXPECT_TRUE(cache().Contains(signature3));
+}
+
+// Tests that `Autofill.AutofillAi.ModelCache.InitSuccess` is emitted on
+// startup.
+TEST_F(AutofillAiModelCacheImplTest, InitSuccessMetric) {
+  base::HistogramTester histogram_tester;
+  RecreateCache();
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AutofillAi.ModelCache.InitSuccess", true, 1);
 }
 
 }  // namespace

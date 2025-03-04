@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
 
 #include "third_party/blink/renderer/platform/fonts/font.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shape_iterator.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
@@ -101,7 +103,7 @@ PlainTextNode::PlainTextNode(const TextRun& run,
                              bool supports_bidi)
     : normalize_space_(normalize_space), base_direction_(run.Direction()) {
   SegmentText(run, bidi_overridden, font, supports_bidi);
-  // TODO(crbug.com/389726691): Implement shaping.
+  Shape(font);
 }
 
 void PlainTextNode::Trace(Visitor* visitor) const {
@@ -164,14 +166,83 @@ void PlainTextNode::SegmentText(const TextRun& run,
   }
 }
 
+// LayoutNG does not split text into words during shaping, but PlainTextNode
+// splits it for Google Docs.
+//
+// * Performance: Google Docs calls CanvasRenderingContext2D.measureText() with
+//   a word, and fillText() with multiple words. We need a word-granularity
+//   ShapeResult cache to maintain performance.
+//
+// * Rendering behavior: Google Docs relies on the rendering of
+//   `fillText("a b", 0, 0)` being the same as `fillText("a", 0, 0)` and
+//   `fillText("b", measureText("a") + measureText(" "), 0)`. So we should not
+//   support kerning/ligature including spaces.
 void PlainTextNode::SegmentWord(wtf_size_t start_offset,
                                 wtf_size_t run_length,
                                 TextDirection direction,
                                 const Font& font) {
-  item_list_.push_back(
-      PlainTextItem(start_offset, run_length, direction, text_content_));
+  if (!font.CanShapeWordByWord()) {
+    item_list_.push_back(
+        PlainTextItem(start_offset, run_length, direction, text_content_));
+    return;
+  }
 
-  // TODO(crbug.com/389726691): Implement word segmentation.
+  const wtf_size_t insertion_index = item_list_.size();
+  StringView text_content(text_content_, start_offset, run_length);
+  for (wtf_size_t index = 0; index < run_length;) {
+    wtf_size_t new_index =
+        CachingWordShapeIterator::NextWordEndIndex(text_content, index);
+    PlainTextItem item(start_offset + index, new_index - index, direction,
+                       text_content_);
+    if (IsLtr(direction)) {
+      item_list_.push_back(std::move(item));
+    } else {
+      item_list_.insert(insertion_index, std::move(item));
+    }
+    index = new_index;
+  }
+}
+
+void PlainTextNode::Shape(const Font& font) {
+  ShapeResultSpacing<String> spacing(text_content_);
+  spacing.SetSpacingAndExpansion(font.GetFontDescription(), normalize_space_);
+  for (auto& item : item_list_) {
+    // TODO(crbug.com/389726691): Implement ShapeResult cache.
+    HarfBuzzShaper shaper(item.text_);
+    ShapeResult* shape_result = shaper.Shape(&font, item.Direction());
+    if (!shape_result) {
+      item.shape_result_ = nullptr;
+      continue;
+    }
+    gfx::RectF ink_bounds;
+    if (!spacing.HasSpacing()) [[likely]] {
+      ink_bounds = shape_result->ComputeInkBounds();
+    } else {
+      shape_result->ApplySpacing(spacing, item.StartOffset());
+      ink_bounds = shape_result->ComputeInkBounds();
+      DCHECK_GE(ink_bounds.width(), 0);
+
+      if (shape_result->Width() >= 0) {
+        // Return bounds as is because glyph bounding box is in logical space.
+      } else {
+        // Negative word-spacing and/or letter-spacing may cause some glyphs
+        // to overflow the left boundary and result negative measured width.
+        // Adjust glyph bounds accordingly to cover the overflow.
+        // The negative width should be clamped to 0 in CSS box model, but
+        // it's up to caller's responsibility.
+        float left = std::min(shape_result->Width(), ink_bounds.width());
+        if (left < ink_bounds.x()) {
+          // The right edge should be the width of the first character in
+          // most cases, but computing it requires re-measuring bounding box
+          // of each glyph. Leave it unchanged, which gives an excessive
+          // right edge but assures it covers all glyphs.
+          ink_bounds.Outset(gfx::OutsetsF().set_left(ink_bounds.x() - left));
+        }
+      }
+    }
+    item.shape_result_ = shape_result;
+    item.ink_bounds_ = ink_bounds;
+  }
 }
 
 }  // namespace blink

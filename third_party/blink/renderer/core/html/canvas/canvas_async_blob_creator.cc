@@ -245,7 +245,7 @@ void CanvasAsyncBlobCreator::Dispose() {
 ImageEncodeOptions* CanvasAsyncBlobCreator::GetImageEncodeOptionsForMimeType(
     ImageEncodingMimeType mime_type) {
   ImageEncodeOptions* encode_options = ImageEncodeOptions::Create();
-  encode_options->setType(ImageEncodingMimeTypeName(mime_type));
+  encode_options->setType(ImageEncoderUtils::MimeTypeName(mime_type));
   return encode_options;
 }
 
@@ -449,7 +449,7 @@ void CanvasAsyncBlobCreator::CreateBlobAndReturnResult(
   RecordIdleTaskStatusHistogram(idle_task_status_);
 
   Blob* result_blob =
-      Blob::Create(encoded_image, ImageEncodingMimeTypeName(mime_type_));
+      Blob::Create(encoded_image, ImageEncoderUtils::MimeTypeName(mime_type_));
   if (function_type_ == kHTMLCanvasToBlobCallback) {
     context_->GetTaskRunner(TaskType::kCanvasBlobSerialization)
         ->PostTask(FROM_HERE,
@@ -516,8 +516,8 @@ void CanvasAsyncBlobCreator::TraceCanvasContent(
       [&](perfetto::EventContext ctx) {
         String data = "data:";
         if (encoded_image) {
-          data = data + ImageEncodingMimeTypeName(mime_type_) + ";base64," +
-                 Base64Encode(*encoded_image);
+          data = data + ImageEncoderUtils::MimeTypeName(mime_type_) +
+                 ";base64," + Base64Encode(*encoded_image);
         }
         ctx.AddDebugAnnotation("data_url", data.Utf8());
       });

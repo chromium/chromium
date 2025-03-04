@@ -171,7 +171,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
-#include "content/public/common/user_agent.h"
 #include "extensions/buildflags/buildflags.h"
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
@@ -2045,8 +2044,9 @@ void SetAndroidOsForTabletSite(content::WebContents* current_tab) {
     entry->SetIsOverridingUserAgent(true);
     std::string product = embedder_support::GetProductAndVersion() + " Mobile";
     blink::UserAgentOverride ua_override;
-    ua_override.ua_string_override = content::BuildUserAgentFromOSAndProduct(
-        kOsOverrideForTabletSite, product);
+    ua_override.ua_string_override =
+        embedder_support::BuildUserAgentFromOSAndProduct(
+            kOsOverrideForTabletSite, product);
     ua_override.ua_metadata_override = embedder_support::GetUserAgentMetadata(
         g_browser_process->local_state());
     ua_override.ua_metadata_override->mobile = true;

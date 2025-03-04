@@ -540,6 +540,29 @@ bool ExternalProviderImpl::HasExtension(
   return prefs_->contains(id);
 }
 
+bool ExternalProviderImpl::HasExtensionWithLocation(
+    const std::string& id,
+    mojom::ManifestLocation location) const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(prefs_);
+  CHECK(ready_);
+  const base::Value::Dict* dict = prefs_->FindDict(id);
+  if (!dict) {
+    return false;
+  }
+
+  if (dict->contains(kExternalUpdateUrl) && location == download_location_) {
+    return true;
+  }
+
+  if (dict->contains(kExternalCrx) && dict->FindString(kExternalVersion) &&
+      location == crx_location_) {
+    return true;
+  }
+
+  return false;
+}
+
 bool ExternalProviderImpl::GetExtensionDetails(
     const std::string& id,
     ManifestLocation* location,

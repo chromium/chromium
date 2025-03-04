@@ -459,6 +459,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1303101771013849280">Alamisho za Faili ya HTML</translation>
 <translation id="1303671224831497365">Hakuna vifaa vya Bluetooth vilivyopatikana</translation>
 <translation id="130491383855577612">Umebadilisha programu na faili za Linux</translation>
+<translation id="1306373239538745517">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Ondoa kiendelezi 1 na data ambayo kimehifadhi kwenye kifaa hiki}other{Ondoa viendelezi {ACCOUNT_EXTENSIONS_COUNT} na data ambayo vimehifadhi kwenye kifaa hiki}}</translation>
 <translation id="1306518237408758433">Fungua <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="1306606229401759371">Badilisha mipangilio</translation>
 <translation id="1307165550267142340">Umeunda PIN</translation>
@@ -1213,6 +1214,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1826192255355608658">Sawazisha alamisho, manenosiri, historia na vipengee vyako vingine vya kivinjari cha Chrome</translation>
 <translation id="1826516787628120939">Inakagua</translation>
 <translation id="1826657447823925402">Usogezaji nyuma umezimwa</translation>
+<translation id="1827416268933303617">Rangi ya <ph name="COLOR_NAME" /></translation>
 <translation id="1827504459960247692">Jina la mtandaopepe</translation>
 <translation id="1828378091493947763">Programu jalizi hii haitumiki kwenye kifaa hiki</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Fungua Zote}=1{&amp;Fungua Alamisho}other{&amp;Fungua Zote ({COUNT})}}</translation>
@@ -1713,7 +1715,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2178545675770638239">Chagua Nenosiri</translation>
 <translation id="2178585470774851578">Unawasha vipengele vya utatuzi vya ChromeOS Flex ambavyo vitaweka mipangilio ya sshd daemon na kuruhusu uwashe kutoka kwenye Hifadhi za USB.</translation>
 <translation id="2178614541317717477">Kuvurugwa kwa Mamlaka ya Cheti</translation>
-<translation id="2179850495466791921">Kwa sasa una <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> na zaidi</translation>
 <translation id="2180620921879609685">Kuzuia maudhui kwenye ukurasa wowote</translation>
 <translation id="2181821976797666341">Sera</translation>
 <translation id="2182058453334755893">Yamenakiliwa kwenye Ubao wa Kunakili</translation>
@@ -2810,7 +2811,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> haiwezi kutumika.</translation>
 <translation id="2926708162326352948">Mandhari yamesasishwa hadi picha iliyopakiwa</translation>
 <translation id="2927017729816812676">Hifadhi ya Akiba</translation>
-<translation id="2928030851119977280">Chaguo limehifadhiwa. Chaguo lako litatumika unapoingia kwenye huduma nyingine za Google.</translation>
+<translation id="2928030851119977280">Chaguo limehifadhiwa. Chaguo lako litatumika ukiingia kwenye huduma nyingine za Google.</translation>
 <translation id="2928795416630981206">Zinazoruhusiwa kufuatilia mkao wa kamera yako</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome imeondoa ruhusa kwenye tovuti 1}other{Chrome imeondoa ruhusa kwenye tovuti {NUM_SITES}}}</translation>
 <translation id="2931157624143513983">Ilingane na eneo la kuchapishwa</translation>
@@ -3133,7 +3134,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3167562202484086668">Futa data yote ya <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Chagua mandhari yanayofaa kwa mahitaji yako. Ili ubadilishe mandhari, taswira ya skrini yako na zaidi, gusa na ushikilie kwenye eneo kazi.</translation>
 <translation id="3170072451822350649">Pia unaweza kuruka kuingia na <ph name="LINK_START" />uvinjari kama Mgeni<ph name="LINK_END" />.</translation>
-<translation id="3171499217959105722">Kwa sasa una <ph name="NUMBERED_ITEM" /> na zaidi</translation>
 <translation id="3175067642577044620">Maudhui</translation>
 <translation id="3175862692832442091">Msitu</translation>
 <translation id="3176347586396987181">Tumia “z” kubonyeza kitufe cha kipanya kisha ushikilie</translation>
@@ -3945,7 +3945,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3744219658596020825">Manenosiri yako hayajapakiwa</translation>
 <translation id="3745306754941902605">Jikoni</translation>
 <translation id="3747077776423672805">Ili kuondoa programu, nenda kwenye Mipangilio &gt; Duka la Google Play &gt;Mapendeleo ya Kudhibiti Android &gt; Kidhibiti cha programu. Kisha uguse programu unayotaka kuondoa (huenda utahitaji kutelezesha kidole kulia au kushoto ili kupata programu). Kisha uguse 'Ondoa' au 'Zima'.</translation>
-<translation id="3747552357646973221">Kwa sasa una <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> na zaidi</translation>
 <translation id="3748424433435232460">Nenosiri la akaunti hii limeshahifadhiwa kwenye kifaa hiki</translation>
 <translation id="3748706263662799310">Ripoti hitilafu</translation>
 <translation id="3749724428455457489">Pata maelezo zaidi kuhusu matangazo yanayopendekezwa na tovuti</translation>
@@ -6728,6 +6727,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5749214722697335450">Tuma data ya matumizi na uchunguzi. Saidia kuboresha hali ya utumiaji wa Android yako kwa kutuma kiotomatiki data ya uchunguzi na matumizi ya kifaa na programu kwa Google. Maelezo haya yatasaidia kuboresha uthabiti wa programu na mfumo na maboresho mengine. Baadhi ya data inayojumlishwa pia itasaidia programu na washirika wa Google kama vile wasanidi programu wa Android. Ikiwa umewasha mipangilio ya historia ya Shughuli za ziada kwenye Wavuti na Programu, huenda data hii itahifadhiwa kwenye akaunti yako ya Google. <ph name="BEGIN_LINK1" />Pata maelezo zaidi kuhusu vipimo<ph name="BEGIN_LINK1_END" />Pata Maelezo Zaidi<ph name="END_LINK1" /></translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Kagua Utayari wa Kipengele cha Kusambaza Mtandao</translation>
+<translation id="5752346055178471785">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Kiendelezi hiki kimehifadhiwa kwenye Akaunti yako ya Google, lakini data yoyote kilichohifadhi katika kifaa hiki pekee inaweza kufutwa}other{Viendelezi hivi vimehifadhiwa kwenye Akaunti yako ya Google, lakini data yoyote vilivyohifadhi katika kifaa hiki pekee inaweza kufutwa}}</translation>
 <translation id="5753570386948603678">Futa kwenye historia</translation>
 <translation id="5756163054456765343">Kituo cha Usaidizi</translation>
 <translation id="5757187557809630523">wimbo unaofuata</translation>
@@ -10428,7 +10428,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
     <ph name="BEGIN_PARAGRAPH2" />Kwa usaidizi zaidi, tembelea: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Muhtasari wa Makaribisho</translation>
 <translation id="8386091599636877289">Imeshindwa kupata sera.</translation>
-<translation id="8387087863179559896">Chrome inaweza kusasisha akaunti yako kwenye tovuti hii kwa kuweka nenosiri thabiti. Hutahitaji kukumbuka nenosiri kwa sababu linahifadhiwa kwa niaba yako kwenye Kidhibiti cha Manenosiri cha Google kwa ajili ya <ph name="EMAIL" />. Maelezo zaidi kuhusu <ph name="PASSWORD_CHANGE" />.</translation>
+<translation id="8387087863179559896">Chrome inaweza kusasisha akaunti yako kwenye tovuti hii kwa kuweka nenosiri thabiti. Hutahitaji kukumbuka nenosiri kwa sababu linahifadhiwa kwa niaba yako kwenye Kidhibiti cha Manenosiri cha Google cha <ph name="EMAIL" />. Maelezo zaidi kuhusu <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="8387361103813440603">Zisizoruhusiwa kuona mahali ulipo</translation>
 <translation id="8387617938027387193">Thibitisha kuwa ni wewe</translation>
 <translation id="8388770971141403598">Wasifu wa ziada hauwezi kutumika</translation>

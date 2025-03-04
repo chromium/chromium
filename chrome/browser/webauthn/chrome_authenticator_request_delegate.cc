@@ -54,7 +54,7 @@
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/gpm_enclave_controller.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
-#include "chrome/browser/webauthn/password_credential_controller.h"
+#include "chrome/browser/webauthn/password_credential_controller_impl.h"
 #include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/common/chrome_version.h"
@@ -342,7 +342,7 @@ void ChromeAuthenticatorRequestDelegate::SetRelyingPartyId(
 
 void ChromeAuthenticatorRequestDelegate::SetUIPresentation(
     UIPresentation ui_presentation) {
-  dialog_controller_->set_ui_presentation(ui_presentation);
+  dialog_controller_->SetUIPresentation(ui_presentation);
 }
 
 bool ChromeAuthenticatorRequestDelegate::DoesBlockRequestOnFailure(
@@ -482,14 +482,9 @@ void ChromeAuthenticatorRequestDelegate::RegisterActionCallbacks(
       bluetooth_adapter_power_on_callback);
   dialog_controller_->SetRequestBlePermissionCallback(
       request_ble_permission_callback);
-  if (PasswordsUsable(credential_types_,
-                      dialog_controller_->ui_presentation())) {
-    auto* password_controller =
-        PasswordCredentialController::MaybeGet(GetRenderFrameHost());
-    if (password_controller) {
-      password_controller->SetPasswordSelectedCallback(
-          password_selected_callback_);
-    }
+  if (password_controller_) {
+    password_controller_->SetPasswordSelectedCallback(
+        password_selected_callback_);
   }
 }
 
@@ -694,12 +689,16 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
 
   if (PasswordsUsable(credential_types_,
                       dialog_controller_->ui_presentation())) {
-    auto* controller =
-        PasswordCredentialController::MaybeGet(GetRenderFrameHost());
-    if (!controller) {
+    // Only valid for the main frame.
+    if (!password_controller_ && GetRenderFrameHost()->IsInPrimaryMainFrame()) {
+      password_controller_ =
+          std::make_unique<webauthn::PasswordCredentialControllerImpl>(
+              render_frame_host_id_, dialog_model_.get());
+    }
+    if (!password_controller_) {
       return;
     }
-    controller->FetchPasswords(
+    password_controller_->FetchPasswords(
         origin.GetURL(),
         base::BindOnce(
             &ChromeAuthenticatorRequestDelegate::OnPasswordCredentialsReceived,
@@ -909,6 +908,11 @@ void ChromeAuthenticatorRequestDelegate::SetMockTimeForTesting(
   CHECK(!enclave_controller_);
   tick_clock_ = tick_clock;
   timer_task_runner_ = std::move(task_runner);
+}
+
+void ChromeAuthenticatorRequestDelegate::SetPasswordControllerForTesting(
+    std::unique_ptr<PasswordCredentialController> controller) {
+  password_controller_ = std::move(controller);
 }
 
 content::RenderFrameHost*

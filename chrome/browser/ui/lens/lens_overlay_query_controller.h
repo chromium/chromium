@@ -134,14 +134,17 @@ class LensOverlayQueryController {
   // points to, to avoid dangling pointers.
   virtual void ResetPageContentData();
 
-  // Sends a request to the server to update the page content.
+  // Sends requests to the server to update the page content and/or make a new
+  // full image request.
   // The first content data is the most important and will be used for
   // generating request types. `primary_content_type` is used for generating the
   // request type and vit param.
-  virtual void SendPageContentUpdateRequest(
-      base::span<const lens::PageContent> underlying_page_contents,
-      lens::MimeType primary_content_type,
-      GURL new_page_url);
+  virtual void SendUpdatedPageContent(
+      std::optional<base::span<const lens::PageContent>>
+          underlying_page_contents,
+      std::optional<lens::MimeType> primary_content_type,
+      std::optional<GURL> new_page_url,
+      const SkBitmap& screenshot);
 
   // Sends a request to the server with a portion of the page content.
   // `partial_content` should be a subset of the full page content. This request

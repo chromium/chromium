@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Home network, not roaming</translation>
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1328223165223065150">Wallpaper colour</translation>
+<translation id="1329478709358066995">Transcript:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Fit to scan area</translation>
 <translation id="1343442362630695901">salt lake</translation>
@@ -1129,7 +1130,6 @@
 <translation id="6325525973963619867">Failed</translation>
 <translation id="6327262166342360252">This wallpaper was created with AI using the following text: '<ph name="PROMPT" />'.</translation>
 <translation id="6331191339300272798">Automatic Dark theme</translation>
-<translation id="6335228876613776082">Model download completed</translation>
 <translation id="6340526405444716530">Personalisation</translation>
 <translation id="6348252528297699679">You can turn off location in Settings &gt; Privacy and security &gt; Privacy controls &gt; Location access. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Username and password</translation>
@@ -1274,6 +1274,7 @@
 <translation id="6930597342185648547">About background</translation>
 <translation id="6939667434404433010">Search recording name</translation>
 <translation id="6939766318048400022">Cafe</translation>
+<translation id="6942253772720771875">Share your feedback or describe your issue</translation>
 <translation id="6943893908656559156">Remote identity (optional)</translation>
 <translation id="6953137545147683679">gold</translation>
 <translation id="6957231940976260713">Service name</translation>
@@ -1598,6 +1599,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8395584934117017006">This <ph name="DEVICE_TYPE" /> is enterprise managed</translation>
 <translation id="8398927464629426868">The rate at which the device is currently charging or discharging</translation>
 <translation id="8403988360557588704">A painting of a <ph name="ART_FEATURE" /> in the <ph name="ART_MOVEMENT" /> style</translation>
+<translation id="8409219750150841791">Generated summary:</translation>
 <translation id="8410244574650205435">Automatically detected</translation>
 <translation id="8420955526972171689">Run tests and troubleshooting for hardware issues</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1644,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8626489604350149811">More actions for <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Light purple</translation>
 <translation id="8647595191512746911">Audio transcription</translation>
+<translation id="8648578954147795914">Generated names:</translation>
 <translation id="8650852232143958317">Take your Gmail and Google Drive files with you</translation>
 <translation id="8651481478098336970">volume mute</translation>
 <translation id="8655295600908251630">Channel</translation>
@@ -1670,7 +1673,6 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos album</translation>
 <translation id="8775713578693478175">Modem APN</translation>
-<translation id="877735394245039557">Model download in progress</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">This network may have a captive portal</translation>
 <translation id="8797082062139985406">Create name using Google AI</translation>
@@ -1784,6 +1786,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="9218016617214286986">Show known APNs</translation>
 <translation id="932327136139879170">Home</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Make sure that your mic is connected or try restarting your Chromebook</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="950520315903467048">Key is missing for <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Compare voices throughout the recording so that the transcript reflects what each speaker said and when</translation>

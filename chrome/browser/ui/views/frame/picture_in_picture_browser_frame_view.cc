@@ -74,6 +74,12 @@
 #include "extensions/common/constants.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+// Windows and CrOS do not clip child widgets to their parents, so we don't have
+// to worry about resizing quite as much.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#define PLATFORM_CLIPS_CHILD_WINDOWS
+#endif
+
 namespace {
 
 constexpr int kWindowIconImageSize = 16;
@@ -371,8 +377,14 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
   gfx::Rect adjusted_bounds = original_bounds;
   if (!child_dialog->IsModal()) {
     // Non-modal dialogs set their bounds directly.  Expand the pip window to
-    // include them, and that's it.
+    // include them, and that's it if we're on a platform that clips child
+    // windows.  If child windows can extend past their parents, then just leave
+    // it all as is.
+#if defined(PLATFORM_CLIPS_CHILD_WINDOWS)
     adjusted_bounds.Union(dialog_bounds);
+#else
+    return;
+#endif
   } else {
     // Modal dialogs will be resized / moved to use the available space, so we
     // only need to make sure that the pip window is big enough, accounting for

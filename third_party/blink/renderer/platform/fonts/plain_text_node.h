@@ -112,6 +112,8 @@ class PLATFORM_EXPORT PlainTextNode : public GarbageCollected<PlainTextNode> {
                    TextDirection direction,
                    const Font& font);
 
+  void Shape(const Font& font);
+
   String text_content_;
   PlainTextItemList item_list_;
   bool normalize_space_ = false;

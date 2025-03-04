@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">Էջը բեռնել ավելի ուշ</translation>
 <translation id="1010225406377140704">Կապվեք ուղարկողի հետ՝ խնդրելով նոր հղում ուղարկել</translation>
 <translation id="1011206368273183593">Ֆայլերի նախապատրաստում</translation>
+<translation id="1012264210825687872">Ձեր պատվերը վերանայելուց հետո դուք պետք է մուտք գործեք<ph name="BNPL_ISSUER_NAME" /> հաշիվ։ Այդ հաշիվն ավտոմատ կկապվի Google Pay-ի հետ։</translation>
 <translation id="1014509239502131234">Արդյունքը հետարկվում է</translation>
 <translation id="1015730422737071372">Տրամադրել լրացուցիչ տեղեկություններ</translation>
 <translation id="1019413721762100891">Անջատ</translation>
@@ -664,6 +665,7 @@
 <translation id="2145193671493396738">Տնտեսական նորություններ</translation>
 <translation id="214556005048008348">Չեղարկել վճարումը</translation>
 <translation id="2147117373852943630">Երաժշտական գործիքներ</translation>
+<translation id="2147254250314124496"><ph name="EMBEDDED_URL" />-ն ուզում է օգտագործել ձեր մասին տեղեկությունները, որոնք պահել է</translation>
 <translation id="2148613324460538318">Ավելացնել քարտ</translation>
 <translation id="2148716181193084225">Այսօր</translation>
 <translation id="2149968176347646218">Կապը պաշտպանված չէ</translation>
@@ -695,6 +697,7 @@
 <translation id="2187317261103489799">Որոշել (կանխադրված)</translation>
 <translation id="2188375229972301266">Մի քանի անցք ներքևում</translation>
 <translation id="2194856509914051091">Կարևոր տեղեկություններ</translation>
+<translation id="2198071643181968308">Իմանալ ավելին<ph name="BNPL_ISSUER_NAME" /> հավելվածի մասին</translation>
 <translation id="2200678913752027654">«Վատն է» կոճակ․ սեղմեք Enter՝ բացելու մի ձև, որտեղ կարող եք մանրամասնել, թե ինչու չեք հավանել այս առաջարկը</translation>
 <translation id="2202627062836089804">ձեր քարտի հետևի կողմում</translation>
 <translation id="2204482073374652408">Թարմացումն ավարտվեց</translation>
@@ -2325,6 +2328,7 @@
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome-ին ձեր սարքի <ph name="PERMISSION" />ն օգտագործելու թույլտվություն է անհրաժեշտ</translation>
 <translation id="510644072453496781">Ստվարաթուղթ (վերջ)</translation>
+<translation id="5106648964679263509">Վիրտուալ քարտի տվյալները <ph name="BNPL_ISSUER_NAME" />-ի համար լրացվել են</translation>
 <translation id="5108881358339761672">Կայքը պաշտպանված չէ</translation>
 <translation id="5109892411553231226">Կառավարել վճարման եղանակները</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2522,6 +2526,7 @@
             <ph name="LIST_ITEM" />ձևերում լրացված տեղեկությունները։
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Հակառակ հերթականությամբ՝ երեսի կողմով վերև</translation>
+<translation id="5445340838622821110">Երբ վճարում եք ժամանակի ընթացքում, լրացվում է մեկանգամյա վիրտուալ քարտի համարը։ Այս համարը միայն այս գնման համար է։ <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Թույլատրեք <ph name="SITE" /> կայքին օգտագործել ձեր մասին պահված տեղեկությունները</translation>
 <translation id="5452270690849572955">Այս <ph name="HOST_NAME" /> էջը չհաջողվեց գտնել</translation>
 <translation id="5452923259299906094">Վճարեք էլեկտրոնային դրամապանակով և Pix-ով</translation>
@@ -3341,6 +3346,7 @@
 <translation id="6917795328362592458">Գաղտնաբառը, որ հենց նոր օգտագործեցիք, կոտրվել է տվյալների արտահոսքի պատճառով։ Ձեր հաշիվները պաշտպանելու համար Գաղտնաբառերի կառավարիչը խորհուրդ է տալիս ստուգել պահված գաղտնաբառերը։</translation>
 <translation id="6917873303492266709">Ներդիրների խմբերով կիսվելու, դրանց միանալու կամ դրանցում համատեղ աշխատելու համար բացեք կարգավորումները և միացրեք «Թույլատրել մուտքը Chrome-ում» կարգավորումը։</translation>
 <translation id="6921197121276419421">Վեբ ծրագրերի տեղադրումը թույլատրված է</translation>
+<translation id="69238565902785824">Ձեր հաշիվը միացված պահելը կօգնի ձեզ ավելի արագ վճարել<ph name="BNPL_ISSUER_NAME" />, բայց դուք կարող եք անջատել այն՝ գնալով <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /></translation>
 <translation id="6924013822850225188">Ընտրեք՝ արդյոք ցուցադրել քարտի առավելությունները վճարում կատարելիս (գործում են բանկի պայմանները)</translation>
 <translation id="6925267999184670015">B+ (Հյուսիսային Ամերիկա)</translation>
 <translation id="6926216138694948720">Բոդի արտ</translation>
@@ -3406,6 +3412,7 @@
 <translation id="701757816833614688">Կրթություն գեղարվեստի և դիզայնի ոլորտում</translation>
 <translation id="702275896380648118">Այս կայքը որոշում է ձեր նախասիրությունները և դրանց հիման վրա գովազդ է առաջարկում այլ կայքերի։ Այս կայքը Chrome-ից նաև ստանում է գովազդի թեմաների մասին տվյալներ՝ ձեզ ավելի համապատասխան գովազդ ցուցադրելու համար։</translation>
 <translation id="7023162328967545559">Ադմինիստրատորի նախազգուշացում</translation>
+<translation id="7023765275461720661">Կապե՞լ հաշիվը և վճարել <ph name="BNPL_ISSUER_NAME" />-ի միջոցով</translation>
 <translation id="7029809446516969842">Գաղտնաբառեր</translation>
 <translation id="7030164307377592766">փոխել վճարման եղանակների լրացման կարգավորումները</translation>
 <translation id="7031646650991750659">Ինչ Google Play հավելվածներ եք դուք տեղադրել</translation>
@@ -3627,6 +3634,7 @@
 <translation id="741204030948306876">Լավ</translation>
 <translation id="7416351320495623771">Գաղտնաբառերի կառավարում…</translation>
 <translation id="7416898721136759658">Դրամաշնորհներ, կրթաթոշակներ և ֆինանսական օգնություն</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">Ծրագրավորում</translation>
 <translation id="7419091773564635591">Համակարգիչներ և էլեկտրոնիկա</translation>
 <translation id="7419106976560586862">Պրոֆիլի ուղի</translation>
@@ -3673,6 +3681,7 @@
 <translation id="7485085230273446323">Բիզնես և արդյունաբերություն</translation>
 <translation id="7485870689360869515">Տվյալներ չեն գտնվել:</translation>
 <translation id="7486880426035242089">OneDrive-ում</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> ծառայությունը կստուգի ձեր համապատասխանությունը պահանջներին (դա չի ազդի ձեր վարկային վարկանիշի վրա)։ Հաստատման դեպքում <ph name="BNPL_ISSUER_NAME" /> ծառայությունը կառաջարկի ձեզ ընտրել վճարային պլան՝ գնումն ավարտելու համար։</translation>
 <translation id="7489392576326061356">Շամպուններ և կոնդիցիոներներ</translation>
 <translation id="7495528107193238112">Այս բովանդակությունն արգելափակված է։ Խնդիրը վերացնելու համար դիմեք կայքի սեփականատիրոջը։</translation>
 <translation id="749865518782565832">Սանտեխնիկական աշխատանքներ</translation>

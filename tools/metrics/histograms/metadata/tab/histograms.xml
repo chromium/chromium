@@ -3417,7 +3417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.TabState.RestoreMethod" enum="TabStateRestoreMethod"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>davidjm@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>

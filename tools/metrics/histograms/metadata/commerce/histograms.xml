@@ -982,7 +982,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.BottomSheet.IsFullyViewed" enum="Boolean"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>ayman@chromium.org</owner>
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -996,7 +996,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.BottomSheet.IsHalfViewed" enum="Boolean"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>ayman@chromium.org</owner>
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -1147,7 +1147,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.PageInfo.IsStoreInfoVisible"
-    enum="BooleanVisible" expires_after="2025-06-29">
+    enum="BooleanVisible" expires_after="2025-08-31">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>

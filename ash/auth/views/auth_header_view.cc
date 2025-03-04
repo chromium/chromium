@@ -105,7 +105,7 @@ AuthHeaderView::AuthHeaderView(const AccountId& account_id,
   title_label_->GetViewAccessibility().SetRole(ax::mojom::Role::kTitleBar);
   title_label_->GetViewAccessibility().SetName(title);
   decorate_label(title_label_);
-  AddChildView(title_label_.get());
+  AddChildViewRaw(title_label_.get());
 
   // Add vertical space separator.
   add_spacer(kTitleToDescriptionDistanceDp);
@@ -119,7 +119,7 @@ AuthHeaderView::AuthHeaderView(const AccountId& account_id,
   description_label_->SetFontList(
       TypographyProvider::Get()->ResolveTypographyToken(kDescriptionFont));
   decorate_label(description_label_);
-  AddChildView(description_label_.get());
+  AddChildViewRaw(description_label_.get());
 }
 
 AuthHeaderView::~AuthHeaderView() {

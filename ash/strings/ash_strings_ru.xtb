@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">Отправить отзыв</translation>
 <translation id="1059120031266247284">Вам предоставили доступ</translation>
 <translation id="1059194134494239015">Разрешение экрана <ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> и кнопка удаления</translation>
 <translation id="1062407476771304334">Заменить</translation>
 <translation id="1073899992769346247">Зарядите или замените ее.</translation>
 <translation id="1081015718268701546">В настоящий момент приложения Linux не поддерживаются. Остальные приложения будут сохранены.</translation>
@@ -1228,6 +1229,7 @@
 <translation id="5043679421800073804">Выбрать последний значок на панели запуска</translation>
 <translation id="504465286040788597">Предыдущий абзац</translation>
 <translation id="5045550434625856497">Неправильный пароль</translation>
+<translation id="5056587122125565772">Создать изображение</translation>
 <translation id="5058794129231928255">Не удалось создать документ Google.</translation>
 <translation id="5062496344832867502">озу</translation>
 <translation id="5068762093486106012">Если вы будете говорить при выключенном микрофоне, появится уведомление. Аудио с вашего устройства никуда не передается.</translation>
@@ -1276,6 +1278,7 @@
 <translation id="5222676887888702881">Выйти</translation>
 <translation id="5228195526683428788">Разделитель экрана</translation>
 <translation id="5229343007215035173">Включить/отключить экран конфиденциальности</translation>
+<translation id="5229860525743792999">Удалить элемент "<ph name="ITEM_LABEL" />" из предлагаемой группы</translation>
 <translation id="5230516054153933099">Окно</translation>
 <translation id="5234764350956374838">Закрыть</translation>
 <translation id="523505283826916779">Настройки специальных возможностей</translation>
@@ -1758,6 +1761,7 @@
 <translation id="6757237461819837179">Контент не воспроизводится</translation>
 <translation id="6760438044935091345">Игровая панель</translation>
 <translation id="6768043681523654438">хранилище</translation>
+<translation id="6769195697113506406">Изображение вставлено</translation>
 <translation id="6777216307882431711">Питание подключенных устройств USB-C</translation>
 <translation id="6781002679438061620">Рабочий стол 9</translation>
 <translation id="6782182743534150858">Рабочий стол 13</translation>
@@ -1984,6 +1988,7 @@
 <translation id="7571361473021531288">Батарея: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> до полного заряда</translation>
 <translation id="7573585051776738856">Активное окно прикреплено справа.</translation>
 <translation id="7579778809502851308">Запись экрана</translation>
+<translation id="7588317312481506627">Скопировано в буфер обмена.</translation>
 <translation id="7593891976182323525">Search или Shift</translation>
 <translation id="7598054670902114203">Использование процессора: <ph name="CPU_USEAGE" /> %. Температура в градусах Цельсия: <ph name="TEMPERATURE" />. Тактовая частота: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> ГГц.</translation>
 <translation id="7599378375976398913">Вставить выбранный результат</translation>
@@ -2178,6 +2183,7 @@
 <translation id="8155628902202578800">Открыть диалоговое окно с информацией об аккаунте <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Используемый язык: <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Контент</translation>
+<translation id="81817143961839203">Не удалось вставить изображение</translation>
 <translation id="8185090165691050712">Показать или скрыть меню для режима блокировки изменения размеров</translation>
 <translation id="8192727139462702395">После этого от вашего устройства (<ph name="DEVICE_TYPE" />) будут отключены следующие внешние устройства:</translation>
 <translation id="8198456017687137612">Трансляция вкладки</translation>
@@ -2256,6 +2262,7 @@
 <translation id="8473301994082929012">Организация <ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> функцию "<ph name="FEATURE_NAME" />".</translation>
 <translation id="8477270416194247200">Для отмены нажмите ALT + SEARCH или SHIFT.</translation>
 <translation id="8480418399907765580">Показать панель инструментов</translation>
+<translation id="8487660088084188539">Когда эти функции включены, текст, который вы вводите, URL веб-страниц и содержимое документов могут передаваться на серверы Google. Эти данные используются для генерации ответов на вопросы, кратких пересказов и подсказок по написанию текстов, а также для улучшения продукта в соответствии с <ph name="LINK_TO_SERVICE_TERMS" />. Не указывайте персональную и конфиденциальную информацию.</translation>
 <translation id="8487699605742506766">Точка доступа</translation>
 <translation id="8491237443345908933">Открыть ссылку в новой вкладке</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не поддерживает разрешение <ph name="SPECIFIED_RESOLUTION" />. Установлено разрешение <ph name="FALLBACK_RESOLUTION" />. Чтобы сохранить изменения, нажмите "Подтвердить". Предыдущие настройки восстановятся через <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2325,6 +2332,7 @@
 <translation id="8725066075913043281">Повторить попытку</translation>
 <translation id="8725214031272624704">Показать доступные способы ввода</translation>
 <translation id="8730621377337864115">Готово</translation>
+<translation id="8731188831050207755">Не удалось скачать файл "<ph name="FILE_NAME" />"</translation>
 <translation id="8731487213223706745">Окончание: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Это может быть попыткой узнать, какие клавиши вы нажимаете.</translation>
 <translation id="8735678380411481005">Цвет подсветки клавиатуры</translation>
@@ -2362,6 +2370,7 @@
 <translation id="8845001906332463065">Справка</translation>
 <translation id="8847100217801213944">Использовать градусы Фаренгейта</translation>
 <translation id="8849001918648564819">Скрытые</translation>
+<translation id="8855792845239861369">Этот язык не поддерживается.</translation>
 <translation id="8855885154700222542">Клавиша полноэкранного режима</translation>
 <translation id="8858369206579825206">Настройки конфиденциальности</translation>
 <translation id="8860366331836346216">Добавить eSIM</translation>

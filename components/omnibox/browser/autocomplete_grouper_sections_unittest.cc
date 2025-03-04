@@ -1692,6 +1692,137 @@ TEST(AutocompleteGrouperSectionsTest,
   }
 }
 
+#if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
+// Tests the groups, limits, and rules for the Desktop SRP section with URL
+// suggestions enabled.
+TEST(AutocompleteGrouperSectionsTest, DesktopSRPZpsSectionWithUrls) {
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::UrlSuggestionsOnFocus>
+      scoped_config;
+  scoped_config.Get().enabled = true;
+  scoped_config.Get().max_search_suggestions = 4;
+  auto test = [](ACMatches matches, std::vector<int> expected_relevances,
+                 bool trends_has_default_side_type = true) {
+    PSections sections;
+    omnibox::GroupConfigMap group_configs;
+    group_configs[omnibox::GROUP_MOST_VISITED];
+    group_configs[omnibox::GROUP_PREVIOUS_SEARCH_RELATED];
+    // Max 8 suggestions, with an upper limit of 4 search suggestions.
+    sections.push_back(
+        std::make_unique<DesktopSRPZpsSection>(group_configs, 8u, 4u));
+    auto out_matches = Section::GroupMatches(std::move(sections), matches);
+    VerifyMatches(out_matches, expected_relevances);
+  };
+  {
+    SCOPED_TRACE(
+        "Given 12 srp zps matches, the group should respect the search "
+        "suggestion limit as well as show them first in the suggestion list.");
+    test(
+        {
+            CreateMatch(100, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(99, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(98, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(97, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(96, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(95, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(94, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+            CreateMatch(93, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+            CreateMatch(92, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+            CreateMatch(91, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+            CreateMatch(90, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+            CreateMatch(89, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+        },
+        {94, 93, 92, 91, 100, 99, 98, 97});
+  }
+  {
+    SCOPED_TRACE(
+        "Given 12 srp zps matches, if there aren't enough serach suggestions, "
+        "backfill with url suggestions");
+    test(
+        {
+            CreateMatch(100, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(99, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(98, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(97, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(96, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(95, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(94, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(93, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(91, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(90, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(89, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(88, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+        },
+        {88, 100, 99, 98, 97, 96, 95, 94});
+  }
+}
+
+// Tests the groups, limits, and rules for the Desktop Web section with URL
+// suggestions enabled.
+TEST(AutocompleteGrouperSectionsTest, DesktopWebZpsSectionWithUrls) {
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::UrlSuggestionsOnFocus>
+      scoped_config;
+  scoped_config.Get().enabled = true;
+  auto test = [](ACMatches matches, std::vector<int> expected_relevances,
+                 bool trends_has_default_side_type = true) {
+    PSections sections;
+    omnibox::GroupConfigMap group_configs;
+    group_configs[omnibox::GROUP_MOST_VISITED];
+    group_configs[omnibox::GROUP_PREVIOUS_SEARCH_RELATED];
+    group_configs[omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST];
+    // Max 8 suggestions, with an upper limit of 4 url suggestions.
+    sections.push_back(
+        std::make_unique<DesktopWebZpsSection>(group_configs, 8u, 4u));
+    auto out_matches = Section::GroupMatches(std::move(sections), matches);
+    VerifyMatches(out_matches, expected_relevances);
+  };
+  {
+    SCOPED_TRACE(
+        "Given 12 web zps matches, the group should respect the url "
+        "limit as well as show them first in the suggestion list.");
+    test(
+        {
+            CreateMatch(100, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(99, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(98, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(97, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(96, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(95, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(94, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(93, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(92, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(91, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+        },
+        {100, 99, 98, 97, 94, 93, 92, 91});
+  }
+  {
+    SCOPED_TRACE(
+        "Given 12 web zps matches, if there aren't enough search suggestions, "
+        "url suggestions should not take their place. Instead less "
+        "overall suggestions should be shown.");
+    test(
+        {
+            CreateMatch(100, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(99, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(98, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(97, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(96, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(95, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(94, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(93, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(91, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(90, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(89, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(88, omnibox::GROUP_MOST_VISITED),
+        },
+        {98, 97, 96, 95, 100, 99});
+  }
+}
+#endif
+
 // Test that (on Android) sections are grouped by Search vs URL.
 #if BUILDFLAG(IS_ANDROID)
 TEST(AutocompleteGrouperSectionsTest,

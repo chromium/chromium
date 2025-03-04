@@ -209,12 +209,16 @@ build_webui("build") {
     web_component_files += [ "glic_page/glic_page.ts" ]
   }
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     web_component_files += [
+      "a11y_page/live_caption_section.ts",
+      "a11y_page/live_translate_section.ts",
+      "default_browser_page/default_browser_page.ts",
       "languages_page/add_languages_dialog.ts",
       "languages_page/languages_page.ts",
       "languages_page/spell_check_page.ts",
       "languages_page/translate_page.ts",
+      "people_page/import_data_dialog.ts",
       "people_page/manage_profile.ts",
       "people_page/sync_account_control.ts",
       "relaunch_confirmation_dialog.ts",
@@ -222,21 +226,11 @@ build_webui("build") {
     ]
   }
 
-  if (!is_chromeos) {
-    web_component_files += [
-      "a11y_page/live_caption_section.ts",
-      "a11y_page/live_translate_section.ts",
-      "default_browser_page/default_browser_page.ts",
-      "people_page/import_data_dialog.ts",
-    ]
-  }
-
-  if (!is_chromeos_ash && !is_mac) {
-    web_component_files += [ "languages_page/edit_dictionary_page.ts" ]
-  }
-
   if (!is_chromeos && !is_mac) {
-    web_component_files += [ "a11y_page/captions_subpage.ts" ]
+    web_component_files += [
+      "a11y_page/captions_subpage.ts",
+      "languages_page/edit_dictionary_page.ts",
+    ]
   }
 
   if (is_mac) {
@@ -315,7 +309,7 @@ build_webui("build") {
     "tooltip_mixin.ts",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     non_web_component_files +=
         [ "people_page/account_manager_browser_proxy.ts" ]
   } else {
@@ -405,7 +399,7 @@ build_webui("build") {
     "//ui/webui/resources/js:build_ts",
   ]
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     ts_deps +=
         [ "//ui/webui/resources/cr_components/theme_color_picker:build_ts" ]
   } else {
@@ -422,7 +416,7 @@ build_webui("build") {
             "$root_gen_dir/chrome/browser/resources/settings_shared/tsc/*",
             target_gen_dir) ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     # TODO(crbug.com/1013466): Browser Settings should not depend on ash/webui/
     # code. The codepath needing this (in people_page.ts) should be removed when
     # the SplitSettings effort makes progress (unclear status as of this

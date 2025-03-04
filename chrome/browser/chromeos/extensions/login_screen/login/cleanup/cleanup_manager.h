@@ -19,7 +19,7 @@
 
 namespace chromeos {
 
-// Common interface between `CleanupManagerAsh` and `CleanupManagerLacros`.
+// Interface for `CleanupManagerAsh`.
 // Performs cleanup operations for the chrome.login.endSharedSession()
 // extension API. A `CleanupManager` owns several `CleanupHandler`s. The
 // individual handlers are in charge of cleaning up a specific
@@ -51,7 +51,6 @@ class CleanupManager {
   void SetIsCleanupInProgressForTesting(bool is_cleanup_in_progress);
 
  protected:
-  // Overridden to initialize `CleanupHandler`s for Ash and Lacros.
   virtual void InitializeCleanupHandlers() = 0;
 
   void OnCleanupHandlerDone(base::RepeatingClosure barrier_closure,

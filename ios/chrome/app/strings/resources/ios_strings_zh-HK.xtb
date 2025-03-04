@@ -651,7 +651,6 @@
 <translation id="385051799172605136">返回</translation>
 <translation id="3851938967634752633">系統會刪除 <ph name="WEBSITE" />、<ph name="SECOND_WEBSITE" /> 和另外 <ph name="NUMBER_OF_ACCOUNTS" /> 個帳戶的密碼，但不會刪除您的帳戶。</translation>
 <translation id="3858860766373142691">名稱</translation>
-<translation id="3861908220442487587">此地址只儲存在此裝置上。如要在其他裝置上使用地址，請將地址移動到 Google 帳戶 (<ph name="USER_EMAIL" />)</translation>
 <translation id="3868495844258915202">顯示完整網址</translation>
 <translation id="3875783148670536197">顯示方法</translation>
 <translation id="3876833929577368454">每次都詢問我</translation>
@@ -1804,7 +1803,6 @@
 <translation id="8679900250380464358">加入閱讀清單</translation>
 <translation id="8680786875305615692">協助加強其他使用者的網絡安全</translation>
 <translation id="8680787084697685621">帳戶登入詳情已過期。</translation>
-<translation id="8683563711222071415">將地址移至帳戶</translation>
 <translation id="8690752723634292147">確認刪除</translation>
 <translation id="8692689525339542358">防範危險網站、下載項目和擴充程式。</translation>
 <translation id="8694281486652655615">顯示呢個項目</translation>

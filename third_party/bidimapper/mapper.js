@@ -25,12 +25,6 @@
             this.#emitter.on(type, handler);
             return this;
         }
-        /**
-         * Like `on` but the listener will only be fired once and then it will be removed.
-         * @param event The event you'd like to listen to
-         * @param handler The handler function to run when the event occurs
-         * @return `this` to enable chaining method calls.
-         */
         once(event, handler) {
             const onceHandler = (eventData) => {
                 handler(eventData);
@@ -42,22 +36,9 @@
             this.#emitter.off(type, handler);
             return this;
         }
-        /**
-         * Emits an event and call any associated listeners.
-         *
-         * @param event The event to emit.
-         * @param eventData Any data to emit with the event.
-         * @return `true` if there are any listeners, `false` otherwise.
-         */
         emit(event, eventData) {
             this.#emitter.emit(event, eventData);
         }
-        /**
-         * Removes all listeners. If given an event argument, it will remove only
-         * listeners for that event.
-         * @param event - the event to remove listeners for.
-         * @returns `this` to enable you to chain method calls.
-         */
         removeAllListeners(event) {
             if (event) {
                 this.#emitter.all.delete(event);
@@ -117,7 +98,6 @@
         #logger;
         #processor;
         #queue = [];
-        // Flag to keep only 1 active processor.
         #isProcessing = false;
         constructor(processor, logger) {
             this.#processor = processor;
@@ -125,7 +105,6 @@
         }
         add(entry, name) {
             this.#queue.push([entry, name]);
-            // No need in waiting. Just initialize processor if needed.
             void this.#processIfNeeded();
         }
         async #processIfNeeded() {
@@ -173,7 +152,6 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    /* eslint-enable @typescript-eslint/no-unnecessary-template-expression */
     var BiDiModule;
     (function (BiDiModule) {
         BiDiModule["Bluetooth"] = "bluetooth";
@@ -266,97 +244,107 @@
     }
     class InvalidArgumentException extends Exception {
         constructor(message, stacktrace) {
-            super("invalid argument" /* ErrorCode.InvalidArgument */, message, stacktrace);
+            super("invalid argument" , message, stacktrace);
         }
     }
     class InvalidSelectorException extends Exception {
         constructor(message, stacktrace) {
-            super("invalid selector" /* ErrorCode.InvalidSelector */, message, stacktrace);
+            super("invalid selector" , message, stacktrace);
         }
     }
     class MoveTargetOutOfBoundsException extends Exception {
         constructor(message, stacktrace) {
-            super("move target out of bounds" /* ErrorCode.MoveTargetOutOfBounds */, message, stacktrace);
+            super("move target out of bounds" , message, stacktrace);
         }
     }
     class NoSuchAlertException extends Exception {
         constructor(message, stacktrace) {
-            super("no such alert" /* ErrorCode.NoSuchAlert */, message, stacktrace);
+            super("no such alert" , message, stacktrace);
         }
     }
     class NoSuchElementException extends Exception {
         constructor(message, stacktrace) {
-            super("no such element" /* ErrorCode.NoSuchElement */, message, stacktrace);
+            super("no such element" , message, stacktrace);
         }
     }
     class NoSuchFrameException extends Exception {
         constructor(message, stacktrace) {
-            super("no such frame" /* ErrorCode.NoSuchFrame */, message, stacktrace);
+            super("no such frame" , message, stacktrace);
         }
     }
     class NoSuchHandleException extends Exception {
         constructor(message, stacktrace) {
-            super("no such handle" /* ErrorCode.NoSuchHandle */, message, stacktrace);
+            super("no such handle" , message, stacktrace);
         }
     }
     class NoSuchHistoryEntryException extends Exception {
         constructor(message, stacktrace) {
-            super("no such history entry" /* ErrorCode.NoSuchHistoryEntry */, message, stacktrace);
+            super("no such history entry" , message, stacktrace);
         }
     }
     class NoSuchInterceptException extends Exception {
         constructor(message, stacktrace) {
-            super("no such intercept" /* ErrorCode.NoSuchIntercept */, message, stacktrace);
+            super("no such intercept" , message, stacktrace);
         }
     }
     class NoSuchNodeException extends Exception {
         constructor(message, stacktrace) {
-            super("no such node" /* ErrorCode.NoSuchNode */, message, stacktrace);
+            super("no such node" , message, stacktrace);
         }
     }
     class NoSuchRequestException extends Exception {
         constructor(message, stacktrace) {
-            super("no such request" /* ErrorCode.NoSuchRequest */, message, stacktrace);
+            super("no such request" , message, stacktrace);
         }
     }
     class NoSuchScriptException extends Exception {
         constructor(message, stacktrace) {
-            super("no such script" /* ErrorCode.NoSuchScript */, message, stacktrace);
+            super("no such script" , message, stacktrace);
         }
     }
     class NoSuchUserContextException extends Exception {
         constructor(message, stacktrace) {
-            super("no such user context" /* ErrorCode.NoSuchUserContext */, message, stacktrace);
+            super("no such user context" , message, stacktrace);
         }
     }
     class UnknownCommandException extends Exception {
         constructor(message, stacktrace) {
-            super("unknown command" /* ErrorCode.UnknownCommand */, message, stacktrace);
+            super("unknown command" , message, stacktrace);
         }
     }
     class UnknownErrorException extends Exception {
         constructor(message, stacktrace = new Error().stack) {
-            super("unknown error" /* ErrorCode.UnknownError */, message, stacktrace);
+            super("unknown error" , message, stacktrace);
         }
     }
     class UnableToCaptureScreenException extends Exception {
         constructor(message, stacktrace) {
-            super("unable to capture screen" /* ErrorCode.UnableToCaptureScreen */, message, stacktrace);
+            super("unable to capture screen" , message, stacktrace);
         }
     }
     class UnsupportedOperationException extends Exception {
         constructor(message, stacktrace) {
-            super("unsupported operation" /* ErrorCode.UnsupportedOperation */, message, stacktrace);
+            super("unsupported operation" , message, stacktrace);
         }
     }
     class UnableToSetCookieException extends Exception {
         constructor(message, stacktrace) {
-            super("unable to set cookie" /* ErrorCode.UnableToSetCookie */, message, stacktrace);
+            super("unable to set cookie" , message, stacktrace);
         }
     }
     class UnableToSetFileInputException extends Exception {
         constructor(message, stacktrace) {
-            super("unable to set file input" /* ErrorCode.UnableToSetFileInput */, message, stacktrace);
+            super("unable to set file input" , message, stacktrace);
+        }
+    }
+    class InvalidWebExtensionException extends Exception {
+        constructor(message, stacktrace) {
+            super("invalid web extension" , message, stacktrace);
+        }
+    }
+    class NoSuchWebExtensionException extends Exception {
+        constructor(message, stacktrace) {
+            super("no such web extension" , message, stacktrace);
         }
     }
 
@@ -377,7 +365,6 @@
      * limitations under the License.
      */
     class BidiNoOpParser {
-        // Bluetooth module
         parseHandleRequestDevicePromptParams(params) {
             return params;
         }
@@ -390,11 +377,9 @@
         parseSimulatePreconnectedPeripheralParameters(params) {
             return params;
         }
-        // Browser module
         parseRemoveUserContextParams(params) {
             return params;
         }
-        // Browsing Context module
         parseActivateParams(params) {
             return params;
         }
@@ -431,7 +416,6 @@
         parseTraverseHistoryParams(params) {
             return params;
         }
-        // CDP module
         parseGetSessionParams(params) {
             return params;
         }
@@ -441,7 +425,6 @@
         parseSendCommandParams(params) {
             return params;
         }
-        // Script module
         parseAddPreloadScriptParams(params) {
             return params;
         }
@@ -460,7 +443,6 @@
         parseRemovePreloadScriptParams(params) {
             return params;
         }
-        // Input module
         parsePerformActionsParams(params) {
             return params;
         }
@@ -470,7 +452,6 @@
         parseSetFilesParams(params) {
             return params;
         }
-        // Network module
         parseAddInterceptParams(params) {
             return params;
         }
@@ -495,18 +476,15 @@
         parseSetCacheBehavior(params) {
             return params;
         }
-        // Permissions module
         parseSetPermissionsParams(params) {
             return params;
         }
-        // Session module
         parseSubscribeParams(params) {
             return params;
         }
         parseUnsubscribeParams(params) {
             return params;
         }
-        // Storage module
         parseDeleteCookiesParams(params) {
             return params;
         }
@@ -514,6 +492,12 @@
             return params;
         }
         parseSetCookieParams(params) {
+            return params;
+        }
+        parseInstallParams(params) {
+            return params;
+        }
+        parseUninstallParams(params) {
             return params;
         }
     }
@@ -544,8 +528,6 @@
             this.#userContextStorage = userContextStorage;
         }
         close() {
-            // Ensure that it is put at the end of the event loop.
-            // This way we send back the response before closing the tab.
             setTimeout(() => this.#browserCdpClient.sendCommand('Browser.close'), 0);
             return {};
         }
@@ -573,7 +555,6 @@
                 });
             }
             catch (err) {
-                // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/target_handler.cc;l=1424;drc=c686e8f4fd379312469fe018f5c390e9c8f20d0d
                 if (err.message.startsWith('Failed to find context with id')) {
                     throw new NoSuchUserContextException(err.message);
                 }
@@ -589,7 +570,6 @@
         async #getWindowInfo(targetId) {
             const windowInfo = await this.#browserCdpClient.sendCommand('Browser.getWindowForTarget', { targetId });
             return {
-                // `active` is not supported in CDP yet.
                 active: false,
                 clientWindow: `${windowInfo.windowId}`,
                 state: windowInfo.bounds.windowState ?? 'normal',
@@ -606,7 +586,6 @@
             const clientWindows = await Promise.all(topLevelTargetIds.map(async (targetId) => await this.#getWindowInfo(targetId)));
             const uniqueClientWindowIds = new Set();
             const uniqueClientWindows = new Array();
-            // Filter out duplicated client windows.
             for (const window of clientWindows) {
                 if (!uniqueClientWindowIds.has(window.clientWindow)) {
                     uniqueClientWindowIds.add(window.clientWindow);
@@ -708,16 +687,14 @@
                 .filter((context) => context.userContext === userContext);
             let newWindow = false;
             switch (params.type) {
-                case "tab" /* BrowsingContext.CreateType.Tab */:
+                case "tab" :
                     newWindow = false;
                     break;
-                case "window" /* BrowsingContext.CreateType.Window */:
+                case "window" :
                     newWindow = true;
                     break;
             }
             if (!existingContexts.length) {
-                // If there are no contexts in the given user context, we need to set
-                // newWindow to true as newWindow=false will be rejected.
                 newWindow = true;
             }
             let result;
@@ -731,32 +708,23 @@
             }
             catch (err) {
                 if (
-                // See https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/devtools/protocol/target_handler.cc;l=90;drc=e80392ac11e48a691f4309964cab83a3a59e01c8
                 err.message.startsWith('Failed to find browser context with id') ||
-                    // See https://source.chromium.org/chromium/chromium/src/+/main:headless/lib/browser/protocol/target_handler.cc;l=49;drc=e80392ac11e48a691f4309964cab83a3a59e01c8
                     err.message === 'browserContextId') {
                     throw new NoSuchUserContextException(`The context ${userContext} was not found`);
                 }
                 throw err;
             }
-            // Wait for the new target to be attached and to be added to the browsing context
-            // storage.
             const context = await this.#browsingContextStorage.waitForContext(result.targetId);
-            // Wait for the new tab to be loaded to avoid race conditions in the
-            // `browsingContext` events, when the `browsingContext.domContentLoaded` and
-            // `browsingContext.load` events from the initial `about:blank` navigation
-            // are emitted after the next navigation is started.
-            // Details: https://github.com/web-platform-tests/wpt/issues/35846
             await context.lifecycleLoaded();
             return { context: context.id };
         }
         navigate(params) {
             const context = this.#browsingContextStorage.getContext(params.context);
-            return context.navigate(params.url, params.wait ?? "none" /* BrowsingContext.ReadinessState.None */);
+            return context.navigate(params.url, params.wait ?? "none" );
         }
         reload(params) {
             const context = this.#browsingContextStorage.getContext(params.context);
-            return context.reload(params.ignoreCache ?? false, params.wait ?? "none" /* BrowsingContext.ReadinessState.None */);
+            return context.reload(params.ignoreCache ?? false, params.wait ?? "none" );
         }
         async activate(params) {
             const context = this.#browsingContextStorage.getContext(params.context);
@@ -799,8 +767,6 @@
                 await context.handleUserPrompt(params.accept, params.userText);
             }
             catch (error) {
-                // Heuristically determine the error
-                // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/page_handler.cc;l=1085?q=%22No%20dialog%20is%20showing%22&ss=chromium
                 if (error.message?.includes('No dialog is showing')) {
                     throw new NoSuchAlertException('No dialog is showing');
                 }
@@ -813,7 +779,6 @@
             if (!context.isTopLevelContext()) {
                 throw new InvalidArgumentException(`Non top-level browsing context ${context.id} cannot be closed.`);
             }
-            // Parent session of a page target session can be a `browser` or a `tab` session.
             const parentCdpClient = context.cdpTarget.parentCdpClient;
             try {
                 const detachedFromTargetPromise = new Promise((resolve) => {
@@ -836,21 +801,14 @@
                     }
                 }
                 catch (error) {
-                    // Swallow error that arise from the session being destroyed. Rely on the
-                    // `detachedFromTargetPromise` event to be resolved.
                     if (!parentCdpClient.isCloseError(error)) {
                         throw error;
                     }
                 }
-                // Sometimes CDP command finishes before `detachedFromTarget` event,
-                // sometimes after. Wait for the CDP command to be finished, and then wait
-                // for `detachedFromTarget` if it hasn't emitted.
                 await detachedFromTargetPromise;
             }
             catch (error) {
-                // Swallow error that arise from the page being destroyed
-                // Example is navigating to faulty SSL certificate
-                if (!(error.code === -32e3 /* CdpErrorConstants.GENERIC_ERROR */ &&
+                if (!(error.code === -32e3  &&
                     error.message === 'Not attached to an active page')) {
                     throw error;
                 }
@@ -916,20 +874,10 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    /**
-     * Check if the given string is a single complex grapheme. A complex grapheme is one that
-     * is made up of multiple characters.
-     */
     function isSingleComplexGrapheme(value) {
         return isSingleGrapheme(value) && value.length > 1;
     }
-    /**
-     * Check if the given string is a single grapheme.
-     */
     function isSingleGrapheme(value) {
-        // Theoretically there can be some strings considered a grapheme in some locales, like
-        // slovak "ch" digraph. Use english locale for consistency.
-        // https://www.unicode.org/reports/tr29/#Grapheme_Cluster_Boundaries
         const segmenter = new Intl.Segmenter('en', { granularity: 'grapheme' });
         return [...segmenter.segment(value)].length === 1;
     }
@@ -951,13 +899,11 @@
      * limitations under the License.
      */
     class NoneSource {
-        type = "none" /* SourceType.None */;
+        type = "none" ;
     }
     class KeySource {
-        type = "key" /* SourceType.Key */;
+        type = "key" ;
         pressed = new Set();
-        // This is a bitfield that matches the modifiers parameter of
-        // https://chromedevtools.github.io/devtools-protocol/tot/Input/#method-dispatchKeyEvent
         #modifiers = 0;
         get modifiers() {
             return this.#modifiers;
@@ -996,7 +942,7 @@
         }
     }
     class PointerSource {
-        type = "pointer" /* SourceType.Pointer */;
+        type = "pointer" ;
         subtype;
         pointerId;
         pressed = new Set();
@@ -1009,8 +955,6 @@
             this.pointerId = id;
             this.subtype = subtype;
         }
-        // This is a bitfield that matches the buttons parameter of
-        // https://chromedevtools.github.io/devtools-protocol/tot/Input/#method-dispatchMouseEvent
         get buttons() {
             let buttons = 0;
             for (const button of this.pressed) {
@@ -1034,10 +978,6 @@
             }
             return buttons;
         }
-        // --- Platform-specific code starts here ---
-        // Input.dispatchMouseEvent doesn't know the concept of double click, so we
-        // need to create the logic, similar to how it's done for OSes:
-        // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:ui/events/event.cc;l=479
         static ClickContext = class ClickContext {
             static #DOUBLE_CLICK_TIME_MS = 500;
             static #MAX_DOUBLE_CLICK_RADIUS = 2;
@@ -1052,9 +992,7 @@
             }
             compare(context) {
                 return (
-                // The click needs to be within a certain amount of ms.
                 context.#time - this.#time > ClickContext.#DOUBLE_CLICK_TIME_MS ||
-                    // The click needs to be within a certain square radius.
                     Math.abs(context.#x - this.#x) >
                         ClickContext.#MAX_DOUBLE_CLICK_RADIUS ||
                     Math.abs(context.#y - this.#y) > ClickContext.#MAX_DOUBLE_CLICK_RADIUS);
@@ -1073,17 +1011,12 @@
         getClickCount(button) {
             return this.#clickContexts.get(button)?.count ?? 0;
         }
-        /**
-         * Resets click count. Resets consequent click counter. Prevents grouping clicks in
-         * different `performActions` calls, so that they are not grouped as double, triple etc
-         * clicks. Required for https://github.com/GoogleChromeLabs/chromium-bidi/issues/3043.
-         */
         resetClickCount() {
             this.#clickContexts = new Map();
         }
     }
     class WheelSource {
-        type = "wheel" /* SourceType.Wheel */;
+        type = "wheel" ;
     }
 
     /**
@@ -1102,10 +1035,6 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    /**
-     * Returns the normalized key value for a given key according to the table:
-     * https://w3c.github.io/webdriver/#dfn-normalized-key-value
-     */
     function getNormalizedKey(value) {
         switch (value) {
             case '\uE000':
@@ -1120,8 +1049,6 @@
                 return 'Tab';
             case '\uE005':
                 return 'Clear';
-            // Specification declares the '\uE006' to be `Return`, but it is not supported by
-            // Chrome, so fall back to `Enter`, which aligns with WPT.
             case '\uE006':
             case '\uE007':
                 return 'Enter';
@@ -1253,10 +1180,6 @@
                 return value;
         }
     }
-    /**
-     * Returns the key code for a given key according to the table:
-     * https://w3c.github.io/webdriver/#dfn-shifted-character
-     */
     function getKeyCode(key) {
         switch (key) {
             case '`':
@@ -1309,8 +1232,6 @@
             case '=':
             case '+':
                 return 'Equal';
-            // The spec declares the '<' to be `IntlBackslash` as well, but it is already covered
-            // in the `Comma` above.
             case '>':
                 return 'IntlBackslash';
             case 'a':
@@ -1528,10 +1449,6 @@
                 return;
         }
     }
-    /**
-     * Returns the location of the key according to the table:
-     * https://w3c.github.io/webdriver/#dfn-key-location
-     */
     function getKeyLocation(key) {
         switch (key) {
             case '\uE007':
@@ -1594,8 +1511,6 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    // TODO: Remove this once https://crrev.com/c/4548290 is stably in Chromium.
-    // `Input.dispatchKeyboardEvent` will automatically handle these conversions.
     const KeyToKeyCode = {
         '0': 48,
         '1': 49,
@@ -1865,7 +1780,6 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    /** https://w3c.github.io/webdriver/#dfn-center-point */
     const CALCULATE_IN_VIEW_CENTER_PT_DECL = ((i) => {
         const t = i.getClientRects()[0], e = Math.max(0, Math.min(t.x, t.x + t.width)), n = Math.min(window.innerWidth, Math.max(t.x, t.x + t.width)), h = Math.max(0, Math.min(t.y, t.y + t.height)), m = Math.min(window.innerHeight, Math.max(t.y, t.y + t.height));
         return [e + ((n - e) >> 1), h + ((m - h) >> 1)];
@@ -1904,9 +1818,6 @@
             this.#contextId = contextId;
             this.#isMacOS = isMacOS;
         }
-        /**
-         * The context can be disposed between action ticks, so need to get it each time.
-         */
         get #context() {
             return this.#browsingContextStorage.getContext(this.#contextId);
         }
@@ -1929,9 +1840,6 @@
                 new Promise((resolve) => setTimeout(resolve, this.#tickDuration)),
             ];
             for (const option of options) {
-                // In theory we have to wait for each action to happen, but CDP is serial,
-                // so as an optimization, we queue all CDP commands at once and await all
-                // of them.
                 promises.push(this.#dispatchAction(option));
             }
             await Promise.all(promises);
@@ -1941,7 +1849,6 @@
             const keyState = this.#inputState.getGlobalKeyState();
             switch (action.type) {
                 case 'keyDown': {
-                    // SAFETY: The source is validated before.
                     await this.#dispatchKeyDownAction(source, action);
                     this.#inputState.cancelList.push({
                         id,
@@ -1953,16 +1860,13 @@
                     break;
                 }
                 case 'keyUp': {
-                    // SAFETY: The source is validated before.
                     await this.#dispatchKeyUpAction(source, action);
                     break;
                 }
                 case 'pause': {
-                    // TODO: Implement waiting on the input source.
                     break;
                 }
                 case 'pointerDown': {
-                    // SAFETY: The source is validated before.
                     await this.#dispatchPointerDownAction(source, keyState, action);
                     this.#inputState.cancelList.push({
                         id,
@@ -1974,17 +1878,14 @@
                     break;
                 }
                 case 'pointerMove': {
-                    // SAFETY: The source is validated before.
                     await this.#dispatchPointerMoveAction(source, keyState, action);
                     break;
                 }
                 case 'pointerUp': {
-                    // SAFETY: The source is validated before.
                     await this.#dispatchPointerUpAction(source, keyState, action);
                     break;
                 }
                 case 'scroll': {
-                    // SAFETY: The source is validated before.
                     await this.#dispatchScrollAction(source, keyState, action);
                     break;
                 }
@@ -1999,13 +1900,11 @@
             const { x, y, subtype: pointerType } = source;
             const { width, height, pressure, twist, tangentialPressure } = action;
             const { tiltX, tiltY } = getTilt(action);
-            // --- Platform-specific code begins here ---
             const { modifiers } = keyState;
             const { radiusX, radiusY } = getRadii(width ?? 1, height ?? 1);
             switch (pointerType) {
-                case "mouse" /* Input.PointerType.Mouse */:
-                case "pen" /* Input.PointerType.Pen */:
-                    // TODO: Implement width and height when available.
+                case "mouse" :
+                case "pen" :
                     await this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchMouseEvent', {
                         type: 'mousePressed',
                         x,
@@ -2022,7 +1921,7 @@
                         force: pressure,
                     });
                     break;
-                case "touch" /* Input.PointerType.Touch */:
+                case "touch" :
                     await this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchTouchEvent', {
                         type: 'touchStart',
                         touchPoints: [
@@ -2046,7 +1945,6 @@
             source.radiusX = radiusX;
             source.radiusY = radiusY;
             source.force = pressure;
-            // --- Platform-specific code ends here ---
         }
         #dispatchPointerUpAction(source, keyState, action) {
             const { button } = action;
@@ -2055,12 +1953,10 @@
             }
             source.pressed.delete(button);
             const { x, y, force, radiusX, radiusY, subtype: pointerType } = source;
-            // --- Platform-specific code begins here ---
             const { modifiers } = keyState;
             switch (pointerType) {
-                case "mouse" /* Input.PointerType.Mouse */:
-                case "pen" /* Input.PointerType.Pen */:
-                    // TODO: Implement width and height when available.
+                case "mouse" :
+                case "pen" :
                     return this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchMouseEvent', {
                         type: 'mouseReleased',
                         x,
@@ -2071,7 +1967,7 @@
                         clickCount: source.getClickCount(button),
                         pointerType,
                     });
-                case "touch" /* Input.PointerType.Touch */:
+                case "touch" :
                     return this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchTouchEvent', {
                         type: 'touchEnd',
                         touchPoints: [
@@ -2087,7 +1983,6 @@
                         modifiers,
                     });
             }
-            // --- Platform-specific code ends here ---
         }
         async #dispatchPointerMoveAction(source, keyState, action) {
             const { x: startX, y: startY, subtype: pointerType } = source;
@@ -2113,11 +2008,9 @@
                     y = Math.round(ratio * (targetY - startY) + startY);
                 }
                 if (source.x !== x || source.y !== y) {
-                    // --- Platform-specific code begins here ---
                     const { modifiers } = keyState;
                     switch (pointerType) {
-                        case "mouse" /* Input.PointerType.Mouse */:
-                            // TODO: Implement width and height when available.
+                        case "mouse" :
                             await this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchMouseEvent', {
                                 type: 'mouseMoved',
                                 x,
@@ -2134,15 +2027,8 @@
                                 force: pressure,
                             });
                             break;
-                        case "pen" /* Input.PointerType.Pen */:
+                        case "pen" :
                             if (source.pressed.size !== 0) {
-                                // Empty `source.pressed.size` means the pen is not detected by digitizer.
-                                // Dispatch a mouse event for the pen only if either:
-                                // 1. the pen is hovering over the digitizer (0);
-                                // 2. the pen is in contact with the digitizer (1);
-                                // 3. the pen has at least one button pressed (2, 4, etc).
-                                // https://www.w3.org/TR/pointerevents/#the-buttons-property
-                                // TODO: Implement width and height when available.
                                 await this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchMouseEvent', {
                                     type: 'mouseMoved',
                                     x,
@@ -2160,7 +2046,7 @@
                                 });
                             }
                             break;
-                        case "touch" /* Input.PointerType.Touch */:
+                        case "touch" :
                             if (source.pressed.size !== 0) {
                                 await this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchTouchEvent', {
                                     type: 'touchMove',
@@ -2183,7 +2069,6 @@
                             }
                             break;
                     }
-                    // --- Platform-specific code ends here ---
                     source.x = x;
                     source.y = y;
                     source.radiusX = radiusX;
@@ -2196,10 +2081,6 @@
             if (this.#context.id === this.#context.cdpTarget.id) {
                 return { x: 0, y: 0 };
             }
-            // https://github.com/w3c/webdriver/pull/1847 proposes dispatching events from
-            // the top-level browsing context. This implementation dispatches it on the top-most
-            // same-target frame, which is not top-level one in case of OOPiF.
-            // TODO: switch to the top-level browsing context.
             const { backendNodeId } = await this.#context.cdpTarget.cdpClient.sendCommand('DOM.getFrameOwner', { frameId: this.#context.id });
             const { model: frameBoxModel } = await this.#context.cdpTarget.cdpClient.sendCommand('DOM.getBoxModel', {
                 backendNodeId,
@@ -2221,7 +2102,6 @@
                     break;
                 default: {
                     const { x: posX, y: posY } = await getElementCenter(this.#context, origin.element);
-                    // SAFETY: These can never be special numbers.
                     targetX = posX + offsetX + frameOffset.x;
                     targetY = posY + offsetY + frameOffset.y;
                     break;
@@ -2255,7 +2135,6 @@
                     deltaY = Math.round(ratio * targetDeltaY - currentDeltaY);
                 }
                 if (deltaX !== 0 || deltaY !== 0) {
-                    // --- Platform-specific code begins here ---
                     const { modifiers } = keyState;
                     await this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchMouseEvent', {
                         type: 'mouseWheel',
@@ -2265,7 +2144,6 @@
                         y: targetY,
                         modifiers,
                     });
-                    // --- Platform-specific code ends here ---
                     currentDeltaX += deltaX;
                     currentDeltaY += deltaY;
                 }
@@ -2274,8 +2152,6 @@
         async #dispatchKeyDownAction(source, action) {
             const rawKey = action.value;
             if (!isSingleGrapheme(rawKey)) {
-                // https://w3c.github.io/webdriver/#dfn-process-a-key-action
-                // WebDriver spec allows a grapheme to be used.
                 throw new InvalidArgumentException(`Invalid key value: ${rawKey}`);
             }
             const isGrapheme = isSingleComplexGrapheme(rawKey);
@@ -2299,15 +2175,9 @@
             }
             source.pressed.add(key);
             const { modifiers } = source;
-            // --- Platform-specific code begins here ---
-            // The spread is a little hack so JS gives us an array of unicode characters
-            // to measure.
             const unmodifiedText = getKeyEventUnmodifiedText(key, source, isGrapheme);
             const text = getKeyEventText(code ?? '', source) ?? unmodifiedText;
             let command;
-            // The following commands need to be declared because Chromium doesn't
-            // handle them. See
-            // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/editing/editing_behavior.cc;l=169;drc=b8143cf1dfd24842890fcd831c4f5d909bef4fc4;bpv=0;bpt=1.
             if (this.#isMacOS && source.meta) {
                 switch (code) {
                     case 'KeyA':
@@ -2325,7 +2195,6 @@
                     case 'KeyZ':
                         command = source.shift ? 'Redo' : 'Undo';
                         break;
-                    // Intentionally empty.
                 }
             }
             const promises = [
@@ -2344,7 +2213,6 @@
                     commands: command ? [command] : undefined,
                 }),
             ];
-            // Drag cancelling happens on escape.
             if (key === 'Escape') {
                 if (!source.alt &&
                     ((this.#isMacOS && !source.ctrl && !source.meta) || !this.#isMacOS)) {
@@ -2352,13 +2220,10 @@
                 }
             }
             await Promise.all(promises);
-            // --- Platform-specific code ends here ---
         }
         #dispatchKeyUpAction(source, action) {
             const rawKey = action.value;
             if (!isSingleGrapheme(rawKey)) {
-                // https://w3c.github.io/webdriver/#dfn-process-a-key-action
-                // WebDriver spec allows a grapheme to be used.
                 throw new InvalidArgumentException(`Invalid key value: ${rawKey}`);
             }
             const isGrapheme = isSingleComplexGrapheme(rawKey);
@@ -2384,9 +2249,6 @@
             }
             source.pressed.delete(key);
             const { modifiers } = source;
-            // --- Platform-specific code begins here ---
-            // The spread is a little hack so JS gives us an array of unicode characters
-            // to measure.
             const unmodifiedText = getKeyEventUnmodifiedText(key, source, isGrapheme);
             const text = getKeyEventText(code ?? '', source) ?? unmodifiedText;
             return this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchKeyEvent', {
@@ -2401,23 +2263,15 @@
                 isKeypad: location === 3,
                 modifiers,
             });
-            // --- Platform-specific code ends here ---
         }
     }
-    /**
-     * Translates a non-grapheme key to either an `undefined` for a special keys, or a single
-     * character modified by shift if needed.
-     */
     const getKeyEventUnmodifiedText = (key, source, isGrapheme) => {
         if (isGrapheme) {
-            // Graphemes should be presented as text in the CDP command.
             return key;
         }
         if (key === 'Enter') {
             return '\r';
         }
-        // If key is not a single character, it is a normalized key value, and should be
-        // presented as key, not text in the CDP command.
         return [...key].length === 1
             ? source.shift
                 ? key.toLocaleUpperCase('en-US')
@@ -2506,7 +2360,6 @@
         return;
     };
     function getCdpButton(button) {
-        // https://www.w3.org/TR/pointerevents/#the-button-property
         switch (button) {
             case 0:
                 return 'left';
@@ -2523,27 +2376,21 @@
         }
     }
     function getTilt(action) {
-        // https://w3c.github.io/pointerevents/#converting-between-tiltx-tilty-and-altitudeangle-azimuthangle
         const altitudeAngle = action.altitudeAngle ?? Math.PI / 2;
         const azimuthAngle = action.azimuthAngle ?? 0;
         let tiltXRadians = 0;
         let tiltYRadians = 0;
         if (altitudeAngle === 0) {
-            // the pen is in the X-Y plane
             if (azimuthAngle === 0 || azimuthAngle === 2 * Math.PI) {
-                // pen is on positive X axis
                 tiltXRadians = Math.PI / 2;
             }
             if (azimuthAngle === Math.PI / 2) {
-                // pen is on positive Y axis
                 tiltYRadians = Math.PI / 2;
             }
             if (azimuthAngle === Math.PI) {
-                // pen is on negative X axis
                 tiltXRadians = -Math.PI / 2;
             }
             if (azimuthAngle === (3 * Math.PI) / 2) {
-                // pen is on negative Y axis
                 tiltYRadians = -Math.PI / 2;
             }
             if (azimuthAngle > 0 && azimuthAngle < Math.PI / 2) {
@@ -2598,16 +2445,9 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    /**
-     * Use Mutex class to coordinate local concurrent operations.
-     * Once `acquire` promise resolves, you hold the lock and must
-     * call `release` function returned by `acquire` to release the
-     * lock. Failing to `release` the lock may lead to deadlocks.
-     */
     class Mutex {
         #locked = false;
         #acquirers = [];
-        // This is FIFO.
         acquire() {
             const state = { resolved: false };
             if (this.#locked) {
@@ -2633,9 +2473,6 @@
         async run(action) {
             const release = await this.acquire();
             try {
-                // Note we need to await here because we want the await to release AFTER
-                // that await happens. Returning action() will trigger the release
-                // immediately which is counter to what we want.
                 const result = await action();
                 return result;
             }
@@ -2669,17 +2506,17 @@
             let source = this.#sources.get(id);
             if (!source) {
                 switch (type) {
-                    case "none" /* SourceType.None */:
+                    case "none" :
                         source = new NoneSource();
                         break;
-                    case "key" /* SourceType.Key */:
+                    case "key" :
                         source = new KeySource();
                         break;
-                    case "pointer" /* SourceType.Pointer */: {
-                        let pointerId = subtype === "mouse" /* Input.PointerType.Mouse */ ? 0 : 2;
+                    case "pointer" : {
+                        let pointerId = subtype === "mouse"  ? 0 : 2;
                         const pointerIds = new Set();
                         for (const [, source] of this.#sources) {
-                            if (source.type === "pointer" /* SourceType.Pointer */) {
+                            if (source.type === "pointer" ) {
                                 pointerIds.add(source.pointerId);
                             }
                         }
@@ -2689,11 +2526,11 @@
                         source = new PointerSource(pointerId, subtype);
                         break;
                     }
-                    case "wheel" /* SourceType.Wheel */:
+                    case "wheel" :
                         source = new WheelSource();
                         break;
                     default:
-                        throw new InvalidArgumentException(`Expected "${"none" /* SourceType.None */}", "${"key" /* SourceType.Key */}", "${"pointer" /* SourceType.Pointer */}", or "${"wheel" /* SourceType.Wheel */}". Found unknown source type ${type}.`);
+                        throw new InvalidArgumentException(`Expected "${"none" }", "${"key" }", "${"pointer" }", or "${"wheel" }". Found unknown source type ${type}.`);
                 }
                 this.#sources.set(id, source);
                 return source;
@@ -2713,7 +2550,7 @@
         getGlobalKeyState() {
             const state = new KeySource();
             for (const [, source] of this.#sources) {
-                if (source.type !== "key" /* SourceType.Key */) {
+                if (source.type !== "key" ) {
                     continue;
                 }
                 for (const pressed of source.pressed) {
@@ -2747,8 +2584,6 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    // We use a weak map here as specified here:
-    // https://www.w3.org/TR/webdriver/#dfn-browsing-context-input-state-map
     class InputStateManager extends WeakMap {
         get(context) {
             assert(context.isTopLevelContext());
@@ -2806,18 +2641,18 @@
                 result = await realm.callFunction(String(function getFiles(fileListLength) {
                     if (!(this instanceof HTMLInputElement)) {
                         if (this instanceof Element) {
-                            return 1 /* ErrorCode.Element */;
+                            return 1 ;
                         }
-                        return 0 /* ErrorCode.Node */;
+                        return 0 ;
                     }
                     if (this.type !== 'file') {
-                        return 2 /* ErrorCode.Type */;
+                        return 2 ;
                     }
                     if (this.disabled) {
-                        return 3 /* ErrorCode.Disabled */;
+                        return 3 ;
                     }
                     if (fileListLength > 1 && !this.multiple) {
-                        return 4 /* ErrorCode.Multiple */;
+                        return 4 ;
                     }
                     return;
                 }), false, params.element, [{ type: 'number', value: params.files.length }]);
@@ -2828,31 +2663,24 @@
             assert(result.type === 'success');
             if (result.result.type === 'number') {
                 switch (result.result.value) {
-                    case 0 /* ErrorCode.Node */: {
+                    case 0 : {
                         throw new NoSuchElementException(`Could not find element ${params.element.sharedId}`);
                     }
-                    case 1 /* ErrorCode.Element */: {
+                    case 1 : {
                         throw new UnableToSetFileInputException(`Element ${params.element.sharedId} is not a input`);
                     }
-                    case 2 /* ErrorCode.Type */: {
+                    case 2 : {
                         throw new UnableToSetFileInputException(`Input element ${params.element.sharedId} is not a file type`);
                     }
-                    case 3 /* ErrorCode.Disabled */: {
+                    case 3 : {
                         throw new UnableToSetFileInputException(`Input element ${params.element.sharedId} is disabled`);
                     }
-                    case 4 /* ErrorCode.Multiple */: {
+                    case 4 : {
                         throw new UnableToSetFileInputException(`Cannot set multiple files on a non-multiple input element`);
                     }
                 }
             }
-            /**
-             * The zero-length array is a special case, it seems that
-             * DOM.setFileInputFiles does not actually update the files in that case, so
-             * the solution is to eval the element value to a new FileList directly.
-             */
             if (params.files.length === 0) {
-                // XXX: These events should converted to trusted events. Perhaps do this
-                // in `DOM.setFileInputFiles`?
                 await realm.callFunction(String(function dispatchEvent() {
                     if (this.files?.length === 0) {
                         this.dispatchEvent(new Event('cancel', {
@@ -2861,19 +2689,16 @@
                         return;
                     }
                     this.files = new DataTransfer().files;
-                    // Dispatch events for this case because it should behave akin to a user action.
                     this.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
                     this.dispatchEvent(new Event('change', { bubbles: true }));
                 }), false, params.element);
                 return {};
             }
-            // Our goal here is to iterate over the input element files and get their
-            // file paths.
             const paths = [];
             for (let i = 0; i < params.files.length; ++i) {
                 const result = await realm.callFunction(String(function getFiles(index) {
                     return this.files?.item(index);
-                }), false, params.element, [{ type: 'number', value: 0 }], "root" /* Script.ResultOwnership.Root */);
+                }), false, params.element, [{ type: 'number', value: 0 }], "root" );
                 assert(result.type === 'success');
                 if (result.result.type !== 'object') {
                     break;
@@ -2884,18 +2709,15 @@
                     objectId: handle,
                 });
                 paths.push(path);
-                // Cleanup the handle.
                 void realm.disown(handle).catch(undefined);
             }
             paths.sort();
-            // We create a new array so we preserve the order of the original files.
             const sortedFiles = [...params.files].sort();
             if (paths.length !== params.files.length ||
                 sortedFiles.some((path, index) => {
                     return paths[index] !== path;
                 })) {
                 const { objectId } = await realm.deserializeForCdp(params.element);
-                // This cannot throw since this was just used in `callFunction` above.
                 assert(objectId !== undefined);
                 await realm.cdpClient.sendCommand('DOM.setFileInputFiles', {
                     files: params.files,
@@ -2903,7 +2725,6 @@
                 });
             }
             else {
-                // XXX: We should dispatch a trusted event.
                 await realm.callFunction(String(function dispatchEvent() {
                     this.dispatchEvent(new Event('cancel', {
                         bubbles: true,
@@ -2916,14 +2737,13 @@
             const actionsByTick = [];
             for (const action of params.actions) {
                 switch (action.type) {
-                    case "pointer" /* SourceType.Pointer */: {
-                        action.parameters ??= { pointerType: "mouse" /* Input.PointerType.Mouse */ };
-                        action.parameters.pointerType ??= "mouse" /* Input.PointerType.Mouse */;
-                        const source = inputState.getOrCreate(action.id, "pointer" /* SourceType.Pointer */, action.parameters.pointerType);
+                    case "pointer" : {
+                        action.parameters ??= { pointerType: "mouse"  };
+                        action.parameters.pointerType ??= "mouse" ;
+                        const source = inputState.getOrCreate(action.id, "pointer" , action.parameters.pointerType);
                         if (source.subtype !== action.parameters.pointerType) {
                             throw new InvalidArgumentException(`Expected input source ${action.id} to be ${source.subtype}; got ${action.parameters.pointerType}.`);
                         }
-                        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/3043
                         source.resetClickCount();
                         break;
                     }
@@ -2961,19 +2781,10 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    /**
-     * Encodes a string to base64.
-     *
-     * Uses the native Web API if available, otherwise falls back to a NodeJS Buffer.
-     * @param {string} base64Str
-     * @return {string}
-     */
     function base64ToString(base64Str) {
-        // Available only if run in a browser context.
         if ('atob' in globalThis) {
             return globalThis.atob(base64Str);
         }
-        // Available only if run in a NodeJS context.
         return Buffer.from(base64Str, 'base64').toString('ascii');
     }
 
@@ -3004,8 +2815,6 @@
         return typedArrayToBase64(new TextEncoder().encode(str));
     }
     function typedArrayToBase64(typedArray) {
-        // chunkSize should be less V8 limit on number of arguments!
-        // https://github.com/v8/v8/blob/d3de848bea727518aee94dd2fd42ba0b62037a27/src/objects/code.h#L444
         const chunkSize = 65534;
         const chunks = [];
         for (let i = 0; i < typedArray.length; i += chunkSize) {
@@ -3015,7 +2824,6 @@
         const binaryString = chunks.join('');
         return btoa(binaryString);
     }
-    /** Converts from CDP Network domain headers to BiDi network headers. */
     function bidiNetworkHeadersFromCdpNetworkHeaders(headers) {
         if (!headers) {
             return [];
@@ -3028,7 +2836,6 @@
             },
         }));
     }
-    /** Converts from Bidi network headers to CDP Fetch domain header entries. */
     function cdpFetchHeadersFromBidiNetworkHeaders(headers) {
         if (headers === undefined) {
             return undefined;
@@ -3060,7 +2867,6 @@
             },
         };
     }
-    /** Converts from Bidi auth action to CDP auth challenge response. */
     function cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction(action) {
         switch (action) {
             case 'default':
@@ -3071,11 +2877,6 @@
                 return 'ProvideCredentials';
         }
     }
-    /**
-     * Converts from CDP Network domain cookie to BiDi network cookie.
-     * * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-Cookie
-     * * https://w3c.github.io/webdriver-bidi/#type-network-Cookie
-     */
     function cdpToBiDiCookie(cookie) {
         const result = {
             name: cookie.name,
@@ -3086,11 +2887,10 @@
             httpOnly: cookie.httpOnly,
             secure: cookie.secure,
             sameSite: cookie.sameSite === undefined
-                ? "none" /* Network.SameSite.None */
+                ? "none"
                 : sameSiteCdpToBiDi(cookie.sameSite),
             ...(cookie.expires >= 0 ? { expiry: cookie.expires } : undefined),
         };
-        // Extending with CDP-specific properties with `goog:` prefix.
         result[`goog:session`] = cookie.session;
         result[`goog:priority`] = cookie.priority;
         result[`goog:sameParty`] = cookie.sameParty;
@@ -3104,22 +2904,12 @@
         }
         return result;
     }
-    /**
-     * Decodes a byte value to a string.
-     * @param {Network.BytesValue} value
-     * @return {string}
-     */
     function deserializeByteValue(value) {
         if (value.type === 'base64') {
             return base64ToString(value.value);
         }
         return value.value;
     }
-    /**
-     * Converts from BiDi set network cookie params to CDP Network domain cookie.
-     * * https://w3c.github.io/webdriver-bidi/#type-network-Cookie
-     * * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-CookieParam
-     */
     function bidiToCdpCookie(params, partitionKey) {
         const deserializedValue = deserializeByteValue(params.cookie.value);
         const result = {
@@ -3132,7 +2922,6 @@
             ...(partitionKey.sourceOrigin !== undefined && {
                 partitionKey: {
                     hasCrossSiteAncestor: false,
-                    // CDP's `partitionKey.topLevelSite` is the BiDi's `partition.sourceOrigin`.
                     topLevelSite: partitionKey.sourceOrigin,
                 },
             }),
@@ -3143,7 +2932,6 @@
                 sameSite: sameSiteBiDiToCdp(params.cookie.sameSite),
             }),
         };
-        // Extending with CDP-specific properties with `goog:` prefix.
         if (params.cookie[`goog:url`] !== undefined) {
             result.url = params.cookie[`goog:url`];
         }
@@ -3164,46 +2952,33 @@
     function sameSiteCdpToBiDi(sameSite) {
         switch (sameSite) {
             case 'Strict':
-                return "strict" /* Network.SameSite.Strict */;
+                return "strict" ;
             case 'None':
-                return "none" /* Network.SameSite.None */;
+                return "none" ;
             case 'Lax':
-                return "lax" /* Network.SameSite.Lax */;
+                return "lax" ;
             default:
-                // Defaults to `Lax`:
-                // https://web.dev/articles/samesite-cookies-explained#samesitelax_by_default
-                return "lax" /* Network.SameSite.Lax */;
+                return "lax" ;
         }
     }
     function sameSiteBiDiToCdp(sameSite) {
         switch (sameSite) {
-            case "strict" /* Network.SameSite.Strict */:
+            case "strict" :
                 return 'Strict';
-            case "lax" /* Network.SameSite.Lax */:
+            case "lax" :
                 return 'Lax';
-            case "none" /* Network.SameSite.None */:
+            case "none" :
                 return 'None';
         }
         throw new InvalidArgumentException(`Unknown 'sameSite' value ${sameSite}`);
     }
-    /**
-     * Returns true if the given protocol is special.
-     * Special protocols are those that have a default port.
-     *
-     * Example inputs: 'http', 'http:'
-     *
-     * @see https://url.spec.whatwg.org/#special-scheme
-     */
     function isSpecialScheme(protocol) {
         return ['ftp', 'file', 'http', 'https', 'ws', 'wss'].includes(protocol.replace(/:$/, ''));
     }
     function getScheme(url) {
         return url.protocol.replace(/:$/, '');
     }
-    /** Matches the given URLPattern against the given URL. */
     function matchUrlPattern(pattern, url) {
-        // Roughly https://w3c.github.io/webdriver-bidi/#match-url-pattern
-        // plus some differences based on the URL parsing methods.
         const parsedUrl = new URL(url);
         if (pattern.protocol !== undefined &&
             pattern.protocol !== getScheme(parsedUrl)) {
@@ -3258,7 +3033,6 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    /** Dispatches Network module commands. */
     class NetworkProcessor {
         #browsingContextStorage;
         #networkStorage;
@@ -3295,7 +3069,7 @@
                 NetworkProcessor.validateHeaders(params.headers);
             }
             const request = this.#getBlockedRequestOrFail(params.request, [
-                "beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */,
+                "beforeRequestSent" ,
             ]);
             try {
                 await request.continueRequest(params);
@@ -3310,8 +3084,8 @@
                 NetworkProcessor.validateHeaders(params.headers);
             }
             const request = this.#getBlockedRequestOrFail(params.request, [
-                "authRequired" /* Network.InterceptPhase.AuthRequired */,
-                "responseStarted" /* Network.InterceptPhase.ResponseStarted */,
+                "authRequired" ,
+                "responseStarted" ,
             ]);
             try {
                 await request.continueResponse(params);
@@ -3324,14 +3098,14 @@
         async continueWithAuth(params) {
             const networkId = params.request;
             const request = this.#getBlockedRequestOrFail(networkId, [
-                "authRequired" /* Network.InterceptPhase.AuthRequired */,
+                "authRequired" ,
             ]);
             await request.continueWithAuth(params);
             return {};
         }
         async failRequest({ request: networkId, }) {
             const request = this.#getRequestOrFail(networkId);
-            if (request.interceptPhase === "authRequired" /* Network.InterceptPhase.AuthRequired */) {
+            if (request.interceptPhase === "authRequired" ) {
                 throw new InvalidArgumentException(`Request '${networkId}' in 'authRequired' phase cannot be failed`);
             }
             if (!request.interceptPhase) {
@@ -3345,9 +3119,9 @@
                 NetworkProcessor.validateHeaders(params.headers);
             }
             const request = this.#getBlockedRequestOrFail(params.request, [
-                "beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */,
-                "responseStarted" /* Network.InterceptPhase.ResponseStarted */,
-                "authRequired" /* Network.InterceptPhase.AuthRequired */,
+                "beforeRequestSent" ,
+                "responseStarted" ,
+                "authRequired" ,
             ]);
             try {
                 await request.provideResponse(params);
@@ -3366,7 +3140,6 @@
         }
         async setCacheBehavior(params) {
             const contexts = this.#browsingContextStorage.verifyTopLevelContextsList(params.contexts);
-            // Change all targets
             if (contexts.size === 0) {
                 this.#networkStorage.defaultCacheBehavior = params.cacheBehavior;
                 await Promise.all(this.#browsingContextStorage.getAllContexts().map((context) => {
@@ -3397,9 +3170,6 @@
             }
             return request;
         }
-        /**
-         * Validate https://fetch.spec.whatwg.org/#header-value
-         */
         static validateHeaders(headers) {
             for (const header of headers) {
                 let headerValue;
@@ -3417,13 +3187,8 @@
             }
         }
         static isMethodValid(method) {
-            // https://httpwg.org/specs/rfc9110.html#method.overview
             return /^[!#$%&'*+\-.^_`|~a-zA-Z\d]+$/.test(method);
         }
-        /**
-         * Attempts to parse the given url.
-         * Throws an InvalidArgumentException if the url is invalid.
-         */
         static parseUrlString(url) {
             try {
                 return new URL(url);
@@ -3575,7 +3340,6 @@
             });
         }
         static wrapInterceptionError(error) {
-            // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/fetch_handler.cc;l=169
             if (error?.message.includes('Invalid header') ||
                 error?.message.includes('Unsafe header')) {
                 return new InvalidArgumentException(error.message);
@@ -3583,9 +3347,6 @@
             return error;
         }
     }
-    /**
-     * See https://w3c.github.io/webdriver-bidi/#unescape-url-pattern
-     */
     function unescapeURLPattern(pattern) {
         const forbidden = new Set(['(', ')', '*', '{', '}']);
         let result = '';
@@ -3645,8 +3406,6 @@
             catch (err) {
                 if (err.message ===
                     `Permission can't be granted to opaque origins.`) {
-                    // Return success if the origin is not valid (does not match any
-                    // existing origins).
                     return {};
                 }
                 throw new InvalidArgumentException(err.message);
@@ -3674,37 +3433,17 @@
     function bytesToHex(bytes) {
         return bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
     }
-    /**
-     * Generates a random v4 UUID, as specified in RFC4122.
-     *
-     * Uses the native Web Crypto API if available, otherwise falls back to a
-     * polyfill.
-     *
-     * Example: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
-     */
     function uuidv4() {
-        // Available only in secure contexts
-        // https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API
         if ('crypto' in globalThis && 'randomUUID' in globalThis.crypto) {
-            // Node with
-            // https://nodejs.org/dist/latest-v20.x/docs/api/globals.html#crypto_1 or
-            // secure browser context.
             return globalThis.crypto.randomUUID();
         }
         const randomValues = new Uint8Array(16);
         if ('crypto' in globalThis && 'getRandomValues' in globalThis.crypto) {
-            // Node (>=18) with
-            // https://nodejs.org/dist/latest-v20.x/docs/api/globals.html#crypto_1 or
-            // browser.
             globalThis.crypto.getRandomValues(randomValues);
         }
         else {
-            // Node (<=16) without
-            // https://nodejs.org/dist/latest-v20.x/docs/api/globals.html#crypto_1.
-            // eslint-disable-next-line @typescript-eslint/no-require-imports
             require('crypto').webcrypto.getRandomValues(randomValues);
         }
-        // Set version (4) and variant (RFC4122) bits.
         randomValues[6] = (randomValues[6] & 0x0f) | 0x40;
         randomValues[8] = (randomValues[8] & 0x3f) | 0x80;
         return [
@@ -3733,9 +3472,6 @@
      * limitations under the License.
      *
      */
-    /**
-     * Used to send messages from realm to BiDi user.
-     */
     class ChannelProxy {
         #properties;
         #id = uuidv4();
@@ -3744,17 +3480,12 @@
             this.#properties = channel;
             this.#logger = logger;
         }
-        /**
-         * Creates a channel proxy in the given realm, initialises listener and
-         * returns a handle to `sendMessage` delegate.
-         */
         async init(realm, eventManager) {
             const channelHandle = await ChannelProxy.#createAndGetHandleInRealm(realm);
             const sendMessageHandle = await ChannelProxy.#createSendMessageHandle(realm, channelHandle);
             void this.#startListener(realm, channelHandle, eventManager);
             return sendMessageHandle;
         }
-        /** Gets a ChannelProxy from window and returns its handle. */
         async startListenerFromWindow(realm, eventManager) {
             try {
                 const channelHandle = await this.#getHandleFromWindow(realm);
@@ -3764,18 +3495,11 @@
                 this.#logger?.(LogType.debugError, error);
             }
         }
-        /**
-         * Evaluation string which creates a ChannelProxy object on the client side.
-         */
         static #createChannelProxyEvalStr() {
             const functionStr = String(() => {
                 const queue = [];
                 let queueNonEmptyResolver = null;
                 return {
-                    /**
-                     * Gets a promise, which is resolved as soon as a message occurs
-                     * in the queue.
-                     */
                     async getMessage() {
                         const onMessage = queue.length > 0
                             ? Promise.resolve()
@@ -3785,10 +3509,6 @@
                         await onMessage;
                         return queue.shift();
                     },
-                    /**
-                     * Adds a message to the queue.
-                     * Resolves the pending promise if needed.
-                     */
                     sendMessage(message) {
                         queue.push(message);
                         if (queueNonEmptyResolver !== null) {
@@ -3800,13 +3520,12 @@
             });
             return `(${functionStr})()`;
         }
-        /** Creates a ChannelProxy in the given realm. */
         static async #createAndGetHandleInRealm(realm) {
             const createChannelHandleResult = await realm.cdpClient.sendCommand('Runtime.evaluate', {
                 expression: this.#createChannelProxyEvalStr(),
                 contextId: realm.executionContextId,
                 serializationOptions: {
-                    serialization: "idOnly" /* Protocol.Runtime.SerializationOptionsSerialization.IdOnly */,
+                    serialization: "idOnly" ,
                 },
             });
             if (createChannelHandleResult.exceptionDetails ||
@@ -3815,7 +3534,6 @@
             }
             return createChannelHandleResult.result.objectId;
         }
-        /** Gets a handle to `sendMessage` delegate from the ChannelProxy handle. */
         static async #createSendMessageHandle(realm, channelHandle) {
             const sendMessageArgResult = await realm.cdpClient.sendCommand('Runtime.callFunctionOn', {
                 functionDeclaration: String((channelHandle) => {
@@ -3824,15 +3542,12 @@
                 arguments: [{ objectId: channelHandle }],
                 executionContextId: realm.executionContextId,
                 serializationOptions: {
-                    serialization: "idOnly" /* Protocol.Runtime.SerializationOptionsSerialization.IdOnly */,
+                    serialization: "idOnly" ,
                 },
             });
-            // TODO: check for exceptionDetails.
             return sendMessageArgResult.result.objectId;
         }
-        /** Starts listening for the channel events of the provided ChannelProxy. */
         async #startListener(realm, channelHandle, eventManager) {
-            // noinspection InfiniteLoopJS
             for (;;) {
                 try {
                     const message = await realm.cdpClient.sendCommand('Runtime.callFunctionOn', {
@@ -3845,7 +3560,7 @@
                         awaitPromise: true,
                         executionContextId: realm.executionContextId,
                         serializationOptions: {
-                            serialization: "deep" /* Protocol.Runtime.SerializationOptionsSerialization.Deep */,
+                            serialization: "deep" ,
                             maxDepth: this.#properties.serializationOptions?.maxObjectDepth ??
                                 undefined,
                         },
@@ -3861,40 +3576,25 @@
                             method: Script$2.EventNames.Message,
                             params: {
                                 channel: this.#properties.channel,
-                                data: realm.cdpToBidiValue(message, this.#properties.ownership ?? "none" /* Script.ResultOwnership.None */),
+                                data: realm.cdpToBidiValue(message, this.#properties.ownership ?? "none" ),
                                 source: realm.source,
                             },
                         }, browsingContext.id);
                     }
                 }
                 catch (error) {
-                    // If an error is thrown, then the channel is permanently broken, so we
-                    // exit the loop.
                     this.#logger?.(LogType.debugError, error);
                     break;
                 }
             }
         }
-        /**
-         * Returns a handle of ChannelProxy from window's property which was set there
-         * by `getEvalInWindowStr`. If window property is not set yet, sets a promise
-         * resolver to the window property, so that `getEvalInWindowStr` can resolve
-         * the promise later on with the channel.
-         * This is needed because `getEvalInWindowStr` can be called before or
-         * after this method.
-         */
         async #getHandleFromWindow(realm) {
             const channelHandleResult = await realm.cdpClient.sendCommand('Runtime.callFunctionOn', {
                 functionDeclaration: String((id) => {
                     const w = window;
                     if (w[id] === undefined) {
-                        // The channelProxy is not created yet. Create a promise, put the
-                        // resolver to window property and return the promise.
-                        // `getEvalInWindowStr` will resolve the promise later.
                         return new Promise((resolve) => (w[id] = resolve));
                     }
-                    // The channelProxy is already created by `getEvalInWindowStr` and
-                    // is set into window property. Return it.
                     const channelProxy = w[id];
                     delete w[id];
                     return channelProxy;
@@ -3903,7 +3603,7 @@
                 executionContextId: realm.executionContextId,
                 awaitPromise: true,
                 serializationOptions: {
-                    serialization: "idOnly" /* Protocol.Runtime.SerializationOptionsSerialization.IdOnly */,
+                    serialization: "idOnly" ,
                 },
             });
             if (channelHandleResult.exceptionDetails !== undefined ||
@@ -3912,28 +3612,13 @@
             }
             return channelHandleResult.result.objectId;
         }
-        /**
-         * String to be evaluated to create a ProxyChannel and put it to window.
-         * Returns the delegate `sendMessage`. Used to provide an argument for preload
-         * script. Does the following:
-         * 1. Creates a ChannelProxy.
-         * 2. Puts the ChannelProxy to window['${this.#id}'] or resolves the promise
-         *    by calling delegate stored in window['${this.#id}'].
-         *    This is needed because `#getHandleFromWindow` can be called before or
-         *    after this method.
-         * 3. Returns the delegate `sendMessage` of the created ChannelProxy.
-         */
         getEvalInWindowStr() {
             const delegate = String((id, channelProxy) => {
                 const w = window;
                 if (w[id] === undefined) {
-                    // `#getHandleFromWindow` is not initialized yet, and will get the
-                    // channelProxy later.
                     w[id] = channelProxy;
                 }
                 else {
-                    // `#getHandleFromWindow` is already set a delegate to window property
-                    // and is waiting for it to be called with the channelProxy.
                     w[id](channelProxy);
                     delete w[id];
                 }
@@ -3961,32 +3646,14 @@
      * limitations under the License.
      *
      */
-    /**
-     * BiDi IDs are generated by the server and are unique within contexts.
-     *
-     * CDP preload script IDs are generated by the client and are unique
-     * within sessions.
-     *
-     * The mapping between BiDi and CDP preload script IDs is 1:many.
-     * BiDi IDs are needed by the mapper to keep track of potential multiple CDP IDs
-     * in the client.
-     */
     class PreloadScript {
-        /** BiDi ID, an automatically generated UUID. */
         #id = uuidv4();
-        /** CDP preload scripts. */
         #cdpPreloadScripts = [];
-        /** The script itself, in a format expected by the spec i.e. a function. */
         #functionDeclaration;
-        /** Targets, in which the preload script is initialized. */
         #targetIds = new Set();
-        /** Channels to be added as arguments to functionDeclaration. */
         #channels;
-        /** The script sandbox / world name. */
         #sandbox;
-        /** The browsing contexts to execute the preload scripts in, if any. */
         #contexts;
-        /** The browsing contexts to execute the preload scripts in, if any. */
         #userContexts;
         get id() {
             return this.#id;
@@ -4002,42 +3669,24 @@
             this.#contexts = params.contexts;
             this.#userContexts = params.userContexts;
         }
-        /** Channels of the preload script. */
         get channels() {
             return this.#channels;
         }
-        /** Contexts of the preload script, if any */
         get contexts() {
             return this.#contexts;
         }
-        /** UserContexts of the preload script, if any */
         get userContexts() {
             return this.#userContexts;
         }
-        /**
-         * String to be evaluated. Wraps user-provided function so that the following
-         * steps are run:
-         * 1. Create channels.
-         * 2. Store the created channels in window.
-         * 3. Call the user-provided function with channels as arguments.
-         */
         #getEvaluateString() {
             const channelsArgStr = `[${this.channels
             .map((c) => c.getEvalInWindowStr())
             .join(', ')}]`;
             return `(()=>{(${this.#functionDeclaration})(...${channelsArgStr})})()`;
         }
-        /**
-         * Adds the script to the given CDP targets by calling the
-         * `Page.addScriptToEvaluateOnNewDocument` command.
-         */
         async initInTargets(cdpTargets, runImmediately) {
             await Promise.all(Array.from(cdpTargets).map((cdpTarget) => this.initInTarget(cdpTarget, runImmediately)));
         }
-        /**
-         * Adds the script to the given CDP target by calling the
-         * `Page.addScriptToEvaluateOnNewDocument` command.
-         */
         async initInTarget(cdpTarget, runImmediately) {
             const addCdpPreloadScriptResult = await cdpTarget.cdpClient.sendCommand('Page.addScriptToEvaluateOnNewDocument', {
                 source: this.#getEvaluateString(),
@@ -4050,9 +3699,6 @@
             });
             this.#targetIds.add(cdpTarget.id);
         }
-        /**
-         * Removes this script from all CDP targets.
-         */
         async remove() {
             await Promise.all([
                 this.#cdpPreloadScripts.map(async (cdpPreloadScript) => {
@@ -4064,7 +3710,6 @@
                 }),
             ]);
         }
-        /** Removes the provided cdp target from the list of cdp preload scripts. */
         dispose(cdpTargetId) {
             this.#cdpPreloadScripts = this.#cdpPreloadScripts.filter((cdpPreloadScript) => cdpPreloadScript.target?.id !== cdpTargetId);
             this.#targetIds.delete(cdpTargetId);
@@ -4177,7 +3822,6 @@
         }
         getRealms(params) {
             if (params.context !== undefined) {
-                // Make sure the context is known.
                 this.#browsingContextStorage.getContext(params.context);
             }
             const realms = this.#realmStorage
@@ -4229,8 +3873,6 @@
             return { ready: false, message: 'already connected' };
         }
         #mergeCapabilities(capabilitiesRequest) {
-            // Roughly following https://www.w3.org/TR/webdriver2/#dfn-capabilities-processing.
-            // Validations should already be done by the parser.
             const mergedCapabilities = [];
             for (const first of capabilitiesRequest.firstMatch ?? [{}]) {
                 const result = {
@@ -4255,7 +3897,6 @@
                 return undefined;
             }
             if (typeof capabilityValue === 'object') {
-                // Do not validate capabilities. Incorrect ones will be ignored by Mapper.
                 return capabilityValue;
             }
             if (typeof capabilityValue !== 'string') {
@@ -4264,12 +3905,12 @@
             switch (capabilityValue) {
                 case 'accept':
                 case 'accept and notify':
-                    return { default: "accept" /* Session.UserPromptHandlerType.Accept */ };
+                    return { default: "accept"  };
                 case 'dismiss':
                 case 'dismiss and notify':
-                    return { default: "dismiss" /* Session.UserPromptHandlerType.Dismiss */ };
+                    return { default: "dismiss"  };
                 case 'ignore':
-                    return { default: "ignore" /* Session.UserPromptHandlerType.Ignore */ };
+                    return { default: "ignore"  };
                 default:
                     throw new InvalidArgumentException(`Unexpected 'unhandledPromptBehavior' value: ${capabilityValue}`);
             }
@@ -4312,9 +3953,6 @@
         }
     }
 
-    /**
-     * Responsible for handling the `storage` module.
-     */
     class StorageProcessor {
         #browserCdpClient;
         #browsingContextStorage;
@@ -4334,16 +3972,12 @@
             }
             catch (err) {
                 if (this.#isNoSuchUserContextError(err)) {
-                    // If the user context is not found, special error is thrown.
                     throw new NoSuchUserContextException(err.message);
                 }
                 throw err;
             }
             const cdpCookiesToDelete = cdpResponse.cookies
                 .filter(
-            // CDP's partition key is the source origin. If the request specifies the
-            // `sourceOrigin` partition key, only cookies with the requested source origin
-            // are returned.
             (c) => partitionKey.sourceOrigin === undefined ||
                 c.partitionKey?.topLevelSite === partitionKey.sourceOrigin)
                 .filter((cdpCookie) => {
@@ -4352,7 +3986,6 @@
             })
                 .map((cookie) => ({
                 ...cookie,
-                // Set expiry to pass date to delete the cookie.
                 expires: 1,
             }));
             await this.#browserCdpClient.sendCommand('Storage.setCookies', {
@@ -4373,16 +4006,12 @@
             }
             catch (err) {
                 if (this.#isNoSuchUserContextError(err)) {
-                    // If the user context is not found, special error is thrown.
                     throw new NoSuchUserContextException(err.message);
                 }
                 throw err;
             }
             const filteredBiDiCookies = cdpResponse.cookies
                 .filter(
-            // CDP's partition key is the source origin. If the request specifies the
-            // `sourceOrigin` partition key, only cookies with the requested source origin
-            // are returned.
             (c) => partitionKey.sourceOrigin === undefined ||
                 c.partitionKey?.topLevelSite === partitionKey.sourceOrigin)
                 .map((c) => cdpToBiDiCookie(c))
@@ -4403,7 +4032,6 @@
             }
             catch (err) {
                 if (this.#isNoSuchUserContextError(err)) {
-                    // If the user context is not found, special error is thrown.
                     throw new NoSuchUserContextException(err.message);
                 }
                 this.#logger?.(LogType.debugError, err);
@@ -4414,8 +4042,6 @@
             };
         }
         #isNoSuchUserContextError(err) {
-            // Heuristic to detect if the user context is not found.
-            // See https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/browser_handler.cc;drc=a56154dd81e4679712422ac6eed2c9581cb51ab0;l=314
             return err.message?.startsWith('Failed to find browser context for id');
         }
         #getCdpBrowserContextId(partitionKey) {
@@ -4426,10 +4052,6 @@
         #expandStoragePartitionSpecByBrowsingContext(descriptor) {
             const browsingContextId = descriptor.context;
             const browsingContext = this.#browsingContextStorage.getContext(browsingContextId);
-            // https://w3c.github.io/webdriver-bidi/#associated-storage-partition.
-            // Each browsing context also has an associated storage partition, which is the
-            // storage partition it uses to persist data. In Chromium it's a `BrowserContext`
-            // which maps to BiDi `UserContext`.
             return {
                 userContext: browsingContext.userContext,
             };
@@ -4440,12 +4062,9 @@
             if (sourceOrigin !== undefined) {
                 const url = NetworkProcessor.parseUrlString(sourceOrigin);
                 if (url.origin === 'null') {
-                    // Origin `null` is a special case for local pages.
                     sourceOrigin = url.origin;
                 }
                 else {
-                    // Port is not supported in CDP Cookie's `partitionKey`, so it should be stripped
-                    // from the requested source origin.
                     sourceOrigin = `${url.protocol}//${url.hostname}`;
                 }
             }
@@ -4459,7 +4078,6 @@
             if (unsupportedPartitionKeys.size > 0) {
                 this.#logger?.(LogType.debugInfo, `Unsupported partition keys: ${JSON.stringify(Object.fromEntries(unsupportedPartitionKeys))}`);
             }
-            // Set `userContext` to `default` if not provided, as it's required in Chromium.
             const userContext = descriptor.userContext ?? 'default';
             return {
                 userContext,
@@ -4468,15 +4086,12 @@
         }
         #expandStoragePartitionSpec(partitionSpec) {
             if (partitionSpec === undefined) {
-                // `userContext` is required in Chromium.
                 return { userContext: 'default' };
             }
             if (partitionSpec.type === 'context') {
                 return this.#expandStoragePartitionSpecByBrowsingContext(partitionSpec);
             }
             assert(partitionSpec.type === 'storageKey', 'Unknown partition type');
-            // Partition spec is a storage partition.
-            // Let partition key be partition spec.
             return this.#expandStoragePartitionSpecByStorageKey(partitionSpec);
         }
         #matchCookie(cookie, filter) {
@@ -4485,7 +4100,6 @@
             }
             return ((filter.domain === undefined || filter.domain === cookie.domain) &&
                 (filter.name === undefined || filter.name === cookie.name) &&
-                // `value` contains fields `type` and `value`.
                 (filter.value === undefined ||
                     deserializeByteValue(filter.value) ===
                         deserializeByteValue(cookie.value)) &&
@@ -4495,6 +4109,65 @@
                 (filter.secure === undefined || filter.secure === cookie.secure) &&
                 (filter.sameSite === undefined || filter.sameSite === cookie.sameSite) &&
                 (filter.expiry === undefined || filter.expiry === cookie.expiry));
+        }
+    }
+
+    /**
+     * Copyright 2025 Google LLC.
+     * Copyright (c) Microsoft Corporation.
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *     http://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
+    class WebExtensionProcessor {
+        #browserCdpClient;
+        constructor(browserCdpClient) {
+            this.#browserCdpClient = browserCdpClient;
+        }
+        async install(params) {
+            switch (params.extensionData.type) {
+                case 'archivePath':
+                case 'base64':
+                    throw new UnsupportedOperationException('Archived and Base64 extensions are not supported');
+            }
+            try {
+                const response = await this.#browserCdpClient.sendCommand('Extensions.loadUnpacked', {
+                    path: params.extensionData.path,
+                });
+                return {
+                    extension: response.id,
+                };
+            }
+            catch (err) {
+                if (err.message.startsWith('invalid web extension')) {
+                    throw new InvalidWebExtensionException(err.message);
+                }
+                throw err;
+            }
+        }
+        async uninstall(params) {
+            try {
+                await this.#browserCdpClient.sendCommand('Extensions.uninstall', {
+                    id: params.extension,
+                });
+                return {};
+            }
+            catch (err) {
+                if (err.message ===
+                    'Uninstall failed. Reason: could not find extension.') {
+                    throw new NoSuchWebExtensionException('no such web extension');
+                }
+                throw err;
+            }
         }
     }
 
@@ -4573,6 +4246,7 @@
         #scriptProcessor;
         #sessionProcessor;
         #storageProcessor;
+        #webExtensionProcessor;
         #parser;
         #logger;
         constructor(cdpConnection, browserCdpClient, eventManager, browsingContextStorage, realmStorage, preloadScriptStorage, networkStorage, bluetoothProcessor, userContextStorage, parser = new BidiNoOpParser(), initConnection, logger) {
@@ -4589,10 +4263,10 @@
             this.#scriptProcessor = new ScriptProcessor(eventManager, browsingContextStorage, realmStorage, preloadScriptStorage, userContextStorage, logger);
             this.#sessionProcessor = new SessionProcessor(eventManager, browserCdpClient, initConnection);
             this.#storageProcessor = new StorageProcessor(browserCdpClient, browsingContextStorage, logger);
+            this.#webExtensionProcessor = new WebExtensionProcessor(browserCdpClient);
         }
         async #processCommand(command) {
             switch (command.method) {
-                // Bluetooth module
                 case 'bluetooth.handleRequestDevicePrompt':
                     return await this.#bluetoothProcessor.handleRequestDevicePrompt(this.#parser.parseHandleRequestDevicePromptParams(command.params));
                 case 'bluetooth.simulateAdapter':
@@ -4601,7 +4275,6 @@
                     return await this.#bluetoothProcessor.simulateAdvertisement(this.#parser.parseSimulateAdvertisementParameters(command.params));
                 case 'bluetooth.simulatePreconnectedPeripheral':
                     return await this.#bluetoothProcessor.simulatePreconnectedPeripheral(this.#parser.parseSimulatePreconnectedPeripheralParameters(command.params));
-                // Browser module
                 case 'browser.close':
                     return this.#browserProcessor.close();
                 case 'browser.createUserContext':
@@ -4614,7 +4287,6 @@
                     return await this.#browserProcessor.removeUserContext(this.#parser.parseRemoveUserContextParams(command.params));
                 case 'browser.setClientWindowState':
                     throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
-                // Browsing Context module
                 case 'browsingContext.activate':
                     return await this.#browsingContextProcessor.activate(this.#parser.parseActivateParams(command.params));
                 case 'browsingContext.captureScreenshot':
@@ -4639,15 +4311,12 @@
                     return await this.#browsingContextProcessor.setViewport(this.#parser.parseSetViewportParams(command.params));
                 case 'browsingContext.traverseHistory':
                     return await this.#browsingContextProcessor.traverseHistory(this.#parser.parseTraverseHistoryParams(command.params));
-                // CDP module
                 case 'goog:cdp.getSession':
                     return this.#cdpProcessor.getSession(this.#parser.parseGetSessionParams(command.params));
                 case 'goog:cdp.resolveRealm':
                     return this.#cdpProcessor.resolveRealm(this.#parser.parseResolveRealmParams(command.params));
                 case 'goog:cdp.sendCommand':
                     return await this.#cdpProcessor.sendCommand(this.#parser.parseSendCommandParams(command.params));
-                // CDP deprecated domain.
-                // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2844
                 case 'cdp.getSession':
                     this.#logger?.(LogType.debugWarn, `Legacy '${command.method}' command is deprecated and will not supported soon. Use 'goog:${command.method}' instead.`);
                     return this.#cdpProcessor.getSession(this.#parser.parseGetSessionParams(command.params));
@@ -4657,14 +4326,12 @@
                 case 'cdp.sendCommand':
                     this.#logger?.(LogType.debugWarn, `Legacy '${command.method}' command is deprecated and will not supported soon. Use 'goog:${command.method}' instead.`);
                     return await this.#cdpProcessor.sendCommand(this.#parser.parseSendCommandParams(command.params));
-                // Input module
                 case 'input.performActions':
                     return await this.#inputProcessor.performActions(this.#parser.parsePerformActionsParams(command.params));
                 case 'input.releaseActions':
                     return await this.#inputProcessor.releaseActions(this.#parser.parseReleaseActionsParams(command.params));
                 case 'input.setFiles':
                     return await this.#inputProcessor.setFiles(this.#parser.parseSetFilesParams(command.params));
-                // Network module
                 case 'network.addIntercept':
                     return await this.#networkProcessor.addIntercept(this.#parser.parseAddInterceptParams(command.params));
                 case 'network.continueRequest':
@@ -4681,10 +4348,8 @@
                     return await this.#networkProcessor.removeIntercept(this.#parser.parseRemoveInterceptParams(command.params));
                 case 'network.setCacheBehavior':
                     return await this.#networkProcessor.setCacheBehavior(this.#parser.parseSetCacheBehavior(command.params));
-                // Permissions module
                 case 'permissions.setPermission':
                     return await this.#permissionsProcessor.setPermissions(this.#parser.parseSetPermissionsParams(command.params));
-                // Script module
                 case 'script.addPreloadScript':
                     return await this.#scriptProcessor.addPreloadScript(this.#parser.parseAddPreloadScriptParams(command.params));
                 case 'script.callFunction':
@@ -4697,7 +4362,6 @@
                     return this.#scriptProcessor.getRealms(this.#parser.parseGetRealmsParams(command.params));
                 case 'script.removePreloadScript':
                     return await this.#scriptProcessor.removePreloadScript(this.#parser.parseRemovePreloadScriptParams(command.params));
-                // Session module
                 case 'session.end':
                     throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
                 case 'session.new':
@@ -4708,26 +4372,19 @@
                     return await this.#sessionProcessor.subscribe(this.#parser.parseSubscribeParams(command.params), command.channel);
                 case 'session.unsubscribe':
                     return await this.#sessionProcessor.unsubscribe(this.#parser.parseUnsubscribeParams(command.params), command.channel);
-                // Storage module
                 case 'storage.deleteCookies':
                     return await this.#storageProcessor.deleteCookies(this.#parser.parseDeleteCookiesParams(command.params));
                 case 'storage.getCookies':
                     return await this.#storageProcessor.getCookies(this.#parser.parseGetCookiesParams(command.params));
                 case 'storage.setCookie':
                     return await this.#storageProcessor.setCookie(this.#parser.parseSetCookieParams(command.params));
-                // WebExtension module
                 case 'webExtension.install':
-                    throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
+                    return await this.#webExtensionProcessor.install(this.#parser.parseInstallParams(command.params));
                 case 'webExtension.uninstall':
-                    throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
+                    return await this.#webExtensionProcessor.uninstall(this.#parser.parseUninstallParams(command.params));
             }
-            // Intentionally kept outside the switch statement to ensure that
-            // ESLint @typescript-eslint/switch-exhaustiveness-check triggers if a new
-            // command is added.
             throw new UnknownCommandException(`Unknown command '${command?.method}'.`);
         }
-        // Workaround for as zod.union always take the first schema
-        // https://github.com/w3c/webdriver-bidi/issues/635
         #processTargetParams(params) {
             if (typeof params === 'object' &&
                 params &&
@@ -4747,14 +4404,14 @@
                     id: command.id,
                     result,
                 };
-                this.emit("response" /* CommandProcessorEvents.Response */, {
+                this.emit("response" , {
                     message: OutgoingMessage.createResolved(response, command.channel),
                     event: command.method,
                 });
             }
             catch (e) {
                 if (e instanceof Exception) {
-                    this.emit("response" /* CommandProcessorEvents.Response */, {
+                    this.emit("response" , {
                         message: OutgoingMessage.createResolved(e.toErrorResponse(command.id), command.channel),
                         event: command.method,
                     });
@@ -4762,7 +4419,7 @@
                 else {
                     const error = e;
                     this.#logger?.(LogType.bidi, error);
-                    this.emit("response" /* CommandProcessorEvents.Response */, {
+                    this.emit("response" , {
                         message: OutgoingMessage.createResolved(new UnknownErrorException(error.message, error.stack).toErrorResponse(command.id), command.channel),
                         event: command.method,
                     });
@@ -4795,10 +4452,13 @@
             this.#browsingContextStorage = browsingContextStorage;
         }
         async simulateAdapter(params) {
+            if (params.type !== 'create') {
+                throw new UnsupportedOperationException(`Simulate type "${params.type}" is not supported. Only create type is supported`);
+            }
+            if (params.state === undefined) {
+                throw new InvalidArgumentException(`Parameter "state" is required for creating a Bluetooth adapter`);
+            }
             const context = this.#browsingContextStorage.getContext(params.context);
-            // Bluetooth spec requires overriding the existing adapter (step 6). From the CDP
-            // perspective, we need to disable the emulation first.
-            // https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateAdapter-command
             await context.cdpTarget.browserCdpClient.sendCommand('BluetoothEmulation.disable');
             await context.cdpTarget.browserCdpClient.sendCommand('BluetoothEmulation.enable', {
                 state: params.state,
@@ -4939,10 +4599,7 @@
                 this.#resolve = resolve;
                 this.#reject = reject;
             });
-            // Needed to avoid `Uncaught (in promise)`. The promises returned by `then`
-            // and `catch` will be rejected anyway.
             this.#promise.catch((_error) => {
-                // Intentionally empty.
             });
         }
         then(onFulfilled, onRejected) {
@@ -4987,10 +4644,6 @@
      * limitations under the License.
      */
     function getTimestamp() {
-        // `timestamp` from the event is MonotonicTime, not real time, so
-        // the best Mapper can do is to set the timestamp to the epoch time
-        // of the event arrived.
-        // https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-MonotonicTime
         return new Date().getTime();
     }
 
@@ -5010,7 +4663,6 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    /** @return Given an input in cm, convert it to inches. */
     function inchesFromCm(cm) {
         return cm / 2.54;
     }
@@ -5037,31 +4689,16 @@
             const bidiValue = this.serializeForBiDi(cdpValue.result.deepSerializedValue, new Map());
             if (cdpValue.result.objectId) {
                 const objectId = cdpValue.result.objectId;
-                if (resultOwnership === "root" /* Script.ResultOwnership.Root */) {
-                    // Extend BiDi value with `handle` based on required `resultOwnership`
-                    // and  CDP response but not on the actual BiDi type.
+                if (resultOwnership === "root" ) {
                     bidiValue.handle = objectId;
-                    // Remember all the handles sent to client.
                     this.#realmStorage.knownHandlesToRealmMap.set(objectId, this.realmId);
                 }
                 else {
-                    // No need to await for the object to be released.
                     void this.#releaseObject(objectId).catch((error) => this.#logger?.(LogType.debugError, error));
                 }
             }
             return bidiValue;
         }
-        /**
-         * Relies on the CDP to implement proper BiDi serialization, except:
-         * * CDP integer property `backendNodeId` is replaced with `sharedId` of
-         * `{documentId}_element_{backendNodeId}`;
-         * * CDP integer property `weakLocalObjectReference` is replaced with UUID `internalId`
-         * using unique-per serialization `internalIdMap`.
-         * * CDP type `platformobject` is replaced with `object`.
-         * @param deepSerializedValue - CDP value to be converted to BiDi.
-         * @param internalIdMap - Map from CDP integer `weakLocalObjectReference` to BiDi UUID
-         * `internalId`.
-         */
         serializeForBiDi(deepSerializedValue, internalIdMap) {
             if (Object.hasOwn(deepSerializedValue, 'weakLocalObjectReference')) {
                 const weakLocalObjectReference = deepSerializedValue.weakLocalObjectReference;
@@ -5074,11 +4711,8 @@
             if (deepSerializedValue.type === 'node' &&
                 deepSerializedValue.value &&
                 Object.hasOwn(deepSerializedValue.value, 'frameId')) {
-                // `frameId` is not needed in BiDi as it is not yet specified.
                 delete deepSerializedValue.value['frameId'];
             }
-            // Platform object is a special case. It should have only `{type: object}`
-            // without `value` field.
             if (deepSerializedValue.type === 'platformobject') {
                 return { type: 'object' };
             }
@@ -5086,7 +4720,6 @@
             if (bidiValue === undefined) {
                 return deepSerializedValue;
             }
-            // Recursively update the nested values.
             if (['array', 'set', 'htmlcollection', 'nodelist'].includes(deepSerializedValue.type)) {
                 for (const i in bidiValue) {
                     bidiValue[i] = this.serializeForBiDi(bidiValue[i], internalIdMap);
@@ -5125,12 +4758,12 @@
                 origin: this.origin,
             };
         }
-        async evaluate(expression, awaitPromise, resultOwnership = "none" /* Script.ResultOwnership.None */, serializationOptions = {}, userActivation = false, includeCommandLineApi = false) {
+        async evaluate(expression, awaitPromise, resultOwnership = "none" , serializationOptions = {}, userActivation = false, includeCommandLineApi = false) {
             const cdpEvaluateResult = await this.cdpClient.sendCommand('Runtime.evaluate', {
                 contextId: this.executionContextId,
                 expression,
                 awaitPromise,
-                serializationOptions: Realm.#getSerializationOptions("deep" /* Protocol.Runtime.SerializationOptionsSerialization.Deep */, serializationOptions),
+                serializationOptions: Realm.#getSerializationOptions("deep" , serializationOptions),
                 userGesture: userActivation,
                 includeCommandLineAPI: includeCommandLineApi,
             });
@@ -5160,19 +4793,14 @@
                 params: this.realmInfo,
             });
         }
-        /**
-         * Serializes a given CDP object into BiDi, keeping references in the
-         * target's `globalThis`.
-         */
         async serializeCdpObject(cdpRemoteObject, resultOwnership) {
-            // TODO: if the object is a primitive, return it directly without CDP roundtrip.
             const argument = Realm.#cdpRemoteObjectToCallArgument(cdpRemoteObject);
             const cdpValue = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
                 functionDeclaration: String((remoteObject) => remoteObject),
                 awaitPromise: false,
                 arguments: [argument],
                 serializationOptions: {
-                    serialization: "deep" /* Protocol.Runtime.SerializationOptionsSerialization.Deep */,
+                    serialization: "deep" ,
                 },
                 executionContextId: this.executionContextId,
             });
@@ -5187,14 +4815,9 @@
             }
             return { value: cdpRemoteObject.value };
         }
-        /**
-         * Gets the string representation of an object. This is equivalent to
-         * calling `toString()` on the object value.
-         */
         async stringifyObject(cdpRemoteObject) {
             const { result } = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
                 functionDeclaration: String(
-                // eslint-disable-next-line @typescript-eslint/no-base-to-string
                 (remoteObject) => String(remoteObject)),
                 awaitPromise: false,
                 arguments: [cdpRemoteObject],
@@ -5207,11 +4830,9 @@
             const keyValueArray = await Promise.all(mappingLocalValue.map(async ([key, value]) => {
                 let keyArg;
                 if (typeof key === 'string') {
-                    // Key is a string.
                     keyArg = { value: key };
                 }
                 else {
-                    // Key is a serialized value.
                     keyArg = await this.deserializeForCdp(key);
                 }
                 const valueArg = await this.deserializeForCdp(value);
@@ -5229,7 +4850,6 @@
                 lineNumber: frame.lineNumber - lineOffset,
                 columnNumber: frame.columnNumber,
             })) ?? [];
-            // Exception should always be there.
             const exception = cdpExceptionDetails.exception;
             return {
                 exception: await this.serializeCdpObject(exception, resultOwnership),
@@ -5243,7 +4863,7 @@
         }
         async callFunction(functionDeclaration, awaitPromise, thisLocalValue = {
             type: 'undefined',
-        }, argumentsLocalValues = [], resultOwnership = "none" /* Script.ResultOwnership.None */, serializationOptions = {}, userActivation = false) {
+        }, argumentsLocalValues = [], resultOwnership = "none" , serializationOptions = {}, userActivation = false) {
             const callFunctionAndSerializeScript = `(...args) => {
       function callFunction(f, args) {
         const deserializedThis = args.shift();
@@ -5264,16 +4884,13 @@
                     functionDeclaration: callFunctionAndSerializeScript,
                     awaitPromise,
                     arguments: thisAndArgumentsList,
-                    serializationOptions: Realm.#getSerializationOptions("deep" /* Protocol.Runtime.SerializationOptionsSerialization.Deep */, serializationOptions),
+                    serializationOptions: Realm.#getSerializationOptions("deep" , serializationOptions),
                     executionContextId: this.executionContextId,
                     userGesture: userActivation,
                 });
             }
             catch (error) {
-                // Heuristic to determine if the problem is in the argument.
-                // The check can be done on the `deserialization` step, but this approach
-                // helps to save round-trips.
-                if (error.code === -32e3 /* CdpErrorConstants.GENERIC_ERROR */ &&
+                if (error.code === -32e3  &&
                     [
                         'Could not find object with given id',
                         'Argument should belong to the same JavaScript world as target object',
@@ -5295,8 +4912,6 @@
         async deserializeForCdp(localValue) {
             if ('handle' in localValue && localValue.handle) {
                 return { objectId: localValue.handle };
-                // We tried to find a handle value but failed
-                // This allows us to have exhaustive switch on `localValue.type`
             }
             else if ('handle' in localValue || 'sharedId' in localValue) {
                 throw new NoSuchHandleException('Handle was not found.');
@@ -5339,8 +4954,6 @@
                         unserializableValue: `new RegExp(${JSON.stringify(localValue.value.pattern)}, ${JSON.stringify(localValue.value.flags)})`,
                     };
                 case 'map': {
-                    // TODO: If none of the nested keys and values has a remote
-                    // reference, serialize to `unserializableValue` without CDP roundtrip.
                     const keyValueArray = await this.#flattenKeyValuePairs(localValue.value);
                     const { result } = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
                         functionDeclaration: String((...args) => {
@@ -5355,18 +4968,14 @@
                         returnByValue: false,
                         executionContextId: this.executionContextId,
                     });
-                    // TODO(#375): Release `result.objectId` after using.
                     return { objectId: result.objectId };
                 }
                 case 'object': {
-                    // TODO: If none of the nested keys and values has a remote
-                    // reference, serialize to `unserializableValue` without CDP roundtrip.
                     const keyValueArray = await this.#flattenKeyValuePairs(localValue.value);
                     const { result } = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
                         functionDeclaration: String((...args) => {
                             const result = {};
                             for (let i = 0; i < args.length; i += 2) {
-                                // Key should be either `string`, `number`, or `symbol`.
                                 const key = args[i];
                                 result[key] = args[i + 1];
                             }
@@ -5377,12 +4986,9 @@
                         returnByValue: false,
                         executionContextId: this.executionContextId,
                     });
-                    // TODO(#375): Release `result.objectId` after using.
                     return { objectId: result.objectId };
                 }
                 case 'array': {
-                    // TODO: If none of the nested items has a remote reference,
-                    // serialize to `unserializableValue` without CDP roundtrip.
                     const args = await this.#flattenValueList(localValue.value);
                     const { result } = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
                         functionDeclaration: String((...args) => args),
@@ -5391,12 +4997,9 @@
                         returnByValue: false,
                         executionContextId: this.executionContextId,
                     });
-                    // TODO(#375): Release `result.objectId` after using.
                     return { objectId: result.objectId };
                 }
                 case 'set': {
-                    // TODO: if none of the nested items has a remote reference,
-                    // serialize to `unserializableValue` without CDP roundtrip.
                     const args = await this.#flattenValueList(localValue.value);
                     const { result } = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
                         functionDeclaration: String((...args) => new Set(args)),
@@ -5405,7 +5008,6 @@
                         returnByValue: false,
                         executionContextId: this.executionContextId,
                     });
-                    // TODO(#375): Release `result.objectId` after using.
                     return { objectId: result.objectId };
                 }
                 case 'channel': {
@@ -5413,9 +5015,7 @@
                     const channelProxySendMessageHandle = await channelProxy.init(this, this.#eventManager);
                     return { objectId: channelProxySendMessageHandle };
                 }
-                // TODO(#375): Dispose of nested objects.
             }
-            // Intentionally outside to handle unknown types
             throw new Error(`Value ${JSON.stringify(localValue)} is not deserializable.`);
         }
         async #getExceptionResult(exceptionDetails, lineOffset, resultOwnership) {
@@ -5459,16 +5059,13 @@
                 });
             }
             catch (error) {
-                // Heuristic to determine if the problem is in the unknown handler.
-                // Ignore the error if so.
-                if (!(error.code === -32e3 /* CdpErrorConstants.GENERIC_ERROR */ &&
+                if (!(error.code === -32e3  &&
                     error.message === 'Invalid remote object id')) {
                     throw error;
                 }
             }
         }
         async disown(handle) {
-            // Disowning an object from different realm does nothing.
             if (this.#realmStorage.knownHandlesToRealmMap.get(handle) !== this.realmId) {
                 return;
             }
@@ -5509,7 +5106,6 @@
     function parseLegacySharedId(sharedId) {
         const match = sharedId.match(new RegExp(`(.*)${SHARED_ID_DIVIDER}(.*)`));
         if (!match) {
-            // SharedId is incorrectly formatted.
             return null;
         }
         const documentId = match[1];
@@ -5527,14 +5123,12 @@
         };
     }
     function parseSharedId(sharedId) {
-        // TODO: remove legacy check once ChromeDriver provides sharedId in the new format.
         const legacyFormattedSharedId = parseLegacySharedId(sharedId);
         if (legacyFormattedSharedId !== null) {
             return { ...legacyFormattedSharedId, frameId: undefined };
         }
         const match = sharedId.match(/f\.(.*)\.d\.(.*)\.e\.([0-9]*)/);
         if (!match) {
-            // SharedId is incorrectly formatted.
             return null;
         }
         const frameId = match[1];
@@ -5618,9 +5212,6 @@
                 if (Object.hasOwn(bidiValue, 'backendNodeId')) {
                     let navigableId = this.browsingContext.navigableId ?? 'UNKNOWN';
                     if (Object.hasOwn(bidiValue, 'loaderId')) {
-                        // `loaderId` should be always there after ~2024-03-05, when
-                        // https://crrev.com/c/5116240 reaches stable.
-                        // TODO: remove the check after the date.
                         navigableId = bidiValue.loaderId;
                         delete bidiValue['loaderId'];
                     }
@@ -5637,7 +5228,6 @@
                     bidiValue.shadowRoot !== null) {
                     bidiValue.shadowRoot = this.serializeForBiDi(bidiValue.shadowRoot, internalIdMap);
                 }
-                // `namespaceURI` can be is either `null` or non-empty string.
                 if (bidiValue.namespaceURI === '') {
                     bidiValue.namespaceURI = null;
                 }
@@ -5651,7 +5241,6 @@
                     throw new NoSuchNodeException(`SharedId "${localValue.sharedId}" was not found.`);
                 }
                 const { documentId, backendNodeId } = parsedSharedId;
-                // TODO: add proper validation if the element is accessible from the current realm.
                 if (this.browsingContext.navigableId !== documentId) {
                     throw new NoSuchNodeException(`SharedId "${localValue.sharedId}" belongs to different document. Current document is ${this.browsingContext.navigableId}.`);
                 }
@@ -5660,13 +5249,10 @@
                         backendNodeId,
                         executionContextId: this.executionContextId,
                     });
-                    // TODO(#375): Release `obj.object.objectId` after using.
                     return { objectId: object.objectId };
                 }
                 catch (error) {
-                    // Heuristic to detect "no such node" exception. Based on the  specific
-                    // CDP implementation.
-                    if (error.code === -32e3 /* CdpErrorConstants.GENERIC_ERROR */ &&
+                    if (error.code === -32e3  &&
                         error.message === 'No node with given id found') {
                         throw new NoSuchNodeException(`SharedId "${localValue.sharedId}" was not found.`);
                     }
@@ -5706,16 +5292,7 @@
      *  limitations under the License.
      *
      */
-    /**
-     * A URL matches about:blank if its scheme is "about", its path contains a single string
-     * "blank", its username and password are the empty string, and its host is null.
-     * https://html.spec.whatwg.org/multipage/urls-and-fetching.html#matches-about:blank
-     * @param {string} url
-     * @return {boolean}
-     */
     function urlMatchesAboutBlank(url) {
-        // An empty string is a special case, and considered to be about:blank.
-        // https://html.spec.whatwg.org/multipage/nav-history-apis.html#window-open-steps
         if (url === '') {
             return true;
         }
@@ -5729,11 +5306,9 @@
                 parsedUrl.host === '');
         }
         catch (err) {
-            // Wrong URL considered do not match about:blank.
             if (err instanceof TypeError) {
                 return false;
             }
-            // Re-throw other unexpected errors.
             throw err;
         }
     }
@@ -5805,7 +5380,7 @@
             this.#started = true;
             if (!this.#isInitial &&
                 !this.#finished.isFinished &&
-                navigationResult.eventName !== "browsingContext.load" /* NavigationEventName.Load */) {
+                navigationResult.eventName !== "browsingContext.load" ) {
                 this.#eventManager.registerEvent({
                     type: 'event',
                     method: navigationResult.eventName,
@@ -5826,31 +5401,24 @@
         }
         fragmentNavigated() {
             this.committed.resolve();
-            this.#finish(new NavigationResult("browsingContext.fragmentNavigated" /* NavigationEventName.FragmentNavigated */));
+            this.#finish(new NavigationResult("browsingContext.fragmentNavigated" ));
         }
         load() {
-            this.#finish(new NavigationResult("browsingContext.load" /* NavigationEventName.Load */));
+            this.#finish(new NavigationResult("browsingContext.load" ));
         }
         fail(message) {
             this.#finish(new NavigationResult(this.committed.isFinished
-                ? "browsingContext.navigationAborted" /* NavigationEventName.NavigationAborted */
-                : "browsingContext.navigationFailed" /* NavigationEventName.NavigationFailed */, message));
+                ? "browsingContext.navigationAborted"
+                : "browsingContext.navigationFailed" , message));
         }
     }
-    /**
-     * Keeps track of navigations. Details: http://go/webdriver:bidi-navigation
-     */
     class NavigationTracker {
         #eventManager;
         #logger;
         #loaderIdToNavigationsMap = new Map();
         #browsingContextId;
         #currentNavigation;
-        // When a new navigation is started via `BrowsingContext.navigate` with `wait` set to
-        // `None`, the command result should have `navigation` value, but mapper does not have
-        // it yet. This value will be set to `navigationId` after next .
         #pendingNavigation;
-        // Flags if the initial navigation to `about:blank` is in progress.
         #isInitialNavigation = true;
         constructor(url, browsingContextId, eventManager, logger) {
             this.#browsingContextId = browsingContextId;
@@ -5859,34 +5427,18 @@
             this.#isInitialNavigation = true;
             this.#currentNavigation = new NavigationState(url, browsingContextId, urlMatchesAboutBlank(url), this.#eventManager);
         }
-        /**
-         * Returns current started ongoing navigation. It can be either a started pending
-         * navigation, or one is already navigated.
-         */
         get currentNavigationId() {
             if (this.#pendingNavigation?.loaderId !== undefined) {
                 return this.#pendingNavigation.navigationId;
             }
             return this.#currentNavigation.navigationId;
         }
-        /**
-         * Flags if the current navigation relates to the initial to `about:blank` navigation.
-         */
         get isInitialNavigation() {
             return this.#isInitialNavigation;
         }
-        /**
-         * Url of the last navigated navigation.
-         */
         get url() {
             return this.#currentNavigation.url;
         }
-        /**
-         * Creates a pending navigation e.g. when navigation command is called. Required to
-         * provide navigation id before the actual navigation is started. It will be used when
-         * navigation started. Can be aborted, failed, fragment navigated, or became a current
-         * navigation.
-         */
         createPendingNavigation(url, canBeInitialNavigation = false) {
             this.#logger?.(LogType.debug, 'createCommandNavigation');
             this.#isInitialNavigation =
@@ -5902,7 +5454,6 @@
             this.#pendingNavigation?.fail('navigation canceled by context disposal');
             this.#currentNavigation.fail('navigation canceled by context disposal');
         }
-        // Update the current url.
         onTargetInfoChanged(url) {
             this.#logger?.(LogType.debug, `onTargetInfoChanged ${url}`);
             this.#currentNavigation.url = url;
@@ -5913,22 +5464,14 @@
             }
             if (this.#pendingNavigation !== undefined &&
                 this.#pendingNavigation.loaderId === undefined) {
-                // This can be a pending navigation to `about:blank` created by a command. Use the
-                // pending navigation in this case.
                 return this.#pendingNavigation;
             }
-            // Create a new pending navigation.
             return this.createPendingNavigation(url, true);
         }
-        /**
-         * @param {string} unreachableUrl indicated the navigation is actually failed.
-         */
         frameNavigated(url, loaderId, unreachableUrl) {
             this.#logger?.(LogType.debug, `frameNavigated ${url}`);
             if (unreachableUrl !== undefined &&
                 !this.#loaderIdToNavigationsMap.has(loaderId)) {
-                // The navigation failed before started. Get or create pending navigation and fail
-                // it.
                 const navigation = this.#pendingNavigation ??
                     this.createPendingNavigation(unreachableUrl, true);
                 navigation.url = unreachableUrl;
@@ -5952,20 +5495,14 @@
         }
         navigatedWithinDocument(url, navigationType) {
             this.#logger?.(LogType.debug, `navigatedWithinDocument ${url}, ${navigationType}`);
-            // Current navigation URL should be updated.
             this.#currentNavigation.url = url;
             if (navigationType !== 'fragment') {
-                // TODO: check for other navigation types, like `javascript`.
                 return;
             }
-            // There is no way to guaranteed match pending navigation with finished fragment
-            // navigations. So assume any pending navigation without loader id is the fragment
-            // one.
             const fragmentNavigation = this.#pendingNavigation !== undefined &&
                 this.#pendingNavigation.loaderId === undefined
                 ? this.#pendingNavigation
                 : new NavigationState(url, this.#browsingContextId, false, this.#eventManager);
-            // Finish ongoing navigation.
             fragmentNavigation.fragmentNavigated();
             if (fragmentNavigation === this.#pendingNavigation) {
                 this.#pendingNavigation = undefined;
@@ -5973,31 +5510,17 @@
         }
         frameRequestedNavigation(url) {
             this.#logger?.(LogType.debug, `Page.frameRequestedNavigation ${url}`);
-            // The page is about to navigate to the url.
             this.createPendingNavigation(url, true);
         }
-        /**
-         * Required to mark navigation as fully complete.
-         * TODO: navigation should be complete when it became the current one on
-         * `Page.frameNavigated` or on navigating command finished with a new loader Id.
-         */
         loadPageEvent(loaderId) {
             this.#logger?.(LogType.debug, 'loadPageEvent');
-            // Even if it was an initial navigation, it is finished.
             this.#isInitialNavigation = false;
             this.#loaderIdToNavigationsMap.get(loaderId)?.load();
         }
-        /**
-         * Fail navigation due to navigation command failed.
-         */
         failNavigation(navigation, errorText) {
             this.#logger?.(LogType.debug, 'failCommandNavigation');
             navigation.fail(errorText);
         }
-        /**
-         * Updates the navigation's `loaderId` and sets it as current one, if it is a
-         * cross-document navigation.
-         */
         navigationCommandFinished(navigation, loaderId) {
             this.#logger?.(LogType.debug, `finishCommandNavigation ${navigation.navigationId}, ${loaderId}`);
             if (loaderId !== undefined) {
@@ -6006,8 +5529,6 @@
             }
             navigation.isFragmentNavigation = loaderId === undefined;
             if (loaderId === undefined || this.#currentNavigation === navigation) {
-                // If the command's navigation is same-document or is already the current one,
-                // nothing to do.
                 return;
             }
             this.#currentNavigation.fail('navigation canceled by concurrent navigation');
@@ -6017,15 +5538,9 @@
                 this.#pendingNavigation = undefined;
             }
         }
-        /**
-         * Emulated event, tight to `Network.requestWillBeSent`.
-         */
         frameStartedNavigating(url, loaderId) {
             this.#logger?.(LogType.debug, `frameStartedNavigating ${url}, ${loaderId}`);
             if (this.#loaderIdToNavigationsMap.has(loaderId)) {
-                // The `frameStartedNavigating` is tight to the `Network.requestWillBeSent` event
-                // which can be emitted several times, e.g. in case of redirection. Nothing to do in
-                // such a case.
                 return;
             }
             const pendingNavigation = this.#pendingNavigation ?? this.createPendingNavigation(url, true);
@@ -6034,11 +5549,6 @@
             pendingNavigation.loaderId = loaderId;
             this.#loaderIdToNavigationsMap.set(loaderId, pendingNavigation);
         }
-        /**
-         * In case of `beforeunload` handler, the pending navigation should be marked as started
-         * for consistency, as the `browsingContext.navigationStarted` should be emitted before
-         * user prompt.
-         */
         beforeunload() {
             this.#logger?.(LogType.debug, `beforeunload`);
             if (this.#pendingNavigation === undefined) {
@@ -6047,10 +5557,6 @@
             }
             this.#pendingNavigation.start();
         }
-        /**
-         * If there is a navigation with the loaderId equals to the network request id, it means
-         * that the navigation failed.
-         */
         networkLoadingFailed(loaderId, errorText) {
             this.#loaderIdToNavigationsMap.get(loaderId)?.fail(errorText);
         }
@@ -6075,18 +5581,11 @@
     var _a$5;
     class BrowsingContextImpl {
         static LOGGER_PREFIX = `${LogType.debug}:browsingContext`;
-        /** Direct children browsing contexts. */
         #children = new Set();
-        /** The ID of this browsing context. */
         #id;
         userContext;
-        /**
-         * The ID of the parent browsing context.
-         * If null, this is a top-level context.
-         */
         #loaderId;
         #parentId = null;
-        // Keeps track of the previously set viewport.
         #previousViewport = { width: 0, height: 0 };
         #originalOpener;
         #lifecycle = {
@@ -6100,9 +5599,7 @@
         #logger;
         #navigationTracker;
         #realmStorage;
-        // The deferred will be resolved when the default realm is created.
         #unhandledPromptBehavior;
-        // Set when the user prompt is opened. Required to provide the type in closing event.
         #lastUserPromptType;
         constructor(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, url, originalOpener, unhandledPromptBehavior, logger) {
             this.#cdpTarget = cdpTarget;
@@ -6124,9 +5621,6 @@
             if (!context.isTopLevelContext()) {
                 context.parent.addChild(context.id);
             }
-            // Hold on the `contextCreated` event until the target is unblocked. This is required,
-            // as the parent of the context can be set later in case of reconnecting to an
-            // existing browser instance + OOPiF.
             eventManager.registerPromiseEvent(context.targetUnblockedOrThrow().then(() => {
                 return {
                     kind: 'success',
@@ -6135,10 +5629,6 @@
                         method: BrowsingContext$2.EventNames.ContextCreated,
                         params: {
                             ...context.serializeToBidiValue(),
-                            // Hack to provide the initial URL of the context, as it can be changed
-                            // between the page target is attached and unblocked, as the page is not
-                            // fully paused in MPArch session (https://crbug.com/372842894).
-                            // TODO: remove once https://crbug.com/372842894 is addressed.
                             url,
                         },
                     },
@@ -6151,9 +5641,6 @@
             }), context.id, BrowsingContext$2.EventNames.ContextCreated);
             return context;
         }
-        /**
-         * @see https://html.spec.whatwg.org/multipage/document-sequences.html#navigable
-         */
         get navigableId() {
             return this.#loaderId;
         }
@@ -6165,11 +5652,9 @@
             this.#realmStorage.deleteRealms({
                 browsingContextId: this.id,
             });
-            // Delete context from the parent.
             if (!this.isTopLevelContext()) {
                 this.parent.#children.delete(this.id);
             }
-            // Fail all ongoing navigations.
             this.#failLifecycleIfNotFinished();
             if (emitContextDestroyed) {
                 this.#eventManager.registerEvent({
@@ -6178,25 +5663,19 @@
                     params: this.serializeToBidiValue(null),
                 }, this.id);
             }
-            // Dispose children after the events are emitted.
             this.#deleteAllChildren();
             this.#eventManager.clearBufferedEvents(this.id);
             this.#browsingContextStorage.deleteContextById(this.id);
         }
-        /** Returns the ID of this context. */
         get id() {
             return this.#id;
         }
-        /** Returns the parent context ID. */
         get parentId() {
             return this.#parentId;
         }
-        /** Sets the parent context ID and updates parent's children. */
         set parentId(parentId) {
             if (this.#parentId !== null) {
                 this.#logger?.(LogType.debugError, 'Parent context already set');
-                // Cannot do anything except logging, as throwing will stop event processing. So
-                // just return,
                 return;
             }
             this.#parentId = parentId;
@@ -6204,31 +5683,23 @@
                 this.parent.addChild(this.id);
             }
         }
-        /** Returns the parent context. */
         get parent() {
             if (this.parentId === null) {
                 return null;
             }
             return this.#browsingContextStorage.getContext(this.parentId);
         }
-        /** Returns all direct children contexts. */
         get directChildren() {
             return [...this.#children].map((id) => this.#browsingContextStorage.getContext(id));
         }
-        /** Returns all children contexts, flattened. */
         get allChildren() {
             const children = this.directChildren;
             return children.concat(...children.map((child) => child.allChildren));
         }
-        /**
-         * Returns true if this is a top-level context.
-         * This is the case whenever the parent context ID is null.
-         */
         isTopLevelContext() {
             return this.#parentId === null;
         }
         get top() {
-            // eslint-disable-next-line @typescript-eslint/no-this-alias
             let topContext = this;
             let parent = topContext.parent;
             while (parent) {
@@ -6264,7 +5735,6 @@
         }
         async getOrCreateSandbox(sandbox) {
             if (sandbox === undefined || sandbox === '') {
-                // Default realm is not guaranteed to be created at this point, so return a deferred.
                 return await this.#defaultRealmDeferred;
             }
             let maybeSandboxes = this.#realmStorage.findRealms({
@@ -6276,30 +5746,20 @@
                     frameId: this.id,
                     worldName: sandbox,
                 });
-                // `Runtime.executionContextCreated` should be emitted by the time the
-                // previous command is done.
                 maybeSandboxes = this.#realmStorage.findRealms({
                     browsingContextId: this.id,
                     sandbox,
                 });
                 assert(maybeSandboxes.length !== 0);
             }
-            // It's possible for more than one sandbox to be created due to provisional
-            // frames. In this case, it's always the first one (i.e. the oldest one)
-            // that is more relevant since the user may have set that one up already
-            // through evaluation.
             return maybeSandboxes[0];
         }
-        /**
-         * Implements https://w3c.github.io/webdriver-bidi/#get-the-navigable-info.
-         */
         serializeToBidiValue(maxDepth = 0, addParentField = true) {
             return {
                 context: this.#id,
                 url: this.url,
                 userContext: this.userContext,
                 originalOpener: this.#originalOpener ?? null,
-                // TODO(#2646): Implement Client Window correctly
                 clientWindow: '',
                 children: maxDepth === null || maxDepth > 0
                     ? this.directChildren.map((c) => c.serializeToBidiValue(maxDepth === null ? maxDepth : maxDepth - 1, false))
@@ -6312,27 +5772,19 @@
         }
         #initListeners() {
             this.#cdpTarget.cdpClient.on('Network.loadingFailed', (params) => {
-                // Detect navigation errors like `net::ERR_BLOCKED_BY_RESPONSE`.
-                // Network related to navigation has request id equals to navigation's loader id.
                 this.#navigationTracker.networkLoadingFailed(params.requestId, params.errorText);
             });
             this.#cdpTarget.cdpClient.on('Page.frameNavigated', (params) => {
                 if (this.id !== params.frame.id) {
                     return;
                 }
-                this.#navigationTracker.frameNavigated(params.frame.url + (params.frame.urlFragment ?? ''), params.frame.loaderId, 
-                // `unreachableUrl` indicates if the navigation failed.
+                this.#navigationTracker.frameNavigated(params.frame.url + (params.frame.urlFragment ?? ''), params.frame.loaderId,
                 params.frame.unreachableUrl);
-                // At the point the page is initialized, all the nested iframes from the
-                // previous page are detached and realms are destroyed.
-                // Delete children from context.
                 this.#deleteAllChildren();
                 this.#documentChanged(params.frame.loaderId);
             });
-            this.#cdpTarget.on("frameStartedNavigating" /* TargetEvents.FrameStartedNavigating */, (params) => {
-                this.#logger?.(LogType.debugInfo, `Received ${"frameStartedNavigating" /* TargetEvents.FrameStartedNavigating */} event`, params);
-                // The frame ID can be either a browsing context id, or not set in case of the frame
-                // is the top-level in the current CDP target.
+            this.#cdpTarget.on("frameStartedNavigating" , (params) => {
+                this.#logger?.(LogType.debugInfo, `Received ${"frameStartedNavigating" } event`, params);
                 const possibleFrameIds = [
                     this.id,
                     ...(this.cdpTarget.id === this.id ? [undefined] : []),
@@ -6377,20 +5829,15 @@
                     this.#loaderId = params.loaderId;
                     return;
                 }
-                // If mapper attached to the page late, it might miss init and
-                // commit events. In that case, save the first loaderId for this
-                // frameId.
                 if (!this.#loaderId) {
                     this.#loaderId = params.loaderId;
                 }
-                // Ignore event from not current navigation.
                 if (params.loaderId !== this.#loaderId) {
                     return;
                 }
                 switch (params.name) {
                     case 'DOMContentLoaded':
                         if (!this.#navigationTracker.isInitialNavigation) {
-                            // Do not emit for the initial navigation.
                             this.#eventManager.registerEvent({
                                 type: 'event',
                                 method: BrowsingContext$2.EventNames.DomContentLoaded,
@@ -6406,7 +5853,6 @@
                         break;
                     case 'load':
                         if (!this.#navigationTracker.isInitialNavigation) {
-                            // Do not emit for the initial navigation.
                             this.#eventManager.registerEvent({
                                 type: 'event',
                                 method: BrowsingContext$2.EventNames.Load,
@@ -6418,7 +5864,6 @@
                                 },
                             }, this.id);
                         }
-                        // The initial navigation is finished.
                         this.#navigationTracker.loadPageEvent(params.loaderId);
                         this.#lifecycle.load.resolve();
                         break;
@@ -6431,18 +5876,15 @@
                 }
                 let origin;
                 let sandbox;
-                // Only these execution contexts are supported for now.
                 switch (auxData.type) {
                     case 'isolated':
                         sandbox = name;
-                        // Sandbox should have the same origin as the context itself, but in CDP
-                        // it has an empty one.
                         if (!this.#defaultRealmDeferred.isFinished) {
                             this.#logger?.(LogType.debugError, 'Unexpectedly, isolated realm created before the default one');
                         }
                         origin = this.#defaultRealmDeferred.isFinished
                             ? this.#defaultRealmDeferred.result.origin
-                            : // This fallback is not expected to be ever reached.
+                            :
                                 '';
                         break;
                     case 'default':
@@ -6454,9 +5896,6 @@
                 const realm = new WindowRealm(this.id, this.#browsingContextStorage, this.#cdpTarget.cdpClient, this.#eventManager, id, this.#logger, origin, uniqueId, this.#realmStorage, sandbox);
                 if (auxData.isDefault) {
                     this.#defaultRealmDeferred.resolve(realm);
-                    // Initialize ChannelProxy listeners for all the channels of all the
-                    // preload scripts related to this BrowsingContext.
-                    // TODO: extend for not default realms by the sandbox name.
                     void Promise.all(this.#cdpTarget
                         .getChannels()
                         .map((channel) => channel.startListenerFromWindow(realm, this.#eventManager)));
@@ -6493,10 +5932,6 @@
                     params: {
                         context: this.id,
                         accepted,
-                        // `lastUserPromptType` should never be undefined here, so fallback to
-                        // `UNKNOWN`. The fallback is required to prevent tests from hanging while
-                        // waiting for the closing event. The cast is required, as the `UNKNOWN` value
-                        // is not standard.
                         type: this.#lastUserPromptType ??
                             'UNKNOWN',
                         userText: accepted && params.userInput ? params.userInput : undefined,
@@ -6509,7 +5944,6 @@
                 if (params.type === 'beforeunload') {
                     this.#navigationTracker.beforeunload();
                 }
-                // Set the last prompt type to provide it in closing event.
                 this.#lastUserPromptType = promptType;
                 const promptHandler = this.#getPromptHandler(promptType);
                 this.#eventManager.registerEvent({
@@ -6526,12 +5960,10 @@
                     },
                 }, this.id);
                 switch (promptHandler) {
-                    // Based on `unhandledPromptBehavior`, check if the prompt should be handled
-                    // automatically (`accept`, `dismiss`) or wait for the user to do it.
-                    case "accept" /* Session.UserPromptHandlerType.Accept */:
+                    case "accept" :
                         void this.handleUserPrompt(true);
                         break;
-                    case "dismiss" /* Session.UserPromptHandlerType.Dismiss */:
+                    case "dismiss" :
                         void this.handleUserPrompt(false);
                         break;
                 }
@@ -6540,31 +5972,31 @@
         static #getPromptType(cdpType) {
             switch (cdpType) {
                 case 'alert':
-                    return "alert" /* BrowsingContext.UserPromptType.Alert */;
+                    return "alert" ;
                 case 'beforeunload':
-                    return "beforeunload" /* BrowsingContext.UserPromptType.Beforeunload */;
+                    return "beforeunload" ;
                 case 'confirm':
-                    return "confirm" /* BrowsingContext.UserPromptType.Confirm */;
+                    return "confirm" ;
                 case 'prompt':
-                    return "prompt" /* BrowsingContext.UserPromptType.Prompt */;
+                    return "prompt" ;
             }
         }
         #getPromptHandler(promptType) {
-            const defaultPromptHandler = "dismiss" /* Session.UserPromptHandlerType.Dismiss */;
+            const defaultPromptHandler = "dismiss" ;
             switch (promptType) {
-                case "alert" /* BrowsingContext.UserPromptType.Alert */:
+                case "alert" :
                     return (this.#unhandledPromptBehavior?.alert ??
                         this.#unhandledPromptBehavior?.default ??
                         defaultPromptHandler);
-                case "beforeunload" /* BrowsingContext.UserPromptType.Beforeunload */:
+                case "beforeunload" :
                     return (this.#unhandledPromptBehavior?.beforeUnload ??
                         this.#unhandledPromptBehavior?.default ??
-                        "accept" /* Session.UserPromptHandlerType.Accept */);
-                case "confirm" /* BrowsingContext.UserPromptType.Confirm */:
+                        "accept" );
+                case "confirm" :
                     return (this.#unhandledPromptBehavior?.confirm ??
                         this.#unhandledPromptBehavior?.default ??
                         defaultPromptHandler);
-                case "prompt" /* BrowsingContext.UserPromptType.Prompt */:
+                case "prompt" :
                     return (this.#unhandledPromptBehavior?.prompt ??
                         this.#unhandledPromptBehavior?.default ??
                         defaultPromptHandler);
@@ -6574,10 +6006,8 @@
             if (loaderId === undefined || this.#loaderId === loaderId) {
                 return;
             }
-            // Document changed.
             this.#resetLifecycleIfFinished();
             this.#loaderId = loaderId;
-            // Delete all child iframes and notify about top level destruction.
             this.#deleteAllChildren(true);
         }
         #resetLifecycleIfFinished() {
@@ -6610,67 +6040,53 @@
                 throw new InvalidArgumentException(`Invalid URL: ${url}`);
             }
             const navigationState = this.#navigationTracker.createPendingNavigation(url);
-            // Navigate and wait for the result. If the navigation fails, the error event is
-            // emitted and the promise is rejected.
             const cdpNavigatePromise = (async () => {
                 const cdpNavigateResult = await this.#cdpTarget.cdpClient.sendCommand('Page.navigate', {
                     url,
                     frameId: this.id,
                 });
                 if (cdpNavigateResult.errorText) {
-                    // If navigation failed, no pending navigation is left.
                     this.#navigationTracker.failNavigation(navigationState, cdpNavigateResult.errorText);
                     throw new UnknownErrorException(cdpNavigateResult.errorText);
                 }
                 this.#navigationTracker.navigationCommandFinished(navigationState, cdpNavigateResult.loaderId);
                 this.#documentChanged(cdpNavigateResult.loaderId);
             })();
-            // Wait for either the navigation is finished or canceled by another navigation.
             const result = await Promise.race([
-                // No `loaderId` means same-document navigation.
                 this.#waitNavigation(wait, cdpNavigatePromise, navigationState),
-                // Throw an error if the navigation is canceled.
                 navigationState.finished,
             ]);
             if (result instanceof NavigationResult) {
                 if (
-                // TODO: check after decision on the spec is done:
-                //  https://github.com/w3c/webdriver-bidi/issues/799.
-                result.eventName === "browsingContext.navigationAborted" /* NavigationEventName.NavigationAborted */ ||
-                    result.eventName === "browsingContext.navigationFailed" /* NavigationEventName.NavigationFailed */) {
+                result.eventName === "browsingContext.navigationAborted"  ||
+                    result.eventName === "browsingContext.navigationFailed" ) {
                     throw new UnknownErrorException(result.message ?? 'unknown exception');
                 }
             }
             return {
                 navigation: navigationState.navigationId,
-                // Url can change due to redirects. Get the one from commandNavigation.
                 url: navigationState.url,
             };
         }
         async #waitNavigation(wait, cdpCommandPromise, navigationState) {
             await Promise.all([navigationState.committed, cdpCommandPromise]);
-            if (wait === "none" /* BrowsingContext.ReadinessState.None */) {
+            if (wait === "none" ) {
                 return;
             }
             if (navigationState.isFragmentNavigation === true) {
-                // After the cdp command is finished, the `fragmentNavigation` should be already
-                // settled. If it's the fragment navigation, wait for the `navigationStatus` to be
-                // finished, which happens after the fragment navigation happened. No need to wait for
-                // DOM events.
                 await navigationState.finished;
                 return;
             }
-            if (wait === "interactive" /* BrowsingContext.ReadinessState.Interactive */) {
+            if (wait === "interactive" ) {
                 await this.#lifecycle.DOMContentLoaded;
                 return;
             }
-            if (wait === "complete" /* BrowsingContext.ReadinessState.Complete */) {
+            if (wait === "complete" ) {
                 await this.#lifecycle.load;
                 return;
             }
             throw new InvalidArgumentException(`Wait condition ${wait} is not supported`);
         }
-        // TODO: support concurrent navigations analogous to `navigate`.
         async reload(ignoreCache, wait) {
             await this.targetUnblockedOrThrow();
             this.#resetLifecycleIfFinished();
@@ -6678,22 +6094,18 @@
             const cdpReloadPromise = this.#cdpTarget.cdpClient.sendCommand('Page.reload', {
                 ignoreCache,
             });
-            // Wait for either the navigation is finished or canceled by another navigation.
             const result = await Promise.race([
-                // No `loaderId` means same-document navigation.
                 this.#waitNavigation(wait, cdpReloadPromise, navigationState),
-                // Throw an error if the navigation is canceled.
                 navigationState.finished,
             ]);
             if (result instanceof NavigationResult) {
-                if (result.eventName === "browsingContext.navigationAborted" /* NavigationEventName.NavigationAborted */ ||
-                    result.eventName === "browsingContext.navigationFailed" /* NavigationEventName.NavigationFailed */) {
+                if (result.eventName === "browsingContext.navigationAborted"  ||
+                    result.eventName === "browsingContext.navigationFailed" ) {
                     throw new UnknownErrorException(result.message ?? 'unknown exception');
                 }
             }
             return {
                 navigation: navigationState.navigationId,
-                // Url can change due to redirects. Get the one from commandNavigation.
                 url: navigationState.url,
             };
         }
@@ -6727,7 +6139,6 @@
                 }
                 catch (err) {
                     if (err.message.startsWith(
-                    // https://crsrc.org/c/content/browser/devtools/protocol/emulation_handler.cc;l=257;drc=2f6eee84cf98d4227e7c41718dd71b82f26d90ff
                     'Width and height values must be positive')) {
                         throw new UnsupportedOperationException('Provided viewport dimensions are not supported');
                     }
@@ -6788,9 +6199,6 @@
             if (params.clip) {
                 const clip = params.clip;
                 if (params.origin === 'viewport' && clip.type === 'box') {
-                    // For viewport origin, the clip is relative to the viewport, while the CDP
-                    // screenshot is relative to the document. So correction for the viewport position
-                    // is required.
                     clip.x += origin.x;
                     clip.y += origin.y;
                 }
@@ -6881,7 +6289,6 @@
                 };
             }
             catch (error) {
-                // Effectively zero dimensions.
                 if (error.message ===
                     'invalid print parameters: content area is empty') {
                     throw new UnsupportedOperationException(error.message);
@@ -6889,16 +6296,11 @@
                 throw error;
             }
         }
-        /**
-         * See
-         * https://w3c.github.io/webdriver-bidi/#:~:text=If%20command%20parameters%20contains%20%22clip%22%3A
-         */
         async #parseRect(clip) {
             switch (clip.type) {
                 case 'box':
                     return { x: clip.x, y: clip.y, width: clip.width, height: clip.height };
                 case 'element': {
-                    // TODO: #1213: Use custom sandbox specifically for Chromium BiDi
                     const sandbox = await this.getOrCreateSandbox(undefined);
                     const result = await sandbox.callFunction(String((element) => {
                         return element instanceof Element;
@@ -6953,7 +6355,6 @@
             ]);
         }
         async locateNodes(params) {
-            // TODO: create a dedicated sandbox instead of `#defaultRealm`.
             return await this.#locateNodesByLocator(await this.#defaultRealmDeferred, params.locator, params.startNodes ?? [], params.maxNodeCount, params.serializationOptions);
         }
         async #getLocatorDelegate(realm, locator, maxNodeCount, startNodes) {
@@ -6973,8 +6374,7 @@
                             };
                             startNodes = startNodes.length > 0 ? startNodes : [document];
                             const returnedNodes = startNodes
-                                .map((startNode) => 
-                            // TODO: stop search early if `maxNodeCount` is reached.
+                                .map((startNode) =>
                             locateNodesUsingCss(startNode))
                                 .flat(1);
                             return maxNodeCount === 0
@@ -6982,18 +6382,14 @@
                                 : returnedNodes.slice(0, maxNodeCount);
                         }),
                         argumentsLocalValues: [
-                            // `cssSelector`
                             { type: 'string', value: locator.value },
-                            // `maxNodeCount` with `0` means no limit.
                             { type: 'number', value: maxNodeCount ?? 0 },
-                            // `startNodes`
                             ...startNodes,
                         ],
                     };
                 case 'xpath':
                     return {
                         functionDeclaration: String((xPathSelector, maxNodeCount, ...startNodes) => {
-                            // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-xpath
                             const evaluator = new XPathEvaluator();
                             const expression = evaluator.createExpression(xPathSelector);
                             const locateNodesUsingXpath = (element) => {
@@ -7006,8 +6402,7 @@
                             };
                             startNodes = startNodes.length > 0 ? startNodes : [document];
                             const returnedNodes = startNodes
-                                .map((startNode) => 
-                            // TODO: stop search early if `maxNodeCount` is reached.
+                                .map((startNode) =>
                             locateNodesUsingXpath(startNode))
                                 .flat(1);
                             return maxNodeCount === 0
@@ -7015,16 +6410,12 @@
                                 : returnedNodes.slice(0, maxNodeCount);
                         }),
                         argumentsLocalValues: [
-                            // `xPathSelector`
                             { type: 'string', value: locator.value },
-                            // `maxNodeCount` with `0` means no limit.
                             { type: 'number', value: maxNodeCount ?? 0 },
-                            // `startNodes`
                             ...startNodes,
                         ],
                     };
                 case 'innerText':
-                    // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-inner-text
                     if (locator.value === '') {
                         throw new InvalidSelectorException('innerText locator cannot be empty');
                     }
@@ -7038,9 +6429,7 @@
                                 if (node instanceof DocumentFragment ||
                                     node instanceof Document) {
                                     const children = [...node.children];
-                                    children.forEach((child) => 
-                                    // `currentMaxDepth` is not decremented intentionally according to
-                                    // https://github.com/w3c/webdriver-bidi/pull/713.
+                                    children.forEach((child) =>
                                     returnedNodes.push(...locateNodesUsingInnerText(child, currentMaxDepth)));
                                     return returnedNodes;
                                 }
@@ -7066,21 +6455,18 @@
                                     }
                                     else {
                                         if (!fullMatch) {
-                                            // Note: `nodeInnerText.includes(searchText)` is already checked
                                             returnedNodes.push(element);
                                         }
                                     }
                                 }
                                 else {
-                                    const childNodeMatches = 
-                                    // Don't search deeper if `maxDepth` is reached.
+                                    const childNodeMatches =
                                     currentMaxDepth <= 0
                                         ? []
                                         : childNodes
                                             .map((child) => locateNodesUsingInnerText(child, currentMaxDepth - 1))
                                             .flat(1);
                                     if (childNodeMatches.length === 0) {
-                                        // Note: `nodeInnerText.includes(searchText)` is already checked
                                         if (!fullMatch || nodeInnerText === searchText) {
                                             returnedNodes.push(element);
                                         }
@@ -7089,14 +6475,11 @@
                                         returnedNodes.push(...childNodeMatches);
                                     }
                                 }
-                                // TODO: stop search early if `maxNodeCount` is reached.
                                 return returnedNodes;
                             };
-                            // TODO: stop search early if `maxNodeCount` is reached.
                             startNodes = startNodes.length > 0 ? startNodes : [document];
                             const returnedNodes = startNodes
-                                .map((startNode) => 
-                            // TODO: stop search early if `maxNodeCount` is reached.
+                                .map((startNode) =>
                             locateNodesUsingInnerText(startNode, maxDepth))
                                 .flat(1);
                             return maxNodeCount === 0
@@ -7104,39 +6487,28 @@
                                 : returnedNodes.slice(0, maxNodeCount);
                         }),
                         argumentsLocalValues: [
-                            // `innerTextSelector`
                             { type: 'string', value: locator.value },
-                            // `fullMatch` with default `true`.
                             { type: 'boolean', value: locator.matchType !== 'partial' },
-                            // `ignoreCase` with default `false`.
                             { type: 'boolean', value: locator.ignoreCase === true },
-                            // `maxNodeCount` with `0` means no limit.
                             { type: 'number', value: maxNodeCount ?? 0 },
-                            // `maxDepth` with default `1000` (same as default full serialization depth).
                             { type: 'number', value: locator.maxDepth ?? 1000 },
-                            // `startNodes`
                             ...startNodes,
                         ],
                     };
                 case 'accessibility': {
-                    // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-accessibility-attributes
                     if (!locator.value.name && !locator.value.role) {
                         throw new InvalidSelectorException('Either name or role has to be specified');
                     }
-                    // The next two commands cause a11y caches for the target to be
-                    // preserved. We probably do not need to disable them if the
-                    // client is using a11y features, but we could by calling
-                    // Accessibility.disable.
                     await Promise.all([
                         this.#cdpTarget.cdpClient.sendCommand('Accessibility.enable'),
                         this.#cdpTarget.cdpClient.sendCommand('Accessibility.getRootAXNode'),
                     ]);
                     const bindings = await realm.evaluate(
-                    /* expression=*/ '({getAccessibleName, getAccessibleRole})', 
-                    /* awaitPromise=*/ false, "root" /* Script.ResultOwnership.Root */, 
-                    /* serializationOptions= */ undefined, 
-                    /* userActivation=*/ false, 
-                    /* includeCommandLineApi=*/ true);
+                     '({getAccessibleName, getAccessibleRole})',
+                     false, "root" ,
+                     undefined,
+                     false,
+                     true);
                     if (bindings.type !== 'success') {
                         throw new Error('Could not get bindings');
                     }
@@ -7193,15 +6565,10 @@
                             return returnedNodes;
                         }),
                         argumentsLocalValues: [
-                            // `name`
                             { type: 'string', value: locator.value.name || '' },
-                            // `role`
                             { type: 'string', value: locator.value.role || '' },
-                            // `bindings`.
                             { handle: bindings.result.handle },
-                            // `maxNodeCount` with `0` means no limit.
                             { type: 'number', value: maxNodeCount ?? 0 },
-                            // `startNodes`
                             ...startNodes,
                         ],
                     };
@@ -7229,7 +6596,7 @@
                     const { object } = await parent.#cdpTarget.cdpClient.sendCommand('DOM.resolveNode', {
                         backendNodeId,
                     });
-                    const locatorResult = await realm.callFunction(`function () { return this; }`, false, { handle: object.objectId }, [], "none" /* Script.ResultOwnership.None */, serializationOptions);
+                    const locatorResult = await realm.callFunction(`function () { return this; }`, false, { handle: object.objectId }, [], "none" , serializationOptions);
                     if (locatorResult.type === 'exception') {
                         throw new Error('Unknown exception');
                     }
@@ -7242,21 +6609,16 @@
             const locatorDelegate = await this.#getLocatorDelegate(realm, locator, maxNodeCount, startNodes);
             serializationOptions = {
                 ...serializationOptions,
-                // The returned object is an array of nodes, so no need in deeper JS serialization.
                 maxObjectDepth: 1,
             };
-            const locatorResult = await realm.callFunction(locatorDelegate.functionDeclaration, false, { type: 'undefined' }, locatorDelegate.argumentsLocalValues, "none" /* Script.ResultOwnership.None */, serializationOptions);
+            const locatorResult = await realm.callFunction(locatorDelegate.functionDeclaration, false, { type: 'undefined' }, locatorDelegate.argumentsLocalValues, "none" , serializationOptions);
             if (locatorResult.type !== 'success') {
                 this.#logger?.(_a$5.LOGGER_PREFIX, 'Failed locateNodesByLocator', locatorResult);
-                // Heuristic to detect invalid selector for different types of selectors.
                 if (
-                // CSS selector.
                 locatorResult.exceptionDetails.text?.endsWith('is not a valid selector.') ||
-                    // XPath selector.
                     locatorResult.exceptionDetails.text?.endsWith('is not a valid XPath expression.')) {
                     throw new InvalidSelectorException(`Not valid selector ${typeof locator.value === 'string' ? locator.value : JSON.stringify(locator.value)}`);
                 }
-                // Heuristic to detect if the `startNode` is not an `HTMLElement` in css selector.
                 if (locatorResult.exceptionDetails.text ===
                     'Error: startNodes in css selector should be HTMLElement, Document or DocumentFragment') {
                     throw new InvalidArgumentException('startNodes in css selector should be HTMLElement, Document or DocumentFragment');
@@ -7266,7 +6628,6 @@
             if (locatorResult.result.type !== 'array') {
                 throw new UnknownErrorException(`Unexpected selector script result type: ${locatorResult.result.type}`);
             }
-            // Check there are no non-node elements in the result.
             const nodes = locatorResult.result.value.map((value) => {
                 if (value.type !== 'node') {
                     throw new UnknownErrorException(`Unexpected selector script result element: ${value.type}`);
@@ -7278,7 +6639,6 @@
     }
     _a$5 = BrowsingContextImpl;
     function serializeOrigin(origin) {
-        // https://html.spec.whatwg.org/multipage/origin.html#ascii-serialisation-of-an-origin
         if (['://', ''].includes(origin)) {
             origin = 'null';
         }
@@ -7336,7 +6696,6 @@
             height: height.value,
         };
     }
-    /** @see https://w3c.github.io/webdriver-bidi/#normalize-rect */
     function normalizeRect(box) {
         return {
             ...(box.width < 0
@@ -7359,7 +6718,6 @@
                 }),
         };
     }
-    /** @see https://w3c.github.io/webdriver-bidi/#rectangle-intersection */
     function getIntersectionRect(first, second) {
         first = normalizeRect(first);
         second = normalizeRect(second);
@@ -7414,8 +6772,6 @@
         get source() {
             return {
                 realm: this.realmId,
-                // This is a hack to make Puppeteer able to track workers.
-                // TODO: remove after Puppeteer tracks workers by owners and use the base version.
                 context: this.associatedBrowsingContexts[0]?.id,
             };
         }
@@ -7465,10 +6821,6 @@
     function isFormatSpecifier(str) {
         return specifiers.some((spec) => str.includes(spec));
     }
-    /**
-     * @param args input remote values to be format printed
-     * @return parsed text of the remote values in specific format
-     */
     function logMessageFormatter(args) {
         let output = '';
         const argFormat = args[0].value.toString();
@@ -7480,7 +6832,6 @@
             }
             if (isFormatSpecifier(token)) {
                 const arg = argValues.shift();
-                // raise an exception when less value is provided
                 assert(arg, `Less value is provided: "${getRemoteValuesText(args, false)}"`);
                 if (token === '%s') {
                     output += stringFromArg(arg);
@@ -7506,7 +6857,6 @@
                     }
                 }
                 else {
-                    // %o, %O, %c
                     output += toJson(arg);
                 }
             }
@@ -7514,30 +6864,12 @@
                 output += token;
             }
         }
-        // raise an exception when more value is provided
         if (argValues.length > 0) {
             throw new Error(`More value is provided: "${getRemoteValuesText(args, false)}"`);
         }
         return output;
     }
-    /**
-     * @param arg input remote value to be parsed
-     * @return parsed text of the remote value
-     *
-     * input: {"type": "number", "value": 1}
-     * output: 1
-     *
-     * input: {"type": "string", "value": "abc"}
-     * output: "abc"
-     *
-     * input: {"type": "object",  "value": [["id", {"type": "number", "value": 1}]]}
-     * output: '{"id": 1}'
-     *
-     * input: {"type": "object", "value": [["font-size", {"type": "string", "value": "20px"}]]}
-     * output: '{"font-size": "20px"}'
-     */
     function toJson(arg) {
-        // arg type validation
         if (arg.type !== 'array' &&
             arg.type !== 'bigint' &&
             arg.type !== 'date' &&
@@ -7565,7 +6897,6 @@
         if (arg.type === 'array') {
             return `[${arg.value?.map((val) => toJson(val)).join(',') ?? ''}]`;
         }
-        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         throw Error(`Invalid value type: ${arg}`);
     }
     function stringFromArg(arg) {
@@ -7599,13 +6930,11 @@
         if (!arg) {
             return '';
         }
-        // if args[0] is a format specifier, format the args as output
         if (arg.type === 'string' &&
             isFormatSpecifier(arg.value.toString()) &&
             formatText) {
             return logMessageFormatter(args);
         }
-        // if args[0] is not a format specifier, just join the args with \u0020 (unicode 'SPACE')
         return args
             .map((arg) => {
             return stringFromArg(arg);
@@ -7614,7 +6943,6 @@
     }
 
     var _a$4;
-    /** Converts CDP StackTrace object to BiDi StackTrace object. */
     function getBidiStackTrace(cdpStackTrace) {
         const stackFrames = cdpStackTrace?.callFrames.map((callFrame) => {
             return {
@@ -7627,16 +6955,16 @@
         return stackFrames ? { callFrames: stackFrames } : undefined;
     }
     function getLogLevel(consoleApiType) {
-        if (["error" /* Log.Level.Error */, 'assert'].includes(consoleApiType)) {
-            return "error" /* Log.Level.Error */;
+        if (["error" , 'assert'].includes(consoleApiType)) {
+            return "error" ;
         }
-        if (["debug" /* Log.Level.Debug */, 'trace'].includes(consoleApiType)) {
-            return "debug" /* Log.Level.Debug */;
+        if (["debug" , 'trace'].includes(consoleApiType)) {
+            return "debug" ;
         }
-        if (["warn" /* Log.Level.Warn */, 'warning'].includes(consoleApiType)) {
-            return "warn" /* Log.Level.Warn */;
+        if (["warn" , 'warning'].includes(consoleApiType)) {
+            return "warn" ;
         }
-        return "info" /* Log.Level.Info */;
+        return "info" ;
     }
     function getLogMethod(consoleApiType) {
         switch (consoleApiType) {
@@ -7667,14 +6995,8 @@
             logManager.#initializeEntryAddedEventListener();
             return logManager;
         }
-        /**
-         * Heuristic serialization of CDP remote object. If possible, return the BiDi value
-         * without deep serialization.
-         */
         async #heuristicSerializeArg(arg, realm) {
             switch (arg.type) {
-                // TODO: Implement regexp, array, object, map and set heuristics base on
-                //  preview.
                 case 'undefined':
                     return { type: 'undefined' };
                 case 'boolean':
@@ -7682,7 +7004,6 @@
                 case 'string':
                     return { type: 'string', value: arg.value };
                 case 'number':
-                    // The value can be either a number or a string like `Infinity` or `-0`.
                     return { type: 'number', value: arg.unserializableValue ?? arg.value };
                 case 'bigint':
                     if (arg.unserializableValue !== undefined &&
@@ -7692,28 +7013,22 @@
                             value: arg.unserializableValue.slice(0, -1),
                         };
                     }
-                    // Unexpected bigint value, fall back to CDP deep serialization.
                     break;
                 case 'object':
                     if (arg.subtype === 'null') {
                         return { type: 'null' };
                     }
-                    // Fall back to CDP deep serialization.
                     break;
             }
-            // Fall back to CDP deep serialization.
-            return await realm.serializeCdpObject(arg, "none" /* Script.ResultOwnership.None */);
+            return await realm.serializeCdpObject(arg, "none" );
         }
         #initializeEntryAddedEventListener() {
             this.#cdpTarget.cdpClient.on('Runtime.consoleAPICalled', (params) => {
-                // Try to find realm by `cdpSessionId` and `executionContextId`,
-                // if provided.
                 const realm = this.#realmStorage.findRealm({
                     cdpSessionId: this.#cdpTarget.cdpSessionId,
                     executionContextId: params.executionContextId,
                 });
                 if (realm === undefined) {
-                    // Ignore exceptions not attached to any realm.
                     this.#logger?.(LogType.cdp, params);
                     return;
                 }
@@ -7742,14 +7057,11 @@
                 }
             });
             this.#cdpTarget.cdpClient.on('Runtime.exceptionThrown', (params) => {
-                // Try to find realm by `cdpSessionId` and `executionContextId`,
-                // if provided.
                 const realm = this.#realmStorage.findRealm({
                     cdpSessionId: this.#cdpTarget.cdpSessionId,
                     executionContextId: params.exceptionDetails.executionContextId,
                 });
                 if (realm === undefined) {
-                    // Ignore exceptions not attached to any realm.
                     this.#logger?.(LogType.cdp, params);
                     return;
                 }
@@ -7760,7 +7072,7 @@
                             type: 'event',
                             method: Log$1.EventNames.LogEntryAdded,
                             params: {
-                                level: "error" /* Log.Level.Error */,
+                                level: "error" ,
                                 source: realm.source,
                                 text,
                                 timestamp: Math.round(params.timestamp),
@@ -7775,9 +7087,6 @@
                 }
             });
         }
-        /**
-         * Try the best to get the exception text.
-         */
         static async #getExceptionText(params, realm) {
             if (!params.exceptionDetails.exception) {
                 return params.exceptionDetails.text;
@@ -7815,8 +7124,6 @@
             const cdpTarget = new CdpTarget(targetId, cdpClient, browserCdpClient, parentCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, networkStorage, prerenderingDisabled, unhandledPromptBehavior, logger);
             LogManager.create(cdpTarget, realmStorage, eventManager, logger);
             cdpTarget.#setEventListeners();
-            // No need to await.
-            // Deferred will be resolved when the target is unblocked.
             void cdpTarget.#unblock();
             return cdpTarget;
         }
@@ -7835,7 +7142,6 @@
             this.#unhandledPromptBehavior = unhandledPromptBehavior;
             this.#logger = logger;
         }
-        /** Returns a deferred that resolves when the target is unblocked. */
         get unblocked() {
             return this.#unblocked;
         }
@@ -7851,26 +7157,13 @@
         get browserCdpClient() {
             return this.#browserCdpClient;
         }
-        /** Needed for CDP escape path. */
         get cdpSessionId() {
-            // SAFETY we got the client by it's id for creating
             return this.#cdpClient.sessionId;
         }
-        /**
-         * Enables all the required CDP domains and unblocks the target.
-         */
         async #unblock() {
             try {
                 await Promise.all([
                     this.#cdpClient.sendCommand('Page.enable'),
-                    // There can be some existing frames in the target, if reconnecting to an
-                    // existing browser instance, e.g. via Puppeteer. Need to restore the browsing
-                    // contexts for the frames to correctly handle further events, like
-                    // `Runtime.executionContextCreated`.
-                    // It's important to schedule this task together with enabling domains commands to
-                    // prepare the tree before the events (e.g. Runtime.executionContextCreated) start
-                    // coming.
-                    // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2282
                     this.#cdpClient
                         .sendCommand('Page.getFrameTree')
                         .then((frameTree) => this.#restoreFrameTreeState(frameTree.frameTree)),
@@ -7883,12 +7176,7 @@
                         isAllowed: !this.#prerenderingDisabled,
                     })
                         .catch(() => {
-                        // Ignore CDP errors, as the command is not supported by iframe targets or
-                        // prerendered pages. Generic catch, as the error can vary between CdpClient
-                        // implementations: Tab vs Puppeteer.
                     }),
-                    // Enabling CDP Network domain is required for navigation detection:
-                    // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856.
                     this.#cdpClient
                         .sendCommand('Network.enable')
                         .then(() => this.toggleNetworkIfNeeded()),
@@ -7899,14 +7187,12 @@
                     }),
                     this.#initAndEvaluatePreloadScripts(),
                     this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
-                    // Resume tab execution as well if it was paused by the debugger.
                     this.#parentCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
                     this.toggleDeviceAccessIfNeeded(),
                 ]);
             }
             catch (error) {
                 this.#logger?.(LogType.debugError, 'Failed to unblock target', error);
-                // The target might have been closed before the initialization finished.
                 if (!this.#cdpClient.isCloseError(error)) {
                     this.#unblocked.resolve({
                         kind: 'error',
@@ -7924,8 +7210,6 @@
             const frame = frameTree.frame;
             const maybeContext = this.#browsingContextStorage.findContext(frame.id);
             if (maybeContext !== undefined) {
-                // Restoring parent of already known browsing context. This means the target is
-                // OOPiF and the BiDi session was connected to already existing browser instance.
                 if (maybeContext.parentId === null &&
                     frame.parentId !== null &&
                     frame.parentId !== undefined) {
@@ -7933,8 +7217,6 @@
                 }
             }
             if (maybeContext === undefined && frame.parentId !== undefined) {
-                // Restore not yet known nested frames. The top-level frame is created when the
-                // target is attached.
                 const parentBrowsingContext = this.#browsingContextStorage.getContext(frame.parentId);
                 BrowsingContextImpl.create(frame.id, frame.parentId, parentBrowsingContext.userContext, parentBrowsingContext.cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, frame.url, undefined, this.#unhandledPromptBehavior, this.#logger);
             }
@@ -7950,7 +7232,6 @@
             const patterns = [];
             this.#fetchDomainStages = stages;
             if (stages.request || stages.auth) {
-                // CDP quirk we need request interception when we intercept auth
                 patterns.push({
                     urlPattern: '*',
                     requestStage: 'Request',
@@ -7987,12 +7268,7 @@
                 });
             }
         }
-        /**
-         * Toggles CDP "Fetch" domain and enable/disable network cache.
-         */
         async toggleNetworkIfNeeded() {
-            // Although the Network domain remains active, Fetch domain activation and caching
-            // settings should be managed dynamically.
             try {
                 await Promise.all([
                     this.toggleSetCacheDisabled(),
@@ -8043,10 +7319,6 @@
                 }
             }
         }
-        /**
-         * Heuristic checking if the error is due to the session being closed. If so, ignore the
-         * error.
-         */
         #isExpectedError(err) {
             const error = err;
             return ((error.code === -32001 &&
@@ -8056,7 +7328,7 @@
         #setEventListeners() {
             this.#cdpClient.on('Network.requestWillBeSent', (eventParams) => {
                 if (eventParams.loaderId === eventParams.requestId) {
-                    this.emit("frameStartedNavigating" /* TargetEvents.FrameStartedNavigating */, {
+                    this.emit("frameStartedNavigating" , {
                         loaderId: eventParams.loaderId,
                         url: eventParams.request.url,
                         frameId: eventParams.frameId,
@@ -8064,8 +7336,6 @@
                 }
             });
             this.#cdpClient.on('*', (event, params) => {
-                // We may encounter uses for EventEmitter other than CDP events,
-                // which we want to skip.
                 if (typeof event !== 'string') {
                     return;
                 }
@@ -8078,8 +7348,6 @@
                         session: this.cdpSessionId,
                     },
                 }, this.id);
-                // Duplicate the event to the deprecated event name.
-                // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2844
                 this.#eventManager.registerEvent({
                     type: 'event',
                     method: `cdp.${event}`,
@@ -8094,7 +7362,6 @@
         async #enableFetch(stages) {
             const patterns = [];
             if (stages.request || stages.auth) {
-                // CDP quirk we need request interception when we intercept auth
                 patterns.push({
                     urlPattern: '*',
                     requestStage: 'Request',
@@ -8147,20 +7414,14 @@
                 await this.#disableFetch();
             }
         }
-        /**
-         * All the ProxyChannels from all the preload scripts of the given
-         * BrowsingContext.
-         */
         getChannels() {
             return this.#preloadScriptStorage
                 .find()
                 .flatMap((script) => script.channels);
         }
-        /** Loads all top-level preload scripts. */
         async #initAndEvaluatePreloadScripts() {
             await Promise.all(this.#preloadScriptStorage
                 .find({
-                // Needed for OOPIF
                 targetId: this.topLevelId,
             })
                 .map((script) => {
@@ -8212,10 +7473,6 @@
             this.#logger = logger;
             this.#setEventListeners(browserCdpClient);
         }
-        /**
-         * This method is called for each CDP session, since this class is responsible
-         * for creating and destroying all targets and browsing contexts.
-         */
         #setEventListeners(cdpClient) {
             cdpClient.on('Target.attachedToTarget', (params) => {
                 this.#handleAttachedToTargetEvent(params, cdpClient);
@@ -8231,9 +7488,7 @@
         #handleFrameAttachedEvent(params) {
             const parentBrowsingContext = this.#browsingContextStorage.findContext(params.parentFrameId);
             if (parentBrowsingContext !== undefined) {
-                BrowsingContextImpl.create(params.frameId, params.parentFrameId, parentBrowsingContext.userContext, parentBrowsingContext.cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, 
-                // At this point, we don't know the URL of the frame yet, so it will be updated
-                // later.
+                BrowsingContextImpl.create(params.frameId, params.parentFrameId, parentBrowsingContext.userContext, parentBrowsingContext.cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage,
                 'about:blank', undefined, this.#unhandledPromptBehavior, this.#logger);
             }
         }
@@ -8244,30 +7499,19 @@
             const { sessionId, targetInfo } = params;
             const targetCdpClient = this.#cdpConnection.getCdpClient(sessionId);
             const detach = async () => {
-                // Detaches and resumes the target suppressing errors.
                 await targetCdpClient
                     .sendCommand('Runtime.runIfWaitingForDebugger')
                     .then(() => parentSessionCdpClient.sendCommand('Target.detachFromTarget', params))
                     .catch((error) => this.#logger?.(LogType.debugError, error));
             };
-            // Do not attach to the Mapper target.
             if (this.#selfTargetId === targetInfo.targetId) {
                 void detach();
                 return;
             }
-            // Service workers are special case because they attach to the
-            // browser target and the page target (so twice per worker) during
-            // the regular auto-attach and might hang if the CDP session on
-            // the browser level is not detached. The logic to detach the
-            // right session is handled in the switch below.
             const targetKey = targetInfo.type === 'service_worker'
                 ? `${parentSessionCdpClient.sessionId}_${targetInfo.targetId}`
                 : targetInfo.targetId;
-            // Mapper generally only needs one session per target. If we
-            // receive additional auto-attached sessions, that is very likely
-            // coming from custom CDP sessions.
             if (this.#targetKeysToBeIgnoredByAutoAttach.has(targetKey)) {
-                // Return to leave the session untouched.
                 return;
             }
             this.#targetKeysToBeIgnoredByAutoAttach.add(targetKey);
@@ -8277,11 +7521,7 @@
                 : 'default';
             switch (targetInfo.type) {
                 case 'tab': {
-                    // Tab targets are required only to handle page targets beneath them.
                     this.#setEventListeners(targetCdpClient);
-                    // Auto-attach to the page target. No need in resuming tab target debugger, as it
-                    // should preserve the page target debugger state, and will be resumed by the page
-                    // target.
                     void (async () => {
                         await targetCdpClient.sendCommand('Target.setAutoAttach', {
                             autoAttach: true,
@@ -8296,23 +7536,11 @@
                     const cdpTarget = this.#createCdpTarget(targetCdpClient, parentSessionCdpClient, targetInfo, userContext);
                     const maybeContext = this.#browsingContextStorage.findContext(targetInfo.targetId);
                     if (maybeContext && targetInfo.type === 'iframe') {
-                        // OOPiF.
                         maybeContext.updateCdpTarget(cdpTarget);
                     }
                     else {
-                        // If attaching to existing browser instance, there could be OOPiF targets. This
-                        // case is handled by the `findFrameParentId` method.
                         const parentId = this.#findFrameParentId(targetInfo, parentSessionCdpClient.sessionId);
-                        // New context.
-                        BrowsingContextImpl.create(targetInfo.targetId, parentId, userContext, cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, 
-                        // Hack: when a new target created, CDP emits targetInfoChanged with an empty
-                        // url, and navigates it to about:blank later. When the event is emitted for
-                        // an existing target (reconnect), the url is already known, and navigation
-                        // events will not be emitted anymore. Replacing empty url with `about:blank`
-                        // allows to handle both cases in the same way.
-                        // "7.3.2.1 Creating browsing contexts".
-                        // https://html.spec.whatwg.org/multipage/document-sequences.html#creating-browsing-contexts
-                        // TODO: check who to deal with non-null creator and its `creatorOrigin`.
+                        BrowsingContextImpl.create(targetInfo.targetId, parentId, userContext, cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage,
                         targetInfo.url === '' ? 'about:blank' : targetInfo.url, targetInfo.openerFrameId ?? targetInfo.openerId, this.#unhandledPromptBehavior, this.#logger);
                     }
                     return;
@@ -8322,7 +7550,6 @@
                     const realm = this.#realmStorage.findRealm({
                         cdpSessionId: parentSessionCdpClient.sessionId,
                     });
-                    // If there is no browsing context, this worker is already terminated.
                     if (!realm) {
                         void detach();
                         return;
@@ -8331,21 +7558,14 @@
                     this.#handleWorkerTarget(cdpToBidiTargetTypes[targetInfo.type], cdpTarget, realm);
                     return;
                 }
-                // In CDP, we only emit shared workers on the browser and not the set of
-                // frames that use the shared worker. If we change this in the future to
-                // behave like service workers (emits on both browser and frame targets),
-                // we can remove this block and merge service workers with the above one.
                 case 'shared_worker': {
                     const cdpTarget = this.#createCdpTarget(targetCdpClient, parentSessionCdpClient, targetInfo, userContext);
                     this.#handleWorkerTarget(cdpToBidiTargetTypes[targetInfo.type], cdpTarget);
                     return;
                 }
             }
-            // DevTools or some other not supported by BiDi target. Just release
-            // debugger and ignore them.
             void detach();
         }
-        /** Try to find the parent browsing context ID for the given attached target. */
         #findFrameParentId(targetInfo, parentSessionId) {
             if (targetInfo.type !== 'iframe') {
                 return null;
@@ -8401,9 +7621,6 @@
             }
         }
         #handleTargetCrashedEvent(cdpClient) {
-            // This is primarily used for service and shared workers. CDP tends to not
-            // signal they closed gracefully and instead says they crashed to signal
-            // they are closed.
             const realms = this.#realmStorage.findRealms({
                 cdpSessionId: cdpClient.sessionId,
             });
@@ -8429,39 +7646,27 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    /** Container class for browsing contexts. */
     class BrowsingContextStorage {
-        /** Map from context ID to context implementation. */
         #contexts = new Map();
-        /** Event emitter for browsing context storage eventsis not expected to be exposed to
-         * the outside world. */
         #eventEmitter = new EventEmitter();
-        /** Gets all top-level contexts, i.e. those with no parent. */
         getTopLevelContexts() {
             return this.getAllContexts().filter((context) => context.isTopLevelContext());
         }
-        /** Gets all contexts. */
         getAllContexts() {
             return Array.from(this.#contexts.values());
         }
-        /** Deletes the context with the given ID. */
         deleteContextById(id) {
             this.#contexts.delete(id);
         }
-        /** Deletes the given context. */
         deleteContext(context) {
             this.#contexts.delete(context.id);
         }
-        /** Tracks the given context. */
         addContext(context) {
             this.#contexts.set(context.id, context);
-            this.#eventEmitter.emit("added" /* BrowsingContextStorageEvents.Added */, {
+            this.#eventEmitter.emit("added" , {
                 browsingContext: context,
             });
         }
-        /**
-         * Waits for a context with the given ID to be added and returns it.
-         */
         waitForContext(browsingContextId) {
             if (this.#contexts.has(browsingContextId)) {
                 return Promise.resolve(this.getContext(browsingContextId));
@@ -8469,22 +7674,19 @@
             return new Promise((resolve) => {
                 const listener = (event) => {
                     if (event.browsingContext.id === browsingContextId) {
-                        this.#eventEmitter.off("added" /* BrowsingContextStorageEvents.Added */, listener);
+                        this.#eventEmitter.off("added" , listener);
                         resolve(event.browsingContext);
                     }
                 };
-                this.#eventEmitter.on("added" /* BrowsingContextStorageEvents.Added */, listener);
+                this.#eventEmitter.on("added" , listener);
             });
         }
-        /** Returns true whether there is an existing context with the given ID. */
         hasContext(id) {
             return this.#contexts.has(id);
         }
-        /** Gets the context with the given ID, if any. */
         findContext(id) {
             return this.#contexts.get(id);
         }
-        /** Returns the top-level context ID of the given context, if any. */
         findTopLevelContextId(id) {
             if (id === null) {
                 return null;
@@ -8507,7 +7709,6 @@
             }
             return;
         }
-        /** Gets the context with the given ID, if any, otherwise throws. */
         getContext(id) {
             const result = this.findContext(id);
             if (result === undefined) {
@@ -8557,13 +7758,7 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    /**
-     * A subclass of Map whose functionality is almost the same as its parent
-     * except for the fact that DefaultMap never returns undefined. It provides a
-     * default value for keys that do not exist.
-     */
     class DefaultMap extends Map {
-        /** The default value to return whenever a key is not present in the map. */
         #getDefaultValue;
         constructor(getDefaultValue, entries) {
             super(entries);
@@ -8596,22 +7791,10 @@
      */
     var _a$3;
     const REALM_REGEX = /(?<=realm=").*(?=")/;
-    /** Abstracts one individual network request. */
     class NetworkRequest {
         static unknownParameter = 'UNKNOWN';
-        /**
-         * Each network request has an associated request id, which is a string
-         * uniquely identifying that request.
-         *
-         * The identifier for a request resulting from a redirect matches that of the
-         * request that initiated it.
-         */
         #id;
         #fetchId;
-        /**
-         * Indicates the network intercept phase, if the request is currently blocked.
-         * Undefined necessarily implies that the request is not blocked.
-         */
         #interceptPhase;
         #servedFromCache = false;
         #redirectCount;
@@ -8645,9 +7828,6 @@
         get fetchId() {
             return this.#fetchId;
         }
-        /**
-         * When blocked returns the phase for it
-         */
         get interceptPhase() {
             return this.#interceptPhase;
         }
@@ -8687,16 +7867,11 @@
                 this.#response.paused?.request.method);
         }
         get #navigationId() {
-            // Heuristic to determine if this is a navigation request, and if not return null.
             if (!this.#request.info ||
                 !this.#request.info.loaderId ||
-                // When we navigate all CDP network events have `loaderId`
-                // CDP's `loaderId` and `requestId` match when
-                // that request triggered the loading
                 this.#request.info.loaderId !== this.#request.info.requestId) {
                 return null;
             }
-            // Get virtual navigation ID from the browsing context.
             return this.#networkStorage.getNavigationId(this.#context ?? undefined);
         }
         get #cookies() {
@@ -8727,7 +7902,6 @@
                 this.#request.auth?.frameId ??
                 null);
         }
-        /** Returns the HTTP status code associated with this request if any. */
         get #statusCode() {
             return (this.#responseOverrides?.statusCode ??
                 this.#response.paused?.responseStatusCode ??
@@ -8760,7 +7934,6 @@
             return headers;
         }
         get #authChallenges() {
-            // TODO: get headers from Fetch.requestPaused
             if (!this.#response.info) {
                 return;
             }
@@ -8770,8 +7943,6 @@
             const headerName = this.#statusCode === 401 ? 'WWW-Authenticate' : 'Proxy-Authenticate';
             const authChallenges = [];
             for (const [header, value] of Object.entries(this.#response.info.headers)) {
-                // TODO: Do a proper match based on https://httpwg.org/specs/rfc9110.html#credentials
-                // Or verify this works
                 if (header.localeCompare(headerName, undefined, { sensitivity: 'base' }) === 0) {
                     authChallenges.push({
                         scheme: value.split(' ').at(0) ?? '',
@@ -8782,34 +7953,20 @@
             return authChallenges;
         }
         get #timings() {
-            // The timing in the CDP events are provided relative to the event's baseline.
-            // However, the baseline can be different for different events, and the events have to
-            // be normalized throughout resource events. Normalize events timestamps  by the
-            // request.
-            // TODO: Verify this is correct.
             const responseTimeOffset = getTiming(getTiming(this.#response.info?.timing?.requestTime) -
                 getTiming(this.#request.info?.timestamp));
             return {
-                // TODO: Verify this is correct
                 timeOrigin: Math.round(getTiming(this.#request.info?.wallTime) * 1000),
-                // Timing baseline.
-                // TODO: Verify this is correct.
                 requestTime: 0,
-                // TODO: set if redirect detected.
                 redirectStart: 0,
-                // TODO: set if redirect detected.
                 redirectEnd: 0,
-                // TODO: Verify this is correct
-                // https://source.chromium.org/chromium/chromium/src/+/main:net/base/load_timing_info.h;l=145
                 fetchStart: getTiming(this.#response.info?.timing?.workerFetchStart, responseTimeOffset),
-                // fetchStart: 0,
                 dnsStart: getTiming(this.#response.info?.timing?.dnsStart, responseTimeOffset),
                 dnsEnd: getTiming(this.#response.info?.timing?.dnsEnd, responseTimeOffset),
                 connectStart: getTiming(this.#response.info?.timing?.connectStart, responseTimeOffset),
                 connectEnd: getTiming(this.#response.info?.timing?.connectEnd, responseTimeOffset),
                 tlsStart: getTiming(this.#response.info?.timing?.sslStart, responseTimeOffset),
                 requestStart: getTiming(this.#response.info?.timing?.sendStart, responseTimeOffset),
-                // https://source.chromium.org/chromium/chromium/src/+/main:net/base/load_timing_info.h;l=196
                 responseStart: getTiming(this.#response.info?.timing?.receiveHeadersStart, responseTimeOffset),
                 responseEnd: getTiming(this.#response.info?.timing?.receiveHeadersEnd, responseTimeOffset),
             };
@@ -8828,8 +7985,6 @@
             return this.#interceptsInPhase(phase).size > 0;
         }
         handleRedirect(event) {
-            // TODO: use event.redirectResponse;
-            // Temporary workaround to emit ResponseCompleted event for redirects
             this.#response.hasExtraInfo = false;
             this.#response.info = event.redirectResponse;
             this.#emitEventsIfReady({
@@ -8837,24 +7992,18 @@
             });
         }
         #emitEventsIfReady(options = {}) {
-            const requestExtraInfoCompleted = 
-            // Flush redirects
+            const requestExtraInfoCompleted =
             options.wasRedirected ||
                 options.hasFailed ||
                 this.#isDataUrl() ||
                 Boolean(this.#request.extraInfo) ||
-                // Requests from cache don't have extra info
                 this.#servedFromCache ||
-                // Sometimes there is no extra info and the response
-                // is the only place we can find out
                 Boolean(this.#response.info && !this.#response.hasExtraInfo);
-            const noInterceptionExpected = 
-            // We can't intercept data urls from CDP
+            const noInterceptionExpected =
             this.#isDataUrl() ||
-                // Cached requests never hit the network
                 this.#servedFromCache;
             const requestInterceptionExpected = !noInterceptionExpected &&
-                this.#isBlockedInPhase("beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */);
+                this.#isBlockedInPhase("beforeRequestSent" );
             const requestInterceptionCompleted = !requestInterceptionExpected ||
                 (requestInterceptionExpected && Boolean(this.#request.paused));
             if (Boolean(this.#request.info) &&
@@ -8864,12 +8013,10 @@
                 this.#emitEvent(this.#getBeforeRequestEvent.bind(this));
             }
             const responseExtraInfoCompleted = Boolean(this.#response.extraInfo) ||
-                // Response from cache don't have extra info
                 this.#servedFromCache ||
-                // Don't expect extra info if the flag is false
                 Boolean(this.#response.info && !this.#response.hasExtraInfo);
             const responseInterceptionExpected = !noInterceptionExpected &&
-                this.#isBlockedInPhase("responseStarted" /* Network.InterceptPhase.ResponseStarted */);
+                this.#isBlockedInPhase("responseStarted" );
             if (this.#response.info ||
                 (responseInterceptionExpected && Boolean(this.#response.paused))) {
                 this.#emitEvent(this.#getResponseStartedEvent.bind(this));
@@ -8896,9 +8043,6 @@
                 event.statusCode <= 399 &&
                 this.#request.info &&
                 event.headers['location'] === this.#request.info.request.url) {
-                // We received the Response Extra info for the redirect
-                // Too late so we need to skip it as it will
-                // fire wrongly for the last one
                 return;
             }
             this.#response.extraInfo = event;
@@ -8927,7 +8071,6 @@
                 };
             });
         }
-        /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-failRequest */
         async failRequest(errorReason) {
             assert(this.#fetchId, 'Network Interception not set-up.');
             await this.cdpClient.sendCommand('Fetch.failRequest', {
@@ -8938,15 +8081,12 @@
         }
         onRequestPaused(event) {
             this.#fetchId = event.requestId;
-            // CDP https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#event-requestPaused
             if (event.responseStatusCode || event.responseErrorReason) {
                 this.#response.paused = event;
-                if (this.#isBlockedInPhase("responseStarted" /* Network.InterceptPhase.ResponseStarted */) &&
-                    // CDP may emit multiple events for a single request
+                if (this.#isBlockedInPhase("responseStarted" ) &&
                     !this.#emittedEvents[Network$2.EventNames.ResponseStarted] &&
-                    // Continue all response that have not enabled Network domain
                     this.#fetchId !== this.id) {
-                    this.#interceptPhase = "responseStarted" /* Network.InterceptPhase.ResponseStarted */;
+                    this.#interceptPhase = "responseStarted" ;
                 }
                 else {
                     void this.#continueResponse();
@@ -8954,12 +8094,10 @@
             }
             else {
                 this.#request.paused = event;
-                if (this.#isBlockedInPhase("beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */) &&
-                    // CDP may emit multiple events for a single request
+                if (this.#isBlockedInPhase("beforeRequestSent" ) &&
                     !this.#emittedEvents[Network$2.EventNames.BeforeRequestSent] &&
-                    // Continue all requests that have not enabled Network domain
                     this.#fetchId !== this.id) {
-                    this.#interceptPhase = "beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */;
+                    this.#interceptPhase = "beforeRequestSent" ;
                 }
                 else {
                     void this.#continueRequest();
@@ -8970,10 +8108,9 @@
         onAuthRequired(event) {
             this.#fetchId = event.requestId;
             this.#request.auth = event;
-            if (this.#isBlockedInPhase("authRequired" /* Network.InterceptPhase.AuthRequired */) &&
-                // Continue all auth requests that have not enabled Network domain
+            if (this.#isBlockedInPhase("authRequired" ) &&
                 this.#fetchId !== this.id) {
-                this.#interceptPhase = "authRequired" /* Network.InterceptPhase.AuthRequired */;
+                this.#interceptPhase = "authRequired" ;
             }
             else {
                 void this.#continueWithAuth({
@@ -8984,13 +8121,12 @@
                 return {
                     method: Network$2.EventNames.AuthRequired,
                     params: {
-                        ...this.#getBaseEventParams("authRequired" /* Network.InterceptPhase.AuthRequired */),
+                        ...this.#getBaseEventParams("authRequired" ),
                         response: this.#getResponseEventParams(),
                     },
                 };
             });
         }
-        /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueRequest */
         async continueRequest(overrides = {}) {
             const overrideHeaders = this.#getOverrideHeader(overrides.headers, overrides.cookies);
             const headers = cdpFetchHeadersFromBidiNetworkHeaders(overrideHeaders);
@@ -9020,9 +8156,8 @@
             });
             this.#interceptPhase = undefined;
         }
-        /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueResponse */
         async continueResponse(overrides = {}) {
-            if (this.interceptPhase === "authRequired" /* Network.InterceptPhase.AuthRequired */) {
+            if (this.interceptPhase === "authRequired" ) {
                 if (overrides.credentials) {
                     await Promise.all([
                         this.waitNextPhase,
@@ -9034,14 +8169,12 @@
                     ]);
                 }
                 else {
-                    // We need to use `ProvideCredentials`
-                    // As `Default` may cancel the request
                     return await this.#continueWithAuth({
                         response: 'ProvideCredentials',
                     });
                 }
             }
-            if (this.#interceptPhase === "responseStarted" /* Network.InterceptPhase.ResponseStarted */) {
+            if (this.#interceptPhase === "responseStarted" ) {
                 const overrideHeaders = this.#getOverrideHeader(overrides.headers, overrides.cookies);
                 const responseHeaders = cdpFetchHeadersFromBidiNetworkHeaders(overrideHeaders);
                 await this.#continueResponse({
@@ -9065,7 +8198,6 @@
             });
             this.#interceptPhase = undefined;
         }
-        /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueWithAuth */
         async continueWithAuth(authChallenge) {
             let username;
             let password;
@@ -9081,20 +8213,13 @@
                 password,
             });
         }
-        /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-provideResponse */
         async provideResponse(overrides) {
             assert(this.#fetchId, 'Network Interception not set-up.');
-            // We need to pass through if the request is already in
-            // AuthRequired phase
-            if (this.interceptPhase === "authRequired" /* Network.InterceptPhase.AuthRequired */) {
-                // We need to use `ProvideCredentials`
-                // As `Default` may cancel the request
+            if (this.interceptPhase === "authRequired" ) {
                 return await this.#continueWithAuth({
                     response: 'ProvideCredentials',
                 });
             }
-            // If we don't modify the response
-            // just continue the request
             if (!overrides.body && !overrides.headers) {
                 return await this.#continueRequest();
             }
@@ -9132,7 +8257,6 @@
             }
             if (this.#isIgnoredEvent() ||
                 (this.#emittedEvents[event.method] &&
-                    // Special case this event can be emitted multiple times
                     event.method !== Network$2.EventNames.AuthRequired)) {
                 return;
             }
@@ -9165,32 +8289,23 @@
                 navigation: this.#navigationId,
                 redirectCount: this.#redirectCount,
                 request: this.#getRequestData(),
-                // Timestamp should be in milliseconds, while CDP provides it in seconds.
                 timestamp: Math.round(getTiming(this.#request.info?.wallTime) * 1000),
-                // Contains isBlocked and intercepts
                 ...interceptProps,
             };
         }
         #getResponseEventParams() {
-            // Chromium sends wrong extraInfo events for responses served from cache.
-            // See https://github.com/puppeteer/puppeteer/issues/9965 and
-            // https://crbug.com/1340398.
             if (this.#response.info?.fromDiskCache) {
                 this.#response.extraInfo = undefined;
             }
             const headers = [
                 ...bidiNetworkHeadersFromCdpNetworkHeaders(this.#response.info?.headers),
                 ...bidiNetworkHeadersFromCdpNetworkHeaders(this.#response.extraInfo?.headers),
-                // TODO: Verify how to dedupe these
-                // ...bidiNetworkHeadersFromCdpNetworkHeadersEntries(
-                //   this.#response.paused?.responseHeaders
-                // ),
             ];
             const authChallenges = this.#authChallenges;
             const response = {
                 url: this.url,
                 protocol: this.#response.info?.protocol ?? '',
-                status: this.#statusCode ?? -1, // TODO: Throw an exception or use some other status code?
+                status: this.#statusCode ?? -1,
                 statusText: this.#response.info?.statusText ||
                     this.#response.paused?.responseStatusText ||
                     '',
@@ -9201,10 +8316,8 @@
                 mimeType: this.#response.info?.mimeType || '',
                 bytesReceived: this.#response.info?.encodedDataLength || 0,
                 headersSize: computeHeadersSize(headers),
-                // TODO: consider removing from spec.
                 bodySize: 0,
                 content: {
-                    // TODO: consider removing from spec.
                     size: 0,
                 },
                 ...(authChallenges ? { authChallenges } : {}),
@@ -9224,9 +8337,7 @@
                 cookies: this.#cookies,
                 headersSize: computeHeadersSize(headers),
                 bodySize: this.#bodySize,
-                // TODO: populate
                 destination: this.#getDestination(),
-                // TODO: populate
                 initiatorType: this.#getInitiatorType(),
                 timings: this.#timings,
             };
@@ -9238,14 +8349,6 @@
                 'goog:resourceInitiator': this.#request.info?.initiator,
             };
         }
-        /**
-         * Heuristic trying to guess the destination.
-         * Specification: https://fetch.spec.whatwg.org/#concept-request-destination.
-         * Specified values: "audio", "audioworklet", "document", "embed", "font", "frame",
-         * "iframe", "image", "json", "manifest", "object", "paintworklet", "report", "script",
-         * "serviceworker", "sharedworker", "style", "track", "video", "webidentity", "worker",
-         * "xslt".
-         */
         #getDestination() {
             switch (this.#request.info?.type) {
                 case 'Script':
@@ -9255,36 +8358,22 @@
                 case 'Image':
                     return 'image';
                 case 'Document':
-                    // If request to document is initiated by parser, assume it is expected to
-                    // arrive in an iframe. Otherwise, fallback to empty string.
                     return this.#request.info?.initiator.type === 'parser' ? 'iframe' : '';
                 default:
                     return '';
             }
         }
-        /**
-         * Heuristic trying to guess the initiator type.
-         * Specification: https://fetch.spec.whatwg.org/#request-initiator-type.
-         * Specified values: "audio", "beacon", "body", "css", "early-hints", "embed", "fetch",
-         * "font", "frame", "iframe", "image", "img", "input", "link", "object", "ping",
-         * "script", "track", "video", "xmlhttprequest", "other".
-         */
         #getInitiatorType() {
             if (this.#request.info?.initiator.type === 'parser') {
                 switch (this.#request.info?.type) {
                     case 'Document':
-                        // The request to document is initiated by the parser. Assuming it's an iframe.
                         return 'iframe';
                     case 'Font':
-                        // If the document's url is not the parser's url, assume the resource is loaded
-                        // from css. Otherwise, it's a `font` element.
                         return this.#request.info?.initiator?.url ===
                             this.#request.info?.documentURL
                             ? 'font'
                             : 'css';
                     case 'Image':
-                        // If the document's url is not the parser's url, assume the resource is loaded
-                        // from css. Otherwise, it's a `img` element.
                         return this.#request.info?.initiator?.url ===
                             this.#request.info?.documentURL
                             ? 'img'
@@ -9307,7 +8396,7 @@
             return {
                 method: Network$2.EventNames.BeforeRequestSent,
                 params: {
-                    ...this.#getBaseEventParams("beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */),
+                    ...this.#getBaseEventParams("beforeRequestSent" ),
                     initiator: {
                         type: _a$3.#getInitiator(this.#request.info.initiator.type),
                         columnNumber: this.#request.info.initiator.columnNumber,
@@ -9322,7 +8411,7 @@
             return {
                 method: Network$2.EventNames.ResponseStarted,
                 params: {
-                    ...this.#getBaseEventParams("responseStarted" /* Network.InterceptPhase.ResponseStarted */),
+                    ...this.#getBaseEventParams("responseStarted" ),
                     response: this.#getResponseEventParams(),
                 },
             };
@@ -9391,17 +8480,11 @@
         return 0;
     }
 
-    /** Stores network and intercept maps. */
     class NetworkStorage {
         #browsingContextStorage;
         #eventManager;
         #logger;
-        /**
-         * A map from network request ID to Network Request objects.
-         * Needed as long as information about requests comes from different events.
-         */
         #requests = new Map();
-        /** A map from intercept ID to track active network intercepts. */
         #intercepts = new Map();
         #defaultCacheBehavior = 'default';
         constructor(eventManager, browsingContextStorage, browserClient, logger) {
@@ -9412,10 +8495,6 @@
             });
             this.#logger = logger;
         }
-        /**
-         * Gets the network request with the given ID, if any.
-         * Otherwise, creates a new network request with the given ID and cdp target.
-         */
         #getOrCreateNetworkRequest(id, cdpTarget, redirectCount) {
             let request = this.getRequestById(id);
             if (request) {
@@ -9427,7 +8506,6 @@
         }
         onCdpTargetCreated(cdpTarget) {
             const cdpClient = cdpTarget.cdpClient;
-            // TODO: Wrap into object
             const listeners = [
                 [
                     'Network.requestWillBeSent',
@@ -9477,7 +8555,6 @@
                     'Fetch.requestPaused',
                     (event) => {
                         this.#getOrCreateNetworkRequest(
-                        // CDP quirk if the Network domain is not present this is undefined
                         event.networkId ?? event.requestId, cdpTarget).onRequestPaused(event);
                     },
                 ],
@@ -9507,9 +8584,9 @@
                     !intercept.contexts.includes(browsingContextId)) {
                     continue;
                 }
-                stages.request ||= intercept.phases.includes("beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */);
-                stages.response ||= intercept.phases.includes("responseStarted" /* Network.InterceptPhase.ResponseStarted */);
-                stages.auth ||= intercept.phases.includes("authRequired" /* Network.InterceptPhase.AuthRequired */);
+                stages.request ||= intercept.phases.includes("beforeRequestSent" );
+                stages.response ||= intercept.phases.includes("responseStarted" );
+                stages.auth ||= intercept.phases.includes("authRequired" );
             }
             return stages;
         }
@@ -9545,21 +8622,11 @@
                 }
             }
         }
-        /**
-         * Adds the given entry to the intercept map.
-         * URL patterns are assumed to be parsed.
-         *
-         * @return The intercept ID.
-         */
         addIntercept(value) {
             const interceptId = uuidv4();
             this.#intercepts.set(interceptId, value);
             return interceptId;
         }
-        /**
-         * Removes the given intercept from the intercept map.
-         * Throws NoSuchInterceptException if the intercept does not exist.
-         */
         removeIntercept(intercept) {
             if (!this.#intercepts.has(intercept)) {
                 throw new NoSuchInterceptException(`Intercept '${intercept}' does not exist.`);
@@ -9592,9 +8659,6 @@
         deleteRequest(id) {
             this.#requests.delete(id);
         }
-        /**
-         * Gets the virtual navigation ID for the given navigable ID.
-         */
         getNavigationId(contextId) {
             if (contextId === undefined) {
                 return null;
@@ -9625,21 +8689,13 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    /**
-     * Container class for preload scripts.
-     */
     class PreloadScriptStorage {
-        /** Tracks all BiDi preload scripts.  */
         #scripts = new Set();
-        /**
-         * Finds all entries that match the given filter (OR logic).
-         */
         find(filter) {
             if (!filter) {
                 return [...this.#scripts];
             }
             return [...this.#scripts].filter((script) => {
-                // Global scripts have no contexts or userContext
                 if (script.contexts === undefined && script.userContexts === undefined) {
                     return true;
                 }
@@ -9653,7 +8709,6 @@
         add(preloadScript) {
             this.#scripts.add(preloadScript);
         }
-        /** Deletes all BiDi preload script entries that match the given filter. */
         remove(id) {
             const script = [...this.#scripts].find((script) => script.id === id);
             if (script === undefined) {
@@ -9661,7 +8716,6 @@
             }
             this.#scripts.delete(script);
         }
-        /** Gets the preload script with the given ID, if any, otherwise throws. */
         getPreloadScript(id) {
             const script = [...this.#scripts].find((script) => script.id === id);
             if (script === undefined) {
@@ -9671,7 +8725,6 @@
         }
         onCdpTargetCreated(targetId, userContext) {
             const scriptInUserContext = [...this.#scripts].filter((script) => {
-                // Global scripts
                 if (!script.userContexts && !script.contexts) {
                     return true;
                 }
@@ -9683,11 +8736,8 @@
         }
     }
 
-    /** Container class for browsing realms. */
     class RealmStorage {
-        /** Tracks handles and their realms sent to the client. */
         #knownHandlesToRealmMap = new Map();
-        /** Map from realm ID to Realm. */
         #realmMap = new Map();
         get knownHandlesToRealmMap() {
             return this.#knownHandlesToRealmMap;
@@ -9695,7 +8745,6 @@
         addRealm(realm) {
             this.#realmMap.set(realm.realmId, realm);
         }
-        /** Finds all realms that match the given filter. */
         findRealms(filter) {
             return Array.from(this.#realmMap.values()).filter((realm) => {
                 if (filter.realmId !== undefined && filter.realmId !== realm.realmId) {
@@ -9735,7 +8784,6 @@
             }
             return maybeRealms[0];
         }
-        /** Gets the only realm that matches the given filter, if any, otherwise throws. */
         getRealm(filter) {
             const maybeRealm = this.findRealm(filter);
             if (maybeRealm === undefined) {
@@ -9743,7 +8791,6 @@
             }
             return maybeRealm;
         }
-        /** Deletes all realms that match the given filter. */
         deleteRealms(filter) {
             this.findRealms(filter).map((realm) => {
                 realm.dispose();
@@ -9771,15 +8818,10 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    /** Implements a FIFO buffer with a fixed size. */
     let Buffer$1 = class Buffer {
         #capacity;
         #entries = [];
         #onItemRemoved;
-        /**
-         * @param capacity The buffer capacity.
-         * @param onItemRemoved Delegate called for each removed element.
-         */
         constructor(capacity, onItemRemoved) {
             this.#capacity = capacity;
             this.#onItemRemoved = onItemRemoved;
@@ -9814,9 +8856,6 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    /**
-     * Creates an object with a positive unique incrementing id.
-     */
     class IdWrapper {
         static #counter = 0;
         #id;
@@ -9844,24 +8883,13 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    /**
-     * Returns true if the given event is a CDP event.
-     * @see https://chromedevtools.github.io/devtools-protocol/
-     */
     function isCdpEvent(name) {
         return (name.split('.').at(0)?.startsWith(BiDiModule.Cdp) ?? false);
     }
-    /**
-     * Returns true if the given event is a deprecated CDP event.
-     * @see https://chromedevtools.github.io/devtools-protocol/
-     */
     function isDeprecatedCdpEvent(name) {
         return (name.split('.').at(0)?.startsWith(BiDiModule.DeprecatedCdp) ??
             false);
     }
-    /**
-     * Asserts that the given event is known to BiDi or BiDi+, or throws otherwise.
-     */
     function assertSupportedEvent(name) {
         if (!EVENT_NAMES.has(name) &&
             !isCdpEvent(name) &&
@@ -9886,7 +8914,6 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    /** Expands "AllEvents" events into atomic events. */
     function unrollEvents(events) {
         const allEvents = new Set();
         function addEvents(events) {
@@ -9925,8 +8952,6 @@
             this.#browsingContextStorage = browsingContextStorage;
         }
         getChannelsSubscribedToEvent(eventName, contextId) {
-            // Maps JSON stringified channel to a channel.
-            // TODO: switch to `Set` of `goog:channel` once legacy `channel` is removed.
             const channels = new Map();
             for (const subscription of this.#subscriptions) {
                 if (this.#isSubscribedTo(subscription, eventName, contextId)) {
@@ -9936,8 +8961,6 @@
             return Array.from(channels.values());
         }
         getChannelsSubscribedToEventGlobally(eventName) {
-            // Maps JSON stringified channel to a channel.
-            // TODO: switch to `Set` of `goog:channel` once legacy `channel` is removed.
             const channels = new Map();
             for (const subscription of this.#subscriptions) {
                 if (this.#isSubscribedTo(subscription, eventName)) {
@@ -9949,14 +8972,9 @@
         #isSubscribedTo(subscription, moduleOrEvent, browsingContextId) {
             let includesEvent = false;
             for (const eventName of subscription.eventNames) {
-                // This also covers the `cdp` case where
-                // we don't unroll the event names
                 if (
-                // Event explicitly subscribed
                 eventName === moduleOrEvent ||
-                    // Event subscribed via module
                     eventName === moduleOrEvent.split('.').at(0) ||
-                    // Event explicitly subscribed compared to module
                     eventName.split('.').at(0) === moduleOrEvent) {
                     includesEvent = true;
                     break;
@@ -9965,7 +8983,6 @@
             if (!includesEvent) {
                 return false;
             }
-            // user context subscription.
             if (subscription.userContextIds.size !== 0) {
                 if (!browsingContextId) {
                     return false;
@@ -9976,7 +8993,6 @@
                 }
                 return subscription.userContextIds.has(context.userContext);
             }
-            // context subscription.
             if (subscription.topLevelTraversableIds.size !== 0) {
                 if (!browsingContextId) {
                     return false;
@@ -9985,7 +9001,6 @@
                 return (topLevelContext !== null &&
                     subscription.topLevelTraversableIds.has(topLevelContext));
             }
-            // global subscription.
             return true;
         }
         isSubscribedTo(moduleOrEvent, contextId) {
@@ -9996,18 +9011,7 @@
             }
             return false;
         }
-        /**
-         * Subscribes to event in the given context and channel.
-         * @param {EventNames} event
-         * @param {BrowsingContext.BrowsingContext | null} contextId
-         * @param {BidiPlusChannel} channel
-         * @return {SubscriptionItem[]} List of
-         * subscriptions. If the event is a whole module, it will return all the specific
-         * events. If the contextId is null, it will return all the top-level contexts which were
-         * not subscribed before the command.
-         */
         subscribe(eventNames, contextIds, userContextIds, channel) {
-            // All the subscriptions are handled on the top-level contexts.
             const subscription = {
                 id: uuidv4(),
                 eventNames: new Set(unrollEvents(eventNames)),
@@ -10025,14 +9029,8 @@
             this.#knownSubscriptionIds.add(subscription.id);
             return subscription;
         }
-        /**
-         * Unsubscribes atomically from all events in the given contexts and channel.
-         *
-         * This is a legacy spec branch to unsubscribe by attributes.
-         */
         unsubscribe(inputEventNames, inputContextIds, channel) {
             const eventNames = new Set(unrollEvents(inputEventNames));
-            // Validation that contexts exist.
             this.#browsingContextStorage.verifyContextsList(inputContextIds);
             const topLevelTraversables = new Set(inputContextIds.map((contextId) => {
                 const topLevelContext = this.#browsingContextStorage.findTopLevelContextId(contextId);
@@ -10046,23 +9044,19 @@
             const eventsMatched = new Set();
             const contextsMatched = new Set();
             for (const subscription of this.#subscriptions) {
-                // `channel` is undefined or an object with 1 field, so `JSON.stringify` is stable.
                 if (JSON.stringify(subscription.channel) !== JSON.stringify(channel)) {
                     newSubscriptions.push(subscription);
                     continue;
                 }
-                // Skip user context subscriptions.
                 if (subscription.userContextIds.size !== 0) {
                     newSubscriptions.push(subscription);
                     continue;
                 }
-                // Skip subscriptions when none of the event names match.
                 if (intersection(subscription.eventNames, eventNames).size === 0) {
                     newSubscriptions.push(subscription);
                     continue;
                 }
                 if (isGlobalUnsubscribe) {
-                    // Skip non-global subscriptions.
                     if (subscription.topLevelTraversableIds.size !== 0) {
                         newSubscriptions.push(subscription);
                         continue;
@@ -10074,7 +9068,6 @@
                             subscriptionEventNames.delete(eventName);
                         }
                     }
-                    // If some events remain in the subscription, we keep it.
                     if (subscriptionEventNames.size !== 0) {
                         newSubscriptions.push({
                             ...subscription,
@@ -10083,12 +9076,10 @@
                     }
                 }
                 else {
-                    // Skip global subscriptions.
                     if (subscription.topLevelTraversableIds.size === 0) {
                         newSubscriptions.push(subscription);
                         continue;
                     }
-                    // Splitting context subscriptions.
                     const eventMap = new Map();
                     for (const eventName of subscription.eventNames) {
                         eventMap.set(eventName, new Set(subscription.topLevelTraversableIds));
@@ -10121,20 +9112,14 @@
                     }
                 }
             }
-            // If some events did not match, it is an invalid request.
             if (!equal(eventsMatched, eventNames)) {
                 throw new InvalidArgumentException('No subscription found');
             }
-            // If some contexts did not match, it is an invalid request.
             if (!isGlobalUnsubscribe && !equal(contextsMatched, topLevelTraversables)) {
                 throw new InvalidArgumentException('No subscription found');
             }
-            // Committing the new subscriptions.
             this.#subscriptions = newSubscriptions;
         }
-        /**
-         * Unsubscribes by subscriptionId.
-         */
         unsubscribeById(subscriptionIds) {
             const subscriptionIdsSet = new Set(subscriptionIds);
             const unknownIds = difference(subscriptionIdsSet, this.#knownSubscriptionIds);
@@ -10147,9 +9132,6 @@
             this.#knownSubscriptionIds = difference(this.#knownSubscriptionIds, subscriptionIdsSet);
         }
     }
-    /**
-     * Replace with Set.prototype.intersection once Node 20 is dropped.
-     */
     function intersection(setA, setB) {
         const result = new Set();
         for (const a of setA) {
@@ -10159,9 +9141,6 @@
         }
         return result;
     }
-    /**
-     * Replace with Set.prototype.difference once Node 20 is dropped.
-     */
     function difference(setA, setB) {
         const result = new Set();
         for (const a of setA) {
@@ -10218,33 +9197,13 @@
             return this.#event;
         }
     }
-    /**
-     * Maps event name to a desired buffer length.
-     */
     const eventBufferLength = new Map([[Log$1.EventNames.LogEntryAdded, 100]]);
     class EventManager extends EventEmitter {
-        /**
-         * Maps event name to a set of contexts where this event already happened.
-         * Needed for getting buffered events from all the contexts in case of
-         * subscripting to all contexts.
-         */
         #eventToContextsMap = new DefaultMap(() => new Set());
-        /**
-         * Maps `eventName` + `browsingContext` to buffer. Used to get buffered events
-         * during subscription. Channel-agnostic.
-         */
         #eventBuffers = new Map();
-        /**
-         * Maps `eventName` + `browsingContext` to  Map of json stringified channel to last id.
-         * Used to avoid sending duplicated events when user
-         * subscribes -> unsubscribes -> subscribes.
-         */
         #lastMessageSent = new Map();
         #subscriptionManager;
         #browsingContextStorage;
-        /**
-         * Map of event name to hooks to be called when client is subscribed to the event.
-         */
         #subscribeHooks;
         #userContextStorage;
         constructor(browsingContextStorage, userContextStorage) {
@@ -10257,9 +9216,6 @@
         get subscriptionManager() {
             return this.#subscriptionManager;
         }
-        /**
-         * Returns consistent key to be used to access value maps.
-         */
         static #getMapKey(eventName, browsingContext) {
             return JSON.stringify({ eventName, browsingContext });
         }
@@ -10282,9 +9238,8 @@
             const eventWrapper = new EventWrapper(event, contextId);
             const sortedChannels = this.#subscriptionManager.getChannelsSubscribedToEvent(eventName, contextId);
             this.#bufferEvent(eventWrapper, eventName);
-            // Send events to channels in the subscription priority.
             for (const channel of sortedChannels) {
-                this.emit("event" /* EventManagerEvents.Event */, {
+                this.emit("event" , {
                     message: OutgoingMessage.createFromPromise(event, channel),
                     event: eventName,
                 });
@@ -10295,9 +9250,8 @@
             const eventWrapper = new EventWrapper(event, null);
             const sortedChannels = this.#subscriptionManager.getChannelsSubscribedToEventGlobally(eventName);
             this.#bufferEvent(eventWrapper, eventName);
-            // Send events to channels in the subscription priority.
             for (const channel of sortedChannels) {
-                this.emit("event" /* EventManagerEvents.Event */, {
+                this.emit("event" , {
                     message: OutgoingMessage.createFromPromise(event, channel),
                     event: eventName,
                 });
@@ -10311,9 +9265,7 @@
             if (userContextIds.length && contextIds.length) {
                 throw new InvalidArgumentException('Both userContexts and contexts cannot be specified.');
             }
-            // First check if all the contexts are known.
             this.#browsingContextStorage.verifyContextsList(contextIds);
-            // Validate user contexts.
             await this.#userContextStorage.verifyUserContextIdList(userContextIds);
             const unrolledEventNames = new Set(unrollEvents(eventNames));
             const subscribeStepEvents = new Map();
@@ -10339,8 +9291,7 @@
             for (const eventName of subscription.eventNames) {
                 for (const contextId of subscriptionNavigableIds) {
                     for (const eventWrapper of this.#getBufferedEvents(eventName, contextId, channel)) {
-                        // The order of the events is important.
-                        this.emit("event" /* EventManagerEvents.Event */, {
+                        this.emit("event" , {
                             message: OutgoingMessage.createFromPromise(eventWrapper.event, channel),
                             event: eventName,
                         });
@@ -10368,8 +9319,6 @@
             await this.toggleModulesIfNeeded();
         }
         async toggleModulesIfNeeded() {
-            // TODO(1): Only update changed subscribers
-            // TODO(2): Enable for Worker Targets
             await Promise.all(this.#browsingContextStorage.getAllContexts().map(async (context) => {
                 return await context.toggleModulesIfNeeded();
             }));
@@ -10380,12 +9329,8 @@
                 this.#eventBuffers.delete(bufferMapKey);
             }
         }
-        /**
-         * If the event is buffer-able, put it in the buffer.
-         */
         #bufferEvent(eventWrapper, eventName) {
             if (!eventBufferLength.has(eventName)) {
-                // Do nothing if the event is no buffer-able.
                 return;
             }
             const bufferMapKey = _a$2.#getMapKey(eventName, eventWrapper.contextId);
@@ -10393,15 +9338,10 @@
                 this.#eventBuffers.set(bufferMapKey, new Buffer$1(eventBufferLength.get(eventName)));
             }
             this.#eventBuffers.get(bufferMapKey).add(eventWrapper);
-            // Add the context to the list of contexts having `eventName` events.
             this.#eventToContextsMap.get(eventName).add(eventWrapper.contextId);
         }
-        /**
-         * If the event is buffer-able, mark it as sent to the given contextId and channel.
-         */
         #markEventSent(eventWrapper, channel, eventName) {
             if (!eventBufferLength.has(eventName)) {
-                // Do nothing if the event is no buffer-able.
                 return;
             }
             const lastSentMapKey = _a$2.#getMapKey(eventName, eventWrapper.contextId);
@@ -10415,9 +9355,6 @@
                 this.#lastMessageSent.set(lastSentMapKey, new Map([[JSON.stringify(channel), lastId]]));
             }
         }
-        /**
-         * Returns events which are buffered and not yet sent to the given channel events.
-         */
         #getBufferedEvents(eventName, contextId, channel) {
             const bufferMapKey = _a$2.#getMapKey(eventName, contextId);
             const lastSentMessageId = this.#lastMessageSent.get(bufferMapKey)?.get(JSON.stringify(channel)) ??
@@ -10427,12 +9364,9 @@
                 ?.get()
                 .filter((wrapper) => wrapper.id > lastSentMessageId) ?? [];
             if (contextId === null) {
-                // For global subscriptions, events buffered in each context should be sent back.
                 Array.from(this.#eventToContextsMap.get(eventName).keys())
-                    .filter((_contextId) => 
-                // Events without context are already in the result.
+                    .filter((_contextId) =>
                 _contextId !== null &&
-                    // Events from deleted contexts should not be sent.
                     this.#browsingContextStorage.hasContext(_contextId))
                     .map((_contextId) => this.#getBufferedEvents(eventName, _contextId, channel))
                     .forEach((events) => result.push(...events));
@@ -10474,7 +9408,6 @@
             });
         };
         #processOutgoingMessage = async (messageEntry) => {
-            // Enrich message with channel data.
             const message = { ...messageEntry.message, ...messageEntry.channel };
             await this.#transport.sendMessage(message);
         };
@@ -10489,22 +9422,17 @@
             const networkStorage = new NetworkStorage(this.#eventManager, this.#browsingContextStorage, browserCdpClient, logger);
             this.#bluetoothProcessor = new BluetoothProcessor(this.#eventManager, this.#browsingContextStorage);
             this.#commandProcessor = new CommandProcessor(cdpConnection, browserCdpClient, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, this.#preloadScriptStorage, networkStorage, this.#bluetoothProcessor, userUserContextStorage, parser, async (options) => {
-                // This is required to ignore certificate errors when service worker is fetched.
                 await browserCdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
                     ignore: options.acceptInsecureCerts ?? false,
                 });
                 new CdpTargetManager(cdpConnection, browserCdpClient, selfTargetId, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, networkStorage, this.#bluetoothProcessor, this.#preloadScriptStorage, defaultUserContextId, options?.['goog:prerenderingDisabled'] ?? false, options?.unhandledPromptBehavior, logger);
-                // Needed to get events about new targets.
                 await browserCdpClient.sendCommand('Target.setDiscoverTargets', {
                     discover: true,
                 });
-                // Needed to automatically attach to new targets.
                 await browserCdpClient.sendCommand('Target.setAutoAttach', {
                     autoAttach: true,
                     waitForDebuggerOnStart: true,
                     flatten: true,
-                    // Browser session should attach to tab instead of the page, so that
-                    // prerendering is not blocked.
                     filter: [
                         {
                             type: 'page',
@@ -10515,21 +9443,14 @@
                 });
                 await this.#topLevelContextsLoaded();
             }, this.#logger);
-            this.#eventManager.on("event" /* EventManagerEvents.Event */, ({ message, event }) => {
+            this.#eventManager.on("event" , ({ message, event }) => {
                 this.emitOutgoingMessage(message, event);
             });
-            this.#commandProcessor.on("response" /* CommandProcessorEvents.Response */, ({ message, event }) => {
+            this.#commandProcessor.on("response" , ({ message, event }) => {
                 this.emitOutgoingMessage(message, event);
             });
         }
-        /**
-         * Creates and starts BiDi Mapper instance.
-         */
         static async createAndStart(bidiTransport, cdpConnection, browserCdpClient, selfTargetId, parser, logger) {
-            // The default context is not exposed in Target.getBrowserContexts but can
-            // be observed via Target.getTargets. To determine the default browser
-            // context, we check which one is mentioned in Target.getTargets and not in
-            // Target.getBrowserContexts.
             const [{ browserContextIds }, { targetInfos }] = await Promise.all([
                 browserCdpClient.sendCommand('Target.getBrowserContexts'),
                 browserCdpClient.sendCommand('Target.getTargets'),
@@ -10545,9 +9466,6 @@
             const server = new BidiServer(bidiTransport, cdpConnection, browserCdpClient, selfTargetId, defaultUserContextId, parser, logger);
             return server;
         }
-        /**
-         * Sends BiDi message.
-         */
         emitOutgoingMessage(messageEntry, event) {
             this.#messageQueue.add(messageEntry, event);
         }
@@ -10577,10 +9495,8 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    /** An error that will be thrown if/when the connection is closed. */
     class CloseError extends Error {
     }
-    /** Represents a high-level CDP connection to the browser. */
     class MapperCdpClient extends EventEmitter {
         #cdpConnection;
         #sessionId;
@@ -10601,19 +9517,11 @@
     }
 
     var _a$1;
-    /**
-     * Represents a high-level CDP connection to the browser backend.
-     *
-     * Manages all CdpClients (each backed by a Session ID) instance for each active
-     * CDP session.
-     */
     class MapperCdpConnection {
         static LOGGER_PREFIX_RECV = `${LogType.cdp}:RECV ◂`;
         static LOGGER_PREFIX_SEND = `${LogType.cdp}:SEND ▸`;
         #mainBrowserCdpClient;
         #transport;
-        /** Map from session ID to CdpClient.
-         * `undefined` points to the main browser session. */
         #sessionCdpClients = new Map();
         #commandCallbacks = new Map();
         #logger;
@@ -10622,10 +9530,8 @@
             this.#transport = transport;
             this.#logger = logger;
             this.#transport.setOnMessage(this.#onMessage);
-            // Create default Browser CDP Session.
             this.#mainBrowserCdpClient = this.#createCdpClient(undefined);
         }
-        /** Closes the connection to the browser. */
         close() {
             this.#transport.close();
             for (const [, { reject, error }] of this.#commandCallbacks) {
@@ -10638,10 +9544,6 @@
             const { sessionId } = await this.#mainBrowserCdpClient.sendCommand('Target.attachToBrowserTarget');
             return this.#createCdpClient(sessionId);
         }
-        /**
-         * Gets a CdpClient instance attached to the given session ID,
-         * or null if the session is not attached.
-         */
         getCdpClient(sessionId) {
             const cdpClient = this.#sessionCdpClients.get(sessionId);
             if (!cdpClient) {
@@ -10674,14 +9576,11 @@
         #onMessage = (json) => {
             const message = JSON.parse(json);
             this.#logger?.(_a$1.LOGGER_PREFIX_RECV, message);
-            // Update client map if a session is attached
-            // Listen for these events on every session.
             if (message.method === 'Target.attachedToTarget') {
                 const { sessionId } = message.params;
                 this.#createCdpClient(sessionId);
             }
             if (message.id !== undefined) {
-                // Handle command response.
                 const callbacks = this.#commandCallbacks.get(message.id);
                 this.#commandCallbacks.delete(message.id);
                 if (callbacks) {
@@ -10696,8 +9595,6 @@
             else if (message.method) {
                 const client = this.#sessionCdpClients.get(message.sessionId ?? undefined);
                 client?.emit(message.method, message.params || {});
-                // Update client map if a session is detached
-                // But emit on that session
                 if (message.method === 'Target.detachedFromTarget') {
                     const { sessionId } = message.params;
                     const client = this.#sessionCdpClients.get(sessionId);
@@ -10705,7 +9602,6 @@
                         this.#sessionCdpClients.delete(sessionId);
                         client.removeAllListeners();
                     }
-                    // Reject all the pending commands for the detached session.
                     for (const callback of this.#commandCallbacks.values()) {
                         if (callback.sessionId === sessionId) {
                             callback.reject(callback.error);
@@ -10714,12 +9610,6 @@
                 }
             }
         };
-        /**
-         * Creates a new CdpClient instance for the given session ID.
-         * @param sessionId either a string, or undefined for the main browser session.
-         * The main browser session is used only to create new browser sessions.
-         * @private
-         */
         #createCdpClient(sessionId) {
             const cdpClient = new MapperCdpClient(this, sessionId);
             this.#sessionCdpClients.set(sessionId, cdpClient);
@@ -10757,8 +9647,8 @@
                 return obj[e];
             });
         };
-        util.objectKeys = typeof Object.keys === "function" // eslint-disable-line ban/ban
-            ? (obj) => Object.keys(obj) // eslint-disable-line ban/ban
+        util.objectKeys = typeof Object.keys === "function"
+            ? (obj) => Object.keys(obj)
             : (object) => {
                 const keys = [];
                 for (const key in object) {
@@ -10776,7 +9666,7 @@
             return undefined;
         };
         util.isInteger = typeof Number.isInteger === "function"
-            ? (val) => Number.isInteger(val) // eslint-disable-line ban/ban
+            ? (val) => Number.isInteger(val)
             : (val) => typeof val === "number" && isFinite(val) && Math.floor(val) === val;
         function joinValues(array, separator = " | ") {
             return array
@@ -10796,7 +9686,7 @@
         objectUtil.mergeShapes = (first, second) => {
             return {
                 ...first,
-                ...second, // second overwrites first
+                ...second,
             };
         };
     })(objectUtil || (objectUtil = {}));
@@ -10866,7 +9756,6 @@
                 return ZodParsedType.unknown;
         }
     };
-
     const ZodIssueCode = util.arrayToEnum([
         "invalid_type",
         "invalid_literal",
@@ -10904,7 +9793,6 @@
             };
             const actualProto = new.target.prototype;
             if (Object.setPrototypeOf) {
-                // eslint-disable-next-line ban/ban
                 Object.setPrototypeOf(this, actualProto);
             }
             else {
@@ -10941,13 +9829,6 @@
                             const terminal = i === issue.path.length - 1;
                             if (!terminal) {
                                 curr[el] = curr[el] || { _errors: [] };
-                                // if (typeof el === "string") {
-                                //   curr[el] = curr[el] || { _errors: [] };
-                                // } else if (typeof el === "number") {
-                                //   const errorArray: any = [];
-                                //   errorArray._errors = [];
-                                //   curr[el] = curr[el] || errorArray;
-                                // }
                             }
                             else {
                                 curr[el] = curr[el] || { _errors: [] };
@@ -10998,7 +9879,6 @@
         const error = new ZodError(issues);
         return error;
     };
-
     const errorMap = (issue, _ctx) => {
         let message;
         switch (issue.code) {
@@ -11123,7 +10003,6 @@
         }
         return { message };
     };
-
     let overrideErrorMap = errorMap;
     function setErrorMap(map) {
         overrideErrorMap = map;
@@ -11131,7 +10010,6 @@
     function getErrorMap() {
         return overrideErrorMap;
     }
-
     const makeIssue = (params) => {
         const { data, path, errorMaps, issueData } = params;
         const fullPath = [...path, ...(issueData.path || [])];
@@ -11168,10 +10046,10 @@
             data: ctx.data,
             path: ctx.path,
             errorMaps: [
-                ctx.common.contextualErrorMap, // contextual error map is first priority
-                ctx.schemaErrorMap, // then schema-bound map if available
-                overrideMap, // then global override map
-                overrideMap === errorMap ? undefined : errorMap, // then global default map
+                ctx.common.contextualErrorMap,
+                ctx.schemaErrorMap,
+                overrideMap,
+                overrideMap === errorMap ? undefined : errorMap,
             ].filter((x) => !!x),
         });
         ctx.common.issues.push(issue);
@@ -11240,13 +10118,10 @@
     const isDirty = (x) => x.status === "dirty";
     const isValid = (x) => x.status === "valid";
     const isAsync = (x) => typeof Promise !== "undefined" && x instanceof Promise;
-
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
-
     Permission to use, copy, modify, and/or distribute this software for any
     purpose with or without fee is hereby granted.
-
     THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
     REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
     AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
@@ -11255,28 +10130,23 @@
     OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
     PERFORMANCE OF THIS SOFTWARE.
     ***************************************************************************** */
-
     function __classPrivateFieldGet(receiver, state, kind, f) {
         if (typeof state === "function" ? receiver !== state || true : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
         return state.get(receiver);
     }
-
     function __classPrivateFieldSet(receiver, state, value, kind, f) {
         if (typeof state === "function" ? receiver !== state || true : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
         return (state.set(receiver, value)), value;
     }
-
     typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
         var e = new Error(message);
         return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
     };
-
     var errorUtil;
     (function (errorUtil) {
         errorUtil.errToObj = (message) => typeof message === "string" ? { message } : message || {};
         errorUtil.toString = (message) => typeof message === "string" ? message : message === null || message === void 0 ? void 0 : message.message;
     })(errorUtil || (errorUtil = {}));
-
     var _ZodEnum_cache, _ZodNativeEnum_cache;
     class ParseInputLazyPath {
         constructor(parent, value, path, key) {
@@ -11535,7 +10405,6 @@
             return this._refinement(refinement);
         }
         constructor(def) {
-            /** Alias of safeParseAsync */
             this.spa = this.safeParseAsync;
             this._def = def;
             this.parse = this.parse.bind(this);
@@ -11645,50 +10514,22 @@
     const cuidRegex = /^c[^\s-]{8,}$/i;
     const cuid2Regex = /^[0-9a-z]+$/;
     const ulidRegex = /^[0-9A-HJKMNP-TV-Z]{26}$/i;
-    // const uuidRegex =
-    //   /^([a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[a-f0-9]{4}-[a-f0-9]{12}|00000000-0000-0000-0000-000000000000)$/i;
     const uuidRegex = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i;
     const nanoidRegex = /^[a-z0-9_-]{21}$/i;
     const jwtRegex = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/;
     const durationRegex = /^[-+]?P(?!$)(?:(?:[-+]?\d+Y)|(?:[-+]?\d+[.,]\d+Y$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:(?:[-+]?\d+W)|(?:[-+]?\d+[.,]\d+W$))?(?:(?:[-+]?\d+D)|(?:[-+]?\d+[.,]\d+D$))?(?:T(?=[\d+-])(?:(?:[-+]?\d+H)|(?:[-+]?\d+[.,]\d+H$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:[-+]?\d+(?:[.,]\d+)?S)?)??$/;
-    // from https://stackoverflow.com/a/46181/1550155
-    // old version: too slow, didn't support unicode
-    // const emailRegex = /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i;
-    //old email regex
-    // const emailRegex = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@((?!-)([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{1,})[^-<>()[\].,;:\s@"]$/i;
-    // eslint-disable-next-line
-    // const emailRegex =
-    //   /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\])|(\[IPv6:(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))\])|([A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])*(\.[A-Za-z]{2,})+))$/;
-    // const emailRegex =
-    //   /^[a-zA-Z0-9\.\!\#\$\%\&\'\*\+\/\=\?\^\_\`\{\|\}\~\-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-    // const emailRegex =
-    //   /^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/i;
     const emailRegex = /^(?!\.)(?!.*\.\.)([A-Z0-9_'+\-\.]*)[A-Z0-9_+-]@([A-Z0-9][A-Z0-9\-]*\.)+[A-Z]{2,}$/i;
-    // const emailRegex =
-    //   /^[a-z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-z0-9-]+(?:\.[a-z0-9\-]+)*$/i;
-    // from https://thekevinscott.com/emojis-in-javascript/#writing-a-regular-expression
     const _emojiRegex = `^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$`;
     let emojiRegex;
-    // faster, simpler, safer
     const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/;
     const ipv4CidrRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\/(3[0-2]|[12]?[0-9])$/;
-    // const ipv6Regex =
-    // /^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$/;
     const ipv6Regex = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/;
     const ipv6CidrRegex = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\/(12[0-8]|1[01][0-9]|[1-9]?[0-9])$/;
-    // https://stackoverflow.com/questions/7860392/determine-if-string-is-in-base64-using-javascript
     const base64Regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
-    // https://base64.guru/standards/base64url
     const base64urlRegex = /^([0-9a-zA-Z-_]{4})*(([0-9a-zA-Z-_]{2}(==)?)|([0-9a-zA-Z-_]{3}(=)?))?$/;
-    // simple
-    // const dateRegexSource = `\\d{4}-\\d{2}-\\d{2}`;
-    // no leap year validation
-    // const dateRegexSource = `\\d{4}-((0[13578]|10|12)-31|(0[13-9]|1[0-2])-30|(0[1-9]|1[0-2])-(0[1-9]|1\\d|2\\d))`;
-    // with leap year validation
     const dateRegexSource = `((\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-((0[13578]|1[02])-(0[1-9]|[12]\\d|3[01])|(0[469]|11)-(0[1-9]|[12]\\d|30)|(02)-(0[1-9]|1\\d|2[0-8])))`;
     const dateRegex = new RegExp(`^${dateRegexSource}$`);
     function timeRegexSource(args) {
-        // let regex = `\\d{2}:\\d{2}:\\d{2}`;
         let regex = `([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d`;
         if (args.precision) {
             regex = `${regex}\\.\\d{${args.precision}}`;
@@ -11701,7 +10542,6 @@
     function timeRegex(args) {
         return new RegExp(`^${timeRegexSource(args)}$`);
     }
-    // Adapted from https://stackoverflow.com/a/3143231
     function datetimeRegex(args) {
         let regex = `${dateRegexSource}T${timeRegexSource(args)}`;
         const opts = [];
@@ -11725,7 +10565,6 @@
             return false;
         try {
             const [header] = jwt.split(".");
-            // Convert base64url to base64
             const base64 = header
                 .replace(/-/g, "+")
                 .replace(/_/g, "/")
@@ -12124,7 +10963,6 @@
             return this._addCheck({ kind: "base64", ...errorUtil.errToObj(message) });
         }
         base64url(message) {
-            // base64url encoding is a modification of base64 that can safely be used in URLs and filenames
             return this._addCheck({
                 kind: "base64url",
                 ...errorUtil.errToObj(message),
@@ -12228,9 +11066,6 @@
                 ...errorUtil.errToObj(message),
             });
         }
-        /**
-         * Equivalent to `.min(1)`
-         */
         nonempty(message) {
             return this.min(1, errorUtil.errToObj(message));
         }
@@ -12298,7 +11133,6 @@
             return !!this._def.checks.find((ch) => ch.kind === "base64");
         }
         get isBase64url() {
-            // base64url encoding is a modification of base64 that can safely be used in URLs and filenames
             return !!this._def.checks.find((ch) => ch.kind === "base64url");
         }
         get minLength() {
@@ -12331,7 +11165,6 @@
             ...processCreateParams(params),
         });
     };
-    // https://stackoverflow.com/questions/3966484/why-does-modulus-operator-return-fractional-number-in-javascript/31711034#31711034
     function floatSafeRemainder(val, step) {
         const valDecCount = (val.toString().split(".")[1] || "").length;
         const stepDecCount = (step.toString().split(".")[1] || "").length;
@@ -12968,7 +11801,6 @@
     class ZodAny extends ZodType {
         constructor() {
             super(...arguments);
-            // to prevent instances of other classes from extending ZodAny. this causes issues with catchall in ZodObject.
             this._any = true;
         }
         _parse(input) {
@@ -12984,7 +11816,6 @@
     class ZodUnknown extends ZodType {
         constructor() {
             super(...arguments);
-            // required
             this._unknown = true;
         }
         _parse(input) {
@@ -13171,47 +12002,7 @@
         constructor() {
             super(...arguments);
             this._cached = null;
-            /**
-             * @deprecated In most cases, this is no longer needed - unknown properties are now silently stripped.
-             * If you want to pass through unknown properties, use `.passthrough()` instead.
-             */
             this.nonstrict = this.passthrough;
-            // extend<
-            //   Augmentation extends ZodRawShape,
-            //   NewOutput extends util.flatten<{
-            //     [k in keyof Augmentation | keyof Output]: k extends keyof Augmentation
-            //       ? Augmentation[k]["_output"]
-            //       : k extends keyof Output
-            //       ? Output[k]
-            //       : never;
-            //   }>,
-            //   NewInput extends util.flatten<{
-            //     [k in keyof Augmentation | keyof Input]: k extends keyof Augmentation
-            //       ? Augmentation[k]["_input"]
-            //       : k extends keyof Input
-            //       ? Input[k]
-            //       : never;
-            //   }>
-            // >(
-            //   augmentation: Augmentation
-            // ): ZodObject<
-            //   extendShape<T, Augmentation>,
-            //   UnknownKeys,
-            //   Catchall,
-            //   NewOutput,
-            //   NewInput
-            // > {
-            //   return new ZodObject({
-            //     ...this._def,
-            //     shape: () => ({
-            //       ...this._def.shape(),
-            //       ...augmentation,
-            //     }),
-            //   }) as any;
-            // }
-            /**
-             * @deprecated Use `.extend` instead
-             *  */
             this.augment = this.extend;
         }
         _getCached() {
@@ -13278,13 +12069,12 @@
                 }
             }
             else {
-                // run catchall validation
                 const catchall = this._def.catchall;
                 for (const key of extraKeys) {
                     const value = ctx.data[key];
                     pairs.push({
                         key: { status: "valid", value: key },
-                        value: catchall._parse(new ParseInputLazyPath(ctx, value, ctx.path, key) //, ctx.child(key), value, getParsedType(value)
+                        value: catchall._parse(new ParseInputLazyPath(ctx, value, ctx.path, key)
                         ),
                         alwaysSet: key in ctx.data,
                     });
@@ -13350,23 +12140,6 @@
                 unknownKeys: "passthrough",
             });
         }
-        // const AugmentFactory =
-        //   <Def extends ZodObjectDef>(def: Def) =>
-        //   <Augmentation extends ZodRawShape>(
-        //     augmentation: Augmentation
-        //   ): ZodObject<
-        //     extendShape<ReturnType<Def["shape"]>, Augmentation>,
-        //     Def["unknownKeys"],
-        //     Def["catchall"]
-        //   > => {
-        //     return new ZodObject({
-        //       ...def,
-        //       shape: () => ({
-        //         ...def.shape(),
-        //         ...augmentation,
-        //       }),
-        //     }) as any;
-        //   };
         extend(augmentation) {
             return new ZodObject({
                 ...this._def,
@@ -13376,11 +12149,6 @@
                 }),
             });
         }
-        /**
-         * Prior to zod@1.0.12 there was a bug in the
-         * inferred type of merged objects. Please
-         * upgrade if you are experiencing issues.
-         */
         merge(merging) {
             const merged = new ZodObject({
                 unknownKeys: merging._def.unknownKeys,
@@ -13393,65 +12161,9 @@
             });
             return merged;
         }
-        // merge<
-        //   Incoming extends AnyZodObject,
-        //   Augmentation extends Incoming["shape"],
-        //   NewOutput extends {
-        //     [k in keyof Augmentation | keyof Output]: k extends keyof Augmentation
-        //       ? Augmentation[k]["_output"]
-        //       : k extends keyof Output
-        //       ? Output[k]
-        //       : never;
-        //   },
-        //   NewInput extends {
-        //     [k in keyof Augmentation | keyof Input]: k extends keyof Augmentation
-        //       ? Augmentation[k]["_input"]
-        //       : k extends keyof Input
-        //       ? Input[k]
-        //       : never;
-        //   }
-        // >(
-        //   merging: Incoming
-        // ): ZodObject<
-        //   extendShape<T, ReturnType<Incoming["_def"]["shape"]>>,
-        //   Incoming["_def"]["unknownKeys"],
-        //   Incoming["_def"]["catchall"],
-        //   NewOutput,
-        //   NewInput
-        // > {
-        //   const merged: any = new ZodObject({
-        //     unknownKeys: merging._def.unknownKeys,
-        //     catchall: merging._def.catchall,
-        //     shape: () =>
-        //       objectUtil.mergeShapes(this._def.shape(), merging._def.shape()),
-        //     typeName: ZodFirstPartyTypeKind.ZodObject,
-        //   }) as any;
-        //   return merged;
-        // }
         setKey(key, schema) {
             return this.augment({ [key]: schema });
         }
-        // merge<Incoming extends AnyZodObject>(
-        //   merging: Incoming
-        // ): //ZodObject<T & Incoming["_shape"], UnknownKeys, Catchall> = (merging) => {
-        // ZodObject<
-        //   extendShape<T, ReturnType<Incoming["_def"]["shape"]>>,
-        //   Incoming["_def"]["unknownKeys"],
-        //   Incoming["_def"]["catchall"]
-        // > {
-        //   // const mergedShape = objectUtil.mergeShapes(
-        //   //   this._def.shape(),
-        //   //   merging._def.shape()
-        //   // );
-        //   const merged: any = new ZodObject({
-        //     unknownKeys: merging._def.unknownKeys,
-        //     catchall: merging._def.catchall,
-        //     shape: () =>
-        //       objectUtil.mergeShapes(this._def.shape(), merging._def.shape()),
-        //     typeName: ZodFirstPartyTypeKind.ZodObject,
-        //   }) as any;
-        //   return merged;
-        // }
         catchall(index) {
             return new ZodObject({
                 ...this._def,
@@ -13482,9 +12194,6 @@
                 shape: () => shape,
             });
         }
-        /**
-         * @deprecated
-         */
         deepPartial() {
             return deepPartialify(this);
         }
@@ -13560,7 +12269,6 @@
             const { ctx } = this._processInputParams(input);
             const options = this._def.options;
             function handleResults(results) {
-                // return first issue-free validation if it exists
                 for (const result of results) {
                     if (result.result.status === "valid") {
                         return result.result;
@@ -13568,12 +12276,10 @@
                 }
                 for (const result of results) {
                     if (result.result.status === "dirty") {
-                        // add issues from dirty option
                         ctx.common.issues.push(...result.ctx.common.issues);
                         return result.result;
                     }
                 }
-                // return invalid
                 const unionErrors = results.map((result) => new ZodError(result.ctx.common.issues));
                 addIssueToContext(ctx, {
                     code: ZodIssueCode.invalid_union,
@@ -13651,13 +12357,6 @@
             ...processCreateParams(params),
         });
     };
-    /////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////
-    //////////                                 //////////
-    //////////      ZodDiscriminatedUnion      //////////
-    //////////                                 //////////
-    /////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////
     const getDiscriminator = (type) => {
         if (type instanceof ZodLazy) {
             return getDiscriminator(type.schema);
@@ -13672,7 +12371,6 @@
             return type.options;
         }
         else if (type instanceof ZodNativeEnum) {
-            // eslint-disable-next-line ban/ban
             return util.objectValues(type.enum);
         }
         else if (type instanceof ZodDefault) {
@@ -13749,18 +12447,8 @@
         get optionsMap() {
             return this._def.optionsMap;
         }
-        /**
-         * The constructor of the discriminated union schema. Its behaviour is very similar to that of the normal z.union() constructor.
-         * However, it only allows a union of objects, all of which need to share a discriminator property. This property must
-         * have a different value for each object in the union.
-         * @param discriminator the name of the discriminator property
-         * @param types an array of object schemas
-         * @param params
-         */
         static create(discriminator, options, params) {
-            // Get all the valid discriminator values
             const optionsMap = new Map();
-            // try {
             for (const type of options) {
                 const discriminatorValues = getDiscriminator(type.shape[discriminator]);
                 if (!discriminatorValues.length) {
@@ -13921,7 +12609,7 @@
                     return null;
                 return schema._parse(new ParseInputLazyPath(ctx, item, ctx.path, itemIndex));
             })
-                .filter((x) => !!x); // filter nulls
+                .filter((x) => !!x);
             if (ctx.common.async) {
                 return Promise.all(items).then((results) => {
                     return ParseStatus.mergeArray(status, results);
@@ -14209,9 +12897,6 @@
             const params = { errorMap: ctx.common.contextualErrorMap };
             const fn = ctx.data;
             if (this._def.returns instanceof ZodPromise) {
-                // Would love a way to avoid disabling this rule, but we need
-                // an alias (using an arrow function was what caused 2651).
-                // eslint-disable-next-line @typescript-eslint/no-this-alias
                 const me = this;
                 return OK(async function (...args) {
                     const error = new ZodError([]);
@@ -14232,9 +12917,6 @@
                 });
             }
             else {
-                // Would love a way to avoid disabling this rule, but we need
-                // an alias (using an arrow function was what caused 2651).
-                // eslint-disable-next-line @typescript-eslint/no-this-alias
                 const me = this;
                 return OK(function (...args) {
                     const parsedArgs = me._def.args.safeParse(args, params);
@@ -14567,7 +13249,6 @@
                         return INVALID;
                     if (inner.status === "dirty")
                         status.dirty();
-                    // return value is ignored
                     executeRefinement(inner.value);
                     return { status: status.value, value: inner.value };
                 }
@@ -14697,7 +13378,6 @@
     class ZodCatch extends ZodType {
         _parse(input) {
             const { ctx } = this._processInputParams(input);
-            // newCtx is used to not collect issues from inner types in ctx
             const newCtx = {
                 ...ctx,
                 common: {
@@ -14871,13 +13551,6 @@
             ...processCreateParams(params),
         });
     };
-    ////////////////////////////////////////
-    ////////////////////////////////////////
-    //////////                    //////////
-    //////////      z.custom      //////////
-    //////////                    //////////
-    ////////////////////////////////////////
-    ////////////////////////////////////////
     function cleanParams(params, data) {
         const p = typeof params === "function"
             ? params(data)
@@ -14887,17 +13560,7 @@
         const p2 = typeof p === "string" ? { message: p } : p;
         return p2;
     }
-    function custom(check, _params = {}, 
-    /**
-     * @deprecated
-     *
-     * Pass `fatal` into the params object instead:
-     *
-     * ```ts
-     * z.string().custom((val) => val.length > 5, { fatal: false })
-     * ```
-     *
-     */
+    function custom(check, _params = {},
     fatal) {
         if (check)
             return ZodAny.create().superRefine((data, ctx) => {
@@ -14965,7 +13628,6 @@
         ZodFirstPartyTypeKind["ZodReadonly"] = "ZodReadonly";
     })(ZodFirstPartyTypeKind || (ZodFirstPartyTypeKind = {}));
     const instanceOfType = (
-    // const instanceOfType = <T extends new (...args: any[]) => any>(
     cls, params = {
         message: `Input not instance of ${cls.name}`,
     }) => custom((data) => data instanceof cls, params);
@@ -15017,8 +13679,7 @@
         date: ((arg) => ZodDate.create({ ...arg, coerce: true })),
     };
     const NEVER = INVALID;
-
-    var z = /*#__PURE__*/Object.freeze({
+    var z = Object.freeze({
         __proto__: null,
         defaultErrorMap: errorMap,
         setErrorMap: setErrorMap,
@@ -15145,13 +13806,6 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    /**
-     * THIS FILE IS AUTOGENERATED by cddlconv 0.1.5.
-     * Run `node tools/generate-bidi-types.mjs` to regenerate.
-     * @see https://github.com/w3c/webdriver-bidi/blob/master/index.bs
-     */
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-nocheck Some types may be circular.
     var Bluetooth$1;
     (function (Bluetooth) {
         Bluetooth.BluetoothServiceUuidSchema = z.lazy(() => z.string());
@@ -15221,7 +13875,9 @@
     (function (Bluetooth) {
         Bluetooth.SimulateAdapterParametersSchema = z.lazy(() => z.object({
             context: z.string(),
-            state: z.enum(['absent', 'powered-off', 'powered-on']),
+            type: z.enum(['create', 'update', 'remove']),
+            leSupported: z.boolean().optional(),
+            state: z.enum(['absent', 'powered-off', 'powered-on']).optional(),
         }));
     })(Bluetooth$1 || (Bluetooth$1 = {}));
     (function (Bluetooth) {
@@ -15288,13 +13944,6 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    /**
-     * THIS FILE IS AUTOGENERATED by cddlconv 0.1.5.
-     * Run `node tools/generate-bidi-types.mjs` to regenerate.
-     * @see https://github.com/w3c/webdriver-bidi/blob/master/index.bs
-     */
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-nocheck Some types may be circular.
     z.lazy(() => Permissions$1.SetPermissionSchema);
     var Permissions$1;
     (function (Permissions) {
@@ -15336,13 +13985,6 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    /**
-     * THIS FILE IS AUTOGENERATED by cddlconv 0.1.5.
-     * Run `node tools/generate-bidi-types.mjs` to regenerate.
-     * @see https://github.com/w3c/webdriver-bidi/blob/master/index.bs
-     */
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-nocheck Some types may be circular.
     const EventSchema = z.lazy(() => z
         .object({
         type: z.literal('event'),
@@ -15729,14 +14371,14 @@
         }));
     })(Browser$1 || (Browser$1 = {}));
     (function (Browser) {
-        Browser.SetClientWindowStateParametersSchema = z.lazy(() => z.union([
-            z
-                .object({
-                clientWindow: Browser.ClientWindowSchema,
-            })
-                .and(Browser.ClientWindowNamedStateSchema),
+        Browser.SetClientWindowStateParametersSchema = z.lazy(() => z
+            .object({
+            clientWindow: Browser.ClientWindowSchema,
+        })
+            .and(z.union([
+            Browser.ClientWindowNamedStateSchema,
             Browser.ClientWindowRectStateSchema,
-        ]));
+        ])));
     })(Browser$1 || (Browser$1 = {}));
     (function (Browser) {
         Browser.ClientWindowNamedStateSchema = z.lazy(() => z.object({
@@ -17555,8 +16197,8 @@
         Input.PointerMoveActionSchema = z.lazy(() => z
             .object({
             type: z.literal('pointerMove'),
-            x: JsIntSchema,
-            y: JsIntSchema,
+            x: z.number(),
+            y: z.number(),
             duration: JsUintSchema.optional(),
             origin: Input.OriginSchema.optional(),
         })
@@ -17707,10 +16349,6 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    /**
-     * @fileoverview Provides parsing and validator for WebDriver BiDi protocol.
-     * Parser types should match the `../protocol` types.
-     */
     function parseObject(obj, schema) {
         const parseResult = schema.safeParse(obj);
         if (parseResult.success) {
@@ -17722,7 +16360,6 @@
             .join(' ');
         throw new InvalidArgumentException(errorMessage);
     }
-    /** @see https://w3c.github.io/webdriver-bidi/#module-browser */
     var Browser;
     (function (Browser) {
         function parseRemoveUserContextParams(params) {
@@ -17730,11 +16367,9 @@
         }
         Browser.parseRemoveUserContextParams = parseRemoveUserContextParams;
     })(Browser || (Browser = {}));
-    /** @see https://w3c.github.io/webdriver-bidi/#module-network */
     var Network;
     (function (Network) {
         function parseAddInterceptParameters(params) {
-            // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
             return parseObject(params, Network$1.AddInterceptParametersSchema);
         }
         Network.parseAddInterceptParameters = parseAddInterceptParameters;
@@ -17743,7 +16378,6 @@
         }
         Network.parseContinueRequestParameters = parseContinueRequestParameters;
         function parseContinueResponseParameters(params) {
-            // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
             return parseObject(params, Network$1.ContinueResponseParametersSchema);
         }
         Network.parseContinueResponseParameters = parseContinueResponseParameters;
@@ -17756,7 +16390,6 @@
         }
         Network.parseFailRequestParameters = parseFailRequestParameters;
         function parseProvideResponseParameters(params) {
-            // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
             return parseObject(params, Network$1.ProvideResponseParametersSchema);
         }
         Network.parseProvideResponseParameters = parseProvideResponseParameters;
@@ -17769,7 +16402,6 @@
         }
         Network.parseSetCacheBehavior = parseSetCacheBehavior;
     })(Network || (Network = {}));
-    /** @see https://w3c.github.io/webdriver-bidi/#module-script */
     var Script;
     (function (Script) {
         function parseGetRealmsParams(params) {
@@ -17797,7 +16429,6 @@
         }
         Script.parseCallFunctionParams = parseCallFunctionParams;
     })(Script || (Script = {}));
-    /** @see https://w3c.github.io/webdriver-bidi/#module-browsingContext */
     var BrowsingContext;
     (function (BrowsingContext) {
         function parseActivateParams(params) {
@@ -17845,12 +16476,10 @@
         }
         BrowsingContext.parseHandleUserPromptParameters = parseHandleUserPromptParameters;
         function parseLocateNodesParams(params) {
-            // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
             return parseObject(params, BrowsingContext$1.LocateNodesParametersSchema);
         }
         BrowsingContext.parseLocateNodesParams = parseLocateNodesParams;
     })(BrowsingContext || (BrowsingContext = {}));
-    /** @see https://w3c.github.io/webdriver-bidi/#module-session */
     var Session;
     (function (Session) {
         function parseSubscribeParams(params) {
@@ -17883,29 +16512,14 @@
     var Storage;
     (function (Storage) {
         function parseGetCookiesParams(params) {
-            // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
-            // The generated schema `SameSiteSchema` in `src/protocol-parser/webdriver-bidi.ts` is
-            // of type `"none" | "strict" | "lax"` which is not assignable to generated enum
-            // `SameSite` in `src/protocol/webdriver-bidi.ts`.
-            // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
             return parseObject(params, Storage$1.GetCookiesParametersSchema);
         }
         Storage.parseGetCookiesParams = parseGetCookiesParams;
         function parseSetCookieParams(params) {
-            // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
-            // The generated schema `SameSiteSchema` in `src/protocol-parser/webdriver-bidi.ts` is
-            // of type `"none" | "strict" | "lax"` which is not assignable to generated enum
-            // `SameSite` in `src/protocol/webdriver-bidi.ts`.
-            // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
             return parseObject(params, Storage$1.SetCookieParametersSchema);
         }
         Storage.parseSetCookieParams = parseSetCookieParams;
         function parseDeleteCookiesParams(params) {
-            // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
-            // The generated schema `SameSiteSchema` in `src/protocol-parser/webdriver-bidi.ts` is
-            // of type `"none" | "strict" | "lax"` which is not assignable to generated enum
-            // `SameSite` in `src/protocol/webdriver-bidi.ts`.
-            // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
             return parseObject(params, Storage$1.DeleteCookiesParametersSchema);
         }
         Storage.parseDeleteCookiesParams = parseDeleteCookiesParams;
@@ -17913,10 +16527,7 @@
     var Cdp;
     (function (Cdp) {
         const SendCommandRequestSchema = z.object({
-            // Allowing any cdpMethod, and casting to proper type later on.
             method: z.string(),
-            // `passthrough` allows object to have any fields.
-            // https://github.com/colinhacks/zod#passthrough
             params: z.object({}).passthrough().optional(),
             session: z.string().optional(),
         });
@@ -17943,7 +16554,6 @@
     (function (Permissions) {
         function parseSetPermissionsParams(params) {
             return {
-                // TODO: remove once "goog:" attributes are not needed.
                 ...params,
                 ...parseObject(params, Permissions$1.SetPermissionParametersSchema),
             };
@@ -17971,9 +16581,19 @@
         }
         Bluetooth.parseSimulatePreconnectedPeripheralParams = parseSimulatePreconnectedPeripheralParams;
     })(Bluetooth || (Bluetooth = {}));
+    var WebModule;
+    (function (WebModule) {
+        function parseInstallParams(params) {
+            return parseObject(params, WebExtension.InstallParametersSchema);
+        }
+        WebModule.parseInstallParams = parseInstallParams;
+        function parseUninstallParams(params) {
+            return parseObject(params, WebExtension.UninstallParametersSchema);
+        }
+        WebModule.parseUninstallParams = parseUninstallParams;
+    })(WebModule || (WebModule = {}));
 
     class BidiParser {
-        // Bluetooth module
         parseHandleRequestDevicePromptParams(params) {
             return Bluetooth.parseHandleRequestDevicePromptParams(params);
         }
@@ -17986,11 +16606,9 @@
         parseSimulatePreconnectedPeripheralParameters(params) {
             return Bluetooth.parseSimulatePreconnectedPeripheralParams(params);
         }
-        // Browser module
         parseRemoveUserContextParams(params) {
             return Browser.parseRemoveUserContextParams(params);
         }
-        // Browsing Context module
         parseActivateParams(params) {
             return BrowsingContext.parseActivateParams(params);
         }
@@ -18027,7 +16645,6 @@
         parseTraverseHistoryParams(params) {
             return BrowsingContext.parseTraverseHistoryParams(params);
         }
-        // CDP module
         parseGetSessionParams(params) {
             return Cdp.parseGetSessionRequest(params);
         }
@@ -18037,7 +16654,6 @@
         parseSendCommandParams(params) {
             return Cdp.parseSendCommandRequest(params);
         }
-        // Input module
         parsePerformActionsParams(params) {
             return Input.parsePerformActionsParams(params);
         }
@@ -18047,7 +16663,6 @@
         parseSetFilesParams(params) {
             return Input.parseSetFilesParams(params);
         }
-        // Network module
         parseAddInterceptParams(params) {
             return Network.parseAddInterceptParameters(params);
         }
@@ -18072,11 +16687,9 @@
         parseSetCacheBehavior(params) {
             return Network.parseSetCacheBehavior(params);
         }
-        // Permissions module
         parseSetPermissionsParams(params) {
             return Permissions.parseSetPermissionsParams(params);
         }
-        // Script module
         parseAddPreloadScriptParams(params) {
             return Script.parseAddPreloadScriptParams(params);
         }
@@ -18095,14 +16708,12 @@
         parseRemovePreloadScriptParams(params) {
             return Script.parseRemovePreloadScriptParams(params);
         }
-        // Session module
         parseSubscribeParams(params) {
             return Session.parseSubscribeParams(params);
         }
         parseUnsubscribeParams(params) {
             return Session.parseUnsubscribeParams(params);
         }
-        // Storage module
         parseDeleteCookiesParams(params) {
             return Storage.parseDeleteCookiesParams(params);
         }
@@ -18111,6 +16722,12 @@
         }
         parseSetCookieParams(params) {
             return Storage.parseSetCookieParams(params);
+        }
+        parseInstallParams(params) {
+            return WebModule.parseInstallParams(params);
+        }
+        parseUninstallParams(params) {
+            return WebModule.parseUninstallParams(params);
         }
     }
 
@@ -18130,15 +16747,12 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    /** HTML source code for the user-facing Mapper tab. */
     const mapperPageSource = '<!DOCTYPE html><title>BiDi-CDP Mapper</title><style>body{font-family: Roboto,serif;font-size:13px;color:#202124;}.log{padding: 10px;font-family:Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;font-size:11px;line-height:180%;background: #f1f3f4;border-radius:4px;}.pre{overflow-wrap: break-word; margin:10px;}.card{margin:60px auto;padding:2px 0;max-width:900px;box-shadow:0 1px 4px rgba(0,0,0,0.15),0 1px 6px rgba(0,0,0,0.2);border-radius:8px;}.divider{height:1px;background:#f0f0f0;}.item{padding:16px 20px;}</style><div class="card"><div class="item"><h1>BiDi-CDP Mapper is controlling this tab</h1><p>Closing or reloading it will stop the BiDi process. <a target="_blank" title="BiDi-CDP Mapper GitHub Repository" href="https://github.com/GoogleChromeLabs/chromium-bidi">Details.</a></p></div><div class="item"><div id="logs" class="log"></div></div></div></div>';
     function generatePage() {
-        // If run not in browser (e.g. unit test), do nothing.
         if (!globalThis.document.documentElement) {
             return;
         }
         globalThis.document.documentElement.innerHTML = mapperPageSource;
-        // Show a confirmation dialog when the user tries to leave the Mapper tab.
         globalThis.window.onbeforeunload = () => 'Closing or reloading this tab will stop the BiDi process. Are you sure you want to leave?';
     }
     function stringify(message) {
@@ -18148,24 +16762,18 @@
         return message;
     }
     function log(logPrefix, ...messages) {
-        // If run not in browser (e.g. unit test), do nothing.
         if (!globalThis.document.documentElement) {
             return;
         }
-        // Skip sending BiDi logs as they are logged once by `bidi:server:*`
         if (!logPrefix.startsWith(LogType.bidi)) {
-            // If `sendDebugMessage` is defined, send the log message there.
             globalThis.window?.sendDebugMessage?.(JSON.stringify({ logType: logPrefix, messages }, null, 2));
         }
         const debugContainer = document.getElementById('logs');
         if (!debugContainer) {
             return;
         }
-        // This piece of HTML should be added:
-        // <div class="pre">...log message...</div>
         const lineElement = document.createElement('div');
         lineElement.className = 'pre';
-        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         lineElement.textContent = [logPrefix, ...messages].map(stringify).join(' ');
         debugContainer.appendChild(lineElement);
         if (debugContainer.childNodes.length > 400) {
@@ -18188,8 +16796,7 @@
                 }
                 catch (e) {
                     const error = e instanceof Error ? e : new Error(e);
-                    // Transport-level error does not provide channel.
-                    this.#respondWithError(message, "invalid argument" /* ErrorCode.InvalidArgument */, error, {});
+                    this.#respondWithError(message, "invalid argument" , error, {});
                 }
             };
         }
@@ -18222,8 +16829,6 @@
             return typeof value;
         }
         static #getErrorResponse(message, errorCode, error) {
-            // XXX: this is bizarre per spec. We reparse the payload and
-            // extract the ID, regardless of what kind of value it was.
             let messageId;
             try {
                 const command = JSON.parse(message);
@@ -18252,12 +16857,9 @@
             if (type !== 'object') {
                 throw new Error(`Expected JSON object but got ${type}`);
             }
-            // Extract and validate id, method and params.
             const { id, method, params } = command;
             const idType = _a.#getJsonType(id);
             if (idType !== 'number' || !Number.isInteger(id) || id < 0) {
-                // TODO: should uint64_t be the upper limit?
-                // https://tools.ietf.org/html/rfc7049#section-2.1
                 throw new Error(`Expected unsigned integer but got ${idType}`);
             }
             const methodType = _a.#getJsonType(method);
@@ -18294,7 +16896,10 @@
     _a = WindowBidiTransport;
     class WindowCdpTransport {
         #onMessage = null;
+        #cdpSend;
         constructor() {
+            this.#cdpSend = window.cdp.send;
+            window.cdp.send = undefined;
             window.cdp.onmessage = (message) => {
                 this.#onMessage?.call(null, message);
             };
@@ -18303,7 +16908,7 @@
             this.#onMessage = onMessage;
         }
         sendMessage(message) {
-            window.cdp.send(message);
+            this.#cdpSend(message);
         }
         close() {
             this.#onMessage = null;
@@ -18332,31 +16937,14 @@
     generatePage();
     const mapperTabToServerTransport = new WindowBidiTransport();
     const cdpTransport = new WindowCdpTransport();
-    /**
-     * A CdpTransport implementation that uses the window.cdp bindings
-     * injected by Target.exposeDevToolsProtocol.
-     */
     const cdpConnection = new MapperCdpConnection(cdpTransport, log);
-    /**
-     * Launches the BiDi mapper instance.
-     * @param {string} selfTargetId
-     * @param options Mapper options. E.g. `acceptInsecureCerts`.
-     */
     async function runMapperInstance(selfTargetId) {
-        // eslint-disable-next-line no-console
         console.log('Launching Mapper instance with selfTargetId:', selfTargetId);
-        const bidiServer = await BidiServer.createAndStart(mapperTabToServerTransport, cdpConnection, 
-        /**
-         * Create a Browser CDP Session per Mapper instance.
-         */
+        const bidiServer = await BidiServer.createAndStart(mapperTabToServerTransport, cdpConnection,
         await cdpConnection.createBrowserSession(), selfTargetId, new BidiParser(), log);
         log(LogType.debugInfo, 'Mapper instance has been launched');
         return bidiServer;
     }
-    /**
-     * Set `window.runMapper` to a function which launches the BiDi mapper instance.
-     * @param selfTargetId Needed to filter out info related to BiDi target.
-     */
     window.runMapperInstance = async (selfTargetId) => {
         await runMapperInstance(selfTargetId);
     };

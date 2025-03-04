@@ -9,6 +9,7 @@
 #include <set>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "RawPtrHelpers.h"
@@ -339,6 +340,20 @@ std::string GetIncludeDirective(const clang::SourceRange replacement_range,
       GetFilename(source_manager, replacement_range.getBegin(),
                   raw_ptr_plugin::FilenameLocationType::kSpellingLoc),
       include_path);
+}
+
+template <typename T>
+const T* GetNodeOrCrash(const MatchFinder::MatchResult& result,
+                        std::string_view id,
+                        std::string_view assert_message) {
+  const T* node = result.Nodes.getNodeAs<T>(id);
+  if (!node) {
+    llvm::errs() << "\nError: no node for `" << id << "` (" << assert_message
+                 << ")\n";
+    DumpMatchResult(result);
+    assert(false && "`GetNodeOrCrash()`");
+  }
+  return node;
 }
 
 // The semantics of `getBeginLoc()` and `getEndLoc()` are somewhat
@@ -796,6 +811,63 @@ void AppendDataCall(const MatchFinder::MatchResult& result) {
       GetReplacementDirective(rep_range, replacement_text, source_manager));
 }
 
+// Handle the case where we match `&container[<offset>]` being used as a buffer.
+void EmitContainerPointerRewrites(const MatchFinder::MatchResult& result,
+                                  const std::string& key) {
+  auto replacement_range =
+      GetNodeOrCrash<clang::UnaryOperator>(
+          result, "container_buff_address",
+          "`container_buff_address` previously expected here")
+          ->getSourceRange();
+  replacement_range.setEnd(replacement_range.getEnd().getLocWithOffset(1));
+  const auto& container_decl_ref = *GetNodeOrCrash<clang::DeclRefExpr>(
+      result, "container_decl_ref",
+      "`container_buff_address` implies `container_decl_ref`");
+
+  std::string container_name = container_decl_ref.getNameInfo().getAsString();
+  std::string replacement_text;
+
+  // Special case: we detected and bound a zero offset (`&buf[0]`).
+  // We need not emit a `.subspan(...)`.
+  if (result.Nodes.getNodeAs<clang::IntegerLiteral>("zero_container_offset")) {
+    replacement_text = container_name;
+  } else {
+    // Dance around the offset expression and emit one replacement on
+    // either side of it:
+    // `base::span<T>(container_decl_ref).subspan(` <offset> `)`
+
+    // Ready and emit the first replacement; pull the replacement
+    // range back to the opening bracket of the container.
+    replacement_range.setEnd(
+        container_decl_ref.getSourceRange().getBegin().getLocWithOffset(
+            container_name.length() + 1u));
+    const auto& contained_type = *GetNodeOrCrash<clang::QualType>(
+        result, "contained_type",
+        "`container_buff_address` implies `contained_type`");
+    replacement_text = llvm::formatv(
+        "base::span<{0}>({1}).subspan(",
+        GetTypeAsString(contained_type, *result.Context), container_name);
+    std::string replacement_directive = GetReplacementDirective(
+        replacement_range, std::move(replacement_text), *result.SourceManager);
+    EmitReplacement(key, replacement_directive);
+
+    // Ready the second replacement; advance the replacement range to
+    // the closing bracket (beyond the offset expression).
+    const auto& container_subscript =
+        *GetNodeOrCrash<clang::CXXOperatorCallExpr>(
+            result, "container_subscript",
+            "`container_buff_address` implies `container_subscript`");
+    replacement_range = {
+        container_subscript.getRParenLoc(),
+        container_subscript.getRParenLoc().getLocWithOffset(1)};
+    // Close the call to `.subspan()`.
+    replacement_text = ")";
+  }
+  std::string replacement_directive = GetReplacementDirective(
+      replacement_range, std::move(replacement_text), *result.SourceManager);
+  EmitReplacement(key, replacement_directive);
+}
+
 static std::string getNodeFromSizeExpr(const clang::Expr* size_expr,
                                        const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
@@ -813,6 +885,9 @@ static std::string getNodeFromSizeExpr(const clang::Expr* size_expr,
         nullptr_expr->getBeginLoc().getLocWithOffset(7)};
     EmitReplacement(
         key, GetReplacementDirective(nullptr_range, "{}", source_manager));
+  }
+  if (result.Nodes.getNodeAs<clang::UnaryOperator>("container_buff_address")) {
+    EmitContainerPointerRewrites(result, key);
   }
 
   EmitReplacement(key, GetIncludeDirective(replacement_range, source_manager));
@@ -1916,11 +1991,26 @@ class Spanifier {
 
     // Matches statements of the form: &buf[n] where buf is a container type
     // (span, vector, array,...).
-    auto buff_address_from_container = unaryOperator(
-        hasOperatorName("&"),
-        hasUnaryOperand(cxxOperatorCallExpr(callee(functionDecl(
-            hasName("operator[]"),
-            hasParent(cxxRecordDecl(hasMethod(hasName("size")))))))));
+    auto buff_address_from_container =
+        unaryOperator(
+            hasOperatorName("&"),
+            hasUnaryOperand(
+                cxxOperatorCallExpr(
+                    callee(functionDecl(
+                        hasName("operator[]"),
+                        hasParent(cxxRecordDecl(hasMethod(hasName("size")))))),
+                    hasDescendant(
+                        declRefExpr(
+                            to(varDecl(hasType(classTemplateSpecializationDecl(
+                                hasTemplateArgument(
+                                    0, refersToType(qualType().bind(
+                                           "contained_type"))))))))
+                            .bind("container_decl_ref")),
+                    optionally(
+                        hasDescendant(integerLiteral(equals(0u))
+                                          .bind("zero_container_offset"))))
+                    .bind("container_subscript")))
+            .bind("container_buff_address");
 
     // T* a = buf.data();
     auto member_data_call =
@@ -2082,17 +2172,27 @@ class Spanifier {
 
     // When passing now-span buffers to third_party functions as parameters, we
     // need to add `.data()` to extract the pointer and keep things compiling.
+    // See test: 'array-external-call-original.cc'
     auto buffer_to_external_func = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
-        callExpr(callee(functionDecl(
-                     anyOf(isExpansionInSystemHeader(),
-                           raw_ptr_plugin::isInExternCContext(),
-                           raw_ptr_plugin::isInThirdPartyLocation(),
-                           hasAttr(clang::attr::UnsafeBufferUsage)),
-                     unless(matchesName(
-                         "std::(size|begin|end|empty|swap|ranges::)")))),
-                 forEachArgumentWithParam(expr(rhs_exprs_without_size_nodes),
-                                          parmVarDecl())));
+        expr(anyOf(
+            callExpr(callee(functionDecl(
+                         anyOf(isExpansionInSystemHeader(),
+                               raw_ptr_plugin::isInExternCContext(),
+                               raw_ptr_plugin::isInThirdPartyLocation(),
+                               hasAttr(clang::attr::UnsafeBufferUsage)),
+                         unless(matchesName(
+                             "std::(size|begin|end|empty|swap|ranges::)")))),
+                     forEachArgumentWithParam(
+                         expr(rhs_exprs_without_size_nodes), parmVarDecl())),
+            cxxConstructExpr(
+                hasDeclaration(cxxConstructorDecl(
+                    anyOf(isExpansionInSystemHeader(),
+                          raw_ptr_plugin::isInExternCContext(),
+                          raw_ptr_plugin::isInThirdPartyLocation(),
+                          hasAttr(clang::attr::UnsafeBufferUsage)))),
+                forEachArgumentWithParam(expr(rhs_exprs_without_size_nodes),
+                                         parmVarDecl())))));
     Match(buffer_to_external_func, AppendDataCall);
 
     // Handles expressions of the form:

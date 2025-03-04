@@ -1130,7 +1130,6 @@
 <translation id="6325525973963619867">실패</translation>
 <translation id="6327262166342360252">이 배경화면은 다음 텍스트를 사용하여 AI로 생성되었습니다. "<ph name="PROMPT" />"</translation>
 <translation id="6331191339300272798">자동 어두운 테마</translation>
-<translation id="6335228876613776082">모델 다운로드 완료</translation>
 <translation id="6340526405444716530">맞춤설정</translation>
 <translation id="6348252528297699679">설정 &gt; 개인 정보 보호 및 보안 &gt; 개인 정보 보호 설정 &gt; 위치 정보 액세스에서 위치를 사용 중지할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">사용자 이름 및 비밀번호</translation>
@@ -1674,7 +1673,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google 포토 앨범</translation>
 <translation id="8775713578693478175">모뎀 APN</translation>
-<translation id="877735394245039557">모델 다운로드 중</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">네트워크에 종속 포털이 있을 수 있습니다.</translation>
 <translation id="8797082062139985406">Google AI를 사용하여 이름 만들기</translation>

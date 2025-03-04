@@ -14,7 +14,6 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/crosapi/arc_ash.h"
 #include "chrome/browser/ash/crosapi/audio_service_ash.h"
 #include "chrome/browser/ash/crosapi/cert_database_ash.h"
 #include "chrome/browser/ash/crosapi/cert_provisioning_ash.h"
@@ -59,11 +58,9 @@
 #include "chrome/browser/ash/crosapi/parent_access_ash.h"
 #include "chrome/browser/ash/crosapi/payment_app_instance_ash.h"
 #include "chrome/browser/ash/crosapi/policy_service_ash.h"
-#include "chrome/browser/ash/crosapi/power_ash.h"
 #include "chrome/browser/ash/crosapi/remoting_ash.h"
 #include "chrome/browser/ash/crosapi/screen_ai_downloader_ash.h"
 #include "chrome/browser/ash/crosapi/structured_metrics_service_ash.h"
-#include "chrome/browser/ash/crosapi/virtual_keyboard_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/ash/crosapi/web_kiosk_service_ash.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
@@ -147,8 +144,7 @@ Profile* GetAshProfile() {
 }  // namespace
 
 CrosapiAsh::CrosapiAsh()
-    : arc_ash_(std::make_unique<ArcAsh>()),
-      audio_service_ash_(std::make_unique<AudioServiceAsh>()),
+    : audio_service_ash_(std::make_unique<AudioServiceAsh>()),
       cert_database_ash_(std::make_unique<CertDatabaseAsh>()),
       cert_provisioning_ash_(std::make_unique<CertProvisioningAsh>()),
       chaps_service_ash_(std::make_unique<ChapsServiceAsh>()),
@@ -202,7 +198,6 @@ CrosapiAsh::CrosapiAsh()
       parent_access_ash_(std::make_unique<ParentAccessAsh>()),
       payment_app_instance_ash_(std::make_unique<PaymentAppInstanceAsh>()),
       policy_service_ash_(std::make_unique<PolicyServiceAsh>()),
-      power_ash_(std::make_unique<PowerAsh>()),
       nonclosable_app_toast_service_ash_(
           std::make_unique<NonclosableAppToastServiceAsh>()),
 #if BUILDFLAG(USE_CUPS)
@@ -223,7 +218,6 @@ CrosapiAsh::CrosapiAsh()
           std::make_unique<StructuredMetricsServiceAsh>()),
       video_conference_manager_ash_(
           std::make_unique<ash::VideoConferenceManagerAsh>()),
-      virtual_keyboard_ash_(std::make_unique<VirtualKeyboardAsh>()),
       vpn_service_ash_(std::make_unique<VpnServiceAsh>()),
       web_kiosk_service_ash_(std::make_unique<WebKioskServiceAsh>()) {
   receiver_set_.set_disconnect_handler(base::BindRepeating(
@@ -249,12 +243,6 @@ void CrosapiAsh::BindAccountManager(
           ->GetAccountManagerMojoService(
               /*profile_path=*/GetAshProfile()->GetPath().value());
   account_manager_mojo_service->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindArc(mojo::PendingReceiver<mojom::Arc> receiver) {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  arc_ash_->MaybeSetProfile(profile);
-  arc_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindAudioService(
@@ -477,11 +465,6 @@ void CrosapiAsh::BindMachineLearningService(
       ->BindMachineLearningService(std::move(receiver));
 }
 
-void CrosapiAsh::BindMahiBrowserDelegate(
-    mojo::PendingReceiver<mojom::MahiBrowserDelegate> receiver) {
-  NOTIMPLEMENTED();
-}
-
 void CrosapiAsh::BindMediaUI(mojo::PendingReceiver<mojom::MediaUI> receiver) {
   media_ui_ash_->BindReceiver(std::move(receiver));
 }
@@ -556,10 +539,6 @@ void CrosapiAsh::BindPaymentAppInstance(
 void CrosapiAsh::BindPolicyService(
     mojo::PendingReceiver<mojom::PolicyService> receiver) {
   policy_service_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindPower(mojo::PendingReceiver<mojom::Power> receiver) {
-  power_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindNonclosableAppToastService(
@@ -647,11 +626,6 @@ void CrosapiAsh::BindVideoCaptureDeviceFactory(
     mojo::PendingReceiver<mojom::VideoCaptureDeviceFactory> receiver) {
   content::GetVideoCaptureService().BindVideoCaptureDeviceFactory(
       std::move(receiver));
-}
-
-void CrosapiAsh::BindVirtualKeyboard(
-    mojo::PendingReceiver<mojom::VirtualKeyboard> receiver) {
-  virtual_keyboard_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindVpnService(

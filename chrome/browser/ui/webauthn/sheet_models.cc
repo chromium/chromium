@@ -14,10 +14,10 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -2117,3 +2117,32 @@ void AuthenticatorGPMLockedPinSheetModel::OnAccept() {
   webauthn::user_actions::RecordAcceptClick();
   dialog_model()->OnForgotGPMPinPressed();
 }
+
+// CombinedSelectorSheetModel
+
+CombinedSelectorSheetModel::CombinedSelectorSheetModel(
+    AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kHidden) {}
+
+std::u16string CombinedSelectorSheetModel::GetStepTitle() const {
+  return u"";
+}
+
+std::u16string CombinedSelectorSheetModel::GetStepDescription() const {
+  return u"";
+}
+
+bool CombinedSelectorSheetModel::IsAcceptButtonVisible() const {
+  return false;
+}
+
+bool CombinedSelectorSheetModel::IsCancelButtonVisible() const {
+  return false;
+}
+
+std::u16string CombinedSelectorSheetModel::GetAcceptButtonLabel() const {
+  return u"";
+}
+
+void CombinedSelectorSheetModel::OnAccept() {}

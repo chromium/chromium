@@ -315,7 +315,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Browser.MemoryFootprint.Background" units="MB"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>justincohen@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -461,7 +461,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.CommitAvailableMB" units="MB"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>aattar@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -475,7 +475,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.CommitLimitMB" units="MB" expires_after="2025-06-29">
+<histogram name="Memory.CommitLimitMB" units="MB" expires_after="2025-08-31">
   <owner>aattar@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -489,7 +489,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.CommitPercentageUsed" units="%"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>aattar@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -905,7 +905,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Experimental.Renderer.AvailableMemoryAfterOOM"
-    units="MB" expires_after="2025-06-29">
+    units="MB" expires_after="2025-08-31">
   <owner>etiennep@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>
@@ -917,7 +917,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Experimental.Renderer.AvailableMemoryBeforeOOM"
-    units="MB" expires_after="2025-06-29">
+    units="MB" expires_after="2025-08-31">
   <owner>etiennep@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>
@@ -929,7 +929,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Experimental.Renderer.HighestPrivateMemoryFootprint"
-    units="MB" expires_after="2025-06-29">
+    units="MB" expires_after="2025-08-31">
   <owner>tasak@google.com</owner>
   <owner>mikt@chromium.org</owner>
   <summary>
@@ -948,7 +948,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Experimental.Renderer.SwapFreeAfterOOM" units="MB"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>etiennep@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>
@@ -960,7 +960,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Experimental.Renderer.SwapFreeBeforeOOM" units="MB"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>etiennep@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>
@@ -971,7 +971,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Experimental.Renderer.TotalMemoryAfterOOM" units="MB"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>etiennep@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>
@@ -1427,7 +1427,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.MemoryStatusRetrievalSuccess" enum="Boolean"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>aattar@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -2671,7 +2671,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.VmmSwap.{VmName}.ActiveAfterEnableDuration"
-    units="Hours" expires_after="2025-06-22">
+    units="Hours" expires_after="2025-08-31">
   <owner>kawasin@google.com</owner>
   <owner>sstan@google.com</owner>
   <summary>

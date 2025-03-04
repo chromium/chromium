@@ -216,6 +216,9 @@ std::string GenerateContentSettingsExceptionsSubPage(ContentSettingsType type) {
           {ContentSettingsType::MIDI_SYSEX, "midiDevices"},
           {ContentSettingsType::ADS, "ads"},
           {ContentSettingsType::HID_CHOOSER_DATA, "hidDevices"},
+#if BUILDFLAG(IS_CHROMEOS)
+          {ContentSettingsType::SMART_CARD_GUARD, "smartCardReaders"},
+#endif
           {ContentSettingsType::STORAGE_ACCESS, "storageAccess"},
           {ContentSettingsType::USB_CHOOSER_DATA, "usbDevices"},
           {ContentSettingsType::WEB_PRINTING, "webPrinting"},

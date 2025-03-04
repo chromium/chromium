@@ -124,6 +124,31 @@ struct GroupRequest {
   EmbeddingOptions embedding_options@1;
   ClusteringOptions clustering_options@2;
   TitleGenerationOptions title_generation_options@3;
+
+  // suppression_context is used as a context for filtering groups that the
+  // client wants to omit from the response.
+  // Generally, the logic is that we'll run clustering with both entities and
+  // suppression_context together, then, if a generated group contains a high
+  // proportion of entities in the suppression_context, the generated
+  // group will be skipped. Finally, the suppression_context items are removed
+  // from the result clusters before returning it to the caller.
+  // Common usage scenario:
+  // 1. User triggers Group() on a desk (say, "desk 1"), then moves a
+  //    particular topic, say, "Tokyo Travel" to another desk, let's call it
+  //    "desk 2".
+  // 2. User opens more tabs and apps on desk 2.
+  // 3. User triggers Group() on desk 2, but we don't want "Tokyo Travel"
+  //    related tabs to be grouped, because in that case the user may
+  //    constantly create desk with "Tokyo Travel" related tabs and that's not
+  //    a very good UX.
+  // 4. To prevent what's stated above, we put all "Tokyo Travel" related tabs
+  //    (even those that have been closed) into suppression_context.
+  // Note: suppression_context may contain entities not found in the
+  // entities.
+  // Note: The entities related to those in suppression_context but not in
+  // suppression_context will also not show up in the output.
+  [MinVersion=1]
+  array<Entity>? suppression_context@4;
 };
 
 [Stable]

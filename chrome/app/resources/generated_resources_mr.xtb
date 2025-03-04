@@ -1718,7 +1718,6 @@
 <translation id="2178545675770638239">पासवर्ड निवडा</translation>
 <translation id="2178585470774851578">तुम्ही ChromeOS Flex ची डीबगिंग वैशिष्‍ट्ये सुरू करत आहात, ज्यामुळे SSH daemon सेट केले जाईल आणि USB ड्राइव्‍हमधून बूट करणे सुरू केले जाईल.</translation>
 <translation id="2178614541317717477">CA तडजोड</translation>
-<translation id="2179850495466791921">तुमच्याकडे सध्या <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> आणि आणखी बरेच काही आहे</translation>
 <translation id="2180620921879609685">कोणत्याही पेजवरील आशय ब्लॉक करू शकते</translation>
 <translation id="2181821976797666341">धोरणे</translation>
 <translation id="2182058453334755893">तुमच्या क्लिपबोर्डवर कॉपी केले</translation>
@@ -3137,7 +3136,6 @@
 <translation id="3167562202484086668"><ph name="BRAND" /> चा सर्व डेटा हटवा</translation>
 <translation id="3169930038976362151">तुमच्या आवश्यकतांची पूर्तता करणारी थीम निवडा. तुमची थीम, वॉलपेपर, स्क्रीन सेव्हर आणि आणखी बरेच काही बदलण्यासाठी, डेस्कटॉपवर फक्त स्पर्श करून धरून ठेवा.</translation>
 <translation id="3170072451822350649">तुम्ही साइन इन वगळुन <ph name="LINK_START" />अतिथी म्हणून ब्राउझ<ph name="LINK_END" /> देखील करू शकता.</translation>
-<translation id="3171499217959105722">तुमच्याकडे सध्या <ph name="NUMBERED_ITEM" /> आणि आणखी बरेच काही आहे</translation>
 <translation id="3175067642577044620">मुख्य भाग</translation>
 <translation id="3175862692832442091">जंगल</translation>
 <translation id="3176347586396987181">माउस बटण प्रेस करून धरून ठेवण्यासाठी “z” वापरा</translation>
@@ -3949,7 +3947,6 @@
 <translation id="3744219658596020825">तुमचे पासवर्ड इंपोर्ट केले गेले नाहीत</translation>
 <translation id="3745306754941902605">स्वयंपाकघर</translation>
 <translation id="3747077776423672805">ॲप्स काढून टाकण्यासाठी, सेटिंग्ज &gt; Google Play स्टोअर &gt; Android प्राधान्ये व्यवस्थापित करा &gt; ॲप्स किंवा अ‍ॅप्लिकेशन व्यवस्थापक वर जा. नंतर तुम्हाला अनइंस्टॉल करायच्या असलेल्या ॲपवर टॅप करा (ॲप शोधण्‍यासाठी तुम्हाला कदाचित उजवीकडे किंवा डावीकडे स्वाइप करावे लागेल). यानंतर अनइंस्टॉल करा किंंवा बंद करा वर टॅप करा.</translation>
-<translation id="3747552357646973221">तुमच्याकडे सध्या <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> आणि आणखी बरेच काही आहे</translation>
 <translation id="3748424433435232460">या खात्याचा पासवर्ड आधीपासून या डिव्हाइसवर सेव्ह केला आहे</translation>
 <translation id="3748706263662799310">बग नोंदवा</translation>
 <translation id="3749724428455457489">साइटने सुचवलेल्या जाहिरातींबद्दल अधिक जाणून घ्या</translation>

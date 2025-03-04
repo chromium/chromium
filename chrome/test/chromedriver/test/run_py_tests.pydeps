@@ -31,10 +31,10 @@
 ../../../../third_party/catapult/devil/devil/android/device_signal.py
 ../../../../third_party/catapult/devil/devil/android/device_temp_file.py
 ../../../../third_party/catapult/devil/devil/android/device_utils.py
+../../../../third_party/catapult/devil/devil/android/devil_util.py
 ../../../../third_party/catapult/devil/devil/android/forwarder.py
 ../../../../third_party/catapult/devil/devil/android/install_commands.py
 ../../../../third_party/catapult/devil/devil/android/logcat_monitor.py
-../../../../third_party/catapult/devil/devil/android/md5sum.py
 ../../../../third_party/catapult/devil/devil/android/ndk/__init__.py
 ../../../../third_party/catapult/devil/devil/android/ndk/abis.py
 ../../../../third_party/catapult/devil/devil/android/sdk/__init__.py

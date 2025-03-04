@@ -16,7 +16,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
-#include "chrome/browser/enterprise/signals/signals_common.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/chrome_desktop_report_request_helper.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
@@ -29,6 +28,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/component_updater/pref_names.h"
+#include "components/device_signals/core/common/common_types.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
@@ -78,7 +78,7 @@
 namespace enterprise_reporting_private =
     ::extensions::api::enterprise_reporting_private;
 
-using SettingValue = enterprise_signals::SettingValue;
+using SettingValue = device_signals::SettingValue;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Invoke;
@@ -939,7 +939,7 @@ class EnterpriseReportingPrivateGetContextInfoOSFirewallTest
   }
 
   extensions::api::enterprise_reporting_private::SettingValue
-  ToInfoSettingValue(enterprise_signals::SettingValue value) {
+  ToInfoSettingValue(device_signals::SettingValue value) {
     switch (value) {
       case SettingValue::DISABLED:
         return extensions::api::enterprise_reporting_private::SettingValue::

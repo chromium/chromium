@@ -651,7 +651,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="385051799172605136">Tilbage</translation>
 <translation id="3851938967634752633">Adgangskoderne til <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> og <ph name="NUMBER_OF_ACCOUNTS" /> andre slettes. Dine konti slettes ikke.</translation>
 <translation id="3858860766373142691">Navn</translation>
-<translation id="3861908220442487587">Denne adresse gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du flytte den til din Google-konto, <ph name="USER_EMAIL" /></translation>
 <translation id="3868495844258915202">Vis hele webadressen</translation>
 <translation id="3875783148670536197">Vis mig hvordan</translation>
 <translation id="3876833929577368454">Spørg mig hver gang</translation>
@@ -1804,7 +1803,6 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8679900250380464358">Føj til læseliste</translation>
 <translation id="8680786875305615692">Vær med til at forbedre sikkerheden på nettet for alle</translation>
 <translation id="8680787084697685621">Oplysningerne om kontologin er forældede.</translation>
-<translation id="8683563711222071415">Flyt adressen til kontoen</translation>
 <translation id="8690752723634292147">Bekræft sletning</translation>
 <translation id="8692689525339542358">Bliv beskyttet mod farlige websites, downloads og udvidelser.</translation>
 <translation id="8694281486652655615">Viser dette element</translation>

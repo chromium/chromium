@@ -9,12 +9,16 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
 #include "base/lazy_instance.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/content_settings/common/content_settings_agent.mojom.h"
@@ -69,6 +73,11 @@ constexpr auto kMediaIndicatorMinimumHoldDurationPhase2 = base::Seconds(4);
 // A delay before blocked media indicator disappears.
 constexpr auto kBlockedMediaIndicatorDismissDelay = base::Minutes(1);
 constexpr auto kBlockedMediaIndicatorDismissDelayPhase2 = base::Seconds(4);
+#if BUILDFLAG(IS_CHROMEOS)
+// A delay before in-use indicator for device (currently only smart cards)
+// disappears.
+constexpr auto kDeviceInUseIndicatorHideDelay = base::Seconds(15);
+#endif
 
 // Determines which taxonomy is used to generate sample topics for the Topics
 // API.
@@ -1587,6 +1596,7 @@ void PageSpecificContentSettings::OnCapturingStateChanged(
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 void PageSpecificContentSettings::OnDeviceUsed(ContentSettingsType type) {
   // For now, only smart card permissions are supported.
   CHECK_EQ(ContentSettingsType::SMART_CARD_GUARD, type);
@@ -1601,8 +1611,31 @@ void PageSpecificContentSettings::OnLastDeviceConnectionLost(
   // For now, only smart card permissions are supported.
   CHECK_EQ(mojom::ContentSettingsType::SMART_CARD_GUARD, type);
   in_use_.erase(type);
-  MaybeUpdateLocationBar();
+
+  // The indicator should remain for `kDeviceInUseIndicatorHideDelay` seconds
+  // after the connection has died in order to also make user aware of very
+  // rapid connections.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PageSpecificContentSettings::MaybeUpdateLocationBar,
+                     weak_factory_.GetWeakPtr()),
+      kDeviceInUseIndicatorHideDelay);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+bool PageSpecificContentSettings::IsInUse(ContentSettingsType type) const {
+  return in_use_.contains(type);
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+bool PageSpecificContentSettings::ShouldShowDeviceInUseIndicator(
+    ContentSettingsType type) const {
+  return IsInUse(type) ||
+         GetLastUsedTime(type) >
+             base::Time::Now() - kDeviceInUseIndicatorHideDelay;
+  ;
+}
+#endif
 
 void PageSpecificContentSettings::OnCapturingStateChangedInternal(
     ContentSettingsType type,
@@ -1644,7 +1677,7 @@ void PageSpecificContentSettings::OnCapturingStateChangedInternal(
 }
 
 const base::Time PageSpecificContentSettings::GetLastUsedTime(
-    ContentSettingsType type) {
+    ContentSettingsType type) const {
   auto it = last_used_time_.find(type);
   if (it != last_used_time_.end()) {
     // After a recent usage HCSM will not have an updated last used time. HCSM

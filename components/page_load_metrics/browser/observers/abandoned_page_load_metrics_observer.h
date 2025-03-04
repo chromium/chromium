@@ -81,7 +81,13 @@ class AbandonedPageLoadMetricsObserver
     // Note that events such as `kAFT*`, `kHeaderChunk*` and `kBodyChunk*` only
     // appears in certain navigations, hence these events may not be mandatory.
     kFirstEssentialLoadingEvent = kParseStart,
-    kLastEssentialLoadingEvent = kBodyChunkEnd,
+    kLastEssentialLoadingEvent = kLargestContentfulPaint,
+
+    // `kFirstGwsEssentialLoadingEvent` and `kLastGwsEssentialLoadingEvent`
+    // aliases to the first / last loading milestones which always exists
+    // unless abandoned for navigations to Gws.
+    kFirstGwsEssentialLoadingEvent = kFirstEssentialLoadingEvent,
+    kLastGwsEssentialLoadingEvent = kBodyChunkEnd,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:NavigationMilestoneEnum2)
 
@@ -198,6 +204,10 @@ class AbandonedPageLoadMetricsObserver
       content::NavigationHandle* navigation_handle);
   bool IsResponseFromCache() const { return was_cached_; }
   int64_t navigation_id() const { return navigation_id_; }
+  const std::map<NavigationMilestone, base::TimeDelta>& loading_milestones()
+      const {
+    return loading_milestones_;
+  }
 
   // Adds the abandonment related metrics to UKM Builder `T`.
   template <typename T>
@@ -278,7 +288,7 @@ class AbandonedPageLoadMetricsObserver
 
   // Whether we've reached and logged all loading milestones, from kParseStart
   // to kBodyChunkEnd.
-  bool DidLogAllLoadingMilestones() const;
+  virtual bool DidLogAllLoadingMilestones() const;
 
   // The ID, start time, and type of the navigation being tracked.
   int64_t navigation_id_ = 0;

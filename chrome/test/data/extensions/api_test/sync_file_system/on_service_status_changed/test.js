@@ -7,20 +7,13 @@ function setupListener() {
   chrome.syncFileSystem.requestFileSystem(function() {});
   chrome.test.getConfig(function(config) {
     setTimeout(function() {
-      // Expect timeout when syncFileSystem is disabled.
-      if (config.customArg == "disabled") {
-        chrome.test.succeed();
-      } else {
-        chrome.test.fail();
-      }
+      chrome.test.succeed();
     }, 10000);
   });
 }
 
 function checkEventReceived(serviceInfo) {
-  chrome.test.assertEq("running", serviceInfo.state);
-  chrome.test.assertEq("Test event description.", serviceInfo.description);
-  chrome.test.succeed();
+  chrome.test.fail("Feature deprecated. Should not receive event");
 }
 
 chrome.test.runTests([

@@ -347,6 +347,7 @@
 <translation id="5727531838415286053">Ha a Chrome véletlenszerű módon regisztrálta Önt egy aktív próbaidőszakra, az Ön böngészési előzményei hatással vannak a megjelenő hirdetésekre és a becslések szerinti érdeklődési körökre. Adatai védelme érdekében a Chrome havi rendszerességgel törli az Ön érdeklődési köreit. Az érdeklődési körök frissülnek, kivéve, ha eltávolítja őket.</translation>
 <translation id="5736850870166430177">Ha valamelyik webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön kártékony fájlt tölt le, akkor a Chrome elküldheti az URL-eket is (az oldal tartalmának részeivel együtt) a Biztonságos Böngészésnek.</translation>
 <translation id="5756509061973259733">Már létezik Chrome-profil ezzel a fiókkal ezen az eszközön.</translation>
+<translation id="5759947850379142561">Válasszon ki bármilyen szöveget vagy képet a Google Lens segítségével való kereséshez, vagy nyomja meg az Esc billentyűt a Google Lensből való kilépéshez</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Nem sikerült a Chrome elindítása. Próbálkozzon újra.</translation>
 <translation id="5809516625706423866">Nem lehet csatlakozni az internethez. „HTTP 401 Unauthorized” hiba. Ellenőrizze a proxybeállításokat.</translation>
@@ -449,6 +450,7 @@
 <translation id="7071827361006050863">A Chrome hamarosan törli a böngészési adatokat</translation>
 <translation id="7085332316435785646">Válassza ki, hogy szeretné-e használni a Chrome-előzményeket személyre szabott élmények biztosításához a Google-szolgáltatásokban.</translation>
 <translation id="7088681679121566888">A Chrome naprakész</translation>
+<translation id="7096221564931416126">Válasszon ki bármilyen szöveget vagy képet a Google Lens segítségével való kereséshez</translation>
 <translation id="7098166902387133879">A Google Chrome használja a mikrofont.</translation>
 <translation id="7099479769133613710">Indítsa újra a ChromeOS frissítéséhez</translation>
 <translation id="7106741999175697885">Feladatkezelő - Google Chrome</translation>

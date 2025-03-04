@@ -11,11 +11,20 @@ class GURL;
 class Profile;
 class ThemeService;
 
+namespace content {
+class BrowserContext;
+class StoragePartitionConfig;
+}  // namespace content
+
 namespace glic {
 
 GURL GetFreURL(Profile* profile);
 std::string GetHotkeyString();
 bool UseDarkMode(ThemeService* theme_service);
+
+// Returns the storage partition config used for the Glic first-run experience.
+content::StoragePartitionConfig GetFreStoragePartitionConfig(
+    content::BrowserContext* browser_context);
 
 }  // namespace glic
 

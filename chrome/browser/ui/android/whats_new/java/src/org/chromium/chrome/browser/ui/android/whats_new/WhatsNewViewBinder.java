@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.ui.android.whats_new;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 public class WhatsNewViewBinder {
     static void bind(
             PropertyModel model, WhatsNewBottomSheetContent view, PropertyKey propertyKey) {

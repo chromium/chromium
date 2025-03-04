@@ -1544,7 +1544,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   view->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
   view->GetViewAccessibility().SetName(u"hello");
   view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  widget->GetRootView()->AddChildView(view);
+  widget->GetRootView()->AddChildViewRaw(view);
 
   // Show the widget, then touch and slide on the right edge of the screen.
   sm_.Call([widget, clock_ptr, generator_ptr]() {
@@ -1626,7 +1626,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TouchExploreSecondaryDisplay) {
   view->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
   view->GetViewAccessibility().SetName(u"hello");
   view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  widget->GetRootView()->AddChildView(view);
+  widget->GetRootView()->AddChildViewRaw(view);
 
   // Show the widget, then touch and slide on the right edge of the screen.
   sm_.Call([widget, clock_ptr, generator_ptr]() {

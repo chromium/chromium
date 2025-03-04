@@ -24,10 +24,10 @@
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
-#include "chrome/browser/enterprise/signals/signals_common.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/device_signals/core/common/common_types.h"
 #include "google_apis/gaia/gaia_id.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -68,13 +68,13 @@ const char kEndpointVerificationStoreFailed[] =
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 api::enterprise_reporting_private::SettingValue ToInfoSettingValue(
-    enterprise_signals::SettingValue value) {
+    device_signals::SettingValue value) {
   switch (value) {
-    case enterprise_signals::SettingValue::UNKNOWN:
+    case device_signals::SettingValue::UNKNOWN:
       return api::enterprise_reporting_private::SettingValue::kUnknown;
-    case enterprise_signals::SettingValue::DISABLED:
+    case device_signals::SettingValue::DISABLED:
       return api::enterprise_reporting_private::SettingValue::kDisabled;
-    case enterprise_signals::SettingValue::ENABLED:
+    case device_signals::SettingValue::ENABLED:
       return api::enterprise_reporting_private::SettingValue::kEnabled;
   }
 }

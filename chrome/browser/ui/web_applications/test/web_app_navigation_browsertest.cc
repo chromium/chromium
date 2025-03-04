@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -132,22 +131,24 @@ void WebAppNavigationBrowserTest::ClickLink(
     const std::string& rel,
     int modifiers,
     blink::WebMouseEvent::Button button) {
-  std::string script = base::StringPrintf(
-      "(() => {"
-      "const link = document.createElement('a');"
-      "link.href = '%s';"
-      "link.target = '%s';"
-      "link.rel = '%s';"
-      // Make a click target that covers the whole viewport.
-      "const click_target = document.createElement('textarea');"
-      "click_target.style.position = 'absolute';"
-      "click_target.style.top = 0;"
-      "click_target.style.left = 0;"
-      "click_target.style.height = '100vh';"
-      "click_target.style.width = '100vw';"
-      "link.appendChild(click_target);"
-      "document.body.appendChild(link);"
-      "})();",
+  std::string script = content::JsReplace(
+      R"(
+(() => {
+  document.body.innerHTML = '';
+  const link = document.createElement('a');
+  link.href = $1;
+  link.target = $2;
+  link.rel = $3;
+  // Make a click target that covers the whole viewport.
+  const click_target = document.createElement('textarea');
+  click_target.style.position = 'absolute';
+  click_target.style.top = 0;
+  click_target.style.left = 0;
+  click_target.style.height = '100vh';
+  click_target.style.width = '100vw';
+  link.appendChild(click_target);
+  document.body.appendChild(link);
+})();)",
       link_url.spec().c_str(), target == LinkTarget::SELF ? "_self" : "_blank",
       rel.c_str());
   ASSERT_TRUE(content::ExecJs(web_contents, script));

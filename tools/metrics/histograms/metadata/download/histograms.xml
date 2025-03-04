@@ -70,7 +70,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Download.Android.NotificationAttachEvent"
-    enum="NotificationAttachEvent" expires_after="2025-06-30">
+    enum="NotificationAttachEvent" expires_after="2025-08-31">
   <owner>qinmin@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>

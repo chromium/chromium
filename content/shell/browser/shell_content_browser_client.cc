@@ -69,7 +69,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/common/user_agent.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_browser_main_parts.h"
@@ -345,11 +344,11 @@ blink::UserAgentMetadata GetShellUserAgentMetadata() {
                                                 CONTENT_SHELL_VERSION);
   metadata.full_version = CONTENT_SHELL_VERSION;
   metadata.platform = "Unknown";
-  metadata.architecture = GetCpuArchitecture();
-  metadata.model = BuildModelInfo();
+  metadata.architecture = embedder_support::GetCpuArchitecture();
+  metadata.model = embedder_support::BuildModelInfo();
 
-  metadata.bitness = GetCpuBitness();
-  metadata.wow64 = content::IsWoW64();
+  metadata.bitness = embedder_support::GetCpuBitness();
+  metadata.wow64 = embedder_support::IsWoW64();
   metadata.form_factors = {"Desktop"};
 
   return metadata;
@@ -760,7 +759,7 @@ std::string ShellContentBrowserClient::GetUserAgent() {
   }
 #endif
 
-  return BuildUnifiedPlatformUserAgentFromProduct(product);
+  return embedder_support::BuildUnifiedPlatformUserAgentFromProduct(product);
 }
 
 blink::UserAgentMetadata ShellContentBrowserClient::GetUserAgentMetadata() {
