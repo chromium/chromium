@@ -304,20 +304,9 @@ bool AutoEnrollmentCheckScreen::IsBlockingError(
 }
 
 bool AutoEnrollmentCheckScreen::ShouldBlockOnServerError() const {
-  using CheckType = policy::AutoEnrollmentTypeChecker::CheckType;
-  switch (auto_enrollment_controller_->auto_enrollment_check_type()) {
-    case CheckType::kForcedReEnrollmentImplicitlyRequired:
-      // Auto-enrollment is implicitly required so we don't block in server
-      // errors.
-      return false;
-    case CheckType::kForcedReEnrollmentExplicitlyRequired:
-    case CheckType::kInitialStateDetermination:
-      // Auto-enrollment is explicitly required so we block on server errors.
-      return true;
-    case CheckType::kUnknownDueToMissingSystemClockSync:
-    case CheckType::kNone:
-      NOTREACHED();
-  }
+  // TODO(rbug.com/383047722) Replace calls to this function with `true` and
+  // clean up accordingly.
+  return true;
 }
 
 }  // namespace ash

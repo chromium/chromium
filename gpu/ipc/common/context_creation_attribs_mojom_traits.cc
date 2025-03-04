@@ -24,7 +24,7 @@ bool StructTraits<gpu::mojom::ContextCreationAttribsDataView,
   out->enable_gles2_interface = data.enable_gles2_interface();
   out->enable_grcontext = data.enable_grcontext();
   out->enable_raster_interface = data.enable_raster_interface();
-  out->enable_oop_rasterization = data.enable_oop_rasterization();
+  out->enable_gpu_rasterization = data.enable_gpu_rasterization();
   return true;
 }
 

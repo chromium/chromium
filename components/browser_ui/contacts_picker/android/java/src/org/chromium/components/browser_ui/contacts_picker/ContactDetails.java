@@ -7,10 +7,9 @@ package org.chromium.components.browser_ui.contacts_picker;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.blink.mojom.ContactIconBlob;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.payments.mojom.PaymentAddress;
 
 import java.util.ArrayList;
@@ -18,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /** A class to keep track of the metadata associated with a contact. */
+@NullMarked
 public class ContactDetails implements Comparable<ContactDetails> {
     // The identifier for the information from the signed in user. Must not be a valid id in the
     // context of the Android Contacts list.
@@ -28,12 +28,12 @@ public class ContactDetails implements Comparable<ContactDetails> {
      * email and phone numbers are returned and the rest is indicated with "+n more" strings).
      */
     public static class AbbreviatedContactDetails {
-        public String primaryEmail;
-        public String overflowEmailCount;
-        public String primaryTelephoneNumber;
-        public String overflowTelephoneNumberCount;
-        public String primaryAddress;
-        public String overflowAddressCount;
+        public @Nullable String primaryEmail;
+        public @Nullable String overflowEmailCount;
+        public @Nullable String primaryTelephoneNumber;
+        public @Nullable String overflowTelephoneNumberCount;
+        public @Nullable String primaryAddress;
+        public @Nullable String overflowAddressCount;
     }
 
     // The unique id for the contact.
@@ -59,7 +59,7 @@ public class ContactDetails implements Comparable<ContactDetails> {
 
     // The avatar icon for the owner of the device. Non-null only if the ContactDetails representing
     // the owner were synthesized (not when a pre-existing contact tile was moved to the top).
-    @Nullable private Drawable mSelfIcon;
+    private @Nullable Drawable mSelfIcon;
 
     /**
      * The ContactDetails constructor.
@@ -73,9 +73,9 @@ public class ContactDetails implements Comparable<ContactDetails> {
     public ContactDetails(
             String id,
             String displayName,
-            List<String> emails,
-            List<String> phoneNumbers,
-            List<PaymentAddress> addresses) {
+            @Nullable List<String> emails,
+            @Nullable List<String> phoneNumbers,
+            @Nullable List<PaymentAddress> addresses) {
         mDisplayName = displayName != null ? displayName : "";
         mEmails = emails != null ? emails : new ArrayList<String>();
         mPhoneNumbers = phoneNumbers != null ? phoneNumbers : new ArrayList<String>();
@@ -141,8 +141,7 @@ public class ContactDetails implements Comparable<ContactDetails> {
      * Fetch the cached icon for this contact. Returns null if this is not the 'self' contact, all
      * other contact avatars should be retrieved through the {@link FetchIconWorkerTask}.
      */
-    @Nullable
-    public Drawable getSelfIcon() {
+    public @Nullable Drawable getSelfIcon() {
         return mSelfIcon;
     }
 
@@ -232,7 +231,7 @@ public class ContactDetails implements Comparable<ContactDetails> {
             boolean includeAddresses,
             boolean includeEmails,
             boolean includeTels,
-            @NonNull Resources resources) {
+            Resources resources) {
         AbbreviatedContactDetails results = new AbbreviatedContactDetails();
 
         results.overflowAddressCount = "";

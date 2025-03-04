@@ -23,16 +23,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/svg/animation/svg_smil_element.h"
 
 #include <algorithm>
 
 #include "base/auto_reset.h"
+#include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
@@ -82,7 +78,7 @@ void SMILInstanceTimeList::InsertSortedAndUnique(SMILTime time,
   auto position = std::lower_bound(instance_times_.begin(),
                                    instance_times_.end(), time_with_origin);
   // Don't add it if we already have one of those.
-  for (auto it = position; it != instance_times_.end(); ++it) {
+  for (auto it = position; it != instance_times_.end(); UNSAFE_TODO(++it)) {
     if (position->Time() != time)
       break;
     // If they share both time and origin, we don't need to add it,
@@ -809,7 +805,7 @@ SMILInterval SVGSMILElement::ResolveInterval(SMILTime begin_after,
   const size_t kMaxIterations = std::max(begin_times_.size() * 4, 1000000u);
   size_t current_iteration = 0;
   for (auto search_start = begin_times_.begin();
-       search_start != begin_times_.end(); ++search_start) {
+       search_start != begin_times_.end(); UNSAFE_TODO(++search_start)) {
     // Find the (next) instance time in the 'begin' list that is greater or
     // equal to |begin_after|.
     auto begin_item = std::lower_bound(

@@ -16,7 +16,8 @@ class PrefService;
 
 namespace privacy_sandbox {
 
-// Startup states
+// Startup states. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
 // LINT.IfChange(NoticeStartupState)
 enum class NoticeStartupState {
   // Incorrect or unknown states, for example if the notice hasn't been shown
@@ -41,7 +42,8 @@ enum class NoticeStartupState {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxNoticeStartupState)
 
-// Different notice actions.
+// Different notice actions. These values are persisted to logs. Entries should
+// not be renumbered and numeric values should never be reused.
 // LINT.IfChange(NoticeActionTaken)
 enum class NoticeActionTaken {
   // No Ack action set.
@@ -50,8 +52,8 @@ enum class NoticeActionTaken {
   kAck = 1,
   // Action taken clicking the 'x' button.
   kClosed = 2,
-  // Action taken clicking the learn more button.
-  kLearnMore = 3,
+  // TODO(crbug.com/392088228): In the process of deprecating, do not use.
+  kLearnMore_Deprecated = 3,
   // Opted in/Consented to the notice using 'Turn it on' or some other form of
   // explicit consent.
   kOptIn = 4,
@@ -93,7 +95,8 @@ enum class NoticeEvent {
   kMaxValue = kTimedOut,
 };
 
-// Different notice action outcomes.
+// Different notice action outcomes. These values are persisted to logs. Entries
+// should not be renumbered and numeric values should never be reused.
 // LINT.IfChange(NoticeActionBehavior)
 enum class NoticeActionBehavior {
   // Action taken on notice set successfully.

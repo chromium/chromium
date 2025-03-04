@@ -241,6 +241,9 @@ Status ChromeImpl::GetWebViewById(const std::string& id, WebView** web_view) {
       *web_view = view.get();
       return Status(kOk);
     }
+    if (!view->IsTab()) {
+      continue;
+    }
     WebView* active_page = nullptr;
     if (!view->GetActivePage(&active_page).IsError()) {
       if (active_page->GetId() == id) {

@@ -190,11 +190,11 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 @property(nonatomic, assign) BOOL automaticPasskeyUpgradesEnabled;
 
 // Indicates whether or not "Offer to Save Passwords" is set to enabled.
-@property(nonatomic, assign, getter=isSavePasswordsEnabled)
-    BOOL savePasswordsEnabled;
+@property(nonatomic, assign, getter=isSavingPasswordsEnabled)
+    BOOL savingPasswordsEnabled;
 
 // Whether saving passkeys is enabled.
-@property(nonatomic, assign) BOOL savePasskeysEnabled;
+@property(nonatomic, assign) BOOL savingPasskeysEnabled;
 
 // The amount of local passwords present on device.
 @property(nonatomic, assign) int localPasswordsCount;
@@ -203,8 +203,8 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 // be shown.
 @property(nonatomic, assign) BOOL showBulkMovePasswordsToAccount;
 
-// Indicates the signed in account.
-@property(nonatomic, copy) NSString* signedInAccount;
+// Indicates the email of the signed in account.
+@property(nonatomic, copy) NSString* userEmail;
 
 // On-device encryption state according to the sync service.
 @property(nonatomic, assign)
@@ -596,7 +596,7 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
       IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_SECTION_DESCRIPTION);
   std::u16string result = base::i18n::MessageFormatter::FormatWithNamedArgs(
       pattern, "COUNT", self.localPasswordsCount, "EMAIL",
-      base::SysNSStringToUTF16(self.signedInAccount));
+      base::SysNSStringToUTF16(self.userEmail));
 
   _bulkMovePasswordsToAccountDescriptionItem.detailText =
       base::SysUTF16ToNSString(result);
@@ -801,32 +801,15 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 
 #pragma mark - PasswordSettingsConsumer
 
-// The `setCanExportPasswords` method required for the PasswordSettingsConsumer
-// protocol is provided by property synthesis.
-
-- (void)setAutomaticPasskeyUpgradesEnabled:(BOOL)enabled {
-  if (_automaticPasskeyUpgradesEnabled == enabled) {
-    return;
-  }
-
-  _automaticPasskeyUpgradesEnabled = enabled;
-
-  if (self.modelLoadStatus == ModelNotLoaded) {
-    return;
-  }
-
-  [self updateAutomaticPasskeyUpgradesSwitch];
-}
-
-- (void)setSavePasswordsEnabled:(BOOL)enabled
-                managedByPolicy:(BOOL)managedByPolicy {
-  BOOL enabledChanged = _savePasswordsEnabled != enabled;
+- (void)setSavingPasswordsEnabled:(BOOL)enabled
+                  managedByPolicy:(BOOL)managedByPolicy {
+  BOOL enabledChanged = _savingPasswordsEnabled != enabled;
   BOOL managedChanged = _managedByPolicy != managedByPolicy;
   if (!enabledChanged && !managedChanged) {
     return;
   }
 
-  _savePasswordsEnabled = enabled;
+  _savingPasswordsEnabled = enabled;
   _managedByPolicy = managedByPolicy;
 
   if (self.modelLoadStatus == ModelNotLoaded) {
@@ -855,23 +838,44 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   [self updateAutomaticPasskeyUpgradesSwitch];
 }
 
-- (void)setSavePasskeysEnabled:(BOOL)enabled {
-  if (_savePasskeysEnabled == enabled) {
+- (void)setAutomaticPasskeyUpgradesEnabled:(BOOL)enabled {
+  if (_automaticPasskeyUpgradesEnabled == enabled) {
     return;
   }
 
-  _savePasskeysEnabled = enabled;
-
-  if (self.modelLoadStatus == ModelNotLoaded) {
-    return;
-  }
-
+  _automaticPasskeyUpgradesEnabled = enabled;
   [self updateAutomaticPasskeyUpgradesSwitch];
 }
 
-- (void)setLocalPasswordsCount:(int)count
-           withUserEligibility:(BOOL)eligibility {
-  BOOL showSection = count > 0 && eligibility;
+- (void)setSavingPasskeysEnabled:(BOOL)enabled {
+  if (_savingPasskeysEnabled == enabled) {
+    return;
+  }
+
+  _savingPasskeysEnabled = enabled;
+  [self updateAutomaticPasskeyUpgradesSwitch];
+}
+
+- (void)setCanDeleteAllCredentials:(BOOL)canDeleteAllCredentials {
+  if (_canDeleteAllCredentials == canDeleteAllCredentials) {
+    return;
+  }
+
+  _canDeleteAllCredentials = canDeleteAllCredentials;
+  [self updateDeleteAllCredentialsSection];
+}
+
+- (void)setCanExportPasswords:(BOOL)canExportPasswords {
+  if (_canExportPasswords == canExportPasswords) {
+    return;
+  }
+
+  _canExportPasswords = canExportPasswords;
+  [self updateExportPasswordsButton];
+}
+
+- (void)setCanBulkMove:(BOOL)canBulkMove localPasswordsCount:(int)count {
+  BOOL showSection = count > 0 && canBulkMove;
 
   if (_localPasswordsCount == count &&
       _showBulkMovePasswordsToAccount == showSection) {
@@ -915,56 +919,6 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   }
 
   [self updateOnDeviceEncryptionSectionWithOldState:oldState];
-}
-
-- (void)updateDeleteAllCredentialsSection {
-  if (self.modelLoadStatus == ModelNotLoaded ||
-      !base::FeatureList::IsEnabled(
-          password_manager::features::kIOSEnableDeleteAllSavedCredentials)) {
-    return;
-  }
-  if (self.canDeleteAllCredentials) {
-    _deleteCredentialsItem.textColor = [UIColor colorNamed:kRedColor];
-    _deleteCredentialsItem.accessibilityTraits &=
-        ~UIAccessibilityTraitNotEnabled;
-
-    _deleteCredentialsFooterItem.text = l10n_util::GetNSString(
-        IDS_IOS_PASSWORD_SETTINGS_CREDENTIAL_DELETION_TEXT);
-  } else {
-    // Disable, rather than remove, because the button will go back and forth
-    // between enabled/disabled status as the flow progresses.
-    _deleteCredentialsItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
-    _deleteCredentialsItem.accessibilityTraits |=
-        UIAccessibilityTraitNotEnabled;
-
-    _deleteCredentialsFooterItem.text = l10n_util::GetNSString(
-        IDS_IOS_PASSWORD_SETTINGS_NO_CREDENTIAL_DELETION_TEXT);
-  }
-
-  NSIndexSet* section = [NSIndexSet
-      indexSetWithIndex:[self.tableViewModel
-                            sectionForSectionIdentifier:
-                                SectionIdentifierDeleteCredentialsButton]];
-  [self.tableView reloadSections:section
-                withRowAnimation:UITableViewRowAnimationAutomatic];
-}
-
-- (void)updateExportPasswordsButton {
-  // This can be invoked before the item is ready when passwords are received
-  // too early.
-  if (self.modelLoadStatus == ModelNotLoaded) {
-    return;
-  }
-  if (self.canExportPasswords) {
-    _exportPasswordsItem.textColor = [UIColor colorNamed:kBlueColor];
-    _exportPasswordsItem.accessibilityTraits &= ~UIAccessibilityTraitNotEnabled;
-  } else {
-    // Disable, rather than remove, because the button will go back and forth
-    // between enabled/disabled status as the flow progresses.
-    _exportPasswordsItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
-    _exportPasswordsItem.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
-  }
-  [self reconfigureCellsForItems:@[ _exportPasswordsItem ]];
 }
 
 - (void)setupChangeGPMPinButton {
@@ -1029,15 +983,16 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 // current state of `isSavePasswordEnabled`.
 - (void)updateManagedSavePasswordsItem {
   self.managedSavePasswordsItem.statusText =
-      self.isSavePasswordsEnabled ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
-                                  : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+      self.isSavingPasswordsEnabled
+          ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+          : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
   [self reconfigureCellsForItems:@[ self.managedSavePasswordsItem ]];
 }
 
 // Updates the appearance of the Save Passwords switch to reflect the current
 // state of `isSavePasswordEnabled`.
 - (void)updateSavePasswordsSwitch {
-  self.savePasswordsItem.on = self.isSavePasswordsEnabled;
+  self.savePasswordsItem.on = self.isSavingPasswordsEnabled;
 
   if (self.modelLoadStatus != ModelLoadComplete) {
     return;
@@ -1424,8 +1379,60 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 // Automatic passkey upgrades switch should be displayed if the feature is
 // enabled and both saving passkeys and password setting is enabled.
 - (BOOL)shouldDisplayPasskeyUpgradesSwitch {
-  return AutomaticPasskeyUpgradeFeatureEnabled() && _savePasswordsEnabled &&
-         _savePasskeysEnabled;
+  return AutomaticPasskeyUpgradeFeatureEnabled() && _savingPasswordsEnabled &&
+         _savingPasskeysEnabled;
+}
+
+- (void)updateDeleteAllCredentialsSection {
+  if (self.modelLoadStatus == ModelNotLoaded ||
+      !base::FeatureList::IsEnabled(
+          password_manager::features::kIOSEnableDeleteAllSavedCredentials)) {
+    return;
+  }
+
+  if (self.canDeleteAllCredentials) {
+    _deleteCredentialsItem.textColor = [UIColor colorNamed:kRedColor];
+    _deleteCredentialsItem.accessibilityTraits &=
+        ~UIAccessibilityTraitNotEnabled;
+
+    _deleteCredentialsFooterItem.text = l10n_util::GetNSString(
+        IDS_IOS_PASSWORD_SETTINGS_CREDENTIAL_DELETION_TEXT);
+  } else {
+    // Disable, rather than remove, because the button will go back and forth
+    // between enabled/disabled status as the flow progresses.
+    _deleteCredentialsItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    _deleteCredentialsItem.accessibilityTraits |=
+        UIAccessibilityTraitNotEnabled;
+
+    _deleteCredentialsFooterItem.text = l10n_util::GetNSString(
+        IDS_IOS_PASSWORD_SETTINGS_NO_CREDENTIAL_DELETION_TEXT);
+  }
+
+  NSIndexSet* section = [NSIndexSet
+      indexSetWithIndex:[self.tableViewModel
+                            sectionForSectionIdentifier:
+                                SectionIdentifierDeleteCredentialsButton]];
+  [self.tableView reloadSections:section
+                withRowAnimation:UITableViewRowAnimationAutomatic];
+}
+
+- (void)updateExportPasswordsButton {
+  // This can be invoked before the item is ready when passwords are received
+  // too early.
+  if (self.modelLoadStatus == ModelNotLoaded) {
+    return;
+  }
+
+  if (self.canExportPasswords) {
+    _exportPasswordsItem.textColor = [UIColor colorNamed:kBlueColor];
+    _exportPasswordsItem.accessibilityTraits &= ~UIAccessibilityTraitNotEnabled;
+  } else {
+    // Disable, rather than remove, because the button will go back and forth
+    // between enabled/disabled status as the flow progresses.
+    _exportPasswordsItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    _exportPasswordsItem.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
+  }
+  [self reconfigureCellsForItems:@[ _exportPasswordsItem ]];
 }
 
 @end

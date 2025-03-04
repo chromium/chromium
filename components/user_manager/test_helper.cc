@@ -42,6 +42,18 @@ void TestHelper::RegisterKioskAppUser(PrefService& local_state,
 }
 
 // static
+void TestHelper::RegisterWebKioskAppUser(PrefService& local_state,
+                                         std::string_view user_id) {
+  auto type = policy::GetDeviceLocalAccountType(user_id);
+  CHECK_EQ(type, policy::DeviceLocalAccountType::kWebKioskApp)
+      << user_id << " did not satisfy to be used for a web kiosk user. "
+      << "See policy::GetDeviceLocalAccountType for details";
+  ScopedListPrefUpdate update(&local_state,
+                              prefs::kDeviceLocalAccountsWithSavedData);
+  update->Append(user_id);
+}
+
+// static
 void TestHelper::RegisterPublicAccountUser(PrefService& local_state,
                                            std::string_view user_id) {
   auto type = policy::GetDeviceLocalAccountType(user_id);

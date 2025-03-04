@@ -1419,8 +1419,7 @@ TEST_F(IsolatedWebAppPolicyManagerOnDemandComponentUpdateTest,
       .WillOnce(ReturnRef(on_demand_updater()));
 
   EXPECT_CALL(on_demand_updater(),
-              OnDemandUpdate(Eq(kIwaKeyDistributionComponentId),
-                             Priority::BACKGROUND, _))
+              OnDemandUpdate(Eq(kIwaKeyDistributionComponentId), _, _))
       .Times(1);
 
   SetUpForceInstallPolicyForOneApp();
@@ -1471,8 +1470,7 @@ TEST_F(IsolatedWebAppPolicyManagerOnDemandComponentUpdateTest,
       .WillOnce(ReturnRef(on_demand_updater()));
 
   EXPECT_CALL(on_demand_updater(),
-              OnDemandUpdate(Eq(kIwaKeyDistributionComponentId),
-                             Priority::BACKGROUND, _))
+              OnDemandUpdate(Eq(kIwaKeyDistributionComponentId), _, _))
       .Times(1)
       .WillOnce(WithoutArgs([&] {
         ASSERT_TRUE(installer);
@@ -1604,8 +1602,7 @@ TEST_F(IsolatedWebAppPolicyManagerOnDemandComponentUpdateTest,
       .WillOnce(ReturnRef(on_demand_updater()));
 
   EXPECT_CALL(on_demand_updater(),
-              OnDemandUpdate(Eq(kIwaKeyDistributionComponentId),
-                             Priority::BACKGROUND, _))
+              OnDemandUpdate(Eq(kIwaKeyDistributionComponentId), _, _))
       .Times(1)
       .WillOnce(WithoutArgs([&] {
         ASSERT_TRUE(installer);

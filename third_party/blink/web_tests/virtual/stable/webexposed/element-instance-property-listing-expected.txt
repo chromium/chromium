@@ -1563,6 +1563,8 @@ svg element a
     property getScreenCTM
     property href
     property nearestViewportElement
+    property rel
+    property relList
     property requiredExtensions
     property systemLanguage
     property target

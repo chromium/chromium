@@ -540,12 +540,6 @@ template("chrome_extra_paks") {
         "//chrome/browser/resources/signin/signout_confirmation:resources",
       ]
     }
-
-    if (enable_webui_generate_code_cache) {
-      sources +=
-          [ "$root_gen_dir/ui/webui/resources/webui_code_cache_resources.pak" ]
-      deps += [ "//ui/webui/resources:code_cache_resources" ]
-    }
   }
 }
 

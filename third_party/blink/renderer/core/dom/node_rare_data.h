@@ -42,7 +42,8 @@ class NodeRareData;
 class Part;
 class ScrollTimeline;
 
-using PartsList = HeapDeque<Member<Part>>;
+using PartsList = GCedHeapDeque<Member<Part>>;
+using TemporaryPartsList = HeapDeque<Member<Part>>;
 
 class NodeMutationObserverData final
     : public GarbageCollected<NodeMutationObserverData> {

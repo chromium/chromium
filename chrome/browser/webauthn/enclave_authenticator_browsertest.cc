@@ -508,11 +508,41 @@ static constexpr char kMakeCredentialConditionalCreate[] = R"((() => {
       rp: { name: "www.example.com" },
       user: {
         id: new Uint8Array([1]),
-        name: "bar@example.com",
+        name: "test@gmail.com",
         displayName: "Foo Bar"
       },
       pubKeyCredParams: [{type: "public-key", alg: -7}],
       challenge: new Uint8Array([0]),
+    }
+  }).then(c => window.domAutomationController.send('webauthn: ' + c.id),
+          e => window.domAutomationController.send('error ' + e));
+})())";
+
+static constexpr char kMakeCredentialConditionalCreateWithExcludeList[] =
+    R"((() => {
+  const base64ToArrayBuffer = (base64) => {
+    const bytes = window.atob(base64);
+    const len = bytes.length;
+    const ret = new Uint8Array(len);
+    for (var i = 0; i < len; i++) {
+        ret[i] = bytes.charCodeAt(i);
+    }
+    return ret.buffer;
+  }
+  return navigator.credentials.create({
+    mediation: "conditional",
+    publicKey: {
+      rp: { name: "www.example.com" },
+      user: {
+        id: new Uint8Array([1]),
+        name: "test@gmail.com",
+        displayName: "Foo Bar"
+      },
+      pubKeyCredParams: [{type: "public-key", alg: -7}],
+      challenge: new Uint8Array([0]),
+      excludeCredentials: [{type: "public-key",
+                            transports: [],
+                            id: base64ToArrayBuffer("$1")}],
     }
   }).then(c => window.domAutomationController.send('webauthn: ' + c.id),
           e => window.domAutomationController.send('error ' + e));
@@ -3982,6 +4012,55 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, CancelRacesTPMCheck) {
   // the fix for https://crbug.com/352532554.
 }
 
+// Regression test for crbug.com/399937685.
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, SelectDeletedPasskey) {
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  registration_state_result.key_version = kSecretVersion;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+  security_domain_service_->pretend_there_are_members();
+  AddTestPasskeyToModel();
+
+  // Set up a conditional UI request.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kGetAssertionConditionalUI);
+  delegate_observer()->WaitForUI();
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kPasskeyAutofill);
+
+  // Delete the credential during the request. Websites could do this through
+  // the signal API, and users through the password manager.
+  passkey_model()->DeleteAllPasskeys();
+
+  // Go through all the steps to get the enclave set up.
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion);
+  dialog_model()->OnAccountPreselectedIndex(0);
+  model_observer()->WaitForStep();
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+  dialog_model()->OnTrustThisComputer();
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+  EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
+      ->StoreKeys(kGaiaId,
+                  {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
+                                        std::end(kSecurityDomainSecret))},
+                  kSecretVersion);
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMError);
+  dialog_model()->OnGPMPinEntered(u"123456");
+  model_observer()->WaitForStep();
+}
+
 class EnclaveAuthenticatorConditionalCreateBrowserTest
     : public EnclaveAuthenticatorBrowserTest,
       public testing::WithParamInterface<bool> {
@@ -4042,10 +4121,23 @@ class EnclaveAuthenticatorConditionalCreateBrowserTest
     saved_form.signon_realm = https_server_.GetURL("example.com", "/").spec();
     saved_form.url = https_server_.GetURL("example.com",
                                           "/password/prefilled_username.html");
-    saved_form.username_value = u"bar@example.com";
+    saved_form.username_value = base::UTF8ToUTF16(std::string(kEmail));
     saved_form.password_value = u"hunter1";
     saved_form.date_last_used = last_used;
     password_store()->AddLogin(saved_form);
+  }
+
+  sync_pb::WebauthnCredentialSpecifics InjectPasskey() {
+    sync_pb::WebauthnCredentialSpecifics passkey;
+    CHECK(passkey.ParseFromArray(kTestProtobuf, sizeof(kTestProtobuf)));
+    // Sync ID and credential ID must be 16 bytes long.
+    passkey.set_sync_id(base::RandBytesAsString(16));
+    passkey.set_credential_id(base::RandBytesAsString(16));
+    passkey.set_user_id(base::RandBytesAsString(16));
+    passkey.set_user_name(kEmail);
+    passkey.set_user_display_name(kEmail);
+    passkey_model()->AddNewPasskeyForTesting(passkey);
+    return passkey;
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -4082,6 +4174,24 @@ IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
+                       ConditionalCreate_FailsWithoutBootstrappedEnclave) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+
+  InjectPassword(base::Time::Now());
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialConditionalCreate);
+  delegate_observer()->WaitForUI();
+
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_THAT(script_result, testing::HasSubstr("NotAllowedError"));
+}
+
+IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
                        ConditionalCreate_FailsWithoutMatchingPassword) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
@@ -4098,6 +4208,41 @@ IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_THAT(script_result, testing::HasSubstr("NotAllowedError"));
 }
+
+IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
+                       ConditionalCreate_ExcludeListMatch) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+
+  BootstrapEnclave();
+  sync_pb::WebauthnCredentialSpecifics passkey = InjectPasskey();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  std::string script = base::ReplaceStringPlaceholders(
+      kMakeCredentialConditionalCreateWithExcludeList,
+      {base::Base64Encode(passkey.credential_id())},
+      /*offsets=*/nullptr);
+  content::ExecuteScriptAsync(web_contents, script);
+  delegate_observer()->WaitForUI();
+
+  // It shouldn't be possible to test the matches on an exclude list without
+  // also having an upgrade eligible password for the request. I.e., without an
+  // upgrade-eligible password, this create() request results in the generic
+  // NotAllowedError, rather than the exclude-list specific InvalidStateError.
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_THAT(script_result, testing::HasSubstr("NotAllowedError"));
+
+  // With an upgrade eligible password, we signal the exclude list match with an
+  // InvalidStateError.
+  InjectPassword(base::Time::Now());
+  content::ExecuteScriptAsync(web_contents, script);
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_THAT(script_result, testing::HasSubstr("InvalidStateError"));
+}
+
 }  // namespace
 
 #endif  // !defined(MEMORY_SANITIZER)

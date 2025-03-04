@@ -290,6 +290,70 @@ void ManifestManager::ParseManifestFromPage(const KURL& document_url,
 }
 
 void ManifestManager::RecordMetrics(const mojom::blink::Manifest& manifest) {
+  UseCounter::Count(GetSupplementable(), WebFeature::kWebAppManifestStartUrl);
+  UseCounter::Count(GetSupplementable(), WebFeature::kWebAppManifestScope);
+
+  if (manifest.display != mojom::blink::DisplayMode::kUndefined) {
+    UseCounter::Count(GetSupplementable(), WebFeature::kWebAppManifestDisplay);
+  }
+
+  if (!manifest.icons.empty()) {
+    UseCounter::Count(GetSupplementable(), WebFeature::kWebAppManifestIcons);
+  }
+
+  if (!manifest.screenshots.empty()) {
+    UseCounter::Count(GetSupplementable(),
+                      WebFeature::kWebAppManifestScreenshots);
+  }
+
+  if (!manifest.lock_screen.is_null()) {
+    UseCounter::Count(GetSupplementable(),
+                      WebFeature::kWebAppManifestLockScreen);
+  }
+
+  if (!manifest.note_taking.is_null()) {
+    UseCounter::Count(GetSupplementable(),
+                      WebFeature::kWebAppManifestNoteTaking);
+  }
+
+  if (!manifest.permissions_policy.empty()) {
+    UseCounter::Count(GetSupplementable(),
+                      WebFeature::kWebAppManifestPermissionsPolicy);
+  }
+
+  if (manifest.prefer_related_applications) {
+    UseCounter::Count(GetSupplementable(),
+                      WebFeature::kWebAppManifestPrefer_Related_Applications);
+  }
+
+  if (manifest.has_theme_color) {
+    UseCounter::Count(GetSupplementable(),
+                      WebFeature::kWebAppManifestThemeColor);
+  }
+
+  if (manifest.has_background_color) {
+    UseCounter::Count(GetSupplementable(),
+                      WebFeature::kWebAppManifestBackgroundColor);
+  }
+
+  if (!manifest.translations.empty()) {
+    UseCounter::Count(GetSupplementable(),
+                      WebFeature::kWebAppManifestTranslations);
+  }
+
+  if (!manifest.tab_strip.is_null()) {
+    UseCounter::Count(GetSupplementable(), WebFeature::kWebAppManifestTabStrip);
+  }
+
+  if (!manifest.version.empty()) {
+    UseCounter::Count(GetSupplementable(), WebFeature::kWebAppManifestVersion);
+  }
+
+  if (!manifest.related_applications.empty()) {
+    UseCounter::Count(GetSupplementable(),
+                      WebFeature::kWebAppManifestRelated_Applications);
+  }
+
   if (manifest.has_custom_id) {
     UseCounter::Count(GetSupplementable(), WebFeature::kWebAppManifestIdField);
   }

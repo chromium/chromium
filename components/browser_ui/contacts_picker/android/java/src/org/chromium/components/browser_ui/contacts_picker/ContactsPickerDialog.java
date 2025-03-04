@@ -4,6 +4,9 @@
 
 package org.chromium.components.browser_ui.contacts_picker;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.FullscreenAlertDialog;
 import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.ui.base.WindowAndroid;
@@ -12,6 +15,7 @@ import org.chromium.ui.base.WindowAndroid;
  * UI for the contacts picker that shows on the Android platform as a result of &lt;input type=file
  * accept=contacts &gt; form element.
  */
+@NullMarked
 public class ContactsPickerDialog extends FullscreenAlertDialog
         implements ContactsPickerToolbar.ContactsToolbarDelegate {
     // The category we're showing contacts for.
@@ -43,7 +47,7 @@ public class ContactsPickerDialog extends FullscreenAlertDialog
             boolean includeAddresses,
             boolean includeIcons,
             String formattedOrigin) {
-        super(windowAndroid.getContext().get());
+        super(assertNonNull(windowAndroid.getContext().get()));
 
         // Initialize the main content view.
         mCategoryView =

@@ -113,7 +113,7 @@ public abstract class SelectableItemView<E> extends CheckableSelectableItemView<
      * Set drawable for the start icon view. Note that you may need to use this method instead of
      * mIconView#setImageDrawable to ensure icon view is correctly set in selection mode.
      */
-    protected void setStartIconDrawable(Drawable iconDrawable) {
+    protected void setStartIconDrawable(@Nullable Drawable iconDrawable) {
         setIconDrawable(iconDrawable);
     }
 

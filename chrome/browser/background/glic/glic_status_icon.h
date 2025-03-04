@@ -9,11 +9,13 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "chrome/browser/status_icons/status_icon_observer.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "ui/native_theme/native_theme_observer.h"
 
 class StatusIcon;
 class StatusIconMenuModel;
 class StatusTray;
+class Browser;
 
 namespace glic {
 
@@ -25,7 +27,8 @@ class GlicController;
 // status icon being clicked or menu item being triggered.
 class GlicStatusIcon : public StatusIconObserver,
                        public StatusIconMenuModel::Delegate,
-                       public ui::NativeThemeObserver {
+                       public ui::NativeThemeObserver,
+                       public BrowserListObserver {
  public:
   explicit GlicStatusIcon(GlicController* controller, StatusTray* status_tray);
   ~GlicStatusIcon() override;
@@ -39,7 +42,13 @@ class GlicStatusIcon : public StatusIconObserver,
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 
+  // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override;
+  void OnBrowserRemoved(Browser* browser) override;
+
   void UpdateHotkey(const ui::Accelerator& hotkey);
+
+  void UpdateShowExitInContextMenu();
 
  private:
   std::unique_ptr<StatusIconMenuModel> CreateStatusIconMenu();

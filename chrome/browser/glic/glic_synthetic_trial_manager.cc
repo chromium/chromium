@@ -13,39 +13,31 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "components/metrics/metrics_service.h"
 #include "components/variations/synthetic_trial_registry.h"
 
 namespace glic {
 
-// static
-GlicSyntheticTrialManager* GlicSyntheticTrialManager::GetInstance() {
-  return base::Singleton<GlicSyntheticTrialManager>::get();
-}
-
-GlicSyntheticTrialManager::GlicSyntheticTrialManager() {
-  metrics::MetricsService* metrics_service =
-      g_browser_process->metrics_service();
-  if (metrics_service) {
-    metrics_service->AddLogsObserver(this);
-  }
-}
+GlicSyntheticTrialManager::GlicSyntheticTrialManager(
+    metrics_services_manager::MetricsServicesManager* metrics_services_manager)
+    : metrics_services_manager_(metrics_services_manager) {}
 
 GlicSyntheticTrialManager::~GlicSyntheticTrialManager() {
-  metrics::MetricsService* metrics_service =
-      g_browser_process->metrics_service();
-  if (metrics_service) {
-    metrics_service->RemoveLogsObserver(this);
+  if (metrics_service_) {
+    metrics_service_->RemoveLogsObserver(this);
   }
 }
 
 void GlicSyntheticTrialManager::SetSyntheticExperimentState(
     const std::string& trial_name,
     const std::string& group_name) {
+  if (!metrics_service_) {
+    metrics_service_ = metrics_services_manager_->GetMetricsService();
+    DCHECK(metrics_service_);
+    metrics_service_->AddLogsObserver(this);
+  }
   // If already registered discard the logs if in a different group. This
   // avoids combining logs from multiple groups from different profiles.
   bool conflicting_group_registered =

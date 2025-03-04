@@ -165,17 +165,10 @@ void IpProtectionTelemetryUma::ProxyResolution(ProxyResolutionResult result) {
 
 void IpProtectionTelemetryUma::GetAuthTokenResultForGeo(
     bool is_token_available,
-    bool enable_token_caching_by_geo,
     bool is_cache_empty,
     bool does_requested_geo_match_current) {
   base::UmaHistogramBoolean("NetworkService.IpProtection.GetAuthTokenResult",
                             is_token_available);
-
-  // Remaining metric is only recorded when caching for geo is enabled.
-  if (!enable_token_caching_by_geo) {
-    return;
-  }
-
   AuthTokenResultForGeo result;
   if (is_token_available) {
     if (does_requested_geo_match_current) {

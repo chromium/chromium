@@ -8,7 +8,6 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -34,7 +33,6 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
@@ -108,8 +106,6 @@ class PerformanceInterventionInteractiveTest
 
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
-    feature_list_.InitAndEnableFeature(
-        performance_manager::features::kPerformanceInterventionUI);
     InteractiveFeaturePromoTest::SetUp();
   }
 
@@ -203,9 +199,6 @@ class PerformanceInterventionInteractiveTest
                                enabled);
     });
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,

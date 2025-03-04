@@ -78,13 +78,12 @@ std::string GetNoticeActionString(NoticeActionTaken action) {
   switch (action) {
     case NoticeActionTaken::kNotSet:
     case NoticeActionTaken::kUnknownActionPreMigration:
+    case NoticeActionTaken::kLearnMore_Deprecated:
       return "";
     case NoticeActionTaken::kAck:
       return "Ack";
     case NoticeActionTaken::kClosed:
       return "Closed";
-    case NoticeActionTaken::kLearnMore:
-      return "LearnMore";
     case NoticeActionTaken::kOptIn:
       return "OptIn";
     case NoticeActionTaken::kOptOut:
@@ -269,7 +268,7 @@ PrivacySandboxNoticeStorage::NoticeActionToNoticeEvent(
   switch (action) {
     case NoticeActionTaken::kNotSet:
     case NoticeActionTaken::kUnknownActionPreMigration:
-    case NoticeActionTaken::kLearnMore:
+    case NoticeActionTaken::kLearnMore_Deprecated:
     case NoticeActionTaken::kOther:
       return std::nullopt;
     case NoticeActionTaken::kAck:
@@ -359,7 +358,7 @@ void PrivacySandboxNoticeStorage::RecordHistogramsOnStartup(
   } else {  // Notice has been shown, action handling below.
     switch (notice_data->notice_action_taken_) {
       case NoticeActionTaken::kNotSet:
-      case NoticeActionTaken::kLearnMore:
+      case NoticeActionTaken::kLearnMore_Deprecated:
         startup_state = NoticeStartupState::kPromptWaiting;
         break;
       case NoticeActionTaken::kOptIn:
@@ -493,6 +492,9 @@ void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
     NoticeActionTaken notice_action_taken,
     base::Time notice_action_taken_time) {
   CheckNoticeNameEligibility(notice);
+  // TODO(crbug.com/392088228): Remove once migration is complete.
+  CHECK(notice_action_taken != NoticeActionTaken::kLearnMore_Deprecated)
+      << "kLearnMore_Deprecated action is deprecated and should not be used.";
   ScopedDictPrefUpdate update(pref_service, kPrivacySandboxNoticeDataPath);
   auto notice_data = ReadNoticeData(pref_service, notice);
 
@@ -520,12 +522,6 @@ void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
   base::UmaHistogramEnumeration(
       base::StrCat({"PrivacySandbox.Notice.NoticeAction.", notice}),
       notice_action_taken);
-
-  // Don't store LearnMore action in prefs since this doesn't affect the prompt
-  // flow.
-  if (notice_action_taken == NoticeActionTaken::kLearnMore) {
-    return;
-  }
 
   update.Get().SetByDottedPath(
       CreatePrefPath(notice, kPrivacySandboxNoticeActionTaken),

@@ -16,6 +16,7 @@
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_view.h"
 #include "chrome/browser/glic/glic_widget.h"
 #include "chrome/browser/glic/glic_window_animator.h"
@@ -442,6 +443,7 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi,
 }
 
 void GlicWindowController::ShowDetachedForTesting() {
+  glic::GlicProfileManager::GetInstance()->SetActiveGlic(glic_service_);
   Show(nullptr, InvocationSource::kOsHotkey);
 }
 

@@ -80,12 +80,7 @@ RendererTask::RendererTask(const std::u16string& title,
       renderer_resources_sampler_(
           CreateRendererResourcesSampler(render_process_host_)),
       render_process_id_(render_process_host_->GetDeprecatedID()),
-      v8_memory_allocated_(0),
-      v8_memory_used_(0),
-      webcache_stats_(blink::WebCacheResourceTypeStats()),
-      profile_name_(GetRendererProfileName(render_process_host_)),
-      termination_status_(base::TERMINATION_STATUS_STILL_RUNNING),
-      termination_error_code_(0) {
+      profile_name_(GetRendererProfileName(render_process_host_)) {
   OnNetworkBytesRead(0);
 
   // Tag the web_contents with a |ContentFaviconDriver| (if needed) so that
@@ -249,6 +244,11 @@ const std::u16string RendererTask::PrefixRendererTitle(
   }
 
   return l10n_util::GetStringFUTF16(message_id, title);
+}
+
+void RendererTask::DefaultUpdateFaviconImpl() {
+  const gfx::ImageSkia* icon = GetFaviconFromWebContents(web_contents());
+  set_icon(icon ? *icon : gfx::ImageSkia());
 }
 
 }  // namespace task_manager

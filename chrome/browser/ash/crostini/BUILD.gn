@@ -14,6 +14,8 @@ mojom("crostini_installer_types_mojom") {
 
 static_library("crostini") {
   sources = [
+    "baguette_installer.cc",
+    "baguette_installer.h",
     "crostini_disk.cc",
     "crostini_disk.h",
     "crostini_export_import.cc",

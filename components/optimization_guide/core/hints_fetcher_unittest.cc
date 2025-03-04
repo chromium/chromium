@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -51,7 +52,7 @@ class HintsFetcherTest : public testing::Test,
         {{features::kRemoteOptimizationGuideFetching, {}},
          {features::kOptimizationHints,
           {{"persist_hints_to_disk",
-            ShouldPersistHintsToDisk() ? "true" : "false"}}}},
+            base::ToString(ShouldPersistHintsToDisk())}}}},
         {});
 
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();

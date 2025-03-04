@@ -32,7 +32,6 @@ class IpProtectionTelemetryUma final : public IpProtectionTelemetry {
   void EmptyTokenCache(ProxyLayer) override;
   void ProxyResolution(ProxyResolutionResult) override;
   void GetAuthTokenResultForGeo(bool is_token_available,
-                                bool enable_token_caching_by_geo,
                                 bool is_cache_empty,
                                 bool does_requested_geo_match_current) override;
   void TokenBatchGenerationComplete(base::TimeDelta duration) override;

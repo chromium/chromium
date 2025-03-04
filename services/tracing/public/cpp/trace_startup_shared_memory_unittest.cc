@@ -20,6 +20,7 @@
 #include "services/tracing/public/cpp/perfetto/shared_memory.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "services/tracing/public/cpp/trace_startup_config.h"
+#include "services/tracing/public/cpp/tracing_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
@@ -41,7 +42,7 @@ TEST(TraceStartupSharedMemoryTest, Create) {
   auto shared_memory = CreateTracingOutputSharedMemory();
 
   ASSERT_TRUE(shared_memory.IsValid());
-  EXPECT_EQ(kDefaultSharedMemorySize, shared_memory.GetSize());
+  EXPECT_EQ(kDefaultSharedMemorySizeBytes, shared_memory.GetSize());
 }
 
 MULTIPROCESS_TEST_MAIN(InitFromLaunchParameters) {
@@ -82,7 +83,7 @@ MULTIPROCESS_TEST_MAIN(InitFromLaunchParameters) {
   auto shmem_region = base::shared_memory::UnsafeSharedMemoryRegionFrom(
       command_line->GetSwitchValueASCII(switches::kTraceBufferHandle));
   EXPECT_TRUE(shmem_region->IsValid());
-  EXPECT_EQ(kDefaultSharedMemorySize, shmem_region->GetSize());
+  EXPECT_EQ(kDefaultSharedMemorySizeBytes, shmem_region->GetSize());
 
   return 0;
 }

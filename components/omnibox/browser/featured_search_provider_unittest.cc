@@ -55,6 +55,7 @@ const std::string kBookmarksUrl =
 const std::string kHistoryUrl =
     TemplateURLStarterPackData::history.destination_url;
 const std::string kTabsUrl = TemplateURLStarterPackData::tabs.destination_url;
+const std::string kPageUrl = TemplateURLStarterPackData::page.destination_url;
 const std::string kGeminiUrl =
     TemplateURLStarterPackData::Gemini.destination_url;
 
@@ -295,7 +296,8 @@ TEST_F(FeaturedSearchProviderTest, StarterPackExpansion) {
 
 TEST_F(FeaturedSearchProviderTest, StarterPackExpansionRelevance) {
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(omnibox::kStarterPackExpansion);
+  features.InitWithFeatures(
+      {omnibox::kStarterPackExpansion, omnibox::kStarterPackPage}, {});
 
   AddStarterPackEntriesToTemplateUrlService();
 
@@ -318,6 +320,7 @@ TEST_F(FeaturedSearchProviderTest, StarterPackExpansionRelevance) {
       kGeminiUrl,
       kBookmarksUrl,
       kHistoryUrl,
+      kPageUrl,
       kTabsUrl,
   });
   for (size_t i = 0; i < matches.size(); i++) {

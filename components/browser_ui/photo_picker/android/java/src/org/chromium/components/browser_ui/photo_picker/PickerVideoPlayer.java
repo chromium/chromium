@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.photo_picker;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -36,6 +38,8 @@ import androidx.core.view.GestureDetectorCompat;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
 
@@ -43,6 +47,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Encapsulates the video player functionality of the Photo Picker dialog. */
+@NullMarked
 public class PickerVideoPlayer extends FrameLayout
         implements View.OnClickListener,
                 SeekBar.OnSeekBarChangeListener,
@@ -95,7 +100,7 @@ public class PickerVideoPlayer extends FrameLayout
     }
 
     // The callback to use for reporting playback progress in tests.
-    private static VideoPlaybackStatusCallback sProgressCallback;
+    private static @Nullable VideoPlaybackStatusCallback sProgressCallback;
 
     // The amount of time (in milliseconds) to skip when fast forwarding/rewinding.
     private static final int SKIP_LENGTH_IN_MS = 10000;
@@ -119,7 +124,7 @@ public class PickerVideoPlayer extends FrameLayout
     private static boolean sShortAnimationTimesForTesting;
 
     // The Window for the dialog the player is shown in.
-    private Window mWindow;
+    private @Nullable Window mWindow;
 
     // The Context to use.
     private Context mContext;
@@ -134,7 +139,7 @@ public class PickerVideoPlayer extends FrameLayout
     private final VideoView mVideoView;
 
     // The MediaPlayer object used to control the VideoView.
-    private MediaPlayer mMediaPlayer;
+    private @Nullable MediaPlayer mMediaPlayer;
 
     // The container view for all the UI elements overlaid on top of the video.
     private final View mVideoOverlayContainer;
@@ -256,6 +261,7 @@ public class PickerVideoPlayer extends FrameLayout
         // size. Post a task, so that size adjustments happen after layout of the video controls has
         // completed (so that the calculations for the view have had time to account for the
         // existence of the nav bar and status bar -- or lack thereof).
+        assumeNonNull(getHandler());
         getHandler().post(() -> adjustVideoLayoutParamsToOrientation());
         super.onConfigurationChanged(newConfig);
     }
@@ -266,12 +272,13 @@ public class PickerVideoPlayer extends FrameLayout
      * @param uri The uri of the video to start playing.
      * @param window The window for the dialog.
      */
-    public void startVideoPlaybackAsync(Uri uri, Window window) {
+    public void startVideoPlaybackAsync(Uri uri, @Nullable Window window) {
         mWindow = window;
         syncNavBarColorToPlaybackStatus(/* playerOpening= */ true);
 
         // Make the filename (uri) of the video visible at the top and de-emphasize the scheme part.
         SpannableString fileName = new SpannableString(uri.toString());
+        assumeNonNull(uri.getScheme());
         fileName.setSpan(
                 new TextAppearanceSpan(mContext, R.style.TextAppearance_TextMedium_Secondary),
                 0,
@@ -299,6 +306,7 @@ public class PickerVideoPlayer extends FrameLayout
                         mMediaPlayer.setOnInfoListener(
                                 (MediaPlayer player, int what, int extra) -> {
                                     if (what == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
+                                        assumeNonNull(sProgressCallback);
                                         sProgressCallback.onVideoPlaying();
                                         return true;
                                     }
@@ -352,6 +360,7 @@ public class PickerVideoPlayer extends FrameLayout
      */
     private void syncNavBarColorToPlaybackStatus(boolean playerOpening) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            assumeNonNull(mWindow);
             if (playerOpening) {
                 if (mPreviousNavBarColorsSaved) {
                     return; // Don't overwrite previously saved colors.
@@ -444,6 +453,7 @@ public class PickerVideoPlayer extends FrameLayout
     }
 
     private boolean onDoubleTapVideo(float x) {
+        assumeNonNull(mMediaPlayer);
         int videoPos = mMediaPlayer.getCurrentPosition();
         int duration = mMediaPlayer.getDuration();
 
@@ -480,6 +490,7 @@ public class PickerVideoPlayer extends FrameLayout
     @Override
     public void onSystemUiVisibilityChange(int visibility) {
         if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+            assumeNonNull(mWindow);
             mWindow.getDecorView().setOnSystemUiVisibilityChangeListener(null);
             onExitFullScreenMode();
 
@@ -488,6 +499,7 @@ public class PickerVideoPlayer extends FrameLayout
                 // from the top of the screen, the system sends the visibility change event before
                 // the resize has happened, so the new video size isn't known yet. Syncing
                 // immediately would make the overlay controls appear in the wrong location.
+                assumeNonNull(getHandler());
                 getHandler().post(() -> adjustVideoLayoutParamsToOrientation());
                 return;
             }
@@ -536,6 +548,7 @@ public class PickerVideoPlayer extends FrameLayout
 
     private void videoSeekTo(int position) {
         if (Build.VERSION.SDK_INT >= 26) {
+            assumeNonNull(mMediaPlayer);
             mMediaPlayer.seekTo(position, MediaPlayer.SEEK_CLOSEST);
         } else {
             // On older versions, sync to nearest previous key frame.
@@ -763,6 +776,7 @@ public class PickerVideoPlayer extends FrameLayout
     }
 
     private void startVideoPlayback() {
+        assumeNonNull(mMediaPlayer);
         mMediaPlayer.start();
         switchToPauseButton();
         showAndMaybeHideVideoControls(/* animateIn= */ false, FadeOut.FADE_OUT_PLAY_QUICKLY);
@@ -771,6 +785,7 @@ public class PickerVideoPlayer extends FrameLayout
     private void stopVideoPlayback() {
         stopPlaybackMonitor();
 
+        assumeNonNull(mMediaPlayer);
         mMediaPlayer.pause();
         switchToPlayButton();
         showAndMaybeHideVideoControls(/* animateIn= */ false, FadeOut.NO_FADE_OUT);
@@ -798,6 +813,7 @@ public class PickerVideoPlayer extends FrameLayout
 
     private void toggleMute() {
         mAudioOn = !mAudioOn;
+        assumeNonNull(mMediaPlayer);
         if (mAudioOn) {
             mMediaPlayer.setVolume(1f, 1f);
             mMuteButton.setImageResource(R.drawable.ic_volume_on_white_24dp);
@@ -829,6 +845,7 @@ public class PickerVideoPlayer extends FrameLayout
 
     private void toggleAndroidSystemUiForFullscreen() {
         mFullScreenToggledInApp = true;
+        assumeNonNull(mWindow);
         View decorView = mWindow.getDecorView();
         if (!mFullScreenEnabled) {
             decorView.setOnSystemUiVisibilityChangeListener(this);

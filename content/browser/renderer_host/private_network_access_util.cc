@@ -13,6 +13,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
@@ -74,7 +75,8 @@ Policy DerivePrivateNetworkRequestPolicy(
 }
 
 Policy DerivePolicyForNonSecureContext(AddressSpace ip_address_space) {
-  if (base::FeatureList::IsEnabled(features::kLocalNetworkAccessChecks)) {
+  if (base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecks)) {
     // LNA blocks all local network access requests coming from non-secure
     // contexts.
     // See:
@@ -120,7 +122,8 @@ Policy DerivePolicyForNonSecureContext(AddressSpace ip_address_space) {
 }
 
 Policy DerivePolicyForSecureContext(AddressSpace ip_address_space) {
-  if (base::FeatureList::IsEnabled(features::kLocalNetworkAccessChecks)) {
+  if (base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecks)) {
     // See:
     // https://github.com/explainers-by-googlers/local-network-access?tab=readme-ov-file#permission-prompts
     return Policy::kPermissionBlock;
@@ -185,7 +188,8 @@ Policy DerivePrivateNetworkRequestPolicy(
                       ? DerivePolicyForSecureContext(ip_address_space)
                       : DerivePolicyForNonSecureContext(ip_address_space);
 
-  if (base::FeatureList::IsEnabled(features::kLocalNetworkAccessChecks)) {
+  if (base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecks)) {
     return policy;
   } else {
     return ApplyFeatureStateToPolicy(feature_state, policy);

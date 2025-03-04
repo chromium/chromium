@@ -214,6 +214,11 @@ def key_from_builder_details(builder_details: PerfBuilderDetails,
   return key
 
 
+def _get_improvement_direction(unit: str) -> str:
+  """Returns the improvement direction for a given unit."""
+  return "down" if "smallerIsBetter" in unit else "up"
+
+
 class JsonUtil:
   """Tools to convert result2 json to skia json."""
 
@@ -245,8 +250,8 @@ class JsonUtil:
         guid_to_values[item[json_constants.GUID]] = item[json_constants.VALUES]
       if json_constants.DIAGNOSTICS in item:
         test_name = item[json_constants.NAME]
-        improvement_direction = json_constants.UNIT_TO_DIRECTION.get(
-            item[json_constants.UNIT], "up")
+        improvement_direction = _get_improvement_direction(
+            item[json_constants.UNIT])
         if not isinstance(item[json_constants.DIAGNOSTICS], dict):
           raise ValueError("The diagnostics should be a dict, but it is %s" %
                            type(item[json_constants.DIAGNOSTICS]))

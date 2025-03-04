@@ -187,11 +187,19 @@ void SkiaOutputDeviceDComp::OnPresentFinished(
   // Remove entries from |overlays_| for textures that weren't scheduled as an
   // overlay this frame.
   if (!overlays_.empty()) {
-    base::EraseIf(overlays_, [this](auto& entry) {
-      const gpu::Mailbox& mailbox = entry.first;
-      return !scheduled_overlay_mailboxes_.contains(mailbox);
-    });
+    if (result.swap_result == gfx::SwapResult::SWAP_ACK) {
+      // If swap did not succeed, then the overlay images could still be in the
+      // visual tree. It's not safe for us to end overlay access on DComp
+      // textures since DWM could potentially still read from them. The images
+      // held back in the swap failure case will either be cleaned up on next
+      // successful swap or after GPU process restart.
+      base::EraseIf(overlays_, [this](auto& entry) {
+        const gpu::Mailbox& mailbox = entry.first;
+        return !scheduled_overlay_mailboxes_.contains(mailbox);
+      });
+    }
     scheduled_overlay_mailboxes_.clear();
+
     for (auto& [mailbox, overlay_data] : overlays_) {
       if (auto overlay_image = overlay_data.GetOverlayAccess()) {
         if (overlay_image->type() ==

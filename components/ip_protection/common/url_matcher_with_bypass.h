@@ -57,7 +57,7 @@ class UrlMatcherWithBypass {
   UrlMatcherWithBypassResult Matches(
       const GURL& resource_url,
       const std::optional<net::SchemefulSite>& top_frame_site,
-      MdlType mdl_type = MdlType::kDefault,
+      MdlType mdl_type,
       bool skip_bypass_check = false) const;
 
   // Builds a matcher to match to the public suffix list domains.

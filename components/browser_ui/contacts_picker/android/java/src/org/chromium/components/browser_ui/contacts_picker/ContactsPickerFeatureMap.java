@@ -8,9 +8,11 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.build.annotations.NullMarked;
 
 /** Java accessor for base::Features listed in {@link ContactsPickerFeatureList} */
 @JNINamespace("browser_ui")
+@NullMarked
 public final class ContactsPickerFeatureMap extends FeatureMap {
     private static final ContactsPickerFeatureMap sInstance = new ContactsPickerFeatureMap();
 

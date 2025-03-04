@@ -4,10 +4,6 @@ Found 178 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_true: The prototype object must have a property "correspondingElement" expected true got false
 [FAIL] SVGElement interface: attribute correspondingUseElement
   assert_true: The prototype object must have a property "correspondingUseElement" expected true got false
-[FAIL] SVGGeometryElement interface: operation isPointInFill(optional DOMPointInit)
-  assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] SVGGeometryElement interface: operation isPointInStroke(optional DOMPointInit)
-  assert_equals: property has wrong .length expected 0 but got 1
 [FAIL] SVGAnimatedRect interface: objects.svg.viewBox must inherit property "baseVal" with the proper type
   assert_true: wrong type: not a DOMRect expected true got false
 [FAIL] SVGAnimatedRect interface: objects.svg.viewBox must inherit property "animVal" with the proper type
@@ -142,8 +138,6 @@ Found 178 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_inherits: property "correspondingElement" not found in prototype chain
 [FAIL] SVGElement interface: objects.polygon must inherit property "correspondingUseElement" with the proper type
   assert_inherits: property "correspondingUseElement" not found in prototype chain
-[FAIL] SVGTextContentElement interface: operation getCharNumAtPosition(optional DOMPointInit)
-  assert_equals: property has wrong .length expected 0 but got 1
 [FAIL] SVGElement interface: objects.text must inherit property "correspondingElement" with the proper type
   assert_inherits: property "correspondingElement" not found in prototype chain
 [FAIL] SVGElement interface: objects.text must inherit property "correspondingUseElement" with the proper type

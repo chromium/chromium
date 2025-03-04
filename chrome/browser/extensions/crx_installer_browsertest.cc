@@ -83,7 +83,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
-#include "chrome/browser/ash/test/kiosk_logged_in_browser_test_mixin.h"
+#include "chrome/browser/ash/test/kiosk_app_logged_in_browser_test_mixin.h"
 #include "chrome/browser/extensions/extension_assets_manager_chromeos.h"
 #endif
 
@@ -1006,8 +1006,8 @@ class ExtensionCrxInstallerKioskTest
   ExtensionCrxInstallerKioskTest() { set_chromeos_user_ = false; }
 
  private:
-  ash::KioskLoggedInBrowserTestMixin kiosk_mixin_{
-      &mixin_host_, "example@kiosk-apps.device-local.localhost"};
+  ash::KioskAppLoggedInBrowserTestMixin kiosk_mixin_{&mixin_host_,
+                                                     "kiosk-account"};
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerKioskTest, InstallTest) {

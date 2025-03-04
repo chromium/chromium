@@ -115,6 +115,7 @@ BASE_DECLARE_FEATURE(kOmniboxTouchDownTriggerForPrefetch);
 // Site search/Keyword mode related features.
 BASE_DECLARE_FEATURE(kStarterPackExpansion);
 BASE_DECLARE_FEATURE(kStarterPackIPH);
+BASE_DECLARE_FEATURE(kStarterPackPage);
 
 // Search and Suggest requests and params.
 BASE_DECLARE_FEATURE(kAblateSearchProviderWarmup);

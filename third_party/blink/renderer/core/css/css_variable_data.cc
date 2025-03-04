@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
@@ -163,10 +159,10 @@ CSSVariableData::CSSVariableData(PassKey,
       has_dashed_functions_(has_dashed_functions) {
   if (is_8bit_) {
     std::ranges::copy(original_text.Span8(),
-                      reinterpret_cast<LChar*>(this + 1));
+                      UNSAFE_TODO(reinterpret_cast<LChar*>(this + 1)));
   } else {
     std::ranges::copy(original_text.Span16(),
-                      reinterpret_cast<UChar*>(this + 1));
+                      UNSAFE_TODO(reinterpret_cast<UChar*>(this + 1)));
   }
 }
 

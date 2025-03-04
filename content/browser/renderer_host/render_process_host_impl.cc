@@ -3367,7 +3367,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       switches::kDisableBackgroundTimerThrottling,
       switches::kDisableBestEffortTasks,
       switches::kDisableBreakpad,
-      switches::kDisableDatabases,
       switches::kDisableFileSystem,
       switches::kDisableFrameRateLimit,
       switches::kDisableGpuMemoryBufferVideoFrames,
@@ -3543,12 +3542,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
   if (GaiaConfig::GetInstance()) {
     GaiaConfig::GetInstance()->SerializeContentsToCommandLineSwitch(
         renderer_cmd);
-  }
-
-  // Disable databases in incognito mode.
-  if (GetBrowserContext()->IsOffTheRecord() &&
-      !browser_cmd.HasSwitch(switches::kDisableDatabases)) {
-    renderer_cmd->AppendSwitch(switches::kDisableDatabases);
   }
 
 #if BUILDFLAG(IS_ANDROID)

@@ -430,8 +430,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Views.ColorProviderCacheSize" units="entries"
-    expires_after="2025-03-09">
-  <owner>pkasting@chromium.org</owner>
+    expires_after="2025-09-09">
   <owner>tluk@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <summary>

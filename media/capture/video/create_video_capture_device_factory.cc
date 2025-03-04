@@ -64,7 +64,11 @@ CreatePlatformSpecificVideoCaptureDeviceFactory(
 #elif BUILDFLAG(IS_WIN)
   return std::make_unique<VideoCaptureDeviceFactoryWin>();
 #elif BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_IOS_TVOS)
+  return CreateFakeVideoCaptureDeviceFactory();
+#else
   return std::make_unique<VideoCaptureDeviceFactoryApple>();
+#endif  // BUILDFLAG(IS_IOS_TVOS)
 #elif BUILDFLAG(IS_ANDROID)
   return std::make_unique<VideoCaptureDeviceFactoryAndroid>();
 #elif BUILDFLAG(IS_FUCHSIA)

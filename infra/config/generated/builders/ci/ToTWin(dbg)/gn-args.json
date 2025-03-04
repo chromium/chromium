@@ -6,6 +6,7 @@
     "llvm_force_head_revision": true,
     "target_cpu": "x86",
     "target_os": "win",
+    "use_reclient": false,
     "use_siso": true
   }
 }

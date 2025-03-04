@@ -28,9 +28,6 @@ class GlicProfileManager {
   GlicProfileManager(const GlicProfileManager&) = delete;
   GlicProfileManager& operator=(const GlicProfileManager&) = delete;
 
-  // Close the Glic window, if one exists.
-  void CloseGlicWindow();
-
   // Return the profile that should be used to open glic. May be null if there
   // is no eligible profile.
   Profile* GetProfileForLaunch() const;
@@ -41,13 +38,11 @@ class GlicProfileManager {
   // True if the given profile should be considered for preloading.
   bool ShouldPreloadForProfile(Profile* profile) const;
 
-  // Returns true if there is an active Glic service, whether or not that
-  // service's panel is showing.
-  bool HasActiveGlicService() const;
-
   // Opens the panel if the "glic-open-on-startup" command line switch was used
   // and glic has not already opened like this.
   void MaybeAutoOpenGlicPanel();
+
+  void ShowProfilePicker();
 
   // Static in order to permit setting forced values before the manager is
   // constructed.
@@ -56,11 +51,15 @@ class GlicProfileManager {
       base::MemoryPressureMonitor::MemoryPressureLevel* level);
 
  private:
+  // Callback from ProfilePicker::Show().
+  void DidSelectProfile(Profile* profile);
+
   base::MemoryPressureMonitor::MemoryPressureLevel GetCurrentPressureLevel()
       const;
 
   base::WeakPtr<GlicKeyedService> active_glic_;
   bool did_auto_open_ = false;
+  base::WeakPtrFactory<GlicProfileManager> weak_ptr_factory_{this};
 };
 }  // namespace glic
 

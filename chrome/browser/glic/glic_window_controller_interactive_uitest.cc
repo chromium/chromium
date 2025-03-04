@@ -32,6 +32,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "glic_profile_manager.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/virtual_display_util.h"
@@ -53,8 +54,8 @@ class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
   auto SimulateGlicHotkey() {
     // TODO: Actually implement the hotkey when we know what it is.
     return Do([this]() {
-      window_controller().Toggle(nullptr, /*prevent_close=*/false,
-                                 InvocationSource::kOsHotkey);
+      glic_service()->ToggleUI(nullptr, /*prevent_close=*/false,
+                               InvocationSource::kOsHotkey);
     });
   }
 
@@ -337,6 +338,16 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                               kActivateSurfaceIncompatibilityNotice),
       InAnyContext(ActivateSurface(test::kGlicHostElementId)),
       SimulateOpenMenuItem(), CheckControllerShowing(true));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       OpeningProfilePickerClosesPanel) {
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kDetached),
+      CheckControllerWidgetMode(GlicWindowMode::kDetached), Do([&]() {
+        glic::GlicProfileManager::GetInstance()->ShowProfilePicker();
+      }),
+      CheckControllerHasWidget(false));
 }
 
 class GlicWindowControllerWithMemoryPressureUiTest

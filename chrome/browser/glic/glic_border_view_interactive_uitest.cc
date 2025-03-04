@@ -195,8 +195,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, BorderResize) {
 }
 
 // Regression test for https://crbug.com/387458471: The border shouldn't be
-// visible before StartAnimation is called, and shouldn't be visible after
-// CancelAnimation is called.
+// visible before Show is called, and shouldn't be visible after
+// StopShowing is called.
 IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, Visibility) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
@@ -205,9 +205,9 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, Visibility) {
   TesterImpl tester(border, base::TimeTicks::Now());
   StartBorderAnimation(browser());
   tester.WaitForAnimationStart();
-  EXPECT_TRUE(border->compositor_for_testing());
+  EXPECT_TRUE(border->IsShowing());
   EXPECT_TRUE(border->GetVisible());
-  border->CancelAnimation();
+  border->StopShowing();
   EXPECT_FALSE(border->GetVisible());
 }
 
@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, SmokeTest) {
 
   StartBorderAnimation(browser());
   tester.WaitForAnimationStart();
-  EXPECT_TRUE(border->compositor_for_testing());
+  EXPECT_TRUE(border->IsShowing());
 
   // Manually stepping the animation code to mimic the behavior of the
   // compositor. As a part of crbug.com/384712084, testing via requesting
@@ -262,8 +262,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, SmokeTest) {
       1.f - gfx::Tween::CalculateValue(gfx::Tween::Type::EASE_IN_OUT_2, 0.433),
       kFloatComparisonTolerance);
 
-  border->CancelAnimation();
-  EXPECT_FALSE(border->compositor_for_testing());
+  border->StopShowing();
+  EXPECT_FALSE(border->IsShowing());
 }
 
 // Ensures that the border animation state is reset after canceling the
@@ -275,11 +275,11 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, AnimationStateReset) {
   TesterImpl tester(border, base::TimeTicks::Now());
   StartBorderAnimation(browser());
   tester.WaitForAnimationStart();
-  EXPECT_TRUE(border->compositor_for_testing());
+  EXPECT_TRUE(border->IsShowing());
   border->OnAnimationStep(base::TimeTicks::Now());
-  border->CancelAnimation();
+  border->StopShowing();
 
-  EXPECT_FALSE(border->compositor_for_testing());
+  EXPECT_FALSE(border->IsShowing());
   EXPECT_FALSE(border->opacity_for_testing());
   EXPECT_FALSE(border->emphasis_for_testing());
 }
@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
 
   StartBorderAnimation(browser());
   tester.WaitForAnimationStart();
-  EXPECT_TRUE(border->compositor_for_testing());
+  EXPECT_TRUE(border->IsShowing());
 
   // T=0s.
   border->OnAnimationStep(kDummyTimeStamp);
@@ -339,8 +339,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
       1.f - gfx::Tween::CalculateValue(gfx::Tween::Type::EASE_IN_OUT_2, 0.234),
       kFloatComparisonTolerance);
 
-  border->CancelAnimation();
-  EXPECT_FALSE(border->compositor_for_testing());
+  border->StopShowing();
+  EXPECT_FALSE(border->IsShowing());
 }
 
 // Disabled due to brittleness; see https://crrev.com/c/6289227.
@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_FocusedWindowChange) {
 
   StartBorderAnimation(browser());
   tester->WaitForAnimationStart();
-  EXPECT_TRUE(border->compositor_for_testing());
+  EXPECT_TRUE(border->IsShowing());
 
   // T=0s.
   border->OnAnimationStep(kDummyTimeStamp);
@@ -378,14 +378,14 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_FocusedWindowChange) {
     new_tester->WaitForAnimationStart();
   }
   ASSERT_TRUE(new_border);
-  EXPECT_TRUE(new_border->compositor_for_testing());
+  EXPECT_TRUE(new_border->IsShowing());
   // The first `OnAnimationStep()` on the defocused border starts the ramp
   // down sequence. After 0.5s, the ramp down has finished.
   border->OnAnimationStep(kDummyTimeStamp);
   timestamp += base::Seconds(0.5);
   tester->set_next_time_tick(timestamp);
   border->OnAnimationStep(kDummyTimeStamp);
-  EXPECT_FALSE(border->compositor_for_testing());
+  EXPECT_FALSE(border->IsShowing());
 
   // T=0 in the new window.
   new_border->OnAnimationStep(kDummyTimeStamp);
@@ -405,8 +405,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_FocusedWindowChange) {
   EXPECT_NEAR(new_border->emphasis_for_testing(), 0.431,
               kFloatComparisonTolerance);
 
-  new_border->CancelAnimation();
-  EXPECT_FALSE(new_border->compositor_for_testing());
+  new_border->StopShowing();
+  EXPECT_FALSE(new_border->IsShowing());
 }
 
 // Ensures that the border fades out before disappearing entirely during
@@ -419,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringEmphasisRampUp) {
 
   StartBorderAnimation(browser());
   tester.WaitForAnimationStart();
-  EXPECT_TRUE(border->compositor_for_testing());
+  EXPECT_TRUE(border->IsShowing());
 
   // T=0s.
   border->OnAnimationStep(kDummyTimeStamp);
@@ -458,11 +458,11 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringEmphasisRampUp) {
   border->OnAnimationStep(kDummyTimeStamp);
   // clamp 0.666-(0.193/0.2) = 0.0
   EXPECT_NEAR(border->opacity_for_testing(), 0.f, kFloatComparisonTolerance);
-  // 0.52/0.5 -> 1, however since CancelAnimation has been invoked (this
+  // 0.52/0.5 -> 1, however since StopShowing has been invoked (this
   // happens when the opacity ramp down is done in order to clean up), emphasis
   // is reset to zero and the compositor is reset.
   EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
-  EXPECT_FALSE(border->compositor_for_testing());
+  EXPECT_FALSE(border->IsShowing());
 }
 
 // Ensures that the border fades out before disappearing entirely during opacity
@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringOpacityRampUp) {
 
   StartBorderAnimation(browser());
   tester.WaitForAnimationStart();
-  EXPECT_TRUE(border->compositor_for_testing());
+  EXPECT_TRUE(border->IsShowing());
 
   // T=0s.
   border->OnAnimationStep(kDummyTimeStamp);
@@ -516,11 +516,11 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringOpacityRampUp) {
   // clamp 0.6-(0.15/0.2) -> 0
   EXPECT_NEAR(border->opacity_for_testing(), 0.f, kFloatComparisonTolerance);
   // 0.45/0.5=0.9, 1-(1-0.9)**2=0.99.
-  // However since CancelAnimation has been invoked (this happens when the
+  // However since StopShowing has been invoked (this happens when the
   // opacity ramp down is done in order to clean up), emphasis is reset to
   // zero and the compositor is reset.
   EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
-  EXPECT_FALSE(border->compositor_for_testing());
+  EXPECT_FALSE(border->IsShowing());
 }
 
 // Ensures that the border fades out before disappearing entirely during stable
@@ -533,7 +533,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringStableState) {
 
   StartBorderAnimation(browser());
   tester.WaitForAnimationStart();
-  EXPECT_TRUE(border->compositor_for_testing());
+  EXPECT_TRUE(border->IsShowing());
 
   // T=0s.
   border->OnAnimationStep(kDummyTimeStamp);
@@ -576,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringStableState) {
   timestamp += base::Seconds(5);
   tester.set_next_time_tick(timestamp);
   border->OnAnimationStep(kDummyTimeStamp);
-  EXPECT_FALSE(border->compositor_for_testing());
+  EXPECT_FALSE(border->IsShowing());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, EnsureTimeWraps) {
@@ -618,7 +618,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChangeEffectTime) {
 
   StartBorderAnimation(browser());
   tester.WaitForAnimationStart();
-  EXPECT_TRUE(border->compositor_for_testing());
+  EXPECT_TRUE(border->IsShowing());
 
   // T=0s.
   border->OnAnimationStep(kDummyTimeStamp);
@@ -648,8 +648,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChangeEffectTime) {
   // different tab.
   EXPECT_EQ(effect_time_before_tab_switching, effect_time_after_tab_switching);
 
-  border->CancelAnimation();
-  EXPECT_FALSE(border->compositor_for_testing());
+  border->StopShowing();
+  EXPECT_FALSE(border->IsShowing());
 }
 
 namespace {
@@ -696,7 +696,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
 
   StartBorderAnimation(browser());
   tester.WaitForAnimationStart();
-  EXPECT_TRUE(border->compositor_for_testing());
+  EXPECT_TRUE(border->IsShowing());
 
   // ---- Ramping up ----
   // T=0s.
@@ -758,7 +758,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
   border->OnAnimationStep(kDummyTimeStamp);
   EXPECT_NEAR(border->opacity_for_testing(), 0.f, kFloatComparisonTolerance);
   EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
-  EXPECT_FALSE(border->compositor_for_testing());
+  EXPECT_FALSE(border->IsShowing());
 }
 
 }  // namespace glic

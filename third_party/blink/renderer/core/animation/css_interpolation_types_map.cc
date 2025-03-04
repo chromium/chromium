@@ -252,6 +252,7 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
       case CSSPropertyID::kTextDecorationColor:
       case CSSPropertyID::kTextEmphasisColor:
       case CSSPropertyID::kColumnRuleColor:
+      case CSSPropertyID::kRowRuleColor:
       case CSSPropertyID::kWebkitTextStrokeColor:
         applicable_types->push_back(
             std::make_unique<CSSColorInterpolationType>(used_property));

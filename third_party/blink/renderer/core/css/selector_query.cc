@@ -24,16 +24,12 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/selector_query.h"
 
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_cache_scope.h"
@@ -431,8 +427,8 @@ bool SelectorQuery::SelectorListMatches(ContainerNode& root_node,
                                         Element& element) const {
   SelectorChecker checker(SelectorChecker::kQueryingRules);
   for (unsigned offset : selector_start_offsets_) {
-    if (SelectorMatches(*(selector_list_->First() + offset), element, root_node,
-                        checker)) {
+    if (SelectorMatches(UNSAFE_TODO(*(selector_list_->First() + offset)),
+                        element, root_node, checker)) {
       return true;
     }
   }

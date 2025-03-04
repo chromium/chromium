@@ -9,6 +9,7 @@
 
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/mock_callback.h"
 #import "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_entra.h"
@@ -62,7 +63,7 @@ class ExtensibleEnterpriseSSOTest : public InProcessBrowserTest {
   NSURL* nativeUrl() { return net::NSURLWithGURL(url()); }
 };
 
-IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSSOTest, DISABLED_SupportedFail) {
+IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSSOTest, SupportedFail) {
   base::HistogramTester histogram_tester;
 
   // Create a fake request
@@ -111,15 +112,11 @@ IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSSOTest, DISABLED_SupportedFail) {
   {
     base::RunLoop run_loop;
     net::HttpRequestHeaders response_headers;
-    base::MockCallback<PlatformAuthProviderManager::GetDataCallback> mock;
-    EXPECT_CALL(mock, Run(_))
-        .WillOnce(
-            [&run_loop, &response_headers](net::HttpRequestHeaders headers) {
-              response_headers = headers;
-              run_loop.Quit();
-            });
-
-    provider.GetData(url(), mock.Get());
+    provider.GetData(
+        url(), base::BindLambdaForTesting([&](net::HttpRequestHeaders headers) {
+          response_headers = headers;
+          run_loop.Quit();
+        }));
     run_loop.Run();
 
     // On failure no headers are returned.
@@ -138,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSSOTest, DISABLED_SupportedFail) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSSOTest, DISABLED_SupportedSuccess) {
+IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSSOTest, SupportedSuccess) {
   base::HistogramTester histogram_tester;
 
   // Create a fake request
@@ -211,15 +208,12 @@ IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSSOTest, DISABLED_SupportedSuccess) {
   {
     base::RunLoop run_loop;
     net::HttpRequestHeaders response_headers;
-    base::MockCallback<PlatformAuthProviderManager::GetDataCallback> mock;
-    EXPECT_CALL(mock, Run(_))
-        .WillOnce(
-            [&run_loop, &response_headers](net::HttpRequestHeaders headers) {
-              response_headers = headers;
-              run_loop.Quit();
-            });
+    provider.GetData(
+        url(), base::BindLambdaForTesting([&](net::HttpRequestHeaders headers) {
+          response_headers = headers;
+          run_loop.Quit();
+        }));
 
-    provider.GetData(url(), mock.Get());
     run_loop.Run();
 
     // On success the right headers are returned.
@@ -276,15 +270,11 @@ IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSSOTest, Unsupported) {
   {
     base::RunLoop run_loop;
     net::HttpRequestHeaders response_headers;
-    base::MockCallback<PlatformAuthProviderManager::GetDataCallback> mock;
-    EXPECT_CALL(mock, Run(_))
-        .WillOnce(
-            [&run_loop, &response_headers](net::HttpRequestHeaders headers) {
-              response_headers = headers;
-              run_loop.Quit();
-            });
-
-    provider.GetData(url(), mock.Get());
+    provider.GetData(
+        url(), base::BindLambdaForTesting([&](net::HttpRequestHeaders headers) {
+          response_headers = headers;
+          run_loop.Quit();
+        }));
     run_loop.Run();
     // On failure no headers are returned.
     EXPECT_TRUE(response_headers.IsEmpty());

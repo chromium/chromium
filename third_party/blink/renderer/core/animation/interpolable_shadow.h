@@ -40,10 +40,8 @@ class InterpolableShadow : public InterpolableValue {
                                     const ui::ColorProvider* color_provider);
   static InterpolableShadow* CreateNeutral();
 
-  static InterpolableShadow* MaybeConvertCSSValue(
-      const CSSValue&,
-      mojom::blink::ColorScheme color_scheme,
-      const ui::ColorProvider* color_provider);
+  static InterpolableShadow* MaybeConvertCSSValue(const CSSValue&,
+                                                  const StyleResolverState*);
 
   // Helpers for CSSListInterpolationFunctions.
   static PairwiseInterpolationValue MaybeMergeSingles(InterpolableValue* start,

@@ -269,10 +269,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kWaitForFirstPartySetsInit);
 NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kWaitForFirstPartySetsInitNavigationThrottleTimeout;
 
-// When enabled, a cross-site ancestor chain bit is included in the partition
-// key in partitioned cookies.
-NET_EXPORT BASE_DECLARE_FEATURE(kAncestorChainBitEnabledInPartitionedCookies);
-
 // When enabled, requestStorageAccessFor will require storage access permissions
 // granted by StorageAccessApi or StorageAccessHeaders to send cookies on
 // requests allowed because of requestStorageAccessFor instead of cors.
@@ -481,11 +477,6 @@ NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyFallbackToDirect;
 // token server in the `Ip-Protection-Debug-Experiment-Arm` header. The default
 // value, 0, is not sent.
 NET_EXPORT extern const base::FeatureParam<int> kIpPrivacyDebugExperimentArm;
-
-// Caches tokens by geo allowing for tokens to be preserved on network/geo
-// changes. The default value of this feature is false which maintains existing
-// behavior by default.
-NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyCacheTokensByGeo;
 
 // When enabled and an IP protection delegate can be be created in the
 // `NetworkContext`, a `IpProtectionProxyDelegate` will ALWAYS be created even

@@ -10,7 +10,7 @@
 
 class Browser;
 
-// TODO(musalmaan): Move this file, along with other intent picker
+// TODO(crbug.com/376283840): Move this file, along with other intent picker
 // and tab helper files, to a dedicated directory in a separate CL.
 
 /**

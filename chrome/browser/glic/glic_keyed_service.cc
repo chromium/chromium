@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -125,18 +124,6 @@ GlicPageHandler* GlicKeyedService::GetPageHandler(
   return nullptr;
 }
 
-void GlicKeyedService::DidSelectProfile(Profile* profile) {
-  if (!GlicEnabling::IsEnabledForProfile(profile)) {
-    return;
-  }
-  // Toggle glic but prevent close if it is already open for the selected
-  // profile.
-  GlicKeyedService* service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-  service->ToggleUI(nullptr, /*prevent_close=*/true,
-                    InvocationSource::kProfilePicker);
-}
-
 base::CallbackListSubscription GlicKeyedService::AddFocusedTabChangedCallback(
     FocusedTabChangedCallback callback) {
   return focused_tab_manager_.AddFocusedTabChangedCallback(callback);
@@ -203,15 +190,6 @@ void GlicKeyedService::ResizePanel(const gfx::Size& size,
                                    base::TimeDelta duration,
                                    base::OnceClosure callback) {
   window_controller_->Resize(size, duration, std::move(callback));
-}
-
-void GlicKeyedService::ShowProfilePicker() {
-  base::OnceCallback<void(Profile*)> callback = base::BindOnce(
-      &GlicKeyedService::DidSelectProfile, weak_ptr_factory_.GetWeakPtr());
-  // If the panel is not closed it will be on top of the profile picker.
-  ClosePanel();
-  ProfilePicker::Show(
-      ProfilePicker::Params::ForGlicManager(std::move(callback)));
 }
 
 void GlicKeyedService::SetPanelDraggableAreas(

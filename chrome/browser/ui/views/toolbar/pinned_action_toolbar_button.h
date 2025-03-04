@@ -55,6 +55,7 @@ class PinnedActionToolbarButton : public ToolbarButton,
   bool ShouldShowEphemerallyInToolbar();
   bool IsIconVisible() { return is_icon_visible_; }
   bool IsPinned() { return pinned_; }
+  views::View* GetImageContainerView() { return image_container_view(); }
 
   bool ShouldSkipExecutionForTesting() { return skip_execution_; }
 

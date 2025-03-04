@@ -207,15 +207,10 @@ class NET_EXPORT CookiePartitionKey {
       CookiePartitionKey::AncestorChainBit has_cross_site_ancestor,
       CookiePartitionKey::ParsingMode parsing_mode);
 
-  AncestorChainBit MaybeAncestorChainBit() const;
+  AncestorChainBit GetAncestorChainBit() const { return ancestor_chain_bit_; }
 
   SchemefulSite site_;
   bool from_script_ = false;
-  // crbug.com/328043119 remove code associated with
-  // kAncestorChainBitEnabledInPartitionedCookies
-  //  when feature is no longer needed.
-  bool ancestor_chain_enabled_ = base::FeatureList::IsEnabled(
-      features::kAncestorChainBitEnabledInPartitionedCookies);
 
   // Having a nonce is a way to force a transient opaque `CookiePartitionKey`
   // for non-opaque origins.

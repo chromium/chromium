@@ -20,14 +20,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 
 #include <limits>
+
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 
@@ -54,9 +51,9 @@ static bool GenericParseNumber(const CharType*& cursor,
   // read the sign
   int sign = 1;
   if (ptr < end && *ptr == '+')
-    ptr++;
+    UNSAFE_TODO(ptr++);
   else if (ptr < end && *ptr == '-') {
-    ptr++;
+    UNSAFE_TODO(ptr++);
     sign = -1;
   }
 
@@ -67,15 +64,15 @@ static bool GenericParseNumber(const CharType*& cursor,
   // read the integer part, build right-to-left
   const CharType* digits_start = ptr;
   while (ptr < end && *ptr >= '0' && *ptr <= '9')
-    ++ptr;  // Advance to first non-digit.
+    UNSAFE_TODO(++ptr);  // Advance to first non-digit.
 
   FloatType integer = 0;
   if (ptr != digits_start) {
-    const CharType* ptr_scan_int_part = ptr - 1;
+    const CharType* ptr_scan_int_part = UNSAFE_TODO(ptr - 1);
     FloatType multiplier = 1;
     while (ptr_scan_int_part >= digits_start) {
-      integer +=
-          multiplier * static_cast<FloatType>(*(ptr_scan_int_part--) - '0');
+      integer += multiplier * static_cast<FloatType>(
+                                  *(UNSAFE_TODO(ptr_scan_int_part--)) - '0');
       multiplier *= 10;
     }
     // Bail out early if this overflows.
@@ -85,7 +82,7 @@ static bool GenericParseNumber(const CharType*& cursor,
 
   FloatType decimal = 0;
   if (ptr < end && *ptr == '.') {  // read the decimals
-    ptr++;
+    UNSAFE_TODO(ptr++);
 
     // There must be a least one digit following the .
     if (ptr >= end || *ptr < '0' || *ptr > '9')
@@ -94,7 +91,7 @@ static bool GenericParseNumber(const CharType*& cursor,
     FloatType frac = 1;
     while (ptr < end && *ptr >= '0' && *ptr <= '9') {
       frac *= static_cast<FloatType>(0.1);
-      decimal += (*(ptr++) - '0') * frac;
+      decimal += (*(UNSAFE_TODO(ptr++)) - '0') * frac;
     }
   }
 
@@ -106,16 +103,16 @@ static bool GenericParseNumber(const CharType*& cursor,
   number *= sign;
 
   // read the exponent part
-  if (ptr + 1 < end && (*ptr == 'e' || *ptr == 'E') &&
-      (ptr[1] != 'x' && ptr[1] != 'm')) {
-    ptr++;
+  if (UNSAFE_TODO(ptr + 1) < end && (*ptr == 'e' || *ptr == 'E') &&
+      (UNSAFE_TODO(ptr[1]) != 'x' && UNSAFE_TODO(ptr[1]) != 'm')) {
+    UNSAFE_TODO(ptr++);
 
     // read the sign of the exponent
     bool exponent_is_negative = false;
     if (*ptr == '+')
-      ptr++;
+      UNSAFE_TODO(ptr++);
     else if (*ptr == '-') {
-      ptr++;
+      UNSAFE_TODO(ptr++);
       exponent_is_negative = true;
     }
 
@@ -127,7 +124,7 @@ static bool GenericParseNumber(const CharType*& cursor,
     while (ptr < end && *ptr >= '0' && *ptr <= '9') {
       exponent *= static_cast<FloatType>(10);
       exponent += *ptr - '0';
-      ptr++;
+      UNSAFE_TODO(ptr++);
     }
     // TODO(fs): This is unnecessarily strict - the position of the decimal
     // point is not taken into account when limiting |exponent|.

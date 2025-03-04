@@ -144,8 +144,17 @@ export class DataSectionElement extends DataSectionElementBase {
       // id may be empty.
       if (this.dataContainer.sectionTitle &&
           this.dataContainer.sectionTitle.length > 0) {
-        this.title_ = await PluralStringProxyImpl.getInstance().getPluralString(
-            this.dataContainer.sectionTitle, this.dataSelectedCount_);
+        if (this.isThemeSection()) {
+          // Themes construct its title with the content of its one and only
+          // item title.
+          this.title_ = this.i18n(
+              this.dataContainer.sectionTitle,
+              this.dataContainer.dataItems[0]!.title);
+        } else {
+          this.title_ =
+              await PluralStringProxyImpl.getInstance().getPluralString(
+                  this.dataContainer.sectionTitle, this.dataSelectedCount_);
+        }
       }
     }
   }

@@ -286,7 +286,7 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateOffscreenContext(
     bool support_locking,
     bool support_gles2_interface,
     bool support_raster_interface,
-    bool support_oop_rasterization,
+    bool support_gpu_rasterization,
     bool support_grcontext,
     bool automatic_flushes,
     viz::command_buffer_metrics::ContextType type,
@@ -307,7 +307,7 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateOffscreenContext(
   attributes.enable_grcontext = support_grcontext;
   // Using RasterDecoder for OOP-R backend, so we need support_raster_interface
   // and !support_gles2_interface.
-  attributes.enable_oop_rasterization = support_oop_rasterization &&
+  attributes.enable_gpu_rasterization = support_gpu_rasterization &&
                                         support_raster_interface &&
                                         !support_gles2_interface;
   return base::MakeRefCounted<viz::ContextProviderCommandBuffer>(

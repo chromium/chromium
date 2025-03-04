@@ -490,6 +490,10 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
   ASSERT_EQ(query_controller.latency_gen_204_counter(
                 LatencyType::kInvocationToInitialFullPageObjectsRequestSent),
             1);
+  ASSERT_EQ(
+      query_controller.latency_gen_204_counter(
+          LatencyType::kInvocationToInitialFullPageObjectsResponseReceived),
+      1);
   ASSERT_EQ(query_controller.sent_client_logs().lens_overlay_entry_point(),
             lens::LensOverlayClientLogs::APP_MENU);
   ASSERT_TRUE(query_controller.sent_client_logs().has_paella_id());

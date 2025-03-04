@@ -11,16 +11,12 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 
 class BookmarksSidePanelUI;
-class ReadingListUI;
 
 class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler {
  public:
   explicit BookmarksPageHandler(
       mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver,
       BookmarksSidePanelUI* bookmarks_ui);
-  explicit BookmarksPageHandler(
-      mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver,
-      ReadingListUI* reading_list_ui);
   BookmarksPageHandler(const BookmarksPageHandler&) = delete;
   BookmarksPageHandler& operator=(const BookmarksPageHandler&) = delete;
   ~BookmarksPageHandler() override;
@@ -66,9 +62,6 @@ class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler {
  private:
   mojo::Receiver<side_panel::mojom::BookmarksPageHandler> receiver_;
   raw_ptr<BookmarksSidePanelUI> bookmarks_ui_ = nullptr;
-  // TODO(corising): Remove use of ReadingListUI which is only needed prior to
-  // kUnifiedSidePanel.
-  raw_ptr<ReadingListUI> reading_list_ui_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_BOOKMARKS_BOOKMARKS_PAGE_HANDLER_H_

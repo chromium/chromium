@@ -112,9 +112,6 @@ const char kDisableBackForwardCache[] = "disable-back-forward-cache";
 // features.
 const char kDisableBlinkFeatures[]          = "disable-blink-features";
 
-// Disables HTML5 DB support.
-const char kDisableDatabases[]              = "disable-databases";
-
 // Disable the per-domain blocking for 3D APIs after GPU reset.
 // This switch is intended only for tests.
 const char kDisableDomainBlockingFor3DAPIs[] =

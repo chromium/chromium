@@ -28,6 +28,7 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/highlight_border.h"
@@ -85,6 +86,8 @@ ActionButtonView::ActionButtonView(views::Button::PressedCallback callback,
   capture_mode_util::SetHighlightBorder(
       this, kActionButtonRadius,
       views::HighlightBorder::Type::kHighlightBorderNoShadow);
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                kActionButtonRadius);
 
   if (icon) {
     image_view_ = AddChildView(

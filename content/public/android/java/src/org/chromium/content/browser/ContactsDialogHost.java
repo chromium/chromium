@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.text.TextUtils;
@@ -120,7 +122,7 @@ public class ContactsDialogHost implements ContactsPickerListener {
     @Override
     public void onContactsPickerUserAction(
             @ContactsPickerAction int action,
-            List<Contact> contacts,
+            @Nullable List<Contact> contacts,
             int percentageShared,
             int propertiesSiteRequested,
             int propertiesUserRejected) {
@@ -134,6 +136,7 @@ public class ContactsDialogHost implements ContactsPickerListener {
                 break;
 
             case ContactsPickerAction.CONTACTS_SELECTED:
+                assumeNonNull(contacts);
                 for (Contact contact : contacts) {
                     ContactsDialogHostJni.get()
                             .addContact(

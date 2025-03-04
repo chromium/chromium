@@ -246,6 +246,27 @@ HRESULT MediaFoundationVideoProcessorAccelerator::Convert(
   return S_OK;
 }
 
+HRESULT MediaFoundationVideoProcessorAccelerator::UpdateOutputSize(
+    gfx::Size output_visible_size) {
+  DCHECK(video_processor_);
+  ComMFMediaType output_media_type;
+  HRESULT hr = video_processor_->GetOutputCurrentType(0, &output_media_type);
+  RETURN_ON_HR_FAILURE(hr, "Couldn't get output type", hr);
+  ComMFMediaType new_output_media_type;
+  hr = MFCreateMediaType(&new_output_media_type);
+  RETURN_ON_HR_FAILURE(hr, "Couldn't create new output media type", hr);
+  hr = output_media_type->CopyAllItems(new_output_media_type.Get());
+  RETURN_ON_HR_FAILURE(hr, "Couldn't clone output media type", hr);
+  hr = MFSetAttributeSize(new_output_media_type.Get(), MF_MT_FRAME_SIZE,
+                          output_visible_size.width(),
+                          output_visible_size.height());
+  RETURN_ON_HR_FAILURE(hr, "Couldn't set new output size", hr);
+  hr = video_processor_->SetOutputType(0, new_output_media_type.Get(), 0);
+  RETURN_ON_HR_FAILURE(hr, "Couldn't set new output type on video processor",
+                       hr);
+  return S_OK;
+}
+
 HRESULT MediaFoundationVideoProcessorAccelerator::AdjustInputTypeIfNeeded(
     IMFSample* sample,
     VideoPixelFormat input_format) {

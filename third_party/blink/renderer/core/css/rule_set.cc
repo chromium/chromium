@@ -28,17 +28,13 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/rule_set.h"
 
 #include <memory>
 #include <type_traits>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/substring_set_matcher/substring_set_matcher.h"
 #include "third_party/blink/public/common/features.h"
@@ -205,10 +201,10 @@ void RuleData::ComputeBloomFilterHashes(const StyleScope* style_scope,
   // captures most of the benefits. (It is fairly common, especially with
   // nesting, to have the same sets of parents in consecutive rules.)
   if (bloom_hash_size_ > 0 && bloom_hash_pos_ >= bloom_hash_size_ &&
-      std::equal(
+      UNSAFE_TODO(std::equal(
           bloom_hash_backing.begin() + bloom_hash_pos_ - bloom_hash_size_,
           bloom_hash_backing.begin() + bloom_hash_pos_,
-          bloom_hash_backing.begin() + bloom_hash_pos_)) {
+          bloom_hash_backing.begin() + bloom_hash_pos_))) {
     bloom_hash_backing.resize(bloom_hash_pos_);
     bloom_hash_pos_ -= bloom_hash_size_;
   }
@@ -218,7 +214,8 @@ void RuleData::MovedToDifferentRuleSet(const Vector<uint16_t>& old_backing,
                                        Vector<uint16_t>& new_backing,
                                        unsigned new_position) {
   unsigned new_pos = new_backing.size();
-  new_backing.insert(new_backing.size(), old_backing.data() + bloom_hash_pos_,
+  new_backing.insert(new_backing.size(),
+                     UNSAFE_TODO(old_backing.data() + bloom_hash_pos_),
                      bloom_hash_size_);
   bloom_hash_pos_ = new_pos;
   position_ = new_position;
@@ -422,7 +419,7 @@ template <class Func>
 static void MarkAsCoveredByBucketing(CSSSelector& selector,
                                      Func&& should_mark_func) {
   for (CSSSelector* s = &selector;;
-       ++s) {  // Termination condition within loop.
+       UNSAFE_TODO(++s)) {  // Termination condition within loop.
     if (should_mark_func(*s)) {
       s->SetCoveredByBucketing(true);
     }
@@ -446,7 +443,7 @@ static void MarkAsCoveredByBucketing(CSSSelector& selector,
 
 static void UnmarkAsCoveredByBucketing(CSSSelector& selector) {
   for (CSSSelector* s = &selector;;
-       ++s) {  // Termination condition within loop.
+       UNSAFE_TODO(++s)) {  // Termination condition within loop.
     s->SetCoveredByBucketing(false);
     if (s->IsLastInComplexSelector() ||
         s->Relation() != CSSSelector::kSubSelector) {
@@ -999,7 +996,7 @@ const StyleRule* FindParentIfUsed(const CSSSelector* selector) {
         return parent;
       }
     }
-  } while (!(selector++)->IsLastInSelectorList());
+  } while (!UNSAFE_TODO((selector++)->IsLastInSelectorList()));
   return nullptr;
 }
 

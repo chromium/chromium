@@ -55,7 +55,10 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/enterprise/client_certificates/core/client_certificates_service.h"
 #include "components/enterprise/client_certificates/core/features.h"
@@ -208,35 +211,53 @@ class NullClientCertStore : public net::ClientCertStore {
 class ClientCertStoreFactoryProvisioned : public ClientCertStoreFactory {
  public:
   explicit ClientCertStoreFactoryProvisioned(
-      client_certificates::CertificateProvisioningService* provisioning_service)
-      : provisioning_service_(provisioning_service) {}
+      client_certificates::CertificateProvisioningService*
+          profile_provisioning_service,
+      client_certificates::CertificateProvisioningService*
+          browser_provisioning_service)
+      : profile_provisioning_service_(profile_provisioning_service),
+        browser_provisioning_service_(browser_provisioning_service) {}
 
   std::unique_ptr<net::ClientCertStore> CreateClientCertStore() override {
     return client_certificates::ClientCertificatesService::Create(
-        provisioning_service_, std::make_unique<NullClientCertStore>());
+        profile_provisioning_service_, browser_provisioning_service_,
+        std::make_unique<NullClientCertStore>());
   }
 
  private:
   raw_ptr<client_certificates::CertificateProvisioningService>
-      provisioning_service_;
+      profile_provisioning_service_;
+  raw_ptr<client_certificates::CertificateProvisioningService>
+      browser_provisioning_service_;
 };
 
 std::unique_ptr<ClientCertStoreLoader> CreateProvisionedClientCertLoader(
     Profile* profile) {
-  if (!profile || !client_certificates::features::
-                      IsManagedClientCertificateForUserEnabled()) {
-    return nullptr;
+  client_certificates::CertificateProvisioningService*
+      profile_provisioning_service = nullptr;
+  if (profile && client_certificates::features::
+                     IsManagedClientCertificateForUserEnabled()) {
+    profile_provisioning_service = client_certificates::
+        CertificateProvisioningServiceFactory::GetForProfile(profile);
   }
-  auto* provisioning_service =
-      client_certificates::CertificateProvisioningServiceFactory::GetForProfile(
-          profile);
-  if (!provisioning_service) {
+
+  client_certificates::CertificateProvisioningService*
+      browser_provisioning_service = nullptr;
+  if (client_certificates::features::
+          IsManagedBrowserClientCertificateEnabled()) {
+    browser_provisioning_service =
+        g_browser_process->browser_policy_connector()
+            ->chrome_browser_cloud_management_controller()
+            ->GetCertificateProvisioningService();
+  }
+
+  if (!profile_provisioning_service && !browser_provisioning_service) {
     return nullptr;
   }
 
   return std::make_unique<ClientCertStoreLoader>(
       std::make_unique<ClientCertStoreFactoryProvisioned>(
-          provisioning_service));
+          profile_provisioning_service, browser_provisioning_service));
 }
 #endif
 

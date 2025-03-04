@@ -33,8 +33,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_wave_shaper_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
-#include "third_party/blink/renderer/modules/webaudio/wave_shaper_handler.h"
-#include "third_party/blink/renderer/modules/webaudio/wave_shaper_processor.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -70,9 +68,8 @@ WaveShaperNode* WaveShaperNode::Create(BaseAudioContext* context,
 
   return node;
 }
-WaveShaperProcessor* WaveShaperNode::GetWaveShaperProcessor() const {
-  return static_cast<WaveShaperProcessor*>(
-      static_cast<WaveShaperHandler&>(Handler()).Processor());
+WaveShaperHandler& WaveShaperNode::GetWaveShaperHandler() const {
+  return static_cast<WaveShaperHandler&>(Handler());
 }
 
 void WaveShaperNode::SetCurveImpl(const float* curve_data,
@@ -103,7 +100,7 @@ void WaveShaperNode::SetCurveImpl(const float* curve_data,
   // Initialize() and Uninitialize(), changing the number of kernels.
   DeferredTaskHandler::GraphAutoLocker context_locker(context());
 
-  GetWaveShaperProcessor()->SetCurve(curve_data, length);
+  GetWaveShaperHandler().SetCurve(curve_data, length);
 }
 
 void WaveShaperNode::setCurve(NotShared<DOMFloat32Array> curve,
@@ -125,7 +122,7 @@ void WaveShaperNode::setCurve(const Vector<float>& curve,
 }
 
 NotShared<DOMFloat32Array> WaveShaperNode::curve() {
-  Vector<float>* curve = GetWaveShaperProcessor()->Curve();
+  Vector<float>* curve = GetWaveShaperHandler().Curve();
   if (!curve) {
     return NotShared<DOMFloat32Array>(nullptr);
   }
@@ -148,30 +145,26 @@ void WaveShaperNode::setOversample(const V8OverSampleType& type) {
 
   switch (type.AsEnum()) {
     case V8OverSampleType::Enum::kNone:
-      GetWaveShaperProcessor()->SetOversample(
-          WaveShaperProcessor::kOverSampleNone);
+      GetWaveShaperHandler().SetOversample(WaveShaperHandler::kOverSampleNone);
       return;
     case V8OverSampleType::Enum::k2X:
-      GetWaveShaperProcessor()->SetOversample(
-          WaveShaperProcessor::kOverSample2x);
+      GetWaveShaperHandler().SetOversample(WaveShaperHandler::kOverSample2x);
       return;
     case V8OverSampleType::Enum::k4X:
-      GetWaveShaperProcessor()->SetOversample(
-          WaveShaperProcessor::kOverSample4x);
+      GetWaveShaperHandler().SetOversample(WaveShaperHandler::kOverSample4x);
       return;
   }
   NOTREACHED();
 }
 
 V8OverSampleType WaveShaperNode::oversample() const {
-  switch (const_cast<WaveShaperNode*>(this)
-              ->GetWaveShaperProcessor()
-              ->Oversample()) {
-    case WaveShaperProcessor::kOverSampleNone:
+  switch (
+      const_cast<WaveShaperNode*>(this)->GetWaveShaperHandler().Oversample()) {
+    case WaveShaperHandler::kOverSampleNone:
       return V8OverSampleType(V8OverSampleType::Enum::kNone);
-    case WaveShaperProcessor::kOverSample2x:
+    case WaveShaperHandler::kOverSample2x:
       return V8OverSampleType(V8OverSampleType::Enum::k2X);
-    case WaveShaperProcessor::kOverSample4x:
+    case WaveShaperHandler::kOverSample4x:
       return V8OverSampleType(V8OverSampleType::Enum::k4X);
   }
   NOTREACHED();

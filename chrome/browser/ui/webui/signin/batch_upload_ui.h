@@ -15,6 +15,7 @@
 
 namespace content {
 class WebUI;
+class WebUIDataSource;
 }
 
 struct AccountInfo;
@@ -85,6 +86,8 @@ class BatchUploadUI : public ui::MojoWebUIController,
 
   // Handler implementing Mojo interface to communicate with the WebUI.
   std::unique_ptr<BatchUploadHandler> handler_;
+
+  raw_ptr<content::WebUIDataSource> web_ui_source_ = nullptr;
 
   mojo::Receiver<batch_upload::mojom::PageHandlerFactory>
       page_factory_receiver_{this};

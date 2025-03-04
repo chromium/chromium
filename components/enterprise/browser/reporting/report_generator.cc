@@ -108,8 +108,8 @@ void ReportGenerator::OnBrowserReportReady(
 
   if (report_type != ReportType::kBrowserVersion) {
     // Generate a queue of requests containing detailed profile information.
-    std::move(callback).Run(
-        report_request_queue_generator_.Generate(*basic_request));
+    report_request_queue_generator_.Generate(std::move(basic_request),
+                                             std::move(callback));
     return;
   }
 

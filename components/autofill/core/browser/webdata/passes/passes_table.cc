@@ -29,12 +29,16 @@ constexpr std::string_view kUnmaskedLoyaltyCardSuffix =
 // `kLoyaltyCardMerchantName`, `kLoyaltyCardProgramName`,
 // `kLoyaltyCardProgramLogo` and `kUnmaskedLoyaltyCardSuffix` in that order.
 // Constructs a `LoyaltyCard` from that data.
-LoyaltyCard LoyaltyCardFromStatement(sql::Statement& s) {
-  return LoyaltyCard(/*loyalty_card_id=*/s.ColumnString(0),
-                     /*merchant_name=*/s.ColumnString(1),
-                     /*program_name=*/s.ColumnString(2),
-                     /*program_logo=*/s.ColumnString(3),
-                     /*unmasked_loyalty_card_suffix=*/s.ColumnString(4));
+std::optional<LoyaltyCard> LoyaltyCardFromStatement(sql::Statement& s) {
+  LoyaltyCard card(/*loyalty_card_id=*/s.ColumnString(0),
+                   /*merchant_name=*/s.ColumnString(1),
+                   /*program_name=*/s.ColumnString(2),
+                   /*program_logo=*/GURL(s.ColumnString(3)),
+                   /*unmasked_loyalty_card_suffix=*/s.ColumnString(4));
+  // Ignore invalid loyalty cards, for more information see
+  // `LoyaltyCard::IsValid()`. Loyalty cards coming from sync should be valid,
+  // so this situation should not happen.
+  return card.IsValid() ? std::optional(std::move(card)) : std::nullopt;
 }
 
 WebDatabaseTable::TypeKey GetKey() {
@@ -85,13 +89,19 @@ std::vector<LoyaltyCard> PassesTable::GetLoyaltyCards() const {
        kLoyaltyCardProgramLogo, kUnmaskedLoyaltyCardSuffix});
   std::vector<LoyaltyCard> result;
   while (query.Step()) {
-    result.emplace_back(LoyaltyCardFromStatement(query));
+    if (auto loyalty_card = LoyaltyCardFromStatement(query)) {
+      result.emplace_back(std::move(*loyalty_card));
+    }
   }
   return result;
 }
 
 bool PassesTable::AddOrUpdateLoyaltyCard(
     const LoyaltyCard& loyalty_card) const {
+  if (!loyalty_card.IsValid()) {
+    // Don't add loyalty cards with non-empty invalid program logo URLs.
+    return false;
+  }
   sql::Statement query;
   InsertBuilder(
       db(), query, kLoyaltyCardsTable,
@@ -102,7 +112,7 @@ bool PassesTable::AddOrUpdateLoyaltyCard(
   query.BindString(index++, loyalty_card.loyalty_card_id);
   query.BindString(index++, loyalty_card.merchant_name);
   query.BindString(index++, loyalty_card.program_name);
-  query.BindString(index++, loyalty_card.program_logo);
+  query.BindString(index++, loyalty_card.program_logo.spec());
   query.BindString(index++, loyalty_card.unmasked_loyalty_card_suffix);
   return query.Run();
 }

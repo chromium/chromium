@@ -4,12 +4,15 @@
 
 package org.chromium.components.browser_ui.contacts_picker;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Lists base::Features that can be accessed through {@link ContactsPickerFeatureMap}.
  *
  * <p>Should be kept in sync with |kFeaturesExposedToJava| in
  * //components/browser_ui/contacts_picker/android/contacts_picker_feature_map.cc
  */
+@NullMarked
 public abstract class ContactsPickerFeatureList {
     public static final String CONTACTS_PICKER_SELECT_ALL = "ContactsPickerSelectAll";
 }

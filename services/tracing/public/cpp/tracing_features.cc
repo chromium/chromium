@@ -20,6 +20,14 @@
 
 namespace features {
 
+namespace {
+
+BASE_FEATURE(kPerfettoBackendParams,
+             "kPerfettoBackendParams",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace
+
 // Runs the tracing service as an in-process browser service.
 BASE_FEATURE(kTracingServiceInProcess,
              "TracingServiceInProcess",
@@ -43,6 +51,21 @@ BASE_FEATURE(kEnablePerfettoSystemTracing,
 BASE_FEATURE(kEnablePerfettoSystemBackgroundTracing,
              "EnablePerfettoSystemBackgroundTracing",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls the preferred size of each page in the shmem buffer.
+BASE_FEATURE_PARAM(int,
+                   kPerfettoSMBPageSizeBytes,
+                   &kPerfettoBackendParams,
+                   "page_size_bytes",
+                   tracing::kDefaultSMBPageSizeBytes);
+
+// Controls the size of the shared memory buffer between the current process and
+// the service backend(s)
+BASE_FEATURE_PARAM(int,
+                   kPerfettoSharedMemorySizeBytes,
+                   &kPerfettoBackendParams,
+                   "shared_memory_size_bytes",
+                   tracing::kDefaultSharedMemorySizeBytes);
 
 }  // namespace features
 

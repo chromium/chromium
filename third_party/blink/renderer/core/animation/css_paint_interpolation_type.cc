@@ -133,15 +133,8 @@ InterpolationValue CSSPaintInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState* state,
     ConversionCheckers&) const {
-  mojom::blink::ColorScheme color_scheme =
-      state ? state->StyleBuilder().UsedColorScheme()
-            : mojom::blink::ColorScheme::kLight;
-  const ui::ColorProvider* color_provider =
-      state ? state->GetDocument().GetColorProviderForPainting(color_scheme)
-            : nullptr;
   InterpolableValue* interpolable_color =
-      CSSColorInterpolationType::MaybeCreateInterpolableColor(
-          value, color_scheme, color_provider);
+      CSSColorInterpolationType::MaybeCreateInterpolableColor(value, state);
   if (!interpolable_color)
     return nullptr;
   return InterpolationValue(interpolable_color);

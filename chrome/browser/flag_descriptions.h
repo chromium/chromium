@@ -373,9 +373,6 @@ extern const char kAutofillEnableBuyNowPayLaterSyncingName[];
 extern const char kAutofillEnableBuyNowPayLaterSyncingDescription[];
 #endif
 
-extern const char kAutofillEnableCardExpiredTextName[];
-extern const char kAutofillEnableCardExpiredTextDescription[];
-
 extern const char kAutofillEnableCvcStorageAndFillingName[];
 extern const char kAutofillEnableCvcStorageAndFillingDescription[];
 
@@ -1299,9 +1296,6 @@ extern const char kHttpsFirstModeIncognitoDescription[];
 
 extern const char kHttpsFirstModeIncognitoNewSettingsName[];
 extern const char kHttpsFirstModeIncognitoNewSettingsDescription[];
-
-extern const char kHttpsFirstModeV2Name[];
-extern const char kHttpsFirstModeV2Description[];
 
 extern const char kHttpsFirstModeV2ForEngagedSitesName[];
 extern const char kHttpsFirstModeV2ForEngagedSitesDescription[];
@@ -2665,9 +2659,6 @@ extern const char kFeedDynamicColorsDescription[];
 
 extern const char kFeedDiscoFeedEndpointName[];
 extern const char kFeedDiscoFeedEndpointDescription[];
-
-extern const char kFetchGaiaHashOnSignInName[];
-extern const char kFetchGaiaHashOnSignInDescription[];
 
 extern const char kFloatingSnackbarName[];
 extern const char kFloatingSnackbarDescription[];
@@ -4400,9 +4391,6 @@ extern const char kCrOSEnforceSystemAecNsAgcDescription[];
 extern const char kDisableIdleSocketsCloseOnMemoryPressureName[];
 extern const char kDisableIdleSocketsCloseOnMemoryPressureDescription[];
 
-extern const char kDisableOfficeEditingComponentAppName[];
-extern const char kDisableOfficeEditingComponentAppDescription[];
-
 extern const char kLockedModeName[];
 extern const char kLockedModeDescription[];
 
@@ -4749,6 +4737,8 @@ extern const char kEnableStandardBoundSessionCredentialsName[];
 extern const char kEnableStandardBoundSessionCredentialsDescription[];
 extern const char kEnableStandardBoundSessionPersistenceName[];
 extern const char kEnableStandardBoundSessionPersistenceDescription[];
+extern const char kEnableStandardBoundSessionRefreshQuotaName[];
+extern const char kEnableStandardBoundSessionRefreshQuotaDescription[];
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 extern const char kEnableCertManagementV2UIName[];

@@ -275,8 +275,6 @@ void ContextInfoFetcher::Fetch(ContextInfoCallback callback) {
   info.chrome_remote_desktop_app_blocked =
       utils::GetChromeRemoteDesktopAppBlocked(
           PolicyBlocklistFactory::GetForBrowserContext(browser_context_));
-  info.third_party_blocking_enabled =
-      utils::GetThirdPartyBlockingEnabled(g_browser_process->local_state());
 
   Profile* profile = Profile::FromBrowserContext(browser_context_);
   info.safe_browsing_protection_level =

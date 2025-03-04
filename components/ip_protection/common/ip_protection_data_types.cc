@@ -64,7 +64,7 @@ std::vector<MdlType> FromMdlResourceProto(
   std::vector<MdlType> mdl_types;
 
   if (!resource.exclude_default_group()) {
-    mdl_types.emplace_back(MdlType::kDefault);
+    mdl_types.emplace_back(MdlType::kIncognito);
   }
 
   if (resource.experiments_size() != 0 &&

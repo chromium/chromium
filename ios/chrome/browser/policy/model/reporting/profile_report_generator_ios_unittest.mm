@@ -11,6 +11,7 @@
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
+#import "base/test/test_future.h"
 #import "components/enterprise/browser/reporting/report_type.h"
 #import "components/policy/core/common/mock_policy_service.h"
 #import "components/policy/core/common/policy_map.h"
@@ -95,8 +96,11 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
 
   std::unique_ptr<em::ChromeUserProfileInfo> GenerateReport() {
     const base::FilePath path = profile_->GetStatePath();
-    std::unique_ptr<em::ChromeUserProfileInfo> report =
-        generator_.MaybeGenerate(path, ReportType::kFull);
+    base::test::TestFuture<std::unique_ptr<em::ChromeUserProfileInfo>>
+        test_future;
+    generator_.MaybeGenerate(path, ReportType::kFull,
+                             test_future.GetCallback());
+    auto report = test_future.Take();
 
     if (!report) {
       return nullptr;

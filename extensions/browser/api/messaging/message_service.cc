@@ -772,10 +772,8 @@ void MessageService::OpenChannelToTabImpl(
       receiver_contents->GetPrimaryMainFrame());
 
   const PortId receiver_port_id = source_port_id.GetOppositePortId();
-  std::unique_ptr<MessagePort> receiver =
-      messaging_delegate_->CreateReceiverForTab(
-          weak_factory_.GetWeakPtr(), extension_id, receiver_port_id,
-          receiver_contents, frame_id, document_id);
+  std::unique_ptr<MessagePort> receiver = CreateReceiverForTab(
+      extension_id, receiver_port_id, receiver_contents, frame_id, document_id);
   if (!receiver.get()) {
     opener_port->DispatchOnDisconnect(kReceivingEndDoesntExistError);
     return;
@@ -816,6 +814,55 @@ void MessageService::OpenChannelToTabImpl(
           false);  // Connections to tabs aren't webview guests.
   OpenChannelImpl(receiver_context, std::move(params), extension,
                   false /* did_enqueue */);
+}
+
+std::unique_ptr<MessagePort> MessageService::CreateReceiverForTab(
+    const ExtensionId& extension_id,
+    const PortId& receiver_port_id,
+    content::WebContents* receiver_contents,
+    int receiver_frame_id,
+    const std::string& receiver_document_id) {
+  // Frame ID -1 is every frame in the tab.
+  bool include_child_frames =
+      receiver_frame_id == -1 && receiver_document_id.empty();
+
+  content::RenderFrameHost* receiver_render_frame_host = nullptr;
+  if (include_child_frames) {
+    // The target is the active outermost main frame of the WebContents.
+    receiver_render_frame_host = receiver_contents->GetPrimaryMainFrame();
+  } else if (!receiver_document_id.empty()) {
+    ExtensionApiFrameIdMap::DocumentId document_id =
+        ExtensionApiFrameIdMap::DocumentIdFromString(receiver_document_id);
+
+    // Return early for invalid documentIds.
+    if (!document_id) {
+      return nullptr;
+    }
+
+    receiver_render_frame_host =
+        ExtensionApiFrameIdMap::Get()->GetRenderFrameHostByDocumentId(
+            document_id);
+
+    // If both |document_id| and |receiver_frame_id| are provided they
+    // should find the same RenderFrameHost, if not return early.
+    if (receiver_frame_id != -1 &&
+        ExtensionApiFrameIdMap::GetRenderFrameHostById(receiver_contents,
+                                                       receiver_frame_id) !=
+            receiver_render_frame_host) {
+      return nullptr;
+    }
+  } else {
+    DCHECK_GT(receiver_frame_id, -1);
+    receiver_render_frame_host = ExtensionApiFrameIdMap::GetRenderFrameHostById(
+        receiver_contents, receiver_frame_id);
+  }
+  if (!receiver_render_frame_host) {
+    return nullptr;
+  }
+
+  return ExtensionMessagePort::CreateForTab(
+      weak_factory_.GetWeakPtr(), receiver_port_id, extension_id,
+      receiver_render_frame_host, include_child_frames);
 }
 
 void MessageService::OpenChannelImpl(BrowserContext* browser_context,

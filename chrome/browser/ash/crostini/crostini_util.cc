@@ -53,6 +53,8 @@
 namespace crostini {
 namespace {
 
+// Keep 'penguin' terminal label for backwards-consistent appearance.
+constexpr char kBaguetteTerminalLabel[] = "penguin";
 constexpr char kCrostiniAppLaunchHistogram[] = "Crostini.AppLaunch";
 constexpr char kCrostiniAppLaunchResultHistogram[] = "Crostini.AppLaunchResult";
 constexpr char kCrostiniAppLaunchResultHistogramTerminal[] =
@@ -451,6 +453,12 @@ const guest_os::GuestId& DefaultContainerId() {
   return *container_id;
 }
 
+const guest_os::GuestId& DefaultBaguetteContainerId() {
+  static const base::NoDestructor<guest_os::GuestId> container_id(
+      kBaguetteDefaultVmType, kCrostiniDefaultVmName, "");
+  return *container_id;
+}
+
 bool IsCrostiniWindow(const aura::Window* window) {
   // TODO(crbug/1158644): Non-Crostini apps (borealis, ...) have also been
   // identifying as Crostini. For now they're less common, and as they become
@@ -503,6 +511,10 @@ bool ShouldStopVm(Profile* profile, const guest_os::GuestId& container_id) {
 
 std::string FormatForUi(guest_os::GuestId guest_id) {
   if (guest_id.vm_name == kCrostiniDefaultVmName) {
+    if (guest_id.container_name.empty()) {
+      // containerless crostini, aka baguette
+      return kBaguetteTerminalLabel;
+    }
     return guest_id.container_name;
   }
   return base::StrCat({guest_id.vm_name, ":", guest_id.container_name});

@@ -352,6 +352,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [
     "demographics_egtest.mm",
+    "dwa_egtest.mm",
     "tab_usage_recorder_egtest.mm",
     "ukm_egtest.mm",
   ]
@@ -360,6 +361,7 @@ source_set("eg2_tests") {
     ":tab_usage_recorder_metrics",
     "//base/test:test_support",
     "//components/metrics/demographics",
+    "//components/metrics/dwa",
     "//components/strings",
     "//components/ukm",
     "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
@@ -399,6 +401,7 @@ source_set("eg_app_support+eg2") {
     "//base/test:test_support",
     "//components/metrics",
     "//components/metrics/demographics:test_support",
+    "//components/metrics/dwa",
     "//components/metrics_services_manager",
     "//components/network_time",
     "//components/prefs",
@@ -422,6 +425,7 @@ source_set("eg_test_support+eg2") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/metrics/dwa",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

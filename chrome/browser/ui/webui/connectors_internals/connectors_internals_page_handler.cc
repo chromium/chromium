@@ -31,6 +31,9 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/client_certificates/core/client_identity.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #endif
@@ -38,6 +41,11 @@
 namespace enterprise_connectors {
 
 namespace {
+
+#if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
+constexpr char kProfile[] = "Profile";
+constexpr char kBrowser[] = "Browser";
+#endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 
 std::string ConvertPolicyLevelToString(DTCPolicyLevel level) {
   switch (level) {
@@ -47,6 +55,26 @@ std::string ConvertPolicyLevelToString(DTCPolicyLevel level) {
       return "User";
   }
 }
+
+#if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
+connectors_internals::mojom::ClientIdentityPtr GetIdentity(
+    client_certificates::CertificateProvisioningService* provisioning_service,
+    std::vector<std::string>& enabled_levels,
+    const std::string& enabled_level) {
+  const auto& status = provisioning_service->GetCurrentStatus();
+  if (!(status.is_policy_enabled)) {
+    return nullptr;
+  }
+  enabled_levels.push_back(enabled_level);
+
+  if (!status.identity.has_value()) {
+    return nullptr;
+  }
+
+  return utils::ConvertIdentity(status.identity.value(),
+                                status.last_upload_code);
+}
+#endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 
 }  // namespace
 
@@ -105,33 +133,40 @@ void ConnectorsInternalsPageHandler::DeleteDeviceTrustKey(
 void ConnectorsInternalsPageHandler::GetClientCertificateState(
     GetClientCertificateStateCallback callback) {
 #if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
-  auto* certificate_provisioning_service =
+  auto* profile_certificate_provisioning_service =
       client_certificates::CertificateProvisioningServiceFactory::GetForProfile(
           profile_);
-  if (!certificate_provisioning_service) {
+  auto* browser_certificate_provisioning_service =
+      g_browser_process->browser_policy_connector()
+          ->chrome_browser_cloud_management_controller()
+          ->GetCertificateProvisioningService();
+  if (!profile_certificate_provisioning_service &&
+      !browser_certificate_provisioning_service) {
     std::move(callback).Run(
         connectors_internals::mojom::ClientCertificateState::New(
             std::vector<std::string>(), nullptr, nullptr));
     return;
   }
 
-  const auto& status = certificate_provisioning_service->GetCurrentStatus();
   std::vector<std::string> enabled_levels;
-  if (status.is_policy_enabled) {
-    enabled_levels.push_back("Profile");
+  connectors_internals::mojom::ClientIdentityPtr managed_browser_identity =
+      nullptr;
+  if (browser_certificate_provisioning_service) {
+    managed_browser_identity = GetIdentity(
+        browser_certificate_provisioning_service, enabled_levels, kBrowser);
   }
 
   connectors_internals::mojom::ClientIdentityPtr managed_profile_identity =
       nullptr;
-  if (status.identity.has_value()) {
-    managed_profile_identity = utils::ConvertIdentity(status.identity.value(),
-                                                      status.last_upload_code);
+  if (profile_certificate_provisioning_service) {
+    managed_profile_identity = GetIdentity(
+        profile_certificate_provisioning_service, enabled_levels, kProfile);
   }
 
   std::move(callback).Run(
       connectors_internals::mojom::ClientCertificateState::New(
           std::move(enabled_levels), std::move(managed_profile_identity),
-          nullptr));
+          std::move(managed_browser_identity)));
 
 #else
   std::move(callback).Run(

@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "url/gurl.h"
+
 namespace autofill {
 
 // Represents a loaylty card coming from the Google Wallet.
@@ -15,7 +17,7 @@ class LoyaltyCard final {
   LoyaltyCard(std::string loyalty_card_id,
               std::string merchant_name,
               std::string program_name,
-              std::string program_logo,
+              GURL program_logo,
               std::string unmasked_loyalty_card_suffix);
 
   LoyaltyCard(const LoyaltyCard&);
@@ -24,6 +26,11 @@ class LoyaltyCard final {
   LoyaltyCard& operator=(LoyaltyCard&&) = default;
 
   ~LoyaltyCard();
+
+  // Checks if this loyalty card is valid. A valid loyalty card contains a
+  // non-empty loyalty card id and a logo URL which should be either empty or
+  // valid.
+  bool IsValid() const;
 
   friend bool operator==(const LoyaltyCard&, const LoyaltyCard&) = default;
 
@@ -35,7 +42,7 @@ class LoyaltyCard final {
   // The loyalty card program name e.g. "BahnBonus".
   std::string program_name;
   // The logo icon URL.
-  std::string program_logo;
+  GURL program_logo;
   // The unmasked part of the  loyalty card issuer text code. The full number is
   // not available on the client.
   std::string unmasked_loyalty_card_suffix;

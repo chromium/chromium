@@ -267,7 +267,7 @@ const base::FeatureParam<int> kCreateSpeculativeRFHDelayMs{
 // See crbug.com/40285083 for more info.
 BASE_FEATURE(kDeleteStaleSessionCookiesOnStartup,
              "DeleteStaleSessionCookiesOnStartup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When a device bound session
 // (https://github.com/w3c/webappsec-dbsc/blob/main/README.md) is
@@ -610,19 +610,6 @@ const char kIsolateOriginsFieldTrialParamName[] = "OriginsList";
 BASE_FEATURE(kLazyInitializeMediaControls,
              "LazyInitializeMediaControls",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables Local Network Access checks.
-// Blocks local network requests without user permission to prevent exploitation
-// of vulnerable local devices.
-//
-// This feature is being built as a replacement for Private Network Access
-// (PNA), and if this is on PNA features may stop working.
-//
-// Public explainer:
-// https://github.com/explainers-by-googlers/local-network-access
-BASE_FEATURE(kLocalNetworkAccessChecks,
-             "LocalNetworkAccessChecks",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLogJsConsoleMessages,
              "LogJsConsoleMessages",

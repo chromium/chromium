@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -80,11 +79,11 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
 }  // namespace
 
 ImageLayerBridge::ImageLayerBridge(OpacityMode opacity_mode)
-    : opacity_mode_(opacity_mode) {
+    : is_opaque_(opacity_mode == kOpaque) {
   layer_ = cc::TextureLayer::CreateForMailbox(this);
   layer_->SetIsDrawable(true);
   layer_->SetHitTestable(true);
-  if (opacity_mode_ == kOpaque) {
+  if (is_opaque_) {
     layer_->SetContentsOpaque(true);
     layer_->SetBlendBackgroundColor(false);
   }
@@ -106,14 +105,14 @@ void ImageLayerBridge::SetImage(scoped_refptr<StaticBitmapImage> image) {
 
   image_ = std::move(image);
   if (image_) {
-    if (opacity_mode_ == kNonOpaque) {
-      layer_->SetContentsOpaque(image_->CurrentFrameKnownToBeOpaque());
-      layer_->SetBlendBackgroundColor(!image_->CurrentFrameKnownToBeOpaque());
-    }
-    if (opacity_mode_ == kOpaque) {
+    const bool image_is_opaque = image_->CurrentFrameKnownToBeOpaque();
+    if (is_opaque_) {
       // If we in opaque mode but image might have transparency we need to
       // ensure its opacity is not used.
-      layer_->SetForceTextureToOpaque(!image_->CurrentFrameKnownToBeOpaque());
+      layer_->SetForceTextureToOpaque(!image_is_opaque);
+    } else {
+      layer_->SetContentsOpaque(image_is_opaque);
+      layer_->SetBlendBackgroundColor(!image_is_opaque);
     }
     if (!has_presented_since_last_set_image_ && image_->IsTextureBacked()) {
       // If the layer bridge is not presenting, the GrContext may not be getting

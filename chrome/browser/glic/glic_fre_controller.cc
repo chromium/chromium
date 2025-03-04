@@ -191,6 +191,14 @@ constexpr net::NetworkTrafficAnnotationTag kGlicFrePreconnectTrafficAnnotation =
         "Minimal data is exchanged, though this may share network state "
         "with credentialed requests."
       destination: GOOGLE_OWNED_SERVICE
+      internal {
+        contacts {
+          owners: "//chrome/browser/glic/OWNERS"
+        }
+      }
+      user_data {
+        type: NONE
+      }
       last_reviewed: "2025-02-26"
     }
     policy {

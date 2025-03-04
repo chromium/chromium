@@ -101,6 +101,10 @@ const std::u16string AutofillErrorDialogControllerImpl::GetTitle() {
 #else
       NOTREACHED();
 #endif  // BUILDFLAG(IS_IOS)
+    case AutofillErrorDialogType::kBnplTemporaryError:
+    case AutofillErrorDialogType::kBnplPermanentError:
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE);
+
     case AutofillErrorDialogType::kTypeUnknown:
       NOTREACHED();
   }
@@ -158,6 +162,12 @@ const std::u16string AutofillErrorDialogControllerImpl::GetDescription() {
 #else
       NOTREACHED();
 #endif  // BUILDFLAG(IS_IOS)
+    case AutofillErrorDialogType::kBnplTemporaryError:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_BNPL_TEMPORARY_ERROR_DESCRIPTION);
+    case AutofillErrorDialogType::kBnplPermanentError:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_BNPL_PERMANENT_ERROR_DESCRIPTION);
     case AutofillErrorDialogType::kTypeUnknown:
       NOTREACHED();
   }

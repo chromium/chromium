@@ -1060,6 +1060,15 @@ void MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
   input_since_keyframe_count_ = 0;
   client_->RequireBitstreamBuffers(kNumInputBuffers, input_visible_size_,
                                    bitstream_buffer_size_);
+
+  if (mf_video_processor_) {
+    hr = mf_video_processor_->UpdateOutputSize(input_visible_size_);
+    if (FAILED(hr)) {
+      NotifyErrorStatus(
+          {EncoderStatus::Codes::kSystemAPICallError,
+           "Couldn't update Video processor output size: " + PrintHr(hr)});
+    }
+  }
 }
 
 void MediaFoundationVideoEncodeAccelerator::Destroy() {
@@ -1796,7 +1805,8 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
   if (base::FeatureList::IsEnabled(kMediaFoundationD3DVideoProcessing)) {
     is_supported_format =
         std::ranges::find(kSupportedPixelFormatsD3DVideoProcessing,
-                          frame->format()) != kSupportedPixelFormats.end();
+                          frame->format()) !=
+        kSupportedPixelFormatsD3DVideoProcessing.end();
   } else {
     is_supported_format =
         std::ranges::find(kSupportedPixelFormats, frame->format()) !=
@@ -2064,10 +2074,20 @@ HRESULT MediaFoundationVideoEncodeAccelerator::CopyInputSampleBufferFromGpu(
 
   if (mf_video_processor_) {
     // This sample needs color space conversion
-    ComMFSample vp_input_sample = std::move(input_sample);
-    hr = mf_video_processor_->Convert(vp_input_sample.Get(), frame->format(),
-                                      &input_sample);
+    ComMFSample vp_output_sample;
+    hr = mf_video_processor_->Convert(input_sample.Get(), frame->format(),
+                                      &vp_output_sample);
+    // input_sample is the sample that will be fed to the encoder, but
+    // its buffers are from the original color format.  Remove those
+    // buffers and replace them with the buffer that has been
+    // converted to the target color format.
     RETURN_ON_HR_FAILURE(hr, "Failed to convert input frame", hr);
+    hr = input_sample->RemoveAllBuffers();
+    RETURN_ON_HR_FAILURE(hr, "Failed to remove buffers from sample", hr);
+    ComMFMediaBuffer vp_output_buffer;
+    hr = vp_output_sample->GetBufferByIndex(0, &vp_output_buffer);
+    RETURN_ON_HR_FAILURE(hr, "Failed to get output buffer from sample", hr);
+    hr = input_sample->AddBuffer(vp_output_buffer.Get());
   }
 
   return S_OK;
@@ -2089,15 +2109,20 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
     // - MFVP will output a different texture that can be used
     //    as encoder input with no synchronization issues.
     HRESULT hr;
+    ComMFSample vp_output_sample;
     if (frame->HasSharedImage()) {
-      ComMFSample vp_input_sample = std::move(input_sample);
-      hr = mf_video_processor_->Convert(vp_input_sample.Get(), frame->format(),
-                                        &input_sample);
+      hr = mf_video_processor_->Convert(input_sample.Get(), frame->format(),
+                                        &vp_output_sample);
     } else {
-      input_sample = nullptr;
-      hr = mf_video_processor_->Convert(frame, &input_sample);
+      hr = mf_video_processor_->Convert(frame, &vp_output_sample);
     }
     RETURN_ON_HR_FAILURE(hr, "Failed to convert input frame", hr);
+    hr = input_sample->RemoveAllBuffers();
+    RETURN_ON_HR_FAILURE(hr, "Failed to remove buffers from sample", hr);
+    ComMFMediaBuffer vp_output_buffer;
+    hr = vp_output_sample->GetBufferByIndex(0, &vp_output_buffer);
+    RETURN_ON_HR_FAILURE(hr, "Failed to get output buffer from sample", hr);
+    hr = input_sample->AddBuffer(vp_output_buffer.Get());
     return S_OK;
   }
 
@@ -2785,10 +2810,13 @@ void MediaFoundationVideoEncodeAccelerator::OnSharedImageSampleAvailable(
   // If the encoding client quickly supplies multiple shared texture
   // frames, there could be multiple shared images being resolved at
   // the same time.  This sample needs to be linked with the correct
-  // frame in the queue.
+  // frame in the queue.  In some circumstances, the client may supply
+  // multiple VideoFrames backed by the same mailbox, so ensure a
+  // queued frame being resolved gets completed.
   auto it = pending_input_queue_.begin();
   for (; it != pending_input_queue_.end(); it++) {
-    if (it->shared_image_token == frame->shared_image()->mailbox()) {
+    if (it->shared_image_token == frame->shared_image()->mailbox() &&
+        it->resolving_shared_image) {
       it->input_sample = sample;
       it->resolving_shared_image = false;
       break;

@@ -954,8 +954,8 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
   FAIL_INIT_IF_NOT(!attrib_helper.fail_if_major_perf_caveat ||
                        !feature_info_->feature_flags().is_swiftshader_for_webgl,
                    "fail_if_major_perf_caveat + swiftshader");
-  FAIL_INIT_IF_NOT(!attrib_helper.enable_oop_rasterization,
-                   "oop rasterization not supported");
+  FAIL_INIT_IF_NOT(!attrib_helper.enable_gpu_rasterization,
+                   "GPU rasterization not supported");
   FAIL_INIT_IF_NOT(!IsES31ForTestingContextType(attrib_helper.context_type) ||
                        feature_info_->gl_version_info().IsAtLeastGLES(3, 1),
                    "ES 3.1 context type requires an ES 3.1 ANGLE context");

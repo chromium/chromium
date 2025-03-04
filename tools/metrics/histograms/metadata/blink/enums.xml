@@ -5938,6 +5938,21 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5334" label="CSSVarFallbackCycle"/>
   <int value="5335" label="CSSAttrFallbackCycle"/>
   <int value="5336" label="CSSRainbowGradientPattern"/>
+  <int value="5337" label="WebAppManifestStartUrl"/>
+  <int value="5338" label="WebAppManifestDisplay"/>
+  <int value="5339" label="WebAppManifestIcons"/>
+  <int value="5340" label="WebAppManifestScreenshots"/>
+  <int value="5341" label="WebAppManifestScope"/>
+  <int value="5342" label="WebAppManifestLockScreen"/>
+  <int value="5343" label="WebAppManifestNoteTaking"/>
+  <int value="5344" label="WebAppManifestPermissionsPolicy"/>
+  <int value="5345" label="WebAppManifestPrefer_Related_Applications"/>
+  <int value="5346" label="WebAppManifestThemeColor"/>
+  <int value="5347" label="WebAppManifestBackgroundColor"/>
+  <int value="5348" label="WebAppManifestTranslations"/>
+  <int value="5349" label="WebAppManifestTabStrip"/>
+  <int value="5350" label="WebAppManifestVersion"/>
+  <int value="5351" label="WebAppManifestRelated_Applications"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -7469,6 +7484,7 @@ Called by update_use_counter_css.py.-->
   <int value="844" label="row-rule-style"/>
   <int value="845" label="gap-rule-paint-order"/>
   <int value="846" label="row-rule-width"/>
+  <int value="847" label="row-rule-color"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

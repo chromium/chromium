@@ -1059,6 +1059,15 @@
   <message name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT" desc="The text informing the user the benefits of linking their BNPL account in the Buy-Now-Pay-Later Terms of Service dialog.">
     Keeping your account linked helps you pay faster with <ph name="BNPL_ISSUER_NAME">$1</ph>, but you can unlink it by going to <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT">$2<ex>wallet.google.com</ex></ph>
   </message>
+  <message name="IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE" desc="The title text of an error dialog informing the user that something went wrong in the Buy Now Pay Later flow.">
+    Something went wrong
+  </message>
+  <message name="IDS_AUTOFILL_BNPL_TEMPORARY_ERROR_DESCRIPTION" desc="The description text of an error dialog informing the user that a temporary error occurred in the Buy Now Pay Later flow.">
+    Pay over time isn't available right now. Try again later.
+  </message>
+  <message name="IDS_AUTOFILL_BNPL_PERMANENT_ERROR_DESCRIPTION" desc="The description text of an error dialog informing the user that a permanent error occurred in the Buy Now Pay Later flow.">
+    Contact the provider for more information
+  </message>
 
   <!-- Credit card benefits-related strings -->
   <message name="IDS_AUTOFILL_CREDIT_CARD_BENEFIT_TEXT_FOR_SUGGESTIONS" desc="benefit text string shown in suggestion dropdown indicating that the credit card has an applicable benefit for this purchase with `terms apply` appended.">

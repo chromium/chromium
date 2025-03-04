@@ -289,6 +289,11 @@ class FakePage : public mojom::Page {
     session_config_updated_cb_ = std::move(session_config_updated_cb);
   }
 
+  void SetLocalCaptionDisabledInterceptorCallback(
+      base::OnceClosure local_caption_disabled_cb) {
+    local_caption_disabled_cb_ = std::move(local_caption_disabled_cb);
+  }
+
  private:
   // mojom::Page:
   void OnStudentActivityUpdated(
@@ -304,10 +309,15 @@ class FakePage : public mojom::Page {
   }
   void OnActiveNetworkStateChanged(
       std::vector<mojom::NetworkInfoPtr> active_networks) override {}
-  void OnLocalCaptionDisabled() override {}
+  void OnLocalCaptionDisabled() override {
+    if (local_caption_disabled_cb_) {
+      std::move(local_caption_disabled_cb_).Run();
+    }
+  }
 
   ActivityInterceptorCallback student_activity_updated_cb_;
   SessionConfigInterceptorCallback session_config_updated_cb_;
+  base::OnceClosure local_caption_disabled_cb_;
 
   const mojo::Receiver<mojom::Page> receiver_;
 };
@@ -1981,6 +1991,13 @@ TEST_F(BocaAppPageHandlerFloatModeTest, SetFloatModeTestWithFalse) {
                                                  future.GetCallback());
 
   EXPECT_FALSE(future.Get());
+}
+
+TEST_F(BocaAppPageHandlerTest, NotifyWhenLocalCaptionClosed) {
+  base::test::TestFuture<void> future;
+  fake_page()->SetLocalCaptionDisabledInterceptorCallback(future.GetCallback());
+  boca_app_handler()->OnLocalCaptionClosed();
+  EXPECT_TRUE(future.Wait());
 }
 
 }  // namespace

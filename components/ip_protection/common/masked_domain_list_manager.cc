@@ -102,7 +102,7 @@ bool MaskedDomainListManager::Matches(
       network_anonymization_key.GetTopFrameSite();
 
   if (UseFlatbuffer()) {
-    MaskedDomainList* mdl = mdl_type == MdlType::kDefault
+    MaskedDomainList* mdl = mdl_type == MdlType::kIncognito
                                 ? default_mdl_.get()
                                 : regular_browsing_mdl_.get();
     // If the MDL is not initialized yet, or initialization failed, nothing

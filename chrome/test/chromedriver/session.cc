@@ -150,13 +150,18 @@ Status Session::GetTargetWindow(WebView** web_view) {
     return Status(kNoSuchWindow, "target window already closed", status);
   }
 
-  Timeout timeout;
-  status = tab->WaitForPendingActivePage(timeout);
-  if (status.IsError()) {
-    return status;
-  }
+  if (tab->IsTab()) {
+    Timeout timeout;
+    status = tab->WaitForPendingActivePage(timeout);
+    if (status.IsError()) {
+      return status;
+    }
 
-  status = tab->GetActivePage(web_view);
+    status = tab->GetActivePage(web_view);
+  } else {
+    // If target window is not a tab (eg. webview), return it as is.
+    *web_view = tab;
+  }
   return status;
 }
 

@@ -2982,27 +2982,8 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="HeuristicType" enum="AutofillFieldType">
     <summary>
-      There are multiple heuristic classification strategies working in
-      parallel. This type is predicted from the active pattern source.
-    </summary>
-  </metric>
-  <metric name="HeuristicTypeDefault" enum="AutofillFieldType">
-    <summary>
-      The type of the field predicted from the source of local heuristics on the
-      client, which uses patterns applied for most users, the types are from
-      |autofill::FieldType|.
-    </summary>
-  </metric>
-  <metric name="HeuristicTypeExperimental" enum="AutofillFieldType">
-    <summary>
-      The type of the field predicted from the heuristics that uses experimental
-      patterns, the types are from |autofill::FieldType|.
-    </summary>
-  </metric>
-  <metric name="HeuristicTypeLegacy" enum="AutofillFieldType">
-    <summary>
-      The type of the field predicted from patterns whose stability is above
-      suspicion, the types are from |autofill::FieldType|.
+      The type of the field predicted the regular expressions. The types are
+      from |autofill::FieldType|.
     </summary>
   </metric>
   <metric name="HtmlFieldMode" enum="AutocompleteHtmlFieldMode">
@@ -3018,6 +2999,13 @@ be describing additional metrics about the same event.
       The field type specified in the autocomplete attribute of the field. Only
       set if a field has a valid autocomplete attribute. See
       autofill::mojom::HtmlFieldType.
+    </summary>
+  </metric>
+  <metric name="MlModelType" enum="AutofillFieldType">
+    <summary>
+      The type of the field predicted by the ML model after consolidation with
+      regex heuristics (the ML model is not allowed to override the regex
+      heuristics in some cases). The types are from |autofill::FieldType|.
     </summary>
   </metric>
   <metric name="OverallType" enum="AutofillFieldType">

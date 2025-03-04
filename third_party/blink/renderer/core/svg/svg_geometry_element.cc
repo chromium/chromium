@@ -30,6 +30,8 @@
 
 #include "third_party/blink/renderer/core/svg/svg_geometry_element.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_point_init.h"
+#include "third_party/blink/renderer/core/geometry/dom_point.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_path.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_shape.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
@@ -79,7 +81,12 @@ void SVGGeometryElement::Trace(Visitor* visitor) const {
   SVGGraphicsElement::Trace(visitor);
 }
 
-bool SVGGeometryElement::isPointInFill(SVGPointTearOff* point) const {
+bool SVGGeometryElement::isPointInFill(const DOMPointInit* point) const {
+  // If either of the x or y properties on point are infinite or NaN, then the
+  // method must return false.
+  if (!std::isfinite(point->x()) || !std::isfinite(point->y())) {
+    return false;
+  }
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
 
@@ -91,10 +98,17 @@ bool SVGGeometryElement::isPointInFill(SVGPointTearOff* point) const {
 
   // Path::Contains will reject points with a non-finite component.
   WindRule fill_rule = layout_object->StyleRef().FillRule();
-  return AsPath().Contains(point->Target()->Value(), fill_rule);
+  const gfx::PointF local_point(ClampTo<float>(point->x()),
+                                ClampTo<float>(point->y()));
+  return AsPath().Contains(local_point, fill_rule);
 }
 
-bool SVGGeometryElement::isPointInStroke(SVGPointTearOff* point) const {
+bool SVGGeometryElement::isPointInStroke(const DOMPointInit* point) const {
+  // If either of the x or y properties on point are infinite or NaN, then the
+  // method must return false.
+  if (!std::isfinite(point->x()) || !std::isfinite(point->y())) {
+    return false;
+  }
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
 
@@ -108,7 +122,8 @@ bool SVGGeometryElement::isPointInStroke(SVGPointTearOff* point) const {
   AffineTransform root_transform;
 
   Path path = AsPath();
-  gfx::PointF local_point = point->Target()->Value();
+  gfx::PointF local_point(ClampTo<float>(point->x()),
+                          ClampTo<float>(point->y()));
   if (layout_shape.HasNonScalingStroke()) {
     const AffineTransform transform =
         layout_shape.ComputeNonScalingStrokeTransform();

@@ -258,14 +258,28 @@ android_library("utils_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/password_manager/CustomTabIntentHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/GmsUpdateLauncher.java",
+    "java/src/org/chromium/chrome/browser/password_manager/LoginDbDeprecationUtilBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordExportLauncher.java",
   ]
 
+  srcjar_deps = [ ":utils_jni_headers" ]
+
   deps = [
     "$google_play_services_package:google_play_services_base_java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:factory_java",
     "//components/browser_ui/settings/android:java",
+    "//third_party/jni_zero:gendeps_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
+}
+
+generate_jni("utils_jni_headers") {
+  visibility = [
+    ":*",
+    "//chrome/browser",
+  ]
+  sources = [ "java/src/org/chromium/chrome/browser/password_manager/LoginDbDeprecationUtilBridge.java" ]
 }
 
 java_group("javatests") {
@@ -523,6 +537,7 @@ source_set("utils") {
     "cct_password_saving_metrics_recorder_bridge.h",
     "first_cct_page_load_marker.cc",
     "first_cct_page_load_marker.h",
+    "login_db_deprecation_util_bridge.cc",
     "password_generation_element_data.cc",
     "password_generation_element_data.h",
     "password_manager_android_util.cc",
@@ -540,6 +555,7 @@ source_set("utils") {
 
   deps = [
     ":jni_headers",
+    ":utils_jni_headers",
     "//chrome/browser/profiles:profile",
     "//chrome/common:non_code_constants",
     "//components/autofill/core/common",

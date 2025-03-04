@@ -45,6 +45,7 @@ found in the LICENSE file.
 
                    <!-- TODO(crbug.com/392943234) Replace this logo when finalized. -->
                    <ImageView
+                       android:id="@+id/privacy_sandbox_eea_consent_logo"
                        android:layout_height="@dimen/privacy_sandbox_chrome_logo_height"
                        android:layout_width="@dimen/privacy_sandbox_chrome_logo_width"
                        android:layout_gravity="center"
@@ -65,6 +66,7 @@ found in the LICENSE file.
                        style="@style/TextAppearance.Headline.Primary" />
 
                    <org.chromium.ui.widget.TextViewWithLeading
+                       android:id="@+id/privacy_sandbox_consent_description_v3"
                        android:layout_width="match_parent"
                        android:layout_height="wrap_content"
                        android:text="@string/privacy_sandbox_m1_consent_description_v3"
@@ -238,6 +240,7 @@ found in the LICENSE file.
                    </LinearLayout>
 
                    <org.chromium.ui.widget.TextViewWithLeading
+                       android:id="@+id/privacy_sandbox_consent_ads_topic_description_v3"
                        android:layout_marginBottom="@dimen/promo_between_text_margin"
                        android:layout_width="match_parent"
                        android:layout_height="wrap_content"
@@ -261,6 +264,7 @@ found in the LICENSE file.
                        android:orientation="horizontal">
 
                        <TextView
+                           android:id="@+id/ad_measurement_dropdown_title"
                            android:layout_weight="1"
                            android:layout_width="0dp"
                            android:layout_height="wrap_content"
@@ -299,6 +303,7 @@ found in the LICENSE file.
                             android:id="@+id/learn_more_card">
 
                             <LinearLayout
+                                android:id="@+id/learn_more_layout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:paddingVertical="12dp"
@@ -316,6 +321,7 @@ found in the LICENSE file.
                         </com.google.android.material.card.MaterialCardView>
 
                         <org.chromium.ui.widget.TextViewWithLeading
+                            android:id="@+id/privacy_sandbox_consent_last_text_v3"
                             android:layout_marginBottom="@dimen/privacy_sandbox_notice_margin_bottom"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -395,6 +401,7 @@ found in the LICENSE file.
         android:visibility="gone">
 
         <LinearLayout
+            android:id="@+id/privacy_policy_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"

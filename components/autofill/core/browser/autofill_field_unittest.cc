@@ -139,11 +139,7 @@ TEST_F(AutofillFieldTest, NoPredictions) {
   EXPECT_EQ(field.PredictionSource(), std::nullopt);
 }
 
-#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-constexpr HeuristicSource kRegexSource = HeuristicSource::kLegacyRegexes;
-#else
-constexpr HeuristicSource kRegexSource = HeuristicSource::kDefaultRegexes;
-#endif
+constexpr HeuristicSource kRegexSource = HeuristicSource::kRegexes;
 constexpr HeuristicSource kMlSource = HeuristicSource::kAutofillMachineLearning;
 
 class AutofillFieldTest_MLPredictions : public AutofillFieldTest {

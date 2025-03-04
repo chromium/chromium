@@ -21,15 +21,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/svg/svg_transform_list.h"
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -143,7 +139,7 @@ SVGParseStatus ParseTransformArgumentsForType(SVGTransformType type,
       break;
 
     if (SkipOptionalSVGSpaces(ptr, end) && *ptr == ',') {
-      ++ptr;
+      UNSAFE_TODO(++ptr);
       trailing_delimiter = true;
     }
   }
@@ -367,7 +363,7 @@ SVGParsingError SVGTransformList::ParseInternal(const CharType*& ptr,
     if (!SkipOptionalSVGSpaces(ptr, end) || *ptr != '(')
       return SVGParsingError(SVGParseStatus::kExpectedStartOfArguments,
                              ptr - start);
-    ptr++;
+    UNSAFE_TODO(ptr++);
 
     TransformArguments arguments;
     SVGParseStatus status =
@@ -380,12 +376,12 @@ SVGParsingError SVGTransformList::ParseInternal(const CharType*& ptr,
     if (!SkipOptionalSVGSpaces(ptr, end) || *ptr != ')')
       return SVGParsingError(SVGParseStatus::kExpectedEndOfArguments,
                              ptr - start);
-    ptr++;
+    UNSAFE_TODO(ptr++);
 
     Append(CreateTransformFromValues(transform_type, arguments));
 
     if (SkipOptionalSVGSpaces(ptr, end) && *ptr == ',') {
-      ++ptr;
+      UNSAFE_TODO(++ptr);
       delim_parsed = true;
     }
   }

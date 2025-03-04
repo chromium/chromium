@@ -974,14 +974,8 @@ void GPMEnclaveController::OnGPMPasskeySelected(
 
     case AccountState::kRecoverable:
     case AccountState::kIrrecoverable:
-      if (base::FeatureList::IsEnabled(
-              device::kWebAuthnNeverSkipTrustThisComputer) ||
-          model_->priority_phone_name.has_value()) {
-        device::enclave::RecordEvent(device::enclave::Event::kOnboarding);
-        model_->SetStep(Step::kTrustThisComputerAssertion);
-      } else {
-        RecoverSecurityDomain();
-      }
+      device::enclave::RecordEvent(device::enclave::Event::kOnboarding);
+      model_->SetStep(Step::kTrustThisComputerAssertion);
       break;
 
     case AccountState::kLoading:

@@ -253,7 +253,7 @@ struct Config {
       attrib_helper.context_type = CONTEXT_TYPE_OPENGLES2;
     }
 #endif
-    attrib_helper.enable_oop_rasterization = it.GetBit();
+    attrib_helper.enable_gpu_rasterization = it.GetBit();
 
 #if defined(GPU_FUZZER_USE_STUB)
     std::vector<std::string_view> enabled_extensions;

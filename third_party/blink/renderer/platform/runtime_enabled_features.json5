@@ -2966,6 +2966,18 @@
       status: "stable",
     },
     {
+      // This turns off all font antialiasing for tests unless it is
+      // explicitly required and enabled using the
+      // "--enable-font-antialiasing" flag like in the case of
+      // "virtual/text-antialias/" virtual test suite.
+      // crbug.com/339041663
+      name: "NoFontAntialiasing",
+      status: {
+        "Win": "test",
+        "default": ""
+      }
+    },
+    {
       name: "NoIdleEncodingForWebTests",
       status: "test",
     },
@@ -4252,7 +4264,7 @@
     },
     {
       name: "SvgAnchorElementRelAttributes",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "SvgContextPaint",

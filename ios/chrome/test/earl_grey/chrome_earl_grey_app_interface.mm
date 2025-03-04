@@ -24,6 +24,7 @@
 #import "components/browsing_data/core/pref_names.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/metrics/demographics/demographic_metrics_provider.h"
+#import "components/metrics/dwa/dwa_recorder.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/features.h"
@@ -1173,6 +1174,10 @@ NSString* SerializedValue(const base::Value* value) {
 
 + (BOOL)isUKMEnabled {
   return base::FeatureList::IsEnabled(ukm::kUkmFeature);
+}
+
++ (BOOL)isDWAEnabled {
+  return base::FeatureList::IsEnabled(metrics::dwa::kDwaFeature);
 }
 
 + (BOOL)isTestFeatureEnabled {

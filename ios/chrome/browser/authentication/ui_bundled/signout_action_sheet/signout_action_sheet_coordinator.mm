@@ -182,11 +182,9 @@ using signin_metrics::SignoutDataLossAlertReason;
 - (void)continueSignOutWithUnsyncedDataTypeSet:(syncer::DataTypeSet)set {
   [self allowUserInteraction];
   if (!set.empty()) {
-    if (!self.accountSwitch) {
-      for (syncer::DataType type : set) {
-        base::UmaHistogramEnumeration("Sync.UnsyncedDataOnSignout2",
-                                      syncer::DataTypeHistogramValue(type));
-      }
+    for (syncer::DataType type : set) {
+      base::UmaHistogramEnumeration("Sync.UnsyncedDataOnSignout2",
+                                    syncer::DataTypeHistogramValue(type));
     }
     [self startActionSheetCoordinatorForSignout];
   } else {
@@ -206,7 +204,7 @@ using signin_metrics::SignoutDataLossAlertReason;
   __weak __typeof(self) weakSelf = self;
   self.actionSheetCoordinator = GetLeavingPrimaryAccountConfirmationDialog(
       self.baseViewController, self.browser, _view, _rect, _signedInUserState,
-      self.accountSwitch, ^(BOOL continueFlow) {
+      /*account_profile_switch=*/false, ^(BOOL continueFlow) {
         [weakSelf signoutConfirmationWithContinue:continueFlow];
       });
   base::RecordAction(
@@ -263,9 +261,6 @@ using signin_metrics::SignoutDataLossAlertReason;
 
 // Returns snackbar if needed.
 - (MDCSnackbarMessage*)signoutSnackbarMessage {
-  if (self.accountSwitch) {
-    return nil;
-  }
   if (self.isForceSigninEnabled) {
     // Snackbar should be skipped since force sign-in dialog will be shown right
     // after.

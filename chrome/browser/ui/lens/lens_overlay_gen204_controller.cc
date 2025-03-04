@@ -58,7 +58,10 @@ constexpr char kPartialPageContentUploadLatencyId[] = "ppcu";
 constexpr char kInteractionFetchLatencyId[] = "lif";
 constexpr char kFetchStickyClusterInfoLatencyId[] = "sctr";
 constexpr char kInvocationToInitialClusterInfoRequestLatencyId[] = "cstcirs";
-constexpr char kInvocationToInitialFullObjectsRequestLatencyId[] = "cstiors";
+constexpr char kInvocationToInitialFullObjectsRequestSentLatencyId[] =
+    "cstiors";
+constexpr char kInvocationToInitialFullObjectsResponseReceivedLatencyId[] =
+    "cstiorr";
 constexpr char kInvocationToInitialInteractionRequestLatencyId[] = "cstiirs";
 constexpr char kInvocationToInitialPageContentRequestLatencyId[] = "cstipcurs";
 constexpr char kInvocationToInitialPartialPageContentRequestLatencyId[] =
@@ -118,7 +121,9 @@ std::string LatencyIdForType(LatencyType latency_type) {
     case LatencyType::kInvocationToInitialClusterInfoRequestSent:
       return kInvocationToInitialClusterInfoRequestLatencyId;
     case LatencyType::kInvocationToInitialFullPageObjectsRequestSent:
-      return kInvocationToInitialFullObjectsRequestLatencyId;
+      return kInvocationToInitialFullObjectsRequestSentLatencyId;
+    case LatencyType::kInvocationToInitialFullPageObjectsResponseReceived:
+      return kInvocationToInitialFullObjectsResponseReceivedLatencyId;
     case LatencyType::kInvocationToInitialInteractionRequestSent:
       return kInvocationToInitialInteractionRequestLatencyId;
     case LatencyType::kInvocationToInitialPageContentRequestSent:

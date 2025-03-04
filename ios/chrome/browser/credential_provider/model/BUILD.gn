@@ -101,6 +101,7 @@ if (ios_enable_credential_provider_extension) {
       "//components/webauthn/core/browser:test_support",
       "//ios/chrome/app/strings",
       "//ios/chrome/browser/favicon/model",
+      "//ios/chrome/browser/favicon/model:test_support",
       "//ios/chrome/browser/history/model",
       "//ios/chrome/browser/infobars/model",
       "//ios/chrome/browser/shared/model/application_context",

@@ -649,23 +649,8 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsFieldType) {
     if (heuristic_types[i] != UNKNOWN_TYPE) {
       expected.merge(std::map<std::string, int64_t>({
           {UFIT::kHeuristicTypeName, heuristic_types[i]},
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-          {UFIT::kHeuristicTypeLegacyName, UNKNOWN_TYPE},
-          {UFIT::kHeuristicTypeDefaultName, heuristic_types[i]},
-          {UFIT::kHeuristicTypeExperimentalName,
-           GetActiveHeuristicSource() == HeuristicSource::kExperimentalRegexes
-               ? heuristic_types[i]
-               : UNKNOWN_TYPE},
-      }));
-      field_log_events_count += 2 + (GetActiveHeuristicSource() ==
-                                     HeuristicSource::kExperimentalRegexes);
-#else
-          {UFIT::kHeuristicTypeLegacyName, heuristic_types[i]},
-          {UFIT::kHeuristicTypeDefaultName, UNKNOWN_TYPE},
-          {UFIT::kHeuristicTypeExperimentalName, UNKNOWN_TYPE},
       }));
       field_log_events_count += 2;
-#endif
     } else {
       ++field_log_events_count;
     }
@@ -749,18 +734,9 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsFieldType) {
                                      6, 1);
   histogram_tester.ExpectBucketCount("Autofill.LogEvent.RationalizationEvent",
                                      12, 1);
-  int num_heuristic_prediction_events = 4;
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  // Are shadow predictions enabled?
-  if (GetActiveHeuristicSource() == HeuristicSource::kExperimentalRegexes) {
-    num_heuristic_prediction_events *= 2;
-  }
-#endif
   histogram_tester.ExpectBucketCount(
-      "Autofill.LogEvent.HeuristicPredictionEvent",
-      num_heuristic_prediction_events, 1);
-  histogram_tester.ExpectBucketCount("Autofill.LogEvent.All",
-                                     23 + num_heuristic_prediction_events, 1);
+      "Autofill.LogEvent.HeuristicPredictionEvent", 4, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 27, 1);
 }
 
 // Test if we have recorded FieldInfo UKM metrics correctly after typing in
@@ -1179,25 +1155,9 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsRecordOnDifferentFrames) {
          base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
         {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
         {UFIT::kHeuristicTypeName, field_types[i]},
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-        {UFIT::kHeuristicTypeLegacyName, UNKNOWN_TYPE},
-        {UFIT::kHeuristicTypeDefaultName, field_types[i]},
-        {UFIT::kHeuristicTypeExperimentalName,
-         GetActiveHeuristicSource() == HeuristicSource::kExperimentalRegexes
-             ? field_types[i]
-             : UNKNOWN_TYPE},
-        {UFIT::kFieldLogEventCountName,
-         2 + (GetActiveHeuristicSource() ==
-              HeuristicSource::kExperimentalRegexes)},
-#else
-        {UFIT::kHeuristicTypeLegacyName, field_types[i]},
-        {UFIT::kHeuristicTypeDefaultName, UNKNOWN_TYPE},
-        {UFIT::kHeuristicTypeExperimentalName, UNKNOWN_TYPE},
-        {UFIT::kFieldLogEventCountName, 2},
-#endif
         {UFIT::kRankInFieldSignatureGroupName, 1},
+        {UFIT::kFieldLogEventCountName, 2},
     };
-
     EXPECT_EQ(expected.size(), entry->metrics.size());
     for (const auto& [metric, value] : expected) {
       test_ukm_recorder().ExpectEntryMetric(entry, metric, value);
@@ -1241,18 +1201,9 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsRecordOnDifferentFrames) {
                                      0, 1);
   histogram_tester.ExpectBucketCount("Autofill.LogEvent.RationalizationEvent",
                                      3, 1);
-  int num_heuristic_prediction_events = 3;
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  // Are shadow predictions enabled?
-  if (GetActiveHeuristicSource() == HeuristicSource::kExperimentalRegexes) {
-    num_heuristic_prediction_events *= 2;
-  }
-#endif
   histogram_tester.ExpectBucketCount(
-      "Autofill.LogEvent.HeuristicPredictionEvent",
-      num_heuristic_prediction_events, 1);
-  histogram_tester.ExpectBucketCount("Autofill.LogEvent.All",
-                                     3 + num_heuristic_prediction_events, 1);
+      "Autofill.LogEvent.HeuristicPredictionEvent", 3, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 6, 1);
 }
 
 // The following code tests that Autofill2.FocusedComplexForm events are emitted

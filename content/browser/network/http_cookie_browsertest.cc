@@ -874,26 +874,7 @@ IN_PROC_BROWSER_TEST_F(
               net::CookieStringIs(IsEmpty()));
 }
 
-class AncestorChainBitEnabledThirdPartyCookiesBlockedTest
-    : public ThirdPartyCookiesHttpCookieBrowserTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  AncestorChainBitEnabledThirdPartyCookiesBlockedTest() {
-    feature_list_.InitWithFeatureStates(
-        {{net::features::kForceThirdPartyCookieBlocking, true},
-         {net::features::kAncestorChainBitEnabledInPartitionedCookies,
-          AncestorChainBitEnabled()}});
-  }
-
-  bool AncestorChainBitEnabled() { return GetParam(); }
-
-  ~AncestorChainBitEnabledThirdPartyCookiesBlockedTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
                        TestCrossSitePartitionKeyNotAvailable) {
   // Set cookie for site A kSameSite ancestor.
   // Create initial frame tree A->B (B is an iframe) and check cookie.
@@ -932,7 +913,7 @@ IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
       net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
 }
 
-IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
                        TestSubresourceRedirects) {
   // Initial frame tree A->B (B is an iframe).
   // A cookie is set for site C.
@@ -986,7 +967,7 @@ IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
       net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
 }
 
-IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
                        TestTopLevelRedirects) {
   // Navigate to Site A and set cookie on site A.
   // Redirect from site A to site B and back to site A.
@@ -1021,8 +1002,8 @@ IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
       net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
 }
 
-IN_PROC_BROWSER_TEST_P(
-    AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
+IN_PROC_BROWSER_TEST_F(
+    ThirdPartyCookiesBlockedHttpCookieBrowserTest,
     TestSameSiteEmbeddedResourceToCrossSiteEmbeddedResource) {
   // Initial frame tree A1->A2 (A2 is an iframe)
   // A cookie is set from top-level A1 for site B with kCrossSite ancestor chain
@@ -1061,7 +1042,7 @@ IN_PROC_BROWSER_TEST_P(
       net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
 }
 
-IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
                        CrossSiteToSameSiteIframeRedirects) {
   // Set partitioned kSameSite ancestor cookie on top level site A.
   // Embed an iframe of site A and confirm cookie is accessible from iframe.
@@ -1102,7 +1083,7 @@ IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
       net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
 }
 
-IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
                        RedirectCrossSiteThroughSameSiteIframe) {
   // Set partitioned kSameSite ancestor cookie on top level site A.
   // Embed an iframe of site A and confirm cookie is accessible from iframe.
@@ -1146,7 +1127,7 @@ IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
       net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
 }
 
-IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
                        RedirectTwoCrossSitesThroughSameSiteIframe) {
   // Set partitioned kSameSite ancestor cookie on top level site A.
   // Embed an iframe of site A and confirm cookie is accessible from iframe.
@@ -1192,8 +1173,8 @@ IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
       net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
 }
 
-IN_PROC_BROWSER_TEST_P(
-    AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
+IN_PROC_BROWSER_TEST_F(
+    ThirdPartyCookiesBlockedHttpCookieBrowserTest,
     RedirectCrossSiteIframeToSameSiteThenNavigateToSameSite) {
   // Set partitioned kSameSite ancestor cookie on top level site A.
   // Embed an iframe of site A and confirm cookie is accessible from iframe.
@@ -1239,7 +1220,7 @@ IN_PROC_BROWSER_TEST_P(
       net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
 }
 
-IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
                        CrossSiteToSameSiteIframeNavigation) {
   // Set partitioned kSameSite ancestor cookie on top level site A.
   // Embed an iframe of site A and confirm cookie is accessible from iframe.
@@ -1438,11 +1419,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsOverridesThirdPartyCookiesBrowserTest,
 INSTANTIATE_TEST_SUITE_P(/* no label */,
                          HttpCookieBrowserTest,
                          ::testing::Bool());
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no label */,
-    AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
-    ::testing::Bool());
 
 }  // namespace
 }  // namespace content

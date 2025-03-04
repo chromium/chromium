@@ -27,7 +27,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
-#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -801,18 +800,8 @@ IN_PROC_BROWSER_TEST_F(TabDiscardExceptionsSettingsInteractiveTest,
       WaitForElementToHide(kPerformanceSettingsPage, kExceptionDialogEntry));
 }
 
-class PerformanceInterventionSettingsInteractiveTest
-    : public WebUiInteractiveTestMixin<InteractiveBrowserTest> {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {performance_manager::features::kPerformanceInterventionUI}, {});
-    InteractiveBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using PerformanceInterventionSettingsInteractiveTest =
+    WebUiInteractiveTestMixin<InteractiveBrowserTest>;
 
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionSettingsInteractiveTest,
                        PerformanceInterventionMetricLogOnToggle) {

@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.photo_picker;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +14,13 @@ import androidx.annotation.IntDef;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** A data adapter for the Photo Picker. */
+@NullMarked
 public class PickerAdapter extends Adapter<ViewHolder> {
     // The possible types of actions required during decoding.
     @IntDef({DecodeActions.NO_ACTION, DecodeActions.FROM_CACHE, DecodeActions.DECODE})
@@ -71,6 +76,7 @@ public class PickerAdapter extends Adapter<ViewHolder> {
 
     @Override
     public int getItemCount() {
+        assumeNonNull(mCategoryView.getPickerBitmaps());
         return mCategoryView.getPickerBitmaps().size();
     }
 

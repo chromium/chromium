@@ -167,7 +167,8 @@ base::UnsafeSharedMemoryRegion CreateTracingOutputSharedMemory() {
   }
 #endif  // DCHECK_IS_ON()
 
-  auto shm = base::UnsafeSharedMemoryRegion::Create(kDefaultSharedMemorySize);
+  auto shm = base::UnsafeSharedMemoryRegion::Create(
+      features::kPerfettoSharedMemorySizeBytes.Get());
   if (!shm.IsValid()) {
     return base::UnsafeSharedMemoryRegion();
   }

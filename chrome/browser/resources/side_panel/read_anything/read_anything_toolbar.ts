@@ -27,7 +27,7 @@ import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {Debouncer, PolymerElement, timeOut} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {emitEvent, getCurrentSpeechRate, minOverflowLengthToScroll, openMenu, spinnerDebounceTimeout, ToolbarEvent} from './common.js';
 import type {SettingsPrefs} from './common.js';
@@ -65,11 +65,13 @@ interface MenuButton {
   openMenu: (target: HTMLElement) => void;
 }
 
+
+type ToggleButtonId =
+    typeof LINK_TOGGLE_BUTTON_ID|typeof IMAGES_TOGGLE_BUTTON_ID;
 interface ToggleButton {
-  id: string;
+  id: ToggleButtonId;
   icon: string;
   title: string;
-  callback: (event: DomRepeatEvent<ToggleButton>) => void;
 }
 
 export const moreOptionsClass = '.more-options-icon';
@@ -217,7 +219,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       title: chrome.readingMode.linksEnabled?
            loadTimeData.getString('disableLinksLabel'):
                loadTimeData.getString('enableLinksLabel'),
-      callback: this.onToggleLinksClick_.bind(this),
     },
   ];
 
@@ -248,9 +249,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   // plays.
   private isAudioCurrentlyPlaying: boolean;
 
-  private hideSpinner: boolean = true;
+  protected hideSpinner_: boolean = true;
 
-  private debouncer_: Debouncer|null = null;
+  private spinnerDebouncerCallbackHandle_?: number;
 
   // If Read Aloud is playable. Certain states, such as when Read Anything does
   // not have content or when the speech engine is loading should disable
@@ -277,7 +278,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         title: chrome.readingMode.imagesEnabled ?
             loadTimeData.getString('disableImagesLabel') :
             loadTimeData.getString('enableImagesLabel'),
-        callback: this.onToggleImagesClick_.bind(this),
       });
     }
   }
@@ -301,10 +301,13 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   override disconnectedCallback() {
-    super.disconnectedCallback();
     if (this.windowResizeCallback_) {
       window.removeEventListener('resize', this.windowResizeCallback_);
     }
+    if (this.spinnerDebouncerCallbackHandle_ !== undefined) {
+      clearTimeout(this.spinnerDebouncerCallbackHandle_);
+    }
+    super.disconnectedCallback();
   }
 
   private initializeMenuButtons_() {
@@ -671,15 +674,16 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.updateFontSize_(false);
   }
 
-  private onToggleButtonClick_(event: DomRepeatEvent<ToggleButton>) {
-    event.model.item.callback(event);
+  protected onToggleButtonClick_(event: DomRepeatEvent<ToggleButton>) {
+    const toggleMenuId = event.model.item.id;
+    if (toggleMenuId === LINK_TOGGLE_BUTTON_ID) {
+      this.onToggleLinksClick_();
+    } else if (toggleMenuId === IMAGES_TOGGLE_BUTTON_ID) {
+      this.onToggleImagesClick_();
+    }
   }
 
-  private onToggleLinksClick_(event: DomRepeatEvent<ToggleButton>) {
-    if (!event.target) {
-      return;
-    }
-
+  private onToggleLinksClick_() {
     this.logger_.logTextSettingsChange(
         ReadAnythingSettingsChange.LINKS_ENABLED_CHANGE);
 
@@ -688,10 +692,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.updateLinkToggleButton();
   }
 
-  private onToggleImagesClick_(event: DomRepeatEvent<ToggleButton>) {
-    if (!event.target) {
-      return;
-    }
+  private onToggleImagesClick_() {
     this.logger_.logTextSettingsChange(
         ReadAnythingSettingsChange.IMAGES_ENABLED_CHANGE);
 
@@ -839,8 +840,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.updateFocus_(focusableElements, newIndex);
   }
 
-
-  private onSpeechPlayingStateChanged_() {
+  private resetHideSpinnerDebouncer_() {
     // Use a debouncer to reduce glitches. Even when audio is fast to respond to
     // the play button, there are still milliseconds of delay. To prevent the
     // spinner from quickly appearing and disappearing, we use a debouncer. If
@@ -849,11 +849,18 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     // is scheduled.
     // TODO (b/339860819) improve debouncer logic so that the spinner disappears
     // immediately when speech starts playing, or when the pause button is hit.
-    this.debouncer_ = Debouncer.debounce(
-        this.debouncer_, timeOut.after(spinnerDebounceTimeout), () => {
-          this.hideSpinner =
-              !this.isSpeechActive || this.isAudioCurrentlyPlaying;
-        });
+    if (this.spinnerDebouncerCallbackHandle_ !== undefined) {
+      clearTimeout(this.spinnerDebouncerCallbackHandle_);
+    }
+    this.spinnerDebouncerCallbackHandle_ = setTimeout(() => {
+      this.hideSpinner_ = !this.isSpeechActive || this.isAudioCurrentlyPlaying;
+      this.spinnerDebouncerCallbackHandle_ = undefined;
+    }, spinnerDebounceTimeout);
+  }
+
+  private onSpeechPlayingStateChanged_() {
+    this.resetHideSpinnerDebouncer_();
+
     // If the previously focused item becomes disabled or disappears from the
     // toolbar because of speech starting or stopping, put the focus on the
     // play/pause button so keyboard navigation continues working.

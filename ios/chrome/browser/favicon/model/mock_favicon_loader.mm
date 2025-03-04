@@ -4,6 +4,6 @@
 
 #import "ios/chrome/browser/favicon/model/mock_favicon_loader.h"
 
-MockFaviconLoader::MockFaviconLoader() : FaviconLoader(nil) {}
+MockFaviconLoader::MockFaviconLoader() = default;
 
 MockFaviconLoader::~MockFaviconLoader() = default;

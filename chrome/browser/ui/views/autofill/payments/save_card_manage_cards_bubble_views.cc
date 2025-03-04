@@ -8,18 +8,26 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_class_properties.h"
 
 namespace autofill {
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SaveCardManageCardsBubbleViews,
+                                      kSaveCardBubbleManageCardsViewId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SaveCardManageCardsBubbleViews,
+                                      kSaveCardBubbleManageCardsButtonId);
 
 SaveCardManageCardsBubbleViews::SaveCardManageCardsBubbleViews(
     views::View* anchor_view,
@@ -35,9 +43,8 @@ SaveCardManageCardsBubbleViews::SaveCardManageCardsBubbleViews(
           },
           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_SAVED_PAYMENT_METHODS)));
-  // TODO(crbug.com/391160867): Use ElementIdentifiers instead of arbitrary
-  // numeric ID.
-  extra_view->SetID(DialogViewId::MANAGE_CARDS_BUTTON);
+  extra_view->SetProperty(views::kElementIdentifierKey,
+                          kSaveCardBubbleManageCardsButtonId);
   extra_view->SetStyle(ui::ButtonStyle::kTonal);
 }
 
@@ -45,7 +52,8 @@ std::unique_ptr<views::View>
 SaveCardManageCardsBubbleViews::CreateMainContentView() {
   std::unique_ptr<views::View> view =
       SaveCardBubbleViews::CreateMainContentView();
-  view->SetID(DialogViewId::MANAGE_CARDS_VIEW);
+  view->SetProperty(views::kElementIdentifierKey,
+                    kSaveCardBubbleManageCardsViewId);
   return view;
 }
 

@@ -139,6 +139,7 @@ class ChromeLabsCoordinatorTest : public TestWithBrowserView {
 
   void TearDown() override {
     about_flags::GetCurrentFlagsState()->Reset();
+    chrome_labs_coordinator_->TearDown();
     TestWithBrowserView::TearDown();
   }
 

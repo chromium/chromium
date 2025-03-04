@@ -356,7 +356,6 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
   }
 
   url::Origin relying_party_origin = caller_origin;
-#if !BUILDFLAG(IS_ANDROID)
   if (remote_desktop_client_override) {
     if (!GetContentClient()
              ->browser()
@@ -370,7 +369,6 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
     }
     relying_party_origin = remote_desktop_client_override->origin;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   if (OriginIsAllowedToClaimRelyingPartyId(relying_party_id,
                                            relying_party_origin)) {
@@ -400,7 +398,6 @@ WebAuthRequestSecurityChecker::ValidateAppIdExtension(
     const blink::mojom::RemoteDesktopClientOverridePtr&
         remote_desktop_client_override,
     std::string* out_appid) {
-#if !BUILDFLAG(IS_ANDROID)
   if (remote_desktop_client_override) {
     if (!GetContentClient()
              ->browser()
@@ -412,7 +409,6 @@ WebAuthRequestSecurityChecker::ValidateAppIdExtension(
     }
     caller_origin = remote_desktop_client_override->origin;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Step 1: "If the AppID is not an HTTPS URL, and matches the FacetID of the
   // caller, no additional processing is necessary and the operation may

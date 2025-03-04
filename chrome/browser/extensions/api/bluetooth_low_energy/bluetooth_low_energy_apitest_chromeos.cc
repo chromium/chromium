@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chrome/browser/ash/test/kiosk_logged_in_browser_test_mixin.h"
+#include "chrome/browser/ash/test/kiosk_app_logged_in_browser_test_mixin.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -70,7 +70,7 @@ class BluetoothLowEnergyApiKioskTestChromeOs
         ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user));
   }
 
-  // TODO(hidehiko): consider to move this into KioskLoggedInBrowserTestMixin
+  // TODO(hidehiko): consider to move this into KioskAppLoggedInBrowserTestMixin
   // so the test can be exercised in the environment closer to the production.
   void SetAutoLaunchApp() {
     auto* manager = ash::KioskChromeAppManager::Get();
@@ -84,8 +84,8 @@ class BluetoothLowEnergyApiKioskTestChromeOs
   }
 
  private:
-  ash::KioskLoggedInBrowserTestMixin kiosk_mixin_{
-      &mixin_host_, "example@kiosk-apps.device-local.localhost"};
+  ash::KioskAppLoggedInBrowserTestMixin kiosk_mixin_{&mixin_host_,
+                                                     "kiosk-account"};
 };
 
 IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTestChromeOs,

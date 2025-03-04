@@ -50,8 +50,7 @@ class CORE_EXPORT CSSColorInterpolationType : public CSSInterpolationType {
       const ui::ColorProvider* color_provider);
   static InterpolableColor* MaybeCreateInterpolableColor(
       const CSSValue&,
-      mojom::blink::ColorScheme color_scheme,
-      const ui::ColorProvider* color_provider);
+      const StyleResolverState*);
 
   static BaseInterpolableColor* CreateBaseInterpolableColor(
       const StyleColor&,

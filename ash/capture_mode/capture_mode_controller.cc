@@ -2049,19 +2049,45 @@ void CaptureModeController::OnImageCapturedForSearch(
     }
   }
 
-  if (ShouldSendRegionSearch(capture_type)) {
-    const gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
-    // `OnSearchUrlFetched()` will be invoked with `image` when the server
-    // response is fetched.
-    delegate_->SendRegionSearch(
-        bitmap, user_capture_region_,
-        base::BindRepeating(&CaptureModeController::OnSearchUrlFetched,
-                            weak_ptr_factory_.GetWeakPtr(),
-                            user_capture_region_, image),
-        base::BindRepeating(&CaptureModeController::OnLensTextDetectionComplete,
-                            weak_ptr_factory_.GetWeakPtr(),
-                            image_search_token));
+  if (!ShouldSendRegionSearch(capture_type)) {
+    return;
   }
+
+  // The Lens Web API needs an access token for authentication, so request
+  // that first. Otherwise, we can start the image search right away.
+  if (features::IsSunfishLensWebEnabled()) {
+    const gfx::Image image = gfx::Image::CreateFrom1xBitmap(bitmap);
+    delegate_->GetPrimaryAccountAccessToken(base::BindRepeating(
+        &CaptureModeController::OnPrimaryAccountAccessTokenAvailable,
+        weak_ptr_factory_.GetWeakPtr(), image, image_search_token));
+    return;
+  }
+
+  const gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  // `OnSearchUrlFetched()` will be invoked with `image` when the server
+  // response is fetched.
+  delegate_->SendRegionSearch(
+      bitmap, user_capture_region_,
+      base::BindRepeating(&CaptureModeController::OnSearchUrlFetched,
+                          weak_ptr_factory_.GetWeakPtr(), user_capture_region_,
+                          image),
+      base::BindRepeating(&CaptureModeController::OnLensTextDetectionComplete,
+                          weak_ptr_factory_.GetWeakPtr(), image_search_token));
+}
+
+// TODO: crbug.com/395939382 - Implement the resource request once a valid
+// `access_token` is returned.
+void CaptureModeController::OnPrimaryAccountAccessTokenAvailable(
+    const gfx::Image& original_image,
+    base::WeakPtr<BaseCaptureModeSession> image_search_token,
+    const std::string& access_token) {
+  if (!image_search_token) {
+    return;
+  }
+
+  // TODO: crbug.com/395939382 - Navigate to the proper URL once it has been
+  // returned by the Lens Web API.
+  ShowSearchResultsPanel(gfx::ImageSkia(), GURL("https://lens.google.com/"));
 }
 
 void CaptureModeController::OnTextDetectionComplete(

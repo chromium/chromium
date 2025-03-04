@@ -101,6 +101,7 @@ chromium-metrics-reviews@google.com.
     <variant name="GetBucketsForType"/>
     <variant name="GetBucketsModifiedBetween"/>
     <variant name="GetExpired"/>
+    <variant name="GetExpiredAndOrphanAndStale"/>
     <variant name="GetOrphan"/>
     <variant name="GetStale"/>
     <variant name="GetStorageKeys"/>

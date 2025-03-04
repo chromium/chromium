@@ -161,8 +161,8 @@ export function canEditNode(
  */
 export function canReorderChildren(
     state: BookmarksPageState, itemId: string): boolean {
-  return !isRootNode(itemId) && !state.nodes[itemId].unmodifiable &&
-      state.prefs.canEdit;
+  return !isRootNode(itemId) && !!state.nodes[itemId] &&
+      !state.nodes[itemId].unmodifiable && state.prefs.canEdit;
 }
 
 export function hasChildFolders(id: string, nodes: NodeMap): boolean {

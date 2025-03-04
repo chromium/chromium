@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.photo_picker;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -18,8 +20,6 @@ import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
@@ -31,6 +31,8 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 
 import java.util.ArrayList;
@@ -40,6 +42,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 /** A class to communicate with the {@link DecoderService}. */
+@NullMarked
 public class DecoderServiceHost extends IDecoderServiceCallback.Stub
         implements DecodeVideoTask.VideoDecodingCallback {
     // A tag for logging error messages.
@@ -76,10 +79,10 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
     private int mFailedVideoDecodesUnknown;
 
     // A worker task for asynchronously handling video decode requests.
-    private DecodeVideoTask mWorkerTask;
+    private @Nullable DecodeVideoTask mWorkerTask;
 
     // The current processing request.
-    private DecoderServiceParams mProcessingRequest;
+    private @Nullable DecoderServiceParams mProcessingRequest;
 
     // The callbacks used to notify the clients when the service is ready.
     private final List<DecoderStatusCallback> mCallbacks = new ArrayList<DecoderStatusCallback>();
@@ -88,10 +91,10 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
     static int sLastDecodingOrdinal = 0;
 
     // A callback to use for testing to see if decoder is ready.
-    static DecoderStatusCallback sStatusCallbackForTesting;
+    static @Nullable DecoderStatusCallback sStatusCallbackForTesting;
 
     // Used to create intents for launching the {@link DecoderService} service.
-    private static Supplier<Intent> sIntentSupplier;
+    private static @Nullable Supplier<Intent> sIntentSupplier;
 
     /**
      * Sets a factory for creating intents that launch the {@link DecoderService} service. This must
@@ -100,14 +103,14 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
      * @param intentSupplier a factory that creates a new Intent. Will be called every time the
      *     PhotoPicker is launched.
      */
-    public static void setIntentSupplier(@NonNull Supplier<Intent> intentSupplier) {
+    public static void setIntentSupplier(Supplier<Intent> intentSupplier) {
         sIntentSupplier = intentSupplier;
     }
 
     // This is true after {#link bindService()} has been called for {@link mConnection}. It
     // indicates that {@link unbindService()} should be called.
     private boolean mBindServiceCalled;
-    IDecoderService mIRemoteService;
+    @Nullable IDecoderService mIRemoteService;
     private ServiceConnection mConnection =
             new ServiceConnection() {
                 @Override
@@ -150,8 +153,8 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
                 String filePath,
                 boolean isVideo,
                 boolean fullWidth,
-                List<Bitmap> bitmaps,
-                String videoDuration,
+                @Nullable List<Bitmap> bitmaps,
+                @Nullable String videoDuration,
                 float ratio);
     }
 
@@ -238,11 +241,12 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
             mCallbacks.add(sStatusCallbackForTesting);
         }
         mContext = context;
-        mContentResolver = mContext.getContentResolver();
+        mContentResolver = context.getContentResolver();
     }
 
     /** Initiate binding with the {@link DecoderService}. */
     public void bind() {
+        assumeNonNull(sIntentSupplier);
         Intent intent = sIntentSupplier.get();
         intent.setAction(IDecoderService.class.getName());
         mContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
@@ -288,7 +292,7 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
      *
      * @return Next pending request (of highest priority).
      */
-    private DecoderServiceParams getNextPending() {
+    private @Nullable DecoderServiceParams getNextPending() {
         if (mPendingRequests.isEmpty()) {
             return null;
         }
@@ -378,8 +382,8 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
     @Override
     public void videoDecodedCallback(
             Uri uri,
-            List<Bitmap> bitmaps,
-            String duration,
+            @Nullable List<Bitmap> bitmaps,
+            @Nullable String duration,
             boolean fullWidth,
             @DecodeVideoTask.DecodingResult int decodingResult,
             float ratio) {
@@ -402,6 +406,7 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
                 break;
         }
 
+        assumeNonNull(uri.getPath());
         closeRequest(uri.getPath(), true, fullWidth, bitmaps, duration, -1, ratio);
     }
 
@@ -438,6 +443,7 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
                     } catch (OutOfMemoryError e) {
                         mFailedImageDecodesMemory++;
                     } finally {
+                        assumeNonNull(filePath);
                         closeRequest(
                                 filePath,
                                 /* isVideo= */ false,
@@ -471,11 +477,13 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
             boolean isVideo,
             boolean fullWidth,
             @Nullable List<Bitmap> bitmaps,
-            String videoDuration,
+            @Nullable String videoDuration,
             long decodeTime,
             float ratio) {
         // If this assert triggers, it means that simultaneous requests have been sent for
         // decoding, which should not happen.
+        assumeNonNull(mProcessingRequest);
+        assumeNonNull(mProcessingRequest.mUri.getPath());
         assert mProcessingRequest.mUri.getPath().equals(filePath);
         long endRpcCall = SystemClock.elapsedRealtime();
         if (isVideo && bitmaps != null) {
@@ -557,6 +565,8 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
             // decoding requests will likely be dropped but note that there may be video requests
             // remaining (which don't require this connection to be open).
             Log.e(TAG, "Connection to decoder service unexpectedly terminated.");
+            assumeNonNull(mProcessingRequest);
+            assumeNonNull(mProcessingRequest.mUri.getPath());
             closeRequestWithError(mProcessingRequest.mUri.getPath());
             return;
         }
@@ -571,14 +581,17 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
             AssetFileDescriptor afd = null;
             try {
                 afd = mContentResolver.openAssetFileDescriptor(params.mUri, "r");
+                assumeNonNull(afd);
             } catch (Exception e) {
                 // FileNotFoundException, IllegalStateException, IllegalArgumentException.
                 Log.e(TAG, "Unable to obtain FileDescriptor", e);
+                assumeNonNull(params.mUri.getPath());
                 closeRequestWithError(params.mUri.getPath());
                 return;
             }
             pfd = afd.getParcelFileDescriptor();
             if (pfd == null) {
+                assumeNonNull(params.mUri.getPath());
                 closeRequestWithError(params.mUri.getPath());
                 return;
             }
@@ -594,6 +607,7 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
         } catch (Exception e) {
             // RemoteException, IOException.
             Log.e(TAG, "IPC Failed", e);
+            assumeNonNull(params.mUri.getPath());
             closeRequestWithError(params.mUri.getPath());
         }
         StreamUtil.closeQuietly(pfd);
@@ -612,6 +626,7 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
         Iterator it = mPendingRequests.iterator();
         while (it.hasNext()) {
             DecoderServiceParams param = (DecoderServiceParams) it.next();
+            assumeNonNull(param.mUri.getPath());
             if (param.mUri.getPath().equals(filePath)) it.remove();
         }
     }

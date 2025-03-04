@@ -38,10 +38,12 @@ class ChromeProfileRequestGenerator {
       ProfileReportGenerator::ExtensionsEnabledCallback callback);
 
  private:
-  void OnBrowserReportReady(
+  void OnReportsReady(
       std::unique_ptr<ReportRequest> request,
       ReportCallback callback,
-      std::unique_ptr<enterprise_management::BrowserReport> browser_report);
+      std::unique_ptr<enterprise_management::BrowserReport> browser_report,
+      std::unique_ptr<enterprise_management::ChromeUserProfileInfo>
+          profile_report);
 
   const base::FilePath profile_path_;
 

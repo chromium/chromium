@@ -4720,6 +4720,21 @@ enum WebFeature {
   kCSSVarFallbackCycle = 5334,
   kCSSAttrFallbackCycle = 5335,
   kCSSRainbowGradientPattern = 5336,
+  kWebAppManifestStartUrl = 5337,
+  kWebAppManifestDisplay = 5338,
+  kWebAppManifestIcons = 5339,
+  kWebAppManifestScreenshots = 5340,
+  kWebAppManifestScope = 5341,
+  kWebAppManifestLockScreen = 5342,
+  kWebAppManifestNoteTaking = 5343,
+  kWebAppManifestPermissionsPolicy = 5344,
+  kWebAppManifestPrefer_Related_Applications = 5345,
+  kWebAppManifestThemeColor = 5346,
+  kWebAppManifestBackgroundColor = 5347,
+  kWebAppManifestTranslations = 5348,
+  kWebAppManifestTabStrip = 5349,
+  kWebAppManifestVersion = 5350,
+  kWebAppManifestRelated_Applications = 5351,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

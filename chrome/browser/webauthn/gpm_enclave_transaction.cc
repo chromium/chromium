@@ -220,7 +220,14 @@ void GPMEnclaveTransaction::StartEnclaveTransaction(
           break;
         }
       }
-      CHECK(selected_credential);
+      if (!selected_credential) {
+        // The credential may not be available if it was deleted during the
+        // WebAuthn request. This can be done by the user or the website. This
+        // should not be normal, jump immediately to an error state.
+        FIDO_LOG(ERROR) << "Could not find credential";
+        delegate_->HandleEnclaveTransactionError();
+        return;
+      }
       if (base::FeatureList::IsEnabled(device::kWebAuthnUpdateLastUsed)) {
         passkey_model_->UpdatePasskeyTimestamp(
             selected_credential->credential_id(), base::Time::Now());

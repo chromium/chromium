@@ -7,7 +7,7 @@
 
 #include "cc/layers/texture_layer_client.h"
 #include "components/viz/common/resources/shared_image_format.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/opacity_mode.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -88,7 +88,7 @@ class PLATFORM_EXPORT ImageLayerBridge
 
   bool disposed_ = false;
   bool has_presented_since_last_set_image_ = false;
-  OpacityMode opacity_mode_ = kNonOpaque;
+  bool is_opaque_ = false;
 };
 
 }  // namespace blink

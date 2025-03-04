@@ -15,4 +15,5 @@ cb_path = cb_dir / "cb.py"
 if __name__ == '__main__':
   argv = sys.argv
   cmd = (cb_path, *argv[1:])
-  subprocess.run(cmd)
+  result = subprocess.run(cmd)
+  sys.exit(result.returncode)

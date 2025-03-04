@@ -262,6 +262,7 @@ class ComputedStyle final : public ComputedStyleBase {
   friend class css_longhand::LightingColor;
   friend class css_longhand::OutlineColor;
   friend class css_longhand::Resize;
+  friend class css_longhand::RowRuleColor;
   friend class css_longhand::StopColor;
   friend class css_longhand::Stroke;
   friend class css_longhand::TextDecorationColor;
@@ -985,6 +986,17 @@ class ComputedStyle final : public ComputedStyleBase {
     }
     return ColumnRuleWidth().GetLegacyValue() && !ColumnRuleIsTransparent() &&
            BorderStyleIsVisible(ColumnRuleStyle().GetLegacyValue());
+  }
+
+  bool RowRuleIsTransparent() const {
+    return RowRuleColor()
+        .GetLegacyValue()
+        .Resolve(GetCurrentColor(), UsedColorScheme())
+        .IsFullyTransparent();
+  }
+  bool HasRowRule() const {
+    return RowRuleWidth().GetLegacyValue() && !RowRuleIsTransparent() &&
+           BorderStyleIsVisible(RowRuleStyle().GetLegacyValue());
   }
 
   // Flex utility functions.

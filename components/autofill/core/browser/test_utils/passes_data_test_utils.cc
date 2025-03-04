@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/test_utils/passes_data_test_utils.h"
 
 #include "components/autofill/core/browser/data_model/passes/loyalty_card.h"
+#include "url/gurl.h"
 
 namespace autofill::test {
 
@@ -12,14 +13,14 @@ LoyaltyCard CreateLoyaltyCard() {
   return LoyaltyCard(
       /*loyalty_card_id=*/"loyalty_card_id_1",
       /*merchant_name=*/"Deutsche Bahn", /*program_name=*/"BahnBonus",
-      /*program_logo=*/"https://empty.url.com",
+      /*program_logo=*/GURL("https://empty.url.com"),
       /*unmasked_loyalty_card_suffix=*/"1234");
 }
 
 LoyaltyCard CreateLoyaltyCard2() {
   return LoyaltyCard(/*loyalty_card_id=*/"loyalty_card_id_2",
                      /*merchant_name=*/"Lidl", /*program_name=*/"CustomerCard",
-                     /*program_logo=*/"https://empty.url.com",
+                     /*program_logo=*/GURL("https://empty.url.com"),
                      /*unmasked_loyalty_card_suffix=*/"4321");
 }
 

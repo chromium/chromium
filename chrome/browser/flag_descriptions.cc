@@ -593,12 +593,6 @@ const char kAutofillEnableBuyNowPayLaterSyncingDescription[] =
     "When enabled, Chrome will sync user data related to buy now pay later.";
 #endif
 
-const char kAutofillEnableCardExpiredTextName[] =
-    "Enable 'expired' text for expired cards.";
-const char kAutofillEnableCardExpiredTextDescription[] =
-    "When enabled, cards that have expired will display 'expired' instead of "
-    "'expires' text.";
-
 const char kAutofillEnableCvcStorageAndFillingName[] =
     "Enable CVC storage and filling for payments autofill";
 const char kAutofillEnableCvcStorageAndFillingDescription[] =
@@ -2267,10 +2261,6 @@ const char kHttpsFirstModeIncognitoNewSettingsName[] =
 const char kHttpsFirstModeIncognitoNewSettingsDescription[] =
     "Enable new HTTPS-First Mode settings UI for HTTPS-First Mode in "
     "Incognito. Must also enable #https-first-mode-incognito.";
-
-const char kHttpsFirstModeV2Name[] = "HTTPS-First Mode V2";
-const char kHttpsFirstModeV2Description[] =
-    "Enable rearchitected version of HTTPS-First Mode.";
 
 const char kHttpsFirstModeV2ForEngagedSitesName[] =
     "HTTPS-First Mode V2 For Engaged Sites";
@@ -4519,12 +4509,6 @@ const char kFeedDiscoFeedEndpointDescription[] =
 const char kFeedDynamicColorsName[] = "Enable dynamic colors in the feed";
 const char kFeedDynamicColorsDescription[] =
     "Allows feed to fully respect dynamic colors if supported by the client.";
-
-const char kFetchGaiaHashOnSignInName[] =
-    "Enable Fetching Gaia credentials from SharedPreferences.";
-const char kFetchGaiaHashOnSignInDescription[] =
-    "Enable retrieving email, salt, and hashed password from SharedPreferences "
-    "for password reuse detection when a user signs in.";
 
 const char kFloatingSnackbarName[] = "FloatingSnackbar";
 const char kFloatingSnackbarDescription[] =
@@ -7495,13 +7479,6 @@ const char kDisableIdleSocketsCloseOnMemoryPressureDescription[] =
     "If enabled, idle sockets will not be closed when chrome detects memory "
     "pressure. This applies to web pages only and not to internal requests.";
 
-const char kDisableOfficeEditingComponentAppName[] =
-    "Disable Office Editing for Docs, Sheets & Slides";
-const char kDisableOfficeEditingComponentAppDescription[] =
-    "Disables Office Editing for Docs, Sheets & Slides component app so "
-    "handlers won't be registered, making it possible to install another "
-    "version for testing.";
-
 const char kLockedModeName[] = "Enable the Locked Mode API.";
 const char kLockedModeDescription[] =
     "Enabled the Locked Mode Web API which allows admin-allowlisted sites "
@@ -8020,6 +7997,12 @@ const char kEnableStandardBoundSessionPersistenceName[] =
 const char kEnableStandardBoundSessionPersistenceDescription[] =
     "Enables session persistence for the official version of "
     "Device Bound Session Credentials.";
+const char kEnableStandardBoundSessionRefreshQuotaName[] =
+    "Device Bound Session Credentials (Standard) Refresh Quota";
+const char kEnableStandardBoundSessionRefreshQuotaDescription[] =
+    "In production, standard Device Bound Session Credentials will feature a "
+    "maximum rate of refreshes. This flag disables that quota in order to "
+    "simplify manual testing.";
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 const char kEnableCertManagementV2UIName[] = "Cert Management V2 UI";

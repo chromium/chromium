@@ -31,6 +31,10 @@ class LensOverlayGen204Controller {
     // objects request was sent.
     kInvocationToInitialFullPageObjectsRequestSent = 1,
 
+    // From when the overlay was invoked to when the initial full page
+    // objects response was received.
+    kInvocationToInitialFullPageObjectsResponseReceived = 10,
+
     // From when the overlay was invoked to when the initial interaction
     // request was sent.
     kInvocationToInitialInteractionRequestSent = 2,

@@ -39,21 +39,11 @@ namespace blink {
 
 using DynamicRangeLimit = ::cc::PaintFlags::DynamicRangeLimitMixture;
 
-enum AlphaDisposition {
-  kPremultiplyAlpha,
-  kDontChangeAlpha,
-};
-
 enum InterpolationQuality {
   kInterpolationNone = static_cast<int>(cc::PaintFlags::FilterQuality::kNone),
   kInterpolationLow = static_cast<int>(cc::PaintFlags::FilterQuality::kLow),
   kInterpolationMedium =
       static_cast<int>(cc::PaintFlags::FilterQuality::kMedium),
-};
-
-enum OpacityMode {
-  kNonOpaque,
-  kOpaque,
 };
 
 enum AntiAliasingMode { kNotAntiAliased, kAntiAliased };

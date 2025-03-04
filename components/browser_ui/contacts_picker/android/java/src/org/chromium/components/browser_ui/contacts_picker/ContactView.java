@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.contacts_picker;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -17,6 +19,9 @@ import android.widget.TextView;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -26,6 +31,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.List;
 
 /** A container class for a view showing a contact in the Contacts Picker. */
+@NullMarked
 public class ContactView extends SelectableItemView<ContactDetails> {
     // Our context.
     private Context mContext;
@@ -54,10 +60,10 @@ public class ContactView extends SelectableItemView<ContactDetails> {
     private ImageView mStar;
 
     // The dialog manager to use to show contact details.
-    private ModalDialogManager mManager;
+    private @Nullable ModalDialogManager mManager;
 
     // The property model listing the contents of the contact details dialog.
-    private PropertyModel mModel;
+    private @Nullable PropertyModel mModel;
 
     /** Constructor for inflating from XML. */
     public ContactView(Context context, AttributeSet attrs) {
@@ -105,11 +111,13 @@ public class ContactView extends SelectableItemView<ContactDetails> {
 
     @Override
     public boolean onLongClick(View view) {
+        assumeNonNull(mCategoryView.getModalDialogManager());
         mManager = mCategoryView.getModalDialogManager();
         ModalDialogProperties.Controller controller =
                 new ModalDialogProperties.Controller() {
                     @Override
                     public void onClick(PropertyModel model, int buttonType) {
+                        assumeNonNull(mManager);
                         mManager.dismissDialog(model, buttonType);
                         mModel = null;
                         mManager = null;
@@ -158,13 +166,14 @@ public class ContactView extends SelectableItemView<ContactDetails> {
      * @param categoryView The category view showing the images. Used to access common functionality
      *     and sizes and retrieve the {@link SelectionDelegate}.
      */
+    @Initializer
     public void setCategoryView(PickerCategoryView categoryView) {
         mCategoryView = categoryView;
         mSelectionDelegate = mCategoryView.getSelectionDelegate();
         setSelectionDelegate(mSelectionDelegate);
     }
 
-    private void updateTextViewVisibilityAndContent(TextView view, String text) {
+    private void updateTextViewVisibilityAndContent(TextView view, @Nullable String text) {
         view.setVisibility(TextUtils.isEmpty(text) ? View.GONE : View.VISIBLE);
         view.setText(text);
     }
@@ -176,7 +185,8 @@ public class ContactView extends SelectableItemView<ContactDetails> {
      * @param contactDetails The details about the contact represented by this ContactView.
      * @param icon The icon to show for the contact (or null if not loaded yet).
      */
-    public void initialize(ContactDetails contactDetails, Bitmap icon) {
+    @Initializer
+    public void initialize(ContactDetails contactDetails, @Nullable Bitmap icon) {
         resetTile();
 
         mContactDetails = contactDetails;
@@ -218,7 +228,7 @@ public class ContactView extends SelectableItemView<ContactDetails> {
      *
      * @param icon The icon to display.
      */
-    public void setIconBitmap(Bitmap icon) {
+    public void setIconBitmap(@Nullable Bitmap icon) {
         Resources resources = mContext.getResources();
         RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory.create(resources, icon);
         drawable.setCircular(true);

@@ -525,7 +525,7 @@
           No thanks
       </message>
       <message name="IDS_IOS_AUTO_DELETION_IPH_TITLE" desc="The title of the half-sheet IPH that appears to prompt the user if they would like to enable the auto-deletion feature.">
-        Auto delete your downlaods
+        Auto delete your downloads
       </message>
       <message name="IDS_IOS_BACK_FORWARD_SWIPE_IPH" desc="The text for the full screen in-product help for side swipe on the current tab to navigate.">
         You can swipe the edge to go back or forward.
@@ -2127,7 +2127,7 @@ See your search engine’s instructions for deleting your search history, if app
        Choose what to do with the existing browsing data on this device, like passwords, history and more.
       </message>
       <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_DISABLED_DESCRIPTION" desc="Message displayed on the managed profile creation screen in a table view item telling the user that their existing browsing data will not be available in the managed profile, but will be available after they signout from it, or sign in with personal account.">
-       Existing browsing data won't be moved to you work account. You can still access it by signing out or adding a personal account.
+       Existing browsing data won't be moved to your work account. You can still access it by signing out or adding a personal account.
       </message>
       <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_LABEL" desc="Message displayed on the managed profile creation screen in a table view item asking the user if they want to keep their existing browsing data separate from the managed profile they will create.">
        Keep data separate?

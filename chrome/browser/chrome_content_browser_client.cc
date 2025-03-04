@@ -201,7 +201,7 @@
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/webapps/web_app_offline.h"
-#include "chrome/browser/webauthn/chrome_web_authentication_delegate.h"
+#include "chrome/browser/webauthn/chrome_web_authentication_delegate_base.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
@@ -778,6 +778,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
+#include "chrome/browser/webauthn/chrome_web_authentication_delegate.h"
 #endif
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -6947,6 +6948,24 @@ bool ChromeContentBrowserClient::IsSecurityLevelAcceptableForWebAuthn(
              switches::kIgnoreCertificateErrors);
 }
 
+content::WebAuthenticationDelegate*
+ChromeContentBrowserClient::GetWebAuthenticationDelegate() {
+  if (!web_authentication_delegate_) {
+#if BUILDFLAG(IS_ANDROID)
+    // Currently, Android is using only the common methods; therefore, the base
+    // class is instantiated here. If you need custom behavior, you need to
+    // introduce a class for Android that would inherit behavior from the base
+    // class.
+    web_authentication_delegate_ =
+        std::make_unique<ChromeWebAuthenticationDelegateBase>();
+#else
+    web_authentication_delegate_ =
+        std::make_unique<ChromeWebAuthenticationDelegate>();
+#endif  // !BUILDFLAG(IS_ANDROID)
+  }
+  return web_authentication_delegate_.get();
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void ChromeContentBrowserClient::CreateDeviceInfoService(
     content::RenderFrameHost* render_frame_host,
@@ -6975,15 +6994,6 @@ ChromeContentBrowserClient::GetDirectSocketsDelegate() {
     direct_sockets_delegate_ = std::make_unique<ChromeDirectSocketsDelegate>();
   }
   return direct_sockets_delegate_.get();
-}
-
-content::WebAuthenticationDelegate*
-ChromeContentBrowserClient::GetWebAuthenticationDelegate() {
-  if (!web_authentication_delegate_) {
-    web_authentication_delegate_ =
-        std::make_unique<ChromeWebAuthenticationDelegate>();
-  }
-  return web_authentication_delegate_.get();
 }
 
 std::unique_ptr<content::AuthenticatorRequestClientDelegate>

@@ -92,6 +92,7 @@ enum SearchEngineType {
   SEARCH_ENGINE_STARTER_PACK_GEMINI = 73,
   SEARCH_ENGINE_LILO = 74,
   SEARCH_ENGINE_STARTPAGE = 75,
+  SEARCH_ENGINE_STARTER_PACK_PAGE = 76,
 
   SEARCH_ENGINE_MAX  // Bounding value needed for UMA histogram macro.
 };
@@ -106,6 +107,7 @@ enum BuiltinEngineType {
   KEYWORD_MODE_STARTER_PACK_HISTORY = 3,
   KEYWORD_MODE_STARTER_PACK_TABS = 4,
   KEYWORD_MODE_STARTER_PACK_GEMINI = 5,
+  KEYWORD_MODE_STARTER_PACK_PAGE = 6,
 
   KEYWORD_MODE_ENGINE_TYPE_MAX  // Bounding value needed for UMA histogram
                                 // macro.

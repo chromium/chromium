@@ -556,14 +556,11 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
     Add(IDR_ECHO_MANIFEST,
         base::FilePath(FILE_PATH_LITERAL("/usr/share/chromeos-assets/echo")));
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    if (!base::FeatureList::IsEnabled(
-            chromeos::features::kDisableOfficeEditingComponentApp)) {
-      AddComponentFromDirWithManifestFilename(
-          base::FilePath("/usr/share/chromeos-assets/quickoffice"),
-          extension_misc::kQuickOfficeComponentExtensionId,
-          extensions::kManifestFilename, extensions::kManifestFilename,
-          base::DoNothing());
-    }
+    AddComponentFromDirWithManifestFilename(
+        base::FilePath("/usr/share/chromeos-assets/quickoffice"),
+        extension_misc::kQuickOfficeComponentExtensionId,
+        extensions::kManifestFilename, extensions::kManifestFilename,
+        base::DoNothing());
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

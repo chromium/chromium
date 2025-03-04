@@ -7,6 +7,7 @@
 
 // Include heap_vector.h to also make general VectorTraits available.
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/utils.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator_impl.h"
@@ -15,30 +16,33 @@
 
 namespace blink {
 
-template <typename T>
-class HeapDeque final : public GarbageCollected<HeapDeque<T>>,
-                        public Deque<T, 0, HeapAllocator> {
-  DISALLOW_NEW();
-
+template <internal::HeapCollectionType CollectionType, typename T>
+class BasicHeapDeque final
+    : public std::conditional_t<
+          CollectionType == internal::HeapCollectionType::kGCed,
+          GarbageCollected<BasicHeapDeque<CollectionType, T>>,
+          internal::DisallowNewBaseForHeapCollections>,
+      public Deque<T, 0, HeapAllocator> {
  public:
-  HeapDeque() = default;
+  BasicHeapDeque() = default;
 
-  explicit HeapDeque(wtf_size_t size) : Deque<T, 0, HeapAllocator>(size) {}
+  explicit BasicHeapDeque(wtf_size_t size) : Deque<T, 0, HeapAllocator>(size) {}
 
-  HeapDeque(wtf_size_t size, const T& val)
+  BasicHeapDeque(wtf_size_t size, const T& val)
       : Deque<T, 0, HeapAllocator>(size, val) {}
 
-  HeapDeque(const HeapDeque<T>& other) : Deque<T, 0, HeapAllocator>(other) {}
+  BasicHeapDeque(const BasicHeapDeque<CollectionType, T>& other)
+      : Deque<T, 0, HeapAllocator>(other) {}
 
-  HeapDeque& operator=(const HeapDeque& other) {
+  BasicHeapDeque& operator=(const BasicHeapDeque& other) {
     Deque<T, 0, HeapAllocator>::operator=(other);
     return *this;
   }
 
-  HeapDeque(HeapDeque&& other) noexcept
+  BasicHeapDeque(BasicHeapDeque&& other) noexcept
       : Deque<T, 0, HeapAllocator>(std::move(other)) {}
 
-  HeapDeque& operator=(HeapDeque&& other) noexcept {
+  BasicHeapDeque& operator=(BasicHeapDeque&& other) noexcept {
     Deque<T, 0, HeapAllocator>::operator=(std::move(other));
     return *this;
   }
@@ -51,17 +55,33 @@ class HeapDeque final : public GarbageCollected<HeapDeque<T>>,
   struct TypeConstraints {
     constexpr TypeConstraints() {
       static_assert(WTF::IsMemberType<T>::value,
-                    "HeapDeque supports only Member.");
-      static_assert(std::is_trivially_destructible_v<HeapDeque>,
-                    "HeapDeque must be trivially destructible.");
+                    "BasicHeapDeque supports only Member.");
+      static_assert(std::is_trivially_destructible_v<BasicHeapDeque>,
+                    "BasicHeapDeque must be trivially destructible.");
       static_assert(
           WTF::IsTraceable<T>::value,
-          "For vectors without traceable elements, use Deque<> instead "
+          "For deques without traceable elements, use Deque<> instead "
           "of HeapDeque<>");
     }
   };
   NO_UNIQUE_ADDRESS TypeConstraints type_constraints_;
 };
+
+// On-stack for in-field version of WTF::Deque for referring to GarbageCollected
+// or DISALLOW_NEW() objects with Trace() methods.
+template <typename T>
+using HeapDeque = BasicHeapDeque<internal::HeapCollectionType::kDisallowNew, T>;
+
+static_assert(WTF::IsDisallowNew<HeapDeque<int>>);
+ASSERT_SIZE(Deque<int>, HeapDeque<int>);
+
+// GCed version of WTF::Deque for referring to GarbageCollected or
+// DISALLOW_NEW() objects with Trace() methods.
+template <typename T>
+using GCedHeapDeque = BasicHeapDeque<internal::HeapCollectionType::kGCed, T>;
+
+static_assert(!WTF::IsDisallowNew<GCedHeapDeque<int>>);
+ASSERT_SIZE(Deque<int>, GCedHeapDeque<int>);
 
 }  // namespace blink
 

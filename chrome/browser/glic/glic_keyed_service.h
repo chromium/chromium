@@ -15,7 +15,6 @@
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_page_handler.h"
-#include "chrome/browser/glic/glic_synthetic_trial_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class BrowserWindowInterface;
@@ -91,16 +90,10 @@ class GlicKeyedService : public KeyedService {
   void ResizePanel(const gfx::Size& size,
                    base::TimeDelta duration,
                    base::OnceClosure callback);
-  void ShowProfilePicker();
   void SetPanelDraggableAreas(const std::vector<gfx::Rect>& draggable_areas);
   void SetContextAccessIndicator(bool show);
   void NotifyWindowIntentToShow();
 
-  // Accessor for the GlicSyntheticTrialManager singleton. This exists as a
-  // singleton so that it may be shared across multiple profiles.
-  raw_ptr<GlicSyntheticTrialManager> synthetic_trial_manager() {
-    return GlicSyntheticTrialManager::GetInstance();
-  }
   // Callback for changes to focused tab data.
   using FocusedTabChangedCallback =
       base::RepeatingCallback<void(FocusedTabData)>;
@@ -159,17 +152,12 @@ class GlicKeyedService : public KeyedService {
   virtual void TryPreload();
   void Reload();
 
-  GlicProfileManager* GetProfileManagerForTesting() { return profile_manager_; }
-
   Profile* profile() const { return profile_; }
 
   base::WeakPtr<GlicKeyedService> GetWeakPtr();
 
  private:
   GlicPageHandler* GetPageHandler(const content::WebContents* webui_contents);
-
-  // Callback from ProfilePicker::Show().
-  void DidSelectProfile(Profile* profile);
 
   // List of callbacks to be notified when the client requests a change to the
   // context access indicator status.

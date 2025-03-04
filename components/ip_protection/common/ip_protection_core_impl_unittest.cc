@@ -50,11 +50,6 @@ constexpr char kMdlMatchesTimeHistogram[] =
 constexpr char kMountainViewGeoId[] = "US,US-CA,MOUNTAIN VIEW";
 constexpr char kSunnyvaleGeoId[] = "US,US-CA,SUNNYVALE";
 
-constexpr bool kEnableTokenCacheByGeo = true;
-constexpr bool kDisableTokenCacheByGeo = false;
-constexpr bool kEnableSplitMdl = true;
-constexpr bool kDisableSplitMdl = false;
-
 class MockIpProtectionTokenManager : public IpProtectionTokenManager {
  public:
   bool IsAuthTokenAvailable() override {
@@ -147,7 +142,10 @@ class IpProtectionCoreImplTest : public testing::Test {
  protected:
   IpProtectionCoreImplTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    SetFeatureParams(kEnableTokenCacheByGeo, kEnableSplitMdl);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        network::features::kMaskedDomainList,
+        {{network::features::kSplitMaskedDomainList.name,
+          base::ToString(true)}});
   }
 
   std::unique_ptr<IpProtectionCoreImpl> MakeCore(
@@ -197,23 +195,6 @@ class IpProtectionCoreImplTest : public testing::Test {
     return net::ProxyChain::ForIpProtection(servers);
   }
 
-  void SetFeatureParams(bool enable_token_cache_by_geo, bool enable_split_mdl) {
-    scoped_feature_list_.Reset();
-
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        // IP Protection feature and params.
-        {base::test::FeatureRefAndParams{
-             net::features::kEnableIpProtectionProxy,
-             {{net::features::kIpPrivacyCacheTokensByGeo.name,
-               base::ToString(enable_token_cache_by_geo)}}},
-         // MDL feature and params.
-         base::test::FeatureRefAndParams{
-             network::features::kMaskedDomainList,
-             {{network::features::kSplitMaskedDomainList.name,
-               base::ToString(enable_split_mdl)}}}},
-        {/*disabled_features=*/});
-  }
-
   ContentSettingsForOneType CreateSetting(const std::string& first_party_url,
                                           ContentSetting setting) {
     content_settings::RuleMetaData metadata;
@@ -233,7 +214,7 @@ class IpProtectionCoreImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
- private:
+ protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -246,7 +227,7 @@ TEST_F(IpProtectionCoreImplTest, TrackingProtectionExceptionAddedAndRetrieved) {
   masked_domain_list_manager.UpdateMaskedDomainList(mdl,
                                                     /*exclusion_list=*/{});
   auto ip_protection_core =
-      MakeCore(&masked_domain_list_manager, /*use_regular_mdl=*/true);
+      MakeCore(&masked_domain_list_manager, /*ip_protection_incognito=*/true);
 
   EXPECT_FALSE(ip_protection_core->HasTrackingProtectionException(GURL(kUrl)));
 
@@ -602,49 +583,6 @@ TEST_F(IpProtectionCoreImplTest,
   EXPECT_FALSE(refresh_requested);
 }
 
-// When token caching by geo is disabled, `GeoObserved` has no impact.
-TEST_F(IpProtectionCoreImplTest, GeoObservedTokenCachingByGeoDisabledNoImpact) {
-  SetFeatureParams(kDisableTokenCacheByGeo, kEnableSplitMdl);
-
-  // Old geo used to set current geo in both the proxy list manager and token
-  // cache manager.
-  std::string old_geo_id = "US,US-CA,MOUNTAIN VIEW";
-
-  // Set up `IppTokenManager` to have an "old geo"
-  auto ipp_token_manager = std::make_unique<MockIpProtectionTokenManager>();
-  ipp_token_manager->SetCurrentGeo(old_geo_id);
-
-  // Set up IppProxyConfigManager to have a "old" geo.
-  auto ipp_proxy_config_manager =
-      std::make_unique<MockIpProtectionProxyConfigManager>();
-  bool refresh_requested = false;
-  ipp_proxy_config_manager->SetOnRequestRefreshProxyList(
-      base::BindLambdaForTesting([&]() { refresh_requested = true; }),
-      old_geo_id);
-  ipp_proxy_config_manager->SetProxyList({MakeChain({"a-proxy"})});
-  ipp_proxy_config_manager->SetCurrentGeo(old_geo_id);
-
-  std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>> managers;
-  managers.insert({ProxyLayer::kProxyA, std::move(ipp_token_manager)});
-  auto ip_protection_core =
-      MakeCore(std::move(ipp_proxy_config_manager), std::move(managers));
-
-  // Simulate a new geo signal that is non-empty. In theory this should cause
-  // both the token cache manager and proxy list manager to set the new geo. But
-  // the disabled experiment means this is short circuited.
-  ip_protection_core->GeoObserved("US,US-CA,SUNNYVALE");
-
-  // Both should still contain the old geo id.
-  EXPECT_EQ(ip_protection_core
-                ->GetIpProtectionTokenManagerForTesting(ProxyLayer::kProxyA)
-                ->CurrentGeo(),
-            old_geo_id);
-
-  EXPECT_EQ(ip_protection_core->GetIpProtectionProxyConfigManagerForTesting()
-                ->CurrentGeo(),
-            old_geo_id);
-}
-
 // Simulates a geo change detected in the IppTokenManager.
 TEST_F(IpProtectionCoreImplTest, GeoChangeObservedInIppTokenManager) {
   // Set up `IppTokenManager` to have an "new geo"
@@ -748,8 +686,12 @@ TEST_F(IpProtectionCoreImplTest,
 TEST_F(
     IpProtectionCoreImplTest,
     RequestShouldBeProxied_SplitMdlDisabled_RegularAndIncognitoMatchDefault) {
-  // Only the split MDL feature is disabled.
-  SetFeatureParams(kEnableTokenCacheByGeo, kDisableSplitMdl);
+  // Disable the split MDL feature.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      network::features::kMaskedDomainList,
+      {{network::features::kSplitMaskedDomainList.name,
+        base::ToString(false)}});
 
   // Create a MDL manager w/ a single entry that matches the default MDL type.
   std::string example_com = "example.com";

@@ -45,6 +45,10 @@ public class AuxiliarySearchUtils {
     static final BooleanCachedFeatureParam SKIP_SCHEMA_CHECK =
             ChromeFeatureList.sAndroidAppIntegrationWithFaviconSkipSchemaCheck;
 
+    @VisibleForTesting
+    static final BooleanCachedFeatureParam USE_SCHEMA_V1 =
+            ChromeFeatureList.sAndroidAppIntegrationMultiDataSourceUseSchemaV1;
+
     /** Convert a Bitmap instance to a byte array. */
     @Nullable
     public static byte[] bitmapToBytes(Bitmap bitmap) {

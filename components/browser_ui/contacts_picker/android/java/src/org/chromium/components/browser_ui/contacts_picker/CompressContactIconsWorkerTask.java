@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.contacts_picker;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ContentResolver;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -12,6 +14,7 @@ import android.graphics.drawable.Drawable;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.blink.mojom.ContactIconBlob;
+import org.chromium.build.annotations.NullMarked;
 
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
@@ -19,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 /** A worker task to retrieve images for contacts. */
+@NullMarked
 public class CompressContactIconsWorkerTask extends AsyncTask<Void> {
     private ContentResolver mContentResolver;
     private Set<String> mNoIconIds;
@@ -73,8 +77,11 @@ public class CompressContactIconsWorkerTask extends AsyncTask<Void> {
                 if (drawable != null && drawable instanceof BitmapDrawable) {
                     icon = ((BitmapDrawable) drawable).getBitmap();
                 } else if (!contact.isSelf()) {
+                    // Passing a null callback doesn't break as long as only doInBackground() is
+                    // called.
                     icon =
-                            new FetchIconWorkerTask(contact.getId(), mContentResolver, null)
+                            new FetchIconWorkerTask(
+                                            contact.getId(), mContentResolver, assumeNonNull(null))
                                     .doInBackground();
                 }
             }

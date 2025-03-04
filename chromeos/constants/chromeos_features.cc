@@ -97,13 +97,6 @@ BASE_FEATURE(kDisableIdleSocketsCloseOnMemoryPressure,
              "disable_idle_sockets_close_on_memory_pressure",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Disables "Office Editing for Docs, Sheets & Slides" component app so handlers
-// won't be registered, making it possible to install another version for
-// testing.
-BASE_FEATURE(kDisableOfficeEditingComponentApp,
-             "DisableOfficeEditingComponentApp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Disables translation services of the Quick Answers V2.
 BASE_FEATURE(kDisableQuickAnswersV2Translation,
              "DisableQuickAnswersV2Translation",

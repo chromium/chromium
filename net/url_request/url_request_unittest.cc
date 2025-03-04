@@ -13076,10 +13076,6 @@ TEST_F(URLRequestTest, SetIsolationInfoFromNak) {
 }
 
 TEST_F(URLRequestTest, CookiePartitionKey) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAncestorChainBitEnabledInPartitionedCookies);
-
   const url::Origin kOrigin = url::Origin::Create(GURL("http://foo.test/"));
   const url::Origin kCrossSiteOrigin =
       url::Origin::Create(GURL("http://b.test/"));

@@ -360,8 +360,7 @@ class IwaIwaKeyDistributionInfoProviderReadinessTest
         .WillOnce(ReturnRef(on_demand_updater()));
 
     EXPECT_CALL(on_demand_updater(),
-                OnDemandUpdate("iebhnlpddlcpcfpfalldikcoeakpeoah",
-                               Priority::BACKGROUND, _))
+                OnDemandUpdate("iebhnlpddlcpcfpfalldikcoeakpeoah", _, _))
         .WillOnce(WithoutArgs([&, load_delay] {
           ASSERT_TRUE(installer_);
           InstallComponentAsync(installer_, base::Version("2.0.0"),
@@ -373,8 +372,7 @@ class IwaIwaKeyDistributionInfoProviderReadinessTest
     EXPECT_CALL(component_updater(), GetOnDemandUpdater).Times(0);
 
     EXPECT_CALL(on_demand_updater(),
-                OnDemandUpdate("iebhnlpddlcpcfpfalldikcoeakpeoah",
-                               Priority::BACKGROUND, _))
+                OnDemandUpdate("iebhnlpddlcpcfpfalldikcoeakpeoah", _, _))
         .Times(0);
   }
 
@@ -383,8 +381,7 @@ class IwaIwaKeyDistributionInfoProviderReadinessTest
         .WillOnce(ReturnRef(on_demand_updater()));
 
     EXPECT_CALL(on_demand_updater(),
-                OnDemandUpdate("iebhnlpddlcpcfpfalldikcoeakpeoah",
-                               Priority::BACKGROUND, _));
+                OnDemandUpdate("iebhnlpddlcpcfpfalldikcoeakpeoah", _, _));
   }
 
  private:

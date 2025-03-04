@@ -4,9 +4,14 @@
 
 package org.chromium.components.browser_ui.photo_picker;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.net.Uri;
 
 import androidx.annotation.IntDef;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -14,6 +19,7 @@ import java.text.DateFormat;
 import java.util.Date;
 
 /** A class to keep track of the meta data associated with a an image in the photo picker. */
+@NullMarked
 public class PickerBitmap implements Comparable<PickerBitmap> {
     // The possible types of tiles involved in the viewer. Note that the values for PICTURE and
     // VIDEO matter, because they are used to prioritize still images over videos in the priority
@@ -28,7 +34,7 @@ public class PickerBitmap implements Comparable<PickerBitmap> {
     }
 
     // The URI of the bitmap to show.
-    private Uri mUri;
+    private @Nullable Uri mUri;
 
     // When the bitmap was last modified on disk.
     private long mLastModified;
@@ -43,7 +49,7 @@ public class PickerBitmap implements Comparable<PickerBitmap> {
      * @param lastModified When the bitmap was last modified on disk.
      * @param type The type of tile involved.
      */
-    public PickerBitmap(Uri uri, long lastModified, @TileTypes int type) {
+    public PickerBitmap(@Nullable Uri uri, long lastModified, @TileTypes int type) {
         // PICTURE must have a lower value than VIDEO, in order for the priority queue in
         // PickerCategoryView to prioritize still images ahead of video.
         assert TileTypes.PICTURE < TileTypes.VIDEO;
@@ -58,7 +64,7 @@ public class PickerBitmap implements Comparable<PickerBitmap> {
      *
      * @return The URI for this PickerBitmap object.
      */
-    public Uri getUri() {
+    public @Nullable Uri getUri() {
         return mUri;
     }
 
@@ -68,7 +74,9 @@ public class PickerBitmap implements Comparable<PickerBitmap> {
      * @return The filename (without the extension and path).
      */
     public String getFilenameWithoutExtension() {
+        assumeNonNull(mUri);
         String filePath = mUri.getPath();
+        assumeNonNull(filePath);
         int index = filePath.lastIndexOf("/");
         if (index == -1) return filePath;
         return filePath.substring(index + 1, filePath.length());

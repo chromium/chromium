@@ -23,6 +23,7 @@ class WhatsNewRegistry;
 namespace glic {
 class GlicBackgroundModeManager;
 class GlicProfileManager;
+class GlicSyntheticTrialManager;
 }  // namespace glic
 #endif
 
@@ -69,6 +70,10 @@ class GlobalFeatures {
   glic::GlicBackgroundModeManager* glic_background_mode_manager() {
     return glic_background_mode_manager_.get();
   }
+
+  glic::GlicSyntheticTrialManager* glic_synthetic_trial_manager() {
+    return synthetic_trial_manager_.get();
+  }
 #endif
 
  protected:
@@ -98,6 +103,7 @@ class GlobalFeatures {
   std::unique_ptr<glic::GlicProfileManager> glic_profile_manager_;
   std::unique_ptr<glic::GlicBackgroundModeManager>
       glic_background_mode_manager_;
+  std::unique_ptr<glic::GlicSyntheticTrialManager> synthetic_trial_manager_;
 #endif
 };
 

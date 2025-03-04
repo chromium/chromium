@@ -35,10 +35,8 @@ class CORE_EXPORT InterpolableFilter final : public InterpolableValue {
       double zoom,
       mojom::blink::ColorScheme color_scheme,
       const ui::ColorProvider* color_provider);
-  static InterpolableFilter* MaybeConvertCSSValue(
-      const CSSValue&,
-      mojom::blink::ColorScheme color_scheme,
-      const ui::ColorProvider* color_provider);
+  static InterpolableFilter* MaybeConvertCSSValue(const CSSValue&,
+                                                  const StyleResolverState*);
 
   // Create an InterpolableFilter representing the 'initial value for
   // interpolation' for the given OperationType.

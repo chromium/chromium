@@ -754,21 +754,6 @@
             ]
         }
     ],
-    "AppBoundDataReencrypt": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AppBoundDataReencrypt"
-                    ]
-                }
-            ]
-        }
-    ],
     "AppCloseRefreshClankStudy": [
         {
             "platforms": [
@@ -9989,21 +9974,6 @@
             ]
         }
     ],
-    "FetchGaiaHashOnSignIn": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FetchGaiaHashOnSignIn"
-                    ]
-                }
-            ]
-        }
-    ],
     "FetchLaterAPI": [
         {
             "platforms": [
@@ -13944,6 +13914,21 @@
             ]
         }
     ],
+    "MacPermanentThinController": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FullscreenPermanentThinController"
+                    ]
+                }
+            ]
+        }
+    ],
     "MacPlatformLocationProvider": [
         {
             "platforms": [
@@ -14343,6 +14328,29 @@
                     ],
                     "disable_features": [
                         "ReleaseResourceDecodedDataOnMemoryPressure"
+                    ]
+                }
+            ]
+        }
+    ],
+    "MemorySaverModeRenderTuning": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "available_memory_threshold_mb": "740"
+                    },
+                    "enable_features": [
+                        "MemorySaverModeRenderTuning"
                     ]
                 }
             ]
@@ -16748,24 +16756,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "Path2DPaintCache"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PdfCr23": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PdfCr23"
                     ]
                 }
             ]
@@ -23012,47 +23002,6 @@
                     "name": "Opt_In_Dogfood",
                     "enable_features": [
                         "DeleteStaleSessionCookiesOnStartup"
-                    ]
-                }
-            ]
-        }
-    ],
-    "StaleStorageCleanup": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DeleteOrphanLocalStorageOnStartup",
-                        "DeleteStaleLocalStorageOnStartup",
-                        "EvictOrphanQuotaStorage",
-                        "EvictStaleQuotaStorage"
-                    ]
-                },
-                {
-                    "name": "Auto_Dogfood",
-                    "enable_features": [
-                        "DeleteOrphanLocalStorageOnStartup",
-                        "DeleteStaleLocalStorageOnStartup",
-                        "EvictOrphanQuotaStorage",
-                        "EvictStaleQuotaStorage"
-                    ]
-                },
-                {
-                    "name": "Opt_In_Dogfood",
-                    "enable_features": [
-                        "DeleteOrphanLocalStorageOnStartup",
-                        "DeleteStaleLocalStorageOnStartup",
-                        "EvictOrphanQuotaStorage",
-                        "EvictStaleQuotaStorage"
                     ]
                 }
             ]

@@ -22,6 +22,7 @@
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -108,9 +109,14 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
   std::unique_ptr<StatusIconMenuModel> menu = CreateStatusIconMenu();
   context_menu_ = menu.get();
   status_icon_->SetContextMenu(std::move(menu));
+
+  BrowserList::AddObserver(this);
+  UpdateShowExitInContextMenu();
 }
 
 GlicStatusIcon::~GlicStatusIcon() {
+  BrowserList::RemoveObserver(this);
+
   context_menu_ = nullptr;
   if (status_icon_) {
 #if !BUILDFLAG(IS_LINUX)
@@ -172,6 +178,14 @@ void GlicStatusIcon::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   status_icon_->SetImage(GetIconForTheme(observed_theme));
 }
 
+void GlicStatusIcon::OnBrowserAdded(Browser* browser) {
+  UpdateShowExitInContextMenu();
+}
+
+void GlicStatusIcon::OnBrowserRemoved(Browser* browser) {
+  UpdateShowExitInContextMenu();
+}
+
 void GlicStatusIcon::UpdateHotkey(const ui::Accelerator& hotkey) {
   CHECK(context_menu_);
   context_menu_->SetAcceleratorForCommandId(IDC_GLIC_STATUS_ICON_MENU_SHOW,
@@ -181,6 +195,15 @@ void GlicStatusIcon::UpdateHotkey(const ui::Accelerator& hotkey) {
   CHECK(show_menu_item_index);
   context_menu_->SetForceShowAcceleratorForItemAt(show_menu_item_index.value(),
                                                   !hotkey.IsEmpty());
+}
+
+void GlicStatusIcon::UpdateShowExitInContextMenu() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  if (context_menu_) {
+    context_menu_->SetCommandIdVisible(IDC_GLIC_STATUS_ICON_MENU_EXIT,
+                                       BrowserList::GetInstance()->empty());
+  }
+#endif
 }
 
 std::unique_ptr<StatusIconMenuModel> GlicStatusIcon::CreateStatusIconMenu() {

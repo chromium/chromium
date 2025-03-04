@@ -404,8 +404,8 @@ TEST_F(IncrementalMarkingTest, HeapVectorEagerTracingStopsAtMember) {
 
 TEST_F(IncrementalMarkingTest, HeapDequePushBackMember) {
   WeakPersistent<LinkedObject> obj = MakeGarbageCollected<LinkedObject>();
-  HeapDeque<Member<LinkedObject>>* deq =
-      MakeGarbageCollected<HeapDeque<Member<LinkedObject>>>();
+  GCedHeapDeque<Member<LinkedObject>>* deq =
+      MakeGarbageCollected<GCedHeapDeque<Member<LinkedObject>>>();
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
   deq->push_back(obj);
@@ -415,8 +415,8 @@ TEST_F(IncrementalMarkingTest, HeapDequePushBackMember) {
 
 TEST_F(IncrementalMarkingTest, HeapDequePushFrontMember) {
   WeakPersistent<LinkedObject> obj = MakeGarbageCollected<LinkedObject>();
-  HeapDeque<Member<LinkedObject>>* deq =
-      MakeGarbageCollected<HeapDeque<Member<LinkedObject>>>();
+  GCedHeapDeque<Member<LinkedObject>>* deq =
+      MakeGarbageCollected<GCedHeapDeque<Member<LinkedObject>>>();
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
   deq->push_front(obj);
@@ -426,8 +426,8 @@ TEST_F(IncrementalMarkingTest, HeapDequePushFrontMember) {
 
 TEST_F(IncrementalMarkingTest, HeapDequeEmplaceBackMember) {
   WeakPersistent<LinkedObject> obj = MakeGarbageCollected<LinkedObject>();
-  HeapDeque<Member<LinkedObject>>* deq =
-      MakeGarbageCollected<HeapDeque<Member<LinkedObject>>>();
+  GCedHeapDeque<Member<LinkedObject>>* deq =
+      MakeGarbageCollected<GCedHeapDeque<Member<LinkedObject>>>();
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
   deq->emplace_back(obj);
@@ -437,8 +437,8 @@ TEST_F(IncrementalMarkingTest, HeapDequeEmplaceBackMember) {
 
 TEST_F(IncrementalMarkingTest, HeapDequeEmplaceFrontMember) {
   WeakPersistent<LinkedObject> obj = MakeGarbageCollected<LinkedObject>();
-  HeapDeque<Member<LinkedObject>>* deq =
-      MakeGarbageCollected<HeapDeque<Member<LinkedObject>>>();
+  GCedHeapDeque<Member<LinkedObject>>* deq =
+      MakeGarbageCollected<GCedHeapDeque<Member<LinkedObject>>>();
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
   deq->emplace_front(obj);
@@ -448,24 +448,24 @@ TEST_F(IncrementalMarkingTest, HeapDequeEmplaceFrontMember) {
 
 TEST_F(IncrementalMarkingTest, HeapDequeCopyMember) {
   WeakPersistent<LinkedObject> obj = MakeGarbageCollected<LinkedObject>();
-  HeapDeque<Member<LinkedObject>>* deq =
-      MakeGarbageCollected<HeapDeque<Member<LinkedObject>>>();
+  GCedHeapDeque<Member<LinkedObject>>* deq =
+      MakeGarbageCollected<GCedHeapDeque<Member<LinkedObject>>>();
   deq->push_back(obj);
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
-  *MakeGarbageCollected<HeapDeque<Member<LinkedObject>>>() = *deq;
+  *MakeGarbageCollected<GCedHeapDeque<Member<LinkedObject>>>() = *deq;
   driver.FinishGC();
   EXPECT_TRUE(obj);
 }
 
 TEST_F(IncrementalMarkingTest, HeapDequeCopyMemberInCtor) {
   WeakPersistent<LinkedObject> obj = MakeGarbageCollected<LinkedObject>();
-  HeapDeque<Member<LinkedObject>>* deq =
-      MakeGarbageCollected<HeapDeque<Member<LinkedObject>>>();
+  GCedHeapDeque<Member<LinkedObject>>* deq =
+      MakeGarbageCollected<GCedHeapDeque<Member<LinkedObject>>>();
   deq->push_back(obj);
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
-  MakeGarbageCollected<HeapDeque<Member<LinkedObject>>>(*deq);
+  MakeGarbageCollected<GCedHeapDeque<Member<LinkedObject>>>(*deq);
   driver.FinishGC();
   // Copy during object construction does not emit write barriers as
   // in-construction/on-stack objects would be found during conservative GC.
@@ -474,24 +474,25 @@ TEST_F(IncrementalMarkingTest, HeapDequeCopyMemberInCtor) {
 
 TEST_F(IncrementalMarkingTest, HeapDequeMoveMember) {
   WeakPersistent<LinkedObject> obj = MakeGarbageCollected<LinkedObject>();
-  HeapDeque<Member<LinkedObject>>* deq =
-      MakeGarbageCollected<HeapDeque<Member<LinkedObject>>>();
+  GCedHeapDeque<Member<LinkedObject>>* deq =
+      MakeGarbageCollected<GCedHeapDeque<Member<LinkedObject>>>();
   deq->push_back(obj);
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
-  *MakeGarbageCollected<HeapDeque<Member<LinkedObject>>>() = std::move(*deq);
+  *MakeGarbageCollected<GCedHeapDeque<Member<LinkedObject>>>() =
+      std::move(*deq);
   driver.FinishGC();
   EXPECT_TRUE(obj);
 }
 
 TEST_F(IncrementalMarkingTest, HeapDequeMoveMemberInCtor) {
   WeakPersistent<LinkedObject> obj = MakeGarbageCollected<LinkedObject>();
-  HeapDeque<Member<LinkedObject>>* deq =
-      MakeGarbageCollected<HeapDeque<Member<LinkedObject>>>();
+  GCedHeapDeque<Member<LinkedObject>>* deq =
+      MakeGarbageCollected<GCedHeapDeque<Member<LinkedObject>>>();
   deq->push_back(obj);
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
-  MakeGarbageCollected<HeapDeque<Member<LinkedObject>>>(std::move(*deq));
+  MakeGarbageCollected<GCedHeapDeque<Member<LinkedObject>>>(std::move(*deq));
   driver.FinishGC();
   // Move construction does not emit a write barrier.
   EXPECT_FALSE(obj);
@@ -500,15 +501,15 @@ TEST_F(IncrementalMarkingTest, HeapDequeMoveMemberInCtor) {
 TEST_F(IncrementalMarkingTest, HeapDequeSwapMember) {
   WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
-  HeapDeque<Member<LinkedObject>>* deq1 =
-      MakeGarbageCollected<HeapDeque<Member<LinkedObject>>>();
+  GCedHeapDeque<Member<LinkedObject>>* deq1 =
+      MakeGarbageCollected<GCedHeapDeque<Member<LinkedObject>>>();
   deq1->push_back(obj1);
-  HeapDeque<Member<LinkedObject>>* deq2 =
-      MakeGarbageCollected<HeapDeque<Member<LinkedObject>>>();
+  GCedHeapDeque<Member<LinkedObject>>* deq2 =
+      MakeGarbageCollected<GCedHeapDeque<Member<LinkedObject>>>();
   deq2->push_back(obj2);
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
-  std::swap(*deq1, *deq2);
+  deq1->Swap(*deq2);
   driver.FinishGC();
   EXPECT_TRUE(obj1);
   EXPECT_TRUE(obj2);

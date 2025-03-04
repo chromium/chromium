@@ -1145,6 +1145,10 @@ bool IsStarterPackExpansionEnabled() {
 bool IsStarterPackIPHEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kStarterPackIPH);
 }
+
+bool IsStarterPackPageEnabled() {
+  return base::FeatureList::IsEnabled(omnibox::kStarterPackPage);
+}
 // <- Site Search Starter Pack
 }  // namespace OmniboxFieldTrial
 

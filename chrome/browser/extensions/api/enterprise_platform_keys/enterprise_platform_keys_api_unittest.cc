@@ -29,7 +29,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "extensions/browser/api_test_utils.h"
-#include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -139,10 +138,8 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
       ExtensionFunction* function,
       base::Value::List args,
       content::BrowserContext* browser_context) {
-    auto dispatcher =
-        std::make_unique<ExtensionFunctionDispatcher>(browser_context);
     api_test_utils::RunFunction(
-        function, std::move(args), std::move(dispatcher),
+        function, std::move(args), browser_context,
         extensions::api_test_utils::FunctionMode::kNone);
     EXPECT_EQ(ExtensionFunction::FAILED, *function->response_type());
     return function->GetError();
@@ -157,10 +154,8 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
     scoped_refptr<ExtensionFunction> function_owner(function);
     // Without a callback the function will not generate a result.
     function->set_has_callback(true);
-    auto dispatcher =
-        std::make_unique<ExtensionFunctionDispatcher>(browser_context);
     api_test_utils::RunFunction(
-        function, std::move(args), std::move(dispatcher),
+        function, std::move(args), browser_context,
         extensions::api_test_utils::FunctionMode::kNone);
     EXPECT_TRUE(function->GetError().empty())
         << "Unexpected error: " << function->GetError();
@@ -261,9 +256,8 @@ TEST_F(EPKChallengeMachineKeyTest, KeyNotRegisteredByDefault) {
   EXPECT_CALL(*mock_tpm_challenge_key_, BuildResponse)
       .WillOnce(Invoke(FakeRunCheckNotRegister));
 
-  auto dispatcher = std::make_unique<ExtensionFunctionDispatcher>(profile());
   EXPECT_TRUE(api_test_utils::RunFunction(
-      func_.get(), CreateArgs(), std::move(dispatcher),
+      func_.get(), CreateArgs(), profile(),
       extensions::api_test_utils::FunctionMode::kNone));
 }
 

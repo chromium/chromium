@@ -13,5 +13,8 @@ specific_include_rules = {
     ],
     "performance_mark_test.cc": [
         "+components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h",
-    ]
+    ],
+    "animation_frame_timing_info.h": [
+        "+components/viz/common/frame_sinks/begin_frame_args.h",
+    ],
 }

@@ -7462,8 +7462,12 @@ interface RestrictionTarget
 interface SVGAElement : SVGGraphicsElement
     attribute @@toStringTag
     getter href
+    getter rel
+    getter relList
     getter target
     method constructor
+    setter rel
+    setter relList
 interface SVGAngle
     attribute @@toStringTag
     attribute SVG_ANGLETYPE_DEG

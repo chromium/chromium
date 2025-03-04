@@ -328,6 +328,12 @@
   <message name="IDS_SEARCH_ENGINES_STARTER_PACK_GEMINI_KEYWORD" desc = "The keyword required to trigger Ask Gemini in keyword mode. This will be prepended with an '@'.">
     Gemini
   </message>
+  <message name="IDS_SEARCH_ENGINES_STARTER_PACK_PAGE_NAME" desc = "The name of the search engine to search with the current page context as it appears on chrome://settings/searchEngines." translateable="false">
+    Page
+  </message>
+  <message name="IDS_SEARCH_ENGINES_STARTER_PACK_PAGE_KEYWORD" desc = "The keyword required to trigger page context search in keyword mode. This will be prepended with an '@'." translateable="false">
+    Page
+  </message>
   <message name="IDS_OMNIBOX_INSTANT_KEYWORD_ASK_TEXT" desc="Text shown in an omnibox suggestion ready for instant keyword search when the destination is suitable for asking. For example, starter pack suggestions like @gemini will Ask Gemini.">
     <ph name="KEYWORD">$1<ex>@gemini</ex></ph> - Ask <ph name="KEYWORD_SHORT_NAME">$2<ex>Gemini</ex></ph>
   </message>

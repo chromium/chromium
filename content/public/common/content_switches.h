@@ -43,7 +43,6 @@ CONTENT_EXPORT extern const char
 CONTENT_EXPORT extern const char kDisableBackgroundTimerThrottling[];
 CONTENT_EXPORT extern const char kDisableBackForwardCache[];
 CONTENT_EXPORT extern const char kDisableBlinkFeatures[];
-CONTENT_EXPORT extern const char kDisableDatabases[];
 CONTENT_EXPORT extern const char kDisableDisplayList2dCanvas[];
 extern const char kDisableDomainBlockingFor3DAPIs[];
 CONTENT_EXPORT extern const char kDisableInProcessStackTraces[];

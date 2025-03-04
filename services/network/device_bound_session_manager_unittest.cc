@@ -91,7 +91,7 @@ class DeviceBoundSessionManagerTest : public ::testing::Test {
 TEST_F(DeviceBoundSessionManagerTest, ObserverNotifiesChangeOnlyOnSite) {
   ScopedTestRegistrationFetcher scoped_fetcher =
       ScopedTestRegistrationFetcher::CreateWithSuccess(
-          "SessionId", "https://example.com/refresh", "example.com");
+          "SessionId", "https://example.com/refresh", "https://example.com");
 
   GURL url("https://example.com");
   net::SchemefulSite site(url);

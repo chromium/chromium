@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/apple/mobile_config.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//media/media_options.gni")
@@ -189,16 +190,20 @@ component("capture_lib") {
       "video/apple/pixel_buffer_transferer.h",
       "video/apple/sample_buffer_transformer.cc",
       "video/apple/sample_buffer_transformer.h",
-      "video/apple/video_capture_device_apple.h",
-      "video/apple/video_capture_device_apple.mm",
-      "video/apple/video_capture_device_avfoundation.h",
-      "video/apple/video_capture_device_avfoundation.mm",
-      "video/apple/video_capture_device_avfoundation_utils.h",
-      "video/apple/video_capture_device_avfoundation_utils.mm",
-      "video/apple/video_capture_device_factory_apple.h",
-      "video/apple/video_capture_device_factory_apple.mm",
-      "video/apple/video_capture_device_frame_receiver.h",
     ]
+    if (target_platform != "tvos") {
+      sources += [
+        "video/apple/video_capture_device_apple.h",
+        "video/apple/video_capture_device_apple.mm",
+        "video/apple/video_capture_device_avfoundation.h",
+        "video/apple/video_capture_device_avfoundation.mm",
+        "video/apple/video_capture_device_avfoundation_utils.h",
+        "video/apple/video_capture_device_avfoundation_utils.mm",
+        "video/apple/video_capture_device_factory_apple.h",
+        "video/apple/video_capture_device_factory_apple.mm",
+        "video/apple/video_capture_device_frame_receiver.h",
+      ]
+    }
     deps += [ "//components/crash/core/common:crash_key" ]
     frameworks = [
       "AVFoundation.framework",

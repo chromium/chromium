@@ -111,8 +111,7 @@ BaseInterpolableColor* CSSColorInterpolationType::CreateBaseInterpolableColor(
 
 InterpolableColor* CSSColorInterpolationType::MaybeCreateInterpolableColor(
     const CSSValue& value,
-    mojom::blink::ColorScheme color_scheme,
-    const ui::ColorProvider* color_provider) {
+    const StyleResolverState* state) {
   if (auto* color_value = DynamicTo<cssvalue::CSSColor>(value)) {
     return CreateInterpolableColor(color_value->Value());
   }
@@ -125,6 +124,13 @@ InterpolableColor* CSSColorInterpolationType::MaybeCreateInterpolableColor(
   // animation.
   if (!StyleColor::IsColorKeyword(identifier_value->GetValueID()))
     return nullptr;
+
+  mojom::blink::ColorScheme color_scheme =
+      state ? state->StyleBuilder().UsedColorScheme()
+            : mojom::blink::ColorScheme::kLight;
+  const ui::ColorProvider* color_provider =
+      state ? state->GetDocument().GetColorProviderForPainting(color_scheme)
+            : nullptr;
   return CreateInterpolableColor(identifier_value->GetValueID(), color_scheme,
                                  color_provider);
 }
@@ -255,14 +261,8 @@ InterpolationValue CSSColorInterpolationType::MaybeConvertValue(
     }
   }
 
-  mojom::blink::ColorScheme color_scheme =
-      state ? state->StyleBuilder().UsedColorScheme()
-            : mojom::blink::ColorScheme::kLight;
-  const ui::ColorProvider* color_provider =
-      state ? state->GetDocument().GetColorProviderForPainting(color_scheme)
-            : nullptr;
   InterpolableColor* interpolable_color =
-      MaybeCreateInterpolableColor(value, color_scheme, color_provider);
+      MaybeCreateInterpolableColor(value, state);
   if (!interpolable_color) {
     return nullptr;
   }

@@ -1028,11 +1028,6 @@ void CookieMonster::OnLoaded(
                                 blocked_due_to_global_op, base::Milliseconds(1),
                                 base::Minutes(1), 50);
 
-  base::UmaHistogramBoolean(
-      "Cookie.Partitioned.AncestorChainBitFeatureEnabled",
-      base::FeatureList::IsEnabled(
-          features::kAncestorChainBitEnabledInPartitionedCookies));
-
   // Invoke the task queue of cookie request.
   InvokeQueue();
 }
@@ -1503,6 +1498,9 @@ void CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
 
   // Check every cookie matching this domain key for equivalence.
   CookieMapItPair range_its = cookie_map->equal_range(key);
+  const auto cookie_being_set_key = cookie_being_set.UniqueKey();
+  const auto cookie_being_set_scope_semantics =
+      GetScopeSemanticsForCookieDomain(cookie_being_set.Domain());
   for (auto cur_it = range_its.first; cur_it != range_its.second; ++cur_it) {
     CanonicalCookie* cur_existing_cookie = cur_it->second.get();
 
@@ -1535,9 +1533,8 @@ void CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
     }
     // If cookie's domain is in legacy mode, check to make sure we are not
     // setting an aliasing cookie.
-    if (cookie_being_set.IsEquivalent(*cur_existing_cookie) ||
-        (GetScopeSemanticsForCookieDomain(cookie_being_set.Domain()) ==
-             CookieScopeSemantics::LEGACY &&
+    if (cookie_being_set_key == cur_existing_cookie->UniqueKey() ||
+        (cookie_being_set_scope_semantics == CookieScopeSemantics::LEGACY &&
          cookie_being_set.LegacyUniqueKey() ==
              cur_existing_cookie->LegacyUniqueKey())) {
       // We should never have more than one equivalent cookie, since they should

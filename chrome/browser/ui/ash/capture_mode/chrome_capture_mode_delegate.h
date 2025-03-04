@@ -116,6 +116,9 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   std::unique_ptr<ash::AshWebView> CreateSearchResultsView() const override;
   void DetectTextInImage(const SkBitmap& image,
                          ash::OnTextDetectionComplete callback) override;
+  void GetPrimaryAccountAccessToken(
+      base::RepeatingCallback<void(const std::string& access_token)> callback)
+      override;
   void SendRegionSearch(const SkBitmap& image,
                         const gfx::Rect& region,
                         ash::OnSearchUrlFetchedCallback search_callback,
@@ -172,6 +175,11 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   // Releases the OCR handle and resets pending OCR requests.
   void ResetOcr();
 
+  void PrimaryAccountAccessTokenAvailable(
+      base::RepeatingCallback<void(const std::string& access_token)> callback,
+      GoogleServiceAuthError error,
+      signin::AccessTokenInfo access_token_info);
+
   // Used to temporarily disable capture mode in certain cases for which neither
   // a device policy, nor DLP will be triggered. For example, Some extension
   // APIs can request that a tab operate in a locked fullscreen mode, and in
@@ -217,6 +225,9 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
+      primary_account_token_fetcher_;
 
   std::unique_ptr<LensOverlayQueryController> lens_overlay_query_controller_;
 

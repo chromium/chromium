@@ -182,6 +182,7 @@ class CORE_EXPORT MouseEventManager final
   void ClearDragDataTransfer();
   DataTransfer* CreateDraggingDataTransfer() const;
 
+  void HandleRemoveSubtree(Node& node, bool inclusive);
   void ResetDragSource();
   bool HoverStateDirty();
 

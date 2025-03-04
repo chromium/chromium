@@ -25,10 +25,6 @@ class PrivacySandboxNoticeService : public KeyedService {
   void Shutdown() override;
 
  private:
-  // TODO(crbug.com/333406690): Remove this once the old privacy sandbox prefs
-  // are migrated to the new data model.
-  void MigratePrivacySandboxPrefsToDataModel();
-
   raw_ptr<PrefService> pref_service_;
   std::unique_ptr<PrivacySandboxNoticeStorage> notice_storage_;
 };

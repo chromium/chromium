@@ -130,10 +130,17 @@ TEST_F(ChromeLabsButtonTest, ShouldButtonShowTest) {
 }
 
 TEST_F(ChromeLabsButtonTest, DotIndicatorTest) {
-  // TODO(crbug.com/354207075): Verify the dot indicator is hidden when the
-  // bubble is shown. The older implementation has been removed since it no
-  // longer works, but want to keep the test as a reminder to write a new one
-  // when the bug is fixed.
+  views::Button* labs_button = browser_view()->toolbar()->GetChromeLabsButton();
+  ChromeLabsCoordinator* coordinator =
+      browser_view()->browser()->GetFeatures().chrome_labs_coordinator();
+  coordinator->MaybeInstallDotIndicator();
+  views::DotIndicator* dot_indicator = coordinator->GetDotIndicator();
+  EXPECT_TRUE(dot_indicator->GetVisible());
+  ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                   ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi test_api(labs_button);
+  test_api.NotifyClick(e);
+  EXPECT_FALSE(dot_indicator->GetVisible());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -1357,21 +1357,21 @@ void BoxFragmentPainter::PaintGridGaps(
   Color rule_color;
   EBorderStyle rule_style;
   LayoutUnit rule_thickness;
+  // TODO(crbug.com/357648037): We are currently only painting gaps with a
+  // single color, but we should update this to paint with all values
+  // potentially set by the author.
   if (track_direction == kForColumns) {
-    // TODO(crbug.com/357648037): We are currently only painting gaps with a
-    // single color, but we should update this to paint with all values
-    // potentially set by the author.
     rule_color =
         LayoutObject::ResolveColor(style, GetCSSPropertyColumnRuleColor());
     rule_style = ComputedStyle::CollapsedBorderStyle(
         style.ColumnRuleStyle().GetLegacyValue());
     rule_thickness = LayoutUnit(style.ColumnRuleWidth().GetLegacyValue());
   } else {
-    // TODO(crbug.com/357648037): Using hard coded values. These values should
-    // be retrieved from the style engine once row rules are implemented.
-    rule_color = Color(0, 128, 0);
-    rule_style = EBorderStyle::kSolid;
-    rule_thickness = LayoutUnit();
+    rule_color =
+        LayoutObject::ResolveColor(style, GetCSSPropertyRowRuleColor());
+    rule_style = ComputedStyle::CollapsedBorderStyle(
+        style.RowRuleStyle().GetLegacyValue());
+    rule_thickness = LayoutUnit(style.RowRuleWidth().GetLegacyValue());
   }
 
   const PhysicalRect local_rect = box_fragment_.LocalRect();
@@ -1391,18 +1391,19 @@ void BoxFragmentPainter::PaintGridGaps(
     LayoutUnit block_start;
     LayoutUnit block_size;
 
+    const LayoutUnit center = (gap.start_offset + gap.end_offset) / 2;
     if (track_direction == kForColumns) {
       // For columns, paint a vertical strip at the center of the gap.
-      const LayoutUnit center = (gap.start_offset + gap.end_offset) / 2;
       inline_start = center - (rule_thickness / 2);
       inline_size = rule_thickness;
       block_start = cross_track_offset;
       block_size = cross_track_size;
     } else {
+      // For rows, paint a horizontal strip at the center of the gap.
       inline_start = cross_track_offset;
       inline_size = cross_track_size;
-      block_start = gap.start_offset;
-      block_size = gap.end_offset - gap.start_offset;
+      block_start = center - (rule_thickness / 2);
+      block_size = rule_thickness;
     }
 
     const LogicalRect gap_logical(inline_start, block_start, inline_size,

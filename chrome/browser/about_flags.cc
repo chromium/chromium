@@ -2629,6 +2629,17 @@ const FeatureEntry::FeatureVariation kAndroidAppIntegrationModuleVariations[] =
       std::size(kAndroidAppIntegrationModule_ForceCardShown_NonPixel),
       nullptr}};
 
+const FeatureEntry::FeatureParam
+    kAndroidAppIntegrationMultiDataSource_UseSchemaV1[] = {
+        {"use_schema_v1", "true"}};
+
+const FeatureEntry::FeatureVariation
+    kAndroidAppIntegrationMultiDataSourceVariations[] = {
+        {"Force to use schema v1",
+         kAndroidAppIntegrationMultiDataSource_UseSchemaV1,
+         std::size(kAndroidAppIntegrationMultiDataSource_UseSchemaV1),
+         nullptr}};
+
 const FeatureEntry::FeatureParam kAuxiliarySearchDonation_MaxDonation_20[] = {
     {chrome::android::kAuxiliarySearchMaxBookmarksCountParam.name, "20"},
     {chrome::android::kAuxiliarySearchMaxTabsCountParam.name, "20"}};
@@ -4367,6 +4378,24 @@ const FeatureEntry::Choice kHistoryOptInEntryPointChoices[] = {
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
+const FeatureEntry::FeatureParam
+    kStandardBoundSessionCredentialsEnabledNoOriginTrialToken[] = {
+        {"ForceEnableForTesting", "true"}};
+const FeatureEntry::FeatureParam
+    kStandardBoundSessionCredentialsEnabledOriginTrialToken[] = {
+        {"ForceEnableForTesting", "false"}};
+
+const FeatureEntry::FeatureVariation
+    kStandardBoundSessionCredentialsVariations[] = {
+        {"- Without Origin Trial tokens",
+         kStandardBoundSessionCredentialsEnabledNoOriginTrialToken,
+         std::size(kStandardBoundSessionCredentialsEnabledNoOriginTrialToken),
+         nullptr},
+        {"- With Origin Trial tokens",
+         kStandardBoundSessionCredentialsEnabledOriginTrialToken,
+         std::size(kStandardBoundSessionCredentialsEnabledOriginTrialToken),
+         nullptr}};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -4868,10 +4897,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          chromeos::features::kDisableIdleSocketsCloseOnMemoryPressure)},
-    {"disable-office-editing-component-app",
-     flag_descriptions::kDisableOfficeEditingComponentAppName,
-     flag_descriptions::kDisableOfficeEditingComponentAppDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kDisableOfficeEditingComponentApp)},
     {"one-group-per-renderer", flag_descriptions::kOneGroupPerRendererName,
      flag_descriptions::kOneGroupPerRendererDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(base::kOneGroupPerRenderer)},
@@ -6275,8 +6300,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidAppIntegrationMultiDataSourceName,
      flag_descriptions::kAndroidAppIntegrationMultiDataSourceDescription,
      kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::kAndroidAppIntegrationMultiDataSource)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kAndroidAppIntegrationMultiDataSource,
+         kAndroidAppIntegrationMultiDataSourceVariations,
+         "AndroidAppIntegrationMultiDataSource")},
 
     {"android-app-integration-v2",
      flag_descriptions::kAndroidAppIntegrationV2Name,
@@ -10562,12 +10589,19 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableStandardBoundSessionCredentialsName,
      flag_descriptions::kEnableStandardBoundSessionCredentialsDescription,
      kOsMac | kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(net::features::kDeviceBoundSessions)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(net::features::kDeviceBoundSessions,
+                                    kStandardBoundSessionCredentialsVariations,
+                                    "standard-device-bound-sessions")},
     {"enable-standard-device-bound-session-persistence",
      flag_descriptions::kEnableStandardBoundSessionPersistenceName,
      flag_descriptions::kEnableStandardBoundSessionPersistenceDescription,
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(net::features::kPersistDeviceBoundSessions)},
+    {"enable-standard-device-bound-sesssion-refresh-quota",
+     flag_descriptions::kEnableStandardBoundSessionRefreshQuotaName,
+     flag_descriptions::kEnableStandardBoundSessionRefreshQuotaDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(net::features::kDeviceBoundSessionsRefreshQuota)},
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"cros-soul-gd", flag_descriptions::kCrosSoulGravediggerName,
@@ -10623,11 +10657,6 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kShowSuggestionsOnAutofocus)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"fetch-gaia-hash-on-sign-in",
-     flag_descriptions::kFetchGaiaHashOnSignInName,
-     flag_descriptions::kFetchGaiaHashOnSignInDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(password_manager::features::kFetchGaiaHashOnSignIn)},
-
     {"android-browser-controls-in-viz",
      flag_descriptions::kAndroidBrowserControlsInVizName,
      flag_descriptions::kAndroidBrowserControlsInVizDescription, kOsAndroid,
@@ -11733,11 +11762,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrivacySandboxAdTopicsContentParityName,
      flag_descriptions::kPrivacySandboxAdTopicsContentParityDescription, kOsAll,
      FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxAdTopicsContentParity)},
-
-    {"autofill-enable-card-expired-text",
-     flag_descriptions::kAutofillEnableCardExpiredTextName,
-     flag_descriptions::kAutofillEnableCardExpiredTextDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardExpiredText)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"enable-android-mininal-ui-large-screen",

@@ -57,6 +57,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoProcessorAccelerator {
   HRESULT Convert(IMFSample* sample,
                   VideoPixelFormat input_format,
                   IMFSample** sample_out);
+  HRESULT UpdateOutputSize(gfx::Size output_visible_size);
 
  private:
   bool InitializeVideoProcessor(const Config& config);

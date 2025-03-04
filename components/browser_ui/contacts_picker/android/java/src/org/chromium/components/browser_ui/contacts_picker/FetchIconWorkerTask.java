@@ -14,11 +14,14 @@ import android.provider.ContactsContract;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
 
 /** A worker task to retrieve images for contacts. */
-class FetchIconWorkerTask extends AsyncTask<Bitmap> {
+@NullMarked
+class FetchIconWorkerTask extends AsyncTask<@Nullable Bitmap> {
     /** An interface to use to communicate back the results to the client. */
     public interface IconRetrievedCallback {
         /**
@@ -27,7 +30,7 @@ class FetchIconWorkerTask extends AsyncTask<Bitmap> {
          * @param icon The icon retrieved.
          * @param contactId The id of the contact the icon refers to.
          */
-        void iconRetrieved(Bitmap icon, String contactId);
+        void iconRetrieved(@Nullable Bitmap icon, String contactId);
     }
 
     // The ID of the contact to look up.
@@ -75,7 +78,7 @@ class FetchIconWorkerTask extends AsyncTask<Bitmap> {
      * @return The icon representing a contact (returned as Bitmap).
      */
     @Override
-    protected Bitmap doInBackground() {
+    protected @Nullable Bitmap doInBackground() {
         assert !ThreadUtils.runningOnUiThread();
 
         if (isCancelled()) return null;
@@ -116,7 +119,7 @@ class FetchIconWorkerTask extends AsyncTask<Bitmap> {
      * @param icon The icon retrieved.
      */
     @Override
-    protected void onPostExecute(Bitmap icon) {
+    protected void onPostExecute(@Nullable Bitmap icon) {
         assert ThreadUtils.runningOnUiThread();
 
         if (isCancelled()) return;

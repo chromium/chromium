@@ -28,6 +28,7 @@
 
 namespace blink {
 
+class DOMPointInit;
 class ExceptionState;
 class LineLayoutItem;
 class SVGAnimatedLength;
@@ -58,7 +59,7 @@ class CORE_EXPORT SVGTextContentElement : public SVGGraphicsElement {
   SVGPointTearOff* getEndPositionOfChar(unsigned charnum, ExceptionState&);
   SVGRectTearOff* getExtentOfChar(unsigned charnum, ExceptionState&);
   float getRotationOfChar(unsigned charnum, ExceptionState&);
-  int getCharNumAtPosition(SVGPointTearOff*, ExceptionState&);
+  int getCharNumAtPosition(DOMPointInit*, ExceptionState&);
   void selectSubString(unsigned charnum, unsigned nchars, ExceptionState&);
 
   static SVGTextContentElement* ElementFromLineLayoutItem(

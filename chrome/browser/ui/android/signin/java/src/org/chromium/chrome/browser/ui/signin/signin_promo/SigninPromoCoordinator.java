@@ -49,8 +49,6 @@ public class SigninPromoCoordinator {
     public SigninPromoCoordinator(Context context, Profile profile, SigninPromoDelegate delegate) {
         mContext = context;
         mDelegate = delegate;
-        // TODO(crbug.com/327387704): Observe the AccountManagerFacade so that the promo gets
-        // properly updated when the list of accounts changes.
         ProfileDataCache profileDataCache =
                 ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
         IdentityManager identityManager =

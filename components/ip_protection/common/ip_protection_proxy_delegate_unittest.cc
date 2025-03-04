@@ -84,7 +84,7 @@ class MockIpProtectionCore : public IpProtectionCore {
       bool ip_protection_incognito = true)
       : masked_domain_list_manager_(masked_domain_list_manager) {
     mdl_type_ =
-        ip_protection_incognito ? MdlType::kDefault : MdlType::kRegularBrowsing;
+        ip_protection_incognito ? MdlType::kIncognito : MdlType::kRegularBrowsing;
   }
 
   bool IsMdlPopulated() override {

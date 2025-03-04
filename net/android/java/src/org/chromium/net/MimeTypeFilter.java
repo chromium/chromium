@@ -56,7 +56,7 @@ public class MimeTypeFilter implements FileFilter {
     }
 
     /** Returns true if either the uri or the mimeType is accepted by the MimeTypeFilter */
-    public boolean accept(Uri uri, @Nullable String mimeType) {
+    public boolean accept(@Nullable Uri uri, @Nullable String mimeType) {
         if (uri != null) {
             String fileExtension =
                     MimeTypeMap.getFileExtensionFromUrl(uri.toString()).toLowerCase(Locale.US);

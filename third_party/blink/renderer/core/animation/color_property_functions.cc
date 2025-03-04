@@ -42,7 +42,11 @@ OptionalStyleColor ColorPropertyFunctions::GetUnvisitedColor(
     case CSSPropertyID::kOutlineColor:
       return OptionalStyleColor(style.OutlineColor());
     case CSSPropertyID::kColumnRuleColor:
+      // TODO(crbug.com/357648037): Look into supporting multiple colors and
+      // deprecating the legacy method.
       return OptionalStyleColor(style.ColumnRuleColor().GetLegacyValue());
+    case CSSPropertyID::kRowRuleColor:
+      return OptionalStyleColor(style.RowRuleColor().GetLegacyValue());
     case CSSPropertyID::kTextEmphasisColor:
       return OptionalStyleColor(style.TextEmphasisColor());
     case CSSPropertyID::kWebkitTextFillColor:
@@ -101,6 +105,9 @@ OptionalStyleColor ColorPropertyFunctions::GetVisitedColor(
     case CSSPropertyID::kColumnRuleColor:
       return OptionalStyleColor(
           style.InternalVisitedColumnRuleColor().GetLegacyValue());
+    case CSSPropertyID::kRowRuleColor:
+      // TODO(crbug.com/357648037): Update to use multiple values.
+      return OptionalStyleColor(style.RowRuleColor().GetLegacyValue());
     case CSSPropertyID::kTextEmphasisColor:
       return OptionalStyleColor(style.InternalVisitedTextEmphasisColor());
     case CSSPropertyID::kWebkitTextFillColor:
@@ -177,6 +184,9 @@ void ColorPropertyFunctions::SetUnvisitedColor(const CSSProperty& property,
       return;
     case CSSPropertyID::kColumnRuleColor:
       builder.SetColumnRuleColor(GapDataList<StyleColor>(style_color));
+      return;
+    case CSSPropertyID::kRowRuleColor:
+      builder.SetRowRuleColor(GapDataList<StyleColor>(style_color));
       return;
     case CSSPropertyID::kWebkitTextStrokeColor:
       builder.SetTextStrokeColor(style_color);

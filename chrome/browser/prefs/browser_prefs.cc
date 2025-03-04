@@ -379,8 +379,8 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
-#include "chrome/browser/ash/policy/enrollment/auto_enrollment_client_impl.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_state_fetcher.h"
 #include "chrome/browser/ash/policy/external_data/handlers/device_wallpaper_image_external_data_handler.h"
 #include "chrome/browser/ash/policy/handlers/adb_sideloading_allowance_mode_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
@@ -1089,6 +1089,14 @@ inline constexpr char kRootSecretPrefName[] =
     "webauthn.authenticator_root_secret";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Deprecated 03/2025.
+inline constexpr char kShouldAutoEnroll[] = "ShouldAutoEnroll";
+inline constexpr char kShouldRetrieveDeviceState[] =
+    "ShouldRetrieveDeviceState";
+inline constexpr char kAutoEnrollmentPowerLimit[] = "AutoEnrollmentPowerLimit";
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1186,6 +1194,13 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 02/2025.
   registry->RegisterStringPref(kRootSecretPrefName, std::string());
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deprecated 03/2025.
+  registry->RegisterBooleanPref(kShouldRetrieveDeviceState, false);
+  registry->RegisterBooleanPref(kShouldAutoEnroll, false);
+  registry->RegisterIntegerPref(kAutoEnrollmentPowerLimit, -1);
+#endif
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1729,8 +1744,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   extensions::login_api::RegisterLocalStatePrefs(registry);
   ::onc::RegisterPrefs(registry);
   policy::AdbSideloadingAllowanceModePolicyHandler::RegisterPrefs(registry);
-  // TODO(b/265923216): Replace with EnrollmentStateFetcher::RegisterPrefs.
-  policy::AutoEnrollmentClientImpl::RegisterPrefs(registry);
   policy::BrowserPolicyConnectorAsh::RegisterPrefs(registry);
   policy::CrdAdminSessionController::RegisterLocalStatePrefs(registry);
   policy::DeviceCloudPolicyManagerAsh::RegisterPrefs(registry);
@@ -1739,6 +1752,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   policy::DeviceStatusCollector::RegisterPrefs(registry);
   policy::DeviceWallpaperImageExternalDataHandler::RegisterPrefs(registry);
   policy::EnrollmentRequisitionManager::RegisterPrefs(registry);
+  policy::EnrollmentStateFetcher::RegisterPrefs(registry);
   policy::EuiccStatusUploader::RegisterLocalStatePrefs(registry);
   policy::MinimumVersionPolicyHandler::RegisterPrefs(registry);
   policy::TPMAutoUpdateModePolicyHandler::RegisterPrefs(registry);
@@ -2419,6 +2433,13 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 #if BUILDFLAG(IS_ANDROID)
   local_state->ClearPref(kRootSecretPrefName);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  // Added 03/2025.
+#if BUILDFLAG(IS_CHROMEOS)
+  local_state->ClearPref(kShouldRetrieveDeviceState);
+  local_state->ClearPref(kShouldAutoEnroll);
+  local_state->ClearPref(kAutoEnrollmentPowerLimit);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

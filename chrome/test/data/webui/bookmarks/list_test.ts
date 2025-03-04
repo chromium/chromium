@@ -4,10 +4,8 @@
 
 import type {BookmarksAppElement, BookmarksItemElement, BookmarksListElement, SelectItemsAction} from 'chrome://bookmarks/bookmarks.js';
 import {BrowserProxyImpl, Command, MenuSource, removeBookmark} from 'chrome://bookmarks/bookmarks.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBookmarksBrowserProxy} from './test_browser_proxy.js';
 import {TestStore} from './test_store.js';
@@ -37,7 +35,7 @@ suite('<bookmarks-list>', function() {
     list.style.position = 'absolute';
 
     replaceBody(list);
-    flush();
+    return eventToPromise('viewport-filled', list.$.list);
   });
 
   test('renders correct <bookmark-item> elements', function() {
@@ -75,23 +73,23 @@ suite('<bookmarks-list>', function() {
     assertEquals('deselect-items', lastAction.name);
   });
 
-  test('adds, deletes, and moves update displayedList_', function() {
+  test('adds, deletes, and moves update displayedList_', async () => {
     list.setDisplayedIdsForTesting(['1', '7', '3', '5']);
-    flush();
+    await eventToPromise('viewport-filled', list.$.list);
     let items = list.shadowRoot!.querySelectorAll('bookmarks-item');
     assertDeepEquals(
         ['1', '7', '3', '5'],
         Array.from(items).filter(i => !i.hidden).map(i => i.itemId));
 
     list.setDisplayedIdsForTesting(['1', '3', '5']);
-    flush();
+    await eventToPromise('viewport-filled', list.$.list);
     items = list.shadowRoot!.querySelectorAll('bookmarks-item');
     assertDeepEquals(
         ['1', '3', '5'],
         Array.from(items).filter(i => !i.hidden).map(i => i.itemId));
 
     list.setDisplayedIdsForTesting(['1', '3', '7', '5']);
-    flush();
+    await eventToPromise('viewport-filled', list.$.list);
     items = list.shadowRoot!.querySelectorAll('bookmarks-item');
     assertDeepEquals(
         ['1', '3', '7', '5'],
@@ -114,7 +112,7 @@ suite('<bookmarks-list> integration test', function() {
   let store: TestStore;
   let items: NodeListOf<BookmarksItemElement>;
 
-  setup(function() {
+  setup(async function() {
     store = new TestStore({
       nodes: testTree(createFolder(
           '10',
@@ -136,7 +134,7 @@ suite('<bookmarks-list> integration test', function() {
     list.style.position = 'absolute';
 
     replaceBody(list);
-    flush();
+    await eventToPromise('viewport-filled', list.$.list);
 
     items = list.shadowRoot!.querySelectorAll('bookmarks-item');
   });
@@ -199,8 +197,11 @@ suite('<bookmarks-list> integration test', function() {
     assertEquals('9', store.data.selection.anchor);
 
     // customClick does not set focus like a real click does.
-    list.$.list.focusItem(4);
-    await waitAfterNextRender(list);
+    await list.$.list.ensureItemRendered(4);
+    const item = list.$.list.domItems()[4];
+    assertTrue(!!item);
+    (item as HTMLElement).focus();
+    await microtasksFinished();
     assertEquals(
         '9',
         (list.shadowRoot?.activeElement as BookmarksItemElement | null)
@@ -218,12 +219,12 @@ suite('<bookmarks-list> integration test', function() {
     store.endBatchUpdate();
 
     // Let `list` update its dom.
-    await waitAfterNextRender(list);
+    await eventToPromise('viewport-filled', list.$.list);
 
     // `list` internally uses setTimeout to trigger focus after deletion. Using
-    // `flushTasks` here should force assertions to run after focus has been
-    // updated.
-    await flushTasks();
+    // `microtasksFinished` here should force assertions to run after focus has
+    // been updated.
+    await microtasksFinished();
 
     // The element immediately preceding the deleted '9' should now be focused.
     assertEquals(
@@ -256,7 +257,7 @@ suite('<bookmarks-list> command manager integration test', function() {
 
     replaceBody(app);
 
-    flush();
+    return microtasksFinished();
   });
 
   test('show context menu', async () => {

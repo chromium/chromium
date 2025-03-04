@@ -321,6 +321,9 @@ class PLATFORM_EXPORT ImageDecoder {
   // Image decoders that support HDR metadata can override this.
   virtual std::optional<gfx::HDRMetadata> GetHDRMetadata() const;
 
+  // Image decoders that support C2PA manifest embedding can override this.
+  virtual bool HasC2PAManifest() const;
+
   // Returns the information required to decide whether or not hardware
   // acceleration can be used to decode this image. Callers of this function
   // must ensure the header was successfully parsed prior to calling this

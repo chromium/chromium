@@ -17,7 +17,6 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
-#import "components/favicon/core/large_icon_service.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store/password_store_change.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -33,7 +32,7 @@
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_util.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
-#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/favicon/model/mock_favicon_loader.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -74,70 +73,6 @@ sync_pb::WebauthnCredentialSpecifics CreatePasskey(
   passkey.set_user_display_name(user_display_name);
   return passkey;
 }
-
-// Needed since FaviconLoader has no fake currently.
-class MockLargeIconService : public favicon::LargeIconService {
- public:
-  MOCK_METHOD(base::CancelableTaskTracker::TaskId,
-              GetLargeIconRawBitmapOrFallbackStyleForPageUrl,
-              (const GURL&,
-               int,
-               int,
-               favicon_base::LargeIconCallback,
-               base::CancelableTaskTracker*),
-              (override));
-  MOCK_METHOD(base::CancelableTaskTracker::TaskId,
-              GetLargeIconImageOrFallbackStyleForPageUrl,
-              (const GURL&,
-               int,
-               int,
-               favicon_base::LargeIconImageCallback,
-               base::CancelableTaskTracker*),
-              (override));
-  MOCK_METHOD(base::CancelableTaskTracker::TaskId,
-              GetLargeIconRawBitmapForPageUrl,
-              (const GURL&,
-               int,
-               std::optional<int>,
-               LargeIconService::NoBigEnoughIconBehavior,
-               favicon_base::LargeIconCallback,
-               base::CancelableTaskTracker*),
-              (override));
-  MOCK_METHOD(base::CancelableTaskTracker::TaskId,
-              GetLargeIconRawBitmapOrFallbackStyleForIconUrl,
-              (const GURL&,
-               int,
-               int,
-               favicon_base::LargeIconCallback,
-               base::CancelableTaskTracker*),
-              (override));
-  MOCK_METHOD(base::CancelableTaskTracker::TaskId,
-              GetIconRawBitmapOrFallbackStyleForPageUrl,
-              (const GURL&,
-               int,
-               favicon_base::LargeIconCallback,
-               base::CancelableTaskTracker*),
-              (override));
-  MOCK_METHOD(void,
-              GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache,
-              (const GURL&,
-               bool,
-               const net::NetworkTrafficAnnotationTag&,
-               favicon_base::GoogleFaviconServerCallback),
-              (override));
-  MOCK_METHOD(void,
-              GetLargeIconFromCacheFallbackToGoogleServer,
-              (const GURL& page_url,
-               StandardIconSize min_source_size_in_pixel,
-               std::optional<StandardIconSize> size_in_pixel_to_resize_to,
-               NoBigEnoughIconBehavior no_big_enough_icon_behavior,
-               bool should_trim_page_url_path,
-               const net::NetworkTrafficAnnotationTag& traffic_annotation,
-               favicon_base::LargeIconCallback callback,
-               base::CancelableTaskTracker* tracker),
-              (override));
-  MOCK_METHOD(void, TouchIconFromGoogleServer, (const GURL&), (override));
-};
 
 class CredentialProviderServiceTest : public PlatformTest {
  public:
@@ -203,8 +138,7 @@ class CredentialProviderServiceTest : public PlatformTest {
   signin::IdentityTestEnvironment identity_test_environment_;
   syncer::TestSyncService sync_service_;
   affiliations::FakeAffiliationService affiliation_service_;
-  MockLargeIconService large_icon_service_;
-  FaviconLoader favicon_loader_ = FaviconLoader(&large_icon_service_);
+  MockFaviconLoader favicon_loader_;
   std::unique_ptr<CredentialProviderService> credential_provider_service_;
 };
 
@@ -481,9 +415,7 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsWithValidURL) {
   ASSERT_EQ(credential_store_.credentials.count, 0u);
 
   // Add password with valid URL to store.
-  EXPECT_CALL(large_icon_service_,
-              GetLargeIconRawBitmapOrFallbackStyleForPageUrl(_, _, _, _, _))
-      .Times(1);
+  EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(1);
   password_manager::PasswordForm valid_password_form;
   valid_password_form.url = GURL("http://g.com");
   valid_password_form.username_value = u"user1";
@@ -495,9 +427,7 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsWithValidURL) {
 
   // Don't add password with invalid URL to store.
   // No favicon should be fetched for invalid URLs.
-  EXPECT_CALL(large_icon_service_,
-              GetLargeIconRawBitmapOrFallbackStyleForPageUrl(_, _, _, _, _))
-      .Times(0);
+  EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(0);
   password_manager::PasswordForm invalid_password_form;
   invalid_password_form.url = GURL("");
   invalid_password_form.username_value = u"user2";
@@ -509,9 +439,7 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsWithValidURL) {
 
   // Add password with valid Android facet URI to store.
   // No favicon should be fetched for Android URI.
-  EXPECT_CALL(large_icon_service_,
-              GetLargeIconRawBitmapOrFallbackStyleForPageUrl(_, _, _, _, _))
-      .Times(0);
+  EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(0);
   password_manager::PasswordForm android_password_form;
   android_password_form.url = GURL(android_password_form.signon_realm);
   android_password_form.signon_realm = "android://hash@com.example.my.app";
@@ -532,9 +460,7 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsRefactored) {
   ASSERT_EQ(credential_store_.credentials.count, 0u);
 
   // Add password with valid URL to store.
-  EXPECT_CALL(large_icon_service_,
-              GetLargeIconRawBitmapOrFallbackStyleForPageUrl(_, _, _, _, _))
-      .Times(1);
+  EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(1);
   password_manager::PasswordForm valid_password_form;
   valid_password_form.url = GURL("http://g.com");
   valid_password_form.username_value = u"user1";
@@ -546,9 +472,7 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsRefactored) {
 
   // Don't add password with invalid URL to store.
   // No favicon should be fetched for invalid URLs.
-  EXPECT_CALL(large_icon_service_,
-              GetLargeIconRawBitmapOrFallbackStyleForPageUrl(_, _, _, _, _))
-      .Times(0);
+  EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(0);
   password_manager::PasswordForm invalid_password_form;
   invalid_password_form.url = GURL("");
   invalid_password_form.username_value = u"user2";
@@ -560,9 +484,7 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsRefactored) {
 
   // Add password with valid Android facet URI to store.
   // No favicon should be fetched for Android URI.
-  EXPECT_CALL(large_icon_service_,
-              GetLargeIconRawBitmapOrFallbackStyleForPageUrl(_, _, _, _, _))
-      .Times(0);
+  EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(0);
   password_manager::PasswordForm android_password_form;
   android_password_form.url = GURL(android_password_form.signon_realm);
   android_password_form.signon_realm = "android://hash@com.example.my.app";
@@ -757,9 +679,7 @@ TEST_F(CredentialProviderServiceTest, AddPasskeys) {
   ASSERT_EQ(credential_store_.credentials.count, 0u);
 
   // Add passkey with valid URL to store.
-  EXPECT_CALL(large_icon_service_,
-              GetLargeIconRawBitmapOrFallbackStyleForPageUrl(_, _, _, _, _))
-      .Times(1);
+  EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(1);
   sync_pb::WebauthnCredentialSpecifics valid_passkey = CreatePasskey(
       "g.com", {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
   test_passkey_model_->AddNewPasskeyForTesting(valid_passkey);
@@ -769,9 +689,7 @@ TEST_F(CredentialProviderServiceTest, AddPasskeys) {
 
   // Add passkey with invalid URL to store.
   // No favicon should be fetched for invalid URLs.
-  EXPECT_CALL(large_icon_service_,
-              GetLargeIconRawBitmapOrFallbackStyleForPageUrl(_, _, _, _, _))
-      .Times(0);
+  EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(0);
   sync_pb::WebauthnCredentialSpecifics invalid_passkey = CreatePasskey(
       "", {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
   test_passkey_model_->AddNewPasskeyForTesting(invalid_passkey);
@@ -781,9 +699,7 @@ TEST_F(CredentialProviderServiceTest, AddPasskeys) {
 
   // Don't add hidden passkeys to the store.
   // No favicon should be fetched for hidden passkeys.
-  EXPECT_CALL(large_icon_service_,
-              GetLargeIconRawBitmapOrFallbackStyleForPageUrl(_, _, _, _, _))
-      .Times(0);
+  EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(0);
   sync_pb::WebauthnCredentialSpecifics hidden_passkey = CreatePasskey(
       "g.com", {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
   hidden_passkey.set_hidden(true);
@@ -793,9 +709,7 @@ TEST_F(CredentialProviderServiceTest, AddPasskeys) {
   ASSERT_EQ(credential_store_.credentials.count, 2u);
 
   // Add 2nd passkey with valid URL to store.
-  EXPECT_CALL(large_icon_service_,
-              GetLargeIconRawBitmapOrFallbackStyleForPageUrl(_, _, _, _, _))
-      .Times(1);
+  EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(1);
   sync_pb::WebauthnCredentialSpecifics valid_passkey2 = CreatePasskey(
       "g.com", {1, 2, 3, 4}, "passkey_username2", "passkey_display_name2");
   test_passkey_model_->AddNewPasskeyForTesting(valid_passkey2);
@@ -810,9 +724,7 @@ TEST_F(CredentialProviderServiceTest, DeletePasskey) {
   ASSERT_EQ(credential_store_.credentials.count, 0u);
 
   // Add passkey with valid URL to store.
-  EXPECT_CALL(large_icon_service_,
-              GetLargeIconRawBitmapOrFallbackStyleForPageUrl(_, _, _, _, _))
-      .Times(1);
+  EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(1);
   sync_pb::WebauthnCredentialSpecifics passkey = CreatePasskey(
       "g.com", {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
   test_passkey_model_->AddNewPasskeyForTesting(passkey);

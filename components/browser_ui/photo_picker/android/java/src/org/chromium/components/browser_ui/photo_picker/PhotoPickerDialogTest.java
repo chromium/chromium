@@ -38,6 +38,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.TestAnimations.EnableAnimations;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
@@ -224,7 +225,7 @@ public class PhotoPickerDialogTest
     // PhotoPickerDialog.PhotoPickerListener:
 
     @Override
-    public void onPhotoPickerUserAction(@PhotoPickerAction int action, Uri[] photos) {
+    public void onPhotoPickerUserAction(@PhotoPickerAction int action, Uri @Nullable [] photos) {
         mLastActionRecorded = action;
         mLastSelectedPhotos = photos != null ? photos.clone() : null;
         if (mLastSelectedPhotos != null) Arrays.sort(mLastSelectedPhotos);

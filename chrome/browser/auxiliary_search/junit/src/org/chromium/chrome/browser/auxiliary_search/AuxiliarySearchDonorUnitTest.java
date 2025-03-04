@@ -453,6 +453,15 @@ public class AuxiliarySearchDonorUnitTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({"AndroidAppIntegrationMultiDataSource:use_schema_v1/true"})
+    public void testGetSchemaSetPreferenceKey_MultiDataSourceEnabled_UseSchemaV1() {
+        assertEquals(
+                ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET,
+                mAuxiliarySearchDonor.getSchemaSetPreferenceKey());
+    }
+
+    @Test
+    @SmallTest
     @DisableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE})
     public void testGetSupportedDocumentClasses() {
         List<Class<?>> list = mAuxiliarySearchDonor.getSupportedDocumentClasses();
@@ -469,6 +478,23 @@ public class AuxiliarySearchDonorUnitTest {
         assertTrue(list.contains(TabWebPage.class));
         assertTrue(list.contains(CustomTabWebPage.class));
         assertTrue(list.contains(TopSiteWebPage.class));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({"AndroidAppIntegrationMultiDataSource:use_schema_v1/true"})
+    public void testUseSchemaV1() {
+        mAuxiliarySearchDonor.resetSchemaSetForTesting();
+        SharedPreferencesManager chromeSharedPreferences = ChromeSharedPreferences.getInstance();
+        String key = ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET;
+        chromeSharedPreferences.writeBoolean(key, true);
+        assertFalse(mAuxiliarySearchDonor.getIsSchemaSetForTesting());
+
+        // Verifies that |mIsSchemaSet| checks the key for schema V1.
+        mAuxiliarySearchDonor.onConsumerSchemaSearchedImpl(/* success= */ true);
+        assertTrue(mAuxiliarySearchDonor.getIsSchemaSetForTesting());
+
+        chromeSharedPreferences.removeKey(key);
     }
 
     private SearchResult createSearchResult(int applicationType, @NonNull String schemaType) {

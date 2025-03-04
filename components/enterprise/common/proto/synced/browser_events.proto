@@ -424,7 +424,7 @@ message SafeBrowsingPasswordChangedEvent {
 }
 
 // A message for reporting dangerous download events.
-// Next ID: 35.
+// Next ID: 40.
 message SafeBrowsingDangerousDownloadEvent {
   reserved 5, 11, 12, 13, 14, 15, 16;
 
@@ -543,6 +543,21 @@ message SafeBrowsingDangerousDownloadEvent {
   // The referrers of the webpage that sent the user to the url that triggered
   // the event.
   repeated UrlInfo referrers = 34;
+
+  // Per-threat Risk Info, powered by Safe Browsing.
+  repeated RiskInfo risk_infos = 35;
+
+  // Top-level risk level for the content.
+  RiskLevel risk_level = 36;
+
+  // URL info of the URL of the tab.
+  UrlInfo tab_url_info = 37;
+
+  // The sha256 hash of the PEdata based on Safe Browsing's PEHash.
+  string pehash_sha256 = 38;
+
+  // Whether the content is encrypted.
+  bool is_encrypted = 39;
 }
 
 // Types of data transferring operations that may have triggered the event to
@@ -638,7 +653,7 @@ message SafeBrowsingInterstitialEvent {
 }
 
 // A DLP (Data Loss Prevention) event where sensitive data may have leaked.
-// Next ID: 32.
+// Next ID: 34.
 message DlpSensitiveDataEvent {
   reserved 6, 9, 10, 11, 12, 13, 15, 25;
 
@@ -731,6 +746,13 @@ message DlpSensitiveDataEvent {
   // The total scan time in milliseconds on the server side before reporting
   // this event.
   int64 server_scan_latency_millis = 31;
+
+  // URL info of the URL that triggered the event.
+  UrlInfo url_info = 32;
+
+  // The referrers of the webpage that sent the user to the url that triggered
+  // the event.
+  repeated UrlInfo referrers = 33;
 }
 
 // Event where a large file could not be scanned for analysis e.g. malware or
@@ -824,7 +846,7 @@ message UnscannedFileEvent {
 
 // Event that indicates that content was transferred.
 //
-// Next ID: 17.
+// Next ID: 22.
 message ContentTransferEvent {
   // The id of the scan. This will be shared by all events that are triggered
   // from a single scan.
@@ -907,6 +929,21 @@ message ContentTransferEvent {
   // The referrers of the webpage that sent the user to the url that triggered
   // the event.
   repeated UrlInfo referrers = 16;
+
+  // Per-threat Risk Info, powered by Safe Browsing.
+  repeated RiskInfo risk_infos = 17;
+
+  // Top-level risk level for the content.
+  RiskLevel risk_level = 18;
+
+  // URL info of the URL of the tab.
+  UrlInfo tab_url_info = 19;
+
+  // The sha256 hash of the PEdata based on Safe Browsing's PEHash.
+  string pehash_sha256 = 20;
+
+  // Whether the content is encrypted.
+  bool is_encrypted = 21;
 }
 
 // Event sent when a user successfully logs in to a website, as determined by

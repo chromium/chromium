@@ -54,7 +54,6 @@
 #include "components/user_manager/known_user.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api_test_utils.h"
-#include "extensions/browser/extension_function_dispatcher.h"
 
 namespace extensions {
 namespace {
@@ -615,9 +614,8 @@ class QuickUnlockPrivateUnitTest
                                          base::Value::List params) {
     base::RunLoop().RunUntilIdle();
     std::optional<base::Value> result =
-        api_test_utils::RunFunctionWithDelegateAndReturnSingleResult(
-            std::move(func), std::move(params),
-            std::make_unique<ExtensionFunctionDispatcher>(profile()),
+        api_test_utils::RunFunctionAndReturnSingleResult(
+            std::move(func), std::move(params), profile(),
             api_test_utils::FunctionMode::kNone);
     base::RunLoop().RunUntilIdle();
     return result;
@@ -627,9 +625,7 @@ class QuickUnlockPrivateUnitTest
   std::string RunFunctionAndReturnError(scoped_refptr<ExtensionFunction> func,
                                         base::Value::List params) {
     base::RunLoop().RunUntilIdle();
-    auto dispatcher = std::make_unique<ExtensionFunctionDispatcher>(profile());
-    api_test_utils::RunFunction(func.get(), std::move(params),
-                                std::move(dispatcher),
+    api_test_utils::RunFunction(func.get(), std::move(params), profile(),
                                 api_test_utils::FunctionMode::kNone);
     EXPECT_TRUE(func->GetResultListForTest()->empty());
     base::RunLoop().RunUntilIdle();

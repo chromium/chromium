@@ -158,6 +158,9 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
               DetectTextInImage,
               (const SkBitmap& image, OnTextDetectionComplete callback),
               (override));
+  void GetPrimaryAccountAccessToken(
+      base::RepeatingCallback<void(const std::string& access_token)> callback)
+      override;
   void SendRegionSearch(const SkBitmap& image,
                         const gfx::Rect& region,
                         ash::OnSearchUrlFetchedCallback search_callback,

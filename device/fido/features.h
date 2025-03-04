@@ -111,11 +111,6 @@ BASE_DECLARE_FEATURE(kDigitalCredentialsHybridLinking);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnPasskeyUpgrade);
 
-// Stops Chrome from skipping the "Trust this computer" screen if the user
-// doesn't have phones.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnNeverSkipTrustThisComputer);
-
 // Checks attestation from the enclave service.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnEnclaveAttestation);

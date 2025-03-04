@@ -42,14 +42,14 @@ const GURL kTestUrl(kUrlString);
 constexpr char kRefreshUrlString[] = "https://example.com/refresh";
 const GURL kTestRefreshUrl(kRefreshUrlString);
 const std::string kSessionId = "SessionId";
-const std::string kOrigin = "example.com";
+const std::string kOrigin = "https://example.com";
 
 constexpr char kUrlString2[] = "https://example2.com";
 const GURL kTestUrl2(kUrlString2);
 constexpr char kRefreshUrlString2[] = "https://example2.com/refresh";
 const GURL kTestRefreshUrl2(kRefreshUrlString);
 const std::string kSessionId2 = "SessionId2";
-const std::string kOrigin2 = "example2.com";
+const std::string kOrigin2 = "https://example2.com";
 
 const std::string kChallenge = "challenge";
 
@@ -407,8 +407,8 @@ TEST_F(SessionServiceImplTest, DeleteAllSessionsBySite) {
   GURL url_a("https://a_example.com");
   GURL url_b("https://b_example.com");
 
-  AddSessionsForTesting({{kSessionId, url_a.spec(), "a_example.com"},
-                         {kSessionId, url_b.spec(), "b_example.com"}});
+  AddSessionsForTesting({{kSessionId, url_a.spec(), "https://a_example.com"},
+                         {kSessionId, url_b.spec(), "https://b_example.com"}});
 
   SchemefulSite site_a(url_a);
   SchemefulSite site_b(url_b);
@@ -985,7 +985,7 @@ TEST_F(SessionServiceImplWithStoreTest, GetAllSessionsWaitsForSessionsToLoad) {
       future.GetCallback<const std::vector<SessionKey>&>());
 
   SessionParams::Scope scope;
-  scope.origin = "example.com";
+  scope.origin = "https://example.com";
   auto session_or_error = Session::CreateIfValid(SessionParams(
       "session_id", kTestUrl, "https://example.com/refresh", std::move(scope),
       /*creds=*/{}, unexportable_keys::UnexportableKeyId()));

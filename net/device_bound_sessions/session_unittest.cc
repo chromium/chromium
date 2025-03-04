@@ -46,7 +46,7 @@ const GURL kTestUrlForWrongETLD(kUrlStringForWrongETLD);
 
 SessionParams CreateValidParams() {
   SessionParams::Scope scope;
-  scope.origin = "example.test";
+  scope.origin = "https://example.test";
   std::vector<SessionParams::Credential> cookie_credentials(
       {SessionParams::Credential{"test_cookie",
                                  "Secure; Domain=example.test"}});
@@ -108,6 +108,15 @@ TEST_F(SessionTest, InvalidServiceRefreshUrl) {
             SessionError::ErrorType::kInvalidRefreshUrl);
 }
 
+TEST_F(SessionTest, InvalidScopeOrigin) {
+  auto params = CreateValidParams();
+  params.scope.origin = "hello world";
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_FALSE(session_or_error.has_value());
+  EXPECT_EQ(session_or_error.error().type,
+            SessionError::ErrorType::kInvalidScopeOrigin);
+}
+
 TEST_F(SessionTest, ScopeOriginSameSiteMismatch) {
   auto params = CreateValidParams();
   params.fetcher_url = kTestUrlForWrongETLD;
@@ -119,7 +128,6 @@ TEST_F(SessionTest, ScopeOriginSameSiteMismatch) {
 
 TEST_F(SessionTest, SameSiteMismatchRefreshUrl) {
   auto params = CreateValidParams();
-  params.fetcher_url = GURL("http://example.test/index.html");
   params.refresh_url = kUrlStringForWrongETLD;
   auto session_or_error = Session::CreateIfValid(params);
   ASSERT_FALSE(session_or_error.has_value());
@@ -133,6 +141,7 @@ TEST_F(SessionTest, NonSecureUrl) {
     auto params = CreateValidParams();
     params.fetcher_url = GURL("http://example.test/index.html");
     params.refresh_url = "http://example.test/registration";
+    params.scope.origin = "http://example.test";
     auto session_or_error = Session::CreateIfValid(params);
     ASSERT_FALSE(session_or_error.has_value());
     EXPECT_EQ(session_or_error.error().type,
@@ -144,7 +153,7 @@ TEST_F(SessionTest, NonSecureUrl) {
     auto params = CreateValidParams();
     params.fetcher_url = GURL("http://localhost:8080/index.html");
     params.refresh_url = "http://localhost:8080/registration";
-    params.scope.origin = "localhost";
+    params.scope.origin = "http://localhost:8080";
     EXPECT_TRUE(Session::CreateIfValid(params).has_value());
   }
 }
@@ -367,6 +376,61 @@ TEST_F(SessionTest, DeferredEmptyCookieAttributesCredentialsField) {
   std::unique_ptr<Session> session = std::move(*session_or_error);
   ASSERT_TRUE(session);
   net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  bool is_deferred =
+      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
+  EXPECT_TRUE(is_deferred);
+}
+
+TEST_F(SessionTest, DeferredNarrowerScopeOrigin) {
+  auto params = CreateValidParams();
+  params.scope.origin = "https://sub.example.test";
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
+  ASSERT_TRUE(session);
+  net::TestDelegate delegate;
+  // Create a request matching the scope origin.
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(GURL("https://sub.example.test/index.html"), IDLE,
+                              &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  bool is_deferred =
+      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
+  EXPECT_TRUE(is_deferred);
+}
+
+TEST_F(SessionTest, NotDeferredNarrowerScopeOrigin) {
+  auto params = CreateValidParams();
+  params.scope.origin = "https://sub.example.test";
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
+  ASSERT_TRUE(session);
+  net::TestDelegate delegate;
+  // Create a request with a broader scope than the scope origin.
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  bool is_deferred =
+      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
+  EXPECT_FALSE(is_deferred);
+}
+
+TEST_F(SessionTest, DeferredMissingScopeOrigin) {
+  auto params = CreateValidParams();
+  params.scope.origin = "";
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
+  ASSERT_TRUE(session);
+  net::TestDelegate delegate;
+  // Create a request matching the fetcher URL.
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));

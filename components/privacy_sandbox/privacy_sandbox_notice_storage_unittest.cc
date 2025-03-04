@@ -84,13 +84,12 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
     switch (action) {
       case NoticeActionTaken::kNotSet:
       case NoticeActionTaken::kUnknownActionPreMigration:
+      case NoticeActionTaken::kLearnMore_Deprecated:
         return "";
       case NoticeActionTaken::kAck:
         return "Ack";
       case NoticeActionTaken::kClosed:
         return "Closed";
-      case NoticeActionTaken::kLearnMore:
-        return "LearnMore";
       case NoticeActionTaken::kOptIn:
         return "OptIn";
       case NoticeActionTaken::kOptOut:
@@ -281,11 +280,11 @@ TEST_F(PrivacySandboxNoticeStorageTest,
 
   // Tries to override action, should not override and emits histograms.
   notice_storage()->SetNoticeActionTaken(
-      prefs(), notice_name, NoticeActionTaken::kLearnMore, base::Time::Now());
+      prefs(), notice_name, NoticeActionTaken::kSettings, base::Time::Now());
   EXPECT_EQ(NoticeActionTaken::kAck, actual->notice_action_taken_);
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeAction.TopicsConsentDesktopModal",
-      NoticeActionTaken::kLearnMore, 0);
+      NoticeActionTaken::kSettings, 0);
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeActionTakenBehavior."
       "TopicsConsentDesktopModal",
@@ -630,7 +629,7 @@ INSTANTIATE_TEST_SUITE_P(
             {NoticeActionTaken::kNotSet, std::nullopt},
             {NoticeActionTaken::kAck, NoticeEvent::kAck},
             {NoticeActionTaken::kClosed, NoticeEvent::kClosed},
-            {NoticeActionTaken::kLearnMore, std::nullopt},
+            {NoticeActionTaken::kLearnMore_Deprecated, std::nullopt},
             {NoticeActionTaken::kOptIn, NoticeEvent::kOptIn},
             {NoticeActionTaken::kOptOut, NoticeEvent::kOptOut},
             {NoticeActionTaken::kOther, std::nullopt},

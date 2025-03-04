@@ -52,6 +52,14 @@ void OnDemandUpdateCompleted(update_client::Error err) {
           << base::to_underlying(err);
 }
 
+component_updater::OnDemandUpdater::Priority GetOnDemandUpdatePriority() {
+#if BUILDFLAG(IS_WIN)
+  return component_updater::OnDemandUpdater::Priority::FOREGROUND;
+#else
+  return component_updater::OnDemandUpdater::Priority::BACKGROUND;
+#endif
+}
+
 }  // namespace
 
 namespace component_updater {
@@ -99,8 +107,7 @@ bool IwaKeyDistributionComponentInstallerPolicy::QueueOnDemandUpdate(
   VLOG(1) << "Queueing on-demand update for the Iwa Key Distribution Component";
   g_browser_process->component_updater()->GetOnDemandUpdater().OnDemandUpdate(
       crx_file::id_util::GenerateIdFromHash(kIwaKeyDistributionPublicKeySHA256),
-      OnDemandUpdater::Priority::BACKGROUND,
-      base::BindOnce(&OnDemandUpdateCompleted));
+      GetOnDemandUpdatePriority(), base::BindOnce(&OnDemandUpdateCompleted));
 
   return true;
 }

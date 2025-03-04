@@ -3536,18 +3536,6 @@ class BrowserAutofillManagerWithLogEventsTest
         .is_active_heuristic_source = true,
         .rank_in_field_signature_group = field_signature_rank,
     });
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-    // When experimental patterns are active, default predictions are computed
-    // for shadow prediction metrics.
-    if (GetActiveHeuristicSource() == HeuristicSource::kExperimentalRegexes) {
-      expected_events.push_back(HeuristicPredictionFieldLogEvent{
-          .field_type = field.heuristic_type(HeuristicSource::kDefaultRegexes),
-          .heuristic_source = HeuristicSource::kDefaultRegexes,
-          .is_active_heuristic_source = false,
-          .rank_in_field_signature_group = field_signature_rank,
-      });
-    }
-#endif
     // Rationalization.
     expected_events.push_back(RationalizationFieldLogEvent{
         .field_type = field.heuristic_type(),

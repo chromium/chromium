@@ -5034,9 +5034,9 @@ chromium-metrics-reviews@google.com.
     If the value is `Not Available`, it means that the a new geo was observed,
     but there was no tokens already in the cache that matched this new geo.
 
-    This histogram will only be emitted to if the MaskedDomainList and
-    EnableIpPrivacyProxy features are enabled, the IpPrivacyCacheTokensByGeo
-    feature parameter is enabled, and a platform-dependent sign-in is complete.
+    This histogram will only be emitted if the MaskedDomainList and
+    EnableIpPrivacyProxy features are enabled and a platform-dependent sign-in
+    is complete.
   </summary>
 </histogram>
 

@@ -16,6 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_bstr.h"
+#include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_variant.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -69,6 +70,16 @@ bool IsSameObject(T* left, U* right) {
   right->QueryInterface(IID_PPV_ARGS(&right_unknown));
 
   return left_unknown == right_unknown;
+}
+
+// Calls `Release()` on each of the `count` interface pointers in `pointers`.
+void ReleasePointers(IUnknown** pointers, LONG count) {
+  if (count > 0) {
+    std::ranges::for_each(
+        // SAFETY: `count` is the number of pointers in `pointers`.
+        UNSAFE_BUFFERS(base::span(pointers, static_cast<size_t>(count))),
+        [](IUnknown* ptr) { ptr->Release(); });
+  }
 }
 
 }  // namespace
@@ -186,7 +197,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, TextfieldAssociatedLabel) {
   ComPtr<IAccessible2_2> textfield_ia2;
   EXPECT_EQ(S_OK, textfield_accessible.As(&textfield_ia2));
   ScopedBstr type(IA2_RELATION_LABELLED_BY);
-  IUnknown** targets;
+  base::win::ScopedCoMem<IUnknown*> targets;
   LONG n_targets;
   EXPECT_EQ(S_OK, textfield_ia2->get_relationTargetsOfType(
                       type.Get(), 0, &targets, &n_targets));
@@ -197,6 +208,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, TextfieldAssociatedLabel) {
   ScopedVariant role;
   EXPECT_EQ(S_OK, label_accessible->get_accRole(childid_self, role.Receive()));
   EXPECT_EQ(ROLE_SYSTEM_STATICTEXT, V_I4(role.ptr()));
+  ReleasePointers(targets.get(), n_targets);
 }
 
 // A subclass of ViewAXPlatformNodeDelegateWinTest that we run twice,
@@ -323,7 +335,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, DISABLED_RetrieveAllAlerts) {
 
   // Initially, there are no alerts
   ScopedBstr alerts_bstr(L"alerts");
-  IUnknown** targets;
+  base::win::ScopedCoMem<IUnknown*> targets;
   LONG n_targets;
   ASSERT_EQ(S_FALSE, root_view_accessible->get_relationTargetsOfType(
                          alerts_bstr.Get(), 0, &targets, &n_targets));
@@ -340,26 +352,26 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, DISABLED_RetrieveAllAlerts) {
   {
     // SAFETY: get_relationTargetsOfType() is a COM interface which guarantees
     // that exactly n_targets pointers are available starting at targets.
-    auto targets_span = UNSAFE_BUFFERS(base::span(targets, 2u));
+    auto targets_span = UNSAFE_BUFFERS(base::span(targets.get(), 2u));
     ASSERT_TRUE(IsSameObject(infobar_accessible.Get(), targets_span[0]));
     ASSERT_TRUE(IsSameObject(infobar2_accessible.Get(), targets_span[1]));
   }
-  CoTaskMemFree(targets);
+  ReleasePointers(targets.get(), n_targets);
+  targets.Reset(nullptr);
 
   // If we set max_targets to 1, we should only get the first one.
   ASSERT_EQ(S_OK, root_view_accessible->get_relationTargetsOfType(
                       alerts_bstr.Get(), 1, &targets, &n_targets));
   ASSERT_EQ(1, n_targets);
   ASSERT_TRUE(IsSameObject(infobar_accessible.Get(), targets[0]));
-  CoTaskMemFree(targets);
 
   // If we delete the first view, we should only get the second one now.
   delete infobar;
+  targets.Reset(nullptr);
   ASSERT_EQ(S_OK, root_view_accessible->get_relationTargetsOfType(
                       alerts_bstr.Get(), 0, &targets, &n_targets));
   ASSERT_EQ(1, n_targets);
   ASSERT_TRUE(IsSameObject(infobar2_accessible.Get(), targets[0]));
-  CoTaskMemFree(targets);
 }
 
 // Test trying to retrieve child widgets during window close does not crash.
