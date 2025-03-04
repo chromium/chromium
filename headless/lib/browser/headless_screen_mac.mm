@@ -6,8 +6,11 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <optional>
+
 #import "base/apple/scoped_objc_class_swizzler.h"
 #include "base/check_deref.h"
+#include "components/headless/display_util/headless_display_util.h"
 #include "ui/display/screen.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 
@@ -78,7 +81,11 @@ display::Display HeadlessScreenMac::GetDisplayNearestView(
     }
 
     const gfx::Rect bounds = gfx::ScreenRectFromNSRect([ns_view frame]);
-    return GetDisplayFromBounds(bounds);
+    std::optional<display::Display> display =
+        GetDisplayFromScreenRect(display_list().displays(), bounds);
+    if (display) {
+      return display.value();
+    }
   }
   return GetPrimaryDisplay();
 }

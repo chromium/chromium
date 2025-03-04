@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -56,7 +55,6 @@ public class TabSwitcherPaneDrawableCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetTabSwitcherDrawable() {
         assertNotNull(mCoordinator.getTabSwitcherDrawable());
     }

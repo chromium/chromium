@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.compositor.overlays.strip.TestTabModel;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.TabDragSource.TabDragShadowBuilder;
 import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
+import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
@@ -259,7 +260,7 @@ public class TabDragSourceTest {
         assertEquals(
                 "Global state tabBeingDragged not set.",
                 mTabBeingDragged,
-                ((ChromeDropDataAndroid) DragDropGlobalState.getForTesting().getData()).tab);
+                ((ChromeTabDropDataAndroid) DragDropGlobalState.getForTesting().getData()).tab);
         assertNull("Shadow view should be null.", mSourceInstance.getShadowViewForTesting());
     }
 
@@ -286,7 +287,7 @@ public class TabDragSourceTest {
         assertEquals(
                 "Global state tabBeingDragged not set.",
                 mTabBeingDragged,
-                ((ChromeDropDataAndroid) DragDropGlobalState.getForTesting().getData()).tab);
+                ((ChromeTabDropDataAndroid) DragDropGlobalState.getForTesting().getData()).tab);
         assertNotNull(
                 "Shadow view is unexpectedly null.", mSourceInstance.getShadowViewForTesting());
     }
@@ -377,7 +378,7 @@ public class TabDragSourceTest {
         when(mTabModelSelector.getTotalTabCount()).thenReturn(2);
 
         // Verify.
-        callAndVerifyAllowTabDragToCreateInstance(true);
+        callAndVerifyAllowDragToCreateInstance(true);
     }
 
     @Test
@@ -408,7 +409,7 @@ public class TabDragSourceTest {
         MultiWindowUtils.setMaxInstancesForTesting(5);
 
         // Verify.
-        callAndVerifyAllowTabDragToCreateInstance(false);
+        callAndVerifyAllowDragToCreateInstance(false);
     }
 
     @Test
@@ -421,7 +422,7 @@ public class TabDragSourceTest {
         MultiWindowUtils.setMaxInstancesForTesting(5);
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "samsung");
 
-        callAndVerifyAllowTabDragToCreateInstance(true);
+        callAndVerifyAllowDragToCreateInstance(true);
     }
 
     @Test
@@ -433,7 +434,7 @@ public class TabDragSourceTest {
         MultiWindowUtils.setMaxInstancesForTesting(5);
 
         // Verify.
-        callAndVerifyAllowTabDragToCreateInstance(false);
+        callAndVerifyAllowDragToCreateInstance(false);
     }
 
     @Test
@@ -1285,7 +1286,8 @@ public class TabDragSourceTest {
     }
 
     private DragEvent mockDragEvent(int action, float x, float y, Tab tab) {
-        ChromeDropDataAndroid dropData = new ChromeDropDataAndroid.Builder().withTab(tab).build();
+        ChromeDropDataAndroid dropData =
+                new ChromeTabDropDataAndroid.Builder().withTab(tab).build();
         DragEvent event = mock(DragEvent.class);
         when(event.getAction()).thenReturn(action);
         when(event.getX()).thenReturn(x);
@@ -1300,8 +1302,7 @@ public class TabDragSourceTest {
         return event;
     }
 
-    private void callAndVerifyAllowTabDragToCreateInstance(
-            boolean expectedAllowTabDragToCreateInstance) {
+    private void callAndVerifyAllowDragToCreateInstance(boolean expectedAllowDragToCreateInstance) {
         // Verify.
         assertTrue(
                 "Tab drag should start.",
@@ -1318,8 +1319,8 @@ public class TabDragSourceTest {
                         any(DragShadowBuilder.class),
                         dropDataCaptor.capture());
         assertEquals(
-                "DropData.allowTabDragToCreateInstance value is not as expected.",
-                expectedAllowTabDragToCreateInstance,
-                dropDataCaptor.getValue().allowTabDragToCreateInstance);
+                "DropData.allowDragToCreateInstance value is not as expected.",
+                expectedAllowDragToCreateInstance,
+                dropDataCaptor.getValue().allowDragToCreateInstance);
     }
 }

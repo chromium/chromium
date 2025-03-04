@@ -307,7 +307,7 @@ BtmRedirectContext::GetRedirectHeuristicURLs(
 
   const std::string& first_party_site = GetSiteForBtm(first_party_url);
   for (const auto& redirect : redirects_) {
-    const GURL& url = redirect->url.url;
+    const GURL& url = redirect->redirecting_url.url;
     const std::string& site = redirect->site;
 
     // The redirect heuristic does not apply for first-party cookie access.
@@ -372,7 +372,7 @@ void BtmRedirectContext::HandleUncommitted(
                                             initial_url_,
                                             GetRedirectChainLength());
             // Copy the URL of `client_redirect` before moving it.
-            UrlAndSourceId final_url = client_redirect->url;
+            UrlAndSourceId final_url = client_redirect->redirecting_url;
             temp_context.AppendClientRedirect(std::move(client_redirect));
             temp_context.AppendServerRedirects(std::move(server_redirects));
             temp_context.ReportIssue(final_url.url);
@@ -471,7 +471,7 @@ bool AddLateCookieAccess(const GURL& url,
   const size_t lookback = std::min(kMaxLookback, redirects.size());
   for (size_t i = 1; i <= lookback; i++) {
     const size_t offset = redirects.size() - i;
-    if (redirects[offset]->url.url == url) {
+    if (redirects[offset]->redirecting_url.url == url) {
       redirects[offset]->access_type |= ToBtmDataAccessType(op);
 
       // This cookie access might indicate a stateful bounce and ideally we'd
@@ -582,10 +582,11 @@ void Populate3PcExceptions(BrowserContext* browser_context,
   for (BtmRedirectInfoPtr& redirect : redirects) {
     redirect->has_3pc_exception =
         browser_client->IsFullCookieAccessAllowed(browser_context, web_contents,
-                                                  redirect->url.url,
+                                                  redirect->redirecting_url.url,
                                                   initial_url_key) ||
-        browser_client->IsFullCookieAccessAllowed(
-            browser_context, web_contents, redirect->url.url, final_url_key);
+        browser_client->IsFullCookieAccessAllowed(browser_context, web_contents,
+                                                  redirect->redirecting_url.url,
+                                                  final_url_key);
   }
 }
 }  // namespace btm

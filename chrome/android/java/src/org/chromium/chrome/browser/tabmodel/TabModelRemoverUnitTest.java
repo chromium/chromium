@@ -89,7 +89,7 @@ public class TabModelRemoverUnitTest {
     @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
     @Mock private Runnable mFinishBlocking;
 
-    @Captor private ArgumentCaptor<Callback<Integer>> mOnResultCaptor;
+    @Captor private ArgumentCaptor<Callback<@ActionConfirmationResult Integer>> mOnResultCaptor;
     @Captor private ArgumentCaptor<Callback<Boolean>> mOnDeleteGroupResultCaptor;
     @Captor private ArgumentCaptor<Callback<MaybeBlockingResult>> mOnMaybeBlockingResultCaptor;
     @Captor private ArgumentCaptor<List<Tab>> mNewTabCreationCaptor;

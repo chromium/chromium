@@ -563,7 +563,7 @@ class ExtensionService : public ExtensionServiceInterface,
   // AddExtension.
   // |install_flags| is a bitmask of InstallFlags.
   void AddNewOrUpdatedExtension(const Extension* extension,
-                                Extension::State initial_state,
+                                const base::flat_set<int>& disable_reasons,
                                 int install_flags,
                                 const syncer::StringOrdinal& page_ordinal,
                                 const std::string& install_parameter,

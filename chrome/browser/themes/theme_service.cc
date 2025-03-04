@@ -51,6 +51,7 @@
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/uninstall_reason.h"
@@ -353,11 +354,12 @@ void ThemeService::RevertToExtensionTheme(const std::string& extension_id) {
                               ->disabled_extensions()
                               .GetByID(extension_id);
   if (extension && extension->is_theme()) {
-    extensions::ExtensionService* service =
-        extensions::ExtensionSystem::Get(profile_)->extension_service();
-    DCHECK(!service->IsExtensionEnabled(extension->id()));
+    DCHECK(!extensions::ExtensionRegistrar::Get(profile_)->IsExtensionEnabled(
+        extension->id()));
     // |extension| is disabled when reverting to the previous theme via an
     // infobar.
+    extensions::ExtensionService* service =
+        extensions::ExtensionSystem::Get(profile_)->extension_service();
     service->EnableExtension(extension->id());
     // Enabling the extension will call back to SetTheme().
   }

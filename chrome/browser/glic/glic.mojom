@@ -176,6 +176,8 @@ struct WebClientInitialState {
 struct GetTabContextOptions {
   // Whether to include inner text in the response.
   bool include_inner_text;
+  // Maximum size in UTF-8 bytes that the returned innerText data may contain.
+  uint32 inner_text_bytes_limit;
   // Whether to include a viewport screenshot in the response.
   bool include_viewport_screenshot;
     // Whether to include annotated page content in the response.
@@ -500,6 +502,8 @@ struct DocumentData {
   // The innerText of the document at its current state.
   // Currently includes embedded same-origin iframes.
   string inner_text;
+  // Whether `inner_text` was truncated due to `inner_text_bytes_limit`.
+  bool inner_text_truncated;
 };
 
 // Information about a PDF document.

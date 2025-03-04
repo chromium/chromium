@@ -177,6 +177,9 @@ enum BocaValidPref {
   kNavigationSetting = 0,
   // Default caption enablement setting.
   kCaptionEnablementSetting = 1,
+  // Default mediastream setting.
+  // NOTE: Boca should only get but not set the setting.
+  kDefaultMediaStreamSetting = 2,
 };
 
 struct Session {

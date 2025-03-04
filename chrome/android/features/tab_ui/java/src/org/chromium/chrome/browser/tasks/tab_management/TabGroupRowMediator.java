@@ -55,7 +55,7 @@ class TabGroupRowMediator {
     private final TabGroupUiActionHandler mTabGroupUiActionHandler;
     private final ModalDialogManager mModalDialogManager;
     private final ActionConfirmationManager mActionConfirmationManager;
-    private final Supplier<Integer> mFetchGroupState;
+    private final Supplier<@GroupWindowState Integer> mFetchGroupState;
     private final PropertyModel mPropertyModel;
 
     private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
@@ -85,7 +85,7 @@ class TabGroupRowMediator {
             ModalDialogManager modalDialogManager,
             ActionConfirmationManager actionConfirmationManager,
             FaviconResolver faviconResolver,
-            Supplier<Integer> fetchGroupState) {
+            Supplier<@GroupWindowState Integer> fetchGroupState) {
         mContext = context;
         mSavedTabGroup = savedTabGroup;
         mTabGroupModelFilter = tabGroupModelFilter;

@@ -63,8 +63,8 @@ bool PlainTextPainter::DrawWithBidiReorder(
 float PlainTextPainter::ComputeInlineSize(const TextRun& run,
                                           const Font& font,
                                           gfx::RectF* glyph_bounds) {
-  // TODO(crbug.com/389726691): Implement this without Font::Width().
-  return font.Width(run, glyph_bounds);
+  FontCachePurgePreventer purge_preventer;
+  return CreateNode(run, font).AccumulateInlineSize(glyph_bounds);
 }
 
 float PlainTextPainter::ComputeSubInlineSize(const TextRun& run,

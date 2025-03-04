@@ -14,7 +14,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -63,7 +62,6 @@ public class TabGroupFaviconClusterUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateBitmapFrom() {
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         newTab(savedTabGroup, JUnitTestGURLs.URL_1);
@@ -86,7 +84,6 @@ public class TabGroupFaviconClusterUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateBitmapFrom_NoTabs() {
         SavedTabGroup savedTabGroup = new SavedTabGroup();
 
@@ -97,7 +94,6 @@ public class TabGroupFaviconClusterUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateBitmapFrom_FourTabs() {
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         newTab(savedTabGroup, JUnitTestGURLs.URL_1);
@@ -111,7 +107,6 @@ public class TabGroupFaviconClusterUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateBitmapFrom_FiveTabs() {
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         newTab(savedTabGroup, JUnitTestGURLs.URL_1);

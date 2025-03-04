@@ -2945,6 +2945,10 @@ public class CustomTabActivityTest {
     @Test
     @MediumTest
     public void omniboxInCct_testNonInteractiveOmniboxWhenIntentNotEligible() {
+        // TODO: Find a better way to test omnibox interactivity because titleBar is going to have
+        // a click listener to show page info.
+        if (ChromeFeatureList.sCctNestedSecurityIcon.isEnabled()) return;
+
         // By default, omnibox in CCT is not permitted and no stubbing is necessary.
         Intent intent = createMinimalCustomTabIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);

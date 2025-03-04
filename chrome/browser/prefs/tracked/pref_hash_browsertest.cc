@@ -881,10 +881,11 @@ class PrefHashBrowserTestChangedSplitPref : public PrefHashBrowserTestBase {
     // Tamper with any installed setting for good.crx
     base::Value::Dict* good_crx_dict = extensions_dict->FindDict(kGoodCrxId);
     ASSERT_TRUE(good_crx_dict);
-    std::optional<int> good_crx_state = good_crx_dict->FindInt("state");
-    ASSERT_TRUE(good_crx_state);
-    EXPECT_EQ(extensions::Extension::ENABLED, *good_crx_state);
-    good_crx_dict->Set("state", extensions::Extension::DISABLED);
+
+    std::optional<int> good_crx_incognito_access =
+        good_crx_dict->FindBool("incognito");
+    ASSERT_FALSE(good_crx_incognito_access.has_value());
+    good_crx_dict->Set("incognito", true);
 
     // Drop a fake extension (for the purpose of this test, dropped settings
     // don't need to be valid extension settings).

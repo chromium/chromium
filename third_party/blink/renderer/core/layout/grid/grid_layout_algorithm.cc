@@ -1321,7 +1321,7 @@ wtf_size_t GridLayoutAlgorithm::ComputeAutomaticRepetitionsForSubgrid(
 }
 
 void GridLayoutAlgorithm::ComputeGridItemBaselines(
-    const scoped_refptr<const GridLayoutTree>& layout_tree,
+    const GridLayoutTreePtr& layout_tree,
     const GridSizingSubtree& sizing_subtree,
     GridTrackSizingDirection track_direction,
     SizingConstraint sizing_constraint) const {
@@ -1803,7 +1803,7 @@ void GridLayoutAlgorithm::CompleteTrackSizingAlgorithm(
 }
 
 void GridLayoutAlgorithm::ComputeBaselineAlignment(
-    const scoped_refptr<const GridLayoutTree>& layout_tree,
+    const GridLayoutTreePtr& layout_tree,
     const GridSizingSubtree& sizing_subtree,
     const SubgriddedItemData& opt_subgrid_data,
     const std::optional<GridTrackSizingDirection>& opt_track_direction,

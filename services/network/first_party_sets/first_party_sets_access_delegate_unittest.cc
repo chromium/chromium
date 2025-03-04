@@ -10,7 +10,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -58,11 +57,6 @@ const net::SchemefulSite kSet3AssociatedSite1(
     GURL("https://set3associatedSite1.test"));
 const int64_t kClearAtRunId(2);
 const int64_t kBrowserRunId(3);
-
-const char kDelayedQueriesCountHistogram[] =
-    "Cookie.FirstPartySets.ContextDelayedQueriesCount";
-const char kMostDelayedQuerDeltaHistogram[] =
-    "Cookie.FirstPartySets.ContextMostDelayedQueryDelta";
 
 mojom::FirstPartySetsAccessDelegateParamsPtr
 CreateFirstPartySetsAccessDelegateParams(bool enabled) {
@@ -611,7 +605,6 @@ class AsyncNonwaitingFirstPartySetsAccessDelegateTest
 
 TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
        QueryBeforeReady_ComputeMetadata) {
-  base::HistogramTester histogram_tester;
   EXPECT_EQ(
       std::make_optional(
           std::make_pair(net::FirstPartySetMetadata(),
@@ -629,17 +622,10 @@ TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
                          net::FirstPartySetsCacheFilter::MatchInfo())),
       delegate().ComputeMetadata(kSet1AssociatedSite1, &kSet1AssociatedSite1,
                                  base::NullCallback()));
-
-  histogram_tester.ExpectUniqueSample(
-      kDelayedQueriesCountHistogram, /*sample=*/0, /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(kMostDelayedQuerDeltaHistogram,
-                                      /*sample=*/0,
-                                      /*expected_bucket_count=*/1);
 }
 
 TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
        QueryBeforeReady_FindEntries) {
-  base::HistogramTester histogram_tester;
   EXPECT_THAT(
       delegate().FindEntries({kSet1AssociatedSite1, kSet2AssociatedSite1},
                              base::NullCallback()),
@@ -659,16 +645,10 @@ TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
            net::FirstPartySetEntry(kSet2Primary, net::SiteType::kAssociated,
                                    0)},
       }));
-  histogram_tester.ExpectUniqueSample(
-      kDelayedQueriesCountHistogram, /*sample=*/0, /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(kMostDelayedQuerDeltaHistogram,
-                                      /*sample=*/0,
-                                      /*expected_bucket_count=*/1);
 }
 
 TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
        OverrideSets_ComputeMetadata) {
-  base::HistogramTester histogram_tester;
   delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent(
       net::FirstPartySetsContextConfig::Create(
           {
@@ -691,16 +671,10 @@ TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
                     net::FirstPartySetEntry(kSet3Primary,
                                             net::SiteType::kAssociated, 0)),
                 net::FirstPartySetsCacheFilter::MatchInfo()));
-  histogram_tester.ExpectUniqueSample(
-      kDelayedQueriesCountHistogram, /*sample=*/0, /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(kMostDelayedQuerDeltaHistogram,
-                                      /*sample=*/0,
-                                      /*expected_bucket_count=*/1);
 }
 
 TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
        OverrideSets_FindEntries) {
-  base::HistogramTester histogram_tester;
   delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent(
       net::FirstPartySetsContextConfig::Create(
           {
@@ -714,11 +688,6 @@ TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
 
   EXPECT_THAT(FindEntriesAndWait({kSet3Primary}),
               UnorderedElementsAre(Pair(kSet3Primary, _)));
-  histogram_tester.ExpectUniqueSample(
-      kDelayedQueriesCountHistogram, /*sample=*/0, /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(kMostDelayedQuerDeltaHistogram,
-                                      /*sample=*/0,
-                                      /*expected_bucket_count=*/1);
 }
 
 }  // namespace network

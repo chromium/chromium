@@ -13,7 +13,6 @@ import android.app.Activity;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle.State;
 import androidx.test.core.app.ActivityScenario;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -78,7 +77,6 @@ public class TabArchiveSettingsFragmentUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testLaunchSettings() {
         mArchiveSettings.setArchiveEnabled(true);
         mArchiveSettings.setArchiveTimeDeltaDays(7);
@@ -151,7 +149,6 @@ public class TabArchiveSettingsFragmentUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testArchiveTimeDeltaSettings() {
         mArchiveSettings.setArchiveEnabled(true);
         mArchiveSettings.setArchiveTimeDeltaDays(7);

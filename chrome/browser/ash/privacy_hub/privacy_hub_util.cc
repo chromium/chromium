@@ -390,7 +390,7 @@ void OpenSystemSettings(ContentType type) {
   }
 
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      ProfileManager::GetPrimaryUserProfile(), settings_path);
+      ProfileManager::GetActiveUserProfile(), settings_path);
 }
 
 ScopedUserPermissionPrefForTest::ScopedUserPermissionPrefForTest(

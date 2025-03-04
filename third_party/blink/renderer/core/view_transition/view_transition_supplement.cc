@@ -269,6 +269,29 @@ ViewTransition* ViewTransitionSupplement::GetTransition(Element& element) {
   return transition == element_transitions_.end() ? nullptr : transition->value;
 }
 
+void ViewTransitionSupplement::ForEachTransition(
+    base::FunctionRef<void(ViewTransition&)> function) {
+  if (!RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()) {
+    if (ViewTransition* document_transition = GetTransition()) {
+      function(*document_transition);
+    }
+    DCHECK(element_transitions_.empty());
+    return;
+  }
+
+  // Local copy of the list, since the function may modify the transition map.
+  HeapVector<Member<ViewTransition>> transitions;
+  if (ViewTransition* document_transition = GetTransition()) {
+    transitions.push_back(document_transition);
+  }
+  for (auto& element_transition : element_transitions_.Values()) {
+    transitions.push_back(element_transition);
+  }
+  for (auto transition : transitions) {
+    function(*transition);
+  }
+}
+
 ViewTransitionSupplement::ViewTransitionSupplement(Document& document)
     : Supplement<Document>(document) {}
 

@@ -63,7 +63,8 @@ class TabModelRemover {
          * @param onResult A callback invoked with the {@link ActionConfirmationResult} of showing
          *     the dialog. May be invoked synchronously in some cases.
          */
-        void showTabGroupDeletionConfirmationDialog(@NonNull Callback<Integer> onResult);
+        void showTabGroupDeletionConfirmationDialog(
+                @NonNull Callback<@ActionConfirmationResult Integer> onResult);
 
         /**
          * Requests to show a dialog asking the user whether to keep the collaboration.

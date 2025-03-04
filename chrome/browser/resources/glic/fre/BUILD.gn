@@ -11,7 +11,10 @@ build_webui("build") {
 
   static_files = [ "fre.html" ]
 
-  non_web_component_files = [ "main.ts" ]
+  non_web_component_files = [
+    "fre_app_controller.ts",
+    "main.ts",
+  ]
 
   webui_context_type = "trusted"
   ts_deps = [

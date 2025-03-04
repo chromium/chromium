@@ -72,7 +72,7 @@ BtmRedirectInfo::BtmRedirectInfo(const UrlAndSourceId& url,
                                  bool was_response_cached,
                                  int response_code,
                                  base::TimeDelta server_bounce_delay)
-    : url(url),
+    : redirecting_url(url),
       site(GetSiteForBtm(url.url)),
       redirect_type(redirect_type),
       access_type(access_type),

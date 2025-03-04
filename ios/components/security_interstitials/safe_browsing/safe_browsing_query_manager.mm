@@ -137,20 +137,15 @@ void SafeBrowsingQueryManager::UrlCheckFinished(
 
   // Store the query result.
   Result& result = query_result_pair->second;
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
-    if (result.sync_check_complete || result.async_check_complete) {
-      // If one result has already been received, combine results.
-      result.proceed = result.proceed && proceed;
-      result.show_error_page = result.show_error_page || show_error_page;
-    } else {
-      result.proceed = proceed;
-      result.show_error_page = show_error_page;
-    }
+  if (result.sync_check_complete || result.async_check_complete) {
+    // If one result has already been received, combine results.
+    result.proceed = result.proceed && proceed;
+    result.show_error_page = result.show_error_page || show_error_page;
   } else {
     result.proceed = proceed;
     result.show_error_page = show_error_page;
   }
+
   // If an error page is requested, an UnsafeResource must be stored before
   // the execution of its completion block.
   DCHECK(!show_error_page || result.resource);
@@ -158,42 +153,28 @@ void SafeBrowsingQueryManager::UrlCheckFinished(
   // Notify observers of the completed URL check. `this` might get destroyed
   // when an observer is notified.
   auto weak_this = weak_factory_.GetWeakPtr();
+  if (type == QueryType::kAsync) {
+    result.async_check_complete = true;
+  } else if (type == QueryType::kSync) {
+    result.sync_check_complete = true;
+  }
 
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
+  for (auto& observer : observers_) {
+    const QueryData& query_data =
+        QueryData(this, query, type, result, performed_check);
     if (type == QueryType::kAsync) {
-      result.async_check_complete = true;
+      observer.SafeBrowsingAsyncQueryFinished(query_data);
     } else if (type == QueryType::kSync) {
-      result.sync_check_complete = true;
+      observer.SafeBrowsingSyncQueryFinished(query_data);
     }
 
-    for (auto& observer : observers_) {
-      const QueryData& query_data =
-          QueryData(this, query, type, result, performed_check);
-      if (type == QueryType::kAsync) {
-        observer.SafeBrowsingAsyncQueryFinished(query_data);
-      } else if (type == QueryType::kSync) {
-        observer.SafeBrowsingSyncQueryFinished(query_data);
-      }
-
-      if (!weak_this) {
-        return;
-      }
+    if (!weak_this) {
+      return;
     }
+  }
 
-    // Clear out the state since the query is finished.
-    if (result.sync_check_complete && result.async_check_complete) {
-      results_.erase(query_result_pair);
-    }
-  } else {
-    for (auto& observer : observers_) {
-      observer.SafeBrowsingQueryFinished(this, query, result, performed_check);
-      if (!weak_this) {
-        return;
-      }
-    }
-
-    // Clear out the state since the query is finished.
+  // Clear out the state since the query is finished.
+  if (result.sync_check_complete && result.async_check_complete) {
     results_.erase(query_result_pair);
   }
 }

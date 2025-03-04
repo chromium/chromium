@@ -5670,7 +5670,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ImportantFile.WriteDuration{ImportantFileClients}" units="ms"
     expires_after="2025-07-13">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
     Time spent in the background thread to write serialized data into an
@@ -7356,7 +7356,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageImageService.Backend.Suggest.Result{ClientId}"
     enum="PageImageServiceResult" expires_after="2025-03-09">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>1457319</component>
   <summary>
@@ -7370,7 +7370,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageImageService.Backend{ClientId}"
     enum="PageImageServiceBackend" expires_after="2025-08-10">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>1457319</component>
   <summary>
@@ -7384,7 +7384,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageImageService.ConsentStatusOnTimeout"
     enum="PageImageServiceConsentStatus" expires_after="2025-03-09">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>1457319</component>
   <summary>
@@ -7396,7 +7396,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageImageService.ConsentStatusRequestCount" enum="Boolean"
     expires_after="2025-03-09">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>1457319</component>
   <summary>
@@ -7407,7 +7407,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageImageService.ConsentStatus{ClientId}"
     enum="PageImageServiceConsentStatus" expires_after="2025-05-11">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>1457319</component>
   <summary>

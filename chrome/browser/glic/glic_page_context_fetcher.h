@@ -63,6 +63,8 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
 
   glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback callback_;
 
+  mojom::GetTabContextOptions options_;
+
   // Intermediate results:
 
   // Whether work is complete for each task, does not imply success.

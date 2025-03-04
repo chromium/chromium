@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/boca/babelorca/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -17,9 +18,11 @@ namespace ash::babelorca {
 
 CaptionBubbleSettingsImpl::CaptionBubbleSettingsImpl(
     PrefService* profile_prefs,
-    std::string_view caption_language_code)
+    std::string_view caption_language_code,
+    base::RepeatingClosure on_local_caption_closed_cb)
     : profile_prefs_(profile_prefs),
-      caption_language_code_(caption_language_code) {}
+      caption_language_code_(caption_language_code),
+      on_local_caption_closed_cb_(on_local_caption_closed_cb) {}
 
 CaptionBubbleSettingsImpl::~CaptionBubbleSettingsImpl() = default;
 
@@ -60,7 +63,11 @@ std::string CaptionBubbleSettingsImpl::GetLiveTranslateTargetLanguageCode() {
   return profile_prefs_->GetString(prefs::kTranslateTargetLanguageCode);
 }
 
-void CaptionBubbleSettingsImpl::SetLiveCaptionEnabled(bool enabled) {}
+void CaptionBubbleSettingsImpl::SetLiveCaptionEnabled(bool enabled) {
+  if (!enabled) {
+    on_local_caption_closed_cb_.Run();
+  }
+}
 
 void CaptionBubbleSettingsImpl::SetLiveCaptionBubbleExpanded(bool expanded) {
   profile_prefs_->SetBoolean(prefs::kCaptionBubbleExpanded, expanded);

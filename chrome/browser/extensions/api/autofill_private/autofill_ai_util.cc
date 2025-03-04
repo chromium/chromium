@@ -86,10 +86,14 @@ std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
     return std::nullopt;
   }
   EntityType entity_type(entity_type_name.value());
-  return EntityInstance(
-      std::move(entity_type), attributes,
-      base::Uuid::ParseLowercase(private_api_entity_instance.guid),
-      private_api_entity_instance.nickname, base::Time::Now());
+  // Newly added entities need to have a guid generated for them.
+  base::Uuid guid =
+      private_api_entity_instance.guid.empty()
+          ? base::Uuid::GenerateRandomV4()
+          : base::Uuid::ParseLowercase(private_api_entity_instance.guid);
+  return EntityInstance(std::move(entity_type), attributes, std::move(guid),
+                        private_api_entity_instance.nickname,
+                        base::Time::Now());
 }
 
 autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(

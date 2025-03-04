@@ -12,8 +12,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -66,7 +64,6 @@ public class TabListEditorSelectionActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testInherentActionProperties() {
         Assert.assertEquals(
                 R.id.tab_list_editor_selection_menu_item,
@@ -89,7 +86,6 @@ public class TabListEditorSelectionActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTitleStateChange() {
         // For this test we will assume there are 2 tabs.
         List<Integer> selectedTabIds = new ArrayList<>();
@@ -143,7 +139,6 @@ public class TabListEditorSelectionActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSelectedAll_FromNoneSelected() {
         List<Integer> selectedTabIds = new ArrayList<>();
         when(mDelegate.areAllTabsSelected()).thenReturn(false);
@@ -154,7 +149,6 @@ public class TabListEditorSelectionActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSelectedAll_FromSomeSelected() {
         List<Integer> selectedTabIds = new ArrayList<>();
         selectedTabIds.add(5);
@@ -168,7 +162,6 @@ public class TabListEditorSelectionActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDeselectedAll_FromAllSelected() {
         List<Integer> selectedTabIds = new ArrayList<>();
         selectedTabIds.add(5);

@@ -677,9 +677,9 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCctOpenInBrowserButtonIfEnabledByEmbedder =
             newCachedFlag(CCT_OPEN_IN_BROWSER_BUTTON_IF_ENABLED_BY_EMBEDDER, true);
     public static final CachedFlag sCctRevampedBranding =
-            newCachedFlag(CCT_REVAMPED_BRANDING, false);
+            newCachedFlag(CCT_REVAMPED_BRANDING, true);
     public static final CachedFlag sCctNestedSecurityIcon =
-            newCachedFlag(CCT_NESTED_SECURITY_ICON, false);
+            newCachedFlag(CCT_NESTED_SECURITY_ICON, true);
     public static final CachedFlag sCctTabModalDialog = newCachedFlag(CCT_TAB_MODAL_DIALOG, true);
     public static final CachedFlag sClankStartupLatencyInjection =
             newCachedFlag(CLANK_STARTUP_LATENCY_INJECTION, false);

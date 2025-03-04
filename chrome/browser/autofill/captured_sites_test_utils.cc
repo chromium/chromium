@@ -786,7 +786,13 @@ bool WebPageReplayServerWrapper::RunWebPageReplayCmd(
 #elif BUILDFLAG(IS_MAC)
   base::FilePath wpr_executable_binary =
       base::FilePath(FILE_PATH_LITERAL("mac"))
+#if defined(ARCH_CPU_ARM64)
+          .AppendASCII("arm64")
+#elif defined(ARCH_CPU_X86_64)
           .AppendASCII("x86_64")
+#else
+#error Mac CPU arch is not supported.
+#endif
           .AppendASCII("wpr");
 #elif BUILDFLAG(IS_POSIX)
   base::FilePath wpr_executable_binary =

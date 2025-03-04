@@ -117,3 +117,7 @@ Browser* TestBrowser::CreateInactiveBrowser() {
 void TestBrowser::DestroyInactiveBrowser() {
   NOTREACHED();
 }
+
+void TestBrowser::SetCommandDispatcher(CommandDispatcher* dispatcher) {
+  command_dispatcher_ = dispatcher;
+}

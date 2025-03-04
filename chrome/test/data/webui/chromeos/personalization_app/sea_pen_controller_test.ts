@@ -184,6 +184,7 @@ suite('SeaPen reducers', () => {
       layout: WallpaperLayout.kCenterCropped,
       descriptionContent: '',
       descriptionTitle: '',
+      actionUrl: null,
     };
     personalizationStore.data.wallpaper.seaPen.currentSelected = 123;
 
@@ -230,6 +231,7 @@ suite('SeaPen reducers', () => {
       layout: WallpaperLayout.kCenterCropped,
       descriptionContent: '',
       descriptionTitle: '',
+      actionUrl: null,
     };
     personalizationStore.data.wallpaper.seaPen.currentSelected = 123;
 

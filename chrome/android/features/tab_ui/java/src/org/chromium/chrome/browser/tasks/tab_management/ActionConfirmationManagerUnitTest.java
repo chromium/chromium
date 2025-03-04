@@ -77,7 +77,7 @@ public class ActionConfirmationManagerUnitTest {
     @Mock private Profile mProfile;
     @Mock private Activity mActivity;
     @Mock private ModalDialogManager mModalDialogManager;
-    @Mock private Callback<Integer> mOnResult;
+    @Mock private Callback<@ActionConfirmationResult Integer> mOnResult;
     @Mock private Callback<MaybeBlockingResult> mOnMaybeBlockingResult;
     @Mock private SyncService mSyncService;
     @Mock private PrefService mPrefService;

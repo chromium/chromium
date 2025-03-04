@@ -568,7 +568,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   bool glic_enabled = false;
 #if BUILDFLAG(ENABLE_GLIC)
   AddSettingsPageUIHandler(std::make_unique<GlicHandler>());
-  glic_enabled = glic::GlicEnabling::IsEnabledAndConsentForProfile(profile);
+  glic_enabled = glic::GlicEnabling::ShouldShowSettingsPage(profile);
   html_source->AddBoolean("showGlicSettings", glic_enabled);
 #endif
 

@@ -380,9 +380,6 @@ void ChromeExtensionRegistrarDelegate::CheckPermissionsIncrease(
   // still remember that "omnibox" had been granted, so that if the
   // extension once again includes "omnibox" in an upgrade, the extension
   // can upgrade without requiring this user's approval.
-  auto passkey = ExtensionPrefs::DisableReasonRawManipulationPasskey();
-  base::flat_set<int> disable_reasons =
-      extension_prefs_->GetRawDisableReasons(passkey, extension->id());
 
   // Silently grant all active permissions to pre-installed apps and apps
   // installed in kiosk mode.
@@ -433,22 +430,13 @@ void ChromeExtensionRegistrarDelegate::CheckPermissionsIncrease(
     }
   }
 
-  bool previously_disabled =
-      extension_prefs_->IsExtensionDisabled(extension->id());
-  // TODO(devlin): Is the |is_extension_loaded| check needed here?
-  if (is_extension_loaded && previously_disabled) {
-    // Legacy disabled extensions do not have a disable reason. Infer that it
-    // was likely disabled by the user.
-    if (disable_reasons.empty()) {
-      disable_reasons.insert(disable_reason::DISABLE_USER_ACTION);
-    }
-  }
+  const DisableReasonSet disable_reasons =
+      extension_prefs_->GetDisableReasons(extension->id());
 
   // If the extension is disabled due to a permissions increase, but does in
   // fact have all permissions, remove that disable reason.
   if (disable_reasons.contains(disable_reason::DISABLE_PERMISSIONS_INCREASE) &&
       !is_privilege_increase) {
-    disable_reasons.erase(disable_reason::DISABLE_PERMISSIONS_INCREASE);
     extension_prefs_->RemoveDisableReason(
         extension->id(), disable_reason::DISABLE_PERMISSIONS_INCREASE);
   }
@@ -459,22 +447,8 @@ void ChromeExtensionRegistrarDelegate::CheckPermissionsIncrease(
   // reason.
   if (is_privilege_increase &&
       !disable_reasons.contains(disable_reason::DISABLE_REMOTE_INSTALL)) {
-    disable_reasons.insert(disable_reason::DISABLE_PERMISSIONS_INCREASE);
-  }
-
-  if (disable_reasons.empty()) {
-    extension_prefs_->SetExtensionEnabled(extension->id());
-  } else {
-    // TODO(crbug.com/372186532): We have an interesting side effect here. The
-    // method below will be called even if the code above doesn't change any
-    // disable reasons. If the extension has disable reasons, but its enabled
-    // state is incorrect, the call below will fix it by setting the correct
-    // enabled state. Disable reasons and enabled state can go out-of-sync if
-    // ExtensionRegistrar::DisableExtension() is called for an extension that is
-    // blocklisted. Until we fix this, we must use raw get/set methods here and
-    // can not convert the above code to a series of additions / removals.
-    extension_prefs_->SetExtensionDisabledWithRawReasons(
-        passkey, extension->id(), disable_reasons);
+    extension_prefs_->AddDisableReason(
+        extension->id(), disable_reason::DISABLE_PERMISSIONS_INCREASE);
   }
 }
 

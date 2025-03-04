@@ -713,8 +713,8 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             // If there's an animation, updating offsets here causes incorrect animation frames
             // because the browser submits a frame with the height update before the offsets in the
             // renderer and browser are updated.
-            if (ChromeFeatureList.sBcivBottomControls.isEnabled()
-                    && !shouldAnimateBrowserControlsHeightChanges()) {
+            if (!ChromeFeatureList.sBcivBottomControls.isEnabled()
+                    || !shouldAnimateBrowserControlsHeightChanges()) {
                 notifyControlOffsetChanged();
             }
             notifyControlsPositionChanged();
@@ -1259,7 +1259,10 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
 
         OffsetTagConstraints currentBottomConstraints =
                 mOffsetTagDefinitions.getConstraints().getBottomControlsConstraints();
-        int additionalHeight = (int) currentBottomConstraints.maxY() - (oldHeight - oldMinHeight);
+        int additionalHeight = 0;
+        if (currentBottomConstraints != null) {
+            additionalHeight = (int) currentBottomConstraints.maxY() - (oldHeight - oldMinHeight);
+        }
         OffsetTagConstraints newBottomConstraints =
                 new OffsetTagConstraints(0, 0, minY, maxY + additionalHeight);
         BrowserControlsOffsetTagConstraints constraints =

@@ -252,11 +252,10 @@ void WebRequestRulesRegistryTest::SetUp() {
   CHECK(ExtensionRegistry::Get(&profile_));
   ExtensionRegistry::Get(&profile_)->AddEnabled(extension_);
   ExtensionPrefs::Get(&profile_)->OnExtensionInstalled(
-      extension_.get(), Extension::State::ENABLED, syncer::StringOrdinal(), "");
+      extension_.get(), /*disable_reasons=*/{}, syncer::StringOrdinal(), "");
   ExtensionRegistry::Get(&profile_)->AddEnabled(extension2_);
   ExtensionPrefs::Get(&profile_)->OnExtensionInstalled(
-      extension2_.get(), Extension::State::ENABLED, syncer::StringOrdinal(),
-      "");
+      extension2_.get(), /*disable_reasons=*/{}, syncer::StringOrdinal(), "");
 }
 
 

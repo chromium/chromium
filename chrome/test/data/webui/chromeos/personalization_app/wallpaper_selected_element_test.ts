@@ -20,6 +20,10 @@ import type {TestWallpaperProvider} from './test_wallpaper_interface_provider.js
 const descriptionOptionsId = 'descriptionOptions';
 const descriptionDialogId = 'descriptionDialog';
 const dailyRefreshButtonId = 'dailyRefresh';
+const learnMoreContainerId = 'descriptionDialogLearnMore';
+const actionUrl = {
+  url: 'https://example.com/',
+};
 const photos: GooglePhotosPhoto[] = [
   // First row.
   {
@@ -181,6 +185,7 @@ suite('WallpaperSelectedElementTest', function() {
         personalizationStore.data.wallpaper.currentSelected = {
           descriptionContent: '',
           descriptionTitle: '',
+          actionUrl: null,
           key: '/sea_pen/111.jpg',
           layout: WallpaperLayout.kCenterCropped,
           type: WallpaperType.kSeaPen,
@@ -486,6 +491,7 @@ suite('WallpaperSelectedElementTest', function() {
     personalizationStore.data.wallpaper.currentSelected = {
       descriptionContent: '',
       descriptionTitle: '',
+      actionUrl: null,
       key: 'key',
       layout: WallpaperLayout.kStretch,
       type: WallpaperType.kOnceGooglePhotos,
@@ -523,6 +529,7 @@ suite('WallpaperSelectedElementTest', function() {
     const currentSelected: CurrentWallpaper = {
       descriptionContent: '',
       descriptionTitle: '',
+      actionUrl: null,
       key: 'key',
       layout: WallpaperLayout.kStretch,
       type: WallpaperType.kDefault,
@@ -548,6 +555,7 @@ suite('WallpaperSelectedElementTest', function() {
         const currentSelected: CurrentWallpaper = {
           descriptionContent: '',
           descriptionTitle: '',
+          actionUrl: null,
           key: 'key',
           layout: WallpaperLayout.kStretch,
           type: WallpaperType.kDefault,
@@ -586,6 +594,7 @@ suite('WallpaperSelectedElementTest', function() {
         personalizationStore.data.wallpaper.currentSelected = {
           descriptionContent: '',
           descriptionTitle: '',
+          actionUrl: null,
           key: 'key',
           layout: WallpaperLayout.kStretch,
           type: WallpaperType.kDefault,
@@ -628,6 +637,7 @@ suite('WallpaperSelectedElementTest', function() {
         personalizationStore.data.wallpaper.currentSelected = {
           descriptionContent: '',
           descriptionTitle: '',
+          actionUrl: null,
           key: 'key',
           layout: WallpaperLayout.kStretch,
           type: WallpaperType.kDefault,
@@ -667,6 +677,7 @@ suite('WallpaperSelectedElementTest', function() {
     personalizationStore.data.wallpaper.currentSelected = {
       descriptionContent: '',
       descriptionTitle: '',
+      actionUrl: null,
       key: 'key',
       layout: WallpaperLayout.kStretch,
       type: WallpaperType.kDefault,
@@ -709,6 +720,7 @@ suite('WallpaperSelectedElementTest', function() {
         personalizationStore.data.wallpaper.currentSelected = {
           descriptionContent: '',
           descriptionTitle: '',
+          actionUrl: null,
           key: 'key',
           layout: WallpaperLayout.kStretch,
           type: WallpaperType.kDefault,
@@ -743,6 +755,7 @@ suite('WallpaperSelectedElementTest', function() {
     personalizationStore.data.wallpaper.currentSelected = {
       descriptionContent: '',
       descriptionTitle: '',
+      actionUrl: null,
       key: 'key',
       layout: WallpaperLayout.kStretch,
       type: WallpaperType.kDefault,
@@ -781,6 +794,7 @@ suite('WallpaperSelectedElementTest', function() {
     personalizationStore.data.wallpaper.currentSelected = {
       descriptionContent: '',
       descriptionTitle: '',
+      actionUrl: null,
       key: 'key',
       layout: WallpaperLayout.kStretch,
       type: WallpaperType.kDefault,
@@ -821,6 +835,7 @@ suite('WallpaperSelectedElementTest', function() {
         personalizationStore.data.wallpaper.currentSelected = {
           descriptionContent: '',
           descriptionTitle: '',
+          actionUrl: null,
           key: 'key',
           layout: WallpaperLayout.kStretch,
           type: WallpaperType.kDefault,
@@ -861,6 +876,7 @@ suite('WallpaperSelectedElementTest', function() {
     personalizationStore.data.wallpaper.currentSelected = {
       descriptionContent: 'content text',
       descriptionTitle: 'title text',
+      actionUrl: null,
       key: 'key',
       layout: WallpaperLayout.kStretch,
       type: WallpaperType.kDefault,
@@ -891,11 +907,13 @@ suite('WallpaperSelectedElementTest', function() {
 
     assertEquals(
         'title text',
-        dialog.querySelector<HTMLHeadingElement>(`h3[slot='title']`)!.innerText,
+        dialog.querySelector<HTMLHeadingElement>(
+                  `h3[slot='title']`)!.innerText.trim(),
         'title text matches');
     assertEquals(
         'content text',
-        dialog.querySelector<HTMLParagraphElement>(`p[slot='body']`)!.innerText,
+        dialog.querySelector<HTMLParagraphElement>(
+                  `p[slot='body']`)!.innerText.trim(),
         'content text matches');
 
     wallpaperSelectedElement.shadowRoot!.getElementById(
@@ -906,5 +924,95 @@ suite('WallpaperSelectedElementTest', function() {
         wallpaperSelectedElement.shadowRoot!.getElementById(
             descriptionDialogId),
         'no description dialog after close button clicked');
+  });
+
+  test('learn more link present if actionUrl exists', async () => {
+    personalizationStore.data.wallpaper.currentSelected = {
+      descriptionContent: 'content text',
+      descriptionTitle: 'title text',
+      actionUrl: null,
+      key: 'key',
+      layout: WallpaperLayout.kStretch,
+      type: WallpaperType.kDefault,
+    };
+    personalizationStore.data.wallpaper.loading.selected.image = false;
+    personalizationStore.data.wallpaper.loading.selected.attribution = false;
+
+    wallpaperSelectedElement = initElement(
+        WallpaperSelectedElement,
+        {
+          path: Paths.COLLECTIONS,
+        },
+    );
+    await waitAfterNextRender(wallpaperSelectedElement);
+
+    wallpaperSelectedElement.shadowRoot!.getElementById(descriptionOptionsId)!
+        .querySelector('cr-button')!.click();
+    await waitAfterNextRender(wallpaperSelectedElement);
+
+    let learnMoreContainer =
+        wallpaperSelectedElement?.shadowRoot?.getElementById(
+            learnMoreContainerId);
+    assertFalse(
+        !!learnMoreContainer, 'learn more container should not exist yet');
+
+
+    personalizationStore.data.wallpaper.currentSelected = {
+      ...personalizationStore.data.wallpaper.currentSelected,
+      actionUrl,
+    };
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(wallpaperSelectedElement);
+
+    learnMoreContainer = wallpaperSelectedElement?.shadowRoot?.getElementById(
+        learnMoreContainerId);
+    assertTrue(!!learnMoreContainer, 'learn more container should exist');
+
+    assertEquals(
+        learnMoreContainer.querySelector('a')?.href, actionUrl.url,
+        'url is displayed');
+  });
+
+  test('learn more link sanitizes href', async () => {
+    personalizationStore.data.wallpaper.currentSelected = {
+      descriptionContent: 'content text',
+      descriptionTitle: 'title text',
+      actionUrl,
+      key: 'key',
+      layout: WallpaperLayout.kStretch,
+      type: WallpaperType.kDefault,
+    };
+    personalizationStore.data.wallpaper.loading.selected.image = false;
+    personalizationStore.data.wallpaper.loading.selected.attribution = false;
+
+    wallpaperSelectedElement = initElement(
+        WallpaperSelectedElement,
+        {
+          path: Paths.COLLECTIONS,
+        },
+    );
+    await waitAfterNextRender(wallpaperSelectedElement);
+
+    wallpaperSelectedElement.shadowRoot!.getElementById(descriptionOptionsId)!
+        .querySelector('cr-button')!.click();
+    await waitAfterNextRender(wallpaperSelectedElement);
+
+    assertTrue(
+        !!wallpaperSelectedElement?.shadowRoot?.getElementById(
+            learnMoreContainerId),
+        'learn more container exists with valid url');
+
+    personalizationStore.data.wallpaper.currentSelected = {
+      ...personalizationStore.data.wallpaper.currentSelected,
+      actionUrl: {url: '<script>bad</script>'},
+    };
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(wallpaperSelectedElement);
+
+    assertEquals(
+        null,
+        wallpaperSelectedElement?.shadowRoot?.getElementById(
+            learnMoreContainerId),
+        'learn more container is gone due to invalid link');
   });
 });

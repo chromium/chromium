@@ -16,8 +16,6 @@ class ExtensionPrefs;
 class ExtensionPrefsObserver {
  public:
   // Called when the reasons for an extension being disabled have changed.
-  // This is *not* called when the disable reasons change due to the extension
-  // being enabled/disabled.
   virtual void OnExtensionDisableReasonsChanged(
       const ExtensionId& extension_id,
       DisableReasonSet disabled_reasons) {}
@@ -38,6 +36,8 @@ class ExtensionPrefsObserver {
   // Note: This does not necessarily correspond to the extension being loaded/
   // unloaded. For that, observe the ExtensionRegistry, and reconcile that the
   // events might not match up.
+  // TODO(crbug.com/40554334): Remove this and migrate consumers to
+  // OnExtensionDisableReasonsChanged.
   virtual void OnExtensionStateChanged(const ExtensionId& extension_id,
                                        bool state) {}
 

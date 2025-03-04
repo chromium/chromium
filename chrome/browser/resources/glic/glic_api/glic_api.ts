@@ -452,11 +452,7 @@ export declare interface PanelState {
 /** The default value of TabContextOptions.pdfSizeLimit. */
 export const DEFAULT_PDF_SIZE_LIMIT = 64 * 1024 * 1024;
 
-/**
- * @todo Not yet implemented. https://crbug.com/383110287
- *
- * The default value of TabContextOptions.innerTextBytesLimit.
- */
+/** The default value of TabContextOptions.innerTextBytesLimit. */
 export const DEFAULT_INNER_TEXT_BYTES_LIMIT = 20000;
 
 /** Options for getting context from a tab. */
@@ -467,8 +463,6 @@ export declare interface TabContextOptions {
    */
   innerText?: boolean;
   /**
-   * @todo Not yet implemented. https://crbug.com/383110287
-   *
    * Maximum size in UTF-8 bytes that the returned innerText data may contain.
    * If exceeded, the innerText will be truncated to the nearest character that
    * will leave the string less than or equal to the specified byte size.
@@ -548,6 +542,9 @@ export declare interface DocumentData {
    * embedded same-origin iframes.
    */
   innerText?: string;
+
+  /** Whether `innerText` was truncated due to `innerTextBytesLimit`. */
+  innerTextTruncated?: boolean;
 }
 
 /** Annotated data from a web document. */

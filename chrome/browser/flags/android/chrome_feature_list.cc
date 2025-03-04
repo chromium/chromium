@@ -670,7 +670,7 @@ BASE_FEATURE(kCCTNavigationalPrefetch,
 
 BASE_FEATURE(kCCTNestedSecurityIcon,
              "CCTNestedSecurityIcon",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTGoogleBottomBar,
              "CCTGoogleBottomBar",
@@ -708,7 +708,7 @@ BASE_FEATURE(kCCTResizableForThirdParties,
 
 BASE_FEATURE(kCCTRevampedBranding,
              "CCTRevampedBranding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTTabModalDialog,
              "CCTTabModalDialog",

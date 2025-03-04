@@ -6839,6 +6839,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name ="IDS_COLLABORATION_CANCEL" desc="The label for buttons that cancel any dialogs in data sharing.">
         Cancel
       </message>
+      <message name ="IDS_COLLABORATION_LOADING_BUTTON" desc="Accessibility string that describes the loading animation on a button after it is clicked when processing a request.">
+        Loading
+      </message>
       <!-- Misc -->
 
       <message name="IDS_SHARED_IMAGE_TILES_COUNT" desc="The count string for number of tiles that overflows from shared image tiles. |COUNT_NUMBER| will be a number between 1 and 99 (it will be 1-2 digits at most). [CHAR_LIMIT=3]">

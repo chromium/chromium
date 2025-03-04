@@ -76,6 +76,7 @@ class CORE_EXPORT ViewTransitionSupplement
 
   ViewTransition* GetTransition();
   ViewTransition* GetTransition(Element&);
+  void ForEachTransition(base::FunctionRef<void(ViewTransition&)>);
 
   explicit ViewTransitionSupplement(Document&);
   ~ViewTransitionSupplement() override;

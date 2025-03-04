@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.CustomTabLocationBar;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.ClientId;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -446,8 +447,20 @@ public class TrustedCdnPublisherUrlTest {
     }
 
     private void verifySecurityIcon(int expectedSecurityIcon) {
+        // TODO(sinansahin): Clean up once the feature flag is removed.
+        boolean nestIcon = ChromeFeatureList.sCctNestedSecurityIcon.isEnabled();
+
+        if (nestIcon
+                && (expectedSecurityIcon == R.drawable.omnibox_https_valid_page_info
+                        || expectedSecurityIcon == R.drawable.omnibox_info)) {
+            expectedSecurityIcon = 0;
+        }
+
         ImageView securityButton =
-                mCustomTabActivityTestRule.getActivity().findViewById(R.id.security_button);
+                mCustomTabActivityTestRule
+                        .getActivity()
+                        .findViewById(nestIcon ? R.id.security_icon : R.id.security_button);
+        // Clean up -- end
 
         if (expectedSecurityIcon == 0) {
             Assert.assertEquals(View.INVISIBLE, securityButton.getVisibility());

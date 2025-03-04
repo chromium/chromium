@@ -432,7 +432,9 @@ public class TopToolbarOverlayMediator {
         // provided to us indirectly via BottomControlsStacker, which controls the
         // position of bottom controls layers.
         int contentOffset = mBrowserControlsStateProvider.getContentOffset();
-        if (mControlsPosition == ControlsPosition.BOTTOM) {
+        // Don't use mControlsPosition here because it will not have been updated if this function
+        // gets called in the middle of a change of position.
+        if (mBrowserControlsStateProvider.getControlsPosition() == ControlsPosition.BOTTOM) {
             contentOffset = (int) (mBottomToolbarControlsOffsetSupplier.get() + mViewportHeight);
         }
 

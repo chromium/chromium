@@ -130,12 +130,6 @@ Options:
                     generated will depend on a stampfile instead of the first
                     output in the input .grd file.
 
-  --js-minifier     A command to run the Javascript minifier. If not set then
-                    Javascript won't be minified. The command should read the
-                    original Javascript from standard input, and output the
-                    minified Javascript to standard output. A non-zero exit
-                    status will be taken as indicating failure.
-
   --css-minifier    A command to run the CSS minifier. If not set then CSS won't
                     be minified. The command should read the original CSS from
                     standard input, and output the minified CSS to standard
@@ -170,15 +164,14 @@ are exported to translation interchange files (e.g. XMB files), etc.
     allowlist_support = False
     write_only_new = False
     depend_on_stamp = False
-    js_minifier = None
     css_minifier = None
     replace_ellipsis = True
     (own_opts, args) = getopt.getopt(
         args, 'a:p:o:D:E:f:w:t:',
         ('depdir=', 'depfile=', 'assert-file-list=', 'help',
          'output-all-resource-defines', 'no-output-all-resource-defines',
-         'no-replace-ellipsis', 'depend-on-stamp', 'js-minifier=',
-         'css-minifier=', 'write-only-new=', 'allowlist-support', 'brotli='))
+         'no-replace-ellipsis', 'depend-on-stamp', 'css-minifier=',
+         'write-only-new=', 'allowlist-support', 'brotli='))
     for (key, val) in own_opts:
       if key == '-a':
         assert_output_files.append(val)
@@ -214,8 +207,6 @@ are exported to translation interchange files (e.g. XMB files), etc.
         write_only_new = val != '0'
       elif key == '--depend-on-stamp':
         depend_on_stamp = True
-      elif key == '--js-minifier':
-        js_minifier = val
       elif key == '--css-minifier':
         css_minifier = val
       elif key == '--allowlist-support':
@@ -240,9 +231,6 @@ are exported to translation interchange files (e.g. XMB files), etc.
         self.VerboseOut('Using allowlist: %s\n' % allowlist_filename)
         allowlist_contents = util.ReadFile(allowlist_filename, 'utf-8')
         self.allowlist_names.update(allowlist_contents.strip().split('\n'))
-
-    if js_minifier:
-      minifier.SetJsMinifier(js_minifier)
 
     if css_minifier:
       minifier.SetCssMinifier(css_minifier)

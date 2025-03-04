@@ -136,17 +136,13 @@ ACTION_P4(VerifyAsyncQueryFinished,
 }
 }  // namespace
 
-class SafeBrowsingQueryManagerTest : public testing::TestWithParam<bool> {
+class SafeBrowsingQueryManagerTest : public PlatformTest {
  protected:
   SafeBrowsingQueryManagerTest()
       : browser_state_(new web::FakeBrowserState()),
         web_state_(std::make_unique<web::FakeWebState>()),
         http_method_("GET"),
-        client_(/*pref_service=*/nullptr),
-        use_async_safe_browsing_(GetParam()) {
-    scoped_feature_list_.InitWithFeatureState(
-        safe_browsing::kSafeBrowsingAsyncRealTimeCheck,
-        use_async_safe_browsing_);
+        client_(/*pref_service=*/nullptr) {
     SafeBrowsingQueryManager::CreateForWebState(web_state_.get(), &client_);
     SafeBrowsingUrlAllowList::CreateForWebState(web_state_.get());
     manager()->AddObserver(&observer_);
@@ -159,17 +155,14 @@ class SafeBrowsingQueryManagerTest : public testing::TestWithParam<bool> {
 
   // Helper function to run all sync callbacks first then async callbacks.
   void RunSyncCallbacksThenAsyncCallbacks() {
-    if (base::FeatureList::IsEnabled(
-            safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(^() {
-            client_.run_sync_callbacks();
-          }));
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(^() {
-            client_.run_async_callbacks();
-          }));
-    }
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^() {
+          client_.run_sync_callbacks();
+        }));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^() {
+          client_.run_async_callbacks();
+        }));
 
     // TODO(crbug.com/359420122): Remove when clean up is complete.
     base::RunLoop().RunUntilIdle();
@@ -182,32 +175,19 @@ class SafeBrowsingQueryManagerTest : public testing::TestWithParam<bool> {
   std::unique_ptr<web::FakeWebState> web_state_;
   std::string http_method_;
   FakeSafeBrowsingClient client_;
-  bool use_async_safe_browsing_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(/* No Instantiation Name */,
-                         SafeBrowsingQueryManagerTest,
-                         testing::Bool());
-
 // Tests a query for a safe URL.
-TEST_P(SafeBrowsingQueryManagerTest, SafeURLQuery) {
+TEST_F(SafeBrowsingQueryManagerTest, SafeURLQuery) {
   GURL url("http://chromium.test");
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
-    EXPECT_CALL(observer_, SafeBrowsingSyncQueryFinished(_))
-        .WillOnce(VerifySyncQueryFinished(url, http_method_,
-                                          /*is_url_sync_safe=*/true,
-                                          /*is_url_async_safe=*/true));
-    EXPECT_CALL(observer_, SafeBrowsingAsyncQueryFinished(_))
-        .WillOnce(VerifyAsyncQueryFinished(url, http_method_,
-                                           /*is_url_sync_safe=*/true,
-                                           /*is_url_async_safe=*/true));
-  } else {
-    EXPECT_CALL(observer_, SafeBrowsingQueryFinished(manager(), _, _, _))
-        .WillOnce(VerifyQueryFinished(url, http_method_,
-                                      /*is_url_safe=*/true));
-  }
+  EXPECT_CALL(observer_, SafeBrowsingSyncQueryFinished(_))
+      .WillOnce(VerifySyncQueryFinished(url, http_method_,
+                                        /*is_url_sync_safe=*/true,
+                                        /*is_url_async_safe=*/true));
+  EXPECT_CALL(observer_, SafeBrowsingAsyncQueryFinished(_))
+      .WillOnce(VerifyAsyncQueryFinished(url, http_method_,
+                                         /*is_url_sync_safe=*/true,
+                                         /*is_url_async_safe=*/true));
 
   // Start a URL check query for the safe URL and run the runloop until the
   // result is received.
@@ -216,23 +196,16 @@ TEST_P(SafeBrowsingQueryManagerTest, SafeURLQuery) {
 }
 
 // Tests a query for an unsafe URL.
-TEST_P(SafeBrowsingQueryManagerTest, UnsafeURLQuery) {
+TEST_F(SafeBrowsingQueryManagerTest, UnsafeURLQuery) {
   GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
-    EXPECT_CALL(observer_, SafeBrowsingSyncQueryFinished(_))
-        .WillOnce(VerifySyncQueryFinished(url, http_method_,
-                                          /*is_url_sync_safe=*/false,
-                                          /*is_url_async_safe=*/false));
-    EXPECT_CALL(observer_, SafeBrowsingAsyncQueryFinished(_))
-        .WillOnce(VerifyAsyncQueryFinished(url, http_method_,
-                                           /*is_url_sync_safe=*/false,
-                                           /*is_url_async_safe=*/false));
-  } else {
-    EXPECT_CALL(observer_, SafeBrowsingQueryFinished(manager(), _, _, _))
-        .WillOnce(VerifyQueryFinished(url, http_method_,
-                                      /*is_url_safe=*/false));
-  }
+  EXPECT_CALL(observer_, SafeBrowsingSyncQueryFinished(_))
+      .WillOnce(VerifySyncQueryFinished(url, http_method_,
+                                        /*is_url_sync_safe=*/false,
+                                        /*is_url_async_safe=*/false));
+  EXPECT_CALL(observer_, SafeBrowsingAsyncQueryFinished(_))
+      .WillOnce(VerifyAsyncQueryFinished(url, http_method_,
+                                         /*is_url_sync_safe=*/false,
+                                         /*is_url_async_safe=*/false));
 
   // Start a URL check query for the unsafe URL and run the runloop until the
   // result is received.
@@ -242,10 +215,7 @@ TEST_P(SafeBrowsingQueryManagerTest, UnsafeURLQuery) {
 
 // Tests a query for an unsafe URL with async checks enabled, where the URL
 // is unsafe with both sync and async checks.
-TEST_P(SafeBrowsingQueryManagerTest, SyncAndAsyncUnsafeURLQuery) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      safe_browsing::kSafeBrowsingAsyncRealTimeCheck);
+TEST_F(SafeBrowsingQueryManagerTest, SyncAndAsyncUnsafeURLQuery) {
   GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
   EXPECT_CALL(observer_, SafeBrowsingSyncQueryFinished(_))
       .WillOnce(VerifySyncQueryFinished(url, http_method_,
@@ -264,10 +234,7 @@ TEST_P(SafeBrowsingQueryManagerTest, SyncAndAsyncUnsafeURLQuery) {
 
 // Tests a query for an unsafe URL with async checks enabled, where the URL
 // is unsafe with async checks only.
-TEST_P(SafeBrowsingQueryManagerTest, AsyncUnsafeURLQuery) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      safe_browsing::kSafeBrowsingAsyncRealTimeCheck);
+TEST_F(SafeBrowsingQueryManagerTest, AsyncUnsafeURLQuery) {
   GURL url("http://" + FakeSafeBrowsingService::kAsyncUnsafeHost);
   EXPECT_CALL(observer_, SafeBrowsingSyncQueryFinished(_))
       .WillOnce(VerifySyncQueryFinished(url, http_method_,
@@ -286,27 +253,18 @@ TEST_P(SafeBrowsingQueryManagerTest, AsyncUnsafeURLQuery) {
 
 // Tests that back-to-back queries for the same unsafe URL correctly sets an
 // UnsafeResource on both queries.
-TEST_P(SafeBrowsingQueryManagerTest, MultipleUnsafeURLQueries) {
+TEST_F(SafeBrowsingQueryManagerTest, MultipleUnsafeURLQueries) {
   GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
-
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
-    EXPECT_CALL(observer_, SafeBrowsingSyncQueryFinished(_))
-        .Times(2)
-        .WillRepeatedly(VerifySyncQueryFinished(url, http_method_,
-                                                /*is_url_sync_safe=*/false,
-                                                /*is_url_async_safe=*/false));
-    EXPECT_CALL(observer_, SafeBrowsingAsyncQueryFinished(_))
-        .Times(2)
-        .WillRepeatedly(VerifyAsyncQueryFinished(url, http_method_,
-                                                 /*is_url_sync_safe=*/false,
-                                                 /*is_url_async_safe=*/false));
-  } else {
-    EXPECT_CALL(observer_, SafeBrowsingQueryFinished(manager(), _, _, _))
-        .Times(2)
-        .WillRepeatedly(VerifyQueryFinished(url, http_method_,
-                                            /*is_url_safe=*/false));
-  }
+  EXPECT_CALL(observer_, SafeBrowsingSyncQueryFinished(_))
+      .Times(2)
+      .WillRepeatedly(VerifySyncQueryFinished(url, http_method_,
+                                              /*is_url_sync_safe=*/false,
+                                              /*is_url_async_safe=*/false));
+  EXPECT_CALL(observer_, SafeBrowsingAsyncQueryFinished(_))
+      .Times(2)
+      .WillRepeatedly(VerifyAsyncQueryFinished(url, http_method_,
+                                               /*is_url_sync_safe=*/false,
+                                               /*is_url_async_safe=*/false));
 
   // Start a URL check query for the unsafe URL and run the runloop until the
   // result is received.
@@ -317,26 +275,18 @@ TEST_P(SafeBrowsingQueryManagerTest, MultipleUnsafeURLQueries) {
 
 // Tests that StoreUnsafeResource associates the UnsafeResource with all
 // queries that match the UnsafeResource's URL.
-TEST_P(SafeBrowsingQueryManagerTest, StoreUnsafeResourceMultipleQueries) {
+TEST_F(SafeBrowsingQueryManagerTest, StoreUnsafeResourceMultipleQueries) {
   GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
-    EXPECT_CALL(observer_, SafeBrowsingSyncQueryFinished(_))
-        .Times(2)
-        .WillRepeatedly(VerifySyncQueryFinished(url, http_method_,
-                                                /*is_url_sync_safe=*/false,
-                                                /*is_url_async_safe=*/false));
-    EXPECT_CALL(observer_, SafeBrowsingAsyncQueryFinished(_))
-        .Times(2)
-        .WillRepeatedly(VerifyAsyncQueryFinished(url, http_method_,
-                                                 /*is_url_sync_safe=*/false,
-                                                 /*is_url_async_safe=*/false));
-  } else {
-    EXPECT_CALL(observer_, SafeBrowsingQueryFinished(manager(), _, _, _))
-        .Times(2)
-        .WillRepeatedly(VerifyQueryFinished(url, http_method_,
-                                            /*is_url_safe=*/false));
-  }
+  EXPECT_CALL(observer_, SafeBrowsingSyncQueryFinished(_))
+      .Times(2)
+      .WillRepeatedly(VerifySyncQueryFinished(url, http_method_,
+                                              /*is_url_sync_safe=*/false,
+                                              /*is_url_async_safe=*/false));
+  EXPECT_CALL(observer_, SafeBrowsingAsyncQueryFinished(_))
+      .Times(2)
+      .WillRepeatedly(VerifyAsyncQueryFinished(url, http_method_,
+                                               /*is_url_sync_safe=*/false,
+                                               /*is_url_async_safe=*/false));
 
   // Start two URL check queries for the unsafe URL and run the runloop until
   // the results are received. Only call StoreUnsafeResource once, rather than
@@ -347,7 +297,7 @@ TEST_P(SafeBrowsingQueryManagerTest, StoreUnsafeResourceMultipleQueries) {
 }
 
 // Tests observer callbacks for manager destruction.
-TEST_P(SafeBrowsingQueryManagerTest, ManagerDestruction) {
+TEST_F(SafeBrowsingQueryManagerTest, ManagerDestruction) {
   web_state_ = nullptr;
   EXPECT_TRUE(observer_.manager_destroyed());
 }
@@ -412,16 +362,10 @@ class WebStateDestroyingQueryManagerObserver
 
 // Test fixture for testing WebState destruction during a
 // SafeBrowsingQueryManager::Observer callback.
-class SafeBrowsingQueryManagerWebStateDestructionTest
-    : public testing::TestWithParam<bool> {
+class SafeBrowsingQueryManagerWebStateDestructionTest : public PlatformTest {
  protected:
   SafeBrowsingQueryManagerWebStateDestructionTest()
-      : http_method_("GET"),
-        client_(/*pref_service=*/nullptr),
-        use_async_safe_browsing_(GetParam()) {
-    scoped_feature_list_.InitWithFeatureState(
-        safe_browsing::kSafeBrowsingAsyncRealTimeCheck,
-        use_async_safe_browsing_);
+      : http_method_("GET"), client_(/*pref_service=*/nullptr) {
     SafeBrowsingQueryManager::CreateForWebState(observer_.web_state(),
                                                 &client_);
     SafeBrowsingUrlAllowList::CreateForWebState(observer_.web_state());
@@ -434,17 +378,14 @@ class SafeBrowsingQueryManagerWebStateDestructionTest
 
   // Helper function to run all sync callbacks first then async callbacks.
   void RunSyncCallbacksThenAsyncCallbacks() {
-    if (base::FeatureList::IsEnabled(
-            safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(^() {
-            client_.run_sync_callbacks();
-          }));
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(^() {
-            client_.run_async_callbacks();
-          }));
-    }
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^() {
+          client_.run_sync_callbacks();
+        }));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^() {
+          client_.run_async_callbacks();
+        }));
 
     // TODO(crbug.com/359420122): Remove when clean up is complete.
     base::RunLoop().RunUntilIdle();
@@ -455,16 +396,10 @@ class SafeBrowsingQueryManagerWebStateDestructionTest
   WebStateDestroyingQueryManagerObserver observer_;
   std::string http_method_;
   FakeSafeBrowsingClient client_;
-  bool use_async_safe_browsing_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(/* No Instantiation Name */,
-                         SafeBrowsingQueryManagerWebStateDestructionTest,
-                         testing::Bool());
-
 // Tests that a query for a safe URL doesn't cause a crash.
-TEST_P(SafeBrowsingQueryManagerWebStateDestructionTest, SafeURLQuery) {
+TEST_F(SafeBrowsingQueryManagerWebStateDestructionTest, SafeURLQuery) {
   GURL url("http://chromium.test");
   // Start a URL check query for the safe URL and run the runloop until the
   // result is received.
@@ -474,7 +409,7 @@ TEST_P(SafeBrowsingQueryManagerWebStateDestructionTest, SafeURLQuery) {
 }
 
 // Tests that a query for an unsafe URL doesn't cause a crash.
-TEST_P(SafeBrowsingQueryManagerWebStateDestructionTest, UnsafeURLQuery) {
+TEST_F(SafeBrowsingQueryManagerWebStateDestructionTest, UnsafeURLQuery) {
   GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
 
   // Start a URL check query for the unsafe URL and run the runloop until the

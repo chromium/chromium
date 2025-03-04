@@ -167,6 +167,14 @@ class CORE_EXPORT ViewTransitionUtils {
   // exists.
   static ViewTransition* GetTransition(const Document& document);
 
+  // Calls the supplied function for every active transition (document-level or
+  // element-scoped).
+  // Note: making this a function template blows up compile size.
+  // TODO(crbug.com/394052227): Consider converting other ForEach* methods in
+  // this class to take base::FunctionRef instead of being templates.
+  static void ForEachTransition(const Document& document,
+                                base::FunctionRef<void(ViewTransition&)>);
+
   // Return the incoming cross-document view transition, if one exists.
   static ViewTransition* GetIncomingCrossDocumentTransition(
       const Document& document);

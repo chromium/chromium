@@ -1,0 +1,44 @@
+<style include="cr-shared-style settings-shared">
+  :host {
+    white-space: nowrap;
+  }
+
+  #dialog::part(body-container) {
+    max-height: 550px;
+  }
+
+  @media all and (max-height: 714px) {
+    #dialog::part(body-container) {
+      max-height: 270px;
+    }
+  }
+
+  #validationError {
+    color: var(--cr-fallback-color-error);
+  }
+</style>
+<cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
+  <div slot="title">[[dialogTitle]]</div>
+  <div slot="body">
+    <template is="dom-repeat" items="[[completeAttributeList_]]">
+      <cr-input id="attributeField" type="text"
+          label="[[item.type.typeNameAsString]]" value="{{item.value}}"
+          spellcheck="false" maxlength="1000" on-input="onAttributeFieldInput_">
+      </cr-input>
+    </template>
+    <div id="validationError" hidden="[[canSave_]]">
+      <!-- TODO(crbug.com/393319296): Confirm with UX and use settings
+           localized strings provider. -->
+      Fill at least one value before saving.
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCancelClick_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button" disabled="[[!canSave_]]"
+        on-click="onConfirmClick_">
+      $i18n{save}
+    </cr-button>
+  </div>
+</cr-dialog>

@@ -9,6 +9,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/content_extraction/inner_text.h"
@@ -161,6 +162,7 @@ void GlicPageContextFetcher::Fetch(
         mojom::GetContextResult::NewErrorReason(*error_reason));
     return;
   }
+  options_ = options;
 
   content::WebContents* aweb_contents =
       focused_tab_data.focused_tab_contents.get();
@@ -181,7 +183,9 @@ void GlicPageContextFetcher::Fetch(
 
   if (options.include_inner_text) {
     content::RenderFrameHost* frame = web_contents()->GetPrimaryMainFrame();
-    // TODO(crbug.com/378937313): Finish this provisional implementation.
+    // This could be more efficient if content_extraction::GetInnerText
+    // supported a max length. Instead, we truncate after generating the full
+    // text.
     content_extraction::GetInnerText(
         *frame,
         /*node_id=*/std::nullopt,
@@ -327,10 +331,21 @@ void GlicPageContextFetcher::RunCallbackIfComplete() {
     LOG(WARNING) << "GlicPageContextFetcher: Returning context for "
                  << tab_context->tab_data->url;
     if (inner_text_result_) {
+      // Get trimmed text without copying.
+      std::string trimmed_text = std::move(inner_text_result_->inner_text);
+      size_t truncated_size = base::TruncateUTF8ToByteSize(
+                                  trimmed_text, options_.inner_text_bytes_limit)
+                                  .length();
+      bool truncated = false;
+      if (truncated_size < trimmed_text.length()) {
+        truncated = true;
+        trimmed_text.resize(truncated_size);
+      }
+
       tab_context->web_page_data =
           mojom::WebPageData::New(mojom::DocumentData::New(
               web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
-              std::move(inner_text_result_->inner_text)));
+              std::move(trimmed_text), truncated));
     }
     if (screenshot_) {
       tab_context->viewport_screenshot = std::move(screenshot_);

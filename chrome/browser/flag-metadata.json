@@ -204,12 +204,12 @@
   {
     "name": "android-browser-controls-in-viz",
     "owners": [ "peilinwang@google.com", "kylechar@chromium.org" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "android-browser-controls-in-viz-bottom-controls",
     "owners": [ "peilinwang@google.com", "kylechar@chromium.org" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "android-elegant-text-height",
@@ -987,17 +987,17 @@
   },
   {
     "name": "bookmarks-and-reading-list-behind-opt-in",
-    "owners": [ "wylieb@chromium.org", "bsazonov@chromium.org" ],
+    "owners": [ "wylieb@google.com", "bsazonov@chromium.org" ],
     "expiry_milestone": 126
   },
   {
     "name": "bookmarks-improved-save-flow",
-    "owners": ["wylieb@chromium.org", "fgorski@chromium.org", "mdjones@chromium.org"],
+    "owners": ["wylieb@google.com", "fgorski@chromium.org", "mdjones@chromium.org"],
     "expiry_milestone": 115
   },
   {
     "name": "bookmarks-refresh",
-    "owners": ["wylieb@chromium.org", "fgorski@chromium.org", "mdjones@chromium.org"],
+    "owners": ["wylieb@google.com", "fgorski@chromium.org", "mdjones@chromium.org"],
     "expiry_milestone": 115
   },
   {
@@ -3490,7 +3490,7 @@
   {
     "name": "enable-mac-a11y-api-migration",
     "owners": [ "shrike@chromium.org", "dtseng@chromium.com" ],
-    "expiry_milestone": 136
+    "expiry_milestone": 142
   },
   {
     "name": "enable-mac-ime-live-conversion-fix",
@@ -4757,7 +4757,7 @@
   {
      "name": "force-list-tab-switcher",
      "owners": ["ckitagawa@chromium.org", "skym@chromium.org"],
-     "expiry_milestone": 136
+     "expiry_milestone": 140
   },
   {
     "name": "force-ntp-mobile-promo",
@@ -6953,7 +6953,7 @@
   {
     "name": "pdf-cr23",
     "owners": [ "andyphan@chromium.org", "//pdf/OWNERS" ],
-    "expiry_milestone": 136
+    "expiry_milestone": 137
   },
   {
     "name": "pdf-ink2",
@@ -6963,7 +6963,7 @@
   {
     "name": "pdf-oopif",
     "owners": [ "andyphan@chromium.org", "//pdf/OWNERS" ],
-    "expiry_milestone": 136
+    "expiry_milestone": 140
   },
   {
     "name": "pdf-portfolio",
@@ -7045,7 +7045,7 @@
   },
   {
     "name": "power-bookmark-backend",
-    "owners": [ "wylieb@chromium.org", "skym@chromium.org" ],
+    "owners": [ "wylieb@google.com", "skym@chromium.org" ],
     "expiry_milestone": 125
   },
   {
@@ -7489,12 +7489,12 @@
   {
     "name": "read-anything-docs-integration",
     "owners": [ "abigailbklein@google.com", "xiangxiao@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 136
+    "expiry_milestone": 145
   },
   {
     "name": "read-anything-docs-load-more-button",
     "owners": [ "sophiatran@google.com", "xiangxiao@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 136
+    "expiry_milestone": 145
   },
   {
     "name": "read-anything-images-via-algorithm",
@@ -8766,7 +8766,7 @@
   {
     "name": "tracking-protection-3pcd",
     "owners": ["fmacintosh@google.com", "koilos@google.com"],
-    "expiry_milestone": 136
+    "expiry_milestone": 142
   },
   {
     "name": "traffic-counters",
@@ -9183,7 +9183,7 @@
   {
     "name": "visited-url-ranking-service-history-visibility-score-filter",
     "owners": ["romanarora@chromium.org", "ssid@chromium.org", "chrome-desktop-ntp@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "vulkan-from-angle",

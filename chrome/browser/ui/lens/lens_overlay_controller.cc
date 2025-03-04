@@ -3267,15 +3267,23 @@ void LensOverlayController::ShowPreselectionBubble() {
         views::kWidgetIdentifierKey,
         const_cast<void*>(kLensOverlayPreselectionWidgetIdentifier));
     preselection_widget_observer_.Observe(preselection_widget_);
-    // When in fullscreen, top Chrome may cover this widget on Mac. Set the
-    // z-order to floating UI element to ensure the widget is above the top
-    // Chrome.
-    preselection_widget_->SetZOrderLevel(ui::ZOrderLevel::kFloatingUIElement);
     // Setting the parent allows focus traversal out of the preselection widget.
     preselection_widget_->SetFocusTraversableParent(
         preselection_widget_anchor_->GetWidget()->GetFocusTraversable());
     preselection_widget_->SetFocusTraversableParentView(
         preselection_widget_anchor_);
+  }
+
+  // When in fullscreen, top Chrome may cover this widget on Mac. Set the
+  // z-order to floating UI element to ensure the widget is above the top
+  // Chrome. Only do this if immersive mode is enabled to avoid issues with
+  // the preselection widget covering other windows.
+  if (tab_->GetBrowserWindowInterface()
+          ->GetImmersiveModeController()
+          ->IsEnabled()) {
+    preselection_widget_->SetZOrderLevel(ui::ZOrderLevel::kFloatingUIElement);
+  } else {
+    preselection_widget_->SetZOrderLevel(ui::ZOrderLevel::kNormal);
   }
 
   auto* bubble_view = static_cast<lens::LensPreselectionBubble*>(

@@ -96,8 +96,6 @@ class ExtensionSyncService : public syncer::SyncableService,
                               extensions::UninstallReason reason) override;
 
   // extensions::ExtensionPrefsObserver:
-  void OnExtensionStateChanged(const std::string& extension_id,
-                               bool state) override;
   void OnExtensionDisableReasonsChanged(
       const std::string& extension_id,
       extensions::DisableReasonSet disabled_reasons) override;

@@ -232,6 +232,8 @@ public class CustomTabToolbarUnitTest {
 
     @Test
     public void testToolbarBrandingDelegateImpl_EmptyToBranding() {
+        if (ChromeFeatureList.sCctNestedSecurityIcon.isEnabled()) return;
+
         assertUrlAndTitleVisible(/* titleVisible= */ false, /* urlVisible= */ true);
         mLocationBar.showEmptyLocationBar();
         assertUrlAndTitleVisible(/* titleVisible= */ false, /* urlVisible= */ false);

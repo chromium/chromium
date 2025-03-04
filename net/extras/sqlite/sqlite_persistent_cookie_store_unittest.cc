@@ -316,8 +316,9 @@ class SQLitePersistentCookieStoreTest : public TestWithTaskEnvironment {
   std::string ReadRawDBContents() {
     std::string contents;
     if (!base::ReadFileToString(temp_dir_.GetPath().Append(kCookieFilename),
-                                &contents))
+                                &contents)) {
       return std::string();
+    }
     return contents;
   }
 
@@ -874,8 +875,9 @@ TEST_F(SQLitePersistentCookieStoreTest, PersistIsPersistent) {
   ASSERT_EQ(2U, cookies.size());
 
   std::map<std::string, CanonicalCookie*> cookie_map;
-  for (const auto& cookie : cookies)
+  for (const auto& cookie : cookies) {
     cookie_map[cookie->Name()] = cookie.get();
+  }
 
   auto it = cookie_map.find(kSessionName);
   ASSERT_TRUE(it != cookie_map.end());
@@ -934,8 +936,9 @@ TEST_F(SQLitePersistentCookieStoreTest, PriorityIsPersistent) {
 
   // Put the cookies into a map, by name, so we can easily find them.
   std::map<std::string, CanonicalCookie*> cookie_map;
-  for (const auto& cookie : cookies)
+  for (const auto& cookie : cookies) {
     cookie_map[cookie->Name()] = cookie.get();
+  }
 
   // Validate that each cookie has the correct priority.
   auto it = cookie_map.find(kLowName);
@@ -999,8 +1002,9 @@ TEST_F(SQLitePersistentCookieStoreTest, SameSiteIsPersistent) {
 
   // Put the cookies into a map, by name, for comparison below.
   std::map<std::string, CanonicalCookie*> cookie_map;
-  for (const auto& cookie : cookies)
+  for (const auto& cookie : cookies) {
     cookie_map[cookie->Name()] = cookie.get();
+  }
 
   // Validate that each cookie has the correct SameSite.
   ASSERT_EQ(1u, cookie_map.count(kNoneName));
@@ -1100,8 +1104,9 @@ TEST_F(SQLitePersistentCookieStoreTest, SourcePortIsPersistent) {
 
   // Put the cookies into a map, by name, for comparison below.
   std::map<std::string, CanonicalCookie*> cookie_map;
-  for (const auto& cookie : cookies)
+  for (const auto& cookie : cookies) {
     cookie_map[cookie->Name()] = cookie.get();
+  }
 
   for (const auto& expected : kTestCookies) {
     ASSERT_EQ(1u, cookie_map.count(expected.name));
@@ -1110,7 +1115,6 @@ TEST_F(SQLitePersistentCookieStoreTest, SourcePortIsPersistent) {
 }
 
 TEST_F(SQLitePersistentCookieStoreTest, UpdateToEncryption) {
-
   // Create unencrypted cookie store and write something to it.
   InitializeStore(/*crypt=*/false, /*restore_old_session_cookies=*/false);
   AddCookie("name", "value123XYZ", "foo.bar", "/", base::Time::Now());
@@ -1823,8 +1827,7 @@ bool AddV18CookiesToDB(sql::Database* db,
 
     statement.Reset(true);
     statement.BindTime(0, cookie.CreationDate());
-    // TODO (crbug.com/326605834) Once ancestor chain bit changes are
-    // implemented update this method utilize the ancestor bit.
+
     base::expected<CookiePartitionKey::SerializedCookiePartitionKey,
                    std::string>
         serialized_partition_key =
@@ -1886,8 +1889,7 @@ bool AddV21CookiesToDB(sql::Database* db) {
 
     statement.Reset(true);
     statement.BindTime(0, cookie.CreationDate());
-    // TODO (crbug.com/326605834) Once ancestor chain bit changes are
-    // implemented update this method utilize the ancestor bit.
+
     base::expected<CookiePartitionKey::SerializedCookiePartitionKey,
                    std::string>
         serialized_partition_key =
@@ -1944,8 +1946,7 @@ bool AddV22CookiesToDB(sql::Database* db,
 
     statement.Reset(true);
     statement.BindTime(0, cookie.CreationDate());
-    // TODO (crbug.com/326605834) Once ancestor chain bit changes are
-    // implemented update this method utilize the ancestor bit.
+
     base::expected<CookiePartitionKey::SerializedCookiePartitionKey,
                    std::string>
         serialized_partition_key =
@@ -2006,8 +2007,7 @@ bool AddV23CookiesToDB(sql::Database* db,
 
     statement.Reset(true);
     statement.BindTime(0, cookie.CreationDate());
-    // TODO (crbug.com/326605834) Once ancestor chain bit changes are
-    // implemented update this method utilize the ancestor bit.
+
     base::expected<CookiePartitionKey::SerializedCookiePartitionKey,
                    std::string>
         serialized_partition_key =
@@ -2781,45 +2781,37 @@ std::unique_ptr<CanonicalCookie> CreatePartitionedCookie(
       scheme);
 }
 
-// Pairs contain a cookie, and hard coded value for has_cross_site_ancestor
-// value.
-//
 // During migration we have no way of knowing if a cross site ancestor was
 // present. When the existing domain and the top_level_site of the partition key
 // are the same. The default behavior is to set the cross site value to
 // kSameSite, so ignore the kCrossSite cookie when testing migration.
-std::vector<std::pair<CanonicalCookie, std::string>>
-GenerateHasCrossSiteAncestorCookiesAndVals(bool migrating = false) {
-  std::vector<std::pair<CanonicalCookie, std::string>> results;
+std::vector<CanonicalCookie> GenerateCookiesForCrossSiteAncestorTest(
+    bool migrating = false) {
+  std::vector<CanonicalCookie> results;
   const std::string default_domain = "example.com";
 
   // Key and domain are the same site
-  results.emplace_back(
-      *CreatePartitionedCookie("A", default_domain, "https://www.example.com",
-                               CookiePartitionKey::AncestorChainBit::kSameSite),
-      "0");
+  results.emplace_back(*CreatePartitionedCookie(
+      "A", default_domain, "https://www.example.com",
+      CookiePartitionKey::AncestorChainBit::kSameSite));
   if (!migrating) {
     // Key and domain are the same site but with kCrossSite
     results.emplace_back(*CreatePartitionedCookie(
-                             "B", default_domain, "https://www.example.com",
-                             CookiePartitionKey::AncestorChainBit::kCrossSite),
-                         "1");
+        "B", default_domain, "https://www.example.com",
+        CookiePartitionKey::AncestorChainBit::kCrossSite));
   }
   // Key and domain are different
   results.emplace_back(*CreatePartitionedCookie(
-                           "C", default_domain, "https://www.toplevelsite.com",
-                           CookiePartitionKey::AncestorChainBit::kCrossSite),
-                       "1");
+      "C", default_domain, "https://www.toplevelsite.com",
+      CookiePartitionKey::AncestorChainBit::kCrossSite));
   // Domain is a substring
   results.emplace_back(*CreatePartitionedCookie(
-                           "D", "ample.com", "https://www.example.com",
-                           CookiePartitionKey::AncestorChainBit::kCrossSite),
-                       "1");
+      "D", "ample.com", "https://www.example.com",
+      CookiePartitionKey::AncestorChainBit::kCrossSite));
   // http check kNonSecure scheme match.
-  results.emplace_back(
-      *CreatePartitionedCookie("E", default_domain, "http://www.example.com",
-                               CookiePartitionKey::AncestorChainBit::kSameSite),
-      "0");
+  results.emplace_back(*CreatePartitionedCookie(
+      "E", default_domain, "http://www.example.com",
+      CookiePartitionKey::AncestorChainBit::kSameSite));
 
   return results;
 }
@@ -2829,13 +2821,12 @@ TEST_F(SQLitePersistentCookieStoreTest,
   const base::FilePath database_path =
       temp_dir_.GetPath().Append(kCookieFilename);
 
-  std::vector<std::pair<CanonicalCookie, std::string>>
-      cookies_and_expected_values =
-          GenerateHasCrossSiteAncestorCookiesAndVals(true);
+  std::vector<CanonicalCookie> exected_cookies =
+      GenerateCookiesForCrossSiteAncestorTest(/*migrating=*/true);
 
   std::vector<CanonicalCookie> cookies;
-  for (auto cookie_pair : cookies_and_expected_values) {
-    cookies.push_back(cookie_pair.first);
+  for (auto cookie : exected_cookies) {
+    cookies.push_back(cookie);
   }
   // Open database, populate and close db.
   {
@@ -2856,13 +2847,11 @@ TEST_F(SQLitePersistentCookieStoreTest,
   ASSERT_TRUE(connection.Open(database_path));
   ASSERT_GE(GetDBCurrentVersionNumber(&connection), 23);
 
-  for (const auto& cookie_pair : cookies_and_expected_values) {
-    // TODO (crbug.com/326605834) Once ancestor chain bit changes are
-    // implemented update this method utilize the ancestor bit.
+  for (const auto& cookie : exected_cookies) {
     base::expected<CookiePartitionKey::SerializedCookiePartitionKey,
                    std::string>
         serialized_partition_key =
-            CookiePartitionKey::Serialize(cookie_pair.first.PartitionKey());
+            CookiePartitionKey::Serialize(cookie.PartitionKey());
     ASSERT_TRUE(serialized_partition_key.has_value());
 
     sql::Statement verify_stmt(connection.GetUniqueStatement(
@@ -2870,13 +2859,14 @@ TEST_F(SQLitePersistentCookieStoreTest,
         " AND top_frame_site_key=?"
         " AND has_cross_site_ancestor=?"));
 
-    verify_stmt.BindString(0, cookie_pair.first.Domain());
+    verify_stmt.BindString(0, cookie.Domain());
     verify_stmt.BindString(1, serialized_partition_key->TopLevelSite());
-    verify_stmt.BindString(2, cookie_pair.second);
+    verify_stmt.BindBool(2,
+                         serialized_partition_key->has_cross_site_ancestor());
 
     ASSERT_TRUE(verify_stmt.is_valid());
     EXPECT_TRUE(verify_stmt.Step());
-    EXPECT_EQ(cookie_pair.first.Name(), verify_stmt.ColumnString(0));
+    EXPECT_EQ(cookie.Name(), verify_stmt.ColumnString(0));
     // Confirm that exactly one cookie matches the SQL query
     EXPECT_FALSE(verify_stmt.Step());
   }
@@ -2886,11 +2876,10 @@ TEST_F(SQLitePersistentCookieStoreTest,
        TestValueOfHasCrossSiteAncestorOnDoCommit) {
   InitializeStore(/*crypt=*/false, /*restore_old_session_cookies=*/false);
 
-  std::vector<std::pair<CanonicalCookie, std::string>>
-      cookies_and_expected_values =
-          GenerateHasCrossSiteAncestorCookiesAndVals();
-  for (const auto& cookie_pair : cookies_and_expected_values) {
-    store_->AddCookie(cookie_pair.first);
+  std::vector<CanonicalCookie> exected_cookies =
+      GenerateCookiesForCrossSiteAncestorTest();
+  for (const auto& cookie : exected_cookies) {
+    store_->AddCookie(cookie);
   }
 
   // Force the store to write its data to the disk.
@@ -2898,19 +2887,17 @@ TEST_F(SQLitePersistentCookieStoreTest,
 
   cookies_ = CreateAndLoad(/*crypt_cookies=*/false,
                            /*restore_old_session_cookies=*/false);
-  EXPECT_EQ(cookies_.size(), cookies_and_expected_values.size());
+  EXPECT_EQ(cookies_.size(), exected_cookies.size());
 
   sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(connection.Open(temp_dir_.GetPath().Append(kCookieFilename)));
   ASSERT_GT(GetDBCurrentVersionNumber(&connection), 23);
 
-  for (const auto& cookie_pair : cookies_and_expected_values) {
-    // TODO (crbug.com/326605834) Once ancestor chain bit changes are
-    // implemented update this method utilize the ancestor bit.
+  for (const auto& cookie : exected_cookies) {
     base::expected<CookiePartitionKey::SerializedCookiePartitionKey,
                    std::string>
         serialized_partition_key =
-            CookiePartitionKey::Serialize(cookie_pair.first.PartitionKey());
+            CookiePartitionKey::Serialize(cookie.PartitionKey());
     ASSERT_TRUE(serialized_partition_key.has_value());
 
     sql::Statement verify_stmt(connection.GetUniqueStatement(
@@ -2918,13 +2905,14 @@ TEST_F(SQLitePersistentCookieStoreTest,
         " AND top_frame_site_key=?"
         " AND has_cross_site_ancestor=?"));
 
-    verify_stmt.BindString(0, cookie_pair.first.Domain());
+    verify_stmt.BindString(0, cookie.Domain());
     verify_stmt.BindString(1, serialized_partition_key->TopLevelSite());
-    verify_stmt.BindString(2, cookie_pair.second);
+    verify_stmt.BindBool(2,
+                         serialized_partition_key->has_cross_site_ancestor());
     ASSERT_TRUE(verify_stmt.is_valid());
 
     EXPECT_TRUE(verify_stmt.Step());
-    EXPECT_EQ(cookie_pair.first.Name(), verify_stmt.ColumnString(0));
+    EXPECT_EQ(cookie.Name(), verify_stmt.ColumnString(0));
     // Confirm that exactly one cookie matches the SQL query
     EXPECT_FALSE(verify_stmt.Step());
   }

@@ -131,6 +131,7 @@ export enum PermissionSetting {
 export enum BocaValidPref {
   NAVIGATION_SETTING = 0,
   CAPTION_ENABLEMENT_SETTING = 1,
+  DEFAULT_MEDIASTREAM_SETTING = 2,
 }
 
 /**

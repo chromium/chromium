@@ -52,7 +52,7 @@ public class CustomTabBrandingTest {
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(4)
+                    .setRevision(5)
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_CUSTOM_TABS)
                     .build();
 

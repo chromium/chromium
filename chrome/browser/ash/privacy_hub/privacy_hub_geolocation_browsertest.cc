@@ -7,16 +7,21 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/geolocation_access_level.h"
+#include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
 
@@ -162,5 +167,73 @@ INSTANTIATE_TEST_SUITE_P(
                         GeolocationAccessLevel::kDisallowed),
         std::make_tuple(GeolocationAccessLevel::kOnlyAllowedForSystem,
                         GeolocationAccessLevel::kDisallowed)));
+
+class MockSettingsWindowManager : public chrome::SettingsWindowManager {
+ public:
+  MOCK_METHOD(void,
+              ShowChromePageForProfile,
+              (Profile * profile,
+               const GURL& gurl,
+               int64_t display_id,
+               apps::LaunchCallback callback),
+              (override));
+};
+
+class PrivacyHubGeolocationBrowsertestCheckSystemSettingsLink
+    : public PrivacyHubGeolocationBrowsertestBase {
+ public:
+  PrivacyHubGeolocationBrowsertestCheckSystemSettingsLink() {
+    login_manager_.AppendRegularUsers(2);
+    primary_user_ = login_manager_.users()[0].account_id;
+    secondary_user_ = login_manager_.users()[1].account_id;
+  }
+  ~PrivacyHubGeolocationBrowsertestCheckSystemSettingsLink() override = default;
+
+ protected:
+  AccountId primary_user_;
+  AccountId secondary_user_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrivacyHubGeolocationBrowsertestCheckSystemSettingsLink,
+                       AlwaysOpenActiveUserSettingsPage) {
+  MockSettingsWindowManager mock_settings_window_manager;
+  chrome::SettingsWindowManager::SetInstanceForTesting(
+      &mock_settings_window_manager);
+
+  // Sign in with the first/primary user.
+  LoginUser(primary_user_);
+  Profile* primary_profile = ProfileManager::GetActiveUserProfile();
+  // When primary user clicks the redirection link from the Browser, the opened
+  // OS settings page has to be tied to the primary user's profile.
+  EXPECT_CALL(
+      mock_settings_window_manager,
+      ShowChromePageForProfile(
+          primary_profile,
+          chrome::GetOSSettingsUrl(
+              chromeos::settings::mojom::kPrivacyHubGeolocationSubpagePath),
+          testing::_, testing::_));
+  // Directly call the underlying method to simulate the link click.
+  privacy_hub_util::OpenSystemSettings(
+      privacy_hub_util::ContentType::GEOLOCATION);
+
+  // Add another/secondary user to the session and log in.
+  ash::UserAddingScreen::Get()->Start();
+  AddUser(secondary_user_);
+  // Check that a different profile is being loaded.
+  Profile* secondary_profile = ProfileManager::GetActiveUserProfile();
+  ASSERT_NE(primary_profile, secondary_profile);
+  // When secondary user clicks the redirection link from the Browser, the
+  // opened OS settings page has to be tied to the secondary user's profile.
+  EXPECT_CALL(
+      mock_settings_window_manager,
+      ShowChromePageForProfile(
+          secondary_profile,
+          chrome::GetOSSettingsUrl(
+              chromeos::settings::mojom::kPrivacyHubGeolocationSubpagePath),
+          display::kInvalidDisplayId, testing::_));
+  // Directly call the underlying method to simulate the link click.
+  privacy_hub_util::OpenSystemSettings(
+      privacy_hub_util::ContentType::GEOLOCATION);
+}
 
 }  // namespace ash

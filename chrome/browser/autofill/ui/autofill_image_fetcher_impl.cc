@@ -142,9 +142,8 @@ void AutofillImageFetcherImpl::InitializeImageFetcher() {
     return;
   }
 
-  // TODO(crbug.com/40245547): Fix and change the config back to kDiskCacheOnly.
   image_fetcher_ = image_fetcher_service->GetImageFetcher(
-      image_fetcher::ImageFetcherConfig::kNetworkOnly);
+      image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
 }
 
 }  // namespace autofill

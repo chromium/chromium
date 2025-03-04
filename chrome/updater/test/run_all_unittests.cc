@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
+#include <cstdlib>
+#include <string_view>
 
 #include "base/base_paths.h"
 #include "base/check.h"
@@ -30,8 +28,6 @@
 #if BUILDFLAG(IS_WIN)
 #include <shlobj.h>
 
-#include <cstdlib>
-#include <cstring>
 #include <memory>
 #include <string>
 
@@ -214,20 +210,23 @@ int main(int argc, char** argv) {
   // Set up the _NT_ALT_SYMBOL_PATH to get symbolized stack traces in logs.
   ScopedSymbolPath scoped_symbol_path_system(/*is_system=*/true);
   ScopedSymbolPath scoped_symbol_path_user(/*is_system=*/false);
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
   // Assume all test bots have the {ISOLATED_OUTDIR} environment variable set.
   // Otherwise, don't run branded updater tests on a developer's system because
   // doing so breaks the updater on the system.
-  if (!std::getenv("ISOLATED_OUTDIR") &&
-      std::strcmp(PRODUCT_FULLNAME_STRING, "ChromiumUpdater")) {
-    LOG(ERROR) << "Running branded updater tests breaks the updater for the "
-                  "branded browser. This is unavoidable in the current "
-                  "implementation. If you don't care about broken updaters and "
-                  "want to run the branded updater tests locally, define an "
-                  "environment variable ISOLATED_OUTDIR and set it to a local "
-                  "directory.";
-    return -1;
+  using std::operator""sv;
+  if constexpr ("ChromiumUpdater"sv.compare(PRODUCT_FULLNAME_STRING)) {
+    if (!std::getenv("ISOLATED_OUTDIR")) {
+      LOG(ERROR)
+          << "Running branded updater tests breaks the updater for "
+             "the branded browser. This is unavoidable in the current "
+             "implementation. If you don't care about broken updaters and "
+             "want to run the branded updater tests locally, define an "
+             "environment variable ISOLATED_OUTDIR and set it to a local "
+             "directory.";
+      return -1;
+    }
   }
 
   // Use the {ISOLATED_OUTDIR} as a log destination for the test suite.

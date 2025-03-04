@@ -20,7 +20,6 @@ import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -67,7 +66,6 @@ public class TabGroupFaviconQuarterUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetCorner() {
         ConstraintLayout.LayoutParams params;
 
@@ -101,7 +99,6 @@ public class TabGroupFaviconQuarterUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetImage() {
         mTabGroupFaviconQuarter.setImage(mDrawable);
         assertEquals(View.VISIBLE, mImageView.getVisibility());
@@ -114,7 +111,6 @@ public class TabGroupFaviconQuarterUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetPlusCount() {
         mTabGroupFaviconQuarter.setPlusCount(PLUS_COUNT);
         assertEquals(View.INVISIBLE, mImageView.getVisibility());
@@ -127,7 +123,6 @@ public class TabGroupFaviconQuarterUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testClear() {
         mTabGroupFaviconQuarter.clear();
         assertEquals(View.INVISIBLE, mImageView.getVisibility());

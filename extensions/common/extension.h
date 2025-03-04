@@ -43,26 +43,6 @@ class PermissionsParser;
 // PermissionsData is protected by a lock.
 class Extension final : public base::RefCountedThreadSafe<Extension> {
  public:
-  // Do not renumber or reorder these values, as they are stored on-disk in the
-  // user's preferences.
-  enum State {
-    DISABLED = 0,
-    ENABLED = 1,
-
-    // DEPRECATED. External uninstallation bits are now stored directly in
-    // the ExtensionPrefs. See https://crbug.com/795026.
-    // An external extension that the user uninstalled. We should not reinstall
-    // such extensions on startup.
-    DEPRECATED_EXTERNAL_EXTENSION_UNINSTALLED = 2,
-
-    // DEPRECATED: Special state for component extensions.
-    // ENABLED_COMPONENT_DEPRECATED = 3,
-
-    // Do not add more values. State is being removed.
-    // https://crbug.com/794205.
-    NUM_STATES = 4,
-  };
-
   // A base class for parsed manifest data that APIs want to store on
   // the extension. Related to base::SupportsUserData, but with an immutable
   // thread-safe interface to match Extension.

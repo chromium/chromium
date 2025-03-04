@@ -10,8 +10,6 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneDrawableProperties.SHOW_NOTIFICATION_DOT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneDrawableProperties.TAB_COUNT;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,7 +40,6 @@ public class TabSwitcherPaneDrawableViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBindAllProperties() {
         int tabCount = 5;
         mModel.set(TAB_COUNT, tabCount);

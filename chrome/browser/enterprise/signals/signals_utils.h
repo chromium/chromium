@@ -15,6 +15,8 @@ class PrefService;
 namespace enterprise_signals {
 namespace utils {
 
+std::optional<bool> GetThirdPartyBlockingEnabled(PrefService* local_state);
+
 bool GetBuiltInDnsClientEnabled(PrefService* local_state);
 
 std::optional<safe_browsing::PasswordProtectionTrigger>

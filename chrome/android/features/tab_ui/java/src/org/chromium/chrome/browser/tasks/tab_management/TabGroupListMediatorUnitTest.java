@@ -61,7 +61,6 @@ import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServi
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -141,13 +140,15 @@ public class TabGroupListMediatorUnitTest {
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
     @Mock private ModalDialogManager mModalDialogManager;
-    @Mock private Profile mProfile;
     @Mock private MessagingBackendService mMessagingBackendService;
     @Mock private Runnable mFinishBlocking;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserver;
     @Captor private ArgumentCaptor<TabGroupSyncService.Observer> mTabGroupSyncObserverCaptor;
-    @Captor private ArgumentCaptor<Callback<Integer>> mActionConfirmationResultCallbackCaptor;
+
+    @Captor
+    private ArgumentCaptor<Callback<@ActionConfirmationResult Integer>>
+            mActionConfirmationResultCallbackCaptor;
 
     @Captor
     private ArgumentCaptor<Callback<MaybeBlockingResult>> mMaybeBlockingResultCallbackCaptor;
@@ -179,8 +180,7 @@ public class TabGroupListMediatorUnitTest {
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveModel);
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
-        mSharedGroupTestHelper =
-                new SharedGroupTestHelper(mDataSharingService, mCollaborationService);
+        mSharedGroupTestHelper = new SharedGroupTestHelper(mCollaborationService);
         mSyncedGroupTestHelper = new SyncedGroupTestHelper(mTabGroupSyncService);
         MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
 
@@ -627,7 +627,7 @@ public class TabGroupListMediatorUnitTest {
         when(mTab1.getRootId()).thenReturn(ROOT_ID1);
         when(mTab1.getTabGroupId()).thenReturn(LOCAL_GROUP_ID1);
         when(mTab1.isClosing()).thenReturn(false);
-        mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1);
+        mSharedGroupTestHelper.mockGetGroupData(COLLABORATION_ID1, GROUP_MEMBER1);
         when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
                 .thenReturn(MemberRole.OWNER);
         createMediator();
@@ -670,7 +670,7 @@ public class TabGroupListMediatorUnitTest {
         when(mTab1.getRootId()).thenReturn(ROOT_ID1);
         when(mTab1.getTabGroupId()).thenReturn(LOCAL_GROUP_ID1);
         when(mTab1.isClosing()).thenReturn(false);
-        mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
+        mSharedGroupTestHelper.mockGetGroupData(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
 
         createMediator();
 
@@ -718,7 +718,7 @@ public class TabGroupListMediatorUnitTest {
         when(mTab1.getRootId()).thenReturn(ROOT_ID1);
         when(mTab1.getTabGroupId()).thenReturn(LOCAL_GROUP_ID1);
         when(mTab1.isClosing()).thenReturn(false);
-        mSharedGroupTestHelper.respondToReadGroupWithFailure(COLLABORATION_ID1);
+        mSharedGroupTestHelper.mockGetGroupDataFailure(COLLABORATION_ID1);
 
         createMediator();
 

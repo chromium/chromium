@@ -215,6 +215,10 @@ struct CurrentWallpaper {
   // `WallpaperType::{kDaily, kOnline}`.
   // May be empty string.
   string description_content;
+
+  // Extra description link about the image.
+  // Only set for `WallpaperType::{kDaily, kOnline}`.
+  url.mojom.Url? action_url;
 };
 
 // Receives updated wallpaper information whenever it is changed.

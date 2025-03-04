@@ -18,7 +18,7 @@ GridSizingTree GridSizingTree::CopyForFragmentation() const {
   return tree_copy;
 }
 
-scoped_refptr<const GridLayoutTree> GridSizingTree::FinalizeTree() const {
+GridLayoutTreePtr GridSizingTree::FinalizeTree() const {
   Vector<GridLayoutTree::GridTreeNode, 16> layout_tree_data;
 
   layout_tree_data.ReserveInitialCapacity(tree_data_.size());

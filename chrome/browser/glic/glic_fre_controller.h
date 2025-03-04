@@ -8,6 +8,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/auth_controller.h"
+#include "chrome/browser/glic/glic_fre.mojom.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 
@@ -39,6 +40,16 @@ class GlicFreController {
   GlicFreController(Profile* profile,
                     signin::IdentityManager* identity_manager);
   ~GlicFreController();
+
+  mojom::FreWebUiState GetWebUiState() const { return webui_state_; }
+  void WebUiStateChanged(mojom::FreWebUiState new_state);
+
+  using WebUiStateChangedCallback =
+      base::RepeatingCallback<void(mojom::FreWebUiState new_state)>;
+
+  // Registers |callback| to be called whenever the WebUi state changes.
+  base::CallbackListSubscription AddWebUiStateChangedCallback(
+      WebUiStateChangedCallback callback);
 
   // Close any windows and destroy web contents.
   void Shutdown();
@@ -102,6 +113,11 @@ class GlicFreController {
   // Tracks the tab that the FRE dialog is shown on.
   raw_ptr<tabs::TabInterface> tab_showing_modal_;
   base::CallbackListSubscription will_detach_subscription_;
+
+  mojom::FreWebUiState webui_state_ = mojom::FreWebUiState::kUninitialized;
+  // List of callbacks to be notified when webui state has changed.
+  base::RepeatingCallbackList<void(mojom::FreWebUiState)>
+      webui_state_callback_list_;
 
   base::WeakPtrFactory<GlicFreController> weak_ptr_factory_{this};
 };

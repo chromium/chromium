@@ -128,8 +128,7 @@ ExtensionId AppWindowGeometryCacheTest::AddExtensionWithPrefs(
 
   extension_prefs_->OnExtensionInstalled(
       extension.get(),
-      Extension::ENABLED,
-      syncer::StringOrdinal::CreateInitialOrdinal(),
+      /*disable_reasons=*/{}, syncer::StringOrdinal::CreateInitialOrdinal(),
       std::string());
   return extension->id();
 }

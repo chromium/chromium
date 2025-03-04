@@ -87,7 +87,7 @@ public class ChromeTabbedOnDragListenerUnitTest {
         when(mTabModelSelector.getModel(false)).thenReturn(Mockito.mock(TabModel.class));
         when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(SOURCE_INSTANCE_ID);
         when(mDragDropGlobalState.getData())
-                .thenReturn(new ChromeDropDataAndroid.Builder().withTab(mTab).build());
+                .thenReturn(new ChromeTabDropDataAndroid.Builder().withTab(mTab).build());
         when(mDragDropGlobalState.isDragSourceInstance(SOURCE_INSTANCE_ID)).thenReturn(true);
         DragDropGlobalState.setInstanceForTesting(mDragDropGlobalState);
         Activity activity = Mockito.mock(Activity.class);
@@ -213,7 +213,7 @@ public class ChromeTabbedOnDragListenerUnitTest {
         // The tab being dragged is in a tab group.
         when(mDragDropGlobalState.getData())
                 .thenReturn(
-                        new ChromeDropDataAndroid.Builder()
+                        new ChromeTabDropDataAndroid.Builder()
                                 .withTab(mTab)
                                 .withTabInGroup(true)
                                 .build());

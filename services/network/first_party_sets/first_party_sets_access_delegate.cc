@@ -206,22 +206,11 @@ void FirstPartySetsAccessDelegate::InvokePendingQueries() {
   CHECK(ready_event_.has_value());
   // !wait_for_init_ implies (pending_queries == nullptr).
   CHECK(wait_for_init_ || pending_queries_ == nullptr);
-  // !wait_for_init_ implies !first_async_query_timer_.has_value().
-  CHECK(wait_for_init_ || !first_async_query_timer_.has_value());
 
   UmaHistogramTimes(
       "Cookie.FirstPartySets.InitializationDuration."
       "ContextReadyToServeQueries2",
       construction_timer_.Elapsed());
-
-  base::UmaHistogramCounts10000(
-      "Cookie.FirstPartySets.ContextDelayedQueriesCount",
-      pending_queries_ ? pending_queries_->size() : 0);
-
-  base::UmaHistogramTimes("Cookie.FirstPartySets.ContextMostDelayedQueryDelta",
-                          first_async_query_timer_.has_value()
-                              ? first_async_query_timer_->Elapsed()
-                              : base::TimeDelta());
 
   if (!pending_queries_) {
     return;
@@ -242,9 +231,6 @@ void FirstPartySetsAccessDelegate::EnqueuePendingQuery(
   CHECK(pending_queries_);
   CHECK(!ready_event_.has_value());
   CHECK(wait_for_init_);
-
-  if (!first_async_query_timer_.has_value())
-    first_async_query_timer_ = {base::ElapsedTimer()};
 
   pending_queries_->push_back(std::move(run_query));
 }

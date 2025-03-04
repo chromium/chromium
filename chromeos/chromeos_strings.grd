@@ -2553,6 +2553,9 @@
         <message name="IDS_PERSONALIZATION_APP_WALLPAPER_DESCRIPTION_DIALOG_OPEN" desc="Label for the button to open wallpaper description dialog">
           About the art
         </message>
+        <message name="IDS_PERSONALIZATION_APP_WALLPAPER_DESCRIPTION_LEARN_MORE" desc="Label for the link to learn more about the currently selected wallpaper.">
+          Learn more
+        </message>
         <message name="IDS_PERSONALIZATION_APP_WALLPAPER_DESCRIPTION_DIALOG_CLOSE" desc="Label for the close button on wallpaper description dialog">
           Close
         </message>

@@ -29,7 +29,7 @@ public final class ChromeDropDataAndroidTest {
     public void testBuildTabClipDataText() {
         when(mTab.getId()).thenReturn(1);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
-        ChromeDropDataAndroid data = new ChromeDropDataAndroid.Builder().withTab(mTab).build();
+        ChromeDropDataAndroid data = new ChromeTabDropDataAndroid.Builder().withTab(mTab).build();
         assertEquals(
                 "Clip data text is not as expected.",
                 JUnitTestGURLs.EXAMPLE_URL.getSpec(),
@@ -38,7 +38,7 @@ public final class ChromeDropDataAndroidTest {
 
     @Test
     public void testBuildTabClipDataTextWithNullTab() {
-        ChromeDropDataAndroid data = new ChromeDropDataAndroid.Builder().build();
+        ChromeDropDataAndroid data = new ChromeTabDropDataAndroid.Builder().build();
         assertNull("Clip data text is not as expected.", data.buildTabClipDataText());
     }
 }

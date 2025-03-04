@@ -910,6 +910,7 @@ suite('does not respond to re-selecting the current wallpaper', () => {
     personalizationStore.data.wallpaper.currentSelected = {
       descriptionContent: '',
       descriptionTitle: '',
+      actionUrl: null,
       key: getImageKey(image)!,
       layout: WallpaperLayout.kCenterCropped,
       type: getImageType(image),
@@ -1157,6 +1158,7 @@ suite('daily refresh loading', () => {
       wallpaperProvider.wallpaperObserverRemote!.onWallpaperChanged({
         descriptionContent: '',
         descriptionTitle: '',
+        actionUrl: null,
         key: getImageKey(mockPhotos[0]!)!,
         layout: WallpaperLayout.kCenterCropped,
         type: WallpaperType.kDailyGooglePhotos,
@@ -1188,6 +1190,7 @@ suite('daily refresh loading', () => {
       personalizationStore.data.wallpaper.currentSelected = {
         descriptionContent: '',
         descriptionTitle: '',
+        actionUrl: null,
         key: mockPhotos[0]!.dedupKey!,
         layout: WallpaperLayout.kCenter,
         type: WallpaperType.kOnceGooglePhotos,
@@ -1251,6 +1254,7 @@ suite('daily refresh loading', () => {
       wallpaperProvider.wallpaperObserverRemote!.onWallpaperChanged({
         descriptionContent: '',
         descriptionTitle: '',
+        actionUrl: null,
         key: getImageKey(wallpaperProvider.images![0]!)!,
         layout: WallpaperLayout.kCenterCropped,
         type: WallpaperType.kDailyGooglePhotos,
@@ -1282,6 +1286,7 @@ suite('daily refresh loading', () => {
         key: getImageKey(wallpaperProvider.images![0]!)!,
         descriptionContent: '',
         descriptionTitle: '',
+        actionUrl: null,
       };
 
       await setDailyRefreshCollectionId(

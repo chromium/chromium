@@ -85,6 +85,8 @@ class PLATFORM_EXPORT PlainTextNode : public GarbageCollected<PlainTextNode> {
   PlainTextNode(const PlainTextNode&) = delete;
   PlainTextNode& operator=(const PlainTextNode&) = delete;
 
+  float AccumulateInlineSize(gfx::RectF* glyph_bounds) const;
+
   // The text contains:
   //  - Normalized whitespace
   //  - No BiDi override controls

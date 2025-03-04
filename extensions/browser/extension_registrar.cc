@@ -261,7 +261,7 @@ void ExtensionRegistrar::EnableExtension(const ExtensionId& extension_id) {
     return;
 
   // Now that we know the extension can be enabled, update the prefs.
-  extension_prefs_->SetExtensionEnabled(extension_id);
+  extension_prefs_->ClearDisableReasons(extension_id);
 
   // This can happen if sync enables an extension that is not installed yet.
   if (!extension)
@@ -329,8 +329,8 @@ void ExtensionRegistrar::DisableExtensionWithRawReasons(
     return;
   }
 
-  extension_prefs_->SetExtensionDisabledWithRawReasons(passkey, extension_id,
-                                                       disable_reasons);
+  extension_prefs_->ReplaceRawDisableReasons(passkey, extension_id,
+                                             disable_reasons);
 
   int include_mask =
       ExtensionRegistry::EVERYTHING & ~ExtensionRegistry::DISABLED;
@@ -1048,7 +1048,7 @@ bool ExtensionRegistrar::ReplaceReloadedExtension(
   // TODO(michaelpg): Other disable reasons might have been added after the
   // reload started. We may want to keep the extension disabled and just remove
   // the DISABLE_RELOAD reason in that case.
-  extension_prefs_->SetExtensionEnabled(extension->id());
+  extension_prefs_->ClearDisableReasons(extension->id());
 
   // Move it over to the enabled list.
   CHECK(registry_->RemoveDisabled(extension->id()));

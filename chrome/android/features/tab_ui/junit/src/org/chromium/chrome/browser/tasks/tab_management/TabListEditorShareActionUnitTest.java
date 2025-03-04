@@ -15,7 +15,6 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -116,7 +115,6 @@ public class TabListEditorShareActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testInherentActionProperties() {
         mAction.configure(() -> mTabGroupModelFilter, mSelectionDelegate, mDelegate, false);
 
@@ -144,7 +142,6 @@ public class TabListEditorShareActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShareActionNoTabs() {
         mAction.configure(() -> mTabGroupModelFilter, mSelectionDelegate, mDelegate, false);
 
@@ -156,7 +153,6 @@ public class TabListEditorShareActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShareActionWithOneTab() throws Exception {
         mAction.configure(() -> mTabGroupModelFilter, mSelectionDelegate, mDelegate, false);
 
@@ -221,7 +217,6 @@ public class TabListEditorShareActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShareActionWithMultipleTabs() throws Exception {
         mAction.configure(() -> mTabGroupModelFilter, mSelectionDelegate, mDelegate, false);
 
@@ -285,7 +280,6 @@ public class TabListEditorShareActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShareActionWithAllFilterableTabs_actionsOnTabs() throws Exception {
         mAction.configure(() -> mTabGroupModelFilter, mSelectionDelegate, mDelegate, false);
 
@@ -307,7 +301,6 @@ public class TabListEditorShareActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShareActionWithAllFilterableTabs_actionsOnTabsAndRelatedTabs()
             throws Exception {
         mAction.configure(() -> mTabGroupModelFilter, mSelectionDelegate, mDelegate, true);

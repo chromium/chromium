@@ -455,7 +455,7 @@ void UseCounterCallback(v8::Isolate* isolate,
       webdx_feature = WebDXFeature::kDRAFT_ErrorIsError;
       break;
     case v8::Isolate::kRegExpEscape:
-      webdx_feature = WebDXFeature::kDRAFT_RegExpEscape;
+      webdx_feature = WebDXFeature::kRegexpEscape;
       break;
     case v8::Isolate::kFloat16Array:
       webdx_feature = WebDXFeature::kFloat16array;

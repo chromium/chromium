@@ -124,7 +124,7 @@ class CORE_EXPORT GridSizingTree {
 
   // Creates a copy of the current grid geometry for the entire tree in a new
   // `GridLayoutTree` instance, which doesn't hold the grid items.
-  scoped_refptr<const GridLayoutTree> FinalizeTree() const;
+  GridLayoutTreePtr FinalizeTree() const;
 
   wtf_size_t Size() const { return tree_data_.size(); }
   GridTreeNode& TreeRootData() const { return At(0); }
@@ -164,8 +164,7 @@ class CORE_EXPORT GridSizingTree {
 
 // This class represents a subtree in a `GridSizingTree` and provides seamless
 // traversal over the tree and access to the sizing tree's lookup methods.
-class GridSizingSubtree
-    : public GridSubtree<GridSizingSubtree, const GridSizingTree*> {
+class GridSizingSubtree : public GridSubtree<GridSizingTree> {
   STACK_ALLOCATED();
 
  public:
@@ -173,58 +172,71 @@ class GridSizingSubtree
 
   explicit GridSizingSubtree(const GridSizingTree& sizing_tree,
                              wtf_size_t subtree_root = 0)
-      : GridSubtree(&sizing_tree, subtree_root) {}
+      : sizing_tree_(&sizing_tree) {
+    SetSubtreeRoot(sizing_tree, subtree_root);
+  }
 
-  GridSizingSubtree(const GridSizingTree* sizing_tree,
-                    wtf_size_t parent_end_index,
-                    wtf_size_t subtree_root)
-      : GridSubtree(sizing_tree, parent_end_index, subtree_root) {}
+  GridSizingSubtree FirstChild() const {
+    return GridSizingSubtree(sizing_tree_,
+                             GridSubtree::FirstChild(SizingTree()));
+  }
+
+  GridSizingSubtree NextSibling() const {
+    return GridSizingSubtree(sizing_tree_,
+                             GridSubtree::NextSibling(SizingTree()));
+  }
 
   SubgriddedItemData LookupSubgriddedItemData(
       const GridItemData& grid_item) const {
-    DCHECK(grid_tree_);
-    return grid_tree_->LookupSubgriddedItemData(grid_item);
+    return SizingTree().LookupSubgriddedItemData(grid_item);
   }
 
   wtf_size_t LookupSubgridIndex(const GridItemData& subgrid_data) const {
-    DCHECK(grid_tree_);
     DCHECK(subgrid_data.IsSubgrid());
-    return grid_tree_->LookupSubgridIndex(subgrid_data.node);
+    return SizingTree().LookupSubgridIndex(subgrid_data.node);
   }
 
   GridSizingSubtree SubgridSizingSubtree(
       const GridItemData& subgrid_data) const {
-    DCHECK(grid_tree_);
     DCHECK(subgrid_data.IsSubgrid());
 
+    const auto& sizing_tree = SizingTree();
     return GridSizingSubtree(
-        *grid_tree_,
-        /*subtree_root=*/grid_tree_->LookupSubgridIndex(subgrid_data.node));
+        sizing_tree,
+        /*subtree_root=*/sizing_tree.LookupSubgridIndex(subgrid_data.node));
   }
 
   // This method is only intended to be used to validate that the given grid
   // node is the respective root of the current subtree.
   bool HasValidRootFor(const BlockNode& grid_node) const {
-    return grid_tree_ &&
-           grid_tree_->LookupSubgridIndex(grid_node) == subtree_root_;
+    return sizing_tree_ &&
+           sizing_tree_->LookupSubgridIndex(grid_node) == subtree_root_;
   }
 
-  GridItems& GetGridItems() const {
-    DCHECK(grid_tree_);
-    return grid_tree_->At(subtree_root_).GetGridItems();
-  }
-
-  GridLayoutData& LayoutData() const {
-    DCHECK(grid_tree_);
-    return grid_tree_->At(subtree_root_).layout_data;
-  }
+  GridItems& GetGridItems() const { return SubtreeRoot().GetGridItems(); }
+  GridLayoutData& LayoutData() const { return SubtreeRoot().layout_data; }
 
   GridSizingTrackCollection& SizingCollection(
       GridTrackSizingDirection track_direction) const {
-    DCHECK(grid_tree_);
-    return grid_tree_->At(subtree_root_)
-        .layout_data.SizingCollection(track_direction);
+    return SubtreeRoot().layout_data.SizingCollection(track_direction);
   }
+
+ private:
+  GridSizingSubtree(const GridSizingTree* sizing_tree, GridSubtree subtree)
+      : GridSubtree(std::move(subtree)), sizing_tree_(sizing_tree) {}
+
+  const GridSizingTree& SizingTree() const {
+    DCHECK(sizing_tree_);
+    return *sizing_tree_;
+  }
+
+  GridSizingTree::GridTreeNode& SubtreeRoot() const {
+    DCHECK(sizing_tree_);
+    return sizing_tree_->At(subtree_root_);
+  }
+
+  // Pointer to the sizing tree shared by multiple subtree instances.
+  const GridSizingTree* sizing_tree_{nullptr};
 };
 
 inline constexpr GridSizingSubtree kNoGridSizingSubtree;

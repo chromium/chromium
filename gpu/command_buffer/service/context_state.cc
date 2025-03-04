@@ -339,7 +339,7 @@ void ContextState::RestoreSamplerBinding(GLuint unit,
     cur_id = cur_sampler->service_id();
 
   std::optional<GLuint> prev_id;
-  if (prev_state) {
+  if (prev_state && unit < prev_state->sampler_units.size()) {
     const auto& prev_sampler = prev_state->sampler_units[unit];
     prev_id.emplace(prev_sampler ? prev_sampler->service_id() : 0);
   }

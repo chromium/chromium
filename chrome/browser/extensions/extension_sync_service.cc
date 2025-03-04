@@ -659,18 +659,6 @@ void ExtensionSyncService::OnExtensionUninstalled(
   pending_updates_.erase(extension->id());
 }
 
-void ExtensionSyncService::OnExtensionStateChanged(
-    const std::string& extension_id,
-    bool state) {
-  ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
-  const Extension* extension = registry->GetInstalledExtension(extension_id);
-  // We can get pref change notifications for extensions that aren't installed
-  // (yet). In that case, we'll pick up the change later via ExtensionRegistry
-  // observation (in OnExtensionInstalled).
-  if (extension)
-    SyncExtensionChangeIfNeeded(*extension);
-}
-
 void ExtensionSyncService::OnExtensionDisableReasonsChanged(
     const std::string& extension_id,
     extensions::DisableReasonSet disabled_reasons) {

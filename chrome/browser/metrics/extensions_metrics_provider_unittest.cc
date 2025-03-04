@@ -250,7 +250,7 @@ class ExtensionMetricsProviderInstallsTest
 // extension installation.
 TEST_F(ExtensionMetricsProviderInstallsTest, TestProtoConstruction) {
   auto add_extension = [this](const Extension* extension) {
-    prefs()->OnExtensionInstalled(extension, Extension::ENABLED,
+    prefs()->OnExtensionInstalled(extension, /*disable_reasons=*/{},
                                   syncer::StringOrdinal(), std::string());
   };
 
@@ -384,8 +384,8 @@ TEST_F(ExtensionMetricsProviderInstallsTest, TestProtoConstruction) {
             .SetLocation(ManifestLocation::kInternal)
             .Build();
     add_extension(extension.get());
-    prefs()->SetExtensionDisabled(
-        extension->id(), {extensions::disable_reason::DISABLE_USER_ACTION});
+    prefs()->AddDisableReason(extension->id(),
+                              extensions::disable_reason::DISABLE_USER_ACTION);
     {
       ExtensionInstallProto install = ConstructProto(*extension);
       ASSERT_EQ(1, install.disable_reasons_size());

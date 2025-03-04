@@ -899,6 +899,10 @@ gfx::Rect ScreenWin::DIPToScreenRectInWindow(gfx::NativeWindow window,
 
 void ScreenWin::UpdateFromDisplayInfos(
     const std::vector<internal::DisplayInfo>& display_infos) {
+  // Retrieve the primary monitor info here, instead of later below. This is a
+  // speculative workaround for the issue observed on older version of Windows
+  // 10.  See crbug.com/394622418 for more detail.
+  auto primary_monitor = MonitorFromWindow(nullptr, MONITOR_DEFAULTTOPRIMARY);
   auto new_screen_win_displays = DisplayInfosToScreenWinDisplays(
       display_infos, color_profile_reader_.get(), dxgi_info_.get());
 
@@ -932,7 +936,7 @@ void ScreenWin::UpdateFromDisplayInfos(
 
   // This primary information is used only to detect if another monitor has
   // became the primary monitor.
-  primary_monitor_ = MonitorFromWindow(nullptr, MONITOR_DEFAULTTOPRIMARY);
+  primary_monitor_ = primary_monitor;
 
   const std::optional<MONITORINFOEX> primary_monitor_info =
       MonitorInfoFromHMONITOR(primary_monitor_);

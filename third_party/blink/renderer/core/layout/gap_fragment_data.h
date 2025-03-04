@@ -13,6 +13,26 @@ namespace blink {
 
 class GapFragmentData {
  public:
+  // GapIntersection points are used to paint gap decorations. An
+  // intersection point occurs:
+  // 1. At the center of an intersection between a gap and the container edge.
+  // 2. At the center of an intersection between gaps in different directions.
+  // https://drafts.csswg.org/css-gaps-1/#layout-painting
+  class GapIntersection {
+   public:
+    GapIntersection(LayoutUnit column_offset, LayoutUnit row_offset)
+        : column_offset(column_offset), row_offset(row_offset) {}
+
+    LayoutUnit column_offset;
+    LayoutUnit row_offset;
+
+    // Represents whether the intersection point is blocked before or after
+    // due to the presence of a spanning item.
+    bool is_blocked_before = false;
+    bool is_blocked_after = false;
+  };
+
+  // TODO(samomekarajr): Take this out when done with the new implementation.
   // GapBoundary represents the start and end offsets of a single gap.
   struct GapBoundary {
     DISALLOW_NEW();

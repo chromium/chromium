@@ -232,6 +232,19 @@ These are the rules to follow when constructing a `FilePath` from a string:
     *   cross-platform code is expected to use UTF8 literals or UTF8 strings
         only.
 
+#### Converting a file path to a string
+
+These are the rules to follow when converting a `FilePath` to a string:
+
+1. Use `base::FilePath::value()` for platform-specific code
+    *   Since `value()` does not do any conversions, it is the safest function
+        to use for platform-specific code, since the characters can retain their
+        native format without undergoing any conversions.
+2. Use `base::FilePath::AsUTF8Unsafe` for cross-platform code
+    *   `AsUTF8Unsafe` is safe to use for both `Posix` (where it returns the
+        underlying string unmodified) and `Windows` (where the underlying wide
+        string is converted using `base::WideToUTF8`).
+
 ### Mind the dependencies
 
 To enforce layering, there are enforced rules about what can be included in

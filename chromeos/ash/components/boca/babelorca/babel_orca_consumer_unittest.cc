@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -66,7 +67,7 @@ class BabelOrcaConsumerTest : public testing::Test {
         std::make_unique<FakeCaptionControllerDelegate>();
     caption_controller_delegate_ = caption_controller_delegate.get();
     auto caption_bubble_settings = std::make_unique<CaptionBubbleSettingsImpl>(
-        &pref_service_, kApplicationLocale);
+        &pref_service_, kApplicationLocale, base::DoNothing());
     caption_bubble_settings_ = caption_bubble_settings.get();
     auto caption_controller = std::make_unique<CaptionController>(
         /*caption_bubble_context=*/

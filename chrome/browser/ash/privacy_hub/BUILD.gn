@@ -34,6 +34,7 @@ source_set("browser_tests") {
   sources = [ "privacy_hub_geolocation_browsertest.cc" ]
 
   deps = [
+    ":privacy_hub",
     "//ash",
     "//chrome/browser",
     "//chrome/browser:browser_process",

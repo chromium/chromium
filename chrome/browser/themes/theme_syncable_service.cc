@@ -36,6 +36,7 @@
 #include "components/sync_preferences/pref_service_syncable_observer.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/pending_extension_info.h"
@@ -554,7 +555,8 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
         DVLOG(1) << "Extension " << id << " is not a theme; aborting";
         return ThemeSyncState::kFailed;
       }
-      if (extension_service->IsExtensionEnabled(id)) {
+      auto* extension_registrar = extensions::ExtensionRegistrar::Get(profile_);
+      if (extension_registrar->IsExtensionEnabled(id)) {
         // An enabled theme extension with the given id was found, so
         // just set the current theme to it.
         theme_service_->SetTheme(extension);

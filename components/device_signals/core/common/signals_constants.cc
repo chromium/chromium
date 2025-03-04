@@ -128,6 +128,10 @@ const char kSiteIsolationEnabled[] = "siteIsolationEnabled";
 // the device.
 const char kSystemDnsServers[] = "systemDnsServers";
 
+// Name of the signal for getting information about whether third party
+// blocking is enabled on the device.
+const char kThirdPartyBlockingEnabled[] = "thirdPartyBlockingEnabled";
+
 // Name of the signal for the trigger which generated the device signals.
 const char kTrigger[] = "trigger";
 

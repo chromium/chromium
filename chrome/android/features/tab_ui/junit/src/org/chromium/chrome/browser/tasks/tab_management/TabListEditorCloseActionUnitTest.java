@@ -13,7 +13,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -83,7 +82,6 @@ public class TabListEditorCloseActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testInherentActionProperties() {
         assertEquals(
                 R.id.tab_list_editor_close_menu_item,
@@ -103,7 +101,6 @@ public class TabListEditorCloseActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCloseActionNoTabs() {
         configure(false);
         mAction.onSelectionStateChange(Collections.emptyList());
@@ -112,7 +109,6 @@ public class TabListEditorCloseActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCloseActionWithOneTab() {
         configure(false);
         List<Integer> tabIds = Arrays.asList(5, 3, 7);
@@ -135,7 +131,6 @@ public class TabListEditorCloseActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCloseActionWithTabs() throws TimeoutException {
         configure(false);
         List<Integer> tabIds = Arrays.asList(5, 3, 7);
@@ -170,7 +165,6 @@ public class TabListEditorCloseActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCloseActionWithTabGroups_ActionOnRelatedTabs() {
         final boolean actionOnRelatedTabs = true;
         configure(actionOnRelatedTabs);
@@ -242,7 +236,6 @@ public class TabListEditorCloseActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCloseActionWithTabGroups_NoActionOnRelatedTabs() {
         final boolean actionOnRelatedTabs = false;
         configure(actionOnRelatedTabs);

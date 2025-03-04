@@ -166,7 +166,7 @@ TEST_F(ScriptingPermissionsModifierUnitTest, WithholdHostPermissionsOnInstall) {
   // Initialize the permissions and have the prefs built and stored.
   PermissionsUpdater(profile()).InitializePermissions(extension.get());
   ExtensionPrefs::Get(profile())->OnExtensionInstalled(
-      extension.get(), Extension::State::ENABLED, syncer::StringOrdinal(), "");
+      extension.get(), /*disable_reasons=*/{}, syncer::StringOrdinal(), "");
 
   ASSERT_TRUE(
       PermissionsManager::Get(profile())->CanAffectExtension(*extension));

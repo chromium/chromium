@@ -71,6 +71,12 @@ base::AtomicSequenceNumber g_next_video_resource_updater_id;
 
 gfx::ProtectedVideoType ProtectedVideoTypeFromMetadata(
     const VideoFrameMetadata& metadata) {
+  // DisplayCompositor doesn't have access to contents of the VideoFrame in this
+  // case,
+  if (metadata.dcomp_surface) {
+    return gfx::ProtectedVideoType::kHardwareProtected;
+  }
+
   if (!metadata.protected_video) {
     return gfx::ProtectedVideoType::kClear;
   }
@@ -98,14 +104,6 @@ VideoFrameResourceType ExternalResourceTypeForHardware(const VideoFrame& frame,
         case GL_TEXTURE_EXTERNAL_OES:
 #if BUILDFLAG(IS_ANDROID)
           return VideoFrameResourceType::STREAM_TEXTURE;
-#elif BUILDFLAG(IS_WIN)
-          // TODO(sunnyps): It's odd to reuse the Android path on Windows. There
-          // could be other unknown assumptions in other parts of the rendering
-          // stack about stream video quads. Investigate alternative solutions.
-          if (frame.metadata().dcomp_surface) {
-            return VideoFrameResourceType::STREAM_TEXTURE;
-          }
-          [[fallthrough]];
 #endif
         case GL_TEXTURE_2D:
         case GL_TEXTURE_RECTANGLE_ARB:

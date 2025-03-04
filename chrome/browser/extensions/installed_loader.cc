@@ -335,9 +335,6 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
       disable_reasons.erase(disable_reason::DISABLE_BLOCKED_BY_POLICY);
       extension_prefs_->RemoveDisableReason(
           extension->id(), disable_reason::DISABLE_BLOCKED_BY_POLICY);
-      if (disable_reasons.empty()) {
-        extension_prefs_->SetExtensionEnabled(extension->id());
-      }
     }
 
     if ((disable_reasons.contains(disable_reason::DISABLE_CORRUPTED))) {
@@ -370,7 +367,7 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
     disable_reason::DisableReason disable_reason = disable_reason::DISABLE_NONE;
     if (policy->MustRemainDisabled(extension.get(), &disable_reason)) {
       DCHECK_NE(disable_reason, disable_reason::DISABLE_NONE);
-      extension_prefs_->SetExtensionDisabled(extension->id(), {disable_reason});
+      extension_prefs_->AddDisableReason(extension->id(), disable_reason);
     }
   }
 

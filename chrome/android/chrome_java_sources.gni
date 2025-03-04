@@ -562,6 +562,8 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/dragdrop/ChromeDragAndDropBrowserDelegate.java",
   "java/src/org/chromium/chrome/browser/dragdrop/ChromeDragDropUtils.java",
   "java/src/org/chromium/chrome/browser/dragdrop/ChromeDropDataAndroid.java",
+  "java/src/org/chromium/chrome/browser/dragdrop/ChromeTabDropDataAndroid.java",
+  "java/src/org/chromium/chrome/browser/dragdrop/ChromeTabGroupDropDataAndroid.java",
   "java/src/org/chromium/chrome/browser/dragdrop/ChromeTabbedOnDragListener.java",
   "java/src/org/chromium/chrome/browser/dragdrop/DragAndDropLauncherActivity.java",
   "java/src/org/chromium/chrome/browser/externalnav/ExternalNavigationDelegateImpl.java",

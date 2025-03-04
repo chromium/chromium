@@ -94,6 +94,8 @@ void AddStrings(content::WebUIDataSource* source) {
       {"currentlySet", IDS_PERSONALIZATION_APP_CURRENTLY_SET},
       {"descriptionDialogOpen",
        IDS_PERSONALIZATION_APP_WALLPAPER_DESCRIPTION_DIALOG_OPEN},
+      {"descriptionDialogLearnMore",
+       IDS_PERSONALIZATION_APP_WALLPAPER_DESCRIPTION_LEARN_MORE},
       {"descriptionDialogClose",
        IDS_PERSONALIZATION_APP_WALLPAPER_DESCRIPTION_DIALOG_CLOSE},
       {"myImagesLabel", IDS_PERSONALIZATION_APP_MY_IMAGES},

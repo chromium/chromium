@@ -352,7 +352,7 @@ enum WebDXFeature {
   kScrollButtons = 294,
   kScrollMarkers = 295,
   kDRAFT_PopoverHint = 296,
-  kDRAFT_RegExpEscape = 297,
+  kRegexpEscape = 297,
   kFloat16array = 298,
   kAppFileHandlers = 299,
   kAppProtocolHandlers = 300,

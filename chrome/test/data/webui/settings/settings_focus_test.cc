@@ -61,3 +61,19 @@ IN_PROC_BROWSER_TEST_F(SettingsFocusTest, MAYBE_SettingsUISearch) {
 IN_PROC_BROWSER_TEST_F(SettingsFocusTest, Menu) {
   RunTest("settings/settings_menu_interactive_ui_test.js", "mocha.run()");
 }
+
+#if BUILDFLAG(ENABLE_GLIC)
+class SettingsGlicPageFocusTest : public SettingsFocusTest {
+ public:
+  SettingsGlicPageFocusTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGlic, features::kTabstripComboButton}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+IN_PROC_BROWSER_TEST_F(SettingsGlicPageFocusTest, GlicPageFocus) {
+  RunTest("settings/glic_page_focus_test.js", "mocha.run()");
+}
+#endif
