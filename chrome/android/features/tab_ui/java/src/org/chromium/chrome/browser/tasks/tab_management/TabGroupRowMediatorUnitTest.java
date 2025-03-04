@@ -24,7 +24,6 @@ import android.content.Context;
 import android.view.ContextThemeWrapper;
 
 import androidx.core.util.Supplier;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -130,7 +129,6 @@ public class TabGroupRowMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testFavicons_zero() {
         PropertyModel propertyModel = buildTestModel();
         ClusterData clusterData = propertyModel.get(CLUSTER_DATA);
@@ -139,7 +137,6 @@ public class TabGroupRowMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testFavicons_one() {
         PropertyModel propertyModel = buildTestModel(mUrl1);
         ClusterData clusterData = propertyModel.get(CLUSTER_DATA);
@@ -149,7 +146,6 @@ public class TabGroupRowMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testFavicons_two() {
         PropertyModel propertyModel = buildTestModel(mUrl1, mUrl2);
         ClusterData clusterData = propertyModel.get(CLUSTER_DATA);
@@ -160,7 +156,6 @@ public class TabGroupRowMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testFavicons_three() {
         PropertyModel propertyModel = buildTestModel(mUrl1, mUrl2, mUrl3);
         ClusterData clusterData = propertyModel.get(CLUSTER_DATA);
@@ -172,7 +167,6 @@ public class TabGroupRowMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testFavicons_four() {
         PropertyModel propertyModel = buildTestModel(mUrl1, mUrl2, mUrl3, mUrl4);
         ClusterData clusterData = propertyModel.get(CLUSTER_DATA);
@@ -185,7 +179,6 @@ public class TabGroupRowMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testFavicons_five() {
         PropertyModel propertyModel = buildTestModel(mUrl1, mUrl2, mUrl3, mUrl4, mUrl5);
         ClusterData clusterData = propertyModel.get(CLUSTER_DATA);
@@ -198,7 +191,6 @@ public class TabGroupRowMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testNotShared() {
         PropertyModel propertyModel = buildTestModel(/* isShared= */ false, mUrl1);
         assertFalse(propertyModel.get(DISPLAY_AS_SHARED));
@@ -206,7 +198,6 @@ public class TabGroupRowMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCollaborationButOnlyOneUser() {
         mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
@@ -216,7 +207,6 @@ public class TabGroupRowMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShared() {
         mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
@@ -226,7 +216,6 @@ public class TabGroupRowMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDestroyable() {
         mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);

@@ -16,7 +16,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -85,7 +84,6 @@ public class TabGroupListCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testForeignFavicon() {
         FaviconResolver resolver =
                 TabGroupListFaviconResolverFactory.build(
@@ -100,7 +98,6 @@ public class TabGroupListCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testFallbackFavicon() {
         FaviconResolver resolver =
                 TabGroupListFaviconResolverFactory.build(
@@ -115,7 +112,6 @@ public class TabGroupListCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testInternalFavicon() {
         FaviconResolver resolver =
                 TabGroupListFaviconResolverFactory.build(

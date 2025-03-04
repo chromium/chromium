@@ -8,8 +8,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,7 +49,6 @@ public class TabSwitcherUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testFocusTab() {
         TabSwitcherUtils.hideTabSwitcherAndShowTab(TAB_ID_1, mTabModelSelector, mLayoutManager);
         verify(mTabModelSelector).selectModel(false);

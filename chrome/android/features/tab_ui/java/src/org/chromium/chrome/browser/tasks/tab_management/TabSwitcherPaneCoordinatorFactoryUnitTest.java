@@ -18,7 +18,6 @@ import android.app.Activity;
 import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -193,7 +192,6 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreate_NativeAlreadyInitialized() {
         when(mLifecycleDispatcher.isNativeInitializationFinished()).thenReturn(true);
         TabSwitcherPaneCoordinator coordinator =
@@ -219,7 +217,6 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateTwoCoordinators_NativeAlreadyInitialized() {
         when(mLifecycleDispatcher.isNativeInitializationFinished()).thenReturn(true);
         TabSwitcherPaneCoordinator coordinator1 =
@@ -261,7 +258,6 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreate_NativeNotInitialized() {
         when(mLifecycleDispatcher.isNativeInitializationFinished()).thenReturn(false);
         TabSwitcherPaneCoordinator coordinator =
@@ -293,14 +289,12 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     }
 
     @Test
-    @SmallTest
     @CommandLineFlags.Add({BaseSwitches.DISABLE_LOW_END_DEVICE_MODE})
     public void testTabListMode_HighEnd() {
         assertEquals(TabListMode.GRID, mFactory.getTabListMode());
     }
 
     @Test
-    @SmallTest
     @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
     @DisableFeatures(ChromeFeatureList.DISABLE_LIST_TAB_SWITCHER)
     public void testTabListMode_LowEnd() {
@@ -308,7 +302,6 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     }
 
     @Test
-    @SmallTest
     @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
     @EnableFeatures(ChromeFeatureList.DISABLE_LIST_TAB_SWITCHER)
     public void testTabListMode_LowEnd_ListDisabled() {
@@ -316,7 +309,6 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateTabGroupModelFilterSupplier_AlreadyCreated() {
         when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
 
@@ -326,7 +318,6 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateTabGroupModelFilterSupplier_WaitForChange() {
         when(mTabModelSelector.getModels()).thenReturn(Collections.emptyList());
 

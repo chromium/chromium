@@ -11,8 +11,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -74,7 +72,6 @@ public class TabListEditorUngroupActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testInherentActionProperties() {
         Assert.assertEquals(
                 R.id.tab_list_editor_ungroup_menu_item,
@@ -96,7 +93,6 @@ public class TabListEditorUngroupActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testUngroupActionDisabled() {
         List<Integer> tabIds = new ArrayList<>();
         mAction.onSelectionStateChange(tabIds);
@@ -107,7 +103,6 @@ public class TabListEditorUngroupActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testUngroupActionWithTabs() throws Exception {
         List<Integer> tabIds = Arrays.asList(5, 3, 7);
         List<Tab> tabs = new ArrayList<>();

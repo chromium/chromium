@@ -14,7 +14,6 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -148,7 +147,6 @@ public class CloseAllTabsDialogUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDialog_RegularMode() {
         final boolean isIncognito = false;
         setUpCurrentModelAndIncognitoCount(isIncognito, 0);
@@ -174,7 +172,6 @@ public class CloseAllTabsDialogUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDialog_RegularMode_OneIncognitoTab() {
         final boolean isIncognito = false;
         setUpCurrentModelAndIncognitoCount(isIncognito, 1);
@@ -200,7 +197,6 @@ public class CloseAllTabsDialogUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDialog_RegularMode_TwoIncognitoTabs() {
         final boolean isIncognito = false;
         setUpCurrentModelAndIncognitoCount(isIncognito, 2);
@@ -226,7 +222,6 @@ public class CloseAllTabsDialogUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDialog_IncognitoMode() {
         final boolean isIncognito = true;
         setUpCurrentModelAndIncognitoCount(isIncognito, 1);
@@ -251,7 +246,6 @@ public class CloseAllTabsDialogUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDismissButton() {
         final boolean isIncognito = true;
         setUpCurrentModelAndIncognitoCount(isIncognito, 1);
@@ -277,7 +271,6 @@ public class CloseAllTabsDialogUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDismissNoButton() {
         final boolean isIncognito = false;
         setUpCurrentModelAndIncognitoCount(isIncognito, 0);

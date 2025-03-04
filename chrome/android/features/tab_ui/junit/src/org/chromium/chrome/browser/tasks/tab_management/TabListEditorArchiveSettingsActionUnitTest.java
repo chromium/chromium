@@ -8,8 +8,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -54,7 +52,6 @@ public class TabListEditorArchiveSettingsActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testInherentActionProperties() {
         Assert.assertEquals(
                 R.id.tab_list_editor_archive_settings_menu_item,
@@ -72,7 +69,6 @@ public class TabListEditorArchiveSettingsActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testPerformAction() {
         mAction.performAction(null);
         verify(mArchiveDelegate).openArchiveSettings();

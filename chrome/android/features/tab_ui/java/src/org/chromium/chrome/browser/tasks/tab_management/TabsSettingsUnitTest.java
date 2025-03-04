@@ -23,7 +23,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle.State;
 import androidx.preference.Preference;
 import androidx.test.core.app.ActivityScenario;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -122,7 +121,6 @@ public class TabsSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testLaunchTabsSettingsAutoOpenSyncedTabGroupsEnabled() {
         when(mPrefServiceMock.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS)).thenReturn(true);
 
@@ -145,7 +143,6 @@ public class TabsSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testLaunchTabsSettingsAutoOpenSyncedTabGroupsDisabled() {
         when(mPrefServiceMock.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS)).thenReturn(false);
 
@@ -168,7 +165,6 @@ public class TabsSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
     public void testTabGroupSyncSettingsHiddenWhenFeatureOff() {
         doReturn(false).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfileMock);
@@ -179,7 +175,6 @@ public class TabsSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH)
     public void testTabGroupSyncSettingsHiddenWhenKillswitchEnabled() {
         TabsSettings tabsSettings = launchFragment();
@@ -189,7 +184,6 @@ public class TabsSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
     public void testArchiveSettingsHiddenWhenFeatureOff() {
         TabsSettings tabsSettings = launchFragment();
@@ -199,7 +193,6 @@ public class TabsSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
     public void testArchiveSettingsTitleAndSummary() {
         TabArchiveSettings archiveSettings =
@@ -217,7 +210,6 @@ public class TabsSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testLaunchTabsSettingsShareTabs_noShowWhenDisabled() {
         TabsSettings tabsSettings = launchFragment();
         ChromeSwitchPreference shareTitlesAndUrlsWithOsSwitch =
@@ -230,7 +222,6 @@ public class TabsSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testLaunchTabsSettingsShareTabs_NotShowWhenDeviceNotCompatible() {
         AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
         when(hooksMock.isEnabled()).thenReturn(true);
@@ -251,7 +242,6 @@ public class TabsSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testLaunchTabsSettingsShareTabs() {
         AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
         when(hooksMock.isEnabled()).thenReturn(true);
@@ -282,7 +272,6 @@ public class TabsSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testLaunchTabsSettingsShareTabs_DefaultDisabled() {
         AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
         when(hooksMock.isEnabled()).thenReturn(true);
@@ -314,7 +303,6 @@ public class TabsSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testLaunchTabsSettingsShareTabs_LearnMore() {
         AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
         when(hooksMock.isEnabled()).thenReturn(true);

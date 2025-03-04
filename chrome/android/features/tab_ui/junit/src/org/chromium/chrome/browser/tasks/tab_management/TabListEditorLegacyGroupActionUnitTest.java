@@ -14,8 +14,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -79,7 +77,6 @@ public class TabListEditorLegacyGroupActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testInherentActionProperties() {
         assertEquals(
                 R.id.tab_list_editor_group_menu_item,
@@ -99,7 +96,6 @@ public class TabListEditorLegacyGroupActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGroupActionDisabled_NoTabs() {
         List<Integer> tabIds = new ArrayList<>();
         mAction.onSelectionStateChange(tabIds);
@@ -108,7 +104,6 @@ public class TabListEditorLegacyGroupActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGroupActionDisabled_OneTabGroup() {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(
@@ -132,7 +127,6 @@ public class TabListEditorLegacyGroupActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGroupActionDisabled_MultipleTabGroupsWithCollaborations() {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(
@@ -168,7 +162,6 @@ public class TabListEditorLegacyGroupActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSingleTabToGroup() {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(
@@ -204,7 +197,6 @@ public class TabListEditorLegacyGroupActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGroupActionWithTabs_WillMergingCreateNewGroup() throws Exception {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(
@@ -250,7 +242,6 @@ public class TabListEditorLegacyGroupActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGroupActionWithTabs_MergedIndividualTabsToNewGroup() throws Exception {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(
@@ -312,7 +303,6 @@ public class TabListEditorLegacyGroupActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGroupActionWithTabGroups_MergeIndividalTabsToExistingGroup() {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(
@@ -379,7 +369,6 @@ public class TabListEditorLegacyGroupActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGroupActionWithTabGroups_MergeGroupToExistingGroup() {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(
@@ -446,7 +435,6 @@ public class TabListEditorLegacyGroupActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGroupActionWithTabGroups_MergeTabsAndGroupsToExistingGroup() {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(
@@ -525,7 +513,6 @@ public class TabListEditorLegacyGroupActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGroupActionWithTabGroups_MergeTabsAndGroupsToCollaborationGroup() {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(
@@ -608,7 +595,6 @@ public class TabListEditorLegacyGroupActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGroupActionWithTabGroups_MergeCollaborationIsFirst() {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(
@@ -650,7 +636,6 @@ public class TabListEditorLegacyGroupActionUnitTest {
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testGroupActionWithTabGroups_MergeCollaborationsAsserts() {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(

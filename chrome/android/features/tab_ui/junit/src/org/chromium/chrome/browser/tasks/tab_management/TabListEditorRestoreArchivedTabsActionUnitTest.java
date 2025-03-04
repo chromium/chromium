@@ -8,8 +8,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -58,7 +56,6 @@ public class TabListEditorRestoreArchivedTabsActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testInherentActionProperties() {
         Assert.assertEquals(
                 R.id.tab_list_editor_restore_archived_tabs_menu_item,
@@ -76,7 +73,6 @@ public class TabListEditorRestoreArchivedTabsActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testPerformAction() {
         List<Tab> tabs = new ArrayList<>();
         mAction.performAction(tabs);

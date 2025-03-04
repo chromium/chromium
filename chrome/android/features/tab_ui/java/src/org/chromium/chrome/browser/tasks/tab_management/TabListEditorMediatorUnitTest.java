@@ -9,8 +9,6 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -63,7 +61,6 @@ public final class TabListEditorMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTopMarginOnAppHeaderStateChange() {
         AppHeaderState state = mock(AppHeaderState.class);
         when(state.getAppHeaderHeight()).thenReturn(10);

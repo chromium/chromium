@@ -14,7 +14,6 @@ import android.app.Activity;
 import android.graphics.drawable.Drawable;
 
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -87,7 +86,6 @@ public class TabListEditorBookmarkActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testInherentActionProperties() {
         Drawable drawable = AppCompatResources.getDrawable(mActivity, R.drawable.star_outline_24dp);
         drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
@@ -112,7 +110,6 @@ public class TabListEditorBookmarkActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBookmarkActionNoTabs() {
         mAction.onSelectionStateChange(new ArrayList<Integer>());
         Assert.assertEquals(
@@ -122,7 +119,6 @@ public class TabListEditorBookmarkActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBookmarkActionWithOneTab() throws Exception {
         List<Integer> tabIds = new ArrayList<>();
         tabIds.add(1);
@@ -195,7 +191,6 @@ public class TabListEditorBookmarkActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBookmarkActionWithMultipleTabs() throws Exception {
         List<Integer> tabIds = new ArrayList<>();
         tabIds.add(1);
