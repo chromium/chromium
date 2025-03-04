@@ -7877,7 +7877,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="294" label="ScrollButtons"/>
   <int value="295" label="ScrollMarkers"/>
   <int value="296" label="DRAFT_PopoverHint"/>
-  <int value="297" label="DRAFT_RegExpEscape"/>
+  <int value="297" label="RegexpEscape"/>
   <int value="298" label="Float16array"/>
   <int value="299" label="AppFileHandlers"/>
   <int value="300" label="AppProtocolHandlers"/>
