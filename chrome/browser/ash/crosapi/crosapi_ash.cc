@@ -62,7 +62,6 @@
 #include "chrome/browser/ash/crosapi/remoting_ash.h"
 #include "chrome/browser/ash/crosapi/screen_ai_downloader_ash.h"
 #include "chrome/browser/ash/crosapi/structured_metrics_service_ash.h"
-#include "chrome/browser/ash/crosapi/virtual_keyboard_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/ash/crosapi/web_kiosk_service_ash.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
@@ -221,7 +220,6 @@ CrosapiAsh::CrosapiAsh()
           std::make_unique<StructuredMetricsServiceAsh>()),
       video_conference_manager_ash_(
           std::make_unique<ash::VideoConferenceManagerAsh>()),
-      virtual_keyboard_ash_(std::make_unique<VirtualKeyboardAsh>()),
       vpn_service_ash_(std::make_unique<VpnServiceAsh>()),
       web_kiosk_service_ash_(std::make_unique<WebKioskServiceAsh>()) {
   receiver_set_.set_disconnect_handler(base::BindRepeating(
@@ -636,11 +634,6 @@ void CrosapiAsh::BindVideoCaptureDeviceFactory(
     mojo::PendingReceiver<mojom::VideoCaptureDeviceFactory> receiver) {
   content::GetVideoCaptureService().BindVideoCaptureDeviceFactory(
       std::move(receiver));
-}
-
-void CrosapiAsh::BindVirtualKeyboard(
-    mojo::PendingReceiver<mojom::VirtualKeyboard> receiver) {
-  virtual_keyboard_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindVpnService(

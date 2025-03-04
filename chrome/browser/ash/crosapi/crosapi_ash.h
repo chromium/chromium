@@ -96,7 +96,6 @@ class ScreenAIDownloaderAsh;
 class StructuredMetricsServiceAsh;
 class VpnServiceAsh;
 class WebKioskServiceAsh;
-class VirtualKeyboardAsh;
 
 // Implementation of Crosapi in Ash. It provides a set of APIs that
 // crosapi clients, such as lacros-chrome, can call into.
@@ -269,8 +268,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindVideoCaptureDeviceFactory(
       mojo::PendingReceiver<mojom::VideoCaptureDeviceFactory> receiver)
       override;
-  void BindVirtualKeyboard(
-      mojo::PendingReceiver<mojom::VirtualKeyboard> receiver) override;
   void BindVpnService(
       mojo::PendingReceiver<mojom::VpnService> receiver) override;
   void BindWebKioskService(
@@ -407,10 +404,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return video_conference_manager_ash_.get();
   }
 
-  VirtualKeyboardAsh* virtual_keyboard_ash() {
-    return virtual_keyboard_ash_.get();
-  }
-
   VpnServiceAsh* vpn_service_ash() { return vpn_service_ash_.get(); }
 
  private:
@@ -485,7 +478,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ScreenAIDownloaderAsh> screen_ai_downloader_ash_;
   std::unique_ptr<StructuredMetricsServiceAsh> structured_metrics_service_ash_;
   std::unique_ptr<ash::VideoConferenceManagerAsh> video_conference_manager_ash_;
-  std::unique_ptr<VirtualKeyboardAsh> virtual_keyboard_ash_;
   std::unique_ptr<VpnServiceAsh> vpn_service_ash_;
   std::unique_ptr<WebKioskServiceAsh> web_kiosk_service_ash_;
 

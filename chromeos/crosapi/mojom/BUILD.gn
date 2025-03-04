@@ -78,7 +78,6 @@ mojom("mojom") {
     "telemetry_management_service.mojom",
     "ui_constants.mojom",
     "video_conference.mojom",
-    "virtual_keyboard.mojom",
     "vpn_service.mojom",
     "web_app_types.mojom",
     "web_kiosk_service.mojom",
