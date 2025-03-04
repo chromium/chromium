@@ -11,15 +11,15 @@
 
 #include "base/check.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
-#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
-using content::DocumentUserData;
+using content::RenderFrameHost;
 
 namespace webauthn {
 
@@ -45,6 +45,13 @@ password_manager::PasswordManagerClient* GetPasswordManagerClient(
 
 }  // namespace
 
+PasswordCredentialControllerImpl::PasswordCredentialControllerImpl(
+    GlobalRenderFrameHostId render_frame_host_id,
+    AuthenticatorRequestDialogModel* model)
+    : render_frame_host_id_(render_frame_host_id), model_(model) {
+  model_observer_.Observe(model_.get());
+}
+
 PasswordCredentialControllerImpl::~PasswordCredentialControllerImpl() = default;
 
 void PasswordCredentialControllerImpl::FetchPasswords(
@@ -59,7 +66,7 @@ void PasswordCredentialControllerImpl::FetchPasswords(
 bool PasswordCredentialControllerImpl::IsAuthRequired() {
   // TODO(crbug.com/392549444): For the prototype, require screen lock only if
   // it's enabled (e.g. via PWM settings). This may change.
-  auto* pwm_client = GetPasswordManagerClient(render_frame_host());
+  auto* pwm_client = GetPasswordManagerClient(*GetRenderFrameHost());
   return pwm_client && pwm_client->GetPasswordFeatureManager()
                            ->IsBiometricAuthenticationBeforeFillingEnabled();
 }
@@ -69,27 +76,16 @@ void PasswordCredentialControllerImpl::SetPasswordSelectedCallback(
   password_selected_callback_ = callback;
 }
 
-void PasswordCredentialControllerImpl::OnPasswordSelected(
-    std::u16string username,
-    std::u16string password) {
+void PasswordCredentialControllerImpl::OnPasswordCredentialSelected(
+    PasswordPair password) {
   // TODO(crbug.com/392549444): Consider adding screen lock auth, etc. for
   // password selection. For prototyping this should be alright.
 
   password_selected_callback_.Run(password_manager::CredentialInfo(
-      password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD, username,
-      username, GURL(), password, url::SchemeHostPort()));
+      password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD,
+      std::get<0>(password), std::get<0>(password), GURL(),
+      std::get<1>(password), url::SchemeHostPort()));
 }
-
-base::WeakPtr<PasswordCredentialController>
-PasswordCredentialControllerImpl::AsWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
-PasswordCredentialControllerImpl::PasswordCredentialControllerImpl(
-    RenderFrameHost* render_frame_host)
-    : DocumentUserData(render_frame_host) {}
-
-DOCUMENT_USER_DATA_KEY_IMPL(PasswordCredentialControllerImpl);
 
 void PasswordCredentialControllerImpl::OnFetchCompleted() {
   CHECK(!callback_.is_null());
@@ -109,8 +105,15 @@ std::unique_ptr<password_manager::FormFetcher>
 PasswordCredentialControllerImpl::GetFormFetcher(const GURL& url) {
   return std::make_unique<password_manager::FormFetcherImpl>(
       GetSynthesizedFormForUrl(url),
-      GetPasswordManagerClient(render_frame_host()),
+      GetPasswordManagerClient(*GetRenderFrameHost()),
       /*should_migrate_http_passwords=*/false);
+}
+
+RenderFrameHost* PasswordCredentialControllerImpl::GetRenderFrameHost() const {
+  RenderFrameHost* ret =
+      content::RenderFrameHost::FromID(render_frame_host_id_);
+  CHECK(ret);
+  return ret;
 }
 
 }  // namespace webauthn

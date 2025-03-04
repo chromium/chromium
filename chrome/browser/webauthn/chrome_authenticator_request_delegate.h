@@ -216,6 +216,9 @@ class ChromeAuthenticatorRequestDelegate
       base::TickClock const* tick_clock,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  void SetPasswordControllerForTesting(
+      std::unique_ptr<webauthn::PasswordCredentialController> controller);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegatePrivateTest,
                            DaysSinceDate);
@@ -346,6 +349,8 @@ class ChromeAuthenticatorRequestDelegate
   bool can_use_synced_phone_passkeys_ = false;
 
   std::unique_ptr<GPMEnclaveController> enclave_controller_;
+
+  std::unique_ptr<webauthn::PasswordCredentialController> password_controller_;
 
   // Stores the TransportAvailabilityInfo while we're waiting for the enclave
   // state to load from the disk.

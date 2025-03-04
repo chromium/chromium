@@ -18,7 +18,7 @@
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
-#include "chrome/browser/webauthn/observable_authenticator_list.h"
+#include "chrome/browser/webauthn/password_credential_controller.h"
 #include "content/public/browser/global_routing_id.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_constants.h"
@@ -182,7 +182,11 @@ enum class EnclaveEnabledStatus {
   AUTHENTICATOR_REQUEST_EVENT_1(OnModelDestroyed,                             \
                                 AuthenticatorRequestDialogModel*)             \
   /* Called when the GPM passkeys are reset successfully or not. */           \
-  AUTHENTICATOR_REQUEST_EVENT_1(OnGpmPasskeysReset, bool)
+  AUTHENTICATOR_REQUEST_EVENT_1(OnGpmPasskeysReset, bool)                     \
+  /* Called when a password mechanism is selected */                          \
+  AUTHENTICATOR_REQUEST_EVENT_1(                                              \
+      OnPasswordCredentialSelected,                                           \
+      webauthn::PasswordCredentialController::PasswordPair)
 
 // AuthenticatorRequestDialogModel holds the UI state for a WebAuthn request.
 // This class is refcounted so that its ownership can be shared between the

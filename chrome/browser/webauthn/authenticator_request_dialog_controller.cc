@@ -2595,17 +2595,15 @@ void AuthenticatorRequestDialogController::StartPasskeyUpgradeRequest() {
 }
 
 void AuthenticatorRequestDialogController::PopulatePasswords() {
-  auto* password_controller =
-      webauthn::PasswordCredentialController::MaybeGet(GetRenderFrameHost());
-  CHECK(password_controller);
   for (const auto& password : passwords_) {
     Mechanism mechanism(
         Mechanism::Password(), password->username_value,
         password->username_value, vector_icons::kPasswordManagerIcon,
         base::BindRepeating(
-            &webauthn::PasswordCredentialController::OnPasswordSelected,
-            password_controller->AsWeakPtr(), password->username_value,
-            password->password_value));
+            &AuthenticatorRequestDialogModel::OnPasswordCredentialSelected,
+            base::Unretained(model_),
+            std::make_pair(password->username_value,
+                           password->password_value)));
     mechanism.description =
         l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_PASSWORD_LABEL);
     model_->mechanisms.emplace_back(std::move(mechanism));
