@@ -178,7 +178,7 @@ class MockWebWrapper : public WebWrapper {
 
   ~MockWebWrapper() override;
 
-  MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (override));
+  MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const, override));
   MOCK_METHOD(const std::u16string&, GetTitle, (), (override));
   MOCK_METHOD(bool, IsFirstLoadForNavigationFinished, (), (override));
   MOCK_METHOD(bool, IsOffTheRecord, (), (override));

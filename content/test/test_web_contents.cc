@@ -134,7 +134,7 @@ int TestWebContents::DownloadImageInFrame(
                        bypass_cache, std::move(callback));
 }
 
-const GURL& TestWebContents::GetLastCommittedURL() {
+const GURL& TestWebContents::GetLastCommittedURL() const {
   if (last_committed_url_.is_valid()) {
     return last_committed_url_;
   }

@@ -33,7 +33,7 @@ class WebContentsWrapper : public WebWrapper {
   WebContentsWrapper operator=(const WebContentsWrapper&) = delete;
   ~WebContentsWrapper() override;
 
-  const GURL& GetLastCommittedURL() override;
+  const GURL& GetLastCommittedURL() const override;
 
   const std::u16string& GetTitle() override;
 

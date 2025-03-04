@@ -125,7 +125,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   int GetUniqueID() override;
   PageType GetPageType() override;
   void SetURL(const GURL& url) override;
-  const GURL& GetURL() override;
+  const GURL& GetURL() const override;
   void SetBaseURLForDataURL(const GURL& url) override;
   const GURL& GetBaseURLForDataURL() override;
 #if BUILDFLAG(IS_ANDROID)
@@ -137,7 +137,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   void SetReferrer(const Referrer& referrer) override;
   const Referrer& GetReferrer() override;
   void SetVirtualURL(const GURL& url) override;
-  const GURL& GetVirtualURL() override;
+  const GURL& GetVirtualURL() const override;
   void SetTitle(std::u16string title) override;
   const std::u16string& GetTitle() override;
   void SetApplicationTitle(const std::u16string& application_title) override;

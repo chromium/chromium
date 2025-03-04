@@ -69,7 +69,7 @@ class NavigationEntry : public base::SupportsUserData {
   // data: URL or something like that. Use GetVirtualURL() below for showing to
   // the user.
   virtual void SetURL(const GURL& url) = 0;
-  virtual const GURL& GetURL() = 0;
+  virtual const GURL& GetURL() const = 0;
 
   // Used for specifying a base URL for pages loaded via data URLs.
   virtual void SetBaseURLForDataURL(const GURL& url) = 0;
@@ -97,7 +97,7 @@ class NavigationEntry : public base::SupportsUserData {
   // GetVirtualURL() will return the URL to display to the user in all cases, so
   // if there is no overridden display URL, it will return the actual one.
   virtual void SetVirtualURL(const GURL& url) = 0;
-  virtual const GURL& GetVirtualURL() = 0;
+  virtual const GURL& GetVirtualURL() const = 0;
 
   // The title as set by the page. This will be empty if there is no title set.
   // The caller is responsible for detecting when there is no title and

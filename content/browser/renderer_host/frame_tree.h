@@ -533,7 +533,11 @@ class CONTENT_EXPORT FrameTree {
       const url::Origin& previously_visited_origin,
       NavigationRequest* navigation_request_to_exclude);
 
+  const NavigationControllerImpl& controller() const {
+    return navigator_.controller();
+  }
   NavigationControllerImpl& controller() { return navigator_.controller(); }
+
   Navigator& navigator() { return navigator_; }
 
   // Another page accessed the initial empty main document, which means it

@@ -228,6 +228,7 @@ class CONTENT_EXPORT Navigator {
 
   // Returns the NavigationController associated with this Navigator.
   NavigationControllerImpl& controller() { return controller_; }
+  const NavigationControllerImpl& controller() const { return controller_; }
 
   void SetWillNavigateFromFrameProxyCallbackForTesting(
       const base::RepeatingClosure& callback);

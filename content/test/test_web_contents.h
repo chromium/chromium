@@ -72,7 +72,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
       uint32_t max_bitmap_size,
       bool bypass_cache,
       ImageDownloadCallback callback) override;
-  const GURL& GetLastCommittedURL() override;
+  const GURL& GetLastCommittedURL() const override;
   const std::u16string& GetTitle() override;
 
   // Override to cache the tab switch start time without going through
