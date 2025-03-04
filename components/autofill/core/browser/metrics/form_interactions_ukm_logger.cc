@@ -250,17 +250,10 @@ void FormInteractionsUkmLogger::LogAutofillFieldInfoAtFormRemove(
   size_t rank_in_field_signature_group = 0;
 
   // Field types from local heuristics prediction.
-  // The field type from the active local heuristic pattern.
-  FieldType heuristic_type = UNKNOWN_TYPE;
-  // The type of the field predicted from patterns whose stability is above
-  // suspicion.
-  FieldType heuristic_legacy_type = UNKNOWN_TYPE;
-  // The type of the field predicted from the source of local heuristics on
-  // the client, which uses patterns applied for most users.
-  FieldType heuristic_default_type = UNKNOWN_TYPE;
-  // The type of the field predicted from the heuristics that uses experimental
-  // patterns.
-  FieldType heuristic_experimental_type = UNKNOWN_TYPE;
+  // The field type from the local heuristic pattern (regex).
+  std::optional<FieldType> heuristic_type;
+  // The type of the field predicted by the ML model.
+  std::optional<FieldType> mlmodel_type;
 
   // Field types from Autocomplete attribute.
   // Information of the HTML autocomplete attribute, see
@@ -289,7 +282,6 @@ void FormInteractionsUkmLogger::LogAutofillFieldInfoAtFormRemove(
   size_t section_id = 0;
   bool type_changed_by_rationalization = false;
 
-  bool had_heuristic_type = false;
   bool had_html_type = false;
   bool had_server_type = false;
   bool had_rationalization_event = false;
@@ -364,28 +356,16 @@ void FormInteractionsUkmLogger::LogAutofillFieldInfoAtFormRemove(
     if (auto* event =
             absl::get_if<HeuristicPredictionFieldLogEvent>(&log_event)) {
       switch (event->heuristic_source) {
-#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-        case HeuristicSource::kLegacyRegexes:
-          heuristic_legacy_type = event->field_type;
+        case HeuristicSource::kRegexes:
+          heuristic_type = event->field_type;
           break;
-#else
-        case HeuristicSource::kDefaultRegexes:
-          heuristic_default_type = event->field_type;
-          break;
-        case HeuristicSource::kExperimentalRegexes:
-          heuristic_experimental_type = event->field_type;
-          break;
-#endif
         case HeuristicSource::kAutofillMachineLearning:
+          mlmodel_type = event->field_type;
+          break;
         case HeuristicSource::kPasswordManagerMachineLearning:
           NOTREACHED();
       }
-
-      if (event->is_active_heuristic_source) {
-        heuristic_type = event->field_type;
-      }
       rank_in_field_signature_group = event->rank_in_field_signature_group;
-      had_heuristic_type = true;
     }
 
     if (auto* event =
@@ -491,11 +471,11 @@ void FormInteractionsUkmLogger::LogAutofillFieldInfoAtFormRemove(
         OptionalBooleanToBool(had_typed_or_filled_value_at_submission));
   }
 
-  if (had_heuristic_type) {
-    builder.SetHeuristicType(heuristic_type)
-        .SetHeuristicTypeLegacy(heuristic_legacy_type)
-        .SetHeuristicTypeDefault(heuristic_default_type)
-        .SetHeuristicTypeExperimental(heuristic_experimental_type);
+  if (heuristic_type.has_value()) {
+    builder.SetHeuristicType(*heuristic_type);
+  }
+  if (mlmodel_type.has_value()) {
+    builder.SetMlModelType(*mlmodel_type);
   }
 
   if (had_html_type) {

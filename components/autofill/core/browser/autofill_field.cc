@@ -232,13 +232,8 @@ FieldType AutofillField::heuristic_type() const {
 FieldType AutofillField::heuristic_type(HeuristicSource s) const {
   // Special handling for ML model predictions.
   if (s == HeuristicSource::kAutofillMachineLearning) {
-#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-    HeuristicSource regex_heuristic_source = HeuristicSource::kLegacyRegexes;
-#else
-    HeuristicSource regex_heuristic_source = HeuristicSource::kDefaultRegexes;
-#endif
     FieldType regex_type =
-        local_type_predictions_[static_cast<size_t>(regex_heuristic_source)];
+        local_type_predictions_[static_cast<size_t>(HeuristicSource::kRegexes)];
     if (regex_type == FieldType::NO_SERVER_DATA) {
       regex_type = FieldType::UNKNOWN_TYPE;
     }

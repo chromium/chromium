@@ -108,16 +108,6 @@ std::string ServerTypesToString(const AutofillField& field) {
   return base::StrCat({"[", base::JoinString(server_types, ", "), "]"});
 }
 
-HeuristicSource GetAvailableRegexHeuristicSource() {
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  return GetActiveRegexFeatures().empty()
-             ? HeuristicSource::kDefaultRegexes
-             : HeuristicSource::kExperimentalRegexes;
-#else
-  return HeuristicSource::kLegacyRegexes;
-#endif
-}
-
 }  // namespace
 
 FormStructure::FormStructure(const FormData& form)
@@ -205,8 +195,6 @@ void FormStructure::DetermineHeuristicTypes(
       base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)
           ? current_page_language_
           : LanguageCode();
-  // The `PatternFile` parameter is overwritten again immediately before
-  // parsing and doesn't matter here.
   ParsingContext context(client_country_, page_language,
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
                          PatternFile::kDefault,
@@ -214,17 +202,8 @@ void FormStructure::DetermineHeuristicTypes(
                          PatternFile::kLegacy,
 #endif
                          GetActiveRegexFeatures(), log_manager);
-
-  // The active heuristic source might not be a pattern source.
-  std::optional<FieldCandidatesMap> active_predictions;
-  HeuristicSource active_heuristic_source = GetActiveHeuristicSource();
-  if (std::optional<PatternFile> pattern_file =
-          HeuristicSourceToPatternFile(active_heuristic_source)) {
-    context.pattern_file = *pattern_file;
-    active_predictions = ParseFieldTypesWithPatterns(context);
-    AssignBestFieldTypes(*active_predictions, active_heuristic_source);
-  }
-  DetermineNonActiveHeuristicTypes(std::move(active_predictions), context);
+  FieldCandidatesMap regex_predictions = ParseFieldTypesWithPatterns(context);
+  AssignBestFieldTypes(regex_predictions, HeuristicSource::kRegexes);
 
   UpdateAutofillCount();
   AssignSections(fields_);
@@ -248,22 +227,6 @@ void FormStructure::DetermineHeuristicTypes(
   }
 
   LogDetermineHeuristicTypesMetrics();
-}
-
-void FormStructure::DetermineNonActiveHeuristicTypes(
-    std::optional<FieldCandidatesMap> active_predictions,
-    ParsingContext& context) {
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  if (GetActiveHeuristicSource() == HeuristicSource::kDefaultRegexes) {
-    return;
-  }
-  // When a non-default source is active, shadow predictions between this
-  // non-default source and default are emitted. Compute default predictions.
-  context.pattern_file = PatternFile::kDefault;
-  context.active_features.clear();
-  AssignBestFieldTypes(ParseFieldTypesWithPatterns(context),
-                       HeuristicSource::kDefaultRegexes);
-#endif
 }
 
 // static
@@ -1005,8 +968,8 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
     buffer << "\n  Name: " << field->parseable_name();
 
     auto type = field->Type().ToStringView();
-    auto regex_heuristic_type = FieldTypeToStringView(
-        field->heuristic_type(GetAvailableRegexHeuristicSource()));
+    auto regex_heuristic_type =
+        FieldTypeToStringView(field->heuristic_type(HeuristicSource::kRegexes));
     std::string ml_heuristic_part;
     if (features::kAutofillModelPredictionsAreActive.Get()) {
       auto ml_heuristic_type = FieldTypeToStringView(
@@ -1100,8 +1063,8 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
     buffer << Tr{} << "Placeholder:" << field->placeholder();
 
     auto type = field->Type().ToStringView();
-    auto regex_heuristic_type = FieldTypeToStringView(
-        field->heuristic_type(GetAvailableRegexHeuristicSource()));
+    auto regex_heuristic_type =
+        FieldTypeToStringView(field->heuristic_type(HeuristicSource::kRegexes));
     std::string ml_heuristic_part;
     if (features::kAutofillModelPredictionsAreActive.Get()) {
       auto ml_heuristic_type = FieldTypeToStringView(
