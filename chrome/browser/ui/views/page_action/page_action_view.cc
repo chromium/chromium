@@ -112,7 +112,7 @@ void PageActionView::ViewHierarchyChanged(
 }
 
 void PageActionView::UpdateBorder() {
-  gfx::Insets insets = GetLayoutInsets(LOCATION_BAR_PAGE_ACTION_ICON_PADDING);
+  gfx::Insets insets = icon_insets_;
   if (ShouldShowLabel()) {
     constexpr int kInsetsLeftPadding = 4;
     constexpr int kInsetsRightPadding = 8;
@@ -181,10 +181,8 @@ void PageActionView::SetModel(PageActionModelInterface* model) {
 }
 
 gfx::Size PageActionView::GetMinimumSize() const {
-  const gfx::Insets insets =
-      GetLayoutInsets(LOCATION_BAR_PAGE_ACTION_ICON_PADDING);
   gfx::Size icon_preferred_size = image_container_view()->GetPreferredSize();
-  icon_preferred_size.Enlarge(insets.width(), insets.height());
+  icon_preferred_size.Enlarge(icon_insets_.width(), icon_insets_.height());
 
   return icon_preferred_size;
 }
