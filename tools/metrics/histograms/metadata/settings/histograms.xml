@@ -800,6 +800,29 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram
+    name="Settings.SafetyHub.DisruptiveNotificationRevocations.FalsePositive.SiteEngagement"
+    units="EngagementScore" expires_after="2026-02-26">
+  <owner>olesiamarukhnno@google.com</owner>
+  <owner>antoniosartori@chromium.org</owner>
+  <summary>
+    Tracks the distribution of the site engagement score for detected false
+    positive sites that were previously marked for revocation of disruptive
+    notifications.
+  </summary>
+</histogram>
+
+<histogram
+    name="Settings.SafetyHub.DisruptiveNotificationRevocations.Proposed.NotificationCount"
+    units="count" expires_after="2026-02-26">
+  <owner>olesiamarukhnno@google.com</owner>
+  <owner>antoniosartori@chromium.org</owner>
+  <summary>
+    Tracks the distribution of the average daily notification count for proposed
+    revocation of disruptive notifications.
+  </summary>
+</histogram>
+
+<histogram
     name="Settings.SafetyHub.DisruptiveNotificationRevocations.RevocationResult"
     enum="DisruptiveNotificationRevocationResult" expires_after="2026-02-26">
   <owner>olesiamarukhnno@google.com</owner>
@@ -809,6 +832,17 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
     the safety hub check runs (once a day). The metric is recorded per each
     notification content setting. It indicates whether the notification should
     be revoked, or the reason why it shouldn't be revoked.
+  </summary>
+</histogram>
+
+<histogram
+    name="Settings.SafetyHub.DisruptiveNotificationRevocations.RevokedWebsitesCount"
+    units="count" expires_after="2026-02-26">
+  <owner>olesiamarukhnno@google.com</owner>
+  <owner>antoniosartori@chromium.org</owner>
+  <summary>
+    Records the number of revoked disruptive notification sites per a Safety Hub
+    run.
   </summary>
 </histogram>
 

@@ -28,6 +28,14 @@ namespace {
 
 constexpr char kRevocationResultHistogram[] =
     "Settings.SafetyHub.DisruptiveNotificationRevocations.RevocationResult";
+constexpr char kNotificationCountHistogram[] =
+    "Settings.SafetyHub.DisruptiveNotificationRevocations.Proposed."
+    "NotificationCount";
+constexpr char kRevokedWebsitesCountHistogram[] =
+    "Settings.SafetyHub.DisruptiveNotificationRevocations.RevokedWebsitesCount";
+constexpr char kFalsePositiveSiteEngagementHistogram[] =
+    "Settings.SafetyHub.DisruptiveNotificationRevocations.FalsePositive."
+    "SiteEngagement";
 
 }  // namespace
 
@@ -101,12 +109,43 @@ TEST_F(DisruptiveNotificationPermissionsManagerTest,
             dict.FindInt(safety_hub::kDailyNotificationCountStr).value_or(0));
 
   t.ExpectBucketCount(kRevocationResultHistogram, RevocationResult::kRevoke, 1);
+  t.ExpectBucketCount(kRevokedWebsitesCountHistogram, 1, 1);
+  t.ExpectBucketCount(kNotificationCountHistogram, 3, 1);
 
   manager()->RevokeDisruptiveNotifications();
   EXPECT_EQ(GetRevokedPermissionsCount(), 1);
   t.ExpectBucketCount(kRevocationResultHistogram, RevocationResult::kRevoke, 1);
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kAlreadyInRevokeList, 1);
+}
+
+TEST_F(DisruptiveNotificationPermissionsManagerTest, RevokedWebsitesCount) {
+  base::HistogramTester t;
+
+  GURL first_url("https://www.example.com");
+  SetNotificationPermission(first_url, CONTENT_SETTING_ALLOW);
+  SetDailyAverageNotificationCount(first_url, 3);
+  site_engagement_service()->ResetBaseScoreForURL(first_url, 0);
+
+  GURL second_url("https://www.chrome.com");
+  SetNotificationPermission(second_url, CONTENT_SETTING_ALLOW);
+  SetDailyAverageNotificationCount(second_url, 1);
+  site_engagement_service()->ResetBaseScoreForURL(second_url, 0);
+
+  GURL third_url("https://www.anothersite.com");
+  SetNotificationPermission(third_url, CONTENT_SETTING_ALLOW);
+  SetDailyAverageNotificationCount(third_url, 3);
+  site_engagement_service()->ResetBaseScoreForURL(third_url, 0);
+
+  manager()->RevokeDisruptiveNotifications();
+
+  EXPECT_EQ(GetRevokedPermissionsCount(), 2);
+
+  t.ExpectBucketCount(kRevocationResultHistogram, RevocationResult::kRevoke, 2);
+  t.ExpectBucketCount(kRevocationResultHistogram,
+                      RevocationResult::kNotDisruptive, 1);
+  t.ExpectBucketCount(kRevokedWebsitesCountHistogram, 2, 1);
+  t.ExpectBucketCount(kNotificationCountHistogram, 3, 2);
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerTest,
@@ -277,6 +316,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerTest, FalsePositivePermission) {
 
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kFalsePositive, 1);
+  t.ExpectBucketCount(kFalsePositiveSiteEngagementHistogram, 5, 1);
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerTest, ProposedMetrics) {
