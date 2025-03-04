@@ -44,12 +44,6 @@ enum AlphaDisposition {
   kDontChangeAlpha,
 };
 
-enum ImageEncodingMimeType {
-  kMimeTypePng,
-  kMimeTypeJpeg,
-  kMimeTypeWebp,
-};
-
 enum InterpolationQuality {
   kInterpolationNone = static_cast<int>(cc::PaintFlags::FilterQuality::kNone),
   kInterpolationLow = static_cast<int>(cc::PaintFlags::FilterQuality::kLow),
@@ -81,10 +75,6 @@ PLATFORM_EXPORT bool ParseCanvasCompositeAndBlendMode(const WTF::String&,
                                                       CompositeOperator&,
                                                       BlendMode&);
 PLATFORM_EXPORT InterpolationQuality GetDefaultInterpolationQuality();
-
-PLATFORM_EXPORT WTF::String ImageEncodingMimeTypeName(ImageEncodingMimeType);
-PLATFORM_EXPORT bool ParseImageEncodingMimeType(const WTF::String&,
-                                                ImageEncodingMimeType&);
 
 PLATFORM_EXPORT WTF::String LineCapName(LineCap);
 PLATFORM_EXPORT bool ParseLineCap(const WTF::String&, LineCap&);

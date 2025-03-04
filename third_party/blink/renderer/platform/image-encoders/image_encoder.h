@@ -7,7 +7,6 @@
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -38,6 +37,12 @@ class VectorWStream : public SkWStream {
  private:
   // Does not have ownership.
   raw_ptr<Vector<unsigned char>> dst_;
+};
+
+enum ImageEncodingMimeType {
+  kMimeTypePng,
+  kMimeTypeJpeg,
+  kMimeTypeWebp,
 };
 
 class PLATFORM_EXPORT ImageEncoder {

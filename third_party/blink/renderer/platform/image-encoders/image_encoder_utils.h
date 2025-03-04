@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_ENCODERS_IMAGE_ENCODER_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_ENCODERS_IMAGE_ENCODER_UTILS_H_
 
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -29,6 +29,9 @@ class PLATFORM_EXPORT ImageEncoderUtils {
 
   static ImageEncodingMimeType ToEncodingMimeType(const String&,
                                                   const EncodeReason);
+
+  static String MimeTypeName(ImageEncodingMimeType);
+  static bool ParseMimeType(const String&, ImageEncodingMimeType&);
 };
 
 }  // namespace blink
