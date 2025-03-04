@@ -352,6 +352,7 @@ if (!is_android) {
       "//components/image_fetcher/core",
       "//components/ip_protection/common:ip_protection_status",
       "//components/metrics:content",
+      "//components/passage_embeddings",
       "//components/performance_manager",
       "//components/permissions",
       "//components/pref_registry",
