@@ -243,7 +243,8 @@ def __step_config(ctx, step_config):
                 "*.sql",
             ],
             "canonicalize_dir": True,
-            "remote": remote_run,
+            # Speculatively disabling for https://crbug.com/398058215
+            "remote": False,
             "platform_ref": "large",
             "timeout": "10m",
         },
