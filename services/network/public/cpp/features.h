@@ -78,6 +78,8 @@ BASE_DECLARE_FEATURE(kPrivateNetworkAccessPreflightShortTimeout);
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kPrivateNetworkAccessPermissionPrompt);
 
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kLocalNetworkAccessChecks);
+
 // If enabled, then the network service will parse the Cookie-Indices header.
 // This does not currently control changing cache behavior according to the
 // value of this header.

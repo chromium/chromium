@@ -229,6 +229,19 @@ BASE_FEATURE(kPrivateNetworkAccessPermissionPrompt,
              "PrivateNetworkAccessPermissionPrompt",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables Local Network Access checks.
+// Blocks local network requests without user permission to prevent exploitation
+// of vulnerable local devices.
+//
+// This feature is being built as a replacement for Private Network Access
+// (PNA), and if this is on PNA features may stop working.
+//
+// Public explainer:
+// https://github.com/explainers-by-googlers/local-network-access
+BASE_FEATURE(kLocalNetworkAccessChecks,
+             "LocalNetworkAccessChecks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, then the network service will parse the Cookie-Indices header.
 // This does not currently control changing cache behavior according to the
 // value of this header.

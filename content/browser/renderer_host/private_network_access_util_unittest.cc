@@ -15,6 +15,7 @@
 #include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -449,7 +450,7 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyIframesWithPreflights) {
 
 TEST(PrivateNetworkAccessUtilTest, DerivePolicyLocalNetworkAccess) {
   base::test::ScopedFeatureList feature_list(
-      features::kLocalNetworkAccessChecks);
+      network::features::kLocalNetworkAccessChecks);
 
   std::map<DerivePolicyInput, Policy> expected = DefaultPolicyMap();
   for (auto& entry : expected) {
