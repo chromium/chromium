@@ -96,15 +96,21 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
                      net::SchemefulSite(), /*session_id=*/std::nullopt});
   }
 
+  // If there is an origin in the scope, verify it is valid. Default to the
+  // fetcher URL if the origin is missing from the scope.
+  GURL scope_origin_as_url = params.scope.origin.empty()
+                                 ? params.fetcher_url
+                                 : GURL(params.scope.origin);
+  url::Origin scope_origin = url::Origin::Create(scope_origin_as_url);
+  if (scope_origin.opaque()) {
+    return base::unexpected(
+        SessionError{SessionError::ErrorType::kInvalidScopeOrigin,
+                     net::SchemefulSite(), /*session_id=*/std::nullopt});
+  }
+
   // Check if the scope-origin is samesite with fetcher URL.
-  if (!params.scope.origin.empty() && !params.fetcher_url.host().empty() &&
-      params.fetcher_url.host() != params.scope.origin &&
-      net::registry_controlled_domains::GetDomainAndRegistry(
-          params.fetcher_url,
-          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES) !=
-          net::registry_controlled_domains::GetDomainAndRegistry(
-              params.scope.origin,
-              net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES)) {
+  if (net::SchemefulSite(scope_origin_as_url) !=
+      net::SchemefulSite(params.fetcher_url)) {
     return base::unexpected(
         SessionError{SessionError::ErrorType::kScopeOriginSameSiteMismatch,
                      net::SchemefulSite(), /*session_id=*/std::nullopt});
@@ -137,8 +143,7 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
   }
 
   std::unique_ptr<Session> session(new Session(
-      Id(params.session_id), url::Origin::Create(params.fetcher_url),
-      candidate_refresh_endpoint));
+      Id(params.session_id), scope_origin, candidate_refresh_endpoint));
   for (const auto& spec : params.scope.specifications) {
     if (!spec.domain.empty() && !spec.path.empty()) {
       const auto inclusion_result =
@@ -420,6 +425,7 @@ void Session::InformOfRefreshResult(SessionError::ErrorType error_type) {
     case kPersistentHttpError:
     case kScopeOriginSameSiteMismatch:
     case kRefreshUrlSameSiteMismatch:
+    case kInvalidScopeOrigin:
 
     // We do not want to back off on many network connection errors
     // (e.g. internet disconnected), so we do not hit our maximum
