@@ -224,7 +224,9 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        // the expectations.
        features::kAutofillBetterLocalHeuristicPlaceholderSupport,
        // TODO(crbug.com/40285735): Remove when launched.
-       features::kAutofillEnableEmailHeuristicOutsideForms});
+       features::kAutofillEnableEmailHeuristicOutsideForms,
+       // TODO(crbug.com/395831853): Remove once launched.
+       features::kAutofillEnableLoyaltyCardsFilling});
 }
 
 FormStructureBrowserTest::~FormStructureBrowserTest() = default;
