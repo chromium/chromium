@@ -61,7 +61,6 @@ import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServi
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -141,7 +140,6 @@ public class TabGroupListMediatorUnitTest {
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
     @Mock private ModalDialogManager mModalDialogManager;
-    @Mock private Profile mProfile;
     @Mock private MessagingBackendService mMessagingBackendService;
     @Mock private Runnable mFinishBlocking;
 
