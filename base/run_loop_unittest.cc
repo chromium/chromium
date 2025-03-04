@@ -527,8 +527,8 @@ class MockNestingObserver : public RunLoop::NestingObserver {
   MockNestingObserver& operator=(const MockNestingObserver&) = delete;
 
   // RunLoop::NestingObserver:
-  MOCK_METHOD0(OnBeginNestedRunLoop, void());
-  MOCK_METHOD0(OnExitNestedRunLoop, void());
+  MOCK_METHOD(void, OnBeginNestedRunLoop, ());
+  MOCK_METHOD(void, OnExitNestedRunLoop, ());
 };
 
 class MockTask {
