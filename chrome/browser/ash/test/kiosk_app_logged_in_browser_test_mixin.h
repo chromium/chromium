@@ -2,25 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_TEST_PUBLIC_ACCOUNT_LOGGED_IN_BROWSER_TEST_MIXIN_H_
-#define CHROME_BROWSER_ASH_TEST_PUBLIC_ACCOUNT_LOGGED_IN_BROWSER_TEST_MIXIN_H_
+#ifndef CHROME_BROWSER_ASH_TEST_KIOSK_APP_LOGGED_IN_BROWSER_TEST_MIXIN_H_
+#define CHROME_BROWSER_ASH_TEST_KIOSK_APP_LOGGED_IN_BROWSER_TEST_MIXIN_H_
 
 #include <string>
+#include <string_view>
 
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 
 namespace ash {
 
-// Registers a new PublicAccount User, and then use the user to enter
-// into a session.
-class PublicAccountLoggedInBrowserTestMixin : public InProcessBrowserTestMixin {
+// Registers a new KioskApp User, and then use the user to enter
+// into a kiosk app session.
+class KioskAppLoggedInBrowserTestMixin : public InProcessBrowserTestMixin {
  public:
-  // `account_id` is the ID for the PublicSession account.
+  // `account_id` is the ID for the KioskApp account.
   // AccountId (to be used by, e.g., UserManager) is generated from the
   // `account_id`.
-  PublicAccountLoggedInBrowserTestMixin(InProcessBrowserTestMixinHost* host,
-                                        std::string_view account_id);
-  ~PublicAccountLoggedInBrowserTestMixin() override;
+  KioskAppLoggedInBrowserTestMixin(InProcessBrowserTestMixinHost* host,
+                                   std::string_view account_id);
+  ~KioskAppLoggedInBrowserTestMixin() override;
 
   // InProcessBrowserTestMixin:
   void SetUpCommandLine(base::CommandLine* command_line) override;
@@ -34,4 +35,4 @@ class PublicAccountLoggedInBrowserTestMixin : public InProcessBrowserTestMixin {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_TEST_PUBLIC_ACCOUNT_LOGGED_IN_BROWSER_TEST_MIXIN_H_
+#endif  // CHROME_BROWSER_ASH_TEST_KIOSK_APP_LOGGED_IN_BROWSER_TEST_MIXIN_H_

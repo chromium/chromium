@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
-#include "chrome/browser/ash/test/kiosk_logged_in_browser_test_mixin.h"
+#include "chrome/browser/ash/test/kiosk_app_logged_in_browser_test_mixin.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chrome/browser/feedback/system_logs/log_sources/device_event_log_source.h"
@@ -398,9 +398,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 // Verifies the systemLog API logs in Kiosk sessions.
 class SystemLogKioskSessionApitest : public SystemLogUserSessionApitest {
  public:
-  static constexpr char kKioskUserName[] =
-      "example@kiosk-apps.device-local.localhost";
-
   SystemLogKioskSessionApitest() {
     // Do not create User by LoggedInUserMixin, because
     // user log-in is handled by KioskBrowserTestMixin.
@@ -408,7 +405,8 @@ class SystemLogKioskSessionApitest : public SystemLogUserSessionApitest {
   }
 
  private:
-  ash::KioskLoggedInBrowserTestMixin kiosk_mixin_{&mixin_host_, kKioskUserName};
+  ash::KioskAppLoggedInBrowserTestMixin kiosk_mixin_{&mixin_host_,
+                                                     "kiosk-account"};
 };
 
 // Logs EVENT or DEBUG extension logs depending on the

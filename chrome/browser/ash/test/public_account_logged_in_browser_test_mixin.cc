@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "components/account_id/account_id.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/test_helper.h"
 
@@ -13,8 +14,11 @@ namespace ash {
 
 PublicAccountLoggedInBrowserTestMixin::PublicAccountLoggedInBrowserTestMixin(
     InProcessBrowserTestMixinHost* host,
-    std::string user_id)
-    : InProcessBrowserTestMixin(host), user_id_(std::move(user_id)) {}
+    std::string_view account_id)
+    : InProcessBrowserTestMixin(host),
+      user_id_(policy::GenerateDeviceLocalAccountUserId(
+          account_id,
+          policy::DeviceLocalAccountType::kPublicSession)) {}
 
 PublicAccountLoggedInBrowserTestMixin::
     ~PublicAccountLoggedInBrowserTestMixin() = default;

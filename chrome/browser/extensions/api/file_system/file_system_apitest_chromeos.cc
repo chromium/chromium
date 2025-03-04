@@ -21,7 +21,7 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
-#include "chrome/browser/ash/test/kiosk_logged_in_browser_test_mixin.h"
+#include "chrome/browser/ash/test/kiosk_app_logged_in_browser_test_mixin.h"
 #include "chrome/browser/extensions/api/file_system/consent_provider_impl.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/ui/browser.h"
@@ -289,8 +289,8 @@ class FileSystemApiKioskTestForRequestFileSystem
   FileSystemApiKioskTestForRequestFileSystem() { set_chromeos_user_ = false; }
 
  private:
-  ash::KioskLoggedInBrowserTestMixin kiosk_mixin_{
-      &mixin_host_, "example@kiosk-apps.device-local.localhost"};
+  ash::KioskAppLoggedInBrowserTestMixin kiosk_mixin_{&mixin_host_,
+                                                     "kiosk-app-account"};
 };
 
 IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
