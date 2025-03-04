@@ -14333,6 +14333,29 @@
             ]
         }
     ],
+    "MemorySaverModeRenderTuning": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "available_memory_threshold_mb": "740"
+                    },
+                    "enable_features": [
+                        "MemorySaverModeRenderTuning"
+                    ]
+                }
+            ]
+        }
+    ],
     "MerchantTrust": [
         {
             "platforms": [
