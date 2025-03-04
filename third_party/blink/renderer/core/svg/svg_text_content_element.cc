@@ -20,6 +20,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_text_content_element.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_point_init.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -230,14 +231,20 @@ float SVGTextContentElement::getRotationOfChar(
 }
 
 int SVGTextContentElement::getCharNumAtPosition(
-    SVGPointTearOff* point,
+    DOMPointInit* point,
     ExceptionState& exception_state) {
+  // If either of the x or y properties on point are infinite or NaN, then the
+  // method must return -1.
+  if (!std::isfinite(point->x()) || !std::isfinite(point->y())) {
+    return -1;
+  }
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
   auto* layout_object = GetLayoutObject();
   if (IsNGTextOrInline(layout_object)) {
-    return SvgTextQuery(*layout_object)
-        .CharacterNumberAtPosition(point->Target()->Value());
+    const gfx::PointF local_point(ClampTo<float>(point->x()),
+                                  ClampTo<float>(point->y()));
+    return SvgTextQuery(*layout_object).CharacterNumberAtPosition(local_point);
   }
   return -1;
 }
