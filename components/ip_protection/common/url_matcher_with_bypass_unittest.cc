@@ -56,10 +56,11 @@ TEST_F(UrlMatcherWithBypassTest, MatchesDefaultGroupOnly) {
 
   // The resource is in the default group, so it should match when matching for
   // that group.
-  EXPECT_EQ(matcher.Matches(GURL("http://example.com"),
-                            /*top_frame_site=*/std::nullopt, MdlType::kDefault,
-                            /*skip_bypass_check=*/true),
-            UrlMatcherWithBypassResult::kMatchAndNoBypass);
+  EXPECT_EQ(
+      matcher.Matches(GURL("http://example.com"),
+                      /*top_frame_site=*/std::nullopt, MdlType::kIncognito,
+                      /*skip_bypass_check=*/true),
+      UrlMatcherWithBypassResult::kMatchAndNoBypass);
 }
 
 TEST_F(UrlMatcherWithBypassTest, MatchesDefaultGroupExcluded) {
@@ -78,10 +79,11 @@ TEST_F(UrlMatcherWithBypassTest, MatchesDefaultGroupExcluded) {
 
   // The resource is not in the default group, so it should not match when
   // matching for the default group.
-  EXPECT_EQ(matcher.Matches(GURL("http://example.com"),
-                            /*top_frame_site=*/std::nullopt, MdlType::kDefault,
-                            /*skip_bypass_check=*/true),
-            UrlMatcherWithBypassResult::kNoMatch);
+  EXPECT_EQ(
+      matcher.Matches(GURL("http://example.com"),
+                      /*top_frame_site=*/std::nullopt, MdlType::kIncognito,
+                      /*skip_bypass_check=*/true),
+      UrlMatcherWithBypassResult::kNoMatch);
 
   // The resource is in the regular browsing group, so it should match when
   // matching for that group.
@@ -107,10 +109,11 @@ TEST_F(UrlMatcherWithBypassTest, MatchesMultipleMdlTypes) {
 
   // The resource is in the default group, so it should match when matching for
   // that group.
-  EXPECT_EQ(matcher.Matches(GURL("http://example.com"),
-                            /*top_frame_site=*/std::nullopt, MdlType::kDefault,
-                            /*skip_bypass_check=*/true),
-            UrlMatcherWithBypassResult::kMatchAndNoBypass);
+  EXPECT_EQ(
+      matcher.Matches(GURL("http://example.com"),
+                      /*top_frame_site=*/std::nullopt, MdlType::kIncognito,
+                      /*skip_bypass_check=*/true),
+      UrlMatcherWithBypassResult::kMatchAndNoBypass);
 
   // The resource is in the regular browsing group, so it should match when
   // matching for that group.
@@ -136,10 +139,11 @@ TEST_F(UrlMatcherWithBypassTest, Matches_ResourceWithNoMdlTypeAdded_NoMatch) {
   // The resource is not in any MDL type, so it should not match when matching
   // for any MDL type.
   GURL resource_url("http://example.com");
-  EXPECT_EQ(matcher.Matches(resource_url,
-                            /*top_frame_site=*/std::nullopt, MdlType::kDefault,
-                            /*skip_bypass_check=*/true),
-            UrlMatcherWithBypassResult::kNoMatch);
+  EXPECT_EQ(
+      matcher.Matches(resource_url,
+                      /*top_frame_site=*/std::nullopt, MdlType::kIncognito,
+                      /*skip_bypass_check=*/true),
+      UrlMatcherWithBypassResult::kNoMatch);
 
   EXPECT_EQ(matcher.Matches(resource_url,
                             /*top_frame_site=*/std::nullopt,
@@ -208,10 +212,11 @@ TEST_F(UrlMatcherWithBypassTest, AddRulesWithoutBypass_BypassCheckIsSkipped) {
   matcher.AddRules(resource_owner, /*excluded_domains=*/{},
                    /*create_bypass_matcher=*/false);
 
-  EXPECT_EQ(matcher.Matches(GURL("http://example.com"),
-                            /*top_frame_site=*/std::nullopt, MdlType::kDefault,
-                            /*skip_bypass_check=*/true),
-            UrlMatcherWithBypassResult::kMatchAndNoBypass);
+  EXPECT_EQ(
+      matcher.Matches(GURL("http://example.com"),
+                      /*top_frame_site=*/std::nullopt, MdlType::kIncognito,
+                      /*skip_bypass_check=*/true),
+      UrlMatcherWithBypassResult::kMatchAndNoBypass);
 }
 
 TEST_F(UrlMatcherWithBypassTest,
@@ -228,7 +233,7 @@ TEST_F(UrlMatcherWithBypassTest,
 
   EXPECT_EQ(matcher.Matches(GURL("http://example.com"),
                             net::SchemefulSite(GURL("http://top.frame.com")),
-                            MdlType::kDefault,
+                            MdlType::kIncognito,
                             /*skip_bypass_check=*/false),
             UrlMatcherWithBypassResult::kMatchAndNoBypass);
 }
@@ -259,7 +264,7 @@ TEST_F(UrlMatcherWithBypassTest,
   // test.com rule.
   EXPECT_EQ(matcher.Matches(GURL("https://test.com"),
                             net::SchemefulSite(GURL("https://a.com")),
-                            MdlType::kDefault,
+                            MdlType::kIncognito,
                             /*skip_bypass_check=*/false),
             UrlMatcherWithBypassResult::kMatchAndBypass);
 
@@ -268,7 +273,7 @@ TEST_F(UrlMatcherWithBypassTest,
   // b.com since it's a more specific domain that that should have a rule.
   EXPECT_EQ(matcher.Matches(GURL("https://sub.test.com"),
                             net::SchemefulSite(GURL("https://b.com")),
-                            MdlType::kDefault,
+                            MdlType::kIncognito,
                             /*skip_bypass_check=*/false),
             UrlMatcherWithBypassResult::kMatchAndBypass);
 
@@ -276,7 +281,7 @@ TEST_F(UrlMatcherWithBypassTest,
   // its own matcher, it matches to the a.com *.test.com rule.
   EXPECT_EQ(matcher.Matches(GURL("https://ssub.test.com"),
                             net::SchemefulSite(GURL("https://a.com")),
-                            MdlType::kDefault,
+                            MdlType::kIncognito,
                             /*skip_bypass_check=*/false),
             UrlMatcherWithBypassResult::kMatchAndBypass);
 }
@@ -309,7 +314,7 @@ TEST_F(
   // match the test.com rule.
   EXPECT_EQ(matcher.Matches(GURL("https://abtesting.com"),
                             net::SchemefulSite(GURL("https://a.com")),
-                            MdlType::kDefault,
+                            MdlType::kIncognito,
                             /*skip_bypass_check=*/false),
             UrlMatcherWithBypassResult::kMatchAndBypass);
 
@@ -319,7 +324,7 @@ TEST_F(
   // containing "test.com" being first (due to "abtesting.com").
   EXPECT_EQ(matcher.Matches(GURL("https://sub.test.com"),
                             net::SchemefulSite(GURL("https://b.com")),
-                            MdlType::kDefault,
+                            MdlType::kIncognito,
                             /*skip_bypass_check=*/false),
             UrlMatcherWithBypassResult::kMatchAndBypass);
 }
@@ -353,8 +358,9 @@ TEST_P(UrlMatcherWithBypassMatchTest, Match) {
   const MatchTest& p = GetParam();
   GURL request_url(base::StrCat({"https://", p.req}));
   net::SchemefulSite top_frame_site(GURL(base::StrCat({"https://", p.top})));
-  EXPECT_EQ(p.result, matcher.Matches(request_url, top_frame_site,
-                                      MdlType::kDefault, p.skip_bypass_check));
+  EXPECT_EQ(p.result,
+            matcher.Matches(request_url, top_frame_site, MdlType::kIncognito,
+                            p.skip_bypass_check));
 }
 
 const std::vector<MatchTest> kMatchTests = {

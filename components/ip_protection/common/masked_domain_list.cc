@@ -267,7 +267,7 @@ bool MaskedDomainList::BuildFromProto(
   for (const ResourceOwner& owner : mdl.resource_owners()) {
     for (const auto& resource : owner.owned_resources()) {
       for (MdlType mdl_type : FromMdlResourceProto(resource)) {
-        auto& builder = mdl_type == MdlType::kDefault
+        auto& builder = mdl_type == MdlType::kIncognito
                             ? default_builder
                             : regular_browsing_builder;
         builder.AddOwner(resource.domain(), owner_id.ValueOrDie(),

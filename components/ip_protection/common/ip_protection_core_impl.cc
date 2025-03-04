@@ -88,9 +88,9 @@ IpProtectionCoreImpl::IpProtectionCoreImpl(
       is_ip_protection_enabled_(is_ip_protection_enabled),
       ipp_over_quic_(net::features::kIpPrivacyUseQuicProxies.Get()),
       mdl_type_(network::features::kSplitMaskedDomainList.Get()
-                    ? (ip_protection_incognito ? MdlType::kDefault
+                    ? (ip_protection_incognito ? MdlType::kIncognito
                                                : MdlType::kRegularBrowsing)
-                    : MdlType::kDefault) {
+                    : MdlType::kIncognito) {
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
 }
 

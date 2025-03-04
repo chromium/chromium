@@ -59,7 +59,7 @@ class MaskedDomainListManager {
   // proxy 1st party requests because no same-origin check is performed.
   bool Matches(const GURL& request_url,
                const net::NetworkAnonymizationKey& network_anonymization_key,
-               MdlType mdl_type = MdlType::kDefault) const;
+               MdlType mdl_type) const;
 
   // Use the Masked Domain List and exclusion list to generate the allow list
   // and the 1P bypass rules.

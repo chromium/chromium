@@ -129,8 +129,8 @@ enum class ProxyLayer { kProxyA = 0, kProxyB = 1, kMaxValue = kProxyB };
 // The type of MDL that is being represented. This is used to determine which
 // MDL to use for a given matching request.
 enum class MdlType {
-  // The default MDL type which is for IPP in incognito browsing.
-  kDefault,
+  // The MDL type for IPP in incognito browsing. This is the default MDL type.
+  kIncognito,
 
   // The MDL type for IPP experiments within regular browsing.
   kRegularBrowsing,
@@ -140,7 +140,7 @@ enum class MdlType {
 //
 // A given MDL resource may represent multiple MDL types. For example, a
 // resource that is in the default MDL group and the regular browsing MDL group
-// would return both kDefault and kRegularBrowsing. Also, an empty vector
+// would return both kIncognito and kRegularBrowsing. Also, an empty vector
 // indicates that the resource does not represent any MDL types which is
 // unexpected and will be logged as such.
 std::vector<MdlType> FromMdlResourceProto(
