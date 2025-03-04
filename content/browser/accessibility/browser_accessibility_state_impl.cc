@@ -304,6 +304,10 @@ void BrowserAccessibilityStateImpl::OnScreenReaderStopped() {
       base::Seconds(kDisableAccessibilitySupportDelaySecs));
 }
 
+void BrowserAccessibilityStateImpl::UpdateKnownAssistiveTechSlow() {
+  // Overridden by some platforms, specifically Windows and Linux.
+}
+
 void BrowserAccessibilityStateImpl::SetKnownScreenReaderAppActive(
     bool is_active) {
   // Currently only meaningful on macOS, for VoiceOver detection,
@@ -313,8 +317,9 @@ void BrowserAccessibilityStateImpl::SetKnownScreenReaderAppActive(
   NOTREACHED();
 }
 
-bool BrowserAccessibilityStateImpl::IsKnownScreenReaderAppActive() {
-  return false;
+BrowserAccessibilityState::AssistiveTech
+BrowserAccessibilityStateImpl::ActiveKnownAssistiveTech() {
+  return kNone;
 }
 
 void BrowserAccessibilityStateImpl::EnableAccessibility() {
@@ -437,6 +442,8 @@ void BrowserAccessibilityStateImpl::UpdateHistogramsOnUIThread() {
 }
 
 void BrowserAccessibilityStateImpl::UpdateHistogramsOnOtherThread() {
+  UpdateKnownAssistiveTechSlow();
+
   for (auto& callback : other_thread_histogram_callbacks_) {
     std::move(callback).Run();
   }
@@ -486,6 +493,26 @@ ui::AXMode BrowserAccessibilityStateImpl::GetAccessibilityModeForBrowserContext(
       ModeCollectionForTarget::GetAccessibilityMode(browser_context));
 }
 
+bool BrowserAccessibilityStateImpl::ShouldBlockAutoDisable() {
+  if (ActiveKnownAssistiveTech()) {
+    // This condition should only occur if a known assistive tech is active.
+    // * If the assistive tech is actually still active, it indicates an error
+    // with the heuristic, and we should notify a histogram so that we can
+    // gather data and improve the heuristic's logic, as well as block the auto
+    // disable from occurring.
+    // * If the assistive tech is no longer active, then it has been unloaded
+    // and it is fine to auto-disable.
+    // Reaching here should be a rare case, and therefore we call the 'slow'
+    // code (uses system calls on Windows/Linux) to update the running active
+    // assistive tech state, before we make a determination.
+    UpdateKnownAssistiveTechSlow();
+    if (ActiveKnownAssistiveTech()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void BrowserAccessibilityStateImpl::OnUserInputEvent() {
   // No need to do anything if accessibility is off, or if it was forced on.
   if (GetAccessibilityMode().is_mode_off() || !allow_ax_mode_changes_) {
@@ -496,6 +523,14 @@ void BrowserAccessibilityStateImpl::OnUserInputEvent() {
   // events, more than kAutoDisableAccessibilityTimeSecs apart, with
   // no accessibility API usage in-between disable accessibility.
   // (See also OnAccessibilityApiUsage()).
+  // TODO(accessibility) This heuristic will possibly be removed because it's
+  // easy for user input events to occur without causing any changes to the
+  // a11y tree, or firing any events that an assistive tech would process.
+  // However, we should also consider whether to use this heuristic in addition
+  // to the focus/load complete one. Some categories of AT don't listen to focus
+  // or load complete either e.g. Select to Speak. It may not be necessary for
+  // Select-To-Speak to block auto disable if the disabling is lazy, e.g. on
+  // next page load and just for this WebContents.
   base::TimeTicks now = ui::EventTimeForNow();
   user_input_event_count_++;
   if (user_input_event_count_ == 1) {
@@ -504,6 +539,13 @@ void BrowserAccessibilityStateImpl::OnUserInputEvent() {
   }
 
   if (user_input_event_count_ < kAutoDisableAccessibilityEventCount) {
+    return;
+  }
+
+  if (ShouldBlockAutoDisable()) {
+    base::UmaHistogramEnumeration(
+        "Accessibility.AutoDisabled.BlockedAfter.UserInput",
+        ActiveKnownAssistiveTech());
     return;
   }
 

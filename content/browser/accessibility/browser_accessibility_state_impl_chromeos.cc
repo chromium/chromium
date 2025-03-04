@@ -26,7 +26,9 @@ class BrowserAccessibilityStateImplChromeOS
     }
   }
 
-  bool IsKnownScreenReaderAppActive() override { return is_chromevox_active_; }
+  BrowserAccessibilityState::AssistiveTech ActiveKnownAssistiveTech() override {
+    return is_chromevox_active_ ? kChromeVox : kNone;
+  }
 
  private:
   bool is_chromevox_active_ = false;

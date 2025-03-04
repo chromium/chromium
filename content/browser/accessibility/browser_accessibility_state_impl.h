@@ -76,10 +76,25 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   void AddAccessibilityModeFlags(ui::AXMode mode) override;
   void RemoveAccessibilityModeFlags(ui::AXMode mode) override;
   void ResetAccessibilityMode() override;
+  // These methods indicate the presence of AXMode::kScreenReader, which is
+  // a misnomer because it is used by many clients, and not just screen readers.
+  // Methods with "KnownAssistiveTech" in the name deal with actual
+  // screen reader usage.
+  // TODO(accessibility) Rename these methods and AXMode::kScreenReader to
+  // something like kAllProperties.
   void OnScreenReaderDetected() override;
   void OnScreenReaderStopped() override;
+  // Some platforms have a strong signal indicating the presence of a
+  // screen reader and can call in to let us know when one has
+  // been enabled/disabled.
   void SetKnownScreenReaderAppActive(bool is_active) override;
-  bool IsKnownScreenReaderAppActive() override;
+  // Other platforms require looking through running processes or modules
+  // attached to the process, for the name of known assistive tech such as
+  // screen readers, which takes time.
+  virtual void UpdateKnownAssistiveTechSlow();
+  // Any currently running assistive tech that should prevent accessibility from
+  // being auto-disabled.
+  AssistiveTech ActiveKnownAssistiveTech() override;
   bool IsAccessibleBrowser() override;
   void AddUIThreadHistogramCallback(base::OnceClosure callback) override;
   void AddOtherThreadHistogramCallback(base::OnceClosure callback) override;
@@ -122,6 +137,9 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
 
   // Notifies listeners that the focused element changed inside a WebContents.
   void OnFocusChangedInPage(const FocusedNodeDetails& details);
+
+  // Return true if auto-disable should be blocked.
+  bool ShouldBlockAutoDisable();
 
  protected:
   BrowserAccessibilityStateImpl();

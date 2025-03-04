@@ -23,6 +23,7 @@
 #include "base/strings/string_util.h"
 #include "base/win/registry.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/browser_thread.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
@@ -165,11 +166,11 @@ class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
 
  protected:
   void InitBackgroundTasks() override;
-  void UpdateHistogramsOnOtherThread() override;
   void UpdateUniqueUserHistograms() override;
   ui::AXPlatform::ProductStrings GetProductStrings() override;
   void OnUiaProviderRequested(bool uia_provider_enabled) override;
-  bool IsKnownScreenReaderAppActive() override;
+  void UpdateKnownAssistiveTechSlow() override;
+  BrowserAccessibilityState::AssistiveTech ActiveKnownAssistiveTech() override;
 
  private:
   std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
@@ -187,16 +188,17 @@ void BrowserAccessibilityStateImplWin::InitBackgroundTasks() {
       base::BindRepeating(&OnWndProc));
 }
 
-void BrowserAccessibilityStateImplWin::UpdateHistogramsOnOtherThread() {
-  BrowserAccessibilityStateImpl::UpdateHistogramsOnOtherThread();
-
+void BrowserAccessibilityStateImplWin::UpdateKnownAssistiveTechSlow() {
   // NOTE: this method is run from another thread to reduce jank, since
   // there's no guarantee these system calls will return quickly. Code that
   // needs to run in the UI thread can be run in
   // UpdateHistogramsOnUIThread instead.
 
-  // Better all-encompassing screen reader metric.
-  // See also specific screen reader metrics below, e.g. WinJAWS, WinNVDA.
+  // Old screen reader metric: does not indicate the use of a screen reader,
+  // just kScreenReader mode, which is used by many clients.
+  // Instead of this, use specific metrics below, e.g. WinJAWS, WinNVDA.
+  // TODO(accessibility) Remove this, which is redundant with
+  // PerformanceManager.Experimental.HasAccessibilityModeFlag.
   ui::AXMode mode =
       BrowserAccessibilityStateImpl::GetInstance()->GetAccessibilityMode();
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinScreenReader2",
@@ -272,7 +274,7 @@ void BrowserAccessibilityStateImplWin::UpdateHistogramsOnOtherThread() {
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinSupernova", g_supernova);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinZoomText", g_zoomtext);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNarrator", g_narrator);
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinAPIS.UIAutomation", g_uia);
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinAPIs.UIAutomation", g_uia);
   static auto* ax_jaws_crash_key = base::debug::AllocateCrashKeyString(
       "ax_jaws", base::debug::CrashKeySize::Size32);
   static auto* ax_narrator_crash_key = base::debug::AllocateCrashKeyString(
@@ -360,8 +362,24 @@ void BrowserAccessibilityStateImplWin::OnUiaProviderRequested(
       .OnUiaProviderRequested(uia_provider_enabled);
 }
 
-bool BrowserAccessibilityStateImplWin::IsKnownScreenReaderAppActive() {
-  return g_jaws || g_nvda || g_supernova || g_zoomtext || g_narrator;
+BrowserAccessibilityState::AssistiveTech
+BrowserAccessibilityStateImplWin::ActiveKnownAssistiveTech() {
+  if (g_jaws) {
+    return kJaws;
+  }
+  if (g_narrator) {
+    return kNarrator;
+  }
+  if (g_nvda) {
+    return kNvda;
+  }
+  if (g_supernova) {
+    return kSupernova;
+  }
+  if (g_zoomtext) {
+    return kZoomText;
+  }
+  return kNone;
 }
 
 // static

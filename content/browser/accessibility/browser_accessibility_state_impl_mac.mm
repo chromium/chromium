@@ -65,7 +65,7 @@ class BrowserAccessibilityStateImplMac : public BrowserAccessibilityStateImpl {
   void UpdateHistogramsOnOtherThread() override;
   void UpdateUniqueUserHistograms() override;
   void SetKnownScreenReaderAppActive(bool is_active) override;
-  bool IsKnownScreenReaderAppActive() override;
+  AssistiveTech ActiveKnownAssistiveTech() override;
 };
 
 void BrowserAccessibilityStateImplMac::InitBackgroundTasks() {
@@ -98,14 +98,20 @@ void BrowserAccessibilityStateImplMac::SetKnownScreenReaderAppActive(
   UMA_HISTOGRAM_BOOLEAN("Accessibility.Mac.VoiceOver", g_voiceover);
 }
 
-bool BrowserAccessibilityStateImplMac::IsKnownScreenReaderAppActive() {
-  return g_voiceover;
+BrowserAccessibilityState::AssistiveTech
+BrowserAccessibilityStateImplMac::ActiveKnownAssistiveTech() {
+  return g_voiceover ? kVoiceOver : kNone;
 }
 
 void BrowserAccessibilityStateImplMac::UpdateUniqueUserHistograms() {
   BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms();
 
   ui::AXMode mode = GetAccessibilityMode();
+  // Old screen reader metric: does not indicate the use of a screen reader,
+  // just kScreenReader mode, which is used by many clients.
+  // Instead of this, use the specific VoiceOver metric.
+  // TODO(accessibility) Remove this, which is redundant with
+  // PerformanceManager.Experimental.HasAccessibilityModeFlag.
   UMA_HISTOGRAM_BOOLEAN("Accessibility.Mac.ScreenReader.EveryReport",
                         mode.has_mode(ui::AXMode::kScreenReader));
   UMA_HISTOGRAM_BOOLEAN("Accessibility.Mac.VoiceOver.EveryReport", g_voiceover);
