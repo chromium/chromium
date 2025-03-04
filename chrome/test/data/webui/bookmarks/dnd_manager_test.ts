@@ -8,6 +8,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertDeepEquals, assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {middleOfNode, topLeftOfNode} from 'chrome://webui-test/mouse_mock_interactions.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestBookmarkManagerApiProxy} from './test_bookmark_manager_api_proxy.js';
 import {TestBookmarksBrowserProxy} from './test_browser_proxy.js';
@@ -35,7 +36,7 @@ suite('drag and drop', function() {
   }
 
   function getListItem(id: string) {
-    const items = list.root!.querySelectorAll('bookmarks-item');
+    const items = list.shadowRoot.querySelectorAll('bookmarks-item');
     for (let i = 0; i < items.length; i++) {
       if (items[i]!.itemId === id) {
         return items[i] as BookmarksItemElement;
@@ -150,9 +151,14 @@ suite('drag and drop', function() {
 
     // Wait for the API listener to call the browser proxy, since this
     // indicates initialization is done.
-    return testBrowserProxy.whenCalled('getIncognitoAvailability').then(() => {
-      flush();
-    });
+    return Promise
+        .all([
+          testBrowserProxy.whenCalled('getIncognitoAvailability'),
+          eventToPromise('viewport-filled', list.$.list),
+        ])
+        .then(() => {
+          flush();
+        });
   });
 
   test('dragInfo isDraggingFolderToDescendant', function() {
@@ -371,7 +377,7 @@ suite('drag and drop', function() {
     // displayed lists.
     store.data.selectedFolder = '111';
     store.notifyObservers();
-    flush();
+    await eventToPromise('viewport-filled', list.$.list);
 
     bookmarkManagerApi.onDragEnter.callListeners(createDragData(['11']));
     dragTarget = getListItem('1111');

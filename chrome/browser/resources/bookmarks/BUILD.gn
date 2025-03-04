@@ -15,7 +15,6 @@ build_webui("build") {
     "edit_dialog.ts",
     "folder_node.ts",
     "item.ts",
-    "list.ts",
     "toolbar.ts",
   ]
 
@@ -32,6 +31,8 @@ build_webui("build") {
     "debouncer.ts",
     "dialog_focus_manager.ts",
     "dnd_manager.ts",
+    "list.html.ts",
+    "list.ts",
     "mouse_focus_behavior.ts",
     "reducers.ts",
     "router.ts",
@@ -46,6 +47,7 @@ build_webui("build") {
   css_files = [
     "folder_node.css",
     "item.css",
+    "list.css",
     "toolbar.css",
     "shared_style.css",
     "shared_style_lit.css",

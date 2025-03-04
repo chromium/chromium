@@ -5,11 +5,10 @@
 import type {BookmarksFolderNodeElement, BookmarksItemElement, BookmarksListElement, SelectFolderAction, SelectItemsAction} from 'chrome://bookmarks/bookmarks.js';
 import {BookmarkManagerApiProxyImpl, BookmarksApiProxyImpl, BookmarksCommandManagerElement, Command, createBookmark, DialogFocusManager, getDisplayedList, MenuSource, selectFolder, setDebouncerForTesting} from 'chrome://bookmarks/bookmarks.js';
 import {isMac} from 'chrome://resources/js/platform.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import type {ModifiersParam} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBookmarkManagerApiProxy} from './test_bookmark_manager_api_proxy.js';
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
@@ -480,7 +479,7 @@ suite('<bookmarks-item> CommandManager integration', function() {
   let store: TestStore;
   let bookmarkManagerProxy: TestBookmarkManagerApiProxy;
 
-  setup(function() {
+  setup(async function() {
     store = new TestStore({
       nodes: testTree(createFolder(
           '1',
@@ -510,13 +509,13 @@ suite('<bookmarks-item> CommandManager integration', function() {
     rootNode.itemId = '1';
     rootNode.depth = 0;
     document.body.appendChild(rootNode);
-    flush();
     document.body.appendChild(document.createElement('cr-toast-manager'));
+    await eventToPromise('viewport-filled', list.$.list);
 
     items = list.shadowRoot!.querySelectorAll<BookmarksItemElement>(
         'bookmarks-item');
     // Wait for the flushed properties to propagate to the item elements' DOMs.
-    return microtasksFinished();
+    await microtasksFinished();
   });
 
   function simulateDoubleClick(element: HTMLElement, config?: MouseEventInit) {
