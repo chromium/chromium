@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_core.h"
@@ -40,12 +39,8 @@ constexpr char kGetProxyListResultHistogram[] =
 constexpr char kProxyListRefreshTimeHistogram[] =
     "NetworkService.IpProtection.ProxyListRefreshTime";
 
-constexpr char kDefaultGeoId[] = "EARTH";
 constexpr char kMountainViewGeoId[] = "US,US-CA,MOUNTAIN VIEW";
 constexpr char kSunnyvaleGeoId[] = "US,US-CA,SUNNYVALE";
-
-constexpr bool kEnableTokenCacheByGeo = true;
-constexpr bool kDisableTokenCacheByGeo = false;
 
 struct GetProxyConfigCall {
   std::optional<std::vector<net::ProxyChain>> proxy_chains;
@@ -129,18 +124,7 @@ class MockIpProtectionCore : public IpProtectionCore {
 
 class IpProtectionProxyConfigManagerImplTest : public testing::Test {
  protected:
-  IpProtectionProxyConfigManagerImplTest() = default;
-
-  // In order to test the geo caching feature, the initialization of the proxy
-  // list manager must be after the feature value is set.
-  void SetUpIpProtectionProxyConfigManager(bool enable_cache_by_geo) {
-    // Set token caching by geo param value.
-    std::map<std::string, std::string> parameters;
-    parameters[net::features::kIpPrivacyCacheTokensByGeo.name] =
-        base::ToString(enable_cache_by_geo);
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        net::features::kEnableIpProtectionProxy, std::move(parameters));
-
+  IpProtectionProxyConfigManagerImplTest() {
     // Default behavior for `GeoObserved`. The default is defined here
     // (instead of in the mock) to allow access to the local instances of the
     // proxy list manager.
@@ -193,54 +177,10 @@ class IpProtectionProxyConfigManagerImplTest : public testing::Test {
   raw_ptr<MockIpProtectionProxyConfigFetcher> mock_fetcher_;
 
   base::HistogramTester histogram_tester_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // The manager gets the proxy list on startup and once again on schedule.
-TEST_F(IpProtectionProxyConfigManagerImplTest,
-       ProxyListOnStartupGeoCachingDisabled) {
-  SetUpIpProtectionProxyConfigManager(kDisableTokenCacheByGeo);
-
-  GetProxyConfigCall expected_call{
-      .proxy_chains = std::vector{MakeChain({"a-proxy"})},
-      .geo_id = kMountainViewGeoId};
-  mock_fetcher_->ExpectGetProxyConfigCall(expected_call);
-  QuitClosureOnRefresh();
-  ipp_proxy_list_->EnableAndTriggerProxyListRefreshingForTesting();
-  WaitTillClosureQuit();
-  ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
-  EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
-  EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
-  // When the token caching by geo feature is enabled, the default geo will be
-  // returned.
-  EXPECT_EQ(ipp_proxy_list_->CurrentGeo(), kDefaultGeoId);
-
-  base::Time start = base::Time::Now();
-
-  expected_call =
-      GetProxyConfigCall{.proxy_chains = std::vector{MakeChain({"b-proxy"})},
-                         .geo_id = kMountainViewGeoId};
-  mock_fetcher_->ExpectGetProxyConfigCall(expected_call);
-  QuitClosureOnRefresh();
-  WaitTillClosureQuit();
-  base::TimeDelta delay = net::features::kIpPrivacyProxyListFetchInterval.Get();
-  EXPECT_EQ(base::Time::Now() - start, delay);
-
-  ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
-  EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
-  EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
-  // When the token caching by geo feature is enabled, the default geo will be
-  // returned.
-  EXPECT_EQ(ipp_proxy_list_->CurrentGeo(), kDefaultGeoId);
-}
-
-// The manager gets the proxy list on startup and once again on schedule.
-TEST_F(IpProtectionProxyConfigManagerImplTest,
-       ProxyListOnStartupGeoCachingEnabled) {
-  SetUpIpProtectionProxyConfigManager(kEnableTokenCacheByGeo);
-
+TEST_F(IpProtectionProxyConfigManagerImplTest, ProxyListOnStartup) {
   // Called twice. Once for startup and once for the proxy list refresh.
   EXPECT_CALL(mock_core_, GeoObserved(testing::_)).Times(2);
 
@@ -277,8 +217,6 @@ TEST_F(IpProtectionProxyConfigManagerImplTest,
 // fails.
 TEST_F(IpProtectionProxyConfigManagerImplTest,
        ProxyListRefreshScheduledIfRefreshFails) {
-  SetUpIpProtectionProxyConfigManager(kEnableTokenCacheByGeo);
-
   // Called once for the proxy list refresh after the first refresh fails.
   EXPECT_CALL(mock_core_, GeoObserved(testing::_)).Times(1);
 
@@ -313,8 +251,6 @@ TEST_F(IpProtectionProxyConfigManagerImplTest,
 // If a failure occurs, the minimum time between fetches does not apply.
 TEST_F(IpProtectionProxyConfigManagerImplTest,
        ProxyListMinTimeIgnoredWhenRefreshFails) {
-  SetUpIpProtectionProxyConfigManager(kEnableTokenCacheByGeo);
-
   // Called once for the proxy list refresh after the first refresh fails.
   EXPECT_CALL(mock_core_, GeoObserved(testing::_)).Times(1);
 
@@ -344,33 +280,7 @@ TEST_F(IpProtectionProxyConfigManagerImplTest,
 
 // The manager refreshes the proxy list on demand, but only once even if
 // `RequestRefreshProxyList()` is called repeatedly.
-TEST_F(IpProtectionProxyConfigManagerImplTest,
-       ProxyListRefreshGeoCachingDisabled) {
-  SetUpIpProtectionProxyConfigManager(kDisableTokenCacheByGeo);
-
-  GetProxyConfigCall expected_call{
-      .proxy_chains = std::vector{MakeChain({"a-proxy"})},
-      .geo_id = kMountainViewGeoId};
-  mock_fetcher_->ExpectGetProxyConfigCall(expected_call);
-  QuitClosureOnRefresh();
-  ipp_proxy_list_->EnableProxyListRefreshingForTesting();
-  ipp_proxy_list_->RequestRefreshProxyList();
-  ipp_proxy_list_->RequestRefreshProxyList();
-  WaitTillClosureQuit();
-  ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
-  EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
-  EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
-  // When the token caching by geo feature is enabled, the default geo will be
-  // returned.
-  EXPECT_EQ(ipp_proxy_list_->CurrentGeo(), kDefaultGeoId);
-}
-
-// The manager refreshes the proxy list on demand, but only once even if
-// `RequestRefreshProxyList()` is called repeatedly.
-TEST_F(IpProtectionProxyConfigManagerImplTest,
-       ProxyListRefreshGeoCachingEnabled) {
-  SetUpIpProtectionProxyConfigManager(kEnableTokenCacheByGeo);
-
+TEST_F(IpProtectionProxyConfigManagerImplTest, ProxyListRefresh) {
   // Repeated calls should not impact how many times the geo change occurs.
   EXPECT_CALL(mock_core_, GeoObserved(testing::_)).Times(1);
 
@@ -390,39 +300,7 @@ TEST_F(IpProtectionProxyConfigManagerImplTest,
 }
 
 TEST_F(IpProtectionProxyConfigManagerImplTest,
-       IsProxyListAvailableEvenIfEmptyGeoCachingDisabled) {
-  SetUpIpProtectionProxyConfigManager(kDisableTokenCacheByGeo);
-
-  mock_fetcher_->ExpectGetProxyConfigCall(GetProxyConfigCall{
-      .proxy_chains = std::vector<net::ProxyChain>{},  // Empty ProxyList
-      .geo_id = ""                                     // Empty Geo Id
-  });
-  QuitClosureOnRefresh();
-  ipp_proxy_list_->RequestRefreshProxyList();
-  WaitTillClosureQuit();
-  ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
-  EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
-
-  // Advance the clock by the min refresh interval, so that the test does not
-  // hang.
-  task_environment_.FastForwardBy(
-      net::features::kIpPrivacyProxyListMinFetchInterval.Get());
-
-  // Should show available even if geo is present and list is empty.
-  mock_fetcher_->ExpectGetProxyConfigCall(GetProxyConfigCall{
-      .proxy_chains = std::vector<net::ProxyChain>{},  // Empty ProxyList
-      .geo_id = kMountainViewGeoId});
-  QuitClosureOnRefresh();
-  ipp_proxy_list_->RequestRefreshProxyList();
-  WaitTillClosureQuit();
-  ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
-  EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
-}
-
-TEST_F(IpProtectionProxyConfigManagerImplTest,
-       IsProxyListAvailableEvenIfEmptyGeoCachingEnabled) {
-  SetUpIpProtectionProxyConfigManager(kEnableTokenCacheByGeo);
-
+       IsProxyListAvailableEvenIfEmpty) {
   mock_fetcher_->ExpectGetProxyConfigCall(GetProxyConfigCall{
       .proxy_chains = std::vector<net::ProxyChain>{},  // Empty ProxyList
   });
@@ -449,61 +327,7 @@ TEST_F(IpProtectionProxyConfigManagerImplTest,
 }
 
 // The manager keeps its existing proxy list if it fails to fetch a new one.
-TEST_F(IpProtectionProxyConfigManagerImplTest,
-       ProxyListKeptAfterFailureGeoCachingDisabled) {
-  SetUpIpProtectionProxyConfigManager(kDisableTokenCacheByGeo);
-
-  GetProxyConfigCall expected_call{
-      .proxy_chains = std::vector{MakeChain({"a-proxy"})},
-      .geo_id = kMountainViewGeoId};
-  mock_fetcher_->ExpectGetProxyConfigCall(expected_call);
-  QuitClosureOnRefresh();
-  ipp_proxy_list_->RequestRefreshProxyList();
-  WaitTillClosureQuit();
-  ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
-  EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
-  EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
-  // When the token caching by geo feature is enabled, the default geo will be
-  // returned.
-  EXPECT_EQ(ipp_proxy_list_->CurrentGeo(), kDefaultGeoId);
-
-  // Advance the clock by the min refresh interval, so that the test does not
-  // hang.
-  task_environment_.FastForwardBy(
-      net::features::kIpPrivacyProxyListMinFetchInterval.Get());
-
-  mock_fetcher_->ExpectGetProxyConfigCallFailure();
-  QuitClosureOnRefresh();
-  ipp_proxy_list_->RequestRefreshProxyList();
-  ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
-  EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
-  EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
-  // When the token caching by geo feature is enabled, the default geo will be
-  // returned.
-  EXPECT_EQ(ipp_proxy_list_->CurrentGeo(), kDefaultGeoId);
-
-  // GeoHint is returned but ProxyChain is failure.
-  // Advance the clock by the min refresh interval, so that the test does not
-  // hang.
-  task_environment_.FastForwardBy(
-      net::features::kIpPrivacyProxyListMinFetchInterval.Get());
-
-  GetProxyConfigCall expected_call_fail{.proxy_chains = std::nullopt,
-                                        .geo_id = kMountainViewGeoId};
-  mock_fetcher_->ExpectGetProxyConfigCall(expected_call_fail);
-  QuitClosureOnRefresh();
-  ipp_proxy_list_->RequestRefreshProxyList();
-  ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
-  EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
-  EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
-  EXPECT_EQ(ipp_proxy_list_->CurrentGeo(), kDefaultGeoId);
-}
-
-// The manager keeps its existing proxy list if it fails to fetch a new one.
-TEST_F(IpProtectionProxyConfigManagerImplTest,
-       ProxyListKeptAfterFailureGeoCachingEnabled) {
-  SetUpIpProtectionProxyConfigManager(kEnableTokenCacheByGeo);
-
+TEST_F(IpProtectionProxyConfigManagerImplTest, ProxyListKeptAfterFailure) {
   GetProxyConfigCall expected_call{
       .proxy_chains = std::vector{MakeChain({"a-proxy"})},
       .geo_id = kMountainViewGeoId};
@@ -546,8 +370,6 @@ TEST_F(IpProtectionProxyConfigManagerImplTest,
 }
 
 TEST_F(IpProtectionProxyConfigManagerImplTest, GetProxyConfigFailureRecorded) {
-  SetUpIpProtectionProxyConfigManager(kEnableTokenCacheByGeo);
-
   mock_fetcher_->ExpectGetProxyConfigCallFailure();
   QuitClosureOnRefresh();
   ipp_proxy_list_->RequestRefreshProxyList();
@@ -558,8 +380,6 @@ TEST_F(IpProtectionProxyConfigManagerImplTest, GetProxyConfigFailureRecorded) {
 }
 
 TEST_F(IpProtectionProxyConfigManagerImplTest, GotEmptyProxyListRecorded) {
-  SetUpIpProtectionProxyConfigManager(kEnableTokenCacheByGeo);
-
   mock_fetcher_->ExpectGetProxyConfigCall(GetProxyConfigCall{
       .proxy_chains = std::vector<net::ProxyChain>{},  // Empty ProxyList
   });
@@ -573,8 +393,6 @@ TEST_F(IpProtectionProxyConfigManagerImplTest, GotEmptyProxyListRecorded) {
 }
 
 TEST_F(IpProtectionProxyConfigManagerImplTest, GotPopulatedProxyListRecorded) {
-  SetUpIpProtectionProxyConfigManager(kEnableTokenCacheByGeo);
-
   GetProxyConfigCall expected_call{
       .proxy_chains = std::vector{MakeChain({"a-proxy", "b-proxy"})},
       .geo_id = kMountainViewGeoId};
@@ -588,29 +406,7 @@ TEST_F(IpProtectionProxyConfigManagerImplTest, GotPopulatedProxyListRecorded) {
   histogram_tester_.ExpectTotalCount(kProxyListRefreshTimeHistogram, 1);
 }
 
-TEST_F(IpProtectionProxyConfigManagerImplTest,
-       CurrentGeoCachingByGeoDisabledReturnsDefault) {
-  SetUpIpProtectionProxyConfigManager(kDisableTokenCacheByGeo);
-
-  // Current Geo is set immediately to default if feature is disabled.
-  ASSERT_EQ(ipp_proxy_list_->CurrentGeo(), kDefaultGeoId);
-
-  // A refreshed list with a geo present should not change the current geo.
-  GetProxyConfigCall expected_call{
-      .proxy_chains = std::vector{MakeChain({"a-proxy", "b-proxy"})},
-      .geo_id = kMountainViewGeoId};
-  mock_fetcher_->ExpectGetProxyConfigCall(expected_call);
-  QuitClosureOnRefresh();
-  ipp_proxy_list_->RequestRefreshProxyList();
-  WaitTillClosureQuit();
-  ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
-  ASSERT_EQ(ipp_proxy_list_->CurrentGeo(), kDefaultGeoId);
-}
-
-TEST_F(IpProtectionProxyConfigManagerImplTest,
-       CurrentGeoCachingByGeoEnabledReturnsGeoOfProxyList) {
-  SetUpIpProtectionProxyConfigManager(kEnableTokenCacheByGeo);
-
+TEST_F(IpProtectionProxyConfigManagerImplTest, CurrentGeo) {
   // Current Geo is not set on initialization, so empty geo should be
   ASSERT_EQ(ipp_proxy_list_->CurrentGeo(), "");
 
@@ -625,10 +421,7 @@ TEST_F(IpProtectionProxyConfigManagerImplTest,
   ASSERT_EQ(ipp_proxy_list_->CurrentGeo(), kMountainViewGeoId);
 }
 
-TEST_F(IpProtectionProxyConfigManagerImplTest,
-       RequestRefreshProxyListCachingByGeoEnabledGeoChanged) {
-  SetUpIpProtectionProxyConfigManager(kEnableTokenCacheByGeo);
-
+TEST_F(IpProtectionProxyConfigManagerImplTest, RequestRefreshProxyList) {
   // Current Geo is not set on initialization, so empty geo should be
   ASSERT_EQ(ipp_proxy_list_->CurrentGeo(), "");
 
@@ -667,9 +460,7 @@ TEST_F(IpProtectionProxyConfigManagerImplTest,
 // If `RequestRefreshProxyList` is called multiple times, the refresh is
 // only requested once within the default interval.
 TEST_F(IpProtectionProxyConfigManagerImplTest,
-       RequestRefreshProxyListCachingByGeoEnabledOnlyObservesGeo) {
-  SetUpIpProtectionProxyConfigManager(kEnableTokenCacheByGeo);
-
+       RequestRefreshProxyList_MultipleCalls_RefreshOnlyOnce) {
   GetProxyConfigCall expected_call{
       .proxy_chains = std::vector{MakeChain({"a-proxy", "b-proxy"})},
       .geo_id = kMountainViewGeoId};
@@ -687,9 +478,7 @@ TEST_F(IpProtectionProxyConfigManagerImplTest,
 // If a proxy list refresh returns the same geo as the current geo, no callbacks
 // to `GeoObserved` are made.
 TEST_F(IpProtectionProxyConfigManagerImplTest,
-       CachingByGeoNoGeoObservedWhenNewGeoMatchesCurrent) {
-  SetUpIpProtectionProxyConfigManager(kEnableTokenCacheByGeo);
-
+       RequestRefreshProxyList_SameGeo_NoGeoObserved) {
   // Each refresh will result in a new call.
   EXPECT_CALL(mock_core_, GeoObserved(testing::_)).Times(2);
 
@@ -725,8 +514,6 @@ TEST_F(IpProtectionProxyConfigManagerImplTest,
 
 TEST_F(IpProtectionProxyConfigManagerImplTest,
        ProxyListRefreshFetchIntervalFuzzed) {
-  SetUpIpProtectionProxyConfigManager(kDisableTokenCacheByGeo);
-
   GetProxyConfigCall expected_call{
       .proxy_chains = std::vector{MakeChain({"a-proxy"})},
       .geo_id = kMountainViewGeoId};
@@ -739,7 +526,7 @@ TEST_F(IpProtectionProxyConfigManagerImplTest,
   ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
   EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
   EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
-  EXPECT_EQ(ipp_proxy_list_->CurrentGeo(), kDefaultGeoId);
+  EXPECT_EQ(ipp_proxy_list_->CurrentGeo(), kMountainViewGeoId);
 
   base::Time start = base::Time::Now();
   expected_call =

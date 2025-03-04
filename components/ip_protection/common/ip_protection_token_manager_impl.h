@@ -109,9 +109,6 @@ class IpProtectionTokenManagerImpl : public IpProtectionTokenManager {
   const int batch_size_;
   const size_t cache_low_water_mark_;
 
-  // Feature flag to safely introduce token caching by geo.
-  bool enable_token_caching_by_geo_ = false;
-
   // The last time token rates were measured and the counts since then.
   base::TimeTicks last_token_rate_measurement_;
   int64_t tokens_spent_ = 0;

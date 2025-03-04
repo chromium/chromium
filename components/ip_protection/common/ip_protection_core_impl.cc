@@ -87,15 +87,10 @@ IpProtectionCoreImpl::IpProtectionCoreImpl(
       probabilistic_reveal_token_registry_(probabilistic_reveal_token_registry),
       is_ip_protection_enabled_(is_ip_protection_enabled),
       ipp_over_quic_(net::features::kIpPrivacyUseQuicProxies.Get()),
-      enable_token_caching_by_geo_(
-          net::features::kIpPrivacyCacheTokensByGeo.Get()) {
-  // Only set the MDL type if the split MDL feature is enabled. Otherwise,
-  // default to the legacy behavior of using the default MDL type.
-  mdl_type_ = network::features::kSplitMaskedDomainList.Get()
-                  ? (ip_protection_incognito ? MdlType::kDefault
-                                             : MdlType::kRegularBrowsing)
-                  : MdlType::kDefault;
-
+      mdl_type_(network::features::kSplitMaskedDomainList.Get()
+                    ? (ip_protection_incognito ? MdlType::kDefault
+                                               : MdlType::kRegularBrowsing)
+                    : MdlType::kDefault) {
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
 }
 
@@ -218,11 +213,6 @@ void IpProtectionCoreImpl::RequestRefreshProxyList() {
 }
 
 void IpProtectionCoreImpl::GeoObserved(const std::string& geo_id) {
-  // If token caching by geo is disabled, short-circuit and don't do anything.
-  if (!enable_token_caching_by_geo_) {
-    return;
-  }
-
   if (ipp_proxy_config_manager_ != nullptr &&
       ipp_proxy_config_manager_->CurrentGeo() != geo_id) {
     ipp_proxy_config_manager_->RequestRefreshProxyList();

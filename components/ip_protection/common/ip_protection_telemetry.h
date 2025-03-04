@@ -125,13 +125,11 @@ class IpProtectionTelemetry {
   virtual void ProxyResolution(ProxyResolutionResult) = 0;
 
   // Results of a call to GetAuthToken. `is_token_available` is true if a token
-  // was returned; `enable_token_caching_by_geo` represents the feature status;
-  // `is_cache_empty` is true if the manager has no cached tokens (for any geo);
-  // and `does_requested_geo_match_current` is true if the token request was
-  // made for the current geo.
+  // was returned; `is_cache_empty` is true if the manager has no cached tokens
+  // (for any geo); and `does_requested_geo_match_current` is true if the token
+  // request was made for the current geo.
   virtual void GetAuthTokenResultForGeo(
       bool is_token_available,
-      bool enable_token_caching_by_geo,
       bool is_cache_empty,
       bool does_requested_geo_match_current) = 0;
 

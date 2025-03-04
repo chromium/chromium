@@ -108,15 +108,12 @@ class IpProtectionCoreImpl
 
   bool is_ip_protection_enabled_;
 
-  MdlType mdl_type_;
-
   // If true, this class will try to connect to IP Protection proxies via QUIC.
   // Once this value becomes false, it stays false until a network change or
   // browser restart.
   bool ipp_over_quic_;
 
-  // Feature flag to safely introduce token caching by geo.
-  const bool enable_token_caching_by_geo_;
+  MdlType mdl_type_;
 
   // List of TRACKING_PROTECTION content setting exceptions.
   std::vector<content_settings::HostIndexedContentSettings>
