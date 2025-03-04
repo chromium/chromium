@@ -45,6 +45,11 @@ source_set("common") {
     "logging/stats_event_subscriber.h",
   ]
 
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   deps = [
     "//media",
     "//media/mojo/mojom:remoting_common",
@@ -87,6 +92,11 @@ source_set("encoding") {
     "encoding/vpx_encoder.h",
     "encoding/vpx_quantizer_parser.cc",
     "encoding/vpx_quantizer_parser.h",
+  ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
   ]
 
   public_deps = [
@@ -135,6 +145,11 @@ source_set("sender") {
     "sender/video_bitrate_suggester.h",
     "sender/video_sender.cc",
     "sender/video_sender.h",
+  ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
   ]
 
   deps = [

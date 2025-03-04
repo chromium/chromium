@@ -12,6 +12,11 @@ source_set("features") {
   sources = [ "features.cc" ]
   public = [ "features.h" ]
   public_deps = [ "//base" ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
 }
 
 source_set("browser") {
@@ -42,6 +47,11 @@ source_set("browser") {
     "rule.h",
     "verdict.cc",
     "verdict.h",
+  ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
   ]
 
   deps = [

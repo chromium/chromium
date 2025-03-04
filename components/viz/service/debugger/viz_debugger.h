@@ -90,6 +90,7 @@ class VIZ_SERVICE_EXPORT VizDebugger {
 
   static VizDebugger* GetInstance();
 
+  VizDebugger();
   ~VizDebugger();
 
   struct VIZ_SERVICE_EXPORT BufferInfo {
@@ -127,7 +128,6 @@ class VIZ_SERVICE_EXPORT VizDebugger {
  private:
   friend class VizDebuggerInternal;
   static std::atomic<bool> enabled_;
-  VizDebugger();
   base::Value FrameAsJson(const uint64_t counter,
                           const gfx::Size& window_pix,
                           base::TimeTicks time_ticks);

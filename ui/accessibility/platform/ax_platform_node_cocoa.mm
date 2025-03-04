@@ -438,21 +438,21 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (BOOL)conditionallyRespondsToSelector:(SEL)selector {
-  static std::unordered_set<SEL> methodSelectorsForActions = {
-      @selector(accessibilityPerformPress),
-  };
+  static base::NoDestructor<std::unordered_set<SEL>> methodSelectorsForActions(
+      { @selector(accessibilityPerformPress), });
 
-  static std::unordered_set<SEL> methodSelectorsForParameterizedAttributes = {
-      @selector(accessibilityCellForColumn:row:),
-      @selector(accessibilityRangeForIndex:),
-      @selector(accessibilityRangeForLine:),
-      @selector(accessibilityRangeForPosition:),
-  };
+  static base::NoDestructor<std::unordered_set<SEL>>
+      methodSelectorsForParameterizedAttributes({
+        @selector(accessibilityCellForColumn:row:),
+            @selector(accessibilityRangeForIndex:),
+            @selector(accessibilityRangeForLine:),
+            @selector(accessibilityRangeForPosition:),
+      });
 
   // See if the method is permitted by checking its corresponding parameterized
   // attribute counterpart.
-  if (methodSelectorsForParameterizedAttributes.find(selector) !=
-      methodSelectorsForParameterizedAttributes.end()) {
+  if (methodSelectorsForParameterizedAttributes->find(selector) !=
+      methodSelectorsForParameterizedAttributes->end()) {
     NSString* selectorString = NSStringFromSelector(selector);
     NSString* attribute =
         [[AXPlatformNodeCocoa newAccessibilityAPIMethodToAttributeMap]
@@ -466,8 +466,8 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
   // See if the method is permitted by checking its corresponding action
   // counterpart.
-  if (methodSelectorsForActions.find(selector) !=
-      methodSelectorsForActions.end()) {
+  if (methodSelectorsForActions->find(selector) !=
+      methodSelectorsForActions->end()) {
     NSString* selectorString = NSStringFromSelector(selector);
     NSString* action =
         [[AXPlatformNodeCocoa newAccessibilityAPIMethodToActionMap]
@@ -484,19 +484,20 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   // If we're in old-accessibility-API mode, disable methods that we've added
   // to support the new API.
   if (!features::IsMacAccessibilityAPIMigrationEnabled()) {
-    static std::unordered_set<SEL> newAccessibilityAPISelectors;
+    static base::NoDestructor<std::unordered_set<SEL>>
+        newAccessibilityAPISelectors;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
       NSSet<NSString*>* methodNames =
           [AXPlatformNodeCocoa newAccessibilityAPIMethods];
       for (NSString* methodName in methodNames) {
         SEL methodSelector = NSSelectorFromString(methodName);
-        newAccessibilityAPISelectors.insert(methodSelector);
+        newAccessibilityAPISelectors->insert(methodSelector);
       }
     });
 
-    if (newAccessibilityAPISelectors.find(selector) !=
-        newAccessibilityAPISelectors.end()) {
+    if (newAccessibilityAPISelectors->find(selector) !=
+        newAccessibilityAPISelectors->end()) {
       return NO;
     }
   } else {
@@ -504,14 +505,12 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     // that are expected to continue to work independent of the flag. For any
     // such API, ensure the corresponding old API is not available when the flag
     // is enabled.
-    static std::unordered_set<SEL> deprecatedSelectors = {
-        @selector(AXInsertionPointLineNumber),
-        @selector(AXNumberOfCharacters),
-        @selector(AXPlaceholderValue),
-        @selector(AXSelectedText),
-        @selector(AXSelectedTextRange),
-        @selector(AXVisibleCharacterRange)};
-    if (deprecatedSelectors.find(selector) != deprecatedSelectors.end()) {
+    static base::NoDestructor<std::unordered_set<SEL>> deprecatedSelectors({
+      @selector(AXInsertionPointLineNumber), @selector(AXNumberOfCharacters),
+          @selector(AXPlaceholderValue), @selector(AXSelectedText),
+          @selector(AXSelectedTextRange), @selector(AXVisibleCharacterRange)
+    });
+    if (deprecatedSelectors->find(selector) != deprecatedSelectors->end()) {
       return NO;
     }
   }

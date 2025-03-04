@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -41,8 +42,8 @@ VizDebugger::BufferInfo::~BufferInfo() = default;
 VizDebugger::BufferInfo::BufferInfo(const BufferInfo& a) = default;
 
 VizDebugger* VizDebugger::GetInstance() {
-  static VizDebugger g_debugger;
-  return &g_debugger;
+  static base::NoDestructor<VizDebugger> g_debugger;
+  return g_debugger.get();
 }
 
 VizDebugger::FilterBlock::FilterBlock(const std::string file_str,

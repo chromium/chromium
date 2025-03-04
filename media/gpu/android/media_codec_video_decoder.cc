@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -219,10 +220,12 @@ PendingDecode::~PendingDecode() = default;
 // static
 std::vector<SupportedVideoDecoderConfig>
 MediaCodecVideoDecoder::GetSupportedConfigs() {
-  static const auto configs = GenerateSupportedConfigs(
-      DeviceInfo::GetInstance(),
-      base::FeatureList::IsEnabled(media::kAllowMediaCodecSoftwareDecoder));
-  return configs;
+  static const base::NoDestructor<std::vector<SupportedVideoDecoderConfig>>
+      configs(GenerateSupportedConfigs(
+          DeviceInfo::GetInstance(),
+          base::FeatureList::IsEnabled(
+              media::kAllowMediaCodecSoftwareDecoder)));
+  return *configs;
 }
 
 MediaCodecVideoDecoder::MediaCodecVideoDecoder(

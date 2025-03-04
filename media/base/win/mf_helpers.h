@@ -32,7 +32,9 @@ class IMFMediaType;
 namespace media {
 
 // Helper function to print HRESULT to std::string.
-const auto PrintHr = logging::SystemErrorCodeToString;
+inline std::string PrintHr(logging::SystemErrorCode error_code) {
+  return logging::SystemErrorCodeToString(error_code);
+}
 
 // Helper macro for DVLOG with function name and this pointer.
 #define DVLOG_FUNC(level) DVLOG(level) << __func__ << ": (" << this << ") "

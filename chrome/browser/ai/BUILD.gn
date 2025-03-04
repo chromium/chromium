@@ -27,6 +27,12 @@ source_set("ai") {
     "features.cc",
     "features.h",
   ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   public_deps = [
     "//base",
     "//chrome/browser:browser_process",
@@ -54,6 +60,12 @@ source_set("impl") {
     "ai_utils.cc",
     "ai_writer.cc",
   ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/content_extraction:content_extraction",

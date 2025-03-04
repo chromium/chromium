@@ -77,6 +77,11 @@ component("gpu") {
     "gpu_video_encode_accelerator_factory.h",
   ]
 
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   public_deps = [
     ":buildflags",
     ":command_buffer_helper",
@@ -374,6 +379,11 @@ source_set("common") {
     ]
   }
 
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   visibility = [
     ":gpu",
     "//media/gpu/*",
@@ -439,6 +449,11 @@ component("buffer_validation") {
     "buffer_validation.h",
   ]
 
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   public_deps = [
     "//base",
     "//media",
@@ -450,6 +465,11 @@ source_set("command_buffer_helper") {
   sources = [
     "command_buffer_helper.cc",
     "command_buffer_helper.h",
+  ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
   ]
 
   public_deps = [
@@ -491,6 +511,11 @@ if (use_v4l2_codec || use_vaapi) {
       "video_frame_mapper.cc",
       "video_frame_mapper.h",
       "video_frame_mapper_factory.h",
+    ]
+
+    configs += [
+      "//build/config/compiler:wexit_time_destructors",
+      "//build/config/compiler:wglobal_constructors",
     ]
 
     public_deps = [

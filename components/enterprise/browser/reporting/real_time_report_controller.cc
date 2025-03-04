@@ -4,7 +4,7 @@
 
 #include "components/enterprise/browser/reporting/real_time_report_controller.h"
 
-#include "base/containers/flat_map.h"
+#include "base/containers/fixed_flat_map.h"
 #include "components/enterprise/browser/reporting/real_time_report_generator.h"
 #include "components/enterprise/browser/reporting/real_time_report_type.h"
 #include "components/enterprise/browser/reporting/real_time_uploader.h"
@@ -69,15 +69,17 @@ void RealTimeReportController::GenerateAndUploadReport(
     return;
   }
 
-  static const base::flat_map<RealTimeReportType, ReportConfig> kConfigs = {
-      {RealTimeReportType::kExtensionRequest,
-       {RealTimeReportType::kExtensionRequest,
-        reporting::Destination::EXTENSIONS_WORKFLOW,
-        reporting::Priority::FAST_BATCH}},
-      {RealTimeReportType::kLegacyTech,
-       {RealTimeReportType::kLegacyTech, reporting::Destination::LEGACY_TECH,
-        reporting::Priority::BACKGROUND_BATCH}},
-  };
+  static constexpr auto kConfigs =
+      base::MakeFixedFlatMap<RealTimeReportType, ReportConfig>({
+          {RealTimeReportType::kExtensionRequest,
+           {RealTimeReportType::kExtensionRequest,
+            reporting::Destination::EXTENSIONS_WORKFLOW,
+            reporting::Priority::FAST_BATCH}},
+          {RealTimeReportType::kLegacyTech,
+           {RealTimeReportType::kLegacyTech,
+            reporting::Destination::LEGACY_TECH,
+            reporting::Priority::BACKGROUND_BATCH}},
+      });
 
   UploadReport(data, kConfigs.at(type));
 }

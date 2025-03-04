@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -259,20 +260,6 @@ std::unordered_map<std::string, ExpectedHeaderInfo> GetExpectedHeaderInfo() {
 #endif  // BUDILDFLAG(IS_ANDROID)
 
   return expected_headers;
-}
-
-// Headers that are not handled by the browser, or not used at all for the
-// navigation commit.
-std::unordered_set<std::string> GetIgnorableHeaderInfo() {
-  std::unordered_set<std::string> ignorable_headers;
-  ignorable_headers.emplace("date");
-  ignorable_headers.emplace("p3p");
-  // TODO(crbug.com/379764811): Consider moving this header to <meta> HTML tag.
-  // Even though the impact is very limited, the existence of this header will
-  // change the behavior.
-  ignorable_headers.emplace("X-DNS-Prefetch-Control");
-
-  return ignorable_headers;
 }
 
 // Check the Content-Security-Policy header is expected, except for the `nonce`.
@@ -860,13 +847,23 @@ void GWSPageLoadMetricsObserver::MaybeRecordUnexpectedHeaders(
 
   std::unordered_map<std::string, ExpectedHeaderInfo> expected_headers =
       GetExpectedHeaderInfo();
-  const static std::unordered_set<std::string> ignorable_headers =
-      GetIgnorableHeaderInfo();
+
+  // Headers that are not handled by the browser, or not used at all for the
+  // navigation commit.
+  constexpr auto kIgnorableHeaderInfo =
+      base::MakeFixedFlatSet<std::string_view>({
+          "date",
+          "p3p",
+          // TODO(crbug.com/379764811): Consider moving this header to <meta>
+          // HTML tag. Even though the impact is very limited, the existence of
+          // this header will change the behavior.
+          "X-DNS-Prefetch-Control",
+      });
 
   size_t iter = 0;
   std::string name, value;
   while (response_headers->EnumerateHeaderLines(&iter, &name, &value)) {
-    if (ignorable_headers.contains(name)) {
+    if (kIgnorableHeaderInfo.contains(name)) {
       continue;
     }
     if (!expected_headers.contains(name)) {

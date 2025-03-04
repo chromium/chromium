@@ -44,6 +44,11 @@ source_set("tracked") {
     sources += [ "device_id_stub.cc" ]
   }
 
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   public_deps = [
     "//services/preferences/public/cpp/tracked",
     "//services/preferences/public/mojom",

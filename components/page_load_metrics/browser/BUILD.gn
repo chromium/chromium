@@ -86,6 +86,10 @@ source_set("browser") {
     "responsiveness_metrics_normalization.cc",
     "responsiveness_metrics_normalization.h",
   ]
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
   deps = [
     "//base",
     "//components/keyed_service/content:content",

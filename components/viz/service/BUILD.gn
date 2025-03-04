@@ -16,6 +16,11 @@ config("viz_service_implementation") {
 
 source_set("viz_service_export") {
   sources = [ "viz_service_export.h" ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
 }
 
 static_library("viz_debugger") {
@@ -24,6 +29,11 @@ static_library("viz_debugger") {
     "debugger/rwlock.h",
     "debugger/viz_debugger.cc",
     "debugger/viz_debugger.h",
+  ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
   ]
 
   defines = [ "VIZ_SERVICE_IMPLEMENTATION" ]
@@ -269,6 +279,11 @@ viz_component("service") {
   ]
 
   defines = [ "VIZ_SERVICE_IMPLEMENTATION" ]
+
+  configs = [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
 
   deps = [
     "//build:chromecast_buildflags",
