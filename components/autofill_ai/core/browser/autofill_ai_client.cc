@@ -12,9 +12,9 @@
 namespace autofill_ai {
 
 AutofillAiClient::SaveOrUpdatePromptResult::SaveOrUpdatePromptResult(
-    bool did_user_interact,
+    bool did_user_decline,
     std::optional<autofill::EntityInstance> entity)
-    : did_user_interact(did_user_interact), entity(std::move(entity)) {}
+    : did_user_decline(did_user_decline), entity(std::move(entity)) {}
 
 AutofillAiClient::SaveOrUpdatePromptResult::SaveOrUpdatePromptResult() =
     default;
