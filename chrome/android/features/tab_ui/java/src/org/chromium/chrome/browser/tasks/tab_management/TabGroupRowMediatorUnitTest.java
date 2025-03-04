@@ -106,8 +106,7 @@ public class TabGroupRowMediatorUnitTest {
         mUrl4 = JUnitTestGURLs.BLUE_1;
         mUrl5 = JUnitTestGURLs.BLUE_2;
         mSyncedGroupTestHelper = new SyncedGroupTestHelper(mTabGroupSyncService);
-        mSharedGroupTestHelper =
-                new SharedGroupTestHelper(mDataSharingService, mCollaborationService);
+        mSharedGroupTestHelper = new SharedGroupTestHelper(mCollaborationService);
         mContext =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
@@ -219,7 +218,7 @@ public class TabGroupRowMediatorUnitTest {
 
     @Test
     public void testCollaborationButOnlyOneUser() {
-        mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1);
+        mSharedGroupTestHelper.mockGetGroupData(COLLABORATION_ID1, GROUP_MEMBER1);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
 
         assertFalse(propertyModel.get(DISPLAY_AS_SHARED));
@@ -228,7 +227,7 @@ public class TabGroupRowMediatorUnitTest {
 
     @Test
     public void testShared() {
-        mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
+        mSharedGroupTestHelper.mockGetGroupData(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
 
         assertTrue(propertyModel.get(DISPLAY_AS_SHARED));
@@ -237,7 +236,7 @@ public class TabGroupRowMediatorUnitTest {
 
     @Test
     public void testDestroyable() {
-        mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
+        mSharedGroupTestHelper.mockGetGroupData(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
 
         assertTrue(propertyModel.get(DISPLAY_AS_SHARED));

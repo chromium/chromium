@@ -291,8 +291,7 @@ public class StripLayoutHelperTest {
         when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
         when(mServiceStatus.isAllowedToJoin()).thenReturn(false);
         when(mDataSharingService.getUiDelegate()).thenReturn(mDataSharingUiDelegate);
-        mSharedGroupTestHelper =
-                new SharedGroupTestHelper(mDataSharingService, mCollaborationService);
+        mSharedGroupTestHelper = new SharedGroupTestHelper(mCollaborationService);
     }
 
     @After
@@ -3592,7 +3591,7 @@ public class StripLayoutHelperTest {
         verifySharedGroupState(groupTitle, false);
 
         // Populate face pile during SharedImageTilesCoordinator#updateCollaborationId.
-        mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
+        mSharedGroupTestHelper.mockGetGroupData(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
 
         // Group changed that shared with multiple collaborators.
         mSharingObserverCaptor
@@ -3651,10 +3650,10 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         if (multipleCollaborators) {
-            mSharedGroupTestHelper.respondToReadGroup(
+            mSharedGroupTestHelper.mockGetGroupData(
                     COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
         } else {
-            mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1);
+            mSharedGroupTestHelper.mockGetGroupData(COLLABORATION_ID1, GROUP_MEMBER1);
         }
 
         // Group the tabs and setup the tab group sync state.

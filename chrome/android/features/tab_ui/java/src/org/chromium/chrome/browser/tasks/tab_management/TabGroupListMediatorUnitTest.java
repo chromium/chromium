@@ -177,8 +177,7 @@ public class TabGroupListMediatorUnitTest {
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveModel);
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
-        mSharedGroupTestHelper =
-                new SharedGroupTestHelper(mDataSharingService, mCollaborationService);
+        mSharedGroupTestHelper = new SharedGroupTestHelper(mCollaborationService);
         mSyncedGroupTestHelper = new SyncedGroupTestHelper(mTabGroupSyncService);
         MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
 
@@ -625,7 +624,7 @@ public class TabGroupListMediatorUnitTest {
         when(mTab1.getRootId()).thenReturn(ROOT_ID1);
         when(mTab1.getTabGroupId()).thenReturn(LOCAL_GROUP_ID1);
         when(mTab1.isClosing()).thenReturn(false);
-        mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1);
+        mSharedGroupTestHelper.mockGetGroupData(COLLABORATION_ID1, GROUP_MEMBER1);
         when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
                 .thenReturn(MemberRole.OWNER);
         createMediator();
@@ -668,7 +667,7 @@ public class TabGroupListMediatorUnitTest {
         when(mTab1.getRootId()).thenReturn(ROOT_ID1);
         when(mTab1.getTabGroupId()).thenReturn(LOCAL_GROUP_ID1);
         when(mTab1.isClosing()).thenReturn(false);
-        mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
+        mSharedGroupTestHelper.mockGetGroupData(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
 
         createMediator();
 
@@ -716,7 +715,7 @@ public class TabGroupListMediatorUnitTest {
         when(mTab1.getRootId()).thenReturn(ROOT_ID1);
         when(mTab1.getTabGroupId()).thenReturn(LOCAL_GROUP_ID1);
         when(mTab1.isClosing()).thenReturn(false);
-        mSharedGroupTestHelper.respondToReadGroupWithFailure(COLLABORATION_ID1);
+        mSharedGroupTestHelper.mockGetGroupDataFailure(COLLABORATION_ID1);
 
         createMediator();
 
