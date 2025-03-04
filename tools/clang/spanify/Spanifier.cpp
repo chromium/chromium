@@ -2082,17 +2082,27 @@ class Spanifier {
 
     // When passing now-span buffers to third_party functions as parameters, we
     // need to add `.data()` to extract the pointer and keep things compiling.
+    // See test: 'array-external-call-original.cc'
     auto buffer_to_external_func = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
-        callExpr(callee(functionDecl(
-                     anyOf(isExpansionInSystemHeader(),
-                           raw_ptr_plugin::isInExternCContext(),
-                           raw_ptr_plugin::isInThirdPartyLocation(),
-                           hasAttr(clang::attr::UnsafeBufferUsage)),
-                     unless(matchesName(
-                         "std::(size|begin|end|empty|swap|ranges::)")))),
-                 forEachArgumentWithParam(expr(rhs_exprs_without_size_nodes),
-                                          parmVarDecl())));
+        expr(anyOf(
+            callExpr(callee(functionDecl(
+                         anyOf(isExpansionInSystemHeader(),
+                               raw_ptr_plugin::isInExternCContext(),
+                               raw_ptr_plugin::isInThirdPartyLocation(),
+                               hasAttr(clang::attr::UnsafeBufferUsage)),
+                         unless(matchesName(
+                             "std::(size|begin|end|empty|swap|ranges::)")))),
+                     forEachArgumentWithParam(
+                         expr(rhs_exprs_without_size_nodes), parmVarDecl())),
+            cxxConstructExpr(
+                hasDeclaration(cxxConstructorDecl(
+                    anyOf(isExpansionInSystemHeader(),
+                          raw_ptr_plugin::isInExternCContext(),
+                          raw_ptr_plugin::isInThirdPartyLocation(),
+                          hasAttr(clang::attr::UnsafeBufferUsage)))),
+                forEachArgumentWithParam(expr(rhs_exprs_without_size_nodes),
+                                         parmVarDecl())))));
     Match(buffer_to_external_func, AppendDataCall);
 
     // Handles expressions of the form:
