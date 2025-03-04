@@ -522,6 +522,10 @@ std::optional<gfx::HDRMetadata> ImageDecoder::GetHDRMetadata() const {
   return std::nullopt;
 }
 
+bool ImageDecoder::HasC2PAManifest() const {
+  return false;
+}
+
 gfx::Size ImageDecoder::FrameSizeAtIndex(wtf_size_t) const {
   return Size();
 }

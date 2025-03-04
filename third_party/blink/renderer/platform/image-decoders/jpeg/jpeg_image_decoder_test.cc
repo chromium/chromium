@@ -683,4 +683,26 @@ TEST(JPEGImageDecoderTest, BppHistogramGrayscale) {
   TestJpegBppHistogram("/images/resources/cs-uma-grayscale.jpg");
 }
 
+// Decode a JPEG with C2PA metadata, and verify that it is detected correctly
+TEST(JPEGImageDecoderTest, c2paManifestPresent) {
+  scoped_refptr<SharedBuffer> test_data = ReadFileToSharedBuffer(
+      "/images/resources/jpeg-with-c2pa-adobe-20220124-C.jpg");
+  ASSERT_TRUE(test_data.get());
+
+  std::unique_ptr<ImageDecoder> test_decoder = CreateJPEGDecoder();
+  test_decoder->SetData(test_data.get(), true);
+  EXPECT_TRUE(test_decoder->HasC2PAManifest());
+}
+
+// Decode a JPEG without C2PA metadata, verify that none is found
+TEST(JPEGImageDecoderTest, c2paManifestNotPresent) {
+  scoped_refptr<SharedBuffer> test_data =
+      ReadFileToSharedBuffer("/images/resources/gracehopper.jpg");
+  ASSERT_TRUE(test_data.get());
+
+  std::unique_ptr<ImageDecoder> test_decoder = CreateJPEGDecoder();
+  test_decoder->SetData(test_data.get(), true);
+  EXPECT_FALSE(test_decoder->HasC2PAManifest());
+}
+
 }  // namespace blink
