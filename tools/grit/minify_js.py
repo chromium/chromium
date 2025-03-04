@@ -22,8 +22,10 @@ def Minify(source):
        tempfile.NamedTemporaryFile(mode="r+", suffix='.js') as outfile:
     infile.write(source)
     infile.flush()
-    node.RunNode(
-        [node_modules.PathToTerser(), infile.name, '--output', outfile.name])
+    node.RunNode([
+        node_modules.PathToTerser(), infile.name, '--comments',
+        '/Copyright|license|LICENSE/', '--output', outfile.name
+    ])
     result = outfile.read()
     return result
 
