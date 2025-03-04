@@ -94,25 +94,18 @@ bool HasAllowedScheme(const GURL& url) {
   return url.SchemeIsHTTPOrHTTPS();
 }
 
-std::string ServerTypesToString(const AutofillField* field) {
-  const std::vector<
-      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>&
-      server_types = field->server_predictions();
+std::string ServerTypesToString(const AutofillField& field) {
+  std::vector<std::string_view> server_types =
+      base::ToVector(field.server_predictions(), [](const auto& prediction) {
+        return FieldTypeToStringView(
+            ToSafeFieldType(prediction.type(), NO_SERVER_DATA));
+      });
 
   if (server_types.empty()) {
     return "pending";
   }
 
-  std::ostringstream buffer;
-  for (const auto& field_prediction : server_types) {
-    if (buffer.tellp() > 0) {  // Add comma if buffer is not empty.
-      buffer << ", ";
-    }
-    FieldType server_type =
-        ToSafeFieldType(field_prediction.type(), NO_SERVER_DATA);
-    buffer << FieldTypeToStringView(server_type);
-  }
-  return "[" + buffer.str() + "]";
+  return base::StrCat({"[", base::JoinString(server_types, ", "), "]"});
 }
 
 HeuristicSource GetAvailableRegexHeuristicSource() {
@@ -1025,7 +1018,7 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
                           FieldTypeToStringView(field->heuristic_type())});
       }
     }
-    std::string server_type = ServerTypesToString(field);
+    std::string server_type = ServerTypesToString(*field);
     const char* is_override =
         field->server_type_prediction_is_override() ? " (manual override)" : "";
     auto html_type_description =
@@ -1120,7 +1113,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
                           FieldTypeToStringView(field->heuristic_type())});
       }
     }
-    std::string server_type = ServerTypesToString(field);
+    std::string server_type = ServerTypesToString(*field);
     if (field->server_type_prediction_is_override()) {
       server_type += " (manual override)";
     }
