@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "android_webview/browser/prefetch/aw_prefetch_manager.h"
+
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_browser_context_store.h"
 #include "android_webview/common/aw_features.h"
@@ -168,6 +169,33 @@ TEST_F(AwPrefetchManagerTest, UpdateMaxPrefetchesIsRespected) {
 
   // Should be on the latest setting, 2.
   EXPECT_EQ(prefetch_manager.GetAllPrefetchesForTesting().size(), 2u);
+}
+
+TEST_F(AwPrefetchManagerTest, PrefetchHandleKeysAlwaysIncrement) {
+  AwPrefetchManager prefetch_manager(browser_context_.get());
+
+  prefetch_manager.SetTtlInSec(base::android::AttachCurrentThread(),
+                               /*ttl_in_sec=*/60 * 10);
+  prefetch_manager.SetMaxPrefetches(base::android::AttachCurrentThread(),
+                                    /* max_prefetches=*/5);
+
+  // Confirm the initial values.
+  int last_prefetch_key = prefetch_manager.GetLastPrefetchKeyForTesting();
+  EXPECT_EQ(last_prefetch_key, -1);
+
+  // Add more than the max allowed prefetches (triggering evictions) while
+  // ensuring that the prefetch handle keys always increment confirming that the
+  // prefetches are both sorted in the order they were added and that their keys
+  // are never reused.
+  for (int i = 0; i < 10; ++i) {
+    int prefetch_key = prefetch_manager.StartPrefetchRequest(
+        base::android::AttachCurrentThread(),
+        "https://example.com/" + base::NumberToString(i),
+        /*prefetch_params=*/nullptr, /*callback=*/nullptr,
+        /*callback_executor=*/nullptr);
+    EXPECT_EQ(prefetch_key, last_prefetch_key + 1);
+    last_prefetch_key = prefetch_key;
+  }
 }
 
 }  // namespace android_webview

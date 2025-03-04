@@ -41,43 +41,40 @@ public class AwPrefetchManager {
     }
 
     @UiThread
-    public void startPrefetchRequest(
+    public int startPrefetchRequest(
             @NonNull String url,
             @Nullable AwPrefetchParameters prefetchParameters,
             @NonNull AwPrefetchCallback callback,
             @NonNull Executor callbackExecutor) {
         assert ThreadUtils.runningOnUiThread();
         try (TraceEvent event = TraceEvent.scoped("WebView.Profile.Prefetch.START")) {
+            final Exception error;
             if (!UrlUtilities.isHttps(url)) {
-                callbackExecutor.execute(
-                        () ->
-                                callback.onError(
-                                        new IllegalArgumentException(
-                                                "URL must have HTTPS scheme for prefetch.")));
-                return;
-            }
-
-            if (!AwFeatureMap.isEnabled(ContentFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS)) {
-                callbackExecutor.execute(
-                        () ->
-                                callback.onError(
-                                        new IllegalStateException(
-                                                "WebView initiated prefetching feature is not"
-                                                        + " enabled.")));
-                return;
-            }
-
-            if (prefetchParameters != null) {
+                error = new IllegalArgumentException("URL must have HTTPS scheme for prefetch.");
+            } else if (!AwFeatureMap.isEnabled(
+                    ContentFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS)) {
+                error =
+                        new IllegalStateException(
+                                "WebView initiated prefetching feature is not" + " enabled.");
+            } else if (prefetchParameters != null) {
                 Optional<IllegalArgumentException> exception =
                         AwBrowserContext.validateAdditionalHeaders(
                                 prefetchParameters.getAdditionalHeaders());
                 if (exception.isPresent()) {
-                    callbackExecutor.execute(() -> callback.onError(exception.get()));
-                    return;
+                    error = exception.get();
+                } else {
+                    error = null;
                 }
+            } else {
+                error = null;
             }
 
-            AwPrefetchManagerJni.get()
+            if (error != null) {
+                callbackExecutor.execute(() -> callback.onError(error));
+                return AwPrefetchManagerJni.get().getNoPrefetchKey();
+            }
+
+            return AwPrefetchManagerJni.get()
                     .startPrefetchRequest(
                             mNativePrefetchManager,
                             url,
@@ -85,6 +82,20 @@ public class AwPrefetchManager {
                             callback,
                             callbackExecutor);
         }
+    }
+
+    @UiThread
+    public void cancelPrefetch(final int prefetchKey) {
+        assert ThreadUtils.runningOnUiThread();
+        AwPrefetchManagerJni.get().cancelPrefetch(mNativePrefetchManager, prefetchKey);
+    }
+
+    @UiThread
+    public boolean getIsPrefetchInCacheForTesting(final int prefetchKey) {
+        // IN-TESTS
+        assert ThreadUtils.runningOnUiThread();
+        return AwPrefetchManagerJni.get()
+                .getIsPrefetchInCacheForTesting(mNativePrefetchManager, prefetchKey);
     }
 
     @UiThread
@@ -110,6 +121,10 @@ public class AwPrefetchManager {
     @VisibleForTesting
     public int getMaxPrefetches() {
         return AwPrefetchManagerJni.get().getMaxPrefetches(mNativePrefetchManager);
+    }
+
+    public int getNoPrefetchKeyForTesting() {
+        return AwPrefetchManagerJni.get().getNoPrefetchKey();
     }
 
     @CalledByNative
@@ -151,14 +166,25 @@ public class AwPrefetchManager {
     @NativeMethods
     interface Natives {
 
-        // TODO (crbug.com/372915956) Consider flattening the prefetch parameters before passing to
-        // native.
-        void startPrefetchRequest(
+        int getNoPrefetchKey();
+
+        // Returns the prefetch key used to cancel the request.
+        int startPrefetchRequest(
                 long nativeAwPrefetchManager,
                 @JniType("std::string") String url,
                 AwPrefetchParameters prefetchParameters,
                 AwPrefetchCallback callback,
                 Executor callbackExecutor);
+
+        /**
+         * Attempts the cancel the prefetch request using the key returned from {@link
+         * Natives#startPrefetchRequest(long, String, AwPrefetchParameters, AwPrefetchCallback,
+         * Executor)}.
+         */
+        void cancelPrefetch(long nativeAwPrefetchManager, int prefetchKey);
+
+        // IN-TESTS
+        boolean getIsPrefetchInCacheForTesting(long nativeAwPrefetchManager, int prefetchKey);
 
         void setTtlInSec(long nativeAwPrefetchManager, int ttlInSeconds);
 

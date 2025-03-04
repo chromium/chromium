@@ -87,7 +87,7 @@ public class Profile {
     }
 
     @UiThread
-    public void prefetchUrl(
+    public int prefetchUrl(
             String url,
             @Nullable PrefetchParams params,
             Executor callbackExecutor,
@@ -100,7 +100,7 @@ public class Profile {
             if (resultCallback == null) {
                 throw new IllegalArgumentException("Callback cannot be null for prefetch.");
             }
-            mBrowserContext
+            return mBrowserContext
                     .getPrefetchManager()
                     .startPrefetchRequest(
                             url,
@@ -116,7 +116,7 @@ public class Profile {
     }
 
     @UiThread
-    public void cancelPrefetch(String url) {
+    public void cancelPrefetch(int prefetchKey) {
         // TODO(334016945): do the actual implementation
     }
 

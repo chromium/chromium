@@ -82,8 +82,10 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
             Executor callbackExecutor,
             /* PrefetchOperationCallback */ InvocationHandler callback) {
         recordApiCall(ApiCall.PREFETCH_URL);
-        setCancelListener(cancellationSignal, url);
-        mProfileImpl.prefetchUrl(url, null, callbackExecutor, createOperationCallback(callback));
+        int prefetchKey =
+                mProfileImpl.prefetchUrl(
+                        url, null, callbackExecutor, createOperationCallback(callback));
+        setCancelListener(cancellationSignal, prefetchKey);
     }
 
     @Override
@@ -99,23 +101,24 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
                         SpeculativeLoadingParametersBoundaryInterface.class,
                         speculativeLoadingParams);
 
-        setCancelListener(cancellationSignal, url);
+        int prefetchKey =
+                mProfileImpl.prefetchUrl(
+                        url,
+                        SupportLibSpeculativeLoadingParametersAdapter
+                                .fromSpeculativeLoadingParametersBoundaryInterface(
+                                        speculativeLoadingParameters),
+                        callbackExecutor,
+                        createOperationCallback(callback));
 
-        mProfileImpl.prefetchUrl(
-                url,
-                SupportLibSpeculativeLoadingParametersAdapter
-                        .fromSpeculativeLoadingParametersBoundaryInterface(
-                                speculativeLoadingParameters),
-                callbackExecutor,
-                createOperationCallback(callback));
+        setCancelListener(cancellationSignal, prefetchKey);
     }
 
-    public void setCancelListener(CancellationSignal cancellationSignal, String url) {
+    public void setCancelListener(CancellationSignal cancellationSignal, int prefetchKey) {
         if (cancellationSignal != null) {
             cancellationSignal.setOnCancelListener(
                     () -> {
                         recordApiCall(ApiCall.CANCEL_PREFETCH);
-                        mProfileImpl.cancelPrefetch(url);
+                        mProfileImpl.cancelPrefetch(prefetchKey);
                     });
         }
     }

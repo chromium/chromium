@@ -7,6 +7,7 @@
 
 #include "android_webview/browser/prefetch/aw_preloading_utils.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_context.h"
 
@@ -76,7 +77,7 @@ AwPrefetchManager::AwPrefetchManager(content::BrowserContext* browser_context)
 
 AwPrefetchManager::~AwPrefetchManager() = default;
 
-void AwPrefetchManager::StartPrefetchRequest(
+int AwPrefetchManager::StartPrefetchRequest(
     JNIEnv* env,
     const std::string& url,
     const base::android::JavaParamRef<jobject>& prefetch_params,
@@ -109,18 +110,37 @@ void AwPrefetchManager::StartPrefetchRequest(
             std::move(request_status_listener), base::Seconds(ttl_in_sec_));
 
     if (prefetch_handle) {
-      // Check if we are trying to exceed the limit.
-      while (!all_prefetches_.empty() &&
-             all_prefetches_.size() >= static_cast<uint>(max_prefetches_)) {
-        // Now remove the oldest prefetch, making it out of scope should trigger
-        // the destructor which handles the reset needed.
-        all_prefetches_.pop_front();
-      }
-      all_prefetches_.push_back(std::move(prefetch_handle));
+      return AddPrefetchHandle(std::move(prefetch_handle));
     }
   } else {
     request_status_listener->OnPrefetchStartFailedDuplicate();
   }
+  return NO_PREFETCH_KEY;
+}
+
+void AwPrefetchManager::CancelPrefetch(JNIEnv* env, jint prefetch_key) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  TRACE_EVENT0("android_webview", "AwPrefetchManager::CancelPrefetch");
+  if (prefetch_key == NO_PREFETCH_KEY) {
+    // no-op.
+    return;
+  }
+
+  auto it = all_prefetches_map_.find(prefetch_key);
+  if (it != all_prefetches_map_.end()) {
+    all_prefetches_map_.erase(it);
+  }
+}
+
+bool AwPrefetchManager::GetIsPrefetchInCacheForTesting(
+    JNIEnv* env,
+    jint prefetch_key) {  // IN-TEST
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return all_prefetches_map_.find(prefetch_key) != all_prefetches_map_.end();
+}
+
+jint JNI_AwPrefetchManager_GetNoPrefetchKey(JNIEnv* env) {
+  return NO_PREFETCH_KEY;
 }
 
 base::android::ScopedJavaLocalRef<jobject>
