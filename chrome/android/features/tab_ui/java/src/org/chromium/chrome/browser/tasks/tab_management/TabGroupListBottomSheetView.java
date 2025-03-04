@@ -29,6 +29,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 public class TabGroupListBottomSheetView extends LinearLayout implements BottomSheetContent {
     private final RecyclerView mRecyclerView;
     private final ViewGroup mContentView;
+    private final boolean mShowNewGroupRow;
 
     /**
      * @param context The {@link Context} to attach the bottom sheet to.
@@ -42,6 +43,7 @@ public class TabGroupListBottomSheetView extends LinearLayout implements BottomS
                                 .inflate(R.layout.tab_group_list_bottom_sheet, /* root= */ null);
         mRecyclerView = mContentView.findViewById(R.id.tab_group_parity_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        mShowNewGroupRow = showNewGroupRow;
     }
 
     @Override
@@ -100,7 +102,10 @@ public class TabGroupListBottomSheetView extends LinearLayout implements BottomS
 
     @Override
     public @NonNull String getSheetContentDescription(Context context) {
-        return context.getString(R.string.tab_group_list_bottom_sheet_content_description);
+        return mShowNewGroupRow
+                ? context.getString(
+                        R.string.tab_group_list_with_add_button_bottom_sheet_content_description)
+                : context.getString(R.string.tab_group_list_bottom_sheet_content_description);
     }
 
     @Override

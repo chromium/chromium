@@ -1053,6 +1053,9 @@
       <message name="IDS_CREATE_NEW_GROUP_ROW_TITLE" desc="Description text for an option in a bottom sheet to create a new tab group.">
         New tab group
       </message>
+      <message name="IDS_TAB_GROUP_LIST_WITH_ADD_BUTTON_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="The content description for the bottom sheet containing a list of tab groups and the option to create a new tab group.">
+        Select tab group or create new tab group
+      </message>
       <message name="IDS_TAB_GROUP_LIST_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="The content description for the bottom sheet containing a list of tab groups.">
         Select tab group
       </message>
