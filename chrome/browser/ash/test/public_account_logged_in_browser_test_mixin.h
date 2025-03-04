@@ -15,11 +15,11 @@ namespace ash {
 // into a session.
 class PublicAccountLoggedInBrowserTestMixin : public InProcessBrowserTestMixin {
  public:
-  // `account_id` is the ID for the PublicSession account.
-  // AccountId (to be used by, e.g., UserManager) is generated from the
-  // `account_id`.
+  // `user_id` is the ID for the PublicAccount user, which must satisfy
+  // to be used for a PublicAccount user.
+  // See policy::GetDeviceLocalAccountType for details.
   PublicAccountLoggedInBrowserTestMixin(InProcessBrowserTestMixinHost* host,
-                                        std::string_view account_id);
+                                        std::string user_id);
   ~PublicAccountLoggedInBrowserTestMixin() override;
 
   // InProcessBrowserTestMixin:
@@ -27,8 +27,6 @@ class PublicAccountLoggedInBrowserTestMixin : public InProcessBrowserTestMixin {
   void SetUpLocalStatePrefService(PrefService* local_state) override;
 
  private:
-  // Email-style ID used as a part of AccountId for the given User,
-  // generated from the `account_id` passed to the ctor.
   const std::string user_id_;
 };
 

@@ -136,8 +136,8 @@ class ArcRobotAuthCodeFetcherBrowserTest
 
  private:
   // Logs in as a public account user.
-  ash::PublicAccountLoggedInBrowserTestMixin logged_in_mixin_{&mixin_host_,
-                                                              "public-account"};
+  ash::PublicAccountLoggedInBrowserTestMixin logged_in_mixin_{
+      &mixin_host_, "example@public-accounts.device-local.localhost"};
 
   // Whether to connect the CloudPolicyClient.
   CloudPolicyClientSetup cloud_policy_client_setup_;

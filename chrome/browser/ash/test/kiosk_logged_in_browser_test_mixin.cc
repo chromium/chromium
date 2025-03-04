@@ -2,27 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/test/kiosk_app_logged_in_browser_test_mixin.h"
+#include "chrome/browser/ash/test/kiosk_logged_in_browser_test_mixin.h"
 
 #include "ash/constants/ash_switches.h"
 #include "components/account_id/account_id.h"
-#include "components/policy/core/common/device_local_account_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/test_helper.h"
 
 namespace ash {
 
-KioskAppLoggedInBrowserTestMixin::KioskAppLoggedInBrowserTestMixin(
+KioskLoggedInBrowserTestMixin::KioskLoggedInBrowserTestMixin(
     InProcessBrowserTestMixinHost* host,
-    std::string_view account_id)
-    : InProcessBrowserTestMixin(host),
-      user_id_(policy::GenerateDeviceLocalAccountUserId(
-          account_id,
-          policy::DeviceLocalAccountType::kKioskApp)) {}
+    std::string_view user_id)
+    : InProcessBrowserTestMixin(host), user_id_(user_id) {}
 
-KioskAppLoggedInBrowserTestMixin::~KioskAppLoggedInBrowserTestMixin() = default;
+KioskLoggedInBrowserTestMixin::~KioskLoggedInBrowserTestMixin() = default;
 
-void KioskAppLoggedInBrowserTestMixin::SetUpCommandLine(
+void KioskLoggedInBrowserTestMixin::SetUpCommandLine(
     base::CommandLine* command_line) {
   command_line->AppendSwitchASCII(ash::switches::kLoginUser, user_id_);
   command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
@@ -33,7 +29,7 @@ void KioskAppLoggedInBrowserTestMixin::SetUpCommandLine(
   command_line->AppendSwitch(ash::switches::kPreventKioskAutolaunchForTesting);
 }
 
-void KioskAppLoggedInBrowserTestMixin::SetUpLocalStatePrefService(
+void KioskLoggedInBrowserTestMixin::SetUpLocalStatePrefService(
     PrefService* local_state) {
   user_manager::TestHelper::RegisterKioskAppUser(*local_state, user_id_);
 }
