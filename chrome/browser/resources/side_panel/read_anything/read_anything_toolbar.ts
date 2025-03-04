@@ -65,11 +65,13 @@ interface MenuButton {
   openMenu: (target: HTMLElement) => void;
 }
 
+
+type ToggleButtonId =
+    typeof LINK_TOGGLE_BUTTON_ID|typeof IMAGES_TOGGLE_BUTTON_ID;
 interface ToggleButton {
-  id: string;
+  id: ToggleButtonId;
   icon: string;
   title: string;
-  callback: (event: DomRepeatEvent<ToggleButton>) => void;
 }
 
 export const moreOptionsClass = '.more-options-icon';
@@ -217,7 +219,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       title: chrome.readingMode.linksEnabled?
            loadTimeData.getString('disableLinksLabel'):
                loadTimeData.getString('enableLinksLabel'),
-      callback: this.onToggleLinksClick_.bind(this),
     },
   ];
 
@@ -277,7 +278,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         title: chrome.readingMode.imagesEnabled ?
             loadTimeData.getString('disableImagesLabel') :
             loadTimeData.getString('enableImagesLabel'),
-        callback: this.onToggleImagesClick_.bind(this),
       });
     }
   }
@@ -671,15 +671,16 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.updateFontSize_(false);
   }
 
-  private onToggleButtonClick_(event: DomRepeatEvent<ToggleButton>) {
-    event.model.item.callback(event);
+  protected onToggleButtonClick_(event: DomRepeatEvent<ToggleButton>) {
+    const toggleMenuId = event.model.item.id;
+    if (toggleMenuId === LINK_TOGGLE_BUTTON_ID) {
+      this.onToggleLinksClick_();
+    } else if (toggleMenuId === IMAGES_TOGGLE_BUTTON_ID) {
+      this.onToggleImagesClick_();
+    }
   }
 
-  private onToggleLinksClick_(event: DomRepeatEvent<ToggleButton>) {
-    if (!event.target) {
-      return;
-    }
-
+  private onToggleLinksClick_() {
     this.logger_.logTextSettingsChange(
         ReadAnythingSettingsChange.LINKS_ENABLED_CHANGE);
 
@@ -688,10 +689,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.updateLinkToggleButton();
   }
 
-  private onToggleImagesClick_(event: DomRepeatEvent<ToggleButton>) {
-    if (!event.target) {
-      return;
-    }
+  private onToggleImagesClick_() {
     this.logger_.logTextSettingsChange(
         ReadAnythingSettingsChange.IMAGES_ENABLED_CHANGE);
 
