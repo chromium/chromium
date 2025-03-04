@@ -22,13 +22,9 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/svg/svg_animation_element.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/svg/animation/element_smil_animations.h"
@@ -139,7 +135,7 @@ static bool ParseKeySplinesInternal(const CharType* ptr,
     SkipOptionalSVGSpaces(ptr, end);
 
     if (ptr < end && *ptr == ';')
-      ptr++;
+      UNSAFE_TODO(ptr++);
     SkipOptionalSVGSpaces(ptr, end);
 
     // The values of cpx1 cpy1 cpx2 cpy2 must all be in the range 0 to 1.

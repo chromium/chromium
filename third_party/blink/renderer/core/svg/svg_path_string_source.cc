@@ -18,13 +18,9 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/svg/svg_path_string_source.h"
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -49,7 +45,7 @@ bool ParseArcFlag(const CharType*& ptr, const CharType* end, bool& flag) {
     return false;
   }
 
-  ptr++;
+  UNSAFE_TODO(ptr++);
   SkipOptionalSVGSpacesOrDelimiter(ptr, end);
 
   return true;
@@ -138,10 +134,10 @@ SVGPathStringSource::SVGPathStringSource(StringView source)
 
   if (is_8bit_source_) {
     current_.character8_ = source.Characters8();
-    end_.character8_ = current_.character8_ + source.length();
+    end_.character8_ = UNSAFE_TODO(current_.character8_ + source.length());
   } else {
     current_.character16_ = source.Characters16();
-    end_.character16_ = current_.character16_ + source.length();
+    end_.character16_ = UNSAFE_TODO(current_.character16_ + source.length());
   }
   EatWhitespace();
 }
@@ -204,9 +200,9 @@ PathSegmentData SVGPathStringSource::ParseSegment() {
     }
     // Consume command letter.
     if (is_8bit_source_)
-      current_.character8_++;
+      UNSAFE_TODO(current_.character8_++);
     else
-      current_.character16_++;
+      UNSAFE_TODO(current_.character16_++);
   } else if (command == kPathSegUnknown) {
     // Possibly an implicit command.
     DCHECK_NE(previous_command_, kPathSegUnknown);
@@ -217,9 +213,9 @@ PathSegmentData SVGPathStringSource::ParseSegment() {
   } else {
     // Valid explicit command.
     if (is_8bit_source_)
-      current_.character8_++;
+      UNSAFE_TODO(current_.character8_++);
     else
-      current_.character16_++;
+      UNSAFE_TODO(current_.character16_++);
   }
 
   segment.command = previous_command_ = command;
