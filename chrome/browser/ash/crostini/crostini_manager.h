@@ -296,6 +296,12 @@ class CrostiniManager : public KeyedService,
   // been started.
   void StartLxd(std::string vm_name, CrostiniResultCallback callback);
 
+  // Wrapper for ConciergeClient::SetUpVmUser
+  // |callback| is called immediately if the arguments are bad.
+  void SetUpBaguetteUser(std::string vm_name,
+                         std::optional<std::string> container_username,
+                         CrostiniResultCallback callback);
+
   // Checks the arguments for creating an Lxd container via
   // CiceroneClient::CreateLxdContainer. |callback| is called immediately if the
   // arguments are bad, or once the container has been created.
@@ -711,6 +717,11 @@ class CrostiniManager : public KeyedService,
   void OnStartLxd(std::string vm_name,
                   CrostiniResultCallback callback,
                   std::optional<vm_tools::cicerone::StartLxdResponse> response);
+
+  // Callback for ConciergeClient::SetUpVmUser.
+  void OnSetUpBaguetteUser(
+      CrostiniResultCallback callback,
+      std::optional<vm_tools::concierge::SetUpVmUserResponse> response);
 
   // Callback for ConciergeClient::ExportDiskImage. Called after the Concierge
   // service method finishes.

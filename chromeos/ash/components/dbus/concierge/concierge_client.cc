@@ -310,6 +310,13 @@ class ConciergeClientImpl : public ConciergeClient {
     CallMethod(concierge::kMuteVmAudioMethod, request, std::move(callback));
   }
 
+  void SetUpVmUser(
+      const vm_tools::concierge::SetUpVmUserRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::SetUpVmUserResponse>
+          callback) override {
+    CallMethod(concierge::kSetUpVmUserMethod, request, std::move(callback));
+  }
+
   void Init(dbus::Bus* bus) override {
     concierge_proxy_ = bus->GetObjectProxy(
         concierge::kVmConciergeServiceName,

@@ -308,6 +308,7 @@ class CrostiniManager::CrostiniRestarter
   void StartTerminaVmFinished(bool success);
   void SharePathsFinished(bool success, const std::string& failure_reason);
   void StartLxdFinished(CrostiniResult result);
+  void SetUpBaguetteUserFinished(CrostiniResult result);
   void CreateLxdContainerFinished(CrostiniResult result);
   void SetUpLxdContainerUserFinished(bool success);
   // Public function - StartLxdContainerFinished(CrostiniResult result);
@@ -882,7 +883,14 @@ void CrostiniManager::CrostiniRestarter::SharePathsFinished(
     LOG(WARNING) << "Failed to share paths: " << failure_reason;
   }
   if (base::FeatureList::IsEnabled(ash::features::kCrostiniContainerless)) {
-    FinishRestart(CrostiniResult::SUCCESS);
+    StartStage(mojom::InstallerState::kConfigureContainer);
+    // TODO(crbug.com/377377749): eventually username should come from
+    // requests_[0].options.container_username once vsh knows how to connect to
+    // the right username
+    crostini_manager_->SetUpBaguetteUser(
+        container_id_.vm_name, "chronos",
+        base::BindOnce(&CrostiniRestarter::SetUpBaguetteUserFinished,
+                       weak_ptr_factory_.GetWeakPtr()));
   } else {
     StartStage(mojom::InstallerState::kStartLxd);
     crostini_manager_->StartLxd(
@@ -918,6 +926,16 @@ void CrostiniManager::CrostiniRestarter::StartLxdFinished(
       requests_[0].options.image_alias,
       base::BindOnce(&CrostiniRestarter::CreateLxdContainerFinished,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CrostiniManager::CrostiniRestarter::SetUpBaguetteUserFinished(
+    CrostiniResult result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (ReturnEarlyIfNeeded()) {
+    return;
+  }
+
+  FinishRestart(result);
 }
 
 void CrostiniManager::CrostiniRestarter::CreateLxdContainerFinished(
@@ -1731,6 +1749,36 @@ void CrostiniManager::StartLxd(std::string vm_name,
       base::BindOnce(&CrostiniManager::OnStartLxd,
                      weak_ptr_factory_.GetWeakPtr(), request.vm_name(),
                      std::move(callback)));
+}
+
+void CrostiniManager::SetUpBaguetteUser(
+    std::string vm_name,
+    std::optional<std::string> container_username,
+    CrostiniResultCallback callback) {
+  if (vm_name.empty()) {
+    LOG(ERROR) << "vm_name is required";
+    std::move(callback).Run(CrostiniResult::CLIENT_ERROR);
+    return;
+  }
+
+  std::string username =
+      container_username.value_or(DefaultContainerUserNameForProfile(profile_));
+  vm_tools::concierge::SetUpVmUserRequest request;
+  request.set_vm_name(vm_name);
+  request.set_owner_id(owner_id_);
+  request.set_username(username);
+  request.add_group_names("cdrom");
+  request.add_group_names("dialout");
+  request.add_group_names("floppy");
+  request.add_group_names("netdev");
+  request.add_group_names("sudo");
+  request.add_group_names("tss");
+  request.add_group_names("video");
+
+  GetConciergeClient()->SetUpVmUser(
+      std::move(request),
+      base::BindOnce(&CrostiniManager::OnSetUpBaguetteUser,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 namespace {
@@ -3262,6 +3310,24 @@ void CrostiniManager::OnStartLxd(
     default:
       LOG(ERROR) << "Failed to start LXD: " << response->failure_reason();
       std::move(callback).Run(CrostiniResult::START_LXD_FAILED);
+  }
+}
+
+void CrostiniManager::OnSetUpBaguetteUser(
+    CrostiniResultCallback callback,
+    std::optional<vm_tools::concierge::SetUpVmUserResponse> response) {
+  if (!response) {
+    LOG(ERROR) << "Failed to set up user in vm. Empty response.";
+    std::move(callback).Run(CrostiniResult::CONTAINER_SETUP_FAILED);
+    return;
+  }
+
+  if (response->success()) {
+    std::move(callback).Run(CrostiniResult::SUCCESS);
+  } else {
+    LOG(ERROR) << "Failed to set up baguette user: "
+               << response->failure_reason();
+    std::move(callback).Run(CrostiniResult::CONTAINER_SETUP_FAILED);
   }
 }
 

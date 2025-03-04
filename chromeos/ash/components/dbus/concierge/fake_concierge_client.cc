@@ -453,6 +453,14 @@ void FakeConciergeClient::MuteVmAudio(
       FROM_HERE, base::BindOnce(std::move(callback), mute_vm_audio_response_));
 }
 
+void FakeConciergeClient::SetUpVmUser(
+    const vm_tools::concierge::SetUpVmUserRequest& request,
+    chromeos::DBusMethodCallback<vm_tools::concierge::SetUpVmUserResponse>
+        callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), set_up_vm_user_response_));
+}
+
 void FakeConciergeClient::NotifyVmStarted(
     const vm_tools::concierge::VmStartedSignal& signal) {
   // Now GetVmInfo can return success.

@@ -179,6 +179,11 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
       chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
           callback) override;
 
+  void SetUpVmUser(
+      const vm_tools::concierge::SetUpVmUserRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::SetUpVmUserResponse>
+          callback) override;
+
   const base::ObserverList<Observer>& observer_list() const {
     return observer_list_;
   }
@@ -373,10 +378,17 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
           aggressive_balloon_response) {
     aggressive_balloon_response_ = aggressive_balloon_response;
   }
+
   void set_mute_vm_audio_response(
       std::optional<vm_tools::concierge::SuccessFailureResponse>
           mute_vm_audio_response) {
     mute_vm_audio_response_ = mute_vm_audio_response;
+  }
+
+  void set_set_up_vm_user_response(
+      std::optional<vm_tools::concierge::SetUpVmUserResponse>
+          set_up_vm_user_response) {
+    set_up_vm_user_response_ = set_up_vm_user_response;
   }
 
   void set_send_create_disk_image_response_delay(base::TimeDelta delay) {
@@ -499,6 +511,8 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
       aggressive_balloon_response_;
   std::optional<vm_tools::concierge::SuccessFailureResponse>
       mute_vm_audio_response_;
+  std::optional<vm_tools::concierge::SetUpVmUserResponse>
+      set_up_vm_user_response_;
 
   base::TimeDelta send_create_disk_image_response_delay_;
   base::TimeDelta send_start_vm_response_delay_;
