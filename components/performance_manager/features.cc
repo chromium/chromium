@@ -54,17 +54,9 @@ const base::FeatureParam<base::TimeDelta>
         &kPerformanceControlsBatteryPerformanceSurvey, "battery_lookback",
         base::Days(8)};
 
-BASE_FEATURE(kPerformanceInterventionUI,
-             "PerformanceInterventionUI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPerformanceInterventionDemoMode,
              "PerformanceInterventionDemoMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool ShouldUsePerformanceInterventionBackend() {
-  return base::FeatureList::IsEnabled(kPerformanceInterventionUI);
-}
 
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kUnthrottledTabProcessReporting,

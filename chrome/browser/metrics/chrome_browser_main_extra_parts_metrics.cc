@@ -49,7 +49,6 @@
 #include "chrome/browser/web_applications/sampling_metrics_provider.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/metrics/android_metrics_helper.h"
-#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -1155,12 +1154,9 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
         std::make_unique<PowerMetricsReporter>(process_monitor_.get());
   }
 
-  if (performance_manager::features::
-          ShouldUsePerformanceInterventionBackend()) {
-    performance_intervention_metrics_reporter_ =
-        std::make_unique<PerformanceInterventionMetricsReporter>(
-            g_browser_process->local_state());
-  }
+  performance_intervention_metrics_reporter_ =
+      std::make_unique<PerformanceInterventionMetricsReporter>(
+          g_browser_process->local_state());
 
   web_app_metrics_provider_ =
       std::make_unique<web_app::SamplingMetricsProvider>();

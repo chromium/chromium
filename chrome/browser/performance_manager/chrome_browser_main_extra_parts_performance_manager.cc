@@ -310,11 +310,8 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
       new performance_manager::user_tuning::BatterySaverModeManager(
           g_browser_process->local_state()));
 
-  if (performance_manager::features::
-          ShouldUsePerformanceInterventionBackend()) {
-    performance_detection_manager_ = base::WrapUnique(
-        new performance_manager::user_tuning::PerformanceDetectionManager());
-  }
+  performance_detection_manager_ = base::WrapUnique(
+      new performance_manager::user_tuning::PerformanceDetectionManager());
 #endif
 
   page_load_metrics_observer_ =

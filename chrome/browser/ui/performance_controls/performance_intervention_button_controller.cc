@@ -199,9 +199,7 @@ void PerformanceInterventionButtonController::MaybeShowUi(
 
   RecordInterventionTriggerResult(type, trigger_result);
 
-  if (trigger_result == InterventionMessageTriggerResult::kShown &&
-      base::FeatureList::IsEnabled(
-          performance_manager::features::kPerformanceInterventionUI)) {
+  if (trigger_result == InterventionMessageTriggerResult::kShown) {
     delegate_->Show();
   }
 }

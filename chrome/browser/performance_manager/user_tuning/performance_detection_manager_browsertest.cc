@@ -48,12 +48,6 @@ class PerformanceDetectionManagerBrowserTest : public InProcessBrowserTest {
   PerformanceDetectionManagerBrowserTest() = default;
   ~PerformanceDetectionManagerBrowserTest() override = default;
 
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        performance_manager::features::kPerformanceInterventionUI);
-    InProcessBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -162,9 +156,7 @@ class PerformanceInterventionDemoModeTest
     set_open_about_blank_on_browser_launch(true);
 
     feature_list_.InitWithFeatures(
-        {performance_manager::features::kPerformanceInterventionUI,
-         performance_manager::features::kPerformanceInterventionDemoMode},
-        {});
+        {performance_manager::features::kPerformanceInterventionDemoMode}, {});
     InProcessBrowserTest::SetUp();
   }
 

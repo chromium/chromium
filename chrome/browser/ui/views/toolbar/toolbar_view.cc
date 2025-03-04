@@ -86,7 +86,6 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/omnibox/browser/omnibox_view.h"
-#include "components/performance_manager/public/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/send_tab_to_self/features.h"
@@ -443,11 +442,8 @@ void ToolbarView::Init() {
         std::make_unique<BatterySaverButton>(browser_view_));
   }
 
-  if (performance_manager::features::
-          ShouldUsePerformanceInterventionBackend()) {
-    performance_intervention_button_ = container_view_->AddChildView(
-        std::make_unique<PerformanceInterventionButton>(browser_view_));
-  }
+  performance_intervention_button_ = container_view_->AddChildView(
+      std::make_unique<PerformanceInterventionButton>(browser_view_));
 
   if (cast) {
     cast_ = container_view_->AddChildView(std::move(cast));
