@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/uuid.h"
+#include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 #include "ui/aura/window_observer.h"
 
 namespace ash {
@@ -160,6 +161,14 @@ class ASH_EXPORT Desk {
   // Returns the lacros profile ID that this desk is associated with. A value of
   // 0 means that the desk is associated with the primary user (the default).
   uint64_t lacros_profile_id() const { return lacros_profile_id_; }
+
+  void set_tab_app_entities(
+      std::vector<coral::mojom::EntityPtr> tab_app_entities) {
+    tab_app_entities_ = std::move(tab_app_entities);
+  }
+  const std::vector<coral::mojom::EntityPtr>& tab_app_entities() const {
+    return tab_app_entities_;
+  }
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -406,6 +415,11 @@ class ASH_EXPORT Desk {
   // The lacros profile ID that this desk has been associated with. Defaults to
   // 0 which means the desk is associated with the primary user.
   uint64_t lacros_profile_id_ = 0;
+
+  // The tab and app items associated with the desk if the desk is created or
+  // restored by Coral. Entities in this vector are used by Coral service to
+  // avoid suggesting groups with similar context.
+  std::vector<coral::mojom::EntityPtr> tab_app_entities_;
 };
 
 }  // namespace ash

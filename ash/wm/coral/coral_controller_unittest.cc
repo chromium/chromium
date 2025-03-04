@@ -288,6 +288,69 @@ TEST_F(CoralControllerTest, NoCrashOnRemovingChipByUser) {
   BirchBarController::Get()->OnItemHiddenByUser(coral_chip->GetItem());
 }
 
+// Tests that the grouping request contains the initial tab and app entities
+// restored on the desk.
+TEST_F(CoralControllerTest, RestoreSuppressionContext) {
+  std::vector<coral::mojom::GroupPtr> test_groups;
+  test_groups.push_back(
+      CreateTestGroup({{"Google", GURL("https://google.com/")},
+                       {"Youtube", GURL("https://youtube.com/")}},
+                      "Coral desk"));
+  OverrideTestResponse(std::move(test_groups), CoralSource::kPostLogin);
+
+  // Enter overview and click on the chip to restore the items to the active
+  // desk.
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+  ClickFirstCoralButton();
+
+  // Re-enter Overview, the request should contains the restored items.
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+
+  // Manually send an in-session request.
+  BirchCoralProvider::Get()->HandleInSessionDataRequest();
+
+  const auto& request = BirchCoralProvider::Get()->GetCoralRequestForTest();
+  EXPECT_EQ(request.suppression_context().size(), 2u);
+  EXPECT_EQ(request.suppression_context()[0]->get_tab()->url,
+            GURL("https://google.com/"));
+  EXPECT_EQ(request.suppression_context()[1]->get_tab()->url,
+            GURL("https://youtube.com/"));
+}
+
+// Tests that the grouping request contains the initial tab and app entities
+// used to create the desk.
+TEST_F(CoralControllerTest, InSessionSuppressionContext) {
+  std::vector<coral::mojom::GroupPtr> test_groups;
+  test_groups.push_back(
+      CreateTestGroup({{"Google", GURL("https://google.com/")},
+                       {"Youtube", GURL("https://youtube.com/")}},
+                      "Coral desk"));
+  OverrideTestResponse(std::move(test_groups), CoralSource::kInSession);
+
+  // Enter overview and click on the chip to restore the items to the active
+  // desk.
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+  ClickFirstCoralButton();
+
+  // End and re-enter Overview, the request should contains the restored items.
+  Shell::Get()->overview_controller()->EndOverview(OverviewEndAction::kTests);
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+
+  // Manually send an in-session request.
+  BirchCoralProvider::Get()->HandleInSessionDataRequest();
+
+  const auto& request = BirchCoralProvider::Get()->GetCoralRequestForTest();
+  EXPECT_EQ(request.suppression_context().size(), 2u);
+  EXPECT_EQ(request.suppression_context()[0]->get_tab()->url,
+            GURL("https://google.com/"));
+  EXPECT_EQ(request.suppression_context()[1]->get_tab()->url,
+            GURL("https://youtube.com/"));
+}
+
 class CoralSavedGroupTest : public CoralControllerTest {
  public:
   desks_storage::DeskModel* desk_model() {

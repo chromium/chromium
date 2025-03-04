@@ -39,14 +39,19 @@ class ASH_EXPORT CoralRequest {
   ~CoralRequest();
 
   void set_source(CoralSource source) { source_ = source; }
-
-  void set_content(std::vector<ContentItem>&& content) {
-    content_ = std::move(content);
-  }
-
   CoralSource source() const { return source_; }
 
+  void set_content(std::vector<ContentItem> content) {
+    content_ = std::move(content);
+  }
   const std::vector<ContentItem>& content() const { return content_; }
+
+  void set_suppression_context(std::vector<ContentItem>&& suppression_context) {
+    suppression_context_ = std::move(suppression_context);
+  }
+  const std::vector<ContentItem>& suppression_context() const {
+    return suppression_context_;
+  }
 
   std::string ToString() const;
 
@@ -55,6 +60,9 @@ class ASH_EXPORT CoralRequest {
 
   // Tab/app content with arbitrary ordering.
   std::vector<ContentItem> content_;
+
+  // Original tab/app content of the workspace.
+  std::vector<ContentItem> suppression_context_;
 };
 
 // `CoralResponse` contains 0-2 groups in order of relevance.

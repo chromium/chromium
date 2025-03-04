@@ -700,6 +700,8 @@ void BirchCoralProvider::HandleInSessionDataRequest() {
   FilterCoralContentItems(&active_tab_app_data, CoralSource::kInSession);
   request_.set_source(CoralSource::kInSession);
   request_.set_content(std::move(active_tab_app_data));
+  request_.set_suppression_context(
+      mojo::Clone(DesksController::Get()->active_desk()->tab_app_entities()));
   Shell::Get()->coral_controller()->GenerateContentGroups(
       request_, BindRemote(),
       base::BindOnce(&BirchCoralProvider::HandleInSessionCoralResponse,
