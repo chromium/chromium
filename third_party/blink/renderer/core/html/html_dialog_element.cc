@@ -345,7 +345,7 @@ bool HTMLDialogElement::IsValidBuiltinCommand(HTMLElement& invoker,
          command == CommandEventType::kShowModal ||
          command == CommandEventType::kClose ||
          (command == CommandEventType::kRequestClose &&
-          RuntimeEnabledFeatures::HTMLCommandActionsV2Enabled());
+          RuntimeEnabledFeatures::HTMLCommandRequestCloseEnabled());
 }
 
 bool HTMLDialogElement::HandleCommandInternal(HTMLElement& invoker,
@@ -386,7 +386,7 @@ bool HTMLDialogElement::HandleCommandInternal(HTMLElement& invoker,
           "A command attempted to close an already closed Dialog");
     }
   } else if (command == CommandEventType::kRequestClose) {
-    CHECK(RuntimeEnabledFeatures::HTMLCommandActionsV2Enabled());
+    CHECK(RuntimeEnabledFeatures::HTMLCommandRequestCloseEnabled());
     if (open) {
       requestClose(return_value, ASSERT_NO_EXCEPTION);
       return true;

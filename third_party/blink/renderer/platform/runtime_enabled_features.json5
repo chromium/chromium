@@ -2345,6 +2345,12 @@
       name: "HTMLCommandAttributes",
       status: "stable",
     },
+    // Adds support for the 'request-close' command.
+    {
+      name: "HTMLCommandRequestClose",
+      depends_on: ["HTMLCommandAttributes"],
+      status: "experimental",
+    },
     {
       // TODO(crbug.com/376516550): Enables dialog light dismiss functionality.
       // This feature shipped in M134, so this flag can be removed in M136.

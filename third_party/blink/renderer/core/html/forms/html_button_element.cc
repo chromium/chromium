@@ -224,14 +224,15 @@ CommandEventType HTMLButtonElement::GetCommandEventType(
     return CommandEventType::kShowModal;
   }
 
+  if (RuntimeEnabledFeatures::HTMLCommandRequestCloseEnabled() &&
+      EqualIgnoringASCIICase(action, keywords::kRequestClose)) {
+    return CommandEventType::kRequestClose;
+  }
+
   // V2 commands go below this point
 
   if (!RuntimeEnabledFeatures::HTMLCommandActionsV2Enabled()) {
     return CommandEventType::kNone;
-  }
-
-  if (EqualIgnoringASCIICase(action, keywords::kRequestClose)) {
-    return CommandEventType::kRequestClose;
   }
 
   // Input/Select Cases
