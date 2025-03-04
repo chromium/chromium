@@ -452,6 +452,10 @@ void FrameFetchContext::PrepareRequest(
     document_loader_->GetServiceWorkerNetworkProvider()->WillSendRequest(
         webreq);
   }
+
+  request.SetAllowsDeviceBoundSessions(
+      RuntimeEnabledFeatures::DeviceBoundSessionCredentialsEnabled(
+          GetExecutionContext()));
 }
 
 void FrameFetchContext::AddResourceTiming(

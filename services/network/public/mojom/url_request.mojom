@@ -582,6 +582,11 @@ struct URLRequest {
   // The socket tag to associate this request with. This is typically set by the
   // embedder.
   SocketTag socket_tag;
+
+  // Whether this request is allowed to register new device bound
+  // sessions or process challenges for existing device bound sessions
+  // (e.g. due to an Origin Trial).
+  bool allows_device_bound_sessions;
 };
 
 // URLRequestBody represents body (i.e. upload data) of a HTTP request.

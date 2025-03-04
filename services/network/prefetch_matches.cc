@@ -122,7 +122,8 @@ namespace {
   DO_FIELD(is_ad_tagged) __VA_ARGS__                           \
   DO_FIELD(prefetch_token) __VA_ARGS__                         \
   DO_FIELD(socket_tag) __VA_ARGS__                             \
-  DO_FIELD(keepalive_token)
+  DO_FIELD(keepalive_token) __VA_ARGS__                        \
+  DO_FIELD(allows_device_bound_sessions)
 
 // clang-format on
 

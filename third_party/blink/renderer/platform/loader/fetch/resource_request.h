@@ -673,6 +673,14 @@ class PLATFORM_EXPORT ResourceRequestHead {
 #endif
   }
 
+  bool AllowsDeviceBoundSessions() const {
+    return allows_device_bound_sessions_;
+  }
+
+  void SetAllowsDeviceBoundSessions(bool allows_device_bound_sessions) {
+    allows_device_bound_sessions_ = allows_device_bound_sessions;
+  }
+
  private:
   const CacheControlHeader& GetCacheControlHeader() const;
 
@@ -826,6 +834,11 @@ class PLATFORM_EXPORT ResourceRequestHead {
 #if DCHECK_IS_ON()
   bool is_set_url_allowed_ = true;
 #endif
+
+  // Whether this request is allowed to register new device bound
+  // sessions or accept challenges on device bound sessions (e.g. due to
+  // an Origin Trial)
+  bool allows_device_bound_sessions_ = false;
 };
 
 class PLATFORM_EXPORT ResourceRequestBody {

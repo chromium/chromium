@@ -898,6 +898,15 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   base::WeakPtr<URLRequest> GetWeakPtr();
 
+  // Whether Device Bound Session registration and challenge are allowed
+  // for this request (e.g. by Origin Trial)
+  bool allows_device_bound_sessions() const {
+    return allows_device_bound_sessions_;
+  }
+  void set_allows_device_bound_sessions(bool allows_device_bound_sessions) {
+    allows_device_bound_sessions_ = allows_device_bound_sessions;
+  }
+
  protected:
   // Allow the URLRequestJob class to control the is_pending() flag.
   void set_is_pending(bool value) { is_pending_ = value; }
@@ -1181,6 +1190,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   base::RepeatingCallback<void(const device_bound_sessions::SessionAccess&)>
       device_bound_session_access_callback_;
+
+  bool allows_device_bound_sessions_ = false;
 
   THREAD_CHECKER(thread_checker_);
 

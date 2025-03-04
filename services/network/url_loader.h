@@ -370,7 +370,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       bool priority_incremental,
       net::CookieSettingOverrides cookie_setting_overrides,
       std::optional<net::SharedDictionaryGetter> shared_dictionary_getter,
-      net::SocketTag socket_tag);
+      net::SocketTag socket_tag,
+      bool allows_device_bound_sessions);
 
   void OpenFilesForUpload(const ResourceRequest& request);
   void SetUpUpload(const ResourceRequest& request,

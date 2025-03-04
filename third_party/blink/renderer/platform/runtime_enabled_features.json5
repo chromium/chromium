@@ -1498,6 +1498,14 @@
       },
     },
     {
+      name: "DeviceBoundSessionCredentials",
+      origin_trial_feature_name: "DeviceBoundSessionCredentials",
+      origin_trial_os: ["win"],
+      status: "experimental",
+      // Killswitch is net::features::kDeviceBoundSessions
+      base_feature: "none",
+    },
+    {
       name: "DeviceOrientationRequestPermission",
       status: "experimental",
     },

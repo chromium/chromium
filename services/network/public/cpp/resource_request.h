@@ -245,6 +245,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   bool is_ad_tagged = false;
   std::optional<base::UnguessableToken> prefetch_token;
   net::SocketTag socket_tag;
+  // Whether this request is allowed to register device bound sessions
+  // or accept challenges for device bound sessions (e.g. due to an
+  // origin trial).
+  bool allows_device_bound_sessions = false;
 };
 // LINT.ThenChange(//services/network/prefetch_matches.cc)
 
