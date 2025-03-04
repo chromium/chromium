@@ -3141,10 +3141,13 @@
             ],
             "experiments": [
                 {
-                    "name": "NoIPH",
+                    "name": "NoIPHWithBackgroundSendResultAndCompression",
                     "params": {
                         "dump-without-crash-navigation-entry-screenshot-cache": "false",
-                        "dump-without-crash-tab-on-back-gesture-handler": "false"
+                        "dump-without-crash-tab-on-back-gesture-handler": "false",
+                        "max-cache-size": "16777216",
+                        "percentage-of-ram-to-use": "0.5",
+                        "transfer-screenshot-in-background-priority": "true"
                     },
                     "enable_features": [
                         "BackForwardTransitions",
@@ -3153,6 +3156,43 @@
                         "NativePageTransitionHardwareCapture"
                     ],
                     "disable_features": [
+                        "IPH_RtlGestureNavigation"
+                    ]
+                },
+                {
+                    "name": "NoIPHWithBackgroundCompression",
+                    "params": {
+                        "dump-without-crash-navigation-entry-screenshot-cache": "false",
+                        "dump-without-crash-tab-on-back-gesture-handler": "false",
+                        "max-cache-size": "16777216",
+                        "percentage-of-ram-to-use": "0.5",
+                        "transfer-screenshot-in-background-priority": "true"
+                    },
+                    "enable_features": [
+                        "BackForwardTransitions",
+                        "CompressBitmapAtBackgroundPriority",
+                        "MirrorBackForwardGesturesInRTL",
+                        "NativePageTransitionHardwareCapture"
+                    ],
+                    "disable_features": [
+                        "IPH_RtlGestureNavigation"
+                    ]
+                },
+                {
+                    "name": "NoIPH",
+                    "params": {
+                        "dump-without-crash-navigation-entry-screenshot-cache": "false",
+                        "dump-without-crash-tab-on-back-gesture-handler": "false",
+                        "max-cache-size": "16777216",
+                        "percentage-of-ram-to-use": "0.5"
+                    },
+                    "enable_features": [
+                        "BackForwardTransitions",
+                        "MirrorBackForwardGesturesInRTL",
+                        "NativePageTransitionHardwareCapture"
+                    ],
+                    "disable_features": [
+                        "CompressBitmapAtBackgroundPriority",
                         "IPH_RtlGestureNavigation"
                     ]
                 },
