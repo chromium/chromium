@@ -2988,29 +2988,6 @@
             ]
         }
     ],
-    "BackForwardCacheForPageWithCacheControlNotStoredHeader": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240129",
-                    "params": {
-                        "level": "restore-unless-cookie-change",
-                        "ttl": "3m"
-                    },
-                    "enable_features": [
-                        "CacheControlNoStoreEnterBackForwardCache"
-                    ]
-                }
-            ]
-        }
-    ],
     "BackForwardCacheMediaSessionService": [
         {
             "platforms": [
