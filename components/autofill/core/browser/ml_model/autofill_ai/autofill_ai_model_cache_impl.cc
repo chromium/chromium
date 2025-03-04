@@ -41,7 +41,7 @@ AutofillAiModelCacheImpl::AutofillAiModelCacheImpl(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
   db_ = db_provider->GetDB<CacheEntryWithMetadata>(
-      leveldb_proto::ProtoDbType::STRIKE_DATABASE,
+      leveldb_proto::ProtoDbType::AUTOFILL_AI_MODEL_CACHE,
       profile_path.Append(kAutofillAiModelCacheDatabaseFileName),
       database_task_runner);
 
