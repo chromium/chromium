@@ -124,9 +124,9 @@ void MaybeEmitDirectNavigationUkm(NavigationHandle* navigation_handle,
 
   const BtmRedirectInfo* first_server_redirect =
       GetFirstServerRedirect(redirect_context);
-  ukm::SourceId source_id = first_server_redirect
-                                ? first_server_redirect->url.source_id
-                                : navigation_handle->GetNextPageUkmSourceId();
+  ukm::SourceId source_id =
+      first_server_redirect ? first_server_redirect->redirecting_url.source_id
+                            : navigation_handle->GetNextPageUkmSourceId();
 
   ukm::builders::DIPS_TrustIndicator_DirectNavigationV2(source_id)
       .SetNavigationSource(static_cast<int64_t>(
@@ -162,7 +162,7 @@ bool PageVisitInfo::WasNavigationToPageClientRedirect() const {
 EntrypointInfo::EntrypointInfo(const BtmRedirectInfo& server_redirect_info,
                                const btm::PageVisitInfo& exit_page_info)
     : site(server_redirect_info.site),
-      source_id(server_redirect_info.url.source_id),
+      source_id(server_redirect_info.redirecting_url.source_id),
       had_triggering_storage_access(
           server_redirect_info.access_type == BtmDataAccessType::kWrite ||
           server_redirect_info.access_type == BtmDataAccessType::kReadWrite),
@@ -354,7 +354,7 @@ void BtmNavigationFlowDetector::
   }
 
   EmitSuspectedTrackerFlowUkm(previous_page_visit_info_->source_id,
-                              exit_info->url.source_id, flow_id,
+                              exit_info->redirecting_url.source_id, flow_id,
                               BtmRedirectType::kServer);
 }
 
