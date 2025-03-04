@@ -361,6 +361,7 @@ class DirectWritingServiceCallback
 
     @BinderThread
     @Override
+    @SuppressWarnings("WrongThread") // View.getContext() should be called on UI thread.
     public void onAppPrivateCommand(String action, Bundle bundle) {
         if (bundle == null || mStylusWritingImeCallback == null) return;
         View currentView = mStylusWritingImeCallback.getContainerView();
