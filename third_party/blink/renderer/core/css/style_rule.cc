@@ -19,13 +19,9 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/style_rule.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_counter_style_rule.h"
@@ -500,7 +496,8 @@ const CSSPropertyValueSet& StyleRule::Properties() const {
 StyleRule::StyleRule(const StyleRule& other, size_t flattened_size)
     : StyleRuleBase(kStyle), properties_(other.Properties().MutableCopy()) {
   for (unsigned i = 0; i < flattened_size; ++i) {
-    new (&SelectorArray()[i]) CSSSelector(other.SelectorArray()[i]);
+    UNSAFE_TODO(new (&SelectorArray()[i])
+                    CSSSelector(other.SelectorArray()[i]));
   }
   if (other.child_rules_ != nullptr) {
     // Since we are getting copied, we also need to copy any child rules
@@ -523,9 +520,8 @@ StyleRule::~StyleRule() {
     selector->~CSSSelector();
     if (is_last) {
       break;
-    } else {
-      ++selector;
     }
+    UNSAFE_TODO(++selector);
   }
 }
 
@@ -556,7 +552,7 @@ void StyleRule::TraceAfterDispatch(blink::Visitor* visitor) const {
   const CSSSelector* current = SelectorArray();
   do {
     visitor->Trace(*current);
-  } while (!(current++)->IsLastInSelectorList());
+  } while (!(UNSAFE_TODO(current++))->IsLastInSelectorList());
 
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
