@@ -80,10 +80,6 @@ BASE_FEATURE(kAutofillEnableCardBenefitsSync,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kAutofillEnableCardExpiredText,
-             "AutofillEnableCardExpiredText",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, runtime retrieval of CVC along with card number and expiry
 // from issuer for enrolled cards will be enabled during form fill.
 BASE_FEATURE(kAutofillEnableCardInfoRuntimeRetrieval,

@@ -76,12 +76,6 @@ const char kAutofillEnableCardBenefitsSyncDescription[] =
     "When enabled, card benefits offered by issuers will be synced from "
     "the Payments server.";
 
-const char kAutofillEnableCardExpiredTextName[] =
-    "Enable 'expired' text for expired cards.";
-const char kAutofillEnableCardExpiredTextDescription[] =
-    "When enabled, cards that have expired will display 'expired' instead of "
-    "'expires' text.";
-
 const char kAutofillEnableDynamicallyLoadingFieldsForAddressInputName[] =
     "Enable dynamically loading fields for address input";
 const char kAutofillEnableDynamicallyLoadingFieldsForAddressInputDescription[] =

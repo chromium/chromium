@@ -11763,11 +11763,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrivacySandboxAdTopicsContentParityDescription, kOsAll,
      FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxAdTopicsContentParity)},
 
-    {"autofill-enable-card-expired-text",
-     flag_descriptions::kAutofillEnableCardExpiredTextName,
-     flag_descriptions::kAutofillEnableCardExpiredTextDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardExpiredText)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"enable-android-mininal-ui-large-screen",
      flag_descriptions::kAndroidMinimalUiLargeScreenName,

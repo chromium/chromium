@@ -11321,7 +11321,6 @@ from previous Chrome versions.
   <int value="-1156639003" label="ArcResizeCompat:enabled"/>
   <int value="-1156179600" label="OmniboxRichEntitySuggestions:enabled"/>
   <int value="-1155543191" label="CopylessPaste:disabled"/>
-  <int value="-1155470492" label="AutofillEnableCardExpiredText:enabled"/>
   <int value="-1155411808" label="HoldingSpacePredictability:enabled"/>
   <int value="-1155071457"
       label="CCTResizableAllowResizeByUserGesture:disabled"/>
@@ -12121,7 +12120,6 @@ from previous Chrome versions.
   <int value="-838233458" label="RustyPng:enabled"/>
   <int value="-837650216" label="DisableCryptAuthV1DeviceSync:disabled"/>
   <int value="-837473047" label="AutofillEnableStickyPaymentsBubble:disabled"/>
-  <int value="-837209358" label="AutofillEnableCardExpiredText:disabled"/>
   <int value="-836123854" label="wallet-service-use-sandbox"/>
   <int value="-835672415" label="PointerEventV1SpecCapturing:disabled"/>
   <int value="-835627918" label="QuickSettingsNetworkRevamp:enabled"/>

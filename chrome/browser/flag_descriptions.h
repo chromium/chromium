@@ -373,9 +373,6 @@ extern const char kAutofillEnableBuyNowPayLaterSyncingName[];
 extern const char kAutofillEnableBuyNowPayLaterSyncingDescription[];
 #endif
 
-extern const char kAutofillEnableCardExpiredTextName[];
-extern const char kAutofillEnableCardExpiredTextDescription[];
-
 extern const char kAutofillEnableCvcStorageAndFillingName[];
 extern const char kAutofillEnableCvcStorageAndFillingDescription[];
 

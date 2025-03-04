@@ -611,11 +611,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "autofill-enable-card-expired-text",
-    "owners": [ "ferny@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "autofill-enable-card-info-runtime-retrieval",
     "owners": [ "hvs@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 145
