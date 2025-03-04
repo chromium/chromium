@@ -297,6 +297,11 @@ public class AuxiliarySearchDonor {
 
     @VisibleForTesting
     String getSchemaSetPreferenceKey() {
+        // TODO(https://crbug.com/397457989): Removes here once the new schema is ready to use.
+        if (AuxiliarySearchUtils.USE_SCHEMA_V1.getValue()) {
+            return ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET;
+        }
+
         return mSupportMultiDataSource
                 ? ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_V2_SET
                 : ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET;

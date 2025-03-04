@@ -2629,6 +2629,17 @@ const FeatureEntry::FeatureVariation kAndroidAppIntegrationModuleVariations[] =
       std::size(kAndroidAppIntegrationModule_ForceCardShown_NonPixel),
       nullptr}};
 
+const FeatureEntry::FeatureParam
+    kAndroidAppIntegrationMultiDataSource_UseSchemaV1[] = {
+        {"use_schema_v1", "true"}};
+
+const FeatureEntry::FeatureVariation
+    kAndroidAppIntegrationMultiDataSourceVariations[] = {
+        {"Force to use schema v1",
+         kAndroidAppIntegrationMultiDataSource_UseSchemaV1,
+         std::size(kAndroidAppIntegrationMultiDataSource_UseSchemaV1),
+         nullptr}};
+
 const FeatureEntry::FeatureParam kAuxiliarySearchDonation_MaxDonation_20[] = {
     {chrome::android::kAuxiliarySearchMaxBookmarksCountParam.name, "20"},
     {chrome::android::kAuxiliarySearchMaxTabsCountParam.name, "20"}};
@@ -6289,8 +6300,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidAppIntegrationMultiDataSourceName,
      flag_descriptions::kAndroidAppIntegrationMultiDataSourceDescription,
      kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::kAndroidAppIntegrationMultiDataSource)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kAndroidAppIntegrationMultiDataSource,
+         kAndroidAppIntegrationMultiDataSourceVariations,
+         "AndroidAppIntegrationMultiDataSource")},
 
     {"android-app-integration-v2",
      flag_descriptions::kAndroidAppIntegrationV2Name,
