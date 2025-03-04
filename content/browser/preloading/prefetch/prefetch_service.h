@@ -450,9 +450,8 @@ class CONTENT_EXPORT PrefetchService {
   // Current prefetch with an in-progress request (if any).
   std::optional<PrefetchContainer::Key> active_prefetch_;
 
-  // Prefetches owned by |this|. Once the network request for a prefetch is
-  // started, |this| takes ownership of the prefetch so the response can be used
-  // on future page loads.
+  // Prefetches owned by `this`. All `PrefetchContainer`s added by
+  // `AddPrefetchContainer*` will be stored here.
   std::map<PrefetchContainer::Key, std::unique_ptr<PrefetchContainer>>
       owned_prefetches_;
 
