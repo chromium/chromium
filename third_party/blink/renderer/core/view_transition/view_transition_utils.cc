@@ -28,6 +28,15 @@ ViewTransition* ViewTransitionUtils::GetTransition(const Document& document) {
 }
 
 // static
+void ViewTransitionUtils::ForEachTransition(
+    const Document& document,
+    base::FunctionRef<void(ViewTransition&)> function) {
+  if (auto* supplement = ViewTransitionSupplement::FromIfExists(document)) {
+    supplement->ForEachTransition(function);
+  }
+}
+
+// static
 ViewTransition* ViewTransitionUtils::GetIncomingCrossDocumentTransition(
     const Document& document) {
   if (auto* transition = GetTransition(document);

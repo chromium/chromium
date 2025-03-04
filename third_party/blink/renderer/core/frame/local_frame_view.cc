@@ -2443,14 +2443,18 @@ bool LocalFrameView::RunViewTransitionSteps(
 
         DCHECK_GE(document->Lifecycle().GetState(),
                   DocumentLifecycle::kPrePaintClean);
-        auto* transition = ViewTransitionUtils::GetTransition(*document);
-        if (!transition)
-          return;
 
-        if (target_state == DocumentLifecycle::kPaintClean)
-          transition->RunViewTransitionStepsDuringMainFrame();
-        else
-          transition->RunViewTransitionStepsOutsideMainFrame();
+        if (target_state == DocumentLifecycle::kPaintClean) {
+          ViewTransitionUtils::ForEachTransition(
+              *document, [](ViewTransition& transition) {
+                transition.RunViewTransitionStepsDuringMainFrame();
+              });
+        } else {
+          ViewTransitionUtils::ForEachTransition(
+              *document, [](ViewTransition& transition) {
+                transition.RunViewTransitionStepsOutsideMainFrame();
+              });
+        }
 
         re_run_lifecycle |= document->Lifecycle().GetState() <
                                 DocumentLifecycle::kPrePaintClean ||
