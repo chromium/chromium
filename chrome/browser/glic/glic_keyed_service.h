@@ -90,7 +90,6 @@ class GlicKeyedService : public KeyedService {
   void ResizePanel(const gfx::Size& size,
                    base::TimeDelta duration,
                    base::OnceClosure callback);
-  void ShowProfilePicker();
   void SetPanelDraggableAreas(const std::vector<gfx::Rect>& draggable_areas);
   void SetContextAccessIndicator(bool show);
   void NotifyWindowIntentToShow();
@@ -153,17 +152,12 @@ class GlicKeyedService : public KeyedService {
   virtual void TryPreload();
   void Reload();
 
-  GlicProfileManager* GetProfileManagerForTesting() { return profile_manager_; }
-
   Profile* profile() const { return profile_; }
 
   base::WeakPtr<GlicKeyedService> GetWeakPtr();
 
  private:
   GlicPageHandler* GetPageHandler(const content::WebContents* webui_contents);
-
-  // Callback from ProfilePicker::Show().
-  void DidSelectProfile(Profile* profile);
 
   // List of callbacks to be notified when the client requests a change to the
   // context access indicator status.

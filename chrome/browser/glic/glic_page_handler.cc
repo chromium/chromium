@@ -25,6 +25,7 @@
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_synthetic_trial_manager.h"
 #include "chrome/browser/glic/glic_tab_data.h"
 #include "chrome/browser/glic/glic_web_client_access.h"
@@ -278,7 +279,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void DetachPanel() override { glic_service_->DetachPanel(); }
 
-  void ShowProfilePicker() override { glic_service_->ShowProfilePicker(); }
+  void ShowProfilePicker() override {
+    glic::GlicProfileManager::GetInstance()->ShowProfilePicker();
+  }
 
   void ResizeWidget(const gfx::Size& size,
                     base::TimeDelta duration,

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 
@@ -62,13 +63,6 @@ GlicProfileManager* GlicProfileManager::GetInstance() {
 GlicProfileManager::GlicProfileManager() = default;
 
 GlicProfileManager::~GlicProfileManager() = default;
-
-void GlicProfileManager::CloseGlicWindow() {
-  if (active_glic_) {
-    active_glic_->ClosePanel();
-    active_glic_.reset();
-  }
-}
 
 Profile* GlicProfileManager::GetProfileForLaunch() const {
   if (g_forced_profile_for_launch_) {
@@ -134,10 +128,6 @@ bool GlicProfileManager::ShouldPreloadForProfile(Profile* profile) const {
   return true;
 }
 
-bool GlicProfileManager::HasActiveGlicService() const {
-  return active_glic_ != nullptr;
-}
-
 void GlicProfileManager::MaybeAutoOpenGlicPanel() {
   if (did_auto_open_ || !base::CommandLine::ForCurrentProcess()->HasSwitch(
                             ::switches::kGlicOpenOnStartup)) {
@@ -150,6 +140,31 @@ void GlicProfileManager::MaybeAutoOpenGlicPanel() {
       FROM_HERE, base::BindOnce(&AutoOpenGlicPanel), base::Seconds(5));
 
   did_auto_open_ = true;
+}
+
+void GlicProfileManager::ShowProfilePicker() {
+  base::OnceCallback<void(Profile*)> callback = base::BindOnce(
+      &GlicProfileManager::DidSelectProfile, weak_ptr_factory_.GetWeakPtr());
+  // If the panel is not closed it will be on top of the profile picker.
+  if (active_glic_) {
+    active_glic_->ClosePanel();
+  }
+  ProfilePicker::Show(
+      ProfilePicker::Params::ForGlicManager(std::move(callback)));
+}
+
+void GlicProfileManager::DidSelectProfile(Profile* profile) {
+  // TODO(crbug.com/399727295) Remove once the profile picker calls this with
+  // fully initialized profiles.
+  if (!GlicEnabling::IsEnabledForProfile(profile)) {
+    return;
+  }
+  // Toggle glic but prevent close if it is already open for the selected
+  // profile.
+  GlicKeyedService* service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+  service->ToggleUI(nullptr, /*prevent_close=*/true,
+                    InvocationSource::kProfilePicker);
 }
 
 // static
