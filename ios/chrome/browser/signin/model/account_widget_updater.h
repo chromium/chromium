@@ -34,6 +34,7 @@ class AccountWidgetUpdater : public SystemIdentityManagerObserver {
       NSMutableDictionary* dictionary,
       id<SystemIdentity> identity);
   void UpdateLoadedAccounts();
+  void HandleMigrationIfNeeded();
 
   raw_ptr<SystemIdentityManager> system_identity_manager_;
 
