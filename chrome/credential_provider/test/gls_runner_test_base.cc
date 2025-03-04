@@ -144,6 +144,7 @@ void GlsRunnerTestBase::SetUp() {
                       L"comment", true, &sid, &error));
 
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
+  EXPECT_NE(policy, nullptr);
   EXPECT_EQ(S_OK, policy->StorePrivateData(kLsaKeyGaiaUsername,
                                            kDefaultGaiaAccountName));
   EXPECT_EQ(S_OK, policy->StorePrivateData(kLsaKeyGaiaPassword, L"password"));

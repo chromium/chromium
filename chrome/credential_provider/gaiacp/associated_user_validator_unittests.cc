@@ -611,6 +611,7 @@ TEST_P(AssociatedUserValidatorUserAccessBlockingTest, BlockUserAccessAsNeeded) {
   if (contains_stored_password) {
     std::wstring store_key = GetUserPasswordLsaStoreKey(OLE2W(sid));
     auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
+    ASSERT_NE(policy, nullptr);
     EXPECT_TRUE(SUCCEEDED(
         policy->StorePrivateData(store_key.c_str(), L"encrypted_data")));
     EXPECT_TRUE(policy->PrivateDataExists(store_key.c_str()));
@@ -749,6 +750,7 @@ TEST_P(AssociatedUserValidatorCloudPolicyLoginEnforcedTest,
   // Store password.
   std::wstring store_key = GetUserPasswordLsaStoreKey(OLE2W(sid));
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
+  ASSERT_NE(policy, nullptr);
   EXPECT_TRUE(SUCCEEDED(
       policy->StorePrivateData(store_key.c_str(), L"encrypted_data")));
   EXPECT_TRUE(policy->PrivateDataExists(store_key.c_str()));
@@ -861,6 +863,7 @@ TEST_P(AssociatedUserValidatorMultipleUploadDeviceFailuresTest,
   // Store encrypted password.
   std::wstring store_key = GetUserPasswordLsaStoreKey(OLE2W(sid));
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
+  ASSERT_NE(policy, nullptr);
   EXPECT_TRUE(SUCCEEDED(
       policy->StorePrivateData(store_key.c_str(), L"encrypted_data")));
   EXPECT_TRUE(policy->PrivateDataExists(store_key.c_str()));
@@ -960,6 +963,7 @@ TEST_F(AssociatedUserValidatorTest, InvalidTokenHandle_MissingPasswordLsaData) {
   std::wstring store_key = GetUserPasswordLsaStoreKey(OLE2W(sid));
 
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
+  ASSERT_NE(policy, nullptr);
   EXPECT_FALSE(policy->PrivateDataExists(store_key.c_str()));
 
   // Valid token fetch result.
@@ -987,6 +991,7 @@ TEST_F(AssociatedUserValidatorTest, ValidTokenHandle_PresentPasswordLsaData) {
   std::wstring store_key = GetUserPasswordLsaStoreKey(OLE2W(sid));
 
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
+  ASSERT_NE(policy, nullptr);
   EXPECT_TRUE(SUCCEEDED(
       policy->StorePrivateData(store_key.c_str(), L"encrypted_data")));
   EXPECT_TRUE(policy->PrivateDataExists(store_key.c_str()));

@@ -224,6 +224,7 @@ TEST_P(GcpReauthCredentialEnforceAuthReasonGetStringValueTest,
     std::wstring store_key = GetUserPasswordLsaStoreKey(OLE2W(sid));
 
     auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
+    ASSERT_NE(policy, nullptr);
     EXPECT_TRUE(SUCCEEDED(
         policy->StorePrivateData(store_key.c_str(), L"encrypted_data")));
     EXPECT_TRUE(policy->PrivateDataExists(store_key.c_str()));
