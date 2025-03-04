@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_COLLABORATION_INTERNAL_METRICS_H_
 #define COMPONENTS_COLLABORATION_INTERNAL_METRICS_H_
 
+#include "components/collaboration/public/collaboration_flow_type.h"
+
 namespace data_sharing {
 class Logger;
 }  // namespace data_sharing
@@ -46,7 +48,10 @@ enum class CollaborationServiceJoinEvent {
   kAllServicesReadyForFlow = 27,
   kTimeoutWaitingForServicesReady = 28,
   kTimeoutWaitingForSyncAndDataSharingGroup = 29,
-  kMaxValue = kTimeoutWaitingForSyncAndDataSharingGroup,
+  kDevicePolicyDisableSignin = 30,
+  kManagedAccountSignin = 31,
+  kAccountInfoNotReadyOnSignin = 32,
+  kMaxValue = kAccountInfoNotReadyOnSignin,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceJoinEvent)
 
@@ -78,7 +83,10 @@ enum class CollaborationServiceShareOrManageEvent {
   kDataSharingServiceReadyObserved = 20,
   kTabGroupServiceReady = 21,
   kAllServicesReadyForFlow = 22,
-  kMaxValue = kAllServicesReadyForFlow,
+  kDevicePolicyDisableSignin = 23,
+  kManagedAccountSignin = 24,
+  kAccountInfoNotReadyOnSignin = 25,
+  kMaxValue = kAccountInfoNotReadyOnSignin,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceShareOrManageEvent)
 
@@ -86,6 +94,11 @@ void RecordJoinEvent(data_sharing::Logger* logger,
                      CollaborationServiceJoinEvent event);
 void RecordShareOrManageEvent(data_sharing::Logger* logger,
                               CollaborationServiceShareOrManageEvent event);
+void RecordJoinOrShareOrManageEvent(
+    data_sharing::Logger* logger,
+    FlowType type,
+    CollaborationServiceJoinEvent join_event,
+    CollaborationServiceShareOrManageEvent share_or_manage_event);
 }  // namespace collaboration::metrics
 
 #endif  // COMPONENTS_COLLABORATION_INTERNAL_METRICS_H_

@@ -76,6 +76,12 @@ std::string_view CollaborationServiceJoinEventToString(
     case CollaborationServiceJoinEvent::
         kTimeoutWaitingForSyncAndDataSharingGroup:
       return "TimeoutWaitingForSyncAndDataSharingGroup";
+    case CollaborationServiceJoinEvent::kDevicePolicyDisableSignin:
+      return "DevicePolicyDisableSignin";
+    case CollaborationServiceJoinEvent::kManagedAccountSignin:
+      return "ManagedAccountSignin";
+    case CollaborationServiceJoinEvent::kAccountInfoNotReadyOnSignin:
+      return "AccountInfoNotReadyOnSignin";
   }
 }
 
@@ -130,6 +136,12 @@ std::string_view CollaborationServiceShareOrManageEventToString(
       return "TabGroupServiceReady";
     case CollaborationServiceShareOrManageEvent::kAllServicesReadyForFlow:
       return "AllServicesReadyForFlow";
+    case CollaborationServiceShareOrManageEvent::kDevicePolicyDisableSignin:
+      return "DevicePolicyDisableSignin";
+    case CollaborationServiceShareOrManageEvent::kManagedAccountSignin:
+      return "ManagedAccountSignin";
+    case CollaborationServiceShareOrManageEvent::kAccountInfoNotReadyOnSignin:
+      return "AccountInfoNotReadyOnSignin";
   }
 }
 
@@ -163,6 +175,18 @@ void RecordShareOrManageEvent(data_sharing::Logger* logger,
                                 event);
   DATA_SHARING_LOG(logger_common::mojom::LogSource::CollaborationService,
                    logger, CreateShareOrManageEventLogString(event));
+}
+
+void RecordJoinOrShareOrManageEvent(
+    data_sharing::Logger* logger,
+    FlowType type,
+    CollaborationServiceJoinEvent join_event,
+    CollaborationServiceShareOrManageEvent share_or_manage_event) {
+  if (type == FlowType::kJoin) {
+    RecordJoinEvent(logger, join_event);
+  } else {
+    RecordShareOrManageEvent(logger, share_or_manage_event);
+  }
 }
 
 }  // namespace collaboration::metrics

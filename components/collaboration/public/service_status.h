@@ -28,16 +28,18 @@ enum class SyncStatus {
 enum class CollaborationStatus {
   // Users are not allowed to either join or create.
   kDisabled = 0,
+  // Disabled while loading some mandatory information.
+  kDisabledPending = 1,
   // The Chrome policy disables this feature, eg: enterprise policies.
-  kDisabledForPolicy = 1,
+  kDisabledForPolicy = 2,
   // Users are allowed to join only but have not joined a shared tab group
   // yet.
-  kAllowedToJoin = 2,
+  kAllowedToJoin = 3,
   // Users are allowed to join only and have already joined at least 1 shared
   // tab group.
-  kEnabledJoinOnly = 3,
+  kEnabledJoinOnly = 4,
   // Users are allowed to join and create shared tab groups.
-  kEnabledCreateAndJoin = 4
+  kEnabledCreateAndJoin = 5
 };
 
 struct ServiceStatus {
