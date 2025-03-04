@@ -55,6 +55,8 @@ class TestBrowser final : public Browser {
   Browser* CreateInactiveBrowser() final;
   void DestroyInactiveBrowser() final;
 
+  void SetCommandDispatcher(CommandDispatcher* dispatcher);
+
  private:
   const Type type_;
   raw_ptr<ProfileIOS> profile_ = nullptr;

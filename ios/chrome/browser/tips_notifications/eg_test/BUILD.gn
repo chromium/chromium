@@ -5,7 +5,10 @@
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [ "tips_notifications_egtest.mm" ]
+  sources = [
+    "tips_notifications_egtest.mm",
+    "tips_promos_egtest.mm",
+  ]
   deps = [
     "//base",
     "//base/test:test_support",
