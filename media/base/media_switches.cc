@@ -605,7 +605,7 @@ BASE_FEATURE(kFeatureManagementLiveTranslateCrOS,
 // Blocks picture-in-picture windows while file dialogs are open.
 BASE_FEATURE(kFileDialogsBlockPictureInPicture,
              "FileDialogsBlockPictureInPicture",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Show toolbar button that opens dialog for controlling media sessions.
