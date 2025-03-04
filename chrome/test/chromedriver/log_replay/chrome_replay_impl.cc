@@ -35,8 +35,7 @@ ChromeReplayImpl::ChromeReplayImpl(
                         extension_dir,
                         network_emulation_enabled,
                         autoaccept_beforeunload,
-                        enable_extension_targets,
-                        /*quit_gracefully=*/false) {}
+                        enable_extension_targets) {}
 
 ChromeReplayImpl::~ChromeReplayImpl() = default;
 
