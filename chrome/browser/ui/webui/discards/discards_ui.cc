@@ -142,7 +142,7 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
           tab_lifecycle_unit_external->GetWebContents();
 
       info->tab_url = contents->GetLastCommittedURL().spec();
-      info->title = base::UTF16ToUTF8(lifecycle_unit->GetTitle());
+      info->title = base::UTF16ToUTF8(contents->GetTitle());
       info->visibility =
           GetLifecycleUnitVisibility(lifecycle_unit->GetVisibility());
       info->loading_state = lifecycle_unit->GetLoadingState();

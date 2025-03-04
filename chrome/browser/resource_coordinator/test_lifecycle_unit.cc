@@ -27,10 +27,6 @@ TabLifecycleUnitExternal* TestLifecycleUnit::AsTabLifecycleUnitExternal() {
   return nullptr;
 }
 
-std::u16string TestLifecycleUnit::GetTitle() const {
-  return title_;
-}
-
 base::TimeTicks TestLifecycleUnit::GetLastFocusedTimeTicks() const {
   return last_focused_time_ticks_;
 }

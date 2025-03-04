@@ -66,10 +66,6 @@ class LifecycleUnit {
   // Returns a unique id representing this LifecycleUnit.
   virtual int32_t GetID() const = 0;
 
-  // Returns a title describing this LifecycleUnit, or an empty string if no
-  // title is available.
-  virtual std::u16string GetTitle() const = 0;
-
   // Returns the last time ticks at which the LifecycleUnit was focused, or
   // base::TimeTicks::Max() if the LifecycleUnit is currently focused.
   virtual base::TimeTicks GetLastFocusedTimeTicks() const = 0;

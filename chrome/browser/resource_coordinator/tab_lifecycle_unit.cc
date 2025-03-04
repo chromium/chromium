@@ -179,10 +179,6 @@ TabLifecycleUnitSource::TabLifecycleUnit::AsTabLifecycleUnitExternal() {
   return this;
 }
 
-std::u16string TabLifecycleUnitSource::TabLifecycleUnit::GetTitle() const {
-  return web_contents()->GetTitle();
-}
-
 base::TimeTicks
 TabLifecycleUnitSource::TabLifecycleUnit::GetLastFocusedTimeTicks() const {
   return last_focused_time_ticks_;
