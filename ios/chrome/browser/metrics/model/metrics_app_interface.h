@@ -15,6 +15,9 @@ namespace syncher {
 // Constant for timeout while waiting for asynchronous sync and UKM operations.
 constexpr base::TimeDelta kSyncUKMOperationsTimeout = base::Seconds(10);
 
+// Constant for timeout while waiting for asynchronous sync and DWA operations.
+constexpr base::TimeDelta kSyncDWAOperationsTimeout = base::Seconds(60);
+
 }  // namespace syncher
 
 // MetricsAppInterface contains the app-side implementation for helpers. These
@@ -86,6 +89,33 @@ constexpr base::TimeDelta kSyncUKMOperationsTimeout = base::Seconds(10);
 
 // Returns YES if the UMA log has user demographics.
 + (BOOL)UMALogHasUserDemographics;
+
+// Returns whether DWA recording is `enabled`.
++ (BOOL)checkDWARecordingEnabled:(BOOL)enabled;
+
+// Returns YES if the DWA recorder has entries.
++ (BOOL)DWARecorderHasEntries:(BOOL)state;
+
+// Returns YES if the DWA recorder has pageload events.
++ (BOOL)DWARecorderHasPageLoadEvents:(BOOL)state;
+
+// Returns YES if the DWA service has logs to send.
++ (BOOL)hasUnsentDWALogs:(BOOL)state;
+
+// Invokes the DWA recorder's OnPageLoad method.
++ (void)DWARecorderOnPageLoadCall;
+
+// Records a new entry metric for DWA.
++ (void)recordTestDWAEntryMetric;
+
+// Returns true iff DWA is allowed for all profiles.
++ (BOOL)DWARecorderAllowedForAllProfiles:(BOOL)state;
+
+// Flushes the DWA service with a periodic trigger.
++ (void)DWAServiceFlushCall;
+
+// Purges DWA recorder.
++ (void)clearDWARecorder;
 
 // Creates a chrome_test_util::HistogramTester that will record every histogram
 // sent during test.

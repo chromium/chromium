@@ -231,6 +231,7 @@ class DwaBrowserTest : public SyncTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// LINT.IfChange(DwaServiceCheck)
 IN_PROC_BROWSER_TEST_F(DwaBrowserTest, DwaServiceCheck) {
   test::MetricsConsentOverride metrics_consent(true);
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
@@ -260,8 +261,10 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest, DwaServiceCheck) {
 
   ClosePlatformBrowser(browser);
 }
+// LINT.ThenChange(/ios/chrome/browser/metrics/model/dwa_egtest.mm:DwaServiceCheck)
 
 // Make sure that DWA is disabled and purged while an incognito window is open.
+// LINT.IfChange(RegularBrowserPlusIncognitoCheck)
 IN_PROC_BROWSER_TEST_F(DwaBrowserTest, RegularBrowserPlusIncognitoCheck) {
   dwa::DwaRecorder* dwa_recorder = metrics::dwa::DwaRecorder::Get();
   test::MetricsConsentOverride metrics_consent(true);
@@ -315,8 +318,10 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest, RegularBrowserPlusIncognitoCheck) {
 
   ClosePlatformBrowser(browser1);
 }
+// LINT.ThenChange(/ios/chrome/browser/metrics/model/dwa_egtest.mm:RegularBrowserPlusIncognitoCheck)
 
 // Make sure opening a regular browser after Incognito doesn't enable DWA.
+// LINT.IfChange(IncognitoPlusRegularBrowserCheck)
 IN_PROC_BROWSER_TEST_F(DwaBrowserTest, IncognitoPlusRegularBrowserCheck) {
   dwa::DwaRecorder* dwa_recorder = metrics::dwa::DwaRecorder::Get();
   test::MetricsConsentOverride metrics_consent(true);
@@ -337,9 +342,11 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest, IncognitoPlusRegularBrowserCheck) {
 
   ClosePlatformBrowser(browser);
 }
+// LINT.ThenChange(/ios/chrome/browser/metrics/model/dwa_egtest.mm:IncognitoPlusRegularBrowserCheck)
 
 // This test ensures that disabling MSBB UKM consent disables and purges DWA.
 // Additionally ensures that DWA is disabled until all UKM consents are enabled.
+// LINT.IfChange(UkmMsbbConsentChangeCheck)
 IN_PROC_BROWSER_TEST_F(DwaBrowserTest, UkmConsentChangeCheck_Msbb) {
   test::MetricsConsentOverride metrics_consent(true);
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
@@ -362,6 +369,7 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest, UkmConsentChangeCheck_Msbb) {
   // consents are enabled.
   RecordTestMetricsAndAssertMetricsRecorded();
 }
+// LINT.ThenChange(/ios/chrome/browser/metrics/model/dwa_egtest.mm:UkmMsbbConsentChangeCheck)
 
 // Not enabled on Android because on Android, kApps and kExtensions is not
 // registered through UserSelectableType.
