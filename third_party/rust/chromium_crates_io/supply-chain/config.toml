@@ -50,7 +50,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."anstyle:1.0.10"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."anyhow:1.0.95"]
+[policy."anyhow:1.0.97"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."arrayvec:0.7.6"]

@@ -11,6 +11,7 @@
     clippy::items_after_statements,
     clippy::let_and_return,
     clippy::let_underscore_untyped,
+    clippy::literal_string_with_formatting_args,
     clippy::match_bool,
     clippy::needless_else,
     clippy::never_loop,
@@ -613,6 +614,7 @@ fn test_as() {
 
     extern "C" fn extern_fn() {}
     #[rustfmt::skip]
+    #[allow(missing_abi)]
     let test = || Ok(ensure!(extern_fn as extern fn() as usize * 0 != 0));
     assert_err(
         test,

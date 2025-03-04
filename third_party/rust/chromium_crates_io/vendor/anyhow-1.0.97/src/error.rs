@@ -478,6 +478,7 @@ impl Error {
     /// The root cause is the last error in the iterator produced by
     /// [`chain()`][Error::chain].
     #[cfg(any(feature = "std", not(anyhow_no_core_error)))]
+    #[allow(clippy::double_ended_iterator_last)]
     pub fn root_cause(&self) -> &(dyn StdError + 'static) {
         self.chain().last().unwrap()
     }
@@ -489,7 +490,7 @@ impl Error {
     /// context has been attached. For details about the interaction between
     /// context and downcasting, [see here].
     ///
-    /// [see here]: trait.Context.html#effect-on-downcasting
+    /// [see here]: crate::Context#effect-on-downcasting
     pub fn is<E>(&self) -> bool
     where
         E: Display + Debug + Send + Sync + 'static,

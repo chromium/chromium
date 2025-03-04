@@ -139,7 +139,7 @@
 //!   - If you want only panics to have backtraces, set `RUST_BACKTRACE=1` and
 //!     `RUST_LIB_BACKTRACE=0`.
 //!
-//!   [`std::backtrace`]: https://doc.rust-lang.org/std/backtrace/index.html#environment-variables
+//!   [`std::backtrace`]: std::backtrace#environment-variables
 //!
 //! - Anyhow works with any error type that has an impl of `std::error::Error`,
 //!   including ones defined in your crate. We do not bundle a `derive(Error)`
@@ -206,7 +206,7 @@
 //! function that returns Anyhow's error type, as the trait that `?`-based error
 //! conversions are defined by is only available in std in those old versions.
 
-#![doc(html_root_url = "https://docs.rs/anyhow/1.0.95")]
+#![doc(html_root_url = "https://docs.rs/anyhow/1.0.97")]
 #![cfg_attr(error_generic_member_access, feature(error_generic_member_access))]
 #![no_std]
 #![deny(dead_code, unused_imports, unused_mut)]
@@ -217,6 +217,7 @@
 #![cfg_attr(anyhow_no_unsafe_op_in_unsafe_fn_lint, allow(unused_unsafe))]
 #![allow(
     clippy::doc_markdown,
+    clippy::elidable_lifetime_names,
     clippy::enum_glob_use,
     clippy::explicit_auto_deref,
     clippy::extra_unused_type_parameters,
