@@ -56,11 +56,11 @@ public class TabUiFeatureUtilities {
     /** Returns whether drag drop from tab strip to create new instance is enabled. */
     public static boolean isTabDragToCreateInstanceSupported() {
         // TODO(crbug/328511660): Add OS version check once available.
-        return doesOEMSupportDragToCreateInstance() || !isTabDragAsWindowEnabled();
+        return doesOemSupportDragToCreateInstance() || !isTabDragAsWindowEnabled();
     }
 
     /** Returns whether device OEM is allow-listed for tab tearing */
-    public static boolean doesOEMSupportDragToCreateInstance() {
+    public static boolean doesOemSupportDragToCreateInstance() {
         return TAB_TEARING_OEM_ALLOWLIST.contains(Build.MANUFACTURER.toLowerCase(Locale.US));
     }
 }

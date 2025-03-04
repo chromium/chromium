@@ -207,7 +207,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     public void testBuildFlags_dropDataHasNoTab() {
         MultiWindowTestUtils.enableMultiInstance();
         int originalFlag = 0;
-        var dropData = new ChromeDropDataAndroid.Builder().build();
+        var dropData = new ChromeTabDropDataAndroid.Builder().build();
         var flags = mDelegate.buildFlags(originalFlag, dropData);
         assertEquals("Original flag should not be modified.", originalFlag, flags);
     }
@@ -238,7 +238,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     private ChromeDropDataAndroid createTabDropData(
             int tabId, boolean allowDragToCreateNewInstance) {
         Tab tab = MockTab.createAndInitialize(tabId, mProfile);
-        return new ChromeDropDataAndroid.Builder()
+        return new ChromeTabDropDataAndroid.Builder()
                 .withTab(tab)
                 .withAllowDragToCreateInstance(allowDragToCreateNewInstance)
                 .build();

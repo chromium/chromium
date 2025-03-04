@@ -45,6 +45,7 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     private static boolean sDefinedItemWithPendingIntentForTesting;
     private static boolean sClipDataItemBuilderNotFound;
 
+    // TODO(crbug.com/380327012): Add separate MIME type for groups.
     private final String[] mSupportedMimeTypes =
             new String[] {
                 MimeTypeUtils.CHROME_MIMETYPE_TAB,
@@ -119,14 +120,19 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     public ClipData buildClipData(@NonNull DropDataAndroid dropData) {
         assert dropData instanceof ChromeDropDataAndroid;
         ChromeDropDataAndroid chromeDropDataAndroid = (ChromeDropDataAndroid) dropData;
-        if (chromeDropDataAndroid.hasTab() && chromeDropDataAndroid.allowTabDragToCreateInstance) {
-            ClipData clipData =
-                    buildClipDataForTabTearing(
-                            chromeDropDataAndroid.tab, chromeDropDataAndroid.windowId);
+        if (chromeDropDataAndroid.hasBrowserContent()
+                && chromeDropDataAndroid.allowDragToCreateInstance) {
+            ClipData clipData = null;
+            if (chromeDropDataAndroid instanceof ChromeTabDropDataAndroid) {
+                clipData =
+                        buildClipDataForTabTearing(
+                                ((ChromeTabDropDataAndroid) chromeDropDataAndroid).tab,
+                                chromeDropDataAndroid.windowId);
+            }
             if (clipData != null) return clipData;
         }
         String text =
-                chromeDropDataAndroid.hasTab()
+                chromeDropDataAndroid.hasBrowserContent()
                         ? chromeDropDataAndroid.buildTabClipDataText()
                         : dropData.text;
         return new ClipData(null, mSupportedMimeTypes, new Item(text));
@@ -161,7 +167,7 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     public int buildFlags(int originalFlag, DropDataAndroid dropData) {
         assert dropData instanceof ChromeDropDataAndroid;
         ChromeDropDataAndroid chromeDropData = (ChromeDropDataAndroid) dropData;
-        if (!chromeDropData.hasTab() || !chromeDropData.allowTabDragToCreateInstance) {
+        if (!chromeDropData.hasBrowserContent() || !chromeDropData.allowDragToCreateInstance) {
             return originalFlag;
         }
         return originalFlag

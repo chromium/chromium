@@ -129,8 +129,8 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
     private Tab getTabFromGlobalState(@NonNull DragDropGlobalState globalState) {
         // We should only attempt to access this while we know there's an active drag.
         assert globalState != null : "Attempting to access dragged tab with invalid drag state.";
-        if (globalState.getData() instanceof ChromeDropDataAndroid) {
-            return ((ChromeDropDataAndroid) globalState.getData()).tab;
+        if (globalState.getData() instanceof ChromeTabDropDataAndroid) {
+            return ((ChromeTabDropDataAndroid) globalState.getData()).tab;
         } else {
             return null;
         }
@@ -139,8 +139,8 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
     private boolean isTabInGroupFromGlobalState(@NonNull DragDropGlobalState globalState) {
         // We should only attempt to access this while we know there's an active drag.
         assert globalState != null : "Attempting to access dragged tab with invalid drag state.";
-        if (globalState.getData() instanceof ChromeDropDataAndroid) {
-            return ((ChromeDropDataAndroid) globalState.getData()).isTabInGroup;
+        if (globalState.getData() instanceof ChromeTabDropDataAndroid) {
+            return ((ChromeTabDropDataAndroid) globalState.getData()).isTabInGroup;
         } else {
             return false;
         }
