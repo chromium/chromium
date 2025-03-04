@@ -366,44 +366,20 @@
       </message>
       <message name="IDS_TAB_GRID_DIALOG_COLLABORATION_ACTIVITY_TABS_ADDED" desc="This text shows in a message card in the TabGridDialog if there are activity updates about the state of the tab group such as tabs being added, changed, or closed. This text describes that tabs were only added.">
         {NUMBER_OF_TABS_ADDED, plural,
-          =1 {<ph name="ONE_ADDED">%1$d<ex>1</ex></ph> tab added}
-          other {<ph name="MANY_ADDED">%1$d<ex>2</ex></ph> tabs added}
-        }
-      </message>
-      <message name="IDS_TAB_GRID_DIALOG_COLLABORATION_ACTIVITY_TABS_ADDED_CHANGED" desc="This text shows in a message card in the TabGridDialog if there are activity updates about the state of the tab group such as tabs being added, changed, or closed. This text describes that tabs were added, and changed.">
-        {NUMBER_OF_TABS_ADDED, plural,
-          =1 {<ph name="ONE_ADDED">%1$d<ex>1</ex></ph> tab added, <ph name="ANY_CHANGED">%2$d<ex>2</ex></ph> changed}
-          other {<ph name="MANY_ADDED">%1$d<ex>2</ex></ph> tabs added, <ph name="ANY_CHANGED">%2$d<ex>2</ex></ph> changed}
+          =1 {<ph name="ONE_ADDED">%1$d<ex>1</ex></ph> new tab}
+          other {<ph name="MANY_ADDED">%1$d<ex>2</ex></ph> new tabs}
         }
       </message>
       <message name="IDS_TAB_GRID_DIALOG_COLLABORATION_ACTIVITY_TABS_ADDED_CLOSED" desc="This text shows in a message card in the TabGridDialog if there are activity updates about the state of the tab group such as tabs being added, changed, or closed. This text describes that tabs were added, and closed.">
         {NUMBER_OF_TABS_ADDED, plural,
-          =1 {<ph name="ONE_ADDED">%1$d<ex>1</ex></ph> tab added, <ph name="ANY_CLOSED">%3$d<ex>2</ex></ph> closed}
-          other {<ph name="MANY_ADDED">%1$d<ex>2</ex></ph> tabs added, <ph name="ANY_CLOSED">%3$d<ex>2</ex></ph> closed}
-        }
-      </message>
-      <message name="IDS_TAB_GRID_DIALOG_COLLABORATION_ACTIVITY_TABS_ADDED_CHANGED_CLOSED" desc="This text shows in a message card in the TabGridDialog if there are activity updates about the state of the tab group such as tabs being added, changed, or closed. This text describes that tabs were added, changed, and closed.">
-        {NUMBER_OF_TABS_ADDED, plural,
-          =1 {<ph name="ONE_ADDED">%1$d<ex>1</ex></ph> tab added, <ph name="ANY_CHANGED">%2$d<ex>2</ex></ph> changed, <ph name="ANY_CLOSED">%3$d<ex>2</ex></ph> closed}
-          other {<ph name="MANY_ADDED">%1$d<ex>2</ex></ph> tabs added, <ph name="ANY_CHANGED">%2$d<ex>2</ex></ph> changed, <ph name="ANY_CLOSED">%3$d<ex>2</ex></ph> closed}
-        }
-      </message>
-      <message name="IDS_TAB_GRID_DIALOG_COLLABORATION_ACTIVITY_TABS_CHANGED" desc="This text shows in a message card in the TabGridDialog if there are activity updates about the state of the tab group such as tabs being added, changed, or closed. This text describes that tabs were only changed.">
-        {NUMBER_OF_TABS_CHANGED, plural,
-          =1 {<ph name="ONE_CHANGED">%2$d<ex>1</ex></ph> tab changed}
-          other {<ph name="MANY_CHANGED">%2$d<ex>2</ex></ph> tabs changed}
-        }
-      </message>
-      <message name="IDS_TAB_GRID_DIALOG_COLLABORATION_ACTIVITY_TABS_CHANGED_CLOSED" desc="This text shows in a message card in the TabGridDialog if there are activity updates about the state of the tab group such as tabs being added, changed, or closed. This text describes that tabs were changed, and closed.">
-        {NUMBER_OF_TABS_CHANGED, plural,
-          =1 {<ph name="ONE_CHANGED">%2$d<ex>1</ex></ph> tab changed, <ph name="ANY_CLOSED">%3$d<ex>2</ex></ph> closed}
-          other {<ph name="MANY_CHANGED">%2$d<ex>2</ex></ph> tabs changed, <ph name="ANY_CLOSED">%3$d<ex>2</ex></ph> closed}
+          =1 {<ph name="ONE_ADDED">%1$d<ex>1</ex></ph> new tab, <ph name="ANY_CLOSED">%2$d<ex>2</ex></ph> closed}
+          other {<ph name="MANY_ADDED">%1$d<ex>2</ex></ph> new tabs, <ph name="ANY_CLOSED">%2$d<ex>2</ex></ph> closed}
         }
       </message>
       <message name="IDS_TAB_GRID_DIALOG_COLLABORATION_ACTIVITY_TABS_CLOSED" desc="This text shows in a message card in the TabGridDialog if there are activity updates about the state of the tab group such as tabs being added, changed, or closed. This text describes that tabs were only closed.">
         {NUMBER_OF_TABS_CLOSED, plural,
-          =1 {<ph name="ONE_CLOSED">%3$d<ex>1</ex></ph> tab closed}
-          other {<ph name="MANY_CLOSED">%3$d<ex>2</ex></ph> tabs closed}
+          =1 {<ph name="ONE_CLOSED">%2$d<ex>1</ex></ph> tab closed}
+          other {<ph name="MANY_CLOSED">%2$d<ex>2</ex></ph> tabs closed}
         }
       </message>
 

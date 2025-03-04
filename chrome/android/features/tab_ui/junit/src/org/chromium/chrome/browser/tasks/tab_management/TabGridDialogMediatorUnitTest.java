@@ -238,7 +238,7 @@ public class TabGridDialogMediatorUnitTest {
         when(mServiceStatus.isAllowedToCreate()).thenReturn(true);
         when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
         MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
-        mockPersistentMessages(/* added= */ 1, /* navigated= */ 2, /* removed= */ 3);
+        mockPersistentMessages(/* added= */ 1, /* navigated= */ 2, /* removed= */ 4);
         TrackerFactory.setTrackerForTests(mTracker);
 
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mHelpAndFeedbackLauncher);
@@ -1772,10 +1772,10 @@ public class TabGridDialogMediatorUnitTest {
                 mModel.get(TabGridDialogProperties.SHARE_BUTTON_STRING_RES));
         assertFalse(mModel.get(TabGridDialogProperties.SHOW_IMAGE_TILES));
         String text = mMessageCardModelCaptor.getValue().get(DESCRIPTION_TEXT).toString();
-        assertTrue(text, text.contains("3"));
+        assertTrue(text, text.contains("4"));
 
         reset(mDialogController);
-        mockPersistentMessages(/* added= */ 1, /* navigated= */ 2, /* removed= */ 4);
+        mockPersistentMessages(/* added= */ 1, /* navigated= */ 2, /* removed= */ 5);
         verify(mMessagingBackendService)
                 .addPersistentMessageObserver(mPersistentMessageObserverCaptor.capture());
         mPersistentMessageObserverCaptor
@@ -1784,18 +1784,20 @@ public class TabGridDialogMediatorUnitTest {
         verify(mDialogController)
                 .addMessageCardItem(/* position= */ eq(0), mMessageCardModelCaptor.capture());
         text = mMessageCardModelCaptor.getValue().get(DESCRIPTION_TEXT).toString();
-        assertFalse(text, text.contains("3"));
-        assertTrue(text, text.contains("4"));
+        assertFalse(text, text.contains("4"));
+        assertTrue(text, text.contains("5"));
 
         reset(mDialogController);
-        mockPersistentMessages(/* added= */ 0, /* navigated= */ 2, /* removed= */ 4);
+        mockPersistentMessages(/* added= */ 0, /* navigated= */ 2, /* removed= */ 5);
         mPersistentMessageObserverCaptor
                 .getValue()
                 .hidePersistentMessage(makePersistentMessage(CollaborationEvent.TAB_ADDED));
         verify(mDialogController)
                 .addMessageCardItem(/* position= */ eq(0), mMessageCardModelCaptor.capture());
         text = mMessageCardModelCaptor.getValue().get(DESCRIPTION_TEXT).toString();
-        assertFalse(text, text.contains("1"));
+        // Shows "new" as a combination of added (1 -> 0) and navigated (2 -> 2).
+        assertFalse(text, text.contains("3"));
+        assertTrue(text, text.contains("2"));
     }
 
     @Test
