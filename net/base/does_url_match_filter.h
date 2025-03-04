@@ -5,9 +5,9 @@
 #ifndef NET_BASE_DOES_URL_MATCH_FILTER_H_
 #define NET_BASE_DOES_URL_MATCH_FILTER_H_
 
-#include <set>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "net/base/net_export.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -23,13 +23,14 @@ enum class UrlFilterType {
 // domains.
 // `filter_type` indicates if we should return true or false for a match.
 // `origins` set of url::Origins to match against.
-// `domains` set of strings representing registrable domains to match against.
+// `domains` set of strings representing registrable domains, IP addresses or
+// local hostnames to match against.
 // Returns true if |url| matches any of the origins or domains, and
 // filter_type == kTrueIfMatches, or |url| doesn't match any of the origins or
 // domains and filter_type == kFalseIfMatches.
 NET_EXPORT bool DoesUrlMatchFilter(UrlFilterType filter_type,
-                                   const std::set<url::Origin>& origins,
-                                   const std::set<std::string>& domains,
+                                   const base::flat_set<url::Origin>& origins,
+                                   const base::flat_set<std::string>& domains,
                                    const GURL& url);
 
 }  // namespace net

@@ -4,13 +4,10 @@
 
 #include "net/base/does_url_match_filter.h"
 
-#include <set>
 #include <string>
 #include <vector>
 
-#include "base/test/task_environment.h"
-#include "net/base/network_isolation_key.h"
-#include "net/http/http_request_headers.h"
+#include "base/containers/flat_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -19,19 +16,19 @@ namespace net {
 
 namespace {
 
-std::set<url::Origin> origins = {
+base::flat_set<url::Origin> origins = {
     url::Origin::Create(GURL("http://www.origin1.com:8080")),
     url::Origin::Create(GURL("http://www.origin2.com:80")),
     url::Origin::Create(GURL("http://www.origin3.com:80")),
     url::Origin::Create(GURL("http://www.origin4.com:80"))};
-std::set<std::string> domains = {"domain1.com", "domain2.com", "domain3.com",
-                                 "domain4.com"};
+base::flat_set<std::string> domains = {"domain1.com", "domain2.com",
+                                       "domain3.com", "domain4.com"};
 
 using DoesUrlMatchFilterTest = testing::Test;
 
 TEST_F(DoesUrlMatchFilterTest, EmptyOriginsAndDomainsLists) {
-  std::set<url::Origin> empty_origins;
-  std::set<std::string> empty_domains;
+  base::flat_set<url::Origin> empty_origins;
+  base::flat_set<std::string> empty_domains;
 
   const GURL url("http://www.test.com");
 
@@ -80,6 +77,58 @@ TEST_F(DoesUrlMatchFilterTest, UrlMatchesDomain) {
   // A url that matches a kTrueIfMatches filter shall be removed
   EXPECT_TRUE(DoesUrlMatchFilter(UrlFilterType::kTrueIfMatches, origins,
                                  domains, match_with_domain));
+}
+
+TEST_F(DoesUrlMatchFilterTest, IPv4AddressMatches) {
+  const GURL match_with_domain("http://192.168.0.1:8080/");
+  const base::flat_set<std::string> ipv4_domains = {"192.168.0.1"};
+
+  // A url that matches a kFalseIfMatches filter shall not be removed
+  EXPECT_FALSE(DoesUrlMatchFilter(UrlFilterType::kFalseIfMatches, {},
+                                  ipv4_domains, match_with_domain));
+
+  // A url that matches a kTrueIfMatches filter shall be removed
+  EXPECT_TRUE(DoesUrlMatchFilter(UrlFilterType::kTrueIfMatches, {},
+                                 ipv4_domains, match_with_domain));
+}
+
+TEST_F(DoesUrlMatchFilterTest, IPv6AddressMatches) {
+  const GURL match_with_domain("https://[2001:db8::1]/");
+  const base::flat_set<std::string> ipv6_domains = {"[2001:db8::1]"};
+
+  // A url that matches a kFalseIfMatches filter shall not be removed
+  EXPECT_FALSE(DoesUrlMatchFilter(UrlFilterType::kFalseIfMatches, {},
+                                  ipv6_domains, match_with_domain));
+
+  // A url that matches a kTrueIfMatches filter shall be removed
+  EXPECT_TRUE(DoesUrlMatchFilter(UrlFilterType::kTrueIfMatches, {},
+                                 ipv6_domains, match_with_domain));
+}
+
+TEST_F(DoesUrlMatchFilterTest, LocalhostMatches) {
+  const GURL match_with_domain("http://localhost/");
+  const base::flat_set<std::string> localhost = {"localhost"};
+
+  // A url that matches a kFalseIfMatches filter shall not be removed
+  EXPECT_FALSE(DoesUrlMatchFilter(UrlFilterType::kFalseIfMatches, {}, localhost,
+                                  match_with_domain));
+
+  // A url that matches a kTrueIfMatches filter shall be removed
+  EXPECT_TRUE(DoesUrlMatchFilter(UrlFilterType::kTrueIfMatches, {}, localhost,
+                                 match_with_domain));
+}
+
+TEST_F(DoesUrlMatchFilterTest, BareHostnameMatches) {
+  const GURL match_with_domain("http://go/");
+  const base::flat_set<std::string> bare_hostname = {"go"};
+
+  // A url that matches a kFalseIfMatches filter shall not be removed
+  EXPECT_FALSE(DoesUrlMatchFilter(UrlFilterType::kFalseIfMatches, {},
+                                  bare_hostname, match_with_domain));
+
+  // A url that matches a kTrueIfMatches filter shall be removed
+  EXPECT_TRUE(DoesUrlMatchFilter(UrlFilterType::kTrueIfMatches, {},
+                                 bare_hostname, match_with_domain));
 }
 
 }  // namespace

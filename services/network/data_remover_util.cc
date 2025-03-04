@@ -4,8 +4,7 @@
 
 #include "services/network/data_remover_util.h"
 
-#include <set>
-
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "net/base/does_url_match_filter.h"
@@ -24,8 +23,8 @@ base::RepeatingCallback<bool(const GURL&)> BindDoesUrlMatchFilter(
     mojom::ClearDataFilter_Type filter_type,
     const std::vector<url::Origin>& origins,
     const std::vector<std::string>& domains) {
-  std::set<url::Origin> origin_set(origins.begin(), origins.end());
-  std::set<std::string> domain_set(domains.begin(), domains.end());
+  base::flat_set<url::Origin> origin_set(origins.begin(), origins.end());
+  base::flat_set<std::string> domain_set(domains.begin(), domains.end());
   return base::BindRepeating(&net::DoesUrlMatchFilter,
                              ConvertClearDataFilterType(filter_type),
                              std::move(origin_set), std::move(domain_set));

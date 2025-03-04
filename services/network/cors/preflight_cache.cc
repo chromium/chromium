@@ -7,6 +7,7 @@
 #include <iterator>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
@@ -167,10 +168,10 @@ void PreflightCache::ClearCache(mojom::ClearDataFilterPtr url_filter) {
   }
   const net::UrlFilterType url_filter_type =
       ConvertClearDataFilterType(url_filter->type);
-  const std::set<url::Origin> origins(url_filter->origins.begin(),
-                                      url_filter->origins.end());
-  const std::set<std::string> domains(url_filter->domains.begin(),
-                                      url_filter->domains.end());
+  const base::flat_set<url::Origin> origins(url_filter->origins.begin(),
+                                            url_filter->origins.end());
+  const base::flat_set<std::string> domains(url_filter->domains.begin(),
+                                            url_filter->domains.end());
 
   for (auto it = cache_.begin(); it != cache_.end();) {
     auto next_it = std::next(it);

@@ -4,25 +4,45 @@
 
 #include "net/base/does_url_match_filter.h"
 
+#include <string_view>
+
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 namespace net {
 
+namespace {
+
+bool MatchesOriginOrDomain(const base::flat_set<url::Origin>& origins,
+                           const base::flat_set<std::string>& domains,
+                           const url::Origin& origin) {
+  if (origins.contains(origin)) {
+    return true;
+  }
+
+  // Avoid the expensive GetDomainAndRegistry() call when possible.
+  if (domains.empty()) {
+    return false;
+  }
+
+  const std::string_view url_registerable_domain =
+      GetDomainAndRegistryAsStringPiece(
+          origin, registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+  const std::string_view domain =
+      url_registerable_domain.empty() ? origin.host() : url_registerable_domain;
+
+  return domains.contains(domain);
+}
+
+}  // namespace
+
 bool DoesUrlMatchFilter(UrlFilterType filter_type,
-                        const std::set<url::Origin>& origins,
-                        const std::set<std::string>& domains,
+                        const base::flat_set<url::Origin>& origins,
+                        const base::flat_set<std::string>& domains,
                         const GURL& url) {
-  std::string url_registerable_domain =
-      registry_controlled_domains::GetDomainAndRegistry(
-          url, registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  bool found_domain = (domains.find(url_registerable_domain != ""
-                                        ? url_registerable_domain
-                                        : url.host()) != domains.end());
-
-  bool found_origin = (origins.find(url::Origin::Create(url)) != origins.end());
-
-  return ((found_domain || found_origin) ==
-          (filter_type == UrlFilterType::kTrueIfMatches));
+  auto origin = url::Origin::Create(url);
+  return MatchesOriginOrDomain(origins, domains, origin) ==
+         (filter_type == UrlFilterType::kTrueIfMatches);
 }
 
 }  // namespace net
