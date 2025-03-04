@@ -14,7 +14,6 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/crosapi/arc_ash.h"
 #include "chrome/browser/ash/crosapi/audio_service_ash.h"
 #include "chrome/browser/ash/crosapi/cert_database_ash.h"
 #include "chrome/browser/ash/crosapi/cert_provisioning_ash.h"
@@ -145,8 +144,7 @@ Profile* GetAshProfile() {
 }  // namespace
 
 CrosapiAsh::CrosapiAsh()
-    : arc_ash_(std::make_unique<ArcAsh>()),
-      audio_service_ash_(std::make_unique<AudioServiceAsh>()),
+    : audio_service_ash_(std::make_unique<AudioServiceAsh>()),
       cert_database_ash_(std::make_unique<CertDatabaseAsh>()),
       cert_provisioning_ash_(std::make_unique<CertProvisioningAsh>()),
       chaps_service_ash_(std::make_unique<ChapsServiceAsh>()),
@@ -245,12 +243,6 @@ void CrosapiAsh::BindAccountManager(
           ->GetAccountManagerMojoService(
               /*profile_path=*/GetAshProfile()->GetPath().value());
   account_manager_mojo_service->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindArc(mojo::PendingReceiver<mojom::Arc> receiver) {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  arc_ash_->MaybeSetProfile(profile);
-  arc_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindAudioService(

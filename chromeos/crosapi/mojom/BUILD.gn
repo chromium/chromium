@@ -8,7 +8,6 @@ import("//printing/buildflags/buildflags.gni")
 mojom("mojom") {
   sources = [
     "account_manager.mojom",
-    "arc.mojom",
     "audio_service.mojom",
     "cert_database.mojom",
     "cert_provisioning.mojom",

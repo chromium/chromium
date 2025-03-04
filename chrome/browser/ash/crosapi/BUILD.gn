@@ -12,8 +12,6 @@ assert(use_ozone)
 
 static_library("crosapi") {
   sources = [
-    "arc_ash.cc",
-    "arc_ash.h",
     "audio_service_ash.cc",
     "audio_service_ash.h",
     "browser_manager.cc",
@@ -165,12 +163,10 @@ static_library("crosapi") {
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/app_service",
-    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_mode",
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/apps",
-    "//chrome/browser/ash/arc",
     "//chrome/browser/ash/attestation",
     "//chrome/browser/ash/cert_provisioning",
     "//chrome/browser/ash/drive",
@@ -230,7 +226,6 @@ static_library("crosapi") {
     "//chrome/browser/screen_ai:screen_ai_install_state",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_navigator_params_headers",
-    "//chrome/browser/ui/ash/arc",
     "//chrome/browser/ui/ash/birch",
     "//chrome/browser/ui/ash/capture_mode",
     "//chrome/browser/ui/ash/desks",
@@ -404,7 +399,6 @@ static_library("crosapi") {
     "//chrome/browser/extensions",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/ui",
-    "//chrome/browser/ui/ash/arc",
     "//chrome/browser/ui/ash/birch",
     "//chrome/browser/ui/ash/capture_mode",
     "//chrome/browser/ui/ash/desks",

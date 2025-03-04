@@ -9,7 +9,6 @@ import "chromeos/components/payments/mojom/payment_app.mojom";
 import "chromeos/components/remote_apps/mojom/remote_apps.mojom";
 import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
 import "chromeos/crosapi/mojom/account_manager.mojom";
-import "chromeos/crosapi/mojom/arc.mojom";
 import "chromeos/crosapi/mojom/audio_service.mojom";
 import "chromeos/crosapi/mojom/guest_os_sk_forwarder.mojom";
 import "chromeos/crosapi/mojom/cert_database.mojom";
@@ -106,18 +105,14 @@ interface Crosapi {
   [MinVersion=4]
   BindAccountManager@7(pending_receiver<AccountManager> receiver);
 
-  // Bind ARC.
-  // Added in M98.
-  [MinVersion=59]
-  BindArc@63(pending_receiver<Arc> receiver);
-
   // BindAppServiceProxy@45 was removed.
+  // BindArc@63 was removed.
   // BindAutomationDeprecated@23 was removed.
   // BindAutomationFactory@26 was removed.
-  // BindBrowserServiceHost@20 was removed.
-  // BindBrowserVersionService@50 was removed.
   // BindBrowserAppInstanceRegistry@54 was removed.
+  // BindBrowserServiceHost@20 was removed.
   // BindBrowserShortcutPublisher@125 was removed.
+  // BindBrowserVersionService@50 was removed.
 
   // Binds the BrowserCdmFactory interface for proxying communication to the
   // HWDRM CDM hosted in a ChromeOS daemon process. We need to use a
