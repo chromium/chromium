@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
-#include "chrome/browser/enterprise/signals/signals_common.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
@@ -22,6 +21,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/device_signals/core/browser/signals_types.h"
+#include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -169,13 +169,13 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest,
   auto disk_encrypted = signals.FindInt(device_signals::names::kDiskEncrypted);
   ASSERT_TRUE(disk_encrypted);
   EXPECT_EQ(disk_encrypted.value(),
-            static_cast<int32_t>(enterprise_signals::SettingValue::ENABLED));
+            static_cast<int32_t>(device_signals::SettingValue::ENABLED));
 
   auto screen_lock_secured =
       signals.FindInt(device_signals::names::kScreenLockSecured);
   ASSERT_TRUE(screen_lock_secured);
   EXPECT_EQ(screen_lock_secured.value(),
-            static_cast<int32_t>(enterprise_signals::SettingValue::ENABLED));
+            static_cast<int32_t>(device_signals::SettingValue::ENABLED));
 }
 
 IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestNetworkSignals) {

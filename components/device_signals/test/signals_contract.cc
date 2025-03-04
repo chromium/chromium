@@ -52,7 +52,7 @@ bool VerifyIsSettingInteger(const std::string& signal_name,
                             const base::Value::Dict& signals) {
   // Verify the value is in the valid enum values range.
   // Enum defined at:
-  // //chrome/browser/enterprise/signals/signals_common.h
+  // //components/device_signals/core/common/common_types.h
   return VerifyIsIntegerWithRange(signal_name, 0, 2, signals);
 }
 

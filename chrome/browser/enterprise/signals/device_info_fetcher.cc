@@ -16,6 +16,8 @@
 
 namespace enterprise_signals {
 
+using SettingValue = device_signals::SettingValue;
+
 namespace {
 
 // When true, will force DeviceInfoFetcher::CreateInstance to return a stubbed

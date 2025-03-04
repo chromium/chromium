@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/enterprise/signals/signals_common.h"
+#include "components/device_signals/core/common/common_types.h"
 
 namespace enterprise_signals {
 
@@ -26,13 +26,13 @@ struct DeviceInfo {
   std::string device_host_name;
   std::string device_model;
   std::string serial_number;
-  SettingValue screen_lock_secured;
-  SettingValue disk_encrypted;
+  device_signals::SettingValue screen_lock_secured;
+  device_signals::SettingValue disk_encrypted;
 
   std::vector<std::string> mac_addresses;
   std::optional<std::string> windows_machine_domain;
   std::optional<std::string> windows_user_domain;
-  std::optional<SettingValue> secure_boot_enabled;
+  std::optional<device_signals::SettingValue> secure_boot_enabled;
 };
 
 // Interface used by the chrome.enterprise.reportingPrivate.getDeviceInfo()
