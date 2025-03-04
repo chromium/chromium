@@ -8,6 +8,7 @@ include_rules = [
   "+chrome/browser/extensions/extension_special_storage_policy.h",
   "+chrome/browser/signin",
   "+chrome/browser/ash/accessibility/accessibility_manager.h",
+  "+chrome/browser/device_identity",
   "+chrome/browser/ui/browser_navigator.h",
   "+chrome/browser/ui/browser_navigator_params.h",
   "+chrome/browser/ui/test",
