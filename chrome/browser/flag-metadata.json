@@ -6953,7 +6953,7 @@
   {
     "name": "pdf-cr23",
     "owners": [ "andyphan@chromium.org", "//pdf/OWNERS" ],
-    "expiry_milestone": 136
+    "expiry_milestone": 137
   },
   {
     "name": "pdf-ink2",
@@ -6963,7 +6963,7 @@
   {
     "name": "pdf-oopif",
     "owners": [ "andyphan@chromium.org", "//pdf/OWNERS" ],
-    "expiry_milestone": 136
+    "expiry_milestone": 140
   },
   {
     "name": "pdf-portfolio",
