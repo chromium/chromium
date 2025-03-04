@@ -26,7 +26,7 @@ void OnGpuChannelEstablished(
   gpu::ContextCreationAttribs attributes;
   attributes.bind_generates_resource = false;
   attributes.enable_raster_interface = true;
-  attributes.enable_oop_rasterization = true;
+  attributes.enable_gpu_rasterization = true;
   attributes.enable_gles2_interface = false;
   attributes.enable_grcontext = false;
 

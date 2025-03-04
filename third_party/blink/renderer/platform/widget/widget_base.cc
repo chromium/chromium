@@ -862,7 +862,7 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
   attributes.enable_gles2_interface = false;
   attributes.enable_grcontext = false;
   attributes.enable_raster_interface = true;
-  attributes.enable_oop_rasterization = false;
+  attributes.enable_gpu_rasterization = false;
 
   constexpr bool automatic_flushes = false;
   constexpr bool support_locking = false;

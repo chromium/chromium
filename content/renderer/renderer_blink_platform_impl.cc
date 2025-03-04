@@ -732,12 +732,12 @@ RendererBlinkPlatformImpl::CreateOffscreenGraphicsContext3DProvider(
   // acceleration mode, either on top of real GPU, or on top of SwiftShader
   // (for testing). This may change in the future if we move Skia software
   // rendering to be OOP as well.
-  attributes.enable_oop_rasterization =
+  attributes.enable_gpu_rasterization =
       attributes.enable_raster_interface &&
       gpu_info.skia_backend_type != gpu::SkiaBackendType::kNone;
-  attributes.enable_gles2_interface = !attributes.enable_oop_rasterization;
+  attributes.enable_gles2_interface = !attributes.enable_gpu_rasterization;
   attributes.enable_grcontext =
-      !attributes.enable_oop_rasterization && web_attributes.support_grcontext;
+      !attributes.enable_gpu_rasterization && web_attributes.support_grcontext;
 
   attributes.gpu_preference = web_attributes.prefer_low_power_gpu
                                   ? gl::GpuPreference::kLowPower

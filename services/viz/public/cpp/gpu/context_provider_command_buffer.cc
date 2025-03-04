@@ -413,7 +413,7 @@ class GrDirectContext* ContextProviderCommandBuffer::GrContext() {
     return gr_context_->get();
   }
 
-  if (attributes_.enable_oop_rasterization) {
+  if (attributes_.enable_gpu_rasterization) {
     return nullptr;
   }
 
