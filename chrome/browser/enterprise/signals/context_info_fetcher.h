@@ -49,7 +49,6 @@ struct ContextInfo {
   std::optional<safe_browsing::PasswordProtectionTrigger>
       password_protection_warning_trigger;
   bool chrome_remote_desktop_app_blocked;
-  std::optional<bool> third_party_blocking_enabled;
   device_signals::SettingValue os_firewall;
   std::vector<std::string> system_dns_servers;
   std::optional<std::string> enterprise_profile_id;
