@@ -333,6 +333,9 @@ class TestJobDelegate : public HttpStreamPool::Job::Delegate {
 // Convert a ClientSocketPool::GroupId to an HttpStreamKey.
 HttpStreamKey GroupIdToHttpStreamKey(const ClientSocketPool::GroupId& group_id);
 
+// Wait for the `group`'s current AttemptManager completion.
+void WaitForAttemptManagerComplete(HttpStreamPool::Group& group);
+
 }  // namespace net
 
 #endif  // NET_HTTP_HTTP_STREAM_POOL_TEST_UTIL_H_
