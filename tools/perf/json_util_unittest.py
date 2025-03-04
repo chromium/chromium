@@ -839,6 +839,44 @@ class JsonUtilTest(unittest.TestCase):
           experiment_only=experiment_only)
       self.assertEqual(got, expected)
 
+  @parameterized.expand([
+      (
+          'default_up_on_empty_string',
+          '',
+          'up',
+      ),
+      (
+          'foo_smallerIsBetter',
+          'foo_smallerIsBetter',
+          'down',
+      ),
+      (
+          'smallerIsBetter',
+          '_smallerIsBetter',
+          'down',
+      ),
+      (
+          'abc_smallerIsBetter',
+          'abc_smallerIsBetter',
+          'down',
+      ),
+      (
+          'default_up',
+          'foo_bar',
+          'up',
+      ),
+      (
+          'bar_biggerIsBetter',
+          'bar_biggerIsBetter',
+          'up',
+      ),
+  ])
+  def test_get_improvement_direction(
+      self, _, unit, expected):
+    # pylint: disable=protected-access
+    got= json_util._get_improvement_direction(unit)
+    self.assertEqual(got, expected)
+
 
 if __name__ == '__main__':
   unittest.main()
