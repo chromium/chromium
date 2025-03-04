@@ -58,7 +58,7 @@ ProtectionLevel AddFlags(ProtectionLevel protection_level,
 namespace features {
 BASE_FEATURE(kAppBoundDataReencrypt,
              "AppBoundDataReencrypt",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 SupportLevel GetAppBoundEncryptionSupportLevel(PrefService* local_state) {
