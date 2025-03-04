@@ -256,7 +256,7 @@ TEST_F(ViewAccessibilityTest, AccessibleURL) {
 }
 
 TEST_F(ViewAccessibilityTest, LazyLoadingNoOverlap) {
-  TestView* lazy_loading_view = new TestView();
+  auto lazy_loading_view = std::make_unique<TestView>();
   lazy_loading_view->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 
   EXPECT_FALSE(lazy_loading_view->GetViewAccessibility().is_initialized());
@@ -272,7 +272,7 @@ TEST_F(ViewAccessibilityTest, LazyLoadingNoOverlap) {
 }
 
 TEST_F(ViewAccessibilityTest, LazyLoadingOverlapString) {
-  TestView* lazy_loading_view = new TestView();
+  auto lazy_loading_view = std::make_unique<TestView>();
   lazy_loading_view->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 
   lazy_loading_view->lazy_loading_data_.AddStringAttribute(
@@ -283,7 +283,7 @@ TEST_F(ViewAccessibilityTest, LazyLoadingOverlapString) {
 }
 
 TEST_F(ViewAccessibilityTest, LazyLoadingOverlapBool) {
-  TestView* lazy_loading_view = new TestView();
+  auto lazy_loading_view = std::make_unique<TestView>();
   lazy_loading_view->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 
   lazy_loading_view->lazy_loading_data_.AddBoolAttribute(
@@ -294,7 +294,7 @@ TEST_F(ViewAccessibilityTest, LazyLoadingOverlapBool) {
 }
 
 TEST_F(ViewAccessibilityTest, LazyLoadingOverlapInt) {
-  TestView* lazy_loading_view = new TestView();
+  auto lazy_loading_view = std::make_unique<TestView>();
   lazy_loading_view->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 
   lazy_loading_view->lazy_loading_data_.AddIntAttribute(
@@ -306,7 +306,7 @@ TEST_F(ViewAccessibilityTest, LazyLoadingOverlapInt) {
 
 // Need to rebase to use this function.
 TEST_F(ViewAccessibilityTest, LazyLoadingOverlapFloat) {
-  TestView* lazy_loading_view = new TestView();
+  auto lazy_loading_view = std::make_unique<TestView>();
   lazy_loading_view->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 
   lazy_loading_view->lazy_loading_data_.AddFloatAttribute(
@@ -319,7 +319,7 @@ TEST_F(ViewAccessibilityTest, LazyLoadingOverlapFloat) {
 }
 
 TEST_F(ViewAccessibilityTest, LazyLoadingOverlapIntList) {
-  TestView* lazy_loading_view = new TestView();
+  auto lazy_loading_view = std::make_unique<TestView>();
   lazy_loading_view->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 
   std::vector<int32_t> list_1 = {1, 2, 3};
@@ -332,7 +332,7 @@ TEST_F(ViewAccessibilityTest, LazyLoadingOverlapIntList) {
 }
 
 TEST_F(ViewAccessibilityTest, CantSetStateInLazyLoading) {
-  TestView* lazy_loading_view = new TestView();
+  auto lazy_loading_view = std::make_unique<TestView>();
   lazy_loading_view->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 
   lazy_loading_view->lazy_loading_data_.AddState(ax::mojom::State::kCollapsed);
@@ -341,7 +341,7 @@ TEST_F(ViewAccessibilityTest, CantSetStateInLazyLoading) {
 }
 
 TEST_F(ViewAccessibilityTest, CantSetActionsInLazyLoading) {
-  TestView* lazy_loading_view = new TestView();
+  auto lazy_loading_view = std::make_unique<TestView>();
   lazy_loading_view->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 
   lazy_loading_view->lazy_loading_data_.AddAction(
@@ -351,7 +351,7 @@ TEST_F(ViewAccessibilityTest, CantSetActionsInLazyLoading) {
 }
 
 TEST_F(ViewAccessibilityTest, CantSetRelativeBoundsInLazyLoading) {
-  TestView* lazy_loading_view = new TestView();
+  auto lazy_loading_view = std::make_unique<TestView>();
   lazy_loading_view->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 
   gfx::RectF relative_bounds(0, 0, 10, 10);

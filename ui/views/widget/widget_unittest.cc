@@ -6268,11 +6268,14 @@ class ScreenshotWidgetTest : public ViewsTestBase {
   // ViewsTestBase:
   void SetUp() override {
     ViewsTestBase::SetUp();
-    widget_ = WidgetAutoclosePtr(new Widget);
-    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
-    native_widget_ = std::make_unique<MockNativeWidget>(widget());
-    ON_CALL(*native_widget(), SetAllowScreenshots(_))
-        .WillByDefault([this](bool allowed) {
+    widget_ = std::make_unique<Widget>();
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
+    native_widget_ =
+        std::make_unique<testing::NiceMock<MockNativeWidget>>(widget());
+    EXPECT_CALL(*native_widget(), SetAllowScreenshots(_))
+        .WillOnce([this](bool allowed) {
           screenshots_allowed_ = allowed;
           return true;
         });
@@ -6287,7 +6290,7 @@ class ScreenshotWidgetTest : public ViewsTestBase {
   }
 
  private:
-  WidgetAutoclosePtr widget_;
+  std::unique_ptr<Widget> widget_;
   std::unique_ptr<MockNativeWidget> native_widget_;
   std::optional<bool> screenshots_allowed_;
 };

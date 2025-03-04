@@ -44,6 +44,9 @@ class TestBarView : public AccessiblePaneView {
 
   View* GetDefaultFocusableChild() override;
 
+  // Removes `child_button` from the view and returns ownership of it.
+  std::unique_ptr<LabelButton> RemoveChildButton();
+
  private:
   void Init();
 
@@ -61,6 +64,10 @@ TestBarView::TestBarView()
 }
 
 TestBarView::~TestBarView() = default;
+
+std::unique_ptr<LabelButton> TestBarView::RemoveChildButton() {
+  return RemoveChildViewT<LabelButton>(child_button_.ExtractAsDangling());
+}
 
 void TestBarView::Init() {
   SetLayoutManager(std::make_unique<FillLayout>());
@@ -274,15 +281,7 @@ TEST_F(AccessiblePaneViewTest, PaneFocusTraversalRespectsRTL) {
             test_view->GetWidget()->GetFocusManager()->GetFocusedView());
 }
 
-// TODO(crbug.com/40832756): Re-enable this test
-#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
-#define MAYBE_DoesntCrashOnEscapeWithRemovedView \
-  DISABLED_DoesntCrashOnEscapeWithRemovedView
-#else
-#define MAYBE_DoesntCrashOnEscapeWithRemovedView \
-  DoesntCrashOnEscapeWithRemovedView
-#endif
-TEST_F(AccessiblePaneViewTest, MAYBE_DoesntCrashOnEscapeWithRemovedView) {
+TEST_F(AccessiblePaneViewTest, DoesntCrashOnEscapeWithRemovedView) {
   auto widget = std::make_unique<Widget>();
   Widget::InitParams params =
       CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
@@ -295,18 +294,17 @@ TEST_F(AccessiblePaneViewTest, MAYBE_DoesntCrashOnEscapeWithRemovedView) {
   widget->Show();
   widget->Activate();
 
-  View* v1 = test_view1->child_button();
-  View* v2 = test_view2->child_button();
   // Do the following:
-  // 1. focus |v1|.
-  // 2. focus |v2|. This makes |test_view2| remember |v1| as having focus.
-  // 3. Removes |v1| from it's parent.
-  // 4. Presses escape on |test_view2|. Escape attempts to revert focus to |v1|
-  //    (because of step 2). Because |v1| is not in a widget this should not
-  //    attempt to focus anything.
-  EXPECT_TRUE(test_view1->SetPaneFocus(v1));
-  EXPECT_TRUE(test_view2->SetPaneFocus(v2));
-  v1->parent()->RemoveChildView(v1);
+  // 1. focus |child_button| in |test_view1|.
+  // 2. focus |child_button| in |test_view2|. This makes |test_view2| remember
+  //    |test_view1|'s button as having focus.
+  // 3. Removes |child_button| from |test_view1|.
+  // 4. Presses escape on |test_view2|. Escape attempts to revert focus to the
+  //    button in |test_view1| (because of step 2). Because it is not in a
+  //    widget this should not attempt to focus anything.
+  EXPECT_TRUE(test_view1->SetPaneFocus(test_view1->child_button()));
+  EXPECT_TRUE(test_view2->SetPaneFocus(test_view2->child_button()));
+  auto orphan = test_view1->RemoveChildButton();
   // This shouldn't hit a CHECK in the FocusManager.
   EXPECT_TRUE(test_view2->AcceleratorPressed(test_view2->escape_key()));
 }
