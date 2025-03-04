@@ -12,7 +12,7 @@ function startTest() {
   testRunner.setBackingScaleFactor(2, finishTest);
   var rect = document.getElementById('rect');
   var result = document.getElementById('result');
-  result.innerHTML = 'rect.offsetHeight = ' + rect.getBoundingClientRect().height;
+  result.innerHTML = 'rect.offsetHeight = ' + rect.height.baseVal.value;
 }
 
 function finishTest() {

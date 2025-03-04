@@ -3679,6 +3679,10 @@
       base_feature: "none",
     },
     {
+      name: "RestrictGetBoundingClientRectForHiddenSVGElements",
+      status: "stable",
+    },
+    {
       // New behavior when line breaker rewinds floats. crbug.com/1499290
       name: "RewindFloats",
       status: "stable",
