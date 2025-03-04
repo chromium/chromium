@@ -1073,10 +1073,13 @@ void VideoEncoder::ProcessEncode(Request* request) {
     frame->set_timestamp(blink_timestamp);
   }
 
-  if (frame->metadata().frame_duration) {
-    frame_metadata_[frame->timestamp()] =
-        FrameMetadata{*frame->metadata().frame_duration};
+  if (frame->metadata().frame_duration.has_value()) {
+    auto duration = *frame->metadata().frame_duration;
+    if (!duration.is_zero() && duration != media::kInfiniteDuration) {
+      frame_metadata_[frame->timestamp()] = FrameMetadata{duration};
+    }
   }
+
   request->StartTracingVideoEncode(encode_options.key_frame,
                                    frame->timestamp());
 
