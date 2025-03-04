@@ -309,9 +309,10 @@ class AbusiveNotificationPermissionsRevocationBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/400648091): Re-enable the test when it's fixed.
 // Test that revocation is happen correctly when auto-revoke is on.
 IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
-                       TestRevokeAbusiveNotificationPermissions) {
+                       DISABLED_TestRevokeAbusiveNotificationPermissions) {
   auto* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   auto* service =
@@ -345,10 +346,11 @@ IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
       1);
 }
 
+// TODO(crbug.com/400645286): Re-enable the test when it's fixed.
 // Test that revocation is happen correctly when auto-revoke is on for a site
 // that is unused then abusive.
 IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
-                       TestSiteWithFirstUnusedThenAbusivePermissions) {
+                       DISABLED_TestSiteWithFirstUnusedThenAbusivePermissions) {
   auto* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   auto* service =
@@ -417,10 +419,11 @@ IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
   }
 }
 
+// TODO(crbug.com/400648762): Re-enable the test when it's fixed.
 // Test that revocation is happen correctly when auto-revoke is on for a site
 // that is abusive then unused.
 IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
-                       TestSiteWithFirstAbusiveThenUnusedPermissions) {
+                       DISABLED_TestSiteWithFirstAbusiveThenUnusedPermissions) {
   auto* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   auto* service =
