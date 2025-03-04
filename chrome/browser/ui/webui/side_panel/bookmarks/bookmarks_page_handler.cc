@@ -182,11 +182,6 @@ BookmarksPageHandler::BookmarksPageHandler(
     BookmarksSidePanelUI* bookmarks_ui)
     : receiver_(this, std::move(receiver)), bookmarks_ui_(bookmarks_ui) {}
 
-BookmarksPageHandler::BookmarksPageHandler(
-    mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver,
-    ReadingListUI* reading_list_ui)
-    : receiver_(this, std::move(receiver)), reading_list_ui_(reading_list_ui) {}
-
 BookmarksPageHandler::~BookmarksPageHandler() = default;
 
 void BookmarksPageHandler::BookmarkCurrentTabInFolder(int64_t folder_id) {
@@ -255,10 +250,8 @@ void BookmarksPageHandler::ExecuteContextMenuCommand(
     const std::vector<int64_t>& node_ids,
     side_panel::mojom::ActionSource source,
     int command_id) {
-  auto embedder =
-      bookmarks_ui_ ? bookmarks_ui_->embedder() : reading_list_ui_->embedder();
   std::unique_ptr<BookmarkContextMenu> context_menu = ContextMenuFromNodes(
-      node_ids, embedder, source,
+      node_ids, bookmarks_ui_->embedder(), source,
       bookmarks_ui_->GetShoppingListContextMenuController());
   if (context_menu && context_menu->IsCommandIdEnabled(command_id)) {
     context_menu->ExecuteCommand(command_id, 0);
@@ -334,9 +327,7 @@ void BookmarksPageHandler::ShowContextMenu(
     return;
   }
 
-  auto embedder =
-      bookmarks_ui_ ? bookmarks_ui_->embedder() : reading_list_ui_->embedder();
-
+  auto embedder = bookmarks_ui_->embedder();
   if (embedder) {
     std::unique_ptr<BookmarkContextMenu> context_menu = ContextMenuFromNodes(
         {id}, embedder, source,
