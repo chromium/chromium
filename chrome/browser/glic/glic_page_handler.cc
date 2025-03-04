@@ -29,6 +29,7 @@
 #include "chrome/browser/glic/glic_tab_data.h"
 #include "chrome/browser/glic/glic_web_client_access.h"
 #include "chrome/browser/glic/glic_window_controller.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/media/audio_ducker.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -410,8 +411,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void SetSyntheticExperimentState(const std::string& trial_name,
                                    const std::string& group_name) override {
-    glic_service_->synthetic_trial_manager()->SetSyntheticExperimentState(
-        trial_name, group_name);
+    g_browser_process->GetFeatures()
+        ->glic_synthetic_trial_manager()
+        ->SetSyntheticExperimentState(trial_name, group_name);
   }
 
   // GlicWindowController::StateObserver implementation.
