@@ -437,7 +437,6 @@
   },
   "chromium.reclient.fyi": {
     "Comparison Linux (reclient)": "reclient/Comparison Linux (reclient)/gn-args.json",
-    "Comparison Linux (reclient)(CQ)": "reclient/Comparison Linux (reclient)(CQ)/gn-args.json",
     "Linux Builder (canonical wd) (reclient compare)": "reclient/Linux Builder (canonical wd) (reclient compare)/gn-args.json",
     "Linux Builder reclient staging": "reclient/Linux Builder reclient staging/gn-args.json",
     "Linux Builder reclient staging untrusted": "reclient/Linux Builder reclient staging untrusted/gn-args.json",
