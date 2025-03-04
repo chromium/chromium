@@ -47,8 +47,7 @@ void DataSharingSDKDelegateIOS::ReadGroups(
     param.collabID = base::SysUTF8ToNSString(group_param.group_id());
     param.consistencyToken =
         base::SysUTF8ToNSString(group_param.consistency_token());
-    // TODO(crbug.com/398892359): the token_secret should be in the group param.
-    param.tokenSecret = base::SysUTF8ToNSString(params.access_token());
+    // TODO(crbug.com/398892359): Pass the token secret.
     [groupsParam addObject:param];
   }
   ShareKitReadConfiguration* config = [[ShareKitReadConfiguration alloc] init];
