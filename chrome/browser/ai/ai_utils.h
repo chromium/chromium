@@ -18,9 +18,6 @@ class AIUtils {
       optimization_guide::OptimizationGuideModelExecutionError::
           ModelExecutionError error);
 
-  // Copied from compose::Config::trimmed_inner_text_max_chars.
-  static constexpr size_t kTrimmedInnerTextMaxChars = 12000;
-
   static constexpr int kNormalizedDownloadProgressMax = 0x10000;
 };
 
