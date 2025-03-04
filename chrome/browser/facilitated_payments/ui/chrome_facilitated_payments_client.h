@@ -16,6 +16,7 @@
 namespace autofill {
 class BankAccount;
 class Ewallet;
+class StrikeDatabase;
 }  // namespace autofill
 
 namespace content {
@@ -45,7 +46,7 @@ class ChromeFacilitatedPaymentsClient
 
   // RiskDataLoader:
   void LoadRiskData(base::OnceCallback<void(const std::string&)>
-                        on_risk_data_loaded_callback) override;
+                        on_risk_data_loaded_callback) final;
 
   payments::facilitated::ContentFacilitatedPaymentsDriver*
   GetFacilitatedPaymentsDriverForFrame(
@@ -59,26 +60,27 @@ class ChromeFacilitatedPaymentsClient
 
   // FacilitatedPaymentsClient:
   // This returns nullptr if the `Profile` associated is null.
-  autofill::PaymentsDataManager* GetPaymentsDataManager() override;
+  autofill::PaymentsDataManager* GetPaymentsDataManager() final;
   // This returns nullptr if the `Profile` associated is null.
   payments::facilitated::FacilitatedPaymentsNetworkInterface*
-  GetFacilitatedPaymentsNetworkInterface() override;
+  GetFacilitatedPaymentsNetworkInterface() final;
   // This returns std::nullopt if the `Profile` associated is null.
-  std::optional<CoreAccountInfo> GetCoreAccountInfo() override;
-  bool IsInLandscapeMode() override;
-  bool IsFoldable() override;
+  std::optional<CoreAccountInfo> GetCoreAccountInfo() final;
+  bool IsInLandscapeMode() final;
+  bool IsFoldable() final;
   void ShowPixPaymentPrompt(
       base::span<const autofill::BankAccount> bank_account_suggestions,
-      base::OnceCallback<void(int64_t)> on_payment_account_selected) override;
+      base::OnceCallback<void(int64_t)> on_payment_account_selected) final;
   void ShowEwalletPaymentPrompt(
       base::span<const autofill::Ewallet> ewallet_suggestions,
-      base::OnceCallback<void(int64_t)> on_payment_account_selected) override;
-  void ShowProgressScreen() override;
-  void ShowErrorScreen() override;
-  void DismissPrompt() override;
+      base::OnceCallback<void(int64_t)> on_payment_account_selected) final;
+  void ShowProgressScreen() final;
+  void ShowErrorScreen() final;
+  void DismissPrompt() final;
   void SetUiEventListener(
       base::RepeatingCallback<void(payments::facilitated::UiEvent)>
-          ui_event_listener) override;
+          ui_event_listener) final;
+  autofill::StrikeDatabase* GetStrikeDatabase() final;
 
   payments::facilitated::ContentFacilitatedPaymentsDriverFactory
       driver_factory_;

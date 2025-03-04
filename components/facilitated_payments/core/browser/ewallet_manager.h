@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
+#include "components/facilitated_payments/core/browser/strike_databases/payment_link_suggestion_strike_database.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 #include "components/facilitated_payments/core/validation/payment_link_validator.h"
@@ -136,6 +137,10 @@ class EwalletManager {
   // being shown.
   void DismissProgressScreen();
 
+  // Retrieves the strike database for payment link suggestion. This can return
+  // nullptr so check before using.
+  PaymentLinkSuggestionStrikeDatabase* GetOrCreateStrikeDatabase();
+
   // A list of eWallets that support the payment link provided in
   // TriggerEwalletPushPayment().
   //
@@ -191,6 +196,9 @@ class EwalletManager {
 
   // A timer to make UI changes.
   base::OneShotTimer ui_timer_;
+
+  // Strike database used to check whether to prompt the FOP selector or not.
+  std::unique_ptr<PaymentLinkSuggestionStrikeDatabase> strike_database_;
 
   base::WeakPtrFactory<EwalletManager> weak_ptr_factory_{this};
 };
