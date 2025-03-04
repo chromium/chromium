@@ -7,6 +7,7 @@
 # TODO(crbug.com/394567614): Remove this target once model files have been moved.
 source_set("ui_bundled_interface") {
   sources = [
+    "autocomplete_match_wrapper.h",
     "omnibox_autocomplete_controller.h",
     "omnibox_controller.h",
     "omnibox_popup_controller.h",
@@ -18,6 +19,7 @@ source_set("ui_bundled_interface") {
 
 source_set("model") {
   sources = [
+    "autocomplete_match_wrapper.mm",
     "omnibox_autocomplete_controller.mm",
     "omnibox_controller.mm",
     "omnibox_popup_controller.mm",
@@ -29,6 +31,10 @@ source_set("model") {
     "//components/omnibox/browser",
     "//components/open_from_clipboard",
     "//ios/chrome/browser/omnibox/ui_bundled:model_interface",
+    "//ios/chrome/browser/omnibox/ui_bundled/popup",
+    "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_internal",
+    "//ios/chrome/browser/omnibox/ui_bundled/popup/row/actions",
+    "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
@@ -40,7 +46,10 @@ source_set("model") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "omnibox_autocomplete_controller_unittest.mm" ]
+  sources = [
+    "autocomplete_match_wrapper_unittest.mm",
+    "omnibox_autocomplete_controller_unittest.mm",
+  ]
   deps = [
     ":model",
     ":ui_bundled_interface",
@@ -49,9 +58,15 @@ source_set("unit_tests") {
     "//components/omnibox/browser:test_support",
     "//components/open_from_clipboard:test_support",
     "//components/prefs:test_support",
+    "//components/search_engines",
+    "//components/search_engines:test_support",
+    "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_internal",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",

@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_match_wrapper.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_match_formatter.h"
@@ -221,6 +222,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 - (void)popupController:(OmniboxPopupController*)popupController
     didUpdateHasThumbnail:(BOOL)hasThumbnail {
   self.hasThumbnail = hasThumbnail;
+  self.autocompleteMatchWrapper.hasThumbnail = hasThumbnail;
 }
 
 #pragma mark - AutocompleteResultDataSource
@@ -491,53 +493,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   }
 }
 
-/// Wraps `match` with AutocompleteMatchFormatter.
-- (AutocompleteMatchFormatter*)wrapMatch:(const AutocompleteMatch&)match
-                              fromResult:(const AutocompleteResult&)result {
-  AutocompleteMatchFormatter* formatter =
-      [AutocompleteMatchFormatter formatterWithMatch:match];
-  formatter.starred = [self.popupController isStarredMatch:match];
-  formatter.incognito = _incognito;
-  formatter.defaultSearchEngineIsGoogle = self.defaultSearchEngineIsGoogle;
-  formatter.pedalData = [self.pedalAnnotator pedalForMatch:match];
-  formatter.isMultimodal = self.hasThumbnail;
-
-  if (formatter.suggestionGroupId) {
-    omnibox::GroupId groupId =
-        static_cast<omnibox::GroupId>(formatter.suggestionGroupId.intValue);
-    omnibox::GroupSection sectionId =
-        result.GetSectionForSuggestionGroup(groupId);
-    formatter.suggestionSectionId =
-        [NSNumber numberWithInt:static_cast<int>(sectionId)];
-  }
-
-  NSMutableArray* actions = [[NSMutableArray alloc] init];
-
-  for (auto& action : match.actions) {
-    SuggestAction* suggestAction =
-        [SuggestAction actionWithOmniboxAction:action.get()];
-
-    if (!suggestAction) {
-      continue;
-    }
-
-    if (suggestAction.type != omnibox::ActionInfo_ActionType_CALL) {
-      [actions addObject:suggestAction];
-      continue;
-    }
-
-    BOOL hasDialApp = [[UIApplication sharedApplication]
-        canOpenURL:net::NSURLWithGURL(suggestAction.actionURI)];
-    if (hasDialApp) {
-      [actions addObject:suggestAction];
-    }
-  }
-
-  formatter.actionsInSuggest = actions;
-
-  return formatter;
-}
-
 /// Extract normal (non-tile) matches from `autocompleteResult`.
 - (NSMutableArray<id<AutocompleteSuggestion>>*)extractMatches:
     (const AutocompleteResult&)autocompleteResult {
@@ -557,13 +512,18 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 #if DCHECK_IS_ON()
         tileMatch.Validate();
 #endif  // DCHECK_IS_ON()
-        AutocompleteMatchFormatter* formatter =
-            [self wrapMatch:tileMatch fromResult:autocompleteResult];
+        AutocompleteMatchFormatter* formatter = [self.autocompleteMatchWrapper
+             wrapMatch:tileMatch
+            fromResult:autocompleteResult
+             isStarred:[self.popupController isStarredMatch:match]];
         [wrappedMatches addObject:formatter];
       }
     } else {
-      [wrappedMatches addObject:[self wrapMatch:match
-                                     fromResult:autocompleteResult]];
+      [wrappedMatches addObject:[self.autocompleteMatchWrapper
+                                     wrapMatch:match
+                                    fromResult:autocompleteResult
+                                     isStarred:[self.popupController
+                                                   isStarredMatch:match]]];
     }
   }
 

@@ -25,6 +25,7 @@
 #import "components/search_engines/search_engines_test_environment.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_client.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_match_wrapper.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_result_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion.h"
@@ -80,6 +81,9 @@ class OmniboxPopupMediatorTest : public PlatformTest {
         remoteSuggestionsService:nil
                          tracker:&tracker];
     mediator_.consumer = mockResultConsumer_;
+
+    autocomplete_match_wrapper_ = [[AutocompleteMatchWrapper alloc] init];
+    mediator_.autocompleteMatchWrapper = autocomplete_match_wrapper_;
   }
 
   void TearDown() override { [mediator_ disconnect]; }
@@ -90,6 +94,7 @@ class OmniboxPopupMediatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   OmniboxPopupMediator* mediator_;
+  AutocompleteMatchWrapper* autocomplete_match_wrapper_;
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
   id mockResultConsumer_;
 };
