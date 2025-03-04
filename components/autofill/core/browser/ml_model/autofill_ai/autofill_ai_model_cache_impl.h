@@ -53,8 +53,8 @@ class AutofillAiModelCacheImpl : public AutofillAiModelCache {
   using CacheEntryWithMetadata = AutofillAiModelCacheEntryWithMetadata;
   using Database = leveldb_proto::ProtoDatabase<CacheEntryWithMetadata>;
 
-  // Removes expired cache entries and limits the cache size to `max_cache_size`
-  // by removing the oldest entries.
+  // Removes expired cache entries and limits the cache size to
+  // `max_cache_size_` by removing the oldest entries.
   void TrimEntries();
   void UpdateInDatabase(FormSignature form_signature,
                         const CacheEntryWithMetadata& entry);

@@ -1252,6 +1252,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.AutofillAi.ModelCache.InitSuccess" enum="Boolean"
+    expires_after="2026-02-28">
+  <owner>jkeitel@google.com</owner>
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records initializing the AutofillAI model cache was successful. Recorded
+    when the model cache is created, i.e., at profile creation.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.AutomationRate.{FormType}" units="%"
     expires_after="2025-08-24">
   <owner>battre@chromium.org</owner>

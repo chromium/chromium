@@ -13,6 +13,7 @@
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "components/autofill/core/common/signatures.h"
@@ -112,7 +113,6 @@ void AutofillAiModelCacheImpl::UpdateInDatabase(
     FormSignature form_signature,
     const CacheEntryWithMetadata& entry) {
   if (!db_initialized_) {
-    // TODO(crbug.com/389631477): Emit metric about error.
     return;
   }
   auto entries_to_save = std::make_unique<Database::KeyEntryVector>();
@@ -124,8 +124,10 @@ void AutofillAiModelCacheImpl::UpdateInDatabase(
 
 void AutofillAiModelCacheImpl::OnDatabaseInit(
     leveldb_proto::Enums::InitStatus status) {
-  if (status != leveldb_proto::Enums::InitStatus::kOK) {
-    // TODO(crbug.com/389631477): Emit metric about error.
+  const bool success = status == leveldb_proto::Enums::InitStatus::kOK;
+  base::UmaHistogramBoolean("Autofill.AutofillAi.ModelCache.InitSuccess",
+                            success);
+  if (!success) {
     return;
   }
   db_initialized_ = true;
