@@ -137,7 +137,7 @@ class TabStripActionContainer : public views::View,
       TabStripController* tab_strip_controller);
   void OnGlicButtonClicked();
   void OnGlicButtonDismissed();
-
+  void OnGlicButtonHovered();
 #endif
 
   void OnTabDeclutterButtonClicked();

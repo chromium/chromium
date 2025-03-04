@@ -46,7 +46,7 @@ void SetModelExecutionCapability(Profile* profile, bool enabled) {
 }
 
 void SetFRECompletion(Profile* profile, bool completed) {
-  profile->GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, true);
+  profile->GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, completed);
 }
 
 }  // namespace glic

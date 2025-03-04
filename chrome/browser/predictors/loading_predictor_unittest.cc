@@ -49,21 +49,24 @@ class MockPreconnectManager : public PreconnectManager {
   MOCK_METHOD2(StartProxy,
                void(const GURL& url,
                     const std::vector<PreconnectRequest>& requests));
-  MOCK_METHOD3(
+  MOCK_METHOD4(
       StartPreresolveHost,
       void(const GURL& url,
            const net::NetworkAnonymizationKey& network_anonymization_key,
-           net::NetworkTrafficAnnotationTag traffic_annotation));
-  MOCK_METHOD3(
+           net::NetworkTrafficAnnotationTag traffic_annotation,
+           const content::StoragePartitionConfig*));
+  MOCK_METHOD4(
       StartPreresolveHosts,
       void(const std::vector<GURL>& urls,
            const net::NetworkAnonymizationKey& network_anonymization_key,
-           net::NetworkTrafficAnnotationTag traffic_annotation));
-  MOCK_METHOD4(StartPreconnectUrl,
+           net::NetworkTrafficAnnotationTag traffic_annotation,
+           const content::StoragePartitionConfig*));
+  MOCK_METHOD5(StartPreconnectUrl,
                void(const GURL& url,
                     bool allow_credentials,
                     net::NetworkAnonymizationKey network_anonymization_key,
-                    net::NetworkTrafficAnnotationTag traffic_annotation));
+                    net::NetworkTrafficAnnotationTag traffic_annotation,
+                    const content::StoragePartitionConfig*));
   MOCK_METHOD1(Stop, void(const GURL& url));
 
   void Start(const GURL& url,
@@ -346,7 +349,7 @@ TEST_F(LoadingPredictorPreconnectTest, TestHandleOmniboxHint) {
       *mock_preconnect_manager_,
       StartPreconnectUrl(preconnect_suggestion, true,
                          CreateNetworkanonymization_key(preconnect_suggestion),
-                         kLoadingPredictorPreconnectTrafficAnnotation));
+                         kLoadingPredictorPreconnectTrafficAnnotation, _));
   predictor_->PrepareForPageLoad(/*initiator_origin=*/std::nullopt,
                                  preconnect_suggestion, HintOrigin::OMNIBOX,
                                  true);
@@ -362,7 +365,7 @@ TEST_F(LoadingPredictorPreconnectTest, TestHandleOmniboxHint) {
       *mock_preconnect_manager_,
       StartPreresolveHost(preresolve_suggestion,
                           net::NetworkAnonymizationKey::CreateSameSite(site),
-                          kLoadingPredictorPreconnectTrafficAnnotation));
+                          kLoadingPredictorPreconnectTrafficAnnotation, _));
   predictor_->PrepareForPageLoad(/*initiator_origin=*/std::nullopt,
                                  preresolve_suggestion, HintOrigin::OMNIBOX,
                                  false);
@@ -630,7 +633,7 @@ TEST_F(LoadingPredictorPreconnectTest, TestHandleHintWhenOnlyHttpsAllowed) {
       *mock_preconnect_manager_,
       StartPreconnectUrl(main_frame_url_https, true,
                          CreateNetworkanonymization_key(main_frame_url_https),
-                         kLoadingPredictorPreconnectTrafficAnnotation));
+                         kLoadingPredictorPreconnectTrafficAnnotation, _));
   EXPECT_TRUE(predictor_->HandleHintByOrigin(main_frame_url_https,
                                              /*preconnectable=*/true,
                                              /*only_allow_https=*/true,
@@ -651,7 +654,7 @@ TEST_F(LoadingPredictorPreconnectTest,
       *mock_preconnect_manager_,
       StartPreresolveHost(main_frame_url_https,
                           CreateNetworkanonymization_key(main_frame_url_https),
-                          kLoadingPredictorPreconnectTrafficAnnotation));
+                          kLoadingPredictorPreconnectTrafficAnnotation, _));
   EXPECT_TRUE(predictor_->HandleHintByOrigin(main_frame_url_https,
                                              /*preconnectable=*/false,
                                              /*only_allow_https=*/true,
