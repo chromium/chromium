@@ -51,13 +51,13 @@ const char kSearchAggregatorPolicySuggestUrl[] =
     "https://www.aggregator.com/suggest";
 
 const char kSearchAggregatorPolicySuggestPath[] = "/suggest";
-const std::u16string kSearchInput = u"@aggregator abc";
+const std::u16string kSearchInput = u"@aggregator john d";
 
 const std::string kGoodJsonResponse = base::StringPrintf(
     R"({
         "querySuggestions": [
           {
-            "suggestion": "Document 1",
+            "suggestion": "John's Demise",
             "dataStore": []
           }
         ],
@@ -91,18 +91,18 @@ const std::string kGoodJsonResponse = base::StringPrintf(
         ],
         "contentSuggestions": [
           {
-            "suggestion": "critical crash",
+            "suggestion": "John's Document",
             "contentType": "THIRD_PARTY",
             "document": {
               "name": "Document 2",
               "structData": {
-                "title": "Critical Crash",
+                "title": "John's Document",
                 "uri": "www.example.com"
               },
               "derivedStructData": {
                 "source_type": "jira",
                 "entity_type": "issue",
-                "title": "Critical Crash",
+                "title": "John's Document",
                 "link": "https://www.example.com"
               }
             },
@@ -251,6 +251,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest, GoodJsonResponse) {
   AutocompleteInput input(
       kSearchInput, metrics::OmniboxEventProto::NTP,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
+  input.set_keyword_mode_entry_method(metrics::OmniboxEventProto::TAB);
   controller()->Start(input);
 
   // Respond for SearchAggregator request.
@@ -258,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest, GoodJsonResponse) {
   EXPECT_EQ(search_aggregator_response.http_request()->method,
             net::test_server::METHOD_POST);
   EXPECT_EQ(search_aggregator_response.http_request()->content,
-            R"({"query":"@aggregator abc","suggestionTypes":[2,3,5]})");
+            R"({"query":"john d","suggestionTypes":[1,2,3,5]})");
   search_aggregator_response.Send(net::HTTP_OK, "application/json",
                                   kGoodJsonResponse);
   search_aggregator_response.Done();
@@ -272,36 +273,38 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest, GoodJsonResponse) {
 
   EXPECT_THAT(
       std::vector<AutocompleteMatch>(result.begin(), result.end()),
-      testing::ElementsAreArray(std::vector<
-                                testing::Matcher<AutocompleteMatch>>({
-          AllOf(Field(&AutocompleteMatch::type,
-                      AutocompleteMatchType::SEARCH_OTHER_ENGINE),
-                Field(&AutocompleteMatch::contents, u"abc"),
-                Field(&AutocompleteMatch::description, u"Aggregator Search"),
-                Field(&AutocompleteMatch::destination_url,
-                      GURL("https://www.aggregator.com/search?q=abc"))),
-          AllOf(Field(&AutocompleteMatch::type,
-                      AutocompleteMatchType::SEARCH_SUGGEST),
-                Field(&AutocompleteMatch::contents, u"Document 1"),
-                Field(&AutocompleteMatch::description, u""),
-                Field(&AutocompleteMatch::destination_url,
-                      GURL("https://www.aggregator.com/search?q=Document+1"))),
-          AllOf(Field(&AutocompleteMatch::type,
-                      AutocompleteMatchType::NAVSUGGEST),
-                Field(&AutocompleteMatch::contents, u"john@example.com"),
-                Field(&AutocompleteMatch::description, u"John Doe"),
-                Field(&AutocompleteMatch::destination_url,
-                      GURL("https://www.aggregator.com/"
-                           "search?q=john%40example.com")),
-                Field(&AutocompleteMatch::image_url,
-                      GURL("https://example.com/image.png"))),
-          AllOf(Field(&AutocompleteMatch::type,
-                      AutocompleteMatchType::NAVSUGGEST),
-                Field(&AutocompleteMatch::contents, u""),
-                Field(&AutocompleteMatch::description, u"Critical Crash"),
-                Field(&AutocompleteMatch::destination_url,
-                      GURL("https://www.example.com/"))),
-      })));
+      testing::ElementsAreArray(
+          std::vector<testing::Matcher<AutocompleteMatch>>({
+              AllOf(
+                  Field(&AutocompleteMatch::type,
+                        AutocompleteMatchType::SEARCH_OTHER_ENGINE),
+                  Field(&AutocompleteMatch::contents, u"john d"),
+                  Field(&AutocompleteMatch::description, u"Aggregator Search"),
+                  Field(&AutocompleteMatch::destination_url,
+                        GURL("https://www.aggregator.com/search?q=john+d"))),
+              AllOf(Field(&AutocompleteMatch::type,
+                          AutocompleteMatchType::SEARCH_SUGGEST),
+                    Field(&AutocompleteMatch::contents, u"John's Demise"),
+                    Field(&AutocompleteMatch::description, u""),
+                    Field(&AutocompleteMatch::destination_url,
+                          GURL("https://www.aggregator.com/"
+                               "search?q=John%27s+Demise"))),
+              AllOf(Field(&AutocompleteMatch::type,
+                          AutocompleteMatchType::NAVSUGGEST),
+                    Field(&AutocompleteMatch::contents, u"john@example.com"),
+                    Field(&AutocompleteMatch::description, u"John Doe"),
+                    Field(&AutocompleteMatch::destination_url,
+                          GURL("https://www.aggregator.com/"
+                               "search?q=john%40example.com")),
+                    Field(&AutocompleteMatch::image_url,
+                          GURL("https://example.com/image.png"))),
+              AllOf(Field(&AutocompleteMatch::type,
+                          AutocompleteMatchType::NAVSUGGEST),
+                    Field(&AutocompleteMatch::contents, u""),
+                    Field(&AutocompleteMatch::description, u"John's Document"),
+                    Field(&AutocompleteMatch::destination_url,
+                          GURL("https://www.example.com/"))),
+          })));
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest, RedirectedResponse) {
@@ -325,6 +328,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest, RedirectedResponse) {
   AutocompleteInput input(
       kSearchInput, metrics::OmniboxEventProto::NTP,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
+  input.set_keyword_mode_entry_method(metrics::OmniboxEventProto::TAB);
   controller()->Start(input);
 
   // Redirect response.
@@ -395,6 +399,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxSearchAggregatorHTTPErrorTest,
   AutocompleteInput input(
       kSearchInput, metrics::OmniboxEventProto::NTP,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
+  input.set_keyword_mode_entry_method(metrics::OmniboxEventProto::TAB);
   controller()->Start(input);
 
   // Respond for SearchAggregator request.
@@ -402,7 +407,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxSearchAggregatorHTTPErrorTest,
   EXPECT_EQ(search_aggregator_response()->http_request()->method,
             net::test_server::METHOD_POST);
   EXPECT_EQ(search_aggregator_response()->http_request()->content,
-            R"({"query":"@aggregator abc","suggestionTypes":[2,3,5]})");
+            R"({"query":"john d","suggestionTypes":[1,2,3,5]})");
   search_aggregator_response()->Send(GetHttpStatusCode());
   search_aggregator_response()->Done();
 
@@ -416,10 +421,10 @@ IN_PROC_BROWSER_TEST_P(OmniboxSearchAggregatorHTTPErrorTest,
       result.default_match(),
       AllOf(Field(&AutocompleteMatch::type,
                   AutocompleteMatchType::SEARCH_OTHER_ENGINE),
-            Field(&AutocompleteMatch::contents, u"abc"),
+            Field(&AutocompleteMatch::contents, u"john d"),
             Field(&AutocompleteMatch::description, u"Aggregator Search"),
             Field(&AutocompleteMatch::destination_url,
-                  GURL("https://www.aggregator.com/search?q=abc"))));
+                  GURL("https://www.aggregator.com/search?q=john+d"))));
 }
 
 INSTANTIATE_TEST_SUITE_P(

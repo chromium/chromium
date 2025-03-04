@@ -4,8 +4,13 @@
 
 #include "enterprise_search_aggregator_provider.h"
 
+#include <algorithm>
+#include <functional>
+#include <iterator>
 #include <memory>
 #include <optional>
+#include <ranges>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
@@ -34,15 +40,50 @@
 
 namespace {
 
-// Limit per enterprise suggestion type, not total matches.
-size_t kMaxEnterpriseMatches = 40;
+// Limit the number matches created for each type, not total, as a performance
+// guard.
+constexpr size_t kMaxMatchesCreatedPerType = 40;
+
+// Limit the number of matches shown for each type, not total, for unscoped
+// inputs. Needed to prevent inputs like 'joe' or 'doc' from flooding the
+// results with `PEOPLE` or `CONTENT` suggestions. More matches may be created
+// in order to ensure the best matches are shown.
+constexpr size_t kMaxUnscopedMatchesShownPerType = 2;
+
+// Score matches based on text similarity of the input and match fields.
+// - Strong matches are input words at least 3 chars long that match the
+//   suggestion content or description.
+// - Weak matches are input words shorter than 3 chars or that match elsewhere
+//   in the match fields.
+constexpr size_t kMinCharForStrongTextMatch = 3;
+
+// If a) every input word is a strong match, and b) there are at least 2 such
+// matches, score matches 1000.
+constexpr size_t kMinWordsForFullTextMatchBoost = 2;
+constexpr int kFullTextMatchScore = 1000;
+
+// Otherwise, score using a weighted sum of the # of strong and weak matches.
+constexpr int kScorePerStrongTextMatch = 400;
+constexpr int kScorePerWeakTextMatch = 100;
+constexpr int kMaxTextScore = 800;
+
+// Shift people relevances higher than calculated with the above constants. Most
+// people-seeking inputs will have 2 words (firstname, lastname) and scoring
+// these 800 wouldn't reliably allow them to make it to the final results.
+constexpr int kPeopleScoreBoost = 100;
+
+// Always show at least 2 suggestions if available. Only show more if they're
+// scored at least 500; i.e. had at least 1 strong and 1 weak match.
+constexpr size_t kMaxLowQualityMatches = 2;
+constexpr int kLowQualityThreshold =
+    kScorePerStrongTextMatch + kScorePerWeakTextMatch;
 
 // Helper for reading possibly null paths from `base::Value::Dict`.
 std::string ptr_to_string(const std::string* ptr) {
   return ptr ? *ptr : "";
 }
 
-// Helper for getting the correct TemplateURL based on the input.
+// Helper for getting the correct `TemplateURL` based on the input.
 const TemplateURL* AdjustTemplateURL(AutocompleteInput* input,
                                      TemplateURLService* turl_service) {
   DCHECK(turl_service);
@@ -50,6 +91,107 @@ const TemplateURL* AdjustTemplateURL(AutocompleteInput* input,
              ? AutocompleteInput::GetSubstitutingTemplateURLForInput(
                    turl_service, input)
              : turl_service->GetEnterpriseSearchAggregatorEngine();
+}
+
+// Helpers to convert vector of strings to sets of words.
+std::set<std::u16string> GetWords(std::vector<std::u16string> strings) {
+  std::set<std::u16string> words = {};
+  for (const auto& string : strings) {
+    auto string_words = String16VectorFromString16(
+        bookmarks::CleanUpTitleForMatching(string), nullptr);
+    std::move(string_words.begin(), string_words.end(),
+              std::inserter(words, words.begin()));
+  }
+  return words;
+}
+std::set<std::u16string> GetWords(std::vector<std::string> strings) {
+  std::vector<std::u16string> u16strings;
+  std::ranges::transform(
+      strings, std::back_inserter(u16strings),
+      [](const auto& string) { return base::UTF8ToUTF16(string); });
+  return GetWords(u16strings);
+}
+
+// Whether `word` prefixes any of `potential_match_words. E.g. 'goo' prefixes
+// 'goo' and 'google'.
+bool WordMatchesAnyOf(std::u16string word,
+                      std::set<std::u16string> potential_match_words) {
+  return std::ranges::any_of(
+      potential_match_words, [&](const auto& match_word) {
+        return base::StartsWith(match_word, word, base::CompareCase::SENSITIVE);
+      });
+}
+
+// Returns 0 if the match should be filtered out.
+int CalculateRelevance(
+    std::set<std::u16string> input_words,
+    AutocompleteMatch::EnterpriseSearchAggregatorType suggestion_type,
+    const std::string& description,
+    const std::string& contents,
+    const std::vector<std::string> additional_scoring_fields) {
+  // Split match fields into words.
+  std::set<std::u16string> strong_scoring_words =
+      GetWords({description, contents});
+  std::set<std::u16string> weak_scoring_words =
+      GetWords(additional_scoring_fields);
+
+  // Compute text similarity of the input and match fields. See comment for
+  // `kMinCharForStrongTextMatch`.
+  size_t strong_matches = 0;
+  size_t weak_matches = 0;
+  for (const auto& input_word : input_words) {
+    if (WordMatchesAnyOf(input_word, strong_scoring_words)) {
+      if (input_word.size() >= kMinCharForStrongTextMatch) {
+        strong_matches++;
+      } else {
+        weak_matches++;
+      }
+    } else if (WordMatchesAnyOf(input_word, weak_scoring_words)) {
+      weak_matches++;
+    }
+  }
+
+  // Skip if there aren't at least 1 strong match or 2 weak matches.
+  if (strong_matches == 0 && weak_matches < 2) {
+    return 0;
+  }
+
+  // Skip when less than half the input words had matches. The backend
+  // prioritizes high recall, whereas most omnibox suggestions require every
+  // input word to match.
+  if ((strong_matches + weak_matches) * 2 < input_words.size()) {
+    return 0;
+  }
+
+  // Compute `relevance` using text similarity. See comments for
+  // `kMinWordsForFullTextMatchBoost` & `kScorePerStrongTextMatch`.
+  CHECK_LE(kMaxTextScore, kFullTextMatchScore);
+  int relevance = 0;
+  if (strong_matches == input_words.size() &&
+      strong_matches >= kMinWordsForFullTextMatchBoost) {
+    relevance = kFullTextMatchScore;
+  } else {
+    relevance =
+        std::min(static_cast<int>(strong_matches) * kScorePerStrongTextMatch +
+                     static_cast<int>(weak_matches) * kScorePerWeakTextMatch,
+                 kMaxTextScore);
+  }
+
+  // People suggestions must match every input word. Otherwise, they feel bad;
+  // e.g. 'omnibox c' shouldn't suggest 'Charles Aznavour'. This doesn't apply
+  // to `QUERY` and `CONTENT` types because those might have fuzzy matches or
+  // matches within their contents.
+  if (suggestion_type ==
+      AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE) {
+    if (strong_matches + weak_matches < input_words.size()) {
+      return 0;
+    } else {
+      // See comment for `kPeopleScoreBoost`.
+      relevance += kPeopleScoreBoost;
+    }
+  }
+
+  return relevance;
 }
 
 }  // namespace
@@ -257,6 +399,9 @@ void EnterpriseSearchAggregatorProvider::UpdateResults(
 void EnterpriseSearchAggregatorProvider::
     ParseEnterpriseSearchAggregatorSearchResults(
         const base::Value::Dict& root_val) {
+  // Break the input into words to avoid redoing this for every match.
+  std::set<std::u16string> input_words = GetWords({adjusted_input_.text()});
+
   // Parse the results.
   const base::Value::List* queryResults = root_val.FindList("querySuggestions");
   const base::Value::List* peopleResults =
@@ -264,18 +409,32 @@ void EnterpriseSearchAggregatorProvider::
   const base::Value::List* contentResults =
       root_val.FindList("contentSuggestions");
 
-  ParseResultList(queryResults,
+  ParseResultList(input_words, queryResults,
                   /*suggestion_type=*/SuggestionType::QUERY,
                   /*is_navigation=*/false);
-  ParseResultList(peopleResults,
+  ParseResultList(input_words, peopleResults,
                   /*suggestion_type=*/SuggestionType::PEOPLE,
                   /*is_navigation=*/true);
-  ParseResultList(contentResults,
+  ParseResultList(input_words, contentResults,
                   /*suggestion_type=*/SuggestionType::CONTENT,
                   /*is_navigation=*/true);
+
+  // Limit low-quality suggestions. See comment for `kMaxLowQualityMatches`.
+  std::ranges::sort(matches_, std::ranges::greater{},
+                    &AutocompleteMatch::relevance);
+  size_t matches_to_keep = kMaxLowQualityMatches;
+  if (matches_.size() > matches_to_keep) {
+    for (; matches_to_keep < matches_.size(); ++matches_to_keep) {
+      if (matches_[matches_to_keep].relevance < kLowQualityThreshold) {
+        break;
+      }
+    }
+    matches_.erase(matches_.begin() + matches_to_keep, matches_.end());
+  }
 }
 
 void EnterpriseSearchAggregatorProvider::ParseResultList(
+    std::set<std::u16string> input_words,
     const base::Value::List* results,
     SuggestionType suggestion_type,
     bool is_navigation) {
@@ -283,16 +442,14 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
     return;
   }
 
-  size_t num_results = results->size();
-  // Limit the number items we add to `matches_`.
-  if (num_results > kMaxEnterpriseMatches) {
-    num_results = kMaxEnterpriseMatches;
-  }
+  // Limit # of matches created. See comment for `kMaxMatchesCreatedPerType`.
+  size_t num_results = std::min(results->size(), kMaxMatchesCreatedPerType);
 
+  ACMatches matches;
   for (size_t i = 0; i < num_results; i++) {
     const base::Value& result_value = (*results)[i];
     if (!result_value.is_dict()) {
-      return;
+      continue;
     }
 
     const base::Value::Dict& result = result_value.GetDict();
@@ -309,7 +466,7 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
     std::string icon_url;
     if (suggestion_type == SuggestionType::PEOPLE) {
       image_url = ptr_to_string(result.FindStringByDottedPath(
-        "document.derivedStructData.displayPhoto.url"));
+          "document.derivedStructData.displayPhoto.url"));
     } else if (suggestion_type == SuggestionType::CONTENT) {
       icon_url = ptr_to_string(result.FindStringByDottedPath("iconUri"));
     }
@@ -326,12 +483,32 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
       continue;
     }
 
-    AutocompleteMatch match = CreateMatch(
-        suggestion_type, is_navigation, 1000 - int(matches_.size()), url,
-        image_url, icon_url, base::UTF8ToUTF16(description),
-        base::UTF8ToUTF16(contents));
-    matches_.push_back(match);
+    auto additional_scoring_fields =
+        GetAdditionalScoringFields(result, suggestion_type);
+    int relevance =
+        CalculateRelevance(input_words, suggestion_type, description, contents,
+                           additional_scoring_fields);
+    if (!relevance) {
+      continue;
+    }
+
+    matches.push_back(CreateMatch(
+        suggestion_type, is_navigation, relevance, url, image_url, icon_url,
+        base::UTF8ToUTF16(description), base::UTF8ToUTF16(contents)));
   }
+
+  // Limit # of matches added. See comment for
+  // `kMaxUnscopedMatchesShownPerType`.
+  if (!adjusted_input_.InKeywordMode() &&
+      kMaxUnscopedMatchesShownPerType < matches.size()) {
+    std::ranges::partial_sort(
+        matches, matches.begin() + kMaxUnscopedMatchesShownPerType,
+        std::ranges::greater{}, &AutocompleteMatch::relevance);
+    matches.erase(matches.begin() + kMaxUnscopedMatchesShownPerType,
+                  matches.end());
+  }
+
+  std::ranges::move(matches, std::back_inserter(matches_));
 }
 
 std::string EnterpriseSearchAggregatorProvider::GetMatchDestinationUrl(
@@ -378,6 +555,35 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchContents(
         "document.derivedStructData.name.userName"));
   }
   return "";
+}
+
+std::vector<std::string>
+EnterpriseSearchAggregatorProvider::GetAdditionalScoringFields(
+    const base::Value::Dict& result,
+    SuggestionType suggestion_type) const {
+  // Should not return any fields already included in `GetMatchDescription()` &
+  // `GetMatchContents()`.
+  if (suggestion_type == SuggestionType::PEOPLE) {
+    return {
+        ptr_to_string(result.FindString("suggestion")),
+        ptr_to_string(result.FindStringByDottedPath(
+            "document.derivedStructData.name.givenName")),
+        ptr_to_string(result.FindStringByDottedPath(
+            "document.derivedStructData.name.familyName")),
+        ptr_to_string(result.FindStringByDottedPath(
+            "document.derivedStructData.emails.value")),
+    };
+  } else if (suggestion_type == SuggestionType::CONTENT) {
+    return {
+        ptr_to_string(
+            result.FindStringByDottedPath("document.derivedStructData.owner")),
+        ptr_to_string(result.FindStringByDottedPath(
+            "document.derivedStructData.mime_type")),
+        ptr_to_string(result.FindStringByDottedPath(
+            "document.derivedStructData.owner_email")),
+    };
+  }
+  return {};
 }
 
 AutocompleteMatch EnterpriseSearchAggregatorProvider::CreateMatch(
