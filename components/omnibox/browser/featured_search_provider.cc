@@ -205,8 +205,10 @@ void FeaturedSearchProvider::AddFeaturedKeywordMatches(
           turl->is_active() == TemplateURLData::ActiveStatus::kTrue) {
         // Don't add the expanded set of starter pack engines unless the feature
         // is enabled.
-        if (!OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
-            turl->starter_pack_id() > TemplateURLStarterPackData::kTabs) {
+        if ((turl->starter_pack_id() == TemplateURLStarterPackData::kGemini &&
+             !OmniboxFieldTrial::IsStarterPackExpansionEnabled()) ||
+            (turl->starter_pack_id() == TemplateURLStarterPackData::kPage &&
+             !OmniboxFieldTrial::IsStarterPackPageEnabled())) {
           continue;
         }
         AddStarterPackMatch(*turl, input);

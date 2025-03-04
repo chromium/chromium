@@ -116,8 +116,11 @@ void TemplateURLTableModel::Reload() {
   for (TemplateURL* template_url : urls) {
     // Don't include the expanded set of starter pack keywords if the expansion
     // feature flag is not enabled.
-    if (!OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
-        template_url->starter_pack_id() > TemplateURLStarterPackData::kTabs) {
+    if ((template_url->starter_pack_id() ==
+             TemplateURLStarterPackData::kGemini &&
+         !OmniboxFieldTrial::IsStarterPackExpansionEnabled()) ||
+        (template_url->starter_pack_id() == TemplateURLStarterPackData::kPage &&
+         !OmniboxFieldTrial::IsStarterPackPageEnabled())) {
       continue;
     }
 

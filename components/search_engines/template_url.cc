@@ -1828,6 +1828,8 @@ BuiltinEngineType TemplateURL::GetBuiltinEngineType() const {
         return KEYWORD_MODE_STARTER_PACK_TABS;
       case TemplateURLStarterPackData::kGemini:
         return KEYWORD_MODE_STARTER_PACK_GEMINI;
+      case TemplateURLStarterPackData::kPage:
+        return KEYWORD_MODE_STARTER_PACK_PAGE;
       default:
         // In theory, this code path should never be reached.  However, it's
         // possible that when expanding the starter pack, a new entry may

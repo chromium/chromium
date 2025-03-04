@@ -320,6 +320,9 @@ BASE_FEATURE(kStarterPackExpansion,
 // users to certain starter pack engines.
 BASE_FEATURE(kStarterPackIPH, "StarterPackIPH", DISABLED);
 
+// Enables the @page starter pack scope.
+BASE_FEATURE(kStarterPackPage, "StarterPackPage", DISABLED);
+
 // If enabled, |SearchProvider| will not function in Zero Suggest.
 BASE_FEATURE(kAblateSearchProviderWarmup,
              "AblateSearchProviderWarmup",
