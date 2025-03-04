@@ -71,12 +71,7 @@ interface Login {
   [MinVersion=3]
   NotifyOnExternalLogoutDone@16();
 
-  // Shows the Guest session confirmation dialog. The dialog explains how to
-  // open a guest session from the login screen. If the user confirms, they
-  // will be logged out of their session, and sent back to the login screen
-  // where they can start a new guest session.
-  [MinVersion=4]
-  ShowGuestSessionConfirmationDialog@17();
+  // ShowGuestSessionConfirmationDialog@17 was removed.
 
   // Removed methods.
   REMOVED_0@0(string? password) => (string? error);
