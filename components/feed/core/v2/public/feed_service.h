@@ -87,6 +87,10 @@ class FeedService : public KeyedService {
         size_t follow_count) = 0;
     // Registers a synthetic field trial "FeedUserSettings".
     virtual void RegisterFeedUserSettingsFieldTrial(std::string_view group) = 0;
+    // Returns the server-provided feed launch CUI metadata.
+    virtual const std::string& GetFeedLaunchCuiMetadata() const = 0;
+    // Sets the server-provided feed launch CUI metadata.
+    virtual void SetFeedLaunchCuiMetadata(const std::string& metadata) = 0;
   };
 
   // Construct a FeedService given an already constructed FeedStream.
@@ -139,6 +143,9 @@ class FeedService : public KeyedService {
 
   // Returns the synthetic field experiments.
   const Experiments& GetExperiments() const;
+
+  // Returns the server-provided feed launch CUI metadata.
+  const std::string& GetFeedLaunchCuiMetadata() const;
 
  private:
   class StreamDelegateImpl;

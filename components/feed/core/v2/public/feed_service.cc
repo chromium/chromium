@@ -195,6 +195,9 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
   void RegisterFeedUserSettingsFieldTrial(std::string_view group) override {
     service_delegate_->RegisterFeedUserSettingsFieldTrial(group);
   }
+  void SetFeedLaunchCuiMetadata(const std::string& metadata) override {
+    service_delegate_->SetFeedLaunchCuiMetadata(metadata);
+  }
 
   void Shutdown() {
     eula_notifier_.reset();
@@ -327,6 +330,10 @@ void FeedService::ClearCachedData() {
 
 const Experiments& FeedService::GetExperiments() const {
   return delegate_->GetExperiments();
+}
+
+const std::string& FeedService::GetFeedLaunchCuiMetadata() const {
+  return delegate_->GetFeedLaunchCuiMetadata();
 }
 
 // static

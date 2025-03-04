@@ -144,9 +144,16 @@ class FeedServiceDelegateImpl : public FeedService::Delegate {
         "FeedUserSettings", group);
   }
   const Experiments& GetExperiments() const override { return experiments_; }
+  const std::string& GetFeedLaunchCuiMetadata() const override {
+    return feed_launch_cui_metadata_;
+  }
+  void SetFeedLaunchCuiMetadata(const std::string& metadata) override {
+    feed_launch_cui_metadata_ = metadata;
+  }
 
  private:
   Experiments experiments_;
+  std::string feed_launch_cui_metadata_;
 };
 
 // static

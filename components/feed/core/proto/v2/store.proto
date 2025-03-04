@@ -152,6 +152,8 @@ message Metadata {
   // feedstore_util::kMaxMostRecentContentHashes. The IDs are stored in the
   // ascending order of the time when the content is viewed by the user.
   repeated uint32 most_recent_viewed_content_hashes = 11;
+  // Serialized server-provided feed launch CUI metadata.
+  bytes feed_launch_cui_metadata = 12;
 
   reserved 10;
 }
