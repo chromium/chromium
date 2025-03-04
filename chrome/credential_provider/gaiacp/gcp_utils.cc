@@ -74,7 +74,7 @@ constexpr base::FilePath::CharType kCredentialProviderFolder[] =
 constexpr wchar_t kDefaultMdmUrl[] =
     L"https://deviceenrollmentforwindows.googleapis.com/v1/discovery";
 
-constexpr int kMaxNumConsecutiveUploadDeviceFailures = 3;
+constexpr int kMaxNumConsecutiveUploadDeviceFailures = 7;
 
 // The following staleness time limits are set to 5 days to prevent file fetch
 // operations unnecessarily by GCPW when machine is offline during weekends and
