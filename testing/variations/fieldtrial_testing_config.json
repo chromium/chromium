@@ -25854,13 +25854,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled:true,CandidateFactors:1.02|1.0|0.95,DelayBasedCandidate:true,HigherBwBiasFactor:0.0002,HigherLogBwBiasFactor:0.02,ObservationDurationLowerBound:250ms,InstantUpperBoundBwBalance:75kbps,BwRampupUpperBoundFactor:1000000.0,InstantUpperBoundTemporalWeightFactor:0.9,TemporalWeightFactor:0.9,MaxIncreaseFactor:1.3,NewtonStepSize:0.75,InherentLossUpperBoundBwBalance:75kbps,LossThresholdOfHighBandwidthPreference:0.15,_20220905"
-                },
-                {
-                    "name": "Enabled:true,CandidateFactors:1.02|1.0|0.95,DelayBasedCandidate:true,HigherBwBiasFactor:0.0002,HigherLogBwBiasFactor:0.02,ObservationDurationLowerBound:250ms,InstantUpperBoundBwBalance:75kbps,BwRampupUpperBoundFactor:1000000.0,InstantUpperBoundTemporalWeightFactor:0.9,TemporalWeightFactor:0.9,MaxIncreaseFactor:1.3,NewtonStepSize:0.75,InherentLossUpperBoundBwBalance:75kbps,LossThresholdOfHighBandwidthPreference:0.15,NotIncreaseIfInherentLossLessThanAverageLoss:true,_20220905"
-                },
-                {
-                    "name": "Enabled:true,CandidateFactors:1.02|1.0|0.95,DelayBasedCandidate:true,HigherBwBiasFactor:0.0002,HigherLogBwBiasFactor:0.02,ObservationDurationLowerBound:250ms,InstantUpperBoundBwBalance:75kbps,BwRampupUpperBoundFactor:1000000.0,InstantUpperBoundTemporalWeightFactor:0.9,TemporalWeightFactor:0.9,MaxIncreaseFactor:1.3,NewtonStepSize:0.75,InherentLossUpperBoundBwBalance:75kbps,LossThresholdOfHighBandwidthPreference:0.15,NotIncreaseIfInherentLossLessThanAverageLoss:true,TrendlineIntegrationEnabled:true,TrendlineObservationsWindowSize:2,_20220905"
+                    "name": "Enabled:true,InstantUpperBoundBwBalance:100kbps,InherentLossUpperBoundBwBalance:100kbps,LossThresholdOfHighBandwidthPreference:0.2,UseByteLossRate:true,ObservationWindowSize:15,BwRampupUpperBoundFactor:1.5,BwRampupUpperBoundInHoldFactor:1.2,BwRampupUpperBoundHoldThreshold:1.3,BoundBestCandidate:true,UseInStartPhase:true,LowerBoundByAckedRateFactor:1.0,HoldDurationFactor:2.0,PaddingDuration:2000ms,PaceAtLossBasedEstimate:true"
                 }
             ]
         }
