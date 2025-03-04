@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -143,9 +144,11 @@ class ProfileReportGeneratorTest : public ::testing::Test {
 
   std::unique_ptr<em::ChromeUserProfileInfo> GenerateReport(
       const base::FilePath& path) {
-    std::unique_ptr<em::ChromeUserProfileInfo> report =
-        generator_.MaybeGenerate(path, ReportType::kFull);
-    return report;
+    base::test::TestFuture<std::unique_ptr<em::ChromeUserProfileInfo>>
+        test_future;
+    generator_.MaybeGenerate(path, ReportType::kFull,
+                             test_future.GetCallback());
+    return test_future.Take();
   }
 
   std::unique_ptr<em::ChromeUserProfileInfo> GenerateReport() {
@@ -217,9 +220,11 @@ TEST_F(ProfileReportGeneratorTest, ProfileNotActivated) {
   params.profile_name = kIdleProfile16;
   testing_profile_manager()->profile_attributes_storage()->AddProfile(
       std::move(params));
-  std::unique_ptr<em::ChromeUserProfileInfo> response =
-      generator_.MaybeGenerate(profile_path, ReportType::kFull);
-  ASSERT_FALSE(response.get());
+  base::test::TestFuture<std::unique_ptr<em::ChromeUserProfileInfo>>
+      test_future;
+  generator_.MaybeGenerate(profile_path, ReportType::kFull,
+                           test_future.GetCallback());
+  ASSERT_FALSE(test_future.Get().get());
 }
 
 TEST_F(ProfileReportGeneratorTest, UnsignedInProfile) {
@@ -260,24 +265,35 @@ TEST_F(ProfileReportGeneratorTest,
 }
 
 TEST_F(ProfileReportGeneratorTest, ProfileIdObfuscate) {
-  auto report = generator_.MaybeGenerate(profile()->GetPath(),
-                                         ReportType::kProfileReport);
+  base::test::TestFuture<std::unique_ptr<em::ChromeUserProfileInfo>>
+      test_future;
+  generator_.MaybeGenerate(profile()->GetPath(), ReportType::kProfileReport,
+                           test_future.GetCallback());
+
+  auto report = test_future.Take();
   ASSERT_TRUE(report);
   EXPECT_EQ(GetProfileName(), report->name());
   EXPECT_NE(profile()->GetPath().AsUTF8Unsafe(), report->id());
   EXPECT_TRUE(report->is_detail_available());
 
-  auto report2 = generator_.MaybeGenerate(profile()->GetPath(),
-                                          ReportType::kProfileReport);
+  test_future.Clear();
+  generator_.MaybeGenerate(profile()->GetPath(), ReportType::kProfileReport,
+                           test_future.GetCallback());
+
   // Profile id is obfuscated with `kProfileReport` type, but the obfuscated
   // result is consistent.
+  auto report2 = test_future.Take();
   EXPECT_EQ(report->id(), report2->id());
 
   TestingProfile* another_profile =
       testing_profile_manager()->CreateTestingProfile("another_profile");
-  auto report3 = generator_.MaybeGenerate(another_profile->GetPath(),
-                                          ReportType::kProfileReport);
+
+  test_future.Clear();
+  generator_.MaybeGenerate(another_profile->GetPath(),
+                           ReportType::kProfileReport,
+                           test_future.GetCallback());
   // Different profiles' id will be different even after obfuscation.
+  auto report3 = test_future.Take();
   EXPECT_NE(report->id(), report3->id());
 }
 

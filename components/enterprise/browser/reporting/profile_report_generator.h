@@ -83,12 +83,15 @@ class ProfileReportGenerator {
   // Pass a callback to enable/disable extension report with dynamic condition.
   void SetExtensionsEnabledCallback(ExtensionsEnabledCallback callback);
 
-  // Generates a report for the profile associated with |path| and |name| if
-  // it's activated, and returns the report. The report is null if it can't be
-  // generated.
-  std::unique_ptr<enterprise_management::ChromeUserProfileInfo> MaybeGenerate(
+  // Generates a report for the profile associated with `path` if
+  // it's activated, and returns the report by invoking `callback` with its
+  // value. The report is null if it can't be generated.
+  void MaybeGenerate(
       const base::FilePath& path,
-      ReportType report_type);
+      ReportType report_type,
+      base::OnceCallback<
+          void(std::unique_ptr<enterprise_management::ChromeUserProfileInfo>)>
+          callback);
 
  protected:
   void GetChromePolicyInfo();
