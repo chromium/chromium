@@ -31,6 +31,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -282,9 +283,9 @@ bool ShowPredictions(const WebDocument& document,
         "\nfield renderer id: ",
         field_id_str,
         "\nvisible: ",
-        field_data.is_visible() ? "true" : "false",
+        base::ToString(field_data.is_visible()),
         "\nfocusable: ",
-        field_data.IsFocusable() ? "true" : "false",
+        base::ToString(field_data.IsFocusable()),
         "\nfield rank: ",
         base::NumberToString(field.rank),
         "\nfield rank in signature group: ",

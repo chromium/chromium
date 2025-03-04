@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/to_string.h"
 #include "base/values.h"
 #include "components/feedback/feedback_constants.h"
 #include "components/feedback/feedback_report.h"
@@ -221,7 +222,7 @@ void FeedbackCommon::PrepareReport(
 
   if (is_offensive_or_unsafe_.has_value()) {
     AddFeedbackData(feedback_data, kIsOffensiveOrUnsafeKey,
-                    is_offensive_or_unsafe_.value() ? "true" : "false");
+                    base::ToString(is_offensive_or_unsafe_.value()));
   }
   if (!ai_metadata_.empty()) {
     // Add feedback data for each key/value pair.

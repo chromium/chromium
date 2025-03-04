@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/signal_key.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
@@ -499,9 +500,8 @@ std::string SegmetationModelMetadataToString(
                                      model_metadata.result_time_to_live()));
   }
   if (model_metadata.has_upload_tensors()) {
-    result.append(
-        base::StringPrintf("upload_tensors: %s",
-                           model_metadata.upload_tensors() ? "true" : "false"));
+    result.append(base::StringPrintf(
+        "upload_tensors: %s", base::ToString(model_metadata.upload_tensors())));
   }
 
   if (base::EndsWith(result, ", "))

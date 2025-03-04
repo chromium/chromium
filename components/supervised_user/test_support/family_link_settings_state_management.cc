@@ -447,7 +447,7 @@ std::string FamilyLinkSettingsState::ToggleIntent::ToString() const {
   bits.push_back("Define[");
   for (const auto& toggle : toggle_list_) {
     bits.push_back(GetToggleAbbrev(toggle.type) + " = ");
-    bits.push_back((static_cast<bool>(toggle.state) ? "true" : "false") +
+    bits.push_back(base::ToString(static_cast<bool>(toggle.state)) +
                    std::string(" "));
   }
   bits.push_back("]");

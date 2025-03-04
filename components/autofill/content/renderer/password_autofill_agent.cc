@@ -30,6 +30,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -337,7 +338,7 @@ void AnnotateFieldsWithSignatures(
                       kDebugAttributeForAlternativeFormSignature,
                       alternative_form_signature);
     SetAttributeAsync(control_element, kDebugAttributeForVisibility,
-                      control_element.IsFocusable() ? "true" : "false");
+                      base::ToString(control_element.IsFocusable()));
   }
 }
 
