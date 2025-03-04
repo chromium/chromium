@@ -15,6 +15,10 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace content {
 
 class PrefetchResponseReader;
@@ -26,7 +30,7 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
     : public network::mojom::URLLoaderClient {
  public:
   static base::WeakPtr<PrefetchStreamingURLLoader> CreateAndStart(
-      network::mojom::URLLoaderFactory* url_loader_factory,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const network::ResourceRequest& request,
       const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
       base::TimeDelta timeout_duration,
@@ -90,7 +94,7 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
       base::OnceClosure on_deletion_scheduled_for_tests);
 
  private:
-  void Start(network::mojom::URLLoaderFactory* url_loader_factory,
+  void Start(scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
              const network::ResourceRequest& request,
              const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
              base::TimeDelta timeout_duration);

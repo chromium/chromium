@@ -83,7 +83,7 @@ static ServiceWorkerContext* g_service_worker_context_for_testing = nullptr;
 
 bool (*g_host_non_unique_filter)(std::string_view) = nullptr;
 
-static network::mojom::URLLoaderFactory* g_url_loader_factory_for_testing =
+static network::SharedURLLoaderFactory* g_url_loader_factory_for_testing =
     nullptr;
 
 static network::mojom::NetworkContext*
@@ -1394,12 +1394,12 @@ void PrefetchService::SendPrefetchRequest(
   DVLOG(1) << *prefetch_container << ": PrefetchStreamingURLLoader is created.";
 }
 
-network::mojom::URLLoaderFactory*
+scoped_refptr<network::SharedURLLoaderFactory>
 PrefetchService::GetURLLoaderFactoryForCurrentPrefetch(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
   DCHECK(prefetch_container);
   if (g_url_loader_factory_for_testing) {
-    return g_url_loader_factory_for_testing;
+    return base::WrapRefCounted(g_url_loader_factory_for_testing);
   }
   return prefetch_container->GetOrCreateNetworkContextForCurrentPrefetch()
       ->GetURLLoaderFactory(this);
@@ -1900,7 +1900,7 @@ void PrefetchService::SetHostNonUniqueFilterForTesting(
 
 // static
 void PrefetchService::SetURLLoaderFactoryForTesting(
-    network::mojom::URLLoaderFactory* url_loader_factory) {
+    network::SharedURLLoaderFactory* url_loader_factory) {
   g_url_loader_factory_for_testing = url_loader_factory;
 }
 

@@ -51,8 +51,8 @@ PrefetchNetworkContext::PrefetchNetworkContext(
 
 PrefetchNetworkContext::~PrefetchNetworkContext() = default;
 
-network::mojom::URLLoaderFactory* PrefetchNetworkContext::GetURLLoaderFactory(
-    PrefetchService* service) {
+scoped_refptr<network::SharedURLLoaderFactory>
+PrefetchNetworkContext::GetURLLoaderFactory(PrefetchService* service) {
   if (!url_loader_factory_) {
     if (use_isolated_network_context_) {
       CreateIsolatedURLLoaderFactory(service);
@@ -66,7 +66,7 @@ network::mojom::URLLoaderFactory* PrefetchNetworkContext::GetURLLoaderFactory(
     }
   }
   CHECK(url_loader_factory_);
-  return url_loader_factory_.get();
+  return url_loader_factory_;
 }
 
 network::mojom::CookieManager* PrefetchNetworkContext::GetCookieManager() {

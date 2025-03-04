@@ -19,6 +19,7 @@
 #include "content/public/test/mock_navigation_handle.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
@@ -75,7 +76,9 @@ void MakeServableStreamingURLLoaderForTest(
   base::WeakPtr<PrefetchResponseReader> weak_response_reader =
       prefetch_container->GetResponseReaderForCurrentPrefetch();
   auto weak_streaming_loader = PrefetchStreamingURLLoader::CreateAndStart(
-      &test_url_loader_factory, *request, TRAFFIC_ANNOTATION_FOR_TESTS,
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory),
+      *request, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*timeout_duration=*/base::TimeDelta(),
       base::BindOnce(
           [](base::RunLoop* on_response_received_loop,
@@ -130,7 +133,9 @@ MakeManuallyServableStreamingURLLoaderForTest(
   request->method = "GET";
 
   auto weak_streaming_loader = PrefetchStreamingURLLoader::CreateAndStart(
-      &test_url_loader_factory, *request, TRAFFIC_ANNOTATION_FOR_TESTS,
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory),
+      *request, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*timeout_duration=*/base::TimeDelta(),
       base::BindOnce([](network::mojom::URLResponseHead* head) {
         return std::optional<PrefetchErrorOnResponseReceived>();
@@ -192,7 +197,9 @@ void MakeServableStreamingURLLoaderWithRedirectForTest(
   auto weak_first_response_reader =
       prefetch_container->GetResponseReaderForCurrentPrefetch();
   auto weak_streaming_loader = PrefetchStreamingURLLoader::CreateAndStart(
-      &test_url_loader_factory, *request, TRAFFIC_ANNOTATION_FOR_TESTS,
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory),
+      *request, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*timeout_duration=*/base::TimeDelta(),
       base::BindOnce(
           [](base::RunLoop* on_response_received_loop,
@@ -275,7 +282,9 @@ void MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
   // PrefetchStreamingURLLoader will be started with a request to the redirect
   // URL.
   auto weak_first_streaming_loader = PrefetchStreamingURLLoader::CreateAndStart(
-      &test_url_loader_factory, *original_request, TRAFFIC_ANNOTATION_FOR_TESTS,
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory),
+      *original_request, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*timeout_duration=*/base::TimeDelta(),
       base::BindOnce([](network::mojom::URLResponseHead* head)
                          -> std::optional<PrefetchErrorOnResponseReceived> {
@@ -329,8 +338,9 @@ void MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
       prefetch_container->GetResponseReaderForCurrentPrefetch();
   auto weak_second_streaming_loader =
       PrefetchStreamingURLLoader::CreateAndStart(
-          &test_url_loader_factory, *redirect_request,
-          TRAFFIC_ANNOTATION_FOR_TESTS,
+          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+              &test_url_loader_factory),
+          *redirect_request, TRAFFIC_ANNOTATION_FOR_TESTS,
           /*timeout_duration=*/base::TimeDelta(),
           base::BindOnce(
               [](base::RunLoop* on_response_received_loop,

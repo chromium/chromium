@@ -28,9 +28,12 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace network::mojom {
 class NetworkContext;
-class URLLoaderFactory;
 }  // namespace network::mojom
 
 namespace content {
@@ -160,7 +163,7 @@ class CONTENT_EXPORT PrefetchService {
   // that this does not take ownership of |url_loader_factory|, and caller must
   // keep ownership over the course of the test.
   static void SetURLLoaderFactoryForTesting(
-      network::mojom::URLLoaderFactory* url_loader_factory);
+      network::SharedURLLoaderFactory* url_loader_factory);
 
   // Sets the NetworkContext to use just for the proxy lookup. Note that this
   // does not take ownership of |network_context|, and the caller must keep
@@ -327,7 +330,8 @@ class CONTENT_EXPORT PrefetchService {
 
   // Gets the URL loader for the given |prefetch_container|. If an override was
   // set by |SetURLLoaderFactoryForTesting|, then that will be returned instead.
-  network::mojom::URLLoaderFactory* GetURLLoaderFactoryForCurrentPrefetch(
+  scoped_refptr<network::SharedURLLoaderFactory>
+  GetURLLoaderFactoryForCurrentPrefetch(
       base::WeakPtr<PrefetchContainer> prefetch_container);
 
   // Called when the request for |prefetch_container| is redirected.
