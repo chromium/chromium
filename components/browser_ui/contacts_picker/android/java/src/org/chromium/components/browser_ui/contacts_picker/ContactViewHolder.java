@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.contacts_picker;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ContentResolver;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -13,8 +15,12 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Holds on to a {@link ContactView} that displays information about a contact. */
+@NullMarked
 public class ContactViewHolder extends ViewHolder
         implements FetchIconWorkerTask.IconRetrievedCallback {
     // Our parent category.
@@ -30,13 +36,13 @@ public class ContactViewHolder extends ViewHolder
     private ContactDetails mContact;
 
     // A worker task for asynchronously retrieving icons off the main thread.
-    private FetchIconWorkerTask mWorkerTask;
+    private @Nullable FetchIconWorkerTask mWorkerTask;
 
     // The size the contact icon will be displayed at (one side of a square).
     private final int mIconSize;
 
     // The icon to use when testing.
-    private static Bitmap sIconForTest;
+    private static @Nullable Bitmap sIconForTest;
 
     /**
      * The PickerBitmapViewHolder.
@@ -64,6 +70,7 @@ public class ContactViewHolder extends ViewHolder
      *
      * @param contact The contact details to show.
      */
+    @Initializer
     public void setContactDetails(ContactDetails contact) {
         mContact = contact;
 
@@ -90,6 +97,7 @@ public class ContactViewHolder extends ViewHolder
 
     /** Cancels the worker task to retrieve the icon. */
     public void cancelIconRetrieval() {
+        assumeNonNull(mWorkerTask);
         mWorkerTask.cancel(true);
         mWorkerTask = null;
     }
@@ -97,7 +105,7 @@ public class ContactViewHolder extends ViewHolder
     // FetchIconWorkerTask.IconRetrievedCallback:
 
     @Override
-    public void iconRetrieved(Bitmap icon, String contactId) {
+    public void iconRetrieved(@Nullable Bitmap icon, String contactId) {
         if (mCategoryView.getIconCache().getBitmap(contactId) == null) {
             mCategoryView.getIconCache().putBitmap(contactId, icon);
         }

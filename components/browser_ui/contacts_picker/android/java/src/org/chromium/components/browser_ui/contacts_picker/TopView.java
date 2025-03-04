@@ -13,12 +13,17 @@ import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.text.SpanApplier;
 
 import java.text.NumberFormat;
 
-/** A container class for the Disclaimer and Select All functionality (and both associated labels). */
+/**
+ * A container class for the Disclaimer and Select All functionality (and both associated labels).
+ */
+@NullMarked
 public class TopView extends RelativeLayout
         implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
     /** An interface for communicating when the Select All checkbox is toggled. */
@@ -70,7 +75,7 @@ public class TopView extends RelativeLayout
     // A Chip for filtering out telephones.
     private ChipView mIconsFilterChip;
 
-    // The callback to use to notify when the filter chips are toggled.
+    // The callback to use to notify when the filter chips are toggled.    @
     private ChipToggledCallback mChipToggledCallback;
 
     // Whether to temporarily ignore clicks on the checkbox.
@@ -194,6 +199,7 @@ public class TopView extends RelativeLayout
      *
      * @param origin The origin string to display.
      */
+    @Initializer
     public void setSiteString(String origin) {
         TextView explanation = findViewById(R.id.explanation);
         StyleSpan boldSpan = new StyleSpan(android.graphics.Typeface.BOLD);
@@ -208,11 +214,13 @@ public class TopView extends RelativeLayout
      *
      * @param callback The callback to use.
      */
+    @Initializer
     public void registerSelectAllCallback(SelectAllToggleCallback callback) {
         mSelectAllCallback = callback;
     }
 
     /** Register a callback to use to notify when the filter chips are toggled. */
+    @Initializer
     public void registerChipToggledCallback(ChipToggledCallback callback) {
         mChipToggledCallback = callback;
     }
@@ -299,6 +307,8 @@ public class TopView extends RelativeLayout
 
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        if (!mIgnoreCheck) mSelectAllCallback.onSelectAllToggled(mSelectAllBox.isChecked());
+        if (!mIgnoreCheck) {
+            mSelectAllCallback.onSelectAllToggled(mSelectAllBox.isChecked());
+        }
     }
 }
