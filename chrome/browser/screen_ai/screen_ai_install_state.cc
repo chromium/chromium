@@ -19,8 +19,8 @@
 #include "ui/accessibility/accessibility_features.h"
 
 namespace {
-// See crbug.com/393349281 and crbug.com/359853518
-const char kMinExpectedVersion[] = "127.15";
+// Proto updated.
+const char kMinExpectedVersion[] = "127.19";
 const int kScreenAICleanUpDelayInDays = 30;
 
 bool IsDeviceCompatible() {

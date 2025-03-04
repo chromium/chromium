@@ -245,7 +245,7 @@ std::vector<screen_ai::mojom::WordBox> GetWordsAndSpaces(
           GetSpaceRect(current_word->bounding_box, words[i + 1]->bounding_box);
       if (!space_rect.IsEmpty()) {
         words_and_spaces.push_back(screen_ai::mojom::WordBox(
-            /*word=*/" ", /*dictionary_word=*/false, current_word->language,
+            /*word=*/" ", current_word->language,
             /*has_space_after=*/false, space_rect,
             current_word->bounding_box_angle, current_word->direction,
             /*confidence=*/1));
@@ -344,8 +344,10 @@ bool AddTextOnImage(FPDF_DOCUMENT document,
 
   bool added_text = false;
   for (const auto& line : annotation->lines) {
+    // TODO(crbug.com/398694513): Try to get baseline information from font
+    // information.
     SearchifyBoundingBoxOrigin baseline_origin =
-        ConvertToPdfOrigin(line->baseline_box, line->baseline_box_angle,
+        ConvertToPdfOrigin(line->bounding_box, line->bounding_box_angle,
                            image_pixel_size.height());
 
     std::vector<screen_ai::mojom::WordBox> words_and_spaces =

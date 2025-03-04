@@ -91,8 +91,6 @@ VisualAnnotationPtr CreateEmptyAnnotation() {
 VisualAnnotationPtr CreateSampleAnnotation(int call_number) {
   auto annotation = CreateEmptyAnnotation();
   auto line_box = screen_ai::mojom::LineBox::New();
-  line_box->baseline_box = gfx::Rect(0, 0, 100, 100);
-  line_box->baseline_box_angle = 0;
   line_box->bounding_box = gfx::Rect(0, 0, 100, 100);
   line_box->bounding_box_angle = 0;
   auto word_box = screen_ai::mojom::WordBox::New();
