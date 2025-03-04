@@ -903,6 +903,7 @@ enum CSSSampleId {
     kRowRuleStyle = 844,
     kGapRulePaintOrder = 845,
     kRowRuleWidth = 846,
+    kRowRuleColor = 847,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).
