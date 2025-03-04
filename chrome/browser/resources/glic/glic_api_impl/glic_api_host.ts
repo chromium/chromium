@@ -18,7 +18,7 @@ import type {BrowserProxy} from '../browser_proxy.js';
 import type {FocusedTabCandidate as FocusedTabCandidateMojo, FocusedTabData as FocusedTabDataMojo, InvalidCandidateError as MojoInvalidCandidateError, NoCandidateTabError as MojoNoCandidateTabError, OpenPanelInfo as OpenPanelInfoMojo, PanelState as PanelStateMojo, ScrollToSelector as ScrollToSelectorMojo, TabData as TabDataMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
 import {WebClientHandlerRemote, WebClientMode, WebClientReceiver} from '../glic.mojom-webui.js';
 import type {DraggableArea, PanelState, Screenshot, ScrollToParams, TabContextOptions, WebPageData} from '../glic_api/glic_api.js';
-import {CaptureScreenshotErrorReason, DEFAULT_PDF_SIZE_LIMIT, GetTabContextErrorReason, InvalidCandidateError, NoCandidateTabError, ScrollToErrorReason} from '../glic_api/glic_api.js';
+import {CaptureScreenshotErrorReason, DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, GetTabContextErrorReason, InvalidCandidateError, NoCandidateTabError, ScrollToErrorReason} from '../glic_api/glic_api.js';
 
 import {replaceProperties} from './conversions.js';
 import type {PostMessageRequestHandler} from './post_message_transport.js';
@@ -253,11 +253,13 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     const {
       result: {errorReason, tabContext},
     } = await this.handler.getContextFromFocusedTab({
-      includeInnerText: request.options.innerText || false,
-      includeViewportScreenshot: request.options.viewportScreenshot || false,
-      includePdf: request.options.pdfData || false,
+      includeInnerText: request.options.innerText ?? false,
+      innerTextBytesLimit:
+          request.options.innerTextBytesLimit ?? DEFAULT_INNER_TEXT_BYTES_LIMIT,
+      includeViewportScreenshot: request.options.viewportScreenshot ?? false,
+      includePdf: request.options.pdfData ?? false,
       includeAnnotatedPageContent:
-          request.options.annotatedPageContent || false,
+          request.options.annotatedPageContent ?? false,
       pdfSizeLimit: request.options.pdfSizeLimit === undefined ?
           DEFAULT_PDF_SIZE_LIMIT :
           Math.min(Number.MAX_SAFE_INTEGER, request.options.pdfSizeLimit),
@@ -291,6 +293,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
         mainDocument: {
           origin: originToClient(webPageData.mainDocument.origin),
           innerText: webPageData.mainDocument.innerText,
+          innerTextTruncated: webPageData.mainDocument.innerTextTruncated,
         },
       };
     }

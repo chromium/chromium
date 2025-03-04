@@ -37,6 +37,7 @@ interface PageElementTypes {
   getPageContextStatus: HTMLSpanElement;
   URL: HTMLInputElement;
   innerTextCheckbox: HTMLInputElement;
+  innerTextBytesLimit: HTMLInputElement;
   viewportScreenshotCheckbox: HTMLInputElement;
   pdfDataCheckbox: HTMLInputElement;
   annotatedPageContentCheckbox: HTMLInputElement;
@@ -348,6 +349,10 @@ $.getpagecontext.addEventListener('click', async () => {
   const options: any = {};
   if ($.innerTextCheckbox.checked) {
     options.innerText = true;
+  }
+  const textLimit = Number.parseInt($.innerTextBytesLimit.value);
+  if (!Number.isNaN(textLimit)) {
+    options.innerTextBytesLimit = textLimit;
   }
   if ($.viewportScreenshotCheckbox.checked) {
     options.viewportScreenshot = {};
