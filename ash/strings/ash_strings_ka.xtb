@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">გამოხმაურება</translation>
 <translation id="1059120031266247284">თქვენთან გაზიარებული</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> ამოშლის ღილაკით</translation>
 <translation id="1062407476771304334">შეცვლა</translation>
 <translation id="1073899992769346247">გამოცვალეთ ან ხელახლა დამუხტეთ ბატარეა</translation>
 <translation id="1081015718268701546">Linux აპები ამჟამად მხარდაუჭერელია. სხვა აპები შეინახება.</translation>
@@ -1228,6 +1229,7 @@
 <translation id="5043679421800073804">თაროზე ბოლო ხატულაზე დაწკაპუნება ან შეხება</translation>
 <translation id="504465286040788597">წინა აბზაცი</translation>
 <translation id="5045550434625856497">არასწორი პაროლი</translation>
+<translation id="5056587122125565772">სურათის შექმნა</translation>
 <translation id="5058794129231928255">Google Doc-ის შექმნა ვერ მოხერხდა</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">თუ საუბრისას თქვენი ხმა არ ისმის, შეტყობინებას მიიღებთ. აუდიო მუდამ თქვენს მოწყობილობაზე ინახება.</translation>
@@ -1276,6 +1278,7 @@
 <translation id="5222676887888702881">გამოსვლა</translation>
 <translation id="5228195526683428788">გაყოფილი ეკრანის გამყოფი</translation>
 <translation id="5229343007215035173">კონფიდენციალური ეკრანის ჩართვა/გამორთვა</translation>
+<translation id="5229860525743792999"><ph name="ITEM_LABEL" />-ის ამოშლა შემოთავაზებული ჯგუფებიდან</translation>
 <translation id="5230516054153933099">ფანჯარა</translation>
 <translation id="5234764350956374838">გაუქმება</translation>
 <translation id="523505283826916779">მარტივი წვდომის პარამეტრები</translation>
@@ -1758,6 +1761,7 @@
 <translation id="6757237461819837179">მედიაკონტენტი არ უკრავს</translation>
 <translation id="6760438044935091345">თამაშების დაფა</translation>
 <translation id="6768043681523654438">საცავი</translation>
+<translation id="6769195697113506406">სურათი ჩასმულია</translation>
 <translation id="6777216307882431711">ელკვება მიეწოდება დაკავშირებულ USB-C მოწყობილობებს</translation>
 <translation id="6781002679438061620">სამუშაო მაგიდა 9</translation>
 <translation id="6782182743534150858">სამუშაო მაგიდა 13</translation>
@@ -1984,6 +1988,7 @@
 <translation id="7571361473021531288">ბატარეა <ph name="BATTERY_PERCENTAGE" />%-ზეა | დარჩენილია <ph name="TIME" /></translation>
 <translation id="7573585051776738856">აქტიური ფანჯარა ჩამაგრებულია მარჯვნივ.</translation>
 <translation id="7579778809502851308">ეკრანის აღბეჭდვა</translation>
+<translation id="7588317312481506627">კოპირებულია გაცვლის ბუფერში.</translation>
 <translation id="7593891976182323525">ძიება ან Shift</translation>
 <translation id="7598054670902114203">CPU-ს მოხმარების სნეპშოტი, <ph name="CPU_USEAGE" />%. ტემპერატურაა <ph name="TEMPERATURE" /> გრადუსი ცელსიუსი, ამჟამინდელი სიჩქარე: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> გჰც</translation>
 <translation id="7599378375976398913">არჩეული შედეგის ჩასმა</translation>
@@ -2178,6 +2183,7 @@
 <translation id="8155628902202578800">საინფორმაციო დიალოგის გახსნა <ph name="USER_EMAIL_ADDRESS" />-ისთვის</translation>
 <translation id="8167567890448493835">გამოიყენება <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">შიგთავსი</translation>
+<translation id="81817143961839203">სურათის ჩასმა ვერ მოხერხდა</translation>
 <translation id="8185090165691050712">ჩაკეტილი რეჟიმის ზომის შეცვლის მენიუს ჩართვა/გამორთვა</translation>
 <translation id="8192727139462702395">Bluetooth-ის გამორთვისას თქვენს <ph name="DEVICE_TYPE" />-თან აღარ იქნება დაკავშირებული შემდეგი გარე მოწყობილობები:</translation>
 <translation id="8198456017687137612">მიმდინარეობს ჩანართის ტრანსლირება</translation>
@@ -2256,6 +2262,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />-ს აქვს <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">გასაუქმებლად დააჭირეთ Shift კლავიშს ან კომბინაციას: Alt+Search.</translation>
 <translation id="8480418399907765580">ხელსაწყოთა ზოლის ჩვენება</translation>
+<translation id="8487660088084188539">როცა ამ ფუნქციებს ჩართავთ, შეტანილი ტექსტი, დოკუმენტის კონტენტი და ვებგვერდის URL შეიძლება გაეგზავნოს Google-ის სერვერებს. ეს ინფორმაცია გამოიყენება ნაწერთან დაკავშირებით შემოთავაზებების გენერირებისთვის, შეჯამებების შექმნისთვის, შეკითხვებზე პასუხის გაცემისა და პროდუქტის გაუმჯობესებისთვის, რასაც დაარეგულირებს <ph name="LINK_TO_SERVICE_TERMS" />. ნუ მიუთითებთ პერსონალურ, სენსიტიურ და კონფიდენციალურ ინფორმაციას.</translation>
 <translation id="8487699605742506766">უსადენო ქსელი</translation>
 <translation id="8491237443345908933">ბმულის გახსნა ახალ ჩანართში</translation>
 <translation id="8492573885090281069"><ph name="SPECIFIED_RESOLUTION" /> არ არის მხარდაჭერილი <ph name="DISPLAY_NAME" />-ის მიერ. გარჩევადობა შეიცვალა <ph name="FALLBACK_RESOLUTION" />-ზე. დააწკაპუნეთ ცვლილებების შენარჩუნების დასადასტურებლად. წინა პარამეტრების აღდგენამდე დარჩა <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2325,6 +2332,7 @@
 <translation id="8725066075913043281">ხელახლა სცადეთ</translation>
 <translation id="8725214031272624704">შეყვანის ხელმისაწვდომი მეთოდების სიის ჩვენება</translation>
 <translation id="8730621377337864115">მზადაა</translation>
+<translation id="8731188831050207755"><ph name="FILE_NAME" /> ვერ ჩამოიტვირთა</translation>
 <translation id="8731487213223706745">სრულდება <ph name="END_TIME" />-ზე (<ph name="DAYS_ELAPSED" />)</translation>
 <translation id="8734991477317290293">ეს შეიძლება იყოს თქვენ მიერ აკრეფილი ტექსტის მოპარვის მცდელობა</translation>
 <translation id="8735678380411481005">კლავიატურის ფონური განათების ფერი</translation>

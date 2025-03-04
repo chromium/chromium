@@ -651,7 +651,6 @@
 <translation id="385051799172605136">Буцах</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> болон өөр <ph name="NUMBER_OF_ACCOUNTS" /> бүртгэлийн нууц үгийг устгана. Таны бүртгэлүүдийг устгахгүй.</translation>
 <translation id="3858860766373142691">Нэр</translation>
-<translation id="3861908220442487587">Энэ хаягийг зөвхөн уг төхөөрөмжид хадгалдаг. Үүнийг бусад төхөөрөмждөө ашиглахын тулд <ph name="USER_EMAIL" /> Google Бүртгэл рүүгээ зөөнө үү</translation>
 <translation id="3868495844258915202">Бүтэн URL-г харуулах</translation>
 <translation id="3875783148670536197">Надад хэрхэн хийхийг харуулна уу</translation>
 <translation id="3876833929577368454">Надаас тухай бүрд асуу</translation>
@@ -1804,7 +1803,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8679900250380464358">Унших жагсаалтад нэмэх</translation>
 <translation id="8680786875305615692">Хүн бүрд веб дээрх аюулгүй байдлыг сайжруулахад туслах</translation>
 <translation id="8680787084697685621">Дансны нэвтрэх мэдээлэл хуучирсан байна.</translation>
-<translation id="8683563711222071415">Хаягийг бүртгэл рүү зөөх</translation>
 <translation id="8690752723634292147">Устгахыг баталгаажуулах</translation>
 <translation id="8692689525339542358">Аюултай сайт, татаж авсан файл болон өргөтгөлүүдээс хамгаалалттай байгаарай.</translation>
 <translation id="8694281486652655615">Энэ зүйлийг харуулна</translation>

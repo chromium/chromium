@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Rhwydwaith cartref, ddim yn trawsrwydweithio</translation>
 <translation id="1327977588028644528">Porth</translation>
 <translation id="1328223165223065150">Lliw papur wal</translation>
+<translation id="1329478709358066995">Trawsgrifiad:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ffitio i'r ardal sganio</translation>
 <translation id="1343442362630695901">llyn halen</translation>
@@ -1129,7 +1130,6 @@
 <translation id="6325525973963619867">Wedi methu</translation>
 <translation id="6327262166342360252">Crëwyd y papur wal hwn gydag AI gan ddefnyddio'r testun canlynol: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Thema dywyll awtomatig</translation>
-<translation id="6335228876613776082">Mae lawrlwytho'r model wedi'i gwblhau</translation>
 <translation id="6340526405444716530">Personoleiddio</translation>
 <translation id="6348252528297699679">Gallwch ddiffodd lleoliad yn y Gosodiadau &gt; Preifatrwydd a diogelwch &gt; Rheolyddion preifatrwydd &gt; Mynediad lleoliad. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Enw defnyddiwr a chyfrinair</translation>
@@ -1274,6 +1274,7 @@
 <translation id="6930597342185648547">Ynglŷn â'r cefndir</translation>
 <translation id="6939667434404433010">Chwilio enw recordiad</translation>
 <translation id="6939766318048400022">Caffi</translation>
+<translation id="6942253772720771875">Rhannwch eich adborth neu disgrifiwch eich problem</translation>
 <translation id="6943893908656559156">Hunaniaeth o bell (dewisol)</translation>
 <translation id="6953137545147683679">aur</translation>
 <translation id="6957231940976260713">Enw'r gwasanaeth</translation>
@@ -1598,6 +1599,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8395584934117017006">Mae'r <ph name="DEVICE_TYPE" /> wedi'i reoli gan y sefydliad</translation>
 <translation id="8398927464629426868">Y gyfradd y mae'r ddyfais yn gwefru neu'n dadwefru</translation>
 <translation id="8403988360557588704">Darlun o <ph name="ART_FEATURE" /> yn yr arddull <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">Crynodeb wedi'i gynhyrchu:</translation>
 <translation id="8410244574650205435">Canfuwyd yn awtomatig</translation>
 <translation id="8420955526972171689">Rhedeg profion a datrys problemau ar gyfer problemau caledwedd</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1644,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8626489604350149811">Rhagor o weithredoedd ar gyfer <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Porffor golau</translation>
 <translation id="8647595191512746911">Trawsgrifio sain</translation>
+<translation id="8648578954147795914">Enwau a gynhyrchwyd:</translation>
 <translation id="8650852232143958317">Ewch â'ch ffeiliau Gmail a Google Drive gyda chi</translation>
 <translation id="8651481478098336970">distewi'r sain</translation>
 <translation id="8655295600908251630">Sianel</translation>
@@ -1670,7 +1673,6 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Albwm Google Photos</translation>
 <translation id="8775713578693478175">APN Modem</translation>
-<translation id="877735394245039557">Mae'r model wrthi'n cael ei lawrlwytho</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Mae'n bosib bod gan y rhwydwaith hwn borth caeth</translation>
 <translation id="8797082062139985406">Creu enw gan ddefnyddio Google AI</translation>
@@ -1784,6 +1786,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="9218016617214286986">Dangos APNs hysbys</translation>
 <translation id="932327136139879170">Cartref</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Sicrhewch fod eich meic wedi'i gysylltu neu rhowch gynnig ar ailgychwyn eich Chromebook</translation>
 <translation id="945522503751344254">Danfon adborth</translation>
 <translation id="950520315903467048">Mae'r fysell ar goll ar gyfer <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Cymharwch leisiau trwy gydol y recordiad fel bod y trawsgrifiad yn adlewyrchu'r hyn a ddywedodd pob siaradwr a phryd</translation>

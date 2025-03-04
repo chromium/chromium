@@ -651,7 +651,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="385051799172605136">Enrere</translation>
 <translation id="3851938967634752633">Les contrasenyes de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> i <ph name="NUMBER_OF_ACCOUNTS" /> més se suprimiran. Els teus comptes no se suprimiran.</translation>
 <translation id="3858860766373142691">Nom</translation>
-<translation id="3861908220442487587">Aquesta adreça només es desa en aquest dispositiu. Per utilitzar-la en altres dispositius, mou-la al teu Compte de Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="3868495844258915202">Mostra l'URL complet</translation>
 <translation id="3875783148670536197">Mostra'm com</translation>
 <translation id="3876833929577368454">Pregunta-m'ho cada vegada</translation>
@@ -1804,7 +1803,6 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8679900250380464358">Afegeix a la llista de lectura</translation>
 <translation id="8680786875305615692">Ajuda a millorar la seguretat al web per a tothom</translation>
 <translation id="8680787084697685621">Les dades d'inici de sessió del compte no estan actualitzades.</translation>
-<translation id="8683563711222071415">Mou l'adreça al compte</translation>
 <translation id="8690752723634292147">Confirma la supressió</translation>
 <translation id="8692689525339542358">Obtén protecció contra baixades, extensions i llocs web perillosos.</translation>
 <translation id="8694281486652655615">Mostra aquest element</translation>

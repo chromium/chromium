@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">Не пропонувати перекладати ці сайти</translation>
 <translation id="1145536944570833626">Видалити наявні дані.</translation>
 <translation id="1150263420752757504">Додаток <ph name="APP_NAME" /> відкриється в Chrome. Продовжуючи, ви приймаєте <ph name="BEGIN_LINK1" />Загальні положення та умови Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Додаткові умови використання Google Chrome та ОС Chrome<ph name="END_LINK2" />.</translation>
+<translation id="1154555449933432029">У вас немає збережених паролів у цьому сервісі.</translation>
 <translation id="115483310321669804">Використати пароль <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Перейменувати</translation>
 <translation id="1174479719160874822">Якщо екран вузький, Chrome надсилатиме запит на мобільний сайт</translation>
@@ -1366,10 +1367,12 @@
 <translation id="7224097611345298931">Ми об’єднали всі паролі для Chrome і <ph name="CHROME_CHANNEL" />, збережені лише на цьому пристрої. Ви можете автоматично вводити всі збережені паролі в обох додатках.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Очікується 1 завантаження}one{Очікується # завантаження}few{Очікується # завантаження}many{Очікується # завантажень}other{Очікується # завантаження}}</translation>
 <translation id="7230064152164845085">Перейти в анонімний режим</translation>
+<translation id="7237724030342645845">Google Менеджер паролів більше не працює</translation>
 <translation id="72415438529550637">Пропозицію пароля закрито.</translation>
 <translation id="7260367682327802201">На вашому пристрої Android може бути схоже налаштування. Якщо опцію "Оцінка ефективності реклами" ввімкнено в Chrome і на пристрої Android, компанії можуть визначати ефективність своїх оголошень на вебсайтах, що ви відвідуєте, і в додатках, якими ви користуєтеся.</translation>
 <translation id="727288900855680735">Надіслати код <ph name="ONE_TIME_CODE" /> на сайт <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Заблокований сайт</translation>
+<translation id="7276868533747677875">Якщо ви раніше експортували паролі, знайдіть відповідний файл CSV на своєму пристрої і імпортуйте його в потрібний менеджер паролів.</translation>
 <translation id="7289049772085228972">Ви маєте найвищий рівень безпеки в Chrome</translation>
 <translation id="7289303553784750393">Якщо ви підключені до Інтернету, але проблема не зникає, спробуйте інші способи ввійти на сайті <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Не можна перейменувати</translation>
@@ -1544,6 +1547,7 @@
 <translation id="8027395186860110042">Незабаром паролі можуть припинити працювати</translation>
 <translation id="8027863900915310177">Виберіть, куди завантажити файл</translation>
 <translation id="8030852056903932865">Дозволити</translation>
+<translation id="8031805944372049238">Щоб зберігати й використовувати паролі за допомогою Google Менеджера паролів, оновіть сервіси Google Play.</translation>
 <translation id="8032569120109842252">У підписках</translation>
 <translation id="8037750541064988519">Залишилося <ph name="DAYS" /> дн.</translation>
 <translation id="8037801708772278989">Щойно перевірено</translation>

@@ -423,6 +423,23 @@ Als je het beleid niet toepast of niet instelt, wordt op basis van de instelling
 Het afzonderlijke beleid <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> kan worden gebruikt om te voorkomen dat specifieke hostnamen of hostnaampatronen door deze functie worden geüpgraded naar HTTPS.</translation>
 <translation id="1342918903685430097">Stel de minimaal toegestane <ph name="PRODUCT_OS_NAME" />-versie in voor het apparaat.</translation>
 <translation id="1343128241903870688">Rapportage van app-informatie van apparaat uitzetten</translation>
+<translation id="1345276795096570241">Zet Single sign-on met <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> uit voor de vermelde identiteitsproviders.
+
+Als je de waarde <ph name="POLICY_VALUE_ALL" /> toevoegt, worden alle ondersteunde identiteitsproviders voor SSO uitgezet.
+
+Als je de waarde <ph name="POLICY_VALUE_MICROSOFT" /> toevoegt, wordt ondersteuning voor Single sign-on voor de Microsoft®-cloudidentiteitsprovider in Chrome uitgezet.
+
+Als je dit beleid niet instelt, worden alle identiteitsproviders die worden ondersteund door <ph name="PRODUCT_NAME" /> aangezet.
+
+Voor identiteitsproviders die zijn aangezet in <ph name="PRODUCT_NAME" /> en op het apparaat zijn ingesteld door de beheerder, kunnen gebruikers die inloggen op hun account met die identiteitsprovider in een app die <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> ondersteunt, automatisch inloggen bij webproperty's met die identiteitsprovider. Informatie over de verificatiegegevens van de gebruiker wordt voor elke verificatiegebeurtenis overgedragen naar de cloudidentiteitsprovider van de gebruiker.
+
+Opmerkingen:
+
+<ph name="PRODUCT_NAME" /> ondersteunt Single sign-on met <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> niet in de incognito- of gastmodus.
+
+<ph name="PRODUCT_NAME" /> ondersteunt Single sign-on met <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> alleen voor de volgende identiteitsproviders: Microsoft.
+
+Deze functie is beschikbaar vanaf <ph name="MAC_OS_NAME" /> 10.15.</translation>
 <translation id="1347198119056266798">Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> en <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Dit beleid wordt genegeerd als het beleid <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> of <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (verouderd) is ingesteld.
 
       Hiermee wordt afgedwongen dat zoekopdrachten in Google Zoeken worden uitgevoerd met SafeSearch ingesteld op 'actief' en wordt voorkomen dat gebruikers deze instelling kunnen wijzigen. Met deze instelling wordt ook de gemiddelde Beperkte modus op YouTube afgedwongen.

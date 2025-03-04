@@ -107,6 +107,7 @@
 <translation id="1413446866325418126">თქვენი მონაცემების Google ანგარიშში შენახვა</translation>
 <translation id="1414981605391750300">მიმდინარეობს Google-თან დაკავშირება. ამას შეიძლება ერთი წუთი დასჭირდეს…</translation>
 <translation id="1416550906796893042">პროგრამის ვერსია</translation>
+<translation id="1416582024052267068">შეინარჩუნეთ წვდომა თქვენს პაროლებზე</translation>
 <translation id="1419753403124156396">გსურთ Chrome-ის გადატვირთვა?</translation>
 <translation id="1428770807407000502">გამოირთოს სინქრონიზაცია?</translation>
 <translation id="1430915738399379752">ბეჭდვა</translation>
@@ -269,6 +270,7 @@
 <translation id="2259659629660284697">პაროლების ექსპორტი…</translation>
 <translation id="2276696007612801991">პაროლების შესამოწმებლად შედით თქვენს Google ანგარიშში</translation>
 <translation id="2278052315791335171">ამ პაროლის წაშლის შემთხვევაში თქვენი ანგარიში <ph name="SITE" />-ზე არ წაიშლება</translation>
+<translation id="2281243904606300427"><ph name="TAB_TITLE" />, არჩეული ინკოგნიტო ჩანართი</translation>
 <translation id="2286841657746966508">ბილინგის მისამართი</translation>
 <translation id="228704530595896923">გაზიარების ვარიანტების სია.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ჩანართის ნახვა}other{<ph name="TABS_COUNT_MANY" /> ჩანართის ნახვა}}</translation>
@@ -328,6 +330,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> ერთეული წაიშალა</translation>
 <translation id="253498598929009420">საიტს შეეძლება თქვენს ეკრანზე არსებული კონტენტის ნახვა</translation>
 <translation id="2536728043171574184">თქვენ ამ გვერდის ხაზგარეშე ასლს ნახულობთ</translation>
+<translation id="2542548955756682219"><ph name="TAB_TITLE" />, ჩანართი</translation>
 <translation id="2546283357679194313">ქუქი-ფაილები და საიტის მონაცემები</translation>
 <translation id="2547843573592965873">პროფილის ჩაკეტვა უზრუნველყოფს თქვენი ინფორმაციის (მათ შორის, პაროლების, გადახდებისა და Google ანგარიშში შენახული სხვა მონაცემების) დაცულობას მანქანაში.</translation>
 <translation id="254973855621628293">ამ მოწყობილობაზე შენახული პაროლები</translation>
@@ -471,6 +474,7 @@
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 პაროლი და სხვა ერთეულები შენახულია მხოლოდ ამ მოწყობილობაზე. თქვენს სხვა მოწყობილობებზე მათ გამოსაყენებლად შეინახეთ ისინი თქვენს Google ანგარიშში (<ph name="ACCOUNT_EMAIL" />).}other{# პაროლი და სხვა ერთეულები შენახულია მხოლოდ ამ მოწყობილობაზე. თქვენს სხვა მოწყობილობებზე მათ გამოსაყენებლად შეინახეთ ისინი თქვენს Google ანგარიშში (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="3187472288455401631">რეკლამის ეფექტურობის გაზომვა</translation>
+<translation id="3189635831478931757">ჩანართების ჯგუფი „<ph name="GROUP_TITLE" />“</translation>
 <translation id="3207960819495026254">ჩანიშნულია</translation>
 <translation id="3208584281581115441">ახლავე შემოწმება</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> წაშლილია</translation>
@@ -515,6 +519,7 @@
 <translation id="342220687432920852">{HOURS,plural, =1{# საათის წინ}other{# საათის წინ}}</translation>
 <translation id="3430670036890315772">პროფილის ჩაკეტვის გამორთვის შემთხვევაში, შენახული ინფორმაცია წაიშლება</translation>
 <translation id="3435465986463792564">მრავალი ფანჯარა გაქვთ? მათი მართვა აქედან შეგიძლიათ</translation>
+<translation id="3435575784518354875">თქვენს პაროლებზე წვდომის შესანარჩუნებლად დააექსპორტეთ ისინი ახლავე, განაახლეთ Google Play Services და შემდეგ დააიმპორტეთ უკან Google პაროლების მმართველში. <ph name="BEGIN_LINK" />სრული ინსტრუქციის ნახვა<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">უსაფრთხოება</translation>
 <translation id="3439276997620616816">აქ იპოვით თქვენს ბოლოდროინდელ ჩანართებს</translation>
 <translation id="3443221991560634068">მიმდინარე გვერდის გადატვირთვა</translation>
@@ -524,6 +529,7 @@
 <translation id="3474624961160222204">გაგრძელება, როგორც <ph name="NAME" /></translation>
 <translation id="3478363558367712427">შეგიძლიათ აირჩიოთ საძიებო სისტემა</translation>
 <translation id="3479552764303398839">ახლა არა</translation>
+<translation id="3487903178221457900">დაექსპორტებული ფაილი, აპების ჩათვლით, შეიძლება ხელმისაწვდომი იყოს სხვებისთვის. დაექსპორტების შემდეგ თქვენი პაროლები წაიშლება Chrome-იდან.</translation>
 <translation id="3488199663160411179">სახელი</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /> შემოთავაზებული კონტენტის შესახებ</translation>
 <translation id="3495219333887281978">სისტემაში შესვლის ქვედა ფურცელი გახსნილია ნახევარ სიმაღლეზე.</translation>
@@ -744,6 +750,7 @@
 <translation id="4523326818319942067">ბოლო საათში</translation>
 <translation id="452750746583162491">სინქრონიზებული მონაცემების გადახედვა</translation>
 <translation id="4532845899244822526">აირჩიეთ საქაღალდე</translation>
+<translation id="4535755320005483982">ჩანართების გაზიარებული ჯგუფი „<ph name="GROUP_TITLE" />“</translation>
 <translation id="4543131175509360848">წვდომის გასაღებების არარსებობის ფურცელი</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ჩანართი}other{<ph name="TAB_COUNT_MANY" /> ჩანართი, <ph name="TAB_COUNT_INCOGNITO" /> ინკოგნიტო}}</translation>
 <translation id="4558311620361989323">ვებგვერდის მალსახმობები</translation>
@@ -1245,6 +1252,7 @@
 <translation id="6756507620369789050">გამოხმაურება</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="676305334223455055">შედით, რათა თქვენს ინტერესებზე მორგებული კონტენტი მიიღოთ</translation>
+<translation id="6764137532716892442">ჩანართების გაზიარებული ჯგუფი „<ph name="GROUP_TITLE" />“ ახალი აქტივობით</translation>
 <translation id="6767294960381293877">მოწყობილობების სია, რომლებთანაც უნდა გაზიარდეს ჩანართი, გახსნილია ნახევარ სიმაღლეზე.</translation>
 <translation id="6785476624617658922">Chrome-ისა და ChromeOS-ის მომსახურების დამატებითი პირობები</translation>
 <translation id="6795633245022906657">სწრაფად გახსენით ახალი ჩანართი. ამ მალსახმობის რედაქტირებისთვის გადადით პარამეტრებზე.</translation>
@@ -1311,6 +1319,7 @@
 <translation id="6965382102122355670">კარგი</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{ჩანართების გაზიარებულ ჯგუფებში ახალი აქტივობის მქონე <ph name="TABS_COUNT_ONE" /> სტანდარტული ჩანართის ნახვა}other{ჩანართების გაზიარებულ ჯგუფებში ახალი აქტივობის მქონე <ph name="TABS_COUNT_MANY" /> სტანდარტული ჩანართის ნახვა}}</translation>
 <translation id="6971862865055170158">უარყოფა</translation>
+<translation id="6976223255612495095"><ph name="TAB_TITLE" />, ახალი ან განახლებული ჩანართი</translation>
 <translation id="6978717888677691380">თქვენ მიერ დაბლოკილი საიტები</translation>
 <translation id="6979737339423435258">ყველა დროის</translation>
 <translation id="6983306615164277634">პოზიციის შესაცვლელად შეგიძლიათ მისამართთა ზოლზე ხანგრძლივად შეხებაც.</translation>
@@ -1704,6 +1713,7 @@
 <translation id="8676276370198826499">დარეგისტრირდით <ph name="SITE_ETLD_PLUS_ONE" />-ში <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ით</translation>
 <translation id="8676789164135894283">დადასტურება შესვლისთვის</translation>
 <translation id="8683039184091909753">სურათი</translation>
+<translation id="8688183792442786085"><ph name="TAB_TITLE" />, არჩეული ჩანართი</translation>
 <translation id="869891660844655955">ვადის გასვლის თარიღი</translation>
 <translation id="8699120352855309748">ამ ენების თარგმნის შემოთავაზების აკრძალვა</translation>
 <translation id="8712637175834984815">კარგი</translation>
@@ -1751,6 +1761,7 @@
 <translation id="8937772741022875483">გსურთ, ციფრული კომფორტიდან ამოშალოთ თქვენი აქტივობა Chrome-ში?</translation>
 <translation id="8942627711005830162">სხვა ფანჯარაში გახსნა</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> — ამ ენის ჩამოტვირთვა ვერ მოხერხდა. ცადეთ მოგვიანებით.</translation>
+<translation id="8957528460562961174">თქვენს პაროლებზე წვდომის შესანარჩუნებლად დააექსპორტეთ ისინი ახლავე და შემდეგ დააიმპორტეთ ისინი პაროლების სასურველ მმართველში. Google პაროლების მმართველმა შეწყვიტა მუშაობა, რადგან Google Play services მიუწვდომელია.</translation>
 <translation id="8963117664422609631">საიტის პარამეტრებზე გადასვლა</translation>
 <translation id="8965591936373831584">მომლოდინე</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> ინკოგნიტო და <ph name="TAB_COUNT_ONE" /> სხვა ჩანართი დაიხურება}other{<ph name="INCOGNITO_TAB_COUNT" /> ინკოგნიტო და <ph name="TAB_COUNT_MANY" /> სხვა ჩანართი დაიხურება}}</translation>
@@ -1836,4 +1847,5 @@
 <translation id="988091779042748639">თქვენი მოწყობილობიდან ინკოგნიტო რეჟიმში დათვალიერების ისტორია რომ წაშალოთ, დახურეთ ყველა ინკოგნიტო ჩანართი.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> ჩანართი</translation>
 <translation id="996149300115483134">არხის ბარათის მენიუ დახურულია</translation>
+<translation id="99907655649633293"><ph name="TAB_TITLE" />, ინკოგნიტო ჩანართი</translation>
 </translationbundle>

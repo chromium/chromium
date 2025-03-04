@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Kotiverkko, ei roaming-tilassa </translation>
 <translation id="1327977588028644528">Yhdyskäytävä</translation>
 <translation id="1328223165223065150">Taustakuvan väri</translation>
+<translation id="1329478709358066995">Transkriptio:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Sovita skannattavalle alueelle</translation>
 <translation id="1343442362630695901">suolajärvi</translation>
@@ -1129,7 +1130,6 @@
 <translation id="6325525973963619867">Epäonnistui</translation>
 <translation id="6327262166342360252">Tämä taustakuva on luotu tekoälyllä seuraavalla tekstillä: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Automaattinen tumma teema</translation>
-<translation id="6335228876613776082">Mallin lataus valmis</translation>
 <translation id="6340526405444716530">Personointi</translation>
 <translation id="6348252528297699679">Voit laittaa sijainnin pois päältä valitsemalla Asetukset &gt; Tietosuoja ja turvallisuus &gt; Yksityisyysasetukset &gt; Sijainnin käyttöoikeus. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Käyttäjätunnus ja salasana</translation>
@@ -1274,6 +1274,7 @@
 <translation id="6930597342185648547">Tietoa taustakuvasta</translation>
 <translation id="6939667434404433010">Hae tallenteen nimeä</translation>
 <translation id="6939766318048400022">kahvila</translation>
+<translation id="6942253772720771875">Jaa palautteesi tai kerro ongelmastasi</translation>
 <translation id="6943893908656559156">Etäidentiteetti (valinnainen)</translation>
 <translation id="6953137545147683679">kulta</translation>
 <translation id="6957231940976260713">Palvelun nimi</translation>
@@ -1598,6 +1599,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8395584934117017006">Tämä <ph name="DEVICE_TYPE" /> on yrityksen ylläpitämä</translation>
 <translation id="8398927464629426868">Laitteen tämänhetkinen latausnopeus tai latauksen purkunopeus</translation>
 <translation id="8403988360557588704">Maalaus: <ph name="ART_FEATURE" />, tyylinä <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">Luotu yhteenveto:</translation>
 <translation id="8410244574650205435">Havaittu automaattisesti</translation>
 <translation id="8420955526972171689">Testaa ja korjaa laitteisto-ongelmia</translation>
 <translation id="8422748173858722634">IMEI-koodi</translation>
@@ -1642,6 +1644,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8626489604350149811"><ph name="APN_NAME" />: lisää toimintoja</translation>
 <translation id="86356131183441916">Vaaleanvioletti</translation>
 <translation id="8647595191512746911">Audiotranskriptio</translation>
+<translation id="8648578954147795914">Luodut nimet:</translation>
 <translation id="8650852232143958317">Ota Gmail‑ ja Google Drive ‑tiedostot mukaan</translation>
 <translation id="8651481478098336970">Mykistä äänenvoimakkuus.</translation>
 <translation id="8655295600908251630">Kanava</translation>
@@ -1670,7 +1673,6 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Kuvat ‑albumi</translation>
 <translation id="8775713578693478175">Modeemin APN</translation>
-<translation id="877735394245039557">Mallia ladataan</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Tällä sivustolla saattaa olla captive portal</translation>
 <translation id="8797082062139985406">Luo nimi Googlen tekoälyn avulla</translation>
@@ -1784,6 +1786,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="9218016617214286986">Näytä tunnetut APN:t</translation>
 <translation id="932327136139879170">Etusivu</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Varmista, että mikrofoni on kytketty, tai yritä käynnistää Chromebook uudelleen</translation>
 <translation id="945522503751344254">Lähetä palautetta</translation>
 <translation id="950520315903467048">Näppäin puuttuu: <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Vertaile tallenteen ääniä niin, että transkriptio kuvastaa, mitä kukin puhuja sanoi ja milloin</translation>

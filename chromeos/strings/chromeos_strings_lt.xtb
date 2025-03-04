@@ -503,6 +503,7 @@
 <translation id="3373141842870501561">„Earth“ srauto ekrano fonas</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> fonas su raide <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Išskirtiniai</translation>
+<translation id="3395147534045164351">Perjungti pritraukimo vietą</translation>
 <translation id="3404249063913988450">Įgalinti ekrano užsklandą</translation>
 <translation id="3413935475507503304">Jei norite tęsti atnaujinimo procesą, spustelėkite „Kitas“.</translation>
 <translation id="3428551088151258685">lauke</translation>
@@ -652,6 +653,7 @@
 <translation id="4113067922640381334">Dabar galite pasiekti naujus <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ekrano fonus<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Tamsus režimas</translation>
 <translation id="4126551873361000548">Atsukti 10 sek.</translation>
+<translation id="4128271910628504223">Įveskite užklausą, pvz., „nupiešk miglotą mišką“</translation>
 <translation id="4130035430755296270">Laikykite pelės žymeklį, kad būtų parodyta daugiau išdėstymo parinkčių</translation>
 <translation id="4130750466177569591">Sutinku</translation>
 <translation id="4131410914670010031">Nespalvotai</translation>
@@ -859,6 +861,7 @@
 <translation id="5050042263972837708">Grupės pavadinimas</translation>
 <translation id="5051044138948155788">Tai vienintelis puslapis. Būsite nukreipti į nuskaitymo pradžios ekraną.</translation>
 <translation id="5053233795640754917">Pristabdyti</translation>
+<translation id="5056587122125565772">Sukurti vaizdą</translation>
 <translation id="5078711626843651677">Balso modeliai laikinai saugomi įrenginyje, kol baigiamas kalbančiųjų žymėjimas etiketėmis. Bet kada galite išjungti šią funkciją skiltyje „Nustatymai“.</translation>
 <translation id="5078983345702708852">futuristinis</translation>
 <translation id="5087864757604726239">atgal</translation>
@@ -1130,7 +1133,6 @@
 <translation id="6325525973963619867">Nepavyko</translation>
 <translation id="6327262166342360252">Šis ekrano fonas sukurtas naudojant DI ir šį tekstą: „<ph name="PROMPT" />“.</translation>
 <translation id="6331191339300272798">Automatinė tamsioji tema</translation>
-<translation id="6335228876613776082">Modelis atsisiųstas</translation>
 <translation id="6340526405444716530">Suasmeninimas</translation>
 <translation id="6348252528297699679">Vietovės informaciją galite išjungti skiltyje „Nustatymai“ &gt; „Privatumas ir sauga“ &gt; „Privatumo valdikliai“ &gt; „Prieiga prie vietovės informacijos“. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Naudotojo vardas ir slaptažodis</translation>
@@ -1674,7 +1676,6 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">„Google“ nuotraukų albumas</translation>
 <translation id="8775713578693478175">Modemo APN</translation>
-<translation id="877735394245039557">Atsisiunčiamas modelis</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Šiame tinkle gali būti fiksuotasis portalas</translation>
 <translation id="8797082062139985406">Kurti pavadinimą naudojantis „Google“ DI</translation>

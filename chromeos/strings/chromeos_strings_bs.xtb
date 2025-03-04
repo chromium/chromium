@@ -81,7 +81,7 @@
 <translation id="131461803491198646">Matična mreža, nije u romingu</translation>
 <translation id="1327977588028644528">Pristupnik</translation>
 <translation id="1328223165223065150">Boja pozadinske slike</translation>
-<translation id="1329478709358066995">Prijepis:</translation>
+<translation id="1329478709358066995">Transkript:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Prilagodi području za skeniranje</translation>
 <translation id="1343442362630695901">slano jezero</translation>
@@ -503,6 +503,7 @@
 <translation id="3373141842870501561">Pozadinska slika sa Zemljom</translation>
 <translation id="33736539805963175">Pozadina u boji "<ph name="LETTERS_COLOR" />" sa slovom <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Ekskluzivno</translation>
+<translation id="3395147534045164351">Uključi/isključi lokaciju poravnanja</translation>
 <translation id="3404249063913988450">Omogućite čuvara ekrana</translation>
 <translation id="3413935475507503304">Da nastavite s ažuriranjem, kliknite na Naprijed.</translation>
 <translation id="3428551088151258685">na otvorenom</translation>
@@ -652,6 +653,7 @@
 <translation id="4113067922640381334">Sada imate pristup novim <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />pozadinskim slikama<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Tamni način rada</translation>
 <translation id="4126551873361000548">10 s nazad</translation>
+<translation id="4128271910628504223">Unesite upit kao što je "nacrtaj maglovitu šumu"</translation>
 <translation id="4130035430755296270">Postavite i zadržite pokazivač miša iznad za više opcija rasporeda</translation>
 <translation id="4130750466177569591">Slažem se</translation>
 <translation id="4131410914670010031">Crno-bijelo</translation>
@@ -859,6 +861,7 @@
 <translation id="5050042263972837708">Naziv grupe</translation>
 <translation id="5051044138948155788">Ovo je jedina stranica. Ovo će vas odvesti na početni ekran za skeniranje.</translation>
 <translation id="5053233795640754917">Pauza</translation>
+<translation id="5056587122125565772">Izradi sliku</translation>
 <translation id="5078711626843651677">Modeli glasova se privremeno čuvaju na uređaju dok se označavanje govornika ne izvrši. Ovo možete isključiti bilo kada u Postavkama.</translation>
 <translation id="5078983345702708852">futurističko</translation>
 <translation id="5087864757604726239">nazad</translation>
@@ -1130,7 +1133,6 @@
 <translation id="6325525973963619867">Neuspješno</translation>
 <translation id="6327262166342360252">Pozadinska slika je kreirana putem AI-ja koristeći tekst "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Automatska tamna tema</translation>
-<translation id="6335228876613776082">Preuzimanje modela je završeno</translation>
 <translation id="6340526405444716530">Personalizacija</translation>
 <translation id="6348252528297699679">Da isključite lokaciju, idite u Postavke &gt; Privatnost i sigurnost &gt; Kontrole privatnosti &gt; Pristup lokaciji. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Korisničko ime i lozinka</translation>
@@ -1275,7 +1277,7 @@
 <translation id="6930597342185648547">O pozadini</translation>
 <translation id="6939667434404433010">Pretražite naziv snimka</translation>
 <translation id="6939766318048400022">Kafić</translation>
-<translation id="6942253772720771875">Podijelite povratne informacije ili opišite svoj problem</translation>
+<translation id="6942253772720771875">Podijelite povratne informacije ili opišite problem</translation>
 <translation id="6943893908656559156">Daljinski identitet (nije obavezno)</translation>
 <translation id="6953137545147683679">zlatne</translation>
 <translation id="6957231940976260713">Ime usluge</translation>
@@ -1674,7 +1676,6 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Fotografija</translation>
 <translation id="8775713578693478175">APN modema</translation>
-<translation id="877735394245039557">Preuzimanje modela je u toku</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Ova mreža možda sadrži zaštitni portal</translation>
 <translation id="8797082062139985406">Kreiranje naziva pomoću Google AI-ja</translation>

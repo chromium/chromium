@@ -1130,7 +1130,6 @@
 <translation id="6325525973963619867">失敗</translation>
 <translation id="6327262166342360252">此桌布是使用以下文字由 AI 建立而成：「<ph name="PROMPT" />」。</translation>
 <translation id="6331191339300272798">自動深色主題背景</translation>
-<translation id="6335228876613776082">模型下載完成</translation>
 <translation id="6340526405444716530">個人化</translation>
 <translation id="6348252528297699679">如要關閉位置，請前往 [設定] &gt; [私隱與安全] &gt; [私隱權設定] &gt; [位置資料存取權]。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">使用者名稱和密碼</translation>
@@ -1674,7 +1673,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">「Google 相片」中的相簿</translation>
 <translation id="8775713578693478175">數據機 APN</translation>
-<translation id="877735394245039557">正在下載模型</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">此網絡可能有強制網絡入口</translation>
 <translation id="8797082062139985406">使用 Google AI 命名</translation>

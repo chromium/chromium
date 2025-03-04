@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">گزارش بازخورد</translation>
 <translation id="1059120031266247284">هم‌رسانی‌شده با شما</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />:‏ <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176">‫<ph name="ITEM_LABEL" /> با دکمه حذف</translation>
 <translation id="1062407476771304334">جایگزینی</translation>
 <translation id="1073899992769346247">باتری را تعویض یا مجدداً شارژ کنید</translation>
 <translation id="1081015718268701546">‏درحال‌حاضر، از برنامه‌های Linux پشتیبانی نمی‌شود. دیگر برنامه‌ها ذخیره خواهند شد.</translation>
@@ -323,6 +324,7 @@
 <translation id="2083190527011054446">شب‌به‌خیر <ph name="GIVEN_NAME" />،</translation>
 <translation id="2086334242442703436">باز کردن «انتخاب‌گر اموجی»</translation>
 <translation id="2088116547584365419">بازی‌ها</translation>
+<translation id="2092517835716911174">برای استفاده از «کمک گرفتن در خواندن» و «کمک گرفتن در نوشتن»، باید حداقل ۱۸ سال داشته باشید.</translation>
 <translation id="209965399369889474">به شبکه متصل نیست</translation>
 <translation id="2107581415810719320">دکمه <ph name="BUTTON_NUMBER" /> دیگر</translation>
 <translation id="2107914222138020205">‏کابل USB-C شما از Thunderbolt پشتیبانی نمی‌کند. ممکن است عملکرد دستگاه محدود شود.</translation>
@@ -1228,6 +1230,7 @@
 <translation id="5043679421800073804">کلیک کردن یا ضربه زدن روی آخرین نماد در قفسه</translation>
 <translation id="504465286040788597">پاراگراف قبلی</translation>
 <translation id="5045550434625856497">گذرواژه نادرست</translation>
+<translation id="5056587122125565772">ایجاد تصویر</translation>
 <translation id="5058794129231928255">‏«سندنگار Google» ایجاد نشد</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">اگر هنگام بی‌صدا بودن صحبت کنید به شما اطلاع داده می‌شود. صدا هرگز از دستگاهتان خارج نمی‌شود.</translation>
@@ -1276,6 +1279,7 @@
 <translation id="5222676887888702881">خروج از سیستم</translation>
 <translation id="5228195526683428788">تقسیم‌کننده صفحهٔ دونیمه</translation>
 <translation id="5229343007215035173">روشن/ خاموش کردن صفحه حریم خصوصی</translation>
+<translation id="5229860525743792999">حذف <ph name="ITEM_LABEL" /> از گروه پیشنهادی</translation>
 <translation id="5230516054153933099">پنجره</translation>
 <translation id="5234764350956374838">رد کردن</translation>
 <translation id="523505283826916779">تنظیمات دسترس‌پذیری</translation>
@@ -1758,6 +1762,7 @@
 <translation id="6757237461819837179">هیچ رسانه‌ای درحال پخش نیست</translation>
 <translation id="6760438044935091345">داشبورد بازی‌ها</translation>
 <translation id="6768043681523654438">فضای ذخیره‌سازی</translation>
+<translation id="6769195697113506406">تصویر درج شد</translation>
 <translation id="6777216307882431711">‏درحال تأمین برق دستگاه‌های USB-C متصل</translation>
 <translation id="6781002679438061620">میز کار ۹</translation>
 <translation id="6782182743534150858">میز کار ۱۳</translation>
@@ -1984,6 +1989,7 @@
 <translation id="7571361473021531288">شارژ <ph name="BATTERY_PERCENTAGE" />٪ | <ph name="TIME" /> باقی مانده است</translation>
 <translation id="7573585051776738856">پنجره فعال به راست متصل شد.</translation>
 <translation id="7579778809502851308">ضبط صفحه‌نمایش</translation>
+<translation id="7588317312481506627">در بریده‌دان کپی شد.</translation>
 <translation id="7593891976182323525">‏جستجو یا Shift</translation>
 <translation id="7598054670902114203">‏عکس آنی استفاده از CPU، <ph name="CPU_USEAGE" />٪. دما <ph name="TEMPERATURE" /> درجه سلسیوس، سرعت فعلی: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> گیگاهرتز</translation>
 <translation id="7599378375976398913">درج نتیجه انتخاب‌شده</translation>
@@ -2178,6 +2184,7 @@
 <translation id="8155628902202578800">باز کردن کادر گفتگوی اطلاعات برای <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">درحال استفاده از <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">محتوا</translation>
+<translation id="81817143961839203">تصویر درج نشد</translation>
 <translation id="8185090165691050712">روشن/ خاموش کردن منو برای تغییر اندازه ‏حالت قفل</translation>
 <translation id="8192727139462702395">هرگاه بلوتوث را خاموش کنید، اتصال این دستگاه‌های خارجی از <ph name="DEVICE_TYPE" /> قطع خواهد شد:</translation>
 <translation id="8198456017687137612">فرستادن برگه</translation>
@@ -2256,6 +2263,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> دارد.</translation>
 <translation id="8477270416194247200">‏برای لغو کردن Alt+Search یا Shift را فشار دهید.</translation>
 <translation id="8480418399907765580">نمایش نوارابزار</translation>
+<translation id="8487660088084188539">‏وقتی این ویژگی‌ها را روشن می‌کنید، ممکن است نوشتار، محتوای سند، و نشانی صفحه وب واردشده به سرورهای Google ارسال شود. از این اطلاعات مطابق با <ph name="LINK_TO_SERVICE_TERMS" />، برای تولید پیشنهاد نوشتاری، تولید خلاصه، پاسخ به سؤالات، و بهبود محصول استفاده می‌شود. اطلاعات شخصی، حساس، یا محرمانه را وارد نکنید.</translation>
 <translation id="8487699605742506766">نقطه اتصال</translation>
 <translation id="8491237443345908933">باز کردن پیوند در برگه جدید</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> از <ph name="SPECIFIED_RESOLUTION" /> پشتیبانی نمی‌کند. وضوح به <ph name="FALLBACK_RESOLUTION" /> تغییر کرد. برای حفظ تغییرات، روی تأیید کلیک کنید. تنظیمات قبلی <ph name="TIMEOUT_SECONDS" /> دیگر بازیابی خواهد شد.</translation>
@@ -2325,6 +2333,7 @@
 <translation id="8725066075913043281">تلاش دوباره</translation>
 <translation id="8725214031272624704">نمایش فهرست روش‌های ورودی دردسترس</translation>
 <translation id="8730621377337864115">تمام</translation>
+<translation id="8731188831050207755">‫<ph name="FILE_NAME" /> بارگیری نشد.</translation>
 <translation id="8731487213223706745">در <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /> به‌پایان می‌رسد</translation>
 <translation id="8734991477317290293">ممکن است تلاش کند ضربه‌کلیدهای شما را به سرقت ببرد</translation>
 <translation id="8735678380411481005">رنگ نور پس‌زمینه صفحه‌کلید</translation>

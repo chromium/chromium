@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">Şu siteleri çevirmeyi önerme:</translation>
 <translation id="1145536944570833626">Mevcut veriler silinir.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" />, Chrome'da açılacak. Devam ederek <ph name="BEGIN_LINK1" />Google Hizmet Şartları<ph name="END_LINK1" /> ile <ph name="BEGIN_LINK2" />Google Chrome ve ChromeOS Ek Hizmet Şartları<ph name="END_LINK2" />'nı kabul etmiş olursunuz.</translation>
+<translation id="1154555449933432029">Google Şifre Yöneticisi'nde kayıtlı şifreniz yok.</translation>
 <translation id="115483310321669804"><ph name="PASSWORD" /> şifresi kullan</translation>
 <translation id="1173894706177603556">Yeniden adlandır</translation>
 <translation id="1174479719160874822">Chrome, ekran küçükse mobil siteyi ister</translation>
@@ -1366,10 +1367,12 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7224097611345298931">Chrome ve <ph name="CHROME_CHANNEL" /> için yalnızca bu cihaza kaydedilen tüm şifreler birleştirildi. Kayıtlı tüm şifrelerinizi her iki uygulamada da otomatik olarak doldurabilirsiniz.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 indirme işlemi beklemede}other{# indirme işlemi beklemede}}</translation>
 <translation id="7230064152164845085">Gizli moda geçin</translation>
+<translation id="7237724030342645845">Google Şifre Yöneticisi çalışmayı durdurdu</translation>
 <translation id="72415438529550637">Şifre önerisi kapatıldı.</translation>
 <translation id="7260367682327802201">Android cihazınızda benzer bir ayar olabilir. Chrome'da ve Android cihazınızda reklam ölçümü etkinse bir şirket, ziyaret ettiğiniz web siteleri ve kullandığınız uygulamalardaki reklamların etkinliğini ölçebilir.</translation>
 <translation id="727288900855680735"><ph name="ORIGIN" /> adresine <ph name="ONE_TIME_CODE" /> gönderilsin mi?</translation>
 <translation id="7274013316676448362">Engellenmiş site</translation>
+<translation id="7276868533747677875">Daha önce şifreleri dışa aktardıysanız cihazınızda bir CSV dosyası arayın ve bu dosyayı tercih ettiğiniz şifre yöneticisine aktarın.</translation>
 <translation id="7289049772085228972">Chrome'un en güçlü güvenlik avantajına sahipsiniz</translation>
 <translation id="7289303553784750393">İnternete bağlı olmanıza rağmen bu sorun çözülmezse <ph name="SITE_ETLD_PLUS_ONE" /> sitesine devam etmek için başka yöntemler deneyebilirsiniz.</translation>
 <translation id="7290209999329137901">Yeniden adlandırma yapılamıyor</translation>
@@ -1544,6 +1547,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8027395186860110042">Şifreler yakında kullanılamayabilir</translation>
 <translation id="8027863900915310177">Nereye indirileceğini seçin</translation>
 <translation id="8030852056903932865">Onayla</translation>
+<translation id="8031805944372049238">Şifreleri Google Şifre Yöneticisi'ne kaydedip bu hizmette kullanmaya başlamak için Google Play Hizmetleri'ni güncelleyin.</translation>
 <translation id="8032569120109842252">Takip edilenler</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> gün kaldı</translation>
 <translation id="8037801708772278989">Az önce kontrol edildi</translation>

@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Собствената мрежа, не роуминг</translation>
 <translation id="1327977588028644528">Шлюз</translation>
 <translation id="1328223165223065150">Цвят на тапета</translation>
+<translation id="1329478709358066995">Препис:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Уеднаквяване с областта за сканиране</translation>
 <translation id="1343442362630695901">солено езеро</translation>
@@ -1129,7 +1130,6 @@
 <translation id="6325525973963619867">Неуспешно</translation>
 <translation id="6327262166342360252">Този тапет бе създаден с AI посредством следния текст: „<ph name="PROMPT" />“.</translation>
 <translation id="6331191339300272798">Автоматична тъмна тема</translation>
-<translation id="6335228876613776082">Изтеглянето на модела завърши</translation>
 <translation id="6340526405444716530">Персонализиране</translation>
 <translation id="6348252528297699679">Можете да изключите местоположението от „Настройки &gt; Поверителност и сигурност &gt; Контроли за поверителност &gt; Достъп до местоположението“. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Потребителско име и парола</translation>
@@ -1274,6 +1274,7 @@
 <translation id="6930597342185648547">Всичко за фона</translation>
 <translation id="6939667434404433010">Търсете по име на записа</translation>
 <translation id="6939766318048400022">Кафене</translation>
+<translation id="6942253772720771875">Споделете отзиви или опишете проблема си</translation>
 <translation id="6943893908656559156">Отдалечена самоличност (по избор)</translation>
 <translation id="6953137545147683679">златист</translation>
 <translation id="6957231940976260713">Имe на услугата</translation>
@@ -1598,6 +1599,7 @@
 <translation id="8395584934117017006">Това устройство <ph name="DEVICE_TYPE" /> се управлява корпоративно</translation>
 <translation id="8398927464629426868">Скоростта, с която устройството се зарежда или разрежда в момента</translation>
 <translation id="8403988360557588704">Картина на <ph name="ART_FEATURE" /> в стил <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">Генерирано обобщение:</translation>
 <translation id="8410244574650205435">Автоматично установено</translation>
 <translation id="8420955526972171689">Извършвайте тестове и отстранявайте неизправности при проблеми с хардуера</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1644,7 @@
 <translation id="8626489604350149811">Още действия за <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Светлолилав</translation>
 <translation id="8647595191512746911">Аудиопрепис</translation>
+<translation id="8648578954147795914">Генерирани имена:</translation>
 <translation id="8650852232143958317">Вземете файловете си от Gmail и Google Диск със себе си</translation>
 <translation id="8651481478098336970">заглушаване на звука</translation>
 <translation id="8655295600908251630">Канал</translation>
@@ -1670,7 +1673,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Албум в Google Снимки</translation>
 <translation id="8775713578693478175">Име на точката за достъп (APN) на модема</translation>
-<translation id="877735394245039557">Моделът се изтегля</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Тази мрежа може да има портал за удостоверяване</translation>
 <translation id="8797082062139985406">Създаване на име чрез AI на Google</translation>
@@ -1784,6 +1786,7 @@
 <translation id="9218016617214286986">Показване на известните имена на точки за достъп (APN)</translation>
 <translation id="932327136139879170">Начална страница</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Уверете се, че микрофонът ви е свързан, или опитайте да рестартирате своя Chromebook</translation>
 <translation id="945522503751344254">Изпращане на отзиви</translation>
 <translation id="950520315903467048">Липсва клавиш за <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">сравняване на гласовете в записа, така че преписът да отразява какво е казал всеки от говорещите и кога.</translation>

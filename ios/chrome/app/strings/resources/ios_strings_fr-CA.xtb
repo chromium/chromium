@@ -206,6 +206,7 @@
 <translation id="1827529786398596735">Maintenez le doigt sur l'écran d'accueil</translation>
 <translation id="1832848789136765277">Pour vous assurer de toujours pouvoir accéder à vos données de synchronisation, vérifiez qu'il s'agit bien de vous</translation>
 <translation id="1836891464494477513">{count,plural, =1{Favori enregistré dans votre compte Google, {email}}one{Favori enregistré dans votre compte Google, {email}}other{Favoris enregistrés dans votre compte Google, {email}}}</translation>
+<translation id="1838089197478136166">Ouvrir dans Portefeuille?</translation>
 <translation id="183878838231635348">Cette carte affiche tous les problèmes de confidentialité ou de sécurité que la Vérification de sécurité détecte automatiquement pour vous.</translation>
 <translation id="1845230888742614096">Conserver le groupe</translation>
 <translation id="1854463785401910334">Rechercher dans les onglets ouverts</translation>
@@ -225,6 +226,7 @@
 <translation id="189531189292803889">Votre iPad a été récemment restauré, ce qui a peut-être modifié votre navigateur par défaut.</translation>
 <translation id="1901366738768303267">Comment puis-je utiliser cette fonctionnalité?</translation>
 <translation id="1901600657316773839">Garder la sélection</translation>
+<translation id="1902277226107477495">Détection d'adresse désactivée. Réactivez-la dans les paramètres.</translation>
 <translation id="1904580727789512086">Les adresses URL que vous visitez sont enregistrées dans votre compte Google</translation>
 <translation id="1911619930368729126">Télév. vers Google Disque</translation>
 <translation id="1923342640370224680">Dernière heure</translation>
@@ -301,6 +303,7 @@
 <translation id="2230173723195178503">Page Web chargée</translation>
 <translation id="2236949375853147973">Mon activité</translation>
 <translation id="2240256190924001613">Profil de configuration proposé</translation>
+<translation id="2244080985779413662">Ce site Web veut télécharger un fichier et l'ouvrir dans votre Portefeuille.</translation>
 <translation id="2245007488813216650">Traduction en cours…</translation>
 <translation id="2249119578464404734">Dans la partie supérieure de l'écran, touchez l'icône de recherche</translation>
 <translation id="2251686759395008410">Menu → Historique</translation>
@@ -648,7 +651,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="385051799172605136">Retour</translation>
 <translation id="3851938967634752633">Les mots de passe de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> et de<ph name="NUMBER_OF_ACCOUNTS" /> autres comptes seront supprimés. Vos comptes ne seront pas supprimés.</translation>
 <translation id="3858860766373142691">Nom</translation>
-<translation id="3861908220442487587">Cette adresse n'est enregistrée que sur cet appareil. Pour l'utiliser sur vos autres appareils, transférez-la vers votre compte Google, <ph name="USER_EMAIL" /></translation>
 <translation id="3868495844258915202">Afficher l'URL complète</translation>
 <translation id="3875783148670536197">Afficher la marche à suivre</translation>
 <translation id="3876833929577368454">Toujours me demander</translation>
@@ -1361,6 +1363,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6779455296366983087">Vos données de navigation seront supprimées</translation>
 <translation id="6790502149545262384">Vous verrez bientôt des histoires de <ph name="CHANNEL_NAME" /> lorsque vous ouvrirez un nouvel onglet.</translation>
+<translation id="6794476726485507147">Choisissez une date et une heure pour recevoir une notification de rappel pour revisiter cette page</translation>
 <translation id="681368974849482173">Élément créé</translation>
 <translation id="6825078212112407882">{count,plural, =1{Favori enregistré dans votre compte Google, {email}}one{{count} favori enregistré dans votre compte Google, {email}}other{{count} favoris enregistrés dans votre compte Google, {email}}}</translation>
 <translation id="6830728435402077660">Pas sécuritaire</translation>
@@ -1488,6 +1491,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7425053386765766120">Ajouter un mode de paiement…</translation>
 <translation id="7425346204213733349">Les modifications apportées à vos favoris, à votre historique, à vos mots de passe et aux autres paramètres ne seront plus synchronisées avec votre compte Google. Cependant, vos données actuelles resteront stockées dans votre compte Google.</translation>
 <translation id="742664698522525515">Conserver le groupe?</translation>
+<translation id="7431851541687113774">Désactiver la détection d'adresse</translation>
 <translation id="7431991332293347422">Gérez la façon dont votre historique de navigation est utilisé pour personnaliser, entre autres, la recherche</translation>
 <translation id="7435356471928173109">Désactivée par votre administrateur</translation>
 <translation id="7438481509621345350">Vous verrez maintenant des articles de <ph name="CHANNEL_NAME" /> lorsque vous ouvrez un nouvel onglet.</translation>
@@ -1641,6 +1645,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8023170444051056234">Vous perdrez immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> », et il sera supprimé de tous vos appareils.</translation>
 <translation id="8023878949384262191">Développe la section.</translation>
 <translation id="8027581147000338959">Ouvrir dans une nouvelle fenêtre</translation>
+<translation id="8029092694585014252">Définir un rappel</translation>
 <translation id="8032569120109842252">Suivi</translation>
 <translation id="8035133914807600019">Nouveau dossier...</translation>
 <translation id="8035412398498507358">Photos</translation>
@@ -1798,7 +1803,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8679900250380464358">Ajouter à la Liste de lecture</translation>
 <translation id="8680786875305615692">Contribuer à l'amélioration de la sécurité sur le Web pour tous</translation>
 <translation id="8680787084697685621">L'information de connexion au compte n'est plus à jour.</translation>
-<translation id="8683563711222071415">Déplacer l'adresse vers le compte</translation>
 <translation id="8690752723634292147">Confirmer la suppression</translation>
 <translation id="8692689525339542358">Protégez-vous contre les sites dangereux, les téléchargements et les extensions.</translation>
 <translation id="8694281486652655615">Affiche cet élément</translation>

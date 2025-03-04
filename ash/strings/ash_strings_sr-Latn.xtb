@@ -22,6 +22,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1058009965971887428">Pošalji povratne informacije</translation>
 <translation id="1059120031266247284">Deljeno sa vama</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> sa dugmetom za uklanjanje</translation>
 <translation id="1062407476771304334">Zameni</translation>
 <translation id="1073899992769346247">Zamenite ili napunite bateriju</translation>
 <translation id="1081015718268701546">Linux aplikacije trenutno nisu podržane. Druge aplikacije će biti sačuvane.</translation>
@@ -323,6 +324,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2083190527011054446">Laku noć, <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Otvorite birač emodžija</translation>
 <translation id="2088116547584365419">igre</translation>
+<translation id="2092517835716911174">Morate da imate najmanje 18 godina da biste koristili funkciju Pomoć pri čitanju i Pomoć pri pisanju.</translation>
 <translation id="209965399369889474">Niste povezani na mrežu</translation>
 <translation id="2107581415810719320"><ph name="BUTTON_NUMBER" />. dugme Drugo</translation>
 <translation id="2107914222138020205">USB-C kabl ne podržava Thunderbolt. Učinak uređaja će možda biti ograničen.</translation>
@@ -1229,6 +1231,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="5043679421800073804">Kliknite na poslednju ikonu na polici ili je dodirnite</translation>
 <translation id="504465286040788597">Prethodni pasus</translation>
 <translation id="5045550434625856497">Neispravna lozinka</translation>
+<translation id="5056587122125565772">Napravi sliku</translation>
 <translation id="5058794129231928255">Pravljenje Google dokumenta nije uspelo</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">Dobićete obaveštenje ako govorite dok je zvuk isključen. Zvuk ostaje na uređaju.</translation>
@@ -1277,6 +1280,7 @@ Možete da koristite i tastersku prečicu. Prvo istaknite tekst, pa pritisnite <
 <translation id="5222676887888702881">Odjavi me</translation>
 <translation id="5228195526683428788">Razdelnik podeljenog ekrana</translation>
 <translation id="5229343007215035173">Uključi/isključi ekran za privatnost</translation>
+<translation id="5229860525743792999">Uklonite <ph name="ITEM_LABEL" /> iz predložene grupe</translation>
 <translation id="5230516054153933099">Prozor</translation>
 <translation id="5234764350956374838">Odbaci</translation>
 <translation id="523505283826916779">Podešavanja pristupačnosti</translation>
@@ -1759,6 +1763,7 @@ Novo instaliranje</translation>
 <translation id="6757237461819837179">Mediji se ne reprodukuju</translation>
 <translation id="6760438044935091345">Kontrolna tabla igre</translation>
 <translation id="6768043681523654438">memorijski prostor</translation>
+<translation id="6769195697113506406">Slika je umetnuta</translation>
 <translation id="6777216307882431711">Napaja povezane uređaje sa USB priključkom tipa C</translation>
 <translation id="6781002679438061620">Radna površina 9</translation>
 <translation id="6782182743534150858">Radna površina 13</translation>
@@ -1986,6 +1991,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="7571361473021531288">Baterija <ph name="BATTERY_PERCENTAGE" />% | preostalo <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Aktivni prozor je fiksiran na desnoj strani.</translation>
 <translation id="7579778809502851308">Snimanje ekrana</translation>
+<translation id="7588317312481506627">Kopirano je u privremenu memoriju.</translation>
 <translation id="7593891976182323525">Taster za pretragu ili Shift</translation>
 <translation id="7598054670902114203">Pregled korišćenja procesora, <ph name="CPU_USEAGE" />%. Temperatura <ph name="TEMPERATURE" /> °C, aktuelna brzina: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Umeće se izabrani rezultat</translation>
@@ -2180,6 +2186,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8155628902202578800">Otvara dijalog sa informacijama za korisnika <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Koristi se <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Sadržaj</translation>
+<translation id="81817143961839203">Umetanje slike nije uspelo</translation>
 <translation id="8185090165691050712">Uključite ili isključite meni za promenu veličine zaključanog režima</translation>
 <translation id="8192727139462702395">Kada isključite Bluetooth, ovi spoljni uređaji će prekinuti vezu sa uređajem <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Prebacuje se kartica</translation>
@@ -2258,6 +2265,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> – <ph name="FEATURE_STATE" />: <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Pritisnite Alt + taster za pretragu ili Shift da biste otkazali.</translation>
 <translation id="8480418399907765580">Prikaži traku s alatkama</translation>
+<translation id="8487660088084188539">Kada uključite ove funkcije, tekst unosa, sadržaj dokumenta i URL veb-stranice mogu da se šalju Google serverima. Ove informacije se koriste za generisanje predloga za pisanje, generisanje rezimea, odgovaranje na pitanja i poboljšanje proizvoda, u skladu sa <ph name="LINK_TO_SERVICE_TERMS" />. Nemojte da navodite nikakve lične, osetljive ili poverljive informacije.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Otvori link na novoj kartici</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ne podržava rezoluciju <ph name="SPECIFIED_RESOLUTION" />. Rezolucija je promenjena u <ph name="FALLBACK_RESOLUTION" />. Kliknite na Potvrdi da biste zadržali promene. Prethodna podešavanja će biti vraćena za <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2327,6 +2335,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8725066075913043281">Probajte ponovo</translation>
 <translation id="8725214031272624704">Prikaži listu dostupnih metoda unosa</translation>
 <translation id="8730621377337864115">Gotovo</translation>
+<translation id="8731188831050207755">Preuzimanje fajla <ph name="FILE_NAME" /> nije uspela</translation>
 <translation id="8731487213223706745">Završava se u <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Možda pokušava da ukrade vašu kombinaciju tastera</translation>
 <translation id="8735678380411481005">Boja pozadinskog osvetljenja tastature</translation>

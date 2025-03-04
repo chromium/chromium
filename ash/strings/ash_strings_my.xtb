@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">အကြံပြုချက် သတင်းပို့ရန်</translation>
 <translation id="1059120031266247284">သင်နှင့် မျှဝေထားသည်</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />− <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176">ဖယ်ရှားရန်ခလုတ်ဖြင့် <ph name="ITEM_LABEL" /></translation>
 <translation id="1062407476771304334">အစားထိုးရန်</translation>
 <translation id="1073899992769346247">ဘက်ထရီ လဲပါ (သို့) အားသွင်းပါ</translation>
 <translation id="1081015718268701546">Linux အက်ပ်များကို လောလောဆယ် ထောက်ပံ့မထားပါ။ အခြားအက်ပ်များကို သိမ်းပါမည်။</translation>
@@ -323,6 +324,7 @@
 <translation id="2083190527011054446">မင်္ဂလာ ညချမ်းပါ <ph name="GIVEN_NAME" /></translation>
 <translation id="2086334242442703436">‘အီမိုဂျီရွေးချယ်စနစ်’ ဖွင့်ရန်</translation>
 <translation id="2088116547584365419">ဂိမ်းများ</translation>
+<translation id="2092517835716911174">သင်သည် ‘ကူဖတ်ပေးပါ’ နှင့် ‘ကူရေးပေးပါ’ တို့ကို သုံးရန် အသက် ၁၈ နှစ် အနည်းဆုံး ရှိရမည်။</translation>
 <translation id="209965399369889474">ကွန်ရက်ချိတ်ဆက်မထားပါ</translation>
 <translation id="2107581415810719320">အခြားခလုတ် <ph name="BUTTON_NUMBER" /> ခု</translation>
 <translation id="2107914222138020205">သင့် USB-C ကေဘယ်သည် Thunderbolt ကို မပံ့ပိုးပါ။ စက်၏စွမ်းဆောင်ရည်သည် အကန့်အသတ်ရှိနိုင်သည်။</translation>
@@ -1228,6 +1230,7 @@
 <translation id="5043679421800073804">စင်ပေါ်ရှိ နောက်ဆုံးသင်္ကေတကို နှိပ်ရန် (သို့) တို့ရန်</translation>
 <translation id="504465286040788597">ယခင်စာပိုဒ်</translation>
 <translation id="5045550434625856497">စကားဝှက် မမှန်ပါ</translation>
+<translation id="5056587122125565772">ပုံပြုလုပ်ရန်</translation>
 <translation id="5058794129231928255">Google Doc ပြုလုပ်၍မရလိုက်ပါ</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">အသံပိတ်ထားစဉ် စကားပြောဆိုပါက သင့်ကိုအကြောင်းကြားပါမည်။ စက်မှ သင့်အသံထွက်မည်မဟုတ်ပါ။</translation>
@@ -1276,6 +1279,7 @@
 <translation id="5222676887888702881">ထွက်ခွာရန်</translation>
 <translation id="5228195526683428788">မျက်နှာပြင် ခွဲ၍ပြသခြင်း ပိုင်းခြားစနစ်</translation>
 <translation id="5229343007215035173">အချက်အလက်ကာကွယ်ရေး ဖန်သားပြင် ဖွင့်/ပိတ် လုပ်ရန်</translation>
+<translation id="5229860525743792999"><ph name="ITEM_LABEL" /> ကို အကြံပြုထားသောအုပ်စုမှ ဖယ်ရှားရန်</translation>
 <translation id="5230516054153933099">ဝင်းဒိုး</translation>
 <translation id="5234764350956374838">ပယ်ရန်</translation>
 <translation id="523505283826916779">ရယူသုံးနိုင်မှု ဆက်တင်များ</translation>
@@ -1758,6 +1762,7 @@
 <translation id="6757237461819837179">မည်သည့်မီဒီယာမျှ ဖွင့်မထားပါ</translation>
 <translation id="6760438044935091345">ဂိမ်း ဒက်ရှ်ဘုတ်</translation>
 <translation id="6768043681523654438">သိုလှောင်ခန်း</translation>
+<translation id="6769195697113506406">ပုံ ထည့်လိုက်သည်</translation>
 <translation id="6777216307882431711">ချိတ်ဆက်ထားသည့် USB-C ကိရိယာများကို အားသွင်းနေပါသည်</translation>
 <translation id="6781002679438061620">မျက်နှာပြင် ၉</translation>
 <translation id="6782182743534150858">မျက်နှာပြင် ၁၃</translation>
@@ -1984,6 +1989,7 @@
 <translation id="7571361473021531288">ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> ကျန်သည်</translation>
 <translation id="7573585051776738856">ဖွင့်ထားသည့်ဝင်းဒိုးကို ညာဖက်တွင် နေရာချလိုက်သည်။</translation>
 <translation id="7579778809502851308">ဖန်သားပြင် ပုံဖမ်းခြင်း</translation>
+<translation id="7588317312481506627">ကလစ်ဘုတ်သို့ မိတ္တူကူးပြီးပြီ။</translation>
 <translation id="7593891976182323525">ရှာဖွေမည် သို့မဟုတ် ပြောင်းလဲမည်</translation>
 <translation id="7598054670902114203">CPU အသုံးပြုမှု လျှပ်တစ်ပြက်ရလဒ်၊ <ph name="CPU_USEAGE" />%။ အပူချိန် <ph name="TEMPERATURE" /> ဒီဂရီ စင်တီဂရိတ်၊ လက်ရှိအမြန်နှုန်း- <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="7599378375976398913">ရွေးထားသော ရလဒ်ကို ထည့်ခြင်း</translation>
@@ -2178,6 +2184,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> အတွက် အချက်အလက်ဒိုင်ယာလော့ခ် ဖွင့်ပါ</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> အသုံးပြုခြင်း</translation>
 <translation id="8168435359814927499">ပါဝင်သောအကြောင်းအရာ</translation>
+<translation id="81817143961839203">ပုံထည့်၍ မရလိုက်ပါ</translation>
 <translation id="8185090165691050712">လော့ခ်မုဒ် အရွယ်အစားပြန်ပြုပြင်ရန်အတွက် မီနူးဖွင့်/ပိတ်ရန်</translation>
 <translation id="8192727139462702395">ဘလူးတုသ် ပိတ်လိုက်သောအခါ ဤပြင်ပစက်များကို သင့် <ph name="DEVICE_TYPE" /> နှင့် ချိတ်ဆက်မှုဖြုတ်ပါမည်-</translation>
 <translation id="8198456017687137612">တဘ်ကို ကာစ်လုပ်နေသည်</translation>
@@ -2256,6 +2263,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> က <ph name="FEATURE_NAME" /> ကို <ph name="FEATURE_STATE" />။</translation>
 <translation id="8477270416194247200">ပယ်ဖျက်ရန် Alt+Search သို့မဟုတ် Shift ကို နှိပ်ပါ။</translation>
 <translation id="8480418399907765580">ကိရိယာဘား ပြပါ</translation>
+<translation id="8487660088084188539">ဤဝန်ဆောင်မှုများကို ဖွင့်သောအခါ ထည့်သွင်းသည့်စာသား၊ မှတ်တမ်းအကြောင်းအရာနှင့် အင်တာနက်စာမျက်နှာ URL တို့ကို Google ဆာဗာများသို့ ပို့နိုင်သည်။ ရေးသားမှု အကြံပြုချက်များ၊ အနှစ်ချုပ်များ ထုတ်လုပ်ရန်၊ မေးခွန်းများ ဖြေရန်နှင့် ထုတ်ကုန် ပိုကောင်းစေရန်အတွက် <ph name="LINK_TO_SERVICE_TERMS" /> နှင့်အညီ ဤအချက်အလက်ကို အသုံးပြုသည်။ ကိုယ်ရေးကိုယ်တာ၊ သတိထားရမည့် (သို့) လျှို့ဝှက်အချက်အလက်များကို မထည့်ပါနှင့်။</translation>
 <translation id="8487699605742506766">ဟော့စပေါ့</translation>
 <translation id="8491237443345908933">လင့်ကို တဘ်အသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> က <ph name="SPECIFIED_RESOLUTION" /> ကို မပံ့ပိုးပါ။ ပုံရိပ်ပြတ်သားကိန်းကို <ph name="FALLBACK_RESOLUTION" /> သို့ ပြောင်းထားသည်။ အပြောင်းအလဲများသိမ်းရန် 'အတည်ပြုရန်' ကို နှိပ်ပါ။ ယခင်ဆက်တင်များကို <ph name="TIMEOUT_SECONDS" /> အကြာတွင် ပြန်ထားရှိပါမည်။</translation>
@@ -2325,6 +2333,7 @@
 <translation id="8725066075913043281">ထပ် စမ်းကြည့်ရန်</translation>
 <translation id="8725214031272624704">ရနိုင်သော လက်ကွက်စာရင်းကို ပြပါ</translation>
 <translation id="8730621377337864115">ပြီးပါပြီ</translation>
+<translation id="8731188831050207755"><ph name="FILE_NAME" /> ဒေါင်းလုဒ်လုပ်၍ မရလိုက်ပါ။</translation>
 <translation id="8731487213223706745"><ph name="DAYS_ELAPSED" /> <ph name="END_TIME" /> တွင် ပြီးဆုံးမည်</translation>
 <translation id="8734991477317290293">၎င်းသည် သင်၏ ခလုတ်နှိပ်ချက်များကို ခိုးယူရန် ကြိုးပမ်းနိုင်သည်။</translation>
 <translation id="8735678380411481005">ကီးဘုတ်နောက်ခံမီးရောင်</translation>

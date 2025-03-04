@@ -416,6 +416,23 @@
 獨立的 <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> 政策可排除特定主機名稱或主機名稱模式，避免這項功能將其升級為 HTTPS。</translation>
 <translation id="1342918903685430097">設定裝置的最低 <ph name="PRODUCT_OS_NAME" /> 版本限制。</translation>
 <translation id="1343128241903870688">停用裝置應用程式資訊回報功能</translation>
+<translation id="1345276795096570241">為清單中的識別資訊提供者停用使用 <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> 的單一登入服務。
+
+如果新增 <ph name="POLICY_VALUE_ALL" /> 這個值，所有支援的單一登入 (SSO) 識別資訊提供者都會遭到停用。
+
+如果新增 <ph name="POLICY_VALUE_MICROSOFT" /> 這個值，Chrome 將停止支援 Microsoft® 雲端識別資訊提供者的單一登入服務。
+
+如未設定這項政策，系統會啟用 <ph name="PRODUCT_NAME" /> 支援的所有識別資訊提供者。
+
+如果系統管理員在裝置上的 <ph name="PRODUCT_NAME" /> 啟用識別資訊提供者並完成設定，使用者只要在支援 <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> 的任何應用程式中，透過該識別資訊提供者登入過一次，就能自動使用該識別資訊提供者登入網站資源。在每個驗證事件中，與使用者驗證資訊相關的資訊都會傳送給使用者的雲端識別資訊提供者。
+
+注意事項：
+
+<ph name="PRODUCT_NAME" /> 的無痕或訪客模式不支援使用 <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> 的單一登入服務。
+
+<ph name="PRODUCT_NAME" /> 僅支援以下識別資訊提供者使用 <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> 的單一登入服務：Microsoft。
+
+這項功能自 <ph name="MAC_OS_NAME" /> 10.15 起開放使用。</translation>
 <translation id="1347198119056266798">這項政策已遭淘汰，請改用 <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> 和 <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />。如果設定 <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />、<ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> 或 <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> 政策 (已淘汰)，系統會忽略這項政策。
 
       將 Google 網頁搜尋中的「安全搜尋」功能強制設為啟用，並禁止使用者變更這項設定。這項設定也會強制執行中度的 YouTube 嚴格篩選模式。

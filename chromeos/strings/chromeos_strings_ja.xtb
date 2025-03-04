@@ -1130,7 +1130,6 @@
 <translation id="6325525973963619867">失敗しました</translation>
 <translation id="6327262166342360252">この壁紙は「<ph name="PROMPT" />」というテキストを使用して AI で作成されました。</translation>
 <translation id="6331191339300272798">ダークモードを自動的に設定する</translation>
-<translation id="6335228876613776082">モデルのダウンロードが完了しました</translation>
 <translation id="6340526405444716530">カスタマイズ</translation>
 <translation id="6348252528297699679">位置情報は、[設定] &gt; [プライバシーとセキュリティ] &gt; [プライバシー管理] &gt; [位置情報へのアクセス] でオフにできます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">ユーザー名とパスワード</translation>
@@ -1674,7 +1673,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google フォトのアルバム</translation>
 <translation id="8775713578693478175">モデムの APN</translation>
-<translation id="877735394245039557">モデルをダウンロードしています</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">このネットワークにはキャプティブ ポータルがある可能性があります</translation>
 <translation id="8797082062139985406">Google AI を使って名前を作成</translation>

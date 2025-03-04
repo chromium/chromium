@@ -25,6 +25,7 @@
 <translation id="1657719826150349398">Преместите картицу надоле</translation>
 <translation id="1697284962337958118">Додајте на/у</translation>
 <translation id="1713541401465507417">Затвори све картице и групе</translation>
+<translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> група картица више није доступна}one{<ph name="TAB_GROUPS_COUNT_MANY" /> група картица више није доступна}few{<ph name="TAB_GROUPS_COUNT_MANY" /> групе картица више нису доступне}other{<ph name="TAB_GROUPS_COUNT_MANY" /> група картица више није доступно}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Сазнајте више<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> картица је груписана</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> картица}one{<ph name="TABS_COUNT_MANY" /> картица}few{<ph name="TABS_COUNT_MANY" /> картице}other{<ph name="TABS_COUNT_MANY" /> картица}}</translation>
@@ -40,6 +41,7 @@
 <translation id="2359808026110333948">Настави</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Скупите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_ONE" /> картицом.}one{Скупите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картицом.}few{Скупите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картице.}other{Скупите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картица.}}</translation>
 <translation id="2498435670446402865">Преименујте групу картица</translation>
+<translation id="2536366509642644298">Групе картица <ph name="TAB_GROUP_NAME_1" /> и <ph name="TAB_GROUP_NAME_2" /> више нису доступне</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Скупите <ph name="TABS_COUNT_ONE" /> картицу.}one{Скупите групу са <ph name="TABS_COUNT_MANY" /> картицом.}few{Скупите групу са <ph name="TABS_COUNT_MANY" /> картице.}other{Скупите групу са <ph name="TABS_COUNT_MANY" /> картица.}}</translation>
 <translation id="2569352796411618312">Предлог: Имате више картица (<ph name="NUMBER_OF_TABS" />) које нисте користили у скорије време. Желите ли да их затворите?</translation>
 <translation id="2662028055331606429">Оцена <ph name="CURRENT_RATING" /> од <ph name="RATING_BASELINE" /></translation>
@@ -62,6 +64,7 @@
 <translation id="3051031624272448591">Увек можете да их вратите из историје</translation>
 <translation id="3052964831964880138">Снижење од <ph name="PRICE_DROP" /> за:<ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Боја иконе групе картица је <ph name="COLOR_NAME" /></translation>
+<translation id="311432875115153175">Листа групе картица је затворена</translation>
 <translation id="3194464645767632461">оцена</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> картица је додата, промењених: <ph name="ANY_CHANGED" />}one{<ph name="MANY_ADDED" /> картица је додата, промењених: <ph name="ANY_CHANGED" />}few{<ph name="MANY_ADDED" /> картице су додате, промењених: <ph name="ANY_CHANGED" />}other{<ph name="MANY_ADDED" /> картица је додато, промењених: <ph name="ANY_CHANGED" />}}</translation>
 <translation id="3328308545011660196">Предлог: Картице (<ph name="NUMBER_OF_TABS" />) делују повезано. Желите ли да их групишете?</translation>
@@ -77,6 +80,7 @@
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> неактивна картица}one{<ph name="TABS_COUNT_MANY" /> неактивна картица}few{<ph name="TABS_COUNT_MANY" /> неактивне картице}other{<ph name="TABS_COUNT_MANY" /> неактивних картица}}</translation>
 <translation id="3969565576924904454">Отворите <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Направљено је пре <ph name="NUM_DAYS_ONE" /> дан}one{Направљено је пре <ph name="NUM_DAYS_MANY" /> дан}few{Направљено је пре <ph name="NUM_DAYS_MANY" /> дана}other{Направљено је пре <ph name="NUM_DAYS_MANY" /> дана}}</translation>
+<translation id="4076226664360336092">Листа група картица, отворена на целом екрану</translation>
 <translation id="4133493477912226187">Картице (<ph name="NUMBER_OF_TABS" />) делују повезано. Желите ли да их групишете?</translation>
 <translation id="4139634748112164403">Картице ће остати отворене на овом уређају, али ће група бити трајно избрисана</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Затворите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_ONE" /> картицом, боје <ph name="COLOR_NAME" />.}one{Затворите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картицом, боје <ph name="COLOR_NAME" />.}few{Затворите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картице, боје <ph name="COLOR_NAME" />.}other{Затворите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картица, боје <ph name="COLOR_NAME" />.}}</translation>
@@ -149,6 +153,7 @@
 <translation id="6744956528665271406">Измени боју групе</translation>
 <translation id="6856809498882026482">Сакријте режим вишеструког избора</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Проширите дељену групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_ONE" /> картицом, боје <ph name="COLOR_NAME" />.}one{Проширите дељену групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картицом, боје <ph name="COLOR_NAME" />.}few{Проширите дељену групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картице, боје <ph name="COLOR_NAME" />.}other{Проширите дељену групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картица, боје <ph name="COLOR_NAME" />.}}</translation>
+<translation id="709473454666962555">Изаберите групу картица</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Дели картицу}one{Дели картице}few{Дели картице}other{Дели картице}}</translation>
 <translation id="7129458170538955174">Информације о овој продавници су отворене до половине екрана</translation>
 <translation id="7204204600596740190">Режим вишеструког избора</translation>
@@ -156,6 +161,7 @@
 <translation id="731648547091221002">Изабрали сте боју <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Погледајте смернице за враћање и друго</translation>
 <translation id="7352298686197644113">Погледајте која ставка на отвореним картицама има нижу цену</translation>
+<translation id="7369451074646620503">Група картица <ph name="TAB_GROUP_NAME" /> више није доступна</translation>
 <translation id="742664698522525515">Желите да задржите групу?</translation>
 <translation id="7452985128687107478">Групе картица се аутоматски чувају и ажурирају на свим уређајима</translation>
 <translation id="747459581954555080">Врати све</translation>
@@ -181,6 +187,7 @@
 <translation id="7966321538264951561">Одбаците предлоге.</translation>
 <translation id="799469866974412355">Нова група са другог уређаја</translation>
 <translation id="8029301326595421733">Информације о овој продавници су отворене на целом екрану</translation>
+<translation id="8053770993984522566">Листа група картица, отворена до половине екрана</translation>
 <translation id="8076492880354921740">Картице</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Проширите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_ONE" /> картицом, боје <ph name="COLOR_NAME" />.}one{Проширите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картицом, боје <ph name="COLOR_NAME" />.}few{Проширите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картице, боје <ph name="COLOR_NAME" />.}other{Проширите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картица, боје <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Премести картицу нагоре</translation>

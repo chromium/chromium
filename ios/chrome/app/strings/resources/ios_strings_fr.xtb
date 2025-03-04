@@ -226,6 +226,7 @@
 <translation id="189531189292803889">Votre iPad a été restauré récemment, ce qui a peut-être modifié votre navigateur par défaut.</translation>
 <translation id="1901366738768303267">Comment utiliser cette fonctionnalité ?</translation>
 <translation id="1901600657316773839">Conserver la sélection</translation>
+<translation id="1902277226107477495">Détection d'adresse désactivée. Réactivez-la dans les paramètres.</translation>
 <translation id="1904580727789512086">Les URL que vous consultez sont enregistrées dans votre compte Google</translation>
 <translation id="1911619930368729126">Importer dans Google Drive</translation>
 <translation id="1923342640370224680">Dernière heure</translation>
@@ -650,7 +651,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="385051799172605136">Retour</translation>
 <translation id="3851938967634752633">Les mots de passe pour <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> et <ph name="NUMBER_OF_ACCOUNTS" /> autres seront supprimés. Vos comptes ne seront pas supprimés.</translation>
 <translation id="3858860766373142691">Nom</translation>
-<translation id="3861908220442487587">Cette adresse n'est enregistrée que sur cet appareil. Pour l'utiliser sur vos autres appareils, déplacez-la vers votre compte Google (<ph name="USER_EMAIL" />)</translation>
 <translation id="3868495844258915202">Afficher l'URL complète</translation>
 <translation id="3875783148670536197">Démonstration</translation>
 <translation id="3876833929577368454">Me demander à chaque fois</translation>
@@ -1491,6 +1491,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7425053386765766120">Ajouter un mode de paiement…</translation>
 <translation id="7425346204213733349">Les modifications apportées à vos favoris, votre historique, vos mots de passe et d'autres paramètres ne seront plus synchronisées avec votre compte Google. Vos données seront cependant maintenues sur votre compte Google.</translation>
 <translation id="742664698522525515">Conserver le groupe ?</translation>
+<translation id="7431851541687113774">Désactiver la détection d'adresse</translation>
 <translation id="7431991332293347422">Contrôlez la manière dont votre historique de navigation est utilisé pour personnaliser la recherche et plus</translation>
 <translation id="7435356471928173109">Mode désactivé par votre administrateur</translation>
 <translation id="7438481509621345350">Vous verrez les stories de <ph name="CHANNEL_NAME" /> quand vous ouvrirez un nouvel onglet.</translation>
@@ -1802,7 +1803,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8679900250380464358">Ajouter à la liste de lecture</translation>
 <translation id="8680786875305615692">Contribuer à renforcer la sécurité sur le Web pour tous</translation>
 <translation id="8680787084697685621">Les informations de connexion au compte sont obsolètes.</translation>
-<translation id="8683563711222071415">Déplacer l'adresse vers le compte</translation>
 <translation id="8690752723634292147">Confirmer la suppression</translation>
 <translation id="8692689525339542358">Protégez-vous contre les sites, extensions et téléchargements dangereux.</translation>
 <translation id="8694281486652655615">Affiche cet élément</translation>

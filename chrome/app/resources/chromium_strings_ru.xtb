@@ -315,6 +315,7 @@
 <translation id="5579324208890605088">Ошибка. Запустите установщик от имени обычного пользователя, а не администратора.</translation>
 <translation id="5596627076506792578">Ещё</translation>
 <translation id="5605834417512968703">Выберите что-нибудь для поиска по изображениям или нажмите клавишу Escape, чтобы его закрыть</translation>
+<translation id="5618818588972826921">Выберите текст или картинку для поиска по изображениям или нажмите клавишу Escape, чтобы его закрыть</translation>
 <translation id="5623402015214259806">{0,plural, =0{Доступно обновление Chromium}=1{Доступно обновление Chromium}one{Обновление Chromium доступно # день}few{Обновление Chromium доступно # дня}many{Обновление Chromium доступно # дней}other{Обновление Chromium доступно # дня}}</translation>
 <translation id="5643865575100044307">Всегда удалять с устройства данные сайтов при закрытии Chromium</translation>
 <translation id="5653831366781983928">Перезапустите Chromium</translation>
@@ -588,5 +589,6 @@
 <translation id="983803489796659991">Выполнить установку не удалось, так как на сервере нет никаких хешированных данных для приложения.</translation>
 <translation id="985498048907240953">Использовать Chromium без входа в аккаунт</translation>
 <translation id="985602178874221306">Авторы Chromium</translation>
+<translation id="989970834842471429">Выберите текст или картинку для поиска по изображениям.</translation>
 <translation id="992780518932311116">Чтобы использовать свои геоданные, предоставьте Chromium доступ к ним в <ph name="BEGIN_LINK" />системных настройках<ph name="END_LINK" /></translation>
 </translationbundle>

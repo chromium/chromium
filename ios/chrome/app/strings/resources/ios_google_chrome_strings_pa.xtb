@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਨੂੰ <ph name="EMAIL" /> ਲਈ Google ਪਾਸਵਰਡ ਪ੍ਰਬੰਧਕ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="1146503048444965320">Chrome ਵਿੱਚ ਨਵੀਂ ਟੈਬ ਖੋਲ੍ਹੋ</translation>
 <translation id="1166460004393506534">Chrome ਤੋਂ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਓ</translation>
+<translation id="1171255741903316750">"ਤੁਹਾਡੇ ਵੱਲੋਂ Chrome ਨੂੰ ਬੰਦ ਕੀਤੇ ਜਾਣ 'ਤੇ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ ਨੂੰ ਲਾਕ ਕਰੋ" ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="1179527450541388808">ਆਪਣੇ iPad ਦੀ ਹੋਮ ਸਕ੍ਰੀਨ ਡੌਕ ਤੋਂ Chrome ਤੱਕ ਤੇਜ਼ੀ ਨਾਲ ਪਹੁੰਚ ਕਰੋ।</translation>
 <translation id="1180362651362502943">ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ Chrome ਡਾਟਾ ਵਰਤਣਾ ਜਾਰੀ ਰੱਖੋ।</translation>
 <translation id="1200396280085622191">ਸੁਨੇਹੇ ਅਤੇ ਹੋਰ ਐਪਾਂ ਵਿਚਲੇ ਲਿੰਕਾਂ 'ਤੇ ਟੈਪ ਕਰ ਕੇ ਕਿਸੇ ਵੇਲੇ ਵੀ Chrome ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
@@ -45,6 +46,7 @@
 <translation id="1917964099031477364">Chrome ਅਤੇ ਇਸ ਡੀਵਾਈਸ ਵਿਚਲੀਆਂ ਹੋਰ Google ਐਪਾਂ ਤੋਂ ਇਸ ਖਾਤੇ ਅਤੇ ਕਿਸੇ ਵੀ ਅਣਰੱਖਿਅਤ ਡਾਟੇ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="1919130412786645364">Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਦਿਓ</translation>
 <translation id="1965935827552890526">ਤੁਸੀਂ ਆਪਣੀ ਦੂਜੀ ਖੁੱਲ੍ਹੀ Chrome ਵਿੰਡੋ ਵਿੱਚ ਜੋ ਕੰਮ ਕਰ ਰਹੇ ਸੀ, ਉਸਨੂੰ ਪੂਰਾ ਕਰੋ।</translation>
+<translation id="1973910962341002002">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ਸੈਟਿੰਗਾਂ ਤੋਂ, "Chrome" ਚਾਲੂ ਕਰੋ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="1984705450038014246">ਆਪਣੇ Chrome ਡਾਟੇ ਦਾ ਸਿੰਕ ਕਰੋ</translation>
 <translation id="1987779152850321833">ਹੇਠਾਂ ਸੁਝਾਈਆਂ ਗਈਆਂ ਇਨ੍ਹਾਂ ਕਾਰਵਾਈਆਂ ਨੂੰ Chrome ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ ਲਾਹਾ ਲੈਣ ਲਈ ਪੂਰਾ ਕਰੋ।</translation>
 <translation id="2055826352861631739">iPad ਲਈ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ Chrome ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
@@ -96,10 +98,13 @@
 <translation id="3282568296779691940">Chrome 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="3303503998967553377">iOS 'ਤੇ Chrome Actions ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="3348862487678490430">Chrome ਦੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਆਈਟਮ ਸ਼ਾਮਲ ਕਰੋ</translation>
+<translation id="3357827134511189025">ਆਟੋਫਿਲ ਲਈ Chrome ਦੀ ਵਰਤੋਂ ਕਰਦਿਆਂ ਕਿਸੇ ਐਪ ਤੋਂ ਆਪਣੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਅਤੇ ਪਾਸਕੀਆਂ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{ਅਜਿਹਾ ਉਦੋਂ ਹੁੰਦਾ ਹੈ, ਜਦੋਂ {THRESHOLD} ਮਿੰਟ ਲਈ Chrome ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ}one{ਅਜਿਹਾ ਉਦੋਂ ਹੁੰਦਾ ਹੈ, ਜਦੋਂ {THRESHOLD} ਮਿੰਟ ਲਈ Chrome ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ}other{ਅਜਿਹਾ ਉਦੋਂ ਹੁੰਦਾ ਹੈ, ਜਦੋਂ {THRESHOLD} ਮਿੰਟ ਲਈ Chrome ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ}}</translation>
 <translation id="3367797402528056312">Chrome ਦਾ ਸੈੱਟਅੱਪ ਪੂਰਾ ਕਰੋ</translation>
 <translation id="3371064404604898522">Chrome ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਵਜੋਂ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="3399930248910934354">Chrome ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
+<translation id="3440830787838130530">Google Password Manager ਵਿੱਚ ਆਪਣੇ ਪਰਿਵਾਰ ਗਰੁੱਪ ਨਾਲ ਪਾਸਵਰਡ ਦੀ ਕਾਪੀ ਨੂੰ ਆਸਾਨੀ ਅਤੇ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸਾਂਝਾ ਕਰੋ</translation>
+<translation id="3460369101684070455">ਆਪਣੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਆਪਣੀਆਂ ਹੋਰ ਐਪਾਂ ਵਿੱਚ ਆਸਾਨੀ ਨਾਲ ਪ੍ਰਾਪਤ ਕਰਨ ਵਾਸਤੇ, ਆਟੋਫਿਲ ਲਈ Chrome ਦੀ ਚੋਣ ਕਰੋ</translation>
 <translation id="3472587960215700950">Chrome ਤੁਹਾਨੂੰ ਪਛਾਣੇ ਗਏ ਪਤਿਆਂ 'ਤੇ ਦਿਸ਼ਾਵਾਂ ਅਤੇ ਸਥਾਨਕ ਜਾਣਕਾਰੀ ਦੇਣ ਲਈ Google Maps ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ।</translation>
 <translation id="3503014945441706099">ਇਸ Chrome ਪ੍ਰੋਫਾਈਲ ਲਈ ਵੀ ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="3522659714780527202">ਜਿਸ ਡੀਵਾਈਸ 'ਤੇ ਵੀ ਤੁਸੀਂ Chrome ਵਰਤਦੇ ਹੋ, ਉੱਥੇ ਆਪਣੀਆਂ ਟੈਬਾਂ ਦੇਖਣ ਲਈ ਸਿੰਕ ਚਾਲੂ ਕਰੋ</translation>
@@ -181,6 +186,7 @@
 <translation id="5998675059699164418">ਤੁਹਾਡੀ ਸੰਸਥਾ ਲਈ Chrome ਵਰਤਣ ਵਾਸਤੇ ਤੁਹਾਨੂੰ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="6021312115739110405">Google ਵੱਲੋਂ ਤੁਹਾਡੇ ਲਈ ਬਣਾਈ ਗਈ ਇੱਕ ਵਿਉਂਤੀ ਫ਼ੀਡ। ਜਿਸ ਵਿੱਚ ਖਬਰਾਂ, ਖੇਡਾਂ ਅਤੇ ਮੌਸਮ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਸ਼ਾਮਲ ਹੈ।</translation>
 <translation id="6022659036123304283">Chrome ਨੂੰ ਆਪਣੇ ਅਨੁਸਾਰ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
+<translation id="6132075343662013154">Chrome ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਪੇਸ਼ਕਸ਼ ਕਰੇਗਾ</translation>
 <translation id="6132149203299792222">ਆਪਣੇ ਪਾਸਵਰਡਾਂ, ਬੁੱਕਮਾਰਕਾਂ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਸਿੰਕ ਕਰਨ ਲਈ ਆਪਣੇ Google ਖਾਤੇ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Chrome ਵਿੱਚ ਖੋਜੋ</translation>
@@ -228,6 +234,7 @@
 <translation id="7061455974939528301">Chrome ਪ੍ਰਤੀਕ ਨੂੰ ਦਬਾਈ ਰੱਖੋ ਅਤੇ "ਹੋਮ ਸਕ੍ਰੀਨ ਦਾ ਸੰਪਾਦਨ ਕਰੋ" 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="7065813315247345131">Chrome ਨੂੰ ਡੌਕ 'ਤੇ ਲਿਜਾਓ</translation>
 <translation id="7124339256045485976">Chrome ਨੂੰ ਅੱਪ-ਟੂ-ਡੇਟ ਰੱਖੋ</translation>
+<translation id="7145599899567697473">Chrome ਵਿੱਚ ਪਾਸਵਰਡ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ ਆਟੋਫਿਲ ਕਰੋ</translation>
 <translation id="7161390184744336561">Google Chrome ਦਾ ਇਹ ਵਰਜਨ ਪੁਰਾਣਾ ਹੈ</translation>
 <translation id="7165736900384873061">Google Chrome QR ਸਕੈਨਰ ਦੀ ਵਰਤੋਂ ਕਰਨਾ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="7175129790242719365">Chrome ਨੁਕਤਾ: Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
@@ -261,6 +268,7 @@
 <translation id="7693590760643069321">ਤੁਸੀਂ ਹੁਣ ਸੁਨੇਹੇ, ਦਸਤਾਵੇਜ਼ ਅਤੇ ਹੋਰ ਐਪਾਂ ਵਿਚਲੇ ਲਿੰਕਾਂ 'ਤੇ ਟੈਪ ਕਰਕੇ ਕਿਸੇ ਵੇਲੇ ਵੀ Chrome ਵਰਤ ਸਕਦੇ ਹੋ।</translation>
 <translation id="7698568245838009292">Chrome ਦੀ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਇੱਛਾ ਹੈ</translation>
 <translation id="7707877166818730835">Chrome ਵਿੱਚ 'ਮੇਰੀ ਨਵੀਨਤਮ ਟੈਬ' ਖੋਲ੍ਹੋ</translation>
+<translation id="7747746207470479571">ਆਟੋਫਿਲ ਲਈ Chrome ਨਾਲ ਆਪਣੇ ਪਾਸਵਰਡ ਅਤੇ ਪਾਸਕੀਆਂ ਤੱਕ ਆਸਾਨੀ ਨਾਲ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="776305366874821582">ਆਪਣੇ iPhone ਦੀ ਹੋਮ ਸਕ੍ਰੀਨ ਡੌਕ ਤੋਂ Chrome ਤੱਕ ਵਧੇਰੇ ਤੇਜ਼ੀ ਨਾਲ ਪਹੁੰਚ ਕਰੋ।</translation>
 <translation id="7780154209050837198">Chrome ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ ਲਾਹਾ ਲੈਣ ਲਈ, ਆਪਣੇ Google ਖਾਤੇ ਨਾਲ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="7787205077729386167">iOS 'ਤੇ Chrome ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ, ਫਿਰ "ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਐਪ" 'ਤੇ ਟੈਪ ਕਰੋ ਅਤੇ Chrome ਚੁਣੋ।</translation>
@@ -281,6 +289,7 @@
 <translation id="8136856065410661948">ਇਸਦੀ ਵਰਤੋਂ Chrome ਅਤੇ Google Lens ਤੋਂ ਤੁਹਾਡੇ Apple Calendar ਵਿੱਚ ਇਵੈਂਟ ਬਣਾਉਣ ਲਈ ਕੀਤੀ ਜਾਵੇਗੀ।</translation>
 <translation id="8154120522323162874">ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨਾ ਜਾਰੀ ਰੱਖ ਕੇ Chrome ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ ਲਾਹਾ ਲਓ।</translation>
 <translation id="8160472928944011082">Chrome ਨੂੰ ਅੱਪਡੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
+<translation id="8245080522851805544">ਤੁਹਾਡੇ ਵੱਲੋਂ Chrome ਨੂੰ ਬੰਦ ਕਰਨ 'ਤੇ ਡੀਵਾਈਸ ਪ੍ਰਮਾਣੀਕਰਨ ਨਾਲ ਆਪਣੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਨਿੱਜੀ ਰੱਖੋ</translation>
 <translation id="8248887045858762645">Chrome ਲਈ ਨੁਕਤਾ</translation>
 <translation id="8265730590513812063">Chrome ਮੀਨੂ ਖੋਲ੍ਹੋ</translation>
 <translation id="8317674518145175158">ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਅਤੇ ਪਤਿਆਂ ਨੂੰ ਇਨਕ੍ਰਿਪਟ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ। Chrome ਦੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਨੂੰ ਸਿੰਕ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ।

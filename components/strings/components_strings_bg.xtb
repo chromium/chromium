@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">Зареждане на страницата по-късно</translation>
 <translation id="1010225406377140704">Свържете се с подателя, за да поискате нова връзка</translation>
 <translation id="1011206368273183593">Файловете се подготвят</translation>
+<translation id="1012264210825687872">След като прегледате поръчката си, трябва да влезете в профила си в(ъв) <ph name="BNPL_ISSUER_NAME" /> или да си създадете такъв. Този профил автоматично ще бъде свързан с Google Pay.</translation>
 <translation id="1014509239502131234">Резултатът се отменя</translation>
 <translation id="1015730422737071372">Въвеждане на допълнителни подробности</translation>
 <translation id="1019413721762100891">Изключено</translation>
@@ -660,6 +661,7 @@
 <translation id="2145193671493396738">Икономически новини</translation>
 <translation id="214556005048008348">Анулиране на плащането</translation>
 <translation id="2147117373852943630">Музикални инструменти</translation>
+<translation id="2147254250314124496"><ph name="EMBEDDED_URL" /> иска да използва запазената за вас информация</translation>
 <translation id="2148613324460538318">Добавяне на карта</translation>
 <translation id="2148716181193084225">днес</translation>
 <translation id="2149968176347646218">Връзката не е защитена</translation>
@@ -691,6 +693,7 @@
 <translation id="2187317261103489799">Откриване (по подразбиране)</translation>
 <translation id="2188375229972301266">Няколко перфорации в долната част</translation>
 <translation id="2194856509914051091">Обмислете следните неща</translation>
+<translation id="2198071643181968308">Научете повече за <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="2200678913752027654">Бутон „Не ми харесва“. Натиснете Enter, за да отворите формуляр за изпращане на подробни отзиви за причината, поради която не харесвате това предложение</translation>
 <translation id="2202627062836089804">задната страна на картата ви</translation>
 <translation id="2204482073374652408">Актуализирането завърши!</translation>
@@ -2318,6 +2321,7 @@
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome се нуждае от достъп до <ph name="PERMISSION" /> на устройството ви</translation>
 <translation id="510644072453496781">Картон (окрайчен)</translation>
+<translation id="5106648964679263509">Виртуалната карта за <ph name="BNPL_ISSUER_NAME" /> е попълнена</translation>
 <translation id="5108881358339761672">Сайтът не е защитен</translation>
 <translation id="5109892411553231226">Управление на начините на плащане</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2513,6 +2517,7 @@
 <ph name="LIST_ITEM" />информацията, въведена във формуляри.
 <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">В обратен ред с отпечатаната страна нагоре</translation>
+<translation id="5445340838622821110">Когато плащате на вноски, се попълва еднократен номер на виртуалната карта. Този номер е само за тази покупка. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Разрешаване на <ph name="SITE" /> да използва запазената за вас информация</translation>
 <translation id="5452270690849572955">Тази страница на <ph name="HOST_NAME" /> не може да бъде намерена</translation>
 <translation id="5452923259299906094">Плащане с eWallet и Pix</translation>
@@ -3332,6 +3337,7 @@
 <translation id="6917795328362592458">Паролата, която току-що използвахте, е разкрита при нарушение на сигурността на данните. За да защитите профилите си, мениджърът на паролите ви препоръчва да проверите запазените си пароли.</translation>
 <translation id="6917873303492266709">За да споделяте, да се присъединявате и да си сътрудничите в групи раздели, отворете настройките и включете „Разрешаване на влизането в Chrome“</translation>
 <translation id="6921197121276419421">Инсталирането на уеб приложения е разрешено</translation>
+<translation id="69238565902785824">Когато профилът ви е свързан, можете да плащате по-бързо с(ъс) <ph name="BNPL_ISSUER_NAME" />. В състояние сте да прекратите връзката с услугата, като посетите <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /></translation>
 <translation id="6924013822850225188">Изберете дали да виждате предимствата на картата си при плащане (прилагат се условията на банката)</translation>
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Бодиарт</translation>
@@ -3397,6 +3403,7 @@
 <translation id="701757816833614688">Образование по визуални изкуства и дизайн</translation>
 <translation id="702275896380648118">Този сайт определя какво харесвате и след това предлага реклами на други сайтове. Той също така получава информация за рекламните ви теми от Chrome, за да ви показва по-подходящи реклами.</translation>
 <translation id="7023162328967545559">Предупреждение от администратор</translation>
+<translation id="7023765275461720661">Искате ли да свържете профила и да платите с(ъс) <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Пароли</translation>
 <translation id="7030164307377592766">промени настройките за попълване на начините на плащане</translation>
 <translation id="7031646650991750659">Кои приложения от Google Play сте инсталирали</translation>
@@ -3619,6 +3626,7 @@
 <translation id="741204030948306876">Да, ще участвам</translation>
 <translation id="7416351320495623771">Управление на паролите…</translation>
 <translation id="7416898721136759658">Безвъзмездна и финансова помощ и стипендии</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">Програмиране</translation>
 <translation id="7419091773564635591">Компютри и електроника</translation>
 <translation id="7419106976560586862">Път на потребителския профил</translation>
@@ -3665,6 +3673,7 @@
 <translation id="7485085230273446323">Бизнес и промишленост</translation>
 <translation id="7485870689360869515">Няма намерени данни.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> ще провери дали отговаряте на условията (това няма да засегне кредитния ви рейтинг). Ако получите одобрение, <ph name="BNPL_ISSUER_NAME" /> ще ви предостави планове за плащане, от които да изберете, и ще завършите покупката си.</translation>
 <translation id="7489392576326061356">Шампоани и балсами</translation>
 <translation id="7495528107193238112">Това съдържание е блокирано. Свържете се със собственика на сайта, за да отстрани проблема.</translation>
 <translation id="749865518782565832">Водопроводни услуги</translation>

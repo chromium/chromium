@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Red local, no en modo roaming</translation>
 <translation id="1327977588028644528">Puerta de enlace</translation>
 <translation id="1328223165223065150">Color del fondo de pantalla</translation>
+<translation id="1329478709358066995">Transcripción:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajustar al área de escaneo</translation>
 <translation id="1343442362630695901">lago salado</translation>
@@ -1129,7 +1130,6 @@
 <translation id="6325525973963619867">Se ha producido un error.</translation>
 <translation id="6327262166342360252">Este fondo de pantalla se creó con IA con el siguiente texto: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Tema oscuro automático</translation>
-<translation id="6335228876613776082">Se completó la descarga del modelo</translation>
 <translation id="6340526405444716530">Personalización</translation>
 <translation id="6348252528297699679">Puedes desactivar la ubicación en Configuración &gt; Privacidad y seguridad &gt; Controles de privacidad &gt; Acceso a la ubicación. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Nombre de usuario y contraseña</translation>
@@ -1274,6 +1274,7 @@
 <translation id="6930597342185648547">Acerca del fondo</translation>
 <translation id="6939667434404433010">Buscar nombre de la grabación</translation>
 <translation id="6939766318048400022">Cafetería</translation>
+<translation id="6942253772720771875">Comparte tus comentarios o describe el problema</translation>
 <translation id="6943893908656559156">Identidad remota (opcional)</translation>
 <translation id="6953137545147683679">dorado</translation>
 <translation id="6957231940976260713">Nombre del servicio</translation>
@@ -1598,6 +1599,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="8395584934117017006">Una empresa administra el dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="8398927464629426868">La tasa a la que el dispositivo se está cargando o descargando</translation>
 <translation id="8403988360557588704">Una pintura de <ph name="ART_FEATURE" /> en estilo <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">Resumen generado:</translation>
 <translation id="8410244574650205435">Detectado automáticamente</translation>
 <translation id="8420955526972171689">Ejecuta pruebas y soluciona problemas de hardware.</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1644,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="8626489604350149811">Más acciones para <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Púrpura claro</translation>
 <translation id="8647595191512746911">Transcripción de audio</translation>
+<translation id="8648578954147795914">Nombres generados:</translation>
 <translation id="8650852232143958317">Lleva tus archivos de Gmail y Google Drive contigo</translation>
 <translation id="8651481478098336970">silenciar volumen</translation>
 <translation id="8655295600908251630">Canal</translation>
@@ -1670,7 +1673,6 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Álbum de Google Fotos</translation>
 <translation id="8775713578693478175">APN del módem</translation>
-<translation id="877735394245039557">Descarga del modelo en curso</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Es posible que esta red tenga un portal cautivo</translation>
 <translation id="8797082062139985406">Crea un nombre con la IA de Google</translation>
@@ -1784,6 +1786,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="9218016617214286986">Mostrar los APN conocidos</translation>
 <translation id="932327136139879170">Página principal</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Asegúrate de que el micrófono esté conectado o intenta reiniciar la Chromebook</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="950520315903467048">No está configurada la tecla para <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Compara las voces a lo largo de la grabación para que la transcripción refleje qué dijo cada interlocutor y cuándo lo dijo</translation>

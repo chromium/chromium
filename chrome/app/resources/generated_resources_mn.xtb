@@ -1715,7 +1715,6 @@
 <translation id="2178545675770638239">Нууц үг сонгоно уу</translation>
 <translation id="2178585470774851578">Та sshd daemon-г тохируулж, USB драйвуудыг ачаалахыг идэвхжүүлэх ChromeOS Flex-н дебагийн онцлогуудыг идэвхжүүлж байна.</translation>
 <translation id="2178614541317717477">CA Compromise</translation>
-<translation id="2179850495466791921">Танд одоогоор <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> болон бусад зүйл байна</translation>
 <translation id="2180620921879609685">Аливаа хуудсан дээрх контентыг блоклох</translation>
 <translation id="2181821976797666341">Тохиргоонууд</translation>
 <translation id="2182058453334755893">Түр санах ой руу хуулсан</translation>
@@ -3134,7 +3133,6 @@
 <translation id="3167562202484086668"><ph name="BRAND" />-н бүх өгөгдлийг устгах</translation>
 <translation id="3169930038976362151">Таны хэрэгцээнд тохирсон загварыг сонгоно уу. Загвар, дэлгэцийн зураг, дэлгэц амраагч болон бусад зүйлээ өөрчлөхийн тулд ердөө дэлгэц дээр удаан дарна уу.</translation>
 <translation id="3170072451822350649">Та нэвтэрч орох ажиллагааг алгасаж болох бөгөөд <ph name="LINK_START" /> зочны хувиар хайлт хийж болно<ph name="LINK_END" /> .</translation>
-<translation id="3171499217959105722">Танд одоогоор <ph name="NUMBERED_ITEM" /> болон бусад зүйл байна</translation>
 <translation id="3175067642577044620">Үндсэн хэсэг</translation>
 <translation id="3175862692832442091">Ой мод</translation>
 <translation id="3176347586396987181">Хулганын товчийг удаан дарахын тулд “z”-г ашиглана уу</translation>
@@ -3946,7 +3944,6 @@
 <translation id="3744219658596020825">Таны нууц үгнүүдийг импорт хийгээгүй</translation>
 <translation id="3745306754941902605">Гал тогоо</translation>
 <translation id="3747077776423672805">Аппуудыг устгахын тулд Тохиргоо &gt; Google Play Дэлгүүр &gt; Android-н сонголтыг удирдах &gt; Апп эсвэл Аппын менежер хэсэгт очно уу. Дараа нь устгахыг хүссэн аппаа товшино уу (та аппыг олохын тулд баруун эсвэл зүүн тийш шудрах шаардлагатай байж болзошгүй). Дараа нь Устгах эсвэл Идэвхгүй болгох гэснийг товшино уу.</translation>
-<translation id="3747552357646973221">Танд одоогоор <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> болон бусад зүйл байна</translation>
 <translation id="3748424433435232460">Энэ бүртгэлийн нууц үгийг энэ төхөөрөмж дээр аль хэдийн хадгалсан байна</translation>
 <translation id="3748706263662799310">Алдааг мэдээлэх</translation>
 <translation id="3749724428455457489">Сайтаас санал болгож буй зарын талаар нэмэлт мэдээлэл аваарай</translation>

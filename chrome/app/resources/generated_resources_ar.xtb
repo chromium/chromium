@@ -1714,7 +1714,6 @@
 <translation id="2178545675770638239">اختيار كلمة مرور</translation>
 <translation id="2178585470774851578">‏يتم حاليًا تفعيل ميزات تصحيح الأخطاء لنظام التشغيل ChromeOS Flex التي ستثبِّت البرنامج الخفي لبروتوكول النقل الآمن (SSHD) وتتيح تشغيل النظام من محرّكات أقراص USB.</translation>
 <translation id="2178614541317717477">‏اختراق المرجع المصدق (CA)</translation>
-<translation id="2179850495466791921">لديك حاليًا <ph name="NUMBERED_ITEM_1" /> و<ph name="NUMBERED_ITEM_2" /> و<ph name="NUMBERED_ITEM_3" /> والمزيد</translation>
 <translation id="2180620921879609685">حظر المحتوى على أي صفحة</translation>
 <translation id="2181821976797666341">السياسات</translation>
 <translation id="2182058453334755893">تم النسخ إلى الحافظة.</translation>
@@ -3130,7 +3129,6 @@
 <translation id="3167562202484086668">حذف كل بيانات "<ph name="BRAND" />"</translation>
 <translation id="3169930038976362151">اختَر المظهر الذي يناسب احتياجاتك. لتغيير المظهر والخلفية وشاشة الاستراحة وغيرها، كل ما عليك فعله هو النقر مع الاستمرار على سطح المكتب.</translation>
 <translation id="3170072451822350649">يمكنك أيضًا تخطي تسجيل الدخول و<ph name="LINK_START" />التصفح كضيف<ph name="LINK_END" />.</translation>
-<translation id="3171499217959105722">لديك حاليًا <ph name="NUMBERED_ITEM" /> والمزيد</translation>
 <translation id="3175067642577044620">القسم العلوي</translation>
 <translation id="3175862692832442091">غابة</translation>
 <translation id="3176347586396987181">‏للضغط مع الاستمرار على زر الماوس، يجب استخدام مفتاح "z"</translation>
@@ -3943,7 +3941,6 @@
 <translation id="3744219658596020825">لم يتم استيراد كلمات المرور.</translation>
 <translation id="3745306754941902605">مطبخ</translation>
 <translation id="3747077776423672805">‏لإزالة التطبيقات، انتقِل إلى "الإعدادات" &gt; "متجر Google Play" &gt; إدارة إعدادات Android المفضّلة &gt; "التطبيقات" أو "مدير التطبيقات". ثم انقر على التطبيق الذي تريد إلغاء تثبيته (عليك التمرير السريع لليمين أو اليسار للعثور على التطبيق)، ثم انقر على "إلغاء التثبيت" أو "إيقاف".</translation>
-<translation id="3747552357646973221">لديك حاليًا <ph name="NUMBERED_ITEM_1" /> و<ph name="NUMBERED_ITEM_2" /> والمزيد</translation>
 <translation id="3748424433435232460">هناك كلمة مرور لهذا الحساب محفوظة حاليًا على هذا الجهاز.</translation>
 <translation id="3748706263662799310">الإبلاغ عن خطأ</translation>
 <translation id="3749724428455457489">مزيد من المعلومات حول الإعلانات المقترَحة من المواقع الإلكترونية</translation>
@@ -4077,6 +4074,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{تمت الموافقة على إضافة واحدة.}zero{تمّت الموافقة على # إضافة.}two{تمت الموافقة على إضافتَين.}few{تمت الموافقة على # إضافات.}many{تمت الموافقة على # إضافةً.}other{تمت الموافقة على # إضافة.}}</translation>
 <translation id="3823019343150397277">‏رقم الحساب بصيغة IBAN</translation>
 <translation id="3823310065043511710">‏يُنصَح بتوفير <ph name="INSTALL_SIZE" /> على الأقل من المساحة لنظام التشغيل Linux.</translation>
+<translation id="3824203811509979971">تلخيص المحتوى أو طرح الأسئلة</translation>
 <translation id="3824621460022590830">الرمز المميز لتسجيل الجهاز غير صالح. يُرجى التواصل مع مشرف الجهاز أو مالكه. رمز الخطأ: <ph name="ERROR_CODE" /></translation>
 <translation id="3824757763656550700">سجِّل الدخول للاطّلاع على علامات التبويب من أجهزتك الأخرى</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{تذكّر اختياري لنوع الملف هذا: <ph name="FILE_TYPES" />}zero{تذكّر اختياري لأنواع الملفات هذه: <ph name="FILE_TYPES" />}two{تذكّر اختياري لهذين النوعين من الملفات: <ph name="FILE_TYPES" />}few{تذكّر اختياري لأنواع الملفات هذه: <ph name="FILE_TYPES" />}many{تذكّر اختياري لأنواع الملفات هذه: <ph name="FILE_TYPES" />}other{تذكّر اختياري لأنواع الملفات هذه: <ph name="FILE_TYPES" />}}</translation>
@@ -4260,6 +4258,7 @@
 <translation id="3948985214866944547">يَحظر معظم المستخدمين مشاركة الموقع الجغرافي الدقيق لهذا الموقع الإلكتروني.</translation>
 <translation id="394984172568887996">‏تمّ الاستيراد من IE</translation>
 <translation id="3949999964543783947">يمكنك <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> لتنزيل الملفات بطريقة أكثر أمانًا.</translation>
+<translation id="3950479158728806902">إنشاء مفتاح مرور تلقائيًا لتسجيل الدخول بشكل أسرع</translation>
 <translation id="3950820424414687140">تسجيل الدخول</translation>
 <translation id="3950841222883198950">الكتابة بالصوت</translation>
 <translation id="3953834000574892725">الحسابات الخاصة بي</translation>
@@ -5188,6 +5187,7 @@
 <translation id="4624054169152573743">مظهر ملوَّن</translation>
 <translation id="4625078469366263107">تفعيل التطبيق</translation>
 <translation id="4625905218692741757">اللون التلقائي الرمادي</translation>
+<translation id="4627107755957573804">يمكن السماح للمواقع الإلكترونية والتطبيقات بترقية الحسابات الحالية لاستخدام مفاتيح المرور</translation>
 <translation id="4627442949885028695">متابعة من جهاز آخر</translation>
 <translation id="4628762811416793313">‏لم يكتمل إعداد حاوية نظام التشغيل Linux. يُرجى إعادة المحاولة.</translation>
 <translation id="4629521233550547305">فتح ملف <ph name="PROFILE_NAME" /> الشخصي</translation>
@@ -5771,6 +5771,7 @@
 <translation id="5053233576223592551">إضافة اسم مستخدِم</translation>
 <translation id="505347685865235222">مجموعة لم تتم تسميتها - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{يجب تغيير كلمة المرور هذه الآن}zero{يجب تغيير كلمات المرور هذه الآن}two{يجب تغيير كلمتَي المرور هاتين الآن}few{يجب تغيير كلمات المرور هذه الآن}many{يجب تغيير كلمات المرور هذه الآن}other{يجب تغيير كلمات المرور هذه الآن}}</translation>
+<translation id="5056587122125565772">إنشاء صورة</translation>
 <translation id="5056950756634735043">جارٍ الاتصال بالحاوية</translation>
 <translation id="5057110919553308744">عند النقر على "الإضافة"</translation>
 <translation id="5057127674016624293">عملية الفحص تستغرق وقتًا أطول من المتوقَّع</translation>
@@ -5881,6 +5882,7 @@
 <translation id="512642543295077915">‏مفتاح البحث + مفتاح Backspace</translation>
 <translation id="5126611267288187364">عرض التغييرات</translation>
 <translation id="5127620150973591153">رمز إتمام الاتصال الآمن: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">يمكنك تلخيص المحتوى أو طرح أسئلة.</translation>
 <translation id="5127881134400491887">إدارة اتصالات الشبكة</translation>
 <translation id="5127934926273826089">أزهار</translation>
 <translation id="5127986747308934633">جهازك تحت تحكّم المشرف</translation>
@@ -11420,6 +11422,7 @@
 <translation id="9074739597929991885">بلوتوث</translation>
 <translation id="9074836595010225693">‏ماوس USB متصل</translation>
 <translation id="9075413375877487220">لا تفي هذه الإضافة بمعايير "الحماية المُحسّنة للتصفّح الآمن"، ولذلك فهي غير موثوق بها.</translation>
+<translation id="9075985558450420812">لإنشاء صورة، يُرجى إدخال طلب مخصّص أو تمييز نص.</translation>
 <translation id="9076523132036239772">عذرًا، تعذر التحقق من صحة البريد الإلكتروني أو كلمة المرور. جرّب الاتصال بالشبكة أولاً.</translation>
 <translation id="9076821103818989526">اللوحة الجانبية</translation>
 <translation id="9076977315710973122">مشاركة ملف الشبكة</translation>

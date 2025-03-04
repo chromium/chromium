@@ -81,6 +81,7 @@
 <translation id="131461803491198646">רשת ביתית, לא בנדידה</translation>
 <translation id="1327977588028644528">שער</translation>
 <translation id="1328223165223065150">צבע הטפט</translation>
+<translation id="1329478709358066995">תמליל:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">התאמה לאזור הסריקה</translation>
 <translation id="1343442362630695901">אגם מלח</translation>
@@ -1129,7 +1130,6 @@
 <translation id="6325525973963619867">נכשל</translation>
 <translation id="6327262166342360252">‏הטפט הזה נוצר על ידי AI לפי הטקסט הבא: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">עיצוב כהה אוטומטי</translation>
-<translation id="6335228876613776082">הורדת המודל הסתיימה</translation>
 <translation id="6340526405444716530">התאמה אישית</translation>
 <translation id="6348252528297699679">אפשר להשבית את שיתוף המיקום ב'הגדרות' &gt; 'פרטיות ואבטחה' &gt; 'אמצעי בקרה על פרטיות' &gt; 'גישה למיקום'. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">שם משתמש וסיסמה</translation>
@@ -1274,6 +1274,7 @@
 <translation id="6930597342185648547">מידע על הרקע שנבחר</translation>
 <translation id="6939667434404433010">חיפוש שם ההקלטה</translation>
 <translation id="6939766318048400022">בית קפה</translation>
+<translation id="6942253772720771875">נשמח לקבל ממך משוב או תיאור של הבעיה</translation>
 <translation id="6943893908656559156">זהות מרחוק (אופציונלי)</translation>
 <translation id="6953137545147683679">זהב</translation>
 <translation id="6957231940976260713">שם שירות</translation>
@@ -1598,6 +1599,7 @@
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> זה מנוהל על ידי ארגון</translation>
 <translation id="8398927464629426868">קצב הטעינה או קצב הפריקה הנוכחיים של המכשיר</translation>
 <translation id="8403988360557588704">ציור של <ph name="ART_FEATURE" /> בסגנון <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">הסיכום שנוצר:</translation>
 <translation id="8410244574650205435">זיהוי אוטומטי</translation>
 <translation id="8420955526972171689">הרצת בדיקות ופתרון בעיות בחומרה</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1644,7 @@
 <translation id="8626489604350149811">עוד פעולות לגבי <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">סגול בהיר</translation>
 <translation id="8647595191512746911">תמלול האודיו</translation>
+<translation id="8648578954147795914">השמות שנוצרו:</translation>
 <translation id="8650852232143958317">‏העברת קבצים מ-Gmail ומ-Google Drive</translation>
 <translation id="8651481478098336970">השתקת עוצמת הקול</translation>
 <translation id="8655295600908251630">ערוץ</translation>
@@ -1670,7 +1673,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">‏אלבום של Google Photos</translation>
 <translation id="8775713578693478175">‏ה-APN של המודם</translation>
-<translation id="877735394245039557">מתבצעת הורדה של המודל</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">יכול להיות שברשת הזאת יש פורטל שבוי</translation>
 <translation id="8797082062139985406">‏יצירת שם באמצעות AI מבית Google</translation>
@@ -1784,6 +1786,7 @@
 <translation id="9218016617214286986">‏הצגת נקודות APN מוכרות</translation>
 <translation id="932327136139879170">בית</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">‏צריך לוודא שהמיקרופון מחובר או להפעיל מחדש את Chromebook</translation>
 <translation id="945522503751344254"> שליחת משוב</translation>
 <translation id="950520315903467048">חסר מקש עבור <ph name="DIRECTION" />. ‫<ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">להשוות בין הקולות במשך ההקלטה כך שהתמליל ישקף את מה שכל אחד הדוברים אמר ומתי</translation>

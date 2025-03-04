@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">Cырсөзүңүз <ph name="EMAIL" /> аккаунту үчүн Google'дун Сырсөздөрдү башкаргычына сакталат.</translation>
 <translation id="1146503048444965320">Chrome'до жаңы өтмөктү ачуу</translation>
 <translation id="1166460004393506534">Chrome'догу серептөө дайындарын өчүрүү</translation>
+<translation id="1171255741903316750">"Chrome жабылганда, жашыруун өтмөктөрдү кулпулоо" параметрин күйгүзүү</translation>
 <translation id="1179527450541388808">Chrome'го iPad'дын башкы экранындагы док бекетинен тез өтүңүз</translation>
 <translation id="1180362651362502943">Google аккаунтуңуздагы Chrome маалыматын колдоно бериңиз.</translation>
 <translation id="1200396280085622191">Эми билдирүүлөрдөгү шилтемелерди жана башка колдонмолорду Chrome'до ача аласыз.</translation>
@@ -45,6 +46,7 @@
 <translation id="1917964099031477364">Бул аккаунт жана башка сакталбаган маалымат Chrome'дон жана ушул түзмөктөгү башка Google колдонмолорунан өчүрүлөт.</translation>
 <translation id="1919130412786645364">Chrome'го кирүүгө уруксат берүү</translation>
 <translation id="1965935827552890526">Жасап жаткан нерсени Chrome'дун ачык терезесинде улантыңыз.</translation>
+<translation id="1973910962341002002">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" параметрлеринен "Chrome'ду" өчүрүү/күйгүзүү</translation>
 <translation id="1984705450038014246">Chrome дайындарын шайкештирүү</translation>
 <translation id="1987779152850321833">Chrome'дун бардык мүмкүнчүлүктөрүн пайдалануу үчүн төмөндө сунушталган аракеттерди аткарыңыз.</translation>
 <translation id="2055826352861631739">Демейки боюнча iPad түзмөгүндө Chrome'ду колдонуңуз</translation>
@@ -96,10 +98,13 @@
 <translation id="3282568296779691940">Chrome'го кириңиз</translation>
 <translation id="3303503998967553377">iOS'то Chrome'догу аракеттерди колдонуу</translation>
 <translation id="3348862487678490430">Окуу тизмесиндеги нерсени Chrome'го кошуу</translation>
+<translation id="3357827134511189025">Автотолтуруу үчүн Chrome аркылуу каалаган колдонмодон сакталган сырсөздөрүңүз жана киргизүүчү ачкычтарыңыз менен кириңиз</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Chrome {THRESHOLD} мүнөт бою колдонулбаса, күтүү режиминде болуп калат}other{Chrome {THRESHOLD} мүнөт бою колдонулбаса, күтүү режиминде болуп калат}}</translation>
 <translation id="3367797402528056312">Chrome'ду аягына чейин тууралаңыз</translation>
 <translation id="3371064404604898522">Chrome'ду демейки серепчи катары коюу</translation>
 <translation id="3399930248910934354">Chrome'дун параметрлерин ачыңыз</translation>
+<translation id="3440830787838130530">Сырсөздөрдү башкаргычта үй-бүлөлүк тобуңуз менен сырсөздүн көчүрмөсүн оңой жана коопсуз бөлүшүңүз</translation>
+<translation id="3460369101684070455">Башка колдонмолордо сакталган сырсөздөрдү оңой терүү максатында автотолтуруу үчүн Chrome'ду тандаңыз</translation>
 <translation id="3472587960215700950">Chrome багыттарды көрсөтүү жана табылган даректер боюнча пайдалуу маалыматты берүү үчүн Google Карталарды колдонот.</translation>
 <translation id="3503014945441706099">Chrome профилиңизде Өркүндөтүлгөн коопсуз серептөөнү да иштетиңиз</translation>
 <translation id="3522659714780527202">Chrome колдонулган түзмөктөрдүн баарындагы өтмөктөрүңүздү көрүү үчүн шайкештирүүнү күйгүзүңүз</translation>
@@ -181,6 +186,7 @@
 <translation id="5998675059699164418">Уюмуңуз Chrome'ду колдонуу үчүн аккаунтуңузга кирүүнү талап кылат.</translation>
 <translation id="6021312115739110405">Сиз үчүн Google түзгөн жеке түрмөк. Жаңылыктар, спорт жана аба ырайы камтылат.</translation>
 <translation id="6022659036123304283">Chrome'ду каалагандай ыңгайлаштырып алыңыз</translation>
+<translation id="6132075343662013154">Chrome сырсөздү сактоону сунуштайт</translation>
 <translation id="6132149203299792222">Сырсөздөрдү, кыстармаларды жана башкаларды шайкештирүү үчүн Google аккаунтуңуз менен кириңиз.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Chrome'до издөө</translation>
@@ -228,6 +234,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="7061455974939528301">Chrome сүрөтчөсүн коё бербей басып туруп, "Башкы экранды түзөтүүнү" чыкылдатыңыз</translation>
 <translation id="7065813315247345131">Chrome'ду Dock панелине жылдырыңыз</translation>
 <translation id="7124339256045485976">Chrome'ду жаңыртып турат</translation>
+<translation id="7145599899567697473">Chrome'до сырсөздөрдү сактоо жана автотолтуруу</translation>
 <translation id="7161390184744336561">Google Chrome эскирип калган</translation>
 <translation id="7165736900384873061">Google Chrome'дун QR сканнерин колдонуу</translation>
 <translation id="7175129790242719365">Chrome кеңеши: Chrome'го кириңиз</translation>
@@ -261,6 +268,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="7693590760643069321">Эми билдирүүлөрдөгү шилтемелерди, документтерди жана башка колдонмолорду Chrome’до ача аласыз.</translation>
 <translation id="7698568245838009292">Chrome камераңызды колдонгону жатат</translation>
 <translation id="7707877166818730835">Chrome'до акыркы өтмөгүмдү ачуу</translation>
+<translation id="7747746207470479571">Автотолтуруу үчүн Chrome менен сырсөздөрүңүзгө жана киргизүүчү ачкычтарыңызга оңой мүмкүнчүлүк алыңыз</translation>
 <translation id="776305366874821582">Chrome'го iPhone'дун Башкы экранындагы док бекетинен тез өтүңүз.</translation>
 <translation id="7780154209050837198">Chrome'дун бардык мүмкүнчүлүктөрүн пайдалануу үчүн Google аккаунтуңуз менен Chrome'го кириңиз.</translation>
 <translation id="7787205077729386167">iOS'то Chrome параметрлерин ачып, андан соң "Демейки серепчини" таптап, Chrome'ду тандаңыз.</translation>
@@ -281,6 +289,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="8136856065410661948">Бул Chrome жана Google Lens кызматындагы Apple Жылнаамасында иш-чараларды түзүү үчүн колдонулат.</translation>
 <translation id="8154120522323162874">Chrome'дун бардык мүмкүнчүлүктөрүн колдонуу үчүн серепчиңизди тууралоону улантыңыз.</translation>
 <translation id="8160472928944011082">Chrome жаңырбай жатат</translation>
+<translation id="8245080522851805544">Chrome'ду жапканда түзмөктүн аныктыгын текшерүү аркылуу серептөөңүздү купуя сактаңыз</translation>
 <translation id="8248887045858762645">Chrome кеңеши</translation>
 <translation id="8265730590513812063">Chrome менюсун ачуу</translation>
 <translation id="8317674518145175158">Даректер жана төлөм ыкмалары шифрленбейт. Chrome'до көрүлгөн вебсайттар шайкештирилбейт.

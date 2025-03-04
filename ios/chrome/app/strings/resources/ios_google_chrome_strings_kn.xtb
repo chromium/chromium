@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು <ph name="EMAIL" /> ನ Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕದಲ್ಲಿ ಉಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="1146503048444965320">Chrome ನಲ್ಲಿ ಹೊಸ ಟ್ಯಾಬ್‌ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1166460004393506534">Chrome ನಲ್ಲಿ ಬ್ರೌಸಿಂಗ್‌ ಡೇಟಾವನ್ನು ಅಳಿಸಿ</translation>
+<translation id="1171255741903316750">"ನೀವು Chrome ಅನ್ನು ಮುಚ್ಚಿದಾಗ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಲಾಕ್ ಮಾಡಿ" ಎಂಬುದನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="1179527450541388808">ನಿಮ್ಮ iPad ನ ಹೋಮ್ ಸ್ಕ್ರೀನ್‌ ಡಾಕ್‌ನಿಂದ Chrome ಅನ್ನು ವೇಗವಾಗಿ ಆ್ಯಕ್ಸೆಸ್‌ ಮಾಡಿ.</translation>
 <translation id="1180362651362502943">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ Chrome ಡೇಟಾ ಬಳಕೆಯನ್ನು ಮುಂದುವರಿಸಿ.</translation>
 <translation id="1200396280085622191">ಸಂದೇಶಗಳು ಮತ್ತು ಇತರ ಆ್ಯಪ್‌ಗಳಲ್ಲಿನ ಲಿಂಕ್‌ಗಳನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ Chrome ಅನ್ನು ಬಳಸಬಹುದು.</translation>
@@ -45,6 +46,7 @@
 <translation id="1917964099031477364">ಈ ಸಾಧನ ಮತ್ತು ಯಾವುದೇ ಉಳಿಸದ ಡೇಟಾವನ್ನು Chrome ಮತ್ತು ಈ ಸಾಧನದಲ್ಲಿರುವ ಇತರ Google ಆ್ಯಪ್‌ಗಳಿಂದ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ.</translation>
 <translation id="1919130412786645364">Chrome ಸೈನ್-ಇನ್ ಅನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="1965935827552890526">ನಿಮ್ಮ ಇತರ ತೆರೆದ Chrome ವಿಂಡೋದಲ್ಲಿ ನೀವು ಮಾಡುತ್ತಿರುವ ಕೆಲಸವನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ.</translation>
+<translation id="1973910962341002002">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ, "Chrome" ಆನ್ ಮಾಡುವುದನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="1984705450038014246">ನಿಮ್ಮ Chrome ಡೇಟಾವನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="1987779152850321833">Chrome ನಿಂದ ಇನ್ನಷ್ಟನ್ನು ಪಡೆಯಲು ಕೆಳಗೆ ಸೂಚಿಸಲಾದ ಈ ಕ್ರಿಯೆಗಳನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ.</translation>
 <translation id="2055826352861631739">iPad ಗಾಗಿ Chrome ಅನ್ನು ಡೀಫಾಲ್ಟ್‌ ಆಗಿ ಬಳಸಿ</translation>
@@ -96,10 +98,13 @@
 <translation id="3282568296779691940">Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="3303503998967553377">iOS ನಲ್ಲಿ Chrome ಆ್ಯಕ್ಷನ್‌ಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="3348862487678490430">ಓದುವ ಪಟ್ಟಿ ಐಟಂ ಅನ್ನು Chrome ಗೆ ಸೇರಿಸಿ</translation>
+<translation id="3357827134511189025">ಆಟೋಫಿಲ್‌ ಮಾಡಲು Chrome ಬಳಸಿಕೊಂಡು ಯಾವುದೇ ಆ್ಯಪ್‌ನಿಂದ ನೀವು ಸೇವ್ ಮಾಡಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಪಾಸ್‌ಕೀಗಳೊಂದಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Chrome ಅನ್ನು {THRESHOLD} ನಿಮಿಷ ಬಳಸದಿದ್ದಾಗ ಇದು ಸಂಭವಿಸುತ್ತದೆ}one{Chrome ಅನ್ನು {THRESHOLD} ನಿಮಿಷಗಳ ಕಾಲ ಬಳಸದಿದ್ದಾಗ ಇದು ಸಂಭವಿಸುತ್ತದೆ}other{Chrome ಅನ್ನು {THRESHOLD} ನಿಮಿಷಗಳ ಕಾಲ ಬಳಸದಿದ್ದಾಗ ಇದು ಸಂಭವಿಸುತ್ತದೆ}}</translation>
 <translation id="3367797402528056312">Chrome ಸೆಟಪ್‌ ಮಾಡುವಿಕೆಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ</translation>
 <translation id="3371064404604898522">ಡಿಫಾಲ್ಟ್ ಬ್ರೌಸರ್‌ ಆಗಿ Chrome ಅನ್ನು ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="3399930248910934354">Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="3440830787838130530">Google Password Manager ನಲ್ಲಿ ನಿಮ್ಮ ಕುಟುಂಬದ ಗುಂಪಿನೊಂದಿಗೆ ಪಾಸ್‌ವರ್ಡ್‌ನ ಕಾಪಿಯನ್ನು ಸುಲಭವಾಗಿ ಮತ್ತು ಸುರಕ್ಷಿತವಾಗಿ ಹಂಚಿಕೊಳ್ಳಿ</translation>
+<translation id="3460369101684070455">ನಿಮ್ಮ ಇತರ ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸುಲಭವಾಗಿ ಪಡೆಯಲು, ಆಟೋಫಿಲ್‌ಗಾಗಿ Chrome ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="3472587960215700950">Chrome, ಪತ್ತೆಯಾದ ವಿಳಾಸಗಳಲ್ಲಿ ನಿಮಗೆ ನಿರ್ದೇಶನಗಳನ್ನು ಮತ್ತು ಸ್ಥಳೀಯ ಮಾಹಿತಿಯನ್ನು ನೀಡಲು Google Maps ಅನ್ನು ಬಳಸುತ್ತದೆ.</translation>
 <translation id="3503014945441706099">ಈ Chrome ಪ್ರೊಫೈಲ್‌ಗಾಗಿಯೂ ವರ್ಧಿತ ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="3522659714780527202">ನೀವು Chrome ಅನ್ನು ಎಲ್ಲಿ ಬಳಸುತ್ತೀರೋ ಅಲ್ಲಿ ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳನ್ನು ನೋಡಲು, ಸಿಂಕ್ ಆನ್ ಮಾಡಿ</translation>
@@ -181,6 +186,7 @@
 <translation id="5998675059699164418">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಪ್ರಕಾರ Chrome ಅನ್ನು ಬಳಸಲು ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ.</translation>
 <translation id="6021312115739110405">Google ನಿಂದ ನಿಮಗಾಗಿ ಮಾಡಿದ ಕಸ್ಟಮ್‌ ಫೀಡ್‌. ಸುದ್ದಿ, ಕ್ರೀಡೆ ಮತ್ತು ಹವಾಮಾನ ಸೇರಿದಂತೆ.</translation>
 <translation id="6022659036123304283">Chrome ಅನ್ನು ನಿಮ್ಮದಾಗಿಸಿಕೊಳ್ಳಿ</translation>
+<translation id="6132075343662013154">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೇವ್‌ ಮಾಡಲು Chrome ಅವಕಾಶ ನೀಡುತ್ತದೆ</translation>
 <translation id="6132149203299792222">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಲು, ನಿಮ್ಮ Google ಖಾತೆಯ ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Chrome ನಲ್ಲಿ ಹುಡುಕಿ</translation>
@@ -228,6 +234,7 @@
 <translation id="7061455974939528301">Chrome ಐಕಾನ್ ಅನ್ನು ಒತ್ತಿ ಹಿಡಿದುಕೊಳ್ಳಿ ಮತ್ತು "ಹೋಮ್‌ ಸ್ಕ್ರೀನ್‌ ಎಡಿಟ್‌ ಮಾಡಿ" ಎಂಬುದನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="7065813315247345131">Chrome ಅನ್ನು ಡಾಕ್‌ಗೆ ಸರಿಸಿ</translation>
 <translation id="7124339256045485976">Chrome ಅನ್ನು ಅಪ್ ಟು ಡೇಟ್ ಆಗಿರಿಸಿ</translation>
+<translation id="7145599899567697473">Chrome ನಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಿ ಮತ್ತು ಆಟೋಫಿಲ್ ಮಾಡಿ</translation>
 <translation id="7161390184744336561">Google Chrome ನ ಅವಧಿ ಮುಗಿದಿದೆ</translation>
 <translation id="7165736900384873061">Google Chrome QR ಸ್ಕ್ಯಾನರ್ ಬಳಕೆಯನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="7175129790242719365">Chromium ಸಲಹೆ: Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
@@ -261,6 +268,7 @@
 <translation id="7693590760643069321">ಸಂದೇಶಗಳು, ಡಾಕ್ಯುಮೆಂಟ್‌ಗಳು ಮತ್ತು ಇತರ ಆ್ಯಪ್‌ಗಳಲ್ಲಿನ ಲಿಂಕ್‌ಗಳನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ Chrome ಅನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="7698568245838009292">ಕ್ಯಾಮರಾವನ್ನು ಪ್ರವೇಶಿಸಲು Chrome ಬಯಸುತ್ತದೆ</translation>
 <translation id="7707877166818730835">Chrome ನಲ್ಲಿ ನನ್ನ ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="7747746207470479571">ಆಟೋಫಿಲ್‌ಗಾಗಿ Chrome ಮೂಲಕ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಪಾಸ್‌ಕೀಗಳಿಗೆ ಸುಲಭವಾಗಿ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="776305366874821582">ನಿಮ್ಮ iPhone ನ ಹೋಮ್‌ ಸ್ಕ್ರೀನ್‌ ಡಾಕ್‌ನಿಂದ Chrome ಅನ್ನು ವೇಗವಾಗಿ ಆ್ಯಕ್ಸೆಸ್‌ ಮಾಡಿ.</translation>
 <translation id="7780154209050837198">Chrome ನಿಂದ ಹೆಚ್ಚಿನ ಪ್ರಯೋಜನ ಪಡೆದುಕೊಳ್ಳಲು, ನಿಮ್ಮ Google ಖಾತೆಯ ಮೂಲಕ Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="7787205077729386167">iOS ನಲ್ಲಿ Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ, ನಂತರ "ಡೀಫಾಲ್ಟ್‌ ಬ್ರೌಸರ್‌ ಆ್ಯಪ್‌" ಅನ್ನು ಟ್ಯಾಪ್‌ ಮಾಡಿ ಮತ್ತು Chrome ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
@@ -281,6 +289,7 @@
 <translation id="8136856065410661948">Chrome ಮತ್ತು Google Lens ಸಹಾಯದಿಂದ ನಿಮ್ಮ Apple Calendar ನಲ್ಲಿ ಈವೆಂಟ್‌ಗಳನ್ನು ರಚಿಸಲು ಇದನ್ನು ಬಳಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="8154120522323162874">ನಿಮ್ಮ ಬ್ರೌಸರ್ ಸೆಟಪ್ ಮಾಡುವಿಕೆಯನ್ನು ಮುಂದುವರಿಸುವ ಮೂಲಕ Chrome ನಿಂದ ಹೆಚ್ಚಿನದನ್ನು ಪಡೆಯಿರಿ.</translation>
 <translation id="8160472928944011082">Chrome ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
+<translation id="8245080522851805544">ನೀವು Chrome ಅನ್ನು ಮುಚ್ಚಿದಾಗ ಸಾಧನದ ದೃಢೀಕರಣದೊಂದಿಗೆ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಖಾಸಗಿಯಾಗಿ ಇರಿಸಿ</translation>
 <translation id="8248887045858762645">Chrome ಸಲಹೆ</translation>
 <translation id="8265730590513812063">Chrome ಮೆನು ತೆರೆಯಿರಿ</translation>
 <translation id="8317674518145175158">ಪಾವತಿ ವಿಧಾನಗಳು ಮತ್ತು ವಿಳಾಸಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ. Chrome ನ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವು ಸಿಂಕ್ ಆಗುವುದಿಲ್ಲ.
@@ -324,5 +333,6 @@
 <translation id="9181628561061032322">Chrome ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆರೆಯುತ್ತದೆ.</translation>
 <translation id="948597495737267756">ನಿಮ್ಮ Chrome ಇತಿಹಾಸ ಪುಟವನ್ನು ತೆರೆಯುತ್ತದೆ.</translation>
 <translation id="97300214378190234">ಇತರ ಆ್ಯಪ್‌ಗಳಲ್ಲಿನ ಲಿಂಕ್‌ಗಳನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿದಾಗಲೆಲ್ಲಾ Chrome ಅನ್ನು ಬಳಸಿ.</translation>
+<translation id="997929539742564806">Chrome ನಿಂದ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಪಾಸ್‌ಕೀಗಳನ್ನು ಆಟೋಫಿಲ್ ಮಾಡುವ ಮೂಲಕ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಸೈಟ್‌ಗಳಿಗೆ ತ್ವರಿತವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="998677222109959694">Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 </translationbundle>

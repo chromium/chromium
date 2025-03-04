@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Ev ağı, dolaşımda değil</translation>
 <translation id="1327977588028644528">Ağ geçidi</translation>
 <translation id="1328223165223065150">Duvar kağıdı rengi</translation>
+<translation id="1329478709358066995">Transkript:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Tarama alanına sığdır</translation>
 <translation id="1343442362630695901">tuz gölü</translation>
@@ -1129,7 +1130,6 @@
 <translation id="6325525973963619867">Başarısız</translation>
 <translation id="6327262166342360252">Bu duvar kağıdı, "<ph name="PROMPT" />" metni kullanılarak yapay zekayla oluşturuldu.</translation>
 <translation id="6331191339300272798">Otomatik koyu tema</translation>
-<translation id="6335228876613776082">Model indirme işlemi tamamlandı</translation>
 <translation id="6340526405444716530">Kişiselleştirme</translation>
 <translation id="6348252528297699679">Ayarlar &gt; Gizlilik ve güvenlik &gt; Gizlilik denetimleri &gt; Konum erişimi bölümünden konumu kapatabilirsiniz. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Kullanıcı adı ve şifre</translation>
@@ -1274,6 +1274,7 @@
 <translation id="6930597342185648547">Arka plan hakkında</translation>
 <translation id="6939667434404433010">Kayıt adını arayın</translation>
 <translation id="6939766318048400022">Kafe</translation>
+<translation id="6942253772720771875">Geri bildiriminizi paylaşın veya sorununuzu açıklayın</translation>
 <translation id="6943893908656559156">Uzak kimlik (isteğe bağlı)</translation>
 <translation id="6953137545147683679">altın</translation>
 <translation id="6957231940976260713">Hizmet adı</translation>
@@ -1598,6 +1599,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8395584934117017006">Bu <ph name="DEVICE_TYPE" />, kuruluş tarafından yönetiliyor</translation>
 <translation id="8398927464629426868">Cihazın şu andaki şarj olma veya şarjının boşalma hızı</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> tarzda bir <ph name="ART_FEATURE" /> resmi</translation>
+<translation id="8409219750150841791">Oluşturulan özet:</translation>
 <translation id="8410244574650205435">Otomatik olarak algılandı</translation>
 <translation id="8420955526972171689">Donanım sorunlarına yönelik testler yapıp ve sorun giderme adımları uygulayın</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1644,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8626489604350149811"><ph name="APN_NAME" /> ile ilgili diğer işlemler</translation>
 <translation id="86356131183441916">Açık mor</translation>
 <translation id="8647595191512746911">Konuşma transkripti</translation>
+<translation id="8648578954147795914">Oluşturulan adlar:</translation>
 <translation id="8650852232143958317">Gmail ve Google Drive dosyalarınızı yanınızda götürün</translation>
 <translation id="8651481478098336970">sesi kapat</translation>
 <translation id="8655295600908251630">Kanal</translation>
@@ -1670,7 +1673,6 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Fotoğraflar albümü</translation>
 <translation id="8775713578693478175">Modem APN'si</translation>
-<translation id="877735394245039557">Model indirme işlemi devam ediyor</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Bu ağda giriş portalı olabilir</translation>
 <translation id="8797082062139985406">Google Yapay Zeka'yı kullanarak ad oluşturun</translation>
@@ -1784,6 +1786,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="9218016617214286986">Bilinen APN'leri göster</translation>
 <translation id="932327136139879170">Ana Sayfa</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Mikrofonunuzun bağlandığından emin olun veya Chromebook'unuzu yeniden başlatmayı deneyin</translation>
 <translation id="945522503751344254">Geri bildirim gönder</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> tuşu eksik. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Kayıt boyunca sesleri karşılaştırarak her konuşmacının ne zaman ne söylediğinin transkriptte gösterilmesini sağlar.</translation>

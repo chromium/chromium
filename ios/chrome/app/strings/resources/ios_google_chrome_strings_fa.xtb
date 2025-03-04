@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">‏گذرواژه‌تان در «مدیر گذرواژه Google» برای <ph name="EMAIL" /> ذخیره خواهد شد.</translation>
 <translation id="1146503048444965320">‏باز کردن برگه جدید در Chrome</translation>
 <translation id="1166460004393506534">‏حذف کردن داده‌های مرور در Chrome</translation>
+<translation id="1171255741903316750">‏«قفل کردن برگه‌های ناشناس هنگام بستن Chrome» را روشن کنید</translation>
 <translation id="1179527450541388808">‏از جایگاه صفحه اصلی iPad سریع‌تر به Chrome دسترسی داشته باشید.</translation>
 <translation id="1180362651362502943">‏به استفاده از داده‌های Chrome ذخیره‌شده در «حساب Google» خود ادامه دهید.</translation>
 <translation id="1200396280085622191">‏با ضربه زدن روی پیوندهای موجود در پیام‌ها و برنامه‌های دیگر، از Chrome استفاده کنید.</translation>
@@ -45,6 +46,7 @@
 <translation id="1917964099031477364">‏این حساب و همه داده‌های ذخیره‌نشده از Chrome و دیگر برنامه‌های Google در این دستگاه برداشته می‌شود.</translation>
 <translation id="1919130412786645364">‏مجاز کردن ورود به سیستم Chrome</translation>
 <translation id="1965935827552890526">‏کاری را که در پنجره باز Chrome دیگر انجام می‌دادید تمام کنید.</translation>
+<translation id="1973910962341002002">‏در تنظیمات «<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />»، «Chrome» را روشن کنید</translation>
 <translation id="1984705450038014246">‏همگام‌سازی داده‌های Chrome</translation>
 <translation id="1987779152850321833">‏اقدامات پیشنهادی زیر را تکمیل کنید تا بیشترین بهره را از Chrome ببرید.</translation>
 <translation id="2055826352861631739">‏استفاده از Chrome برای iPad به‌طور پیش‌فرض</translation>
@@ -96,10 +98,13 @@
 <translation id="3282568296779691940">‏ورود به سیستم Chrome</translation>
 <translation id="3303503998967553377">‏استفاده از کنش‌های Chrome در iOS</translation>
 <translation id="3348862487678490430">‏افزودن مورد «فهرست خواندن» به Chrome</translation>
+<translation id="3357827134511189025">‏بااستفاده از «Chrome برای تکمیل خودکار»، با گذرواژه‌ها و گذرکلیدهای ذخیره‌شده‌تان از هر برنامه‌ای، به سیستم وارد شوید</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{‏این اتفاق زمانی رخ می‌دهد که از Chrome به‌مدت {THRESHOLD} دقیقه استفاده نشده باشد}one{‏این اتفاق زمانی رخ می‌دهد که از Chrome به‌مدت {THRESHOLD} دقیقه استفاده نشده باشد}other{‏این اتفاق زمانی رخ می‌دهد که از Chrome به‌مدت {THRESHOLD} دقیقه استفاده نشده باشد}}</translation>
 <translation id="3367797402528056312">‏راه‌اندازی Chrome را تمام کنید</translation>
 <translation id="3371064404604898522">‏تنظیم Chrome به‌عنوان مرورگر پیش‌فرض</translation>
 <translation id="3399930248910934354">‏باز کردن «تنظیمات Chrome»</translation>
+<translation id="3440830787838130530">‏به‌راحتی و با ایمنی نسخه‌ای از گذرواژه را در «مدیر گذرواژه Google» با گروه خانواده‌تان هم‌رسانی کنید</translation>
+<translation id="3460369101684070455">‏برای دریافت آسان گذرواژه‌های ذخیره‌شده در برنامه‌های دیگر، «Chrome برای تکمیل خودکار» را انتخاب کنید</translation>
 <translation id="3472587960215700950">‏‫Chrome برای ارائه مسیرها و اطلاعات محلی به شما در نشانی‌های شناسایی‌شده از Google Maps استفاده می‌کند.</translation>
 <translation id="3503014945441706099">‏برای این نمایه Chrome نیز «مرور ایمن پیشرفته» را دریافت کنید</translation>
 <translation id="3522659714780527202">‏در همه دستگاه‌هایی که در آن‌ها از Chrome استفاده می‌کنید، همگام‌سازی را روشن کنید تا بتوانید برگه‌هایتان را ببینید</translation>
@@ -181,6 +186,7 @@
 <translation id="5998675059699164418">‏سازمانتان از شما می‌خواهد برای استفاده از Chrome به سیستم وارد شوید.</translation>
 <translation id="6021312115739110405">‏یک فید سفارشی که Google برای شما می‌سازد. شامل اخبار، ورزش، و آب‌وهوا.</translation>
 <translation id="6022659036123304283">‏Chrome را برای خود اختصاصی کنید</translation>
+<translation id="6132075343662013154">‏‫Chrome پیشنهاد می‌دهد که گذرواژه‌تان را ذخیره کند</translation>
 <translation id="6132149203299792222">‏برای همگام‌سازی گذرواژه‌ها، نشانک‌ها، و موارد دیگر، به سیستم «حساب Google» خود وارد شوید.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">‏جستجو در Chrome</translation>
@@ -228,6 +234,7 @@
 <translation id="7061455974939528301">‏نماد Chrome را فشار دهید و نگه دارید و روی «ویرایش کردن صفحه اصلی» کلیک کنید</translation>
 <translation id="7065813315247345131">‏انتقال Chrome به سکوی برنامه‌ها</translation>
 <translation id="7124339256045485976">‏به‌روز نگه داشتن Chrome</translation>
+<translation id="7145599899567697473">‏گذرواژه‌ها در Chrome ذخیره و به‌طور خودکار تکمیل می‌شود</translation>
 <translation id="7161390184744336561">‏نسخه Google Chrome قدیمی است</translation>
 <translation id="7165736900384873061">‏استفاده از اسکنر QR در Google Chrome را شروع کنید</translation>
 <translation id="7175129790242719365">‏نکته Chrome: به سیستم Chrome وارد شوید</translation>
@@ -261,6 +268,7 @@
 <translation id="7693590760643069321">‏اکنون می‌توانید انتخاب کنید پیوندهای موجود در پیام‌ها، اسناد، و برنامه‌های دیگر همیشه در Chrome باز شوند.</translation>
 <translation id="7698568245838009292">‏Chrome می‌خواهد به «دوربین» دسترسی داشته باشد</translation>
 <translation id="7707877166818730835">‏باز کردن آخرین برگه من در Chrome</translation>
+<translation id="7747746207470479571">‏بااستفاده از «Chrome برای تکمیل خودکار»، به گذرواژه‌ها و گذرکلیدهایتان به‌راحتی دسترسی داشته باشید</translation>
 <translation id="776305366874821582">‏از جایگاه صفحه اصلی iPhone سریع‌تر به Chrome دسترسی داشته باشید.</translation>
 <translation id="7780154209050837198">‏برای اینکه بیشترین بهره را از Chrome ببرید، با «حساب Google» به سیستم Chrome وارد شوید.</translation>
 <translation id="7787205077729386167">‏تنظیمات Chrome را در iOS باز کنید، سپس روی «برنامه مرورگر پیش‌فرض» تک‌ضرب بزنید و Chrome را انتخاب کنید.</translation>
@@ -281,6 +289,7 @@
 <translation id="8136856065410661948">‏از این دسترسی برای ایجاد رویداد در Apple Calendar از Chrome و «لنز Google» استفاده می‌شود.</translation>
 <translation id="8154120522323162874">‏با ادامه راه‌اندازی مرورگرتان، بیشترین بهره را از Chrome ببرید.</translation>
 <translation id="8160472928944011082">‏Chrome به‌روزرسانی نمی‌شود</translation>
+<translation id="8245080522851805544">‏وقتی Chrome را می‌بندید، مرورتان را با اصالت‌سنجی دستگاه خصوصی نگه دارید</translation>
 <translation id="8248887045858762645">‏نکات Chrome</translation>
 <translation id="8265730590513812063">‏باز کردن منو Chrome</translation>
 <translation id="8317674518145175158">‏روش‌های پرداخت و نشانی‌ها رمزگذاری نخواهند شد. سابقه مرور Chrome همگام‌سازی نخواهد شد.
@@ -324,5 +333,6 @@
 <translation id="9181628561061032322">‏برگه‌های اخیر Chrome را باز می‌کند.</translation>
 <translation id="948597495737267756">‏صفحه «سابقه Chrome» را باز می‌کند.</translation>
 <translation id="97300214378190234">‏با ضربه زدن روی پیوندهای موجود در برنامه‌های دیگر، از Chrome استفاده کنید.</translation>
+<translation id="997929539742564806">‏بااستفاده از تکمیل خودکار گذرواژه‌ها و گذرکلیدها در Chrome، سریع‌تر به سیستم برنامه‌ها و سایت‌ها وارد شوید</translation>
 <translation id="998677222109959694">‏مدیریت تنظیمات Chrome</translation>
 </translationbundle>

@@ -459,6 +459,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1303101771013849280">Järjehoidjate HTML-fail</translation>
 <translation id="1303671224831497365">Bluetooth-seadmeid ei leitud</translation>
 <translation id="130491383855577612">Linuxi rakenduste ja failide asendamine õnnestus</translation>
+<translation id="1306373239538745517">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Eemaldage üks laiendus ja andmed, mille laiendus on selles seadmes salvestanud}other{Eemaldage {ACCOUNT_EXTENSIONS_COUNT} laiendust ja andmed, mille laiendused on selles seadmes salvestanud}}</translation>
 <translation id="1306518237408758433">Ava <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="1306606229401759371">Muuda seaded</translation>
 <translation id="1307165550267142340">PIN-kood loodi</translation>
@@ -1208,6 +1209,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1826192255355608658">Sünkroonige oma Chrome'i brauseri järjehoidjad, paroolid, ajalugu ja muu</translation>
 <translation id="1826516787628120939">Kontrollimine</translation>
 <translation id="1826657447823925402">Tagurpidi kerimine on keelatud</translation>
+<translation id="1827416268933303617"><ph name="COLOR_NAME" /> värv</translation>
 <translation id="1827504459960247692">Kuumkoha nimi</translation>
 <translation id="1828378091493947763">Seda pistikprogrammi selles seadmes ei toetata</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Ava kõik}=1{&amp;Ava järjehoidja}other{&amp;Ava kõik ({COUNT})}}</translation>
@@ -1708,7 +1710,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2178545675770638239">Parooli valimine</translation>
 <translation id="2178585470774851578">Soovite lubada Chrome OS Flexi silumisfunktsioonid, mis seadistavad üksuse sshd daemon ja lubavad käivitamise USB-kettalt.</translation>
 <translation id="2178614541317717477">CA turvarike</translation>
-<translation id="2179850495466791921">Teil on praegu <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> ja veel rohkem</translation>
 <translation id="2180620921879609685">Blokeeri sisu mis tahes lehel</translation>
 <translation id="2181821976797666341">Reeglid</translation>
 <translation id="2182058453334755893">Kopeeritud lõikelauale</translation>
@@ -2522,7 +2523,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="273093730430620027">See leht pääseb teie kaamera juurde.</translation>
 <translation id="2730956943403103181">V8 optimeerija kasutamine ei ole lubatud</translation>
 <translation id="2731392572903530958">A&amp;va suletud aken uuesti</translation>
-<translation id="2731700343119398978">Oodake ...</translation>
+<translation id="2731700343119398978">Palun oodake ...</translation>
 <translation id="2731971182069536520">Seadme järgmisel taaskäivitamisel teeb administraator ühekordse värskenduse, mille käigus kustutatakse teie kohalikud andmed.</translation>
 <translation id="2732134891301408122">Lisasisu üksus <ph name="CURRENT_ELEMENT" /> <ph name="TOTAL_ELEMENTS" />-st</translation>
 <translation id="2733248615007838252">Meeldivaks märkimine saadab tagasisidet, et need tulemused meeldivad teile.</translation>
@@ -3127,7 +3128,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3167562202484086668">Kustuta kõik teenuse <ph name="BRAND" /> andmed</translation>
 <translation id="3169930038976362151">Valige enda vajadustele vastav teema. Teema, taustapildi, ekraanisäästja ja muu muutmiseks puudutage töölauda pikalt.</translation>
 <translation id="3170072451822350649">Võite sisselogimise vahele jätta ja <ph name="LINK_START" />sirvida külalisena<ph name="LINK_END" />.</translation>
-<translation id="3171499217959105722">Teil on praegu <ph name="NUMBERED_ITEM" /> ja veel rohkem</translation>
 <translation id="3175067642577044620">Sisu</translation>
 <translation id="3175862692832442091">Mets</translation>
 <translation id="3176347586396987181">Kasutage hiirenupu pikalt vajutamiseks klahvi „z“</translation>
@@ -3939,7 +3939,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3744219658596020825">Teie paroole ei imporditud</translation>
 <translation id="3745306754941902605">Köök</translation>
 <translation id="3747077776423672805">Rakenduste eemaldamiseks avage menüü Seaded&gt; Google Play pood &gt; Androidi eelistuste haldamine &gt; Rakendused või Rakenduste haldur. Seejärel puudutage rakendust, mille soovite desinstallida (rakenduse leidmiseks peate võib-olla paremale või vasakule pühkima). Seejärel puudutage käsku Desinstalli või Keela.</translation>
-<translation id="3747552357646973221">Teil on praegu <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> ja veel rohkem</translation>
 <translation id="3748424433435232460">Selle konto parool on sellesse seadmesse juba salvestatud.</translation>
 <translation id="3748706263662799310">Teatage veast</translation>
 <translation id="3749724428455457489">Lisateave saidi soovitatud reklaamide kohta</translation>
@@ -6724,6 +6723,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5749214722697335450">Kasutus- ja diagnostikaandmete saatmine. Aidake täiustada Androidi kasutuskogemust, saates Google'ile automaatselt seadme teavet ning rakenduse kasutus- ja diagnostikaandmeid. See aitab parandada süsteemi ja rakenduse stabiilsust ning muud. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Kui täiendavad veebi- ja rakendustegevused on sisse lülitatud, võidakse need andmed salvestada teie Google'i kontole. <ph name="BEGIN_LINK1" />Lisateave mõõdikute kohta<ph name="BEGIN_LINK1_END" />Lisateave<ph name="END_LINK1" /></translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Kontrolli jagamise valmidust</translation>
+<translation id="5752346055178471785">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{See laiendus on teie Google'i kontole salvestatud, aga kõik andmed, mille laiendus on selles seadmes salvestanud, võidakse kustutada}other{Need laiendused on teie Google'i kontole salvestatud, aga kõik andmed, mille laiendused on selles seadmes salvestanud, võidakse kustutada}}</translation>
 <translation id="5753570386948603678">Kustuta ajaloost</translation>
 <translation id="5756163054456765343">A&amp;bikeskus</translation>
 <translation id="5757187557809630523">järgmine lugu</translation>

@@ -503,6 +503,7 @@
 <translation id="3373141842870501561">എർത്ത് ഫ്ലോ വാൾപേപ്പർ</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> പശ്ചാത്തലത്തിലുള്ള <ph name="LETTERS_LETTER" /> എന്ന അക്ഷരം</translation>
 <translation id="3383623117265110236">എക്‌സ്ക്ലൂസീവ്</translation>
+<translation id="3395147534045164351">സ്‌നാപ്പ് ലൊക്കേഷൻ ടോഗിൾ ചെയ്യുക</translation>
 <translation id="3404249063913988450">സ്ക്രീൻ സേവർ പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="3413935475507503304">അപ്‌ഡേറ്റുമായി മുന്നോട്ട് പോകാൻ, 'അടുത്തത്' ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="3428551088151258685">ഔട്ട്ഡോർ</translation>
@@ -652,6 +653,7 @@
 <translation id="4113067922640381334">നിങ്ങൾക്ക് ഇപ്പോൾ പുതിയ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />വാൾപേപ്പറുകളിലേക്ക്<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ആക്സസ് ഉണ്ട്</translation>
 <translation id="4117637339509843559">ഡാർക്ക് മോഡ്</translation>
 <translation id="4126551873361000548">10 സെക്കൻഡ് പിന്നോട്ട് നീക്കുക</translation>
+<translation id="4128271910628504223">"മൂടൽമഞ്ഞുള്ള ഒരു കാട് വരയ്ക്കുക" എന്നത് പോലുള്ള ഒരു പ്രോംപ്റ്റ് നൽകുക</translation>
 <translation id="4130035430755296270">കൂടുതൽ ലേഔട്ട് ഓപ്ഷനുകൾക്ക് ഹോവർ ചെയ്യുന്നത് തുടരുക</translation>
 <translation id="4130750466177569591">ഞാന്‍ അംഗീകരിക്കുന്നു</translation>
 <translation id="4131410914670010031">കറുപ്പും വെള്ളയും</translation>
@@ -859,6 +861,7 @@
 <translation id="5050042263972837708">ഗ്രൂപ്പിന്‍റെ പേര്</translation>
 <translation id="5051044138948155788">ഇത് അവസാനത്തെ പേജാണ്. ഇത് നീക്കം ചെയ്യുന്നത് നിങ്ങളെ സ്‌കാനിംഗിന്റെ ആരംഭ സ്ക്രീനിലേക്ക് കൊണ്ടുപോകും.</translation>
 <translation id="5053233795640754917">താൽക്കാലികമായി നിർത്തുക</translation>
+<translation id="5056587122125565772">ചിത്രം സൃഷ്ടിക്കുക</translation>
 <translation id="5078711626843651677">സ്പീക്കർ ലേബലിംഗ് പൂർത്തിയാകുന്നത് വരെ ശബ്‌ദ മോഡലുകൾ ഉപകരണത്തിൽ താൽക്കാലികമായി സംഭരിക്കും. ക്രമീകരണത്തിൽ ഏതുസമയത്തും നിങ്ങൾക്ക് ഇത് ഓഫാക്കാം.</translation>
 <translation id="5078983345702708852">ഫ്യൂച്ചറിസ്റ്റിക്</translation>
 <translation id="5087864757604726239">തിരികെ</translation>
@@ -1130,7 +1133,6 @@
 <translation id="6325525973963619867">പരാജയപ്പെട്ടു</translation>
 <translation id="6327262166342360252">ഇനിപ്പറയുന്ന ടെക്‌സ്റ്റ് ഉൾപ്പെടുത്തി, AI ഉപയോഗിച്ചാണ് ഈ വാൾപേപ്പർ സൃഷ്‌ടിച്ചത്: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">സ്വയമേവയുള്ള ഡാർക്ക് തീം</translation>
-<translation id="6335228876613776082">മോഡലിന്റെ ഡൗൺലോഡ് പൂർത്തിയായി</translation>
 <translation id="6340526405444716530">വ്യക്തിപരമാക്കൽ</translation>
 <translation id="6348252528297699679">ക്രമീകരണം &gt; സ്വകാര്യതയും സുരക്ഷയും &gt; സ്വകാര്യതാ നിയന്ത്രണങ്ങൾ &gt; ലൊക്കേഷൻ ആക്‌സസ് എന്നിങ്ങനെ പോയി നിങ്ങൾക്ക് ലൊക്കേഷൻ ഓഫാക്കാം. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">ഉപയോക്തൃനാമവും പാസ്‍വേഡും</translation>
@@ -1674,7 +1676,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ആൽബം</translation>
 <translation id="8775713578693478175">മോഡം APN</translation>
-<translation id="877735394245039557">മോഡലിന്റെ ഡൗൺലോഡ് പുരോഗമിക്കുന്നു</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">ഈ നെറ്റ്‌വർക്കിന് ക്യാപ്റ്റീവ് പോർട്ടൽ ഉണ്ടായിരിക്കാം</translation>
 <translation id="8797082062139985406">Google AI ഉപയോഗിച്ച് പേര് സൃഷ്ടിക്കുക</translation>

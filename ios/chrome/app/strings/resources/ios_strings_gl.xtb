@@ -206,6 +206,7 @@
 <translation id="1827529786398596735">Mantén premida a pantalla de inicio</translation>
 <translation id="1832848789136765277">Para asegurarte de poder acceder sempre aos teus datos sincronizados, verifica a túa identidade</translation>
 <translation id="1836891464494477513">{count,plural, =1{O marcador gardouse na túa Conta de Google ({email})}other{Os marcadores gardáronse na túa Conta de Google ({email})}}</translation>
+<translation id="1838089197478136166">Queres abrilo en Wallet?</translation>
 <translation id="183878838231635348">Nesta tarxeta mostraranse os problemas de privacidade ou seguranza que detecte automaticamente Comprobación de seguranza.</translation>
 <translation id="1845230888742614096">Manter grupo</translation>
 <translation id="1854463785401910334">Fai buscas nas pestanas abertas</translation>
@@ -225,6 +226,7 @@
 <translation id="189531189292803889">O teu iPad restaurouse recentemente. Pode que por iso se cambiase o teu navegador predeterminado.</translation>
 <translation id="1901366738768303267">Como se usa esta función?</translation>
 <translation id="1901600657316773839">Manter selección</translation>
+<translation id="1902277226107477495">A detección de enderezos está desactivada. Volve activala en Configuración.</translation>
 <translation id="1904580727789512086">Os URL que visitas gárdanse na túa Conta de Google</translation>
 <translation id="1911619930368729126">Cargar en Google Drive</translation>
 <translation id="1923342640370224680">Última hora</translation>
@@ -301,6 +303,7 @@
 <translation id="2230173723195178503">Cargouse a páxina web</translation>
 <translation id="2236949375853147973">A miña actividade</translation>
 <translation id="2240256190924001613">Hai un perfil de configuración dispoñible</translation>
+<translation id="2244080985779413662">Este sitio web quere descargar un ficheiro e abrilo no teu Wallet.</translation>
 <translation id="2245007488813216650">Traducindo…</translation>
 <translation id="2249119578464404734">Na parte superior da pantalla, toca a icona de busca</translation>
 <translation id="2251686759395008410">Menú → Historial</translation>
@@ -648,7 +651,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="385051799172605136">Atrás</translation>
 <translation id="3851938967634752633">Eliminaranse os contrasinais de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e <ph name="NUMBER_OF_ACCOUNTS" /> sitios web máis. Non se eliminarán as túas contas.</translation>
 <translation id="3858860766373142691">Nome</translation>
-<translation id="3861908220442487587">Este enderezo só está gardado neste dispositivo. Para usalo noutros, móveo á túa Conta de Google, <ph name="USER_EMAIL" /></translation>
 <translation id="3868495844258915202">Mostrar o URL completo</translation>
 <translation id="3875783148670536197">Ver como facelo</translation>
 <translation id="3876833929577368454">Preguntar sempre</translation>
@@ -1361,6 +1363,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6779455296366983087">Eliminaranse os teus datos de navegación</translation>
 <translation id="6790502149545262384">Dentro de pouco verás as historias de <ph name="CHANNEL_NAME" /> cando abras unha pestana nova.</translation>
+<translation id="6794476726485507147">Escolle unha data e unha hora na que recibir unha notificación de recordatorio para volver visitar esta páxina</translation>
 <translation id="681368974849482173">Creouse o elemento</translation>
 <translation id="6825078212112407882">{count,plural, =1{O marcador gardouse na túa Conta de Google ({email})}other{{count} marcadores gardáronse na túa Conta de Google ({email})}}</translation>
 <translation id="6830728435402077660">Non seguro</translation>
@@ -1488,6 +1491,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7425053386765766120">Engadir método de pago…</translation>
 <translation id="7425346204213733349">Os cambios nos marcadores, no historial, nos contrasinais e noutras opcións de configuración deixarán de sincronizarse coa túa conta de Google. Non obstante, os teus datos actuais permanecerán almacenados na túa conta de Google.</translation>
 <translation id="742664698522525515">Queres manter o grupo?</translation>
+<translation id="7431851541687113774">Desactivar detección de enderezos</translation>
 <translation id="7431991332293347422">Controla como se utiliza o historial de navegación para personalizar a Busca e moito máis</translation>
 <translation id="7435356471928173109">Desactivada polo teu administrador</translation>
 <translation id="7438481509621345350">Agora mostraránseche historias de <ph name="CHANNEL_NAME" /> cando abras unha pestana nova.</translation>
@@ -1641,6 +1645,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8023170444051056234">Perderás inmediatamente o acceso ao grupo de pestanas "<ph name="GROUP_NAME" />", que se eliminará de todos os dispositivos</translation>
 <translation id="8023878949384262191">Amplía a sección.</translation>
 <translation id="8027581147000338959">Abrir nunha ventá nova</translation>
+<translation id="8029092694585014252">Definir recordatorio</translation>
 <translation id="8032569120109842252">Seguindo</translation>
 <translation id="8035133914807600019">Cartafol novo...</translation>
 <translation id="8035412398498507358">Fotos</translation>
@@ -1798,7 +1803,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8679900250380464358">Engadir á lista de lectura</translation>
 <translation id="8680786875305615692">Axudar a mellorar a seguranza na Web para todos</translation>
 <translation id="8680787084697685621">Os detalles de inicio de sesión da conta están caducados.</translation>
-<translation id="8683563711222071415">Mover enderezo á conta</translation>
 <translation id="8690752723634292147">Confirmar eliminación</translation>
 <translation id="8692689525339542358">Protéxete contra as extensións, descargas e sitios perigosos.</translation>
 <translation id="8694281486652655615">Mostra este elemento</translation>

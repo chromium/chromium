@@ -459,6 +459,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1303101771013849280">Lesezeichen-HTML-Datei</translation>
 <translation id="1303671224831497365">Keine Bluetooth-Geräte gefunden</translation>
 <translation id="130491383855577612">Linux-Apps und -Dateien wurden erfolgreich ersetzt</translation>
+<translation id="1306373239538745517">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{1 Erweiterung und die darüber auf diesem Gerät gespeicherten Daten entfernen}other{{ACCOUNT_EXTENSIONS_COUNT} Erweiterungen und die darüber auf diesem Gerät gespeicherten Daten entfernen}}</translation>
 <translation id="1306518237408758433">„<ph name="BOOKMARK_TITLE" />“ öffnen</translation>
 <translation id="1306606229401759371">Einstellungen ändern</translation>
 <translation id="1307165550267142340">Deine PIN wurde erstellt</translation>
@@ -1204,6 +1205,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1826192255355608658">Lesezeichen, Passwörter, Verlauf und mehr in deinem Chrome-Browser synchronisieren</translation>
 <translation id="1826516787628120939">Überprüfung läuft</translation>
 <translation id="1826657447823925402">„Scroll-Richtung umkehren“ deaktiviert</translation>
+<translation id="1827416268933303617">Farbe „<ph name="COLOR_NAME" />“</translation>
 <translation id="1827504459960247692">Name des Hotspots</translation>
 <translation id="1828378091493947763">Dieses Plug-in wird auf diesem Gerät nicht unterstützt</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{Alle &amp;öffnen}=1{Lesezeichen &amp;öffnen}other{Alle ({COUNT}) &amp;öffnen}}</translation>
@@ -1318,6 +1320,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1910721550319506122">Willkommen!</translation>
 <translation id="1910736334623230603">Eine Suche in mehreren Bildern ist nicht möglich. Füge ein Bild nach dem anderen hinzu.</translation>
 <translation id="1910908536872421421">Chrome for Testing v<ph name="BROWSER_VERSION" /> ist nur für automatisierte Tests vorgesehen. Verwende für deine normalen Surfaktivitäten eine Standardversion von Chrome, die automatisch aktualisiert wird.</translation>
+<translation id="1912867150686509584">Mehr Besprechungen in deinem Kalender sehen</translation>
 <translation id="1913749768968678106">Streamen, speichern und teilen</translation>
 <translation id="1915073950770830761">Canary</translation>
 <translation id="1915307458270490472">Auflegen</translation>
@@ -2945,6 +2948,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3029808567601324798">Zeit zum Sperren</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{Gemäß <ph name="MANAGER" /> ist es notwendig, heute ein Update herunterzuladen. Das Update wird automatisch heruntergeladen, sobald eine Verbindung zum Internet besteht.}other{Gemäß <ph name="MANAGER" /> ist es notwendig, vor Ablauf der Frist ein Update herunterzuladen. Das Update wird automatisch heruntergeladen, sobald eine Verbindung zum Internet besteht.}}</translation>
 <translation id="3030772324014024606">Bearbeiten</translation>
+<translation id="3030795534674718505">Darf Informationen nutzen, die zu deiner Person gespeichert wurden</translation>
 <translation id="3030967311408872958">Sonnenuntergang bis -aufgang</translation>
 <translation id="3031417829280473749">Agentin X</translation>
 <translation id="3031532026314193077">Zum Rechtsklicken Touchpad und Tastatur verwenden</translation>
@@ -3728,6 +3732,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3621202678540785336">Eingang</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{eine App}other{# Apps}}</translation>
 <translation id="3622820753353315928">Farbe des Bildschirms beim Aufleuchten</translation>
+<translation id="3623318122257816196">Auf Websites, die du besuchst, können von anderen Websites stammende Inhalte eingebettet sein, z. B. Bilder, Werbung und Text. Diese anderen Websites dürfen die Berechtigung anfordern, Informationen zu nutzen, die sie zu deiner Person gespeichert haben, wenn du auf der Website surfst.</translation>
 <translation id="362333465072914957">Es wird darauf gewartet, dass die Zertifizierungsstelle ein Zertifikat ausstellt</translation>
 <translation id="3623598555687153298">Dadurch werden <ph name="TOTAL_USAGE" /> an von angezeigten Websites gespeicherten Daten gelöscht</translation>
 <translation id="3624567683873126087">Gerät entsperren und im Google-Konto anmelden</translation>
@@ -3804,6 +3809,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3673622964532248901">Streamen an dieses Gerät nicht zulässig</translation>
 <translation id="3675683621636519363">Absturzberichte, Diagnose- und Nutzungsdaten an ChromeOS Flex senden</translation>
 <translation id="367645871420407123">Leer lassen, wenn du für das Root-Passwort den Standardtestwert festlegen möchtest</translation>
+<translation id="3676777756440746804">Websites dürfen nicht darum bitten, Informationen verwenden zu dürfen, die sie zu deiner Person gespeichert haben</translation>
 <translation id="3677911431265050325">Mobile Version anfordern</translation>
 <translation id="3678156199662914018">Erweiterung: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">In diesem Fenster aufgerufene Seiten erscheinen nicht im Browserverlauf und hinterlassen auch keine anderweitigen Spuren wie Cookies auf dem Computer, nachdem du dich abgemeldet hast. Deine Lesezeichen und deine heruntergeladenen Dateien bleiben nicht erhalten.</translation>
@@ -3978,6 +3984,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3778208826288864398">Der Sicherheitsschlüssel wurde gesperrt, weil zu oft die falsche PIN eingegeben wurde. Du musst den Sicherheitsschlüssel zurücksetzen.</translation>
 <translation id="3778740492972734840">E&amp;ntwicklertools</translation>
 <translation id="3778868487658107119">Du kannst ihm Fragen stellen und ihn Dinge erledigen lassen. Er ist immer für dich da.</translation>
+<translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{dein Browserverlauf von # Website}other{dein Browserverlauf von # Websites}}</translation>
 <translation id="3779244863011082655">Anderes <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-Konto verwenden</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> kann deine Passwörter nicht auf Datenpannen prüfen. Versuch es bitte später noch einmal.</translation>
 <translation id="3781742599892759500">Mikrofonzugriff für Linux</translation>
@@ -4262,6 +4269,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3961005895395968120">Weitere Aktionen für „<ph name="IBAN_DESCRIPTION" />“</translation>
 <translation id="3963753386716096475">Anderes Smartphone, anderes Tablet oder anderen Sicherheitsschlüssel verwenden</translation>
 <translation id="3964480518399667971">Mobilfunknetz ausschalten</translation>
+<translation id="3965467402665811906">Websites dürfen darum bitten, Informationen verwenden zu dürfen, die sie zu deiner Person gespeichert haben</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> beenden</translation>
 <translation id="3965984916551757611">Benachrichtigungen, Google Play</translation>
 <translation id="3966072572894326936">Anderen Ordner wählen...</translation>
@@ -5114,6 +5122,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4582297591746054421">Websites lesen normalerweise die Zwischenablage aus, um Funktionen wie die Beibehaltung der Formatierung von Texten in der Zwischenablage umzusetzen</translation>
 <translation id="4582563038311694664">Alle Einstellungen zurücksetzen</translation>
 <translation id="4584770411839426377">Fenster</translation>
+<translation id="4584836561445313300">Deine Organisation kann alle vorhandenen Browserdaten, wie Passwörter und mehr, sehen und verwalten</translation>
 <translation id="4585793705637313973">Seite bearbeiten</translation>
 <translation id="4586275095964870617"><ph name="URL" /> konnte nicht in einem alternativen Browser geöffnet werden. Bitte setze dich mit dem Systemadministrator in Verbindung.</translation>
 <translation id="4587589328781138893">Websites</translation>
@@ -5878,6 +5887,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5139823398361067371">Gib die PIN für deinen Sicherheitsschlüssel ein. Falls du sie nicht kennst, musst du den Sicherheitsschlüssel zurücksetzen.</translation>
 <translation id="5139955368427980650">Ö&amp;ffnen</translation>
 <translation id="5140742218917419811">Zu verwendende Tasten</translation>
+<translation id="5140852400507269896">{BOOKMARKS_COUNT,plural, =1{# Erweiterung}other{# Erweiterungen}}</translation>
 <translation id="5141421572306659464">Primäres Konto</translation>
 <translation id="5141957579434225843">Verwende beispielsweise oà, oè, uỳ statt òa, òe, ùy</translation>
 <translation id="5143374789336132547">Durch die Erweiterung <ph name="EXTENSION_NAME" /> wurde die Seite geändert, die beim Klicken auf die Schaltfläche "Startseite" erscheint.</translation>
@@ -6700,6 +6710,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5749214722697335450">Nutzungs- und Diagnosedaten senden. Du kannst uns helfen, Android zu verbessern, indem du zulässt, dass Diagnose- und Gerätedaten sowie App-Nutzungsdaten automatisch an Google gesendet werden. Die Daten helfen unter anderem dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google hilfreich, beispielsweise für Android-Entwickler. Wenn die Einstellung „Zusätzliche Web- &amp; App-Aktivitäten“ aktiviert ist, werden diese Daten möglicherweise in deinem Google-Konto gespeichert. <ph name="BEGIN_LINK1" />Weitere Informationen zu Messwerten<ph name="BEGIN_LINK1_END" />Weitere Informationen<ph name="END_LINK1" /></translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Tethering-Bereitschaft prüfen</translation>
+<translation id="5752346055178471785">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Diese Erweiterung wird in deinem Google-Konto gespeichert, aber alle Daten, die darüber nur auf diesem Gerät gespeichert wurden, können gelöscht werden}other{Diese Erweiterungen werden in deinem Google-Konto gespeichert, aber alle Daten, die darüber nur auf diesem Gerät gespeichert wurden, können gelöscht werden}}</translation>
 <translation id="5753570386948603678">Aus Verlauf löschen</translation>
 <translation id="5756163054456765343">H&amp;ilfe</translation>
 <translation id="5757187557809630523">nächster Titel</translation>
@@ -7073,6 +7084,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6016462059150340136">Jeder in meiner Nähe</translation>
 <translation id="6016551720757758985">Powerwash und Zurücksetzen auf vorherige Version bestätigen</translation>
 <translation id="6016972670657536680">Wähle die Sprache und die Taste aus. Die derzeit ausgewählte Sprache ist <ph name="LANGUAGE" />.</translation>
+<translation id="6017318029492906697">Dürfen keine Informationen verwenden, die sie über dich gespeichert haben</translation>
 <translation id="6017514345406065928">Grün</translation>
 <translation id="6019169947004469866">Zuschneiden</translation>
 <translation id="6019851026059441029">Sehr gut – HD</translation>
@@ -7929,6 +7941,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6650584564768559994">Du erzielst ausgewogene Arbeitsspeichereinsparungen. Deine Tabs werden nach einer optimalen Zeitspanne inaktiv.</translation>
 <translation id="665061930738760572">In &amp;neuem Fenster öffnen</translation>
 <translation id="6651237644330755633">Diesem Zertifikat zur Identifizierung von Websites vertrauen</translation>
+<translation id="6651366126843599466">kann deine Informationen während des Surfens verwenden</translation>
 <translation id="6651495917527016072">WLAN-Netzwerke mit Smartphone synchronisieren. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="6651762277693024112">Wird bei jedem Besuch dieser Website automatisch ausgeführt</translation>
 <translation id="6654509035557065241">Netzwerk als bevorzugt festlegen</translation>
@@ -8813,6 +8826,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7286908876112207905">Das Einfügen dieser Inhalte auf dieser Website ist nicht zulässig</translation>
 <translation id="7287143125007575591">Zugriff verweigert</translation>
 <translation id="7287411021188441799">Standardhintergrund wiederherstellen</translation>
+<translation id="7287949630503871403">In App gespeicherte Daten</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974">Aktuelles KI-Design <ph name="INDEX" /> von <ph name="SUBJECT" /></translation>
 <translation id="7289049772085228972">Du nutzt den umfangreichen Schutz von Chrome</translation>
@@ -8969,6 +8983,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7399045143794278225">Synchronisierung anpassen</translation>
 <translation id="7399616692258236448">Standortanfragen werden automatisch für alle Websites blockiert, außer bei Websites, bei denen du es zulässt</translation>
 <translation id="7399802613464275309">Sicherheitscheck</translation>
+<translation id="7400059772197434086">wird daran gehindert, deine Informationen zu nutzen auf</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">Wieder zu <ph name="OLD_SEARCH_PROVIDER" /> wechseln?</translation>
 <translation id="7400528739136719497">Einige Google-Stimmen sind derzeit möglicherweise nicht verfügbar</translation>
@@ -10010,6 +10025,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8116972784401310538">&amp;Lesezeichenmanager</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> merkt sich, wie du dich angemeldet hast, und meldet dich wenn möglich automatisch an. Wenn diese Funktion deaktiviert ist, wirst du jedes Mal um eine Bestätigung gebeten.</translation>
 <translation id="8118362518458010043">Von Chrome deaktiviert. Diese Erweiterung könnte unsicher sein.</translation>
+<translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# Lesezeichen}other{# Lesezeichen}}</translation>
 <translation id="8118488170956489476">Dein Browser wird <ph name="BEGIN_LINK" />von deiner Organisation verwaltet<ph name="END_LINK" /></translation>
 <translation id="8118515372935001629">Displayaktualisierungsrate</translation>
 <translation id="8118860139461251237">Downloads verwalten</translation>

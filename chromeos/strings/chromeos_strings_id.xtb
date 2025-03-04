@@ -1130,7 +1130,6 @@
 <translation id="6325525973963619867">Gagal</translation>
 <translation id="6327262166342360252">Wallpaper ini dibuat dengan AI menggunakan teks berikut: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Tema gelap otomatis</translation>
-<translation id="6335228876613776082">Proses download model selesai</translation>
 <translation id="6340526405444716530">Personalisasi</translation>
 <translation id="6348252528297699679">Anda dapat menonaktifkan lokasi di Setelan &gt; Privasi dan keamanan &gt; Kontrol privasi &gt; Akses lokasi. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Nama pengguna dan sandi</translation>
@@ -1674,7 +1673,6 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Foto</translation>
 <translation id="8775713578693478175">APN Modem</translation>
-<translation id="877735394245039557">Proses download model sedang berlangsung</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Jaringan ini mungkin memiliki captive portal</translation>
 <translation id="8797082062139985406">Buat nama menggunakan AI Google</translation>

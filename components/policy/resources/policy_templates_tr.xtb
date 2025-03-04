@@ -425,6 +425,23 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa gi
 Belirli ana makine adlarının veya ana makine adı kalıplarının bu özellik tarafından HTTPS'ye yükseltilmesini engellemek için ayrı <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> politikası kullanılabilir.</translation>
 <translation id="1342918903685430097">Cihaz için izin verilen minimum <ph name="PRODUCT_OS_NAME" /> sürümünü yapılandır.</translation>
 <translation id="1343128241903870688">Cihazın uygulama bilgileri raporlamasını devre dışı bırak</translation>
+<translation id="1345276795096570241">Listelenen kimlik sağlayıcılar için <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> ile tek oturum açma özelliğini devre dışı bırakın.
+
+<ph name="POLICY_VALUE_ALL" /> değeri eklendiğinde TOA için desteklenen tüm kimlik sağlayıcılar devre dışı bırakılır.
+
+<ph name="POLICY_VALUE_MICROSOFT" /> değeri eklendiğinde Chrome'da Microsoft® bulut kimliği sağlayıcısı için tek oturum açma desteği devre dışı bırakılır.
+
+Bu politika ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" /> tarafından desteklenen tüm kimlik sağlayıcılar etkinleştirilir.
+
+<ph name="PRODUCT_NAME" /> için etkinleştirilen ve yönetici tarafından cihazda yapılandırılan kimlik sağlayıcılar için, <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> özelliğini destekleyen herhangi bir uygulamada bu kimlik sağlayıcıyı kullanarak oturum açan kullanıcılar, web mülklerinde otomatik olarak bu kimlik sağlayıcıyı kullanarak oturum açabilirler. Kullanıcının kimlik doğrulama bilgileriyle ilgili veriler her kimlik doğrulama etkinliğinde kullanıcının bulut kimlik sağlayıcısına iletilir.
+
+Notlar:
+
+<ph name="PRODUCT_NAME" />, Gizli veya Misafir modlarında <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> ile Tek Oturum Açma özelliğini desteklemez.
+
+<ph name="PRODUCT_NAME" />, yalnızca aşağıdaki kimlik sağlayıcılar için <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> ile Tek Oturum Açma özelliğini destekler: Microsoft.
+
+Bu özellik, <ph name="MAC_OS_NAME" /> 10.15 sürümünden itibaren kullanılabilir.</translation>
 <translation id="1347198119056266798">Bu politika kullanımda kaldırılmıştır. Lütfen bunun yerine <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> ve <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> politikalarını kullanın. <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> veya (kullanımdan kaldırılan) <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> politikası ayarlanırsa bu politika yoksayılır.
 
       Google Web Arama'daki sorguları Güvenli Arama etkin olarak yapılmaya zorlar ve kullanıcıların bu ayarı değiştirmelerini engeller. Bu ayar, aynı zamanda YouTube'da Orta Düzey Kısıtlı Mod'un kullanılmasını da zorunlu kılar.
