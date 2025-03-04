@@ -25,6 +25,7 @@ suite('WallpaperFullscreenElementTest', function() {
   const currentSelectedCustomImage: CurrentWallpaper = {
     descriptionContent: '',
     descriptionTitle: '',
+    actionUrl: null,
     key: 'testing',
     layout: WallpaperLayout.kCenter,
     type: WallpaperType.kCustomized,

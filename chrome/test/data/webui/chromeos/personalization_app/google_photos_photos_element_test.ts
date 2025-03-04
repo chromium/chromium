@@ -462,6 +462,7 @@ suite('GooglePhotosPhotosElementTest', function() {
     personalizationStore.data.wallpaper.currentSelected = {
       descriptionContent: '',
       descriptionTitle: '',
+      actionUrl: null,
       key: photo.id,
       layout: WallpaperLayout.kCenter,
       type: WallpaperType.kOnceGooglePhotos,
@@ -488,6 +489,7 @@ suite('GooglePhotosPhotosElementTest', function() {
     personalizationStore.data.wallpaper.currentSelected = {
       descriptionContent: '',
       descriptionTitle: '',
+      actionUrl: null,
       key: anotherPhoto.dedupKey!,
       layout: WallpaperLayout.kCenter,
       type: WallpaperType.kOnceGooglePhotos,
@@ -515,6 +517,7 @@ suite('GooglePhotosPhotosElementTest', function() {
     personalizationStore.data.wallpaper.currentSelected = {
       descriptionContent: '',
       descriptionTitle: '',
+      actionUrl: null,
       key: '//foo',
       layout: WallpaperLayout.kCenter,
       type: WallpaperType.kCustomized,

@@ -20,6 +20,7 @@ import './info_svg_element.js';
 import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 import type {CurrentAttribution, CurrentWallpaper, GooglePhotosPhoto, WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
 import {WallpaperLayout, WallpaperType} from '../../personalization_app.mojom-webui.js';
@@ -70,6 +71,11 @@ export class WallpaperSelectedElement extends WithPersonalizationStore {
       imagesByCollectionId_: Object,
 
       photosByAlbumId_: Object,
+
+      actionUrl_: {
+        type: String,
+        computed: 'computeActionUrl_(image_)',
+      },
 
       attribution_: {
         type: Object,
@@ -174,6 +180,7 @@ export class WallpaperSelectedElement extends WithPersonalizationStore {
   isGooglePhotosAlbumShared: boolean;
   googlePhotosAlbumId: string|undefined;
   path: string;
+  private actionUrl_: string|null;
   private attribution_: CurrentAttribution|null;
   private image_: CurrentWallpaper|null;
   private imageTitle_: string;
@@ -525,6 +532,19 @@ export class WallpaperSelectedElement extends WithPersonalizationStore {
    */
   private getContainerClass_(isLoading: boolean, showImage: boolean): string {
     return this.showPlaceholders_(isLoading, showImage) ? 'loading' : '';
+  }
+
+  private computeActionUrl_(image: CurrentWallpaper|null): string|null {
+    if (!image?.actionUrl?.url) {
+      return null;
+    }
+
+    try {
+      return sanitizeInnerHtml(image.actionUrl.url).toString();
+    } catch (e) {
+      console.warn('cannot display learn more link', e);
+      return null;
+    }
   }
 }
 

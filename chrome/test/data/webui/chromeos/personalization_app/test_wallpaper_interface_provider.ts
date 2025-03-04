@@ -148,6 +148,7 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
     this.currentWallpaper = {
       descriptionContent: 'test content',
       descriptionTitle: 'test title',
+      actionUrl: null,
       key: '1',
       layout: WallpaperLayout.kCenter,
       type: WallpaperType.kOnline,
