@@ -684,7 +684,8 @@ void ResourcePool::PoolResource::OnMemoryDump(
   // the root ownership.
   const int kImportance =
       static_cast<int>(gpu::TracingImportance::kClientOwner);
-  if (backing_ && backing_->shared_image()) {
+  if (backing_ && backing_->can_access_shared_image_on_compositor_thread &&
+      backing_->shared_image()) {
     backing_->shared_image()->OnMemoryDump(pmd, dump->guid(), kImportance);
   }
 

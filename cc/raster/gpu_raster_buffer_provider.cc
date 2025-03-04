@@ -67,6 +67,14 @@ GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
     in_use_resource.set_backing(std::move(backing));
   }
   backing_ = in_use_resource.backing();
+  if (!backing_->shared_image()) {
+    // The backing's SharedImage will be created on a worker thread during the
+    // execution of this raster; to avoid data races during taking of memory
+    // dumps on the compositor thread, mark the backing's SharedImage as
+    // unavailable for access on the compositor thread for the duration of the
+    // raster.
+    backing_->can_access_shared_image_on_compositor_thread = false;
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Only do this in Chrome OS because:
@@ -79,7 +87,11 @@ GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
 #endif
 }
 
-GpuRasterBufferProvider::RasterBufferImpl::~RasterBufferImpl() = default;
+GpuRasterBufferProvider::RasterBufferImpl::~RasterBufferImpl() {
+  // This raster task is complete, so if the backing's SharedImage was created
+  // on a worker thread during the raster work that has now happened.
+  backing_->can_access_shared_image_on_compositor_thread = true;
+}
 
 void GpuRasterBufferProvider::RasterBufferImpl::Playback(
     const RasterSource* raster_source,

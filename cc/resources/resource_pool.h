@@ -68,6 +68,11 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
       return shared_image_;
     }
 
+    // If this field is set to false, the backing's SharedImage is in the
+    // process of being created on a worker thread and should not be accessed on
+    // the compositor thread.
+    bool can_access_shared_image_on_compositor_thread = true;
+
     gpu::SyncToken mailbox_sync_token;
 
     // For resources that are modified directly on the gpu, outside the command
