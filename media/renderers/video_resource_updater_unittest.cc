@@ -794,7 +794,6 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_DCompSurface) {
 
   VideoFrameExternalResource resource =
       updater->CreateExternalResourceFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::STREAM_TEXTURE, resource.type);
   EXPECT_TRUE(resource.release_callback);
   EXPECT_EQ((GLenum)GL_TEXTURE_EXTERNAL_OES,
             resource.resource.texture_target());
@@ -822,7 +821,8 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_DCompSurface) {
   const viz::TextureDrawQuad* quad =
       pass->quad_list.ElementAt(0)->DynamicCast<viz::TextureDrawQuad>();
   EXPECT_NE(nullptr, quad);
-  EXPECT_EQ(true, quad->is_stream_video);
+  EXPECT_EQ(gfx::ProtectedVideoType::kHardwareProtected,
+            quad->protected_video_type);
   EXPECT_EQ(viz::OverlayPriority::kRequired, quad->overlay_priority_hint);
 
   updater->ReleaseFrameResource();

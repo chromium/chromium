@@ -292,10 +292,7 @@ void RecordDCLayerResult(DCLayerResult result, const DrawQuad* quad) {
   switch (quad->material) {
     case DrawQuad::Material::kTextureContent: {
       auto* tex_quad = TextureDrawQuad::MaterialCast(quad);
-      if (tex_quad->is_stream_video) {
-        RecordVideoDCLayerResult(result,
-                                 gfx::ProtectedVideoType::kHardwareProtected);
-      } else if (tex_quad->is_video_frame) {
+      if (tex_quad->is_video_frame) {
         RecordVideoDCLayerResult(result, tex_quad->protected_video_type);
       } else {
         UMA_HISTOGRAM_ENUMERATION("GPU.DirectComposition.DCLayerResult.Texture",
@@ -348,7 +345,8 @@ QuadList::Iterator FindAnOverlayCandidateExcludingMediaFoundationVideoContent(
   for (auto quad_it = quad_list.begin(); quad_it != quad_list.end();
        ++quad_it) {
     if (quad_it->material == DrawQuad::Material::kTextureContent &&
-        TextureDrawQuad::MaterialCast(*quad_it)->is_stream_video) {
+        TextureDrawQuad::MaterialCast(*quad_it)->protected_video_type ==
+            gfx::ProtectedVideoType::kHardwareProtected) {
       return quad_list.end();
     }
     if (it == quad_list.end() &&
@@ -375,13 +373,7 @@ gfx::ProtectedVideoType GetProtectedVideoType(const DrawQuad* quad) {
 bool IsOverlayRequiredForQuad(const DrawQuad* quad) {
   // Hardware protected video always requires overlays, and for software
   // protected video we prefer it for the protection benefits of overlays.
-  if (GetProtectedVideoType(quad) != gfx::ProtectedVideoType::kClear) {
-    return true;
-  }
-  // As do stream video textures e.g. when MediaFoundationRenderer is used for
-  // clear video with direct composition.
-  return quad->material == DrawQuad::Material::kTextureContent &&
-         TextureDrawQuad::MaterialCast(quad)->is_stream_video;
+  return GetProtectedVideoType(quad) != gfx::ProtectedVideoType::kClear;
 }
 
 // A bit of a misnomer, but these are all the "standard" no overlay required
@@ -479,9 +471,10 @@ ValidateDrawQuadResult ValidateDrawQuad(
     }
   }
 
-  if (quad->is_stream_video) {
-    // Stream video quads contain Media Foundation dcomp surface which is
-    // always presented as overlay.
+  if (quad->protected_video_type ==
+      gfx::ProtectedVideoType::kHardwareProtected) {
+    // HardwareProtected video quads contain Media Foundation dcomp surface
+    // which is always presented as overlay.
     result.code = DC_LAYER_SUCCESS;
   } else {
     result.code = ValidateTextureQuad(
@@ -539,11 +532,6 @@ void FromDrawQuad(const DisplayResourceProvider* resource_provider,
   dc_layer.hdr_metadata = resource_provider->GetHDRMetadata(quad->resource_id);
 
   dc_layer.protected_video_type = quad->protected_video_type;
-  // protected_video_type is hard-coded for stream video.
-  // TODO(crbug.com/40878556): Consider using quad->protected_video_type.
-  if (quad->is_stream_video) {
-    dc_layer.protected_video_type = gfx::ProtectedVideoType::kHardwareProtected;
-  }
   dc_layer.possible_video_fullscreen_letterboxing =
       is_possible_full_screen_letterboxing;
   if (quad->is_video_frame) {
