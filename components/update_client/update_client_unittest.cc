@@ -120,7 +120,20 @@ bool MakeTestFile(const base::FilePath& from_path, base::FilePath* to_path) {
 
 class MockObserver : public UpdateClient::Observer {
  public:
+  MockObserver(const MockObserver&) = delete;
+  MockObserver operator=(const MockObserver&) = delete;
+
+  explicit MockObserver(scoped_refptr<UpdateClient> update_client)
+      : update_client_(update_client) {
+    update_client_->AddObserver(this);
+  }
+
+  ~MockObserver() override { update_client_->RemoveObserver(this); }
+
   MOCK_METHOD1(OnEvent, void(const CrxUpdateItem& item));
+
+ private:
+  const scoped_refptr<UpdateClient> update_client_;
 };
 
 class MockActionHandler : public ActionHandler {
@@ -400,7 +413,7 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -417,7 +430,6 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
       .WillRepeatedly(
           [&items](const CrxUpdateItem& item) { items.push_back(item); });
 
-  update_client->AddObserver(&observer);
   update_client->Update(
       {"jebgalgnebhfojomionfpkfelancnnkf"},
       base::BindOnce(&DataCallbackMock::Callback),
@@ -430,8 +442,6 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id.c_str());
   EXPECT_EQ(ComponentState::kUpToDate, items[1].state);
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id.c_str());
-
-  update_client->RemoveObserver(&observer);
 }
 
 // Tests the scenario where two CRXs are checked for updates. On CRX has
@@ -609,7 +619,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -653,7 +663,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
       .WillRepeatedly(
           [&items](const CrxUpdateItem& item) { items.push_back(item); });
 
-  update_client->AddObserver(&observer);
   const std::vector<std::string> ids = {"jebgalgnebhfojomionfpkfelancnnkf",
                                         "abagagagagagagagagagagagagagagag"};
   update_client->Update(
@@ -690,8 +699,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
     EXPECT_EQ(items[i].downloaded_bytes, std::get<0>(progress_bytes[i]));
     EXPECT_EQ(items[i].total_bytes, std::get<1>(progress_bytes[i]));
   }
-
-  update_client->RemoveObserver(&observer);
 }
 
 // Tests the scenario where two CRXs are checked for updates. One CRX has
@@ -848,7 +855,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -899,7 +906,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
       .WillRepeatedly(
           [&items](const CrxUpdateItem& item) { items.push_back(item); });
 
-  update_client->AddObserver(&observer);
   const std::vector<std::string> ids = {"jebgalgnebhfojomionfpkfelancnnkf",
                                         "abagagagagagagagagagagagagagagag"};
   update_client->Update(
@@ -925,8 +931,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[6].id.c_str());
   EXPECT_EQ(ComponentState::kUpdateError, items[7].state);
   EXPECT_STREQ("abagagagagagagagagagagagagagagag", items[7].id.c_str());
-
-  update_client->RemoveObserver(&observer);
 }
 
 // Tests the update check for two CRXs scenario when the second CRX does not
@@ -1080,7 +1084,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -1119,7 +1123,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
       .WillRepeatedly(
           [&items](const CrxUpdateItem& item) { items.push_back(item); });
 
-  update_client->AddObserver(&observer);
   const std::vector<std::string> ids = {"jebgalgnebhfojomionfpkfelancnnkf",
                                         "ihfokbkgjpifnbbojhneepfflplebdkc"};
   update_client->Update(
@@ -1143,8 +1146,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[5].id.c_str());
   EXPECT_EQ(ComponentState::kUpdated, items[6].state);
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[6].id.c_str());
-
-  update_client->RemoveObserver(&observer);
 }
 
 // Tests the update check for two CRXs scenario when no CrxComponent data is
@@ -1204,7 +1205,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentDataAtAll) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -1223,7 +1224,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentDataAtAll) {
       .WillRepeatedly(
           [&items](const CrxUpdateItem& item) { items.push_back(item); });
 
-  update_client->AddObserver(&observer);
   const std::vector<std::string> ids = {"jebgalgnebhfojomionfpkfelancnnkf",
                                         "ihfokbkgjpifnbbojhneepfflplebdkc"};
   update_client->Update(
@@ -1237,8 +1237,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentDataAtAll) {
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id.c_str());
   EXPECT_EQ(ComponentState::kUpdateError, items[1].state);
   EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id.c_str());
-
-  update_client->RemoveObserver(&observer);
 }
 
 // Tests the scenario where there is a download timeout for the first
@@ -1449,7 +1447,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -1508,7 +1506,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
       .WillRepeatedly(
           [&items](const CrxUpdateItem& item) { items.push_back(item); });
 
-  update_client->AddObserver(&observer);
   const std::vector<std::string> ids = {"jebgalgnebhfojomionfpkfelancnnkf",
                                         "ihfokbkgjpifnbbojhneepfflplebdkc"};
   update_client->Update(
@@ -1540,8 +1537,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
   EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[9].id.c_str());
   EXPECT_EQ(ComponentState::kUpdated, items[10].state);
   EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[10].id.c_str());
-
-  update_client->RemoveObserver(&observer);
 }
 
 // Tests the differential update scenario for one CRX. Tests install progress
@@ -1799,7 +1794,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -1856,7 +1851,6 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
                 })));
   }
 
-  update_client->AddObserver(&observer);
   const std::vector<std::string> ids = {"ihfokbkgjpifnbbojhneepfflplebdkc"};
   {
     std::vector<CrxUpdateItem> items;
@@ -1942,8 +1936,6 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
       EXPECT_EQ(items[i].install_progress, samples[i]);
     }
   }
-
-  update_client->RemoveObserver(&observer);
 }
 
 // Tests the update scenario for one CRX where the CRX installer returns
@@ -2137,7 +2129,7 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -2169,7 +2161,6 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
       .WillRepeatedly(
           [&items](const CrxUpdateItem& item) { items.push_back(item); });
 
-  update_client->AddObserver(&observer);
   std::vector<std::string> ids = {"jebgalgnebhfojomionfpkfelancnnkf"};
   update_client->Update(
       ids, base::BindOnce(&DataCallbackMock::Callback),
@@ -2190,8 +2181,6 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[4].id.c_str());
   EXPECT_EQ(ComponentState::kUpdateError, items[5].state);
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[5].id.c_str());
-
-  update_client->RemoveObserver(&observer);
 }
 
 // Tests the fallback from differential to full update scenario for one CRX.
@@ -2444,7 +2433,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -2497,8 +2486,6 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
                          item.state == ComponentState::kUpdated;
                 })));
   }
-
-  update_client->AddObserver(&observer);
 
   const std::vector<std::string> ids = {"ihfokbkgjpifnbbojhneepfflplebdkc"};
 
@@ -2562,8 +2549,6 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
     EXPECT_EQ(ComponentState::kUpdated, items[7].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[7].id.c_str());
   }
-
-  update_client->RemoveObserver(&observer);
 }
 
 // Tests the fallback from differential to full update due to CRX missing from
@@ -2816,7 +2801,7 @@ TEST_F(UpdateClientTest,
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -2863,8 +2848,6 @@ TEST_F(UpdateClientTest,
                          item.state == ComponentState::kUpdated;
                 })));
   }
-
-  update_client->AddObserver(&observer);
 
   const std::vector<std::string> ids = {"ihfokbkgjpifnbbojhneepfflplebdkc"};
 
@@ -2928,8 +2911,6 @@ TEST_F(UpdateClientTest,
     EXPECT_EQ(ComponentState::kUpdated, items[7].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[7].id.c_str());
   }
-
-  update_client->RemoveObserver(&observer);
 }
 
 // Tests the queuing of update checks. In this scenario, two update checks are
@@ -3012,7 +2993,7 @@ TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -3045,7 +3026,6 @@ TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
       .WillRepeatedly(
           [&items2](const CrxUpdateItem& item) { items2.push_back(item); });
 
-  update_client->AddObserver(&observer);
   const std::vector<std::string> ids = {"jebgalgnebhfojomionfpkfelancnnkf"};
   update_client->Update(
       ids, base::BindOnce(&DataCallbackMock::Callback),
@@ -3068,8 +3048,6 @@ TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items2[0].id.c_str());
   EXPECT_EQ(ComponentState::kUpToDate, items2[1].state);
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items2[1].id.c_str());
-
-  update_client->RemoveObserver(&observer);
 }
 
 // Tests the install of one CRX. Tests the installer is invoked with the
@@ -3229,7 +3207,7 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
         "updateclientdata.apps.jebgalgnebhfojomionfpkfelancnnkf.fp"));
   }
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -3271,7 +3249,6 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
       .WillRepeatedly(
           [&items](const CrxUpdateItem& item) { items.push_back(item); });
 
-  update_client->AddObserver(&observer);
   update_client->Install(
       std::string("jebgalgnebhfojomionfpkfelancnnkf"),
       base::BindOnce(&DataCallbackMock::Callback),
@@ -3303,8 +3280,6 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
       dict.FindStringByDottedPath("apps.jebgalgnebhfojomionfpkfelancnnkf.fp");
   ASSERT_TRUE(fingerprint);
   EXPECT_STREQ("some-fingerprint", fingerprint->c_str());
-
-  update_client->RemoveObserver(&observer);
 }
 
 // Tests the install of one CRX when no component data is provided. This
@@ -3363,7 +3338,7 @@ TEST_F(UpdateClientTest, OneCrxInstallNoCrxComponentData) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -3390,7 +3365,6 @@ TEST_F(UpdateClientTest, OneCrxInstallNoCrxComponentData) {
       .WillRepeatedly(
           [&items](const CrxUpdateItem& item) { items.push_back(item); });
 
-  update_client->AddObserver(&observer);
   update_client->Install(
       std::string("jebgalgnebhfojomionfpkfelancnnkf"),
       base::BindOnce(&DataCallbackMock::Callback),
@@ -3401,8 +3375,6 @@ TEST_F(UpdateClientTest, OneCrxInstallNoCrxComponentData) {
   EXPECT_EQ(1u, items.size());
   EXPECT_EQ(ComponentState::kUpdateError, items[0].state);
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id.c_str());
-
-  update_client->RemoveObserver(&observer);
 }
 
 // Tests that overlapping installs of the same CRX result in an error.
@@ -3483,7 +3455,7 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                 return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                        item.state == ComponentState::kChecking;
@@ -3508,7 +3480,6 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
   base::RepeatingClosure barrier_quit_closure =
       BarrierClosure(2, runloop_.QuitClosure());
 
-  update_client->AddObserver(&observer);
   update_client->Install(
       std::string("jebgalgnebhfojomionfpkfelancnnkf"),
       base::BindOnce(&DataCallbackMock::Callback),
@@ -3528,8 +3499,6 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items1[1].id.c_str());
 
   EXPECT_TRUE(items2.empty());
-
-  update_client->RemoveObserver(&observer);
 }
 
 // Tests that UpdateClient::Update returns Error::INVALID_ARGUMENT when
@@ -3715,7 +3684,7 @@ TEST_F(UpdateClientTest, DiskFull) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -3742,7 +3711,6 @@ TEST_F(UpdateClientTest, DiskFull) {
       .WillRepeatedly(
           [&items](const CrxUpdateItem& item) { items.push_back(item); });
 
-  update_client->AddObserver(&observer);
   const std::vector<std::string> ids = {"jebgalgnebhfojomionfpkfelancnnkf"};
   update_client->Update(
       ids, base::BindOnce(&DataCallbackMock::Callback),
@@ -3759,8 +3727,6 @@ TEST_F(UpdateClientTest, DiskFull) {
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id.c_str());
   EXPECT_EQ(ComponentState::kUpdateError, items[3].state);
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id.c_str());
-
-  update_client->RemoveObserver(&observer);
 }
 
 TEST_F(UpdateClientTest, DiskFullDiff) {
@@ -4001,7 +3967,7 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -4050,7 +4016,6 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
                 })));
   }
 
-  update_client->AddObserver(&observer);
   const std::vector<std::string> ids = {"ihfokbkgjpifnbbojhneepfflplebdkc"};
   {
     std::vector<CrxUpdateItem> items;
@@ -4121,8 +4086,6 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
     EXPECT_EQ(ComponentState::kUpdateError, items[4].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id.c_str());
   }
-
-  update_client->RemoveObserver(&observer);
 }
 
 struct SendPingTestCase {
@@ -4314,7 +4277,7 @@ TEST_F(UpdateClientTest, RetryAfter) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -4342,8 +4305,6 @@ TEST_F(UpdateClientTest, RetryAfter) {
                          item.state == ComponentState::kUpToDate;
                 })));
   }
-
-  update_client->AddObserver(&observer);
 
   const std::vector<std::string> ids = {"jebgalgnebhfojomionfpkfelancnnkf"};
   {
@@ -4379,8 +4340,6 @@ TEST_F(UpdateClientTest, RetryAfter) {
                           false, ExpectErrorThenQuit(runloop, Error::NONE));
     runloop.Run();
   }
-
-  update_client->RemoveObserver(&observer);
 }
 
 // Tests the update check for two CRXs scenario. The first component supports
@@ -4585,7 +4544,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -4632,7 +4591,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
       .WillRepeatedly(
           [&items](const CrxUpdateItem& item) { items.push_back(item); });
 
-  update_client->AddObserver(&observer);
   const std::vector<std::string> ids = {"jebgalgnebhfojomionfpkfelancnnkf",
                                         "ihfokbkgjpifnbbojhneepfflplebdkc"};
   update_client->Update(
@@ -4660,8 +4618,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
   EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[7].id.c_str());
   EXPECT_EQ(ComponentState::kUpdated, items[8].state);
   EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[8].id.c_str());
-
-  update_client->RemoveObserver(&observer);
 }
 
 // Tests all ping back events have the correct errorcode and extracode1 set in
@@ -4822,7 +4778,7 @@ TEST_F(UpdateClientTest, OneCrxUpdateDownloadTimeout) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -4857,7 +4813,6 @@ TEST_F(UpdateClientTest, OneCrxUpdateDownloadTimeout) {
       .WillRepeatedly(
           [&items](const CrxUpdateItem& item) { items.push_back(item); });
 
-  update_client->AddObserver(&observer);
   const std::vector<std::string> ids = {"jebgalgnebhfojomionfpkfelancnnkf"};
   update_client->Update(
       ids, base::BindOnce(&DataCallbackMock::Callback),
@@ -4876,8 +4831,6 @@ TEST_F(UpdateClientTest, OneCrxUpdateDownloadTimeout) {
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id.c_str());
   EXPECT_EQ(ComponentState::kUpdateError, items[4].state);
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[4].id.c_str());
-
-  update_client->RemoveObserver(&observer);
 }
 
 // Tests the scenario where the update check fails.
@@ -4947,7 +4900,7 @@ TEST_F(UpdateClientTest, OneCrxUpdateCheckFails) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -4973,7 +4926,6 @@ TEST_F(UpdateClientTest, OneCrxUpdateCheckFails) {
       .WillRepeatedly(
           [&items](const CrxUpdateItem& item) { items.push_back(item); });
 
-  update_client->AddObserver(&observer);
   const std::vector<std::string> ids = {"jebgalgnebhfojomionfpkfelancnnkf"};
   update_client->Update(
       ids, base::BindOnce(&DataCallbackMock::Callback),
@@ -4986,8 +4938,6 @@ TEST_F(UpdateClientTest, OneCrxUpdateCheckFails) {
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id.c_str());
   EXPECT_EQ(ComponentState::kUpdateError, items[1].state);
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id.c_str());
-
-  update_client->RemoveObserver(&observer);
 }
 
 // Tests the scenario where the server responds with different values for
@@ -5109,7 +5059,7 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -5183,16 +5133,12 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
         }));
   }
 
-  update_client->AddObserver(&observer);
   const std::vector<std::string> ids = {
       "jebgalgnebhfojomionfpkfelancnnkf", "abagagagagagagagagagagagagagagag",
       "ihfokbkgjpifnbbojhneepfflplebdkc", "gjpmebpgbhcamgdgjcmnjfhggjpgcimm"};
   update_client->Update(ids, base::BindOnce(&DataCallbackMock::Callback), {},
                         true, ExpectErrorThenQuit(runloop_, Error::NONE));
-
   runloop_.Run();
-
-  update_client->RemoveObserver(&observer);
 }
 
 // Tests that a run action in invoked in the CRX install scenario.
@@ -5668,7 +5614,7 @@ TEST_F(UpdateClientTest, BadCrxDataCallback) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           UpdateChecker::Factory{});
 
-  MockObserver observer;
+  MockObserver observer(update_client);
 
   std::vector<CrxUpdateItem> items;
   auto receiver = base::MakeRefCounted<MockCrxStateChangeReceiver>();
@@ -5676,7 +5622,6 @@ TEST_F(UpdateClientTest, BadCrxDataCallback) {
       .WillRepeatedly(
           [&items](const CrxUpdateItem& item) { items.push_back(item); });
 
-  update_client->AddObserver(&observer);
   const std::vector<std::string> ids = {"jebgalgnebhfojomionfpkfelancnnkf",
                                         "gjpmebpgbhcamgdgjcmnjfhggjpgcimm"};
   // The `CrxDataCallback` argument only returns a value for the first
@@ -5696,7 +5641,6 @@ TEST_F(UpdateClientTest, BadCrxDataCallback) {
   runloop_.Run();
 
   EXPECT_TRUE(items.empty());
-  update_client->RemoveObserver(&observer);
 }
 
 // Tests cancellation of an install before the task is run.
@@ -5960,7 +5904,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
 
   base::RepeatingClosure cancel;
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -5989,7 +5933,6 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
       .WillRepeatedly(
           [&items](const CrxUpdateItem& item) { items.push_back(item); });
 
-  update_client->AddObserver(&observer);
   cancel = update_client->Install(
       std::string("jebgalgnebhfojomionfpkfelancnnkf"),
       base::BindOnce(&DataCallbackMock::Callback),
@@ -6008,8 +5951,6 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id.c_str());
   EXPECT_EQ(ComponentState::kUpdateError, items[4].state);
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[4].id.c_str());
-
-  update_client->RemoveObserver(&observer);
 }
 
 // Tests cancellation of an install before the download.
@@ -6138,7 +6079,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
 
   base::RepeatingClosure cancel;
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -6163,7 +6104,6 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
       .WillRepeatedly(
           [&items](const CrxUpdateItem& item) { items.push_back(item); });
 
-  update_client->AddObserver(&observer);
   cancel = update_client->Install(
       std::string("jebgalgnebhfojomionfpkfelancnnkf"),
       base::BindOnce(&DataCallbackMock::Callback),
@@ -6178,8 +6118,6 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id.c_str());
   EXPECT_EQ(ComponentState::kUpdateError, items[2].state);
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id.c_str());
-
-  update_client->RemoveObserver(&observer);
 }
 
 TEST_F(UpdateClientTest, CheckForUpdate_NoUpdate) {
@@ -6260,7 +6198,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_NoUpdate) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -6278,7 +6216,6 @@ TEST_F(UpdateClientTest, CheckForUpdate_NoUpdate) {
       .WillRepeatedly(
           [&items](const CrxUpdateItem& item) { items.push_back(item); });
 
-  update_client->AddObserver(&observer);
   const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
   update_client->CheckForUpdate(
       id, base::BindOnce(&DataCallbackMock::Callback),
@@ -6290,7 +6227,6 @@ TEST_F(UpdateClientTest, CheckForUpdate_NoUpdate) {
   EXPECT_STREQ(items[0].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
   EXPECT_EQ(items[1].state, ComponentState::kUpToDate);
   EXPECT_STREQ(items[1].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
-  update_client->RemoveObserver(&observer);
 }
 
 TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
@@ -6409,7 +6345,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -6427,7 +6363,6 @@ TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
       .WillRepeatedly(
           [&items](const CrxUpdateItem& item) { items.push_back(item); });
 
-  update_client->AddObserver(&observer);
   const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
   update_client->CheckForUpdate(
       id, base::BindOnce(&DataCallbackMock::Callback),
@@ -6439,7 +6374,6 @@ TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
   EXPECT_STREQ(items[0].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
   EXPECT_EQ(items[1].state, ComponentState::kCanUpdate);
   EXPECT_STREQ(items[1].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
-  update_client->RemoveObserver(&observer);
 }
 
 TEST_F(UpdateClientTest, CheckForUpdate_QueueChecks) {
@@ -6520,7 +6454,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_QueueChecks) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -6549,7 +6483,6 @@ TEST_F(UpdateClientTest, CheckForUpdate_QueueChecks) {
   // Do two `CheckForUpdate` calls, expect the calls to be done in sequence.
   base::RepeatingClosure barrier_quit_closure =
       BarrierClosure(2, runloop_.QuitClosure());
-  update_client->AddObserver(&observer);
   const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
   update_client->CheckForUpdate(
       id, base::BindOnce(&DataCallbackMock::Callback),
@@ -6572,7 +6505,6 @@ TEST_F(UpdateClientTest, CheckForUpdate_QueueChecks) {
   EXPECT_STREQ(items[2].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
   EXPECT_EQ(items[3].state, ComponentState::kUpToDate);
   EXPECT_STREQ(items[3].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
-  update_client->RemoveObserver(&observer);
 }
 
 TEST_F(UpdateClientTest, CheckForUpdate_Stop) {
@@ -6653,7 +6585,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_Stop) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -6676,7 +6608,6 @@ TEST_F(UpdateClientTest, CheckForUpdate_Stop) {
   // because `Stop` cancels the queued up subsequent call.
   base::RepeatingClosure barrier_quit_closure =
       BarrierClosure(2, runloop_.QuitClosure());
-  update_client->AddObserver(&observer);
   const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
   update_client->CheckForUpdate(
       id, base::BindOnce(&DataCallbackMock::Callback),
@@ -6696,7 +6627,6 @@ TEST_F(UpdateClientTest, CheckForUpdate_Stop) {
   EXPECT_STREQ(items[0].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
   EXPECT_EQ(items[1].state, ComponentState::kUpToDate);
   EXPECT_STREQ(items[1].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
-  update_client->RemoveObserver(&observer);
 }
 
 TEST_F(UpdateClientTest, CheckForUpdate_Errors) {
@@ -6739,7 +6669,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_Errors) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -6756,7 +6686,6 @@ TEST_F(UpdateClientTest, CheckForUpdate_Errors) {
   // Tests some error cases when arguments are incorrect.
   base::RepeatingClosure barrier_quit_closure =
       BarrierClosure(2, runloop_.QuitClosure());
-  update_client->AddObserver(&observer);
   const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
   update_client->CheckForUpdate(
       id,
@@ -6789,7 +6718,6 @@ TEST_F(UpdateClientTest, CheckForUpdate_Errors) {
   EXPECT_EQ(items[0].state, ComponentState::kUpdateError);
   EXPECT_STREQ(items[0].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
   EXPECT_EQ(items[0].error_code, static_cast<int>(Error::CRX_NOT_FOUND));
-  update_client->RemoveObserver(&observer);
 }
 
 // Tests `CheckForUpdate` when the updates are disabled but the server ignores
@@ -6911,7 +6839,7 @@ TEST_F(UpdateClientTest, UpdateCheck_UpdateDisabled) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -6933,7 +6861,6 @@ TEST_F(UpdateClientTest, UpdateCheck_UpdateDisabled) {
       .WillRepeatedly(
           [&items](const CrxUpdateItem& item) { items.push_back(item); });
 
-  update_client->AddObserver(&observer);
   update_client->CheckForUpdate(
       "jebgalgnebhfojomionfpkfelancnnkf",
       base::BindOnce(&DataCallbackMock::Callback),
@@ -6947,7 +6874,6 @@ TEST_F(UpdateClientTest, UpdateCheck_UpdateDisabled) {
   EXPECT_STREQ(items[1].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
   EXPECT_EQ(items[2].state, ComponentState::kUpdateError);
   EXPECT_STREQ(items[2].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
-  update_client->RemoveObserver(&observer);
 }
 
 // Tests the cached update scenario for one CRX to validate that the file is
@@ -7118,7 +7044,7 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  MockObserver observer;
+  MockObserver observer(update_client);
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -7171,7 +7097,6 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
                 })));
   }
 
-  update_client->AddObserver(&observer);
   const std::vector<std::string> ids = {"jebgalgnebhfojomionfpkfelancnnkf"};
   {
     std::vector<CrxUpdateItem> items;
@@ -7248,8 +7173,6 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
       EXPECT_EQ(items[i].install_progress, samples[i]);
     }
   }
-
-  update_client->RemoveObserver(&observer);
 }
 
 }  // namespace update_client
