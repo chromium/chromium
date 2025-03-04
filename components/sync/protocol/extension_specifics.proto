@@ -31,6 +31,8 @@ message ExtensionSpecifics {
   // Extensions Gallery) is used.
   optional string update_url = 3;
   // Whether or not this extension is enabled.
+  // TODO(crbug.com/40554334): Deprecate this field. Enabled state can be
+  // determined from the disable reasons set.
   optional bool enabled = 4;
   // Whether or not this extension is enabled in incognito mode.
   optional bool incognito_enabled = 5;

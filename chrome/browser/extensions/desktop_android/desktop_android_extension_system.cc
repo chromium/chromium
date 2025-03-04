@@ -179,7 +179,7 @@ bool DesktopAndroidExtensionSystem::AddExtension(
   // This is normally handled by ExtensionService, and should likely be moved
   // to ExtensionRegistrar.
   ExtensionPrefs::Get(browser_context_)
-      ->OnExtensionInstalled(extension.get(), Extension::ENABLED,
+      ->OnExtensionInstalled(extension.get(), /*disable_reasons=*/{},
                              syncer::StringOrdinal(),
                              kInstallFlagInstallImmediately, std::string(),
                              std::move(index_result.value()));

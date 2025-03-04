@@ -59,7 +59,7 @@ class ExtensionTestingProfile : public TestingProfile {
       std::string description = "Test extension",
       std::string update_url =
           "https://clients2.google.com/service/update2/crx",
-      int state_value = 0);
+      const extensions::DisableReasonSet& disable_reasons = {});
 
   void SetInstallSignature(extensions::InstallSignature signature);
 
@@ -82,13 +82,14 @@ ExtensionTestingProfile::ExtensionTestingProfile(TestingProfile* profile)
   extension_prefs_ = extensions::ExtensionPrefs::Get(profile_);
 }
 
-void ExtensionTestingProfile::AddExtension(std::string extension_id,
-                                           std::string extension_name,
-                                           base::Time install_time,
-                                           std::string version,
-                                           std::string description,
-                                           std::string update_url,
-                                           int state_value) {
+void ExtensionTestingProfile::AddExtension(
+    std::string extension_id,
+    std::string extension_name,
+    base::Time install_time,
+    std::string version,
+    std::string description,
+    std::string update_url,
+    const extensions::DisableReasonSet& disable_reasons) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder()
           .SetID(extension_id)
@@ -106,8 +107,10 @@ void ExtensionTestingProfile::AddExtension(std::string extension_id,
   extension_prefs_->UpdateExtensionPref(
       extension_id, "last_update_time",
       base::Value(base::NumberToString(install_time.ToInternalValue())));
-  extension_prefs_->UpdateExtensionPref(extension_id, "state",
-                                        base::Value(state_value));
+
+  if (!disable_reasons.empty()) {
+    extension_service_->DisableExtension(extension_id, disable_reasons);
+  }
 }
 
 void ExtensionTestingProfile::SetInstallSignature(
@@ -238,12 +241,11 @@ TEST_F(ExtensionDataCollectionTest, CollectExtensionDataWithExtension) {
   std::string version = "1.4.2";
   std::string description = "Test Extension";
   std::string update_url = "https://www.chromium.org";
-  int state = extensions::Extension::State::ENABLED;
 
   std::unique_ptr<ExtensionTestingProfile> profile =
       CreateProfile(SAFE_BROWSING_AND_EXTENDED_REPORTING);
   profile->AddExtension(extension_id, extension_name, install_time, version,
-                        description, update_url, state);
+                        description, update_url, /*disable_reasons=*/{});
 
   extensions::ExtensionIdSet valid_ids;
   extensions::ExtensionIdSet invalid_ids;
@@ -269,7 +271,8 @@ TEST_F(ExtensionDataCollectionTest, CollectExtensionDataWithExtension) {
   ASSERT_EQ(extension_info.update_url(), update_url);
   ASSERT_EQ(extension_info.has_signature_validation(), true);
   ASSERT_EQ(extension_info.signature_is_valid(), false);
-  ASSERT_EQ(extension_info.state(), state);
+  ASSERT_EQ(extension_info.state(),
+            ClientIncidentReport_ExtensionData_ExtensionInfo::STATE_ENABLED);
   std::string expected_manifest =
       "{\"description\":\"Test Extension\",\""
       "manifest_version\":2,\"name\":\"my_test_extension\",\"update_url\":\""

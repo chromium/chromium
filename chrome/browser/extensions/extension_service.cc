@@ -1278,7 +1278,7 @@ void ExtensionService::AddComponentExtension(const Extension* extension) {
 
     // TODO(crbug.com/40508457): If needed, add support for Declarative Net
     // Request to component extensions and pass the ruleset install prefs here.
-    AddNewOrUpdatedExtension(extension, Extension::ENABLED, kInstallFlagNone,
+    AddNewOrUpdatedExtension(extension, {}, kInstallFlagNone,
                              syncer::StringOrdinal(), std::string(),
                              /*ruleset_install_prefs=*/{});
     return;
@@ -1404,16 +1404,6 @@ void ExtensionService::OnExtensionInstalled(
     RecordPermissionMessagesHistogram(extension, "Install", is_user_profile);
   }
 
-  const Extension::State initial_state =
-      disable_reasons.empty() ? Extension::ENABLED : Extension::DISABLED;
-  if (initial_state == Extension::ENABLED) {
-    extension_prefs_->SetExtensionEnabled(id);
-  } else {
-    auto passkey = ExtensionPrefs::DisableReasonRawManipulationPasskey();
-    extension_prefs_->SetExtensionDisabledWithRawReasons(passkey, id,
-                                                         disable_reasons);
-  }
-
   allowlist()->OnExtensionInstalled(id, install_flags);
 
   ExtensionPrefs::DelayReason delay_reason;
@@ -1423,13 +1413,13 @@ void ExtensionService::OnExtensionInstalled(
           &delay_reason);
   switch (action) {
     case InstallGate::INSTALL:
-      AddNewOrUpdatedExtension(extension, initial_state, install_flags,
+      AddNewOrUpdatedExtension(extension, disable_reasons, install_flags,
                                page_ordinal, install_parameter,
                                std::move(ruleset_install_prefs));
       return;
     case InstallGate::DELAY:
       extension_prefs_->SetDelayedInstallInfo(
-          extension, initial_state, install_flags, delay_reason, page_ordinal,
+          extension, disable_reasons, install_flags, delay_reason, page_ordinal,
           install_parameter, std::move(ruleset_install_prefs));
 
       // Transfer ownership of |extension|.
@@ -1487,15 +1477,15 @@ void ExtensionService::OnExtensionManagementSettingsChanged() {
 
 void ExtensionService::AddNewOrUpdatedExtension(
     const Extension* extension,
-    Extension::State initial_state,
+    const base::flat_set<int>& disable_reasons,
     int install_flags,
     const syncer::StringOrdinal& page_ordinal,
     const std::string& install_parameter,
     base::Value::Dict ruleset_install_prefs) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  extension_prefs_->OnExtensionInstalled(extension, initial_state, page_ordinal,
-                                         install_flags, install_parameter,
-                                         std::move(ruleset_install_prefs));
+  extension_prefs_->OnExtensionInstalled(
+      extension, disable_reasons, page_ordinal, install_flags,
+      install_parameter, std::move(ruleset_install_prefs));
   delayed_install_manager_.Remove(extension->id());
   if (InstallVerifier::NeedsVerification(*extension, GetBrowserContext())) {
     InstallVerifier::Get(GetBrowserContext())->VerifyExtension(extension->id());

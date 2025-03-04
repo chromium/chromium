@@ -167,8 +167,7 @@ void AddExtension(const std::string& name,
           .SetID(kId)
           .Build();
   extensions::ExtensionPrefs::Get(profile)->OnExtensionInstalled(
-      extension.get(), extensions::Extension::State::ENABLED,
-      syncer::StringOrdinal(), "");
+      extension.get(), /*disable_reasons=*/{}, syncer::StringOrdinal(), "");
   extensions::ExtensionRegistry::Get(profile)->AddEnabled(extension);
 }
 

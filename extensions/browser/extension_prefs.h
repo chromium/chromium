@@ -265,17 +265,17 @@ class ExtensionPrefs : public KeyedService {
   // |ruleset_install_prefs| contains install prefs needed for the Declarative
   // Net Request API.
   void OnExtensionInstalled(const Extension* extension,
-                            Extension::State initial_state,
+                            const base::flat_set<int>& disable_reasons,
                             const syncer::StringOrdinal& page_ordinal,
                             int install_flags,
                             const std::string& install_parameter,
                             base::Value::Dict ruleset_install_prefs);
   // OnExtensionInstalled with no install flags and |ruleset_install_prefs|.
   void OnExtensionInstalled(const Extension* extension,
-                            Extension::State initial_state,
+                            const base::flat_set<int>& disable_reasons,
                             const syncer::StringOrdinal& page_ordinal,
                             const std::string& install_parameter) {
-    OnExtensionInstalled(extension, initial_state, page_ordinal,
+    OnExtensionInstalled(extension, disable_reasons, page_ordinal,
                          kInstallFlagNone, install_parameter, {});
   }
 
@@ -409,20 +409,7 @@ class ExtensionPrefs : public KeyedService {
   // Did the extension ask to escalate its permission during an upgrade?
   bool DidExtensionEscalatePermissions(const ExtensionId& id) const;
 
-  // Sets the extension's state to enabled and clears disable reasons.
-  void SetExtensionEnabled(const ExtensionId& extension_id);
-
-  // Sets the extension's state to disabled and sets the disable reasons.
-  // However, if the current state is EXTERNAL_EXTENSION_UNINSTALLED then that
-  // is preserved (but the disable reasons are still set).
-  void SetExtensionDisabled(const ExtensionId& extension_id,
-                            const DisableReasonSet& disable_reasons);
-
-  // Getters and setters for disabled reason.
-  // Note that you should rarely need to modify disable reasons directly -
-  // pass the proper value to SetExtensionEnabled / SetExtensionDisabled instead
-  // when you enable/disable an extension. In particular, AddDisableReason(s) is
-  // only legal when the extension is not enabled.
+  // Getters and setters for disable reasons.
 
   // Returns the set of reasons for which an extension is disabled. If there are
   // unknown reasons in the prefs (e.g. reasons which were synced from a newer
@@ -467,10 +454,6 @@ class ExtensionPrefs : public KeyedService {
   void AddRawDisableReasons(DisableReasonRawManipulationPasskey,
                             const ExtensionId& extension_id,
                             const base::flat_set<int>& disable_reasons);
-  void SetExtensionDisabledWithRawReasons(
-      DisableReasonRawManipulationPasskey,
-      const ExtensionId& extension_id,
-      const base::flat_set<int>& disable_reasons);
 
   // Clears disable reasons that do not apply to component extensions.
   void ClearInapplicableDisableReasonsForComponentExtension(
@@ -670,7 +653,7 @@ class ExtensionPrefs : public KeyedService {
   //
   // |install_flags| are a bitmask of extension::InstallFlags.
   void SetDelayedInstallInfo(const Extension* extension,
-                             Extension::State initial_state,
+                             const base::flat_set<int>& disable_reasons,
                              int install_flags,
                              DelayReason delay_reason,
                              const syncer::StringOrdinal& page_ordinal,
@@ -765,6 +748,11 @@ class ExtensionPrefs : public KeyedService {
   // TODO(crbug.com/372186532): Remove this around M140.
   void MaybeMigrateDisableReasonsBitflagToList();
 
+  // Performs a one-time cleanup of the extension's "state" pref. Also adds a
+  // disable reason if the pref disagrees with the list of disable reasons.
+  // TODO(crbug.com/40554334): Remove this around M140.
+  void MaybeClearExtensionStatePref();
+
   // Iterates over the extension pref entries and removes any obsolete keys. We
   // need to do this here specially (rather than in
   // MigrateObsoleteProfilePrefs()) because these entries are subkeys of the
@@ -776,18 +764,13 @@ class ExtensionPrefs : public KeyedService {
   // TODO(tjudkins): Remove this and the obsolete key in M83.
   void MigrateToNewWithholdingPref();
 
-  // Migrates to the new way of recording explicit user uninstalls of external
-  // extensions (by using a list of IDs rather than a bit set in each extension
-  // dictionary).
-  // TODO(devlin): Remove this once clients are migrated over, around M84.
-  void MigrateToNewExternalUninstallPref();
-
 #if BUILDFLAG(IS_CHROMEOS)
   // Updates pref that were scheduled to be applied after Chrome restarts. This
   // function should only be called from the constructor of the ExtensionPrefs
   // class.
   void ApplyPendingUpdates();
 #endif
+
   // Returns true if the given component extension should be installed, even
   // though it has been obsoleted. Installing it allows us to ensure it is
   // cleaned/deleted up properly. After that cleanup is done, this will return
@@ -879,12 +862,13 @@ class ExtensionPrefs : public KeyedService {
 
   // Helper function to notify observers that the disable reasons for an
   // extension have changed.
-  void NotifyDisableReasonsChanged(const ExtensionId& extension_id);
+  void OnDisableReasonsChanged(const ExtensionId& extension_id,
+                               const base::flat_set<int>& old_reasons,
+                               const base::flat_set<int>& new_reasons);
 
   // Helper methods to read and write disable reasons to prefs.
   base::flat_set<int> ReadDisableReasonsFromPrefs(
-      const ExtensionId& extension_id,
-      bool collapse_unknown_reasons) const;
+      const ExtensionId& extension_id) const;
 
   void WriteDisableReasonsToPrefs(const ExtensionId& extension_id,
                                   const base::flat_set<int>& disable_reasons);
@@ -892,11 +876,6 @@ class ExtensionPrefs : public KeyedService {
   // Installs the persistent extension preferences into |prefs_|'s extension
   // pref store. Does nothing if extensions_disabled_ is true.
   void InitPrefStore();
-
-  // Checks whether there is a state pref for the extension and if so, whether
-  // it matches |check_state|.
-  bool DoesExtensionHaveState(const ExtensionId& extension_id,
-                              Extension::State check_state) const;
 
   // Reads the list of strings for |pref| from user prefs into
   // |id_container_out|. Returns false if the pref wasn't found in the user
@@ -924,7 +903,7 @@ class ExtensionPrefs : public KeyedService {
   // `kDelayedInstallInfo`.
   void PopulateExtensionInfoPrefs(const Extension* extension,
                                   const base::Time install_time,
-                                  Extension::State initial_state,
+                                  const base::flat_set<int>& disable_reasons,
                                   int install_flags,
                                   const std::string& install_parameter,
                                   base::Value::Dict ruleset_install_prefs,

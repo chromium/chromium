@@ -187,7 +187,7 @@ scoped_refptr<Extension> TestExtensionPrefs::AddExtensionWithManifestAndFlags(
 
   EXPECT_TRUE(crx_file::id_util::IdIsValid(extension->id()));
   prefs()->OnExtensionInstalled(extension.get(),
-                                Extension::ENABLED,
+                                /*disable_reasons=*/{},
                                 syncer::StringOrdinal::CreateInitialOrdinal(),
                                 std::string());
   return extension;
@@ -201,7 +201,7 @@ std::string TestExtensionPrefs::AddExtensionAndReturnId(
 
 void TestExtensionPrefs::AddExtension(const Extension* extension) {
   prefs()->OnExtensionInstalled(extension,
-                                Extension::ENABLED,
+                                /*disable_reasons=*/{},
                                 syncer::StringOrdinal::CreateInitialOrdinal(),
                                 std::string());
 }

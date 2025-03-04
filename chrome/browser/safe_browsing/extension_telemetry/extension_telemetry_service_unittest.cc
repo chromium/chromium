@@ -735,8 +735,9 @@ TEST_F(ExtensionTelemetryServiceTest, TestExtensionInfoProtoConstruction) {
   UnregisterExtensionWithExtensionService(kExtensionId[1]);
 
   auto add_extension = [this](const Extension* extension) {
-    extension_prefs_->OnExtensionInstalled(
-        extension, Extension::ENABLED, syncer::StringOrdinal(), std::string());
+    extension_prefs_->OnExtensionInstalled(extension, /*disable_reasons=*/{},
+                                           syncer::StringOrdinal(),
+                                           std::string());
   };
 
   // Test basic prototype construction. All fields should be present, except
@@ -827,8 +828,8 @@ TEST_F(ExtensionTelemetryServiceTest, TestExtensionInfoProtoConstruction) {
             .SetLocation(ManifestLocation::kInternal)
             .Build();
     add_extension(extension.get());
-    extension_prefs_->SetExtensionDisabled(
-        extension->id(), {extensions::disable_reason::DISABLE_USER_ACTION});
+    extension_prefs_->AddDisableReason(
+        extension->id(), extensions::disable_reason::DISABLE_USER_ACTION);
     {
       std::unique_ptr<ExtensionInfo> extension_pb =
           GetExtensionInfo(*extension);
