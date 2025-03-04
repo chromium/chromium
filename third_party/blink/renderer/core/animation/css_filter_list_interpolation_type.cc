@@ -196,14 +196,8 @@ InterpolationValue CSSFilterListInterpolationType::MaybeConvertValue(
   wtf_size_t length = list.length();
   auto* interpolable_list = MakeGarbageCollected<InterpolableList>(length);
   for (wtf_size_t i = 0; i < length; i++) {
-    mojom::blink::ColorScheme color_scheme =
-        state ? state->StyleBuilder().UsedColorScheme()
-              : mojom::blink::ColorScheme::kLight;
-    const ui::ColorProvider* color_provider =
-        state ? state->GetDocument().GetColorProviderForPainting(color_scheme)
-              : nullptr;
-    InterpolableFilter* result = InterpolableFilter::MaybeConvertCSSValue(
-        list.Item(i), color_scheme, color_provider);
+    InterpolableFilter* result =
+        InterpolableFilter::MaybeConvertCSSValue(list.Item(i), state);
     if (!result) {
       return nullptr;
     }

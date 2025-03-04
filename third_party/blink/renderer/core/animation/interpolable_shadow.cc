@@ -24,12 +24,17 @@ InterpolableLength* MaybeConvertLength(const CSSPrimitiveValue* value) {
 }
 
 InterpolableColor* MaybeConvertColor(const CSSValue* value,
-                                     mojom::blink::ColorScheme color_scheme,
-                                     const ui::ColorProvider* color_provider) {
+                                     const StyleResolverState* state) {
   if (value) {
-    return CSSColorInterpolationType::MaybeCreateInterpolableColor(
-        *value, color_scheme, color_provider);
+    return CSSColorInterpolationType::MaybeCreateInterpolableColor(*value,
+                                                                   state);
   }
+  mojom::blink::ColorScheme color_scheme =
+      state ? state->StyleBuilder().UsedColorScheme()
+            : mojom::blink::ColorScheme::kLight;
+  const ui::ColorProvider* color_provider =
+      state ? state->GetDocument().GetColorProviderForPainting(color_scheme)
+            : nullptr;
   return CSSColorInterpolationType::CreateInterpolableColor(
       StyleColor::CurrentColor(), color_scheme, color_provider);
 }
@@ -83,8 +88,7 @@ InterpolableShadow* InterpolableShadow::CreateNeutral() {
 // static
 InterpolableShadow* InterpolableShadow::MaybeConvertCSSValue(
     const CSSValue& value,
-    mojom::blink::ColorScheme color_scheme,
-    const ui::ColorProvider* color_provider) {
+    const StyleResolverState* state) {
   const auto* shadow = DynamicTo<CSSShadowValue>(value);
   if (!shadow) {
     return nullptr;
@@ -102,8 +106,7 @@ InterpolableShadow* InterpolableShadow::MaybeConvertCSSValue(
   InterpolableLength* y = MaybeConvertLength(shadow->y.Get());
   InterpolableLength* blur = MaybeConvertLength(shadow->blur.Get());
   InterpolableLength* spread = MaybeConvertLength(shadow->spread.Get());
-  InterpolableColor* color =
-      MaybeConvertColor(shadow->color, color_scheme, color_provider);
+  InterpolableColor* color = MaybeConvertColor(shadow->color, state);
 
   // If any of the conversations failed, we can't represent this CSSValue.
   if (!x || !y || !blur || !spread || !color) {
