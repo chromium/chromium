@@ -53,7 +53,6 @@ class HeadlessScreen : public display::ScreenBase {
       display::mojom::ScreenOrientation screen_orientation);
 
   display::Display GetDisplayById(int64_t display_id);
-  display::Display GetDisplayFromBounds(const gfx::Rect& bounds) const;
 
   base::flat_map<int64_t, bool> is_natural_landscape_map_;
 };

@@ -1,0 +1,7 @@
+include_rules = [
+  "+base",
+  "+ui/aura",
+  "+ui/display",
+  "+ui/gfx/geometry",
+  "+ui/gfx/native_widget_types.h",
+]

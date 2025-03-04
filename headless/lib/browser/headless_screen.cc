@@ -4,8 +4,12 @@
 
 #include "headless/lib/browser/headless_screen.h"
 
+#include <optional>
+
 #include "base/check_deref.h"
 #include "base/containers/flat_set.h"
+#include "base/notimplemented.h"
+#include "components/headless/display_util/headless_display_util.h"
 #include "components/headless/screen_info/headless_screen_info.h"
 #include "ui/display/display_finder.h"
 #include "ui/display/display_list.h"
@@ -50,12 +54,16 @@ display::Display HeadlessScreen::GetDisplayNearestWindow(
   // use its bounds to find the nearest display.
 #if defined(USE_AURA)
   if (window) {
-    const gfx::Rect bounds = window->GetBoundsInScreen();
-    return GetDisplayFromBounds(bounds);
+    std::optional<display::Display> display =
+        GetDisplayFromWindow(display_list().displays(), window);
+    if (display) {
+      return display.value();
+    }
   }
 #else
   NOTIMPLEMENTED_LOG_ONCE();
 #endif  // #if defined(USE_AURA)
+
   return GetPrimaryDisplay();
 }
 
@@ -172,21 +180,6 @@ display::Display HeadlessScreen::GetDisplayById(int64_t display_id) {
   auto it = display_list().FindDisplayById(display_id);
   if (it != display_list().displays().end()) {
     return *it;
-  }
-
-  return GetPrimaryDisplay();
-}
-
-display::Display HeadlessScreen::GetDisplayFromBounds(
-    const gfx::Rect& bounds) const {
-  if (auto* display = display::FindDisplayWithBiggestIntersection(
-          display_list().displays(), bounds)) {
-    return *display;
-  }
-
-  if (auto* display = display::FindDisplayNearestPoint(
-          display_list().displays(), bounds.CenterPoint())) {
-    return *display;
   }
 
   return GetPrimaryDisplay();
