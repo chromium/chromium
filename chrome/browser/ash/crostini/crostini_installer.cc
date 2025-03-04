@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -528,8 +530,14 @@ void CrostiniInstaller::OnCrostiniRestartFinished(CrostiniResult result) {
 
   if (!skip_launching_terminal_for_testing_) {
     // kInvalidDisplayId will launch terminal on the current active display.
+    const guest_os::GuestId* container_id;
+    if (base::FeatureList::IsEnabled(ash::features::kCrostiniContainerless)) {
+      container_id = &crostini::DefaultBaguetteContainerId();
+    } else {
+      container_id = &crostini::DefaultContainerId();
+    }
     guest_os::LaunchTerminal(profile_, display::kInvalidDisplayId,
-                             crostini::DefaultContainerId());
+                             *container_id);
   }
 }
 
@@ -566,11 +574,17 @@ void CrostiniInstaller::OnAvailableDiskSpace(std::optional<int64_t> bytes) {
 
   UpdateInstallingState(InstallerState::kInstallImageLoader);
 
-  // Kick off the Crostini Restart sequence. We will be added as an observer.
+  const guest_os::GuestId* container_id;
+  if (base::FeatureList::IsEnabled(ash::features::kCrostiniContainerless)) {
+    container_id = &crostini::DefaultBaguetteContainerId();
+  } else {
+    container_id = &crostini::DefaultContainerId();
+  }
+
   restart_id_ =
       crostini::CrostiniManager::GetForProfile(profile_)
           ->RestartCrostiniWithOptions(
-              crostini::DefaultContainerId(), std::move(restart_options_),
+              *container_id, std::move(restart_options_),
               base::BindOnce(&CrostiniInstaller::OnCrostiniRestartFinished,
                              weak_ptr_factory_.GetWeakPtr()),
               this);
