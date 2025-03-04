@@ -7489,12 +7489,12 @@
   {
     "name": "read-anything-docs-integration",
     "owners": [ "abigailbklein@google.com", "xiangxiao@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 136
+    "expiry_milestone": 145
   },
   {
     "name": "read-anything-docs-load-more-button",
     "owners": [ "sophiatran@google.com", "xiangxiao@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 136
+    "expiry_milestone": 145
   },
   {
     "name": "read-anything-images-via-algorithm",
