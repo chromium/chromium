@@ -54,7 +54,6 @@ namespace crostini {
 namespace {
 
 // Keep 'penguin' terminal label for backwards-consistent appearance.
-constexpr char kBaguetteTerminalLabel[] = "penguin";
 constexpr char kCrostiniAppLaunchHistogram[] = "Crostini.AppLaunch";
 constexpr char kCrostiniAppLaunchResultHistogram[] = "Crostini.AppLaunchResult";
 constexpr char kCrostiniAppLaunchResultHistogramTerminal[] =
@@ -455,7 +454,8 @@ const guest_os::GuestId& DefaultContainerId() {
 
 const guest_os::GuestId& DefaultBaguetteContainerId() {
   static const base::NoDestructor<guest_os::GuestId> container_id(
-      kBaguetteDefaultVmType, kCrostiniDefaultVmName, "");
+      kBaguetteDefaultVmType, kCrostiniDefaultVmName,
+      kCrostiniDefaultContainerName);
   return *container_id;
 }
 
@@ -511,10 +511,6 @@ bool ShouldStopVm(Profile* profile, const guest_os::GuestId& container_id) {
 
 std::string FormatForUi(guest_os::GuestId guest_id) {
   if (guest_id.vm_name == kCrostiniDefaultVmName) {
-    if (guest_id.container_name.empty()) {
-      // containerless crostini, aka baguette
-      return kBaguetteTerminalLabel;
-    }
     return guest_id.container_name;
   }
   return base::StrCat({guest_id.vm_name, ":", guest_id.container_name});
