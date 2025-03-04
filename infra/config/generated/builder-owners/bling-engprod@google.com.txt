@@ -2,23 +2,14 @@ ci/Mac Builder
 ci/Mac Builder (dbg)
 ci/Mac11 Tests
 ci/Mac12 Tests
-ci/ios-vm
-ci/ios18-sdk-device
-ci/mac-archive-rel
-ci/mac-arm64-archive-rel
-ci/mac-arm64-dbg
-ci/mac-arm64-on-arm64-rel
 ci/mac-arm64-rel
 ci/mac-official
-ci/mac-vm
 ci/mac11-arm64-rel-tests
 ci/mac12-arm64-rel-tests
 ci/mac13-arm64-rel-tests
 ci/mac14-arm64-rel-tests
 ci/mac14-tests
 ci/mac14-tests-dbg
-try/ios-vm
-try/mac-vm
 try/mac14-arm64-rel
 try/mac14-arm64-rel-compilator
 try/mac14-tests

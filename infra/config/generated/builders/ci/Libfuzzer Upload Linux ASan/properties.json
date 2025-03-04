@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Libfuzzer Upload Linux ASan",
-              "project": "chromium"
+              "project": "chromium-m135"
             },
             "builder_spec": {
               "builder_group": "chromium.fuzz",
@@ -36,7 +36,7 @@
         {
           "bucket": "ci",
           "builder": "Libfuzzer Upload Linux ASan",
-          "project": "chromium"
+          "project": "chromium-m135"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -68,13 +68,7 @@
     ]
   },
   "builder_group": "chromium.fuzz",
-  "gardener_rotations": [
-    "chromium"
-  ],
   "recipe": "chromium/fuzz",
-  "sheriff_rotations": [
-    "chromium"
-  ],
   "upload_bucket": "chromium-browser-libfuzzer",
   "upload_directory": "asan"
 }

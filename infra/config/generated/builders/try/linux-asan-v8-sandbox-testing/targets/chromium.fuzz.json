@@ -1,7 +1,0 @@
-{
-  "ASAN Release V8 Sandbox Testing": {
-    "additional_compile_targets": [
-      "chromium_builder_asan"
-    ]
-  }
-}
