@@ -31,34 +31,6 @@ const char kPrefName[] = "pref.name";
 
 }  // namespace
 
-#if BUILDFLAG(IS_CHROMEOS)
-TEST(PrefServiceUtilTest, GetAllDottedPaths) {
-  using pref_service_util::GetAllDottedPaths;
-
-  base::Value::Dict dict;
-  std::vector<std::string> paths;
-
-  GetAllDottedPaths(dict, paths);
-  // Expect paths to be [].
-  EXPECT_EQ(paths.size(), std::size_t(0));
-
-  dict.SetByDottedPath("one.two", base::Value(12));
-  GetAllDottedPaths(dict, paths);
-  EXPECT_THAT(paths, testing::UnorderedElementsAre("one.two"));
-
-  paths.clear();
-  dict.SetByDottedPath("one.three", base::Value(13));
-  GetAllDottedPaths(dict, paths);
-  EXPECT_THAT(paths, testing::UnorderedElementsAre("one.two", "one.three"));
-
-  paths.clear();
-  dict.SetByDottedPath("key", "value");
-  GetAllDottedPaths(dict, paths);
-  EXPECT_THAT(paths,
-              testing::UnorderedElementsAre("one.two", "one.three", "key"));
-}
-#endif
-
 TEST(PrefServiceTest, NoObserverFire) {
   TestingPrefServiceSimple prefs;
 
