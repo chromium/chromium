@@ -115,8 +115,8 @@ public class ObservableSupplierImplTest {
         Callback<String> supplierObserver = ignored -> called.set(true);
 
         mSupplier.addSyncObserverAndPostIfSet(supplierObserver);
-        boolean idle = ShadowLooper.shadowMainLooper().isIdle();
-        assertFalse(idle);
+        ShadowLooper.runUiThreadTasks();
+        assertTrue(called.get());
     }
 
     @Test

@@ -4,8 +4,6 @@
 
 package org.chromium.base.supplier;
 
-import android.os.Handler;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
@@ -33,7 +31,6 @@ import java.util.Objects;
 @NullMarked
 public class ObservableSupplierImpl<E extends @Nullable Object> implements ObservableSupplier<E> {
     private final ThreadChecker mThreadChecker = new ThreadChecker();
-    private final Handler mHandler = new Handler();
 
     private @Nullable E mObject;
     protected final ObserverList<Callback<E>> mObservers = new ObserverList<>();
@@ -59,7 +56,8 @@ public class ObservableSupplierImpl<E extends @Nullable Object> implements Obser
         if (notify) {
             final E currentObject = mObject;
             if (postOnAdd) {
-                mHandler.post(
+                ThreadUtils.assertOnUiThread();
+                ThreadUtils.postOnUiThread(
                         () -> {
                             if (mObject == currentObject && mObservers.hasObserver(obs)) {
                                 obs.onResult(mObject);
