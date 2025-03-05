@@ -299,7 +299,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."libm:0.2.11"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."link-cplusplus:1.0.9"]
+[policy."link-cplusplus:1.0.10"]
 criteria = []
 
 [policy."litemap:0.7.4"]
