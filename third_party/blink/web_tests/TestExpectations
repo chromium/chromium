@@ -7239,14 +7239,6 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] http/tests/devtools/elements/resolve-alien-node.js [ Skip Timeout ]
 [ Debug Mac13 ] http/tests/devtools/oopif/oopif-elements-inspect.js [ Skip Timeout ]
 
-crbug.com/400528100 css3/blending/effect-background-blend-mode-stacking.html [ Failure ]
-crbug.com/400528100 fast/frames/frame-set-scaling-centered.html [ Failure ]
-crbug.com/400528100 fast/frames/frame-set-scaling.html [ Failure ]
-crbug.com/400528100 svg/transforms/svg-css-transforms.xhtml [ Failure ]
-crbug.com/400528100 transforms/scale-transform-composited-descendants-backdrop-filter.html [ Failure ]
-crbug.com/400528100 transforms/svg-vs-css.xhtml [ Failure ]
-crbug.com/400528100 virtual/gpu-rasterization/images/sprite-no-bleed.html [ Failure ]
-
 crbug.com/1401170 [ Debug ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-from-coop-page-to-opener_coop-ro_cross-origin.https.html [ Failure ]
 
 # Sheriff 2023-05-23
@@ -9032,10 +9024,6 @@ crbug.com/387898495 fast/mediastream/MediaStreamTrack-applyConstraints.html [ Fa
 
 # Gardener 2025-03-03
 crbug.com/381238355 [ Mac11 ] virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-fit-fill-img.html [ Failure Pass ]
-
-# Gardener 2025-03-04
-crbug.com/400528100 [ Win11 ] scrollbars/scaled-rendering/scrollbars-scaled-half-size.html [ Failure ]
-crbug.com/400528100 [ Win11-arm64 ] scrollbars/scaled-rendering/scrollbars-scaled-half-size.html [ Failure ]
 
 # Gardener 2025-03-05
 crbug.com/400811282 [ Mac ] external/wpt/media-source/URL-createObjectURL-revoke.html [ Failure ]
