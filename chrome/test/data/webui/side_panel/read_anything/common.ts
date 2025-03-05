@@ -5,7 +5,7 @@ import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/c
 import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {MetricsBrowserProxyImpl, playFromSelectionTimeout, spinnerDebounceTimeout} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {MetricsBrowserProxyImpl, playFromSelectionTimeout} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -61,10 +61,6 @@ export function playFromSelectionWithMockTimer(app: AppElement): void {
   app.playSpeech();
   mockTimer.tick(playFromSelectionTimeout);
   mockTimer.uninstall();
-}
-
-export async function waitForSpinnerTimeout(): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, spinnerDebounceTimeout));
 }
 
 // Returns the list of items in the given dropdown menu
