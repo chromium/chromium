@@ -626,6 +626,23 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Camera.FrameDropRate.{FeatureType}" units="%"
+    expires_after="2026-02-10">
+  <owner>julianachang@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the frame drop rate for each feature during a camera session.
+    Emitted when the camera session is closed.
+  </summary>
+  <token key="FeatureType">
+    <variant name="AutoFraming" summary="Frame drop rate with AutoFraming on"/>
+    <variant name="Effects" summary="Frame drop rate with VC Effects on"/>
+    <variant name="HDRNet" summary="Frame drop rate with HDRNet on"/>
+    <variant name="NoEffects" summary="Frame drop rate with no features on"/>
+    <variant name="Overall" summary="Frame drop rate for overall pipeline"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.Camera.GcamAutoExposure.AverageConvergenceLatency"
     units="frames" expires_after="2026-02-10">
   <owner>jcliang@chromium.org</owner>
