@@ -8,7 +8,6 @@
 
 #include "base/containers/span.h"
 #include "base/functional/overloaded.h"
-#include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/digital_credentials/digital_identity_low_risk_origins.h"
@@ -220,11 +219,7 @@ void DigitalIdentityProviderDesktop::OnCableEvent(
 void DigitalIdentityProviderDesktop::OnFinished(
     base::expected<Response, Error> result) {
   if (result.has_value()) {
-    std::string encoded_result =
-        base::WriteJsonWithOptions(result.value().value(),
-                                   base::JSONWriter::OPTIONS_PRETTY_PRINT)
-            .value_or("");
-    std::move(callback_).Run(std::move(encoded_result));
+    std::move(callback_).Run(std::move(result.value().value()));
     return;
   }
 

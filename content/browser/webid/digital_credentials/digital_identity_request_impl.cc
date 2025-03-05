@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/types/optional_util.h"
@@ -333,7 +334,8 @@ DigitalIdentityRequestImpl::~DigitalIdentityRequestImpl() = default;
 
 void DigitalIdentityRequestImpl::CompleteRequest(
     std::optional<std::string> protocol,
-    const base::expected<std::string, RequestStatusForMetrics>& response) {
+    const base::expected<DigitalIdentityProvider::DigitalCredential,
+                         RequestStatusForMetrics>& response) {
   CompleteRequestWithStatus(
       std::move(protocol),
       response.has_value() ? RequestDigitalIdentityStatus::kSuccess
@@ -350,7 +352,8 @@ void DigitalIdentityRequestImpl::CompleteRequestWithError(
 void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
     std::optional<std::string> protocol,
     RequestDigitalIdentityStatus status,
-    const base::expected<std::string, RequestStatusForMetrics>& response) {
+    const base::expected<DigitalIdentityProvider::DigitalCredential,
+                         RequestStatusForMetrics>& response) {
   // Invalidate pending requests in case that the request gets aborted.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
@@ -362,8 +365,17 @@ void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
                                     ? RequestStatusForMetrics::kSuccess
                                     : response.error());
 
-  std::move(callback_).Run(status, std::move(protocol),
-                           base::OptionalFromExpected(response));
+  if (response.has_value()) {
+    CHECK(protocol.has_value());
+    // The protocol provided in the digital wallet response is preferred. If
+    // absent, the protocol specified in the original request will be used
+    // instead. This fallback mechanism maintains backward compatibility with
+    // digital wallets that do not include the protocol in their response.
+    std::move(callback_).Run(
+        status, response->protocol.value_or(protocol.value()), response->data);
+  } else {
+    std::move(callback_).Run(status, std::nullopt, std::nullopt);
+  }
 }
 
 Value BuildGetRequest(blink::mojom::DigitalCredentialRequestPtr request,
@@ -538,8 +550,9 @@ void DigitalIdentityRequestImpl::OnGetRequestJsonParsed(
     GetUIThreadTaskRunner()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(protocol),
-                       "fake_test_token"),
+                       weak_ptr_factory_.GetWeakPtr(), protocol,
+                       DigitalIdentityProvider::DigitalCredential(
+                           protocol, "fake_test_token")),
         base::Milliseconds(1));
     return;
   }
@@ -591,8 +604,9 @@ void DigitalIdentityRequestImpl::OnCreateRequestJsonParsed(
     GetUIThreadTaskRunner()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(protocol),
-                       "fake_test_token"),
+                       weak_ptr_factory_.GetWeakPtr(), protocol,
+                       DigitalIdentityProvider::DigitalCredential(
+                           protocol, "fake_test_token")),
         base::Milliseconds(1));
     return;
   }

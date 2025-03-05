@@ -18,6 +18,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.webid.IdentityCredentialsDelegate;
 import org.chromium.content_public.browser.webid.DigitalIdentityRequestStatusForMetrics;
 import org.chromium.ui.base.WindowAndroid;
@@ -87,12 +88,13 @@ public class DigitalIdentityProvider {
         sCredentials
                 .get(assumeNonNull(window.getActivity().get()), origin, request)
                 .then(
-                        data -> {
+                        response -> {
                             if (mDigitalIdentityProvider != 0) {
                                 DigitalIdentityProviderJni.get()
                                         .onReceive(
                                                 mDigitalIdentityProvider,
-                                                new String(data),
+                                                response.mProtocol,
+                                                response.mData,
                                                 DigitalIdentityRequestStatusForMetrics.SUCCESS);
                             }
                         },
@@ -101,6 +103,7 @@ public class DigitalIdentityProvider {
                                 DigitalIdentityProviderJni.get()
                                         .onReceive(
                                                 mDigitalIdentityProvider,
+                                                "",
                                                 "",
                                                 DigitalIdentityProvider
                                                         .computeStatusForMetricsFromException(e));
@@ -128,6 +131,7 @@ public class DigitalIdentityProvider {
                                 DigitalIdentityProviderJni.get()
                                         .onReceive(
                                                 mDigitalIdentityProvider,
+                                                null,
                                                 data,
                                                 DigitalIdentityRequestStatusForMetrics.SUCCESS);
                             }
@@ -137,6 +141,7 @@ public class DigitalIdentityProvider {
                                 DigitalIdentityProviderJni.get()
                                         .onReceive(
                                                 mDigitalIdentityProvider,
+                                                "",
                                                 "",
                                                 DigitalIdentityProvider
                                                         .computeStatusForMetricsFromException(e));
@@ -148,7 +153,8 @@ public class DigitalIdentityProvider {
     interface Natives {
         void onReceive(
                 long nativeDigitalIdentityProviderAndroid,
-                String digitalIdentity,
+                @Nullable @JniType("std::optional<std::string>") String protocol,
+                @JniType("std::string") String digitalIdentity,
                 @DigitalIdentityRequestStatusForMetrics int statusForMetrics);
     }
 }

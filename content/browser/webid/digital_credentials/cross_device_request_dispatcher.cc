@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/values.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/cable/fido_tunnel_device.h"
 #include "device/fido/fido_authenticator.h"
@@ -186,14 +187,20 @@ void RequestDispatcher::OnComplete(
     const base::Value::Dict& data_dict = data->GetDict();
     const base::Value* wallet_data = data_dict.Find("data");
     if (wallet_data) {
-      std::move(callback_).Run(Response(wallet_data->Clone()));
+      // TODO(crbug.com/336329411): Extract the protocol from the 'data_dict'
+      // dictionary within the response, instead of always using std::nullopt.
+      std::move(callback_).Run(
+          Response(DigitalIdentityProvider::DigitalCredential(
+              /*protocol=*/std::nullopt,
+              base::WriteJson(*wallet_data).value_or(""))));
       return;
     }
     FIDO_LOG(EVENT) << "Response doesn't contain a 'data' field.";
   }
   FIDO_LOG(EVENT) << "No proper standard format is received from the mobile "
                      "device. Fallback to legacy format.";
-  std::move(callback_).Run(Response(data->Clone()));
+  std::move(callback_).Run(Response(DigitalIdentityProvider::DigitalCredential(
+      /*protocol=*/std::nullopt, base::WriteJson(*data).value_or(""))));
 }
 
 }  // namespace content::digital_credentials::cross_device

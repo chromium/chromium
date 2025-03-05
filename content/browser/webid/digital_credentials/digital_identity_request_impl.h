@@ -101,7 +101,7 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   // `status_for_metrics`.
   void CompleteRequest(
       std::optional<std::string> protocol,
-      const base::expected<std::string,
+      const base::expected<DigitalIdentityProvider::DigitalCredential,
                            DigitalIdentityProvider::RequestStatusForMetrics>&
           status_for_metrics);
 
@@ -111,7 +111,7 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   void CompleteRequestWithStatus(
       std::optional<std::string> protocol,
       blink::mojom::RequestDigitalIdentityStatus status,
-      const base::expected<std::string,
+      const base::expected<DigitalIdentityProvider::DigitalCredential,
                            DigitalIdentityProvider::RequestStatusForMetrics>&
           response);
 
