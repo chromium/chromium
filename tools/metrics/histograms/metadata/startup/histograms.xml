@@ -1044,7 +1044,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.IOSColdStartType" enum="IOSColdStartType"
-    expires_after="2025-04-01">
+    expires_after="2026-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@chromium.org</owner>
   <summary>
