@@ -9,8 +9,6 @@
 //! This crate provides the [`quote!`] macro for turning Rust syntax tree data
 //! structures into tokens of source code.
 //!
-//! [`quote!`]: macro.quote.html
-//!
 //! Procedural macros in Rust receive a stream of tokens as input, execute
 //! arbitrary Rust code to determine how to manipulate those tokens, and produce
 //! a stream of tokens to hand back to the compiler to compile into the caller's
@@ -46,7 +44,6 @@
 //! implementing hygienic procedural macros.
 //!
 //! [a]: https://serde.rs/
-//! [`quote_spanned!`]: macro.quote_spanned.html
 //!
 //! ```
 //! # use quote::quote;
@@ -92,9 +89,10 @@
 //! [prettyplease]: https://github.com/dtolnay/prettyplease
 
 // Quote types in rustdoc of other crates get linked to here.
-#![doc(html_root_url = "https://docs.rs/quote/1.0.38")]
+#![doc(html_root_url = "https://docs.rs/quote/1.0.39")]
 #![allow(
     clippy::doc_markdown,
+    clippy::elidable_lifetime_names,
     clippy::missing_errors_doc,
     clippy::missing_panics_doc,
     clippy::module_name_repetitions,
@@ -136,8 +134,6 @@ macro_rules! __quote {
         /// Note: for returning tokens to the compiler in a procedural macro, use
         /// `.into()` on the result to convert to [`proc_macro::TokenStream`].
         ///
-        /// [`TokenStream`]: https://docs.rs/proc-macro2/1.0/proc_macro2/struct.TokenStream.html
-        ///
         /// <br>
         ///
         /// # Interpolation
@@ -149,7 +145,6 @@ macro_rules! __quote {
         /// Rust primitive types as well as most of the syntax tree types from the [Syn]
         /// crate.
         ///
-        /// [`ToTokens`]: trait.ToTokens.html
         /// [Syn]: https://github.com/dtolnay/syn
         ///
         /// Repetition is done using `#(...)*` or `#(...),*` again similar to
@@ -171,11 +166,9 @@ macro_rules! __quote {
         /// `ToTokens` implementation. Tokens that originate within the `quote!`
         /// invocation are spanned with [`Span::call_site()`].
         ///
-        /// [`Span::call_site()`]: https://docs.rs/proc-macro2/1.0/proc_macro2/struct.Span.html#method.call_site
+        /// [`Span::call_site()`]: proc_macro2::Span::call_site
         ///
         /// A different span can be provided through the [`quote_spanned!`] macro.
-        ///
-        /// [`quote_spanned!`]: macro.quote_spanned.html
         ///
         /// <br>
         ///
@@ -196,8 +189,6 @@ macro_rules! __quote {
         /// There is a [`From`]-conversion in both directions so returning the output of
         /// `quote!` from a procedural macro usually looks like `tokens.into()` or
         /// `proc_macro::TokenStream::from(tokens)`.
-        ///
-        /// [`From`]: https://doc.rust-lang.org/std/convert/trait.From.html
         ///
         /// <br>
         ///
@@ -546,7 +537,7 @@ macro_rules! __quote_spanned {
         /// anything more than a few characters. There should be no space before the
         /// `=>` token.
         ///
-        /// [`Span`]: https://docs.rs/proc-macro2/1.0/proc_macro2/struct.Span.html
+        /// [`Span`]: proc_macro2::Span
         ///
         /// ```
         /// # use proc_macro2::Span;
@@ -588,8 +579,6 @@ macro_rules! __quote_spanned {
         /// The following procedural macro code uses `quote_spanned!` to assert that a
         /// particular Rust type implements the [`Sync`] trait so that references can be
         /// safely shared between threads.
-        ///
-        /// [`Sync`]: https://doc.rust-lang.org/std/marker/trait.Sync.html
         ///
         /// ```
         /// # use quote::{quote_spanned, TokenStreamExt, ToTokens};

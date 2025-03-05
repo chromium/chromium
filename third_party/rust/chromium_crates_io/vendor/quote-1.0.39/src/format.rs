@@ -26,7 +26,7 @@
 /// default. This trait is like `Display`, with a few differences:
 ///
 /// * `IdentFragment` is only implemented for a limited set of types, such as
-///    unsigned integers and strings.
+///   unsigned integers and strings.
 /// * [`Ident`] arguments will have their `r#` prefixes stripped, if present.
 ///
 /// [`IdentFragment`]: crate::IdentFragment

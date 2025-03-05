@@ -353,7 +353,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."qr_code:2.0.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."quote:1.0.38"]
+[policy."quote:1.0.39"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."rand:0.8.5"]
