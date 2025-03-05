@@ -81,21 +81,18 @@ PrefetchDocumentManager::~PrefetchDocumentManager() {
   // `MayReleasePrefetch()` below.
   weak_method_factory_.InvalidateWeakPtrs();
 
-  // On destruction, removes any prefetches that not yet start prefetching from
-  // |PrefetchService|. Other already started prefetches associated by |this|
-  // can still remain and be used after the destruction of |this|.
+  // On destruction, we can reset the PrefetchContainer, because navigations
+  // using the PrefetchContainer can either:
+  // - Continue serving without PrefetchContainer (if the non-redirect head is
+  //   already received)
+  // - Safely fallback to non-prefetching (e.g. if BlockUntilHead)
+  // And the PrefetchContainer can't be used for new navigations (because
+  // currently prefetches are initiator-Document-scoped).
+  // TODO(https://crbug.com/390329781): This logic will be moved to
+  // `PrefetchHandle` soon.
   for (const auto& prefetch_iter : all_prefetches_) {
     if (prefetch_iter.second) {
-      switch (prefetch_iter.second->GetLoadState()) {
-        case PrefetchContainer::LoadState::kNotStarted:
-        case PrefetchContainer::LoadState::kEligible:
-        case PrefetchContainer::LoadState::kFailedIneligible:
-        case PrefetchContainer::LoadState::kFailedHeldback:
-          prefetch_service->MayReleasePrefetch(prefetch_iter.second);
-          break;
-        case PrefetchContainer::LoadState::kStarted:
-          break;
-      }
+      prefetch_service->MayReleasePrefetch(prefetch_iter.second);
     }
   }
 }
