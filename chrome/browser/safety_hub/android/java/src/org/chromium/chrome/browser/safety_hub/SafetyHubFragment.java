@@ -259,9 +259,14 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         updateAllModules();
 
         for (SafetyHubModuleMediator moduleMediator : mModuleMediators) {
+            // Fetch the passwords again to get the latest result.
             if (moduleMediator.getOption() == ModuleOption.ACCOUNT_PASSWORDS) {
-                // Fetch the passwords again to get the latest result.
                 ((SafetyHubAccountPasswordsModuleMediator) moduleMediator)
+                        .triggerNewCredentialFetch();
+                break;
+            }
+            if (moduleMediator.getOption() == ModuleOption.LOCAL_PASSWORDS) {
+                ((SafetyHubLocalPasswordsModuleMediator) moduleMediator)
                         .triggerNewCredentialFetch();
                 break;
             }

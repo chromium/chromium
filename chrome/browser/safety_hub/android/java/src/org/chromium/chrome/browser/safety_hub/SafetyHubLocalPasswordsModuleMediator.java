@@ -162,6 +162,10 @@ public class SafetyHubLocalPasswordsModuleMediator
         return mLocalPasswordsDataSource.isManaged();
     }
 
+    public void triggerNewCredentialFetch() {
+        mLocalPasswordsDataSource.triggerNewCredentialFetch();
+    }
+
     @Override
     public void stateChanged(@ModuleType int moduleType) {
         updateModule(moduleType);
