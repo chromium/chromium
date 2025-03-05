@@ -42,21 +42,21 @@ class MediaStreamSourceTest : public testing::Test {
   scoped_refptr<AudioBus> bus;
 };
 
-TEST_F(MediaStreamSourceTest, SetEmptyAudioConsumer) {
-  source->SetAudioConsumer(nullptr);
+TEST_F(MediaStreamSourceTest, SetEmptyWebAudioConsumer) {
+  source->SetWebAudioConsumer(nullptr);
 }
 
-TEST_F(MediaStreamSourceTest, SetAudioConsumer) {
-  source->SetAudioConsumer(&consumer);
+TEST_F(MediaStreamSourceTest, SetWebAudioConsumer) {
+  source->SetWebAudioConsumer(&consumer);
 
   EXPECT_CALL(consumer, ConsumeAudio(_, 10));
 
   source->ConsumeAudio(bus.get(), 10);
 }
 
-TEST_F(MediaStreamSourceTest, RemoveAudioConsumer) {
-  source->SetAudioConsumer(&consumer);
-  EXPECT_TRUE(source->RemoveAudioConsumer());
+TEST_F(MediaStreamSourceTest, RemoveWebAudioConsumer) {
+  source->SetWebAudioConsumer(&consumer);
+  EXPECT_TRUE(source->RemoveWebAudioConsumer());
 
   // The consumer should get no calls.
   EXPECT_CALL(consumer, ConsumeAudio(_, 10)).Times(0);
@@ -64,14 +64,14 @@ TEST_F(MediaStreamSourceTest, RemoveAudioConsumer) {
   source->ConsumeAudio(bus.get(), 10);
 }
 
-TEST_F(MediaStreamSourceTest, ConsumeEmptyAudioConsumer) {
+TEST_F(MediaStreamSourceTest, ConsumeEmptyWebAudioConsumer) {
   // The consumer should get no calls.
   EXPECT_CALL(consumer, ConsumeAudio(_, 10)).Times(0);
 
   source->ConsumeAudio(bus.get(), 10);
 }
 
-TEST_F(MediaStreamSourceTest, RemoveEmptyAudioConsumer) {
-  EXPECT_FALSE(source->RemoveAudioConsumer());
+TEST_F(MediaStreamSourceTest, RemoveEmptyWebAudioConsumer) {
+  EXPECT_FALSE(source->RemoveWebAudioConsumer());
 }
 }  // namespace blink
