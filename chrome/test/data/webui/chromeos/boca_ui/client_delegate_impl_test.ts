@@ -326,6 +326,10 @@ class MockRemoteHandler extends PageHandlerRemote {
   override openFeedbackDialog() {
     return Promise.resolve();
   }
+
+  override refreshWorkbook() {
+    return Promise.resolve();
+  }
 }
 
 suite('ClientDelegateTest', function() {
@@ -813,5 +817,15 @@ suite('ClientDelegateTest', function() {
           openFeedbackDialogResponded = true;
         });
         assertTrue(openFeedbackDialogResponded);
+      });
+
+  test(
+      'client delegate should respond correctly for refresh workbook',
+      async () => {
+        let refreshWorkbookResponded = false;
+        await clientDelegateImpl.getInstance().refreshWorkbook().then(() => {
+          refreshWorkbookResponded = true;
+        });
+        assertTrue(refreshWorkbookResponded);
       });
 });

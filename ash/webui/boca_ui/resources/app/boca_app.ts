@@ -347,6 +347,11 @@ export declare interface ClientApiDelegate {
   closeTab(tabId: number): Promise<boolean>;
 
   openFeedbackDialog(): Promise<void>;
+
+  /**
+   * Refresh the workbook for students.
+   */
+  refreshWorkbook(): Promise<void>;
 }
 
 /**
