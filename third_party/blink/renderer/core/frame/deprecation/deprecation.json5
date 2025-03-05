@@ -583,16 +583,6 @@
       milestone: 96,
     },
     {
-      name: "WebSQL",
-      message: "Web SQL is deprecated. Please use SQLite WebAssembly or Indexed Database",
-      translation_note: "Warning displayed to developers when the Web SQL API is used to let them know this API is deprecated.",
-      web_features: [
-        "kOpenWebDatabase",
-      ],
-      chrome_status_feature: 5134293578285056,
-      milestone: 115,
-    },
-    {
       name: "XHRJSONEncodingDetection",
       message: "UTF-16 is not supported by response json in `XMLHttpRequest`",
       translation_note: "Warning displayed to developers that they are using `XMLHttpRequest` API in a way that they expect an unsupported character encoding `UTF-16` could be used in the server reply.",
