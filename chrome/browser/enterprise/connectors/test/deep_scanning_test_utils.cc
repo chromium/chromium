@@ -530,8 +530,8 @@ void EventReportValidator::ValidateFederatedOrigin(
 }
 
 void EventReportValidator::ValidateIdentities(const base::Value::Dict* value) {
-  const base::Value::List* identities = value->FindList(
-      SafeBrowsingPrivateEventRouter::kKeyPasswordBreachIdentities);
+  const base::Value::List* identities =
+      value->FindList(kKeyPasswordBreachIdentities);
   if (!password_breach_identities_) {
     EXPECT_EQ(nullptr, identities);
   } else {
@@ -543,10 +543,9 @@ void EventReportValidator::ValidateIdentities(const base::Value::Dict* value) {
       for (const auto& actual_identity : *identities) {
         const base::Value::Dict& actual_identity_dict =
             actual_identity.GetDict();
-        const std::string* url = actual_identity_dict.FindString(
-            SafeBrowsingPrivateEventRouter::kKeyPasswordBreachIdentitiesUrl);
+        const std::string* url =
+            actual_identity_dict.FindString(kKeyPasswordBreachIdentitiesUrl);
         const std::string* actual_username = actual_identity_dict.FindString(
-            SafeBrowsingPrivateEventRouter::
                 kKeyPasswordBreachIdentitiesUsername);
         EXPECT_NE(nullptr, actual_username);
         const std::u16string username = base::UTF8ToUTF16(*actual_username);

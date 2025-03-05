@@ -249,13 +249,6 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
             "filePasswordProtected", "content_transfer_method", 12345, result);
   }
 
-  void TriggerOnPasswordBreachEvent(
-      const std::string& trigger,
-      const std::vector<std::pair<GURL, std::u16string>>& identities) {
-    SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
-        ->OnPasswordBreach(trigger, identities);
-  }
-
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
   void TriggerOnDataControlsSensitiveDataEvent(
       const data_controls::Verdict::TriggeredRules& triggered_rules) {
@@ -842,97 +835,6 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
 
   Mock::VerifyAndClearExpectations(client_.get());
   EXPECT_EQ(base::Value::Type::NONE, report.type());
-}
-
-TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnPasswordBreach) {
-  SetUpRouters(
-      /*authorized=*/true,
-      /*realtime_reporting_enable=*/true,
-      /*enabled_event_names=*/{},
-      /*enabled_opt_in_events=*/{{"passwordBreachEvent", {"*"}}});
-
-  signin::IdentityTestEnvironment identity_test_environment;
-  enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(profile_)
-      ->SetIdentityManagerForTesting(
-          identity_test_environment.identity_manager());
-  identity_test_environment.MakePrimaryAccountAvailable(
-      profile_->GetProfileUserName(), signin::ConsentLevel::kSignin);
-
-  enterprise_connectors::test::EventReportValidator validator(client_.get());
-  validator.ExpectPasswordBreachEvent(
-      "SAFETY_CHECK",
-      {
-          {"https://first.example.com/", u"*****"},
-          {"https://second.example.com/", u"*****@gmail.com"},
-      },
-      profile_->GetProfileUserName(), GetProfileIdentifier());
-
-  TriggerOnPasswordBreachEvent(
-      "SAFETY_CHECK",
-      {
-          {GURL("https://first.example.com"), u"first_user_name"},
-          {GURL("https://second.example.com"), u"second_user_name@gmail.com"},
-      });
-}
-
-TEST_F(SafeBrowsingPrivateEventRouterTest,
-       TestOnPasswordBreachNoMatchingUrlPattern) {
-  SetUpRouters(
-      /*authorized=*/true,
-      /*realtime_reporting_enable=*/true,
-      /*enabled_event_names=*/{},
-      /*enabled_opt_in_events=*/{{"passwordBreachEvent", {"notexample.com"}}});
-
-  signin::IdentityTestEnvironment identity_test_environment;
-  enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(profile_)
-      ->SetIdentityManagerForTesting(
-          identity_test_environment.identity_manager());
-  identity_test_environment.MakePrimaryAccountAvailable(
-      profile_->GetProfileUserName(), signin::ConsentLevel::kSignin);
-
-  enterprise_connectors::test::EventReportValidator validator(client_.get());
-  validator.ExpectNoReport();
-
-  TriggerOnPasswordBreachEvent(
-      "SAFETY_CHECK",
-      {
-          {GURL("https://first.example.com"), u"first_user_name"},
-          {GURL("https://second.example.com"), u"second_user_name"},
-      });
-}
-
-TEST_F(SafeBrowsingPrivateEventRouterTest,
-       TestOnPasswordBreachPartiallyMatchingUrlPatterns) {
-  SetUpRouters(
-      /*authorized=*/true,
-      /*realtime_reporting_enable=*/true,
-      /*enabled_event_names=*/{},
-      /*enabled_opt_in_events=*/
-      {{"passwordBreachEvent", {"secondexample.com"}}});
-
-  signin::IdentityTestEnvironment identity_test_environment;
-  enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(profile_)
-      ->SetIdentityManagerForTesting(
-          identity_test_environment.identity_manager());
-  identity_test_environment.MakePrimaryAccountAvailable(
-      profile_->GetProfileUserName(), signin::ConsentLevel::kSignin);
-
-  // The event is only enabled on secondexample.com, so expect only the
-  // information related to that origin to be reported.
-  enterprise_connectors::test::EventReportValidator validator(client_.get());
-  validator.ExpectPasswordBreachEvent(
-      "SAFETY_CHECK",
-      {
-          {"https://secondexample.com/", u"*****"},
-      },
-      profile_->GetProfileUserName(), GetProfileIdentifier());
-
-  TriggerOnPasswordBreachEvent(
-      "SAFETY_CHECK",
-      {
-          {GURL("https://firstexample.com"), u"first_user_name"},
-          {GURL("https://secondexample.com"), u"second_user_name"},
-      });
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Allowed) {

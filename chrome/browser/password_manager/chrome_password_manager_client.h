@@ -267,13 +267,9 @@ class ChromePasswordManagerClient
       bool is_federated,
       const url::SchemeHostPort& federated_origin,
       const std::u16string& login_user_name) const override;
-#endif
 
-// TODO(crbug.com/390419758): Update the build flag after the reporting event
-// router supports reporting password breach event.
 // Reporting password breach event is only supported when extensions are enabled
 // and safe browsing is available.
-#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   void MaybeReportEnterprisePasswordBreachEvent(
       const std::vector<std::pair<GURL, std::u16string>>& identities)
       const override;

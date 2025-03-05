@@ -129,6 +129,17 @@ std::string_view GetPayloadSizeUmaMetricName(std::string_view eventName);
 
 std::string_view GetPayloadSizeUmaMetricName(EventCase eventCase);
 
+// Key names used with when building the dictionary to pass to the real-time
+// reporting API. Should be removed once the proto synced migration is complete.
+inline constexpr char kKeyTrigger[] = "trigger";
+inline constexpr char kKeyUrl[] = "url";
+inline constexpr char kKeyIsFederated[] = "isFederated";
+inline constexpr char kKeyFederatedOrigin[] = "federatedOrigin";
+inline constexpr char kKeyLoginUserName[] = "loginUserName";
+inline constexpr char kKeyPasswordBreachIdentities[] = "identities";
+inline constexpr char kKeyPasswordBreachIdentitiesUrl[] = "url";
+inline constexpr char kKeyPasswordBreachIdentitiesUsername[] = "username";
+
 }  // namespace enterprise_connectors
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REPORTING_CONSTANTS_H_

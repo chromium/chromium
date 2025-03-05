@@ -167,12 +167,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
-
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
-#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
@@ -210,7 +204,7 @@ using Logger = autofill::SavePasswordProgressLogger;
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 constexpr char kPasswordBreachEntryTrigger[] = "PASSWORD_ENTRY";
 #endif
 
@@ -1175,13 +1169,11 @@ void ChromePasswordManagerClient::MaybeReportEnterpriseLoginEvent(
   // is enabled by the admin.
   router->OnLoginEvent(url, is_federated, federated_origin, login_user_name);
 }
-#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 void ChromePasswordManagerClient::MaybeReportEnterprisePasswordBreachEvent(
     const std::vector<std::pair<GURL, std::u16string>>& identities) const {
-  extensions::SafeBrowsingPrivateEventRouter* router =
-      extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
+  enterprise_connectors::ReportingEventRouter* router =
+      enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
           profile_);
   if (!router) {
     return;
@@ -1191,7 +1183,7 @@ void ChromePasswordManagerClient::MaybeReportEnterprisePasswordBreachEvent(
   // is enabled by the admin.
   router->OnPasswordBreach(kPasswordBreachEntryTrigger, identities);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 ukm::SourceId ChromePasswordManagerClient::GetUkmSourceId() {
   return web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
