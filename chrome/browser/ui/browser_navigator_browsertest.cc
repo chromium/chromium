@@ -38,6 +38,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/captive_portal/core/buildflags.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/browser/tab_matcher.h"
@@ -2526,6 +2527,7 @@ class BrowserNavigatorPopinPolicyBypassTest
         {blink::features::kPartitionedPopins, true},
         {features::kPartitionedPopinsHeaderPolicyBypass,
          PartitionedPopinsHeaderPolicyBypass()},
+        {content_settings::features::kTrackingProtection3pcd, true},
     });
   }
   bool PartitionedPopinsHeaderPolicyBypass() const { return GetParam(); }
