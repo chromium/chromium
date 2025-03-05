@@ -9,6 +9,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/clamped_math.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/system/sys_info.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
@@ -116,7 +117,7 @@ std::string VideoEncoder::Options::ToString() {
   }
   keys.push_back(base::StringPrintf(
       "produce_annexb: %s",
-      avc.produce_annexb || hevc.produce_annexb ? "true" : "false"));
+      base::ToString(avc.produce_annexb || hevc.produce_annexb)));
   return base::JoinString(keys, ",  ");
 }
 

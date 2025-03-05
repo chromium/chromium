@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "media/base/limits.h"
 #include "media/base/media_util.h"
 #include "media/base/video_types.h"
@@ -110,7 +111,7 @@ std::string VideoDecoderConfig::AsHumanReadableString() const {
     << "," << visible_rect().width() << "," << visible_rect().height() << "]"
     << ", natural size: [" << natural_size().width() << ","
     << natural_size().height() << "]"
-    << ", has extra data: " << (extra_data().empty() ? "false" : "true")
+    << ", has extra data: " << base::ToString(!extra_data().empty())
     << ", encryption scheme: " << encryption_scheme()
     << ", rotation: " << VideoRotationToString(video_transformation().rotation)
     << ", flipped: " << video_transformation().mirrored

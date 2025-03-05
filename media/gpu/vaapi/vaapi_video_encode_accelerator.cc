@@ -26,6 +26,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1245,7 +1246,7 @@ bool VaapiVideoEncodeAccelerator::OnMemoryDump(
 
   MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
   dump->AddString("encoder native input mode", "",
-                  native_input_mode_ ? "true" : "false");
+                  base::ToString(native_input_mode_));
 
   constexpr double kNumBytesPerPixelYUV420 = 12.0 / 8;
 
