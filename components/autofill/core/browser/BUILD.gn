@@ -1230,6 +1230,7 @@ source_set("unit_tests") {
     "data_model/addresses/contact_info_unittest.cc",
     "data_model/addresses/phone_number_unittest.cc",
     "data_model/autofill_ai/country_info_unittest.cc",
+    "data_model/autofill_ai/date_info_unittest.cc",
     "data_model/autofill_ai/entity_instance_unittest.cc",
     "data_model/autofill_ai/entity_type_unittest.cc",
     "data_model/data_model_utils_unittest.cc",

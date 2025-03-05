@@ -72,7 +72,9 @@ std::u16string AttributeInstance::GetInfo(
                        },
                        [&](const DateInfo& date) {
                          if (format_string.empty()) {
-                           // TODO(crbug.com/396325496): Consider using locale.
+                           // TODO(crbug.com/396325496): Consider falling back
+                           // to a locale-specific format by relying on
+                           // `app_locale`.
                            format_string = u"YYYY-MM-DD";
                          }
                          return date.GetDate(format_string);
@@ -186,12 +188,7 @@ void AttributeInstance::SetRawInfo(FieldType type,
                   },
                   [&](DateInfo& date) {
                     CHECK(IsDateFieldType(type));
-                    if (data_util::Date result;
-                        ParseDate(value, u"YYYY-MM-DD", result)) {
-                      date.SetDate(std::move(result));
-                    } else {
-                      date.SetDate({});
-                    }
+                    date.SetDate(value, u"YYYY-MM-DD");
                   },
                   [&](NameInfo& name) {
                     name.SetRawInfoWithVerificationStatus(type, value, status);

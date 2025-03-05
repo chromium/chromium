@@ -14,6 +14,7 @@
 namespace autofill {
 
 // Stores a year, month, day tuple.
+// For the grammar of format strings, see `AutofillField::format_string()`.
 class DateInfo {
  public:
   DateInfo();
@@ -23,8 +24,13 @@ class DateInfo {
   DateInfo& operator=(DateInfo&& info);
   ~DateInfo();
 
-  void SetDate(data_util::Date date) { date_ = std::move(date); }
-  const data_util::Date& GetDate() const { return date_; }
+  // Changes the date. Incremental formats only lead to incremental changes:
+  //   SetDate(Date{.day = 16}, u"DD");
+  //   SetDate(Date{.day = 12}, u"MM");
+  //   SetDate(Date{.day = 2022}, u"YYYY");
+  // leads to
+  //   GetDate(u"DD/MM/YYYY") == u"16/12/2022"
+  void SetDate(std::u16string_view date, std::u16string_view format);
 
   std::u16string GetDate(std::u16string_view format) const;
 
