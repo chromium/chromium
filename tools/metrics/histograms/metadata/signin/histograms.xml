@@ -1369,33 +1369,6 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
-<histogram name="Signin.HadPreviousSyncAccount.SignedOutOnProfileLoad"
-    enum="BooleanHadSyncAccount" expires_after="2024-12-11">
-  <owner>mastiz@chromium.org</owner>
-  <owner>msarda@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Records whether sync was turned on/consented on a profile at least once
-    since the last time all profile data was wiped out (e.g. the user chose to
-    clear data upon signout). This histogram is recorded upon profile load, and
-    only for the case where the user is fully signed out.
-  </summary>
-</histogram>
-
-<histogram name="Signin.HadPreviousSyncAccount.SyncOffOnProfileLoad"
-    enum="BooleanHadSyncAccount" expires_after="2024-12-11">
-  <owner>mastiz@chromium.org</owner>
-  <owner>msarda@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Records whether sync was turned on/consented on a profile at least once
-    since the last time all profile data was wiped out (e.g. the user chose to
-    clear data upon signout). This histogram is recorded upon profile load, and
-    only if sync is off (either the user is fully signed out, or the user is
-    signed in without turning sync on).
-  </summary>
-</histogram>
-
 <histogram name="Signin.HistoryAlreadyOptedInAccessPoint.{ConsentLevel}"
     enum="SigninAccessPoint" expires_after="2025-08-31">
   <owner>treib@google.com</owner>
