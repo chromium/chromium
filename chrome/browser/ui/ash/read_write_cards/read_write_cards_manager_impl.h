@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_card_context.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_manager.h"
@@ -24,6 +25,10 @@ namespace content {
 class BrowserContext;
 struct ContextMenuParams;
 }  // namespace content
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace chromeos {
 
@@ -40,7 +45,10 @@ using OptInFeatures = crosapi::mojom::MagicBoostController::OptInFeatures;
 // EditorMenuController, or nullptr.
 class ReadWriteCardsManagerImpl : public ReadWriteCardsManager {
  public:
-  ReadWriteCardsManagerImpl();
+  // `shared_url_loader_factory` should be the instance associated with browser
+  // process.
+  explicit ReadWriteCardsManagerImpl(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
   ReadWriteCardsManagerImpl(const ReadWriteCardsManagerImpl&) = delete;
   ReadWriteCardsManagerImpl& operator=(const ReadWriteCardsManagerImpl&) =
       delete;
