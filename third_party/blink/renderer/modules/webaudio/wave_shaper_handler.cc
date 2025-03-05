@@ -42,8 +42,41 @@ namespace blink {
 
 namespace {
 
-constexpr unsigned kNumberOfChannels = 1;
 constexpr unsigned kDefaultNumberOfOutputChannels = 1;
+
+// Computes value of the WaveShaper
+double WaveShaperCurveValue(float input,
+                            const float* curve_data,
+                            int curve_length) {
+  // Calculate a virtual index based on input -1 -> +1 with -1 being
+  // curve[0], +1 being curve[curveLength - 1], and 0 being at the center of
+  // the curve data. Then linearly interpolate between the two points in the
+  // curve.
+  const double virtual_index = 0.5 * (input + 1) * (curve_length - 1);
+  double output;
+  if (virtual_index < 0) {
+    // input < -1, so use curve[0]
+    output = curve_data[0];
+  } else if (virtual_index >= curve_length - 1) {
+    // input >= 1, so use last curve value
+    output = curve_data[curve_length - 1];
+  } else {
+    // The general case where -1 <= input < 1, where 0 <= virtualIndex <
+    // curveLength - 1, so interpolate between the nearest samples on the
+    // curve.
+    const unsigned index1 = static_cast<unsigned>(virtual_index);
+    const unsigned index2 = index1 + 1;
+    const double interpolation_factor = virtual_index - index1;
+
+    const double value1 = curve_data[index1];
+    const double value2 = curve_data[index2];
+
+    output =
+        (1.0 - interpolation_factor) * value1 + interpolation_factor * value2;
+  }
+
+  return output;
+}
 
 }  // namespace
 
@@ -117,7 +150,7 @@ class WaveShaperProcessor final : public AudioDSPKernelProcessor {
     // the kernels.
     WaveShaperDSPKernel* kernel =
         static_cast<WaveShaperDSPKernel*>(kernels_[0].get());
-    double output = kernel->WaveShaperCurveValue(0.0, curve_data, curve_length);
+    double output = WaveShaperCurveValue(0.0, curve_data, curve_length);
     double tail_time =
         output == 0 ? 0 : std::numeric_limits<double>::infinity();
 
@@ -246,40 +279,6 @@ class WaveShaperProcessor final : public AudioDSPKernelProcessor {
       }
     }
 
-    // Computes value of the WaveShaper
-    double WaveShaperCurveValue(float input,
-                                const float* curve_data,
-                                int curve_length) const {
-      // Calculate a virtual index based on input -1 -> +1 with -1 being
-      // curve[0], +1 being curve[curveLength - 1], and 0 being at the center of
-      // the curve data. Then linearly interpolate between the two points in the
-      // curve.
-      double virtual_index = 0.5 * (input + 1) * (curve_length - 1);
-      double output;
-      if (virtual_index < 0) {
-        // input < -1, so use curve[0]
-        output = curve_data[0];
-      } else if (virtual_index >= curve_length - 1) {
-        // input >= 1, so use last curve value
-        output = curve_data[curve_length - 1];
-      } else {
-        // The general case where -1 <= input < 1, where 0 <= virtualIndex <
-        // curveLength - 1, so interpolate between the nearest samples on the
-        // curve.
-        unsigned index1 = static_cast<unsigned>(virtual_index);
-        unsigned index2 = index1 + 1;
-        double interpolation_factor = virtual_index - index1;
-
-        double value1 = curve_data[index1];
-        double value2 = curve_data[index2];
-
-        output = (1.0 - interpolation_factor) * value1 +
-                 interpolation_factor * value2;
-      }
-
-      return output;
-    }
-
     // Like WaveShaperCurveValue, but computes the values for a vector of
     // inputs.
     void WaveShaperCurveValues(float* destination,
@@ -353,7 +352,7 @@ class WaveShaperProcessor final : public AudioDSPKernelProcessor {
           int32_t* i2 = reinterpret_cast<int32_t*>(&index2);
 
           // Get the curve_data values and save them in v1 and v2,
-          // carfully clamping the values.  If the input is NaN, index1
+          // carefully clamping the values.  If the input is NaN, index1
           // could be 0x8000000.
           v1[k] = curve_data[ClampTo(i1[0], 0, max_index)];
           v2[k] = curve_data[ClampTo(i2[0], 0, max_index)];
@@ -574,7 +573,7 @@ WaveShaperHandler::WaveShaperHandler(AudioNode& node, float sample_rate)
     : AudioHandler(NodeType::kNodeTypeWaveShaper, node, sample_rate),
       processor_(std::make_unique<WaveShaperProcessor>(
           sample_rate,
-          kNumberOfChannels,
+          kDefaultNumberOfOutputChannels,
           node.context()->GetDeferredTaskHandler().RenderQuantumFrames())) {
   AddInput();
   AddOutput(kDefaultNumberOfOutputChannels);

@@ -15,6 +15,7 @@ class AudioNode;
 class AudioProcessor;
 class WaveShaperProcessor;
 
+// WaveShaperHandler implements non-linear distortion effects.
 class WaveShaperHandler final : public AudioHandler {
  public:
   static scoped_refptr<WaveShaperHandler> Create(AudioNode&, float sample_rate);
