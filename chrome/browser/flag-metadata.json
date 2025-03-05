@@ -5669,7 +5669,7 @@
   {
     "name": "lens-overlay-alternative-onboarding",
     "owners": [ "stkhapugin@chromium.org", "christianxu@chromium.org", "lens-chrome@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "lens-overlay-disable-price-insights",
@@ -5689,12 +5689,12 @@
   {
     "name": "lens-overlay-enable-location-bar-entrypoint",
     "owners": ["christianxu@google.com", "stkhapugin@chromium.org"],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "lens-overlay-enable-location-bar-entrypoint-on-srp",
     "owners": ["christianxu@google.com", "stkhapugin@chromium.org"],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "lens-overlay-enable-lvf-escape-hatch",
@@ -5704,12 +5704,12 @@
   {
     "name": "lens-overlay-enable-same-tab-navigation",
     "owners": ["christianxu@google.com", "stkhapugin@chromium.org"],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "lens-overlay-force-show-onboarding-screen",
     "owners": [ "ameurhosni@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "lens-single-tap-text-selection-disabled",
