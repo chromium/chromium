@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
@@ -29,14 +30,38 @@ import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
-import org.chromium.ui.widget.ChromeImageButton;
 import org.chromium.ui.widget.TextViewWithLeading;
 import org.chromium.url.GURL;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 // TODO(crbug.com/392943234): Update this class's naming and description when naming is finalized.
 /** Handles logic for the Privacy Sandbox Ads consents/notices dialogs. */
 public class PrivacySandboxDialogV3 extends ChromeDialog
         implements View.OnClickListener, DialogInterface.OnShowListener {
+
+    @IntDef({
+        PrivacySandboxDialogType.UNKNOWN,
+        PrivacySandboxDialogType.EEA_CONSENT,
+        PrivacySandboxDialogType.EEA_NOTICE,
+        PrivacySandboxDialogType.ROW_NOTICE,
+        PrivacySandboxDialogType.RESTRICTED_NOTICE,
+        PrivacySandboxDialogType.MAX_VALUE,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface PrivacySandboxDialogType {
+        // Default dialog type.
+        int UNKNOWN = 0;
+        int EEA_CONSENT = 1;
+        int EEA_NOTICE = 2;
+        int ROW_NOTICE = 3;
+        int RESTRICTED_NOTICE = 4;
+        int MAX_VALUE = 5;
+    }
+
+    private @PrivacySandboxDialogType int mDialogType;
+
     private View mContentView;
 
     private LinearLayout mViewContainer;
@@ -44,73 +69,39 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
     private LinearLayout mActionButtons;
     private ScrollView mScrollView;
     private View mBottomFade;
-    private LinearLayout mAdMeasurementDropdownElement;
 
-    private final CheckableImageView mAdMeasurementExpandArrowView;
-    private LinearLayout mAdMeasurementDropdownContainer;
-    private TextViewWithLeading mLearnMoreText;
+    // Dropdown elements
+    private LinearLayout mDropdownElement;
+    private CheckableImageView mDropdownExpandArrowView;
+    private LinearLayout mDropdownContentContainer;
 
+    // Privacy policy
     private boolean mIsPrivacyPageLoaded;
-
     private LinearLayout mPrivacyPolicyView;
     private FrameLayout mPrivacyPolicyContent;
-    private ChromeImageButton mPrivacyPolicyBackButton;
     private ThinWebView mThinWebView;
     private WebContents mWebContents;
     private WebContentsObserver mWebContentsObserver;
-    private final Profile mProfile;
-    private final ActivityWindowAndroid mActivityWindowAndroid;
 
+    private TextViewWithLeading mLearnMoreText;
     private @IdRes int mLearnMoreTextIdRes = R.id.learn_more_text;
     private @StringRes int mLearnMoreLinkString =
             R.string.privacy_sandbox_m1_consent_learn_more_card_v3;
 
     public PrivacySandboxDialogV3(
-            Context context, Profile profile, ActivityWindowAndroid activityWindowAndroid) {
+            Context context,
+            Profile profile,
+            ActivityWindowAndroid activityWindowAndroid,
+            @PrivacySandboxDialogType int dialogType) {
         super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
+        mDialogType = dialogType;
 
-        mProfile = profile;
-        mActivityWindowAndroid = activityWindowAndroid;
+        fetchDialogContent(context);
+        registerDialogButtons();
+        registerDropdownElements(context);
+        registerPrivacyPolicy(profile, activityWindowAndroid);
 
-        mContentView =
-                LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_consent_eea_v3, null);
-        setContentView(mContentView);
-
-        ButtonCompat ackButton = mContentView.findViewById(R.id.ack_button);
-        ackButton.setOnClickListener(this);
-
-        ButtonCompat noButton = mContentView.findViewById(R.id.no_button);
-        noButton.setOnClickListener(this);
-
-        mMoreButton = mContentView.findViewById(R.id.more_button);
-        mActionButtons = mContentView.findViewById(R.id.action_buttons);
         mScrollView = mContentView.findViewById(R.id.privacy_sandbox_dialog_scroll_view);
-
-        mBottomFade = mContentView.findViewById(R.id.bottom_fade);
-
-        // Controls for the Ad Measurement expanding section.
-        mAdMeasurementDropdownElement =
-                mContentView.findViewById(R.id.ad_measurement_dropdown_element);
-        mAdMeasurementDropdownElement.setOnClickListener(this);
-        mAdMeasurementDropdownContainer =
-                mContentView.findViewById(R.id.ad_measurement_dropdown_container);
-        mAdMeasurementExpandArrowView = mContentView.findViewById(R.id.ad_measurement_expand_arrow);
-        mAdMeasurementExpandArrowView.setImageDrawable(
-                PrivacySandboxDialogUtils.createExpandDrawable(context));
-        mAdMeasurementExpandArrowView.setChecked(isMeasurementDropdownExpanded());
-
-        mViewContainer = mContentView.findViewById(R.id.privacy_sandbox_consent_eea_view);
-        mPrivacyPolicyView = mContentView.findViewById(R.id.privacy_policy_view);
-        mPrivacyPolicyContent = mContentView.findViewById(R.id.privacy_policy_content);
-        mPrivacyPolicyBackButton = mContentView.findViewById(R.id.privacy_policy_back_button);
-        mPrivacyPolicyBackButton.setOnClickListener(this);
-        mIsPrivacyPageLoaded = false;
-
-        createPrivacyPolicyLink();
-        mMoreButton.setOnClickListener(this);
-        setOnShowListener(this);
-        setCancelable(false);
-
         mScrollView
                 .getViewTreeObserver()
                 .addOnScrollChangedListener(
@@ -125,6 +116,55 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
                                         });
                             }
                         });
+
+        setOnShowListener(this);
+        setCancelable(false);
+    }
+
+    private void fetchDialogContent(Context context) {
+        switch (mDialogType) {
+                // Fall through
+            case PrivacySandboxDialogType.EEA_CONSENT:
+            case PrivacySandboxDialogType.EEA_NOTICE:
+            case PrivacySandboxDialogType.ROW_NOTICE:
+            case PrivacySandboxDialogType.RESTRICTED_NOTICE:
+            default:
+                // TODO(crbug.com/392943234): For now we're defaulting to using the EEA consent
+                // dialog for all types as it's the only available dialog right now. Update this as
+                // we support more dialogs.
+                mContentView =
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.privacy_sandbox_consent_eea_v3, null);
+                mViewContainer = mContentView.findViewById(R.id.privacy_sandbox_consent_eea_view);
+                // TODO(crbug.com/392943234): Emit a histogram if we hit the default cause.
+        }
+        setContentView(mContentView);
+    }
+
+    private void registerDialogButtons() {
+        ButtonCompat ackButton = mContentView.findViewById(R.id.ack_button);
+        ackButton.setOnClickListener(this);
+        ButtonCompat noButton = mContentView.findViewById(R.id.no_button);
+        noButton.setOnClickListener(this);
+        mActionButtons = mContentView.findViewById(R.id.action_buttons);
+
+        mMoreButton = mContentView.findViewById(R.id.more_button);
+        mMoreButton.setOnClickListener(this);
+        mBottomFade = mContentView.findViewById(R.id.bottom_fade);
+    }
+
+    private void registerDropdownElements(Context context) {
+        // TODO(crbug.com/392943234): Not all dialogs will contain a dropdown, update logic to
+        // reflect this.
+        mDropdownElement = mContentView.findViewById(R.id.ad_measurement_dropdown_element);
+        mDropdownElement.setOnClickListener(this);
+
+        mDropdownContentContainer =
+                mContentView.findViewById(R.id.ad_measurement_dropdown_container);
+        mDropdownExpandArrowView = mContentView.findViewById(R.id.ad_measurement_expand_arrow);
+        mDropdownExpandArrowView.setImageDrawable(
+                PrivacySandboxDialogUtils.createExpandDrawable(context));
+        mDropdownExpandArrowView.setChecked(isDropdownExpanded());
     }
 
     private void handleAckButtonClick() {
@@ -142,30 +182,29 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
         mScrollView.post(() -> mScrollView.pageScroll(ScrollView.FOCUS_DOWN));
     }
 
-    private void handleAdMeasurementDropdownClick(View view) {
-        if (isMeasurementDropdownExpanded()) {
-            mAdMeasurementDropdownContainer.setVisibility(View.GONE);
-            mAdMeasurementDropdownContainer.removeAllViews();
+    private void handleDropdownClick(View view) {
+        if (isDropdownExpanded()) {
+            mDropdownContentContainer.setVisibility(View.GONE);
+            mDropdownContentContainer.removeAllViews();
         } else {
-            mAdMeasurementDropdownContainer.setVisibility(View.VISIBLE);
+            mDropdownContentContainer.setVisibility(View.VISIBLE);
             LayoutInflater.from(getContext())
                     .inflate(
                             R.layout.privacy_sandbox_consent_eea_dropdown_v3,
-                            mAdMeasurementDropdownContainer);
-
-            mScrollView.post(() -> mScrollView.scrollTo(0, mAdMeasurementDropdownElement.getTop()));
+                            mDropdownContentContainer);
+            mScrollView.post(() -> mScrollView.scrollTo(0, mDropdownElement.getTop()));
         }
 
-        mAdMeasurementExpandArrowView.setChecked(isMeasurementDropdownExpanded());
+        mDropdownExpandArrowView.setChecked(isDropdownExpanded());
         PrivacySandboxDialogUtils.updateDropdownControlContentDescription(
                 getContext(),
                 view,
-                isMeasurementDropdownExpanded(),
+                isDropdownExpanded(),
                 R.string.privacy_sandbox_m1_consent_ads_topic_dropdown_v3);
         view.announceForAccessibility(
                 getContext()
                         .getString(
-                                isMeasurementDropdownExpanded()
+                                isDropdownExpanded()
                                         ? R.string.accessibility_expanded_group
                                         : R.string.accessibility_collapsed_group));
     }
@@ -191,7 +230,20 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
         }
     }
 
-    private void createPrivacyPolicyLink() {
+    private void registerPrivacyPolicy(
+            Profile profile, ActivityWindowAndroid activityWindowAndroid) {
+        mPrivacyPolicyView = mContentView.findViewById(R.id.privacy_policy_view);
+        if (mPrivacyPolicyView == null) {
+            return;
+        }
+        mPrivacyPolicyContent = mContentView.findViewById(R.id.privacy_policy_content);
+        mContentView.findViewById(R.id.privacy_policy_back_button).setOnClickListener(this);
+        mIsPrivacyPageLoaded = false;
+        createPrivacyPolicyLink(profile, activityWindowAndroid);
+    }
+
+    private void createPrivacyPolicyLink(
+            Profile profile, ActivityWindowAndroid activityWindowAndroid) {
         mLearnMoreText = mContentView.findViewById(mLearnMoreTextIdRes);
         mLearnMoreText.setText(
                 SpanApplier.applySpans(
@@ -203,7 +255,7 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
                                         getContext(), this::onPrivacyPolicyClicked))));
         mLearnMoreText.setMovementMethod(LinkMovementMethod.getInstance());
         if (mThinWebView == null || mWebContents == null || mWebContents.isDestroyed()) {
-            mWebContents = WebContentsFactory.createWebContents(mProfile, true, false);
+            mWebContents = WebContentsFactory.createWebContents(profile, true, false);
             mWebContentsObserver =
                     new WebContentsObserver(mWebContents) {
                         @Override
@@ -224,7 +276,7 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
                     };
             mThinWebView =
                     PrivacySandboxDialogController.createPrivacyPolicyThinWebView(
-                            mWebContents, mProfile, mActivityWindowAndroid);
+                            mWebContents, profile, activityWindowAndroid);
         }
     }
 
@@ -243,8 +295,9 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
             handleNoButtonClick();
         } else if (id == R.id.more_button) {
             handleMoreButtonClick();
+        // TODO(crbug.com/392943234): Rename this to be more generic
         } else if (id == R.id.ad_measurement_dropdown_element) {
-            handleAdMeasurementDropdownClick(view);
+            handleDropdownClick(view);
         } else if (id == R.id.privacy_policy_back_button) {
             handlePrivacyPolicyBackButtonClicked();
         }
@@ -278,8 +331,8 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
         }
     }
 
-    private boolean isMeasurementDropdownExpanded() {
-        return mAdMeasurementDropdownContainer != null
-                && mAdMeasurementDropdownContainer.getVisibility() == View.VISIBLE;
+    private boolean isDropdownExpanded() {
+        return mDropdownContentContainer != null
+                && mDropdownContentContainer.getVisibility() == View.VISIBLE;
     }
 }

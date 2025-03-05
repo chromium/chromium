@@ -108,7 +108,7 @@ public final class PrivacySandboxDialogV3Test {
                         });
     }
 
-    private void launchDialog() {
+    private void launchDialog(@PrivacySandboxDialogV3.PrivacySandboxDialogType int dialogType) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (mDialog != null) {
@@ -119,7 +119,8 @@ public final class PrivacySandboxDialogV3Test {
                             new PrivacySandboxDialogV3(
                                     sActivityTestRule.getActivity(),
                                     sActivityTestRule.getProfile(false),
-                                    sActivityTestRule.getActivity().getWindowAndroid());
+                                    sActivityTestRule.getActivity().getWindowAndroid(),
+                                    dialogType);
                     mDialog.show();
                 });
         // Wait for the dialog to render.
@@ -142,7 +143,7 @@ public final class PrivacySandboxDialogV3Test {
     @SmallTest
     @Feature({"RenderTest"})
     public void testRenderEeaConsent() throws IOException {
-        launchDialog();
+        launchDialog(PrivacySandboxDialogV3.PrivacySandboxDialogType.EEA_CONSENT);
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_consent_eea_view");
     }
 
@@ -150,8 +151,8 @@ public final class PrivacySandboxDialogV3Test {
     @SmallTest
     @Feature({"RenderTest"})
     public void testRenderEeaConsentDropdownContent() throws IOException {
-        launchDialog();
         // Expands the dropdown element.
+        launchDialog(PrivacySandboxDialogV3.PrivacySandboxDialogType.EEA_CONSENT);
         onView(withId(R.id.ad_measurement_dropdown_element))
                 .inRoot(isDialog())
                 .perform(scrollTo(), click());
@@ -171,7 +172,8 @@ public final class PrivacySandboxDialogV3Test {
                             new PrivacySandboxDialogV3(
                                     sActivityTestRule.getActivity(),
                                     sActivityTestRule.getProfile(false),
-                                    sActivityTestRule.getActivity().getWindowAndroid());
+                                    sActivityTestRule.getActivity().getWindowAndroid(),
+                                    PrivacySandboxDialogV3.PrivacySandboxDialogType.EEA_CONSENT);
                     // Resize the window such that we see the entire notice without scrolling.
                     // Note that we're picking an arbitrary height value that should capture all the
                     // content.
@@ -190,7 +192,7 @@ public final class PrivacySandboxDialogV3Test {
     @Test
     @SmallTest
     public void testEeaConsentActionButtonsAreShown() {
-        launchDialog();
+        launchDialog(PrivacySandboxDialogV3.PrivacySandboxDialogType.EEA_CONSENT);
         clickMoreButtonAndScrollToBottomIfNeeded();
         // Verify action buttons are shown
         onView(withId(R.id.no_button)).check(matches(isDisplayed()));
@@ -200,7 +202,7 @@ public final class PrivacySandboxDialogV3Test {
     @Test
     @SmallTest
     public void testEeaConsentAcceptButtonDismissesDialog() {
-        launchDialog();
+        launchDialog(PrivacySandboxDialogV3.PrivacySandboxDialogType.EEA_CONSENT);
         onView(withId(R.id.privacy_sandbox_consent_title)).check(matches(isDisplayed()));
         clickMoreButtonAndScrollToBottomIfNeeded();
         onViewWaiting(withId(R.id.ack_button), true);
@@ -211,7 +213,7 @@ public final class PrivacySandboxDialogV3Test {
     @Test
     @SmallTest
     public void testEeaConsentDeclineButtonDismissesDialog() {
-        launchDialog();
+        launchDialog(PrivacySandboxDialogV3.PrivacySandboxDialogType.EEA_CONSENT);
         onView(withId(R.id.privacy_sandbox_consent_title)).check(matches(isDisplayed()));
         clickMoreButtonAndScrollToBottomIfNeeded();
         onViewWaiting(withId(R.id.no_button), true);
@@ -222,7 +224,7 @@ public final class PrivacySandboxDialogV3Test {
     @Test
     @SmallTest
     public void testEeaConsentActionButtonsAreSticky() {
-        launchDialog();
+        launchDialog(PrivacySandboxDialogV3.PrivacySandboxDialogType.EEA_CONSENT);
         clickMoreButtonAndScrollToBottomIfNeeded();
         // Verify action buttons are shown
         onView(withId(R.id.no_button)).check(matches(isDisplayed()));
@@ -241,7 +243,7 @@ public final class PrivacySandboxDialogV3Test {
     @Test
     @SmallTest
     public void testEEAConsentPrivacyPolicyLink() {
-        launchDialog();
+        launchDialog(PrivacySandboxDialogV3.PrivacySandboxDialogType.EEA_CONSENT);
         onView(withId(R.id.learn_more_text)).inRoot(isDialog()).perform(scrollTo(), click());
         // Validate Privacy Policy View is not shown
         onView(withId(R.id.privacy_policy_view))
@@ -278,7 +280,8 @@ public final class PrivacySandboxDialogV3Test {
     @Test
     @SmallTest
     public void testEEAConsentDropdown() {
-        launchDialog();
+        launchDialog(PrivacySandboxDialogV3.PrivacySandboxDialogType.EEA_CONSENT);
+        onView(withId(R.id.ad_measurement_dropdown_element)).inRoot(isDialog()).perform(scrollTo());
         // Validate dropdown content is not shown
         onView(withId(R.id.ad_measurement_dropdown_container))
                 .inRoot(isDialog())
