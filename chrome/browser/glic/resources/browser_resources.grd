@@ -93,9 +93,6 @@ found in the LICENSE file.
           Disable glic in notifications area
         </message>
       </if>
-      <message name="IDS_GLIC_STATUS_ICON_MENU_CLOSE" translateable="false" desc="This is the menu item for closing the Glic window.">
-        Close Glic
-      </message>
       <if expr="is_win or is_linux">
         <message name="IDS_GLIC_STATUS_ICON_MENU_EXIT" translateable="false" desc="This is the menu item for exiting Chrome.">
           Exit

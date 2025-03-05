@@ -111,14 +111,7 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
   status_icon_->SetContextMenu(std::move(menu));
 
   BrowserList::AddObserver(this);
-  UpdateVisibilityOfExitInContextMenu();
-  UpdateVisibilityOfShowAndCloseInContextMenu();
-
-  GlicProfileManager* manager = GlicProfileManager::GetInstance();
-  profile_observer_.Observe(manager);
-  if (GlicKeyedService* service = manager->GetActiveGlicService()) {
-    panel_state_observer_.Observe(&service->window_controller());
-  }
+  UpdateShowExitInContextMenu();
 }
 
 GlicStatusIcon::~GlicStatusIcon() {
@@ -175,12 +168,6 @@ void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {
           "GlicOsEntrypoint.ContextMenuSelection.Exit"));
       break;
     }
-    case IDC_GLIC_STATUS_ICON_MENU_CLOSE: {
-      controller_->Close();
-      base::RecordAction(base::UserMetricsAction(
-          "GlicOsEntrypoint.ContextMenuSelection.CloseGlic"));
-      break;
-    }
     default: {
       NOTREACHED();
     }
@@ -192,24 +179,11 @@ void GlicStatusIcon::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 }
 
 void GlicStatusIcon::OnBrowserAdded(Browser* browser) {
-  UpdateVisibilityOfExitInContextMenu();
+  UpdateShowExitInContextMenu();
 }
 
 void GlicStatusIcon::OnBrowserRemoved(Browser* browser) {
-  UpdateVisibilityOfExitInContextMenu();
-}
-
-void GlicStatusIcon::OnActiveGlicServiceChanged(GlicKeyedService* new_service) {
-  panel_state_observer_.Reset();
-  if (new_service) {
-    panel_state_observer_.Observe(&new_service->window_controller());
-  }
-  UpdateVisibilityOfShowAndCloseInContextMenu();
-}
-
-void GlicStatusIcon::PanelStateChanged(const mojom::PanelState& panel_state,
-                                       Browser* attached_browser) {
-  UpdateVisibilityOfShowAndCloseInContextMenu();
+  UpdateShowExitInContextMenu();
 }
 
 void GlicStatusIcon::UpdateHotkey(const ui::Accelerator& hotkey) {
@@ -221,16 +195,9 @@ void GlicStatusIcon::UpdateHotkey(const ui::Accelerator& hotkey) {
   CHECK(show_menu_item_index);
   context_menu_->SetForceShowAcceleratorForItemAt(show_menu_item_index.value(),
                                                   !hotkey.IsEmpty());
-  context_menu_->SetAcceleratorForCommandId(IDC_GLIC_STATUS_ICON_MENU_CLOSE,
-                                            &hotkey);
-  std::optional<size_t> close_menu_item_index =
-      context_menu_->GetIndexOfCommandId(IDC_GLIC_STATUS_ICON_MENU_CLOSE);
-  CHECK(close_menu_item_index);
-  context_menu_->SetForceShowAcceleratorForItemAt(close_menu_item_index.value(),
-                                                  !hotkey.IsEmpty());
 }
 
-void GlicStatusIcon::UpdateVisibilityOfExitInContextMenu() {
+void GlicStatusIcon::UpdateShowExitInContextMenu() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   if (context_menu_) {
     context_menu_->SetCommandIdVisible(IDC_GLIC_STATUS_ICON_MENU_EXIT,
@@ -239,20 +206,8 @@ void GlicStatusIcon::UpdateVisibilityOfExitInContextMenu() {
 #endif
 }
 
-void GlicStatusIcon::UpdateVisibilityOfShowAndCloseInContextMenu() {
-  if (context_menu_) {
-    const bool showing = controller_->IsShowing();
-    context_menu_->SetCommandIdVisible(IDC_GLIC_STATUS_ICON_MENU_CLOSE,
-                                       showing);
-    context_menu_->SetCommandIdVisible(IDC_GLIC_STATUS_ICON_MENU_SHOW,
-                                       !showing);
-  }
-}
-
 std::unique_ptr<StatusIconMenuModel> GlicStatusIcon::CreateStatusIconMenu() {
   std::unique_ptr<StatusIconMenuModel> menu(new StatusIconMenuModel(this));
-  menu->AddItem(IDC_GLIC_STATUS_ICON_MENU_CLOSE,
-                l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_MENU_CLOSE));
   menu->AddItem(IDC_GLIC_STATUS_ICON_MENU_SHOW,
                 l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_MENU_SHOW));
 

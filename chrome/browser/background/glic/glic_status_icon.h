@@ -7,8 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/glic/glic_profile_manager.h"
-#include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "chrome/browser/status_icons/status_icon_observer.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -30,9 +28,7 @@ class GlicController;
 class GlicStatusIcon : public StatusIconObserver,
                        public StatusIconMenuModel::Delegate,
                        public ui::NativeThemeObserver,
-                       public BrowserListObserver,
-                       public GlicProfileManager::Observer,
-                       public GlicWindowController::StateObserver {
+                       public BrowserListObserver {
  public:
   explicit GlicStatusIcon(GlicController* controller, StatusTray* status_tray);
   ~GlicStatusIcon() override;
@@ -50,19 +46,9 @@ class GlicStatusIcon : public StatusIconObserver,
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;
 
-  // GlicProfileManager::Observer
-  void OnActiveGlicServiceChanged(GlicKeyedService* new_service) override;
-
-  // GlicWindowController::StateObserver
-  void PanelStateChanged(const mojom::PanelState& panel_state,
-                         Browser* attached_browser) override;
-
   void UpdateHotkey(const ui::Accelerator& hotkey);
 
-  void UpdateVisibilityOfExitInContextMenu();
-  void UpdateVisibilityOfShowAndCloseInContextMenu();
-
-  StatusIconMenuModel* GetContextMenuForTesting() { return context_menu_; }
+  void UpdateShowExitInContextMenu();
 
  private:
   std::unique_ptr<StatusIconMenuModel> CreateStatusIconMenu();
@@ -71,11 +57,6 @@ class GlicStatusIcon : public StatusIconObserver,
 
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observer_{this};
-  base::ScopedObservation<GlicProfileManager, GlicProfileManager::Observer>
-      profile_observer_{this};
-  base::ScopedObservation<GlicWindowController,
-                          GlicWindowController::StateObserver>
-      panel_state_observer_{this};
 
   raw_ptr<StatusTray> status_tray_;
   raw_ptr<StatusIcon> status_icon_;

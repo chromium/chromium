@@ -70,8 +70,8 @@ GlicKeyedService* GlicKeyedService::Get(content::BrowserContext* context) {
 }
 
 void GlicKeyedService::Shutdown() {
-  CloseUI();
-  profile_manager_->OnServiceShutdown(this);
+  window_controller_->Shutdown();
+  SetContextAccessIndicator(false);
 }
 
 void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
@@ -84,11 +84,6 @@ void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
 
   profile_manager_->SetActiveGlic(this);
   window_controller_->Toggle(bwi, prevent_close, source);
-}
-
-void GlicKeyedService::CloseUI() {
-  window_controller_->Shutdown();
-  SetContextAccessIndicator(false);
 }
 
 void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {
