@@ -222,7 +222,7 @@ bool IsOccluded(
       if (render_pass_it != render_pass_filters.end()) {
         auto* filters = render_pass_it->second.get();
         overlap_rect = gfx::RectF(
-            GetExpandedRectWithPixelMovingForegroundFilter(*rpdq, *filters));
+            GetTargetExpandedRectForPixelMovingFilters(*rpdq, *filters));
         has_pixel_moving_filter = true;
       }
     }

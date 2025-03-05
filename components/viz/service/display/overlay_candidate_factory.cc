@@ -480,7 +480,7 @@ void OverlayCandidateFactory::SetDisplayRect(
       auto filter_it = render_pass_filters_->find(rpdq->render_pass_id);
       if (filter_it != render_pass_filters_->end()) {
         candidate.display_rect = gfx::RectF(
-            filter_it->second->ExpandRectForPixelMovement(quad.visible_rect));
+            GetExpandedRectForPixelMovingFilters(*rpdq, *filter_it->second));
         // uv_rect will be updated in SkiaRenderer because the buffer size will
         // be rounded up some.
       }

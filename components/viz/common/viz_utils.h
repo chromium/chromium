@@ -26,6 +26,7 @@ VIZ_COMMON_EXPORT bool AlwaysUseWideColorGamut();
 #endif
 
 class CopyOutputRequest;
+class RenderPassDrawQuadInternal;
 
 // This takes a gfx::Rect and a clip region quad in the same space,
 // and returns a quad with the same proportions in the space -0.5->0.5.
@@ -51,9 +52,17 @@ VIZ_COMMON_EXPORT gfx::Rect ClippedQuadRectangle(const DrawQuad* quad);
 VIZ_COMMON_EXPORT gfx::RectF ClippedQuadRectangleF(const DrawQuad* quad);
 
 // The expanded area that will be changed by a render pass draw quad with a
-// pixel-moving foreground filter.
-VIZ_COMMON_EXPORT gfx::Rect GetExpandedRectWithPixelMovingForegroundFilter(
-    const DrawQuad& rpdq,
+// pixel-moving foreground filter. The returned bounds are in the quad's target
+// coordinate space.
+VIZ_COMMON_EXPORT gfx::Rect GetTargetExpandedRectForPixelMovingFilters(
+    const RenderPassDrawQuadInternal& rpdq,
+    const cc::FilterOperations& filters);
+
+// The expanded area that will be changed by a render pass draw quad with a
+// pixel-moving foreground filter. The returned bounds are in the quad's
+// original coordinate space.
+VIZ_COMMON_EXPORT gfx::Rect GetExpandedRectForPixelMovingFilters(
+    const RenderPassDrawQuadInternal& rpdq,
     const cc::FilterOperations& filters);
 
 // This transforms a rect from the view transition content surface/render_pass
