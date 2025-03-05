@@ -17,7 +17,7 @@ use super::*;
 use crate::mem;
 
 // miniz_oxide doesn't provide any error messages (yet?)
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct ErrorMessage;
 
 impl ErrorMessage {
@@ -50,6 +50,16 @@ impl fmt::Debug for Inflate {
     }
 }
 
+impl From<FlushDecompress> for MZFlush {
+    fn from(value: FlushDecompress) -> Self {
+        match value {
+            FlushDecompress::None => Self::None,
+            FlushDecompress::Sync => Self::Sync,
+            FlushDecompress::Finish => Self::Finish,
+        }
+    }
+}
+
 impl InflateBackend for Inflate {
     fn make(zlib_header: bool, _window_bits: u8) -> Self {
         let format = format_from_bool(zlib_header);
@@ -67,9 +77,8 @@ impl InflateBackend for Inflate {
         output: &mut [u8],
         flush: FlushDecompress,
     ) -> Result<Status, DecompressError> {
-        let flush = MZFlush::new(flush as i32).unwrap();
-
-        let res = inflate::stream::inflate(&mut self.inner, input, output, flush);
+        let mz_flush = flush.into();
+        let res = inflate::stream::inflate(&mut self.inner, input, output, mz_flush);
         self.total_in += res.bytes_consumed as u64;
         self.total_out += res.bytes_written as u64;
 
@@ -123,6 +132,17 @@ impl fmt::Debug for Deflate {
     }
 }
 
+impl From<FlushCompress> for MZFlush {
+    fn from(value: FlushCompress) -> Self {
+        match value {
+            FlushCompress::None => Self::None,
+            FlushCompress::Partial | FlushCompress::Sync => Self::Sync,
+            FlushCompress::Full => Self::Full,
+            FlushCompress::Finish => Self::Finish,
+        }
+    }
+}
+
 impl DeflateBackend for Deflate {
     fn make(level: Compression, zlib_header: bool, _window_bits: u8) -> Self {
         // Check in case the integer value changes at some point.
@@ -145,8 +165,8 @@ impl DeflateBackend for Deflate {
         output: &mut [u8],
         flush: FlushCompress,
     ) -> Result<Status, CompressError> {
-        let flush = MZFlush::new(flush as i32).unwrap();
-        let res = deflate::stream::deflate(&mut self.inner, input, output, flush);
+        let mz_flush = flush.into();
+        let res = deflate::stream::deflate(&mut self.inner, input, output, mz_flush);
         self.total_in += res.bytes_consumed as u64;
         self.total_out += res.bytes_written as u64;
 

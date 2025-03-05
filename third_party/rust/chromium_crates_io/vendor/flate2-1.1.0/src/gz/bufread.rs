@@ -10,9 +10,7 @@ use crate::Compression;
 
 fn copy(into: &mut [u8], from: &[u8], pos: &mut usize) -> usize {
     let min = cmp::min(into.len(), from.len() - *pos);
-    for (slot, val) in into.iter_mut().zip(from[*pos..*pos + min].iter()) {
-        *slot = *val;
-    }
+    into[..min].copy_from_slice(&from[*pos..*pos + min]);
     *pos += min;
     min
 }
@@ -82,17 +80,18 @@ impl<R: BufRead> GzEncoder<R> {
             return Ok(0);
         }
         let crc = self.inner.get_ref().crc();
-        let ref arr = [
-            (crc.sum() >> 0) as u8,
-            (crc.sum() >> 8) as u8,
-            (crc.sum() >> 16) as u8,
-            (crc.sum() >> 24) as u8,
+        let calced_crc_bytes = crc.sum().to_le_bytes();
+        let arr = [
+            calced_crc_bytes[0],
+            calced_crc_bytes[1],
+            calced_crc_bytes[2],
+            calced_crc_bytes[3],
             (crc.amount() >> 0) as u8,
             (crc.amount() >> 8) as u8,
             (crc.amount() >> 16) as u8,
             (crc.amount() >> 24) as u8,
         ];
-        Ok(copy(into, arr, &mut self.pos))
+        Ok(copy(into, &arr, &mut self.pos))
     }
 }
 

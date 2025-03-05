@@ -8,7 +8,7 @@ use crc32fast::Hasher;
 /// The CRC calculated by a [`CrcReader`].
 ///
 /// [`CrcReader`]: struct.CrcReader.html
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Crc {
     amt: u32,
     hasher: Hasher,
@@ -23,19 +23,10 @@ pub struct CrcReader<R> {
     crc: Crc,
 }
 
-impl Default for Crc {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 impl Crc {
     /// Create a new CRC.
-    pub fn new() -> Crc {
-        Crc {
-            amt: 0,
-            hasher: Hasher::new(),
-        }
+    pub fn new() -> Self {
+        Self::default()
     }
 
     /// Returns the current crc32 checksum.

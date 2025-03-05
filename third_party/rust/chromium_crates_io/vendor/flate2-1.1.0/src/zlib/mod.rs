@@ -7,7 +7,7 @@ mod tests {
     use std::io;
     use std::io::prelude::*;
 
-    use rand::{thread_rng, Rng};
+    use rand::{rng, Rng};
 
     use crate::zlib::{read, write};
     use crate::Compression;
@@ -18,7 +18,7 @@ mod tests {
         let mut w = write::ZlibEncoder::new(Vec::new(), Compression::default());
         let v = crate::random_bytes().take(1024).collect::<Vec<_>>();
         for _ in 0..200 {
-            let to_write = &v[..thread_rng().gen_range(0..v.len())];
+            let to_write = &v[..rng().random_range(0..v.len())];
             real.extend(to_write.iter().copied());
             w.write_all(to_write).unwrap();
         }
@@ -47,7 +47,7 @@ mod tests {
         let mut w = write::ZlibEncoder::new(Vec::new(), Compression::default());
         let v = crate::random_bytes().take(1024).collect::<Vec<_>>();
         for _ in 0..200 {
-            let to_write = &v[..thread_rng().gen_range(0..v.len())];
+            let to_write = &v[..rng().random_range(0..v.len())];
             real.extend(to_write.iter().copied());
             w.write_all(to_write).unwrap();
         }

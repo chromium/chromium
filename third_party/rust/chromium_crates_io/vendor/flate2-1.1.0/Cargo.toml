@@ -11,15 +11,16 @@
 
 [package]
 edition = "2018"
-rust-version = "1.56.1"
+rust-version = "1.67.0"
 name = "flate2"
-version = "1.0.35"
+version = "1.1.0"
 authors = [
     "Alex Crichton <alex@alexcrichton.com>",
     "Josh Triplett <josh@joshtriplett.org>",
 ]
 build = false
 exclude = [".*"]
+autolib = false
 autobins = false
 autoexamples = false
 autotests = false
@@ -51,6 +52,40 @@ all-features = true
 rustdoc-args = [
     "--cfg",
     "docsrs",
+]
+
+[features]
+any_impl = []
+any_zlib = ["any_impl"]
+cloudflare_zlib = [
+    "any_zlib",
+    "cloudflare-zlib-sys",
+]
+default = ["rust_backend"]
+miniz-sys = ["rust_backend"]
+rust_backend = [
+    "miniz_oxide",
+    "any_impl",
+]
+zlib = [
+    "any_zlib",
+    "libz-sys",
+]
+zlib-default = [
+    "any_zlib",
+    "libz-sys/default",
+]
+zlib-ng = [
+    "any_zlib",
+    "libz-ng-sys",
+]
+zlib-ng-compat = [
+    "zlib",
+    "libz-sys/zlib-ng",
+]
+zlib-rs = [
+    "any_zlib",
+    "libz-rs-sys",
 ]
 
 [lib]
@@ -166,7 +201,7 @@ name = "zero-write"
 path = "tests/zero-write.rs"
 
 [dependencies.cloudflare-zlib-sys]
-version = "0.3.0"
+version = "0.3.5"
 optional = true
 
 [dependencies.crc32fast]
@@ -177,7 +212,7 @@ version = "1.1.16"
 optional = true
 
 [dependencies.libz-rs-sys]
-version = "0.4.0"
+version = "0.4.2"
 features = [
     "std",
     "rust-allocator",
@@ -191,7 +226,7 @@ optional = true
 default-features = false
 
 [dependencies.miniz_oxide]
-version = "0.8.0"
+version = "0.8.4"
 features = ["with-alloc"]
 optional = true
 default-features = false
@@ -201,43 +236,9 @@ version = "1.0"
 default-features = false
 
 [dev-dependencies.rand]
-version = "0.8"
-
-[features]
-any_impl = []
-any_zlib = ["any_impl"]
-cloudflare_zlib = [
-    "any_zlib",
-    "cloudflare-zlib-sys",
-]
-default = ["rust_backend"]
-miniz-sys = ["rust_backend"]
-rust_backend = [
-    "miniz_oxide",
-    "any_impl",
-]
-zlib = [
-    "any_zlib",
-    "libz-sys",
-]
-zlib-default = [
-    "any_zlib",
-    "libz-sys/default",
-]
-zlib-ng = [
-    "any_zlib",
-    "libz-ng-sys",
-]
-zlib-ng-compat = [
-    "zlib",
-    "libz-sys/zlib-ng",
-]
-zlib-rs = [
-    "any_zlib",
-    "libz-rs-sys",
-]
+version = "0.9"
 
 [target.'cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))'.dependencies.miniz_oxide]
-version = "0.8.0"
+version = "0.8.4"
 features = ["with-alloc"]
 default-features = false

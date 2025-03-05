@@ -1476,6 +1476,22 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.0.34 -> 1.0.35"
 notes = "There are no significant code changes in this delta (just one string constant change). Note that prior audits may have been partial."
 
+[[audits.flate2]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.35 -> 1.1.0"
+notes = """
+This is a delta audit from a **partial** audit (**not** covering zlib-related crate features which are not used by Chromium). The delta does not appear to any new unsafety or unsoundness. Changes consist of:
+- deriving more impls, e.g. for Clone or Default
+- migrating away from deprecated things in the rand crate
+- general improvements, e.g.:
+  - slice::copy_from_slice instead of a for loop
+  - Result::map_err instead of Result::unwrap
+  - use helpers for converting numerics to/from little-endian bytes
+  - nicer conversions between miniz_oxide::MZFlush and  FlushCompress/FlushDecompress
+- cfg soup changes in FFI for the C zlib backends–though Chromium does not use these backends
+"""
+
 [[audits.foldhash]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
