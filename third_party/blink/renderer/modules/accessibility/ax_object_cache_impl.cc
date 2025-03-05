@@ -4079,11 +4079,16 @@ void AXObjectCacheImpl::MaybeDisallowImplicitSelectionWithCleanLayout(
       // The active descendant or focus may lose its implicit selected state.
       Node* focus = FocusedNode();
       if (focus == container->GetNode()) {
-        if (AXObject* activedescendant = container->ActiveDescendant()) {
-          AddDirtyObjectToSerializationQueue(activedescendant);
+        if (const Element* activedescendant =
+                AXObject::ElementFromAttributeOrInternals(
+                    container->GetElement(),
+                    html_names::kAriaActivedescendantAttr)) {
+          if (const AXObject* ax_activedescendant = Get(activedescendant)) {
+            AddDirtyObjectToSerializationQueue(ax_activedescendant);
+          }
         }
       }
-      if (AXObject* ax_focus = Get(focus)) {
+      if (const AXObject* ax_focus = Get(focus)) {
         AddDirtyObjectToSerializationQueue(ax_focus);
       }
     }
