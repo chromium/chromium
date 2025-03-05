@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/loader/render_blocking_element_link_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -39,7 +40,7 @@ class CORE_EXPORT RenderBlockingResourceManager final
   }
   bool HasNonFontRenderBlockingResources() const {
     return pending_stylesheet_owner_nodes_.size() || pending_scripts_.size() ||
-           element_render_blocking_links_.size();
+           element_render_blocking_links_->HasElement();
   }
   bool HasRenderBlockingFonts() const {
     return pending_font_preloads_.size() || imperative_font_loading_count_;
@@ -85,6 +86,7 @@ class CORE_EXPORT RenderBlockingResourceManager final
  private:
   friend class RenderBlockingResourceManagerTest;
 
+  void OnRenderBlockingElementLinkEmpty();
   void RenderBlockingResourceUnblocked();
 
   // Exposed to unit tests only.
@@ -107,9 +109,7 @@ class CORE_EXPORT RenderBlockingResourceManager final
 
   // Tracks the currently pending render-blocking element ids and the links that
   // caused them to be blocking.
-  HeapHashMap<AtomicString,
-              Member<HeapHashSet<WeakMember<const HTMLLinkElement>>>>
-      element_render_blocking_links_;
+  Member<RenderBlockingElementLinkMap> element_render_blocking_links_;
 
   Member<Document> document_;
 
