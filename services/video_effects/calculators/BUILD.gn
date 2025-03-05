@@ -48,6 +48,22 @@ source_set("inference") {
   ]
 }
 
+source_set("in_place_copy") {
+  visibility = [ ":graph" ]
+
+  sources = [
+    "in_place_copy_calculator_webgpu.cc",
+    "in_place_copy_calculator_webgpu.h",
+  ]
+
+  deps = [
+    ":graph_config",
+    "//base",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/mediapipe",
+  ]
+}
+
 source_set("graph") {
   sources = [
     "video_effects_graph_webgpu.cc",
@@ -57,6 +73,7 @@ source_set("graph") {
   deps = [
     ":blur",
     ":graph_config",
+    ":in_place_copy",
     ":inference",
     "//base",
     "//third_party/mediapipe",

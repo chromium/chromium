@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "services/video_effects/calculators/background_blur_calculator_webgpu.h"
+#include "services/video_effects/calculators/in_place_copy_calculator_webgpu.h"
 #include "services/video_effects/calculators/inference_calculator_webgpu.h"
 #include "services/video_effects/calculators/video_effects_graph_config.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
@@ -60,6 +61,7 @@ constexpr char kOutputTextureInputStreamName[] = "output_texture";
 
 // Intermediate streams:
 constexpr char kBackgroundMaskOutputStreamName[] = "mask";
+constexpr char kBluredTextureStreamName[] = "blurred_texture";
 
 // Graph outputs:
 constexpr char kOutputTextureOutputStreamName[] = "out";
@@ -110,13 +112,22 @@ std::unique_ptr<VideoEffectsGraphWebGpu> VideoEffectsGraphWebGpu::Create() {
   blur_node->add_input_stream(StreamFromTagAndName(
       BackgroundBlurCalculatorWebGpu::kMaskTextureStreamTag,
       kBackgroundMaskOutputStreamName));
-  blur_node->add_input_stream(StreamFromTagAndName(
-      BackgroundBlurCalculatorWebGpu::kOutputTextureInputStreamTag,
-      kOutputTextureInputStreamName));
 
   blur_node->add_output_stream(StreamFromTagAndName(
-      BackgroundBlurCalculatorWebGpu::kOutputTextureOutputStreamTag,
-      kOutputTextureOutputStreamName));
+      BackgroundBlurCalculatorWebGpu::kOutputTextureStreamTag,
+      kBluredTextureStreamName));
+
+  auto* in_place_copy_node = config.add_node();
+  in_place_copy_node->set_calculator(
+      InPlaceCopyCalculatorWebGpu::kCalculatorName);
+  in_place_copy_node->add_input_stream(StreamFromTagAndName(
+      InPlaceCopyCalculatorWebGpu::kInputStreamTag, kBluredTextureStreamName));
+  in_place_copy_node->add_input_stream(
+      StreamFromTagAndName(InPlaceCopyCalculatorWebGpu::kOutputInputStreamTag,
+                           kOutputTextureInputStreamName));
+  in_place_copy_node->add_output_stream(
+      StreamFromTagAndName(InPlaceCopyCalculatorWebGpu::kOutputStreamTag,
+                           kOutputTextureOutputStreamName));
 
   // Dawn Wire over command buffer is not thread-safe, so we need to make
   // MediaPipe use our own thread:
