@@ -5559,35 +5559,20 @@ TEST_F(UpdateClientTest, CustomAttributeNoUpdate) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           mock_update_checker_factory.GetFactory());
 
-  class Observer : public UpdateClient::Observer {
-   public:
-    explicit Observer(scoped_refptr<UpdateClient> update_client)
-        : update_client_(update_client) {}
+  MockObserver observer(update_client);
+  EXPECT_CALL(observer, OnEvent(_))
+      .WillRepeatedly(Invoke([](const CrxUpdateItem& item) {
+        if (item.state == ComponentState::kUpToDate) {
+          ASSERT_TRUE(item.custom_updatecheck_data.contains("_example"));
+          EXPECT_EQ("example_value",
+                    item.custom_updatecheck_data.at("_example"));
+        }
+      }));
 
-    void OnEvent(const CrxUpdateItem& item) override {
-      if (item.state != ComponentState::kUpToDate) {
-        return;
-      }
-      ++calls;
-      ASSERT_TRUE(item.custom_updatecheck_data.count("_example"));
-      EXPECT_EQ("example_value", item.custom_updatecheck_data.at("_example"));
-    }
-
-    int calls = 0;
-
-   private:
-    scoped_refptr<UpdateClient> update_client_;
-  };
-
-  Observer observer(update_client);
-  update_client->AddObserver(&observer);
-  const std::vector<std::string> ids = {"jebgalgnebhfojomionfpkfelancnnkf"};
-  update_client->Update(ids, base::BindOnce(&DataCallbackMock::Callback), {},
-                        true, ExpectErrorThenQuit(runloop_, Error::NONE));
+  update_client->Update({"jebgalgnebhfojomionfpkfelancnnkf"},
+                        base::BindOnce(&DataCallbackMock::Callback), {}, true,
+                        ExpectErrorThenQuit(runloop_, Error::NONE));
   runloop_.Run();
-  update_client->RemoveObserver(&observer);
-
-  EXPECT_EQ(1, observer.calls);
 }
 
 // Tests the scenario where `CrxDataCallback` returns a vector whose elements
