@@ -375,8 +375,7 @@ VideoConfig DecoderConfigAdapter::ToCastVideoConfig(
     }
   }
 
-  const gfx::Size aspect_ratio =
-      config.aspect_ratio().GetNaturalSize(config.visible_rect());
+  const gfx::Size aspect_ratio = config.coded_size();
   video_config.width = aspect_ratio.width();
   video_config.height = aspect_ratio.height();
 
