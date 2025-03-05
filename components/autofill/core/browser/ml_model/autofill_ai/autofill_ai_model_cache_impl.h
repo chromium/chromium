@@ -48,9 +48,10 @@ class AutofillAiModelCacheImpl : public AutofillAiModelCache {
   // AutofillAiModelCache:
   void Update(FormSignature form_signature, CacheEntry entry) override;
   bool Contains(FormSignature form_signature) const override;
+  std::map<FormSignature, CacheEntryWithMetadata> GetAllEntries()
+      const override;
 
  private:
-  using CacheEntryWithMetadata = AutofillAiModelCacheEntryWithMetadata;
   using Database = leveldb_proto::ProtoDatabase<CacheEntryWithMetadata>;
 
   // Removes expired cache entries and limits the cache size to

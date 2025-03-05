@@ -639,14 +639,42 @@ function addTabLink(linkText: string, tabId: string) {
       }
     }
     getRequiredElement(tabId).style.display = 'block';
+    onTabShown(tabId);
   });
   tabsDiv.appendChild(link);
+}
+
+function onTabShown(tabId: string) {
+  if (tabId === 'tab-autofill-ai-cache') {
+    chrome.send('getAutofillAiCache');
+  }
 }
 
 function addAutofillTabs() {
   addTabLink('Autofill logs', 'tab-logs');
   addTabLink('AutofillAI cache', 'tab-autofill-ai-cache');
   getRequiredElement('tab-links').style.display = 'block';
+}
+
+interface AutofillAiCacheEntry {
+  formSignature: string;
+  creationTime: string;
+}
+
+function displayAutofillAiCache(entries: AutofillAiCacheEntry[]) {
+  const container = getRequiredElement('tab-autofill-ai-cache');
+  if (entries.length === 0) {
+    container.innerText = 'Cache is empty.';
+    return;
+  }
+
+  container.innerText = '';
+  for (const entry of entries) {
+    const entryDiv = document.createElement('div');
+    entryDiv.innerText = 'Form signature: ' + entry.formSignature +
+        ', creation time: ' + entry.creationTime;
+    container.appendChild(entryDiv);
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -656,6 +684,7 @@ document.addEventListener('DOMContentLoaded', () => {
   addWebUiListener(
       'notify-reset-done', (message: string) => showModalDialog(message));
   addWebUiListener('add-structured-log', addStructuredLog);
+  addWebUiListener('display-autofill-ai-cache', displayAutofillAiCache);
   addWebUiListener('setup-autofill-internals', setUpAutofillInternals);
   addWebUiListener(
       'setup-password-manager-internals', setUpPasswordManagerInternals);

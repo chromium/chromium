@@ -6,11 +6,16 @@
 
 #include <utility>
 
+#include "base/i18n/time_formatting.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/autofill/autofill_ai_model_cache_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "components/autofill/core/browser/logging/log_router.h"
+#include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/grit/autofill_and_password_manager_internals_resources.h"
 #include "components/grit/autofill_and_password_manager_internals_resources_map.h"
@@ -110,6 +115,10 @@ void InternalsUIHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "resetCache", base::BindRepeating(&InternalsUIHandler::OnResetCache,
                                         base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getAutofillAiCache",
+      base::BindRepeating(&InternalsUIHandler::OnGetAutofillAiCache,
+                          base::Unretained(this)));
 #if BUILDFLAG(IS_ANDROID)
   web_ui()->RegisterMessageCallback(
       "resetUpmEviction",
@@ -124,6 +133,29 @@ void InternalsUIHandler::OnJavascriptAllowed() {
 
 void InternalsUIHandler::OnJavascriptDisallowed() {
   EndSubscription();
+}
+
+void InternalsUIHandler::OnGetAutofillAiCache(const base::Value::List& args) {
+  AutofillAiModelCache* model_cache =
+      AutofillAiModelCacheFactory::GetForProfile(Profile::FromWebUI(web_ui()));
+  if (!model_cache) {
+    FireWebUIListener("display-autofill-ai-cache", base::Value::List());
+    return;
+  }
+
+  base::Value::List results;
+  for (const auto& [form_signature, cache_entry] :
+       model_cache->GetAllEntries()) {
+    results.Append(
+        base::Value::Dict()
+            .Set("formSignature", base::NumberToString(*form_signature))
+            .Set("creationTime",
+                 base::TimeFormatFriendlyDateAndTime(
+                     base::Time::FromDeltaSinceWindowsEpoch(
+                         base::Microseconds(cache_entry.creation_time())))));
+  }
+
+  FireWebUIListener("display-autofill-ai-cache", std::move(results));
 }
 
 void InternalsUIHandler::OnLoaded(const base::Value::List& args) {
