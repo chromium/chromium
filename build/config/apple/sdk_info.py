@@ -12,6 +12,7 @@ import re
 import subprocess
 import sys
 
+
 # This script prints information about the build system, the operating
 # system and the iOS or Mac SDK (depending on the platform "iphonesimulator",
 # "iphoneos" or "macosx" generally).
@@ -134,13 +135,8 @@ def main():
                       help='Value of gn $root_build_dir')
   parser.add_argument('platform',
                       choices=[
-                          'appletvos',
-                          'appletvsimulator',
-                          'iphoneos',
-                          'iphonesimulator',
-                          'macosx',
-                          'watchos',
-                          'watchsimulator',
+                          'iphoneos', 'iphonesimulator', 'macosx', 'watchos',
+                          'watchsimulator'
                       ])
   args = parser.parse_args()
   if args.developer_dir:
