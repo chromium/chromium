@@ -17,6 +17,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.thinwebview.CompositorView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.ui.base.WindowAndroid;
@@ -27,6 +28,7 @@ import org.chromium.ui.base.WindowAndroid;
  * provided in the native.
  */
 @JNINamespace("thin_webview::android")
+@NullMarked
 public class CompositorViewImpl implements CompositorView {
     private final Context mContext;
     private final View mView;
