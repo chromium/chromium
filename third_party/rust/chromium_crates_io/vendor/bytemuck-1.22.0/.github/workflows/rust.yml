@@ -82,7 +82,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sanitizer: [address, memory, leak]
+        # leak is disabled because the config got outdated
+        # and bytemuck doesn't really do allocation anyway.
+        sanitizer: [address, memory]
     steps:
     - uses: actions/checkout@v3
     - uses: hecrj/setup-rust-action@v1

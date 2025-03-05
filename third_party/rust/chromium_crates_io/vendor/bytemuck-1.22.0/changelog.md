@@ -1,5 +1,13 @@
 # `bytemuck` changelog
 
+## 1.22
+
+* Add the `pod_saturating` feature, which adds `Pod` impls for `Saturating<T>`
+  when `T` is already `Pod`.
+* A bump in the minimum `bytemuck_derive` dependency from 1.4.0 to 1.4.1 to
+  avoid a bug if you have a truly ancient `cargo.lock` file sitting around.
+* Adds `Send` and `Sync` impls to `BoxBytes`.
+
 ## 1.21
 
 * Implement `Pod` and `Zeroable` for `core::arch::{x86, x86_64}::__m512`, `__m512d` and `__m512i` without nightly.

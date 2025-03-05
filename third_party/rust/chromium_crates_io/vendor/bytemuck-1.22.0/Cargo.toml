@@ -12,10 +12,11 @@
 [package]
 edition = "2018"
 name = "bytemuck"
-version = "1.21.0"
+version = "1.22.0"
 authors = ["Lokathor <zefria@gmail.com>"]
 build = false
 exclude = ["/pedantic.bat"]
+autolib = false
 autobins = false
 autoexamples = false
 autotests = false
@@ -48,6 +49,47 @@ features = [
     "extern_crate_alloc",
     "extern_crate_std",
 ]
+
+[features]
+aarch64_simd = []
+align_offset = []
+alloc_uninit = []
+avx512_simd = []
+const_zeroed = []
+derive = ["bytemuck_derive"]
+extern_crate_alloc = []
+extern_crate_std = ["extern_crate_alloc"]
+latest_stable_rust = [
+    "aarch64_simd",
+    "avx512_simd",
+    "align_offset",
+    "alloc_uninit",
+    "const_zeroed",
+    "derive",
+    "min_const_generics",
+    "must_cast",
+    "must_cast_extra",
+    "pod_saturating",
+    "track_caller",
+    "transparentwrapper_extra",
+    "wasm_simd",
+    "zeroable_atomics",
+    "zeroable_maybe_uninit",
+]
+min_const_generics = []
+must_cast = []
+must_cast_extra = ["must_cast"]
+nightly_docs = []
+nightly_float = []
+nightly_portable_simd = []
+nightly_stdsimd = []
+pod_saturating = []
+track_caller = []
+transparentwrapper_extra = []
+unsound_ptr_pod_impl = []
+wasm_simd = []
+zeroable_atomics = []
+zeroable_maybe_uninit = []
 
 [lib]
 name = "bytemuck"
@@ -90,47 +132,8 @@ name = "wrapper_forgets"
 path = "tests/wrapper_forgets.rs"
 
 [dependencies.bytemuck_derive]
-version = "1.4"
+version = "1.4.1"
 optional = true
-
-[features]
-aarch64_simd = []
-align_offset = []
-alloc_uninit = []
-avx512_simd = []
-const_zeroed = []
-derive = ["bytemuck_derive"]
-extern_crate_alloc = []
-extern_crate_std = ["extern_crate_alloc"]
-latest_stable_rust = [
-    "aarch64_simd",
-    "avx512_simd",
-    "align_offset",
-    "alloc_uninit",
-    "const_zeroed",
-    "derive",
-    "min_const_generics",
-    "must_cast",
-    "must_cast_extra",
-    "track_caller",
-    "transparentwrapper_extra",
-    "wasm_simd",
-    "zeroable_atomics",
-    "zeroable_maybe_uninit",
-]
-min_const_generics = []
-must_cast = []
-must_cast_extra = ["must_cast"]
-nightly_docs = []
-nightly_float = []
-nightly_portable_simd = []
-nightly_stdsimd = []
-track_caller = []
-transparentwrapper_extra = []
-unsound_ptr_pod_impl = []
-wasm_simd = []
-zeroable_atomics = []
-zeroable_maybe_uninit = []
 
 [lints.rust.unexpected_cfgs]
 level = "deny"

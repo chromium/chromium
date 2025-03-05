@@ -56,6 +56,8 @@ unsafe impl Zeroable for f64 {}
 unsafe impl Zeroable for f128 {}
 unsafe impl<T: Zeroable> Zeroable for Wrapping<T> {}
 unsafe impl<T: Zeroable> Zeroable for core::cmp::Reverse<T> {}
+#[cfg(feature = "pod_saturating")]
+unsafe impl<T: Zeroable> Zeroable for core::num::Saturating<T> {}
 
 // Note: we can't implement this for all `T: ?Sized` types because it would
 // create NULL pointers for vtables.

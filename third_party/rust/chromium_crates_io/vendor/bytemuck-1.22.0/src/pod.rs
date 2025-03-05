@@ -57,6 +57,9 @@ unsafe impl Pod for f64 {}
 unsafe impl Pod for f128 {}
 unsafe impl<T: Pod> Pod for Wrapping<T> {}
 
+#[cfg(feature = "pod_saturating")]
+unsafe impl<T: Pod> Pod for core::num::Saturating<T>{}
+
 #[cfg(feature = "unsound_ptr_pod_impl")]
 #[cfg_attr(
   feature = "nightly_docs",

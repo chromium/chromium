@@ -1,7 +1,7 @@
 [package]
 name = "bytemuck"
 description = "A crate for mucking around with piles of bytes."
-version = "1.21.0"
+version = "1.22.0"
 authors = ["Lokathor <zefria@gmail.com>"]
 repository = "https://github.com/Lokathor/bytemuck"
 readme = "README.md"
@@ -58,6 +58,9 @@ unsound_ptr_pod_impl = []
 # MSRV 1.46.0: adds the `#[track_caller]` attribute to functions which may panic
 track_caller = []
 
+# MSRV 1.74.0 Pod/Zeroable implementations for `core::num::Saturating`
+pod_saturating = []
+
 # Enables all features that are both sound and supported on the latest stable
 # version of Rust, with the exception of `extern_crate_alloc` and
 # `extern_crate_std`.
@@ -73,6 +76,7 @@ latest_stable_rust = [
   "min_const_generics",
   "must_cast",
   "must_cast_extra",
+  "pod_saturating",
   "track_caller",
   "transparentwrapper_extra",
   "wasm_simd",
@@ -93,7 +97,7 @@ nightly_float = []
 nightly_docs = []
 
 [dependencies]
-bytemuck_derive = { version = "1.4", path = "derive", optional = true }
+bytemuck_derive = { version = "1.4.1", path = "derive", optional = true }
 
 [lints.rust]
 unexpected_cfgs = { level = "deny", check-cfg = ['cfg(target_arch, values("spirv"))'] }

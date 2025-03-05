@@ -783,6 +783,12 @@ pub struct BoxBytes {
   layout: Layout,
 }
 
+// SAFETY: `BoxBytes` is semantically a `Box<[u8], Global>` with a different allocation alignment,
+// `Box<[u8], Global>` is `Send + Sync`, and changing the allocation alignment has no thread-safety implications.
+unsafe impl Send for BoxBytes {}
+// SAFETY: See `Send` impl
+unsafe impl Sync for BoxBytes {}
+
 impl Deref for BoxBytes {
   type Target = [u8];
 

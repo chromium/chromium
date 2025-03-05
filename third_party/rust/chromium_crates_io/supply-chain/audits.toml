@@ -482,6 +482,18 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.20.0 -> 1.21.0"
 notes = "Unsafe review at https://chromium-review.googlesource.com/c/chromium/src/+/6111154/"
 
+[[audits.bytemuck]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.21.0 -> 1.22.0"
+notes = """
+This adds new instances of unsafe, but the uses are justified:
+- BoxBytes is essentially a Box<[u8], which is Send + Sync, so also marking BoxBytes as Send + Sync is justified.
+- core::num::Saturating<T> meets the criteria for Zeroable + Pod, so marking it as such is justified.
+
+See https://crrev.com/c/6321863 for more audit notes.
+"""
+
 [[audits.bytemuck_derive]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
