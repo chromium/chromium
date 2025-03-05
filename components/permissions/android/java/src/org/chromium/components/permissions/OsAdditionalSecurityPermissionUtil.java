@@ -7,11 +7,13 @@ package org.chromium.components.permissions;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /**
  * Utility class for querying whether the operating system has granted various security permissions.
  */
+@NullMarked
 public class OsAdditionalSecurityPermissionUtil {
     private static @Nullable OsAdditionalSecurityPermissionProvider sProviderInstance;
 
