@@ -20,6 +20,7 @@ namespace {
 // Keys used to store the different values in the JSON dictionary received
 // from gaia server.
 const char kGaiaIdKey[] = "id";
+const char kSubKey[] = "sub";
 const char kEmailKey[] = "email";
 const char kHostedDomainKey[] = "hd";
 const char kFullNameKey[] = "name";
@@ -37,7 +38,12 @@ std::optional<AccountInfo> AccountInfoFromUserInfo(
   // return empty result if any is missing or is empty.
   const std::string* gaia_id_value = user_info.FindString(kGaiaIdKey);
   if (!gaia_id_value || gaia_id_value->empty()) {
-    return std::nullopt;
+    // The GAIA ID may be returned via a different property, based on which
+    // endpoint the browser is communicating with.
+    gaia_id_value = user_info.FindString(kSubKey);
+    if (!gaia_id_value || gaia_id_value->empty()) {
+      return std::nullopt;
+    }
   }
 
   const std::string* email_value = user_info.FindString(kEmailKey);
