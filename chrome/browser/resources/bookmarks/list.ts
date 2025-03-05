@@ -214,7 +214,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
       const leadIndex = this.displayedIds_.indexOf(leadId);
       assert(leadIndex !== -1);
       const element = await this.$.list.ensureItemRendered(leadIndex);
-      (element as HTMLElement).focus();
+      element.focus();
     });
   }
 
@@ -262,7 +262,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
           Math.min(this.displayedIds_.length - 1, Math.max(0, focusedIndex));
       this.focusedIndex_ = focusedIndex;
       const element = await list.ensureItemRendered(focusedIndex);
-      (element as HTMLElement).focus();
+      element.focus();
 
       if (cursorModifier && !e.shiftKey) {
         this.dispatch(updateAnchor(this.displayedIds_[focusedIndex]));

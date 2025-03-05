@@ -512,7 +512,7 @@ suite('<bookmarks-item> CommandManager integration', function() {
     document.body.appendChild(document.createElement('cr-toast-manager'));
     await eventToPromise('viewport-filled', list.$.list);
 
-    items = list.shadowRoot!.querySelectorAll<BookmarksItemElement>(
+    items = list.shadowRoot.querySelectorAll<BookmarksItemElement>(
         'bookmarks-item');
     // Wait for the flushed properties to propagate to the item elements' DOMs.
     await microtasksFinished();

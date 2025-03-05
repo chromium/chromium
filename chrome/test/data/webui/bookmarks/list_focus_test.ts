@@ -82,7 +82,7 @@ suite('<bookmarks-list>', function() {
     list.style.position = 'absolute';
     replaceBody(list);
     flush();
-    items = list.shadowRoot!.querySelectorAll('bookmarks-item');
+    items = list.shadowRoot.querySelectorAll('bookmarks-item');
 
     testCommandManager = new TestCommandManager();
     document.body.appendChild(testCommandManager.getCommandManager());
