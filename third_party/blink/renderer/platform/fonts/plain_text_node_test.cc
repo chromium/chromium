@@ -190,8 +190,9 @@ TEST_F(PlainTextNodeTest, SegmentTextNormalizeSpaces) {
   EXPECT_EQ(node.ItemList()[4].Text(), " ");
 }
 
-TEST_F(PlainTextNodeTest, DISABLED_SegmentTextIdeograph) {
-  TextRun run(String(u"\u611F\u3058foo"));
+TEST_F(PlainTextNodeTest, SegmentTextIdeograph) {
+  String text = u"\u611F\u3058foo";
+  TextRun run(text);
   PlainTextNode& node = CreatePlainTextNode(run, !kNormalizeSpace,
                                             !kBidiOverridden, kSupportsBidi);
   ASSERT_EQ(node.ItemList().size(), 3u);
