@@ -82,8 +82,8 @@ TEST_P(InstallerAPITest, GetInstallerOutcome) {
             InstallerApiResult::kSystemError);
   EXPECT_EQ(installer_outcome->installer_error, 1);
   EXPECT_EQ(installer_outcome->installer_extracode1, -2);
-  EXPECT_STREQ(installer_outcome->installer_text->c_str(), "some text");
-  EXPECT_STREQ(installer_outcome->installer_cmd_line->c_str(), "some cmd line");
+  EXPECT_EQ(installer_outcome->installer_text, "some text");
+  EXPECT_EQ(installer_outcome->installer_cmd_line, "some cmd line");
 
   // Checks that LastInstallerXXX values match the installer outcome.
   for (std::optional<InstallerOutcome> last_installer_outcome :
@@ -151,7 +151,7 @@ TEST_P(InstallerAPITest, MakeInstallerResult) {
     EXPECT_EQ(installer_result.result.code_, 0);
     EXPECT_EQ(installer_result.result.extra_, -2);
     EXPECT_TRUE(installer_result.installer_text.empty());
-    EXPECT_STREQ(installer_result.installer_cmd_line.c_str(), "some cmd line");
+    EXPECT_EQ(installer_result.installer_cmd_line, "some cmd line");
   }
 
   {
@@ -166,7 +166,7 @@ TEST_P(InstallerAPITest, MakeInstallerResult) {
               update_client::ErrorCategory::kInstaller);
     EXPECT_EQ(installer_result.result.code_, 1);
     EXPECT_EQ(installer_result.result.extra_, -2);
-    EXPECT_STREQ(installer_result.installer_text.c_str(), "some text");
+    EXPECT_EQ(installer_result.installer_text, "some text");
     EXPECT_TRUE(installer_result.installer_cmd_line.empty());
     installer_outcome.installer_error = std::nullopt;
     installer_result = MakeInstallerResult(installer_outcome, 10);
@@ -174,7 +174,7 @@ TEST_P(InstallerAPITest, MakeInstallerResult) {
               update_client::ErrorCategory::kInstaller);
     EXPECT_EQ(installer_result.result.code_, 10);
     EXPECT_EQ(installer_result.result.extra_, -2);
-    EXPECT_STREQ(installer_result.installer_text.c_str(), "some text");
+    EXPECT_EQ(installer_result.installer_text, "some text");
     EXPECT_TRUE(installer_result.installer_cmd_line.empty());
   }
 

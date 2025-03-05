@@ -67,10 +67,10 @@ class UpdaterNetworkTest : public ::testing::Test {
                                    const std::string& header_etag,
                                    const std::string& header_x_cup_server_proof,
                                    int64_t xheader_retry_after_sec) {
-    EXPECT_STREQ(response_body->c_str(), expected_body.c_str());
+    EXPECT_EQ(*response_body, expected_body);
     EXPECT_EQ(net_error, 0);
-    EXPECT_STREQ(header_etag.c_str(), "Wfhw789h");
-    EXPECT_STREQ(header_x_cup_server_proof.c_str(), "server-proof");
+    EXPECT_EQ(header_etag, "Wfhw789h");
+    EXPECT_EQ(header_x_cup_server_proof, "server-proof");
     EXPECT_EQ(xheader_retry_after_sec, 67);
     PostRequestCompleted();
   }

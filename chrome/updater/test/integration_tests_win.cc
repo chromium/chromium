@@ -214,14 +214,14 @@ void CheckInstallation(UpdaterScope scope,
                     root, GetAppClientsKey(kLegacyGoogleUpdateAppID).c_str(),
                     Wow6432(KEY_READ))
                     .ReadValue(kRegValuePV, &pv));
-      EXPECT_STREQ(kUpdaterVersionUtf16, pv.c_str());
+      EXPECT_EQ(kUpdaterVersionUtf16, pv);
       EXPECT_EQ(
           ERROR_SUCCESS,
           base::win::RegKey(
               root, GetAppClientStateKey(kLegacyGoogleUpdateAppID).c_str(),
               Wow6432(KEY_READ))
               .ReadValue(kRegValuePV, &pv));
-      EXPECT_STREQ(kUpdaterVersionUtf16, pv.c_str());
+      EXPECT_EQ(kUpdaterVersionUtf16, pv);
 
       std::wstring uninstall_cmd_line_string;
       EXPECT_EQ(ERROR_SUCCESS,

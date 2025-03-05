@@ -40,7 +40,7 @@ TEST(PrefsTest, PrefsCommitPendingWrites) {
 
   // Writes something to prefs.
   metadata->SetBrandCode("someappid", "brand");
-  EXPECT_STREQ(metadata->GetBrandCode("someappid").c_str(), "brand");
+  EXPECT_EQ(metadata->GetBrandCode("someappid"), "brand");
 
   metadata->SetLang("someappid", "somelang");
 #if BUILDFLAG(IS_WIN)
@@ -62,7 +62,7 @@ TEST(PrefsTest, PrefsCommitPendingWrites) {
                         Wow6432(KEY_SET_VALUE))
           .WriteValue(kRegValueBrandCode, L"nbrnd"),
       ERROR_SUCCESS);
-  EXPECT_STREQ(metadata->GetBrandCode("someappid").c_str(), "nbrnd");
+  EXPECT_EQ(metadata->GetBrandCode("someappid"), "nbrnd");
 
   EXPECT_EQ(
       base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
