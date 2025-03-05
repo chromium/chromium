@@ -16,6 +16,9 @@ import "mojo/public/mojom/base/time.mojom";
 interface Page {
   // Called before the page is shown.
   IntentToShow();
+  // Called any time the ready state of the profile changes.
+  // `profile_is_ready` = `GlicEnabling::IsReadyForProfile()`.
+  SetProfileIsReady(bool profile_is_ready);
 };
 
 // Factory for PageHandler used in chrome://glic.
@@ -75,10 +78,6 @@ interface PageHandler {
   // Resize the widget hosting the WebUI to the given size.
   // If `duration` is 0 or less, instantly resize, otherwise run an animation.
   ResizeWidget(gfx.mojom.Size size, mojo_base.mojom.TimeDelta duration) => ();
-
-  // Returns true if the profile associated with this Glic page is enabled by
-  // policy.
-  IsProfileEnabled() => (bool enabled);
 
   // Notifies the PageHandler that the state of the WebUI has changed.
   WebUiStateChanged(WebUiState new_state);

@@ -524,6 +524,10 @@ GlicPageHandler::GlicPageHandler(
       receiver_(this, std::move(receiver)),
       page_(std::move(page)) {
   GetGlicService()->PageHandlerAdded(this);
+  subscriptions_.push_back(
+      GetGlicService()->enabling().RegisterEnableChanged(base::BindRepeating(
+          &GlicPageHandler::EnableChange, base::Unretained(this))));
+  EnableChange();
 }
 
 GlicPageHandler::~GlicPageHandler() {
@@ -577,14 +581,13 @@ void GlicPageHandler::ResizeWidget(const gfx::Size& size,
   GetGlicService()->ResizePanel(size, duration, std::move(callback));
 }
 
-void GlicPageHandler::IsProfileEnabled(IsProfileEnabledCallback callback) {
-  bool enabled = GlicEnabling::IsEnabledForProfile(
-      Profile::FromBrowserContext(browser_context_));
-  std::move(callback).Run(enabled);
-}
-
 void GlicPageHandler::WebUiStateChanged(glic::mojom::WebUiState new_state) {
   GetGlicService()->window_controller().WebUiStateChanged(new_state);
+}
+
+void GlicPageHandler::EnableChange() {
+  page_->SetProfileIsReady(GlicEnabling::IsReadyForProfile(
+      Profile::FromBrowserContext(browser_context_)));
 }
 
 }  // namespace glic

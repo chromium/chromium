@@ -71,6 +71,9 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
   // Present only when loading or after loading is finished. Removed on error.
   private webview?: WebviewController;
 
+  private profileIsReady: boolean|undefined = undefined;
+  private profileIsReadyInitialState = Promise.withResolvers<void>();
+
   state: WebUiState|undefined;
 
   // When entering loading state, this represents the earliest timestamp at
@@ -213,26 +216,21 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
   }
 
   private async beginLoad(): Promise<void> {
-    // Send this message but block on it only after webview cookies are synced
-    // to minimize latency. Enabling state is checked only when going online.
-    // This only applies when showing Glic in a tab (since the entry point
-    // button is removed when disabled) so the mild inconsistency doesn't
-    // matter.
-    const enabledCheck = this.browserProxy.handler.isProfileEnabled();
-
     // Time to show the loading panel if the web client is not ready.
     const showLoadingTime = performance.now() + kPreHoldLoadingTimeMs;
 
-    // Blocking on cookie syncing here introduces latency, we should consider
-    // ways to avoid it.
-    const {success} = await this.browserProxy.handler.prepareForClient();
+    // profileIsReady isn't available right away. Wait until it's ready.
+    await this.profileIsReadyInitialState.promise;
 
-    const isEnabled = (await enabledCheck).enabled;
+    const isEnabled = this.profileIsReady;
     if (!isEnabled) {
       this.setState(WebUiState.kUnavailable);
       return;
     }
 
+    // Blocking on cookie syncing here introduces latency, we should consider
+    // ways to avoid it.
+    const {success} = await this.browserProxy.handler.prepareForClient();
     if (!success) {
       this.setState(WebUiState.kError);
       return;
@@ -416,6 +414,26 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
   intentToShow() {
     if (this.state === WebUiState.kError) {
       this.reload();
+    }
+  }
+
+  setProfileIsReady(profileIsReady: boolean) {
+    if (this.profileIsReady === profileIsReady) {
+      return;
+    }
+    const initialCall = this.profileIsReady === undefined;
+    this.profileIsReady = profileIsReady;
+
+    if (initialCall) {
+      this.profileIsReadyInitialState.resolve();
+    } else {
+      if (!profileIsReady) {
+        this.setState(WebUiState.kUnavailable);
+      } else {
+        if (this.state === WebUiState.kUnavailable) {
+          this.setState(WebUiState.kBeginLoad);
+        }
+      }
     }
   }
 }
