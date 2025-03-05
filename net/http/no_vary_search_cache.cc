@@ -414,6 +414,32 @@ void NoVarySearchCache::MaybeInsert(const HttpRequestInfo& request,
   EvictIfOverfull();
 }
 
+void NoVarySearchCache::ClearData(UrlFilterType filter_type,
+                                  const base::flat_set<url::Origin>& origins,
+                                  const base::flat_set<std::string>& domains,
+                                  base::Time delete_begin,
+                                  base::Time delete_end) {
+  // For simplicity, first collect a list of matching QueryStrings to erase and
+  // then erase them.
+  // TODO(https://crbug.com/382394774): Make this algorithm more efficient.
+  std::vector<QueryString*> pending_erase;
+  for (const auto& [cache_key, data_map] : map_) {
+    const std::string base_url_string =
+        HttpCache::GetResourceURLFromHttpCacheKey(cache_key.value());
+    const GURL base_url(base_url_string);
+    CHECK(base_url.is_valid());
+    // DoesUrlMatchFilter() only looks at the origin of the URL, which is why we
+    // don't need to worry about reconstructing the full URL with query.
+    if (DoesUrlMatchFilter(filter_type, origins, domains, base_url)) {
+      FindQueryStringsInTimeRange(data_map, delete_begin, delete_end,
+                                  pending_erase);
+    }
+  }
+  for (QueryString* query_string : pending_erase) {
+    EraseQuery(query_string);
+  }
+}
+
 void NoVarySearchCache::Erase(EraseHandle handle) {
   if (QueryString* query_string = handle.query_string_.get()) {
     EraseQuery(query_string);
@@ -462,6 +488,25 @@ void NoVarySearchCache::EraseQuery(QueryString* query_string) {
     CHECK_EQ(removed_count, 1u);
     if (map_it->second.empty()) {
       map_.erase(map_it);
+    }
+  }
+}
+
+// static
+void NoVarySearchCache::FindQueryStringsInTimeRange(
+    const DataMapType& data_map,
+    base::Time delete_begin,
+    base::Time delete_end,
+    std::vector<QueryString*>& matches) {
+  for (const auto& [_, query_string_list] : data_map) {
+    for (auto* node = query_string_list.list.head();
+         node != query_string_list.list.end(); node = node->next()) {
+      QueryString* query_string = node->value()->ToQueryString();
+      const base::Time insertion_time = query_string->insertion_time();
+      if ((delete_begin.is_null() || delete_begin <= insertion_time) &&
+          (delete_end.is_max() || delete_end > insertion_time)) {
+        matches.push_back(query_string);
+      }
     }
   }
 }

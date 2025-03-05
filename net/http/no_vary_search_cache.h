@@ -14,6 +14,7 @@
 #include <string_view>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/containers/linked_list.h"
 #include "base/memory/raw_ptr.h"
@@ -21,6 +22,7 @@
 #include "base/memory/stack_allocated.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
+#include "net/base/does_url_match_filter.h"
 #include "net/base/net_export.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "net/http/http_request_info.h"
@@ -109,15 +111,21 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
   void MaybeInsert(const HttpRequestInfo& request,
                    const HttpResponseHeaders& headers);
 
-  // TODO(https://crbug.com/382394774): Implement ClearData() so that entries
-  // removed via the UI or Clear-Site-Data from the disk cache are also
-  // removed from this cache. This is needed before persistence is implemented.
-  // void ClearData(base::RepeatingCallback<bool(const GURL&)> url_matcher,
-  //                base::Time delete_begin,
-  //                base::Time delete_end);
+  // Synchronously deletes entries that match `origins` or `domains` with update
+  // times equal or greater than `delete_begin` and less than `delete_end`.
+  // Setting `filter_type` to UrlFilterType::kFalseIfMatching inverts the
+  // meaning of `origins` and `domains` as with DoesURlMatchFilter(), but
+  // doesn't affect the interpretation of `delete_begin` and `delete_end`.
+  // In particular, ClearData(URLFilterType::kFalseIfMatching, {}, {},
+  // base::Time(), base::Time::Max()) will delete everything.
+  void ClearData(UrlFilterType filter_type,
+                 const base::flat_set<url::Origin>& origins,
+                 const base::flat_set<std::string>& domains,
+                 base::Time delete_begin,
+                 base::Time delete_end);
 
-  // Erases the entry referenced by `erase_handle` from the cache. Does nothing
-  // if the entry no longer exists.
+  // Erases the entry referenced by `erase_handle` from the cache. Does
+  // nothing if the entry no longer exists.
   void Erase(EraseHandle handle);
 
   // Returns the size (number of stored original query strings) of the cache.
@@ -167,6 +175,13 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
 
   // Erases `query_string` from the cache.
   void EraseQuery(QueryString* query_string);
+
+  // Scans all the QueryStrings in `data_map` to find ones in the range
+  // [delete_begin, delete_end) and appends them to `matches`.
+  static void FindQueryStringsInTimeRange(const DataMapType& data_map,
+                                          base::Time delete_begin,
+                                          base::Time delete_end,
+                                          std::vector<QueryString*>& matches);
 
   static std::optional<FindQueryStringResult> FindQueryStringInList(
       QueryStringList& query_strings,
