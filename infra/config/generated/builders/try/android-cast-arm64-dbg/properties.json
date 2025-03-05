@@ -24,7 +24,7 @@
                   "mb"
                 ],
                 "build_config": "Debug",
-                "config": "android",
+                "config": "cast_builder",
                 "target_bits": 64,
                 "target_platform": "android"
               },

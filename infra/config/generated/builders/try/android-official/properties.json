@@ -22,7 +22,7 @@
                 "apply_configs": [
                   "mb"
                 ],
-                "config": "android",
+                "config": "main_builder",
                 "target_arch": "arm",
                 "target_platform": "android"
               },
