@@ -44,7 +44,7 @@
 using testing::_;
 using testing::ReturnRef;
 using testing::Test;
-using Role = blink::mojom::AILanguageModelInitialPromptRole;
+using Role = blink::mojom::AILanguageModelPromptRole;
 
 namespace {
 
@@ -91,29 +91,28 @@ SkBitmap CreateTestBitmap(int width, int height) {
   return bitmap;
 }
 
-// Construct a mojom::Input holding a single piece of text.
-on_device_model::mojom::InputPtr MakeInput(const std::string& text) {
-  auto input = on_device_model::mojom::Input::New();
-  input->pieces.push_back(ml::Token::kUser);
-  input->pieces.push_back(text);
-  input->pieces.push_back(ml::Token::kEnd);
-  return input;
+// Build a mojo prompt struct with the specified `role` and `text`
+blink::mojom::AILanguageModelPromptPtr MakePrompt(Role role,
+                                                  const std::string& text) {
+  return blink::mojom::AILanguageModelPrompt::New(
+      role, blink::mojom::AILanguageModelPromptContent::NewText(text));
 }
 
-// Construct a simple InitialPrompts mojom message.
-std::vector<blink::mojom::AILanguageModelInitialPromptPtr>
-GetTestInitialPrompts() {
-  auto create_initial_prompt = [](Role role, const char* content) {
-    return blink::mojom::AILanguageModelInitialPrompt::New(role, content);
-  };
-  std::vector<blink::mojom::AILanguageModelInitialPromptPtr> initial_prompts{};
-  initial_prompts.push_back(
-      create_initial_prompt(Role::kUser, kTestInitialPromptsUser1));
-  initial_prompts.push_back(
-      create_initial_prompt(Role::kAssistant, kTestInitialPromptsSystem1));
-  initial_prompts.push_back(
-      create_initial_prompt(Role::kUser, kTestInitialPromptsUser2));
-  return initial_prompts;
+// Build a mojo prompt struct array holding a single piece of text.
+std::vector<blink::mojom::AILanguageModelPromptPtr> MakeInput(
+    const std::string& text) {
+  std::vector<blink::mojom::AILanguageModelPromptPtr> prompts;
+  prompts.push_back(MakePrompt(Role::kUser, text));
+  return prompts;
+}
+
+// Build a mojo prompt struct array with a simple set of initial prompts.
+std::vector<blink::mojom::AILanguageModelPromptPtr> GetTestInitialPrompts() {
+  std::vector<blink::mojom::AILanguageModelPromptPtr> prompts;
+  prompts.push_back(MakePrompt(Role::kUser, kTestInitialPromptsUser1));
+  prompts.push_back(MakePrompt(Role::kAssistant, kTestInitialPromptsSystem1));
+  prompts.push_back(MakePrompt(Role::kUser, kTestInitialPromptsUser2));
+  return prompts;
 }
 
 // Construct a ContextItem with system prompt text.
@@ -231,7 +230,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
   struct Options {
     blink::mojom::AILanguageModelSamplingParamsPtr sampling_params = nullptr;
     std::optional<std::string> system_prompt = std::nullopt;
-    std::vector<blink::mojom::AILanguageModelInitialPromptPtr> initial_prompts;
+    std::vector<blink::mojom::AILanguageModelPromptPtr> initial_prompts;
     std::string prompt_input = kTestPrompt;
     std::string expected_context = "";
     std::string expected_cloned_context =
@@ -1254,11 +1253,11 @@ TEST_P(AILanguageModelVisionTest, Basic) {
   EXPECT_CALL(mock_responder, OnCompletion(_))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
 
-  on_device_model::mojom::InputPtr input = on_device_model::mojom::Input::New();
-  input->pieces.push_back(ml::Token::kUser);
-  input->pieces.push_back(kTestPrompt);
-  input->pieces.push_back(CreateTestBitmap(10, 10));
-  input->pieces.push_back(ml::Token::kEnd);
+  std::vector<blink::mojom::AILanguageModelPromptPtr> input =
+      MakeInput(kTestPrompt);
+  input.push_back(blink::mojom::AILanguageModelPrompt::New(
+      Role::kUser, blink::mojom::AILanguageModelPromptContent::NewBitmap(
+                       CreateTestBitmap(10, 10))));
   mock_session->Prompt(std::move(input),
                        mock_responder.BindNewPipeAndPassRemote());
   run_loop.Run();

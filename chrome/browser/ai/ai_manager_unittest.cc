@@ -113,7 +113,7 @@ TEST_F(AIManagerTest, AIContextBoundObjectSet) {
       blink::mojom::AILanguageModelCreateOptions::New(
           /*sampling_params=*/nullptr,
           /*system_prompt=*/std::nullopt,
-          std::vector<blink::mojom::AILanguageModelInitialPromptPtr>(),
+          std::vector<blink::mojom::AILanguageModelPromptPtr>(),
           std::vector<blink::mojom::AILanguageCodePtr>()));
   run_loop.Run();
   ASSERT_EQ(1u, GetAIManagerContextBoundObjectSetSize());

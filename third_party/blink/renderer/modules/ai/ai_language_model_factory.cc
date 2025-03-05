@@ -42,19 +42,6 @@ namespace blink {
 
 namespace {
 
-mojom::blink::AILanguageModelInitialPromptRole AILanguageModelInitialPromptRole(
-    V8AILanguageModelPromptRole role) {
-  switch (role.AsEnum()) {
-    case V8AILanguageModelPromptRole::Enum::kSystem:
-      return mojom::blink::AILanguageModelInitialPromptRole::kSystem;
-    case V8AILanguageModelPromptRole::Enum::kUser:
-      return mojom::blink::AILanguageModelInitialPromptRole::kUser;
-    case V8AILanguageModelPromptRole::Enum::kAssistant:
-      return mojom::blink::AILanguageModelInitialPromptRole::kAssistant;
-  }
-  NOTREACHED();
-}
-
 class CreateLanguageModelClient
     : public GarbageCollected<CreateLanguageModelClient>,
       public mojom::blink::AIManagerCreateLanguageModelClient,
@@ -67,8 +54,7 @@ class CreateLanguageModelClient
       AbortSignal* signal,
       mojom::blink::AILanguageModelSamplingParamsPtr sampling_params,
       WTF::String system_prompt,
-      WTF::Vector<mojom::blink::AILanguageModelInitialPromptPtr>
-          initial_prompts,
+      WTF::Vector<mojom::blink::AILanguageModelPromptPtr> initial_prompts,
       AICreateMonitor* monitor,
       std::optional<WTF::Vector<WTF::String>> expected_input_languages)
       : AIMojoClient(script_state, ai, resolver, signal),
@@ -293,7 +279,7 @@ ScriptPromise<AILanguageModel> AILanguageModelFactory::create(
 
   mojom::blink::AILanguageModelSamplingParamsPtr sampling_params;
   WTF::String system_prompt;
-  WTF::Vector<mojom::blink::AILanguageModelInitialPromptPtr> initial_prompts;
+  WTF::Vector<mojom::blink::AILanguageModelPromptPtr> initial_prompts;
   AbortSignal* signal = nullptr;
   AICreateMonitor* monitor = MakeGarbageCollected<AICreateMonitor>(
       GetExecutionContext(), task_runner_);
@@ -390,10 +376,10 @@ ScriptPromise<AILanguageModel> AILanguageModelFactory::create(
             resolver->RejectWithTypeError("Input type not supported");
             return promise;
           }
-          initial_prompts.push_back(
-              mojom::blink::AILanguageModelInitialPrompt::New(
-                  AILanguageModelInitialPromptRole(dict->role()),
-                  dict->content()->GetAsString()));
+          initial_prompts.push_back(mojom::blink::AILanguageModelPrompt::New(
+              AILanguageModel::ConvertRoleToMojo(dict->role()),
+              mojom::blink::AILanguageModelPromptContent::NewText(
+                  dict->content()->GetAsString())));
         }
       }
     }

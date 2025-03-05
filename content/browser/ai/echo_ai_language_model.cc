@@ -61,7 +61,7 @@ void EchoAILanguageModel::DoMockExecution(
 }
 
 void EchoAILanguageModel::Prompt(
-    on_device_model::mojom::InputPtr input,
+    std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
   if (is_destroyed_) {
@@ -73,17 +73,13 @@ void EchoAILanguageModel::Prompt(
   }
 
   std::string response = "";
-  for (const auto& piece : input->pieces) {
-    if (std::holds_alternative<std::string>(piece)) {
-      response += std::get<std::string>(piece);
-    } else if (std::holds_alternative<SkBitmap>(piece)) {
+  for (const auto& prompt : prompts) {
+    if (prompt->content->is_text()) {
+      response += prompt->content->get_text();
+    } else if (prompt->content->is_bitmap()) {
       response += "<image>";
-    } else if (std::holds_alternative<::ml::Token>(piece)) {
-      NOTIMPLEMENTED_LOG_ONCE();
-    } else if (std::holds_alternative<bool>(piece)) {
-      NOTIMPLEMENTED_LOG_ONCE();
-    } else if (std::holds_alternative<ml::AudioBuffer>(piece)) {
-      NOTIMPLEMENTED_LOG_ONCE();
+    } else if (prompt->content->is_audio()) {
+      response += "<audio>";
     } else {
       NOTIMPLEMENTED_LOG_ONCE();
     }

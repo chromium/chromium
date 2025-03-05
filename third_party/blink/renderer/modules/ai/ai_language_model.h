@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_clone_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_prompt_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_prompt_role.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
@@ -27,6 +28,10 @@ class AILanguageModel final : public EventTarget,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  // Get the mojo enum value for the given V8 `role` enum value.
+  static mojom::blink::AILanguageModelPromptRole ConvertRoleToMojo(
+      V8AILanguageModelPromptRole role);
+
   AILanguageModel(
       ExecutionContext* execution_context,
       mojo::PendingRemote<mojom::blink::AILanguageModel> pending_remote,

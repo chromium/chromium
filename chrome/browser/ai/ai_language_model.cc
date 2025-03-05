@@ -25,7 +25,7 @@
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
-#include "services/on_device_model/public/mojom/on_device_model.mojom.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-shared.h"
@@ -58,13 +58,13 @@ using optimization_guide::proto::PromptApiPrompt;
 using optimization_guide::proto::PromptApiRequest;
 using optimization_guide::proto::PromptApiRole;
 
-PromptApiRole ConvertRole(blink::mojom::AILanguageModelInitialPromptRole role) {
+PromptApiRole ConvertRole(blink::mojom::AILanguageModelPromptRole role) {
   switch (role) {
-    case blink::mojom::AILanguageModelInitialPromptRole::kSystem:
+    case blink::mojom::AILanguageModelPromptRole::kSystem:
       return PromptApiRole::PROMPT_API_ROLE_SYSTEM;
-    case blink::mojom::AILanguageModelInitialPromptRole::kUser:
+    case blink::mojom::AILanguageModelPromptRole::kUser:
       return PromptApiRole::PROMPT_API_ROLE_USER;
-    case blink::mojom::AILanguageModelInitialPromptRole::kAssistant:
+    case blink::mojom::AILanguageModelPromptRole::kAssistant:
       return PromptApiRole::PROMPT_API_ROLE_ASSISTANT;
   }
 }
@@ -75,6 +75,54 @@ PromptApiPrompt MakePrompt(PromptApiRole role, const std::string& content) {
   prompt.set_role(role);
   prompt.set_content(content);
   return prompt;
+}
+
+// Get the corresponding ml::Token for the given `role`.
+ml::Token GetMLToken(blink::mojom::AILanguageModelPromptRole role) {
+  switch (role) {
+    case blink::mojom::AILanguageModelPromptRole::kSystem:
+      return ml::Token::kSystem;
+    case blink::mojom::AILanguageModelPromptRole::kUser:
+      return ml::Token::kUser;
+    case blink::mojom::AILanguageModelPromptRole::kAssistant:
+      return ml::Token::kModel;
+  }
+  NOTREACHED();
+}
+
+// Convert `prompts` to an on-device model input sequence.
+on_device_model::mojom::InputPtr BuildOnDeviceModelInput(
+    const std::vector<blink::mojom::AILanguageModelPromptPtr>& prompts) {
+  auto current_role = ml::Token::kEnd;
+  auto input = on_device_model::mojom::Input::New();
+
+  // Add `prompts` to `input`, interleaving role tokens as needed.
+  for (const auto& prompt : prompts) {
+    ml::Token new_role = GetMLToken(prompt->role);
+    if (new_role != current_role) {
+      input->pieces.emplace_back(new_role);
+      current_role = new_role;
+    }
+    if (prompt->content->is_text()) {
+      input->pieces.emplace_back(prompt->content->get_text());
+    } else if (prompt->content->is_bitmap()) {
+      input->pieces.emplace_back(prompt->content->get_bitmap());
+    } else if (prompt->content->is_audio()) {
+      // TODO: Export services/on_device_model/ml/chrome_ml_types_traits.cc.
+      const on_device_model::mojom::AudioDataPtr& audio_data =
+          prompt->content->get_audio();
+      ml::AudioBuffer audio_buffer;
+      audio_buffer.sample_rate_hz = audio_data->sample_rate;
+      audio_buffer.num_channels = audio_data->channel_count;
+      audio_buffer.num_frames = audio_data->frame_count;
+      audio_buffer.data = audio_data->data;
+      input->pieces.push_back(audio_buffer);
+    } else {
+      NOTREACHED();
+    }
+  }
+  input->pieces.emplace_back(ml::Token::kEnd);
+  return input;
 }
 
 // Construct an empty multimodal PromptApiRequest message.
@@ -228,7 +276,7 @@ PromptApiMetadata AILanguageModel::ParseMetadata(
 
 void AILanguageModel::SetInitialPrompts(
     const std::optional<std::string> system_prompt,
-    std::vector<blink::mojom::AILanguageModelInitialPromptPtr> initial_prompts,
+    std::vector<blink::mojom::AILanguageModelPromptPtr> initial_prompts,
     CreateLanguageModelCallback callback) {
   Context::ContextItem item;
   if (system_prompt) {
@@ -236,8 +284,15 @@ void AILanguageModel::SetInitialPrompts(
         MakePrompt(PromptApiRole::PROMPT_API_ROLE_SYSTEM, *system_prompt);
   }
   for (const auto& prompt : initial_prompts) {
-    *item.prompts.Add() =
-        MakePrompt(ConvertRole(prompt->role), prompt->content);
+    if (prompt->content->is_text()) {
+      *item.prompts.Add() =
+          MakePrompt(ConvertRole(prompt->role), prompt->content->get_text());
+    } else if (base::FeatureList::IsEnabled(
+                   blink::features::kAIPromptAPIMultimodalInput)) {
+      NOTIMPLEMENTED();
+    } else {
+      NOTREACHED();
+    }
   }
   MultimodalMessage request = MakeInitialPrompt(item);
   session_->GetContextSizeInTokens(
@@ -449,7 +504,7 @@ void AILanguageModel::MultimodalResponder::OnDisconnect() {
 }
 
 void AILanguageModel::Prompt(
-    on_device_model::mojom::InputPtr input,
+    std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
   if (!session_) {
@@ -472,7 +527,7 @@ void AILanguageModel::Prompt(
         context_remote.InitWithNewPipeAndPassReceiver(),
         std::move(pending_responder));
     auto append_options = on_device_model::mojom::AppendOptions::New();
-    append_options->input = std::move(input);
+    append_options->input = BuildOnDeviceModelInput(prompts);
     append_options->max_tokens = context_->max_tokens();
     // Append the model token to make sure the model knows to give output.
     append_options->input->pieces.push_back(ml::Token::kModel);
@@ -487,12 +542,20 @@ void AILanguageModel::Prompt(
                                     std::move(response_remote));
     return;
   }
+  if (prompts.size() != 1) {
+    mojo::ReportBadMessage("Number of prompts must be 1.");
+    return;
+  }
+  if (!prompts[0]->content->is_text()) {
+    mojo::ReportBadMessage("Unsupported prompt content type.");
+    return;
+  }
+  if (prompts[0]->role != blink::mojom::AILanguageModelPromptRole::kUser) {
+    mojo::ReportBadMessage("Unsupported prompt role.");
+    return;
+  }
 
-  CHECK_EQ(input->pieces.size(), 3u);
-  CHECK(std::holds_alternative<ml::Token>(input->pieces[0]));
-  CHECK(std::holds_alternative<std::string>(input->pieces[1]));
-  CHECK(std::holds_alternative<ml::Token>(input->pieces[2]));
-  const std::string& input_text = std::get<std::string>(input->pieces[1]);
+  const std::string& input_text = prompts[0]->content->get_text();
 
   // Clear the response from the previous execution.
   current_response_ = "";
