@@ -111,6 +111,13 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   QualifiedName getFrom(
       const V8UnionSanitizerAttributeNamespaceOrString*) const;
 
+  // Helpers for setFrom(SanitizerConfig*, ...): Count items in config.
+  // These are used for error checking.
+  int countItemsInSanitizerConfig(const SanitizerConfig*) const;
+  int countItemsInSanitizerElement(
+      const V8UnionSanitizerElementNamespaceWithAttributesOrString*) const;
+  int countItemsInConfig() const;
+
   // These members are Blink-representation of SanitizerConfig, and the core
   // data structure(s) for Sanitizer. We'll try to keep them simple (sets and
   // maps), and to use QualifiedName, since that's an efficient-to-compare

@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Element names in config item: elements
-  assert_array_equals: lengths differ, expected array ["123", "custom-elements", "p", "potato", "span", "template"] length 6, got ["", "123", "custom-elements", "p", "potato", "span", "template"] length 7
-[FAIL] Element names in config item: removeElements
-  assert_array_equals: lengths differ, expected array ["123", "custom-elements", "p", "potato", "span", "template"] length 6, got ["", "123", "custom-elements", "p", "potato", "span", "template"] length 7
-[FAIL] Element names in config item: replaceWithChildrenElements
-  assert_array_equals: lengths differ, expected array ["123", "custom-elements", "p", "potato", "span", "template"] length 6, got ["", "123", "custom-elements", "p", "potato", "span", "template"] length 7
-Harness: the test ran to completion.
-
