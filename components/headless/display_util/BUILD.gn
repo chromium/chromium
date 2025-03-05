@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/ui.gni")
-
 source_set("display_util") {
   sources = [
     "headless_display_util.cc",
@@ -13,11 +11,6 @@ source_set("display_util") {
   deps = [
     "//base",
     "//ui/display",
-    "//ui/gfx",
     "//ui/gfx/geometry",
   ]
-
-  if (use_aura) {
-    deps += [ "//ui/aura" ]
-  }
 }

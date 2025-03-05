@@ -54,9 +54,9 @@ display::Display HeadlessScreen::GetDisplayNearestWindow(
   // use its bounds to find the nearest display.
 #if defined(USE_AURA)
   if (window) {
-    std::optional<display::Display> display =
-        GetDisplayFromWindow(display_list().displays(), window);
-    if (display) {
+    const gfx::Rect bounds = window->GetBoundsInScreen();
+    if (std::optional<display::Display> display =
+            GetDisplayFromScreenRect(display_list().displays(), bounds)) {
       return display.value();
     }
   }

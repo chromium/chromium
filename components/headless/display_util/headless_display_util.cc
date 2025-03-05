@@ -4,32 +4,11 @@
 
 #include "components/headless/display_util/headless_display_util.h"
 
-#include "base/notimplemented.h"
-#include "build/build_config.h"
 #include "ui/display/display_finder.h"
-
-#if defined(USE_AURA)
-#include "ui/aura/window.h"
-#endif
 
 using display::Display;
 
 namespace headless {
-
-std::optional<Display> GetDisplayFromWindow(
-    const std::vector<Display>& displays,
-    gfx::NativeWindow window) {
-#if defined(USE_AURA)
-  if (window) {
-    const gfx::Rect bounds = window->GetBoundsInScreen();
-    return GetDisplayFromScreenRect(displays, bounds);
-  }
-#else
-  NOTIMPLEMENTED_LOG_ONCE();
-#endif  // #if defined(USE_AURA)
-
-  return std::nullopt;
-}
 
 std::optional<Display> GetDisplayFromScreenRect(
     const std::vector<Display>& displays,
