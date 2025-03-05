@@ -10,7 +10,6 @@
 
 #include "third_party/blink/renderer/core/css/css_path_value.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
-#include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 

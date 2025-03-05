@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_view_dimension.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_vertex_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_vertex_step_mode.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 
 namespace blink {
 

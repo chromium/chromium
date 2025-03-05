@@ -22,7 +22,6 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "skia/buildflags.h"
 #include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
@@ -32,6 +31,7 @@
 #include "ui/gfx/geometry/size.h"
 
 class GrBackendTexture;
+class SkSurface;
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_H_
