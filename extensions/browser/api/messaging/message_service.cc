@@ -47,7 +47,6 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/extensions_browser_client.h"
-#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/message_service_api.h"
 #include "extensions/browser/message_tracker.h"
 #include "extensions/browser/pref_names.h"
@@ -64,6 +63,10 @@
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#endif
 
 using content::BrowserContext;
 using content::BrowserThread;
@@ -574,6 +577,7 @@ void MessageService::OpenChannelToExtension(
     source_frame = ExtensionApiFrameIdMap::Get()->GetFrameData(
         source_render_frame_host->GetGlobalId());
   } else {
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
     // Check to see if it was a WebView making the request.
     // Sending messages from WebViews to extensions breaks webview isolation,
     // so only allow component extensions to receive messages from WebViews.
@@ -583,6 +587,7 @@ void MessageService::OpenChannelToExtension(
         Manifest::IsComponentLocation(target_extension->location())) {
       include_guest_process_info = true;
     }
+#endif
   }
 
   std::unique_ptr<OpenChannelParams> params =
@@ -939,6 +944,7 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
 
   int guest_process_id = content::ChildProcessHost::kInvalidUniqueID;
   int guest_render_frame_routing_id = MSG_ROUTING_NONE;
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   if (params->include_guest_process_info &&
       // TODO(lazyboy): Investigate <webview> SW messaging.
       source.is_for_render_frame()) {
@@ -948,6 +954,7 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
 
     DCHECK(WebViewGuest::FromRenderFrameHost(source.GetRenderFrameHost()));
   }
+#endif
 
   // Send the connect event to the receiver.  Give it the opener's port ID (the
   // opener has the opposite port ID).
