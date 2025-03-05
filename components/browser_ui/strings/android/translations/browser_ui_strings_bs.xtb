@@ -6,6 +6,7 @@
 <translation id="1044891598689252897">Web lokacije će normalno funkcionirati</translation>
 <translation id="1070329623210597193">Fajlovi koje ova web lokacija može pregledati ili urediti</translation>
 <translation id="1073417869336441572">Kažite nam zašto ste dozvolili kolačiće treće strane i pomozite nam da poboljšamo Chrome. <ph name="BEGIN_LINK" />Pošaljite povratne informacije<ph name="END_LINK" /></translation>
+<translation id="1074758928858737435">Možete zatražiti prikaz verzije web-lokacija za računala</translation>
 <translation id="1085696779717592361">Koristite Chrome kao zadanu opciju</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1181037720776840403">Ukloni</translation>
@@ -32,6 +33,7 @@
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> web lokacija}one{<ph name="SITE_COUNT" /> web lokacija}few{<ph name="SITE_COUNT" /> web lokacije}other{<ph name="SITE_COUNT" /> web lokacija}}</translation>
 <translation id="1500473259453106018">Sakrij karticu Padovi cijena na karticama</translation>
 <translation id="1510341833810331442">Web lokacijama nije dozvoljeno da pohranjuju podatke na uređaj</translation>
+<translation id="1538031354170655462">Web-lokacije obično upotrebljavaju komunikaciju kratkog dometa (NFC) za rad s oznakama ili uređajima u blizini, na primjer za skeniranje znački ili plaćanje dodirom</translation>
 <translation id="1547123415014299762">Kolačići treće strane su dozvoljeni</translation>
 <translation id="1593426485665524382">Nove radnje su dostupne pri vrhu ekrana</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -115,6 +117,7 @@
 <translation id="2677748264148917807">Napusti</translation>
 <translation id="2682367912565197520">Brisanje sačuvanog nivoa zumiranja</translation>
 <translation id="2683434792633810741">Izbrisati i poništiti?</translation>
+<translation id="2685514716378236873">Nije dopušteno</translation>
 <translation id="2713106313042589954">Isključi kameru</translation>
 <translation id="2717722538473713889">Adrese e-pošte</translation>
 <translation id="2726059656860238749">Pokreni Chrome s fokusiranim višenamjenskim okvirom, što smanjuje vrijeme pokretanja na uređajima niže klase.</translation>
@@ -211,12 +214,14 @@
 <translation id="3955193568934677022">Dozvoljava web lokacijama da reproduciraju zaštićeni sadržaj (preporučeno)</translation>
 <translation id="3965467402665811906">Web lokacije vas mogu pitati da koriste sačuvane informacije o vama</translation>
 <translation id="3967822245660637423">Preuzimanje je završeno</translation>
+<translation id="3981465354637804599">Web-lokacije obično prikazuju oglase kako bi mogle pružati sadržaj ili usluge bez dodatnih troškova. Međutim, za neke je web-lokacije poznato da prikazuju ometajuće ili obmanjujuće oglase.</translation>
 <translation id="3987993985790029246">Kopiraj link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="3992308058851451478">Web lokacija <ph name="SITE" /> može koristiti informacije o vama dok pregledate</translation>
 <translation id="3992684624889376114">O ovoj stranici</translation>
 <translation id="4002066346123236978">Naslov</translation>
 <translation id="4046123991198612571">Sljedeća numera</translation>
+<translation id="4077310749977440510">Web-lokacije obično čitaju vaš međuspremnik radi značajki poput zadržavanja formatiranja kopiranog teksta</translation>
 <translation id="4149890623864272035">Jeste li sigurni da želite izbrisati sve lokalne podatke, uključujući kolačiće, i poništiti sva odobrenja za ovu web lokaciju?</translation>
 <translation id="4149994727733219643">Pojednostavljeni prikaz za web lokacije</translation>
 <translation id="4151930093518524179">Zadano zumiranje</translation>
@@ -224,6 +229,7 @@
 <translation id="4169549551965910670">Povezano s USB uređajem</translation>
 <translation id="4194328954146351878">Web lokacije moraju tražiti odobrenje za pregled i izmjenu informacija na NFC uređajima (preporučeno)</translation>
 <translation id="4200726100658658164">Otvaranje postavki lokacije</translation>
+<translation id="421742575134139848">Web-lokacije mogu reproducirati zvuk koji služi kao audiozapis za glazbu, videozapise i druge medijske sadržaje</translation>
 <translation id="4226663524361240545">Obavještenja mogu aktivirati vibraciju uređaja</translation>
 <translation id="4259722352634471385">Navigacija je blokirana: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Nakon što napustite web lokaciju, sinhronizacija se može nastaviti da se završe zadaci, kao što je otpremanje fotografija ili slanje poruke chata</translation>
@@ -247,6 +253,7 @@
 <translation id="4566417217121906555">Isključi mikrofon</translation>
 <translation id="4570913071927164677">Detalji</translation>
 <translation id="4598549027014564149">U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na web lokacijama, čak ni na srodnim web lokacijama. Aktivnost pregledanja se ne koristi za stvari kao što je personaliziranje oglasa. Moguće je da funkcije neće raditi na nekim web lokacijama.</translation>
+<translation id="461356340001513807">Omogućuje vam da se prijavite na web-lokacije pomoću računa koji imate na usluzi za provjeru identiteta</translation>
 <translation id="4619615317237390068">Kartice iz drugih uređaja</translation>
 <translation id="4644713492825682049">Izbriši i poništi</translation>
 <translation id="4645575059429386691">Upravlja roditelj</translation>
@@ -430,6 +437,7 @@
 <translation id="7000754031042624318">Isključeno u postavkama Androida</translation>
 <translation id="702275896380648118">Ova web lokacija utvrđuje stvari koje vam se sviđaju, a zatim predlaže oglase drugim web lokacijama. Ova web lokacija prikuplja i vaše teme oglasa iz Chromea da vam prikazuje relevantnije oglase.</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
+<translation id="7055552182600664515">Da bi se reproducirao sadržaj zaštićen autorskim pravima, web-lokacije će možda trebati koristiti uslugu za zaštitu sadržaja <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 odabrana kartica}one{# odabrana kartica}few{# odabrane kartice}other{# odabranih kartica}}</translation>
 <translation id="708014373017851679">Aplikacija <ph name="APP_NAME" /> je zastarjela. Ažurirajte aplikaciju.</translation>
 <translation id="7087918508125750058">Odabrali ste <ph name="ITEM_COUNT" />.  Opcije su dostupne pri vrhu ekrana</translation>

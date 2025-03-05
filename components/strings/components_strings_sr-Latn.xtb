@@ -3010,7 +3010,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6322182122604171028">Korišćenje funkcije Windows Hello nije uspelo</translation>
 <translation id="6326947323444967009">Podesite Chrome kao podrazumevani pregledač sistema u podešavanjima iOS-a</translation>
 <translation id="6328639280570009161">Pokušajte da onemogućite predviđanje mreže</translation>
-<translation id="6328784461820205019">„Veza nije privatna“ ili „&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;“ ili „&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;“ ili „&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;“ ili „&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;“ ili „Greška u vezi sa SSL sertifikatom“</translation>
 <translation id="6335029926534404762">Sportska obuća</translation>
 <translation id="6337133576188860026">Oslobađa manje od <ph name="SIZE" />. Neki sajtovi će se možda sporije učitavati kad ih sledeći put posetite.</translation>
 <translation id="6337534724793800597">Filtriraj smernice prema nazivu</translation>
@@ -3731,6 +3730,7 @@ Dodatni detalji:
 <translation id="7569983096843329377">Crna</translation>
 <translation id="7574998639136359461">Oprema za zimske sportove</translation>
 <translation id="7575207903026901870">Dugme Ukloni predlog, pritisnite Enter da biste uklonili ovaj predlog</translation>
+<translation id="7575800019233204241">„Veza nije privatna“ ili „&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;“ ili „&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;“ ili „&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;“ ili „Greška sa SSL sertifikatom“</translation>
 <translation id="7575887283389198269">Mobilni telefoni</translation>
 <translation id="7578104083680115302">Plaćajte brzo na sajtovima i u aplikacijama na svim uređajima pomoću kartica koje ste sačuvali na Google-u.</translation>
 <translation id="7579442726219254162">Nepoznata promenljiva „<ph name="VARIABLE" />“ u upravljanoj konfiguraciji aplikacije <ph name="APPLICATION_ID" />.</translation>

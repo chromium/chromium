@@ -34,7 +34,6 @@
 <translation id="1112015203684611006">Print. ebaõnn.</translation>
 <translation id="1118569444314402022">Tere tulemast tagasi, <ph name="USER_NAME" />!</translation>
 <translation id="1121850836842642159">Fotod ja kujutised</translation>
-<translation id="1125564390852150847">Loo uus vaheleht.</translation>
 <translation id="1126696498560056882">Kontode haldamine selles seadmes</translation>
 <translation id="1126809382673880764">Ei kaitse teid ohtlike veebisaitide, allalaadimiste ega laienduste eest. Google'i ohutu sirvimine kaitseb teid siiski muudes Google'i teenustes, kus see saadaval on (nt Gmail ja Otsing).</translation>
 <translation id="1142371195993008685">Lülita teenuse <ph name="FEATURE_NAME" /> märguanded välja</translation>
@@ -89,7 +88,6 @@
 <translation id="1358106883354237005">Hallatud konto</translation>
 <translation id="1358214951266274152">Külastage kopeeritud linki</translation>
 <translation id="1360432990279830238">Login välja ja keelan sünkroonimise?</translation>
-<translation id="1362192716574455663">Olemasolevaid sirvimisandmeid ei teisaldata teie töökontole. Pääsete sellele siiski juurde, logides välja või lisades isikliku konto.</translation>
 <translation id="1363028406613469049">Rada</translation>
 <translation id="1364367057792633742">Uus vaheleht</translation>
 <translation id="1365106417372288489">Teie iPhone taastati hiljuti, mistõttu võis teie vaikebrauseri muutuda.</translation>
@@ -116,7 +114,6 @@
 <translation id="1455660774629812862">Ära peida</translation>
 <translation id="1456545332132818232">Toote <ph name="PRODUCT_NAME" /> arvustused, tärne <ph name="STARS" /> maksimumist <ph name="MAX_STARS" />, <ph name="DOMAIN" /></translation>
 <translation id="1460751212339734034">Säästke aega, tippige vähem</translation>
-<translation id="1466035273550360103">Avatud vahelehti ei ole</translation>
 <translation id="1469381646033328562">Sinu kontot haldab vanem.
 <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Muudetud</translation>
@@ -291,6 +288,7 @@
 <translation id="2161446265348023004">Lülitu avatud aknale</translation>
 <translation id="2164946989711475905">Logige sisse …</translation>
 <translation id="2175927920773552910">QR-kood</translation>
+<translation id="218350106843433823">Paroolide ja pääsuvõtmete automaattäide</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="219283042927675668">Grupi vahelehed</translation>
 <translation id="2194856509914051091">Olulised aspektid</translation>
@@ -380,6 +378,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="2511117522375201202">Teil on <ph name="NUMBER_OF_PASSWORDS" /> ohustatud parooli, mis võivad teie turvalisuse ohtu seada.</translation>
 <translation id="2513103768503127042">Siit leiate oma vahelegrupid</translation>
 <translation id="251837347827266434">Teid logitakse välja, vahelehed suletakse ja sirvimisandmed kustutatakse</translation>
+<translation id="2520787026086861736">Väljalülitamiseks avage <ph name="BEGIN_LINK" />Automaattäide ja paroolid<ph name="END_LINK" /></translation>
 <translation id="2529021024822217800">Ava kõik</translation>
 <translation id="2536991091671391962">Saate salvestatud paroole kasutada mis tahes seadmes. Need salvestatakse konto <ph name="EMAIL" /> puhul Google'i paroolihaldurisse.</translation>
 <translation id="2538103551183528357">Peidetud, parool</translation>
@@ -480,7 +479,6 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="2969979262385602596">Sisselogimine ebaõnnestus. Proovige hiljem uuesti.</translation>
 <translation id="2989523299700148168">Hiljuti külastatud</translation>
 <translation id="2989805286512600854">Ava uuel vahelehel</translation>
-<translation id="2990025507101398383">Inkognito vahelehti ei ole</translation>
 <translation id="2996291259634659425">Parooli loomine</translation>
 <translation id="3000900718786961632">{COUNT,plural, =1{Uut saadetist jälgitakse}other{Uusi saadetisi jälgitakse}}</translation>
 <translation id="3010025794097054078">Kaitske ennast andmetega seotud rikkumiste, ebaturvaliste veebisaitide ja muu eest.</translation>
@@ -584,7 +582,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="35083190962747987">Avage ${url}</translation>
 <translation id="3511519535430890904">Lisage sirvimise kaitse</translation>
 <translation id="3517216995152707259">Sirvimisandmete kustutamine ei logi teid Google'i kontolt välja. Selleks <ph name="BEGIN_LINK" />logige Chrome'ist välja<ph name="END_LINK" />.</translation>
-<translation id="3519193562722059437">Avage vaheleht veebi sirvimiseks.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Ava vaheleht}other{Ava {count} vahelehte}}</translation>
 <translation id="3523513363815970085">Peida moodul „Teie enim külastatud saidid"</translation>
 <translation id="3523789730715594198">Sünkroonimise võite seadetes igal ajal lõpetada. Google võib Otsingut ja muid teenuseid teie ajaloo alusel isikupärastada.</translation>
@@ -678,6 +675,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3940195383040445971">Jälgige vahelehtedel hindu</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Sulge {COUNT} vaheleht}other{Sulge {COUNT} vahelehte}}</translation>
 <translation id="3948600256434252210">Inkognito režiimis sirvimiseks võite pühkida paremale.</translation>
+<translation id="3950479158728806902">Loo kiiremaks sisselogimiseks automaatselt pääsuvõti</translation>
 <translation id="3950820424414687140">Logige sisse</translation>
 <translation id="3955740319737378355">Valmis</translation>
 <translation id="3955822496205734389">Teil on nõrgad paroolid.</translation>
@@ -702,6 +700,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4018440314314549819">Kasutage salvestatud paroolide puhul automaatset täitmist</translation>
 <translation id="4021447724486050609">Värskendage oma brauserit</translation>
 <translation id="4021931095789478915">Lisa ${url} lugemisloendisse</translation>
+<translation id="4026496154402824012">Väljalülitamiseks avage <ph name="BEGIN_LINK" />Paroolivalikud<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Salvesta kontole …</translation>
 <translation id="4038354071007134711">Seadme ükski rakendus ei saa seda faili avada.</translation>
 <translation id="4042870976416480368">Otsi lehelt</translation>
@@ -837,6 +836,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4619564267100705184">Kinnitage, et see olete teie</translation>
 <translation id="4619615317237390068">Muudest seadmetest pärinevad vahelehed</translation>
 <translation id="4624080227980645783">Uus inkognito aken</translation>
+<translation id="4627107755957573804">Lubab saitidel ja rakendustel olemasolevad kontod pääsuvõtmetele üle viia</translation>
 <translation id="4630212057753624203">Näidismull</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> korduvalt kasutatud parooli</translation>
 <translation id="4631890462758052414">Uus inkognito vaheleht</translation>
@@ -985,7 +985,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="5217329997012062137">Kui kasutate Google Lensi, saadetakse Google'ile lehe ekraanipilt.</translation>
 <translation id="5220945116117011963">Kalendrisündmuste loomine kuupäevade põhjal</translation>
 <translation id="5222676887888702881">Logi välja</translation>
-<translation id="5228579091201413441">Sünkroonimise lubamine</translation>
 <translation id="5233638681132016545">Uus vaheleht</translation>
 <translation id="5234094073825090254">{count,plural, =1{Järjehoidja salvestati teie Google'i kontole {email}.}other{Järjehoidjad salvestati teie Google'i kontole {email}.}}</translation>
 <translation id="5234764350956374838">Loobu</translation>
@@ -1135,6 +1134,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5859715514067755465">Edasi</translation>
 <translation id="5860033963881614850">Väljas</translation>
 <translation id="5860491529813859533">Lülita sisse</translation>
+<translation id="5868644772996939262">Paroolide ja pääsuvõtmete automaattäide</translation>
 <translation id="5869522115854928033">Salvestatud paroolid</translation>
 <translation id="5878899964490256268"><ph name="EMAIL" />. Haldab teie organisatsioon.</translation>
 <translation id="5888889603768021126">Sisse logitud teenusega</translation>
@@ -1238,7 +1238,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6284652193729350524">Paku tõlkimist keelde <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Kanali <ph name="CHANNEL_NAME" /> jälgimine lõpetati</translation>
 <translation id="6293101329759844770">Google'i ohutu sirvimise sisselülitamiseks avage jaotis <ph name="BEGIN_LINK" />Google'i teenused<ph name="END_LINK" /> ja puudutage valikut Google'i ohutu sirvimine.</translation>
-<translation id="6295434468271563378">Allalaaditavate failide automaatne kustutamine</translation>
 <translation id="6295751040240588413">Kaardi sobimatu hüüdnimi</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6301104306974789820">Hankige hinna jälgimise teavitusi</translation>
@@ -1572,7 +1571,6 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7669493687462784703">Kas soovite jätkata seadistusprofiili allalaadimist saidilt <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Inkognito režiimis sirvimiseks võite pühkida vasakule.</translation>
 <translation id="7679915578945954324">Saidi aadress kopeeriti</translation>
-<translation id="769134787192530091">Vahelehtede sünkroonimine …</translation>
 <translation id="7696316012653762532">Lehe tõlkimise võimalused</translation>
 <translation id="7700527812567437847">Otsige ekraanilt Google Lensiga</translation>
 <translation id="7701040980221191251">Pole</translation>
@@ -1730,7 +1728,6 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8283172974887967105">Määra …</translation>
 <translation id="8289930144142009940">Kanali <ph name="FEATURE_NAME" /> märguanded on välja lülitatud</translation>
 <translation id="8299417921174340354">Paroolide kasutamiseks peate oma seadmes esmalt pääsukoodi seadistama.</translation>
-<translation id="8299613349954694191">Avage inkognito vaheleht ja sirvige veebi privaatselt.</translation>
 <translation id="8307481894409578819">Seda faili ei saanud üles laadida</translation>
 <translation id="8319076807703933069">Uus otsing</translation>
 <translation id="833647236762414178">Looge, salvestage ja hallake oma paroole ning pääsuvõtmeid, et saaksite hõlpsalt saitidele ja rakendustesse sisse logida. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>

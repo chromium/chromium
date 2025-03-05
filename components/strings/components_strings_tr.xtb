@@ -3010,7 +3010,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6322182122604171028">Windows Hello kullanılamadı</translation>
 <translation id="6326947323444967009">Chrome'u iOS ayarlarından sistemin varsayılan tarayıcısı olarak ayarlayın.</translation>
 <translation id="6328639280570009161">Ağ tahmin özelliğini devre dışı bırakmayı deneyin</translation>
-<translation id="6328784461820205019">"Bağlantınız gizli değil", "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" veya "SSL sertifika hatası"</translation>
 <translation id="6335029926534404762">Spor Ayakkabıları</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> boyutundan daha az yer açar. Bir sonraki ziyaretinizde bazı siteler daha yavaş yüklenebilir.</translation>
 <translation id="6337534724793800597">Politikaları ada göre filtrele</translation>
@@ -3730,6 +3729,7 @@ Ek ayrıntılar:
 <translation id="7569983096843329377">Siyah</translation>
 <translation id="7574998639136359461">Kış Sporları Gereçleri</translation>
 <translation id="7575207903026901870">Öneriyi Kaldır düğmesi, bu öneriyi kaldrımak için Enter tuşuna basın</translation>
+<translation id="7575800019233204241">"Bağlantınız gizli değil", "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" veya "SSL sertifika hatası"</translation>
 <translation id="7575887283389198269">Cep Telefonları</translation>
 <translation id="7578104083680115302">Google'a kaydettiğiniz kartları kullanarak farklı cihazlardan sitelerde ve uygulamalarda ödemelerinizi hızla yapabilirsiniz.</translation>
 <translation id="7579442726219254162">"<ph name="APPLICATION_ID" />" uygulamasının yönetilen yapılandırmasında bilinmeyen "<ph name="VARIABLE" />" değişkeni.</translation>

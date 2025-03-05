@@ -6,6 +6,7 @@
 <translation id="1044891598689252897">사이트가 정상적으로 작동합니다.</translation>
 <translation id="1070329623210597193">이 사이트에서 볼 수 있거나 수정할 수 있는 파일</translation>
 <translation id="1073417869336441572">서드 파티 쿠키를 허용한 이유를 알려주시면 Chrome을 개선하는 데 도움이 됩니다. <ph name="BEGIN_LINK" />의견 보내기<ph name="END_LINK" /></translation>
+<translation id="1074758928858737435">사이트의 데스크톱 버전을 표시하도록 요청할 수 있습니다.</translation>
 <translation id="1085696779717592361">Chrome을 기본 브라우저로 사용</translation>
 <translation id="1178581264944972037">일시중지</translation>
 <translation id="1181037720776840403">삭제</translation>
@@ -32,6 +33,7 @@
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 사이트}other{<ph name="SITE_COUNT" /> 사이트}}</translation>
 <translation id="1500473259453106018">탭에 가격 인하 정보 숨기기 카드</translation>
 <translation id="1510341833810331442">사이트에서 기기에 데이터를 저장할 수 없습니다.</translation>
+<translation id="1538031354170655462">사이트에서는 일반적으로 근거리 무선통신(NFC)을 사용하여 배지를 스캔하거나 비접촉 결제하는 등 근처의 태그 또는 기기와 상호작용합니다.</translation>
 <translation id="1547123415014299762">서드 파티 쿠키 허용됨</translation>
 <translation id="1593426485665524382">화면 상단에서 새로운 작업 가능</translation>
 <translation id="1620510694547887537">카메라</translation>
@@ -115,6 +117,7 @@
 <translation id="2677748264148917807">나가기</translation>
 <translation id="2682367912565197520">저장된 확대/축소 수준 삭제</translation>
 <translation id="2683434792633810741">삭제하고 재설정하시겠습니까?</translation>
+<translation id="2685514716378236873">허용되지 않음</translation>
 <translation id="2713106313042589954">카메라 끄기</translation>
 <translation id="2717722538473713889">이메일 주소</translation>
 <translation id="2726059656860238749">검색주소창에 초점을 맞춘 Chrome을 실행하여 저사양 기기의 시작 시간을 줄입니다.</translation>
@@ -211,12 +214,14 @@
 <translation id="3955193568934677022">사이트에서 보호된 콘텐츠를 재생하도록 허용(권장)</translation>
 <translation id="3965467402665811906">사이트에서 나에 관해 저장된 정보 사용을 요청할 수 있음</translation>
 <translation id="3967822245660637423">다운로드 완료</translation>
+<translation id="3981465354637804599">사이트에서는 일반적으로 콘텐츠나 서비스를 무료로 제공하기 위해 광고를 표시합니다. 그러나 일부 사이트는 방해가 되거나 사용자를 현혹하는 광고를 표시하는 것으로 알려져 있습니다.</translation>
 <translation id="3987993985790029246">링크 복사</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="3992308058851451478"><ph name="SITE" />에서 인터넷을 사용하는 동안 내 정보를 사용할 수 있음</translation>
 <translation id="3992684624889376114">이 페이지에 관한 정보</translation>
 <translation id="4002066346123236978">제목</translation>
 <translation id="4046123991198612571">다음 트랙</translation>
+<translation id="4077310749977440510">사이트에서는 일반적으로 복사한 텍스트 서식 유지와 같은 기능을 사용하기 위해 클립보드를 읽습니다.</translation>
 <translation id="4149890623864272035">쿠키를 포함한 모든 로컬 데이터를 삭제하고 이 웹사이트에 대한 권한을 모두 재설정하시겠습니까?</translation>
 <translation id="4149994727733219643">웹페이지 간단히 보기</translation>
 <translation id="4151930093518524179">기본 확대/축소</translation>
@@ -224,6 +229,7 @@
 <translation id="4169549551965910670">USB 기기에 연결되었습니다.</translation>
 <translation id="4194328954146351878">사이트에서 NFC 기기의 정보를 보고 변경하도록 허용하기 전에 확인(권장)</translation>
 <translation id="4200726100658658164">위치 설정 열기</translation>
+<translation id="421742575134139848">사이트에서는 음악, 동영상, 기타 미디어의 오디오를 제공하기 위해 소리를 재생할 수 있습니다.</translation>
 <translation id="4226663524361240545">알림이 있으면 진동이 울릴 수도 있습니다.</translation>
 <translation id="4259722352634471385">탐색이 차단됨: <ph name="URL" /></translation>
 <translation id="4274673989874969668">사이트에서 나간 후에도 사이트가 동기화를 계속하여 사진 업로드나 채팅 메시지 전송과 같은 작업을 마무리합니다.</translation>
@@ -247,6 +253,7 @@
 <translation id="4566417217121906555">마이크 음소거</translation>
 <translation id="4570913071927164677">세부정보</translation>
 <translation id="4598549027014564149">시크릿 모드인 경우 사이트에서 쿠키를 사용해 관련 사이트 등 사용자의 사이트 탐색 활동을 볼 수 없습니다. 사용자의 탐색 활동은 광고 개인 최적화 등의 목적으로 사용되지 않습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
+<translation id="461356340001513807">가지고 있는 ID 서비스 계정으로 웹사이트에 로그인할 수 있습니다.</translation>
 <translation id="4619615317237390068">다른 기기의 탭</translation>
 <translation id="4644713492825682049">삭제 및 재설정</translation>
 <translation id="4645575059429386691">부모님이 관리합니다.</translation>
@@ -430,6 +437,7 @@
 <translation id="7000754031042624318">Android 설정에서 사용 중지됨</translation>
 <translation id="702275896380648118">이 사이트는 내 관심분야를 파악한 후 다른 사이트에 광고를 추천합니다. Chrome에 저장된 내 광고 주제를 기반으로 더 관련성 있는 광고를 표시합니다.</translation>
 <translation id="7053983685419859001">차단</translation>
+<translation id="7055552182600664515">저작권으로 보호되는 콘텐츠를 재생하려면 사이트에서 콘텐츠 보호 서비스를 사용해야 할 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1개 선택됨}other{#개 선택됨}}</translation>
 <translation id="708014373017851679">'<ph name="APP_NAME" />' 앱이 최신 버전이 아닙니다. 앱을 업데이트하세요.</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" />개 선택됨. 화면 상단에서 옵션 선택 가능</translation>

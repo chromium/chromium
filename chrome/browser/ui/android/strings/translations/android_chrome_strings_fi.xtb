@@ -146,6 +146,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="160275202205869636">Kun tämä on päällä, voit tallentaa dataa Google-tilille ja käyttää sitä. Kun asetus on pois päältä, data tallennetaan vain tälle laitteelle.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Poista 1 valittu kohde}other{Poista # valittua kohdetta}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 kirjanmerkki ja muita kohteita tallennetaan vain tälle laitteelle. Jos haluat käyttää niitä muilla laitteilla, tallenna ne Google-tilillesi (<ph name="ACCOUNT_EMAIL" />).}other{# kirjanmerkkiä ja muita kohteita tallennetaan vain tälle laitteelle. Jos haluat käyttää niitä muilla laitteilla, tallenna ne Google-tilillesi (<ph name="ACCOUNT_EMAIL" />).}}</translation>
+<translation id="1639239467298939599">Ladataan</translation>
 <translation id="1641113438599504367">Selaussuoja</translation>
 <translation id="164269334534774161">Katselet sivun offline-kopiota, joka luotiin <ph name="CREATION_TIME" />.</translation>
 <translation id="1644574205037202324">Historia</translation>
@@ -549,6 +550,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3566639033325271639">Päivitä asetukset</translation>
 <translation id="3568945271227339929">Ei vaarantuneita salasanoja</translation>
 <translation id="357465026686164600">Puhelin suojausavaimena</translation>
+<translation id="3575464060651642446">Tarkistetaan salasanoja tällä laitteella…</translation>
 <translation id="3577473026931028326">Jotain meni pieleen. Yritä uudelleen.</translation>
 <translation id="3577558748185201054">Ylläpidä kiinnostuksen kohteita ja valintoja</translation>
 <translation id="3587482841069643663">Kaikki</translation>

@@ -3012,7 +3012,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6322182122604171028">Nepavyko naudoti „Windows Hello“</translation>
 <translation id="6326947323444967009">Nustatyti „Chrome“ kaip numatytąją sistemos naršyklę „iOS“ nustatymuose</translation>
 <translation id="6328639280570009161">Bandykite neleisti tinklo numatymo</translation>
-<translation id="6328784461820205019">„Ryšys nėra privatus“, „&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;“, „&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;“, „&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;“, „&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;“ arba „SSL sertifikato klaida“</translation>
 <translation id="6335029926534404762">Sportiniai bateliai</translation>
 <translation id="6337133576188860026">Atlaisvina mažiau nei <ph name="SIZE" />. Per kitą jūsų apsilankymą kai kurios svetainės gali būti įkeliamos lėčiau.</translation>
 <translation id="6337534724793800597">Filtruoti politiką pagal pavadinimą</translation>
@@ -3733,6 +3732,7 @@ Papildoma išsami informacija:
 <translation id="7569983096843329377">Juoda</translation>
 <translation id="7574998639136359461">Žiemos sporto įranga</translation>
 <translation id="7575207903026901870">Pašalinkite pasiūlymo mygtuką, paspauskite „Enter“, kad pašalintumėte šį pasiūlymą</translation>
+<translation id="7575800019233204241">„Ryšys nėra privatus“, „&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;“, „&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;“, „&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;“ arba „SSL sertifikato klaida“</translation>
 <translation id="7575887283389198269">Mobilieji telefonai</translation>
 <translation id="7578104083680115302">Greitai mokėkite svetainėse ir programose įvairiuose įrenginiuose naudodami korteles, kurias išsaugojote „Google“.</translation>
 <translation id="7579442726219254162">Nežinomas kintamasis „<ph name="VARIABLE" />“ valdomoje „<ph name="APPLICATION_ID" />“ konfigūracijoje.</translation>

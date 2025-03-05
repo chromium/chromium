@@ -1365,7 +1365,6 @@
 <translation id="1936157145127842922">फोल्डरमा देखाउनुहोस्</translation>
 <translation id="1936931585862840749">प्रिन्ट गर्नु पर्ने प्रतिको सङ्ख्या तोक्न (१ देखि <ph name="MAX_COPIES" /> सम्मको) कुनै सङ्ख्या प्रयोग गर्नुहोस्।</translation>
 <translation id="1937774647013465102">यस यन्त्रमार्फत <ph name="ARCHITECTURE_DEVICE" />प्रकारको कन्टेनरसम्बन्धी वास्तुकला <ph name="ARCHITECTURE_CONTAINER" /> इम्पोर्ट गर्न सकिएन। तपाईं यो कन्टेनरलाई फरक यन्त्रमा पुनर्स्थापना गरी हेर्न सक्नुहुन्छ अथवा तपाईं Files एपमार्फत खोलेर यस कन्टेनरसम्बन्धी छविभित्रका फाइलहरूमाथि पहुँच राख्न सक्नुहुन्छ।</translation>
-<translation id="1938116692670653897">हाल प्रयोग गरिएको कलर थिम</translation>
 <translation id="1938351510777341717">बाह्य आदेश</translation>
 <translation id="1940221956626514677">टुलबार कस्टमाइज गर्नुहोस्</translation>
 <translation id="1940546824932169984">कनेक्ट गरिएका डिभाइस</translation>
@@ -4001,7 +4000,7 @@
 <translation id="3788301286821743879">kiosk एप सुरु गर्न सकिएन।</translation>
 <translation id="3788401245189148511">यसले सक्छ:</translation>
 <translation id="3789432704615470433">SharePoint र OneDrive मा भएका फाइलहरू</translation>
-<translation id="3789841737615482174">स्थापना गर्नुहोस्</translation>
+<translation id="3789841737615482174">इन्स्टल गर्नुहोस्</translation>
 <translation id="3790417903123637354">कुनै समस्या आयो। पछि फेरि प्रयास गर्नुहोस्</translation>
 <translation id="379082410132524484">तपाईंको कार्डको म्याद सकियो</translation>
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> वटा एक्स्टेन्सन</translation>
@@ -4064,6 +4063,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{एउटा एक्स्टेन्सन स्वीकार गरिएको छ}other{# वटा एक्स्टेन्सन स्वीकार गरिएको छ}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux प्रयोग गर्न कम्तीमा पनि <ph name="INSTALL_SIZE" /> ठाउँ खाली राख्न सिफारिस गरिन्छ।</translation>
+<translation id="3824203811509979971">कन्टेन्टको सारांश बनाउनुहोस् वा प्रश्नहरू सोध्नुहोस्</translation>
 <translation id="3824621460022590830">यन्त्र दर्ता गर्न प्रयोग गरिने टोकन अवैध छ। कृपया आफ्नो डिभाइसका मालिक वा एड्मिनसँग सम्पर्क गर्नुहोस्। त्रुटिको कोड: <ph name="ERROR_CODE" />।</translation>
 <translation id="3824757763656550700">अन्य डिभाइसका ट्याबहरू हेर्न साइन इन गर्नुहोस्</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{यो प्रकारको फाइलका हकमा मेरो रोजाइ याद राख्नुहोस्: <ph name="FILE_TYPES" />}other{यी प्रकारका फाइलका हकमा मेरो रोजाइ याद राख्नुहोस्: <ph name="FILE_TYPES" />}}</translation>
@@ -4249,6 +4249,7 @@
 <translation id="3948985214866944547">अधिकांश मान्छेहरू यो साइटका हकमा सटीक लोकेसन सेयर गर्न रोक लगाउँछन्</translation>
 <translation id="394984172568887996">IE बाट आयात गरिएको</translation>
 <translation id="3949999964543783947">सुरक्षित तरिकाले फाइलहरू डाउनलोड गर्न <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
+<translation id="3950479158728806902">अझ छिटो साइन इन गर्नका निम्ति पासकी स्वतः बनाउनुहोस्</translation>
 <translation id="3950820424414687140">साइन इन गर्नुहोस्</translation>
 <translation id="3950841222883198950">भ्वाइस टाइपिङ</translation>
 <translation id="3953834000574892725">मेरा खाताहरू</translation>
@@ -5177,6 +5178,7 @@
 <translation id="4624054169152573743">कलर थिम</translation>
 <translation id="4625078469366263107">एप सक्षम पार्नुहोस्</translation>
 <translation id="4625905218692741757">डिफल्ट खरानी रङ</translation>
+<translation id="4627107755957573804">साइट तथा एपहरूले पासकी प्रयोग गर्न सकून् भन्नाका लागि तिनलाई हालका खाताहरू अपग्रेड गर्ने अनुमति दिनुहोस्</translation>
 <translation id="4627442949885028695">अर्को यन्त्रबाट जारी राख्नुहोस्</translation>
 <translation id="4628762811416793313">Linux कन्टेनर सेटअप गर्ने कार्य पूरा भएन। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> नामक प्रोफाइल खोल्नुहोस्</translation>
@@ -5760,6 +5762,7 @@
 <translation id="5053233576223592551">युजरनेम हाल्नुहोस्</translation>
 <translation id="505347685865235222">नाम नभएको समूह - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{तपाईंले अहिले नै यो पासवर्ड बदल्नु पर्छ}other{तपाईंले अहिले नै यी पासवर्डहरू बदल्नु पर्छ}}</translation>
+<translation id="5056587122125565772">फोटो बनाउनुहोस्</translation>
 <translation id="5056950756634735043">कन्टेनरमा कनेक्ट गरिँदै छ</translation>
 <translation id="5057110919553308744">तपाईंले विस्तारमा क्लिक गर्दा</translation>
 <translation id="5057127674016624293">स्क्यान गर्न अपेक्षा गरेभन्दा बढी समय लागिरहेको छ</translation>
@@ -5870,6 +5873,7 @@
 <translation id="512642543295077915">सर्च + ब्याकस्पेस</translation>
 <translation id="5126611267288187364">परिवर्तनहरू हेर्नुहोस्</translation>
 <translation id="5127620150973591153">सुरक्षित कनेक्सन ID: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">कन्टेन्टको सारांश बनाउनुहोस् वा प्रश्नहरू सोध्नुहोस्।</translation>
 <translation id="5127881134400491887">नेटवर्क जडानहरू व्यवस्थित गर्नुहोस्</translation>
 <translation id="5127934926273826089">फूलहरू</translation>
 <translation id="5127986747308934633">तपाईंका एड्मिनले तपाईंको डिभाइस नियन्त्रण गरिरहनुभएको छ</translation>
@@ -10137,6 +10141,7 @@
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> अफ गर्नुहोस्</translation>
 <translation id="8195920051450756553">एउटै की फेरि एक्टिभेट हुन लाग्ने समय</translation>
 <translation id="8197673340773315084">"कार्य" वा "व्यक्तिगत" जस्तो कुनै नाम वा लेबल हाल्नुहोस्</translation>
+<translation id="8198181050118789419">थिम: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">ट्याब कास्ट गरिँदै छ</translation>
 <translation id="8199300056570174101">नेटवर्क (सेवा) र डिभाइसका गुणहरू</translation>
 <translation id="8200772114523450471">रिजुमी</translation>
@@ -11393,6 +11398,7 @@
 <translation id="9074739597929991885">ब्लुटुथ</translation>
 <translation id="9074836595010225693">USB माउस जडित</translation>
 <translation id="9075413375877487220">परिष्कृत Safe Browsing का अनुसार यो एक्स्टेन्सन सुरक्षित छैन।</translation>
+<translation id="9075985558450420812">फोटो बनाउनका निम्ति कस्टम प्रम्प्ट हाल्नुहोस् वा टेक्स्ट हाइलाइट गर्नुहोस्।</translation>
 <translation id="9076523132036239772">माफ गर्नुहोस्, तपाइँको इमेल वा पासवर्ड रुजू गर्न सकिएन। पहिला एक सञ्जालमा जडान गर्ने प्रयास गर्नुहोस्।</translation>
 <translation id="9076821103818989526">साइड प्यानल</translation>
 <translation id="9076977315710973122">SMB मार्फत सेयर गर्ने सेटिङ</translation>

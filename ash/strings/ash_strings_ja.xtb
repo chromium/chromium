@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">フィードバックを送信</translation>
 <translation id="1059120031266247284">共有されました</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> と削除ボタン</translation>
 <translation id="1062407476771304334">置換</translation>
 <translation id="1073899992769346247">バッテリーを交換または充電してください</translation>
 <translation id="1081015718268701546">Linux アプリは現在サポートされていません。他のアプリは保存されます。</translation>
@@ -323,6 +324,7 @@
 <translation id="2083190527011054446">おやすみなさい、<ph name="GIVEN_NAME" /> さん</translation>
 <translation id="2086334242442703436">絵文字選択ツールを開く</translation>
 <translation id="2088116547584365419">ゲーム</translation>
+<translation id="2092517835716911174">文書読解サポートと文書作成サポートを使用するには、18 歳以上である必要があります。</translation>
 <translation id="209965399369889474">ネットワークに接続されていません</translation>
 <translation id="2107581415810719320">他のボタン <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C ケーブルは Thunderbolt に対応していません。デバイスのパフォーマンスが制限される可能性があります。</translation>
@@ -1228,6 +1230,7 @@
 <translation id="5043679421800073804">シェルフで最後のアイコンをクリックまたはタップします</translation>
 <translation id="504465286040788597">前の段落</translation>
 <translation id="5045550434625856497">パスワードが正しくありません</translation>
+<translation id="5056587122125565772">画像を作成</translation>
 <translation id="5058794129231928255">Google ドキュメントを作成できませんでした</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">ミュートしているときに話すと、通知されます。音声がデバイスの外部に送信されることはありません。</translation>
@@ -1276,6 +1279,7 @@
 <translation id="5222676887888702881">ログアウト</translation>
 <translation id="5228195526683428788">分割画面の分割線</translation>
 <translation id="5229343007215035173">プライバシー画面のオン / オフを切り替える</translation>
+<translation id="5229860525743792999">提案グループから <ph name="ITEM_LABEL" /> を削除</translation>
 <translation id="5230516054153933099">ウィンドウ</translation>
 <translation id="5234764350956374838">閉じる</translation>
 <translation id="523505283826916779">ユーザー補助機能の設定</translation>
@@ -1758,6 +1762,7 @@
 <translation id="6757237461819837179">再生中のメディアはありません</translation>
 <translation id="6760438044935091345">ゲーム ダッシュボード</translation>
 <translation id="6768043681523654438">ストレージ</translation>
+<translation id="6769195697113506406">画像を挿入しました</translation>
 <translation id="6777216307882431711">接続された USB-C デバイスを充電中</translation>
 <translation id="6781002679438061620">デスク 9</translation>
 <translation id="6782182743534150858">デスク 13</translation>
@@ -1985,6 +1990,7 @@
 <translation id="7571361473021531288">バッテリー残量 <ph name="BATTERY_PERCENTAGE" />% | 残り使用時間 <ph name="TIME" /></translation>
 <translation id="7573585051776738856">アクティブなウィンドウを右側に固定しました。</translation>
 <translation id="7579778809502851308">スクリーン キャプチャ</translation>
+<translation id="7588317312481506627">クリップボードにコピーしました。</translation>
 <translation id="7593891976182323525">検索/Shift</translation>
 <translation id="7598054670902114203">CPU 使用状況のスナップショット、<ph name="CPU_USEAGE" />%。気温 <ph name="TEMPERATURE" /> 度（摂氏）、現在の速度: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">選択した結果を挿入します</translation>
@@ -2179,6 +2185,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> の情報ダイアログを開きます</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> を使用しています</translation>
 <translation id="8168435359814927499">コンテンツ</translation>
+<translation id="81817143961839203">画像を挿入できませんでした</translation>
 <translation id="8185090165691050712">ロックモードのサイズ変更メニューのオンとオフを切り替えます</translation>
 <translation id="8192727139462702395">Bluetooth をオフにすると、次の外部デバイスが <ph name="DEVICE_TYPE" /> と接続解除されます。</translation>
 <translation id="8198456017687137612">タブをキャスト中</translation>
@@ -2257,6 +2264,7 @@
 <translation id="8473301994082929012"><ph name="FEATURE_NAME" />は <ph name="ORGANIZATION_NAME" /> により<ph name="FEATURE_STATE" />に設定されています。</translation>
 <translation id="8477270416194247200">キャンセルするには Alt+ 検索キーまたは Shift キーを押します。</translation>
 <translation id="8480418399907765580">ツールバーを表示</translation>
+<translation id="8487660088084188539">これらの機能をオンにすると、入力したテキスト、ドキュメントの内容、ウェブページの URL が Google サーバーに送信されることがあります。この情報は、<ph name="LINK_TO_SERVICE_TERMS" /> に沿って、文章作成の提案や要約の生成、質問への回答、サービスの改善に使用されます。個人情報や機密情報は含めないでください。</translation>
 <translation id="8487699605742506766">アクセス ポイント</translation>
 <translation id="8491237443345908933">新しいタブでリンクを開く</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> は <ph name="SPECIFIED_RESOLUTION" /> に対応していません。解像度を <ph name="FALLBACK_RESOLUTION" /> に変更しました。変更を保存するには確定してください。<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
@@ -2326,6 +2334,7 @@
 <translation id="8725066075913043281">もう一度試す</translation>
 <translation id="8725214031272624704">利用可能な入力方法のリストを表示する</translation>
 <translation id="8730621377337864115">完了</translation>
+<translation id="8731188831050207755"><ph name="FILE_NAME" /> をダウンロードできませんでした。</translation>
 <translation id="8731487213223706745"><ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /> に終了</translation>
 <translation id="8734991477317290293">キー入力が読み取られる可能性があります</translation>
 <translation id="8735678380411481005">キーボードのバックライトの色</translation>

@@ -1368,7 +1368,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1936157145127842922">Mostrar en carpeta</translation>
 <translation id="1936931585862840749">Usa un número para indicar cuántas copias quieres imprimir (entre 1 y <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">No se puede importar el tipo de arquitectura de contenedores <ph name="ARCHITECTURE_CONTAINER" /> con este dispositivo, que es <ph name="ARCHITECTURE_DEVICE" />. Intenta restaurar este contenedor en otro dispositivo o accede a los archivos de esta imagen de contenedor abriéndola en la aplicación Archivos.</translation>
-<translation id="1938116692670653897">Tema de color actual</translation>
 <translation id="1938351510777341717">Tecla Comando externa</translation>
 <translation id="1940221956626514677">Personalizar barra de herramientas</translation>
 <translation id="1940546824932169984">Dispositivos conectados</translation>

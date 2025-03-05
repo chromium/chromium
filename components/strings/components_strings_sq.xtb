@@ -3009,7 +3009,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6322182122604171028">Windows Hello nuk mund të përdorej</translation>
 <translation id="6326947323444967009">Cakto Chrome si shfletuesin e parazgjedhur të sistemit te cilësimet e iOS</translation>
 <translation id="6328639280570009161">Provo çaktivizimin e parashikimit të rrjetit</translation>
-<translation id="6328784461820205019">"Lidhja jote nuk është private" ose "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" ose "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" ose "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" ose "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" ose "Gabim i certifikatës SSL"</translation>
 <translation id="6335029926534404762">Atlete</translation>
 <translation id="6337133576188860026">Liron më pak se <ph name="SIZE" />. Disa sajte mund të ngarkohen më ngadalë gjatë vizitës tënde të radhës.</translation>
 <translation id="6337534724793800597">Filtro politikat sipas emrit</translation>
@@ -3728,6 +3727,7 @@ Detaje shtesë:
 <translation id="7569983096843329377">E zezë</translation>
 <translation id="7574998639136359461">Pajisje për sporte dimërore</translation>
 <translation id="7575207903026901870">Butoni "Hiq sugjerimin", shtyp Enter për ta hequr këtë sugjerim</translation>
+<translation id="7575800019233204241">"Lidhja jote nuk është private" ose "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" ose "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" ose "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" ose "Gabim i certifikatës SSL"</translation>
 <translation id="7575887283389198269">Celularë</translation>
 <translation id="7578104083680115302">Paguaj me shpejtësi në sajte dhe aplikacione mes pajisjeve të ndryshme duke përdorur kartat që ke ruajtur me Google.</translation>
 <translation id="7579442726219254162">Ndryshorja e panjohur "<ph name="VARIABLE" />" në konfigurimin e menaxhuar të "<ph name="APPLICATION_ID" />".</translation>

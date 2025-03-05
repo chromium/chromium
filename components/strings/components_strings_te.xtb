@@ -3006,7 +3006,6 @@
 <translation id="6322182122604171028">Windows Helloను ఉపయోగించడం సాధ్యం కాలేదు</translation>
 <translation id="6326947323444967009">iOS సెట్టింగ్‌లలో Chromeను సిస్టమ్ ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయండి</translation>
 <translation id="6328639280570009161">నెట్‌వర్క్ సూచనను నిలిపివేసి ప్రయత్నించండి</translation>
-<translation id="6328784461820205019">"మీ కనెక్షన్ ప్రైవేట్ కాదు" లేదా "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" లేదా "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" లేదా "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" లేదా "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" లేదా "SSL సర్టిఫికెట్ ఎర్రర్"</translation>
 <translation id="6335029926534404762">క్రీడాకారుల షూస్</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> కంటే తక్కువ స్థలాన్ని ఖాళీ చేస్తుంది. మీ తదుపరి సందర్శనలో కొన్ని సైట్‌లు మరింత నెమ్మదిగా లోడ్ కావచ్చు.</translation>
 <translation id="6337534724793800597">పేరు ద్వారా విధానాలను ఫిల్టర్ చేయి</translation>
@@ -3020,6 +3019,7 @@
 <translation id="6351658970066645919">బ్రౌజింగ్ డేటాను తొలగించండి</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ఏవీ లేవు}=1{1 పాస్‌వర్డ్ (<ph name="DOMAIN_LIST" />కు చెందినది, సింక్ చేయబడింది)}=2{2 పాస్‌వర్డ్‌లు (<ph name="DOMAIN_LIST" />కు చెందినవి, సింక్ చేయబడ్డాయి)}other{# పాస్‌వర్డ్‌లు (<ph name="DOMAIN_LIST" />కు చెందినవి, సింక్ చేయబడ్డాయి)}}</translation>
 <translation id="6355392890578844978">ఈ బ్రౌజర్ కంపెనీ లేదా ఇతర సంస్థ ద్వారా మేనేజ్ చేయబడదు. ఈ పరికరంలోని యాక్టివిటీని Chromium వెలుపల మేనేజ్ చేస్తుండవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">"<ph name="GROUP_TITLE_1" />", "<ph name="GROUP_TITLE_2" />" ట్యాబ్ గ్రూప్‌లు ఇకపై అందుబాటులో ఉండవు</translation>
 <translation id="6358088212770985041">పేమెంట్ ఆప్షన్‌లను ఎడిట్ చేయండి</translation>
 <translation id="6358450015545214790">దీని అర్ధం ఏమిటి?</translation>
 <translation id="6360213755783740931">మాల్‌వేర్ రక్షణ గురించి మరింత తెలుసుకోండి</translation>
@@ -3726,6 +3726,7 @@
 <translation id="7569983096843329377">నలుపు</translation>
 <translation id="7574998639136359461">శీతాకాలపు క్రీడలకు సంబంధించిన ఎక్విప్‌మెంట్</translation>
 <translation id="7575207903026901870">సూచన బటన్‌ను తీసివేసి, ఈ సూచనను తీసివేయడానికి ఎంటర్ నొక్కండి</translation>
+<translation id="7575800019233204241">"మీ కనెక్షన్ ప్రైవేట్‌గా లేదు" లేదా "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" లేదా "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" లేదా "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" లేదా "SSL సర్టిఫికేట్ ఎర్రర్"</translation>
 <translation id="7575887283389198269">మొబైల్ ఫోన్‌లు</translation>
 <translation id="7578104083680115302">మీరు Googleతో సేవ్ చేసిన కార్డ్‌లను ఉపయోగించి పరికరాల్లోని సైట్‌లు మరియు యాప్‌లలో శీఘ్రంగా పేమెంట్ చేయండి.</translation>
 <translation id="7579442726219254162">మేనేజ్ చేసిన కాన్ఫిగరేషన్ "<ph name="APPLICATION_ID" />"లో తెలియని వేరియబుల్ "<ph name="VARIABLE" />" ఉంది.</translation>

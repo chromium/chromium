@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">প্রতিক্রিয়া জানান</translation>
 <translation id="1059120031266247284">আপনার সাথে শেয়ার করা হয়েছে</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176">সরানোর বোতাম সহ <ph name="ITEM_LABEL" /></translation>
 <translation id="1062407476771304334">প্রতিস্থাপন করুন</translation>
 <translation id="1073899992769346247">ব্যাটারিটি বদলান বা রিচার্জ করুন</translation>
 <translation id="1081015718268701546">Linux অ্যাপ বর্তমানে কাজ করে না। অন্যান্য অ্যাপ সেভ করা হবে।</translation>
@@ -1228,6 +1229,7 @@
 <translation id="5043679421800073804">শেল্ফের শেষ আইকনে ক্লিক করুন বা ট্যাপ করুন</translation>
 <translation id="504465286040788597">পূর্ববর্তী অনুচ্ছেদ</translation>
 <translation id="5045550434625856497">ভুল পাসওয়ার্ড</translation>
+<translation id="5056587122125565772">ছবি তৈরি করুন</translation>
 <translation id="5058794129231928255">Google Doc তৈরি করা যায়নি</translation>
 <translation id="5062496344832867502">রাম</translation>
 <translation id="5068762093486106012">মিউট করা অবস্থায় আপনি কথা বললে, আপনাকে তা জানানো হবে। অডিও সব সময় আপনার ডিভাইসেই থেকে যায়।</translation>
@@ -1276,6 +1278,7 @@
 <translation id="5222676887888702881">সাইন-আউট করুন</translation>
 <translation id="5228195526683428788">স্প্লিট স্ক্রিন বিভাজক</translation>
 <translation id="5229343007215035173">প্রাইভেসি স্ক্রিন চালু/বন্ধ করুন</translation>
+<translation id="5229860525743792999">সাজেস্ট করা গ্রুপ থেকে <ph name="ITEM_LABEL" /> সরান</translation>
 <translation id="5230516054153933099">উইন্ডো</translation>
 <translation id="5234764350956374838">খারিজ</translation>
 <translation id="523505283826916779">অ্যাক্সেসিবিলিটি সেটিংস</translation>
@@ -1758,6 +1761,7 @@
 <translation id="6757237461819837179">কোনও মিডিয়া চলছে না</translation>
 <translation id="6760438044935091345">গেম ড্যাশবোর্ড</translation>
 <translation id="6768043681523654438">স্টোরেজ</translation>
+<translation id="6769195697113506406">ছবি যোগ করা হয়েছে</translation>
 <translation id="6777216307882431711">কানেক্ট করা USB-C ডিভাইসগুলি চার্জ করা হচ্ছে</translation>
 <translation id="6781002679438061620">ডেস্ক ৯</translation>
 <translation id="6782182743534150858">ডেস্ক ১৩</translation>
@@ -1985,6 +1989,7 @@
 <translation id="7571361473021531288">ব্যাটারিতে আর <ph name="BATTERY_PERCENTAGE" />% চার্জ | <ph name="TIME" /> বাকি আছে</translation>
 <translation id="7573585051776738856">অ্যাক্টিভ উইন্ডোটি ডানদিকে ডক করা আছে।</translation>
 <translation id="7579778809502851308">স্ক্রিন ক্যাপচার করুন</translation>
+<translation id="7588317312481506627">ক্লিপবোর্ডে কপি করা হয়েছে।</translation>
 <translation id="7593891976182323525">Search অথবা Shift</translation>
 <translation id="7598054670902114203">সিপিইউ (CPU) ব্যবহারের স্ন্যাপশট, <ph name="CPU_USEAGE" />%। তাপমাত্রা <ph name="TEMPERATURE" /> ডিগ্রি সেলসিয়াস, বর্তমান স্পিড: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> গিগাহার্ৎজ</translation>
 <translation id="7599378375976398913">বেছে নেওয়া ফলাফল ইনপুট ফিল্ডে যোগ করা হচ্ছে</translation>
@@ -2179,6 +2184,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" />-এর জন্য তথ্য সংক্রান্ত ডায়ালগ খুলুন</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> ব্যবহার করা হচ্ছে</translation>
 <translation id="8168435359814927499">কন্টেন্ট</translation>
+<translation id="81817143961839203">ছবি ইনসার্ট করা যায়নি</translation>
 <translation id="8185090165691050712">লক মোড ছোট বড় করতে মেনু চালু/বন্ধ করুন</translation>
 <translation id="8192727139462702395">আপনি ব্লুটুথ বন্ধ করলে, আপনার <ph name="DEVICE_TYPE" /> থেকে এইসব এক্সটার্নাল ডিভাইস ডিসকানেক্ট হয়ে যাবে:</translation>
 <translation id="8198456017687137612">কাস্ট করার ট্যাব</translation>
@@ -2257,6 +2263,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />-এর <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />।</translation>
 <translation id="8477270416194247200">Alt+Search টিপুন বা বাতিল করতে Shift টিপুন</translation>
 <translation id="8480418399907765580">সরঞ্জামদণ্ড দেখান</translation>
+<translation id="8487660088084188539">আপনি এইসব ফিচার চালু করলে Google সার্ভারে ইনপুট টেক্সট, ডকুমেন্ট কন্টেন্ট ও ওয়েব পৃষ্ঠার URL পাঠানো হতে পারে। <ph name="LINK_TO_SERVICE_TERMS" /> অনুযায়ী লেখার সাজেশন তৈরি করতে, সারসংক্ষেপ তৈরি করতে, প্রশ্নের উত্তর দিতে এবং প্রোডাক্ট উন্নত করতে এই তথ্য ব্যবহার করা হয়। ব্যক্তিগত, সংবেদনশীল বা গোপনীয় তথ্য দেবেন না।</translation>
 <translation id="8487699605742506766">হটস্পট</translation>
 <translation id="8491237443345908933">নতুন ট্যাবে লিঙ্ক খুলুন</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> রেজোলিউশনে চলতে পারে না। এই রেজোলিউশন পরিবর্তন করে <ph name="FALLBACK_RESOLUTION" /> করা হয়েছে। পরিবর্তিত সেটিংস বজায় রাখতে, 'কনফার্ম করুন' বোতামে ক্লিক করুন। <ph name="TIMEOUT_SECONDS" />-এর মধ্যে পুরনো সেটিংসে ফিরিয়ে নিয়ে যাওয়া হবে।</translation>
@@ -2326,6 +2333,7 @@
 <translation id="8725066075913043281">আবার চেষ্টা করুন</translation>
 <translation id="8725214031272624704">উপলভ্য ইনপুট পদ্ধতির তালিকা দেখান</translation>
 <translation id="8730621377337864115">হয়ে গেছে</translation>
+<translation id="8731188831050207755"><ph name="FILE_NAME" /> ডাউনলোড করা যায়নি।</translation>
 <translation id="8731487213223706745"><ph name="DAYS_ELAPSED" />-এর <ph name="END_TIME" />-এ শেষ হবে</translation>
 <translation id="8734991477317290293">এটি আপনার পাসওয়ার্ড চুরি করার চেষ্টা করতে পারে</translation>
 <translation id="8735678380411481005">কীবোর্ড ব্যাকলাইটের রঙ</translation>

@@ -256,6 +256,7 @@
 <translation id="1419305130220238697">«Կառավարել ներբեռնումները Chrome-ում» կոճակ․ ակտիվացրեք՝ Chrome-ում ձեր ներբեռնած ֆայլերը կառավարելու համար</translation>
 <translation id="1420345875188552368">Ավտոմատ վճարման ձեր պահված եղանակը կարող է օգտագործվել այս վճարման համար։ Էլեկտրոնային դրամապանակները Chrome-ում անջատելու համար բացեք ձեր <ph name="BEGIN_LINK1" />վճարման կարգավորումները<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />՝ զուգակցումը թույլատրելու համար</translation>
+<translation id="1421484961346698724">Հաշիվը հեռացվել է</translation>
 <translation id="14222610277930434">Հաճախ եք այցելում</translation>
 <translation id="1422930527989633628">Կարող է հայցել մոտակա Bluetooth սարքերը հայտնաբերելու թույլտվություն</translation>
 <translation id="1426410128494586442">Այո</translation>
@@ -3019,7 +3020,6 @@
 <translation id="6322182122604171028">Չհաջողվեց օգտագործել Windows Hello-ն</translation>
 <translation id="6326947323444967009">Դարձրեք Chrome-ը համակարգի կանխադրված դիտարկիչ iOS-ի կարգավորումներում</translation>
 <translation id="6328639280570009161">Անջատեք ցանցի գործողությունների կանխատեսումը</translation>
-<translation id="6328784461820205019">«Ձեր կապը պաշտպանված չէ» կամ «&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;» կամ «&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;» կամ «&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;» կամ «&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;» կամ «SSL հավաստագրի սխալ»</translation>
 <translation id="6335029926534404762">Սպորտային կոշիկներ</translation>
 <translation id="6337133576188860026">Կազատվի մինչև <ph name="SIZE" /> տարածք։ Դրանից հետո որոշ կայքեր հնարավոր է՝ ավելի դանդաղ բեռնվեն։</translation>
 <translation id="6337534724793800597">Զտել կանոններն ըստ անվան</translation>
@@ -3738,6 +3738,7 @@
 <translation id="7569983096843329377">Սև</translation>
 <translation id="7574998639136359461">Ձմեռային սպորտաձևերի մարզագույք</translation>
 <translation id="7575207903026901870">Հուշումը հեռացնելու կոճակ։ Սեղմեք Enter՝ հեռացնելու համար։</translation>
+<translation id="7575800019233204241">«Ձեր կապը պաշտպանված չէ» կամ «&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;» կամ «&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;» կամ «&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;» կամ «SSL հավաստագրի սխալ»</translation>
 <translation id="7575887283389198269">Բջջային հեռախոսներ</translation>
 <translation id="7578104083680115302">Պահեք քարտերը Google-ում, որպեսզի արագ կատարեք վճարումներ կայքերում և հավելվածներում ձեր բոլոր սարքերով:</translation>
 <translation id="7579442726219254162">Անհայտ փոփոխական («<ph name="VARIABLE" />») «<ph name="APPLICATION_ID" />» կառավարվող կազմաձևում։</translation>

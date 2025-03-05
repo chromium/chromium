@@ -1374,7 +1374,6 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1936157145127842922">Onyesha katika Folda</translation>
 <translation id="1936931585862840749">Tumia namba kuonyesha idadi ya nakala za kuchapisha (moja hadi <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Haiwezi kupakia metadata ya aina ya usanifu wa<ph name="ARCHITECTURE_CONTAINER" /> kwa kutumia kifaa hiki ambacho ni <ph name="ARCHITECTURE_DEVICE" />. Unaweza kujaribu kurejesha metadata hii kwenye kifaa tofauti, au unaweza kufikia faili zilizo ndani ya picha ya metadata hii kwa kuzifungua katika programu ya Faili.</translation>
-<translation id="1938116692670653897">Mandhari ya sasa ya rangi</translation>
 <translation id="1938351510777341717">Amri ya Nje</translation>
 <translation id="1940221956626514677">Badilisha upendavyo upau wa vidhibiti</translation>
 <translation id="1940546824932169984">Vifaa vilivyounganishwa</translation>
@@ -4078,6 +4077,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Kiendelezi kimeidhinishwa}other{Viendelezi # vimeidhinishwa}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Angalau nafasi ya <ph name="INSTALL_SIZE" /> inapendekezwa kwenye Linux.</translation>
+<translation id="3824203811509979971">Andaa muhtasari wa maudhui au uulize maswali</translation>
 <translation id="3824621460022590830">Tokeni ya usajili wa kifaa si sahihi. Tafadhali wasiliana na mmiliki au msimamizi wa kifaa chako. Msimbo wa hitilafu: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Ingia katika akaunti ili uone vichupo kutoka kwenye vifaa vingine</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Kumbuka chaguo langu kwa aina hii ya faili: <ph name="FILE_TYPES" />}other{Kumbuka chaguo langu kwa aina hizi za faili: <ph name="FILE_TYPES" />}}</translation>
@@ -4264,6 +4264,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3948985214866944547">Watu wengi huzuia tovuti hii isifikie data ya eneo mahususi walipo</translation>
 <translation id="394984172568887996">Zilizoingizwa Kutoka IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> ili ufanye shughuli ya kupakua faili iwe salama zaidi</translation>
+<translation id="3950479158728806902">Buni ufunguo wa siri kiotomatiki ili uingie katika akaunti kwa haraka</translation>
 <translation id="3950820424414687140">Ingia katika akaunti</translation>
 <translation id="3950841222883198950">Andika kwa kutamka</translation>
 <translation id="3953834000574892725">Akaunti zangu</translation>
@@ -5190,6 +5191,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4624054169152573743">Hali ya rangi</translation>
 <translation id="4625078469366263107">Washa Programu</translation>
 <translation id="4625905218692741757">Rangi ya kijivu ya chaguomsingi</translation>
+<translation id="4627107755957573804">Ruhusu tovuti na programu ziboreshe akaunti zilizopo ili zitumie funguo za siri</translation>
 <translation id="4627442949885028695">Endelea kutoka kwenye kifaa kingine</translation>
 <translation id="4628762811416793313">Imeshindwa kukamilisha kuweka mipangilio ya metadata ya Linux. Tafadhali jaribu tena.</translation>
 <translation id="4629521233550547305">Fungua wasifu wa <ph name="PROFILE_NAME" /></translation>
@@ -5773,6 +5775,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5053233576223592551">Weka Jina la mtumiaji</translation>
 <translation id="505347685865235222">Kikundi kisicho na jina - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{Unapaswa kulibadilisha sasa}other{Unapaswa kuyabadilisha sasa}}</translation>
+<translation id="5056587122125565772">Buni picha</translation>
 <translation id="5056950756634735043">Inaunganisha kwenye metadata</translation>
 <translation id="5057110919553308744">Unapobofya kiendelezi</translation>
 <translation id="5057127674016624293">Hatua ya kuchanganua inachukua muda mrefu zaidi kuliko ilivyotarajiwa</translation>
@@ -5883,6 +5886,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="512642543295077915">tafuta pamoja na "backspace"</translation>
 <translation id="5126611267288187364">Angalia mabadiliko</translation>
 <translation id="5127620150973591153">Nambari salama ya kuunganisha: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">Andaa muhtasari wa maudhui au uulize maswali.</translation>
 <translation id="5127881134400491887">Dhibiti miunganisho ya mtandao</translation>
 <translation id="5127934926273826089">Maua</translation>
 <translation id="5127986747308934633">Msimamizi wako anadhibiti kifaa chako</translation>
@@ -10154,6 +10158,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8195854162863398249">Zima kipengele cha <ph name="FEATURE_NAME" /></translation>
 <translation id="8195920051450756553">Kuchelewa kabla ya kuanza kutumia kitufe sawa tena</translation>
 <translation id="8197673340773315084">Weka jina au lebo, kama vile wasifu wa Kazi au Binafsi</translation>
+<translation id="8198181050118789419">Mandhari: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Inatuma maudhui ya kichupo</translation>
 <translation id="8199300056570174101">Sifa za Kifaa na Mtandao (Huduma)</translation>
 <translation id="8200772114523450471">Endelea</translation>
@@ -11410,6 +11415,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Kipanya cha USB kimeunganishwa</translation>
 <translation id="9075413375877487220">Kiendelezi hiki hakiaminiki na Kipengele cha Kuvinjari Salama Kilichoboreshwa.</translation>
+<translation id="9075985558450420812">Weka kidokezo maalum au uangazie maandishi ili ubuni picha.</translation>
 <translation id="9076523132036239772">Samahani, barua pepe au nenosiri lako havingeweza kuthibitishwa. Jaribu kuunganisha kwenye mtandao kwanza.</translation>
 <translation id="9076821103818989526">Kidirisha cha pembeni</translation>
 <translation id="9076977315710973122">Kushiriki SMB</translation>

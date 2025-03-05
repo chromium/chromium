@@ -3007,7 +3007,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6322182122604171028">Impossibile usare Windows Hello</translation>
 <translation id="6326947323444967009">Imposta Chrome come browser predefinito del sistema nelle impostazioni di iOS</translation>
 <translation id="6328639280570009161">Prova a disattivare la previsione della rete</translation>
-<translation id="6328784461820205019">"La connessione non è privata", "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" o "Errore certificato SSL"</translation>
 <translation id="6335029926534404762">Scarpe da atletica</translation>
 <translation id="6337133576188860026">Consente di liberare meno di <ph name="SIZE" />. Alcuni siti potrebbero caricarsi più lentamente alla prossima visita.</translation>
 <translation id="6337534724793800597">Filtra le policy per nome</translation>
@@ -3728,6 +3727,7 @@ Ulteriori dettagli:
 <translation id="7569983096843329377">Nero</translation>
 <translation id="7574998639136359461">Attrezzature e articoli per sport invernali</translation>
 <translation id="7575207903026901870">Rimuovi il pulsante Suggerimento, premi INVIO per rimuovere questo suggerimento</translation>
+<translation id="7575800019233204241">"La connessione non è privata", "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" o "Errore certificato SSL"</translation>
 <translation id="7575887283389198269">Cellulari</translation>
 <translation id="7578104083680115302">Paga velocemente su siti e app su più dispositivi utilizzando le carte salvate su Google.</translation>
 <translation id="7579442726219254162">Variabile sconosciuta "<ph name="VARIABLE" />" nella configurazione gestita di "<ph name="APPLICATION_ID" />".</translation>

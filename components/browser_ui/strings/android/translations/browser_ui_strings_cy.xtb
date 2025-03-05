@@ -6,6 +6,7 @@
 <translation id="1044891598689252897">Bydd gwefannau'n gweithio fel arfer</translation>
 <translation id="1070329623210597193">Ffeiliau y gall y wefan hon eu gweld neu eu golygu</translation>
 <translation id="1073417869336441572">Helpwch ni i wella Chrome trwy ddweud wrthym pam eich bod wedi caniatáu cwcis trydydd parti. <ph name="BEGIN_LINK" />Anfon adborth<ph name="END_LINK" /></translation>
+<translation id="1074758928858737435">Gallwch ofyn am weld y fersiwn bwrdd gwaith o wefannau</translation>
 <translation id="1085696779717592361">Defnyddiwch Chrome yn Ddiofyn</translation>
 <translation id="1178581264944972037">Seibio</translation>
 <translation id="1181037720776840403">Dileu</translation>
@@ -32,6 +33,7 @@
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> wefan}zero{<ph name="SITE_COUNT" /> gwefannau}two{<ph name="SITE_COUNT" /> wefan}few{<ph name="SITE_COUNT" /> gwefan}many{<ph name="SITE_COUNT" /> gwefan}other{<ph name="SITE_COUNT" /> gwefan}}</translation>
 <translation id="1500473259453106018">Cuddio cerdyn gostyngiadau pris ar dabiau</translation>
 <translation id="1510341833810331442">Ni chaniateir i wefannau gadw data ar eich dyfais</translation>
+<translation id="1538031354170655462">Mae gwefannau fel arfer yn defnyddio cyfathrebu agosfaes (NFC) i weithio gyda thagiau neu ddyfeisiau cyfagos, fel sganio bathodynnau neu dapio i dalu</translation>
 <translation id="1547123415014299762">Caniateir cwcis trydydd parti</translation>
 <translation id="1593426485665524382">Mae gweithredoedd newydd ar gael yn agos at frig y sgrîn</translation>
 <translation id="1620510694547887537">Camera</translation>
@@ -211,12 +213,14 @@
 <translation id="3955193568934677022">Caniatáu i wefannau chwarae cynnwys gwarchodedig (argymhellir)</translation>
 <translation id="3965467402665811906">Gall gwefannau ofyn am gael defnyddio gwybodaeth y maent wedi'u cadw amdanoch chi</translation>
 <translation id="3967822245660637423">Lawrlwytho wedi'i gwblhau</translation>
+<translation id="3981465354637804599">Mae gwefannau fel arfer yn dangos hysbysebion fel y gallant ddarparu cynnwys neu wasanaethau'n ddi-dâl. Ond, mae'n hysbys bod rhai gwefannau yn dangos hysbysebion ymwthiol neu gamarweiniol.</translation>
 <translation id="3987993985790029246">Copïo'r ddolen</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992308058851451478">Gall <ph name="SITE" /> ddefnyddio eich gwybodaeth wrth i chi bori</translation>
 <translation id="3992684624889376114">Ynghylch y dudalen hon</translation>
 <translation id="4002066346123236978">Teitl</translation>
 <translation id="4046123991198612571">Trac nesaf</translation>
+<translation id="4077310749977440510">Mae gwefannau fel arfer yn darllen eich clipfwrdd ar gyfer nodweddion megis cadw fformat y testun y gwnaethoch ei gopïo</translation>
 <translation id="4149890623864272035">Ydych chi'n siŵr eich bod chi am ddileu'r holl ddata lleol, gan gynnwys cwcis, ac ailosod yr holl ganiatadau ar gyfer y wefan hon?</translation>
 <translation id="4149994727733219643">Gwedd syml ar gyfer tudalennau gwe</translation>
 <translation id="4151930093518524179">Chwyddo diofyn</translation>
@@ -224,6 +228,7 @@
 <translation id="4169549551965910670">Wedi'i gysylltu â dyfais USB</translation>
 <translation id="4194328954146351878">Gofyn cyn caniatáu i wefannau weld a newid gwybodaeth ar ddyfeisiau NFC (argymhellir)</translation>
 <translation id="4200726100658658164">Agor Gosodiadau Lleoliad</translation>
+<translation id="421742575134139848">Gallai gwefannau chwarae sain i ddarparu sain ar gyfer cerddoriaeth, fideos a chyfryngau eraill</translation>
 <translation id="4226663524361240545">Mae'n bosib y bydd hysbysiadau ddirgrynu’r ddyfais</translation>
 <translation id="4259722352634471385">Llywio wedi'i rwystro: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Ar ôl i chi adael gwefan, gall ddal i gysoni i orffen tasgau, megis uwchlwytho lluniau neu anfon neges sgwrsio</translation>
@@ -247,6 +252,7 @@
 <translation id="4566417217121906555">Distewi'r meicroffon</translation>
 <translation id="4570913071927164677">Manylion</translation>
 <translation id="4598549027014564149">Tra yn y modd Anhysbys, ni all gwefannau ddefnyddio'ch cwcis i weld eich gweithgarwch pori ar draws gwefannau, hyd yn oed gwefannau cysylltiedig. Nid yw eich gweithgarwch pori yn cael ei ddefnyddio ar gyfer pethau megis personoleiddio hysbysebion. Mae'n bosib na fydd nodweddion ar rai gwefannau yn gweithio.</translation>
+<translation id="461356340001513807">Yn gadael i chi fewngofnodi i wefannau gan ddefnyddio'r cyfrif sydd gennych gyda gwasanaeth hunaniaeth</translation>
 <translation id="4619615317237390068">Tabiau o ddyfeisiau eraill</translation>
 <translation id="4644713492825682049">Dileu ac ailosod</translation>
 <translation id="4645575059429386691">Rheolir gan dy riant</translation>
@@ -430,6 +436,7 @@
 <translation id="7000754031042624318">Wedi'i ddiffodd yn Gosodiadau Android</translation>
 <translation id="702275896380648118">Mae'r wefan hon yn penderfynu pethau rydych yn eu hoffi ac yn cynnig hysbysebion i wefannau eraill. Mae'r wefan hon hefyd yn cael eich pynciau hysbysebion o Chrome i ddangos hysbysebion mwy perthnasol i chi.</translation>
 <translation id="7053983685419859001">Rhwystro</translation>
+<translation id="7055552182600664515">I chwarae cynnwys sydd wedi'i warchod gan hawlfraint, efallai y bydd angen i wefannau ddefnyddio gwasanaeth diogelu cynnwys. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Mae 1 wedi'i ddewis}zero{Mae # wedi'u dewis}two{Mae # wedi'u dewis}few{Mae # wedi'u dewis}many{Mae # wedi'u dewis}other{Mae # wedi'u dewis}}</translation>
 <translation id="708014373017851679">Mae '<ph name="APP_NAME" />' yn hen. Diweddarwch yr ap.</translation>
 <translation id="7087918508125750058">Dewiswyd <ph name="ITEM_COUNT" />.  Mae dewisiadau ar gael yn agos at waelod y sgrîn</translation>

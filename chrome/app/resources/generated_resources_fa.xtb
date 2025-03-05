@@ -1375,7 +1375,6 @@
 <translation id="1936157145127842922">نمایش در پوشه</translation>
 <translation id="1936931585862840749">از شماره‌ای برای مشخص کردن تعداد کپی‌های چاپ استفاده کنید (۱ تا <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">‏نمی‌توان با این دستگاه که <ph name="ARCHITECTURE_DEVICE" /> است، محتوای با نوع معماری <ph name="ARCHITECTURE_CONTAINER" /> را وارد کرد. می‌توانید این محتوا را در دستگاه دیگری بازیابی کنید، یا اینکه برنامه Files را باز کنید و ازطریق آن به فایل‌های درون این تصویر محتوی دسترسی یابید.</translation>
-<translation id="1938116692670653897">مضمون رنگ‌های فعلی</translation>
 <translation id="1938351510777341717">فرمان خارجی</translation>
 <translation id="1940221956626514677">سفارشی‌سازی نوارابزار</translation>
 <translation id="1940546824932169984">دستگاه‌های متصل</translation>
@@ -10161,6 +10160,7 @@
 <translation id="8195854162863398249">غیر فعال کردن <ph name="FEATURE_NAME" /></translation>
 <translation id="8195920051450756553">تأخیر قبل‌از فعال کردن مجدد یک کلید</translation>
 <translation id="8197673340773315084">نام یا برچسبی مثل «کاری» یا «شخصی» اضافه کنید</translation>
+<translation id="8198181050118789419">زمینه: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">فرستادن برگه</translation>
 <translation id="8199300056570174101">مشخصات دستگاه و شبکه (سرویس)</translation>
 <translation id="8200772114523450471">ازسرگیری</translation>

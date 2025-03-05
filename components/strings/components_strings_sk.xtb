@@ -252,6 +252,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1419305130220238697">Tlačidlo Spravovať stiahnuté súbory v Chrome, ktorého aktivovaním môžete spravovať súbory, ktoré ste si stiahli v Chrome</translation>
 <translation id="1420345875188552368">Na túto platbu sa môže použiť váš uložený spôsob automatickej platby. Ak chcete vypnúť elektronické peňaženky v Chrome, prejdite do <ph name="BEGIN_LINK1" />nastavení platieb<ph name="END_LINK1" />.</translation>
 <translation id="1420920093772172268">Ak chcete povoliť párovanie, <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="1421484961346698724">Odstránený účet</translation>
 <translation id="14222610277930434">Často navštevujete</translation>
 <translation id="1422930527989633628">Môže žiadať o povolenie objavovať zariadenia s rozhraním Bluetooth v okolí</translation>
 <translation id="1426410128494586442">Áno</translation>
@@ -3005,7 +3006,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6322182122604171028">Windows Hello sa nepodarilo použiť</translation>
 <translation id="6326947323444967009">Nastaviť Chrome ako predvolený prehliadač systému v nastaveniach iOS</translation>
 <translation id="6328639280570009161">Skúste zakázať predpovede siete</translation>
-<translation id="6328784461820205019">„Vaše pripojenie nie je súkromné“, „&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;“, „&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;“, „&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;“ alebo „&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;“ alebo „Chyba certifikátu SSL“.</translation>
 <translation id="6335029926534404762">Obuv na atletiku</translation>
 <translation id="6337133576188860026">Uvoľní menej ako <ph name="SIZE" />. Niektoré weby sa môžu pri ďalšej návšteve načítať pomalšie.</translation>
 <translation id="6337534724793800597">Filtrovať pravidlá podľa mena</translation>
@@ -3019,6 +3019,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6351658970066645919">Odstrániť dáta prehliadania</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Žiadne}=1{Jedno heslo (pre zoznam domén <ph name="DOMAIN_LIST" />, synchronizované)}=2{Dve heslá (pre zoznam domén <ph name="DOMAIN_LIST" />, synchronizované)}few{# heslá (pre zoznam domén <ph name="DOMAIN_LIST" />, synchronizované)}many{# passwords (for <ph name="DOMAIN_LIST" />, synced)}other{# hesiel (pre zoznam domén <ph name="DOMAIN_LIST" />, synchronizovaných)}}</translation>
 <translation id="6355392890578844978">Tento prehliadač nespravuje firma ani iná organizácia. Aktivita v tomto zariadení môže byť spravovaná mimo prehliadača Chromium. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Skupiny kariet <ph name="GROUP_TITLE_1" /> a <ph name="GROUP_TITLE_2" /> už nie sú k dispozícii</translation>
 <translation id="6358088212770985041">upraviť spôsoby platby</translation>
 <translation id="6358450015545214790">Čo znamenajú tieto položky?</translation>
 <translation id="6360213755783740931">Ďalšie informácie o ochrane pred malvérom</translation>
@@ -3725,6 +3726,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7569983096843329377">Čierna</translation>
 <translation id="7574998639136359461">Vybavenie na zimné športy</translation>
 <translation id="7575207903026901870">Tlačidlo odstránenia návrhu, tento návrh odstránite stlačením klávesa Enter</translation>
+<translation id="7575800019233204241">„Vaše pripojenie nie je súkromné“, „&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;“, „&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;“, „&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;“ alebo „Chyba certifikátu SSL“</translation>
 <translation id="7575887283389198269">Mobilné telefóny</translation>
 <translation id="7578104083680115302">Zaplaťte rýchlejšie na stránkach a v aplikáciách v rôznych službách pomocou kariet, ktoré ste si uložili na Googli.</translation>
 <translation id="7579442726219254162">Neznáma premenná <ph name="VARIABLE" /> v spravovanej konfigurácii aplikácie <ph name="APPLICATION_ID" />.</translation>

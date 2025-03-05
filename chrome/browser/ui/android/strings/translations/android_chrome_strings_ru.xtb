@@ -107,6 +107,7 @@
 <translation id="1413446866325418126">Сохраните данные в аккаунте Google</translation>
 <translation id="1414981605391750300">Подключение к Google. Подождите…</translation>
 <translation id="1416550906796893042">Версия приложения</translation>
+<translation id="1416582024052267068">Сохранить доступ к паролям</translation>
 <translation id="1419753403124156396">Перезапустить Chrome?</translation>
 <translation id="1428770807407000502">Отключить синхронизацию?</translation>
 <translation id="1430915738399379752">Печать</translation>
@@ -146,6 +147,7 @@
 <translation id="160275202205869636">Когда параметр включен, данные можно использовать и сохранять в аккаунте Google. В противном случае данные хранятся только на этом устройстве.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Удалить 1 выбранный объект}one{Удалить # выбранный объект}few{Удалить # выбранных объекта}many{Удалить # выбранных объектов}other{Удалить # выбранного объекта}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 закладка и другие данные доступны только на этом устройстве. Сохраните их в своем аккаунте Google (<ph name="ACCOUNT_EMAIL" />), чтобы использовать на других устройствах.}one{# закладка и другие данные сохранены только на этом устройстве. Сохраните их в своем аккаунте Google (<ph name="ACCOUNT_EMAIL" />), чтобы использовать на других устройствах.}few{# закладки и другие данные доступны только на этом устройстве. Сохраните их в своем аккаунте Google (<ph name="ACCOUNT_EMAIL" />), чтобы использовать на других устройствах.}many{# закладок и другие данные доступны только на этом устройстве. Сохраните их в своем аккаунте Google (<ph name="ACCOUNT_EMAIL" />), чтобы использовать на других устройствах.}other{# закладки и другие данные доступны только на этом устройстве. Сохраните их в своем аккаунте Google (<ph name="ACCOUNT_EMAIL" />), чтобы использовать на других устройствах.}}</translation>
+<translation id="1639239467298939599">Загрузка…</translation>
 <translation id="1641113438599504367">Безопасный просмотр</translation>
 <translation id="164269334534774161">Эта офлайн-копия страницы была создана <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">История</translation>
@@ -515,6 +517,7 @@
 <translation id="342220687432920852">{HOURS,plural, =1{# ч. назад}one{# ч. назад}few{# ч. назад}many{# ч. назад}other{# ч. назад}}</translation>
 <translation id="3430670036890315772">Если вы отключите блокировку профиля, вся сохраненная вами информация будет удалена.</translation>
 <translation id="3435465986463792564">Открыто много окон? Ими можно управлять здесь.</translation>
+<translation id="3435575784518354875">Экспортируйте пароли, обновите сервисы Google Play и импортируйте пароли обратно в Google Менеджер паролей. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="3435738964857648380">Безопасность</translation>
 <translation id="3439276997620616816">Здесь будут ваши недавние вкладки.</translation>
 <translation id="3443221991560634068">Обновить страницу</translation>
@@ -524,6 +527,7 @@
 <translation id="3474624961160222204">Продолжить как <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Вы можете выбрать другую поисковую систему.</translation>
 <translation id="3479552764303398839">Не сейчас</translation>
+<translation id="3487903178221457900">Экспортированный файл может быть доступен другим пользователям, а также сторонним приложениям. После выполнения этой операции пароли будут удалены из Chrome.</translation>
 <translation id="3488199663160411179">имя</translation>
 <translation id="3493531032208478708">Подробнее <ph name="BEGIN_LINK" />о рекомендованном контенте<ph name="END_LINK" />…</translation>
 <translation id="3495219333887281978">Нижний экран входа в аккаунт открыт наполовину.</translation>
@@ -1751,6 +1755,7 @@
 <translation id="8937772741022875483">Удалить данные о ваших действиях в Chrome из сервиса "Цифровое благополучие"?</translation>
 <translation id="8942627711005830162">Открыть в новом окне</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – не удалось скачать этот языковой пакет. Повторите попытку позже.</translation>
+<translation id="8957528460562961174">Вы можете экспортировать пароли и импортировать их в предпочитаемый менеджер паролей. Google Менеджер паролей больше не работает, потому что сервисы Google Play недоступны.</translation>
 <translation id="8963117664422609631">Открыть настройки сайтов</translation>
 <translation id="8965591936373831584">ожидание</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_ONE" /> вкладка будут закрыты.}one{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладка будут закрыты.}few{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}many{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладок будут закрыты.}other{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}}</translation>

@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">‏Chrome میں ڈاؤن لوڈز کا نظم کریں بٹن، Chrome میں ڈاؤن لوڈ کردہ اپنی فائلز کا نظم کرنے کے لیے فعال کریں</translation>
 <translation id="1420345875188552368">‏آپ کا محفوظ کردہ خودکار ادائیگی کا طریقہ اس ادائیگی کے لیے استعمال کیا جا سکتا ہے۔ ‫Chrome میں eWallets کو آف کرنے کے لیے، اپنی <ph name="BEGIN_LINK1" />ادائیگی کی ترتیبات<ph name="END_LINK1" /> پر جائیں</translation>
 <translation id="1420920093772172268">جوڑا بنانے کی اجازت دینے کیلئے <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="1421484961346698724">اکاؤنٹ حذف کر دیا گیا</translation>
 <translation id="14222610277930434">آپ اکثر ملاحظہ کرتے ہیں</translation>
 <translation id="1422930527989633628">سائٹ قریبی بلوٹوتھ آلات کو دریافت کرنے کیلئے پوچھ سکتی ہے</translation>
 <translation id="1426410128494586442">ہاں</translation>
@@ -3012,7 +3013,6 @@
 <translation id="6322182122604171028">‏Windows Hello کا استعمال نہیں کیا جا سکا</translation>
 <translation id="6326947323444967009">‏iOS کی ترتیبات میں Chrome کو سسٹم کے ڈیفالٹ براؤزر کے بطور سیٹ کریں</translation>
 <translation id="6328639280570009161">نیٹ ورک کی پیشین گوئی غیر فعال کرنے کی کوشش کریں</translation>
-<translation id="6328784461820205019">‏"آپ کا کنکشن نجی نہیں ہے" یا "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" یا "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" یا "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" یا "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" یا "SSL سرٹیفکیٹ سے متعلق خرابی"</translation>
 <translation id="6335029926534404762">ایتھلیٹک جوتے</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> سے کم بچت ہوتی ہے۔ آپ کے اگلے ملاحظہ پر کچھ سائٹس مزید آہستہ سے لوڈ ہو سکتی ہیں۔</translation>
 <translation id="6337534724793800597">نام کے لحاظ سے پالیسیاں فلٹر کریں</translation>
@@ -3026,6 +3026,7 @@
 <translation id="6351658970066645919">براؤزنگ ڈیٹا حذف کریں</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{کوئی نہیں}=1{1 پاس ورڈ (برائے <ph name="DOMAIN_LIST" />، مطابقت پذیر ہے)}=2{2 پاس ورڈز (برائے <ph name="DOMAIN_LIST" />، مطابقت پذیر ہیں)}other{# پاس ورڈز (برائے <ph name="DOMAIN_LIST" />، مطابقت پذیر ہیں)}}</translation>
 <translation id="6355392890578844978">‏یہ براؤزر کسی کمپنی یا دوسری تنظیم کے زیر انتظام نہیں ہے۔ اس آلے پر ہونے والی سرگرمی کا نظم Chromium سے باہر کیا جا سکتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">اب "<ph name="GROUP_TITLE_1" />" اور "<ph name="GROUP_TITLE_2" />" "ٹیب گروپس دستیاب نہیں ہیں</translation>
 <translation id="6358088212770985041">ادائیگی کے طریقوں میں ترمیم کریں</translation>
 <translation id="6358450015545214790">ان کا کیا مطلب ہے؟</translation>
 <translation id="6360213755783740931">مالویئر تحفظ کے بارے میں مزید جانیں</translation>
@@ -3731,6 +3732,7 @@
 <translation id="7569983096843329377">سیاہ</translation>
 <translation id="7574998639136359461">سرمائی کھیل کے ساز و سامان</translation>
 <translation id="7575207903026901870">‏تجویز کا بٹن ہٹائیں، اس تجویز کو ہٹانے کے لیے Enter دبائیں</translation>
+<translation id="7575800019233204241">‏"آپ کا کنکشن نجی نہیں ہے" یا "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" یا "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" یا "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" یا "SSL سرٹیفکیٹ میں خرابی"</translation>
 <translation id="7575887283389198269">موبائل فونز</translation>
 <translation id="7578104083680115302">‏Google کے ساتھ اپنے محفوظ کردہ کارڈز کا استعمال کر کے سبھی آلات پر موجود سائٹس اور ایپس پر جلدی سے ادائیگی کریں۔</translation>
 <translation id="7579442726219254162">"<ph name="APPLICATION_ID" />" کی نظم کردہ کنفیگریشن میں نامعلوم متغیر "<ph name="VARIABLE" />"۔</translation>

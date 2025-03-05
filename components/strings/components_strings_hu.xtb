@@ -3007,7 +3007,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6322182122604171028">Hiba történt a Windows Hello használata során</translation>
 <translation id="6326947323444967009">A Chrome beállítása a rendszer alapértelmezett böngészőjeként az iOS beállításaiban</translation>
 <translation id="6328639280570009161">Próbálkozzon a hálózati előrejelzések kikapcsolásával</translation>
-<translation id="6328784461820205019">„Az Ön kapcsolata nem privát”, „&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;”, „&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;”, „&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;”, „&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;” vagy „SSL-tanúsítványhiba”</translation>
 <translation id="6335029926534404762">Sportcipők</translation>
 <translation id="6337133576188860026"><ph name="SIZE" />-nál kevesebb hely szabadul fel. Előfordulhat, hogy egyes webhelyek lassabban töltődnek be, amikor legközelebb felkeresi őket.</translation>
 <translation id="6337534724793800597">Házirendek szűrése név szerint</translation>
@@ -3727,6 +3726,7 @@ További részletek:
 <translation id="7569983096843329377">Fekete</translation>
 <translation id="7574998639136359461">Télisport-felszerelés</translation>
 <translation id="7575207903026901870">Javaslat eltávolítása gomb. Nyomja meg az Entert a javaslat eltávolításához</translation>
+<translation id="7575800019233204241">„Az Ön kapcsolata nem privát”, „&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;”, „&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;”, „&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;” vagy „SSL-tanúsítványhiba”</translation>
 <translation id="7575887283389198269">Mobiltelefonok</translation>
 <translation id="7578104083680115302">A Google rendszerében mentett kártyákkal gyorsan fizethet webhelyeken és alkalmazásokban bármelyik eszközén.</translation>
 <translation id="7579442726219254162">Ismeretlen változó („<ph name="VARIABLE" />”) található a(z) „<ph name="APPLICATION_ID" />” kezelt konfigurációjában.</translation>

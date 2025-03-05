@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">Κουμπί Διαχείριση λήψεων στο Chrome, ενεργοποιήστε το για να διαχειριστείτε τα αρχεία που έχετε κατεβάσει στο Chrome</translation>
 <translation id="1420345875188552368">Ο αποθηκευμένος τρόπος αυτόματης πληρωμής μπορεί να χρησιμοποιηθεί για αυτή την πληρωμή. Για να απενεργοποιήσετε τα Ηλεκτρονικά πορτοφόλια στο Chrome, μεταβείτε στις <ph name="BEGIN_LINK1" />ρυθμίσεις πληρωμής<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> για να επιτρέψετε τη σύζευξη</translation>
+<translation id="1421484961346698724">Διαγραμμένος λογαριασμός</translation>
 <translation id="14222610277930434">Επισκέπτεστε συχνά</translation>
 <translation id="1422930527989633628">Μπορεί να ζητά να εντοπίζει κοντινές συσκευές Bluetooth (συνιστάται).</translation>
 <translation id="1426410128494586442">Ναι</translation>
@@ -3012,7 +3013,6 @@
 <translation id="6322182122604171028">Δεν ήταν δυνατή η χρήση του Windows Hello</translation>
 <translation id="6326947323444967009">Ορίστε το Chrome ως το προεπιλεγμένο πρόγραμμα περιήγησης του συστήματος στις ρυθμίσεις του iOS</translation>
 <translation id="6328639280570009161">Δοκιμάστε να απενεργοποιήσετε την πρόβλεψη δικτύου</translation>
-<translation id="6328784461820205019">"Η σύνδεσή σας δεν είναι ιδιωτική" ή "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" ή "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" ή "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" ή "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" ή "Σφάλμα πιστοποιητικού SSL"</translation>
 <translation id="6335029926534404762">Αθλητικά παπούτσια</translation>
 <translation id="6337133576188860026">Απελευθερώνει λιγότερο από <ph name="SIZE" />. Ορισμένοι ιστότοποι μπορεί να φορτωθούν πιο αργά κατά την επόμενη επίσκεψή σας.</translation>
 <translation id="6337534724793800597">Φιλτράρισμα πολιτικών με βάση το όνομα</translation>
@@ -3026,6 +3026,7 @@
 <translation id="6351658970066645919">Διαγραφή δεδομένων περιήγησης</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Κανένας}=1{1 κωδικός πρόσβασης (για <ph name="DOMAIN_LIST" />, συγχρονισμένος)}=2{2 κωδικοί πρόσβασης (για <ph name="DOMAIN_LIST" />, συγχρονισμένοι)}other{# κωδικοί πρόσβασης (για <ph name="DOMAIN_LIST" />, συγχρονισμένοι)}}</translation>
 <translation id="6355392890578844978">Αυτό το πρόγραμμα περιήγησης δεν είναι διαχειριζόμενο από κάποια εταιρεία ή άλλον οργανισμό. Η διαχείριση της δραστηριότητας σε αυτήν τη συσκευή μπορεί να πραγματοποιηθεί εκτός Chromium. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Οι ομάδες καρτελών <ph name="GROUP_TITLE_1" /> και <ph name="GROUP_TITLE_2" /> δεν διατίθενται πλέον</translation>
 <translation id="6358088212770985041">επεξεργαστεί τους τρόπους πληρωμής</translation>
 <translation id="6358450015545214790">Τι σημαίνουν αυτά;</translation>
 <translation id="6360213755783740931">Μάθετε περισσότερα σχετικά με την προστασία από κακόβουλα προγράμματα</translation>
@@ -3732,6 +3733,7 @@
 <translation id="7569983096843329377">Μαύρο</translation>
 <translation id="7574998639136359461">Εξοπλισμός χειμερινών σπορ</translation>
 <translation id="7575207903026901870">Κατάργηση κουμπιού Πρόταση, πατήστε Enter για κατάργηση αυτής της πρότασης.</translation>
+<translation id="7575800019233204241">"Η σύνδεσή σας δεν είναι ιδιωτική" ή "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" ή "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" ή "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" ή "Σφάλμα πιστοποιητικού SSL"</translation>
 <translation id="7575887283389198269">Κινητά Τηλέφωνα</translation>
 <translation id="7578104083680115302">Κάντε γρήγορες πληρωμές σε ιστότοπους και εφαρμογές σε διαφορετικές συσκευές χρησιμοποιώντας κάρτες που έχετε αποθηκεύσει στην Google.</translation>
 <translation id="7579442726219254162">Άγνωστη μεταβλητή <ph name="VARIABLE" /> στη διαχειριζόμενη διαμόρφωση της εφαρμογής <ph name="APPLICATION_ID" />.</translation>

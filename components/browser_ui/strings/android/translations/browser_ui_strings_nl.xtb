@@ -6,6 +6,7 @@
 <translation id="1044891598689252897">Sites werken naar behoren</translation>
 <translation id="1070329623210597193">Bestanden die deze site mag bekijken of bewerken</translation>
 <translation id="1073417869336441572">Help ons Chrome te verbeteren door ons te vertellen waarom je cookies van derden hebt toegestaan. <ph name="BEGIN_LINK" />Feedback sturen<ph name="END_LINK" /></translation>
+<translation id="1074758928858737435">Je kunt vragen om de desktopversie van sites te bekijken</translation>
 <translation id="1085696779717592361">Chrome standaard gebruiken</translation>
 <translation id="1178581264944972037">Onderbreken</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
@@ -32,6 +33,7 @@
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
 <translation id="1500473259453106018">Kaart Prijsdalingen op tabbladen verbergen</translation>
 <translation id="1510341833810331442">Sites mogen geen gegevens opslaan op je apparaat</translation>
+<translation id="1538031354170655462">Sites gebruiken meestal Near Field Communication (NFC) om te werken met tags of apparaten in de buurt, zoals badges scannen of contactloos betalen</translation>
 <translation id="1547123415014299762">Cookies van derden zijn toegestaan</translation>
 <translation id="1593426485665524382">Er zijn nieuwe acties beschikbaar bovenaan het scherm</translation>
 <translation id="1620510694547887537">Camera</translation>
@@ -115,6 +117,7 @@
 <translation id="2677748264148917807">Verlaten</translation>
 <translation id="2682367912565197520">Opgeslagen zoomniveau verwijderen</translation>
 <translation id="2683434792633810741">Verwijderen en resetten?</translation>
+<translation id="2685514716378236873">Niet toegestaan</translation>
 <translation id="2713106313042589954">Camera uitzetten</translation>
 <translation id="2717722538473713889">E-mailadressen</translation>
 <translation id="2726059656860238749">Start Chrome met de Omnibox gefocust om de opstarttijd op basisapparaten te verkorten.</translation>
@@ -211,12 +214,14 @@
 <translation id="3955193568934677022">Toestaan dat sites beschermde content afspelen (aanbevolen)</translation>
 <translation id="3965467402665811906">Sites kunnen vragen of ze informatie over je mogen gebruiken</translation>
 <translation id="3967822245660637423">Downloaden voltooid</translation>
+<translation id="3981465354637804599">Sites kiezen er vaak voor advertenties te tonen zodat ze hun content en services kosteloos kunnen aanbieden. Het is wel bekend dat bepaalde sites opdringerige of misleidende advertenties tonen.</translation>
 <translation id="3987993985790029246">Link kopiëren</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> van ?</translation>
 <translation id="3992308058851451478"><ph name="SITE" /> kan je informatie gebruiken terwijl je browst</translation>
 <translation id="3992684624889376114">Over deze pagina</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4046123991198612571">Volgend nummer</translation>
+<translation id="4077310749977440510">Sites lezen je klembord meestal voor functies zoals behoud van opmaak van de tekst die je hebt gekopieerd</translation>
 <translation id="4149890623864272035">Weet je zeker dat je alle lokale gegevens (waaronder cookies) wilt verwijderen en alle rechten voor deze website wilt resetten?</translation>
 <translation id="4149994727733219643">Vereenvoudigde weergave voor webpagina's</translation>
 <translation id="4151930093518524179">Standaardzoom</translation>
@@ -224,6 +229,7 @@
 <translation id="4169549551965910670">Verbonden met een USB-apparaat</translation>
 <translation id="4194328954146351878">Vragen voordat sites informatie op NFC-apparaten mogen zien en wijzigen (aanbevolen)</translation>
 <translation id="4200726100658658164">Locatie-instellingen openen</translation>
+<translation id="421742575134139848">Sites spelen mogelijk geluid af om audio te bieden voor muziek, video's en andere media</translation>
 <translation id="4226663524361240545">Het apparaat kan trillen bij meldingen</translation>
 <translation id="4259722352634471385">Navigatie is geblokkeerd: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Nadat je een site verlaat, blijft de synchronisatie meestal doorgaan om taken af te ronden, zoals foto's uploaden of chatberichten sturen</translation>
@@ -247,6 +253,7 @@
 <translation id="4566417217121906555">Microfoon uitzetten</translation>
 <translation id="4570913071927164677">Details</translation>
 <translation id="4598549027014564149">Als je de incognitomodus gebruikt, kunnen sites je cookies niet gebruiken om je browse-activiteit op sites te bekijken (ook niet op gerelateerde sites). Je browse-activiteit wordt bijvoorbeeld niet gebruikt om advertenties te personaliseren. Functies op bepaalde sites werken misschien niet.</translation>
+<translation id="461356340001513807">Hiermee kun je inloggen bij websites met het account dat je hebt bij een identiteitsservice</translation>
 <translation id="4619615317237390068">Tabbladen van andere apparaten</translation>
 <translation id="4644713492825682049">Verwijderen en resetten</translation>
 <translation id="4645575059429386691">Beheerd door je ouder</translation>
@@ -430,6 +437,7 @@
 <translation id="7000754031042624318">Uitgezet in Android-instellingen</translation>
 <translation id="702275896380648118">Deze site stelt vast wat je leuk vindt en stelt daarna advertenties voor op andere sites. Deze site krijgt ook je advertentieonderwerpen van Chrome zodat de site je relevantere advertenties kan laten zien.</translation>
 <translation id="7053983685419859001">Blokkeren</translation>
+<translation id="7055552182600664515">Als je content wilt afspelen die auteursrechtelijk beschermd is, moet je misschien een contentbeveiligingsservice gebruiken. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 geselecteerd}other{# geselecteerd}}</translation>
 <translation id="708014373017851679"><ph name="APP_NAME" /> is verouderd. Update de app.</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> geselecteerd. Opties beschikbaar bovenaan het scherm.</translation>

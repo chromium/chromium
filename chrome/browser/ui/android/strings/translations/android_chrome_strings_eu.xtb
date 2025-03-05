@@ -145,6 +145,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="160275202205869636">Aktibatuta badago, datuak Google-ko kontuan erabiltzen eta gordetzen dira. Desaktibatuta badago, datuak gailu honetan soilik gordetzen dira.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Kendu hautatutako elementua}other{Kendu hautatutako # elementuak}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 laster-marka eta beste elementu batzuk gailu honetan soilik gorde dira. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan (<ph name="ACCOUNT_EMAIL" />).}other{# laster-marka eta beste elementu batzuk gailu honetan soilik gorde dira. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan (<ph name="ACCOUNT_EMAIL" />).}}</translation>
+<translation id="1639239467298939599">Kargatzen</translation>
 <translation id="1641113438599504367">Arakatze segurua</translation>
 <translation id="164269334534774161">Orri honen konexiorik gabeko kopia ikusten ari zara (kopiaren data: <ph name="CREATION_TIME" />)</translation>
 <translation id="1644574205037202324">Historia</translation>

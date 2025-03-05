@@ -107,6 +107,7 @@
 <translation id="1413446866325418126">‏ذخیره کردن داده‌ها در «حساب Google»</translation>
 <translation id="1414981605391750300">‏درحال اتصال به Google. ممکن است یک دقیقه طول بکشد…</translation>
 <translation id="1416550906796893042">نسخه برنامه</translation>
+<translation id="1416582024052267068">حفظ دسترسی به گذرواژه‌ها</translation>
 <translation id="1419753403124156396">‏‫Chrome بازراه‌اندازی شود؟</translation>
 <translation id="1428770807407000502">همگام‌سازی خاموش شود؟</translation>
 <translation id="1430915738399379752">چاپ</translation>
@@ -146,6 +147,7 @@
 <translation id="160275202205869636">‏وقتی روشن باشد، از داده‌های «حساب Google» شما استفاده می‌شود و داده‌ها در آن ذخیره می‌شود. وقتی خاموش باشد، داده‌ها فقط در این دستگاه ذخیره می‌شود.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{حذف ۱ مورد انتخاب‌شده}one{حذف # مورد انتخاب‌شده}other{حذف # مورد انتخاب‌شده}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{‏‫۱ نشانک و موارد دیگر فقط در این دستگاه ذخیره شده‌اند. برای استفاده از آن‌ها در دستگاه‌های دیگرتان، آن‌ها را در «حساب Google» خود (<ph name="ACCOUNT_EMAIL" />) ذخیره کنید.}one{‏‫# نشانک و موارد دیگر فقط در این دستگاه ذخیره شده‌اند. برای استفاده از آن‌ها در دستگاه‌های دیگرتان، آن‌ها را در «حساب Google» خود (<ph name="ACCOUNT_EMAIL" />) ذخیره کنید.}other{‏‫# نشانک و موارد دیگر فقط در این دستگاه ذخیره شده‌اند. برای استفاده از آن‌ها در دستگاه‌های دیگرتان، آن‌ها را در «حساب Google» خود (<ph name="ACCOUNT_EMAIL" />) ذخیره کنید.}}</translation>
+<translation id="1639239467298939599">در حال بارگیری</translation>
 <translation id="1641113438599504367">مرور ایمن</translation>
 <translation id="164269334534774161">شما در حال تماشای کپی آفلاین این صفحه از <ph name="CREATION_TIME" /> هستید</translation>
 <translation id="1644574205037202324">سابقه</translation>
@@ -515,6 +517,7 @@
 <translation id="342220687432920852">{HOURS,plural, =1{‫# ساعت پیش}one{‫# ساعت پیش}other{‫# ساعت پیش}}</translation>
 <translation id="3430670036890315772">خاموش کردن قفل نمایه باعث برداشته شدن اطلاعات ذخیره‌شده‌تان می‌شود</translation>
 <translation id="3435465986463792564">پنجره‌های زیادی دارید؟ می‌توانید از اینجا مدیریتشان کنید</translation>
+<translation id="3435575784518354875">‏برای اینکه دسترسی‌تان به گذرواژه‌ها حفظ شود، اکنون آن‌ها را صادر کنید، «خدمات Google Play» را به‌روز کنید، و سپس آن‌ها را دوباره به «مدیر گذرواژه Google» وارد کنید. <ph name="BEGIN_LINK" />دستورالعمل‌های کامل را ببینید<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">امنیت</translation>
 <translation id="3439276997620616816">برگه‌های اخیر را اینجا خواهید دید</translation>
 <translation id="3443221991560634068">بار کردن مجدد صفحه کنونی</translation>
@@ -524,6 +527,7 @@
 <translation id="3474624961160222204">ادامه دادن به‌عنوان <ph name="NAME" /></translation>
 <translation id="3478363558367712427">می‌توانید موتور جستجویتان را انتخاب کنید</translation>
 <translation id="3479552764303398839">حالا نه</translation>
+<translation id="3487903178221457900">‏ممکن است فایل صادرشده برای دیگران، ازجمله برنامه‌ها، قابل‌دسترس باشد. وقتی صادر کنید، گذرواژه‌هایتان از Chrome حذف می‌شود.</translation>
 <translation id="3488199663160411179">نام</translation>
 <translation id="3493531032208478708">درباره محتوای پیشنهادی <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">برگ زیرین ورود به سیستم نیمه‌باز شده است.</translation>
@@ -1752,6 +1756,7 @@
 <translation id="8937772741022875483">‏فعالیت Chrome شما در «آسایش دیجیتالی» برداشته شود؟</translation>
 <translation id="8942627711005830162">باز کردن در پنجره دیگر</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - این زبان بارگیری نشد. بعداً دوباره امتحان کنید.</translation>
+<translation id="8957528460562961174">‏برای اینکه دسترسی‌تان به گذرواژه‌ها حفظ شود، اکنون آن‌ها را صادر کنید و سپس به مدیر گذرواژه موردنظرتان وارد کنید. «مدیر گذرواژه Google» ازکار افتاد زیرا «خدمات Google Play» دردسترس نیست.</translation>
 <translation id="8963117664422609631">رفتن به تنظیمات سایت</translation>
 <translation id="8965591936373831584">در انتظار</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> برگه ناشناس و <ph name="TAB_COUNT_ONE" /> برگه دیگر بسته خواهند شد}one{<ph name="INCOGNITO_TAB_COUNT" /> برگه ناشناس و <ph name="TAB_COUNT_MANY" /> برگه دیگر بسته خواهند شد}other{<ph name="INCOGNITO_TAB_COUNT" /> برگه ناشناس و <ph name="TAB_COUNT_MANY" /> برگه دیگر بسته خواهند شد}}</translation>

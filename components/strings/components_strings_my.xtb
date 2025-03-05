@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">Chrome တွင် သင်ဒေါင်းလုဒ်လုပ်ထားသည့် ဖိုင်များစီမံရန်အတွက် ‘Chrome တွင် ဒေါင်းလုဒ်များစီမံရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
 <translation id="1420345875188552368">သိမ်းထားသော အလိုအလျောက်ငွေပေးချေနည်းလမ်းကို ဤပေးချေမှုအတွက် သုံးနိုင်သည်။ Chrome တွင် eWallet များ ပိတ်ရန် <ph name="BEGIN_LINK1" />ငွေပေးချေမှု ဆက်တင်များ<ph name="END_LINK1" /> သို့သွားပါ</translation>
 <translation id="1420920093772172268">တွဲချိတ်ခြင်းအား ခွင့်ပြုရန် <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="1421484961346698724">ဖျက်ထားသည့် အကောင့်</translation>
 <translation id="14222610277930434">မကြာခဏ သင်ဝင်ကြည့်သည်များ</translation>
 <translation id="1422930527989633628">အနီးရှိ ဘလူးတုသ်သုံးစက်များ ရှာဖွေရန် ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="1426410128494586442">Yes</translation>
@@ -3010,7 +3011,6 @@
 <translation id="6322182122604171028">Windows Hello ကို အသုံးပြု၍ မရပါ</translation>
 <translation id="6326947323444967009">Chrome ကို iOS ဆက်တင်များတွင် စနစ်၏ မူရင်းဘရောင်ဇာအဖြစ် သတ်မှတ်ရန်</translation>
 <translation id="6328639280570009161">ကွန်ရက် ခန့်မှန်းမှုကို ပိတ်ထားရန် ကြိုးစားပါ</translation>
-<translation id="6328784461820205019">"သင်၏ချိတ်ဆက်မှုသည် သီးသန့်ဖြစ်မနေပါ" သို့မဟုတ် "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" သို့မဟုတ် "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" သို့မဟုတ် "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" သို့မဟုတ် "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" သို့မဟုတ် "SSL အသိအမှတ်ပြုလက်မှတ် အမှားအယွင်း"</translation>
 <translation id="6335029926534404762">အားကစား ဖိနပ်</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> အောက် နေရာလွတ်ပြုလုပ်ပါ။ အချို့ဝဘ်ဆိုက်များကို နောက်တစ်ကြိမ်ဖွင့်သည့်အခါ ပိုမိုနှေးကွေးစွာ ဖွင့်ပါလိမ့်မည်။</translation>
 <translation id="6337534724793800597">မူဝါဒများကို အမည်များဖြင့် စစ်ထုတ်ရန်</translation>
@@ -3731,6 +3731,7 @@
 <translation id="7569983096843329377">အနက်ရောင်</translation>
 <translation id="7574998639136359461">ဆောင်းရာသီအားကစား ပစ္စည်း</translation>
 <translation id="7575207903026901870">'အကြံပြုချက်' ခလုတ်ကို ဖယ်ရှားခြင်း၊ ဤအကြံပြုချက်ကို ဖယ်ရှားရန် Enter ကို နှိပ်ပါ</translation>
+<translation id="7575800019233204241">"သင်၏ ချိတ်ဆက်မှုသည် သီးသန့်မဟုတ်ပါ" သို့မဟုတ် "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" သို့မဟုတ် "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" သို့မဟုတ် "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" သို့မဟုတ် "SSL အသိအမှတ်ပြုလက်မှတ် အမှား"</translation>
 <translation id="7575887283389198269">မိုဘိုင်းဖုန်း</translation>
 <translation id="7578104083680115302">သင်က Google နှင့် သိမ်းဆည်းခဲ့သည့် ကဒ်များကို သုံးပြီး ကိရိယာများထဲတွင် ဆိုက်များ နှင့် အက်ပ်များ ပေါ်မှာ လျင်မြန်စွာ ငွေပေးချေပါ။</translation>
 <translation id="7579442726219254162">“<ph name="APPLICATION_ID" />” ၏ စီမံခန့်ခွဲထားသည့် စီစဉ်သတ်မှတ်ချက်ရှိ မသိရသောကိန်းရှင် “<ph name="VARIABLE" />”။</translation>

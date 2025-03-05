@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">'Chrome ਵਿੱਚ ਡਾਊਨਲੋਡਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ' ਬਟਨ, Chrome ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਫ਼ਾਈਲਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ ਇਸਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="1420345875188552368">ਇਸ ਭੁਗਤਾਨ ਲਈ ਤੁਹਾਡੀ ਰੱਖਿਅਤ ਕੀਤੀ ਸਵੈ-ਭੁਗਤਾਨ ਵਿਧੀ ਵਰਤੀ ਜਾ ਸਕਦੀ ਹੈ। Chrome ਵਿੱਚ ਈ-ਵਾਲੇਟਾਂ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ, ਆਪਣੀਆਂ <ph name="BEGIN_LINK1" />ਭੁਗਤਾਨ ਸੈਟਿੰਗਾਂ<ph name="END_LINK1" /> ਵਿੱਚ ਜਾਓ</translation>
 <translation id="1420920093772172268">ਜੋੜਾਬੱਧ ਕਰਨ ਲਈ ਇਜਾਜ਼ਤ ਦੇਣ ਵਾਸਤੇ <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="1421484961346698724">ਖਾਤਾ ਮਿਟਾਇਆ ਗਿਆ</translation>
 <translation id="14222610277930434">ਤੁਹਾਡੇ ਵੱਲੋਂ ਅਕਸਰ ਦੇਖੀਆਂ ਜਾਂਦੀਆਂ</translation>
 <translation id="1422930527989633628">ਸਾਈਟ ਨਜ਼ਦੀਕੀ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਦਾ ਪਤਾ ਲਗਾਉਣ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="1426410128494586442">ਹਾਂ</translation>
@@ -3006,7 +3007,6 @@
 <translation id="6322182122604171028">Windows Hello ਨੂੰ ਨਹੀਂ ਵਰਤ ਸਕੇ</translation>
 <translation id="6326947323444967009">iOS ਸੈਟਿੰਗਾਂ ਵਿੱਚ Chrome ਨੂੰ ਸਿਸਟਮ ਦੇ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਵਜੋਂ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="6328639280570009161">ਨੈੱਟਵਰਕ ਪੂਰਵ-ਸੂਚਨਾ ਨੂੰ ਬੰਦ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
-<translation id="6328784461820205019">"ਤੁਹਾਡਾ ਕਨੈਕਸ਼ਨ ਨਿੱਜੀ ਨਹੀਂ ਹੈ" ਜਾਂ "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" ਜਾਂ "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" ਜਾਂ "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" ਜਾਂ "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" ਜਾਂ "SSL ਪ੍ਰਮਾਣ-ਪੱਤਰ ਗੜਬੜ"</translation>
 <translation id="6335029926534404762">ਅਥਲੈਟਿਕ ਜੁੱਤੇ</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> ਤੋਂ ਘੱਟ ਜਗ੍ਹਾ ਖਾਲੀ ਕਰਦਾ ਹੈ। ਤੁਹਾਡੀ ਅਗਲੀ ਫੇਰੀ 'ਤੇ ਕੁਝ ਸਾਈਟਾਂ ਵਧੇਰੇ ਹੌਲੀ ਲੋਡ ਹੋ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="6337534724793800597">ਨਾਮ ਮੁਤਾਬਕ ਨੀਤੀਆਂ ਫਿਲਟਰ ਕਰੋ</translation>
@@ -3726,6 +3726,7 @@
 <translation id="7569983096843329377">ਕਾਲਾ</translation>
 <translation id="7574998639136359461">ਸਰਦੀ ਦੀਆਂ ਖੇਡਾਂ ਦੇ ਉਪਕਰਨ</translation>
 <translation id="7575207903026901870">ਸੁਝਾਅ ਬਟਨ ਹਟਾਓ, ਇਸ ਸੁਝਾਅ ਨੂੰ ਹਟਾਉਣ ਲਈ ਐਂਟਰ ਦਬਾਓ</translation>
+<translation id="7575800019233204241">"ਤੁਹਾਡਾ ਕਨੈਕਸ਼ਨ ਨਿੱਜੀ ਨਹੀਂ ਹੈ" ਜਾਂ "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" ਜਾਂ "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" ਜਾਂ "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" ਜਾਂ "SSL ਪ੍ਰਮਾਣ-ਪੱਤਰ ਗੜਬੜ"</translation>
 <translation id="7575887283389198269">ਮੋਬਾਈਲ ਫ਼ੋਨ</translation>
 <translation id="7578104083680115302">ਤੁਹਾਡੇ ਵੱਲੋਂ Google ਨਾਲ ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਕਾਰਡਾਂ ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਹੋਏ ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ 'ਤੇ ਵਧੇਰੇ ਤੇਜ਼ ਭੁਗਤਾਨ ਕਰੋ।</translation>
 <translation id="7579442726219254162">"<ph name="APPLICATION_ID" />" ਦੇ ਪ੍ਰਤਿਬੰਧਿਤ ਸੰਰੂਪਣ ਵਿੱਚ ਅਗਿਆਤ ਵੇਰੀਏਬਲ "<ph name="VARIABLE" />".</translation>

@@ -1365,7 +1365,6 @@
 <translation id="1936157145127842922">Қалтада көрсету</translation>
 <translation id="1936931585862840749">Басып шығарылатын көшірмелер санын көрсетіңіз (1-<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_CONTAINER" /> контейнер архитектурасы түрін бұл құрылғымен (<ph name="ARCHITECTURE_DEVICE" />) импорттау мүмкін емес. Бұл контейнерді басқа құрылғыда қалпына келтіріп көруіңізге болады немесе файлдарға контейнер кескінін Files қолданбасынан ашу арқылы кіре аласыз.</translation>
-<translation id="1938116692670653897">Қазіргі түс тақырыбы</translation>
 <translation id="1938351510777341717">Сыртқы пәрмен</translation>
 <translation id="1940221956626514677">Құралдар тақтасын бейімдеу</translation>
 <translation id="1940546824932169984">Жалғанған құрылғылар</translation>
@@ -10132,6 +10131,7 @@
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> функциясын өшіру</translation>
 <translation id="8195920051450756553">Бір пернені қайтадан іске қосу алдындағы кідіріс</translation>
 <translation id="8197673340773315084">Атау не белгі қосыңыз, мысалы, "Жұмыс" немесе "Жеке".</translation>
+<translation id="8198181050118789419">Тақырып: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Қойынды трансляциялануда</translation>
 <translation id="8199300056570174101">Желі (қызмет) және құрылғы сипаттары</translation>
 <translation id="8200772114523450471">Жалғастыру</translation>

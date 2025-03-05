@@ -34,7 +34,6 @@
 <translation id="1112015203684611006">Pencetakan gagal.</translation>
 <translation id="1118569444314402022">Selamat kembali, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Foto &amp; Imej</translation>
-<translation id="1125564390852150847">Buat tab baharu.</translation>
 <translation id="1126696498560056882">Urus akaun pada peranti ini</translation>
 <translation id="1126809382673880764">Tidak melindungi anda daripada laman web, muat turun dan sambungan yang berbahaya. Anda akan mendapat perlindungan Penyemakan Imbas Selamat, jika tersedia, dalam perkhidmatan Google yang lain, seperti Gmail dan Carian.</translation>
 <translation id="1142371195993008685">Matikan pemberitahuan untuk <ph name="FEATURE_NAME" /></translation>
@@ -89,7 +88,6 @@
 <translation id="1358106883354237005">Akaun Terurus</translation>
 <translation id="1358214951266274152">Lawati Pautan yang Disalin</translation>
 <translation id="1360432990279830238">Log keluar dan matikan penyegerakan?</translation>
-<translation id="1362192716574455663">Data semakan imbas sedia ada tidak akan dialihkan kepada akaun kerja anda. Anda masih boleh mengakses data tersebut dengan log keluar dari akaun atau menambahkan akaun peribadi.</translation>
 <translation id="1363028406613469049">Penjejakan</translation>
 <translation id="1364367057792633742">Tab baharu</translation>
 <translation id="1365106417372288489">iPhone anda dipulihkan baru-baru ini dan mungkin telah menukar penyemak imbas lalai anda.</translation>
@@ -116,7 +114,6 @@
 <translation id="1455660774629812862">Jangan sembunyikan</translation>
 <translation id="1456545332132818232">Ulasan produk bagi <ph name="PRODUCT_NAME" />, <ph name="STARS" /> daripada <ph name="MAX_STARS" />, <ph name="DOMAIN" /></translation>
 <translation id="1460751212339734034">Jimatkan masa, kurangkan menaip</translation>
-<translation id="1466035273550360103">Tiada tab terbuka</translation>
 <translation id="1469381646033328562">Akaun anda diuruskan oleh ibu/bapa anda.
 <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Diubah</translation>
@@ -482,7 +479,6 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="2969979262385602596">Gagal melog masuk. Sila cuba sebentar lagi.</translation>
 <translation id="2989523299700148168">Dilawati baru-baru ini</translation>
 <translation id="2989805286512600854">Buka dalam Tab Baharu</translation>
-<translation id="2990025507101398383">Tiada tab Inkognito</translation>
 <translation id="2996291259634659425">Buat ungkapan laluan</translation>
 <translation id="3000900718786961632">{COUNT,plural, =1{Bungkusan baharu dijejaki}other{Bungkusan baharu dijejaki}}</translation>
 <translation id="3010025794097054078">Kekal selamat daripada pelanggaran data, laman web yang tidak selamat dan pelbagai lagi.</translation>
@@ -586,7 +582,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="35083190962747987">Buka ${url}</translation>
 <translation id="3511519535430890904">Tambahkan perlindungan penyemakan imbas</translation>
 <translation id="3517216995152707259">Tindakan memadamkan data semakan imbas anda tidak membuat anda log keluar dari Google Account anda. Untuk berbuat demikian, <ph name="BEGIN_LINK" />log keluar dari Chrome<ph name="END_LINK" />.</translation>
-<translation id="3519193562722059437">Buka tab untuk menyemak imbas web.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Buka tab}other{Buka {count} tab}}</translation>
 <translation id="3523513363815970085">Sembunyikan "Laman popular anda"</translation>
 <translation id="3523789730715594198">Anda boleh menghentikan penyegerakan pada bila-bila masa dalam tetapan ini. Google mungkin memeribadikan Search dan perkhidmatan lain berdasarkan sejarah anda.</translation>
@@ -990,7 +985,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="5217329997012062137">Apabila anda menggunakan Google Lens, tangkapan skrin halaman dihantar kepada Google.</translation>
 <translation id="5220945116117011963">Buat acara kalendar daripada tarikh</translation>
 <translation id="5222676887888702881">Log keluar</translation>
-<translation id="5228579091201413441">Dayakan penyegerakan</translation>
 <translation id="5233638681132016545">Tab baharu</translation>
 <translation id="5234094073825090254">{count,plural, =1{Penanda halaman disimpan dalam Google Account anda, {email}.}other{Penanda halaman disimpan dalam Google Account anda, {email}.}}</translation>
 <translation id="5234764350956374838">Ketepikan</translation>
@@ -1244,7 +1238,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6284652193729350524">Tawarkan untuk menterjemah <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Telah berhenti mengikuti <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Untuk menghidupkan Penyemakan Imbas Selamat, buka <ph name="BEGIN_LINK" />Perkhidmatan Google<ph name="END_LINK" /> dan ketik Penyemakan Imbas Selamat.</translation>
-<translation id="6295434468271563378">Autopadam muat turun anda</translation>
 <translation id="6295751040240588413">Nama panggilan kad tidak sah</translation>
 <translation id="629730747756840877">Akaun</translation>
 <translation id="6301104306974789820">Dapatkan pemberitahuan penjejakan harga</translation>
@@ -1578,7 +1571,6 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7669493687462784703">Teruskan memuat turun profil konfigurasi daripada <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Anda boleh meleret ke kiri untuk menyemak imbas dalam Inkognito.</translation>
 <translation id="7679915578945954324">Alamat laman disalin</translation>
-<translation id="769134787192530091">Menyegerakkan tab anda…</translation>
 <translation id="7696316012653762532">Pilihan untuk menterjemahkan halaman</translation>
 <translation id="7700527812567437847">Cari pada skrin dengan Google Lens</translation>
 <translation id="7701040980221191251">Tiada</translation>
@@ -1736,7 +1728,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8283172974887967105">Tetapkan…</translation>
 <translation id="8289930144142009940">Pemberitahuan <ph name="FEATURE_NAME" /> dimatikan</translation>
 <translation id="8299417921174340354">Untuk menggunakan kata laluan, anda mesti menetapkan kod laluan pada peranti anda dahulu.</translation>
-<translation id="8299613349954694191">Buka tab Inkognito untuk menyemak imbas web secara tertutup.</translation>
 <translation id="8307481894409578819">Fail ini tidak dapat dimuat naik</translation>
 <translation id="8319076807703933069">Carian Baharu</translation>
 <translation id="833647236762414178">Buat, simpan dan urus kata laluan &amp; kunci laluan anda supaya anda dapat log masuk ke laman dan apl dengan mudah. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>

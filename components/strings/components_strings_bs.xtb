@@ -252,6 +252,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1419305130220238697">Dugme Upravljaj preuzimanjima u Chromeu, aktivirajte da upravljate fajlovima koje ste preuzeli u Chromeu</translation>
 <translation id="1420345875188552368">Sačuvani način automatskog plaćanja se može upotrijebiti za ovo plaćanje. Da isključite e-novčanike u Chromeu, idite u <ph name="BEGIN_LINK1" />postavke plaćanja<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> da omogućite uparivanje</translation>
+<translation id="1421484961346698724">Račun je izbrisan</translation>
 <translation id="14222610277930434">Često posjećujete</translation>
 <translation id="1422930527989633628">Može tražiti da otkriva Bluetooth uređaje u blizini</translation>
 <translation id="1426410128494586442">Da</translation>
@@ -3010,7 +3011,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6322182122604171028">Upotreba funkcije Windows Hello nije uspjela</translation>
 <translation id="6326947323444967009">Postavite Chrome kao zadani preglednik sistema u postavkama iOS-a</translation>
 <translation id="6328639280570009161">Pokušajte onemogućiti predviđanje mreže</translation>
-<translation id="6328784461820205019">"Vaša veza nije privatna" ili "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" ili "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" ili "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" ili "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" ili "SSL certificate error"</translation>
 <translation id="6335029926534404762">Sportska obuća</translation>
 <translation id="6337133576188860026">Oslobodit će se manje od <ph name="SIZE" />. Neke web lokacije će se prilikom sljedeće posjete možda sporije učitavati.</translation>
 <translation id="6337534724793800597">Filtriraj pravila po nazivu</translation>
@@ -3024,6 +3024,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6351658970066645919">Izbriši podatke pregledanja</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ništa}=1{1 lozinka (za <ph name="DOMAIN_LIST" />, sinhronizirano)}=2{2 lozinke (za <ph name="DOMAIN_LIST" />, sinhronizirano)}one{# lozinka (za <ph name="DOMAIN_LIST" />, sinhronizirano)}few{# lozinke (za <ph name="DOMAIN_LIST" />, sinhronizirano)}other{# lozinki (za <ph name="DOMAIN_LIST" />, sinhronizirano)}}</translation>
 <translation id="6355392890578844978">Ovim preglednikom ne upravlja kompanija ili neka druga organizacija. Aktivnostima na ovom uređaju se može upravljati van Chromiuma. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Grupe kartica <ph name="GROUP_TITLE_1" /> i <ph name="GROUP_TITLE_2" /> više nisu dostupne</translation>
 <translation id="6358088212770985041">urediti načine plaćanja</translation>
 <translation id="6358450015545214790">Šta ovo znači?</translation>
 <translation id="6360213755783740931">Saznajte više o zaštiti od zlonamjernog softvera</translation>
@@ -3730,6 +3731,7 @@ Dodatni detalji:
 <translation id="7569983096843329377">Crna</translation>
 <translation id="7574998639136359461">Oprema za zimske sportove</translation>
 <translation id="7575207903026901870">Dugme za uklanjanje prijedloga. Pritisnite Enter da uklonite ovaj prijedlog</translation>
+<translation id="7575800019233204241">"Vaša veza nije privatna" ili "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" ili "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" ili "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" ili "Pogreška SSL certifikata"</translation>
 <translation id="7575887283389198269">Mobilni telefoni</translation>
 <translation id="7578104083680115302">Plaćajte brzo na web lokacijama i aplikacijama sa svih uređaja pomoću kartica koje sačuvate na Googleu.</translation>
 <translation id="7579442726219254162">Nepoznata varijabla "<ph name="VARIABLE" />" u upravljanoj konfiguraciji za "<ph name="APPLICATION_ID" />".</translation>

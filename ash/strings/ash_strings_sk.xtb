@@ -22,6 +22,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1058009965971887428">Nahlásiť spätnú väzbu</translation>
 <translation id="1059120031266247284">Zdieľané s vami</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> s tlačidlom na odstránenie</translation>
 <translation id="1062407476771304334">Nahradiť</translation>
 <translation id="1073899992769346247">Vymeňte alebo dobite batériu</translation>
 <translation id="1081015718268701546">Aplikácie pre Linux nie sú momentálne podporované. Ostatné aplikácie budú uložené.</translation>
@@ -323,6 +324,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2083190527011054446">Dobrú noc, <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Otvoriť výber emodži</translation>
 <translation id="2088116547584365419">hry</translation>
+<translation id="2092517835716911174">Ak chcete používať asistenta pri čítaní a asistenta pri písaní, musíte mať aspoň 18 rokov.</translation>
 <translation id="209965399369889474">Nemáte pripojenie k sieti</translation>
 <translation id="2107581415810719320">Iné tlačidlo <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Kábel USB-C nepodporuje Thunderbolt. Výkonnosť zariadenia môže byť obmedzená.</translation>
@@ -1228,6 +1230,7 @@ Pripojené je jedno zariadenie.</translation>
 <translation id="5043679421800073804">Kliknutie alebo klepnutie na poslednú ikonu na poličke</translation>
 <translation id="504465286040788597">Predchádzajúci odsek</translation>
 <translation id="5045550434625856497">Nesprávne heslo</translation>
+<translation id="5056587122125565772">Vytvoriť obrázok</translation>
 <translation id="5058794129231928255">Dokument Google sa nepodarilo vytvoriť</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Ak budete hovoriť s vypnutým zvukom, dostanete upozornenie. Zvuk nikdy neopustí vaše zariadenie.</translation>
@@ -1276,6 +1279,7 @@ Môžete použiť aj klávesovú skratku. Najprv zvýraznite text, potom stlačt
 <translation id="5222676887888702881">Odhlásiť sa</translation>
 <translation id="5228195526683428788">Rozdeľovač obrazovky</translation>
 <translation id="5229343007215035173">Zapnutie alebo vypnutie zámky na ochranu súkromia</translation>
+<translation id="5229860525743792999">Odstrániť <ph name="ITEM_LABEL" /> z navrhovanej skupiny</translation>
 <translation id="5230516054153933099">Okno</translation>
 <translation id="5234764350956374838">Ignorovať</translation>
 <translation id="523505283826916779">Nastavenia zjednodušenia prístupu</translation>
@@ -1758,6 +1762,7 @@ Nová inštalácia</translation>
 <translation id="6757237461819837179">Neprehrávajú sa žiadne médiá</translation>
 <translation id="6760438044935091345">Herný panel</translation>
 <translation id="6768043681523654438">ukladací priestor</translation>
+<translation id="6769195697113506406">Bol vložený obrázok</translation>
 <translation id="6777216307882431711">Napájajú sa pripojené zariadenia USB-C</translation>
 <translation id="6781002679438061620">9. plocha</translation>
 <translation id="6782182743534150858">13. plocha</translation>
@@ -1984,6 +1989,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7571361473021531288">Zostávajúca batéria: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Aktívne okno je ukotvené vpravo.</translation>
 <translation id="7579778809502851308">Snímanie obrazovky</translation>
+<translation id="7588317312481506627">Skopírované do schránky.</translation>
 <translation id="7593891976182323525">Hľadať alebo Shift</translation>
 <translation id="7598054670902114203">Snímka používania procesora, <ph name="CPU_USEAGE" /> %. Teplota: <ph name="TEMPERATURE" /> stup. Celzia, aktuálna rýchlosť: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Vkladá sa vybraný výsledok</translation>
@@ -2178,6 +2184,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8155628902202578800">Otvoriť dialógové okno informácií o používateľovi <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Práve sa používa <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Obsah</translation>
+<translation id="81817143961839203">Obrázok sa nepodarilo vložiť</translation>
 <translation id="8185090165691050712">Zapnutie alebo vypnutie ponuky umožňujúcej zmenu veľkosti zamknutého režimu</translation>
 <translation id="8192727139462702395">Keď vypnete Bluetooth, od zariadenia <ph name="DEVICE_TYPE" /> sa odpoja tieto externé zariadenia:</translation>
 <translation id="8198456017687137612">Karta prenosu</translation>
@@ -2256,6 +2263,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> má <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Ak to chcete zrušiť, stlačte klávesy Alt+Hľadať alebo Shift.</translation>
 <translation id="8480418399907765580">Zobraziť panel s nástrojmi</translation>
+<translation id="8487660088084188539">Keď tieto funkcie zapnete, vstupný text, obsah dokumentov a webová adresa stránky môžu byť odoslané na servery Googlu. Tieto informácie sa používajú na účely generovania návrhov formulácií aj zhrnutí, odpovedania na otázky a zlepšovania danej služby v súlade s <ph name="LINK_TO_SERVICE_TERMS" />. Neuvádzajte žiadne osobné, citlivé ani dôverné údaje.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Otvorenie odkazu na novej karte</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> nepodporuje rozlíšenie <ph name="SPECIFIED_RESOLUTION" />. Preto bolo zmenené na <ph name="FALLBACK_RESOLUTION" />. Zmeny ponecháte kliknutím na Potvrdiť. Predchádzajúce nastavenia budú obnovené o <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2325,6 +2333,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8725066075913043281">Skúsiť znova</translation>
 <translation id="8725214031272624704">Zobrazenie zoznamu dostupných metód vstupu</translation>
 <translation id="8730621377337864115">Hotovo</translation>
+<translation id="8731188831050207755"><ph name="FILE_NAME" /> sa nepodarilo stiahnuť.</translation>
 <translation id="8731487213223706745">Skončí sa o <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Je možné, že sa pokúša ukradnúť vaše stlačenia klávesov</translation>
 <translation id="8735678380411481005">Farba podsvietenia klávesnice</translation>

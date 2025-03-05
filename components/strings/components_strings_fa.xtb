@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">‏دکمه «مدیریت بارگیری‌ها در Chrome»؛ برای مدیریت فایل‌هایی که در Chrome بارگیری کرده‌اید، آن را فعال کنید</translation>
 <translation id="1420345875188552368">‏ممکن است از روش پرداخت خودکار ذخیره‌شده‌تان برای این پرداخت استفاده شود. برای خاموش کردن «کیف پول الکترونیکی» در Chrome، به <ph name="BEGIN_LINK1" />تنظیمات پرداخت<ph name="END_LINK1" /> بروید.</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> جهت مجاز کردن مرتبط‌سازی</translation>
+<translation id="1421484961346698724">حساب حذف‌شده</translation>
 <translation id="14222610277930434">اغلب بازدید می‌کنید</translation>
 <translation id="1422930527989633628">می‌تواند برای پیدا کردن دستگاه‌های بلوتوث اطراف درخواست دهد</translation>
 <translation id="1426410128494586442">بله</translation>
@@ -3010,7 +3011,6 @@
 <translation id="6322182122604171028">‏استفاده از Windows Hello ممکن نشد</translation>
 <translation id="6326947323444967009">‏Chrome را در تنظیمات iOS به‌عنوان مرورگر پیش‌فرض سیستم تنظیم کنید</translation>
 <translation id="6328639280570009161">غیرفعال کردن پیش‌بینی شبکه را امتحان کنید</translation>
-<translation id="6328784461820205019">‏«اتصالتان خصوصی نیست» یا «&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;» یا «&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;» یا «&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;» یا «خطای گواهینامه SSL»</translation>
 <translation id="6335029926534404762">کفش ورزشی</translation>
 <translation id="6337133576188860026">کمتر از <ph name="SIZE" /> از فضا را آزاد می‌کند. ممکن است برخی از سایت‌ها در بازدیدهای بعدی کندتر بارگیری شوند.</translation>
 <translation id="6337534724793800597">فیلتر کردن خط‌مشی‌ها براساس نام</translation>
@@ -3731,6 +3731,7 @@
 <translation id="7569983096843329377">سیاه</translation>
 <translation id="7574998639136359461">تجهیزات ورزش‌های زمستانی</translation>
 <translation id="7575207903026901870">‏برداشتن دکمه «پیشنهاد»، برای برداشتن این پیشنهاد، دکمه Enter را فشار دهید</translation>
+<translation id="7575800019233204241">‏«اتصالتان خصوصی نیست» یا «&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;» یا «&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;» یا «&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;» یا «خطای گواهینامه SSL»</translation>
 <translation id="7575887283389198269">تلفن همراه</translation>
 <translation id="7578104083680115302">‏با استفاده از کارت‌هایی که با Google ذخیره کرده‌اید به‌سرعت در همه دستگاه‌هایتان پرداخت‌های سایت‌ها و برنامه‌ها را انجام دهید.</translation>
 <translation id="7579442726219254162">متغیر نامعلوم «<ph name="VARIABLE" />» در پیکربندی تحت‌مدیریت «<ph name="APPLICATION_ID" />».</translation>
@@ -4560,7 +4561,7 @@
 <translation id="9078964945751709336">اطلاعات بیشتری نیاز است</translation>
 <translation id="9080712759204168376">خلاصه سفارش</translation>
 <translation id="9084304544887760521">اگر قیمت محصولاتی که پیگیری می‌کنید در هر سایتی کاهش پیدا کند، ایمیلی به <ph name="EMAIL" /> ارسال می‌شود.</translation>
-<translation id="9089260154716455634">خط‌مشی ساعت‌های خاموشی:</translation>
+<translation id="9089260154716455634">خط‌مشی ساعات خاموشی:</translation>
 <translation id="9090218457905363312">موسیقی کارائیبی و رگِی</translation>
 <translation id="9090243919347147717">پیوست‌ها</translation>
 <translation id="9090548458280093580">جستجوی سابقه، با بهره‌گیری از هوش مصنوعی</translation>

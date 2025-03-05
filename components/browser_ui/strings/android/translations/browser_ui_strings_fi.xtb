@@ -6,6 +6,7 @@
 <translation id="1044891598689252897">Sivustot toimivat normaalisti</translation>
 <translation id="1070329623210597193">Tiedostot, jotka sivusto voi katsella tai muokata</translation>
 <translation id="1073417869336441572">Auta meitä parantamaan Chromea kertomalla, miksi sallit kolmannen osapuolen evästeet. <ph name="BEGIN_LINK" />Lähetä palautetta<ph name="END_LINK" /></translation>
+<translation id="1074758928858737435">Voit pyytää sivustojen tietokoneversiota</translation>
 <translation id="1085696779717592361">Chromen käyttö oletuksena</translation>
 <translation id="1178581264944972037">Tauko</translation>
 <translation id="1181037720776840403">Poista</translation>
@@ -32,6 +33,7 @@
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sivusto}other{<ph name="SITE_COUNT" /> sivustoa}}</translation>
 <translation id="1500473259453106018">Piilota "Hinnanalennukset avoimilla välilehdillä" ‑kortti</translation>
 <translation id="1510341833810331442">Sivustot eivät saa tallentaa dataa laitteellesi</translation>
+<translation id="1538031354170655462">Sivustot käyttävät yleensä Near Field Communication (NFC) -teknologiaa toimiakseen lähellä olevien tagien tai laitteiden kanssa, esimerkiksi tunnusten skannaamiseen tai lähimaksamiseen</translation>
 <translation id="1547123415014299762">Kolmannen osapuolen evästeet on sallittu</translation>
 <translation id="1593426485665524382">Uusia toimintoja saatavilla näytön yläosassa</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -211,12 +213,14 @@
 <translation id="3955193568934677022">Salli sivustojen toistaa suojattua sisältöä (suositus)</translation>
 <translation id="3965467402665811906">Sivustot voivat pyytää lupaa sinusta tallennettujen tietojen käytölle</translation>
 <translation id="3967822245660637423">Lataus on valmis</translation>
+<translation id="3981465354637804599">Sivustot näyttävät yleensä mainoksia voidakseen tarjota sisältöä tai palveluja maksutta. Joidenkin sivustojen tiedetään näyttävän häiritseviä tai harhaanjohtavia mainoksia.</translation>
 <translation id="3987993985790029246">Kopioi linkki</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992308058851451478"><ph name="SITE" /> voi käyttää tietojasi selaamisen aikana</translation>
 <translation id="3992684624889376114">Tietoja sivusta</translation>
 <translation id="4002066346123236978">Nimi</translation>
 <translation id="4046123991198612571">Seuraava kappale</translation>
+<translation id="4077310749977440510">Sivustot lukevat yleensä leikepöydän sisältöä säilyttääkseen kopioimasi tekstin muotoilun ja muita vastaavia ominaisuuksia varten</translation>
 <translation id="4149890623864272035">Haluatko varmasti poistaa kaiken paikallisen datan, myös evästeet, ja nollata kaikki tämän verkkosivuston luvat?</translation>
 <translation id="4149994727733219643">Yksinkertaisempi sivunäkymä</translation>
 <translation id="4151930093518524179">Zoomauksen oletusarvo</translation>
@@ -224,6 +228,7 @@
 <translation id="4169549551965910670">Yhdistetty USB-laitteeseen</translation>
 <translation id="4194328954146351878">Kysy, saavatko sivustot nähdä ja muuttaa NFC-laitteiden tietoja (suositeltu)</translation>
 <translation id="4200726100658658164">Avaa sijaintiasetukset</translation>
+<translation id="421742575134139848">Sivustoilla voidaan toistaa ääntä musiikin, videoiden tai muun median yhteydessä</translation>
 <translation id="4226663524361240545">Laite voi väristä ilmoitusten yhteydessä.</translation>
 <translation id="4259722352634471385">Kohde on estetty: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Kun lähdet sivustolta, se voi jatkaa synkronointia viimeistelläkseen asioita, kuten kuvien latauksen tai chat-viestin lähettämisen</translation>
@@ -247,6 +252,7 @@
 <translation id="4566417217121906555">Mykistä mikrofoni</translation>
 <translation id="4570913071927164677">Tiedot</translation>
 <translation id="4598549027014564149">Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta – eivät edes aiheeseen liittyvillä sivustoilla. Selaustoimintaasi ei käytetä mainosten personointiin tai muuhun vastaavaan. Joidenkin sivustojen ominaisuudet eivät välttämättä toimi.</translation>
+<translation id="461356340001513807">Sallii sinun kirjautua verkkosivustoille identiteettipalvelun tilillä</translation>
 <translation id="4619615317237390068">Välilehdet muista laitteista</translation>
 <translation id="4644713492825682049">Poista ja nollaa luvat</translation>
 <translation id="4645575059429386691">Vanhempasi hallinnoima</translation>
@@ -430,6 +436,7 @@
 <translation id="7000754031042624318">Poistettu käytöstä Android-asetuksissa</translation>
 <translation id="702275896380648118">Tämä sivusto päättelee, mistä pidät, ja ehdottaa sitten mainoksia muille sivustoille. Se myös saa mainosaiheesi Chromesta, jotta voit nähdä osuvampia mainoksia.</translation>
 <translation id="7053983685419859001">Estä</translation>
+<translation id="7055552182600664515">Sivustojen on ehkä käytettävä sisällönsuojauspalvelua, jotta ne voivat toistaa tekijänoikeudella suojattua sisältöä. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 valittu}other{# valittu}}</translation>
 <translation id="708014373017851679"><ph name="APP_NAME" /> on vanhentunut. Päivitä sovellus.</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> valittu. Toimintoja on käytettävissä näytön yläosassa.</translation>

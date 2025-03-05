@@ -1379,7 +1379,6 @@
 <translation id="1936157145127842922">फ़ोल्डर में दिखाएं</translation>
 <translation id="1936931585862840749">बताएं कि आपको कितनी कॉपी प्रिंट करनी है (1 से <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">कंटेनर संरचना प्रकार <ph name="ARCHITECTURE_CONTAINER" /> को इस डिवाइस <ph name="ARCHITECTURE_DEVICE" />के साथ इंपोर्ट नहीं किया जा सकता. आप इस कंटेनर को किसी दूसरे डिवाइस में बहाल करके देख सकते हैं या फिर आप फ़ाइल ऐप्लिकेशन खोलकर इस कंटेनर में मौजूद फ़ाइलें ऐक्सेस कर सकते हैं.</translation>
-<translation id="1938116692670653897">मौजूदा कलर थीम</translation>
 <translation id="1938351510777341717">बाहरी निर्देश</translation>
 <translation id="1940221956626514677">टूलबार को पसंद के मुताबिक बनाएं</translation>
 <translation id="1940546824932169984">कनेक्ट किए गए डिवाइस</translation>
@@ -4082,6 +4081,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{एक्सटेंशन को मंज़ूरी दी गई}one{# एक्सटेंशन को मंज़ूरी दी गई}other{# एक्सटेंशन को मंज़ूरी दी गई}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux के लिए कम से कम <ph name="INSTALL_SIZE" /> खाली जगह होनी चाहिए.</translation>
+<translation id="3824203811509979971">कॉन्टेंट के बारे में खास जानकारी पाएं या इससे जुड़े सवाल पूछें</translation>
 <translation id="3824621460022590830">डिवाइस का नाम दर्ज करने वाला टोकन अमान्य है. कृपया डिवाइस के मालिक या एडमिन से संपर्क करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">अन्य डिवाइसों में खुले हुए टैब देखने के लिए साइन इन करें</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{इस फ़ाइल टाइप के लिए मेरी पसंद याद रखें: <ph name="FILE_TYPES" />}one{इस फ़ाइल टाइप के लिए मेरी पसंद याद रखें: <ph name="FILE_TYPES" />}other{इन फ़ाइल टाइप के लिए मेरी पसंद याद रखें: <ph name="FILE_TYPES" />}}</translation>
@@ -4267,6 +4267,7 @@
 <translation id="3948985214866944547">ज़्यादातर लोग इस साइट के लिए, जगह की सटीक जानकारी शेयर करने की अनुमति नहीं देते हैं</translation>
 <translation id="394984172568887996">IE से आयात किया गया</translation>
 <translation id="3949999964543783947">सुरक्षित तरीके से फ़ाइलें डाउनलोड करने के लिए, <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
+<translation id="3950479158728806902">तेज़ी से साइन इन करने के लिए, अपने-आप पासकी बनने की सुविधा चालू करें</translation>
 <translation id="3950820424414687140">साइन इन करें</translation>
 <translation id="3950841222883198950">बोली को लिखाई में बदलने की सुविधा से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="3953834000574892725">मेरे खाते</translation>
@@ -5195,6 +5196,7 @@
 <translation id="4624054169152573743">रंग की थीम</translation>
 <translation id="4625078469366263107">ऐप्लिकेशन चालू करें</translation>
 <translation id="4625905218692741757">स्लेटी डिफ़ॉल्ट रंग</translation>
+<translation id="4627107755957573804">साइटों और ऐप्लिकेशन को, मौजूदा खाते अपग्रेड करने की अनुमति दें, ताकि वे पासकी इस्तेमाल कर सकें</translation>
 <translation id="4627442949885028695">किसी अन्य डिवाइस से जारी रखें</translation>
 <translation id="4628762811416793313">Linux कंटेनर का सेटअप पूरा नहीं हुआ. कृपया फिर से कोशिश करें.</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> प्रोफ़ाइल खोलें</translation>
@@ -5777,6 +5779,7 @@
 <translation id="5053233576223592551">उपयोगकर्ता नाम जोड़ें</translation>
 <translation id="505347685865235222">बिना नाम वाला ग्रुप - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{इसे अभी बदलें}one{इसे अभी बदलें}other{इन्हें अभी बदलें}}</translation>
+<translation id="5056587122125565772">इमेज जनरेट करें</translation>
 <translation id="5056950756634735043">कंटेनर से जोड़ा जा रहा है</translation>
 <translation id="5057110919553308744">जब आप एक्सटेंशन को क्लिक करते हैं</translation>
 <translation id="5057127674016624293">स्कैन करने में उम्मीद से ज़्यादा समय लग रहा है</translation>
@@ -5887,6 +5890,7 @@
 <translation id="512642543295077915">खोज बटन + backspace</translation>
 <translation id="5126611267288187364">बदलाव देखें</translation>
 <translation id="5127620150973591153">सुरक्षित कनेक्शन आईडी: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">कॉन्टेंट के बारे में खास जानकारी पाएं या इससे जुड़े सवाल पूछें.</translation>
 <translation id="5127881134400491887">नेटवर्क कनेक्शन प्रबंधित करें</translation>
 <translation id="5127934926273826089">फूलों से जुड़ी सेवाएं</translation>
 <translation id="5127986747308934633">आपका एडमिन आपके डिवाइस को कंट्रोल कर रहा है</translation>
@@ -11413,6 +11417,7 @@
 <translation id="9074739597929991885">ब्लूटूथ</translation>
 <translation id="9074836595010225693">USB माउस कनेक्ट किया गया</translation>
 <translation id="9075413375877487220">Safe Browsing की बेहतर सुविधा के मुताबिक, यह एक्सटेंशन सुरक्षित नहीं है.</translation>
+<translation id="9075985558450420812">इमेज जनरेट करने के लिए, पसंद के मुताबिक कोई प्रॉम्प्ट डालें या टेक्स्ट हाइलाइट करें.</translation>
 <translation id="9076523132036239772">क्षमा करें, आपके ईमेल या पासवर्ड का सत्‍यापन नहीं किया जा सका. पहले किसी नेटवर्क से कनेक्‍ट करने का प्रयास करें.</translation>
 <translation id="9076821103818989526">साइड पैनल</translation>
 <translation id="9076977315710973122">एसएमबी शेयर करना</translation>

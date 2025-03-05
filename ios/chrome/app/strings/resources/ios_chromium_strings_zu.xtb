@@ -94,6 +94,7 @@ Ukuze uthole amasethingi engeziwe asebenzisa idatha ukuthuthukisa ukuzizwisa kwa
 <translation id="328933489847748230">{count,plural, =1{Manje kuvela iwindi le-Chromium elilodwa}one{Manje kuvela amawindi angu-{count} we-Chromium}other{Manje kuvela amawindi angu-{count} we-Chromium}}</translation>
 <translation id="3344973607274501920">I-Chromium ayikwazanga ukuhlola iphasiwedi yakho. Zama ukuhlola ukuxhumeka kwakho ku-inthanethi.</translation>
 <translation id="3366305173356742781">Idatha ye-Chromium ku-akhawunti yakho</translation>
+<translation id="33788334537425157">Vula elithi "Khiya amathebhu e-Icognito uma uvala iChromium"</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Lokhu kwenzeka lapho i-Chromium ingasetshenziswa umzuzu ongu-{THRESHOLD}. Lokhu kungafaka umlando kanye nokugcwalisa okuzenzakalelayo.}one{Lokhu kwenzeka lapho i-Chromium ingasetshenziswa imizuzu engu-{THRESHOLD}. Lokhu kungafaka umlando kanye nokugcwalisa okuzenzakalelayo.}other{Lokhu kwenzeka lapho i-Chromium ingasetshenziswa imizuzu engu-{THRESHOLD}. Lokhu kungafaka umlando kanye nokugcwalisa okuzenzakalelayo.}}</translation>
 <translation id="3410395242749598859">Enye idatha yakho yeChromium ayikalondolozwa ku-<ph name="EMAIL" /> okwamanje.
 Zama ukulinda imizuzu embalwa ngaphambi kokushintsha ama-akhawunti. Uma ushintsha ama-akhawunti manje, le datha izosulwa.</translation>
@@ -101,8 +102,10 @@ Zama ukulinda imizuzu embalwa ngaphambi kokushintsha ama-akhawunti. Uma ushintsh
 <translation id="347967311580159871">Ukuze uthole amasethingi engeziwe asebenzisa idatha ukuthuthukisa ukuzizwisa kwakho kwe-Chromium, iya <ph name="BEGIN_LINK" />Kumasevisi e-Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Iphasiwedi yakho ayizange yabiwe. Hlola ukuxhumeka kwakho kwe-inthanethi futhi uqinisekise ukuthi ungene ngemvume ku-Chromium. Bese uzame futhi.</translation>
 <translation id="3529798650269984835">Vula okuthi “Ukhiya wamathebhu e-Incognito uma uvala iChromium.”</translation>
+<translation id="3541247799006476453">Finyelela kalula kumaphasiwedi nezikhiye zakho zokudlula ngeChromium Ezigcwaliselayo</translation>
 <translation id="3567399274263440288">Ukuze uthole okuningi kwe-Chromium, ngena ngemvume ku-Chromium nge-Google Account yakho</translation>
 <translation id="3581385059720151202">Sesha okubukwayo kuChromium</translation>
+<translation id="3582640969619785896">IChromium izocela ukulondoloza iphasiwedi yakho</translation>
 <translation id="3594315078412605236">Lawula izindlela zokukhokha kuChromium</translation>
 <translation id="3634039384458740619">Vula Amasethingi We-Chromium</translation>
 <translation id="3639997914391704523">I-Chromium ingahlola amaphasiwedi akho uma ungena ngemvume nge-Akhawunti yakho ye-Google.</translation>
@@ -159,6 +162,7 @@ Ukuze ushintshe lawa masethingi, <ph name="BEGIN_LINK" />sula idatha ye-Chromium
 <translation id="4999538639245140991">Ngoba uphuma ku-akhawunti ephethwe ngu-<ph name="SIGNOUT_MANAGED_DOMAIN" />, idatha yakho ye-Chromium izosuswa kusuka kule divayisi. Idatha yakho izohlala ku-akhawunti yakho ye-Google.</translation>
 <translation id="5042011327527167688">Thepha okuthi “Buka nge-Amamephu eGoogle ku-Chromium.”</translation>
 <translation id="5044871537677053278">I-Chromium ithola amakheli bese isebenzisa Amamephu eGoogle ukuze ikunikeze izikhombisi-ndlela kanye nolwazi lwendawo.</translation>
+<translation id="5048140766121299007">Kula masethingi "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" vula "iChromium"</translation>
 <translation id="5048795749726991615">Ukuze uthole kalula amaphasiwedi akho alondoloziwe kwamanye ama-app, sebenzisa i-Chromium Yokugcwalisa Okuzenzakalelayo</translation>
 <translation id="5053429694249468757">Isula idatha yeChromium…</translation>
 <translation id="5071749685031362629">IChromium ye-iOS</translation>
@@ -166,6 +170,7 @@ Ukuze ushintshe lawa masethingi, <ph name="BEGIN_LINK" />sula idatha ye-Chromium
 <translation id="5124429847818367226">Manje usungasebenzisa i-Chromium noma kunini uma ubhrawuza noma uthepha amalinki emilayezweni, kumadokhumenti, nakwamanye ama-app.</translation>
 <translation id="5131565040785979529">Inhlangano yakho, <ph name="DOMAIN" />, ilawula i-akhawunti ongene kuyo ngemvume kanye nendlela i-Chromium esetshenziswa ngayo.</translation>
 <translation id="5134464247000681876">Vula amalinki kuGmail, kuMaps, kuYouTube nakwamanye ama-app kuChromium</translation>
+<translation id="5203244847421322551">Londoloza bese wenza amaphasiwedi azigwaliseleke kuChromium</translation>
 <translation id="5224391634244552924">Awekho amaphasiwedi alondoloziwe. I-Chromium ingahlola amaphasiwedi akho lapho uwalondoloza khona.</translation>
 <translation id="5259423875997548710">Sesha okubukwayo kuChromium.</translation>
 <translation id="5308226104666789935">I-Chromium ayikwazi ukuhlola izibuyekezo</translation>
@@ -213,6 +218,7 @@ Izinto okumelwe uzicabangele:
 <translation id="6197255575340902638">Uma ufihla "i-<ph name="MODULE_NAME" />", i-Chromium ngeke isalandelela ngokuzenzakalelayo amaphakheji akho esikhathi esizayo futhi izosusa yonke idatha yakho yokulandela yephakheji edlule.</translation>
 <translation id="6247557882553405851">Umphathi Wephasiwedi ye-Google</translation>
 <translation id="6268381023930128611">Phuma ku-Chromium?</translation>
+<translation id="6301717043141881464">Ukuze uwathole kalula amaphasiwedi akho alondoloziwe kwamanye ama-app akho, khetha iChromium Ezigcwaliselayo</translation>
 <translation id="6324041800010509197">Vakashela Ithebhu Ye-Grid Ku-Chromium</translation>
 <translation id="6325378625795868881">Sebenzisa i-Chromium noma nini uma uthepha amalinki kumilayezo, amadokhumenti, namanye ama-app.</translation>
 <translation id="6424492062988593837">I-Chromium ingocono nakakhulu! Inguqulo entsha iyatholakala.</translation>
@@ -224,6 +230,7 @@ Izinto okumelwe uzicabangele:
 <translation id="6574750762636192517">Phatha amaphasiwedi kuChromium</translation>
 <translation id="6590232959690355435">Ivula ikhasi lakho Lomlando weChromium.</translation>
 <translation id="6674470628873622334">Ivula ithebhu entsha ye-Incognito kuChromium.</translation>
+<translation id="6680609900732453726">Gcina ukubhrawuza kwakho kuyimfihlo ngedivayisi efakazela ubuqiniso uma uvala iChromium</translation>
 <translation id="6752854822223394465">Inhlangano yakho isetha i-Chromium...</translation>
 <translation id="6794054469102824109">Ivula iGeyimu ye-Dino ye-Chromium.</translation>
 <translation id="6820823224820483452">I-Chromium ayikwazanga ukuhlola wonke amaphasiwedi. Zama futhi kusasa.</translation>
@@ -287,6 +294,7 @@ Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. 
 <translation id="8254729934443216898">Hlola izakhi ezintsha ezikusiza ukuthi uthole okuningi ku-Chromium.</translation>
 <translation id="8293572045658095405">UkuChromium Incognito</translation>
 <translation id="830951810931292870">Ivula ama-URL afakiwe ku-Chromium nge-Incognito.</translation>
+<translation id="8390323835464055390">Ngena ngemvume ngamaphasiwedi nezikhiye zakho zokudlula ezilondoloziwe kunoma iyiphi i-app usebenzisa iChromium Ezigcwaliselayo</translation>
 <translation id="8409374867500149834">Unokuvikeleka okuqine kakhulu kwe-Chromium ngokumelene namawebhusayithi ayingozi</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Lokhu kwenzeka lapho iChromium ingasetshenziswa umzuzu ongu-{THRESHOLD}. Idatha elondolozwe kule divayisi kuphela ngenkathi ungene ngemvume izosulwa. Lokhu kungase kuhlanganise umlando namaphasiwedi.}one{Lokhu kwenzeka lapho iChromium ingasetshenziswa imizuzu engu-{THRESHOLD}. Idatha elondolozwe kule divayisi kuphela ngenkathi ungene ngemvume izosulwa. Lokhu kungase kuhlanganise umlando namaphasiwedi.}other{Lokhu kwenzeka lapho iChromium ingasetshenziswa imizuzu engu-{THRESHOLD}. Idatha elondolozwe kule divayisi kuphela ngenkathi ungene ngemvume izosulwa. Lokhu kungase kuhlanganise umlando namaphasiwedi.}}</translation>
 <translation id="858114650497379505">Ungasebenzisa amaphasiwedi owalondolozile ku-Password Manager kwamanye ama-app ku-iPhone yakho.</translation>

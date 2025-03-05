@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">'Chromeରେ ଡାଉନଲୋଡଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ' ବଟନ, Chromeରେ ଆପଣ ଡାଉନଲୋଡ କରିଥିବା ଫାଇଲଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="1420345875188552368">ଏହି ପେମେଣ୍ଟ ପାଇଁ ଆପଣଙ୍କର ସେଭ କରାଯାଇଥିବା ଅଟୋ-ପେମେଣ୍ଟ ପଦ୍ଧତିକୁ ବ୍ୟବହାର କରାଯାଇପାରେ। Chromeରେ eWallet ବନ୍ଦ କରିବା ପାଇଁ ଆପଣଙ୍କ <ph name="BEGIN_LINK1" />ପେମେଣ୍ଟ ସେଟିଂସ<ph name="END_LINK1" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="1420920093772172268">ପେୟାରିଂକୁ ଅନୁମତି ଦେବା ପାଇଁ <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="1421484961346698724">ଆକାଉଣ୍ଟ ଡିଲିଟ ହୋଇଯାଇଛି</translation>
 <translation id="14222610277930434">ଆପଣ ପ୍ରାୟତଃ ଭିଜିଟ କରନ୍ତି</translation>
 <translation id="1422930527989633628">ଆଖପାଖର ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସଗୁଡ଼ିକୁ ଖୋଜି ପାଇବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="1426410128494586442">ହଁ</translation>
@@ -3006,7 +3007,6 @@
 <translation id="6322182122604171028">Windows Hello ବ୍ୟବହାର କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="6326947323444967009">iOS ସେଟିଂସରେ Chromeକୁ ସିଷ୍ଟମର ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବେ ସେଟ କରନ୍ତୁ</translation>
 <translation id="6328639280570009161">ନେଟ୍‌ୱର୍କ ପୁର୍ବାନୁମାନ ଅକ୍ଷମ କରି ଦେଖନ୍ତୁ</translation>
-<translation id="6328784461820205019">"ଆପଣଙ୍କ ସଂଯୋଗ ବ୍ୟକ୍ତିଗତ ନୁହେଁ" କିମ୍ବା "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" କିମ୍ବା "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" କିମ୍ବା "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" କିମ୍ବା "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" କିମ୍ବା "SSL ସାର୍ଟିଫିକେଟ୍ ତ୍ରୁଟି"</translation>
 <translation id="6335029926534404762">ଆଥଲେଟିକ ଜୋତା</translation>
 <translation id="6337133576188860026"><ph name="SIZE" />ଠାରୁ କମ୍ ଖାଲି କରନ୍ତି। କିଛି ଆପଣଙ୍କର ପରବର୍ତ୍ତୀ ଭ୍ରମଣ ସମୟରେ ଆହୁରି ଧୀରେ ଲୋଡ୍ ହୋଇପାରନ୍ତି।</translation>
 <translation id="6337534724793800597">ନାମ ଅନୁଯାୟୀ ନୀତିଗୁଡ଼ିକ ଫିଲ୍ଟର୍‍ କରନ୍ତୁ</translation>

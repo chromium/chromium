@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">सुझाव, शिकायत या राय दें</translation>
 <translation id="1059120031266247284">आपके साथ शेयर की गई</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> के साथ इसे हटाने का बटन दिख रहा है</translation>
 <translation id="1062407476771304334">प्रतिस्थापित करें</translation>
 <translation id="1073899992769346247">बैटरी बदलें या उसे रीचार्ज करें</translation>
 <translation id="1081015718268701546">फ़िलहाल, Linux ऐप्लिकेशन काम नहीं कर रहे हैं. अन्य ऐप्लिकेशन सेव हो जाएंगे.</translation>
@@ -1229,6 +1230,7 @@
 <translation id="5043679421800073804">शेल्फ़ पर आखिरी आइकॉन पर क्लिक या टैप करने के लिए</translation>
 <translation id="504465286040788597">पिछले पैराग्राफ़ पर जाएं</translation>
 <translation id="5045550434625856497">ग़लत पासवर्ड</translation>
+<translation id="5056587122125565772">इमेज जनरेट करें</translation>
 <translation id="5058794129231928255">Google दस्तावेज़ नहीं बनाया जा सका</translation>
 <translation id="5062496344832867502">रैम</translation>
 <translation id="5068762093486106012">माइक के म्यूट रहते हुए बात करने पर, आपको इसकी सूचना दी जाएगी. माइक के म्यूट होने पर, आपकी बातचीत किसी को सुनाई नहीं देती.</translation>
@@ -1277,6 +1279,7 @@
 <translation id="5222676887888702881">साइन आउट करें</translation>
 <translation id="5228195526683428788">स्प्लिट स्क्रीन डिवाइडर</translation>
 <translation id="5229343007215035173">निजता स्क्रीन चालू/बंद करें</translation>
+<translation id="5229860525743792999"><ph name="ITEM_LABEL" /> को सुझाए गए ग्रुप से हटाएं</translation>
 <translation id="5230516054153933099">विंडो</translation>
 <translation id="5234764350956374838">खारिज करें</translation>
 <translation id="523505283826916779">सुलभता सेटिंग</translation>
@@ -1759,6 +1762,7 @@
 <translation id="6757237461819837179">कोई मीडिया नहीं चल रहा है</translation>
 <translation id="6760438044935091345">गेम डैशबोर्ड</translation>
 <translation id="6768043681523654438">डिवाइस का स्टोरेज</translation>
+<translation id="6769195697113506406">इमेज जोड़ी गई</translation>
 <translation id="6777216307882431711">कनेक्ट किए गए यूएसबी-सी डिवाइस चार्ज कर रहा है</translation>
 <translation id="6781002679438061620">डेस्क 9</translation>
 <translation id="6782182743534150858">डेस्क 13</translation>
@@ -1985,6 +1989,7 @@
 <translation id="7571361473021531288"><ph name="BATTERY_PERCENTAGE" />% बैटरी बची है | <ph name="TIME" /> तक चलेगी</translation>
 <translation id="7573585051776738856">चालू विंडो को दाईं तरफ़ डॉक किया गया है.</translation>
 <translation id="7579778809502851308">स्क्रीन कैप्चर</translation>
+<translation id="7588317312481506627">क्लिपबोर्ड पर कॉपी की गई.</translation>
 <translation id="7593891976182323525">Search या Shift</translation>
 <translation id="7598054670902114203">सीपीयू के इस्तेमाल का स्नैपशॉट, <ph name="CPU_USEAGE" />%. तापमान <ph name="TEMPERATURE" /> डिग्री सेल्सियस, मौजूदा स्पीड: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> गीगाहर्ट्ज़</translation>
 <translation id="7599378375976398913">चुना गया नतीजा जोड़ा जा रहा है</translation>
@@ -2179,6 +2184,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> के लिए, जानकारी वाला डायलॉग खोलें.</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> का इस्तेमाल किया जा रहा है</translation>
 <translation id="8168435359814927499">कॉन्टेंट</translation>
+<translation id="81817143961839203">इमेज नहीं जोड़ी जा सकी</translation>
 <translation id="8185090165691050712">मेन्यू को चालू या बंद करने के लिए, ताकि लॉक मोड का साइज़ बदला जा सके</translation>
 <translation id="8192727139462702395">ब्लूटूथ बंद करने पर, ये बाहरी डिवाइस आपके <ph name="DEVICE_TYPE" /> से डिसकनेक्ट हो जाएंगे:</translation>
 <translation id="8198456017687137612">कास्टिंग टैब</translation>
@@ -2257,6 +2263,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> में <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> हैं.</translation>
 <translation id="8477270416194247200">रद्द करने के लिए Alt+Search या Shift दबाएं.</translation>
 <translation id="8480418399907765580">टूलबार दिखाएं</translation>
+<translation id="8487660088084188539">इन सुविधाओं को चालू करने पर यह जानकारी, Google के सर्वर को भेजी जाती है: डाला गया टेक्स्ट, दस्तावेज़ में मौजूद कॉन्टेंट, और वेब पेज का यूआरएल. इस जानकारी का इस्तेमाल, लिखने से जुड़े सुझाव देने, खास जानकारी जनरेट करने, सवालों के जवाब देने, और प्रॉडक्ट को बेहतर बनाने के लिए किया जाता है. इस प्रोसेस पर <ph name="LINK_TO_SERVICE_TERMS" /> लागू होती हैं. इनपुट में किसी भी तरह की निजी, संवेदनशील या गोपनीय जानकारी शामिल न करें.</translation>
 <translation id="8487699605742506766">हॉटस्पॉट</translation>
 <translation id="8491237443345908933">लिंक को नए टैब में खोलें</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> के साथ काम नहीं करता. रिज़ॉल्यूशन को बदलकर <ph name="FALLBACK_RESOLUTION" /> कर दिया गया था. बदलाव बनाए रखने के लिए, 'जारी रखें' पर क्लिक करें. सेटिंग को <ph name="TIMEOUT_SECONDS" /> में पहले जैसा दिया जाएगा.</translation>
@@ -2326,6 +2333,7 @@
 <translation id="8725066075913043281">फिर से कोशिश करें</translation>
 <translation id="8725214031272624704">इनपुट के उपलब्ध तरीकों की सूची दिखाएं</translation>
 <translation id="8730621377337864115">हो गया</translation>
+<translation id="8731188831050207755"><ph name="FILE_NAME" /> डाउनलोड नहीं की जा सकी.</translation>
 <translation id="8731487213223706745"><ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /> पर खत्म होगा</translation>
 <translation id="8734991477317290293">यह आपके कीस्ट्रोक चुराने की कोशिश कर सकता है</translation>
 <translation id="8735678380411481005">कीबोर्ड की बैकलाइट का रंग</translation>

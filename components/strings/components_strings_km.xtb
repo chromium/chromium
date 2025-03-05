@@ -3015,7 +3015,6 @@
 <translation id="6322182122604171028">មិនអាចប្រើ Windows Hello បានទេ</translation>
 <translation id="6326947323444967009">កំណត់ Chrome ជាកម្មវិធីរុករកតាមអ៊ីនធឺណិតលំនាំដើមរបស់ប្រព័ន្ធនៅក្នុងការកំណត់ iOS</translation>
 <translation id="6328639280570009161">សាកល្បងការបិទដំណើរការការព្យាករណ៍បណ្តាញ</translation>
-<translation id="6328784461820205019">"ការតភ្ជាប់របស់អ្នកមិនមានលក្ខណៈឯកជន" ឬ "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" ឬ "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" ឬ "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" ឬ "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" ឬ "វិញ្ញាបនបត្រ SSL មាន​បញ្ហា"</translation>
 <translation id="6335029926534404762">ស្បែកជើង​កីឡា</translation>
 <translation id="6337133576188860026">បង្កើន​ទំហំផ្ទុក​តិចជាង <ph name="SIZE" /> ។ ទំព័រ​មួយចំនួន​អាចផ្ទុក​យឺតជាងមុន នៅពេលដែលអ្នក​ចូល​លើកក្រោយ។</translation>
 <translation id="6337534724793800597">ត្រងគោលការណ៍តាមឈ្មោះ</translation>
@@ -3736,6 +3735,7 @@
 <translation id="7569983096843329377">ខ្មៅ</translation>
 <translation id="7574998639136359461">បរិក្ខារ​កីឡា​រដូវ​រងា</translation>
 <translation id="7575207903026901870">ប៊ូតុង​លុប​ការណែនាំ ចុច Enter ដើម្បី​លុប​ការណែនាំ​នេះ</translation>
+<translation id="7575800019233204241">"ការតភ្ជាប់​របស់អ្នក​មិន​មានលក្ខណៈ​ឯកជន" ឬ "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" ឬ "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" ឬ "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" ឬ "មានបញ្ហាផ្នែក​វិញ្ញាបនបត្រ SSL"</translation>
 <translation id="7575887283389198269">ទូរសព្ទ​ចល័ត</translation>
 <translation id="7578104083680115302">បង់ប្រាក់យ៉ាងឆាប់រហ័សក្នុងគេហទំព័រ និងកម្មវិធីនៅលើឧបករណ៍នានាដោយប្រើកាតដែលអ្នកបានរក្សាទុកជាមួយ Google។</translation>
 <translation id="7579442726219254162">អថេរ "<ph name="VARIABLE" />" ដែលមិនស្គាល់​នៅក្នុង​ការកំណត់រចនាសម្ព័ន្ធ​ដែលស្ថិតក្រោម​ការគ្រប់គ្រង​របស់ "<ph name="APPLICATION_ID" />"។</translation>

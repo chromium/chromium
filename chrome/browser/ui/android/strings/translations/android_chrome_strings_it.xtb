@@ -147,6 +147,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="160275202205869636">Quando l'opzione è attiva, utilizza e salva i dati nel tuo Account Google. Se è disattivata, i dati vengono salvati solo su questo dispositivo.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Rimuovi 1 elemento selezionato}other{Rimuovi # elementi selezionati}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 preferito e altri elementi sono salvati solo su questo dispositivo. Per usarli sugli altri tuoi dispositivi, salvali nel tuo Account Google, <ph name="ACCOUNT_EMAIL" />.}other{# preferiti e altri elementi sono salvati solo su questo dispositivo. Per usarli sugli altri tuoi dispositivi, salvali nel tuo Account Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
+<translation id="1639239467298939599">Caricamento</translation>
 <translation id="1641113438599504367">Navigazione sicura</translation>
 <translation id="164269334534774161">È visualizzata una copia offline di questa pagina del giorno <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Cronologia</translation>

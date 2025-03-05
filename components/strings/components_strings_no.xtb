@@ -252,6 +252,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1419305130220238697">Knappen «Administrer nedlastinger i Chrome» – aktiver for å administrere filer du har lastet ned i Chrome</translation>
 <translation id="1420345875188552368">Den lagrede betalingsmåten din for automatisk betaling kan brukes for denne betalingen. For å slå av e-lommebøker i Chrome, gå til <ph name="BEGIN_LINK1" />betalingsinnstillingene<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> for å tillate sammenkobling.</translation>
+<translation id="1421484961346698724">Slettet konto</translation>
 <translation id="14222610277930434">Du besøker nettstedet ofte</translation>
 <translation id="1422930527989633628">Kan be om å få oppdage Bluetooth-enheter i nærheten</translation>
 <translation id="1426410128494586442">Ja</translation>
@@ -3010,7 +3011,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6322182122604171028">Kunne ikke bruke Windows Hello</translation>
 <translation id="6326947323444967009">Angi Chrome som systemets standardnettleser i iOS-innstillingene</translation>
 <translation id="6328639280570009161">Prøv å slå av nettverksforutsigelse</translation>
-<translation id="6328784461820205019">«Tilkoblingen din er ikke privat», «&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;», «&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;», «&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;», «&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;» eller «SSL-sertifikatfeil»</translation>
 <translation id="6335029926534404762">Treningssko</translation>
 <translation id="6337133576188860026">Frigjør mindre enn <ph name="SIZE" />. Det kan hende enkelte nettsteder lastes inn tregere neste gang du besøker dem.</translation>
 <translation id="6337534724793800597">Filtrér retningslinjer etter navn</translation>
@@ -3024,6 +3024,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6351658970066645919">Slett nettlesingsdata</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ingen}=1{1 passord (for <ph name="DOMAIN_LIST" /> – synkronisert)}=2{2 passord (for <ph name="DOMAIN_LIST" /> – synkronisert)}other{# passord (for <ph name="DOMAIN_LIST" /> – synkronisert)}}</translation>
 <translation id="6355392890578844978">Denne nettleseren administreres ikke av et selskap eller en annen organisasjon. Aktiviteten på denne enheten kan bli administrert utenfor Chromium. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Fanegruppene «<ph name="GROUP_TITLE_1" />» og «<ph name="GROUP_TITLE_2" />» er ikke tilgjengelige mer</translation>
 <translation id="6358088212770985041">redigere betalingsmåter</translation>
 <translation id="6358450015545214790">Hva innebærer dette?</translation>
 <translation id="6360213755783740931">Finn ut mer om beskyttelse mot skadelig programvare</translation>
@@ -3729,6 +3730,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7569983096843329377">Svart</translation>
 <translation id="7574998639136359461">Vintersportsutstyr</translation>
 <translation id="7575207903026901870">Knapp for å fjerne forslag – trykk på Enter for å fjerne dette forslaget</translation>
+<translation id="7575800019233204241">«Tilkoblingen din er ikke privat», «&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;», «&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;», «&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;» eller «SSL-sertifikatfeil»</translation>
 <translation id="7575887283389198269">Mobiltelefoner</translation>
 <translation id="7578104083680115302">Når du lagrer kort med Google, kan du bruke dem til å betale raskt på nettsteder og i apper – uansett hvilken enhet du bruker.</translation>
 <translation id="7579442726219254162">Ukjent variabel «<ph name="VARIABLE" />» i den administrerte konfigurasjonen for «<ph name="APPLICATION_ID" />».</translation>

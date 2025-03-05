@@ -22,6 +22,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1058009965971887428">Tagasiside saatmine</translation>
 <translation id="1059120031266247284">Teiega jagatud</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> koos eemaldamisnupuga</translation>
 <translation id="1062407476771304334">Asenda</translation>
 <translation id="1073899992769346247">Vahetage patareid või laadige seda</translation>
 <translation id="1081015718268701546">Linuxi rakendusi praegu ei toetata. Muud rakendused salvestatakse.</translation>
@@ -1230,6 +1231,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5043679421800073804">Klõps või puudutus riiuli viimasel ikoonil</translation>
 <translation id="504465286040788597">Eelmine lõik</translation>
 <translation id="5045550434625856497">Vale salasõna</translation>
+<translation id="5056587122125565772">Loo pilt</translation>
 <translation id="5058794129231928255">Google'i dokumente ei õnnestunud luua</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Teid teavitatakse, kui räägite vaigistatuna. Heli ei saadeta kunagi teie seadmest välja.</translation>
@@ -1278,6 +1280,7 @@ Kasutada saate ka klaviatuuri otseteed. Esmalt tõstke tekst esile, seejärel va
 <translation id="5222676887888702881">Logi välja</translation>
 <translation id="5228195526683428788">Jagatud ekraanikuva jaotur</translation>
 <translation id="5229343007215035173">Lülita privaatne kuva sisse/välja</translation>
+<translation id="5229860525743792999">Eemalda <ph name="ITEM_LABEL" /> soovitatud grupist</translation>
 <translation id="5230516054153933099">Aken</translation>
 <translation id="5234764350956374838">Loobu</translation>
 <translation id="523505283826916779">Juurdepääsuseaded</translation>
@@ -1760,6 +1763,7 @@ Uus installimine</translation>
 <translation id="6757237461819837179">Meediat ei esitata</translation>
 <translation id="6760438044935091345">Mängu juhtpaneel</translation>
 <translation id="6768043681523654438">salvestusruum</translation>
+<translation id="6769195697113506406">Pilt sisestati</translation>
 <translation id="6777216307882431711">Ühendatud USB-C-tüüpi seadmete toitega varustamine</translation>
 <translation id="6781002679438061620">Töölaud 9</translation>
 <translation id="6782182743534150858">Töölaud 13</translation>
@@ -1986,6 +1990,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7571361473021531288">Aku laetuse tase: <ph name="BATTERY_PERCENTAGE" />% | järelejäänud aeg: <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Aktiivne aken dokiti paremale.</translation>
 <translation id="7579778809502851308">Ekraanikuva jäädvustamine</translation>
+<translation id="7588317312481506627">Kopeeriti lõikelauale.</translation>
 <translation id="7593891976182323525">Otsinguklahv või tõstuklahv</translation>
 <translation id="7598054670902114203">Protsessori kasutuse ülevaade, <ph name="CPU_USEAGE" />%. temperatuur <ph name="TEMPERATURE" /> °C, praegune kiirus: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Valitud tulemuse sisestamine</translation>
@@ -2180,6 +2185,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8155628902202578800">Avage konto <ph name="USER_EMAIL_ADDRESS" /> teabedialoog</translation>
 <translation id="8167567890448493835">Kasutusel: <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Sisu</translation>
+<translation id="81817143961839203">Pildi sisestamine ebaõnnestus</translation>
 <translation id="8185090165691050712">Lülita lukurežiimi suuruse muutmise menüü sisse/välja</translation>
 <translation id="8192727139462702395">Kui lülitate Bluetoothi välja, katkestatakse nende välisseadmete ühendus teie seadmega <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Vahelehe ülekandmine</translation>
@@ -2258,6 +2264,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />: <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Tühistamiseks vajutage klahvikombinatsiooni Alt + Otsing või tõstuklahvi.</translation>
 <translation id="8480418399907765580">Näita tööriistariba</translation>
+<translation id="8487660088084188539">Kui lülitate need funktsioonid sisse, võidakse sisendtekst, dokumendi sisu ja veebilehe URL saata Google'i serveritesse. Seda teavet kasutatakse selleks, et genereerida kirjutussoovitusi ja kokkuvõtteid, vastata küsimustele ning täiustada toodet dokumendi <ph name="LINK_TO_SERVICE_TERMS" /> kohaselt. Ärge lisage midagi isiklikku, delikaatset ega konfidentsiaalset.</translation>
 <translation id="8487699605742506766">Kuumkoht</translation>
 <translation id="8491237443345908933">Lingi avamine uuel vahelehel</translation>
 <translation id="8492573885090281069">Seade <ph name="DISPLAY_NAME" /> ei toeta eraldusvõimet <ph name="SPECIFIED_RESOLUTION" />. Eraldusvõimeks määrati <ph name="FALLBACK_RESOLUTION" />. Muudatuste säilitamiseks klõpsake nupul Kinnita. Eelmised seaded taastatakse <ph name="TIMEOUT_SECONDS" /> pärast.</translation>
@@ -2327,6 +2334,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8725066075913043281">Proovi uuesti</translation>
 <translation id="8725214031272624704">Kuva saadaolevate sisestusmeetodite loend</translation>
 <translation id="8730621377337864115">Valmis</translation>
+<translation id="8731188831050207755">Faili <ph name="FILE_NAME" /> allalaadimine nurjus.</translation>
 <translation id="8731487213223706745">Lõpeb kell <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">See võib üritada varastada teie klahvivajutusi</translation>
 <translation id="8735678380411481005">Klaviatuuri taustavalguse värv</translation>

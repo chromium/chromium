@@ -34,7 +34,6 @@
 <translation id="1112015203684611006">Se produjo un error en la impresión.</translation>
 <translation id="1118569444314402022">Te damos la bienvenida nuevamente, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Imágenes y fotos</translation>
-<translation id="1125564390852150847">Crea una pestaña nueva.</translation>
 <translation id="1126696498560056882">Administrar cuentas en este dispositivo</translation>
 <translation id="1126809382673880764">No te protege contra descargas, extensiones ni sitios web peligrosos. Seguirás teniendo la protección (donde esté disponible) de la Navegación segura en otros servicios de Google, como Gmail y la Búsqueda.</translation>
 <translation id="1142371195993008685">Desactivar las notificaciones para <ph name="FEATURE_NAME" /></translation>
@@ -89,7 +88,6 @@
 <translation id="1358106883354237005">Cuenta administrada</translation>
 <translation id="1358214951266274152">Visita el vínculo que copiaste</translation>
 <translation id="1360432990279830238">¿Salir y desactivar la sincronización?</translation>
-<translation id="1362192716574455663">Los datos de navegación existentes no se transferirán a tu cuenta laboral. Puedes acceder a ella si sales de la cuenta o agregas una cuenta personal.</translation>
 <translation id="1363028406613469049">Seguimiento</translation>
 <translation id="1364367057792633742">Nueva pestaña</translation>
 <translation id="1365106417372288489">Se restableció tu iPhone recientemente y es posible que haya cambiado tu navegador predeterminado</translation>
@@ -116,7 +114,6 @@
 <translation id="1455660774629812862">No ocultar</translation>
 <translation id="1456545332132818232">Opiniones sobre el producto en <ph name="PRODUCT_NAME" />, <ph name="STARS" /> de <ph name="MAX_STARS" />, <ph name="DOMAIN" /></translation>
 <translation id="1460751212339734034">Ahorra tiempo y escribe menos</translation>
-<translation id="1466035273550360103">No hay pestañas abiertas</translation>
 <translation id="1469381646033328562">Tu madre o padre administra tu cuenta.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Se cambió</translation>
@@ -476,7 +473,6 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="2969979262385602596">Error al iniciar la sesión. Inténtalo más tarde.</translation>
 <translation id="2989523299700148168">Visitados recientemente</translation>
 <translation id="2989805286512600854">Abrir en una nueva pestaña</translation>
-<translation id="2990025507101398383">No hay pestañas de incógnito</translation>
 <translation id="2996291259634659425">Crear frase de contraseña</translation>
 <translation id="3000900718786961632">{COUNT,plural, =1{Nuevo seguimiento de paquete}other{Nuevos seguimientos de paquete}}</translation>
 <translation id="3010025794097054078">Protégete de violaciones de la seguridad de los datos, sitios web inseguros y mucho más.</translation>
@@ -577,7 +573,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="35083190962747987">Abrir ${url}</translation>
 <translation id="3511519535430890904">Agrega protección para la navegación</translation>
 <translation id="3517216995152707259">Si borras los datos de navegación, no saldrás de tu Cuenta de Google. Para ello, debes <ph name="BEGIN_LINK" />salir de Chrome<ph name="END_LINK" />.</translation>
-<translation id="3519193562722059437">Abre una pestaña para navegar por la Web.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Abrir la pestaña}other{Abrir {count} pestañas}}</translation>
 <translation id="3523513363815970085">Ocultar "Tus sitios principales"</translation>
 <translation id="3523789730715594198">Puedes detener la sincronización en cualquier momento desde la configuración. Es posible que Google personalice la Búsqueda y otros servicios en función de tu historial.</translation>
@@ -974,7 +969,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5217329997012062137">Cuando usas Google Lens, se envía una captura de pantalla de la página a Google.</translation>
 <translation id="5220945116117011963">Crea eventos de calendario a partir de fechas</translation>
 <translation id="5222676887888702881">Salir</translation>
-<translation id="5228579091201413441">Habilitar sincronización</translation>
 <translation id="5233638681132016545">Nueva pestaña</translation>
 <translation id="5234094073825090254">{count,plural, =1{Se guardó el favorito en tu Cuenta de Google, {email}.}other{Se guardaron los favoritos en tu Cuenta de Google, {email}.}}</translation>
 <translation id="5234764350956374838">Descartar</translation>
@@ -1227,7 +1221,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6284652193729350524">Ofrecer traducción al <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Dejaste de seguir <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Si quieres activar la Navegación segura, abre <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" /> y, luego, presiona Navegación segura.</translation>
-<translation id="6295434468271563378">Borra automáticamente tus descargas</translation>
 <translation id="6295751040240588413">El sobrenombre de la tarjeta no es válido</translation>
 <translation id="629730747756840877">Cuenta</translation>
 <translation id="6301104306974789820">Recibir notificaciones de seguimiento de precios</translation>
@@ -1558,7 +1551,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7669493687462784703">¿Quieres seguir descargando un perfil de configuración de <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Puedes deslizar el dedo hacia la izquierda para navegar en modo Incógnito.</translation>
 <translation id="7679915578945954324">Se copiaron las direcciones de los sitios</translation>
-<translation id="769134787192530091">Sincronizando las pestañas…</translation>
 <translation id="7696316012653762532">Opciones para traducir la página</translation>
 <translation id="7700527812567437847">Buscar en pantalla con Google Lens</translation>
 <translation id="7701040980221191251">No hay</translation>
@@ -1714,7 +1706,6 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8283172974887967105">Establecer…</translation>
 <translation id="8289930144142009940">Se desactivaron las notificaciones de <ph name="FEATURE_NAME" /></translation>
 <translation id="8299417921174340354">Para usar contraseñas, primero debes establecer una en tu dispositivo.</translation>
-<translation id="8299613349954694191">Abre una pestaña de incógnito para navegar por la Web de forma privada.</translation>
 <translation id="8307481894409578819">No se pudo subir este archivo</translation>
 <translation id="8319076807703933069">Nueva búsqueda</translation>
 <translation id="833647236762414178">Crea, guarda y administra tus contraseñas y llaves de acceso para acceder fácilmente a sitios y apps. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>

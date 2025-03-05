@@ -252,6 +252,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1419305130220238697">Nupp Chrome'i allalaadimiste haldamine, aktiveerige nupp Chrome'is allalaaditud failide haldamiseks</translation>
 <translation id="1420345875188552368">Selle makse tegemiseks võidakse kasutada teie salvestatud automaatmakse viisi. E-rahakottide väljalülitamiseks Chrome'is avage oma <ph name="BEGIN_LINK1" />makseseaded<ph name="END_LINK1" />.</translation>
 <translation id="1420920093772172268">Sidumise lubamiseks <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="1421484961346698724">Kustutatud konto</translation>
 <translation id="14222610277930434">Külastate sageli</translation>
 <translation id="1422930527989633628">Saab küsida luba läheduses asuvate Bluetooth-seadmete tuvastamiseks</translation>
 <translation id="1426410128494586442">Jah</translation>
@@ -3010,7 +3011,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6322182122604171028">Funktsiooni Windows Hello ei saa kasutada</translation>
 <translation id="6326947323444967009">iOS-i seadetes Chrome'i süsteemi vaikebrauseriks määramine</translation>
 <translation id="6328639280570009161">Proovige keelata võrguprognoos</translation>
-<translation id="6328784461820205019">„Teie ühendus ei ole privaatne” või „&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;” või „&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;” või „&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;” või „&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;” või „SSL-i sertifikaadi viga”</translation>
 <translation id="6335029926534404762">Spordijalatsid</translation>
 <translation id="6337133576188860026">Vabastab alla <ph name="SIZE" />. Mõne saidi laadimine võib järgmisel külastusel rohkem aega võtta.</translation>
 <translation id="6337534724793800597">Reeglite filtreerimine nime järgi</translation>
@@ -3731,6 +3731,7 @@ Lisateave:
 <translation id="7569983096843329377">Must</translation>
 <translation id="7574998639136359461">Talvespordivarustus</translation>
 <translation id="7575207903026901870">Soovituse eemaldamise nupp, vajutage selle soovituse eemaldamiseks sisestusklahvi</translation>
+<translation id="7575800019233204241">„Teie ühendus ei ole privaatne” või „&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;” või „&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;” või „&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;” või „SSL-i sertifikaadi viga”</translation>
 <translation id="7575887283389198269">Mobiiltelefonid</translation>
 <translation id="7578104083680115302">Google'i salvestatud kaartide abil saate eri seadmetes saitidel ja rakendustes kiirelt maksta.</translation>
 <translation id="7579442726219254162">Tundmatu muutuja „<ph name="VARIABLE" />“ rakenduse „<ph name="APPLICATION_ID" />“ hallatud seadistuses.</translation>

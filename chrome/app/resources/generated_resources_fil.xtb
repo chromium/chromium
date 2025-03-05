@@ -1379,7 +1379,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1936157145127842922">Ipakita sa Folder</translation>
 <translation id="1936931585862840749">Gumamit ng numero para isaad kung gaano karaming kopya ang ipi-print (1 hanggang <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Hindi puwedeng mag-import ng uri ng architecture ng container na <ph name="ARCHITECTURE_CONTAINER" /> sa device na ito na <ph name="ARCHITECTURE_DEVICE" />. Maaari mong subukang i-restore ang container na ito sa ibang device, o puwede mong i-access ang mga file sa loob ng ganitong larawan ng container sa pamamagitan ng pagbukas sa app na Mga File.</translation>
-<translation id="1938116692670653897">Kasalukuyang tema ng kulay</translation>
 <translation id="1938351510777341717">External na Command</translation>
 <translation id="1940221956626514677">I-customize ang toolbar</translation>
 <translation id="1940546824932169984">Mga nakakonektang device</translation>
@@ -3822,6 +3821,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3670229581627177274">I-on ang Bluetooth</translation>
 <translation id="3670480940339182416">Puwedeng gamitin ng mga site ang V8 optimizer</translation>
 <translation id="3671764914317109892">Gumamit ng pang-araw-araw na wika para maghanap sa iyong history ng pag-browse. Puwede ka ring magtanong at makakuha ng mga sagot batay sa iyong history ng pag-browse.</translation>
+<translation id="3671982238795754537">Matuto pa tungkol sa mga passkey</translation>
 <translation id="3672681487849735243">Nakakita ng factory error</translation>
 <translation id="3673097791729989571">Hino-host ng <ph name="SAML_DOMAIN" /> ang pag-sign in</translation>
 <translation id="3673287357837016374">Na-update na ang iyong PIN</translation>
@@ -4738,6 +4738,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4289540628985791613">Pangkalahatang-ideya</translation>
 <translation id="428963538941819373">Makakagamit ang mga site na ito ng impormasyong na-save ng mga ito tungkol sa iyo habang bina-browse mo ang <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Pumili ng PIN</translation>
+<translation id="4290526909608432059">Malapit nang matapos ang suporta para sa mga Chrome app. Para malaman ang mga opsyon mo, makipag-ugnayan sa developer ng app o sa iyong team ng suporta ng IT.</translation>
 <translation id="4290791284969893584">Pagkatapos isara ang isang page, posibleng hindi matapos ang mga gawaing sinimulan mo</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> miyembro</translation>
 <translation id="4290898381118933198">Mag-swipe para mag-navigate sa mga page</translation>
@@ -8535,6 +8536,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Nakakonekta ang serial port</translation>
 <translation id="7033616203784997570">Dapat ay hanggang 62 character lang ang input</translation>
 <translation id="7034692021407794547">Dapat munang tanggapin ng administrator na may mga pribilehiyo ng Pamamahala ng Pagsingil ang Mga Tuntunin ng Serbisyo ng Hardware ng Google Meet sa seksyong Hardware ng Google Meet ng Admin console.</translation>
+<translation id="7036550011779986598">Gumawa ng passkey ang <ph name="RP_ID" /> para sa iyong account. Nag-aalok ang mga passkey ng mas mabilis at mas ligtas na paraan para mag-sign in at naka-save ang mga ito sa Google Password Manager para kay <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> na espasyo ang inirerekomenda para sa Linux. Para madagdagan ang bakanteng espasyo, mag-delete ng mga file sa iyong device.</translation>
 <translation id="7037157058268992880">Nakalimutan ang PIN</translation>
 <translation id="7037509989619051237">Text na ipi-preview</translation>
@@ -10578,6 +10580,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8477178913400731244">Mag-delete ng data</translation>
 <translation id="8477241577829954800">Humalili</translation>
 <translation id="8477384620836102176">&amp;Pangkalahatan</translation>
+<translation id="8477446666255316832">Mag-sign in nang mas mabilis sa susunod</translation>
 <translation id="8479176401914456949">Invalid ang code. Pakisubukan ulit.</translation>
 <translation id="8480869669560681089">Hindi kilalang device mula sa <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Kumpirmahin ang Pahintulot sa USB</translation>

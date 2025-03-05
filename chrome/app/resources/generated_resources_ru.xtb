@@ -1370,7 +1370,6 @@
 <translation id="1936157145127842922">Показать в папке</translation>
 <translation id="1936931585862840749">Укажите количество копий для печати, используя цифры (от 1 до <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Не удалось импортировать тип архитектуры контейнера <ph name="ARCHITECTURE_CONTAINER" /> на это устройство (<ph name="ARCHITECTURE_DEVICE" />). Вы можете попробовать восстановить этот контейнер на другом устройстве или получить доступ к файлам, открыв образ контейнера в приложении "Файлы".</translation>
-<translation id="1938116692670653897">Текущая цветовая тема</translation>
 <translation id="1938351510777341717">Внешняя клавиша Command</translation>
 <translation id="1940221956626514677">Настроить панель инструментов</translation>
 <translation id="1940546824932169984">Подключенные устройства</translation>
@@ -10156,6 +10155,7 @@
 <translation id="8195854162863398249">Выключить функцию "<ph name="FEATURE_NAME" />"</translation>
 <translation id="8195920051450756553">Время задержки перед активацией повторно нажатой клавиши</translation>
 <translation id="8197673340773315084">Укажите название, например "Рабочий"</translation>
+<translation id="8198181050118789419">Тема: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Трансляция вкладки</translation>
 <translation id="8199300056570174101">Настройки сети и устройства</translation>
 <translation id="8200772114523450471">Возобновить</translation>

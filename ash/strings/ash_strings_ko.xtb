@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">의견 보내기</translation>
 <translation id="1059120031266247284">나와 공유됨</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176">삭제 버튼이 있는 <ph name="ITEM_LABEL" /></translation>
 <translation id="1062407476771304334">바꾸기</translation>
 <translation id="1073899992769346247">배터리를 교체하거나 충전해 주세요.</translation>
 <translation id="1081015718268701546">Linux 앱은 현재 지원되지 않습니다. 다른 앱은 저장됩니다.</translation>
@@ -323,6 +324,7 @@
 <translation id="2083190527011054446">편안한 밤 보내세요, <ph name="GIVEN_NAME" />님</translation>
 <translation id="2086334242442703436">그림 이모티콘 선택 도구 열기</translation>
 <translation id="2088116547584365419">게임</translation>
+<translation id="2092517835716911174">요약 도우미 및 글쓰기 도우미 기능을 사용하려면 만 18세 이상이어야 합니다.</translation>
 <translation id="209965399369889474">네트워크에 연결되어 있지 않음</translation>
 <translation id="2107581415810719320">기타 버튼 <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">사용 중인 USB-C 케이블은 Thunderbolt를 지원하지 않습니다. 기기 성능이 제한될 수 있습니다.</translation>
@@ -1228,6 +1230,7 @@
 <translation id="5043679421800073804">앱 표시줄의 마지막 아이콘 클릭 또는 탭</translation>
 <translation id="504465286040788597">이전 단락</translation>
 <translation id="5045550434625856497">비밀번호가 잘못되었습니다.</translation>
+<translation id="5056587122125565772">이미지 만들기</translation>
 <translation id="5058794129231928255">Google 문서를 만들 수 없음</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">음소거 상태에서 말하면 알림을 받습니다. 오디오는 기기 외부로 유출되지 않습니다.</translation>
@@ -1276,6 +1279,7 @@
 <translation id="5222676887888702881">로그아웃</translation>
 <translation id="5228195526683428788">화면 분할기</translation>
 <translation id="5229343007215035173">개인 정보 보호 화면 사용 설정/중지</translation>
+<translation id="5229860525743792999">추천 그룹에서 <ph name="ITEM_LABEL" /> 삭제</translation>
 <translation id="5230516054153933099">창</translation>
 <translation id="5234764350956374838">닫기</translation>
 <translation id="523505283826916779">접근성 설정</translation>
@@ -1758,6 +1762,7 @@
 <translation id="6757237461819837179">재생 중인 미디어 없음</translation>
 <translation id="6760438044935091345">게임 대시보드</translation>
 <translation id="6768043681523654438">저장용량</translation>
+<translation id="6769195697113506406">이미지 삽입됨</translation>
 <translation id="6777216307882431711">연결된 USB-C 기기 전원 공급 중</translation>
 <translation id="6781002679438061620">데스크 9</translation>
 <translation id="6782182743534150858">데스크 13</translation>
@@ -1984,6 +1989,7 @@
 <translation id="7571361473021531288">배터리 <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> 남음</translation>
 <translation id="7573585051776738856">활성 창이 오른쪽에 고정되었습니다.</translation>
 <translation id="7579778809502851308">화면 캡처</translation>
+<translation id="7588317312481506627">클립보드에 복사되었습니다.</translation>
 <translation id="7593891976182323525">검색 또는 Shift 키</translation>
 <translation id="7598054670902114203">CPU 사용량 스냅샷: <ph name="CPU_USEAGE" />%, 온도 <ph name="TEMPERATURE" />도, 현재 속도: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="7599378375976398913">선택한 결과 삽입 중</translation>
@@ -2178,6 +2184,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> 정보 대화상자 열기</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> 사용 중</translation>
 <translation id="8168435359814927499">콘텐츠</translation>
+<translation id="81817143961839203">이미지를 삽입할 수 없음</translation>
 <translation id="8185090165691050712">잠금 모드의 크기를 조절할 수 있는 메뉴 사용 설정/사용 중지</translation>
 <translation id="8192727139462702395">블루투스를 사용 중지하면 다음의 외부 기기와 <ph name="DEVICE_TYPE" />의 연결이 해제됩니다.</translation>
 <translation id="8198456017687137612">탭 전송 중</translation>
@@ -2256,6 +2263,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />에서 <ph name="FEATURE_NAME" /> 기능을 <ph name="FEATURE_STATE" /> 상태로 설정했습니다.</translation>
 <translation id="8477270416194247200">취소하려면 Alt+검색 또는 Shift 키를 누르세요.</translation>
 <translation id="8480418399907765580">툴바 표시</translation>
+<translation id="8487660088084188539">이 기능을 사용 설정하면 입력 텍스트, 문서 콘텐츠, 웹페이지 URL이 Google 서버로 전송될 수 있습니다. 이 정보는 <ph name="LINK_TO_SERVICE_TERMS" />에 따라 작성 제안 및 요약을 생성하고, 질문에 답변하며, 제품을 개선하는 데 사용됩니다. 개인 정보, 민감한 정보 또는 기밀 정보는 포함하지 마세요.</translation>
 <translation id="8487699605742506766">핫스팟</translation>
 <translation id="8491237443345908933">새 탭에서 링크 열기</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />에서 <ph name="SPECIFIED_RESOLUTION" />을(를) 지원하지 않습니다. 해상도가 <ph name="FALLBACK_RESOLUTION" />(으)로 변경되었습니다. 변경사항을 유지하려면 확인을 클릭하세요. <ph name="TIMEOUT_SECONDS" /> 후 이전 설정으로 복원됩니다.</translation>
@@ -2325,6 +2333,7 @@
 <translation id="8725066075913043281">다시 시도하기</translation>
 <translation id="8725214031272624704">사용 가능한 입력 방법 목록 표시</translation>
 <translation id="8730621377337864115">완료</translation>
+<translation id="8731188831050207755"><ph name="FILE_NAME" /> 파일을 다운로드하지 못함</translation>
 <translation id="8731487213223706745"><ph name="END_TIME" /><ph name="DAYS_ELAPSED" />에 종료</translation>
 <translation id="8734991477317290293">키 입력 내용을 도용하려는 시도일 수 있습니다.</translation>
 <translation id="8735678380411481005">키보드 백라이트 색상</translation>

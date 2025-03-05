@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">Butonul Gestionează descărcările în Chrome, activează pentru a gestiona fișierele pe care le-ai descărcat în Chrome</translation>
 <translation id="1420345875188552368">Metoda de plată automată salvată poate fi folosită pentru această plată. Pentru a dezactiva portofelele electronice în Chrome, accesează <ph name="BEGIN_LINK1" />setările pentru plăți<ph name="END_LINK1" />.</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> pentru a permite asocierea</translation>
+<translation id="1421484961346698724">Contul a fost șters</translation>
 <translation id="14222610277930434">Accesezi des</translation>
 <translation id="1422930527989633628">Poate solicita permisiunea să descopere dispozitive Bluetooth din apropiere</translation>
 <translation id="1426410128494586442">Da</translation>
@@ -3010,7 +3011,6 @@
 <translation id="6322182122604171028">Nu am putut folosi Windows Hello</translation>
 <translation id="6326947323444967009">Setează Chrome ca browser prestabilit pentru sistem în setările iOS</translation>
 <translation id="6328639280570009161">Încercați să dezactivați anticiparea rețelei</translation>
-<translation id="6328784461820205019">„Conexiunea nu este privată” sau „&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;” sau „&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;” sau „&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;” sau „&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;” sau „Eroare privind certificatul SSL”</translation>
 <translation id="6335029926534404762">Încălțăminte sport</translation>
 <translation id="6337133576188860026">Eliberează mai puțin de <ph name="SIZE" />. Este posibil ca unele site-uri să se încarce mai lent la următoarea accesare.</translation>
 <translation id="6337534724793800597">Filtrați politicile după nume</translation>
@@ -3024,6 +3024,7 @@
 <translation id="6351658970066645919">Șterge datele de navigare</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Niciuna}=1{O parolă (pentru <ph name="DOMAIN_LIST" />, sincronizată)}=2{2 parole (pentru <ph name="DOMAIN_LIST" />, sincronizate)}few{# parole (pentru <ph name="DOMAIN_LIST" />, sincronizate)}other{# de parole (pentru <ph name="DOMAIN_LIST" />, sincronizate)}}</translation>
 <translation id="6355392890578844978">Browserul nu este gestionat de o companie sau o altă organizație. Este posibil ca activitatea de pe acest dispozitiv să fie gestionată în afara Chromium. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Grupurile de file <ph name="GROUP_TITLE_1" /> și <ph name="GROUP_TITLE_2" /> nu mai sunt disponibile</translation>
 <translation id="6358088212770985041">să modifice metodele de plată</translation>
 <translation id="6358450015545214790">Ce înseamnă acestea?</translation>
 <translation id="6360213755783740931">Află mai multe despre protecția împotriva programelor malware</translation>
@@ -3730,6 +3731,7 @@ Detalii suplimentare:
 <translation id="7569983096843329377">Negru</translation>
 <translation id="7574998639136359461">Echipament pentru sporturi de iarnă</translation>
 <translation id="7575207903026901870">Butonul Elimină sugestia, apasă pe Enter pentru a elimina această sugestie</translation>
+<translation id="7575800019233204241">„Conexiunea nu este privată”, „&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;”, „&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;”, „&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;” sau „Eroare privind certificatul SSL”</translation>
 <translation id="7575887283389198269">Telefoane mobile</translation>
 <translation id="7578104083680115302">Plătește rapid pe site-uri și în aplicații pe diferite dispozitive folosind cardurile pe care le-ai salvat pe Google.</translation>
 <translation id="7579442726219254162">Configurația gestionată pentru <ph name="APPLICATION_ID" /> conține o variabilă necunoscută, <ph name="VARIABLE" />.</translation>

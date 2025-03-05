@@ -34,7 +34,6 @@
 <translation id="1112015203684611006">Printimi dështoi.</translation>
 <translation id="1118569444314402022">Mirë se u ktheve, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Fotografitë dhe imazhet</translation>
-<translation id="1125564390852150847">Krijo një skedë të re</translation>
 <translation id="1126696498560056882">Menaxho llogaritë në këtë pajisje</translation>
 <translation id="1126809382673880764">Nuk të mbron kundër faqeve të internetit, shkarkimeve dhe shtesave të rrezikshme. Do të vazhdosh të marrësh mbrojtje për "Shfletimin e sigurt", aty ku ofrohet, në shërbimet e tjera të Google, si Gmail dhe "Kërko".</translation>
 <translation id="1142371195993008685">Çaktivizo njoftimet për "<ph name="FEATURE_NAME" />"</translation>
@@ -89,7 +88,6 @@
 <translation id="1358106883354237005">Llogaria e menaxhuar</translation>
 <translation id="1358214951266274152">Vizito lidhjen që kopjove</translation>
 <translation id="1360432990279830238">Do të dalësh dhe çaktivizosh sinkronizimin?</translation>
-<translation id="1362192716574455663">Të dhënat ekzistuese të shfletimit nuk do të zhvendosen te llogaria jote e punës. Mund të qasesh përsëri në to duke dalë nga llogaria ose duke shtuar një llogari personale.</translation>
 <translation id="1363028406613469049">Pjesa muzikore</translation>
 <translation id="1364367057792633742">Skedë e re</translation>
 <translation id="1365106417372288489">Telefoni yt iPhone është restauruar së fundi, gjë që mund të ketë ndryshuar shfletuesin tënd të parazgjedhur.</translation>
@@ -116,7 +114,6 @@
 <translation id="1455660774629812862">Mos i fshih</translation>
 <translation id="1456545332132818232">Komentet e produktit për <ph name="PRODUCT_NAME" />, <ph name="STARS" /> nga <ph name="MAX_STARS" />, <ph name="DOMAIN" /></translation>
 <translation id="1460751212339734034">Kurse kohë, shkruaj më pak</translation>
-<translation id="1466035273550360103">Nuk ka skeda të hapura</translation>
 <translation id="1469381646033328562">Llogaria jote menaxhohet nga prindi yt.
 <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Ndryshuar</translation>
@@ -476,7 +473,6 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="2969979262385602596">Nuk mund të identifikohej. Provo përsëri.</translation>
 <translation id="2989523299700148168">Vizituar së fundi</translation>
 <translation id="2989805286512600854">Hape në skedë të re</translation>
-<translation id="2990025507101398383">Asnjë skedë "e fshehtë"</translation>
 <translation id="2996291259634659425">Krijo një frazë kalimi</translation>
 <translation id="3000900718786961632">{COUNT,plural, =1{Një pako e re e gjurmuar}other{Pako të reja të gjurmuara}}</translation>
 <translation id="3010025794097054078">Qëndro i sigurt nga nxjerrjet e paautorizuara të të dhënave, uebsajtet e pasigurta etj.</translation>
@@ -577,7 +573,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="35083190962747987">Hap ${url}</translation>
 <translation id="3511519535430890904">Shto mbrojtjen e shfletimit</translation>
 <translation id="3517216995152707259">Fshirja e të dhënave të shfletimit nuk bën që të dalësh nga "Llogaria jote e Google". Për ta bërë këtë, <ph name="BEGIN_LINK" />dil nga llogaria në Chrome<ph name="END_LINK" />.</translation>
-<translation id="3519193562722059437">Hap një skedë për të shfletuar uebin.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Hap skedën}other{Hap {count} skeda}}</translation>
 <translation id="3523513363815970085">Fshih "Sajtet e tua kryesore"</translation>
 <translation id="3523789730715594198">Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
@@ -974,7 +969,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5217329997012062137">Kur përdor "Lenten e Google", Google i dërgohet një pamje ekrani e faqes.</translation>
 <translation id="5220945116117011963">Krijo ngjarje kalendari nga datat</translation>
 <translation id="5222676887888702881">Dil</translation>
-<translation id="5228579091201413441">Aktivizo sinkronizimin</translation>
 <translation id="5233638681132016545">Skedë e re</translation>
 <translation id="5234094073825090254">{count,plural, =1{Faqeshënuesi u ruajt në "Llogarinë tënde të Google", {email}.}other{Faqeshënuesit u ruajtën në "Llogarinë tënde të Google", {email}.}}</translation>
 <translation id="5234764350956374838">Hiq</translation>
@@ -1227,7 +1221,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6284652193729350524">Ofro përkthimin në <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Ndjekja e <ph name="CHANNEL_NAME" /> u anulua</translation>
 <translation id="6293101329759844770">Për të aktivizuar "Shfletimin e sigurt", hap <ph name="BEGIN_LINK" />Shërbimet e Google<ph name="END_LINK" /> dhe trokit te "Shfletimi i sigurt".</translation>
-<translation id="6295434468271563378">Fshi automatikisht shkarkimet e tua</translation>
 <translation id="6295751040240588413">Pseudonim i pavlefshëm karte</translation>
 <translation id="629730747756840877">Llogaria</translation>
 <translation id="6301104306974789820">Merr njoftime për monitorimin e çmimeve</translation>
@@ -1558,7 +1551,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7669493687462784703">Të vazhdohet shkarkimi i një profili konfigurimi nga <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Mund të rrëshqasësh shpejt majtas për të shfletuar në modalitetin "I fshehtë".</translation>
 <translation id="7679915578945954324">Adresat e sajteve u kopjuan</translation>
-<translation id="769134787192530091">Po sinkronizohen skedat…</translation>
 <translation id="7696316012653762532">Opsionet për përkthimin e faqes</translation>
 <translation id="7700527812567437847">Kërko në ekran me "Lenten e Google"</translation>
 <translation id="7701040980221191251">Asnjë</translation>
@@ -1714,7 +1706,6 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8283172974887967105">Cakto…</translation>
 <translation id="8289930144142009940">Njoftimet për "<ph name="FEATURE_NAME" />" janë çaktivizuar</translation>
 <translation id="8299417921174340354">Për të përdorur fjalëkalimet, duhet të vendosësh në fillim një kod në pajisjen tënde.</translation>
-<translation id="8299613349954694191">Hap një skedë "të fshehtë" për të shfletuar në mënyrë private në ueb.</translation>
 <translation id="8307481894409578819">Ky skedar nuk mund të ngarkohej</translation>
 <translation id="8319076807703933069">Kërkim i ri</translation>
 <translation id="833647236762414178">Krijo, ruaj dhe menaxho fjalëkalimet dhe çelësat e kalimit për t'u identifikuar me lehtësi në sajte dhe aplikacione. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>

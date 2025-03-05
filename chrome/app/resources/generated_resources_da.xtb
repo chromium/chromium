@@ -1379,7 +1379,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1936157145127842922">Vis i mappe</translation>
 <translation id="1936931585862840749">Brug et tal til at angive, hvor mange kopier der skal udskrives (1 til <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Containerarkitekturen <ph name="ARCHITECTURE_CONTAINER" /> kan ikke importeres med denne enhed, som kører med <ph name="ARCHITECTURE_DEVICE" />. Du kan prøve at gendanne denne container i en anden enhed, eller også kan du åbne filerne i containerbilledet i appen Filer.</translation>
-<translation id="1938116692670653897">Aktuelt farvetema</translation>
 <translation id="1938351510777341717">Ekstern kommando</translation>
 <translation id="1940221956626514677">Tilpas værktøjslinjen</translation>
 <translation id="1940546824932169984">Forbundne enheder</translation>
@@ -10160,6 +10159,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8195854162863398249">Deaktiver <ph name="FEATURE_NAME" /></translation>
 <translation id="8195920051450756553">Forsinkelse, inden samme tast aktiveres igen</translation>
 <translation id="8197673340773315084">Tilføj et navn eller en etiket, f.eks. Arbejde eller Privat</translation>
+<translation id="8198181050118789419">Tema: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Caster fane</translation>
 <translation id="8199300056570174101">Egenskaber for netværkstjeneste og enhed</translation>
 <translation id="8200772114523450471">Genoptag</translation>

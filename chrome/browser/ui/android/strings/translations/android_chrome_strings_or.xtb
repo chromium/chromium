@@ -107,6 +107,7 @@
 <translation id="1413446866325418126">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଡାଟା ସେଭ କରନ୍ତୁ</translation>
 <translation id="1414981605391750300">Googleକୁ ଯୋଗାଯୋଗ କରାଯାଉଛି। ଏଥିରେ କିଛି ସମୟ ଲାଗିପାରେ…</translation>
 <translation id="1416550906796893042">ଆପ୍ଲିକେସନ୍ ସଂସ୍କରଣ</translation>
+<translation id="1416582024052267068">ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଆକ୍ସେସ ରଖନ୍ତୁ</translation>
 <translation id="1419753403124156396">Chrome ରିଷ୍ଟାର୍ଟ କରିବେ?</translation>
 <translation id="1428770807407000502">ସିଙ୍କ ବନ୍ଦ କରିବେ?</translation>
 <translation id="1430915738399379752">ପ୍ରିଣ୍ଟ କରନ୍ତୁ</translation>
@@ -146,6 +147,7 @@
 <translation id="160275202205869636">ଚାଲୁ ଥିବା ସମୟରେ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଡାଟା ବ୍ୟବହାର ଏବଂ ସେଭ କରନ୍ତୁ। ବନ୍ଦ ଥିବା ସମୟରେ କେବଳ ଏହି ଡିଭାଇସରେ ଡାଟା ସେଭ କରାଯାଏ।</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 ଚୟନ କରାଯାଇଥିବା ଆଇଟମ୍‌ କାଢ଼ନ୍ତୁ}other{#ଟି ଚୟନ କରାଯାଇଥିବା ଆଇଟମ୍‌ କାଢ଼ନ୍ତୁ}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 ବୁକମାର୍କ ଏବଂ ଅନ୍ୟ ଆଇଟମଗୁଡ଼ିକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଏ। ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକରେ ସେଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ, <ph name="ACCOUNT_EMAIL" />ରେ ସେଗୁଡ଼ିକୁ ସେଭ କରନ୍ତୁ।}other{# ବୁକମାର୍କ ଏବଂ ଅନ୍ୟ ଆଇଟମକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଏ। ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକରେ ସେଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ, <ph name="ACCOUNT_EMAIL" />ରେ ସେଗୁଡ଼ିକୁ ସେଭ କରନ୍ତୁ।}}</translation>
+<translation id="1639239467298939599">ଲୋଡ୍ ହେଉଛି</translation>
 <translation id="1641113438599504367">ସେଫ୍ ବ୍ରାଉଜିଂ</translation>
 <translation id="164269334534774161"><ph name="CREATION_TIME" />ରୁ ଆପଣ ଏହି ପୃଷ୍ଠାର ଏକ ଅଫ୍‍ଲାଇନ୍‍ କପି ଦେଖୁଛନ୍ତି</translation>
 <translation id="1644574205037202324">ଇତିହାସ</translation>
@@ -515,6 +517,7 @@
 <translation id="342220687432920852">{HOURS,plural, =1{# ଘଣ୍ଟା ପୂର୍ବେ}other{# ଘଣ୍ଟା ପୂର୍ବେ}}</translation>
 <translation id="3430670036890315772">ଆପଣଙ୍କ ପ୍ରୋଫାଇଲ ଲକ ବନ୍ଦ କରିବା ଦ୍ୱାରା ସେଭ କରାଯାଇଥିବା ଆପଣଙ୍କ ସୂଚନାକୁ କାଢ଼ି ଦିଆଯିବ</translation>
 <translation id="3435465986463792564">ଅନେକ ୱିଣ୍ଡୋ ଖୋଲା ଅଛି କି? ଆପଣ ସେଗୁଡ଼ିକୁ ଏଠାରୁ ପରିଚାଳନା କରିପାରିବେ</translation>
+<translation id="3435575784518354875">ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଆକ୍ସେସ ଜାରି ରଖିବାକୁ, ସେଗୁଡ଼ିକୁ ଏବେ ଏକ୍ସପୋର୍ଟ କରନ୍ତୁ, Google Play ସେବାଗୁଡ଼ିକୁ ଅପଡେଟ କରନ୍ତୁ ଏବଂ ତା’ପରେ ସେଗୁଡ଼ିକୁ ପୁଣି Google Password Managerକୁ ଇମ୍ପୋର୍ଟ କରନ୍ତୁ। <ph name="BEGIN_LINK" />ସମ୍ପୂର୍ଣ୍ଣ ନିର୍ଦ୍ଦେଶାବଳୀ ଦେଖନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="3435738964857648380">ସୁରକ୍ଷା</translation>
 <translation id="3439276997620616816">ଆପଣ ଏଠାରେ ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ଟାବଗୁଡ଼ିକ ପାଇବେ</translation>
 <translation id="3443221991560634068">ବର୍ତ୍ତମାନର ପୃଷ୍ଠାକୁ ରିଲୋଡ୍ କରନ୍ତୁ</translation>
@@ -524,6 +527,7 @@
 <translation id="3474624961160222204"><ph name="NAME" /> ଭାବେ ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="3478363558367712427">ଆପଣ ଆପଣଙ୍କର ସର୍ଚ୍ଚ ଇଞ୍ଜିନ୍ ବାଛିପାରିବେ</translation>
 <translation id="3479552764303398839">ଏବେ ନୁହେଁ</translation>
+<translation id="3487903178221457900">ଏକ୍ସପୋର୍ଟ କରାଯାଇଥିବା ଫାଇଲ ଆପ୍ସ ସମେତ ଅନ୍ୟମାନେ ଆକ୍ସେସ କରିପାରିବେ। ଆପଣ ଏକ୍ସପୋର୍ଟ କରିବା ପରେ, ଆପଣଙ୍କର ପାସୱାର୍ଡଗୁଡ଼ିକ Chromeରୁ ଡିଲିଟ ହୋଇଯିବ।</translation>
 <translation id="3488199663160411179">ନାମ</translation>
 <translation id="3493531032208478708">ପ୍ରସ୍ତାବିତ ବିଷୟବସ୍ତୁ ବିଷୟରେ <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">ସାଇନ ଇନ ବଟମ ସିଟ ଅଧା ସ୍କ୍ରିନରେ ଖୋଲିଛି।</translation>
@@ -1751,6 +1755,7 @@
 <translation id="8937772741022875483">ଡିଜିଟାଲ୍ ୱେଲ୍‍ବିଂରୁ ଆପଣଙ୍କର Chromeର କାର୍ଯ୍ୟକଳାପ କାଢ଼ିବେ?</translation>
 <translation id="8942627711005830162">ଅନ୍ୟ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - ଏହି ଭାଷାକୁ ଡାଉନଲୋଡ୍ କରାଯାଇପାରିଲା ନାହିଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="8957528460562961174">ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଆକ୍ସେସ ଜାରି ରଖିବା ପାଇଁ, ସେଗୁଡ଼ିକୁ ଏବେ ରପ୍ତାନି କରନ୍ତୁ ଏବଂ ତାପରେ ସେଗୁଡ଼ିକୁ ଆପଣଙ୍କର ପସନ୍ଦର ପାସୱାର୍ଡ ପରିଚାଳକକୁ ଇମ୍ପୋର୍ଟ କରନ୍ତୁ। Google Play ସେବାଗୁଡ଼ିକ ଉପଲବ୍ଧ ନଥିବାରୁ Google Password Manager କାମ କରିବା ବନ୍ଦ କରିଦେଇଛି।</translation>
 <translation id="8963117664422609631">ସାଇଟ୍ ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="8965591936373831584">ବାକି ଅଛି</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" />ଟି ଇନକଗ୍ନିଟୋ ଏବଂ <ph name="TAB_COUNT_ONE" />ଟି ଅଧିକ ଟାବ୍ ବନ୍ଦ ହୋଇଯିବ}other{<ph name="INCOGNITO_TAB_COUNT" />ଟି ଇନକଗ୍ନିଟୋ ଏବଂ <ph name="TAB_COUNT_MANY" />ଟି ଅଧିକ ଟାବ୍ ବନ୍ଦ ହୋଇଯିବ}}</translation>

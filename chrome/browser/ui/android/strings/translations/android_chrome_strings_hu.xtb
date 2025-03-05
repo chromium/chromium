@@ -146,6 +146,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="160275202205869636">Bekapcsolva: a rendszer használja a Google-fiókjában lévő adatokat, és ment oda újakat. Kikapcsolva: a rendszer csak az eszközre menti az adatokat.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 kijelölt elem eltávolítása}other{# kijelölt elem eltávolítása}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 könyvjelzőt és egyéb elemeket csak erre az eszközre ment a rendszer. Annak érdekében, hogy a többi eszközén is használhatók legyenek, mentse őket Google-fiókjába (<ph name="ACCOUNT_EMAIL" />).}other{# könyvjelzőt és egyéb elemeket csak erre az eszközre ment a rendszer. Annak érdekében, hogy a többi eszközén is használhatók legyenek, mentse őket Google-fiókjába (<ph name="ACCOUNT_EMAIL" />).}}</translation>
+<translation id="1639239467298939599">Betöltés</translation>
 <translation id="1641113438599504367">Biztonságos Böngészés</translation>
 <translation id="164269334534774161">Jelenleg az oldal <ph name="CREATION_TIME" />-i dátummal mentett offline példányát tekinti meg</translation>
 <translation id="1644574205037202324">Előzmények</translation>

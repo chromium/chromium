@@ -107,6 +107,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1413446866325418126">Google 계정에 데이터 저장</translation>
 <translation id="1414981605391750300">Google에 연결하는 중입니다. 잠시만 기다려 주세요...</translation>
 <translation id="1416550906796893042">애플리케이션 버전</translation>
+<translation id="1416582024052267068">비밀번호에 대한 액세스를 유지하세요</translation>
 <translation id="1419753403124156396">Chrome을 다시 시작하시겠습니까?</translation>
 <translation id="1428770807407000502">동기화를 사용 중지하시겠습니까?</translation>
 <translation id="1430915738399379752">인쇄</translation>
@@ -146,6 +147,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="160275202205869636">이 설정을 사용하도록 설정하면 Google 계정을 통해 데이터를 사용하고 저장할 수 있습니다. 사용 중지하면 데이터가 이 기기에만 저장됩니다.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{선택한 1개 항목 삭제}other{선택한 #개 항목 삭제}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{북마크 1개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정(<ph name="ACCOUNT_EMAIL" />)에 저장하세요.}other{북마크 #개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정(<ph name="ACCOUNT_EMAIL" />)에 저장하세요.}}</translation>
+<translation id="1639239467298939599">로드 중</translation>
 <translation id="1641113438599504367">세이프 브라우징</translation>
 <translation id="164269334534774161"><ph name="CREATION_TIME" />에 작성된 이 페이지의 오프라인 사본을 보는 중입니다.</translation>
 <translation id="1644574205037202324">방문 기록</translation>
@@ -515,6 +517,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="342220687432920852">{HOURS,plural, =1{#시간 전}other{#시간 전}}</translation>
 <translation id="3430670036890315772">프로필 잠금을 사용 중지하면 저장된 정보가 삭제됩니다.</translation>
 <translation id="3435465986463792564">창이 많이 열렸나요? 여기에서 관리할 수 있습니다.</translation>
+<translation id="3435575784518354875">비밀번호에 대한 액세스를 유지하려면 지금 비밀번호를 내보내고 Google Play 서비스를 업데이트한 후 Google 비밀번호 관리자로 다시 가져오세요. <ph name="BEGIN_LINK" />전체 안내 보기<ph name="END_LINK" /></translation>
 <translation id="3435738964857648380">보안</translation>
 <translation id="3439276997620616816">여기에서 최근 탭을 확인할 수 있습니다.</translation>
 <translation id="3443221991560634068">현재 페이지 새로고침</translation>
@@ -524,6 +527,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3474624961160222204"><ph name="NAME" />(으)로 계속</translation>
 <translation id="3478363558367712427">검색엔진을 선택할 수 있습니다.</translation>
 <translation id="3479552764303398839">나중에</translation>
+<translation id="3487903178221457900">내보낸 파일은 앱을 포함한 다른 사용자가 액세스할 수 있습니다. 내보내면 비밀번호가 Chrome에서 삭제됩니다.</translation>
 <translation id="3488199663160411179">이름</translation>
 <translation id="3493531032208478708">추천 콘텐츠 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">로그인 하단 시트가 절반 높이로 열렸습니다.</translation>
@@ -549,6 +553,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3566639033325271639">설정 업데이트</translation>
 <translation id="3568945271227339929">유출된 비밀번호 없음</translation>
 <translation id="357465026686164600">휴대전화를 보안 키로 사용</translation>
+<translation id="3575464060651642446">이 기기의 비밀번호를 확인하는 중…</translation>
 <translation id="3577473026931028326">문제가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="3577558748185201054">관심분야 및 환경설정을 관리합니다</translation>
 <translation id="3587482841069643663">전체</translation>
@@ -1751,6 +1756,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8937772741022875483">디지털 웰빙에서 Chrome 활동을 삭제할까요?</translation>
 <translation id="8942627711005830162">다른 창에서 열기</translation>
 <translation id="8945143127965743188"><ph name="LANG" />: 다운로드할 수 없는 언어입니다. 나중에 다시 시도해 보세요.</translation>
+<translation id="8957528460562961174">비밀번호에 계속 액세스하려면 지금 비밀번호를 내보낸 후 원하는 비밀번호 관리자로 가져오세요. Google Play 서비스를 사용할 수 없으므로 Google 비밀번호 관리자 작동이 중지되었습니다.</translation>
 <translation id="8963117664422609631">사이트 설정으로 이동</translation>
 <translation id="8965591936373831584">보류 중</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{시크릿 탭 <ph name="INCOGNITO_TAB_COUNT" />개와 일반 탭 <ph name="TAB_COUNT_ONE" />개가 닫힙니다.}other{시크릿 탭 <ph name="INCOGNITO_TAB_COUNT" />개와 일반 탭 <ph name="TAB_COUNT_MANY" />개가 닫힙니다.}}</translation>

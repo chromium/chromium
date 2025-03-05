@@ -146,6 +146,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="160275202205869636">Ja šis iestatījums ir ieslēgts, varat izmantot un saglabāt datus savā Google kontā. Ja tas ir izslēgts, dati tiek saglabāti tikai šajā ierīcē.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Noņemt 1 atlasīto vienumu}zero{Noņemt # atlasītos vienumus}one{Noņemt # atlasīto vienumu}other{Noņemt # atlasītos vienumus}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{Viena grāmatzīme un citi vienumi ir saglabāti tikai šajā ierīcē. Lai varētu tos izmantot citās ierīcēs, saglabājiet tos Google kontā (<ph name="ACCOUNT_EMAIL" />).}zero{# grāmatzīmes un citi vienumi ir saglabāti tikai šajā ierīcē. Lai varētu tos izmantot citās ierīcēs, saglabājiet tos Google kontā (<ph name="ACCOUNT_EMAIL" />).}one{# grāmatzīme un citi vienumi ir saglabāti tikai šajā ierīcē. Lai varētu tos izmantot citās ierīcēs, saglabājiet tos Google kontā (<ph name="ACCOUNT_EMAIL" />).}other{# grāmatzīmes un citi vienumi ir saglabāti tikai šajā ierīcē. Lai varētu tos izmantot citās ierīcēs, saglabājiet tos Google kontā (<ph name="ACCOUNT_EMAIL" />).}}</translation>
+<translation id="1639239467298939599">Notiek ielāde</translation>
 <translation id="1641113438599504367">Droša pārlūkošana</translation>
 <translation id="164269334534774161">Jūs skatāt šīs lapas bezsaistes kopiju, kas tika izveidota šādā datumā: <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Vēsture</translation>

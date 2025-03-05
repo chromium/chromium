@@ -1378,7 +1378,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1936157145127842922">Visa i mapp</translation>
 <translation id="1936931585862840749">Använd ett nummer som anger hur många kopior som ska skrivas ut (1 till <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Det går inte att importera en behållararkitektur av typen <ph name="ARCHITECTURE_CONTAINER" /> med den här enheten, som är en <ph name="ARCHITECTURE_DEVICE" />. Du kan testa att återställa behållaren till en annan enhet, eller så kan du öppna filerna i behållarbilden via appen Filer.</translation>
-<translation id="1938116692670653897">Aktuellt färgtema</translation>
 <translation id="1938351510777341717">Extern kommandotangent</translation>
 <translation id="1940221956626514677">Anpassa verktygsfältet</translation>
 <translation id="1940546824932169984">Anslutna enheter</translation>
@@ -9703,7 +9702,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="788453346724465748">Läser in kontouppgifter …</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{ett objekt}other{# objekt}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
-<translation id="7887174313503389866">Få en guidad rundtur av viktiga integritets- och säkerhetskontroller. Öppna den enskilda inställningarna för att se fler alternativ.</translation>
+<translation id="7887174313503389866">Få en guidad rundtur av viktiga integritets- och säkerhetskontroller. Öppna de enskilda inställningarna för att se fler alternativ.</translation>
 <translation id="7887334752153342268">Duplicera</translation>
 <translation id="7887864092952184874">Bluetooth-musen har kopplats</translation>
 <translation id="7889371445710865055">Ändra dikteringsspråk</translation>
@@ -10158,6 +10157,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8195854162863398249">Inaktivera <ph name="FEATURE_NAME" /></translation>
 <translation id="8195920051450756553">Fördröjning innan samma tangent aktiveras igen</translation>
 <translation id="8197673340773315084">Lägg till ett namn eller en etikett, till exempel Jobb eller Privat</translation>
+<translation id="8198181050118789419">Tema: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Castar flik</translation>
 <translation id="8199300056570174101">Nätverkstjänst och enhetsegenskaper</translation>
 <translation id="8200772114523450471">Återuppta</translation>

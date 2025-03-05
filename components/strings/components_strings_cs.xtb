@@ -3005,7 +3005,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6322182122604171028">Windows Hello nebylo možné použít</translation>
 <translation id="6326947323444967009">V nastavení iOS nastavte Chrome jako výchozí prohlížeč</translation>
 <translation id="6328639280570009161">Zkuste deaktivovat předvídání akcí sítě</translation>
-<translation id="6328784461820205019">Vaše připojení není soukromé, &lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;, &lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;, &lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;, &lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt; nebo Chyba certifikátu SSL</translation>
 <translation id="6335029926534404762">Sportovní obuv</translation>
 <translation id="6337133576188860026">Uvolní méně než <ph name="SIZE" />. Je možné, že se některé weby při příští návštěvě budou načítat pomaleji.</translation>
 <translation id="6337534724793800597">Filtrovat zásady podle názvu</translation>
@@ -3724,6 +3723,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7569983096843329377">Černá</translation>
 <translation id="7574998639136359461">Vybavení pro zimní sporty</translation>
 <translation id="7575207903026901870">Tlačítko Odstranit návrh, stisknutím klávesy Enter tento návrh odstraníte</translation>
+<translation id="7575800019233204241">Vaše připojení není soukromé nebo &lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt; nebo &lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt; nebo &lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt; nebo Chyba certifikátu SSL</translation>
 <translation id="7575887283389198269">Mobilní telefony</translation>
 <translation id="7578104083680115302">Plaťte na webech a v aplikacích v různých zařízeních rychle pomocí karet uložených na Googlu.</translation>
 <translation id="7579442726219254162">Neznámá proměnná <ph name="VARIABLE" /> ve spravované konfiguraci aplikace <ph name="APPLICATION_ID" />.</translation>

@@ -147,6 +147,7 @@
 <translation id="160275202205869636">เมื่อเปิดไว้ ระบบจะใช้และบันทึกข้อมูลในบัญชี Google ของคุณ เมื่อปิดไว้ ระบบจะบันทึกข้อมูลในอุปกรณ์เครื่องนี้เท่านั้น</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{นำ 1 รายการที่เลือกออก}other{นำ # รายการที่เลือกออก}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{ระบบบันทึกบุ๊กมาร์ก 1 รายการและรายการอื่นๆ ไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google <ph name="ACCOUNT_EMAIL" />}other{ระบบบันทึกบุ๊กมาร์ก # รายการและรายการอื่นๆ ไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google <ph name="ACCOUNT_EMAIL" />}}</translation>
+<translation id="1639239467298939599">กำลังโหลด</translation>
 <translation id="1641113438599504367">Google Safe Browsing</translation>
 <translation id="164269334534774161">คุณกำลังดูสำเนาออฟไลน์ของหน้านี้จากวันที่ <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">ประวัติการเข้าชม</translation>
@@ -552,6 +553,7 @@
 <translation id="3566639033325271639">อัปเดตการตั้งค่า</translation>
 <translation id="3568945271227339929">ไม่มีรหัสผ่านที่ถูกละเมิด</translation>
 <translation id="357465026686164600">โทรศัพท์เป็นคีย์ความปลอดภัย</translation>
+<translation id="3575464060651642446">กำลังตรวจสอบรหัสผ่านในอุปกรณ์นี้…</translation>
 <translation id="3577473026931028326">เกิดข้อผิดพลาด ลองใหม่</translation>
 <translation id="3577558748185201054">จัดการความสนใจและความต้องการของคุณ</translation>
 <translation id="3587482841069643663">ทั้งหมด</translation>

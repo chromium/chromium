@@ -3008,7 +3008,6 @@
 <translation id="6322182122604171028">無法使用 Windows Hello</translation>
 <translation id="6326947323444967009">在 iOS 設定中將 Chrome 設為系統的預設瀏覽器</translation>
 <translation id="6328639280570009161">建議停用網路預測功能</translation>
-<translation id="6328784461820205019">「你的連線不是私人連線」、「&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;」、「&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;」、「&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;」、「&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;」或「SSL 憑證錯誤」</translation>
 <translation id="6335029926534404762">運動鞋</translation>
 <translation id="6337133576188860026">釋出不到 <ph name="SIZE" />。下次造訪部分網站時，載入速度可能會變慢。</translation>
 <translation id="6337534724793800597">依名稱篩選政策</translation>
@@ -3728,6 +3727,7 @@
 <translation id="7569983096843329377">黑色</translation>
 <translation id="7574998639136359461">冬季運動用品</translation>
 <translation id="7575207903026901870">移除建議按鈕，按下 Enter 鍵即可移除這項建議</translation>
+<translation id="7575800019233204241">「你的連線不是私人連線」、「&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;」、「&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;」、「&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;」或「SSL 憑證錯誤」</translation>
 <translation id="7575887283389198269">手機</translation>
 <translation id="7578104083680115302">在不同的裝置上透過各個網站和應用程式消費時，使用您讓 Google 儲存的信用卡資料即可快速付款。</translation>
 <translation id="7579442726219254162">在「<ph name="APPLICATION_ID" />」受管理設定中的未知變數「<ph name="VARIABLE" />」。</translation>

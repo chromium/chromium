@@ -1369,7 +1369,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1936157145127842922">Kuva kaustas</translation>
 <translation id="1936931585862840749">Kasutage numbrit, mis näitab, kui palju koopiaid printida (1 kuni <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Selle seadmega, mis põhineb arhitektuuril <ph name="ARCHITECTURE_DEVICE" />, ei saa konteineri arhitektuuri tüüpi <ph name="ARCHITECTURE_CONTAINER" /> importida. Võite proovida konteineri muus seadmes taastada või rakendusega Failid selles konteinerikujutises olevatele failidele juurde pääseda.</translation>
-<translation id="1938116692670653897">Praegune värviteema</translation>
 <translation id="1938351510777341717">Väline Command-klahv</translation>
 <translation id="1940221956626514677">Kohanda tööriistariba</translation>
 <translation id="1940546824932169984">Ühendatud seadmed</translation>
@@ -4072,6 +4071,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Laiendus on kinnitatud}other{# laiendust on kinnitatud}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linuxi jaoks on soovitatav vähemalt <ph name="INSTALL_SIZE" /> vaba ruumi.</translation>
+<translation id="3824203811509979971">Sisukokkuvõtted ja küsimused</translation>
 <translation id="3824621460022590830">Seadme registreerimistunnus on sobimatu. Võtke ühendust seadme omaniku või administraatoriga. Veakood: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Logige sisse, et näha muudest seadmetest pärinevaid vahelehti</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Jäta minu valik selle failitüübi puhul meelde: <ph name="FILE_TYPES" />}other{Jäta minu valik nende failitüüpide puhul meelde: <ph name="FILE_TYPES" />}}</translation>
@@ -4258,6 +4258,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="3948985214866944547">Enamik inimesi blokeerivad selle saidi puhul täpse asukoha jagamise</translation>
 <translation id="394984172568887996">Imporditud IE'st</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, et faile ohutumalt alla laadida</translation>
+<translation id="3950479158728806902">Loo kiiremaks sisselogimiseks automaatselt pääsuvõti</translation>
 <translation id="3950820424414687140">Logige sisse</translation>
 <translation id="3950841222883198950">Häälsisestus</translation>
 <translation id="3953834000574892725">Minu kontod</translation>
@@ -5186,6 +5187,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4624054169152573743">Värviteema</translation>
 <translation id="4625078469366263107">Luba rakendus</translation>
 <translation id="4625905218692741757">Hall vaikevärv</translation>
+<translation id="4627107755957573804">Lubab saitidel ja rakendustel olemasolevad kontod pääsuvõtmetele üle viia</translation>
 <translation id="4627442949885028695">Jätkake sealt, kus muus seadmes pooleli jäite</translation>
 <translation id="4628762811416793313">Linuxi konteineri seadistus ei jõudnud lõpule. Proovige uuesti.</translation>
 <translation id="4629521233550547305">Ava profiil <ph name="PROFILE_NAME" /></translation>
@@ -5769,6 +5771,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5053233576223592551">Lisa kasutajanimi</translation>
 <translation id="505347685865235222">Nimetu grupp – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{Peaksite seda kohe muutma}other{Peaksite neid kohe muutma}}</translation>
+<translation id="5056587122125565772">Loo pilt</translation>
 <translation id="5056950756634735043">Ühenduse loomine konteineriga</translation>
 <translation id="5057110919553308744">Laiendusel klõpsamisel</translation>
 <translation id="5057127674016624293">Skannimine võtab oodatust kauem</translation>
@@ -5879,6 +5882,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="512642543295077915">otsing + tagasilüke</translation>
 <translation id="5126611267288187364">Kuva muudatused</translation>
 <translation id="5127620150973591153">Turvalise ühenduse ID: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">Sisukokkuvõtted ja küsimused.</translation>
 <translation id="5127881134400491887">Võrguühenduste haldamine</translation>
 <translation id="5127934926273826089">Lilled</translation>
 <translation id="5127986747308934633">Teie seadet juhib teie administraator</translation>
@@ -10149,6 +10153,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8195854162863398249">Funktsiooni <ph name="FEATURE_NAME" /> keelamine</translation>
 <translation id="8195920051450756553">Viivitus enne sama klahvi uuesti aktiveerimist</translation>
 <translation id="8197673340773315084">Lisage nimi või silt, nt Töö või Isiklik</translation>
+<translation id="8198181050118789419">Teema: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Vahelehe ülekandmine</translation>
 <translation id="8199300056570174101">Võrk (teenus) ja seadme atribuudid</translation>
 <translation id="8200772114523450471">Taasta</translation>
@@ -11405,6 +11410,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB-hiir on ühendatud</translation>
 <translation id="9075413375877487220">Täiustatud ohutu sirvimine ei usalda seda laiendust.</translation>
+<translation id="9075985558450420812">Piltide loomine vabas vormis päringu või esiletõstetud teksti põhjal.</translation>
 <translation id="9076523132036239772">Kahjuks ei õnnestunud teie e-posti aadressi või parooli kinnitada. Proovige kõigepealt luua ühendus võrguga.</translation>
 <translation id="9076821103818989526">Külgpaneel</translation>
 <translation id="9076977315710973122">SMB võrguhoidla</translation>

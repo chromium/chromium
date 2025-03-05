@@ -3010,7 +3010,6 @@
 <translation id="6322182122604171028">Windows Hello का इस्तेमाल नहीं किया जा सका</translation>
 <translation id="6326947323444967009">iOS की सेटिंग में, Chrome को सिस्टम के डिफ़ॉल्ट ब्राउज़र के रूप में सेट करें</translation>
 <translation id="6328639280570009161">नेटवर्क पूर्वानुमान को अक्षम करके देखें</translation>
-<translation id="6328784461820205019">"आपका कनेक्शन निजी नहीं है" या "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" या "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" या "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" या "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" या "एसएसएल प्रमाणपत्र गड़बड़ी"</translation>
 <translation id="6335029926534404762">ऐथलेटिक जूते</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> से कम जगह खाली करता है. आपकी अगली विज़िट पर कुछ साइटें और भी धीमे लोड हो सकती हैं.</translation>
 <translation id="6337534724793800597">नाम के अनुसार नीतियां फ़िल्टर करें</translation>
@@ -3730,6 +3729,7 @@
 <translation id="7569983096843329377">काला</translation>
 <translation id="7574998639136359461">विंटर स्पोर्ट्स के इक्विपमेंट</translation>
 <translation id="7575207903026901870">सुझाव बटन हटाएं, इस सुझाव को हटाने के लिए Enter दबाएं</translation>
+<translation id="7575800019233204241">"आपका कनेक्शन निजी नहीं है" या "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" या "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" या "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" या "SSL प्रमाणपत्र गड़बड़ी"</translation>
 <translation id="7575887283389198269">मोबाइल फ़ोन</translation>
 <translation id="7578104083680115302">Google के साथ सहेजे गए कार्ड का उपयोग करके डिवाइसों में मौजूद साइटों और ऐप्‍स पर तुरंत भुगतान करें.</translation>
 <translation id="7579442726219254162">"<ph name="APPLICATION_ID" />" के मैनेज किए जा रहे कॉन्फ़िगरेशन में अज्ञात वैरिएबल "<ph name="VARIABLE" />".</translation>

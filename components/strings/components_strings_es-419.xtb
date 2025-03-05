@@ -3011,7 +3011,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6322182122604171028">No se pudo usar Windows Hello</translation>
 <translation id="6326947323444967009">Establece Chrome como el navegador predeterminado del sistema en la configuración de iOS</translation>
 <translation id="6328639280570009161">Intenta inhabilitar la predicción de red.</translation>
-<translation id="6328784461820205019">"La conexión no es privada", "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" o "Error del certificado SSL"</translation>
 <translation id="6335029926534404762">Calzado deportivo</translation>
 <translation id="6337133576188860026">Esta acción libera menos de <ph name="SIZE" />. Es posible que algunos sitios se carguen más lento en tu próxima visita.</translation>
 <translation id="6337534724793800597">Filtrar políticas por nombre</translation>
@@ -3731,6 +3730,7 @@ Detalles adicionales:
 <translation id="7569983096843329377">Negro</translation>
 <translation id="7574998639136359461">Equipo para deportes de invierno</translation>
 <translation id="7575207903026901870">Botón Quitar sugerencia; presiona Intro para quitar esta sugerencia</translation>
+<translation id="7575800019233204241">"La conexión no es privada" o "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" o "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" o "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" o "Error de certificado SSL"</translation>
 <translation id="7575887283389198269">Teléfonos celulares</translation>
 <translation id="7578104083680115302">Paga con rapidez en sitios y apps a través de varios dispositivos con tarjetas que guardaste en Google.</translation>
 <translation id="7579442726219254162">La configuración administrada de "<ph name="APPLICATION_ID" />" contiene la variable desconocida "<ph name="VARIABLE" />".</translation>

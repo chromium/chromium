@@ -146,6 +146,7 @@
 <translation id="160275202205869636">開啟時，可在 Google 帳戶中使用及儲存資料。關閉後，資料只會儲存到這部裝置。</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{移除 1 個選取的項目}other{移除 # 個選取的項目}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{這 1 個書籤和其他項目只會儲存在這部裝置上。如要在其他裝置上使用，請儲存到 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}other{這 # 個書籤和其他項目只會儲存在這部裝置上。如要在其他裝置上使用，請儲存到 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}}</translation>
+<translation id="1639239467298939599">載入中</translation>
 <translation id="1641113438599504367">安全瀏覽</translation>
 <translation id="164269334534774161">您目前瀏覽的是這個網頁的離線複本 (建立時間：<ph name="CREATION_TIME" />)</translation>
 <translation id="1644574205037202324">歷史記錄</translation>

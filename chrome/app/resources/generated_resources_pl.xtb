@@ -1370,7 +1370,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1936157145127842922">Pokaż w folderze</translation>
 <translation id="1936931585862840749">Wpisz wartość numeryczną, by określić liczbę kopii do wydrukowania (od 1 do <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Kontenera o architekturze <ph name="ARCHITECTURE_CONTAINER" /> nie można zaimportować na tym urządzeniu, które ma architekturę <ph name="ARCHITECTURE_DEVICE" />. Możesz przywrócić ten kontener na innym urządzeniu albo uzyskać dostęp do plików znajdujących się wewnątrz obrazu kontenera, otwierając go w aplikacji Pliki.</translation>
-<translation id="1938116692670653897">Bieżący motyw kolorystyczny</translation>
 <translation id="1938351510777341717">Polecenie zewnętrzne</translation>
 <translation id="1940221956626514677">Dostosuj pasek narzędzi</translation>
 <translation id="1940546824932169984">Połączone urządzenia</translation>
@@ -4050,6 +4049,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Rozszerzenie zostało zatwierdzone}few{Zostały zatwierdzone # rozszerzenia}many{Zostało zatwierdzonych # rozszerzeń}other{Zostało zatwierdzone # rozszerzenia}}</translation>
 <translation id="3823019343150397277">Numer IBAN</translation>
 <translation id="3823310065043511710">Do korzystania z Linuksa zalecane jest co najmniej <ph name="INSTALL_SIZE" /> wolnego miejsca.</translation>
+<translation id="3824203811509979971">Podsumuj treść lub zadaj pytania</translation>
 <translation id="3824621460022590830">Token rejestrowania urządzenia jest nieprawidłowy. Skontaktuj się z właścicielem lub administratorem urządzenia. Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Zaloguj się, aby zobaczyć karty z innych urządzeń</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Zapamiętaj mój wybór w przypadku tego typu plików: <ph name="FILE_TYPES" />}few{Zapamiętaj mój wybór w przypadku tych typów plików: <ph name="FILE_TYPES" />}many{Zapamiętaj mój wybór w przypadku tych typów plików: <ph name="FILE_TYPES" />}other{Zapamiętaj mój wybór w przypadku tych typów plików: <ph name="FILE_TYPES" />}}</translation>
@@ -4236,6 +4236,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="3948985214866944547">W przypadku tej witryny większość użytkowników blokuje udostępnianie dokładnej lokalizacji</translation>
 <translation id="394984172568887996">Zaimportowane z IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, aby zwiększyć bezpieczeństwo pobierania plików</translation>
+<translation id="3950479158728806902">Automatycznie utwórz klucz dostępu, aby szybciej się logować</translation>
 <translation id="3950820424414687140">Zaloguj się</translation>
 <translation id="3950841222883198950">Pisanie głosowe</translation>
 <translation id="3953834000574892725">Moje konta</translation>
@@ -5164,6 +5165,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4624054169152573743">Motyw kolorystyczny</translation>
 <translation id="4625078469366263107">Włącz aplikację</translation>
 <translation id="4625905218692741757">Domyślny kolor szary</translation>
+<translation id="4627107755957573804">Zezwalaj witrynom i aplikacjom na uaktualnianie istniejących kont, aby można było używać kluczy dostępu</translation>
 <translation id="4627442949885028695">Kontynuuj z innego urządzenia</translation>
 <translation id="4628762811416793313">Konfiguracja kontenera Linuxa nie została ukończona. Spróbuj ponownie.</translation>
 <translation id="4629521233550547305">Otwórz profil <ph name="PROFILE_NAME" /></translation>
@@ -5746,6 +5748,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5053233576223592551">Dodaj nazwę użytkownika</translation>
 <translation id="505347685865235222">Grupa bez nazwy – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{Należy je teraz zmienić}few{Należy je teraz zmienić}many{Należy je teraz zmienić}other{Należy je teraz zmienić}}</translation>
+<translation id="5056587122125565772">Utwórz obraz</translation>
 <translation id="5056950756634735043">Łączę się z kontenerem</translation>
 <translation id="5057110919553308744">Gdy klikniesz rozszerzenie</translation>
 <translation id="5057127674016624293">Skanowanie trwa dłużej niż zwykle</translation>
@@ -5856,6 +5859,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="512642543295077915">Klawisz wyszukiwania + Backspace</translation>
 <translation id="5126611267288187364">Pokaż zmiany</translation>
 <translation id="5127620150973591153">Identyfikator bezpiecznego połączenia: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">Podsumuj treść lub zadaj pytania.</translation>
 <translation id="5127881134400491887">Zarządzanie połączeniami sieciowymi</translation>
 <translation id="5127934926273826089">Kwiaty</translation>
 <translation id="5127986747308934633">Administrator ma kontrolę nad Twoim urządzeniem</translation>
@@ -10125,6 +10129,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8195854162863398249">Wyłącz <ph name="FEATURE_NAME" /></translation>
 <translation id="8195920051450756553">Opóźnienie przed ponownym aktywowaniem tego samego klawisza</translation>
 <translation id="8197673340773315084">Dodaj nazwę lub etykietę, np. Praca lub Osobisty</translation>
+<translation id="8198181050118789419">Motyw: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Przesyłam kartę</translation>
 <translation id="8199300056570174101">Właściwości sieci (usługi) i urządzenia</translation>
 <translation id="8200772114523450471">Wznów</translation>
@@ -11376,6 +11381,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Podłączono mysz USB</translation>
 <translation id="9075413375877487220">Ulepszone Bezpieczne przeglądanie uznaje to rozszerzenie za niezaufane.</translation>
+<translation id="9075985558450420812">Wpisz niestandardowy prompt lub zaznacz tekst, aby utworzyć obraz.</translation>
 <translation id="9076523132036239772">Niestety, nie udało się zweryfikować Twojego adresu e-mail lub hasła. Najpierw nawiąż połączenie z siecią.</translation>
 <translation id="9076821103818989526">Panel boczny</translation>
 <translation id="9076977315710973122">Udostępnianie plików SMB</translation>

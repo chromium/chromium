@@ -1377,7 +1377,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1936157145127842922">Megjelenítés mappában</translation>
 <translation id="1936931585862840749">Számmal jelezze, hogy hány példányt szeretne nyomtatni (1–<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Nem lehet importálni a tároló <ph name="ARCHITECTURE_CONTAINER" /> architektúratípusát, ugyanis az eszköz architektúrájának típusa <ph name="ARCHITECTURE_DEVICE" />. Megpróbálhatja helyreállítani ezt a tárolót egy másik eszközön, vagy a Fájlok alkalmazás megnyitásával hozzáférhet a tároló lemezképében lévő fájlokhoz.</translation>
-<translation id="1938116692670653897">Jelenlegi színösszeállítás</translation>
 <translation id="1938351510777341717">Külső parancs</translation>
 <translation id="1940221956626514677">Eszköztár személyre szabása</translation>
 <translation id="1940546824932169984">Társított eszközök</translation>

@@ -3010,7 +3010,6 @@
 <translation id="6322182122604171028">Windows Hello वापरता आले नाही</translation>
 <translation id="6326947323444967009">iOS सेटिंग्जमध्ये Chrome ला सिस्टीमचा डीफॉल्ट ब्राउझर म्हणून सेट करा</translation>
 <translation id="6328639280570009161">नेटवर्क पूर्वानुमान अक्षम करून पहा</translation>
-<translation id="6328784461820205019">"तुमचे कनेक्शन खाजगी नाही" किंवा "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" किंवा "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" किंवा "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" किंवा "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" किंवा "SSL सर्टिफिकेट एरर"</translation>
 <translation id="6335029926534404762">ॲथलेटिक शूज</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> पेक्षा कमी जागा मोकळी करते. काही साइट तुमच्या पुढील भेटीच्या वेळी आणखी धीम्या गतीने लोड होऊ शकतात.</translation>
 <translation id="6337534724793800597">धोरणे नावानुसार फिल्टर करा</translation>
@@ -3024,6 +3023,7 @@
 <translation id="6351658970066645919">ब्राउझिंग डेटा हटवा</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{काहीही नाही}=1{(<ph name="DOMAIN_LIST" /> साठी) एक पासवर्ड सिंक केला}=2{(<ph name="DOMAIN_LIST" /> साठी) दोन पासवर्ड सिंक केले}other{(<ph name="DOMAIN_LIST" /> साठी) # पासवर्ड सिंक केले}}</translation>
 <translation id="6355392890578844978">हा ब्राउझर कंपनी किंवा इतर संस्थेद्वारे व्यवस्थापित केला जात नाही. या डिव्हाइसवरील अ‍ॅक्टिव्हिटी Chromium च्या बाहेर व्यवस्थापित केली जाऊ शकते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">"<ph name="GROUP_TITLE_1" />" आणि "<ph name="GROUP_TITLE_2" />" "हे टॅब गट आता उपलब्ध नाहीत</translation>
 <translation id="6358088212770985041">पेमेंट पद्धती संपादित करा</translation>
 <translation id="6358450015545214790">याचा अर्थ काय आहे?</translation>
 <translation id="6360213755783740931">मालवेअर संरक्षणाबद्दल अधिक जाणून घ्या</translation>
@@ -3730,6 +3730,7 @@
 <translation id="7569983096843329377">काळा</translation>
 <translation id="7574998639136359461">हिवाळ्यातील क्रीडा उपकरणे</translation>
 <translation id="7575207903026901870">सूचना बटण काढा, ही सूचना काढण्यासाठी एंटर प्रेस करा</translation>
+<translation id="7575800019233204241">"तुमचे कनेक्शन खाजगी नाही" किंवा "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" किंवा "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" किंवा "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" किंवा "SSL सर्टिफिकेट एरर"</translation>
 <translation id="7575887283389198269">मोबाइल फोन</translation>
 <translation id="7578104083680115302">तुम्ही Google सह सेव्ह केलेल्या कार्डचा वापर करून डिव्‍हाइसेसवरून द्रुतपणे साइट आणि ॲप्सवर पेमेंट करा.</translation>
 <translation id="7579442726219254162">"<ph name="APPLICATION_ID" />" च्या व्यवस्थापित कॉंफिगरेशनमध्ये "<ph name="VARIABLE" />" हा अज्ञात व्हेरिएबल आहे.</translation>

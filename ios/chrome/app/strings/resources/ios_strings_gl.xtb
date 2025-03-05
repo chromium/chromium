@@ -34,7 +34,6 @@
 <translation id="1112015203684611006">Erro impresión</translation>
 <translation id="1118569444314402022">Dámosche a benvida de novo, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Fotos e imaxes</translation>
-<translation id="1125564390852150847">Crear pestana nova</translation>
 <translation id="1126696498560056882">Xestionar contas deste dispositivo</translation>
 <translation id="1126809382673880764">Non te protexe contra sitios web, descargas e extensións perigosos. Continuarás dispoñendo da protección da función Navegación segura, sempre que estea dispoñible, noutros servizos de Google (como Gmail e a Busca).</translation>
 <translation id="1142371195993008685">Desactivar notificacións para <ph name="FEATURE_NAME" /></translation>
@@ -89,7 +88,6 @@
 <translation id="1358106883354237005">Conta xestionada</translation>
 <translation id="1358214951266274152">Visitar ligazón que copiaches</translation>
 <translation id="1360432990279830238">Queres pechar sesión?</translation>
-<translation id="1362192716574455663">Os datos de navegación actuais non se transferirán á túa conta do traballo. Pecha sesión ou engade unha conta persoal para seguir accedendo a eles.</translation>
 <translation id="1363028406613469049">Número de seguimento</translation>
 <translation id="1364367057792633742">Nova pestana</translation>
 <translation id="1365106417372288489">O teu iPhone restaurouse recentemente. Pode que por iso se cambiase o teu navegador predeterminado.</translation>
@@ -116,7 +114,6 @@
 <translation id="1455660774629812862">Non ocultar</translation>
 <translation id="1456545332132818232">Reseñas de produtos en <ph name="PRODUCT_NAME" />, <ph name="STARS" /> de <ph name="MAX_STARS" />, <ph name="DOMAIN" /></translation>
 <translation id="1460751212339734034">Aforra tempo, escribe menos</translation>
-<translation id="1466035273550360103">Non hai ningunha pestana aberta</translation>
 <translation id="1469381646033328562">A túa conta está xestionada polo teu pai ou pola túa nai.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Cambiada</translation>
@@ -476,7 +473,6 @@ O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar 
 <translation id="2969979262385602596">Erro ao iniciar sesión. Téntao de novo máis tarde.</translation>
 <translation id="2989523299700148168">Visitados recentemente</translation>
 <translation id="2989805286512600854">Abrir nunha pestana nova</translation>
-<translation id="2990025507101398383">Non hai ningunha pestana do modo de incógnito</translation>
 <translation id="2996291259634659425">Crear contrasinal</translation>
 <translation id="3000900718786961632">{COUNT,plural, =1{Novo paquete con seguimento}other{Novos paquetes con seguimento}}</translation>
 <translation id="3010025794097054078">Protéxete contra as violacións da seguranza dos datos, os sitios web que non sexan seguros e moito máis.</translation>
@@ -577,7 +573,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="35083190962747987">Abre ${url}</translation>
 <translation id="3511519535430890904">Engade protección á navegación</translation>
 <translation id="3517216995152707259">Ao eliminar os teus datos de navegación, non se pecha a sesión da túa Conta de Google. Para facelo, <ph name="BEGIN_LINK" />pecha a sesión en Chrome<ph name="END_LINK" />.</translation>
-<translation id="3519193562722059437">Abre unha pestana para examinar a web.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Abrir a pestana}other{Abrir {count} pestanas}}</translation>
 <translation id="3523513363815970085">Ocultar Sitios principais</translation>
 <translation id="3523789730715594198">Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
@@ -974,7 +969,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5217329997012062137">Cando usas Google Lens, envíase unha captura de pantalla da páxina a Google.</translation>
 <translation id="5220945116117011963">Crea eventos do calendario a partir de datas</translation>
 <translation id="5222676887888702881">Pechar sesión</translation>
-<translation id="5228579091201413441">Activar sincronización</translation>
 <translation id="5233638681132016545">Nova pestana</translation>
 <translation id="5234094073825090254">{count,plural, =1{O marcador gardouse na túa Conta de Google ({email}).}other{Os marcadores gardáronse na túa Conta de Google ({email}).}}</translation>
 <translation id="5234764350956374838">Rexeitar</translation>
@@ -1227,7 +1221,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6284652193729350524">Ofrecer traducir contido en <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Deixaches de seguir a canle <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Para activar a opción Navegación segura, abre <ph name="BEGIN_LINK" />Servizos de Google<ph name="END_LINK" /> e toca Navegación segura.</translation>
-<translation id="6295434468271563378">Eliminar automaticamente as descargas</translation>
 <translation id="6295751040240588413">O alcume da tarxeta non é válido</translation>
 <translation id="629730747756840877">Conta</translation>
 <translation id="6301104306974789820">Obter notificacións de seguimento de prezos</translation>
@@ -1558,7 +1551,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7669493687462784703">Queres seguir descargando un perfil de configuración de <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Podes pasar o dedo cara á esquerda para navegar no modo de incógnito.</translation>
 <translation id="7679915578945954324">Copiáronse os enderezos dos sitios</translation>
-<translation id="769134787192530091">Sincronizando as túas pestanas…</translation>
 <translation id="7696316012653762532">Opcións para traducir a páxina</translation>
 <translation id="7700527812567437847">Buscar pantalla con Google Lens</translation>
 <translation id="7701040980221191251">Ningunha</translation>
@@ -1714,7 +1706,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8283172974887967105">Definir…</translation>
 <translation id="8289930144142009940">As notificacións de <ph name="FEATURE_NAME" /> están desactivadas</translation>
 <translation id="8299417921174340354">Para usar os contrasinais, en primeiro lugar debes definir un contrasinal no teu dispositivo.</translation>
-<translation id="8299613349954694191">Abre unha pestana do modo de incógnito para navegar pola Web de forma privada.</translation>
 <translation id="8307481894409578819">Non se puido cargar este ficheiro</translation>
 <translation id="8319076807703933069">Nova busca</translation>
 <translation id="833647236762414178">Crea, garda e xestiona os teus contrasinais e claves de acceso para poder iniciar sesión facilmente nos sitios e nas aplicacións. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>

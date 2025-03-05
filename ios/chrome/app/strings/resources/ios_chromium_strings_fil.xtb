@@ -94,6 +94,7 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="328933489847748230">{count,plural, =1{Nagpapakita ngayon ng 1 window ng Chromium}one{Nagpapakita ngayon ng {count} window ng Chromium}other{Nagpapakita ngayon ng {count} na window ng Chromium}}</translation>
 <translation id="3344973607274501920">Hindi masuri ng Chromium ang iyong mga password. Subukang tingnan ang iyong koneksyon sa internet.</translation>
 <translation id="3366305173356742781">Data sa Chromium sa iyong account</translation>
+<translation id="33788334537425157">I-on ang "I-lock ang mga tab na Icognito kapag isinara mo ang Chromium"</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} minuto. Posibleng kasama rito ang history at autofill.}one{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} minuto. Posibleng kasama rito ang history at autofill.}other{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} na minuto. Posibleng kasama rito ang history at autofill.}}</translation>
 <translation id="3410395242749598859">Hindi pa nase-save sa <ph name="EMAIL" /> ang ilan sa iyong data sa Chromium.
 Subukang maghintay nang ilang minuto bago lumipat ng account. Kung lilipat ka ng account ngayon, made-delete ang data na ito.</translation>
@@ -101,8 +102,10 @@ Subukang maghintay nang ilang minuto bago lumipat ng account. Kung lilipat ka ng
 <translation id="347967311580159871">Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experience sa Chromium, pumunta sa <ph name="BEGIN_LINK" />Mga Serbisyo ng Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Hindi na-share ang password mo. Suriin ang iyong koneksyon sa internet at tiyaking naka-sign in ka sa Chromium. Pagkatapos ay subukan ulit.</translation>
 <translation id="3529798650269984835">I-on ang “I-lock ang mga tab na Incognito kapag isinara mo ang Chromium.”</translation>
+<translation id="3541247799006476453">Magkaroon ng madaling access sa iyong mga password at passkey gamit ang Chromium para sa AutoFill</translation>
 <translation id="3567399274263440288">Para masulit ang Chromium, mag-sign in sa Chromium gamit ang iyong Google Account.</translation>
 <translation id="3581385059720151202">Maghanap ng mga visual sa Chromium</translation>
+<translation id="3582640969619785896">Mag-aalok ang Chromium na i-save ang iyong password</translation>
 <translation id="3594315078412605236">Pamahalaan ang mga paraan ng pagbabayad sa Chromium</translation>
 <translation id="3634039384458740619">Buksan ang Mga Setting ng Chromium</translation>
 <translation id="3639997914391704523">Masusuri ng Chromium ang iyong mga password kapag nag-sign in ka sa Google Account mo.</translation>
@@ -159,6 +162,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="4999538639245140991">Dahil magsa-sign out ka sa account na pinapamahalaan ng <ph name="SIGNOUT_MANAGED_DOMAIN" />, made-delete ang iyong data sa Chromium sa device na ito. Mananatili ang data mo sa iyong Google Account.</translation>
 <translation id="5042011327527167688">I-tap ang “Tingnan gamit ang Google Maps sa Chromium.”</translation>
 <translation id="5044871537677053278">Dine-detect ng Chromium ang mga address at ginagamit nito ang Google Maps para bigyan ka ng mga direksyon at lokal na impormasyon.</translation>
+<translation id="5048140766121299007">Mula sa mga setting na "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />," i-on ang "Chromium"</translation>
 <translation id="5048795749726991615">Para madaling makuha ang iyong mga naka-save na password sa iba mo pang app, gamitin ang Chromium para sa AutoFill</translation>
 <translation id="5053429694249468757">Dine-delete ang data sa Chromium…</translation>
 <translation id="5071749685031362629">Chromium para sa iOS</translation>
@@ -166,6 +170,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="5124429847818367226">Magagamit mo na ngayon ang Chromium sa tuwing magba-browse o magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="5131565040785979529">Pinapamahalaan ng iyong organisasyon at <ph name="DOMAIN" /> ang account kung saan ka naka-sign in at kung paano ginagamit ang Chromium.</translation>
 <translation id="5134464247000681876">Buksan ang mga link mula sa Gmail, Maps, YouTube, at iba pang app sa Chromium</translation>
+<translation id="5203244847421322551">Mag-save at mag-autofill ng mga password sa Chromium</translation>
 <translation id="5224391634244552924">Walang naka-save na password. Masusuri ng Chromium ang iyong mga password kapag na-save mo ang mga ito.</translation>
 <translation id="5259423875997548710">Maghanap ng mga visual sa Chromium.</translation>
 <translation id="5308226104666789935">Hindi matingnan ng Chromium kung may mga update</translation>
@@ -214,6 +219,7 @@ Mga bagay na dapat isaalang-alang:
 <translation id="6197255575340902638">Kung iha-hide mo ang "<ph name="MODULE_NAME" />," hindi na awtomatikong susubaybayan ng Chromium ang iyong mga package sa hinaharap at ide-delete nito ang lahat ng dati mong data ng pagsubaybay sa package.</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6268381023930128611">Mag-sign out sa Chromium?</translation>
+<translation id="6301717043141881464">Para madaling makuha ang iyong mga naka-save na password sa iba mo pang app, piliin ang Chromium para sa Autofill</translation>
 <translation id="6324041800010509197">Bisitahin ang Tab Grid sa Chromium</translation>
 <translation id="6325378625795868881">Gamitin ang Chromium sa tuwing magta-tap ka ng mga link sa mga mensahe at iba pang app.</translation>
 <translation id="6424492062988593837">Naging mas mahusay na ang Chromium! Available na ang bagong bersyon.</translation>
@@ -225,6 +231,7 @@ Mga bagay na dapat isaalang-alang:
 <translation id="6574750762636192517">Pamahalaan ang mga password sa Chromium</translation>
 <translation id="6590232959690355435">Bubuksan ang iyong page ng History sa Chromium.</translation>
 <translation id="6674470628873622334">Magbubukas ng bagong tab na Incognito sa Chromium.</translation>
+<translation id="6680609900732453726">Panatilihing pribado ang iyong pag-browse gamit ang pag-authenticate ng device kapag isinara mo ang Chromium</translation>
 <translation id="6752854822223394465">Sine-set up ng iyong organisasyon ang Chromium...</translation>
 <translation id="6794054469102824109">Mabubuksan ang Dino Game ng Chromium.</translation>
 <translation id="6820823224820483452">Hindi masuri ng Chromium ang lahat ng password. Subukan ulit bukas.</translation>
@@ -288,6 +295,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="8254729934443216898">Mag-explore ng mga bagong feature na makakatulong sa iyong masulit ang Chromium.</translation>
 <translation id="8293572045658095405">Nasa Incognito ka sa Chromium</translation>
 <translation id="830951810931292870">Bubuksan ang mga in-input na URL sa Chromium sa Incognito.</translation>
+<translation id="8390323835464055390">Mag-sign in sa pamamagitan ng iyong mga naka-save na password at passkey mula sa anumang app gamit ang Chromium para sa AutoFill</translation>
 <translation id="8409374867500149834">Nasa iyo ang pinakamaigting na seguridad ng Chromium laban sa mga mapaminsalang website</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} minuto. Ang naka-save lang na data sa device na ito habang naka-sign in ka ang ide-delete. Puwedeng kabilang dito ang history at mga password.}one{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} minuto. Ang naka-save lang na data sa device na ito habang naka-sign in ka ang ide-delete. Puwedeng kabilang dito ang history at mga password.}other{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} na minuto. Ang naka-save lang na data sa device na ito habang naka-sign in ka ang ide-delete. Puwedeng kabilang dito ang history at mga password.}}</translation>
 <translation id="858114650497379505">Puwede mong gamitin ang mga password na na-save mo sa Password Manager sa iba pang app sa iyong iPhone.</translation>

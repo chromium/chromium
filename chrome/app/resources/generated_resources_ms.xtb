@@ -1378,7 +1378,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1936157145127842922">Paparkan dalam Folder</translation>
 <translation id="1936931585862840749">Gunakan nombor untuk menyatakan bilangan salinan yang perlu dicetak (1 hingga <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Tidak dapat mengimport seni bina bekas jenis <ph name="ARCHITECTURE_CONTAINER" /> dengan peranti ini, iaitu peranti <ph name="ARCHITECTURE_DEVICE" />. Anda boleh cuba memulihkan bekas ini dalam peranti lain atau anda boleh cuba mengakses fail dalam imej bekas ini dengan membuka fail dalam apl Files.</translation>
-<translation id="1938116692670653897">Tema warna semasa</translation>
 <translation id="1938351510777341717">Perintah Luaran</translation>
 <translation id="1940221956626514677">Sesuaikan bar alat</translation>
 <translation id="1940546824932169984">Peranti yang disambungkan</translation>
@@ -3821,6 +3820,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3670229581627177274">Hidupkan Bluetooth</translation>
 <translation id="3670480940339182416">Laman boleh menggunakan pengoptimum V8</translation>
 <translation id="3671764914317109892">Gunakan bahasa harian untuk mencari sejarah penyemakan imbas anda. Anda juga boleh bertanya soalan dan mendapatkan jawapan berdasarkan sejarah penyemakan imbas anda.</translation>
+<translation id="3671982238795754537">Ketahui kunci laluan dengan lebih lanjut</translation>
 <translation id="3672681487849735243">Ralat kilang telah dikesan</translation>
 <translation id="3673097791729989571">Log masuk dihoskan oleh <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">PIN anda telah dikemaskinikan</translation>
@@ -4737,6 +4737,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4289540628985791613">Gambaran keseluruhan</translation>
 <translation id="428963538941819373">Laman ini boleh menggunakan maklumat yang disimpan tentang anda ketika anda menyemak imbas <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Pilih PIN</translation>
+<translation id="4290526909608432059">Sokongan untuk apl Chrome akan ditamatkan tidak lama lagi. Untuk mengetahui pilihan anda, hubungi pembangun apl atau pasukan sokongan IT anda.</translation>
 <translation id="4290791284969893584">Selepas menutup halaman, tugas yang anda mulakan mungkin tidak selesai</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> ahli</translation>
 <translation id="4290898381118933198">Leret untuk menavigasi antara halaman</translation>
@@ -8532,6 +8533,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Port bersiri disambungkan</translation>
 <translation id="7033616203784997570">Input mestilah tidak melebihi 62 aksara</translation>
 <translation id="7034692021407794547">Pentadbir yang mempunyai keistimewaan Pengurusan Pengebilan mesti menerima Syarat Perkhidmatan Perkakasan Google Meet di bahagian Perkakasan Google Meet dalam Konsol pentadbir dahulu.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> baru sahaja membuat kunci laluan untuk akaun anda. Kunci laluan menawarkan cara yang lebih pantas dan selamat untuk log masuk dan disimpan dalam Google Password Manager untuk <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> ruang disyorkan untuk Linux. Untuk meningkatkan ruang kosong, padamkan fail daripada peranti anda.</translation>
 <translation id="7037157058268992880">Terlupa PIN</translation>
 <translation id="7037509989619051237">Teks ke pratonton</translation>
@@ -10575,6 +10577,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8477178913400731244">Padamkan data</translation>
 <translation id="8477241577829954800">Menggantikan</translation>
 <translation id="8477384620836102176">&amp;Umum</translation>
+<translation id="8477446666255316832">Log masuk dengan lebih pantas selepas ini</translation>
 <translation id="8479176401914456949">Kod tidak sah. Sila cuba lagi.</translation>
 <translation id="8480869669560681089">Peranti tidak diketahui daripada <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Sahkan Kebenaran USB</translation>

@@ -47,7 +47,6 @@
 <translation id="2671423594960767771">Бүлгийг хуваалцах</translation>
 <translation id="2677748264148917807">Үлдээх</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> долоо хоногийн өмнө шинэчилсэн}other{<ph name="NUM_WEEKS_MANY" /> долоо хоногийн өмнө шинэчилсэн}}</translation>
-<translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> таб нэмсэн, <ph name="ANY_CHANGED" />-г өөрчилсөн, <ph name="ANY_CLOSED" />-г хаасан}other{<ph name="MANY_ADDED" /> таб нэмсэн, <ph name="ANY_CHANGED" />-г өөрчилсөн, <ph name="ANY_CLOSED" />-г хаасан}}</translation>
 <translation id="2753877351161418426">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> цагийн өмнө шинэчилсэн}other{<ph name="NUM_HOURS_MANY" /> цагийн өмнө шинэчилсэн}}</translation>
 <translation id="2755485474385016903">Хийсэн өөрчлөлтийг бүлэг дэх хүн бүр хардаг</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> цагийн өмнө үүсгэсэн}other{<ph name="NUM_HOURS_MANY" /> цагийн өмнө үүсгэсэн}}</translation>
@@ -63,7 +62,6 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />-н үнэ <ph name="PRICE_DROP" />-р буурсан</translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> табын бүлгийн өнгөний дүрс тэмдэг</translation>
 <translation id="3194464645767632461">үнэлгээ</translation>
-<translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> таб нэмсэн, <ph name="ANY_CHANGED" />-г өөрчилсөн}other{<ph name="MANY_ADDED" /> таб нэмсэн, <ph name="ANY_CHANGED" />-г өөрчилсөн}}</translation>
 <translation id="3328308545011660196">Зөвлөмж: <ph name="NUMBER_OF_TABS" /> таб холбоотой бололтой. Эдгээрийг бүлэглэх үү?</translation>
 <translation id="3547352561153509682">Энэ нь бүлгийг <ph name="USER_EMAIL" />-д нэвтэрсэн бүх төхөөрөмжөөс устгана</translation>
 <translation id="3613492231657284463">Идэвхгүй табуудыг нуух харилцах цонх</translation>
@@ -82,7 +80,6 @@
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> таб, <ph name="COLOR_NAME" /> өнгөтэй <ph name="TITLE_OF_GROUP" /> табын бүлгийг хаана уу.}other{<ph name="TABS_COUNT_MANY" /> таб, <ph name="COLOR_NAME" /> өнгөтэй <ph name="TITLE_OF_GROUP" /> табын бүлгийг хаана уу.}}</translation>
 <translation id="4159784952369912983">Нил ягаан</translation>
 <translation id="427987768447457592">Шинэ табын бүлэг</translation>
-<translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> табыг өөрчилсөн, <ph name="ANY_CLOSED" />-г хаасан}other{<ph name="MANY_CHANGED" /> табыг өөрчилсөн, <ph name="ANY_CLOSED" />-г хаасан}}</translation>
 <translation id="4371591986692297148">Идэвхгүй</translation>
 <translation id="4431937619879060901">Та "<ph name="GROUP_NAME" />" табын бүлэгт хандах эрхээ тэр даруй алдах ба уг бүлгийг таны бүх төхөөрөмжөөс устгана</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> хоногийн өмнө шинэчилсэн}other{<ph name="NUM_DAYS_MANY" /> хоногийн өмнө шинэчилсэн}}</translation>
@@ -106,7 +103,6 @@
 <translation id="5073204694187207510">Бүтэн дэлгэцийн торыг нуух</translation>
 <translation id="5076161749301278626">Дэлгүүрийн шүүмжүүдийг харах уу?</translation>
 <translation id="5094423602314093681">Табыг хасаж, бүлгийг устгах уу?</translation>
-<translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> таб нэмсэн}other{<ph name="MANY_ADDED" /> таб нэмсэн}}</translation>
 <translation id="5161254044473106830">Гарчиг шаардлагатай</translation>
 <translation id="5339733443032484186">Таны сүүлийн таб</translation>
 <translation id="5380159289133845234">Давхардсан табуудыг архивлах</translation>
@@ -144,7 +140,6 @@
 <translation id="6589356853295569750">Хуваалцсан табын бүлгийн өөрчлөлтийн талаарх мэдэгдлийг бүтэн өндрөөр нээсэн</translation>
 <translation id="6590332670428149473">Табын бүлгийн үйлдлийн цэсийг <ph name="COLOR_NAME" /> өнгөтэй, хуваалцсан <ph name="TITLE_OF_GROUP" /> табын бүлэгт зориулж нээнэ үү.</translation>
 <translation id="6615455863669487791">Надад үзүүлнэ үү</translation>
-<translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> табыг өөрчилсөн}other{<ph name="MANY_CHANGED" /> табыг өөрчилсөн}}</translation>
 <translation id="6694634756612002311">Хуваалцахыг удирдах</translation>
 <translation id="6744956528665271406">Бүлгийн өнгийг засах</translation>
 <translation id="6856809498882026482">Олон сонголттой горимыг нуух</translation>
@@ -192,7 +187,6 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> сарын өмнө шинэчилсэн}other{<ph name="NUM_MONTHS_MANY" /> сарын өмнө шинэчилсэн}}</translation>
 <translation id="8398929769197326728">Шинэ фолдер - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Тохиргоо</translation>
-<translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> таб нэмсэн, <ph name="ANY_CLOSED" />-г хаасан}other{<ph name="MANY_ADDED" /> таб нэмсэн, <ph name="ANY_CLOSED" />-г хаасан}}</translation>
 <translation id="8633025649649592204">Саяхны үйл ажиллагаа</translation>
 <translation id="870736955561925754">Табыг хааж, бүлгийг устгах уу?</translation>
 <translation id="8712637175834984815">Ойлголоо</translation>

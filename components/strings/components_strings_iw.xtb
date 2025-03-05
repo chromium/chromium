@@ -3015,7 +3015,6 @@ Del</translation>
 <translation id="6322182122604171028">‏לא ניתן היה להשתמש ב-Windows Hello</translation>
 <translation id="6326947323444967009">‏הגדרת Chrome כדפדפן ברירת המחדל של המערכת בהגדרות iOS</translation>
 <translation id="6328639280570009161">יש לנסות להשבית את חיזוי הרשת</translation>
-<translation id="6328784461820205019">‏"החיבור שלך אינו פרטי" או "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" או "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" או "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" או "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" או "שגיאת אישור SSL"</translation>
 <translation id="6335029926534404762">נעלי ספורט</translation>
 <translation id="6337133576188860026">פינוי של פחות מ-<ph name="SIZE" /> מהנפח. ייתכן שחלק מהאתרים ייטענו לאט יותר בביקור הבא שלך.</translation>
 <translation id="6337534724793800597">סינון מדיניות לפי שם</translation>
@@ -3735,6 +3734,7 @@ Del</translation>
 <translation id="7569983096843329377">שחור</translation>
 <translation id="7574998639136359461">ציוד לספורט חורף</translation>
 <translation id="7575207903026901870">‏הכפתור 'הסרת ההצעה', יש ללחוץ על Enter כדי להסיר את ההצעה הזו</translation>
+<translation id="7575800019233204241">‏"החיבור שלך אינך פרטי" או "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" או "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" או "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" או "שגיאת אישור SSL"</translation>
 <translation id="7575887283389198269">טלפונים ניידים</translation>
 <translation id="7578104083680115302">‏ניתן לשלם במהירות באתרים ובאפליקציות בכל המכשירים באמצעות כרטיסים ששמרת ב-Google.</translation>
 <translation id="7579442726219254162">משתנה לא ידוע '<ph name="VARIABLE" />' בהגדרות האישיות המנוהלות של '<ph name="APPLICATION_ID" />'.</translation>

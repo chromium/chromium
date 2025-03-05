@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">"Chrome браузерінде жүктеп алынған файлдарды басқару" түймесі, Chrome браузерінде жүктеп алған файлдарды басқару үшін белсендіріңіз</translation>
 <translation id="1420345875188552368">Бұл төлем үшін сақталған автоматты төлеу әдісіңізді пайдалануға болады. Chrome-дағы электрондық әмияндарды өшіру үшін <ph name="BEGIN_LINK1" />төлем параметрлеріне<ph name="END_LINK1" /> өтіңіз.</translation>
 <translation id="1420920093772172268">Жұптауға рұқсат беру үшін <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="1421484961346698724">Жойылған аккаунт</translation>
 <translation id="14222610277930434">Жиі кіргенсіз</translation>
 <translation id="1422930527989633628">Маңайдағы Bluetooth құрылғыларын анықтауды сұрай алады</translation>
 <translation id="1426410128494586442">Иә</translation>
@@ -3009,7 +3010,6 @@
 <translation id="6322182122604171028">Windows Hello платформасын пайдалану мүмкін болмады</translation>
 <translation id="6326947323444967009">Chrome-ды iOS параметрлерінде жүйенің әдепкі браузері етіп орнату</translation>
 <translation id="6328639280570009161">Желілік болжамды өшіруге әрекет ету</translation>
-<translation id="6328784461820205019">"Байланыс қорғалмаған" немесе "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" немесе "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" немесе "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" немесе "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" немесе "SSL сертификатының қатесі"</translation>
 <translation id="6335029926534404762">Спорттық аяқ киім</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> аз орын босатады .Кейбір сайттар келесі кіргенде баяуырақ жүктелуі мүмкін.</translation>
 <translation id="6337534724793800597">Атауы бойынша сүзгі саясаттары</translation>
@@ -3728,6 +3728,7 @@
 <translation id="7569983096843329377">Қара</translation>
 <translation id="7574998639136359461">Қысқы спорт жабдығы</translation>
 <translation id="7575207903026901870">"Ұсынысты өшіру" түймесі: өшіру үшін Enter пернесін басыңыз.</translation>
+<translation id="7575800019233204241">"Байланысыңыз жеке емес" немесе "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" немесе "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" немесе "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" немесе "SSL сертификат қатесі"</translation>
 <translation id="7575887283389198269">Мобильдік телефондар</translation>
 <translation id="7578104083680115302">Google арқылы сақтаған карталармен құрылғылар бойынша сайттарда және қолданбаларда жылдам төлеңіз.</translation>
 <translation id="7579442726219254162">Басқарылатын "<ph name="APPLICATION_ID" />" конфигурациясындағы белгісіз "<ph name="VARIABLE" />" айнымалысы.</translation>

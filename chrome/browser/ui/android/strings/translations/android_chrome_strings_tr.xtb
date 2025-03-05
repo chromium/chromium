@@ -146,6 +146,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="160275202205869636">Etkinleştirildiğinde verileri kullanabilir ve Google Hesabınıza kaydedebilirsiniz. Devre dışı bırakıldığında veriler yalnızca bu cihaza kaydedilir.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 seçili öğeyi kaldır}other{# seçili öğeyi kaldır}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 yer işareti ve diğer öğeler yalnızca bu cihaza kaydedilir. Diğer cihazlarınızda kullanmak için Google Hesabınıza (<ph name="ACCOUNT_EMAIL" />) kaydedin.}other{# yer işareti ve diğer öğeler yalnızca bu cihaza kaydedilir. Diğer cihazlarınızda kullanmak için Google Hesabınıza (<ph name="ACCOUNT_EMAIL" />) kaydedin.}}</translation>
+<translation id="1639239467298939599">Yükleniyor</translation>
 <translation id="1641113438599504367">Güvenli Tarama</translation>
 <translation id="164269334534774161">Bu sayfanın <ph name="CREATION_TIME" /> tarihinde oluşturulan bir çevrimdışı kopyasını görüntülüyorsunuz</translation>
 <translation id="1644574205037202324">Geçmiş</translation>

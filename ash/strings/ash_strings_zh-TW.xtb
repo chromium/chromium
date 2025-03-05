@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">提供意見</translation>
 <translation id="1059120031266247284">已與你分享</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />：<ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176">「<ph name="ITEM_LABEL" />」和移除按鈕</translation>
 <translation id="1062407476771304334">取代</translation>
 <translation id="1073899992769346247">請更換電池或進行充電</translation>
 <translation id="1081015718268701546">目前不支援 Linux 應用程式，系統將儲存其他應用程式。</translation>
@@ -1225,6 +1226,7 @@
 <translation id="5043679421800073804">點選或輕觸檔案櫃中的最後一個圖示</translation>
 <translation id="504465286040788597">上一段</translation>
 <translation id="5045550434625856497">密碼不正確</translation>
+<translation id="5056587122125565772">生成圖像</translation>
 <translation id="5058794129231928255">無法建立 Google 文件</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">如果在靜音狀態下說話，系統會傳送通知給你。音訊資料只會儲存在裝置上。</translation>
@@ -1273,6 +1275,7 @@
 <translation id="5222676887888702881">登出</translation>
 <translation id="5228195526683428788">分割畫面分隔線</translation>
 <translation id="5229343007215035173">開啟/關閉隱私保護功能</translation>
+<translation id="5229860525743792999">從建議群組中移除「<ph name="ITEM_LABEL" />」</translation>
 <translation id="5230516054153933099">視窗</translation>
 <translation id="5234764350956374838">關閉</translation>
 <translation id="523505283826916779">無障礙設定</translation>
@@ -1754,6 +1757,7 @@
 <translation id="6757237461819837179">目前未播放任何媒體</translation>
 <translation id="6760438044935091345">遊戲資訊主頁</translation>
 <translation id="6768043681523654438">儲存空間</translation>
+<translation id="6769195697113506406">已插入圖像</translation>
 <translation id="6777216307882431711">為連接的 USB-C 裝置供電</translation>
 <translation id="6781002679438061620">桌面 9</translation>
 <translation id="6782182743534150858">桌面 13</translation>
@@ -1980,6 +1984,7 @@
 <translation id="7571361473021531288">電池電量：<ph name="BATTERY_PERCENTAGE" />% | 還可使用 <ph name="TIME" /></translation>
 <translation id="7573585051776738856">讓使用中的視窗固定在畫面右側。</translation>
 <translation id="7579778809502851308">擷取螢幕畫面</translation>
+<translation id="7588317312481506627">已複製到剪貼簿。</translation>
 <translation id="7593891976182323525">搜尋鍵或 Shift 鍵</translation>
 <translation id="7598054670902114203">CPU 用量數據匯報：<ph name="CPU_USEAGE" />%；溫度：攝氏 <ph name="TEMPERATURE" /> 度；目前速度：<ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="7599378375976398913">正在插入所選結果</translation>
@@ -2174,6 +2179,7 @@
 <translation id="8155628902202578800">開啟 <ph name="USER_EMAIL_ADDRESS" /> 的資訊對話方塊</translation>
 <translation id="8167567890448493835">使用<ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">內容</translation>
+<translation id="81817143961839203">無法插入圖像</translation>
 <translation id="8185090165691050712">開啟/關閉選單即可調整鎖定模式的大小</translation>
 <translation id="8192727139462702395">關閉藍牙後，以下外接裝置會與 <ph name="DEVICE_TYPE" /> 中斷連線：</translation>
 <translation id="8198456017687137612">正在投放分頁</translation>
@@ -2252,6 +2258,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> 已<ph name="FEATURE_STATE" /><ph name="FEATURE_NAME" />。</translation>
 <translation id="8477270416194247200">按下 Alt + 搜尋鍵或 Shift 鍵即可取消。</translation>
 <translation id="8480418399907765580">顯示工具列</translation>
+<translation id="8487660088084188539">開啟這些功能後，輸入的文字、文件內容和網頁網址可能會傳送到 Google 伺服器，用於產生撰寫建議、生成摘要、回答問題及提升產品品質。我們使用這類資訊時會遵守<ph name="LINK_TO_SERVICE_TERMS" />的規定。輸入內容時，請勿加入任何個人、敏感或機密資訊。</translation>
 <translation id="8487699605742506766">無線基地台</translation>
 <translation id="8491237443345908933">在新分頁中開啟連結</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> 不支援 <ph name="SPECIFIED_RESOLUTION" />，解析度已變更為 <ph name="FALLBACK_RESOLUTION" />。請按一下 [確認] 以保留變更。系統會在 <ph name="TIMEOUT_SECONDS" />後還原先前的設定。</translation>
@@ -2321,6 +2328,7 @@
 <translation id="8725066075913043281">再試一次</translation>
 <translation id="8725214031272624704">顯示可用的輸入法清單</translation>
 <translation id="8730621377337864115">完成</translation>
+<translation id="8731188831050207755">無法下載「<ph name="FILE_NAME" />」。</translation>
 <translation id="8731487213223706745">結束時間：<ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">你的按鍵行為可能會遭到側錄</translation>
 <translation id="8735678380411481005">鍵盤背光顏色</translation>

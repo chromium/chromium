@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">የይለፍ ቃልዎ ለ<ph name="EMAIL" /> በGoogle የይለፍ ቃል አስተዳዳሪ ላይ ይቀመጣል።</translation>
 <translation id="1146503048444965320">Chrome ውስጥ አዲስ ትር ክፈት</translation>
 <translation id="1166460004393506534">Chrome ውስጥ የአሰሳ ውሂብን ይሰርዙ።</translation>
+<translation id="1171255741903316750">«Chrome ሲዘጉ ማንነት የማያሳውቁ ትሮችን ይቆልፉ» የሚለውን ያብሩ</translation>
 <translation id="1179527450541388808">ከእርስዎ iPad መነሻ ማያ ገፅ መትከያ ላይ Chrome ይበልጥ በፍጥነት ይድረሱ።</translation>
 <translation id="1180362651362502943">በGoogle መለያዎ ውስጥ የChrome ውሂብን መጠቀምዎን ይቀጥሉ።</translation>
 <translation id="1200396280085622191">በመልዕክቶች እና ሌሎች መተግበሪያዎች ውስጥ ያሉ አገናኞች ላይ መታ በሚያደርጉበት በማንኛውም ጊዜ Chromeን ይጠቀሙ።</translation>
@@ -45,6 +46,7 @@
 <translation id="1917964099031477364">ይህ መለያ እና ማንኛውም ያልተቀመጠ ውሂብ ከChrome እና በዚህ መሣሪያ ላይ ካሉት ከሌሎች የGoogle መተግበሪያዎች ይወገዳል።</translation>
 <translation id="1919130412786645364">የChrome በመለያ መግባትን ይፍቀዱ</translation>
 <translation id="1965935827552890526">በእርስዎ ሌላኛው ክፍት የChrome መስኮት ላይ እያደረጉ ያሉትን ነገር ያጠናቅቁ።</translation>
+<translation id="1973910962341002002">ከ«<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />» ቅንብሮች «Chrome»ን ያብሩ</translation>
 <translation id="1984705450038014246">የChrome ውሂብዎን ያስምሩ</translation>
 <translation id="1987779152850321833">ከChrome ማግኘት የሚችሉትን ሁሉ ለማግኘት ከታች ያሉትን እነዚህን የተጠቆሙ እርምጃዎች ያጠናቅቁ።</translation>
 <translation id="2055826352861631739">Chrome ለiPad በነባሪ ይጠቀሙ</translation>
@@ -96,10 +98,13 @@
 <translation id="3282568296779691940">Chrome ውስጥ ይግቡ</translation>
 <translation id="3303503998967553377">በiOS ላይ Chrome እርምጃዎችን ይጠቀሙ</translation>
 <translation id="3348862487678490430">የንባብ ዝርዝር ንጥልን ወደ Chrome ያክሉ</translation>
+<translation id="3357827134511189025">ለራስ-ሙላ Chrome በመጠቀም በእርስዎ የተቀመጡ የይለፍ ቃላት እና የይለፍ ቁልፎች ከማንኛውም መተግበሪያ በመለያ ይግቡ</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{ይህ የሚሆነው Chrome ለ{THRESHOLD} ደቂቃ ጥቅም ላይ ሳይውል ሲቀር ነው}one{ይህ የሚሆነው Chrome ለ{THRESHOLD} ደቂቃዎች ጥቅም ላይ ሳይውል ሲቀር ነው}other{ይህ የሚሆነው Chrome ለ{THRESHOLD} ደቂቃዎች ጥቅም ላይ ሳይውል ሲቀር ነው}}</translation>
 <translation id="3367797402528056312">Chrome ማዋቀርን ያጠናቅቁ</translation>
 <translation id="3371064404604898522">Chromeን እንደ ነባሪ አሳሽ ያስቀምጡት</translation>
 <translation id="3399930248910934354">የChrome ቅንብሮችን ይክፈቱ</translation>
+<translation id="3440830787838130530">በGoogle የይለፍ ቃል አስተዳዳሪ ውስጥ በቀላሉ እና ደህንነቱ በተጠበቀ መልኩ የይለፍ ቃል ቅጂ ለቤተሰብ ቡድንዎ ያጋሩ</translation>
+<translation id="3460369101684070455">በሌሎች መተግበሪያዎችዎ ውስጥ የተቀመጡ የይለፍ ቃላትዎን በቀላሉ ለማግኘት Chrome ለራስ-ሙላን ይጠቀሙ</translation>
 <translation id="3472587960215700950">Chrome በታወቁ አድራሻዎች ላይ አቅጣጫዎችን እና አካባቢያዊ መረጃን ለእርስዎ ለመስጠት Google ካርታዎችን ይጠቀማል።</translation>
 <translation id="3503014945441706099">ለዚህ የChrome መገለጫ የተሻሻለ የደህንነት አሰሳንም ያግኙ</translation>
 <translation id="3522659714780527202">Chromeን ከሚጠቀሙበት የትኛዉም ቦታ ትሮችን ለማየት ስምረትን ያብሩ</translation>
@@ -181,6 +186,7 @@
 <translation id="5998675059699164418">Chromeን ለመጠቀም የእርስዎ ድርጅት እርስዎ በመለያ እንዲገቡ ይጠይቃል።</translation>
 <translation id="6021312115739110405">በGoogle ለእርስዎ የተሠራ ብጁ ምግብ። ዜና፣ ስፖርት እና የአየር ሁኔታን ጨምሮ።</translation>
 <translation id="6022659036123304283">Chromeን የራስዎ ያድርጉት</translation>
+<translation id="6132075343662013154">Chrome የይለፍ ቃልዎን ለማስቀመጥ ጥያቄ ያቀርባል</translation>
 <translation id="6132149203299792222">የእርስዎን የይለፍ ቃላት፣ እልባቶች እና ሌሎችንም ለማስመር በGoogle መለያዎ ይግቡ።</translation>
 <translation id="6145223986912084844">Chrome</translation>
 <translation id="6177442314419606057">በChrome ውስጥ ይፈልጉ</translation>
@@ -228,6 +234,7 @@
 <translation id="7061455974939528301">የChrome አዶን ተጭነው ይያዙ እና «መነሻ ማያ ገፅ አርትዕ» ላይ ጠቅ ያድርጉ</translation>
 <translation id="7065813315247345131">Chromeን ወደ መትከያ ያንቀሳቅሱ</translation>
 <translation id="7124339256045485976">Chromeን እንደተዘመነ ያቆዩት</translation>
+<translation id="7145599899567697473">Chrome ውስጥ የይለፍ ቃላትን ያስቀምጡ እና በራስ ይሙሉ</translation>
 <translation id="7161390184744336561">Google Chrome ቀኑ አልፎበታል</translation>
 <translation id="7165736900384873061">የGoogle Chrome QR መቃኛን መጠቀም ይጀምሩ</translation>
 <translation id="7175129790242719365">የChrome ጠቃሚ ምክር፦ ወደ Chrome ይግቡ</translation>
@@ -261,6 +268,7 @@
 <translation id="7693590760643069321">አገናኞችን በመልዕክቶች፣ በሰነዶች እና በሌሎች መተግበሪያዎች ውስጥ መታ በሚያደርጉበት ጊዜ ሁሉ Chromeን አሁን መጠቀም ይችላሉ።</translation>
 <translation id="7698568245838009292">Chrome ካሜራውን መድረስ ይፈልጋል</translation>
 <translation id="7707877166818730835">በChrome ውስጥ የእኔ የቅርብ ጊዜ ትርን ክፈት</translation>
+<translation id="7747746207470479571">ለራስ-ሙላ በChrome ለእርስዎ የይለፍ ቃላት እና የይለፍ ቁልፎች ቀላል መዳረሻ ያግኙ</translation>
 <translation id="776305366874821582">ከእርስዎ iPhone መነሻ ማያ ገፅ መትከያ ላይ Chrome ይበልጥ በፍጥነት ይድረሱ።</translation>
 <translation id="7780154209050837198">ከChrome የበለጠ ለማግኘት በGoogle መለያዎ ወደ Chrome ይግቡ።</translation>
 <translation id="7787205077729386167">በiOS ውስጥ የChrome ቅንብሮችን ይክፈቱ ከዚያ «ነባሪ አሳሽ መተግበሪያ» ላይ መታ ያድርጉ እና Chrome ይምረጡ።</translation>
@@ -281,6 +289,7 @@
 <translation id="8136856065410661948">ይህ ከChrome እና Google ሌንስ በእርስዎ Apple ቀን መቁጠሪያ ውስጥ ክስተቶችን ለመፍጠር ሥራ ላይ ይውላል።</translation>
 <translation id="8154120522323162874">አሳሽዎን ማቀናበር በመቀጠል ከChrome ማግኘት የሚችሉትን ሁሉ ያግኙ።</translation>
 <translation id="8160472928944011082">Chromeን ማዘመን አልተቻለም</translation>
+<translation id="8245080522851805544">Chrome በሚዘጉበት ጊዜ በመሣሪያ ማረጋገጫ አሰሳዎን በመሣሪያ ማረጋገጫ ግላዊ አድርገው ይቆዩ</translation>
 <translation id="8248887045858762645">የChrome ጠቃሚ ምክር</translation>
 <translation id="8265730590513812063">የChrome ምናሌን ይክፈቱ</translation>
 <translation id="8317674518145175158">የመክፈያ ዘዴዎች እና አድራሻዎች አይመሰጠሩም። የChrome የአሰሳ ታሪክ አይሰምርም።

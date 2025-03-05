@@ -3009,7 +3009,6 @@
 <translation id="6322182122604171028">Не ўдалося выкарыстаць Windows Hello</translation>
 <translation id="6326947323444967009">Зрабіць Chrome стандартным браўзерам сістэмы ў наладах iOS</translation>
 <translation id="6328639280570009161">Паспрабуйце выключыць прагназаванне сеткі</translation>
-<translation id="6328784461820205019">"Падключэнне не з’яўляецца прыватным", або "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;", або "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;", або "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;", або "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;", або "Памылка сертыфіката SSL"</translation>
 <translation id="6335029926534404762">Спартыўны абутак</translation>
 <translation id="6337133576188860026">Вызваліцца да <ph name="SIZE" />. Некаторыя сайты могуць загружацца павальней пры наступным наведванні.</translation>
 <translation id="6337534724793800597">Фільтр палітык па назве</translation>

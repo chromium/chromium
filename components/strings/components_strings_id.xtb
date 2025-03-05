@@ -252,6 +252,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1419305130220238697">Tombol Kelola download di Chrome, aktifkan untuk mengelola file yang telah Anda download di Chrome</translation>
 <translation id="1420345875188552368">Metode pembayaran otomatis Anda yang tersimpan dapat digunakan untuk pembayaran ini. Untuk menonaktifkan eWallet di Chrome, buka <ph name="BEGIN_LINK1" />setelan pembayaran<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> untuk mengizinkan penyandingan</translation>
+<translation id="1421484961346698724">Akun yang dihapus</translation>
 <translation id="14222610277930434">Sering Anda Buka</translation>
 <translation id="1422930527989633628">Dapat meminta untuk menemukan perangkat Bluetooth di sekitar</translation>
 <translation id="1426410128494586442">Ya</translation>
@@ -3010,7 +3011,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6322182122604171028">Tidak dapat menggunakan Windows Hello</translation>
 <translation id="6326947323444967009">Setel Chrome sebagai browser default sistem di setelan iOS</translation>
 <translation id="6328639280570009161">Coba nonaktifkan prediksi jaringan</translation>
-<translation id="6328784461820205019">"Koneksi Anda tidak bersifat pribadi" atau "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" atau "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" atau "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" atau "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" atau "SSL certificate error"S</translation>
 <translation id="6335029926534404762">Sepatu Atletik</translation>
 <translation id="6337133576188860026">Sediakan ruang kurang dari <ph name="SIZE" />. Beberapa situs mungkin dimuat lebih lambat saat dibuka lagi.</translation>
 <translation id="6337534724793800597">Filter kebijakan menurut nama</translation>
@@ -3024,6 +3024,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6351658970066645919">Hapus Data Penjelajahan</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Tidak ada}=1{1 sandi (untuk <ph name="DOMAIN_LIST" />, disinkronkan)}=2{2 sandi (untuk <ph name="DOMAIN_LIST" />, disinkronkan)}other{# sandi (untuk <ph name="DOMAIN_LIST" />, disinkronkan)}}</translation>
 <translation id="6355392890578844978">Browser ini tidak dikelola oleh perusahaan atau organisasi lain. Aktivitas di perangkat ini mungkin dikelola di luar Chromium. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Grup tab "<ph name="GROUP_TITLE_1" />" dan "<ph name="GROUP_TITLE_2" />" tidak lagi tersedia</translation>
 <translation id="6358088212770985041">mengedit metode pembayaran</translation>
 <translation id="6358450015545214790">Apakah maksud ini?</translation>
 <translation id="6360213755783740931">Pelajari lebih lanjut Perlindungan malware</translation>
@@ -3728,6 +3729,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7569983096843329377">Hitam</translation>
 <translation id="7574998639136359461">Peralatan Olahraga Musim Dingin</translation>
 <translation id="7575207903026901870">Hapus tombol Saran, tekan Enter untuk menghapus saran ini</translation>
+<translation id="7575800019233204241">"Koneksi tidak bersifat pribadi" atau "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" atau "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" atau "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" atau "SSL certificate error"</translation>
 <translation id="7575887283389198269">Ponsel</translation>
 <translation id="7578104083680115302">Bayar di situs dan aplikasi di semua perangkat dengan cepat menggunakan kartu yang disimpan dengan Google.</translation>
 <translation id="7579442726219254162">Variabel tidak dikenal "<ph name="VARIABLE" />" di konfigurasi terkelola "<ph name="APPLICATION_ID" />".</translation>

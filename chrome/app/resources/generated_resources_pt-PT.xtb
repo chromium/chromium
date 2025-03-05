@@ -1368,7 +1368,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1936157145127842922">Mostrar na pasta</translation>
 <translation id="1936931585862840749">Utilize um número para indicar as cópias a imprimir (1 a <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Não é possível importar o tipo de arquitetura de contentor <ph name="ARCHITECTURE_CONTAINER" /> com este dispositivo cuja arquitetura é <ph name="ARCHITECTURE_DEVICE" />. Pode tentar restaurar este contentor para um dispositivo diferente ou pode aceder aos ficheiros contidos na imagem deste contentor através da aplicação Ficheiros.</translation>
-<translation id="1938116692670653897">Tema de cores atual</translation>
 <translation id="1938351510777341717">Comando externo</translation>
 <translation id="1940221956626514677">Personalizar barra de ferramentas</translation>
 <translation id="1940546824932169984">Dispositivos ligados</translation>
@@ -3809,6 +3808,7 @@ Quer pará-lo?</translation>
 <translation id="3670229581627177274">Ativar o Bluetooth</translation>
 <translation id="3670480940339182416">Os sites podem usar o otimizador do V8</translation>
 <translation id="3671764914317109892">Use linguagem corrente para pesquisar o seu histórico de navegação. Também pode fazer perguntas e receber respostas com base no seu histórico de navegação.</translation>
+<translation id="3671982238795754537">Saiba mais acerca das chaves de acesso</translation>
 <translation id="3672681487849735243">Foi detetado um erro de fábrica</translation>
 <translation id="3673097791729989571">Início de sessão alojado por <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">O seu PIN foi atualizado</translation>
@@ -4725,6 +4725,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4289540628985791613">Vista geral</translation>
 <translation id="428963538941819373">Estes sites podem usar informações guardadas sobre si enquanto navega em <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Escolha um PIN</translation>
+<translation id="4290526909608432059">A compatibilidade com as Apps do Chrome vai terminar em breve. Para saber mais sobre as opções disponíveis, contacte o programador da app ou a sua equipa de apoio técnico de TI.</translation>
 <translation id="4290791284969893584">Depois de fechar uma página, as tarefas que iniciou podem não ser concluídas</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> membro</translation>
 <translation id="4290898381118933198">Deslize rapidamente para navegar entre páginas</translation>
@@ -8521,6 +8522,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - porta de série associada</translation>
 <translation id="7033616203784997570">A entrada tem de ter, no máximo, 62 carateres</translation>
 <translation id="7034692021407794547">Um administrador com os privilégios Gestão de faturação tem primeiro de aceitar os Termos de Utilização do hardware Google Meet na secção hardware Google Meet da consola do administrador.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> acabou de criar uma chave de acesso para a sua conta. As chaves de acesso oferecem uma forma mais rápida e segura de iniciar sessão e são guardadas no Gestor de Palavras-passe da Google para <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Recomenda-se <ph name="DISK_SIZE" /> de espaço para o Linux. Para aumentar o espaço livre, elimine ficheiros do dispositivo.</translation>
 <translation id="7037157058268992880">Esqueci-me do PIN</translation>
 <translation id="7037509989619051237">Texto para pré-visualização</translation>
@@ -10563,6 +10565,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8477178913400731244">Eliminar dados</translation>
 <translation id="8477241577829954800">Substituído</translation>
 <translation id="8477384620836102176">&amp;Geral</translation>
+<translation id="8477446666255316832">Inicie sessão mais rapidamente da próxima vez</translation>
 <translation id="8479176401914456949">Código inválido. Tente novamente.</translation>
 <translation id="8480869669560681089">Dispositivo desconhecido de <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Confirmar autorização USB</translation>

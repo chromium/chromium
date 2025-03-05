@@ -6,6 +6,7 @@
 <translation id="1044891598689252897">Weby budú fungovať normálne</translation>
 <translation id="1070329623210597193">Súbory, ktoré môže tento web čítať alebo upravovať</translation>
 <translation id="1073417869336441572">Pomôžte nám zlepšiť Chrome tým, že nám poviete, prečo ste povolili súbory cookie tretích strán. <ph name="BEGIN_LINK" />Odoslať spätnú väzbu<ph name="END_LINK" /></translation>
+<translation id="1074758928858737435">Môžete požiadať o zobrazenie verzie webov pre počítače</translation>
 <translation id="1085696779717592361">Predvolené používanie Chromu</translation>
 <translation id="1178581264944972037">Pozastaviť</translation>
 <translation id="1181037720776840403">Odstrániť</translation>
@@ -32,6 +33,7 @@
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> webe}few{<ph name="SITE_COUNT" /> weboch}many{<ph name="SITE_COUNT" /> sites}other{<ph name="SITE_COUNT" /> weboch}}</translation>
 <translation id="1500473259453106018">Skryť kartu Poklesy cien na kartách</translation>
 <translation id="1510341833810331442">Weby nemôžu ukladať údaje vo vašom zariadení</translation>
+<translation id="1538031354170655462">Weby zvyčajne používajú technológiu NFC (Near Field Communication), aby mohli fungovať so značkami alebo zariadeniami v okolí. Umožňuje im to napríklad skenovať odznaky alebo realizovať bezkontaktné platby</translation>
 <translation id="1547123415014299762">Súbory cookie tretích strán sú povolené</translation>
 <translation id="1593426485665524382">Nové akcie sú k dispozícii hore na obrazovke</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -115,6 +117,7 @@
 <translation id="2677748264148917807">Odísť</translation>
 <translation id="2682367912565197520">Odstrániť uloženú úroveň lupy</translation>
 <translation id="2683434792633810741">Chcete odstrániť a resetovať?</translation>
+<translation id="2685514716378236873">Nepovolené</translation>
 <translation id="2713106313042589954">Vypnúť kameru</translation>
 <translation id="2717722538473713889">E‑mailové adresy</translation>
 <translation id="2726059656860238749">Spúšťajte Chrome s aktívnym omniboxom, čím sa skráti čas spustenia v zariadeniach s nízkym výkonom.</translation>
@@ -211,12 +214,14 @@
 <translation id="3955193568934677022">Povoliť webom prehrávať chránený obsah (odporúčané)</translation>
 <translation id="3965467402665811906">Weby môžu žiadať o používanie informácií, ktoré o vás uložili</translation>
 <translation id="3967822245660637423">Sťahovanie dokončené</translation>
+<translation id="3981465354637804599">Weby zvyčajne zobrazujú reklamy, aby mohli poskytovať obsah či služby bez peňažného poplatku. Niektoré weby sú však známe tým, že zobrazujú obťažujúce alebo zavádzajúce reklamy.</translation>
 <translation id="3987993985790029246">Kopírovať odkaz</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992308058851451478"><ph name="SITE" /> môže pri prehliadaní používať vaše informácie</translation>
 <translation id="3992684624889376114">Táto stránka</translation>
 <translation id="4002066346123236978">Názov</translation>
 <translation id="4046123991198612571">Ďalšia skladba</translation>
+<translation id="4077310749977440510">Weby zvyčajne čítajú vašu schránku na poskytovanie funkcií, napríklad aby mohli zachovať formátovanie textu, ktorý ste skopírovali</translation>
 <translation id="4149890623864272035">Naozaj chcete odstrániť všetky miestne údaje vrátane súborov cookie a resetovať všetky povolenia pre tento web?</translation>
 <translation id="4149994727733219643">Jednoduché zobrazenie webových stránok</translation>
 <translation id="4151930093518524179">Predvolená lupa</translation>
@@ -224,6 +229,7 @@
 <translation id="4169549551965910670">Pripojené k zariadeniu USB</translation>
 <translation id="4194328954146351878">Pýtať sa, či chcete povoliť webom zobrazovať a meniť informácie v zariadeniach s rozhraním NFC (odprúčané)</translation>
 <translation id="4200726100658658164">Otvoriť nastavenia polohy</translation>
+<translation id="421742575134139848">Weby môžu prehrávať zvuk, aby mohli poskytovať stopu hudby, videí a ďalších médií</translation>
 <translation id="4226663524361240545">Upozornenia môžu pri prijatí na zariadení spustiť vibrovanie</translation>
 <translation id="4259722352634471385">Navigácia je zablokovaná: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Keď web opustíte, môže naďalej synchronizovať dokončenie úloh, napríklad nahrávanie fotiek alebo odoslanie četovej správy</translation>
@@ -247,6 +253,7 @@
 <translation id="4566417217121906555">Vypnúť mikrofón</translation>
 <translation id="4570913071927164677">Podrobnosti</translation>
 <translation id="4598549027014564149">Keď ste v režime inkognito, weby nemôžu pomocou súborov cookie zobraziť vašu aktivitu prehliadania na nich (ani súvisiace weby). Aktivita prehliadania sa nepoužíva ani na prispôsobenie reklám. Funkcie na niektorých weboch nemusia fungovať.</translation>
+<translation id="461356340001513807">Umožňuje vám prihlásiť sa na weboch účtom, ktorý ste si zriadili prostredníctvom služby identity</translation>
 <translation id="4619615317237390068">Karty z iných zariadení</translation>
 <translation id="4644713492825682049">Odstrániť a resetovať</translation>
 <translation id="4645575059429386691">Spravované vaším rodičom</translation>
@@ -430,6 +437,7 @@
 <translation id="7000754031042624318">Vypnuté v nastaveniach Androidu</translation>
 <translation id="702275896380648118">Tento web určuje, čo sa vám páči, a potom navrhuje reklamy iným webom. Dostáva aj témy reklám od Chromu, aby vám zobrazoval relevantnejšie reklamy.</translation>
 <translation id="7053983685419859001">Blokovať</translation>
+<translation id="7055552182600664515">Ak chcete prehrávať obsah chránený autorskými právami, weby budú zrejme musieť používať službu na ochranu obsahu. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 vybratá položka}few{# vybraté položky}many{Niekoľko (#) vybratých položiek}other{# vybratých položiek}}</translation>
 <translation id="708014373017851679">Aplikácia <ph name="APP_NAME" /> je zastaraná. Aktualizujte ju.</translation>
 <translation id="7087918508125750058">Vybrané: <ph name="ITEM_COUNT" />.  Možnosti sú k dispozícii v hornej časti obrazovky.</translation>

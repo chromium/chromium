@@ -47,7 +47,6 @@
 <translation id="2671423594960767771">分享群組項目</translation>
 <translation id="2677748264148917807">離開</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> 週前更新}other{<ph name="NUM_WEEKS_MANY" /> 週前更新}}</translation>
-<translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{已新增 <ph name="ONE_ADDED" /> 個分頁、變更 <ph name="ANY_CHANGED" /> 個分頁、關閉 <ph name="ANY_CLOSED" /> 個分頁}other{已新增 <ph name="MANY_ADDED" /> 個分頁、變更 <ph name="ANY_CHANGED" /> 個分頁、關閉 <ph name="ANY_CLOSED" /> 個分頁}}</translation>
 <translation id="2753877351161418426">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> 小時前更新}other{<ph name="NUM_HOURS_MANY" /> 小時前更新}}</translation>
 <translation id="2755485474385016903">群組成員都會看到所做的變更</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> 小時前建立}other{<ph name="NUM_HOURS_MANY" /> 小時前建立}}</translation>
@@ -63,7 +62,6 @@
 <translation id="3052964831964880138">「<ph name="PRODUCT_NAME" />」降價 <ph name="PRICE_DROP" /></translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" />分頁群組顏色圖示</translation>
 <translation id="3194464645767632461">評分</translation>
-<translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{已新增 <ph name="ONE_ADDED" /> 個分頁、變更 <ph name="ANY_CHANGED" /> 個分頁}other{已新增 <ph name="MANY_ADDED" /> 個分頁、變更 <ph name="ANY_CHANGED" /> 個分頁}}</translation>
 <translation id="3328308545011660196">建議：似乎有 <ph name="NUMBER_OF_TABS" /> 個相關的分頁。要將這些分頁加入群組嗎？</translation>
 <translation id="3547352561153509682">這項操作會將群組從所有已登入 <ph name="USER_EMAIL" /> 的裝置刪除</translation>
 <translation id="3613492231657284463">隱藏「閒置分頁」對話方塊</translation>
@@ -82,7 +80,6 @@
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{關閉含有 <ph name="TABS_COUNT_ONE" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」群組，顏色為<ph name="COLOR_NAME" />。}other{關閉含有 <ph name="TABS_COUNT_MANY" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」群組，顏色為<ph name="COLOR_NAME" />。}}</translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="427987768447457592">新分頁群組</translation>
-<translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{已變更 <ph name="ONE_CHANGED" /> 個分頁、關閉 <ph name="ANY_CLOSED" /> 個分頁}other{已變更 <ph name="MANY_CHANGED" /> 個分頁、關閉 <ph name="ANY_CLOSED" /> 個分頁}}</translation>
 <translation id="4371591986692297148">未啟用</translation>
 <translation id="4431937619879060901">你將立即失去「<ph name="GROUP_NAME" />」分頁群組的存取權，且該群組會從你的所有裝置中刪除</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> 天前更新}other{<ph name="NUM_DAYS_MANY" /> 天前更新}}</translation>
@@ -106,7 +103,6 @@
 <translation id="5073204694187207510">隱藏全螢幕格狀檢視</translation>
 <translation id="5076161749301278626">要查看商店評論嗎？</translation>
 <translation id="5094423602314093681">要移除分頁並刪除群組嗎？</translation>
-<translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{已新增 <ph name="ONE_ADDED" /> 個分頁}other{已新增 <ph name="MANY_ADDED" /> 個分頁}}</translation>
 <translation id="5161254044473106830">請輸入標題</translation>
 <translation id="5339733443032484186">最後一個分頁</translation>
 <translation id="5380159289133845234">封存重複分頁</translation>
@@ -144,7 +140,6 @@
 <translation id="6589356853295569750">共用分頁群組異動通知已開啟，並顯示在整個畫面</translation>
 <translation id="6590332670428149473">開啟共用分頁群組「<ph name="TITLE_OF_GROUP" />」(<ph name="COLOR_NAME" />) 的動作選單。</translation>
 <translation id="6615455863669487791">顯示</translation>
-<translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{已變更 <ph name="ONE_CHANGED" /> 個分頁}other{已變更 <ph name="MANY_CHANGED" /> 個分頁}}</translation>
 <translation id="6694634756612002311">管理共用設定</translation>
 <translation id="6744956528665271406">編輯群組顏色</translation>
 <translation id="6856809498882026482">隱藏多選模式</translation>
@@ -192,7 +187,6 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> 個月前更新}other{<ph name="NUM_MONTHS_MANY" /> 個月前更新}}</translation>
 <translation id="8398929769197326728">新資料夾 - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">設定</translation>
-<translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{已新增 <ph name="ONE_ADDED" /> 個分頁、關閉 <ph name="ANY_CLOSED" /> 個分頁}other{已新增 <ph name="MANY_ADDED" /> 個分頁、關閉 <ph name="ANY_CLOSED" /> 個分頁}}</translation>
 <translation id="8633025649649592204">近期活動</translation>
 <translation id="870736955561925754">要關閉分頁並刪除群組嗎？</translation>
 <translation id="8712637175834984815">我瞭解了</translation>

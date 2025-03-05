@@ -1367,7 +1367,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1936157145127842922">Prikaži u direktorijumu</translation>
 <translation id="1936931585862840749">Navedite broj primeraka za štampanje (1–<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Ne možete da uvezete tip arhitekture kontejnera <ph name="ARCHITECTURE_CONTAINER" /> pomoću ovog uređaja, koji je <ph name="ARCHITECTURE_DEVICE" />. Možete da probate da vratite ovaj kontejner na drugi uređaj ili da otvorite aplikaciju Datoteke da biste pristupili datotekama u slici ovog kontejnera.</translation>
-<translation id="1938116692670653897">Aktuelna šema boja</translation>
 <translation id="1938351510777341717">Spoljna komanda</translation>
 <translation id="1940221956626514677">Prilagodi traku s alatkama</translation>
 <translation id="1940546824932169984">Povezani uređaji</translation>
@@ -3806,6 +3805,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3670229581627177274">Uključi Bluetooth</translation>
 <translation id="3670480940339182416">Sajtovi mogu da koriste V8 optimizator</translation>
 <translation id="3671764914317109892">Koristite svakodnevni jezik da biste pretraživali istoriju pregledanja. Možete i da postavljate pitanja i dobijate odgovore na osnovu istorije pregledanja.</translation>
+<translation id="3671982238795754537">Saznajte više o pristupnim ključevima</translation>
 <translation id="3672681487849735243">Otkrivena je fabrička greška</translation>
 <translation id="3673097791729989571">Prijavljivanje hostuje <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">PIN je ažuriran</translation>
@@ -4722,6 +4722,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4289540628985791613">Pregled</translation>
 <translation id="428963538941819373">Ovi sajtovi mogu da koriste informacije koje su sačuvali o vama tokom pregledanja <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Izaberite PIN</translation>
+<translation id="4290526909608432059">Podrška za Chrome aplikacije će uskoro prestati. Da biste saznali više o opcijama, obratite se programeru aplikacije ili timu za IT podršku.</translation>
 <translation id="4290791284969893584">Posle zatvaranja stranice zadaci koje ste započeli se možda neće dovršiti</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> član</translation>
 <translation id="4290898381118933198">Prevucite da biste prelazili s jedne stranice na drugu</translation>
@@ -8520,6 +8521,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – serijski port je povezan</translation>
 <translation id="7033616203784997570">Unos može da ima najviše 62 znaka</translation>
 <translation id="7034692021407794547">Administrator sa privilegijama Upravljanje obračunom mora prvo da prihvati uslove korišćenja usluge za Google Meet hardver u odeljku Google Meet hardver na administratorskoj konzoli.</translation>
+<translation id="7036550011779986598">Sajt <ph name="RP_ID" /> je upravo napravio pristupni ključ za vaš nalog. Pristupni ključevi nude brži i bezbedniji način za prijavljivanje i čuvaju se u Google menadžeru lozinki za <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Za Linux se preporučuje <ph name="DISK_SIZE" /> prostora. Da biste oslobodili prostor, izbrišite datoteke sa uređaja.</translation>
 <translation id="7037157058268992880">Zaboravio/la sam PIN</translation>
 <translation id="7037509989619051237">Tekst za pregled</translation>
@@ -10562,6 +10564,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8477178913400731244">Izbriši podatke</translation>
 <translation id="8477241577829954800">Zamenjeno</translation>
 <translation id="8477384620836102176">&amp;Opšte</translation>
+<translation id="8477446666255316832">Prijavite se brže sledeći put</translation>
 <translation id="8479176401914456949">Kôd je nevažeći. Probajte ponovo.</translation>
 <translation id="8480869669560681089">Nepoznat uređaj proizvođača <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Potvrdite dozvolu za USB</translation>

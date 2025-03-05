@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">系統會將密碼儲存在 <ph name="EMAIL" /> 的「Google 密碼管理工具」。</translation>
 <translation id="1146503048444965320">在 Chrome 中開啟新分頁</translation>
 <translation id="1166460004393506534">刪除 Chrome 中的瀏覽資料</translation>
+<translation id="1171255741903316750">啟用「關閉 Chrome 時鎖定無痕式分頁」</translation>
 <translation id="1179527450541388808">從 iPad 主畫面 Dock 更快存取 Chrome。</translation>
 <translation id="1180362651362502943">繼續使用 Google 帳戶中的 Chrome 資料</translation>
 <translation id="1200396280085622191">隨時使用 Chrome 開啟訊息和其他應用程式中的連結。</translation>
@@ -45,6 +46,7 @@
 <translation id="1917964099031477364">此帳戶和所有未儲存的資料將從 Chrome 和此裝置上的其他 Google 應用程式中移除。</translation>
 <translation id="1919130412786645364">允許登入 Chrome</translation>
 <translation id="1965935827552890526">請完成您在其他已開啟的 Chrome 視窗中正在執行的動作。</translation>
+<translation id="1973910962341002002">在「<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />」設定中，將「Chrome」切換為開啟</translation>
 <translation id="1984705450038014246">同步處理 Chrome 資料</translation>
 <translation id="1987779152850321833">完成下列建議動作，充分運用 Chrome 的各項功能。</translation>
 <translation id="2055826352861631739">預設使用 iPad 版 Chrome</translation>
@@ -96,10 +98,13 @@
 <translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3303503998967553377">在 iOS 上使用 Chrome 操作</translation>
 <translation id="3348862487678490430">將閱讀清單項目新增至 Chrome</translation>
+<translation id="3357827134511189025">透過 Chrome 的自動填入功能，使用任何應用程式已儲存的密碼和密鑰登入</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{當 Chrome 閒置 {THRESHOLD} 分鐘後，系統就會執行此操作}other{當 Chrome 閒置 {THRESHOLD} 分鐘後，系統就會執行此操作}}</translation>
 <translation id="3367797402528056312">完成 Chrome 設定</translation>
 <translation id="3371064404604898522">將 Chrome 設定為預設瀏覽器</translation>
 <translation id="3399930248910934354">開啟 Chrome 設定</translation>
+<translation id="3440830787838130530">「Google 密碼管理工具」讓你輕鬆又安全地與家庭群組分享密碼副本</translation>
+<translation id="3460369101684070455">如要在其他應用程式中輕鬆取得已儲存的密碼，請選擇 Chrome 的自動填入功能</translation>
 <translation id="3472587960215700950">偵測到地址後，Chrome 會使用「Google 地圖」規劃路線及提供當地資訊。</translation>
 <translation id="3503014945441706099">同時為此 Chrome 個人檔案取得「強化安全瀏覽」功能</translation>
 <translation id="3522659714780527202">如要在任何使用 Chrome 的裝置上查看分頁，請開啟同步處理功能</translation>
@@ -181,6 +186,7 @@
 <translation id="5998675059699164418">您的機構要求您登入才能使用 Chrome。</translation>
 <translation id="6021312115739110405">Google 為你而設的自訂動態消息，涵蓋新聞、運動和天氣資訊。</translation>
 <translation id="6022659036123304283">自訂屬於您的 Chrome</translation>
+<translation id="6132075343662013154">Chrome 會詢問你是否要儲存密碼</translation>
 <translation id="6132149203299792222">登入 Google 帳戶就能同步處理密碼、書籤和其他資料。</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">在 Chrome 中搜尋</translation>
@@ -228,6 +234,7 @@
 <translation id="7061455974939528301">按住 Chrome 圖示，然後按一下 [編輯主畫面]</translation>
 <translation id="7065813315247345131">將 Chrome 移至 Dock</translation>
 <translation id="7124339256045485976">取得 Chrome 最新更新</translation>
+<translation id="7145599899567697473">在 Chrome 儲存及自動填入密碼</translation>
 <translation id="7161390184744336561">Google Chrome 版本過舊</translation>
 <translation id="7165736900384873061">開始使用 Google Chrome 二維條碼掃描器</translation>
 <translation id="7175129790242719365">Chrome 提示：登入 Chrome</translation>
@@ -261,6 +268,7 @@
 <translation id="7693590760643069321">您現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chrome。</translation>
 <translation id="7698568245838009292">Chrome 要求存取相機</translation>
 <translation id="7707877166818730835">在 Chrome 中開啟我的最新分頁</translation>
+<translation id="7747746207470479571">透過 Chrome 的自動填入功能，輕鬆取得密碼和密鑰</translation>
 <translation id="776305366874821582">從 iPhone 主畫面 Dock 更快存取 Chrome。</translation>
 <translation id="7780154209050837198">如要充分運用 Chrome 的所有功能，請透過 Google 帳戶登入 Chrome。</translation>
 <translation id="7787205077729386167">在 iOS 中開啟 Chrome 設定，輕按 [預設瀏覽器應用程式]，然後選取 [Chrome]。</translation>
@@ -281,6 +289,7 @@
 <translation id="8136856065410661948">系統會透過此操作，在 Chrome 和「Google 智能鏡頭」的「Apple 日曆」中建立活動。</translation>
 <translation id="8154120522323162874">如要充分運用 Chrome 的功能，請繼續設定瀏覽器。</translation>
 <translation id="8160472928944011082">Chrome 無法更新</translation>
+<translation id="8245080522851805544">裝置驗證功能讓你在關閉 Chrome 時確保瀏覽資料保密</translation>
 <translation id="8248887045858762645">Chrome 提示</translation>
 <translation id="8265730590513812063">開啟 Chrome 選單</translation>
 <translation id="8317674518145175158">系統將不會加密你的付款方法和地址，Chrome 上的瀏覽記錄將不會同步。
@@ -324,5 +333,6 @@
 <translation id="9181628561061032322">開啟 Chrome 最近開啟的分頁。</translation>
 <translation id="948597495737267756">開啟「Chrome 記錄」頁面。</translation>
 <translation id="97300214378190234">隨時使用 Chrome 開啟其他應用程式中的連結。</translation>
+<translation id="997929539742564806">自動填入 Chrome 中的密碼與密鑰，快速登入應用程式和網站</translation>
 <translation id="998677222109959694">管理 Chrome 設定</translation>
 </translationbundle>

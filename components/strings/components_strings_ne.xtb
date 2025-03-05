@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">Chrome मा डाउनलोडहरू व्यवस्थापन गर्ने बटन, आफूले Chrome मा डाउनलोड गरेका फाइलहरू व्यवस्थापन गर्न यो बटन थिच्नुहोस्</translation>
 <translation id="1420345875188552368">तपाईंले सेभ गर्नुभएको स्वतः भुक्तानी गर्ने विधि यो भुक्तानीका हकमा प्रयोग गरिन सक्छ। Chrome मा इवालेट अफ गर्न <ph name="BEGIN_LINK1" />भुक्तानीसम्बन्धी सेटिङ<ph name="END_LINK1" />मा जानुहोस्</translation>
 <translation id="1420920093772172268">कनेक्ट गर्ने प्रक्रियालाई अनुमति दिन <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="1421484961346698724">मेटाइएको खाता</translation>
 <translation id="14222610277930434">तपाईंले प्रायः खोल्ने ट्याब</translation>
 <translation id="1422930527989633628">वरपर रहेका ब्लुटुथ चल्ने डिभाइसहरू पत्ता लगाउने अनुमति माग्न सक्छ</translation>
 <translation id="1426410128494586442">हो</translation>
@@ -1594,7 +1595,7 @@
 <translation id="3784372983762739446">ब्लुटुथ उपकरणहरू</translation>
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" सँग सबैभन्दा बढी मिल्दाजुल्दा परिणाम</translation>
 <translation id="3789155188480882154">आकार १६</translation>
-<translation id="3789841737615482174">स्थापना गर्नुहोस्</translation>
+<translation id="3789841737615482174">इन्स्टल गर्नुहोस्</translation>
 <translation id="3791118028061680614">एपहरू अदलबदल नगरिकनै भुक्तानी गर्नुहोस्</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> इन्च)</translation>
 <translation id="3792826587784915501">प्रशंसकको जमात भएका तथा इन्डी चलचित्रहरू</translation>
@@ -3008,7 +3009,6 @@
 <translation id="6322182122604171028">Windows Hello प्रयोग गर्न सकिएन</translation>
 <translation id="6326947323444967009">iOS का सेटिङमा गई Chrome लाई सिस्टमको डिफल्ट ब्राउजरका रूपमा सेट गर्नुहोस्</translation>
 <translation id="6328639280570009161">सञ्जाल भविष्यवाणि असक्षम गर्नुहोस्</translation>
-<translation id="6328784461820205019">"तपाईंको जडान व्यक्तिगत छैन" वा "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" वा "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" वा "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" वा "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" वा "SSL प्रमाणपत्रसम्बन्धी त्रुटि"</translation>
 <translation id="6335029926534404762">एथलेटिक जुत्ता</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> भन्दा कम ठाउँ खाली गर्दछ। तपाईं अर्कोपटक आउँदा केही साइटहरू अझ ढिलोगरी लोड हुनसक्छन्।</translation>
 <translation id="6337534724793800597">नामद्वारा नीतिहरू फिल्टर गर्छ</translation>
@@ -3727,6 +3727,7 @@
 <translation id="7569983096843329377">कालो</translation>
 <translation id="7574998639136359461">हिउँदे खेलकुदसम्बन्धी उपकरण</translation>
 <translation id="7575207903026901870">सुझावको बटन हटाउनुहोस्, यो सुझाव हटाउन Enter थिच्नुहोस्</translation>
+<translation id="7575800019233204241">"तपाईंको जडान निजी छैन" वा "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" वा "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" वा "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" वा "SSL प्रमाणपत्रसम्बन्धी त्रुटि"</translation>
 <translation id="7575887283389198269">मोबाइल फोन</translation>
 <translation id="7578104083680115302">तपाईंले Google मार्फत सुरक्षित गर्नुभएका कार्डहरू प्रयोग गर्दै साइट र एपहरूमा द्रुत रूपमा भुक्तानी गर्नुहोस्।</translation>
 <translation id="7579442726219254162">"<ph name="APPLICATION_ID" />" को व्यवस्थित कन्फिगुरेसनमा भएको अज्ञात भेरिएबल "<ph name="VARIABLE" />"।</translation>

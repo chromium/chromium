@@ -3010,7 +3010,6 @@
 <translation id="6322182122604171028">Коришћење функције Windows Hello није успело</translation>
 <translation id="6326947323444967009">Подесите Chrome као подразумевани прегледач система у подешавањима iOS-а</translation>
 <translation id="6328639280570009161">Покушајте да онемогућите предвиђање мреже</translation>
-<translation id="6328784461820205019">„Веза није приватна“ или „&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;“ или „&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;“ или „&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;“ или „&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;“ или „Грешка у вези са SSL сертификатом“</translation>
 <translation id="6335029926534404762">Спортска обућа</translation>
 <translation id="6337133576188860026">Ослобађа мање од <ph name="SIZE" />. Неки сајтови ће се можда спорије учитавати кад их следећи пут посетите.</translation>
 <translation id="6337534724793800597">Филтрирај смернице према називу</translation>
@@ -3731,6 +3730,7 @@
 <translation id="7569983096843329377">Црна</translation>
 <translation id="7574998639136359461">Опрема за зимске спортове</translation>
 <translation id="7575207903026901870">Дугме Уклони предлог, притисните Enter да бисте уклонили овај предлог</translation>
+<translation id="7575800019233204241">„Веза није приватна“ или „&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;“ или „&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;“ или „&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;“ или „Грешка са SSL сертификатом“</translation>
 <translation id="7575887283389198269">Мобилни телефони</translation>
 <translation id="7578104083680115302">Плаћајте брзо на сајтовима и у апликацијама на свим уређајима помоћу картица које сте сачували на Google-у.</translation>
 <translation id="7579442726219254162">Непозната променљива „<ph name="VARIABLE" />“ у управљаној конфигурацији апликације <ph name="APPLICATION_ID" />.</translation>

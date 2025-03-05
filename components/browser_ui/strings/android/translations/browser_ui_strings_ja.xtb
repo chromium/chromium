@@ -6,6 +6,7 @@
 <translation id="1044891598689252897">サイトは通常どおり動作します</translation>
 <translation id="1070329623210597193">このサイトが表示または編集できるファイル</translation>
 <translation id="1073417869336441572">Chrome の改善に役立てるため、サードパーティ Cookie を許可した理由をお聞かせください。<ph name="BEGIN_LINK" />フィードバックを送信<ph name="END_LINK" /></translation>
+<translation id="1074758928858737435">サイトの PC 版を表示するようリクエストできます</translation>
 <translation id="1085696779717592361">Chrome をデフォルトに設定する</translation>
 <translation id="1178581264944972037">一時停止</translation>
 <translation id="1181037720776840403">削除</translation>
@@ -32,6 +33,7 @@
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 件のサイト}other{<ph name="SITE_COUNT" /> 件のサイト}}</translation>
 <translation id="1500473259453106018">タブカードで値下げ情報を非表示にする</translation>
 <translation id="1510341833810331442">サイトはデバイスにデータを保存できません</translation>
+<translation id="1538031354170655462">付近のタグやデバイスと接続してバッジのスキャンやタッチ決済などを行うため、サイトで近距離無線通信（NFC）を使用する場合があります</translation>
 <translation id="1547123415014299762">サードパーティの Cookie が許可されています</translation>
 <translation id="1593426485665524382">画面上部付近で新しい操作が可能になりました</translation>
 <translation id="1620510694547887537">カメラ</translation>
@@ -115,6 +117,7 @@
 <translation id="2677748264148917807">このページを離れる</translation>
 <translation id="2682367912565197520">保存したズームレベルを削除</translation>
 <translation id="2683434792633810741">削除してリセットしますか？</translation>
+<translation id="2685514716378236873">許可しないサイト</translation>
 <translation id="2713106313042589954">カメラをオフにする</translation>
 <translation id="2717722538473713889">メールアドレス</translation>
 <translation id="2726059656860238749">アドレスバーにフォーカスを置いた状態で Chrome を起動し、ローエンド デバイスの起動時間を短縮します。</translation>
@@ -211,12 +214,14 @@
 <translation id="3955193568934677022">保護されたコンテンツの再生をサイトに許可する（推奨）</translation>
 <translation id="3965467402665811906">サイトがあなたに関する保存済みの情報の使用を要求できるようにする</translation>
 <translation id="3967822245660637423">ダウンロード完了</translation>
+<translation id="3981465354637804599">コンテンツやサービスを無料で提供するため、サイトで広告を表示する場合があります。ただし、一部のサイトでは煩わしい広告や誤解を招く広告が表示される場合もあります。</translation>
 <translation id="3987993985790029246">リンクのコピー</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ？</translation>
 <translation id="3992308058851451478"><ph name="SITE" /> は次のサイトの閲覧時にあなたの情報を使用できます</translation>
 <translation id="3992684624889376114">このページについて</translation>
 <translation id="4002066346123236978">タイトル</translation>
 <translation id="4046123991198612571">次のトラック</translation>
+<translation id="4077310749977440510">コピーしたテキストの書式を保持したりするため、サイトでクリップボードを読み取る場合があります</translation>
 <translation id="4149890623864272035">Cookie を含むすべてのローカルデータを削除し、このウェブサイトに対するすべての権限をリセットしてもよろしいですか？</translation>
 <translation id="4149994727733219643">ウェブページの簡易表示</translation>
 <translation id="4151930093518524179">デフォルトのズーム</translation>
@@ -224,6 +229,7 @@
 <translation id="4169549551965910670">USB デバイスに接続されています</translation>
 <translation id="4194328954146351878">サイトが NFC デバイスの情報を参照および変更することを許可する前に確認する（推奨）</translation>
 <translation id="4200726100658658164">位置情報の設定を開く</translation>
+<translation id="421742575134139848">サイトで音楽や動画などのメディアの音声が再生される場合があります</translation>
 <translation id="4226663524361240545">通知を受け取るとデバイスが振動します</translation>
 <translation id="4259722352634471385"><ph name="URL" /> へのアクセスがブロックされました</translation>
 <translation id="4274673989874969668">ユーザーがサイトから離れた後も、サイトは同期を継続して、写真のアップロードやチャット メッセージの送信などのタスクを完了することがあります</translation>
@@ -247,6 +253,7 @@
 <translation id="4566417217121906555">マイクをミュート</translation>
 <translation id="4570913071927164677">詳細</translation>
 <translation id="4598549027014564149">シークレット モードのとき、サイトは Cookie を使用して関連サイトを含む他のサイトでの閲覧アクティビティを確認することができません。閲覧アクティビティは、広告のパーソナライズなどには使用されません。一部のサイトで機能を使用できなくなる可能性があります。</translation>
+<translation id="461356340001513807">アカウント管理サービスのアカウントを使用してウェブサイトにログインできます</translation>
 <translation id="4619615317237390068">他のデバイスからのタブ</translation>
 <translation id="4644713492825682049">削除してリセット</translation>
 <translation id="4645575059429386691">保護者により管理されています</translation>
@@ -430,6 +437,7 @@
 <translation id="7000754031042624318">Android の設定で無効</translation>
 <translation id="702275896380648118">このサイトでは、ユーザーの好みを判断して他のサイトに広告を提案します。また、より関連性の高い広告を表示するために Chrome から広告のトピックを取得します。</translation>
 <translation id="7053983685419859001">ブロック</translation>
+<translation id="7055552182600664515">著作権で保護されたコンテンツを再生するため、サイトでコンテンツ保護サービスの使用を求める場合があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 件を選択済み}other{# 件を選択済み}}</translation>
 <translation id="708014373017851679">「<ph name="APP_NAME" />」は最新ではありません。アプリを更新してください。</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> 件選択されています。オプションは画面上部にあります</translation>

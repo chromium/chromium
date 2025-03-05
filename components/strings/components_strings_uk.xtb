@@ -3010,7 +3010,6 @@
 <translation id="6322182122604171028">Не вдалося скористатися Windows Hello</translation>
 <translation id="6326947323444967009">Зробити Chrome веб-переглядачем системи за умовчанням у налаштуваннях iOS</translation>
 <translation id="6328639280570009161">Спробуйте вимкнути прогнозування мережі.</translation>
-<translation id="6328784461820205019">"З’єднання не конфіденційне", "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" або "Помилка сертифіката SSL"</translation>
 <translation id="6335029926534404762">Спортивне взуття</translation>
 <translation id="6337133576188860026">Звільняє менше <ph name="SIZE" />. Деякі сайти можуть завантажуватися повільніше під час наступного відвідування.</translation>
 <translation id="6337534724793800597">Фільтрувати правила за назвою</translation>
@@ -3730,6 +3729,7 @@
 <translation id="7569983096843329377">Чорний</translation>
 <translation id="7574998639136359461">Обладнання для зимових видів спорту</translation>
 <translation id="7575207903026901870">Кнопка видалення підказки: натисніть Enter, щоб видалити цю підказку</translation>
+<translation id="7575800019233204241">"З’єднання не конфіденційне", "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" або "Помилка сертифіката SSL"</translation>
 <translation id="7575887283389198269">Мобільні телефони</translation>
 <translation id="7578104083680115302">Зберігайте картки в Google, щоб швидко платити на сайтах і в додатках на всіх своїх пристроях.</translation>
 <translation id="7579442726219254162">Невідома змінна "<ph name="VARIABLE" />" у керованій конфігурації "<ph name="APPLICATION_ID" />".</translation>

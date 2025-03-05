@@ -3007,7 +3007,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6322182122604171028">Ayikwazanga ukusebenzisa i-Windows Hello</translation>
 <translation id="6326947323444967009">Setha i-Chrome njengebhrawuza ezenzakalelayo yesistimu kumasethingi e-iOS</translation>
 <translation id="6328639280570009161">Zama ukukhubaza ukuqagela kwenethiwekhi</translation>
-<translation id="6328784461820205019">"Uxhumo lwakho aluyona imfihlo" noma "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" noma "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" noma "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" noma "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" noma "SSL certificate error"</translation>
 <translation id="6335029926534404762">Izicathulo Zokujigima</translation>
 <translation id="6337133576188860026">Khulula kufika ngaphansi kuka-<ph name="SIZE" />. Amanye amasayithi angalayisha kancane kakhulu ekuvakasheni kwakho okulandelayo.</translation>
 <translation id="6337534724793800597">Hlunga izinqubomgomo ngegama</translation>
@@ -3021,6 +3020,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6351658970066645919">Sula Idatha Yopheqululo</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Lutho}=1{1 iphasiwedi (ye-<ph name="DOMAIN_LIST" />, ivunyelanisiwe)}=2{2 amaphasiwedi (e-<ph name="DOMAIN_LIST" />, avunyelanisiwe)}one{# amaphasiwedi (e-<ph name="DOMAIN_LIST" />, avunyelanisiwe)}other{# amaphasiwedi (e-<ph name="DOMAIN_LIST" />, avunyelanisiwe)}}</translation>
 <translation id="6355392890578844978">Lesi siphequluli asiphethwe inkampani noma enye inhlangano. Umsebenzi okule divayisi ungaphathwa ngaphandle kwe-Chromium. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Leli qembu lethebhu "<ph name="GROUP_TITLE_1" />" naleli "<ph name="GROUP_TITLE_2" />" akasatholakali</translation>
 <translation id="6358088212770985041">hlela izindlela zokukhokha</translation>
 <translation id="6358450015545214790">Ingabe lokhu kusho ukuthini?</translation>
 <translation id="6360213755783740931">Funda kabanzi ngesivikelo sivikelo se-Malware</translation>
@@ -3726,6 +3726,7 @@ Imininingwane engeziwe:
 <translation id="7569983096843329377">Mnyama</translation>
 <translation id="7574998639136359461">Isisetshenziswa Somdlalo Wasebusika</translation>
 <translation id="7575207903026901870">Susa inkinobho yesiphazamisi, cindezela ku-Enter ukuze ususe lesi siphakamiso</translation>
+<translation id="7575800019233204241">"Uxhumo lwakho aluyona imfihlo" noma "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" noma "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" noma "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" noma "SSL certificate error"</translation>
 <translation id="7575887283389198269">Amaselula</translation>
 <translation id="7578104083680115302">Khokha ngokushesha kumasayithi nezinhlelo zokusebenza kumadivayisi onkana usebenzisa amakhadi owalondoloze nge-Google.</translation>
 <translation id="7579442726219254162">Inguquko engaziwa ye-"<ph name="VARIABLE" />" kokuthi phatha ukulungiselela kwe-"<ph name="APPLICATION_ID" />".</translation>

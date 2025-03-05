@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">[Chrome でのダウンロードを管理] ボタンです。実行すると、Chrome でダウンロードしたファイルを管理できます</translation>
 <translation id="1420345875188552368">保存した自動支払い方法をこの支払いで使用できます。Chrome で電子ウォレットをオフにするには、<ph name="BEGIN_LINK1" />お支払い設定<ph name="END_LINK1" />に移動してください</translation>
 <translation id="1420920093772172268">ペア設定するには <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="1421484961346698724">削除されたアカウント</translation>
 <translation id="14222610277930434">頻繁にアクセス</translation>
 <translation id="1422930527989633628">近くにある Bluetooth デバイスの検出を要求できる</translation>
 <translation id="1426410128494586442">はい</translation>
@@ -3010,7 +3011,6 @@
 <translation id="6322182122604171028">Windows Hello を使用できませんでした</translation>
 <translation id="6326947323444967009">iOS 設定で Chrome をシステムの既定のブラウザとして設定します</translation>
 <translation id="6328639280570009161">ネットワーク予測を無効にしてみてください</translation>
-<translation id="6328784461820205019">「この接続ではプライバシーが保護されません」、「&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;」、「&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;」、「&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;」、「&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;」、「SSL 証明書エラー」</translation>
 <translation id="6335029926534404762">スポーツ シューズ</translation>
 <translation id="6337133576188860026">最大で <ph name="SIZE" /> を解放します。サイトによっては、次回アクセスする際に読み込みに時間がかかる可能性があります。</translation>
 <translation id="6337534724793800597">ポリシーを名前でフィルタ</translation>
@@ -3024,6 +3024,7 @@
 <translation id="6351658970066645919">閲覧履歴データの削除</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{なし}=1{<ph name="DOMAIN_LIST" /> のパスワード 1 件（同期）}=2{<ph name="DOMAIN_LIST" /> のパスワード 2 件（同期）}other{<ph name="DOMAIN_LIST" /> のパスワード # 件（同期）}}</translation>
 <translation id="6355392890578844978">このブラウザは、会社またはその他の組織によって管理されていません。このデバイス上のアクティビティは、Chromium の外部で管理されている可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">「<ph name="GROUP_TITLE_1" />」と「<ph name="GROUP_TITLE_2" />」のタブグループは使用できなくなりました</translation>
 <translation id="6358088212770985041">お支払い方法を編集します</translation>
 <translation id="6358450015545214790">ヘルプ</translation>
 <translation id="6360213755783740931">マルウェアからの保護の詳細</translation>
@@ -3731,6 +3732,7 @@
 <translation id="7569983096843329377">黒</translation>
 <translation id="7574998639136359461">ウィンター スポーツ用品</translation>
 <translation id="7575207903026901870">候補を削除するボタンです。Enter キーを押すと、この候補を削除します</translation>
+<translation id="7575800019233204241">「この接続ではプライバシーが保護されません」、「&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;」、「&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;」、「&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;」、「SSL 証明書エラー」</translation>
 <translation id="7575887283389198269">携帯電話</translation>
 <translation id="7578104083680115302">どのデバイスでも、Google に保存したカードを使ってサイトやアプリの支払いをすばやく行うことができます。</translation>
 <translation id="7579442726219254162">「<ph name="APPLICATION_ID" />」の管理対象の設定に不明な変数「<ph name="VARIABLE" />」があります。</translation>

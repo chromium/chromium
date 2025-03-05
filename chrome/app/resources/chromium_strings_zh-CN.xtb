@@ -511,6 +511,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="813913629614996137">正在初始化…</translation>
 <translation id="8166782796394721554">开启 Chromium 的 JavaScript 和 WebAssembly 引擎额外保护功能</translation>
 <translation id="81770708095080097">此文件存在危险，因此 Chromium 已将其拦截。</translation>
+<translation id="8177472873527554730">在页面中找不到内容</translation>
 <translation id="8200109504272824693">请输入您的口令，以便将 Chromium 数据保存在您的账号 <ph name="USER_EMAIL" /> 中并使用这些数据</translation>
 <translation id="8221491193165283816">您通常会屏蔽通知。要允许此网站向您发送通知，请点击此处。</translation>
 <translation id="8223363452568144035">如需使用摄像头，请在<ph name="BEGIN_LINK" />系统设置<ph name="END_LINK" />中授予 Chromium 访问权限</translation>

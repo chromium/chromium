@@ -1365,7 +1365,6 @@
 <translation id="1936157145127842922">フォルダで表示</translation>
 <translation id="1936931585862840749">印刷部数を数値（1～<ph name="MAX_COPIES" />）で指定してください。</translation>
 <translation id="1937774647013465102">このデバイス（<ph name="ARCHITECTURE_DEVICE" />）でコンテナのアーキテクチャ タイプ <ph name="ARCHITECTURE_CONTAINER" /> をインポートできません。このコンテナを別のデバイスに復元できるかお試しださい。または、ファイルアプリを開いて、このコンテナ イメージ内のファイルにアクセスすることも可能です。</translation>
-<translation id="1938116692670653897">現在のカラーテーマ</translation>
 <translation id="1938351510777341717">外部コマンド</translation>
 <translation id="1940221956626514677">ツールバーをカスタマイズ</translation>
 <translation id="1940546824932169984">接続済みのデバイス</translation>
@@ -4059,6 +4058,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{1 個の拡張機能が承認されました}other{# 個の拡張機能が承認されました}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux 用の推奨される空き容量は <ph name="INSTALL_SIZE" /> 以上です。</translation>
+<translation id="3824203811509979971">コンテンツの要約や質問を行う</translation>
 <translation id="3824621460022590830">デバイス登録トークンが無効です。デバイスの所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="3824757763656550700">ログインして他のデバイスのタブを表示</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{次のファイル形式の設定を保存: <ph name="FILE_TYPES" />}other{次のファイル形式の設定を保存: <ph name="FILE_TYPES" />}}</translation>
@@ -4245,6 +4245,7 @@
 <translation id="3948985214866944547">ほとんどのユーザーがこのサイトとの正確な位置情報の共有をブロックしています</translation>
 <translation id="394984172568887996">IE ブックマーク</translation>
 <translation id="3949999964543783947">ファイルのダウンロードの安全性を高めるために <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
+<translation id="3950479158728806902">パスキーを自動作成してすばやくログイン</translation>
 <translation id="3950820424414687140">ログイン</translation>
 <translation id="3950841222883198950">音声入力</translation>
 <translation id="3953834000574892725">マイ アカウント</translation>
@@ -5171,6 +5172,7 @@
 <translation id="4624054169152573743">色のテーマ</translation>
 <translation id="4625078469366263107">アプリを有効にする</translation>
 <translation id="4625905218692741757">グレーのデフォルト カラー</translation>
+<translation id="4627107755957573804">サイトやアプリが既存のアカウントをアップグレードしてパスキーを使用できるようにします</translation>
 <translation id="4627442949885028695">他のデバイスで開いたタブ</translation>
 <translation id="4628762811416793313">Linux コンテナの設定を完了できませんでした。もう一度お試しください。</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> のプロフィールを開く</translation>
@@ -5753,6 +5755,7 @@
 <translation id="5053233576223592551">ユーザー名を追加</translation>
 <translation id="505347685865235222">名前のないグループ - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{今すぐ変更してください}other{今すぐ変更してください}}</translation>
+<translation id="5056587122125565772">画像を作成</translation>
 <translation id="5056950756634735043">コンテナに接続しています</translation>
 <translation id="5057110919553308744">拡張機能をクリックしたとき</translation>
 <translation id="5057127674016624293">スキャンに通常より時間がかかっています</translation>
@@ -5863,6 +5866,7 @@
 <translation id="512642543295077915">検索+Backspace</translation>
 <translation id="5126611267288187364">変更の表示</translation>
 <translation id="5127620150973591153">安全な接続 ID: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">コンテンツを要約したり、質問したりできます。</translation>
 <translation id="5127881134400491887">ネットワーク接続の管理</translation>
 <translation id="5127934926273826089">花</translation>
 <translation id="5127986747308934633">管理者がデバイスを制御しています</translation>
@@ -10126,6 +10130,7 @@
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> を無効にする</translation>
 <translation id="8195920051450756553">同じキーを再び有効にするまでの待機時間</translation>
 <translation id="8197673340773315084">名前やラベル（仕事、個人など）を入力</translation>
+<translation id="8198181050118789419">テーマ: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">タブをキャスト中</translation>
 <translation id="8199300056570174101">ネットワーク（サービス）とデバイスのプロパティ</translation>
 <translation id="8200772114523450471">再開</translation>
@@ -11382,6 +11387,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB マウスが接続されました</translation>
 <translation id="9075413375877487220">この拡張機能は、セーフ ブラウジング保護強化機能で信頼されていません。</translation>
+<translation id="9075985558450420812">カスタムのプロンプトを入力するかテキストをハイライト表示して画像を作成します。</translation>
 <translation id="9076523132036239772">メール アドレスまたはパスワードを確認できませんでした。まずネットワークに接続してください。</translation>
 <translation id="9076821103818989526">サイドパネル</translation>
 <translation id="9076977315710973122">SMB 共有</translation>

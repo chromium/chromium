@@ -107,6 +107,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="1413446866325418126">Save data in your Google Account</translation>
 <translation id="1414981605391750300">Contacting Google. This may take a minute…</translation>
 <translation id="1416550906796893042">Application version</translation>
+<translation id="1416582024052267068">Keep access to your passwords</translation>
 <translation id="1419753403124156396">Restart Chrome?</translation>
 <translation id="1428770807407000502">Turn off sync?</translation>
 <translation id="1430915738399379752">Print</translation>
@@ -146,6 +147,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="160275202205869636">When on, use and save data in your Google Account. When off, data is saved only to this device.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Remove 1 selected item}other{Remove # selected items}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 bookmark and other items are saved only to this device. To use them on your other devices, save them in your Google Account, <ph name="ACCOUNT_EMAIL" />.}other{# bookmarks and other items are saved only to this device. To use them on your other devices, save them in your Google Account, <ph name="ACCOUNT_EMAIL" />.}}</translation>
+<translation id="1639239467298939599">Loading</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="164269334534774161">You are viewing an offline copy of this page from <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">History</translation>
@@ -515,6 +517,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="342220687432920852">{HOURS,plural, =1{# hr ago}other{# hrs ago}}</translation>
 <translation id="3430670036890315772">Turning off your profile lock will remove your saved info</translation>
 <translation id="3435465986463792564">Got many windows? You can manage them from here</translation>
+<translation id="3435575784518354875">To keep access to your passwords, export them now, update Google Play services and then import them back to Google Password Manager. <ph name="BEGIN_LINK" />See full instructions<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Security</translation>
 <translation id="3439276997620616816">You’ll find your recent tabs here</translation>
 <translation id="3443221991560634068">Reload the current page</translation>
@@ -524,6 +527,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3474624961160222204">Continue as <ph name="NAME" /></translation>
 <translation id="3478363558367712427">You can choose your search engine</translation>
 <translation id="3479552764303398839">Not now</translation>
+<translation id="3487903178221457900">The exported file may be accessible to others, including apps. Once you export, your passwords are deleted from Chrome.</translation>
 <translation id="3488199663160411179">name</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /> about suggested content</translation>
 <translation id="3495219333887281978">Sign-in bottom sheet opened at half height.</translation>
@@ -549,6 +553,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3566639033325271639">Update settings</translation>
 <translation id="3568945271227339929">No compromised passwords</translation>
 <translation id="357465026686164600">Phone as a security key</translation>
+<translation id="3575464060651642446">Checking passwords on this device…</translation>
 <translation id="3577473026931028326">Something went wrong. Try again.</translation>
 <translation id="3577558748185201054">Manage your interests and preferences</translation>
 <translation id="3587482841069643663">All</translation>
@@ -1751,6 +1756,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8937772741022875483">Remove your Chrome activity from Digital Wellbeing?</translation>
 <translation id="8942627711005830162">Open in other window</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – This language couldn't be downloaded. Try again later.</translation>
+<translation id="8957528460562961174">To keep access to your passwords, export them now and then import them to your preferred password manager. Google Password Manager stopped working because Google Play services isn't available.</translation>
 <translation id="8963117664422609631">Go to site settings</translation>
 <translation id="8965591936373831584">pending</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> incognito and <ph name="TAB_COUNT_ONE" /> more tab will be closed}other{<ph name="INCOGNITO_TAB_COUNT" /> incognito and <ph name="TAB_COUNT_MANY" /> more tabs will be closed}}</translation>
