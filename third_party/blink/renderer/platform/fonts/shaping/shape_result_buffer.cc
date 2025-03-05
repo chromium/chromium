@@ -28,6 +28,62 @@ unsigned CharactersInShapeResult(
 
 }  // namespace
 
+void ShapeResultBuffer::ComputeRangeIn(const ShapeResult& result,
+                                       const gfx::RectF& ink_bounds,
+                                       CharacterRangeContext& context) {
+  result.EnsureGraphemes(StringView(context.text, context.total_num_characters,
+                                    result.NumCharacters()));
+  if (context.is_rtl) {
+    // Convert logical offsets to visual offsets, because results are in
+    // logical order while runs are in visual order.
+    if (!context.from_x && context.from >= 0 &&
+        static_cast<unsigned>(context.from) < result.NumCharacters()) {
+      context.from = result.NumCharacters() - context.from - 1;
+    }
+    if (!context.to_x && context.to >= 0 &&
+        static_cast<unsigned>(context.to) < result.NumCharacters()) {
+      context.to = result.NumCharacters() - context.to - 1;
+    }
+    context.current_x -= result.Width();
+  }
+  for (unsigned i = 0; i < result.runs_.size(); i++) {
+    if (!result.runs_[i]) {
+      continue;
+    }
+    DCHECK_EQ(context.is_rtl, result.runs_[i]->IsRtl());
+    int num_characters = result.runs_[i]->num_characters_;
+    if (!context.from_x && context.from >= 0 && context.from < num_characters) {
+      context.from_x = result.runs_[i]->XPositionForVisualOffset(
+                           context.from, AdjustMidCluster::kToStart) +
+                       context.current_x;
+    } else {
+      context.from -= num_characters;
+    }
+
+    if (!context.to_x && context.to >= 0 && context.to < num_characters) {
+      context.to_x = result.runs_[i]->XPositionForVisualOffset(
+                         context.to, AdjustMidCluster::kToEnd) +
+                     context.current_x;
+    } else {
+      context.to -= num_characters;
+    }
+
+    if (context.from_x || context.to_x) {
+      context.min_y = std::min(context.min_y, ink_bounds.y());
+      context.max_y = std::max(context.max_y, ink_bounds.bottom());
+    }
+
+    if (context.from_x && context.to_x) {
+      break;
+    }
+    context.current_x += result.runs_[i]->width_;
+  }
+  if (context.is_rtl) {
+    context.current_x -= result.Width();
+  }
+  context.total_num_characters += result.NumCharacters();
+}
+
 CharacterRange ShapeResultBuffer::GetCharacterRange(
     const StringView& text,
     TextDirection direction,
@@ -36,96 +92,43 @@ CharacterRange ShapeResultBuffer::GetCharacterRange(
     unsigned absolute_to) const {
   DCHECK_EQ(CharactersInShapeResult(results_), text.length());
 
-  float current_x = 0;
-  float from_x = 0;
-  float to_x = 0;
-  bool found_from_x = false;
-  bool found_to_x = false;
-  float min_y = 0;
-  float max_y = 0;
-
-  if (direction == TextDirection::kRtl)
-    current_x = total_width;
-
-  // The absoluteFrom and absoluteTo arguments represent the start/end offset
+  // The absolute_from and absolute_to arguments represent the start/end offset
   // for the entire run, from/to are continuously updated to be relative to
   // the current word (ShapeResult instance).
   int from = absolute_from;
   int to = absolute_to;
 
-  unsigned total_num_characters = 0;
+  CharacterRangeContext context{text, IsRtl(direction), from, to,
+                                IsRtl(direction) ? total_width : 0};
   for (unsigned j = 0; j < results_.size(); j++) {
     const ShapeResult* result = results_[j];
-    result->EnsureGraphemes(
-        StringView(text, total_num_characters, result->NumCharacters()));
-    if (direction == TextDirection::kRtl) {
-      // Convert logical offsets to visual offsets, because results are in
-      // logical order while runs are in visual order.
-      if (!found_from_x && from >= 0 &&
-          static_cast<unsigned>(from) < result->NumCharacters())
-        from = result->NumCharacters() - from - 1;
-      if (!found_to_x && to >= 0 &&
-          static_cast<unsigned>(to) < result->NumCharacters())
-        to = result->NumCharacters() - to - 1;
-      current_x -= result->Width();
-    }
-    for (unsigned i = 0; i < result->runs_.size(); i++) {
-      if (!result->runs_[i])
-        continue;
-      DCHECK_EQ(direction == TextDirection::kRtl, result->runs_[i]->IsRtl());
-      int num_characters = result->runs_[i]->num_characters_;
-      if (!found_from_x && from >= 0 && from < num_characters) {
-        from_x = result->runs_[i]->XPositionForVisualOffset(
-                     from, AdjustMidCluster::kToStart) +
-                 current_x;
-        found_from_x = true;
-      } else {
-        from -= num_characters;
-      }
-
-      if (!found_to_x && to >= 0 && to < num_characters) {
-        to_x = result->runs_[i]->XPositionForVisualOffset(
-                   to, AdjustMidCluster::kToEnd) +
-               current_x;
-        found_to_x = true;
-      } else {
-        to -= num_characters;
-      }
-
-      if (found_from_x || found_to_x) {
-        min_y = std::min(min_y, result->GetDeprecatedInkBounds().y());
-        max_y = std::max(max_y, result->GetDeprecatedInkBounds().bottom());
-      }
-
-      if (found_from_x && found_to_x)
-        break;
-      current_x += result->runs_[i]->width_;
-    }
-    if (direction == TextDirection::kRtl)
-      current_x -= result->Width();
-    total_num_characters += result->NumCharacters();
+    ComputeRangeIn(*result, result->GetDeprecatedInkBounds(), context);
   }
 
   // The position in question might be just after the text.
-  if (!found_from_x && absolute_from == total_num_characters) {
-    from_x = direction == TextDirection::kRtl ? 0 : total_width;
-    found_from_x = true;
+  if (!context.from_x && absolute_from == context.total_num_characters) {
+    context.from_x = direction == TextDirection::kRtl ? 0 : total_width;
   }
-  if (!found_to_x && absolute_to == total_num_characters) {
-    to_x = direction == TextDirection::kRtl ? 0 : total_width;
-    found_to_x = true;
+  if (!context.to_x && absolute_to == context.total_num_characters) {
+    context.to_x = direction == TextDirection::kRtl ? 0 : total_width;
   }
-  if (!found_from_x)
-    from_x = 0;
-  if (!found_to_x)
-    to_x = direction == TextDirection::kRtl ? 0 : total_width;
+  if (!context.from_x) {
+    context.from_x = 0;
+  }
+  if (!context.to_x) {
+    context.to_x = direction == TextDirection::kRtl ? 0 : total_width;
+  }
 
   // None of our runs is part of the selection, possibly invalid arguments.
-  if (!found_to_x && !found_from_x)
-    from_x = to_x = 0;
-  if (from_x < to_x)
-    return CharacterRange(from_x, to_x, -min_y, max_y);
-  return CharacterRange(to_x, from_x, -min_y, max_y);
+  if (!context.to_x && !context.from_x) {
+    context.from_x = context.to_x = 0;
+  }
+  if (*context.from_x < *context.to_x) {
+    return CharacterRange(*context.from_x, *context.to_x, -context.min_y,
+                          context.max_y);
+  }
+  return CharacterRange(*context.to_x, *context.from_x, -context.min_y,
+                        context.max_y);
 }
 
 int ShapeResultBuffer::OffsetForPosition(
