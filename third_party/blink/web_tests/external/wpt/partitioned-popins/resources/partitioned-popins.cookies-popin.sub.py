@@ -19,7 +19,6 @@ def main(request, response):
 
   // Step 7 (partitioned-popins/partitioned-popins.cookies-*.tentative.sub.https.window.js)
   const id = (new URLSearchParams(window.location.search)).get("id");
-  test_driver.set_test_context(window.top);
   let cookie_string_on_load = \"""" + cookie_string + b"""\";
   let message = "ReadOnLoad:";
   message += getCookieMessage(cookie_string_on_load, "FirstParty", "", id);
@@ -43,7 +42,9 @@ def main(request, response):
   message += getCookieMessage(document.cookie, "FirstParty", "Popin", id);
   message += getCookieMessage(document.cookie, "ThirdParty", "Popin", id);
   await test_driver.set_permission({ name: 'storage-access' }, 'granted');
-  await document.requestStorageAccess();
+  try {
+    await test_driver.bless("fake user interaction", () => document.requestStorageAccess());
+  } catch (_) {}
   document.cookie = "FirstPartyStrictPopinAfterRSA=" + id + "; SameSite=Strict; Secure";
   document.cookie = "FirstPartyLaxPopinAfterRSA=" + id + "; SameSite=Lax; Secure";
   document.cookie = "FirstPartyNonePopinAfterRSA=" + id + "; SameSite=None; Secure";
