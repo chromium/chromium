@@ -299,6 +299,15 @@ public class IdentityDiscController
     /** {@link SyncService.SyncStateChangedListener} implementation. */
     @Override
     public void syncStateChanged() {
+        maybeUpdateIdentityErrorAndBadge();
+    }
+
+    @VisibleForTesting
+    public @SyncError int getIdentityError() {
+        return mIdentityError;
+    }
+
+    private void maybeUpdateIdentityErrorAndBadge() {
         if (mProfile == null) {
             return;
         }
@@ -373,6 +382,7 @@ public class IdentityDiscController
             mSyncService = SyncServiceFactory.getForProfile(profile);
             if (mSyncService != null) {
                 mSyncService.addSyncStateChangedListener(this);
+                maybeUpdateIdentityErrorAndBadge();
             }
 
             notifyObservers(true);
