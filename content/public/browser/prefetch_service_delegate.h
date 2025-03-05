@@ -25,10 +25,6 @@ class CONTENT_EXPORT PrefetchServiceDelegate {
   // Clears data for delegate associated with given |browser_context|.
   static void ClearData(BrowserContext* browser_context);
 
-  // Gets the major version of the embedder. Only the major version of embedder
-  // is included in the user agent for prefetch requests.
-  virtual std::string GetMajorVersionNumber() = 0;
-
   // Gets the accept language header to be included in prefetch requests.
   virtual std::string GetAcceptLanguageHeader() = 0;
 

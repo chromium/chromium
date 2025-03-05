@@ -26,7 +26,6 @@ class MockPrefetchServiceDelegate : public PrefetchServiceDelegate {
       delete;
 
   // PrefetchServiceDelegate.
-  MOCK_METHOD(std::string, GetMajorVersionNumber, (), (override));
   MOCK_METHOD(std::string, GetAcceptLanguageHeader, (), (override));
   MOCK_METHOD(GURL, GetDefaultPrefetchProxyHost, (), (override));
   MOCK_METHOD(std::string, GetAPIKey, (), (override));

@@ -59,13 +59,6 @@ namespace embedder_support {
 
 namespace {
 
-const char kFrozenUserAgentTemplate[] =
-    "Mozilla/5.0 (%s) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%s.0.0.0 "
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    "%s"
-#endif
-    "Safari/537.36";
-
 #if BUILDFLAG(IS_WIN)
 
 // The registry key where the UniversalApiContract version value can be read
@@ -831,26 +824,6 @@ std::string BuildOSCpuInfoFromOSVersionAndCpuType(const std::string& os_version,
 #endif
 
   return os_cpu;
-}
-
-std::string GetReducedUserAgent(bool mobile, std::string major_version) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  // There is an extra field in the template on Mobile.
-  std::string device_compat;
-  // Note: The extra space after Mobile is meaningful here, to avoid
-  // "MobileSafari", but unneeded for non-mobile Android devices.
-  device_compat = mobile ? "Mobile " : "";
-#endif
-  std::string user_agent =
-      base::StringPrintf(kFrozenUserAgentTemplate, GetUnifiedPlatform().c_str(),
-                         major_version.c_str()
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-                             ,
-                         device_compat.c_str()
-#endif
-      );
-
-  return user_agent;
 }
 
 std::string BuildUnifiedPlatformUserAgentFromProduct(
