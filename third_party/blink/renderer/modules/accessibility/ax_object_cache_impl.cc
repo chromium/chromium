@@ -2310,7 +2310,7 @@ void AXObjectCacheImpl::DiscardBadAriaHiddenBecauseOfFocus(AXObject& obj) {
   if (bad_aria_hidden_ancestor->GetElement()) {
     bad_aria_hidden_ancestor->GetElement()->AddConsoleMessage(
         mojom::blink::ConsoleMessageSource::kRendering,
-        mojom::blink::ConsoleMessageLevel::kError,
+        mojom::blink::ConsoleMessageLevel::kWarning,
         String::Format(
             "Blocked aria-hidden on an element because its descendant retained "
             "focus. The focus must not be hidden from assistive technology "
