@@ -906,9 +906,7 @@ String LayoutText::TransformAndSecureText(const String& original,
     }
     auto [masked, secure_map] = SecureText(transformed, mask);
     if (!secure_map.IsEmpty()) {
-      offset_map = TextOffsetMap(
-          offset_map, secure_map,
-          RuntimeEnabledFeatures::TextTransformAndSecurityFixEnabled());
+      offset_map = TextOffsetMap(offset_map, secure_map);
     }
     return masked;
   }
