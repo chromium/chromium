@@ -6,6 +6,5 @@
  * Name of the chrome flags.
  */
 export enum Flag {
-  PREVIEW_OCR = 'preview_ocr',
   SUPER_RES = 'super_res',
 }

@@ -241,16 +241,6 @@ BASE_FEATURE(kBocaSpotlight, "BocaSpotlight", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCrosSwitcher, "CrosSwitcher", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Make the text on PDFs saved from Camera app accessible.
-BASE_FEATURE(kCameraAppPdfOcr,
-             "CameraAppPdfOcr",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable OCR features on the preview in Camera app.
-BASE_FEATURE(kCameraAppPreviewOcr,
-             "CameraAppPreviewOcr",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Indicates whether the camera super resolution is supported. Note that this
 // feature is overridden by login_manager based on whether a per-board build
 // sets the USE camera_feature_super_res flag. Refer to:

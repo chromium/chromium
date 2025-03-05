@@ -6112,14 +6112,6 @@ const char kCrostiniVirtualKeyboardSupportName[] =
 const char kCrostiniVirtualKeyboardSupportDescription[] =
     "Experimental support for the Virtual Keyboard on Crostini.";
 
-const char kCameraAppPdfOcrName[] = "Camera App PDF OCR";
-const char kCameraAppPdfOcrDescription[] =
-    "Enable this flag to make text on PDFs saved from Camera app accessible.";
-
-const char kCameraAppPreviewOcrName[] = "Camera App Preview OCR";
-const char kCameraAppPreviewOcrDescription[] =
-    "Enable this flag to use OCR features on preview in Camera app.";
-
 const char kConchName[] = "Conch feature";
 const char kConchDescription[] = "Enable Conch on ChromeOS.";
 

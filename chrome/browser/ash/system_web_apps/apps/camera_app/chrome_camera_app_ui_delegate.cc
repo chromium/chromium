@@ -362,11 +362,7 @@ ChromeCameraAppUIDelegate::PdfServiceManager::CreateOcrRemote() {
 void ChromeCameraAppUIDelegate::PdfServiceManager::PerformOcr(
     const SkBitmap& image,
     PerformOcrCallback callback) {
-  if (base::FeatureList::IsEnabled(ash::features::kCameraAppPdfOcr)) {
-    optical_character_recognizer_->PerformOCR(image, std::move(callback));
-    return;
-  }
-  std::move(callback).Run(screen_ai::mojom::VisualAnnotation::New());
+  optical_character_recognizer_->PerformOCR(image, std::move(callback));
 }
 
 // TODO(b/339345727): Inform CCA earlier when the PDF service crashes.
@@ -509,8 +505,6 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
                     base::ToLowerASCII(base::SysInfo::HardwareModelName()));
   source->AddString("device_type",
                     DeviceTypeToString(chromeos::GetDeviceType()));
-  source->AddBoolean("preview_ocr", base::FeatureList::IsEnabled(
-                                        ash::features::kCameraAppPreviewOcr));
   source->AddBoolean("super_res", base::FeatureList::IsEnabled(
                                       ash::features::kCameraSuperResSupported));
 
