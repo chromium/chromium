@@ -2444,9 +2444,6 @@ external/wpt/webdriver/tests/bidi/browsing_context/close/prompt_unload.py [ Time
 # Flaky test
 crbug.com/377833124 external/wpt/webdriver/tests/bidi/browsing_context/navigate/error.py [ Failure Pass ]
 
-# unblock roll wpt
-crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception.https.html [ Failure ]
-
 # Disable certain requestIdleCallback tests pending spec or test changes.
 crbug.com/1316344 virtual/threaded/external/wpt/requestidlecallback/deadline-max-timeout-dynamic.html [ Failure ]
 crbug.com/1329296 virtual/threaded/external/wpt/requestidlecallback/deadline-max-rAF-dynamic.html [ Failure Pass ]
