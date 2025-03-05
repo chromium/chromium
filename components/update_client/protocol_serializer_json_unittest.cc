@@ -4,6 +4,7 @@
 
 #include "components/update_client/protocol_serializer_json.h"
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -49,7 +50,7 @@ TEST(SerializeRequestJSON, Serialize) {
     apps.push_back(MakeProtocolApp(
         "id1", base::Version("1.0"), "ap1", "BRND", "ins_id", "lang", -1,
         "source1", "location1", "fp1", {{"attr1", "1"}, {"attr2", "2"}}, "c1",
-        "ch1", "cn1", "test", {0, 1},
+        "ch1", "cn1", "test", {0, 1}, /*cached_hashes=*/{},
         MakeProtocolUpdateCheck(true, "33.12", true, false),
         {{"install", "foobar_install_data_index", ""}},
         MakeProtocolPing("id1", metadata.get(), {}), std::move(events)));
@@ -93,10 +94,11 @@ TEST(SerializeRequestJSON, Serialize) {
   {
     // Tests `sameversionupdate` presence with a minimal request for one app.
     std::vector<protocol_request::App> apps;
-    apps.push_back(MakeProtocolApp(
-        "id1", base::Version("1.0"), "", "", "", "", -2, "", "", "", {}, "", "",
-        "", "", {}, MakeProtocolUpdateCheck(false, "", false, true), {},
-        std::nullopt, std::nullopt));
+    apps.push_back(
+        MakeProtocolApp("id1", base::Version("1.0"), "", "", "", "", -2, "", "",
+                        "", {}, "", "", "", "", {}, /*cached_hashes=*/{},
+                        MakeProtocolUpdateCheck(false, "", false, true), {},
+                        std::nullopt, std::nullopt));
 
     const auto request = std::make_unique<ProtocolSerializerJSON>()->Serialize(
         MakeProtocolRequest(false, "{15160585-8ADE-4D3C-839B-1281A6035D1F}", "",

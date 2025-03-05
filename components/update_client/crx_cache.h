@@ -5,16 +5,15 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_CRX_CACHE_H_
 #define COMPONENTS_UPDATE_CLIENT_CRX_CACHE_H_
 
+#include <map>
 #include <optional>
 #include <string>
-#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
 #include "base/types/expected.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace base {
 class FilePath;
@@ -48,9 +47,9 @@ class CrxCache : public base::RefCountedThreadSafe<CrxCache> {
   // contents in `cache_root` that do not belong to the cache.
   explicit CrxCache(std::optional<base::FilePath> cache_root);
 
-  // Returns a set of hashes that are present in the cache.
-  void ListHashes(
-      base::OnceCallback<void(const absl::flat_hash_set<std::string>&)>
+  // Returns a multimap of app IDs to hashes that are present in the cache.
+  void ListHashesByAppId(
+      base::OnceCallback<void(const std::multimap<std::string, std::string>&)>
           callback) const;
 
   // Returns a cached element with a matching hash. If there is no element
