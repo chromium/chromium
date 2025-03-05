@@ -2480,6 +2480,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"non-modal-sign-in-promo", flag_descriptions::kNonModalSignInPromoName,
      flag_descriptions::kNonModalSignInPromoDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kNonModalSignInPromo)},
+    {"suggest-strong-password-in-add-password",
+     flag_descriptions::kSuggestStrongPasswordInAddPasswordName,
+     flag_descriptions::kSuggestStrongPasswordInAddPasswordDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kSuggestStrongPasswordInAddPassword)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

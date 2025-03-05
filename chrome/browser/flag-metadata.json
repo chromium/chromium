@@ -8222,6 +8222,11 @@
     "expiry_milestone": 142
   },
   {
+      "name": "suggest-strong-password-in-add-password",
+      "owners": [ "prasanaa@google.com", "adamta@google.com" ],
+      "expiry_milestone": 150
+  },
+  {
     "name": "summarization-api-for-gemini-nano",
     "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai@chromium.org"],
     "expiry_milestone": 140

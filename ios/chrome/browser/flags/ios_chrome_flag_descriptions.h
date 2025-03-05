@@ -706,6 +706,9 @@ extern const char kSpotlightNeverRetainIndexDescription[];
 extern const char kStartSurfaceName[];
 extern const char kStartSurfaceDescription[];
 
+extern const char kSuggestStrongPasswordInAddPasswordName[];
+extern const char kSuggestStrongPasswordInAddPasswordDescription[];
+
 extern const char kSupervisedUserLocalWebApprovalsName[];
 extern const char kSupervisedUserLocalWebApprovalsDescription[];
 

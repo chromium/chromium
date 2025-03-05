@@ -1195,6 +1195,12 @@ const char kSpotlightNeverRetainIndexDescription[] =
     "Tentative spotlight memory improvement by not storing a strong pointer to "
     "the spotlight default index";
 
+const char kSuggestStrongPasswordInAddPasswordName[] =
+    "Suggest Strong password in add password page";
+const char kSuggestStrongPasswordInAddPasswordDescription[] =
+    "Add field suggest strong password in add password page if the user is "
+    "signed in and syncing passwords to their Google Account.";
+
 const char kSupervisedUserLocalWebApprovalsName[] =
     "Enable local web approvals feature";
 const char kSupervisedUserLocalWebApprovalsDescription[] =
