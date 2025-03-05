@@ -9,7 +9,7 @@ build_webui("build") {
 
   static_files = [ "bookmarks.html" ]
 
-  # Files holding a Lit element definition and have an equivalent .html file.
+  # Files holding a Polymer element definition and have an equivalent .html file.
   web_component_files = [
     "app.ts",
     "edit_dialog.ts",
@@ -33,9 +33,11 @@ build_webui("build") {
     "dnd_manager.ts",
     "list.html.ts",
     "list.ts",
+    "mouse_focus_behavior.ts",
     "reducers.ts",
     "router.ts",
     "store.ts",
+    "store_client_mixin.ts",
     "store_client_mixin_lit.ts",
     "types.ts",
     "util.ts",
@@ -43,11 +45,11 @@ build_webui("build") {
 
   # Files that are passed as input to css_to_wrapper().
   css_files = [
-    "app.css",
     "folder_node.css",
     "item.css",
     "list.css",
     "toolbar.css",
+    "shared_style.css",
     "shared_style_lit.css",
     "shared_vars.css",
   ]

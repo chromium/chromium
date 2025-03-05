@@ -3,37 +3,34 @@
 // found in the LICENSE file.
 
 import type {BookmarksPageState, NodeMap} from 'chrome://bookmarks/bookmarks.js';
-import {createEmptyState, removeBookmark, Store, StoreClientMixinLit} from 'chrome://bookmarks/bookmarks.js';
-import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {createEmptyState, removeBookmark, Store, StoreClientMixin} from 'chrome://bookmarks/bookmarks.js';
+import {flush, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestStore} from './test_store.js';
 import {createFolder, createItem, getAllFoldersOpenState, testTree} from './test_util.js';
 
-const TestStoreClientBase = StoreClientMixinLit(CrLitElement);
+const TestStoreClientBase = StoreClientMixin(PolymerElement);
 
 class TestStoreClient extends TestStoreClientBase {
-  static get is() {
-    return 'test-store-client';
-  }
+  hasChanged: boolean = false;
 
-  override render() {
+  static get template() {
     return html`
-      ${this.toArray(this.items).map(item => html`
-        <div class="item">${item}</div>`)}
+      <template is="dom-repeat" items="[[toArray(items)]]">
+        <div class="item">[[item]]</div>
+      </template>
     `;
   }
 
-  static override get properties() {
+  static get properties() {
     return {
-      items: {type: Object},
+      items: {
+        type: Object,
+        observer: 'itemsChanged',
+      },
     };
   }
-
-  items: NodeMap = {};
-  hasChanged: boolean = false;
 
   toArray(items: NodeMap) {
     return Object.values(items).map(value => value.id);
@@ -41,23 +38,14 @@ class TestStoreClient extends TestStoreClientBase {
 
   override connectedCallback() {
     super.connectedCallback();
+    this.watch('items', function(state) {
+      return state.nodes;
+    });
     this.updateFromStore();
   }
 
-  override willUpdate(changedProperties: PropertyValues<this>) {
-    super.willUpdate(changedProperties);
-    if (changedProperties.has('items') &&
-        Object.values(this.items).length > 0) {
-      this.itemsChanged(this.items, changedProperties.get('items'));
-    }
-  }
-
-  override onStateChanged(state: BookmarksPageState) {
-    this.items = state.nodes || {};
-  }
-
   itemsChanged(_newItems: NodeMap, oldItems?: NodeMap) {
-    if (oldItems && Object.values(oldItems).length > 0) {
+    if (oldItems) {
       this.hasChanged = true;
     }
   }
@@ -107,10 +95,10 @@ suite('bookmarks.StoreClientMixin', function() {
   let store: Store;
   let client: TestStoreClient;
 
-  function update(newState: BookmarksPageState): Promise<void> {
+  function update(newState: BookmarksPageState) {
     store.data = newState;
     store.endBatchUpdate();
-    return microtasksFinished();
+    flush();
   }
 
   function getRenderedItems() {
@@ -134,14 +122,14 @@ suite('bookmarks.StoreClientMixin', function() {
 
     client = document.createElement('test-store-client') as TestStoreClient;
     document.body.appendChild(client);
-    return microtasksFinished();
+    flush();
   });
 
   test('renders initial data', function() {
     assertDeepEquals(['0', '1', '11', '12', '13'], getRenderedItems());
   });
 
-  test('renders changes to watched state', async () => {
+  test('renders changes to watched state', function() {
     assertFalse(client.hasChanged);
     const newItems = testTree(createFolder('1', [
       createItem('11'),
@@ -150,15 +138,15 @@ suite('bookmarks.StoreClientMixin', function() {
     const newState = Object.assign({}, store.data, {
       nodes: newItems,
     });
-    await update(newState);
+    update(newState);
 
     assertTrue(client.hasChanged);
     assertDeepEquals(['0', '1', '11', '12'], getRenderedItems());
   });
 
-  test('ignores changes to other subtrees', async () => {
+  test('ignores changes to other subtrees', function() {
     const newState = Object.assign({}, store.data, {selectedFolder: 'foo'});
-    await update(newState);
+    update(newState);
 
     assertFalse(client.hasChanged);
   });
