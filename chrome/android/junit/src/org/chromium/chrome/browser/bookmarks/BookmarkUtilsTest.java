@@ -79,6 +79,7 @@ public class BookmarkUtilsTest {
     @Mock private ShoppingService mShoppingService;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
+    @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
 
     private Activity mActivity;
     private FakeBookmarkModel mBookmarkModel;
@@ -127,7 +128,8 @@ public class BookmarkUtilsTest {
                 new GURL("https://test.com"),
                 mSnackbarManager,
                 mProfile,
-                mBottomSheetController);
+                mBottomSheetController,
+                mBookmarkManagerOpener);
         // Normally, a snackbar is shown.
         verify(mSnackbarManager).showSnackbar(any());
         verify(mTracker).notifyEvent(EventConstants.READ_LATER_ARTICLE_SAVED);
@@ -152,7 +154,8 @@ public class BookmarkUtilsTest {
                 new GURL("https://test.com"),
                 mSnackbarManager,
                 mProfile,
-                mBottomSheetController);
+                mBottomSheetController,
+                mBookmarkManagerOpener);
         // When account bookmarks are enabled, reading list saves use the regular save flow.
         verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
         verify(mTracker).notifyEvent(EventConstants.READ_LATER_ARTICLE_SAVED);
@@ -179,7 +182,8 @@ public class BookmarkUtilsTest {
                 mActivity,
                 BookmarkType.NORMAL,
                 mBookmarkIdCallback,
-                /* fromExplicitTrackUi= */ false);
+                /* fromExplicitTrackUi= */ false,
+                mBookmarkManagerOpener);
 
         histograms.assertExpected();
     }
@@ -203,7 +207,8 @@ public class BookmarkUtilsTest {
                 mActivity,
                 BookmarkType.READING_LIST,
                 mBookmarkIdCallback,
-                /* fromExplicitTrackUi= */ false);
+                /* fromExplicitTrackUi= */ false,
+                mBookmarkManagerOpener);
 
         histograms.assertExpected();
     }

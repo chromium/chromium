@@ -39,9 +39,10 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
-import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -73,6 +74,7 @@ public class BookmarkFolderPickerActivityTest {
     private static BookmarkId sOtherFolderId;
     private static BookmarkId sLocalOrSyncableReadingListFolder;
 
+    private final BookmarkManagerOpener mBookmarkManagerOpener = new BookmarkManagerOpenerImpl();
     private BookmarkFolderPickerActivity mActivity;
 
     @BeforeClass
@@ -189,7 +191,7 @@ public class BookmarkFolderPickerActivityTest {
                         BookmarkFolderPickerActivity.class,
                         Stage.RESUMED,
                         () -> {
-                            BookmarkUtils.startFolderPickerActivity(
+                            mBookmarkManagerOpener.startFolderPickerActivity(
                                     sActivityTestRule.getActivity(),
                                     sActivityTestRule.getProfile(false),
                                     ids);

@@ -63,6 +63,7 @@ public class BookmarkMoveSnackbarManagerTest {
     @Mock private ProfileResolver.Natives mProfileResolverNatives;
     @Mock private IdentityManager mIdentityManager;
     @Mock private BookmarkFolderPickerActivity mFolderPickerActivity;
+    @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
 
     private BookmarkMoveSnackbarManager mBookmarkMoveSnackbarManager;
     private Activity mActivity;
@@ -132,7 +133,8 @@ public class BookmarkMoveSnackbarManagerTest {
     @Test
     @SmallTest
     public void testWithoutAnyMovement() {
-        mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(mBookmarkId1);
+        mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(
+                mBookmarkManagerOpener, mBookmarkId1);
         verifyNoInteractions(mSnackbarManager);
 
         mBookmarkMoveSnackbarManager.onActivityStateChange(
@@ -152,7 +154,8 @@ public class BookmarkMoveSnackbarManagerTest {
     @Test
     @SmallTest
     public void testSingleLocalMovement() {
-        mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(mBookmarkId1);
+        mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(
+                mBookmarkManagerOpener, mBookmarkId1);
 
         mBookmarkModelObserver.bookmarkNodeMoved(
                 mBookmarkModel.getBookmarkById(mAccountMobileFolderId),
@@ -172,7 +175,8 @@ public class BookmarkMoveSnackbarManagerTest {
     @Test
     @SmallTest
     public void testSingleAccountMovement() {
-        mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(mBookmarkId1);
+        mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(
+                mBookmarkManagerOpener, mBookmarkId1);
 
         mBookmarkModel.moveBookmark(mBookmarkId1, mAccountMobileFolderId, 0);
         mBookmarkModelObserver.bookmarkNodeMoved(
@@ -194,7 +198,7 @@ public class BookmarkMoveSnackbarManagerTest {
     @SmallTest
     public void testMultipleLocalMovement() {
         mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(
-                mBookmarkId1, mBookmarkId2, mBookmarkId3);
+                mBookmarkManagerOpener, mBookmarkId1, mBookmarkId2, mBookmarkId3);
 
         mBookmarkModelObserver.bookmarkNodeMoved(
                 mBookmarkModel.getBookmarkById(mAccountMobileFolderId),
@@ -215,7 +219,7 @@ public class BookmarkMoveSnackbarManagerTest {
     @SmallTest
     public void testMultipleAccountMovement() {
         mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(
-                mBookmarkId1, mBookmarkId2, mBookmarkId3);
+                mBookmarkManagerOpener, mBookmarkId1, mBookmarkId2, mBookmarkId3);
 
         mBookmarkModel.moveBookmarks(
                 Arrays.asList(mBookmarkId1, mBookmarkId2, mBookmarkId3), mAccountMobileFolderId);
@@ -238,7 +242,8 @@ public class BookmarkMoveSnackbarManagerTest {
     @SmallTest
     public void testMovementWithoutFeatureFlag() {
         mBookmarkModel.setAreAccountBookmarkFoldersActive(false);
-        mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(mBookmarkId1);
+        mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(
+                mBookmarkManagerOpener, mBookmarkId1);
 
         mBookmarkModelObserver.bookmarkNodeMoved(
                 mBookmarkModel.getBookmarkById(mAccountMobileFolderId),
@@ -252,7 +257,8 @@ public class BookmarkMoveSnackbarManagerTest {
     @Test
     @SmallTest
     public void testSnackbarAvailability() {
-        mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(mBookmarkId1);
+        mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(
+                mBookmarkManagerOpener, mBookmarkId1);
 
         mBookmarkModelObserver.bookmarkNodeMoved(
                 mBookmarkModel.getBookmarkById(mAccountMobileFolderId),
@@ -276,7 +282,8 @@ public class BookmarkMoveSnackbarManagerTest {
     @Test
     @SmallTest
     public void testMovementToFolderWithALongName() {
-        mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(mBookmarkId1);
+        mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(
+                mBookmarkManagerOpener, mBookmarkId1);
 
         mBookmarkModelObserver.bookmarkNodeMoved(
                 mBookmarkModel.getBookmarkById(mAccountMobileFolderId),

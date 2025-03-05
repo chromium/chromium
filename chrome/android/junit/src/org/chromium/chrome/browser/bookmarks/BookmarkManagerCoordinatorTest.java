@@ -81,6 +81,7 @@ public class BookmarkManagerCoordinatorTest {
     @Mock private ShoppingService mShoppingService;
     @Mock private ReauthenticatorBridge mReauthenticatorMock;
     @Mock private BookmarkOpener mBookmarkOpener;
+    @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
 
     private Activity mActivity;
     private BookmarkManagerCoordinator mCoordinator;
@@ -120,7 +121,7 @@ public class BookmarkManagerCoordinatorTest {
                                             mProfile,
                                             mBookmarkUiPrefs,
                                             mBookmarkOpener,
-                                            /* openBookmarkComponentName= */ null);
+                                            mBookmarkManagerOpener);
                             mActivity.setContentView(mCoordinator.getView());
                         });
     }

@@ -95,12 +95,13 @@ public class BookmarkToolbarMediatorTest {
 
     @Spy private Context mContext;
 
-    FakeBookmarkModel mBookmarkModel;
-    BookmarkToolbarMediator mMediator;
-    PropertyModel mModel;
-    OneshotSupplierImpl<BookmarkDelegate> mBookmarkDelegateSupplier;
-    BooleanSupplier mIncognitoEnabledSupplier;
-    boolean mIncognitoEnabled = true;
+    private BookmarkManagerOpener mBookmarkManagerOpener = new BookmarkManagerOpenerImpl();
+    private FakeBookmarkModel mBookmarkModel;
+    private BookmarkToolbarMediator mMediator;
+    private PropertyModel mModel;
+    private OneshotSupplierImpl<BookmarkDelegate> mBookmarkDelegateSupplier;
+    private BooleanSupplier mIncognitoEnabledSupplier;
+    private boolean mIncognitoEnabled = true;
 
     @Before
     public void setUp() {
@@ -148,7 +149,8 @@ public class BookmarkToolbarMediatorTest {
                         mBookmarkAddNewFolderCoordinator,
                         mEndSearchRunnable,
                         mBookmarkMoveSnackbarManager,
-                        mIncognitoEnabledSupplier);
+                        mIncognitoEnabledSupplier,
+                        mBookmarkManagerOpener);
         mBookmarkDelegateSupplier.set(mBookmarkDelegate);
     }
 
@@ -183,7 +185,8 @@ public class BookmarkToolbarMediatorTest {
                         mBookmarkAddNewFolderCoordinator,
                         mEndSearchRunnable,
                         mBookmarkMoveSnackbarManager,
-                        mIncognitoEnabledSupplier);
+                        mIncognitoEnabledSupplier,
+                        mBookmarkManagerOpener);
     }
 
     @Test
@@ -315,7 +318,8 @@ public class BookmarkToolbarMediatorTest {
         assertTrue(
                 mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
                         .apply(R.id.selection_mode_move_menu_id));
-        verify(mBookmarkMoveSnackbarManager).startFolderPickerAndObserveResult(bookmarkId);
+        verify(mBookmarkMoveSnackbarManager)
+                .startFolderPickerAndObserveResult(mBookmarkManagerOpener, bookmarkId);
     }
 
     @Test

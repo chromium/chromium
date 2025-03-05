@@ -12,6 +12,7 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/accessibility/AccessibilityTabHelper.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkModel.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkUtils.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerOpenerImpl.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/compositor/CompositorViewHolder.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/compositor/bottombar/ephemeraltab/EphemeralTabCoordinator.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManager.java",

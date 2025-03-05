@@ -9,8 +9,6 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.view.MenuItem;
 
 import androidx.test.filters.MediumTest;
@@ -41,10 +39,10 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelTest;
-import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
@@ -367,14 +365,11 @@ public class BookmarkEditTest {
                         BookmarkEditActivity.class,
                         Stage.RESUMED,
                         () -> {
-                            Context context = ContextUtils.getApplicationContext();
-                            Intent intent =
-                                    BookmarkUtils.getEditActivityIntent(
-                                            context,
+                            new BookmarkManagerOpenerImpl()
+                                    .startEditActivity(
+                                            ContextUtils.getApplicationContext(),
                                             ProfileManager.getLastUsedRegularProfile(),
                                             bookmarkId);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            context.startActivity(intent);
                         });
     }
 

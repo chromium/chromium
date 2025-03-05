@@ -17,6 +17,7 @@ import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkMoveSnackbarManager;
@@ -262,7 +263,9 @@ public class BookmarkEditActivity extends SnackbarActivity {
                 ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.DRAWABLE);
         mFolderSelectRowModel.set(
                 ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
-                () -> mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(mBookmarkId));
+                () ->
+                        mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(
+                                new BookmarkManagerOpenerImpl(), mBookmarkId));
 
         mFolderSelectRow =
                 ImprovedBookmarkRow.buildView(this, displayPref == BookmarkRowDisplayPref.VISUAL);

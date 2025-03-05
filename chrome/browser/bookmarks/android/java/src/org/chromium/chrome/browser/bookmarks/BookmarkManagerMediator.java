@@ -380,6 +380,7 @@ class BookmarkManagerMediator
             new PendingRunnable(
                     TaskTraits.UI_DEFAULT, mCallbackController.makeCancelable(this::refresh));
     private final BookmarkMoveSnackbarManager mBookmarkMoveSnackbarManager;
+    private final BookmarkManagerOpener mBookmarkManagerOpener;
 
     @Nullable private BookmarkBatchUploadCardCoordinator mBookmarkBatchUploadCardCoordinator;
     // Whether this instance has been destroyed.
@@ -418,7 +419,8 @@ class BookmarkManagerMediator
             SnackbarManager snackbarManager,
             BooleanSupplier canShowSigninPromo,
             Consumer<OnScrollListener> onScrollListenerConsumer,
-            BookmarkMoveSnackbarManager bookmarkMoveSnackbarManager) {
+            BookmarkMoveSnackbarManager bookmarkMoveSnackbarManager,
+            BookmarkManagerOpener bookmarkManagerOpener) {
         mContext = activity;
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.addObserver(mBookmarkModelObserver);
@@ -461,7 +463,7 @@ class BookmarkManagerMediator
         }
         mBookmarkUndoController = bookmarkUndoController;
         mBookmarkMoveSnackbarManager = bookmarkMoveSnackbarManager;
-
+        mBookmarkManagerOpener = bookmarkManagerOpener;
         if (CommerceFeatureUtils.isShoppingListEligible(mShoppingService)) {
             mShoppingService.addSubscriptionsObserver(mSubscriptionsObserver);
         }
@@ -737,14 +739,14 @@ class BookmarkManagerMediator
 
         // Close bookmark UI. Keep the reading list page open.
         if (bookmark != null && bookmark.getType() != BookmarkType.READING_LIST) {
-            BookmarkUtils.finishActivityOnPhone(mContext);
+            mBookmarkManagerOpener.finishActivityOnPhone(mContext);
         }
     }
 
     @Override
     public void openBookmarksInNewTabs(List<BookmarkId> bookmarks, boolean incognito) {
         if (mBookmarkOpener.openBookmarksInNewTabs(bookmarks, incognito)) {
-            BookmarkUtils.finishActivityOnPhone(mContext);
+            mBookmarkManagerOpener.finishActivityOnPhone(mContext);
         }
     }
 
@@ -1471,7 +1473,8 @@ class BookmarkManagerMediator
                         }
                     } else if (textId == R.string.bookmark_item_edit) {
                         BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
-                        BookmarkUtils.startEditActivity(mContext, mProfile, bookmarkItem.getId());
+                        mBookmarkManagerOpener.startEditActivity(
+                                mContext, mProfile, bookmarkItem.getId());
                     } else if (textId == R.string.reading_list_mark_as_read) {
                         BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
                         mBookmarkModel.setReadStatusForReadingList(
@@ -1483,7 +1486,8 @@ class BookmarkManagerMediator
                                 bookmarkItem.getId(), /* read= */ false);
                         RecordUserAction.record("Android.BookmarkPage.ReadingList.MarkAsUnread");
                     } else if (textId == R.string.bookmark_item_move) {
-                        mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(bookmarkId);
+                        mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(
+                                mBookmarkManagerOpener, bookmarkId);
                         RecordUserAction.record("MobileBookmarkManagerMoveToFolder");
                     } else if (textId == R.string.bookmark_item_delete) {
                         if (mBookmarkModel != null) {
