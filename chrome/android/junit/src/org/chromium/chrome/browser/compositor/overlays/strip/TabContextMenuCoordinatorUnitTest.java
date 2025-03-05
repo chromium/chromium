@@ -13,8 +13,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin.TAB_STRIP_CONTEXT_MENU;
 
 import android.app.Activity;
-import android.view.LayoutInflater;
-import android.view.View;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -33,7 +31,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
-import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -44,7 +41,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
-import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator.OnItemClickedCallback;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
@@ -56,7 +52,6 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.url.GURL;
 
@@ -89,21 +84,17 @@ public class TabContextMenuCoordinatorUnitTest {
     @Mock private Tab mTabOutsideOfGroup;
     @Mock private Tab mNonUrlTab;
     @Mock private TabRemover mTabRemover;
-    @Mock private View mMenuView;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabUngrouper mTabUngrouper;
     @Mock private Profile mProfile;
     @Mock private TabGroupListBottomSheetCoordinator mBottomSheetCoordinator;
     @Mock private ShareDelegate mShareDelegate;
-    @Mock private ActionConfirmationManager mActionConfirmationManager;
-    @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabCreator mTabCreator;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private CollaborationService mCollaborationService;
     @Mock private ServiceStatus mServiceStatus;
-    @Mock private DataSharingTabManager mDataSharingTabManager;
     @Mock private WeakReference<Activity> mWeakReferenceActivity;
 
     @Before
@@ -114,8 +105,6 @@ public class TabContextMenuCoordinatorUnitTest {
         CollaborationServiceFactory.setForTesting(mCollaborationService);
 
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
-        LayoutInflater inflater = LayoutInflater.from(activity);
-        mMenuView = inflater.inflate(R.layout.tab_strip_group_menu_layout, null);
         when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardVisibilityDelegate);
         when(mWindowAndroid.getActivity()).thenReturn(mWeakReferenceActivity);
         when(mWeakReferenceActivity.get()).thenReturn(activity);
@@ -138,24 +127,17 @@ public class TabContextMenuCoordinatorUnitTest {
         mSavedTabGroup.collaborationId = COLLABORATION_ID;
         mOnItemClickedCallback =
                 TabContextMenuCoordinator.getMenuItemClickedCallback(
-                        activity,
                         () -> mTabModel,
                         mTabGroupModelFilter,
                         mBottomSheetCoordinator,
-                        mShareDelegate,
-                        mActionConfirmationManager,
-                        mModalDialogManager,
-                        mDataSharingTabManager);
+                        () -> mShareDelegate);
         mTabContextMenuCoordinator =
                 TabContextMenuCoordinator.createContextMenuCoordinator(
-                        mTabModel,
+                        () -> mTabModel,
                         mTabGroupModelFilter,
                         mBottomSheetCoordinator,
-                        mShareDelegate,
-                        mActionConfirmationManager,
-                        mModalDialogManager,
-                        mWindowAndroid,
-                        mDataSharingTabManager);
+                        () -> mShareDelegate,
+                        mWindowAndroid);
     }
 
     @Test
