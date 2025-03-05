@@ -100,8 +100,8 @@ void FetchEvent::ResolveHandledPromise() {
 }
 
 void FetchEvent::RejectHandledPromise(const String& error_message) {
-  handled_property_->Reject(ServiceWorkerError::GetException(
-      nullptr, mojom::blink::ServiceWorkerErrorType::kNetwork, error_message));
+  handled_property_->Reject(ServiceWorkerError::AsException(
+      mojom::blink::ServiceWorkerErrorType::kNetwork, error_message));
 }
 
 const AtomicString& FetchEvent::InterfaceName() const {
@@ -212,7 +212,7 @@ void FetchEvent::OnNavigationPreloadError(
     return;
   }
   preload_response_property_->Reject(
-      ServiceWorkerError::Take(nullptr, *error.get()));
+      ServiceWorkerError::AsException(error->error_type, error->message));
 }
 
 void FetchEvent::OnNavigationPreloadComplete(

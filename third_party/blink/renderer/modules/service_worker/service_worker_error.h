@@ -40,33 +40,23 @@
 namespace blink {
 
 class DOMException;
-class ScriptPromiseResolverBase;
+class ScriptState;
 
-class ServiceWorkerError {
+struct ServiceWorkerError {
   STATIC_ONLY(ServiceWorkerError);
 
- public:
-  // For CallbackPromiseAdapter
-  using IDLType = DOMException;
-  using WebType = const WebServiceWorkerError&;
-  static DOMException* Take(ScriptPromiseResolverBase*,
-                            const WebServiceWorkerError& web_error);
-
-  // TODO(crbug.com/879019): Eventually we'll remove WebServiceWorkerError and
-  // use this GetException() everywhere instead of the above Take().
-  static DOMException* GetException(ScriptPromiseResolverBase*,
-                                    mojom::blink::ServiceWorkerErrorType error,
-                                    const String& error_msg);
+  static DOMException* AsException(
+      mojom::blink::ServiceWorkerErrorType error_type,
+      const String& message);
 };
 
-class ServiceWorkerErrorForUpdate : public ServiceWorkerError {
+struct ServiceWorkerErrorForUpdate {
   STATIC_ONLY(ServiceWorkerErrorForUpdate);
 
- public:
-  // For CallbackPromiseAdapter
-  using IDLType = IDLAny;
-  static v8::Local<v8::Value> Take(ScriptPromiseResolverBase* resolver,
-                                   const WebServiceWorkerError& web_error);
+  static v8::Local<v8::Value> AsJSException(
+      ScriptState*,
+      mojom::blink::ServiceWorkerErrorType error_type,
+      const String& message);
 };
 
 }  // namespace blink
