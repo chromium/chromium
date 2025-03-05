@@ -23,8 +23,8 @@ owners:
 - ydago@chromium.org
 - file://components/policy/OWNERS
 
-future_on:
-- chrome.mac
+supported_on:
+- chrome.mac:135-
 
 features:
   dynamic_refresh: true
