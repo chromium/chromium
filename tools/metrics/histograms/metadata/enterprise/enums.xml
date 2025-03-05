@@ -409,13 +409,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Timeout on a consumer device"/>
 </enum>
 
-<enum name="EnterpriseBrowserSigninPolicy">
-  <summary>Value for BrowserSignin policy</summary>
-  <int value="0" label="Disable browser sign-in"/>
-  <int value="1" label="Enable browser sign-in"/>
-  <int value="2" label="Force users to sign-in to use the browser"/>
-</enum>
-
 <enum name="EnterpriseCloudExtensionRequestListUpdate">
   <summary>Extension request pending list update event.</summary>
   <int value="0" label="New request added"/>

@@ -40,15 +40,6 @@ enum class PoliciesSources {
   kMaxValue = kEnrollmentOnly,
 };
 
-// Values for the BrowserSignin policy.
-// VALUES MUST COINCIDE WITH THE BrowserSignin POLICY DEFINITION.
-enum class BrowserSigninMode {
-  kDisabled = 0,
-  kEnabled = 1,
-  kForced = 2,
-  kMaxValue = kForced
-};
-
 // Manages regular updates of policy usage UMA histograms.
 class POLICY_EXPORT PolicyStatisticsCollector {
  public:

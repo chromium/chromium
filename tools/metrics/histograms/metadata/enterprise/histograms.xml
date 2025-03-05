@@ -427,17 +427,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.BrowserSigninPolicy"
-    enum="EnterpriseBrowserSigninPolicy" expires_after="2025-03-09">
-  <owner>alexwchen@chromium.org</owner>
-  <owner>cbe-eng@google.com</owner>
-  <summary>
-    Histogram for counting the BrowserSignin policy. This metric is recorded
-    every 24 hours and at startup along with the full set of the enterprise
-    policy rules that are in use.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.CBCMPolicyInvalidations"
     enum="EnterprisePolicyInvalidations" expires_after="2025-12-20">
   <owner>zmin@chromium.org</owner>

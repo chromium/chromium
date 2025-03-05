@@ -28,10 +28,6 @@ namespace policy {
 namespace {
 
 constexpr char kPoliciesSourceMetricsName[] = "Enterprise.Policies.Sources";
-#if !BUILDFLAG(IS_CHROMEOS)
-constexpr char kBrowserSigninModeMetricsName[] =
-    "Enterprise.BrowserSigninPolicy";
-#endif
 
 constexpr const char* kCBCMEnrollmentPolicies[] = {
     "CloudManagementEnrollmentToken", "CloudManagementEnrollmentMandatory"};
@@ -89,17 +85,6 @@ void RecordPoliciesSources(SimplePolicySource source) {
                                   PoliciesSources::kEnrollmentOnly);
   }
 }
-#if !BUILDFLAG(IS_CHROMEOS)
-// Records UMA metrics for signin mode
-void RecordBrowserSigninMode(const base::Value* value) {
-  if (value && value->is_int() && 0 <= value->GetInt() &&
-      value->GetInt() <= static_cast<int>(BrowserSigninMode::kMaxValue)) {
-    base::UmaHistogramEnumeration(
-        kBrowserSigninModeMetricsName,
-        static_cast<BrowserSigninMode>(value->GetInt()));
-  };
-}
-#endif
 }  // namespace
 
 const base::TimeDelta PolicyStatisticsCollector::kStatisticsUpdateRate =
@@ -176,10 +161,6 @@ void PolicyStatisticsCollector::CollectStatistics() {
   }
 
   RecordPoliciesSources(static_cast<SimplePolicySource>(source));
-#if !BUILDFLAG(IS_CHROMEOS)
-  RecordBrowserSigninMode(
-      policies.GetValue(key::kBrowserSignin, base::Value::Type::INTEGER));
-#endif
 
   // Take care of next update.
   prefs_->SetTime(policy_prefs::kLastPolicyStatisticsUpdate, base::Time::Now());
