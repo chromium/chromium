@@ -6,6 +6,7 @@
 #define COMPONENTS_ENTERPRISE_SIGNIN_ENTERPRISE_IDENTITY_SERVICE_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -32,6 +33,11 @@ class EnterpriseIdentityService : public KeyedService {
   // before resolving the callback.
   virtual void GetManagedAccountsWithRefreshTokens(
       GetManagedAccountsCallback callback) = 0;
+
+  // Will invoke `callback` with a list of OAuth access tokens created with the
+  // DM server scope for each valid managed accounts.
+  virtual void GetManagedAccountsAccessTokens(
+      base::OnceCallback<void(std::vector<std::string>)> callback) = 0;
 };
 
 }  // namespace enterprise
