@@ -371,4 +371,53 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(LoginDbDeprecated(false)));
 #endif
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
+       MigrateDefaultProfileStorePref) {
+  // Set up 2 account storage users, with default stores "profile" and
+  // "account", respectively.
+  using password_manager::features_util::kObsoleteAccountStorageDefaultStoreKey;
+  GaiaId profile_store_user_gaia("profile");
+  GaiaId account_store_user_gaia("account");
+  auto profile_store_user_hash =
+      signin::GaiaIdHash::FromGaiaId(profile_store_user_gaia);
+  auto account_store_user_hash =
+      signin::GaiaIdHash::FromGaiaId(account_store_user_gaia);
+  syncer::SyncPrefs sync_prefs(&pref_service_);
+  sync_prefs.SetSelectedTypeForAccount(syncer::UserSelectableType::kPasswords,
+                                       true, profile_store_user_hash);
+  sync_prefs.SetSelectedTypeForAccount(syncer::UserSelectableType::kPasswords,
+                                       true, account_store_user_hash);
+  pref_service_.SetDict(
+      password_manager::prefs::kObsoleteAccountStoragePerAccountSettings,
+      base::Value::Dict()
+          .Set(profile_store_user_hash.ToBase64(),
+               base::Value::Dict().Set(
+                   kObsoleteAccountStorageDefaultStoreKey,
+                   static_cast<int>(
+                       password_manager::PasswordForm::Store::kProfileStore)))
+          .Set(account_store_user_hash.ToBase64(),
+               base::Value::Dict().Set(
+                   kObsoleteAccountStorageDefaultStoreKey,
+                   static_cast<int>(
+                       password_manager::PasswordForm::Store::kAccountStore))));
+
+  // Without the migration, account storage will be on for both accounts upon
+  // sign-in.
+  EXPECT_TRUE(sync_prefs.GetSelectedTypesForAccount(profile_store_user_gaia)
+                  .Has(syncer::UserSelectableType::kPasswords));
+  EXPECT_TRUE(sync_prefs.GetSelectedTypesForAccount(account_store_user_gaia)
+                  .Has(syncer::UserSelectableType::kPasswords));
+
+  MigrateDefaultProfileStorePref(&pref_service_);
+
+  // After the migration, account storage will be off for the user with profile
+  // store as the default.
+  EXPECT_FALSE(sync_prefs.GetSelectedTypesForAccount(profile_store_user_gaia)
+                   .Has(syncer::UserSelectableType::kPasswords));
+  EXPECT_TRUE(sync_prefs.GetSelectedTypesForAccount(account_store_user_gaia)
+                  .Has(syncer::UserSelectableType::kPasswords));
+}
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+
 }  // namespace password_manager::features_util
