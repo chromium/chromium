@@ -1057,7 +1057,7 @@ class TabListMediator implements TabListNotificationHandler {
                         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
                         if (mActionsOnAllRelatedTabs
                                 && filter != null
-                                && filter.tabGroupExistsForRootId(tab.getRootId())) {
+                                && filter.tabGroupExists(tab.getTabGroupId())) {
                             int groupIndex = filter.indexOf(tab);
                             Tab groupTab = filter.getTabAt(groupIndex);
                             if (!groupTab.isClosing()) {
