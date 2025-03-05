@@ -333,6 +333,37 @@ class JsonUtil:
 
     return output
 
+  def _generate_synthetic_measurements(
+      self,
+      value_measurements: List[Tuple[str, float]],
+      keys: Dict[str, str],
+  ) -> List[Dict[str, Any]]:
+    """Generates synthetic measurements."""
+    synthetic_measurements = []
+    for value, measurement in value_measurements:
+      synthetic_measurements.append({
+          json_constants.VALUE: value,
+          json_constants.MEASUREMENT: measurement,
+      })
+    synthetic_result = {
+        json_constants.MEASUREMENTS: {
+            json_constants.STAT: synthetic_measurements
+        },
+        json_constants.KEY: {
+            json_constants.IMPROVEMENT_DIRECTION: (
+                keys[json_constants.IMPROVEMENT_DIRECTION]),
+            json_constants.UNIT: keys[json_constants.UNIT],
+            json_constants.TEST: keys[json_constants.TEST],
+        },
+    }
+    if keys.get(json_constants.SUBTEST_1, ""):
+      synthetic_result[json_constants.KEY][json_constants.SUBTEST_1] = (
+          keys[json_constants.SUBTEST_1])
+    if keys.get(json_constants.SUBTEST_2, ""):
+      synthetic_result[json_constants.KEY][json_constants.SUBTEST_2] = (
+          keys[json_constants.SUBTEST_2])
+    return synthetic_result
+
   def measurements_from_results(
       self,
       data: Mapping[List[Any], List[Any]],
@@ -366,11 +397,11 @@ class JsonUtil:
               json_constants.MEASUREMENT: max_val,
           },
           {
-              json_constants.VALUE: "min",
+              json_constants.VALUE: json_constants.MIN,
               json_constants.MEASUREMENT: min_val
           },
           {
-              json_constants.VALUE: "sum",
+              json_constants.VALUE: json_constants.SUM,
               json_constants.MEASUREMENT: sum_val
           },
       ]
@@ -389,33 +420,90 @@ class JsonUtil:
       if subtest_2:
         result[json_constants.KEY][json_constants.SUBTEST_2] = subtest_2
       results.append(result)
-      # Generate a synthetic measurement that ends with "_avg"
+      # Generate a synthetic measurement that ends with "_avg", "_min", "_max",
+      # and "_sum" to support the data parity with the chromeperf.
       if self.generate_synthetic_measurements:
-        synthetic_measurements = [
-            {
-                json_constants.VALUE: json_constants.VALUE,
-                json_constants.MEASUREMENT: avg,
-            },
-            {
-                json_constants.VALUE: json_constants.STD_DEV,
-                json_constants.MEASUREMENT: std_err,
-            },
-        ]
-        synthetic_result = {
-            json_constants.MEASUREMENTS: {
-                json_constants.STAT: synthetic_measurements
-            },
-            json_constants.KEY: {
+        synthetic_result_avg = self._generate_synthetic_measurements(
+            value_measurements=[
+                (json_constants.VALUE, avg),
+                (json_constants.STD_DEV, std_err),
+            ],
+            keys={
                 json_constants.IMPROVEMENT_DIRECTION: improvement_direction,
                 json_constants.UNIT: unit,
                 json_constants.TEST: test_name + "_avg",
+                json_constants.SUBTEST_1: subtest_1,
+                json_constants.SUBTEST_2: subtest_2,
             },
-        }
-        if subtest_1:
-          synthetic_result[json_constants.KEY][json_constants.SUBTEST_1] = (
-              subtest_1)
-        if subtest_2:
-          synthetic_result[json_constants.KEY][json_constants.SUBTEST_2] = (
-              subtest_2)
-        results.append(synthetic_result)
+        )
+        synthetic_result_min = self._generate_synthetic_measurements(
+            value_measurements=[
+                (json_constants.MIN, min_val),
+                (json_constants.STD_DEV, std_err),
+            ],
+            keys={
+                json_constants.IMPROVEMENT_DIRECTION: improvement_direction,
+                json_constants.UNIT: unit,
+                json_constants.TEST: test_name + "_min",
+                json_constants.SUBTEST_1: subtest_1,
+                json_constants.SUBTEST_2: subtest_2,
+            },
+        )
+        synthetic_result_max = self._generate_synthetic_measurements(
+            value_measurements=[
+                (json_constants.MAX, max_val),
+                (json_constants.STD_DEV, std_err),
+            ],
+            keys={
+                json_constants.IMPROVEMENT_DIRECTION: improvement_direction,
+                json_constants.UNIT: unit,
+                json_constants.TEST: test_name + "_max",
+                json_constants.SUBTEST_1: subtest_1,
+                json_constants.SUBTEST_2: subtest_2,
+            },
+        )
+        synthetic_result_sum = self._generate_synthetic_measurements(
+            value_measurements=[
+                (json_constants.SUM, sum_val),
+                (json_constants.STD_DEV, std_err),
+            ],
+            keys={
+                json_constants.IMPROVEMENT_DIRECTION: improvement_direction,
+                json_constants.UNIT: unit,
+                json_constants.TEST: test_name + "_sum",
+                json_constants.SUBTEST_1: subtest_1,
+                json_constants.SUBTEST_2: subtest_2,
+            },
+        )
+        synthetic_result_count = self._generate_synthetic_measurements(
+            value_measurements=[
+                (json_constants.COUNT, count),
+                (json_constants.STD_DEV, std_err),
+            ],
+            keys={
+                json_constants.IMPROVEMENT_DIRECTION: "up",
+                json_constants.UNIT: "unitless_biggerIsBetter",
+                json_constants.TEST: test_name + "_count",
+                json_constants.SUBTEST_1: subtest_1,
+                json_constants.SUBTEST_2: subtest_2,
+            },
+        )
+        synthetic_result_std = self._generate_synthetic_measurements(
+            value_measurements=[
+                (json_constants.STD_DEV, std_err),
+            ],
+            keys={
+                json_constants.IMPROVEMENT_DIRECTION: "down",
+                json_constants.UNIT: unit,
+                json_constants.TEST: test_name + "_std",
+                json_constants.SUBTEST_1: subtest_1,
+                json_constants.SUBTEST_2: subtest_2,
+            },
+        )
+        results.append(synthetic_result_avg)
+        results.append(synthetic_result_min)
+        results.append(synthetic_result_max)
+        results.append(synthetic_result_sum)
+        results.append(synthetic_result_count)
+        results.append(synthetic_result_std)
     return results
