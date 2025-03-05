@@ -14,6 +14,12 @@ when = "2024-12-19"
 user-id = 55123
 user-login = "rust-lang-owner"
 
+[[publisher.libc]]
+version = "0.2.170"
+when = "2025-02-23"
+user-id = 55123
+user-login = "rust-lang-owner"
+
 [[publisher.libm]]
 version = "0.2.11"
 when = "2024-10-28"
