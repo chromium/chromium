@@ -202,10 +202,8 @@
     (UIPresentationController*)presentationController {
   base::RecordAction(
       base::UserMetricsAction("Signin_AccountMenu_Dismissed_By_User"));
-  // We assume the dismiss was done by the user.
-  self.mediator.signinCoordinatorResult = SigninCoordinatorResultCanceledByUser;
-  // UIShutdownNoDismiss because the UI is already dismissed.
-  [self interruptWithAction:SynchronousStopAction() completion:nil];
+  [self runCompletionWithSigninResult:SigninCoordinatorResultCanceledByUser
+                   completionIdentity:nil];
 }
 
 #pragma mark - AccountMenuMediatorDelegate
@@ -240,12 +238,13 @@
 
 - (void)didTapSettingsButton {
   // Close the account menu and open the Settings page.
-  __weak id<ApplicationCommands> applicationHandler = HandlerForProtocol(
+  [self stopChildrenAndViewControllerWithAction:SigninCoordinatorInterrupt::
+                                                    DismissWithAnimation];
+  [self runCompletionWithSigninResult:SigninCoordinatorResultCanceledByUser
+                   completionIdentity:nil];
+  id<ApplicationCommands> applicationHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [self interruptWithAction:SigninCoordinatorInterrupt::DismissWithAnimation
-                 completion:^{
-                   [applicationHandler showSettingsFromViewController:nil];
-                 }];
+  [applicationHandler showSettingsFromViewController:nil];
 }
 
 - (void)signOutFromTargetRect:(CGRect)targetRect
@@ -281,10 +280,14 @@
                                   completion:completion];
 }
 
-- (void)mediatorWantsToBeDismissed:(AccountMenuMediator*)mediator {
+- (void)mediatorWantsToBeDismissed:(AccountMenuMediator*)mediator
+                        withResult:(SigninCoordinatorResult)signinResult
+                    signedIdentity:(id<SystemIdentity>)signedIdentity {
   CHECK_EQ(mediator, _mediator);
-  [self interruptWithAction:SigninCoordinatorInterrupt::DismissWithAnimation
-                 completion:nil];
+  [self stopChildrenAndViewControllerWithAction:SigninCoordinatorInterrupt::
+                                                    DismissWithAnimation];
+  [self runCompletionWithSigninResult:signinResult
+                   completionIdentity:signedIdentity];
 }
 
 - (AuthenticationFlow*)
@@ -417,8 +420,8 @@
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion {
   [self stopChildrenAndViewControllerWithAction:action];
-  [self runCompletionWithSigninResult:self.mediator.signinCoordinatorResult
-                   completionIdentity:self.mediator.signinCompletionIdentity];
+  [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
+                   completionIdentity:nil];
   if (completion) {
     completion();
   }

@@ -35,13 +35,6 @@ class SyncService;
 // The delegate of the mediator.
 @property(nonatomic, weak) id<AccountMenuMediatorDelegate> delegate;
 
-// Parameters for [super
-// runCompletionWithSigninResult:completionIdentity];
-@property(nonatomic, readwrite) SigninCoordinatorResult signinCoordinatorResult;
-// the identity with which the user is newly signed-in.
-@property(nonatomic, strong, readonly) id<SystemIdentity>
-    signinCompletionIdentity;
-
 - (instancetype)initWithSyncService:(syncer::SyncService*)syncService
               accountManagerService:
                   (ChromeAccountManagerService*)accountManagerService
