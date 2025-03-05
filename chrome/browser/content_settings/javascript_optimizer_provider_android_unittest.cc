@@ -5,6 +5,7 @@
 #include "chrome/browser/content_settings/javascript_optimizer_provider_android.h"
 
 #include "base/functional/callback_forward.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/android/tab_android.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
@@ -36,7 +37,8 @@ std::unique_ptr<content_settings::RuleIterator> GetRuleIterator(
 TEST_F(JavascriptOptimizerProviderAndroidTest, GetRuleIterator_NoPermission) {
   base::MockRepeatingCallback<bool()> callback;
   ON_CALL(callback, Run()).WillByDefault(Return(false));
-  JavascriptOptimizerProviderAndroid provider(callback.Get());
+  JavascriptOptimizerProviderAndroid provider(callback.Get(),
+                                              /*should_record_metrics=*/false);
 
   std::unique_ptr<content_settings::RuleIterator> rule_iterator =
       GetRuleIterator(provider, ContentSettingsType::JAVASCRIPT_OPTIMIZER);
@@ -51,7 +53,8 @@ TEST_F(JavascriptOptimizerProviderAndroidTest, GetRuleIterator_NoPermission) {
 TEST_F(JavascriptOptimizerProviderAndroidTest, GetRuleIterator_HasPermission) {
   base::MockRepeatingCallback<bool()> callback;
   ON_CALL(callback, Run()).WillByDefault(Return(true));
-  JavascriptOptimizerProviderAndroid provider(callback.Get());
+  JavascriptOptimizerProviderAndroid provider(callback.Get(),
+                                              /*should_record_metrics=*/false);
 
   std::unique_ptr<content_settings::RuleIterator> rule_iterator =
       GetRuleIterator(provider, ContentSettingsType::JAVASCRIPT_OPTIMIZER);
@@ -62,7 +65,8 @@ TEST_F(JavascriptOptimizerProviderAndroidTest,
        GetRuleIterator_IncompatibleContentType) {
   base::MockRepeatingCallback<bool()> callback;
   ON_CALL(callback, Run()).WillByDefault(Return(false));
-  JavascriptOptimizerProviderAndroid provider(callback.Get());
+  JavascriptOptimizerProviderAndroid provider(callback.Get(),
+                                              /*should_record_metrics=*/false);
 
   std::unique_ptr<content_settings::RuleIterator> rule_iterator =
       GetRuleIterator(provider, ContentSettingsType::COOKIES);
@@ -72,7 +76,8 @@ TEST_F(JavascriptOptimizerProviderAndroidTest,
 TEST_F(JavascriptOptimizerProviderAndroidTest, GetRuleIterator_AfterShutdown) {
   base::MockRepeatingCallback<bool()> callback;
   ON_CALL(callback, Run()).WillByDefault(Return(false));
-  JavascriptOptimizerProviderAndroid provider(callback.Get());
+  JavascriptOptimizerProviderAndroid provider(callback.Get(),
+                                              /*should_record_metrics=*/false);
 
   std::unique_ptr<content_settings::RuleIterator> rule_iterator =
       GetRuleIterator(provider, ContentSettingsType::JAVASCRIPT_OPTIMIZER);
@@ -101,7 +106,8 @@ std::unique_ptr<content_settings::Rule> GetRule(
 TEST_F(JavascriptOptimizerProviderAndroidTest, GetRule_NoPermission) {
   base::MockRepeatingCallback<bool()> callback;
   ON_CALL(callback, Run()).WillByDefault(Return(false));
-  JavascriptOptimizerProviderAndroid provider(callback.Get());
+  JavascriptOptimizerProviderAndroid provider(callback.Get(),
+                                              /*should_record_metrics=*/false);
 
   std::unique_ptr<content_settings::Rule> rule =
       GetRule(provider, ContentSettingsType::JAVASCRIPT_OPTIMIZER);
@@ -112,7 +118,8 @@ TEST_F(JavascriptOptimizerProviderAndroidTest, GetRule_NoPermission) {
 TEST_F(JavascriptOptimizerProviderAndroidTest, GetRule_HasPermission) {
   base::MockRepeatingCallback<bool()> callback;
   ON_CALL(callback, Run()).WillByDefault(Return(true));
-  JavascriptOptimizerProviderAndroid provider(callback.Get());
+  JavascriptOptimizerProviderAndroid provider(callback.Get(),
+                                              /*should_record_metrics=*/false);
 
   std::unique_ptr<content_settings::Rule> rule =
       GetRule(provider, ContentSettingsType::JAVASCRIPT_OPTIMIZER);
@@ -122,7 +129,8 @@ TEST_F(JavascriptOptimizerProviderAndroidTest, GetRule_HasPermission) {
 TEST_F(JavascriptOptimizerProviderAndroidTest, GetRule_IncompatibleCategory) {
   base::MockRepeatingCallback<bool()> callback;
   ON_CALL(callback, Run()).WillByDefault(Return(false));
-  JavascriptOptimizerProviderAndroid provider(callback.Get());
+  JavascriptOptimizerProviderAndroid provider(callback.Get(),
+                                              /*should_record_metrics=*/false);
 
   std::unique_ptr<content_settings::Rule> rule =
       GetRule(provider, ContentSettingsType::COOKIES);
@@ -132,7 +140,8 @@ TEST_F(JavascriptOptimizerProviderAndroidTest, GetRule_IncompatibleCategory) {
 TEST_F(JavascriptOptimizerProviderAndroidTest, GetRule_AfterShutdown) {
   base::MockRepeatingCallback<bool()> callback;
   ON_CALL(callback, Run()).WillByDefault(Return(false));
-  JavascriptOptimizerProviderAndroid provider(callback.Get());
+  JavascriptOptimizerProviderAndroid provider(callback.Get(),
+                                              /*should_record_metrics=*/false);
 
   std::unique_ptr<content_settings::Rule> rule =
       GetRule(provider, ContentSettingsType::JAVASCRIPT_OPTIMIZER);
@@ -142,4 +151,19 @@ TEST_F(JavascriptOptimizerProviderAndroidTest, GetRule_AfterShutdown) {
   provider.ShutdownOnUIThread();
   rule = GetRule(provider, ContentSettingsType::JAVASCRIPT_OPTIMIZER);
   EXPECT_EQ(nullptr, rule.get());
+}
+
+TEST_F(JavascriptOptimizerProviderAndroidTest, RecordHistogram) {
+  const char* kHistogram =
+      "ContentSettings.RegularProfile.DefaultJavascriptOptimizationBlockedByOs";
+  bool kTestCases[] = {true, false};
+
+  for (bool os_grants_permission : kTestCases) {
+    base::HistogramTester histogram_tester;
+    base::MockRepeatingCallback<bool()> callback;
+    ON_CALL(callback, Run()).WillByDefault(Return(os_grants_permission));
+    JavascriptOptimizerProviderAndroid provider(callback.Get(),
+                                                /*should_record_metrics=*/true);
+    histogram_tester.ExpectUniqueSample(kHistogram, !os_grants_permission, 1);
+  }
 }

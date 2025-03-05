@@ -214,11 +214,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Account fetching succeeded"/>
 </enum>
 
-<enum name="BooleanHadSyncAccount">
-  <int value="0" label="Did not have a sync-enabled account before"/>
-  <int value="1" label="Had at least one sync-enabled account before"/>
-</enum>
-
 <enum name="BooleanIsShared">
   <int value="0" label="Not Shared"/>
   <int value="1" label="Is Shared"/>

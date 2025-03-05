@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabListEditorActionProperties.DESTROYABLE;
+
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -14,6 +16,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -335,6 +338,10 @@ public abstract class TabListEditorAction {
         return editorSupportsActionOnRelatedTabs()
                 ? getTabsAndRelatedTabsFromSelection()
                 : getTabsFromSelection();
+    }
+
+    protected void setDestroyable(Destroyable destroyable) {
+        mModel.set(DESTROYABLE, destroyable);
     }
 
     public static int getTabCountIncludingRelatedTabs(

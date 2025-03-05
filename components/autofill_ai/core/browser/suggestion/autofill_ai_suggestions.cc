@@ -39,6 +39,7 @@ using autofill::AttributeInstance;
 using autofill::AttributeType;
 using autofill::AutofillField;
 using autofill::FieldGlobalId;
+using autofill::FieldType;
 using autofill::Suggestion;
 using autofill::SuggestionType;
 
@@ -319,40 +320,44 @@ std::vector<Suggestion> CreateFillingSuggestions(
   const AutofillField* autofill_field = form.GetFieldById(field_global_id);
   CHECK(autofill_field);
 
-  std::optional<autofill::FieldType>
-      triggering_field_autofill_ai_type_prediction =
-          autofill_field->GetAutofillAiServerTypePredictions();
-  CHECK(triggering_field_autofill_ai_type_prediction);
-  std::optional<AttributeType> triggering_field_attribute_type =
-      AttributeType::FromFieldType(
-          *triggering_field_autofill_ai_type_prediction);
+  const std::optional<FieldType> trigger_field_autofill_ai_type =
+      autofill_field->GetAutofillAiServerTypePredictions();
+  CHECK(trigger_field_autofill_ai_type);
+  const std::optional<AttributeType> trigger_field_attribute_type =
+      AttributeType::FromFieldType(*trigger_field_autofill_ai_type);
   // The triggering field should be of `FieldTypeGroup::kAutofillAi`
   // type and therefore mapping it to an `AttributeType` should always
   // return a value.
-  CHECK(triggering_field_attribute_type);
+  CHECK(trigger_field_attribute_type);
+
+  const FieldType trigger_field_autofill_type =
+      autofill_field->Type().GetStorableType();
 
   // Suggestion and their fields to be filled metadata.
   std::vector<SuggestionWithMetadata> suggestions_with_metadata;
   for (const autofill::EntityInstance& entity : entities) {
     //  Only entities that match the triggering field entity should be used to
     //  generate suggestions.
-    if (entity.type() != triggering_field_attribute_type->entity_type()) {
+    if (entity.type() != trigger_field_attribute_type->entity_type()) {
       continue;
     }
     base::optional_ref<const AttributeInstance> attribute_for_triggering_field =
-        entity.attribute(*triggering_field_attribute_type);
+        entity.attribute(*trigger_field_attribute_type);
     // Do not create suggestion if the triggering field cannot be filled.
-    if (!attribute_for_triggering_field) {
+    if (!attribute_for_triggering_field ||
+        attribute_for_triggering_field
+            ->GetInfo(trigger_field_autofill_type, app_locale)
+            .empty()) {
       continue;
     }
 
     // Obfuscated types are not prefix matched to avoid that a webpage can
     // use the existence of suggestions to guess a user's data.
-    if (!triggering_field_attribute_type->is_obfuscated()) {
+    if (!trigger_field_attribute_type->is_obfuscated()) {
       const std::u16string normalized_attribute =
           autofill::AutofillProfileComparator::NormalizeForComparison(
               attribute_for_triggering_field->GetInfo(
-                  autofill_field->Type().GetStorableType(), app_locale));
+                  trigger_field_autofill_type, app_locale));
       const std::u16string normalized_field_content =
           autofill::AutofillProfileComparator::NormalizeForComparison(
               autofill_field->value(autofill::ValueSemantics::kCurrent));
@@ -369,7 +374,7 @@ std::vector<Suggestion> CreateFillingSuggestions(
       if (field->section() != autofill_field->section()) {
         continue;
       }
-      std::optional<autofill::FieldType> field_autofill_ai_prediction =
+      std::optional<FieldType> field_autofill_ai_prediction =
           field->GetAutofillAiServerTypePredictions();
       if (!field_autofill_ai_prediction) {
         continue;
@@ -379,7 +384,7 @@ std::vector<Suggestion> CreateFillingSuggestions(
           AttributeType::FromFieldType(*field_autofill_ai_prediction);
       // Only fields that match the triggering field entity should be used to
       // generate suggestions.
-      if (!attribute_type || triggering_field_attribute_type->entity_type() !=
+      if (!attribute_type || trigger_field_attribute_type->entity_type() !=
                                  attribute_type->entity_type()) {
         continue;
       }
@@ -411,7 +416,7 @@ std::vector<Suggestion> CreateFillingSuggestions(
                    SuggestionType::kFillAutofillAi);
     s.suggestion.payload = Suggestion::AutofillAiPayload(entity.guid());
     s.suggestion.icon =
-        GetSuggestionIcon(triggering_field_attribute_type->entity_type());
+        GetSuggestionIcon(trigger_field_attribute_type->entity_type());
     s.attribute_type_to_value =
         base::flat_map(std::move(attribute_type_to_value));
     s.field_to_value = base::flat_map(std::move(field_to_value));
@@ -422,7 +427,7 @@ std::vector<Suggestion> CreateFillingSuggestions(
   }
 
   std::vector<Suggestion> suggestions = GenerateFillingSuggestionLabels(
-      *triggering_field_attribute_type,
+      *trigger_field_attribute_type,
       DedupeFillingSuggestions(std::move(suggestions_with_metadata)));
 
   // Footer suggestions.

@@ -42,6 +42,7 @@
 #include "content/browser/interest_group/interest_group_real_time_report_util.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/interest_group_update.h"
+#include "content/browser/interest_group/protected_audience_network_util.h"
 #include "content/browser/interest_group/trusted_signals_cache_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
@@ -589,32 +590,6 @@ void InterestGroupManagerImpl::GetLastMaintenanceTimeForTesting(
       std::move(callback));
 }
 
-std::optional<std::string> InterestGroupManagerImpl::MaybeGetUserAgentOverride(
-    const FrameTreeNodeId& frame_tree_node_id) {
-  if (base::FeatureList::IsEnabled(features::kFledgeEnableUserAgentOverrides)) {
-    FrameTreeNode* frame_tree_node =
-        FrameTreeNode::GloballyFindByID(frame_tree_node_id);
-
-    if (frame_tree_node != nullptr) {
-      const bool override_user_agent =
-          frame_tree_node->navigator()
-              .GetDelegate()
-              ->ShouldOverrideUserAgentForRendererInitiatedNavigation();
-      if (override_user_agent) {
-        std::string maybe_user_agent =
-            frame_tree_node->navigator()
-                .GetDelegate()
-                ->GetUserAgentOverride(frame_tree_node->frame_tree())
-                .ua_string_override;
-        if (!maybe_user_agent.empty()) {
-          return std::move(maybe_user_agent);
-        }
-      }
-    }
-  }
-  return std::nullopt;
-}
-
 void InterestGroupManagerImpl::EnqueueReports(
     ReportType report_type,
     std::vector<GURL> report_urls,
@@ -657,7 +632,7 @@ void InterestGroupManagerImpl::EnqueueReports(
     report_request->url_loader_factory = url_loader_factory;
     report_request->frame_tree_node_id = frame_tree_node_id;
     report_request->user_agent_override =
-        MaybeGetUserAgentOverride(frame_tree_node_id);
+        GetUserAgentOverrideForProtectedAudience(frame_tree_node_id);
     report_requests_.emplace_back(std::move(report_request));
   }
 
@@ -705,7 +680,7 @@ void InterestGroupManagerImpl::EnqueueRealTimeReports(
                                            flip_probability);
 
   std::optional<std::string> user_agent_override =
-      MaybeGetUserAgentOverride(frame_tree_node_id);
+      GetUserAgentOverrideForProtectedAudience(frame_tree_node_id);
 
   base::TimeTicks now = base::TimeTicks::Now();
   for (auto& [origin, histogram] : histograms) {

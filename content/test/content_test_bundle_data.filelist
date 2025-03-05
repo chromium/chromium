@@ -6432,6 +6432,11 @@ data/browsing_topics/v0.init_too_old.sql
 data/browsing_topics/v1.init_too_new.sql
 data/browsing_topics/v1.no_hashed_to_unhashed_domains_table.sql
 data/browsing_topics/v1.sql
+data/btm/v1.sql
+data/btm/v2.sql
+data/btm/v3.sql
+data/btm/v4.sql
+data/btm/v5.sql
 data/btm/v6.sql
 data/btm/v7.sql
 data/btm/v8.sql

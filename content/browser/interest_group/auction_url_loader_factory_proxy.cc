@@ -21,6 +21,7 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/interest_group/interest_group_features.h"
+#include "content/browser/interest_group/protected_audience_network_util.h"
 #include "content/browser/interest_group/subresource_url_authorizations.h"
 #include "content/browser/interest_group/subresource_url_builder.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -329,40 +330,28 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
         client_security_state_.Clone();
   }
 
-  bool network_instrumentation_enabled = false;
   if (owner_frame_tree_node_id_) {
     FrameTreeNode* owner_frame_tree_node =
         FrameTreeNode::GloballyFindByID(owner_frame_tree_node_id_);
-    new_request.throttling_profile_id =
-        owner_frame_tree_node->current_frame_host()->devtools_frame_token();
-    if (base::FeatureList::IsEnabled(
-            features::kFledgeEnableUserAgentOverrides) &&
-        owner_frame_tree_node != nullptr) {
-      const bool override_user_agent =
-          owner_frame_tree_node->navigator()
-              .GetDelegate()
-              ->ShouldOverrideUserAgentForRendererInitiatedNavigation();
-      if (override_user_agent) {
-        std::string maybe_user_agent =
-            owner_frame_tree_node->navigator()
-                .GetDelegate()
-                ->GetUserAgentOverride(owner_frame_tree_node->frame_tree())
-                .ua_string_override;
-        if (!maybe_user_agent.empty()) {
-          new_request.headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
-                                        std::move(maybe_user_agent));
-        }
-      }
+
+    std::optional<std::string> user_agent_override =
+        GetUserAgentOverrideForProtectedAudience(owner_frame_tree_node);
+    if (user_agent_override) {
+      new_request.headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
+                                    std::move(user_agent_override).value());
     }
 
+    new_request.throttling_profile_id =
+        owner_frame_tree_node->current_frame_host()->devtools_frame_token();
+    bool network_instrumentation_enabled = false;
     devtools_instrumentation::ApplyAuctionNetworkRequestOverrides(
         owner_frame_tree_node, &new_request, &network_instrumentation_enabled);
-  }
-
-  if (network_instrumentation_enabled) {
-    new_request.enable_load_timing = true;
-    if (new_request.trusted_params.has_value()) {
-      new_request.trusted_params->devtools_observer = CreateDevtoolsObserver();
+    if (network_instrumentation_enabled) {
+      new_request.enable_load_timing = true;
+      if (new_request.trusted_params.has_value()) {
+        new_request.trusted_params->devtools_observer =
+            CreateDevtoolsObserver();
+      }
     }
   }
 

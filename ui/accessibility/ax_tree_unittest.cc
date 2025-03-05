@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/scoped_observation.h"
+#include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -201,7 +202,7 @@ class TestAXTreeObserver final : public AXTreeObserver {
                         bool is_ignored_new_value) override {
     attribute_change_log_.push_back(
         base::StringPrintf("IsIgnored changed on node ID %d to %s", node->id(),
-                           is_ignored_new_value ? "true" : "false"));
+                           base::ToString(is_ignored_new_value)));
   }
 
   void OnStateChanged(AXTree* tree,
@@ -209,7 +210,7 @@ class TestAXTreeObserver final : public AXTreeObserver {
                       ax::mojom::State state,
                       bool new_value) override {
     attribute_change_log_.push_back(base::StringPrintf(
-        "%s changed to %s", ToString(state), new_value ? "true" : "false"));
+        "%s changed to %s", ToString(state), base::ToString(new_value)));
   }
 
   void OnStringAttributeChanged(AXTree* tree,
@@ -247,7 +248,7 @@ class TestAXTreeObserver final : public AXTreeObserver {
                               ax::mojom::BoolAttribute attr,
                               bool new_value) override {
     attribute_change_log_.push_back(base::StringPrintf(
-        "%s changed to %s", ToString(attr), new_value ? "true" : "false"));
+        "%s changed to %s", ToString(attr), base::ToString(new_value)));
   }
 
   void OnIntListAttributeChanged(

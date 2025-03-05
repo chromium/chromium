@@ -57,10 +57,9 @@ class PhoneHubUiControllerTest : public AshTestBase,
     phone_hub_manager_.set_host_last_seen_timestamp(std::nullopt);
     phone_hub_manager_.set_eche_connection_handler(handler_.get());
 
-    // Create user 1 session and simulate its login.
-    SimulateUserLogin(kUser1Email);
-    // Create user 2 session.
-    GetSessionControllerClient()->AddUserSession(kUser2Email);
+    // Create user 1 and 2 sessions, with user 1 as active.
+    SimulateUserLogin({kUser1Email});
+    GetSessionControllerClient()->AddUserSession({kUser2Email});
 
     controller_ = std::make_unique<PhoneHubUiController>();
     controller_->AddObserver(this);

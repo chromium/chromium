@@ -460,6 +460,9 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kFloat16Array:
       webdx_feature = WebDXFeature::kFloat16array;
       break;
+    case v8::Isolate::kWasmBranchHinting:
+      webdx_feature = WebDXFeature::kDRAFT_WasmBranchHinting;
+      break;
     default:
       // This can happen if V8 has added counters that this version of Blink
       // does not know about. It's harmless.

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/image_downloader/image_downloader_impl.h"
 
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -295,7 +291,8 @@ void ImageDownloaderImpl::DidFetchImage(
 
   // Remove the image fetcher from our pending list. We're in the callback from
   // MultiResolutionImageResourceFetcher, best to delay deletion.
-  for (auto it = image_fetchers_.begin(); it != image_fetchers_.end(); ++it) {
+  for (auto it = image_fetchers_.begin(); it != image_fetchers_.end();
+       UNSAFE_TODO(++it)) {
     MultiResolutionImageResourceFetcher* image_fetcher = it->get();
     DCHECK(image_fetcher);
     if (image_fetcher == fetcher) {

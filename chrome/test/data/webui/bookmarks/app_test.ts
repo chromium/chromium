@@ -91,7 +91,7 @@ suite('<bookmarks-app>', function() {
     const list = app.shadowRoot!.querySelector('bookmarks-list');
     assertTrue(!!list);
     await flushTasks();
-    const item = list.shadowRoot!.querySelectorAll('bookmarks-item')[0];
+    const item = list.shadowRoot.querySelectorAll('bookmarks-item')[0];
     assertTrue(!!item);
     const hasFocusAttribute = () => app.hasAttribute(HIDE_FOCUS_RING_ATTRIBUTE);
 

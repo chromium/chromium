@@ -17,13 +17,16 @@ constexpr char kAppLocaleUS[] = "en-US";
 
 struct GetInfoParams {
   std::string app_locale = "";
-  std::u16string_view format_string = u"";
+  const char16_t* format_string = nullptr;
 };
 
 std::u16string GetInfo(const AttributeInstance& a,
                        FieldType field_type,
                        GetInfoParams params = {}) {
-  return a.GetInfo(field_type, params.app_locale, params.format_string);
+  return a.GetInfo(field_type, params.app_locale,
+                   params.format_string
+                       ? std::optional(std::u16string(params.format_string))
+                       : std::nullopt);
 }
 
 TEST(AutofillEntityInstanceTest, Attributes) {

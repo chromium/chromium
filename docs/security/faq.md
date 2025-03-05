@@ -1080,6 +1080,11 @@ See our dedicated [Extensions Security FAQ](https://chromium.googlesource.com/ch
 
 See our [Chrome Custom Tabs security FAQ](custom-tabs-faq.md).
 
+<a name="TOC-What-is-the-security-story-for-Fullscreen-"></a>
+### What is the security story for Fullscreen?
+
+See our dedicated [Fullscreen Security FAQ](https://chromium.googlesource.com/chromium/src/+/main/docs/security/fullscreen.md).
+
 <a name="TOC-How-is-security-different-in-Chrome-for-iOS--"></a>
 ### How is security different in Chrome for iOS?
 

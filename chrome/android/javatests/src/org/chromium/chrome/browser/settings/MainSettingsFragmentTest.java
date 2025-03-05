@@ -19,6 +19,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -40,7 +41,9 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.preference.Preference;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.Intents;
@@ -53,6 +56,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -64,6 +68,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -146,6 +151,7 @@ import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 
 /** Test for {@link MainSettings}. Main purpose is to have a quick confidence check on the xml. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -207,11 +213,13 @@ public class MainSettingsFragmentTest {
                 mSigninAndHistorySyncActivityLauncher);
         DeveloperSettings.setIsEnabledForTests(true);
         Intents.init();
-        // Keep render tests consistent by suppressing the "new" label.
-        ChromeSharedPreferences.getInstance()
-                .writeInt(
+
+        // Keep render tests consistent by suppressing "new" labels.
+        final var prefs = ChromeSharedPreferences.getInstance();
+        Stream.of(
                         ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_VIEW_COUNT,
-                        MainSettings.ADDRESS_BAR_NEW_LABEL_MAX_VIEW_COUNT);
+                        ChromePreferenceKeys.APPEARANCE_SETTINGS_VIEW_COUNT)
+                .forEach(key -> prefs.writeInt(key, MainSettings.NEW_LABEL_MAX_VIEW_COUNT));
     }
 
     @After
@@ -926,8 +934,6 @@ public class MainSettingsFragmentTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testAndroidAddressBarFlagOn() {
-        ChromeSharedPreferences.getInstance()
-                .writeInt(ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_VIEW_COUNT, 0);
         startSettings();
         // This setting should only appear for certain devices, even if the flag is enabled. Since
         // this is an instrumentation test there's not a good way to fake or force device
@@ -942,13 +948,8 @@ public class MainSettingsFragmentTest {
                     mMainSettings.findPreference(MainSettings.PREF_ADDRESS_BAR));
         } else {
             assertSettingsExists(MainSettings.PREF_ADDRESS_BAR, AddressBarSettingsFragment.class);
-            String prefTitleWithNewLabel =
-                    SpanApplier.applySpans(
-                                    mMainSettings.getString(R.string.address_bar_settings),
-                                    new SpanInfo("<new>", "</new>"))
-                            .toString();
             Assert.assertEquals(
-                    prefTitleWithNewLabel,
+                    mMainSettings.getString(R.string.address_bar_settings),
                     mMainSettings
                             .findPreference(MainSettings.PREF_ADDRESS_BAR)
                             .getTitle()
@@ -960,69 +961,29 @@ public class MainSettingsFragmentTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testAndroidAddressBar_newLabel() {
-        ChromeSharedPreferences.getInstance()
-                .writeInt(
-                        ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_VIEW_COUNT,
-                        MainSettings.ADDRESS_BAR_NEW_LABEL_MAX_VIEW_COUNT);
-        startSettings();
-        if (!ToolbarPositionController.isToolbarPositionCustomizationEnabled(
-                mSettingsActivityTestRule.getActivity(), false)) {
-            return;
-        }
-
-        assertSettingsExists(MainSettings.PREF_ADDRESS_BAR, AddressBarSettingsFragment.class);
-        String prefTitleWithoutNewLabel =
-                SpanApplier.removeSpanText(
-                                mMainSettings.getString(R.string.address_bar_settings),
-                                new SpanInfo("<new>", "</new>"))
-                        .trim();
-        Assert.assertEquals(
-                prefTitleWithoutNewLabel,
-                mMainSettings.findPreference(MainSettings.PREF_ADDRESS_BAR).getTitle().toString());
-
-        ChromeSharedPreferences.getInstance()
-                .writeInt(
-                        ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_VIEW_COUNT,
-                        MainSettings.ADDRESS_BAR_NEW_LABEL_MAX_VIEW_COUNT - 1);
-        restartSettings();
-
-        String prefTitleWithNewLabel =
-                SpanApplier.applySpans(
-                                mMainSettings.getString(R.string.address_bar_settings),
-                                new SpanInfo("<new>", "</new>"))
-                        .toString();
-        Assert.assertEquals(
-                prefTitleWithNewLabel,
-                mMainSettings.findPreference(MainSettings.PREF_ADDRESS_BAR).getTitle().toString());
-
-        mMainSettings.findPreference(MainSettings.PREF_ADDRESS_BAR).performClick();
-        restartSettings();
-
-        Assert.assertEquals(
-                prefTitleWithoutNewLabel,
-                mMainSettings.findPreference(MainSettings.PREF_ADDRESS_BAR).getTitle().toString());
+        Assume.assumeThat(supportAddressBarSettings(), is(true));
+        testNewPreferenceLabel(
+                AddressBarSettingsFragment.class,
+                MainSettings.PREF_ADDRESS_BAR,
+                ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_VIEW_COUNT,
+                R.string.address_bar_settings);
     }
 
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
-    public void testAndroidAddressBar_cleanipBadPrefValue() {
+    public void testAndroidAddressBar_cleanUpBadPrefValue() {
         ChromeSharedPreferences.getInstance()
                 .writeInt(ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_CLICKED, 1);
         startSettings();
-        if (!ToolbarPositionController.isToolbarPositionCustomizationEnabled(
-                mSettingsActivityTestRule.getActivity(), false)) {
+
+        if (!supportAddressBarSettings()) {
             return;
         }
 
         assertSettingsExists(MainSettings.PREF_ADDRESS_BAR, AddressBarSettingsFragment.class);
-        String prefTitleWithoutNewLabel =
-                SpanApplier.removeSpanText(
-                                mMainSettings.getString(R.string.address_bar_settings),
-                                new SpanInfo("<new>", "</new>"))
-                        .trim();
         Assert.assertEquals(
-                prefTitleWithoutNewLabel,
+                mMainSettings.getString(R.string.address_bar_settings),
                 mMainSettings.findPreference(MainSettings.PREF_ADDRESS_BAR).getTitle().toString());
     }
 
@@ -1073,6 +1034,17 @@ public class MainSettingsFragmentTest {
         Assert.assertEquals(
                 ThemeSettingsEntry.SETTINGS,
                 themePref.getExtras().getInt(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_APPEARANCE_SETTINGS)
+    public void testAppearanceSettingsNewLabel() {
+        testNewPreferenceLabel(
+                AppearanceSettingsFragment.class,
+                MainSettings.PREF_APPEARANCE,
+                ChromePreferenceKeys.APPEARANCE_SETTINGS_VIEW_COUNT,
+                R.string.appearance_settings);
     }
 
     private void startSettings() {
@@ -1133,6 +1105,11 @@ public class MainSettingsFragmentTest {
         return pref;
     }
 
+    private boolean supportAddressBarSettings() {
+        return ToolbarPositionController.isToolbarPositionCustomizationEnabled(
+                ContextUtils.getApplicationContext(), false);
+    }
+
     private boolean supportNotificationSettings() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false;
         return PackageManagerUtils.canResolveActivity(
@@ -1141,5 +1118,44 @@ public class MainSettingsFragmentTest {
 
     private boolean supportThirdPartyFillingSetting() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+    }
+
+    private void testNewPreferenceLabel(
+            @NonNull Class prefFragmentClass,
+            @NonNull String prefKey,
+            @NonNull String viewCountPrefKey,
+            @StringRes int titleId) {
+        // Set up.
+        final var prefs = ChromeSharedPreferences.getInstance();
+        prefs.writeInt(viewCountPrefKey, MainSettings.NEW_LABEL_MAX_VIEW_COUNT);
+        startSettings();
+
+        final String prefTitleWithoutNewLabel = mMainSettings.getString(titleId);
+
+        // Case: Pref has been viewed `NEW_LABEL_MAX_VIEW_COUNT` times.
+        assertSettingsExists(prefKey, prefFragmentClass);
+        Assert.assertEquals(
+                prefTitleWithoutNewLabel,
+                mMainSettings.findPreference(prefKey).getTitle().toString());
+
+        final String prefTitleWithNewLabel =
+                SpanApplier.applySpans(
+                                mMainSettings.getString(
+                                        R.string.prefs_new_label, prefTitleWithoutNewLabel),
+                                new SpanInfo("<new>", "</new>"))
+                        .toString();
+
+        // Case: Pref has been viewed fewer than `NEW_LABEL_MAX_VIEW_COUNT` times.
+        prefs.writeInt(viewCountPrefKey, MainSettings.NEW_LABEL_MAX_VIEW_COUNT - 1);
+        restartSettings();
+        Assert.assertEquals(
+                prefTitleWithNewLabel, mMainSettings.findPreference(prefKey).getTitle().toString());
+
+        // Case: Pref has been clicked.
+        mMainSettings.findPreference(prefKey).performClick();
+        restartSettings();
+        Assert.assertEquals(
+                prefTitleWithoutNewLabel,
+                mMainSettings.findPreference(prefKey).getTitle().toString());
     }
 }

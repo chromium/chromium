@@ -129,7 +129,7 @@ MediaStreamSource::MediaStreamSource(
     bool remote,
     std::unique_ptr<WebPlatformMediaStreamSource> platform_source,
     ReadyState ready_state,
-    bool requires_consumer)
+    bool requires_webaudio_consumer_)
     : MediaStreamSource(id,
                         display::kInvalidDisplayId,
                         type,
@@ -137,7 +137,7 @@ MediaStreamSource::MediaStreamSource(
                         remote,
                         std::move(platform_source),
                         ready_state,
-                        requires_consumer) {}
+                        requires_webaudio_consumer_) {}
 
 MediaStreamSource::MediaStreamSource(
     const String& id,
@@ -147,14 +147,14 @@ MediaStreamSource::MediaStreamSource(
     bool remote,
     std::unique_ptr<WebPlatformMediaStreamSource> platform_source,
     ReadyState ready_state,
-    bool requires_consumer)
+    bool requires_webaudio_consumer)
     : id_(id),
       display_id_(display_id),
       type_(type),
       name_(name),
       remote_(remote),
       ready_state_(ready_state),
-      requires_consumer_(requires_consumer),
+      requires_webaudio_consumer_(requires_webaudio_consumer),
       platform_source_(std::move(platform_source)) {
   SendLogMessage(
       String::Format(
@@ -217,22 +217,23 @@ void MediaStreamSource::SetAudioProcessingProperties(bool echo_cancellation,
   voice_isolation_ = voice_isolation;
 }
 
-void MediaStreamSource::SetAudioConsumer(
-    WebAudioDestinationConsumer* consumer) {
-  DCHECK(requires_consumer_);
-  base::AutoLock locker(audio_consumer_lock_);
-  // audio_consumer_ should only be set once.
-  DCHECK(!audio_consumer_);
-  audio_consumer_ = std::make_unique<ConsumerWrapper>(consumer);
+void MediaStreamSource::SetWebAudioConsumer(
+    WebAudioDestinationConsumer* webaudio_consumer) {
+  DCHECK(requires_webaudio_consumer_);
+
+  base::AutoLock locker(webaudio_consumer_lock_);
+  // webaudio_consumer_ should only be set once.
+  DCHECK(!webaudio_consumer_);
+  webaudio_consumer_ = std::make_unique<ConsumerWrapper>(webaudio_consumer);
 }
 
-bool MediaStreamSource::RemoveAudioConsumer() {
-  DCHECK(requires_consumer_);
+bool MediaStreamSource::RemoveWebAudioConsumer() {
+  DCHECK(requires_webaudio_consumer_);
 
-  base::AutoLock locker(audio_consumer_lock_);
-  if (!audio_consumer_)
+  base::AutoLock locker(webaudio_consumer_lock_);
+  if (!webaudio_consumer_)
     return false;
-  audio_consumer_.reset();
+  webaudio_consumer_.reset();
   return true;
 }
 
@@ -267,23 +268,24 @@ void MediaStreamSource::SetAudioFormat(int number_of_channels,
                                 Id().Utf8().c_str(), number_of_channels,
                                 sample_rate)
                      .Utf8());
-  DCHECK(requires_consumer_);
-  base::AutoLock locker(audio_consumer_lock_);
-  if (!audio_consumer_)
+  DCHECK(requires_webaudio_consumer_);
+
+  base::AutoLock locker(webaudio_consumer_lock_);
+  if (!webaudio_consumer_)
     return;
-  audio_consumer_->SetFormat(number_of_channels, sample_rate);
+  webaudio_consumer_->SetFormat(number_of_channels, sample_rate);
 }
 
 void MediaStreamSource::ConsumeAudio(AudioBus* bus, int number_of_frames) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("mediastream"),
                "MediaStreamSource::ConsumeAudio");
 
-  DCHECK(requires_consumer_);
+  DCHECK(requires_webaudio_consumer_);
 
-  base::AutoLock locker(audio_consumer_lock_);
-  if (!audio_consumer_)
+  base::AutoLock locker(webaudio_consumer_lock_);
+  if (!webaudio_consumer_)
     return;
-  audio_consumer_->ConsumeAudio(bus, number_of_frames);
+  webaudio_consumer_->ConsumeAudio(bus, number_of_frames);
 }
 
 void MediaStreamSource::OnDeviceCaptureConfigurationChange(
@@ -343,8 +345,8 @@ void MediaStreamSource::Trace(Visitor* visitor) const {
 
 void MediaStreamSource::Dispose() {
   {
-    base::AutoLock locker(audio_consumer_lock_);
-    audio_consumer_.reset();
+    base::AutoLock locker(webaudio_consumer_lock_);
+    webaudio_consumer_.reset();
   }
   platform_source_.reset();
 }

@@ -185,11 +185,6 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
                                  bool consented_to_sync,
                                  ScopedPrefCommit& scoped_pref_commit);
 
-  // Invoked during initialization, it logs metrics to understand what fraction
-  // of users have a sync-enabled primary account in the past, on the same
-  // profile.
-  void RecordHadPreviousSyncAccount() const;
-
   // Starts the sign out process.
   void StartSignOut(signin_metrics::ProfileSignout signout_source_metric,
                     RemoveAccountsOption remove_option);

@@ -11,7 +11,9 @@ shown first, followed by targets with one dep that needs annotation, etc.
 
 import argparse
 import collections
+import json
 import pathlib
+import re
 import subprocess
 import sys
 
@@ -27,6 +29,54 @@ _DEPENDENCY_JSON_PATH = '/tmp/class_and_target_stats_deps.json'
 _NOMARK_LIST_PATH = pathlib.Path('/tmp/java_file_stats_file_nomark')
 _FILE_CACHE_PATH = pathlib.Path('/tmp/java_file_stats_file_cache')
 _CHROME_PACKAGE_PREFIXES = ('org.chromium', 'com.google')
+
+# These are classes that show up as unmarked but are not really (e.g.
+# annotations).
+_IGNORED_CLASSES_RE = [
+    # These are just annotations in build_java.
+    r'org.chromium.build.annotations.*',
+    # Errorprone plugins don't need annotations.
+    r'org.chromium.tools.errorprone.plugin.*',
+    # Not sure why this one isn't annotated.
+    r'org.chromium.base.test.ClangProfiler',
+]
+
+
+def gen_build_target_graph(out_dir: pathlib.Path, include_testonly: bool,
+                           no_cache: bool):
+    project_json = out_dir / 'project.json'
+    if not project_json.exists() or no_cache:
+        subprocess.run(['gn', 'gen', '--ide=json', str(out_dir)])
+    assert project_json.exists()
+    with project_json.open() as f:
+        data = json.load(f)
+    outbound = collections.defaultdict(set)
+    inbound = collections.defaultdict(set)
+    skip = set()
+    if not include_testonly:
+        for target, info in data['targets'].items():
+            if not info['testonly']:
+                continue
+        if '__' in target:
+            target = target.split('__')[0]
+        skip.add(target)
+    for target, info in data['targets'].items():
+        if '__' in target:
+            target = target.split('__')[0]
+        if target in skip:
+            continue
+        for dep in info['deps']:
+            if '__' in dep:
+                dep = dep.split('__')[0]
+            if dep in skip:
+                continue
+            # After removing subtargets, A_java depends on A_java__header, but
+            # we don't want that in the graph.
+            if target == dep:
+                continue
+            outbound[target].add(dep)
+            inbound[dep].add(target)
+    return outbound, inbound, skip
 
 
 def main():
@@ -45,11 +95,23 @@ def main():
     parser.add_argument(
         '--no-cache',
         action='store_true',
-        help='Skip the /tmp caches, useful when the list files changes.')
+        help='Skip the /tmp caches and regenerate project.json, useful when '
+        'the list files changes.')
+    parser.add_argument(
+        '-C',
+        '--out-dir',
+        required=True,
+        type=pathlib.Path,
+        help='Used to generate project.json in the outdir and use it for the '
+        'target graph.')
     parser.add_argument('-v',
                         '--verbose',
                         action='store_true',
                         help='Show more output.')
+    parser.add_argument(
+        '--include-testonly',
+        action='store_true',
+        help='Include testonly targets, otherwise excluded by default.')
     args = parser.parse_args()
     subprocess.run([
         'gsutil.py', 'cp', 'gs://clank-dependency-graphs/latest/all.json',
@@ -59,6 +121,8 @@ def main():
     class_graph, _, _ = serialization.load_class_and_package_graphs_from_file(
         _DEPENDENCY_JSON_PATH)
     target_graph = target_dependency.JavaTargetDependencyGraph(class_graph)
+    target_outbound, target_inbound, skipped_targets = gen_build_target_graph(
+        args.out_dir, args.include_testonly, args.no_cache)
 
     cmd = [
         str(_SRC / 'tools/android/nullaway/java_file_stats.py'),
@@ -83,6 +147,11 @@ def main():
             # Skip all files without /org/ or /com/ since they are likely not
             # relevant for chrome packages (e.g. usually third_party stuff).
             continue
+        if any(
+                re.match(pattern, full_name)
+                for pattern in _IGNORED_CLASSES_RE):
+            #print(f'Ignoring {full_name}')
+            continue
         unmarked_classes.add(full_name)
 
     class_nodes = [
@@ -100,60 +169,76 @@ def main():
         print(f'After filtering {len(filtered_class_nodes)}')
 
     targets_num_unmarked = collections.defaultdict(int)
+    targets_unmarked_classes = collections.defaultdict(set)
+    java_targets = set()
     for n in filtered_class_nodes:
         for t in n.build_targets:
+            if '__' in t:
+                t = t.split('__')[0]
             # Skip these jni ones, not interesting.
             if 'jni_headers_java' in t:
                 continue
+            if t in skipped_targets:
+                continue
+            if not args.include_testonly and 'test' in t:
+                continue
+            java_targets.add(t)
             targets_num_unmarked[t] += 1
+            targets_unmarked_classes[t].add(n.name)
     if args.verbose:
         print(f'{len(targets_num_unmarked)=}')
 
-    targets_list = set(targets_num_unmarked.keys())
-    targets_unmarked_deps = collections.defaultdict(set)
-    targets_unmarked_dependents = collections.defaultdict(set)
-    to_remove = set()
-    for target in targets_list:
+    target_transitive_outbound = collections.defaultdict(set)
+    target_transitive_inbound = collections.defaultdict(set)
+    for target in java_targets:
+        # These are deps of this target
+        target_transitive_outbound[target].update(target_outbound[target])
+        target_transitive_inbound[target].update(target_inbound[target])
         node = target_graph.get_node_by_key(target)
         if node is None:
-            if args.verbose:
-                print(f'Removing {target=} not in target graph.')
-            to_remove.add(target)
             continue
-        # These are deps of this target
         for n in node.outbound:
-            if n._unique_key in targets_num_unmarked:
-                targets_unmarked_deps[target].add(n._unique_key)
+            if n._unique_key not in target_transitive_outbound[target]:
+                #print(target, 'inbound', n._unique_key)
+                target_transitive_outbound[target].add(n._unique_key)
         # These are targets that depend on this target
         for n in node.inbound:
-            if n._unique_key in targets_num_unmarked:
-                targets_unmarked_dependents[target].add(n._unique_key)
-    targets_list = set(t for t in targets_list if t not in to_remove)
+            if n._unique_key not in target_transitive_inbound[target]:
+                #print(target, 'outbound', n._unique_key)
+                target_transitive_inbound[target].add(n._unique_key)
 
-    # Account for up to 5-levels of transitive deps. This isn't perfect as some
-    # targets define deps in GN that the target graph doesn't pick up on (e.g.
-    # //chrome/browser/settings/internal_java), but this is good enough for this
-    # script.
+    # Account for up to 5-levels of transitive deps (~2^5). This isn't perfect
+    # as some targets define deps in GN that the target graph doesn't pick up on
+    # (e.g. //chrome/browser/settings/internal_java), but this is good enough
+    # for this script.
     for _ in range(5):
         # Allow consideration of transitive deps that do not have any unmarked.
-        targets_list.update(targets_unmarked_deps.keys())
-        targets_list.update(targets_unmarked_dependents.keys())
-        for target in targets_list:
-            node = target_graph.get_node_by_key(target)
-            assert node is not None
-            for n in node.outbound:
-                targets_unmarked_deps[target] |= targets_unmarked_deps[
-                    n._unique_key]
-            for n in node.inbound:
-                targets_unmarked_dependents[target] |= (
-                    targets_unmarked_dependents[n._unique_key])
+        for target in java_targets:
+            # These are deps of this target
+            for t in target_outbound[target]:
+                target_transitive_outbound[target].update(
+                    target_transitive_outbound[t])
+            # These are targets that depend on this target
+            for t in target_inbound[target]:
+                target_transitive_inbound[target].update(
+                    target_transitive_inbound[t])
+
+    targets_unmarked_deps = collections.defaultdict(set)
+    targets_unmarked_dependents = collections.defaultdict(set)
+    for target in java_targets:
+        for dep in target_transitive_outbound[target]:
+            if targets_num_unmarked[dep] > 0:
+                targets_unmarked_deps[target].add(dep)
+        for dep in target_transitive_inbound[target]:
+            if targets_num_unmarked[dep] > 0:
+                targets_unmarked_dependents[target].add(dep)
 
     if not args.all:
-        targets_list = set(t for t in targets_list
+        java_targets = set(t for t in java_targets
                            if len(targets_unmarked_deps[t]) == 0)
 
     # Only keep targets that actually need to be annotated.
-    targets_list = [t for t in targets_list if targets_num_unmarked[t] > 0]
+    targets_list = [t for t in java_targets if targets_num_unmarked[t] > 0]
 
     # Prefer targets that don't depend on any unmarked deps, then break ties by
     # preferring targets that many unmarked targets depend on, then break ties
@@ -169,6 +254,11 @@ def main():
         print(f'{t[2:]} deps={len(targets_unmarked_deps[t])} '
               f'dependent={len(targets_unmarked_dependents[t])} '
               f'classes={targets_num_unmarked[t]}')
+        if args.verbose:
+            for tt in targets_unmarked_deps[t]:
+                print(f'> {tt}')
+            for c in targets_unmarked_classes[t]:
+                print(f'$ {c}')
 
 
 if __name__ == '__main__':

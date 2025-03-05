@@ -145,10 +145,6 @@ std::string GetCpuBitness();
 std::string BuildOSCpuInfoFromOSVersionAndCpuType(const std::string& os_version,
                                                   const std::string& cpu_type);
 
-// Returns the reduced User-agent string for
-// https://github.com/WICG/ua-client-hints.
-std::string GetReducedUserAgent(bool mobile, std::string major_version);
-
 // TODO(crbug.com/40200617): Remove this after user agent reduction phase 5 and
 // --force-major-version-to-minor is removed.
 // Return the <unifiedPlatform> token of a reduced User-Agent header.

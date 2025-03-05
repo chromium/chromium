@@ -206,7 +206,9 @@ final class CursorAnchorInfoController {
     }
 
     public void updateCursorAnchorInfoData(InputCursorAnchorInfo cursorAnchorInfo, View view) {
-        if (mInputCursorAnchorInfo != null && mInputCursorAnchorInfo.equals(cursorAnchorInfo)) {
+        if (mInputCursorAnchorInfo != null
+                && InputCursorAnchorInfoComparator.equals(
+                        mInputCursorAnchorInfo, cursorAnchorInfo)) {
             return;
         }
         mInputCursorAnchorInfo = cursorAnchorInfo;

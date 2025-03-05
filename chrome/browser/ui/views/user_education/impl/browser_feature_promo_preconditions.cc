@@ -63,7 +63,14 @@ user_education::FeaturePromoResult WindowActivePrecondition::CheckPrecondition(
     widget = views::Widget::GetWidgetForNativeWindow(
         contents->GetTopLevelNativeWindow());
   }
-  return widget && widget->GetPrimaryWindowWidget()->ShouldPaintAsActive()
+  if (widget) {
+    // For some reason sometimes primary can be null;
+    // see https://crbug.com/400921315
+    if (auto* const primary = widget->GetPrimaryWindowWidget()) {
+      widget = primary;
+    }
+  }
+  return widget && widget->ShouldPaintAsActive()
              ? user_education::FeaturePromoResult::Success()
              : user_education::FeaturePromoResult::kBlockedByUi;
 }

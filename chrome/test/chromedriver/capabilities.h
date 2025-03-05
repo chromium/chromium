@@ -165,6 +165,9 @@ struct Capabilities {
   // bound to ChromeDriver's process. If true, Chrome will not quit if
   // ChromeDriver dies.
   bool detach;
+  // Whether to attempt terminating the browser process gracefully before
+  // resorting to SIGKILL.
+  bool quit_gracefully = false;
 
   std::optional<MobileDevice> mobile_device;
 

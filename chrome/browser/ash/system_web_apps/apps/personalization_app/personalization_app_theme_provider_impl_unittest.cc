@@ -366,7 +366,7 @@ class PersonalizationAppThemeProviderImplJellyTest
   void SetUp() override {
     PersonalizationAppThemeProviderImplTest::SetUp();
     AddAndLoginUser();
-    GetSessionControllerClient()->AddUserSession(kAccountId, kFakeTestEmail);
+    GetSessionControllerClient()->AddUserSession({kFakeTestEmail}, kAccountId);
   }
 
  protected:

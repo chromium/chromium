@@ -248,9 +248,10 @@ class FatalCrashEventsObserverTestBase : public ::ash::NoSessionAshTestBase {
                                    user_manager::UserType user_type) {
     const auto account_id = AccountId::FromUserEmail(std::string(user_email));
     GetSessionControllerClient()->AddUserSession(
-        account_id, account_id.GetUserEmail(), user_type,
-        /*pref_service=*/nullptr, /*is_new_profile=*/false,
-        /*given_name=*/std::string(), /*is_managed=*/true);
+        {.display_email = account_id.GetUserEmail(),
+         .user_type = user_type,
+         .is_account_managed = true},
+        account_id);
     GetSessionControllerClient()->SwitchActiveUser(account_id);
     GetSessionControllerClient()->SetSessionState(
         session_manager::SessionState::ACTIVE);
@@ -262,7 +263,7 @@ class FatalCrashEventsObserverTestBase : public ::ash::NoSessionAshTestBase {
   // `SimulateUserLogin` defined in this class instead.
   void SimulateUserLogin(const std::string& user_email,
                          user_manager::UserType user_type) {
-    NoSessionAshTestBase::SimulateUserLogin(user_email, user_type);
+    NoSessionAshTestBase::SimulateUserLogin({user_email, user_type});
   }
 
   ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;

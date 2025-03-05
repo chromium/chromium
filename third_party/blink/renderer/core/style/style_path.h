@@ -10,13 +10,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
 class CSSValue;
-class Path;
-class SVGPathByteStream;
 
 class StylePath final : public BasicShape {
  public:

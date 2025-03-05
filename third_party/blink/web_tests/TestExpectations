@@ -1050,12 +1050,6 @@ crbug.com/336604 external/wpt/css/css-flexbox/flexbox-collapsed-item-horiz-003.h
 crbug.com/336604 external/wpt/css/css-flexbox/flexbox_visibility-collapse-line-wrapping.html [ Failure ]
 crbug.com/336604 external/wpt/css/css-flexbox/flexbox_visibility-collapse.html [ Failure ]
 
-# Temporary failures while we remove some -webkit-box quirks.
-crbug.com/384765587 external/wpt/compat/webkit-box-horizontal-reverse-variants.html [ Failure ]
-crbug.com/384765587 external/wpt/compat/webkit-box-horizontal-rtl-variants.html [ Failure ]
-crbug.com/384765587 external/wpt/compat/webkit-box-ignore-box-pack.html [ Failure ]
-crbug.com/384765587 fast/deprecated-flexbox/017.html [ Failure ]
-
 # [css-lists]
 crbug.com/1123457 external/wpt/css/css-lists/counter-list-item.html [ Failure ]
 crbug.com/1123457 external/wpt/css/css-lists/counter-list-item-2.html [ Failure ]
@@ -2613,6 +2607,9 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/400775108 [ Win ] external/wpt/html/canvas/offscreen/manual/text/canvas.2d.offscreen.worker.lang.inherit.html [ Failure ]
+crbug.com/400781219 [ Win11-arm64 ] external/wpt/mathml/presentation-markup/operators/mo-form-dynamic.html [ Failure ]
+crbug.com/400781219 [ Win10.20h2 ] external/wpt/mathml/presentation-markup/operators/mo-form-dynamic.html [ Failure ]
 crbug.com/400504661 [ Mac ] external/wpt/editing/plaintext-only/nested-with-contenteditable-true.html [ Failure ]
 crbug.com/399763756 [ Mac ] external/wpt/editing/whitespaces/forwarddelete-chars-following-collapsible-white-space.html [ Failure ]
 crbug.com/399769591 [ Win10.20h2 ] external/wpt/bluetooth/bidi/requestDevice/acceptAllDevices/device-with-name.https.window.html [ Failure Timeout ]
@@ -9037,8 +9034,8 @@ crbug.com/398165466 [ Debug Mac14 ] http/tests/inspector-protocol/tracing/screen
 crbug.com/387898495 fast/mediastream/MediaStreamTrack-applyConstraints.html [ Failure Pass ]
 
 # Test is flaky because of window activation, will fix shortly but don't want to block builds for now.
-crbug.com/340606651 external/wpt/partitioned-popins/partitioned-popins.cookies-blocked.tentative.sub.https.window.html [ Pass Failure ]
-crbug.com/340606651 external/wpt/partitioned-popins/partitioned-popins.cookies-allowed.tentative.sub.https.window.html [ Pass Failure ]
+crbug.com/340606651 external/wpt/partitioned-popins/partitioned-popins.cookies-blocked.tentative.sub.https.window.html [ Failure Pass ]
+crbug.com/340606651 external/wpt/partitioned-popins/partitioned-popins.cookies-allowed.tentative.sub.https.window.html [ Failure Pass ]
 
 # Gardener 2025-03-03
 crbug.com/381238355 [ Mac11 ] virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-fit-fill-img.html [ Failure Pass ]

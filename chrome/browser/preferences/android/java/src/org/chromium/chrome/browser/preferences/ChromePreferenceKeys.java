@@ -56,6 +56,10 @@ public final class ChromePreferenceKeys {
     public static final String ADDRESS_BAR_SETTINGS_VIEW_COUNT =
             "Chrome.AddressBar.SettingsViewCount";
 
+    public static final String APPEARANCE_SETTINGS_CLICKED = "Chrome.Appearance.SettingsClicked";
+    public static final String APPEARANCE_SETTINGS_VIEW_COUNT =
+            "Chrome.Appearance.SettingsViewCount";
+
     /** The language code to override application language with. */
     public static final String APPLICATION_OVERRIDE_LANGUAGE =
             "Chrome.Language.ApplicationOverrideLanguage";
@@ -947,6 +951,8 @@ public final class ChromePreferenceKeys {
                 ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
                 ADDRESS_BAR_SETTINGS_CLICKED,
                 ADDRESS_BAR_SETTINGS_VIEW_COUNT,
+                APPEARANCE_SETTINGS_CLICKED,
+                APPEARANCE_SETTINGS_VIEW_COUNT,
                 AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER,
                 AUTOFILL_ASSISTANT_PROACTIVE_HELP_ENABLED,
                 AUTOFILL_THIRD_PARTY_MODE_STATE,

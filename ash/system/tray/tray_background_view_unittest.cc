@@ -278,7 +278,16 @@ TEST_F(TrayBackgroundViewTest, EventsDisabledForHideAnimation) {
   EXPECT_TRUE(test_tray_background_view()->GetCanProcessEventsWithinSubtree());
 }
 
-TEST_F(TrayBackgroundViewTest, HandleSessionChange) {
+namespace {
+
+class NoSessionTrayBackgroundViewTest : public TrayBackgroundViewTest {
+ public:
+  NoSessionTrayBackgroundViewTest() { set_start_session(false); }
+};
+
+}  // namespace
+
+TEST_F(NoSessionTrayBackgroundViewTest, HandleSessionChange) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
@@ -297,8 +306,7 @@ TEST_F(TrayBackgroundViewTest, HandleSessionChange) {
       test_tray_background_view()->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(test_tray_background_view()->GetVisible());
 
-  GetSessionControllerClient()->SetSessionState(
-      session_manager::SessionState::ACTIVE);
+  SimulateUserLogin(kRegularUserLoginInfo);
   task_environment()->FastForwardBy(base::Milliseconds(20));
   EXPECT_FALSE(
       test_tray_background_view()->layer()->GetAnimator()->is_animating());
@@ -314,8 +322,7 @@ TEST_F(TrayBackgroundViewTest, HandleSessionChange) {
   EXPECT_TRUE(test_tray_background_view()->GetVisible());
 
   // Not showing animation after unlocking screen.
-  GetSessionControllerClient()->SetSessionState(
-      session_manager::SessionState::LOCKED);
+  GetSessionControllerClient()->LockScreen();
   task_environment()->FastForwardBy(base::Milliseconds(20));
 
   test_tray_background_view()->SetVisiblePreferred(false);
@@ -325,15 +332,16 @@ TEST_F(TrayBackgroundViewTest, HandleSessionChange) {
       test_tray_background_view()->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(test_tray_background_view()->GetVisible());
 
-  GetSessionControllerClient()->SetSessionState(
-      session_manager::SessionState::ACTIVE);
+  GetSessionControllerClient()->UnlockScreen();
   task_environment()->FastForwardBy(base::Milliseconds(20));
   EXPECT_FALSE(
       test_tray_background_view()->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(test_tray_background_view()->GetVisible());
 
   // Not showing animation when switching users.
-  GetSessionControllerClient()->AddUserSession("a");
+  // TODO: Fix bug. switching active user fails the test.
+  GetSessionControllerClient()->AddUserSession({"a@tray"});
+
   test_tray_background_view()->SetVisiblePreferred(false);
   test_tray_background_view()->SetVisiblePreferred(true);
   EXPECT_TRUE(

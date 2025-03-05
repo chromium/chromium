@@ -1128,11 +1128,8 @@ class UnifiedSystemTrayAccessibilityTest : public AshTestBase {
   void RegisterUserWithUserPrefs(const AccountId& account_id,
                                  user_manager::UserType user_type) {
     // Create a fake user prefs map.
-    GetSessionControllerClient()->Reset();
-    GetSessionControllerClient()->AddUserSession(user_email, user_type);
-    GetSessionControllerClient()->SwitchActiveUser(account_id);
-    GetSessionControllerClient()->SetSessionState(
-        session_manager::SessionState::ACTIVE);
+    ClearLogin();
+    SimulateUserLogin({user_email, user_type}, account_id);
   }
 
  protected:

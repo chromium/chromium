@@ -268,7 +268,7 @@
         Enhanced Calendar
       </message>
       <message name="IDS_IOS_AI_PROTOTYPING_CALENDAR_PROMPT_PLACEHOLDER" translateable="false" desc="The placeholder for the prompt text field of the enhanced calendar page in the AI prototyping menu [Length: unlimited].">
-        (Optional) Insert your custom prompt...
+        (Optional) Insert your custom prompt:
       </message>
       <message name="IDS_IOS_AI_PROTOTYPING_CALENDAR_SELECTED_TEXT_PLACEHOLDER" translateable="false" desc="The placeholder for the 'selected text' (date/time) text field of the enhanced calendar page in the AI prototyping menu [Length: unlimited].">
         Insert your 'selected text' (date/time)...
@@ -287,6 +287,9 @@
       </message>
       <message name="IDS_IOS_AI_PROTOTYPING_QUERY_PLACEHOLDER" translateable="false" desc="Query placeholder text for AI prototyping menu [Length: unlimited].">
         Insert your query...
+      </message>
+      <message name="IDS_IOS_AI_PROTOTYPING_RESULT_PLACEHOLDER" translateable="false" desc="The placeholder for the result text field of all pages in the AI prototyping menu [Length: unlimited].">
+        Result will appear here...
       </message>
       <message name="IDS_IOS_AI_PROTOTYPING_SERVER_SIDE_SUBMIT" translateable="false" desc="Server side submit button text for AI prototyping menu [Length: unlimited].">
         Server Side Submit

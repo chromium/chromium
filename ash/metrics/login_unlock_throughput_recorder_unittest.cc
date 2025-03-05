@@ -201,7 +201,7 @@ class LoginUnlockThroughputRecorderTestBase : public LoginTestBase {
   }
 
   void LoginOwner() {
-    SimulateUserLogin(kDefaultUserEmail);
+    SimulateUserLogin(kRegularUserLoginInfo);
     LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_ACTIVE,
                                         LoginState::LOGGED_IN_USER_REGULAR);
   }

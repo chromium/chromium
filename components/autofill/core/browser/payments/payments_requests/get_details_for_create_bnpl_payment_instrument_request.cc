@@ -67,9 +67,10 @@ GetDetailsForCreateBnplPaymentInstrumentRequest::GetRequestContent() {
 void GetDetailsForCreateBnplPaymentInstrumentRequest::ParseResponse(
     const base::Value::Dict& response) {
   if (const std::string* context_token = response.FindString("context_token")) {
-    context_token_ = std::move(*context_token);
+    context_token_ = context_token ? *context_token : std::string();
   }
 
+  // TODO(crbug.com/399677795): Parse legal message to `LegalMessageLines`.
   if (const base::Value::Dict* legal_message_value =
           response.FindDict("legal_message")) {
     legal_message_ =
@@ -78,6 +79,7 @@ void GetDetailsForCreateBnplPaymentInstrumentRequest::ParseResponse(
 }
 
 bool GetDetailsForCreateBnplPaymentInstrumentRequest::IsResponseComplete() {
+  // TODO(crbug.com/399677795): Add check legal_message is not empty.
   return !context_token_.empty() && legal_message_;
 }
 

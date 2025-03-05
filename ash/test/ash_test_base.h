@@ -15,6 +15,7 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
 #include "ash/test/ash_test_helper.h"
+#include "ash/test/login_info.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_types.h"
@@ -77,8 +78,6 @@ class TestShellDelegate;
 class TestSystemTrayClient;
 class UnifiedSystemTray;
 class WorkAreaInsets;
-
-inline constexpr std::string kDefaultUserEmail = "user0@tray";
 
 // Base class for most tests in //ash. Constructs ash::Shell and all its
 // dependencies. Provides a user login session (use NoSessionAshTestBase for
@@ -319,33 +318,24 @@ class AshTestBase : public testing::Test {
 
   AmbientAshTestHelper* GetAmbientAshTestHelper();
 
-  // Simulates a user sign-in, and returns an AccountId used to sign in.  It
-  // creates a new user session, adds it to existing user sessions and makes it
-  // the active user session.
-  //
-  // For convenience |user_email| is used to create an |AccountId|. For testing
-  // behavior where |AccountId|s are compared, prefer the method of the same
-  // name that takes an |AccountId| created with a valid storage key instead.
-  // See the documentation for|AccountId::GetUserEmail| for discussion.
+  // Simulates a user sign-in, and returns an AccountId used to sign in.
+  // Please see `AshTestHelper::SimulateUserLogin` for more details.
   AccountId SimulateUserLogin(
-      const std::string& user_email,
-      user_manager::UserType user_type = user_manager::UserType::kRegular);
-
-  // Simulates a user sign-in. It creates a new user session, adds it to
-  // existing user sessions and makes it the active user session.
-  void SimulateUserLogin(
-      const AccountId& account_id,
-      user_manager::UserType user_type = user_manager::UserType::kRegular,
+      LoginInfo login_info,
+      std::optional<AccountId> opt_account_id = std::nullopt,
       std::unique_ptr<PrefService> pref_service = nullptr);
+
+  // Similar to above, but it uses AccountId with default values.
+  void SimulateUserLogin(const AccountId& account_id);
 
   // Simular to SimulateUserLogin but for a newly created user first ever login.
   AccountId SimulateNewUserFirstLogin(const std::string& user_email);
 
   // Similar to SimulateUserLogin but for a guest user.
-  void SimulateGuestLogin();
+  AccountId SimulateGuestLogin();
 
   // Simulates kiosk mode. |user_type| must correlate to a kiosk type user.
-  void SimulateKioskMode(user_manager::UserType user_type);
+  AccountId SimulateKioskMode(user_manager::UserType user_type);
 
   // Switches the active user to `account_id`;
   void SwitchActiveUser(const AccountId& account_id);

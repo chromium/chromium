@@ -344,13 +344,18 @@ class AutofillField : public FormFieldData {
   //
   // Only one format string is stored at a time: the one with the
   // highest-ranking `FormatStringSource`.
-  const std::string& format_string() const { return format_string_; }
+  base::optional_ref<const std::u16string> format_string() const {
+    if (format_string_source_ == FormatStringSource::kUnset) {
+      return std::nullopt;
+    }
+    return format_string_;
+  }
 
   FormatStringSource format_string_source() const {
     return format_string_source_;
   }
 
-  void set_format_string_unless_overruled(std::string format_string,
+  void set_format_string_unless_overruled(std::u16string format_string,
                                           FormatStringSource source) {
     if (format_string_source_ <= source) {
       format_string_ = std::move(format_string);
@@ -504,7 +509,7 @@ class AutofillField : public FormFieldData {
   // Corresponds to the requirements determined by the Autofill server.
   std::optional<PasswordRequirementsSpec> password_requirements_;
 
-  std::string format_string_;
+  std::u16string format_string_;
   FormatStringSource format_string_source_ = FormatStringSource::kUnset;
 
   // Predictions which where calculated on the client. This is initialized to

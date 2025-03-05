@@ -305,7 +305,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
-  'boringssl_revision': '757f994823ea53c3978947e116da115b59ea413e',
+  'boringssl_revision': 'a57d1b883707d1246f7e6fe4488c8dc4eba0ee00',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Fuchsia sdk
   # and whatever else without interference from each other.
@@ -329,7 +329,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling NaCl
   # and whatever else without interference from each other.
-  'nacl_revision': '1258a9e17b2302a1f3a6145d8f70e28a1425afe3',
+  'nacl_revision': 'bcb2019294eebe8f13d3dd624d2f9982dabe6153',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling freetype
   # and whatever else without interference from each other.
@@ -361,7 +361,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
-  'crossbench_revision': '24f2876a66bf7818da294dd2a8f2024a8e4d18d7',
+  'crossbench_revision': '52d2231984ba01eb7363a65e80771d8b95c021ec',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libFuzzer
   # and whatever else without interference from each other.
@@ -377,7 +377,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '2380d438d1c56f2e46883ee3910dc33706cf3b7d',
+  'devtools_frontend_revision': '6f29fce188fe574a774e53359d3e6a24a8f0e7fd',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1457,7 +1457,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'e674369492fb6c44aa8891273ad886cf23862010',
+    '2bc2befef43e3144307a096382f473b306133d1a',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2309,7 +2309,7 @@ deps = {
     Var('chromium_git') + '/webm/libvpx.git' + '@' +  '95afae324986797afb19a606f3d95ecdf21e99a7',
 
   'src/third_party/libwebm/source':
-    Var('chromium_git') + '/webm/libwebm.git' + '@' + 'b4f01ea3ed6fd00923caa383bb2cf6f7a0b7f633',
+    Var('chromium_git') + '/webm/libwebm.git' + '@' + 'e79a98159fdf6d1aa37b3500e32c6410a2cbe268',
 
   'src/third_party/libwebp/src':
     Var('chromium_git') + '/webm/libwebp.git' + '@' +  '2af6c034ac871c967e04c8c9f8bf2dbc2e271b18',
@@ -2818,7 +2818,7 @@ deps = {
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + '3a7525ec0c8f710b3cec586d1451dc5c1ca41759',
+    Var('webrtc_git') + '/src.git' + '@' + '72a1d7d002ed820dc287074a5537bb789d0d38b5',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -2864,7 +2864,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/linux-amd64',
-          'version': 'uLQB_1WxcmRdlgGWxlAm-iVcWjyluWWVqk9bd5iOK6wC',
+          'version': 'iooiiMwZUCMqHCv40mG4S7a86FM-mCHhc43iUkLWqEcC',
         },
       ],
       'dep_type': 'cipd',
@@ -2874,7 +2874,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/windows-amd64',
-          'version': 'LZpmI-6e2-R1o2X3Zgl_O54JicwHEzFp8T_XTBBs8zoC',
+          'version': 'xa9dza8Y74PPBKEHXdNtCQoVjtZgz1BmvtOM2CygAR8C',
         },
       ],
       'dep_type': 'cipd',
@@ -2948,7 +2948,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': 'NglY04bmUmCBHDsaUD-b3fK0x1_zTU91BgUL2OzRatUC',
+        'version': 'DrKoFhmfjD2TV89KGsJwu15OATV41GBvT6aipRejc6QC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',

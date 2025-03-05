@@ -911,18 +911,19 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
     // somewhat asynchronous. This causes the immediate Deactivate() call to not
     // work.
     BrowserList* const browser_list = BrowserList::GetInstance();
-    Browser* active_browser = browser_list->GetLastActive();
+    Browser* last_active_browser = browser_list->GetLastActive();
     // Check if there's a currently-active window that should re-take focus.
     new_window->window()->ShowInactive();
-    // Unconditionally activate the last active window, if it is still alive.
+
+    // If the browser is still active, activate the last active (alive) window.
     // It's possible that showing the new browser synchronously caused the old
-    // one to close.
-    // Ideally, we should only activate the old window if it was previously
-    // active, so that we don't interrupt the user's workflow.
-    // However, `active_browser->window()->IsActive()` is not reliable for this
-    // purpose, since it returns false if the activation is on a child window.
-    if (base::Contains(*browser_list, active_browser)) {
-      active_browser->window()->Activate();
+    // one to close, so we check for alive-ness.
+    // We check `active_browser->IsActive()` instead of
+    // `active_browser->window()->IsActive()` because the latter returns false
+    // if only child windows are active.
+    if (base::Contains(*browser_list, last_active_browser) &&
+        last_active_browser->IsActive()) {
+      last_active_browser->window()->Activate();
     }
   }
 

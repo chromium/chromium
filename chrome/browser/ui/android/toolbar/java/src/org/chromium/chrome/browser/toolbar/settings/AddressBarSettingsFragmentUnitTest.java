@@ -80,8 +80,7 @@ public class AddressBarSettingsFragmentUnitTest {
         mActivityScenarioRule.getScenario().moveToState(State.STARTED);
 
         assertEquals(
-                AddressBarSettingsFragment.getTitleWithoutSpans(mActivity),
-                mSettings.getPageTitle().get());
+                AddressBarSettingsFragment.getTitle(mActivity), mSettings.getPageTitle().get());
 
         AddressBarPreference addressBarPreference =
                 (AddressBarPreference)

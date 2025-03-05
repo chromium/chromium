@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_registration.h"
 
 #include <optional>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -102,7 +98,7 @@ void BackgroundFetchRegistration::OnRequestCompleted(
       observer->OnRequestCompleted(response->Clone());
       it = observers_.erase(it);
     } else {
-      it++;
+      UNSAFE_TODO(it++);
     }
   }
 }

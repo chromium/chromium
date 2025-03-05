@@ -108,8 +108,6 @@ class Bundle(object):
       return 'mac'
     if platform in ('watchos', 'watchsimulator'):
       return 'watchos'
-    if platform in ('appletvos', 'appletvsimulator'):
-      return 'tvos'
     raise ValueError('unknown bundle type %s for %s' % (extension, platform))
 
   @property

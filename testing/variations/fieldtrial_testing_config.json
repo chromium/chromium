@@ -15069,21 +15069,6 @@
             ]
         }
     ],
-    "NewEtc1Encoder": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseNewEtc1Encoder"
-                    ]
-                }
-            ]
-        }
-    ],
     "NewOSCryptAlgorithmForPasswords": [
         {
             "platforms": [
@@ -25484,29 +25469,6 @@
                     "name": "VulkanVMALargeHeapBlockSize",
                     "enable_features": [
                         "VulkanVMALargeHeapBlockSize"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WaitForLateScrollEvents": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "DispatchScrollEventsUntilDeadline",
-                    "params": {
-                        "mode": "DispatchScrollEventsUntilDeadline"
-                    },
-                    "enable_features": [
-                        "WaitForLateScrollEvents"
                     ]
                 }
             ]

@@ -405,8 +405,7 @@ TEST_F(NetworkDetailedViewControllerTest, WifiNetworkListItemSelected) {
 
   // Login as secondary user, and make sure network is not connected to,
   // but settings page is opened.
-  GetSessionControllerClient()->AddUserSession(kUser1Email);
-  SimulateUserLogin(kUser1Email);
+  SimulateUserLogin({kUser1Email});
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOGIN_SECONDARY);
   base::RunLoop().RunUntilIdle();

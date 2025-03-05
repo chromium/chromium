@@ -158,22 +158,35 @@ class PLATFORM_EXPORT MediaStreamSource final
     capabilities_ = capabilities;
   }
 
-  void SetAudioFormat(int number_of_channels, float sample_rate);
-  void ConsumeAudio(AudioBus*, int number_of_frames);
-
-  // Only used if this is a WebAudio source.
-  // The WebAudioDestinationConsumer is not owned, and has to be disposed of
-  // separately after calling removeAudioConsumer.
-  bool RequiresAudioConsumer() const { return requires_consumer_; }
-  void SetAudioConsumer(WebAudioDestinationConsumer*);
-  bool RemoveAudioConsumer();
-
   void OnDeviceCaptureConfigurationChange(const MediaStreamDevice& device);
   void OnDeviceCaptureHandleChange(const MediaStreamDevice& device);
   void OnZoomLevelChange(const MediaStreamDevice& device, int zoom_level);
 
-  void Trace(Visitor*) const;
+  // Returns true if MediaStreamSource should receive audio from
+  // MediaStreamAudioDestinationNode.
+  bool RequiresWebAudioConsumer() const { return requires_webaudio_consumer_; }
 
+  // Sets the WebAudioDestinationConsumer that will receive audio data from this
+  // MediaStreamSource. It is called when this MediaStreamSource is connected to
+  // a Web Audio graph via a MediaStreamAudioDestinationNode.
+  void SetWebAudioConsumer(WebAudioDestinationConsumer*);
+
+  // Removes the association with the current WebAudioDestinationConsumer.
+  // The WebAudioDestinationConsumer is not owned by this class, and has to be
+  // disposed separately after calling this method.
+  bool RemoveWebAudioConsumer();
+
+  // Sets the audio format (number of channels and sample rate) for this
+  // MediaStreamSource. This method can be called from either the main thread
+  // (during MediaStreamAudioDestinationHandler construction) or the Web Audio
+  // rendering thread (during the Process() method call).
+  void SetAudioFormat(int number_of_channels, float sample_rate);
+
+  // Provides rendered WebAudio data to the associated
+  // WebAudioDestinationConsumer. Called on the Web Audio rendering thread.
+  void ConsumeAudio(AudioBus*, int number_of_frames);
+
+  void Trace(Visitor*) const;
   void Dispose();
 
  private:
@@ -205,11 +218,15 @@ class PLATFORM_EXPORT MediaStreamSource final
   String group_id_;
   bool remote_;
   ReadyState ready_state_;
-  bool requires_consumer_;
   HeapHashSet<WeakMember<Observer>> observers_;
-  base::Lock audio_consumer_lock_;
-  std::unique_ptr<ConsumerWrapper> audio_consumer_
-      GUARDED_BY(audio_consumer_lock_);
+
+  // True if the audio source is MediaStreamAudioDestinationNode.
+  bool requires_webaudio_consumer_;
+
+  base::Lock webaudio_consumer_lock_;
+  std::unique_ptr<ConsumerWrapper> webaudio_consumer_
+      GUARDED_BY(webaudio_consumer_lock_);
+
   std::unique_ptr<WebPlatformMediaStreamSource> platform_source_;
   Capabilities capabilities_;
   std::optional<bool> echo_cancellation_;

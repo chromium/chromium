@@ -138,7 +138,9 @@ class NET_EXPORT SessionService {
   virtual void DeleteAllSessions(
       std::optional<base::Time> created_after_time,
       std::optional<base::Time> created_before_time,
-      base::RepeatingCallback<bool(const net::SchemefulSite&)> site_matcher,
+      base::RepeatingCallback<bool(const url::Origin&,
+                                   const net::SchemefulSite&)>
+          origin_and_site_matcher,
       base::OnceClosure completion_callback) = 0;
 
   // Add an observer for session changes that include `url`. `callback`

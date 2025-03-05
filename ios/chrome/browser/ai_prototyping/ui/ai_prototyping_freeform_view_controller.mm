@@ -188,6 +188,8 @@ using optimization_guide::proto::BlingPrototypingRequest_ModelEnum_Name;
   _responseContainer.layer.borderColor = [primaryColor CGColor];
   _responseContainer.layer.borderWidth = kBorderWidth;
   _responseContainer.textContainer.lineBreakMode = NSLineBreakByWordWrapping;
+  _responseContainer.text =
+      l10n_util::GetNSString(IDS_IOS_AI_PROTOTYPING_RESULT_PLACEHOLDER);
 
   UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
     label, systemInstructionsFieldContainer, queryFieldContainer,

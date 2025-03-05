@@ -595,6 +595,11 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 version = "0.1.2"
 notes = "Contains no unsafe"
 
+[[audits.calendrical_calculations]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.1.2 -> 0.1.3"
+
 [[audits.cfg-if]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
@@ -1926,6 +1931,12 @@ delta = "1.0.11 -> 1.0.14"
 notes = """
 Unsafe review at https://crrev.com/c/6051067
 """
+
+[[audits.itoa]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.14 -> 1.0.15"
+notes = "Only minor rustdoc changes."
 
 [[audits.ixdtf]]
 who = "Manish Goregaokar <manishearth@google.com>"

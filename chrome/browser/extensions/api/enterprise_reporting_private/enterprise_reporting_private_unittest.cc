@@ -463,14 +463,6 @@ class EnterpriseReportingPrivateGetContextInfoTest
 #endif
   }
 
-  void ExpectDefaultThirdPartyBlockingEnabled(
-      const enterprise_reporting_private::ContextInfo& info) {
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    EXPECT_TRUE(*info.third_party_blocking_enabled);
-#else
-    EXPECT_FALSE(info.third_party_blocking_enabled.has_value());
-#endif
-  }
 };
 
 TEST_F(EnterpriseReportingPrivateGetContextInfoTest, NoSpecialContext) {
@@ -495,45 +487,8 @@ TEST_F(EnterpriseReportingPrivateGetContextInfoTest, NoSpecialContext) {
       enterprise_reporting_private::PasswordProtectionTrigger::kPolicyUnset,
       info.password_protection_warning_trigger);
   EXPECT_FALSE(info.chrome_remote_desktop_app_blocked);
-  ExpectDefaultThirdPartyBlockingEnabled(info);
   EXPECT_TRUE(info.enterprise_profile_id);
 }
-
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-class EnterpriseReportingPrivateGetContextInfoThirdPartyBlockingTest
-    : public EnterpriseReportingPrivateGetContextInfoTest,
-      public testing::WithParamInterface<bool> {};
-
-TEST_P(EnterpriseReportingPrivateGetContextInfoThirdPartyBlockingTest, Test) {
-  bool policyValue = GetParam();
-
-  g_browser_process->local_state()->SetBoolean(
-      prefs::kThirdPartyBlockingEnabled, policyValue);
-
-  enterprise_reporting_private::ContextInfo info = GetContextInfo();
-
-  EXPECT_TRUE(info.browser_affiliation_ids.empty());
-  EXPECT_TRUE(info.profile_affiliation_ids.empty());
-  EXPECT_TRUE(info.on_file_attached_providers.empty());
-  EXPECT_TRUE(info.on_file_downloaded_providers.empty());
-  EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
-  EXPECT_EQ(enterprise_reporting_private::RealtimeUrlCheckMode::kDisabled,
-            info.realtime_url_check_mode);
-  EXPECT_TRUE(info.on_security_event_providers.empty());
-  EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
-  EXPECT_EQ(enterprise_reporting_private::SafeBrowsingLevel::kStandard,
-            info.safe_browsing_protection_level);
-  EXPECT_EQ(BuiltInDnsClientPlatformDefault(),
-            info.built_in_dns_client_enabled);
-  EXPECT_FALSE(info.chrome_remote_desktop_app_blocked);
-  EXPECT_EQ(policyValue, *info.third_party_blocking_enabled);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    EnterpriseReportingPrivateGetContextInfoThirdPartyBlockingTest,
-    testing::Bool());
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 class EnterpriseReportingPrivateGetContextInfoSafeBrowsingTest
     : public EnterpriseReportingPrivateGetContextInfoTest,
@@ -576,7 +531,6 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoSafeBrowsingTest, Test) {
   EXPECT_EQ(
       enterprise_reporting_private::PasswordProtectionTrigger::kPolicyUnset,
       info.password_protection_warning_trigger);
-  ExpectDefaultThirdPartyBlockingEnabled(info);
   EXPECT_TRUE(info.enterprise_profile_id);
 }
 
@@ -614,7 +568,6 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoBuiltInDnsClientTest, Test) {
   EXPECT_EQ(
       enterprise_reporting_private::PasswordProtectionTrigger::kPolicyUnset,
       info.password_protection_warning_trigger);
-  ExpectDefaultThirdPartyBlockingEnabled(info);
   EXPECT_TRUE(info.enterprise_profile_id);
 }
 
@@ -669,7 +622,6 @@ TEST_P(EnterpriseReportingPrivateGetContextPasswordProtectionWarningTrigger,
             info.safe_browsing_protection_level);
   EXPECT_EQ(BuiltInDnsClientPlatformDefault(),
             info.built_in_dns_client_enabled);
-  ExpectDefaultThirdPartyBlockingEnabled(info);
   EXPECT_EQ(passwordTriggerValue, info.password_protection_warning_trigger);
   EXPECT_TRUE(info.enterprise_profile_id);
 }
@@ -715,7 +667,6 @@ class EnterpriseReportingPrivateGetContextOSFirewallLinuxTest
         enterprise_reporting_private::PasswordProtectionTrigger::kPolicyUnset,
         info.password_protection_warning_trigger);
     EXPECT_FALSE(info.chrome_remote_desktop_app_blocked);
-    ExpectDefaultThirdPartyBlockingEnabled(info);
     EXPECT_TRUE(info.enterprise_profile_id);
   }
 
@@ -823,7 +774,6 @@ class EnterpriseReportingPrivateGetContextInfoChromeRemoteDesktopAppBlockedTest
     EXPECT_EQ(
         enterprise_reporting_private::PasswordProtectionTrigger::kPolicyUnset,
         info.password_protection_warning_trigger);
-    ExpectDefaultThirdPartyBlockingEnabled(info);
     EXPECT_TRUE(info.enterprise_profile_id);
   }
 };
@@ -964,7 +914,6 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoOSFirewallTest, Test) {
       enterprise_reporting_private::PasswordProtectionTrigger::kPolicyUnset,
       info.password_protection_warning_trigger);
   EXPECT_FALSE(info.chrome_remote_desktop_app_blocked);
-  ExpectDefaultThirdPartyBlockingEnabled(info);
   EXPECT_EQ(ToInfoSettingValue(firewall_value_), info.os_firewall);
   EXPECT_TRUE(info.enterprise_profile_id);
 }
@@ -1027,7 +976,6 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoRealTimeURLCheckTest, Test) {
   EXPECT_EQ(
       enterprise_reporting_private::PasswordProtectionTrigger::kPolicyUnset,
       info.password_protection_warning_trigger);
-  ExpectDefaultThirdPartyBlockingEnabled(info);
   EXPECT_TRUE(info.enterprise_profile_id);
 }
 

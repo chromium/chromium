@@ -365,7 +365,7 @@ class HoldingSpaceTrayTestBase : public AshTestBase {
     AccountId user_account = AccountId::FromUserEmail(kTestUser);
     HoldingSpaceController::Get()->RegisterClientAndModelForUser(
         user_account, client(), model());
-    GetSessionControllerClient()->AddUserSession(kTestUser);
+    GetSessionControllerClient()->AddUserSession({kTestUser});
     holding_space_prefs::MarkTimeOfFirstAvailability(
         GetSessionControllerClient()->GetUserPrefService(user_account));
   }
@@ -456,7 +456,7 @@ class HoldingSpaceTrayTestBase : public AshTestBase {
     AccountId user_account = AccountId::FromUserEmail(user_id);
     HoldingSpaceController::Get()->RegisterClientAndModelForUser(user_account,
                                                                  client, model);
-    GetSessionControllerClient()->AddUserSession(user_id);
+    GetSessionControllerClient()->AddUserSession({user_id});
 
     holding_space_prefs::MarkTimeOfFirstAvailability(
         GetSessionControllerClient()->GetUserPrefService(user_account));

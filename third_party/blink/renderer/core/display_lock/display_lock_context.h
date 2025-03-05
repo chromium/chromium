@@ -118,13 +118,14 @@ class CORE_EXPORT DisplayLockContext final
     //   - This is content-visibility: auto within an element with a non-none
     //     scroll-marker-group property.
     //   - This is an activatable for a11y lock and a11y is enabled.
+    // TODO(400977357): Optimize layout for the scroll-marker-group cases.
     return !is_locked_ || forced_info_.is_forced(ForcedPhase::kLayout) ||
            (IsActivatable(DisplayLockActivationReason::kAny) &&
             ActivatableDisplayLocksForced()) ||
+           (IsAuto() && HasScrollerWithScrollMarkerGroup()) ||
            (document_->GetStyleEngine().SkippedContainerRecalc() &&
-            ((IsAuto() && HasScrollerWithScrollMarkerGroup()) ||
-             (IsActivatable(DisplayLockActivationReason::kAccessibility) &&
-              document_->ExistingAXObjectCache())));
+            IsActivatable(DisplayLockActivationReason::kAccessibility) &&
+            document_->ExistingAXObjectCache());
   }
   void DidLayoutChildren();
   ALWAYS_INLINE bool ShouldPrePaintChildren() const {

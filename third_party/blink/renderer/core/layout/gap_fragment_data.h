@@ -20,6 +20,7 @@ class GapFragmentData {
   // https://drafts.csswg.org/css-gaps-1/#layout-painting
   class GapIntersection {
    public:
+    GapIntersection() = default;
     GapIntersection(LayoutUnit column_offset, LayoutUnit row_offset)
         : column_offset(column_offset), row_offset(row_offset) {}
 
@@ -31,6 +32,8 @@ class GapFragmentData {
     bool is_blocked_before = false;
     bool is_blocked_after = false;
   };
+
+  using GapIntersectionList = Vector<GapIntersection>;
 
   // TODO(samomekarajr): Take this out when done with the new implementation.
   // GapBoundary represents the start and end offsets of a single gap.
@@ -73,6 +76,27 @@ class GapFragmentData {
       visitor->Trace(rows);
       visitor->Trace(columns);
     }
+
+    void SetGapIntersections(GridTrackSizingDirection track_direction,
+                             Vector<GapIntersectionList>&& intersection_list) {
+      track_direction == kForColumns ? column_intersections_ = intersection_list
+                                     : row_intersections_ = intersection_list;
+    }
+
+    const Vector<GapIntersectionList>& GetGapIntersections(
+        GridTrackSizingDirection track_direction) const {
+      return track_direction == kForColumns ? column_intersections_
+                                            : row_intersections_;
+    }
+
+   private:
+    // TODO(samomekarajr): Potential optimization. This can be a single
+    // Vector<GapIntersection> if we exclude intersection points at the edge of
+    // the container. We can check the "blocked" status of edge intersection
+    // points to determine if we should draw from edge of the container to that
+    // intersection.
+    Vector<GapIntersectionList> column_intersections_;
+    Vector<GapIntersectionList> row_intersections_;
   };
 };
 

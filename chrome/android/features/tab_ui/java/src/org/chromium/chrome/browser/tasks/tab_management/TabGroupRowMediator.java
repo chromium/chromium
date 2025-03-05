@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProper
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.LEAVE_RUNNABLE;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
@@ -24,6 +25,7 @@ import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.MaybeBlockingResult;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupTimeAgo.TimestampEvent;
@@ -119,12 +121,14 @@ class TabGroupRowMediator {
         mPropertyModel = builder.build();
 
         String collaborationId = savedTabGroup.collaborationId;
+        GroupData groupData = null;
+        @GroupSharedState int sharedState = GroupSharedState.NOT_SHARED;
         if (mCollaborationService.getServiceStatus().isAllowedToJoin()
                 && TabShareUtils.isCollaborationIdValid(savedTabGroup.collaborationId)) {
-            onReadGroup(mCollaborationService.getGroupData(collaborationId));
-        } else {
-            setSharedProperties(GroupSharedState.NOT_SHARED, /* groupData= */ null);
+            groupData = mCollaborationService.getGroupData(collaborationId);
+            sharedState = TabShareUtils.discernSharedGroupState(groupData);
         }
+        setSharedProperties(sharedState, groupData, numberOfTabs);
     }
 
     /**
@@ -143,13 +147,8 @@ class TabGroupRowMediator {
         }
     }
 
-    private void onReadGroup(@Nullable GroupData groupData) {
-        @GroupSharedState int sharedState = TabShareUtils.discernSharedGroupState(groupData);
-        setSharedProperties(sharedState, groupData);
-    }
-
     private void setSharedProperties(
-            @GroupSharedState int sharedState, @Nullable GroupData groupData) {
+            @GroupSharedState int sharedState, @Nullable GroupData groupData, int numberOfTabs) {
         if (sharedState == GroupSharedState.NOT_SHARED) {
             mPropertyModel.set(DELETE_RUNNABLE, this::processDeleteGroup);
             mPropertyModel.set(LEAVE_RUNNABLE, null);
@@ -159,7 +158,7 @@ class TabGroupRowMediator {
         }
 
         String collaborationId = groupData.groupToken.collaborationId;
-        String groupTitle = groupData.displayName;
+        String groupTitle = groupTitleWithFallback(groupData, numberOfTabs);
         @MemberRole
         int memberRole = mCollaborationService.getCurrentUserRoleForGroup(collaborationId);
         if (memberRole == MemberRole.OWNER) {
@@ -333,6 +332,15 @@ class TabGroupRowMediator {
         } else {
             assert !allowDialog : "A dialog should have already been shown.";
             mTabGroupSyncService.removeGroup(mSavedTabGroup.syncId);
+        }
+    }
+
+    private String groupTitleWithFallback(GroupData groupData, int numberOfTabs) {
+        String groupTitle = groupData.displayName;
+        if (TextUtils.isEmpty(groupTitle)) {
+            return TabGroupTitleUtils.getDefaultTitle(mContext, numberOfTabs);
+        } else {
+            return groupTitle;
         }
     }
 }

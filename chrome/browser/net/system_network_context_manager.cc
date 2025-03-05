@@ -15,6 +15,7 @@
 
 #include "base/auto_reset.h"
 #include "base/build_time.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -502,11 +503,13 @@ SystemNetworkContextManager* SystemNetworkContextManager::GetInstance() {
     // Initialize the network service, which will trigger
     // ChromeContentBrowserClient::OnNetworkServiceCreated(), which calls
     // CreateInstance() to initialize |g_system_network_context_manager|.
-    content::GetNetworkService();
 
-    // TODO(crbug.com/40634772): There should be a DCHECK() here to make sure
-    // |g_system_network_context_manager| has been created, but that is not
-    // true in many unit tests.
+    content::GetNetworkService();
+    // content::GetNetworkService() does not always create
+    // |g_system_network_context_manager| (in some unit tests).
+    if (!g_system_network_context_manager) {
+      CHECK_IS_TEST();
+    }
   }
 
   return g_system_network_context_manager;

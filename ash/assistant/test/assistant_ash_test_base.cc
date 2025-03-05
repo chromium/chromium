@@ -138,19 +138,7 @@ void AssistantAshTestBase::CreateAndSwitchActiveUser(
       ash_test_helper()->test_session_controller_client();
 
   session_controller_client->Reset();
-
-  session_controller_client->AddUserSession(
-      display_email, user_manager::UserType::kRegular,
-      /*pref_service=*/nullptr,
-      /*is_new_profile=*/false, given_name);
-
-  session_controller_client->SwitchActiveUser(Shell::Get()
-                                                  ->session_controller()
-                                                  ->GetUserSession(0)
-                                                  ->user_info.account_id);
-
-  session_controller_client->SetSessionState(
-      session_manager::SessionState::ACTIVE);
+  SimulateUserLogin({.display_email = display_email, .given_name = given_name});
 
   SetUpActiveUser();
 }

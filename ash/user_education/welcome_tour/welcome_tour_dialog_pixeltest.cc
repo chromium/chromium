@@ -26,7 +26,7 @@ class WelcomeTourDialogPixelTest : public UserEducationAshTestBase {
                               features::kWelcomeTourForceUserEligibility},
         /*disabled_features=*/{});
     UserEducationAshTestBase::SetUp();
-    SimulateUserLogin("primary@test");
+    SimulateUserLogin({"primary@test"});
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;

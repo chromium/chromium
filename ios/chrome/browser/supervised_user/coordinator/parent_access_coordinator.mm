@@ -24,13 +24,16 @@
 #import "ios/chrome/browser/supervised_user/model/supervised_user_error_container.h"
 #import "ios/chrome/browser/supervised_user/ui/constants.h"
 #import "ios/chrome/browser/supervised_user/ui/parent_access_bottom_sheet_view_controller.h"
+#import "ios/chrome/browser/supervised_user/ui/parent_access_bottom_sheet_view_controller_presentation_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
 
-@interface ParentAccessCoordinator () <UIAdaptivePresentationControllerDelegate,
-                                       ParentAccessMediatorDelegate,
-                                       ParentAccessTabHelperDelegate>
+@interface ParentAccessCoordinator () <
+    UIAdaptivePresentationControllerDelegate,
+    ParentAccessMediatorDelegate,
+    ParentAccessTabHelperDelegate,
+    ParentAccessBottomSheetViewControllerPresentationDelegate>
 @end
 
 @implementation ParentAccessCoordinator {
@@ -84,7 +87,9 @@
 
   // Do not use the bottom sheet default dismiss button.
   _viewController.showDismissBarButton = NO;
+
   _viewController.presentationController.delegate = self;
+  _viewController.presentationDelegate = self;
 
   // Set up for a snackbar that will be displayed when the widget fails to load.
   _snackbarCommandsHandler = HandlerForProtocol(
@@ -145,6 +150,14 @@
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
+  [self hideParentAccessBottomSheetWithResult:supervised_user::
+                                                  LocalApprovalResult::kCanceled
+                                    errorType:std::nullopt];
+}
+
+#pragma mark - ParentAccessBottomSheetViewControllerPresentationDelegate
+
+- (void)closeButtonTapped:(ParentAccessBottomSheetViewController*)controller {
   [self hideParentAccessBottomSheetWithResult:supervised_user::
                                                   LocalApprovalResult::kCanceled
                                     errorType:std::nullopt];

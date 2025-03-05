@@ -20,6 +20,7 @@
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -86,7 +87,7 @@ OutputController::ErrorStatisticsTracker::~ErrorStatisticsTracker() {
     controller_->SendLogMessage("StopStream => (duration=%" PRId64 " sec)",
                                 duration.InSeconds());
     controller_->SendLogMessage("StopStream => (error_during_callback=%s)",
-                                error_during_callback_ ? "true" : "false");
+                                base::ToString(error_during_callback_).c_str());
   }
 }
 
@@ -553,7 +554,7 @@ void OutputController::ToggleLocalOutput() {
   disable_local_output_ = !disable_local_output_;
 
   SendLogMessage("%s({disable_local_output=%s} [state=%s])", __func__,
-                 disable_local_output_ ? "true" : "false",
+                 base::ToString(disable_local_output_).c_str(),
                  StateToString(state_));
 
   // If there is an active |stream_|, close it and re-create either: 1) a fake

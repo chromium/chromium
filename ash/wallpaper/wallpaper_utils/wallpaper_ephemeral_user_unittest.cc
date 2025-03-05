@@ -25,15 +25,14 @@ TEST_F(WallpaperEphemeralUserTest, RegularUser) {
 
 TEST_F(WallpaperEphemeralUserTest, RegularUserLoggedIn) {
   const AccountId& account_id = user_manager::StubAccountId();
-  const user_manager::UserType user_type = user_manager::UserType::kRegular;
-  SimulateUserLogin(account_id, user_type);
+  SimulateUserLogin({.user_type = user_manager::UserType::kRegular},
+                    account_id);
   EXPECT_FALSE(IsEphemeralUser(account_id));
 }
 
 TEST_F(WallpaperEphemeralUserTest, PublicAccount) {
-  const AccountId& account_id =
-      AccountId::FromUserEmail("managed_guest@test.com");
-  SimulateUserLogin(account_id, user_manager::UserType::kPublicAccount);
+  auto account_id = SimulateUserLogin(
+      {"managed_guest@test.com", user_manager::UserType::kPublicAccount});
   EXPECT_TRUE(IsEphemeralUser(account_id));
 }
 

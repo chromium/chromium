@@ -3442,6 +3442,7 @@ void GridLayoutAlgorithm::PlaceGridItems(
                                   gap_geometry->GetGapBoundaries(kForColumns));
     PopulateGapIntersectionPoints(inline_intersection_points,
                                   gap_geometry->GetGapBoundaries(kForRows));
+    BuildGapIntersectionPoints(sizing_data.layout_data, gap_geometry);
     container_builder_.SetGapGeometry(std::move(gap_geometry));
   }
 
@@ -3925,6 +3926,65 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   if (fragmentainer_space != kIndefiniteSize) {
     *offset_in_stitched_container += fragmentainer_space;
   }
+}
+
+void GridLayoutAlgorithm::BuildGapIntersectionPoints(
+    const GridLayoutData& layout_data,
+    GapFragmentData::GapGeometry* gap_geometry) const {
+  const Vector<LayoutUnit> col_tracks =
+      LayoutGrid::ComputeExpandedPositions(&layout_data, kForColumns);
+  const Vector<LayoutUnit> row_tracks =
+      LayoutGrid::ComputeExpandedPositions(&layout_data, kForRows);
+
+  const LayoutUnit col_gutter_size = layout_data.Columns().GutterSize();
+  const LayoutUnit row_gutter_size = layout_data.Rows().GutterSize();
+
+  const wtf_size_t col_count = col_tracks.size();
+  const wtf_size_t row_count = row_tracks.size();
+
+  // For columns, populate each column gap with intersection points. Since we
+  // don't know the mid-point of each row gap yet, we'll set the block offset to
+  // a placeholder value of `LayoutUnit()` which will be updated once we
+  // calculate row gaps midpoint.
+  Vector<GapFragmentData::GapIntersectionList> columns(
+      col_count - 2, GapFragmentData::GapIntersectionList(row_count));
+  for (wtf_size_t col_index = 1; col_index < col_count - 1; ++col_index) {
+    const LayoutUnit mid_point =
+        LayoutUnit(col_tracks[col_index] - (col_gutter_size / 2.0f));
+
+    columns[col_index - 1][0] =
+        GapFragmentData::GapIntersection(mid_point, row_tracks[0]);
+    for (wtf_size_t row_index = 1; row_index < row_count - 1; ++row_index) {
+      columns[col_index - 1][row_index] =
+          GapFragmentData::GapIntersection(mid_point, LayoutUnit());
+    }
+    columns[col_index - 1][row_count - 1] =
+        GapFragmentData::GapIntersection(mid_point, row_tracks[row_count - 1]);
+  }
+
+  // For rows, populate each row gap with intersection points. Since we already
+  // calculated mid-points for each column gap, we'll set the inline offset to
+  // the corresponding column mid-point and update columns with the row
+  // mid-point.
+  Vector<GapFragmentData::GapIntersectionList> rows(
+      row_count - 2, GapFragmentData::GapIntersectionList(col_count));
+  for (wtf_size_t row_index = 1; row_index < row_count - 1; ++row_index) {
+    const LayoutUnit mid_point =
+        LayoutUnit(row_tracks[row_index] - (row_gutter_size / 2.0f));
+
+    rows[row_index - 1][0] =
+        GapFragmentData::GapIntersection(col_tracks[0], mid_point);
+    for (wtf_size_t col_index = 1; col_index < col_count - 1; ++col_index) {
+      rows[row_index - 1][col_index] = GapFragmentData::GapIntersection(
+          columns[col_index - 1][0].column_offset, mid_point);
+      columns[col_index - 1][row_index].row_offset = mid_point;
+    }
+    rows[row_index - 1][col_count - 1] =
+        GapFragmentData::GapIntersection(col_tracks[col_count - 1], mid_point);
+  }
+
+  gap_geometry->SetGapIntersections(kForColumns, std::move(columns));
+  gap_geometry->SetGapIntersections(kForRows, std::move(rows));
 }
 
 void GridLayoutAlgorithm::BuildGapGeometry(

@@ -15,6 +15,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -113,6 +114,12 @@ class BnplManager {
     // Context token shared between client and Payments server.
     std::string context_token;
 
+    // Terms and legal messages from the selected issuer. These messages will
+    // be set in `OnDidGetDetailsForCreateBnplPaymentInstrument()` when the
+    // server response is received after the user selects an unlinked
+    // buy-now-pay-later issuer.
+    LegalMessageLines legal_message_lines;
+
     // URL that the the partner redirected the user to after finishing the BNPL
     // flow on the partner website.
     GURL redirect_url;
@@ -136,6 +143,23 @@ class BnplManager {
   // callback contains the result of the call as well as the VCN details.
   void OnVcnDetailsFetched(PaymentsAutofillClient::PaymentsRpcResult result,
                            const BnplFetchVcnResponseDetails& response_details);
+
+  // Runs after users select a BNPL issuer, and will redirect to plan selection
+  // or terms of services depending on the issuer.
+  void OnIssuerSelected(const BnplIssuer& selected_issuer);
+
+  // This function makes the appropriate call to the payments server to get info
+  // from the server for creating an instrument for the selected issuer.
+  void GetDetailsForCreateBnplPaymentInstrument();
+
+  // The callback after
+  // `PaymentsNetworkInterface::GetDetailsForCreateBnplPaymentInstrument` calls.
+  // The callback contains the result of the call as well as `context_token`
+  // for creating the instrument and `legal_message` for user action.
+  void OnDidGetDetailsForCreateBnplPaymentInstrument(
+      PaymentsAutofillClient::PaymentsRpcResult result,
+      std::string context_token,
+      std::unique_ptr<base::Value::Dict> legal_message);
 
   // Combines `responses` from suggestion shown event and amount extraction,
   // and try to show card suggestions with buy-now-pay-later suggestion.

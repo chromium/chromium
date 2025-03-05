@@ -3864,6 +3864,8 @@ static_library("browser") {
       "new_tab_page/modules/file_suggestion/drive_suggestion_handler.h",
       "new_tab_page/modules/file_suggestion/microsoft_files_page_handler.cc",
       "new_tab_page/modules/file_suggestion/microsoft_files_page_handler.h",
+      "new_tab_page/modules/microsoft_modules_helper.cc",
+      "new_tab_page/modules/microsoft_modules_helper.h",
       "new_tab_page/modules/modules_constants.h",
       "new_tab_page/modules/modules_switches.cc",
       "new_tab_page/modules/modules_switches.h",

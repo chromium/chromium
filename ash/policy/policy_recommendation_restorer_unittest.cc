@@ -241,7 +241,7 @@ TEST_F(PolicyRecommendationRestorerTest,
   SetUserSettings();
 
   ConnectToSigninPrefService();
-  SimulateUserLogin("user@test.com");
+  SimulateUserLogin({"user@test.com"});
 
   VerifyPrefFollowsUser(prefs::kAccessibilityLargeCursorEnabled,
                         base::Value(true));
@@ -351,7 +351,7 @@ TEST_F(PolicyRecommendationRestorerTest, DoNothingOnSessionStart) {
   ConnectToSigninPrefService();
   SetUserSettings();
 
-  SimulateUserLogin("user@test.com");
+  SimulateUserLogin({"user@test.com"});
   VerifyPrefsFollowUser();
   EXPECT_FALSE(RestoreTimerIsRunning());
 }

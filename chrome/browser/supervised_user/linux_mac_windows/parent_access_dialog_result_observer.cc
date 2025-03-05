@@ -22,10 +22,8 @@ bool HasNavigatedToTerminalVerificationUrl(
 }  // namespace
 
 ParentAccessDialogResultObserver::ParentAccessDialogResultObserver(
-    content::WebContents* web_contents,
     LocalApprovalResultCallback url_approval_result_callback)
-    : content::WebContentsObserver(web_contents),
-      url_approval_result_callback_(std::move(url_approval_result_callback)) {}
+    : url_approval_result_callback_(std::move(url_approval_result_callback)) {}
 
 ParentAccessDialogResultObserver::~ParentAccessDialogResultObserver() {
   // url_approval_result_callback_ might have been executed on
@@ -38,6 +36,12 @@ ParentAccessDialogResultObserver::~ParentAccessDialogResultObserver() {
         .Run(result_.value_or(supervised_user::LocalApprovalResult::kCanceled),
              error_type_);
   }
+}
+
+void ParentAccessDialogResultObserver::StartObserving(
+    content::WebContents* contents) {
+  CHECK(contents);
+  Observe(contents);
 }
 
 void ParentAccessDialogResultObserver::StopObserving() {

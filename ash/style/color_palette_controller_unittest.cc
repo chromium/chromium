@@ -108,7 +108,7 @@ class ColorPaletteControllerTest : public NoSessionAshTestBase {
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
     GetSessionControllerClient()->Reset();
-    GetSessionControllerClient()->AddUserSession(kAccountId, kUser);
+    GetSessionControllerClient()->AddUserSession({kUser}, kAccountId);
     wallpaper_controller_ = Shell::Get()->wallpaper_controller();
     color_palette_controller_ = Shell::Get()->color_palette_controller();
 

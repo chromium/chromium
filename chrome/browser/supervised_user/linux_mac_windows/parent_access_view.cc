@@ -123,11 +123,11 @@ base::WeakPtr<ParentAccessView> ParentAccessView::ShowParentAccessDialog(
     content::WebContents* web_contents,
     const GURL& target_url,
     const supervised_user::FilteringBehaviorReason& filtering_reason,
-    WebContentsObserverCreationCallback web_contents_observer_creation_cb,
+    WebContentsObservationCallback web_contents_observation_cb,
     base::OnceClosure abort_dialog_callback,
     base::OnceClosure dialog_result_reset_callback) {
   CHECK(web_contents);
-  CHECK(web_contents_observer_creation_cb);
+  CHECK(web_contents_observation_cb);
 
   auto dialog_delegate = std::make_unique<views::DialogDelegate>();
   dialog_delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
@@ -159,7 +159,7 @@ base::WeakPtr<ParentAccessView> ParentAccessView::ShowParentAccessDialog(
 
   // Starts observing the new dialog contents that have been created in
   // `Initialize`.
-  std::move(web_contents_observer_creation_cb)
+  std::move(web_contents_observation_cb)
       .Run(view_weak_ptr->GetWebViewContents());
 
   view_weak_ptr.get()->content_loader_timeout_observer_ =

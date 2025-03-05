@@ -165,8 +165,8 @@ class GeolocationControllerTest : public AshTestBase {
 
   void CreateTestUserSessions() {
     GetSessionControllerClient()->Reset();
-    GetSessionControllerClient()->AddUserSession(kUser1Email);
-    GetSessionControllerClient()->AddUserSession(kUser2Email);
+    GetSessionControllerClient()->AddUserSession({kUser1Email});
+    GetSessionControllerClient()->AddUserSession({kUser2Email});
   }
 
   void SwitchActiveUser(const std::string& email) {

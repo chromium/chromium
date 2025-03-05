@@ -33,6 +33,8 @@
 #include "ash/system/notification_center/session_state_notification_blocker.h"
 #include "ash/system/screen_layout_observer.h"
 #include "ash/test/ash_test_views_delegate.h"
+#include "ash/test/login_info.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/toplevel_window.h"
 #include "ash/test_shell_delegate.h"
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
@@ -462,7 +464,7 @@ void AshTestHelper::SetUp(InitParams init_params) {
     // TODO(crbug.com/383441831): Remove Reset();
     session_controller_client_->Reset();
 
-    SimulateUserLogin(AccountId::FromUserEmail("user0@tray"));
+    SimulateUserLogin({}, AccountId::FromUserEmail("user0@tray"));
   }
 }
 
@@ -471,17 +473,20 @@ display::Display AshTestHelper::GetSecondaryDisplay() const {
       .GetSecondaryDisplay();
 }
 
-void AshTestHelper::SimulateUserLogin(
-    const AccountId& account_id,
-    user_manager::UserType user_type,
-    bool is_new_profile,
+AccountId AshTestHelper::SimulateUserLogin(
+    LoginInfo login_info,
+    std::optional<AccountId> opt_account_id,
     std::unique_ptr<PrefService> pref_service) {
-  session_controller_client_->AddUserSession(
-      account_id, account_id.GetUserEmail(), user_type, std::move(pref_service),
-      is_new_profile);
+  AccountId account_id = session_controller_client_->AddUserSession(
+      login_info, opt_account_id, std::move(pref_service));
   session_controller_client_->SwitchActiveUser(account_id);
-  session_controller_client_->SetSessionState(
-      session_manager::SessionState::ACTIVE);
+
+  if (login_info.activate_session) {
+    session_controller_client_->SetSessionState(
+        session_manager::SessionState::ACTIVE);
+  }
+
+  return account_id;
 }
 
 }  // namespace ash

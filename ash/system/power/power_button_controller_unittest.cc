@@ -836,7 +836,7 @@ TEST_F(PowerButtonControllerTest, MenuItemsToLoginAndLockedStatus) {
   // Should have sign out, lock screen and feedback items if user is logged in
   // and screen is unlocked.
   ClearLogin();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   OpenPowerButtonMenu();
   EXPECT_FALSE(GetLockedState());
   EXPECT_TRUE(power_button_test_api_->MenuHasSignOutItem());
@@ -1034,7 +1034,7 @@ TEST_F(PowerButtonControllerTest, MenuNavigation) {
   TapToDismissPowerButtonMenu();
 
   ClearLogin();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   OpenPowerButtonMenu();
   ASSERT_TRUE(power_button_test_api_->MenuHasSignOutItem());
   ASSERT_TRUE(power_button_test_api_->MenuHasLockScreenItem());

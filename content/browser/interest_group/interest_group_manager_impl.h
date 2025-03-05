@@ -345,11 +345,6 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   void GetLastMaintenanceTimeForTesting(
       base::RepeatingCallback<void(base::Time)> callback) const;
 
-  // Returns a user agent override string for the given frame tree node,
-  // if one is available and the feature is enabled.
-  std::optional<std::string> MaybeGetUserAgentOverride(
-      const FrameTreeNodeId& frame_tree_node_id);
-
   // Enqueues reports for the specified URLs. Virtual for testing.
   virtual void EnqueueReports(
       ReportType report_type,

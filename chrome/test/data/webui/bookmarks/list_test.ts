@@ -39,14 +39,14 @@ suite('<bookmarks-list>', function() {
   });
 
   test('renders correct <bookmark-item> elements', function() {
-    const items = list.shadowRoot!.querySelectorAll('bookmarks-item');
+    const items = list.shadowRoot.querySelectorAll('bookmarks-item');
     const ids = Array.from(items).map((item) => item.itemId);
 
     assertDeepEquals(['1', '3', '5', '7'], ids);
   });
 
   test('shift-selects multiple items', function() {
-    const items = list.shadowRoot!.querySelectorAll('bookmarks-item');
+    const items = list.shadowRoot.querySelectorAll('bookmarks-item');
 
     customClick(items[0]!);
 
@@ -76,21 +76,21 @@ suite('<bookmarks-list>', function() {
   test('adds, deletes, and moves update displayedList_', async () => {
     list.setDisplayedIdsForTesting(['1', '7', '3', '5']);
     await eventToPromise('viewport-filled', list.$.list);
-    let items = list.shadowRoot!.querySelectorAll('bookmarks-item');
+    let items = list.shadowRoot.querySelectorAll('bookmarks-item');
     assertDeepEquals(
         ['1', '7', '3', '5'],
         Array.from(items).filter(i => !i.hidden).map(i => i.itemId));
 
     list.setDisplayedIdsForTesting(['1', '3', '5']);
     await eventToPromise('viewport-filled', list.$.list);
-    items = list.shadowRoot!.querySelectorAll('bookmarks-item');
+    items = list.shadowRoot.querySelectorAll('bookmarks-item');
     assertDeepEquals(
         ['1', '3', '5'],
         Array.from(items).filter(i => !i.hidden).map(i => i.itemId));
 
     list.setDisplayedIdsForTesting(['1', '3', '7', '5']);
     await eventToPromise('viewport-filled', list.$.list);
-    items = list.shadowRoot!.querySelectorAll('bookmarks-item');
+    items = list.shadowRoot.querySelectorAll('bookmarks-item');
     assertDeepEquals(
         ['1', '3', '7', '5'],
         Array.from(items).filter(i => !i.hidden).map(i => i.itemId));
@@ -136,7 +136,7 @@ suite('<bookmarks-list> integration test', function() {
     replaceBody(list);
     await eventToPromise('viewport-filled', list.$.list);
 
-    items = list.shadowRoot!.querySelectorAll('bookmarks-item');
+    items = list.shadowRoot.querySelectorAll('bookmarks-item');
   });
 
   test('shift-selects multiple items', function() {

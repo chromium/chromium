@@ -4644,8 +4644,7 @@ TEST_F(NoSessionShelfLayoutManagerTest, UpdateShelfVisibilityAfterLogin) {
   auto window = CreateTestWindow(gfx::Rect(400, kExpectedWindowHeight));
 
   // Simulate login.
-  SimulateUserLogin(kUserAccount, user_manager::UserType::kRegular,
-                    std::move(user_prefs));
+  SimulateUserLogin({}, kUserAccount, std::move(user_prefs));
 
   // The window should be the same height.
   EXPECT_EQ(kExpectedWindowHeight, window->bounds().height());

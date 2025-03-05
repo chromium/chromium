@@ -19,6 +19,7 @@
 #include "ash/user_education/user_education_types.h"
 #include "components/account_id/account_id.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
+#include "components/user_manager/user_names.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -257,23 +258,24 @@ TEST_F(UserEducationUtilAshTest, GetMatchingViewInRootWindow) {
 
 // Verifies that `GetUserType()` is working as intended.
 TEST_F(UserEducationUtilAshTest, GetUserType) {
-  AccountId guest_account_id = AccountId::FromUserEmail("guest@test");
-  AccountId regular_account_id = AccountId::FromUserEmail("regular@test");
+  AccountId regular_account_id = AccountId::FromUserEmail(kDefaultUserEmail);
+  AccountId guest_account_id = user_manager::GuestAccountId();
 
   // Case: no user sessions added.
   EXPECT_FALSE(GetUserType(AccountId()));
   EXPECT_FALSE(GetUserType(guest_account_id));
   EXPECT_FALSE(GetUserType(regular_account_id));
 
-  auto* session_controller = GetSessionControllerClient();
-  session_controller->AddUserSession(guest_account_id.GetUserEmail(),
-                                     user_manager::UserType::kGuest);
-  session_controller->AddUserSession(regular_account_id.GetUserEmail(),
-                                     user_manager::UserType::kRegular);
+  EXPECT_EQ(SimulateGuestLogin(), guest_account_id);
 
-  // Case: multiple user sessions added.
   EXPECT_FALSE(GetUserType(AccountId()));
   EXPECT_EQ(GetUserType(guest_account_id), user_manager::UserType::kGuest);
+
+  ClearLogin();
+
+  SimulateUserLogin(regular_account_id);
+  EXPECT_FALSE(GetUserType(AccountId()));
+  // Case: multiple user sessions added.
   EXPECT_EQ(GetUserType(regular_account_id), user_manager::UserType::kRegular);
 }
 
@@ -287,7 +289,7 @@ TEST_F(UserEducationUtilAshTest, IsPrimaryAccountActive) {
 
   // Case: primary user session added but inactive.
   auto* session_controller_client = GetSessionControllerClient();
-  session_controller_client->AddUserSession(primary_account_id.GetUserEmail());
+  session_controller_client->AddUserSession({}, primary_account_id);
   EXPECT_FALSE(IsPrimaryAccountActive());
 
   // Case: primary user session activated.
@@ -301,8 +303,7 @@ TEST_F(UserEducationUtilAshTest, IsPrimaryAccountActive) {
   EXPECT_TRUE(IsPrimaryAccountActive());
 
   // Case: secondary user session added but inactive.
-  session_controller_client->AddUserSession(
-      secondary_account_id.GetUserEmail());
+  session_controller_client->AddUserSession({}, secondary_account_id);
   EXPECT_TRUE(IsPrimaryAccountActive());
 
   // Case: secondary user activated and then deactivated.
@@ -323,9 +324,8 @@ TEST_F(UserEducationUtilAshTest, IsPrimaryAccountId) {
   EXPECT_FALSE(IsPrimaryAccountId(secondary_account_id));
 
   auto* session_controller_client = GetSessionControllerClient();
-  session_controller_client->AddUserSession(primary_account_id.GetUserEmail());
-  session_controller_client->AddUserSession(
-      secondary_account_id.GetUserEmail());
+  session_controller_client->AddUserSession({}, primary_account_id);
+  session_controller_client->AddUserSession({}, secondary_account_id);
 
   // Case: multiple user sessions added.
   EXPECT_FALSE(IsPrimaryAccountId(AccountId()));

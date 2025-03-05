@@ -295,4 +295,21 @@ message MatchedUrlNavigationRule {
 
   // Whether the matched rule need to block screenshots.
   optional bool block_screenshot = 8;
+
+  message DataMaskingAction {
+    optional string display_name = 1;
+
+    // The type of masking to be applied. This is either "LIGHT", "HARD" or
+    // "REDACTED", and is implemented using a string instead of an enum to
+    // simplify compatibility when this proto field is converted to a JSON
+    // object in Chrome for a JS extension API call.
+    optional string mask_type = 2;
+
+    // This is a regex pattern that will be used to match the URL.
+    optional string pattern = 3;
+  }
+
+  // The set of data masking actions that should be applied to the URL due to
+  // this rule match.
+  repeated DataMaskingAction data_masking_actions = 9;
 }

@@ -172,7 +172,7 @@ void SharingServiceOperation::OnShowSharePicker(
     blink::mojom::ShareError error) {
   if (file_paths_.size() > 0) {
     PrepareDirectoryTask::ScheduleSharedFileDeletion(std::move(file_paths_),
-                                                     base::Minutes(0));
+                                                     base::Seconds(60));
   }
   std::move(callback_).Run(error);
 }

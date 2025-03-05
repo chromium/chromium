@@ -1083,7 +1083,7 @@ targets.mixin(
 # On dual-GPU devices this forces high performance GPU to be used by WebGL
 # while everything else uses the low performance GPU. ANGLE/Metal only.
 targets.mixin(
-    name = "gpu_force_high_performance_gpu_for_webgl",
+    name = "gpu_force_high_performance_gpu_for_webgl_metal",
     args = [
         "--extra-browser-args=--enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL",
     ],

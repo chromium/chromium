@@ -19,8 +19,7 @@ class ParentAccessDialogResultObserver : public content::WebContentsObserver {
       supervised_user::LocalApprovalResult,
       std::optional<supervised_user::LocalWebApprovalErrorType>)>;
 
-  ParentAccessDialogResultObserver(
-      content::WebContents* web_contents,
+  explicit ParentAccessDialogResultObserver(
       LocalApprovalResultCallback url_approval_result_callback);
   // The destructor records metrics on the approval's outcome for certain
   // outcomes (cancellations, error cases).
@@ -30,6 +29,7 @@ class ParentAccessDialogResultObserver : public content::WebContentsObserver {
   ParentAccessDialogResultObserver& operator=(
       const ParentAccessDialogResultObserver&) = delete;
 
+  void StartObserving(content::WebContents* contents);
   void StopObserving();
 
   // Helper that sets the results to Error, in case we fail to load

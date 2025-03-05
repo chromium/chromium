@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
-#include "components/embedder_support/switches.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/preloading/prefetch/prefetch_network_context_client.h"
@@ -95,10 +94,7 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory(
 
   auto context_params = network::mojom::NetworkContextParams::New();
   context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
-  context_params->user_agent = embedder_support::GetReducedUserAgent(
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          embedder_support::kUseMobileUserAgent),
-      delegate ? delegate->GetMajorVersionNumber() : "");
+  context_params->user_agent = embedder_support::GetUserAgent();
   // The verifier created here does not have the same parameters as used in the
   // profile (where additional parameters are added in
   // chrome/browser/net/profile_network_context_service.h

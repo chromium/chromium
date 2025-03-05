@@ -279,6 +279,62 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
+                       UniqueDialogWhenLocalApprovalRequestInProgress) {
+  base::HistogramTester histogram_tester;
+
+  CHECK(contents());
+  auto handler = std::make_unique<SupervisedUserWebContentHandlerImpl>(
+      contents(), content::FrameTreeNodeId(), 0);
+
+  supervised_user::UrlFormatter url_formatter(
+      *GetUrlFilter(), supervised_user::FilteringBehaviorReason::DEFAULT);
+  GURL blocked_url("https://www.example.com/");
+
+  bool approval_initiated;
+  auto approval_initiated_lambda = [](bool& result,
+                                      bool actual_approval_initiated) {
+    result = actual_approval_initiated;
+  };
+
+  // Makes a local approval request and checks that the PACP dialog is created.
+  handler->RequestLocalApproval(
+      blocked_url, u"child_display_name", url_formatter,
+      supervised_user::FilteringBehaviorReason::MANUAL,
+      /*callback=*/
+      base::BindOnce(approval_initiated_lambda, std::ref(approval_initiated)));
+  EXPECT_EQ(true, approval_initiated);
+
+  // Make another approval request, which should return early while another is
+  // in progress.
+  handler->RequestLocalApproval(
+      blocked_url, u"child_display_name", url_formatter,
+      supervised_user::FilteringBehaviorReason::MANUAL,
+      /*callback=*/
+      base::BindOnce(approval_initiated_lambda, std::ref(approval_initiated)));
+  EXPECT_EQ(false, approval_initiated);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return handler->GetWeakParentAccessViewForTesting() != nullptr;
+  }));
+  // Close the parent approval dialog.
+  views::Widget* widget =
+      handler->GetWeakParentAccessViewForTesting()->GetWidget();
+  ASSERT_TRUE(widget);
+  widget->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return handler->GetWeakParentAccessViewForTesting() == nullptr;
+  }));
+
+  // The next local approval request should go through.
+  handler->RequestLocalApproval(
+      blocked_url, u"child_display_name", url_formatter,
+      supervised_user::FilteringBehaviorReason::MANUAL,
+      /*callback=*/
+      base::BindOnce(approval_initiated_lambda, std::ref(approval_initiated)));
+  EXPECT_EQ(true, approval_initiated);
+}
+
+IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
                        RecordDialogCancellationOnCloseButton) {
   base::HistogramTester histogram_tester;
 

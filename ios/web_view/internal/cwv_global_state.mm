@@ -21,6 +21,7 @@
   std::unique_ptr<ios_web_view::WebViewWebClient> _web_client;
   std::unique_ptr<ios_web_view::WebViewWebMainDelegate> _web_main_delegate;
   std::unique_ptr<web::WebMain> _web_main;
+  BOOL _isEarlyInitialized;
   BOOL _isStarted;
   NSString* _customUserAgent;
   NSString* _userAgentProduct;
@@ -68,7 +69,16 @@
 #endif  // defined(CWV_UNIT_TEST)
 }
 
-- (void)start {
+- (BOOL)isEarlyInitialized {
+#if defined(CWV_UNIT_TEST)
+  // Global state initialization is not needed in a unit test environment.
+  return YES;
+#else
+  return _isEarlyInitialized;
+#endif  // defined(CWV_UNIT_TEST)
+}
+
+- (void)earlyInit {
 #if defined(CWV_UNIT_TEST)
   // Global state initialization is not needed in a unit test environment.
 #else
@@ -76,7 +86,7 @@
 
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    DCHECK(!_isStarted);
+    DCHECK(!_isEarlyInitialized);
 
     // This is for generating coverage data for tests only.
     coverage_util::ConfigureCoverageReportPath();
@@ -87,6 +97,24 @@
         std::make_unique<ios_web_view::WebViewWebMainDelegate>();
     web::WebMainParams params(_web_main_delegate.get());
     _web_main = std::make_unique<web::WebMain>(std::move(params));
+
+    _isEarlyInitialized = YES;
+  });
+#endif  // defined(CWV_UNIT_TEST)
+}
+
+- (void)start {
+#if defined(CWV_UNIT_TEST)
+  // Global state initialization is not needed in a unit test environment.
+#else
+  DCHECK([NSThread isMainThread]);
+
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    DCHECK(_isEarlyInitialized);
+    DCHECK(!_isStarted);
+
+    _web_main->Startup();
 
     _isStarted = YES;
   });

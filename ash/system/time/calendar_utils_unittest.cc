@@ -454,12 +454,12 @@ TEST_F(CalendarUtilsUnitTest, GetYearOfDay) {
 }
 
 TEST_F(CalendarUtilsUnitTest, ChildLoggedIn) {
-  SimulateUserLogin("test@test.test", user_manager::UserType::kChild);
+  SimulateUserLogin({"test@test.test", user_manager::UserType::kChild});
   EXPECT_TRUE(calendar_utils::IsActiveUser());
 }
 
 TEST_F(CalendarUtilsUnitTest, InactiveUser) {
-  SimulateUserLogin("test@test.test", user_manager::UserType::kGuest);
+  SimulateGuestLogin();
   EXPECT_FALSE(calendar_utils::IsActiveUser());
 }
 

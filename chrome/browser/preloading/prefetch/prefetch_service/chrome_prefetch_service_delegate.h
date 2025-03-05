@@ -30,7 +30,6 @@ class ChromePrefetchServiceDelegate : public content::PrefetchServiceDelegate {
       const ChromePrefetchServiceDelegate&) = delete;
 
   // content::PrefetchServiceDelegate
-  std::string GetMajorVersionNumber() override;
   std::string GetAcceptLanguageHeader() override;
   GURL GetDefaultPrefetchProxyHost() override;
   std::string GetAPIKey() override;

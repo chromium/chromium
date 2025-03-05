@@ -148,7 +148,7 @@ class PowerButtonTest : public NoSessionAshTestBase {
 // `PowerButton` should be with the correct view id and have the UMA tracking
 // with the correct catalog name.
 TEST_F(PowerButtonTest, PowerButtonHasCorrectViewIdAndUma) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
 
   // No metrics logged before clicking on any buttons.
   histogram_tester_.ExpectTotalCount("Ash.QuickSettings.Button.Activated",
@@ -170,7 +170,7 @@ TEST_F(PowerButtonTest, PowerButtonHasCorrectViewIdAndUma) {
 }
 
 TEST_F(PowerButtonTest, LockMenuButtonRecordsUma) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   // TOOD(crbug.com/383442863): Move this to SimulateUserLogin.
   GetSessionControllerClient()->SetCanLockScreen(true);
   SimulatePowerButtonPress();
@@ -186,7 +186,7 @@ TEST_F(PowerButtonTest, LockMenuButtonRecordsUma) {
 }
 
 TEST_F(PowerButtonTest, SignOutMenuButtonRecordsUma) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   SimulatePowerButtonPress();
 
   LeftClickOn(GetSignOutButton());
@@ -201,7 +201,7 @@ TEST_F(PowerButtonTest, SignOutMenuButtonRecordsUma) {
 }
 
 TEST_F(PowerButtonTest, RestartMenuButtonRecordsUma) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   SimulatePowerButtonPress();
 
   LeftClickOn(GetRestartButton());
@@ -216,7 +216,7 @@ TEST_F(PowerButtonTest, RestartMenuButtonRecordsUma) {
 }
 
 TEST_F(PowerButtonTest, PowerOffMenuButtonRecordsUma) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   SimulatePowerButtonPress();
 
   LeftClickOn(GetPowerOffButton());
@@ -230,7 +230,7 @@ TEST_F(PowerButtonTest, PowerOffMenuButtonRecordsUma) {
 }
 
 TEST_F(PowerButtonTest, EmailMenuButtonRecordsUma) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   SimulatePowerButtonPress();
 
   LeftClickOn(GetEmailButton());
@@ -271,7 +271,7 @@ TEST_F(PowerButtonTest, ButtonStatesNotLoggedIn) {
 
 // All buttons are shown after login.
 TEST_F(PowerButtonTest, ButtonStatesLoggedIn) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   // TOOD(crbug.com/383442863): Move this to SimulateUserLogin.
   GetSessionControllerClient()->SetCanLockScreen(true);
 
@@ -301,7 +301,7 @@ TEST_F(PowerButtonTest, ButtonStatesLoggedIn) {
 
 // The lock button are hidden at the lock screen.
 TEST_F(PowerButtonTest, ButtonStatesLockScreen) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
 
   // Changes in lock state close the system tray bubble, so re-show it.
@@ -335,7 +335,7 @@ TEST_F(PowerButtonTest, ButtonStatesLockScreen) {
 
 // The lock button is hidden when adding a second multiprofile user.
 TEST_F(PowerButtonTest, ButtonStatesAddingUser) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   SetUserAddingScreenRunning(true);
 
   EXPECT_TRUE(GetPowerButton()->GetVisible());
@@ -375,7 +375,7 @@ TEST_F(PowerButtonTest, ButtonStatesGuestMode) {
 }
 
 TEST_F(PowerButtonTest, EmailIsShownForRegularAccount) {
-  SimulateUserLogin("user@gmail.com", user_manager::UserType::kRegular);
+  SimulateUserLogin({"user@gmail.com", user_manager::UserType::kRegular});
   SimulatePowerButtonPress();
   EXPECT_TRUE(GetEmailButton()->GetVisible());
   EXPECT_TRUE(GetEmailButton()->GetEnabled());
@@ -383,7 +383,7 @@ TEST_F(PowerButtonTest, EmailIsShownForRegularAccount) {
 }
 
 TEST_F(PowerButtonTest, EmailIsShownForChildAccount) {
-  SimulateUserLogin("child@gmail.com", user_manager::UserType::kChild);
+  SimulateUserLogin({"child@gmail.com", user_manager::UserType::kChild});
   SimulatePowerButtonPress();
   EXPECT_TRUE(GetEmailButton()->GetVisible());
   // The multi-profile user chooser is disabled for child accounts.
@@ -392,7 +392,7 @@ TEST_F(PowerButtonTest, EmailIsShownForChildAccount) {
 }
 
 TEST_F(PowerButtonTest, EmailIsNotShownForPublicAccount) {
-  SimulateUserLogin("test@test.com", user_manager::UserType::kPublicAccount);
+  SimulateUserLogin({"test@test.com", user_manager::UserType::kPublicAccount});
   SimulatePowerButtonPress();
   EXPECT_EQ(nullptr, GetEmailButton());
 }
@@ -401,7 +401,7 @@ TEST_F(PowerButtonTest, EmailIsNotShownForPublicAccount) {
 // accessed in kiosk mode.
 
 TEST_F(PowerButtonTest, ClickingEmailShowsUserChooserView) {
-  SimulateUserLogin("user@gmail.com", user_manager::UserType::kRegular);
+  SimulateUserLogin({"user@gmail.com", user_manager::UserType::kRegular});
   SimulatePowerButtonPress();
   LeftClickOn(GetEmailButton());
 
@@ -412,7 +412,7 @@ TEST_F(PowerButtonTest, ClickingEmailShowsUserChooserView) {
 }
 
 TEST_F(PowerButtonTest, UserItemButtonTooltipText) {
-  SimulateUserLogin("user@gmail.com", user_manager::UserType::kRegular);
+  SimulateUserLogin({"user@gmail.com", user_manager::UserType::kRegular});
   SimulatePowerButtonPress();
   LeftClickOn(GetEmailButton());
 
@@ -454,7 +454,7 @@ TEST_F(PowerButtonTest, UserItemButtonTooltipText) {
 // Power button's rounded radii should change correctly when switching between
 // active/inactive.
 TEST_F(PowerButtonTest, ButtonRoundedRadii) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
 
   // Sets a LTR locale.
   base::i18n::SetICUDefaultLocale("en_US");
@@ -487,7 +487,7 @@ TEST_F(PowerButtonTest, ButtonRoundedRadii) {
 }
 
 TEST_F(PowerButtonTest, DeviceRebootOnShutdownPolicyHidesPowerOffButton) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   // Simulate DeviceRebootOnShutdownPolicy is enabled.
   Shell::Get()->shutdown_controller()->SetRebootOnShutdown(true);
 
@@ -498,7 +498,7 @@ TEST_F(PowerButtonTest, DeviceRebootOnShutdownPolicyHidesPowerOffButton) {
 }
 
 TEST_F(PowerButtonTest, ChevronFlipsWhenMenuIsShowing) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
 
   EXPECT_TRUE(GetPowerButton()->GetVisible());
   EXPECT_FALSE(IsMenuShowing());

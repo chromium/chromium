@@ -770,6 +770,10 @@ static const char* kInterstitialDetails = "Details";
 // correctly adapts to orientation changes.
 - (void)
     testSupervisedUserInterstitialCanRequestLocalWebApprovalWithOrientationChanges {
+  // Set up histogram tracking.
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
+
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFakePermissionCreator];
   [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
@@ -807,12 +811,40 @@ static const char* kInterstitialDetails = "Details";
                                    kParentAccessViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Tap outside to dimiss the bottom sheet.
-  [[EarlGrey selectElementWithMatcher:grey_keyWindow()]
+  // Tap the (x) button to dimiss the bottom sheet.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kParentAccessCloseButtonAccessibilityIdentifier)]
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:
           grey_accessibilityID(kParentAccessViewAccessibilityIdentifier)];
+
+  // Verify that metrics are recorded on bottom sheet dismissal.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          supervised_user::LocalApprovalResult::
+                                              kCanceled)
+                         forHistogram:@"FamilyLinkUser.LocalWebApprovalResult"],
+      @"Unexpected value for local web approval result histogram.");
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:1
+              forHistogram:@"FamilyLinkUser.LocalWebApprovalResult"],
+      @"Unexpected total count for local web approval result histogram.");
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:0
+              forHistogram:@"FamilyLinkUser.LocalWebApprovalErrorType"],
+      @"Unexpected total count for local web approval error histogram.");
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:0
+              forHistogram:@"FamilyLinkUser."
+                           @"LocalWebApprovalCompleteRequestTotalDuration"],
+      @"Unexpected total count for local web approval duration histogram.");
 }
 
 // Tests that the local web approval bottom sheet dismisses after timeout upon

@@ -52,7 +52,7 @@ class NET_EXPORT RegistrationRequestParam {
 
   static RegistrationRequestParam CreateForTesting(
       const GURL& registration_endpoint,
-      std::string session_identifier,
+      std::optional<std::string> session_identifier,
       std::optional<std::string> challenge);
 
  private:

@@ -23,6 +23,9 @@ void AndroidBrowserTest::SetUp() {
   SetUpDefaultCommandLine(command_line);
   ASSERT_TRUE(test_launcher_utils::CreateUserDataDir(&temp_user_data_dir_));
 
+  InitializeHTTPSTestServer();
+  embedded_https_test_server().AddDefaultHandlers(GetChromeTestDataDir());
+
   BrowserTestBase::SetUp();
 }
 

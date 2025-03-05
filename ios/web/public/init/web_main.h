@@ -47,6 +47,8 @@ class WebMain {
   explicit WebMain(WebMainParams params);
   ~WebMain();
 
+  int Startup();
+
  private:
   std::unique_ptr<WebMainRunner> web_main_runner_;
 };

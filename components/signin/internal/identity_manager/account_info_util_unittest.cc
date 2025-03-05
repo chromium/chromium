@@ -24,7 +24,8 @@ base::Value::Dict CreateUserInfoWithValues(const char* email,
                                            const char* full_name,
                                            const char* given_name,
                                            const char* locale,
-                                           const char* picture_url) {
+                                           const char* picture_url,
+                                           const char* sub = nullptr) {
   base::Value::Dict user_info;
   if (email) {
     user_info.Set("email", base::Value(email));
@@ -52,6 +53,10 @@ base::Value::Dict CreateUserInfoWithValues(const char* email,
 
   if (picture_url) {
     user_info.Set("picture", base::Value(picture_url));
+  }
+
+  if (sub) {
+    user_info.Set("sub", base::Value(sub));
   }
 
   return user_info;
@@ -85,6 +90,54 @@ TEST_F(AccountInfoUtilTest, FromUserInfo) {
           /*hosted_domain=*/"example.com", /*full_name=*/"full name",
           /*given_name=*/"given name", /*locale=*/"locale",
           /*picture_url=*/"https://example.com/picture/user"));
+
+  ASSERT_TRUE(maybe_account_info.has_value());
+
+  AccountInfo& account_info = maybe_account_info.value();
+  ASSERT_EQ(account_info.email, "user@example.com");
+  ASSERT_EQ(account_info.gaia.ToString(), "gaia_id_user_example_com");
+  ASSERT_EQ(account_info.hosted_domain, "example.com");
+  ASSERT_EQ(account_info.full_name, "full name");
+  ASSERT_EQ(account_info.given_name, "given name");
+  ASSERT_EQ(account_info.locale, "locale");
+  ASSERT_EQ(account_info.picture_url, "https://example.com/picture/user");
+}
+
+// Tests that AccountInfoFromUserInfo returns an AccountInfo with the value
+// extracted from the passed base::Value when the GAIA ID is stored in
+// the "sub" value.
+TEST_F(AccountInfoUtilTest, FromUserInfoWithSub) {
+  std::optional<AccountInfo> maybe_account_info =
+      AccountInfoFromUserInfo(CreateUserInfoWithValues(
+          /*email=*/"user@example.com", /*gaia=*/nullptr,
+          /*hosted_domain=*/"example.com", /*full_name=*/"full name",
+          /*given_name=*/"given name", /*locale=*/"locale",
+          /*picture_url=*/"https://example.com/picture/user",
+          /*sub=*/"gaia_id_user_example_com"));
+
+  ASSERT_TRUE(maybe_account_info.has_value());
+
+  AccountInfo& account_info = maybe_account_info.value();
+  ASSERT_EQ(account_info.email, "user@example.com");
+  ASSERT_EQ(account_info.gaia.ToString(), "gaia_id_user_example_com");
+  ASSERT_EQ(account_info.hosted_domain, "example.com");
+  ASSERT_EQ(account_info.full_name, "full name");
+  ASSERT_EQ(account_info.given_name, "given name");
+  ASSERT_EQ(account_info.locale, "locale");
+  ASSERT_EQ(account_info.picture_url, "https://example.com/picture/user");
+}
+
+// Tests that AccountInfoFromUserInfo returns an AccountInfo with the value
+// extracted from the passed base::Value, and that the GAIA ID stored in "id"
+// takes precedence over the "sub" value.
+TEST_F(AccountInfoUtilTest, FromUserInfoWithIdAndSub) {
+  std::optional<AccountInfo> maybe_account_info =
+      AccountInfoFromUserInfo(CreateUserInfoWithValues(
+          /*email=*/"user@example.com", /*gaia=*/"gaia_id_user_example_com",
+          /*hosted_domain=*/"example.com", /*full_name=*/"full name",
+          /*given_name=*/"given name", /*locale=*/"locale",
+          /*picture_url=*/"https://example.com/picture/user",
+          /*sub=*/"gaia_sub_user_example_com"));
 
   ASSERT_TRUE(maybe_account_info.has_value());
 

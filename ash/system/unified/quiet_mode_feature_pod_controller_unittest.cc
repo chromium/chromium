@@ -78,14 +78,14 @@ TEST_F(QuietModeFeaturePodControllerTest, ButtonVisibilityNotLoggedIn) {
 }
 
 TEST_F(QuietModeFeaturePodControllerTest, ButtonVisibilityLoggedIn) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   SetUpButton();
   // If logged in, it should be visible.
   EXPECT_TRUE(IsButtonVisible());
 }
 
 TEST_F(QuietModeFeaturePodControllerTest, ButtonVisibilityLocked) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   BlockUserSession(UserSessionBlockReason::BLOCKED_BY_LOCK_SCREEN);
   SetUpButton();
   // If locked, it should not be visible.
@@ -93,7 +93,7 @@ TEST_F(QuietModeFeaturePodControllerTest, ButtonVisibilityLocked) {
 }
 
 TEST_F(QuietModeFeaturePodControllerTest, IconUMATracking) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   SetUpButton();
   message_center::MessageCenter::Get()->SetQuietMode(false);
 
@@ -135,7 +135,7 @@ TEST_F(QuietModeFeaturePodControllerTest, IconUMATracking) {
 }
 
 TEST_F(QuietModeFeaturePodControllerTest, ToggledState) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
 
   // Do not disturb is initially off, button is not toggled.
   SetUpButton();

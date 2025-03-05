@@ -216,6 +216,9 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PREFS_SECTION_ADVANCED" desc='Title of "Advanced" section of preferences. [CHAR_LIMIT=32]'>
         Advanced
       </message>
+      <message name="IDS_PREFS_NEW_LABEL" desc="The label displayed next to the title of newly added preferences.">
+        <ph name="PREF_TITLE">%1$s</ph>  <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
+      </message>
 
       <!-- Notification channels -->
       <message name="IDS_NOTIFICATION_CATEGORY_GROUP_GENERAL" desc='Subheading for "General" section of a list of notification categories. [CHAR_LIMIT=32]'>
@@ -455,8 +458,8 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       </message>
 
       <!-- Address bar settings -->
-      <message name="IDS_ADDRESS_BAR_SETTINGS" desc="Title for Address Bar settings. The NEW label is displayed until the user clicks on this menu item at least twice. [CHAR_LIMIT=32]">
-        Address bar  <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
+      <message name="IDS_ADDRESS_BAR_SETTINGS" desc="Title for Address Bar settings. [CHAR_LIMIT=32]">
+        Address bar
       </message>
 
       <message name="IDS_ADDRESS_BAR_SETTINGS_CURRENTLY_ON_TOP" desc="Description for Address Bar Settings image when the address bar is top-anchored.">

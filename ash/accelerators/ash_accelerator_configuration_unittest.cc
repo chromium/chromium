@@ -1535,7 +1535,7 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveAcceleratorPref) {
   // Now re-login to the original profile.
   GetSessionControllerClient()->LockScreen();
   config_->Initialize(test_data);
-  SimulateUserLogin(kFakeUserEmail);
+  SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
   EXPECT_FALSE(original_pref_overrides.empty());
 
@@ -1610,7 +1610,7 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveAcceleratorThenResetAllPref) {
   // Now re-login to the original profile.
   GetSessionControllerClient()->LockScreen();
   config_->Initialize(test_data);
-  SimulateUserLogin(kFakeUserEmail);
+  SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
   EXPECT_FALSE(original_pref_overrides.empty());
 
@@ -1638,7 +1638,7 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveAcceleratorThenResetAllPref) {
   // Relogin, expect shortcuts to be back to default.
   GetSessionControllerClient()->LockScreen();
   config_->Initialize(test_data);
-  SimulateUserLogin(kFakeUserEmail);
+  SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& reset_pref_overrides = GetOverridePref();
   EXPECT_TRUE(reset_pref_overrides.empty());
   // `test_data` is the default state of accelerators.
@@ -1700,7 +1700,7 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveAcceleratorThenResetPref) {
   // Now re-login to the original profile.
   GetSessionControllerClient()->LockScreen();
   config_->Initialize(test_data);
-  SimulateUserLogin(kFakeUserEmail);
+  SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
   EXPECT_FALSE(original_pref_overrides.empty());
 
@@ -1724,7 +1724,7 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveAcceleratorThenResetPref) {
   // Relogin, expect shortcuts to be back to default.
   GetSessionControllerClient()->LockScreen();
   config_->Initialize(test_data);
-  SimulateUserLogin(kFakeUserEmail);
+  SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& reset_pref_overrides = GetOverridePref();
   EXPECT_TRUE(reset_pref_overrides.empty());
   // `test_data` is the default state of accelerators.
@@ -1795,7 +1795,7 @@ TEST_F(AshAcceleratorConfigurationTest, AddAcceleratorWithPrefs) {
   // Now re-login to the original profile.
   GetSessionControllerClient()->LockScreen();
   config_->Initialize(test_data);
-  SimulateUserLogin(kFakeUserEmail);
+  SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
   EXPECT_FALSE(original_pref_overrides.empty());
 
@@ -1871,7 +1871,7 @@ TEST_F(AshAcceleratorConfigurationTest, AddAcceleratorWithConflictWithPrefs) {
   // Now re-login to the original profile.
   GetSessionControllerClient()->LockScreen();
   config_->Initialize(test_data);
-  SimulateUserLogin(kFakeUserEmail);
+  SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
   EXPECT_FALSE(original_pref_overrides.empty());
 
@@ -1995,7 +1995,7 @@ TEST_F(AshAcceleratorConfigurationTest,
   // Now re-login to the original profile.
   GetSessionControllerClient()->LockScreen();
   config_->Initialize(test_data);
-  SimulateUserLogin(kFakeUserEmail);
+  SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
   EXPECT_FALSE(original_pref_overrides.empty());
 
@@ -2162,7 +2162,7 @@ TEST_F(AshAcceleratorConfigurationTest,
   // Now re-login to the original profile.
   GetSessionControllerClient()->LockScreen();
   config_->Initialize(test_data);
-  SimulateUserLogin(kFakeUserEmail);
+  SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
   EXPECT_FALSE(original_pref_overrides.empty());
 
@@ -2257,7 +2257,7 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveThenAddAcceleratorWithPrefs) {
   // Now re-login to the original profile.
   GetSessionControllerClient()->LockScreen();
   config_->Initialize(test_data);
-  SimulateUserLogin(kFakeUserEmail);
+  SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
   EXPECT_FALSE(original_pref_overrides.empty());
 
@@ -2337,7 +2337,7 @@ TEST_F(AshAcceleratorConfigurationTest, ReplaceAcceleratorWithPrefs) {
   // Now re-login to the original profile.
   GetSessionControllerClient()->LockScreen();
   config_->Initialize(test_data);
-  SimulateUserLogin(kFakeUserEmail);
+  SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
   EXPECT_FALSE(original_pref_overrides.empty());
 
@@ -2378,7 +2378,7 @@ TEST_F(AshAcceleratorConfigurationTest, IgnoreBadActionIdPrefs) {
   // since the bad pref should've been removed.
   GetSessionControllerClient()->LockScreen();
   config_->Initialize(test_data);
-  SimulateUserLogin(kFakeUserEmail);
+  SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
   EXPECT_TRUE(original_pref_overrides.empty());
 
@@ -2419,7 +2419,7 @@ TEST_F(AshAcceleratorConfigurationTest, IgnoreBadAcceleratorPrefs) {
   // since the bad pref should've been removed.
   GetSessionControllerClient()->LockScreen();
   config_->Initialize(test_data);
-  SimulateUserLogin(kFakeUserEmail);
+  SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
   EXPECT_TRUE(original_pref_overrides.empty());
 
@@ -2508,7 +2508,7 @@ TEST_F(AshAcceleratorConfigurationTest, AddAcceleratorWithPrefReleasedState) {
   // Now re-login to the original profile.
   GetSessionControllerClient()->LockScreen();
   config_->Initialize(test_data);
-  SimulateUserLogin(kFakeUserEmail);
+  SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
   EXPECT_FALSE(original_pref_overrides.empty());
 
@@ -2579,7 +2579,7 @@ TEST_F(AshAcceleratorConfigurationTest, SwitchUserPrefsAreSeparate) {
   // Now re-login to the original profile.
   GetSessionControllerClient()->LockScreen();
   config_->Initialize(test_data);
-  SimulateUserLogin(kFakeUserEmail);
+  SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
   EXPECT_FALSE(original_pref_overrides.empty());
 
@@ -2655,7 +2655,7 @@ TEST_F(AshAcceleratorConfigurationTest, PrefsResetWithFlag) {
   // is enabled, expect that no prefs were saved.
   GetSessionControllerClient()->LockScreen();
   config_->Initialize(test_data);
-  SimulateUserLogin(kFakeUserEmail);
+  SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
   EXPECT_TRUE(original_pref_overrides.empty());
 }

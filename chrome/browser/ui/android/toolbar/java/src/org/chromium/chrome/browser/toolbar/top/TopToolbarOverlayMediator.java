@@ -369,8 +369,13 @@ public class TopToolbarOverlayMediator {
         } else if (mIsVisibilityManuallyControlled) {
             mModel.set(TopToolbarOverlayProperties.VISIBLE, mManualVisibility && mIsOnValidLayout);
         } else {
+            // When BCIV is enabled, we want to show the composited view even if the controls are
+            // offscreen, because we want to avoid an additional compositor frame when scrolling
+            // them back on screen.
             boolean visibility =
-                    !BrowserControlsUtils.areBrowserControlsOffScreen(mBrowserControlsStateProvider)
+                    (ChromeFeatureList.sBrowserControlsInViz.isEnabled()
+                                    || !BrowserControlsUtils.areBrowserControlsOffScreen(
+                                            mBrowserControlsStateProvider))
                             && mIsOnValidLayout;
             mModel.set(TopToolbarOverlayProperties.VISIBLE, visibility);
         }

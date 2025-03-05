@@ -69,7 +69,7 @@ class ActiveSessionAuthControllerTest
 
     GetSessionControllerClient()->Reset();
     GetSessionControllerClient()->AddUserSession(
-        kUserEmail, user_manager::UserType::kRegular);
+        {kUserEmail, user_manager::UserType::kRegular});
     GetSessionControllerClient()->SetSessionState(
         session_manager::SessionState::ACTIVE);
   }

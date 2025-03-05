@@ -78,8 +78,8 @@ class TouchDevicesControllerSigninTest : public NoSessionAshTestBase {
 
   void CreateTestUserSessions() {
     GetSessionControllerClient()->Reset();
-    SimulateUserLogin(kUser1Email);
-    SimulateUserLogin(kUser2Email);
+    SimulateUserLogin({kUser1Email});
+    SimulateUserLogin({kUser2Email});
     SwitchActiveUser(kUser1Email);
   }
 
@@ -194,7 +194,7 @@ TEST_F(TouchDevicesControllerPrefsTest, RecordUma) {
   histogram_tester.ExpectTotalCount("Touchpad.TapDragging.Changed", 0);
 
   // Simulate active user pref service is changed.
-  SimulateUserLogin(kUser1Email);
+  SimulateUserLogin({kUser1Email});
 
   histogram_tester.ExpectTotalCount("Touchpad.TapDragging.Started", 1);
   histogram_tester.ExpectTotalCount("Touchpad.TapDragging.Changed", 0);

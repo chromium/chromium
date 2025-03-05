@@ -195,7 +195,8 @@ class LastWindowClosedTest : public NoSessionAshTestBase {
   void StartManagedGuestSession() {
     TestSessionControllerClient* session = GetSessionControllerClient();
     session->Reset();
-    session->AddUserSession(kUserEmail, user_manager::UserType::kPublicAccount);
+    session->AddUserSession(
+        {kUserEmail, user_manager::UserType::kPublicAccount});
     session->SetSessionState(session_manager::SessionState::ACTIVE);
   }
 
@@ -221,7 +222,7 @@ TEST_F(LastWindowClosedTest, RegularSession) {
   EXPECT_FALSE(controller->dialog_for_testing());
 
   // Dialog is not visible after login.
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   EXPECT_FALSE(controller->dialog_for_testing());
 
   // Creating and closing a window does not show the dialog because this is not

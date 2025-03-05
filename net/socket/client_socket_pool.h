@@ -251,10 +251,12 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
   // while establishing a tunnel. It will be invoked asynchronously, once for
   // each auth challenge seen.
   //
-  // `fail_if_alias_requires_proxy_override` indicates that a request should
-  // fail with net error `ERR_PROXY_REQUIRED` if
-  // ProxyDelegate::ShouldOverrideProxyResolution returns true for resolved DNS
-  // records.
+  // |fail_if_alias_requires_proxy_override| is used to determine whether all
+  // requests in a group will support failing with net error
+  // `ERR_PROXY_REQUIRED` if ProxyDelegate::ShouldOverrideProxyResolution
+  // returns true for resolved DNS records. This will only be enabled if every
+  // request in the group has this bit set to true; if any request has it set to
+  // false, it will be disabled for the entire group.
   virtual int RequestSocket(
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,

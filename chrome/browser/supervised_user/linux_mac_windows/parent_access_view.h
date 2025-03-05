@@ -54,7 +54,7 @@ class DialogContentLoadWithTimeoutObserver
   base::OnceClosure show_view_and_destroy_timer_callback_;
 };
 
-using WebContentsObserverCreationCallback =
+using WebContentsObservationCallback =
     base::OnceCallback<void(content::WebContents*)>;
 
 // Implements a View to display the Parent Access Widget (PACP).
@@ -72,7 +72,7 @@ class ParentAccessView : public views::View, public views::WidgetObserver {
       content::WebContents* web_contents,
       const GURL& target_url,
       const supervised_user::FilteringBehaviorReason& filtering_reason,
-      WebContentsObserverCreationCallback web_contents_observer_creation_cb,
+      WebContentsObservationCallback web_contents_observation_cb,
       base::OnceClosure abort_dialog_callback,
       base::OnceClosure dialog_result_reset_callback);
 

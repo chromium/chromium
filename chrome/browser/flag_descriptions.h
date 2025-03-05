@@ -3140,11 +3140,6 @@ extern const char kWasmTtsComponentUpdaterEnabledName[];
 extern const char kWasmTtsComponentUpdaterEnabledDescription[];
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-extern const char kWebAppSystemMediaControlsName[];
-extern const char kWebAppSystemMediaControlsDescription[];
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-
 extern const char kWebAuthenticationPermitEnterpriseAttestationName[];
 extern const char kWebAuthenticationPermitEnterpriseAttestationDescription[];
 

@@ -238,8 +238,7 @@ TEST_P(KeyboardModifierMetricsRecorderPrefStartedTest, InitializeTest) {
   ResetHistogramTester();
 
   // Sign into first account and verify the metric is emitted.
-  SimulateUserLogin(account_id1, user_manager::UserType::kRegular,
-                    std::move(pref_service1));
+  SimulateUserLogin({}, account_id1, std::move(pref_service1));
   if (modifier_key_ != data_.default_modifier_key) {
     histogram_tester_->ExpectUniqueSample(data_.started_metric_name,
                                           static_cast<int>(modifier_key_), 1);
@@ -249,8 +248,7 @@ TEST_P(KeyboardModifierMetricsRecorderPrefStartedTest, InitializeTest) {
   }
 
   // Sign into second account and verify the metric is emitted.
-  SimulateUserLogin(account_id2, user_manager::UserType::kRegular,
-                    std::move(pref_service2));
+  SimulateUserLogin({}, account_id2, std::move(pref_service2));
   if (modifier_key_ != data_.default_modifier_key) {
     histogram_tester_->ExpectUniqueSample(data_.started_metric_name,
                                           static_cast<int>(modifier_key_), 2);
@@ -373,8 +371,7 @@ TEST_P(KeyboardModifierMetricsRecorderHashTest, HashTest) {
   ResetHistogramTester();
 
   // Sign into first account and verify the metric is emitted.
-  SimulateUserLogin(account_id1, user_manager::UserType::kRegular,
-                    std::move(pref_service1));
+  SimulateUserLogin({}, account_id1, std::move(pref_service1));
   if (data_.expected_value.has_value()) {
     histogram_tester_->ExpectUniqueSample(
         "ChromeOS.Settings.Keyboard.Modifiers.Hash",
@@ -385,8 +382,7 @@ TEST_P(KeyboardModifierMetricsRecorderHashTest, HashTest) {
   }
 
   // Sign into second account and verify the metric is emitted.
-  SimulateUserLogin(account_id2, user_manager::UserType::kRegular,
-                    std::move(pref_service2));
+  SimulateUserLogin({}, account_id2, std::move(pref_service2));
 
   if (data_.expected_value.has_value()) {
     histogram_tester_->ExpectUniqueSample(

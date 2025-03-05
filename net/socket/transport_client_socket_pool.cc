@@ -286,7 +286,8 @@ int TransportClientSocketPool::RequestSocket(
     CHECK(!request->handle()->is_initialized());
     request.reset();
   } else {
-    Group* group = GetOrCreateGroup(group_id);
+    Group* group = GetOrCreateGroup(
+        group_id, !request->fail_if_alias_requires_proxy_override());
     group->InsertUnboundRequest(std::move(request));
     // Have to do this asynchronously, as closing sockets in higher level pools
     // call back in to |this|, which will cause all sorts of fun and exciting
@@ -331,7 +332,8 @@ int TransportClientSocketPool::RequestSockets(
       NetLogEventType::SOCKET_POOL_CONNECTING_N_SOCKETS, "num_sockets",
       num_sockets);
 
-  Group* group = GetOrCreateGroup(group_id);
+  Group* group = GetOrCreateGroup(
+      group_id, !request.fail_if_alias_requires_proxy_override());
 
   // RequestSocketsInternal() may delete the group.
   bool deleted_group = false;
@@ -454,7 +456,8 @@ int TransportClientSocketPool::RequestSocketInternal(
 
   // We couldn't find a socket to reuse, and there's space to allocate one,
   // so allocate and connect a new one.
-  group = GetOrCreateGroup(group_id);
+  group = GetOrCreateGroup(group_id,
+                           !request.fail_if_alias_requires_proxy_override());
   std::unique_ptr<ConnectJob> connect_job(
       CreateConnectJob(group_id, request.socket_params(), proxy_chain_,
                        request.proxy_annotation_tag(), request.priority(),
@@ -599,7 +602,10 @@ void TransportClientSocketPool::CancelRequest(const GroupId& group_id,
       } else if (cancel_connect_job) {
         // Close the socket if |cancel_connect_job| is true and there are no
         // other pending requests.
-        Group* group = GetOrCreateGroup(group_id);
+        // Don't try to disable `fail_if_alias_require_proxy_override_` during a
+        // request cancellation.
+        Group* group = GetOrCreateGroup(
+            group_id, /*disable_fail_if_alias_require_proxy_override=*/false);
         if (group->unbound_request_count() == 0)
           socket->Disconnect();
       }
@@ -610,7 +616,10 @@ void TransportClientSocketPool::CancelRequest(const GroupId& group_id,
   }
 
   CHECK(base::Contains(group_map_, group_id));
-  Group* group = GetOrCreateGroup(group_id);
+  // Don't try to disable `fail_if_alias_require_proxy_override_` during a
+  // request cancellation.
+  Group* group = GetOrCreateGroup(
+      group_id, /*disable_fail_if_alias_require_proxy_override=*/false);
 
   std::unique_ptr<Request> request = group->FindAndRemoveBoundRequest(handle);
   if (request) {
@@ -967,12 +976,20 @@ void TransportClientSocketPool::CleanupIdleSocketsInGroup(
 }
 
 TransportClientSocketPool::Group* TransportClientSocketPool::GetOrCreateGroup(
-    const GroupId& group_id) {
+    const GroupId& group_id,
+    bool disable_fail_if_alias_require_proxy_override) {
+  Group* group;
   auto it = group_map_.find(group_id);
-  if (it != group_map_.end())
-    return it->second;
-  Group* group = new Group(group_id, this);
-  group_map_[group_id] = group;
+  if (it != group_map_.end()) {
+    group = it->second;
+  } else {
+    group = new Group(group_id, this);
+    group_map_[group_id] = group;
+  }
+
+  if (disable_fail_if_alias_require_proxy_override) {
+    group->DisableFailIfAliasRequiresProxyOverride();
+  }
   return group;
 }
 
@@ -1906,6 +1923,11 @@ void TransportClientSocketPool::Group::SetPriority(ClientSocketHandle* handle,
 
   // This function must be called with a valid ClientSocketHandle.
   NOTREACHED();
+}
+
+void TransportClientSocketPool::Group::
+    DisableFailIfAliasRequiresProxyOverride() {
+  fail_if_alias_requires_proxy_override_ = false;
 }
 
 bool TransportClientSocketPool::Group::RequestWithHandleHasJobForTesting(

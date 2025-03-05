@@ -29,7 +29,7 @@ class HotspotInfoCacheTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
-  void LogIn() { SimulateUserLogin("user1@test.com"); }
+  void LogIn() { SimulateUserLogin({"user1@test.com"}); }
 
   void LogOut() { ClearLogin(); }
 };

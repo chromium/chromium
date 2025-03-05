@@ -441,40 +441,40 @@ suite('OfficialBuild', function() {
 
     item = queryPromoteUpdater();
     assertTrue(!!item);
-    assertFalse(item!.hasAttribute('disabled'));
-    assertTrue(item!.hasAttribute('actionable'));
+    assertFalse(item.hasAttribute('disabled'));
+    assertTrue(item.hasAttribute('actionable'));
 
     arrow = queryArrowIcon();
     assertTrue(!!arrow);
-    assertEquals('CR-ICON-BUTTON', arrow!.parentElement!.tagName);
-    assertFalse(arrow!.parentElement!.hidden);
-    assertFalse(arrow!.hasAttribute('disabled'));
+    assertEquals('CR-ICON-BUTTON', arrow.parentElement!.tagName);
+    assertFalse(arrow.parentElement!.hidden);
+    assertFalse(arrow.hasAttribute('disabled'));
 
     firePromoteUpdaterStatusChanged(PromoStatusScenarios.IN_BETWEEN);
     flush();
     item = queryPromoteUpdater();
     assertTrue(!!item);
-    assertTrue(item!.hasAttribute('disabled'));
-    assertTrue(item!.hasAttribute('actionable'));
+    assertTrue(item.hasAttribute('disabled'));
+    assertTrue(item.hasAttribute('actionable'));
 
     arrow = queryArrowIcon();
     assertTrue(!!arrow);
-    assertEquals('CR-ICON-BUTTON', arrow!.parentElement!.tagName);
-    assertFalse(arrow!.parentElement!.hidden);
-    assertTrue(arrow!.hasAttribute('disabled'));
+    assertEquals('CR-ICON-BUTTON', arrow.parentElement!.tagName);
+    assertFalse(arrow.parentElement!.hidden);
+    assertTrue(arrow.hasAttribute('disabled'));
 
     firePromoteUpdaterStatusChanged(PromoStatusScenarios.PROMOTED);
     flush();
     item = queryPromoteUpdater();
     assertTrue(!!item);
-    assertTrue(item!.hasAttribute('disabled'));
-    assertFalse(item!.hasAttribute('actionable'));
+    assertTrue(item.hasAttribute('disabled'));
+    assertFalse(item.hasAttribute('actionable'));
 
     arrow = queryArrowIcon();
     assertTrue(!!arrow);
-    assertEquals('CR-ICON-BUTTON', arrow!.parentElement!.tagName);
-    assertTrue(arrow!.parentElement!.hidden);
-    assertTrue(arrow!.hasAttribute('disabled'));
+    assertEquals('CR-ICON-BUTTON', arrow.parentElement!.tagName);
+    assertTrue(arrow.parentElement!.hidden);
+    assertTrue(arrow.hasAttribute('disabled'));
   });
 
   test('PromoteUpdaterButtonWorksWhenEnabled', async function() {
@@ -483,7 +483,7 @@ suite('OfficialBuild', function() {
     const item = page.shadowRoot!.querySelector<HTMLElement>('#promoteUpdater');
     assertTrue(!!item);
 
-    item!.click();
+    item.click();
 
     await browserProxy.whenCalled('promoteUpdater');
   });

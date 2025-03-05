@@ -34,6 +34,7 @@
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_helper.h"
+#include "ash/test/login_info.h"
 #include "ash/test/pixel/ash_pixel_diff_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_helper.h"
@@ -439,19 +440,20 @@ AmbientAshTestHelper* AshTestBase::GetAmbientAshTestHelper() {
   return ash_test_helper_->ambient_ash_test_helper();
 }
 
-AccountId AshTestBase::SimulateUserLogin(const std::string& user_email,
-                                         user_manager::UserType user_type) {
-  auto account_id = AccountId::FromUserEmail(user_email);
-  SimulateUserLogin(account_id, user_type);
+AccountId AshTestBase::SimulateUserLogin(
+    LoginInfo info,
+    std::optional<AccountId> opt_account_id,
+    std::unique_ptr<PrefService> pref_service) {
+  auto account_id = ash_test_helper_->SimulateUserLogin(
+      std::move(info), std::move(opt_account_id), std::move(pref_service));
+  if (pixel_test_helper_) {
+    pixel_test_helper_->StabilizeUi();
+  }
   return account_id;
 }
 
-void AshTestBase::SimulateUserLogin(const AccountId& account_id,
-                                    user_manager::UserType user_type,
-                                    std::unique_ptr<PrefService> pref_service) {
-  ash_test_helper_->SimulateUserLogin(
-      account_id, user_type, /*is_new_profiel=*/false, std::move(pref_service));
-
+void AshTestBase::SimulateUserLogin(const AccountId& account_id) {
+  ash_test_helper_->SimulateUserLogin({}, std::move(account_id), nullptr);
   if (pixel_test_helper_) {
     pixel_test_helper_->StabilizeUi();
   }
@@ -459,27 +461,26 @@ void AshTestBase::SimulateUserLogin(const AccountId& account_id,
 
 AccountId AshTestBase::SimulateNewUserFirstLogin(
     const std::string& user_email) {
-  auto account_id = AccountId::FromUserEmail(user_email);
-  ash_test_helper_->SimulateUserLogin(account_id,
-                                      user_manager::UserType::kRegular,
-                                      /*is_new_profile=*/true);
+  auto account_id = ash_test_helper_->SimulateUserLogin(
+      {.display_email = user_email, .is_new_profile = true}, std::nullopt);
+
   if (pixel_test_helper_) {
     pixel_test_helper_->StabilizeUi();
   }
   return account_id;
 }
 
-void AshTestBase::SimulateGuestLogin() {
-  SimulateUserLogin(AccountId::FromUserEmail(user_manager::kGuestUserName),
-                    user_manager::UserType::kGuest);
+AccountId AshTestBase::SimulateGuestLogin() {
+  return SimulateUserLogin(
+      {user_manager::kGuestUserName, user_manager::UserType::kGuest});
 }
 
-void AshTestBase::SimulateKioskMode(user_manager::UserType user_type) {
+AccountId AshTestBase::SimulateKioskMode(user_manager::UserType user_type) {
   DCHECK(user_type == user_manager::UserType::kKioskApp ||
          user_type == user_manager::UserType::kWebKioskApp);
 
   GetSessionControllerClient()->SetIsRunningInAppMode(true);
-  SimulateUserLogin(AccountId::FromUserEmail(kKioskUserEmail), user_type);
+  return SimulateUserLogin({kKioskUserEmail, user_type});
 }
 
 void AshTestBase::SwitchActiveUser(const AccountId& account_id) {

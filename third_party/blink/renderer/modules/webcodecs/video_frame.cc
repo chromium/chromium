@@ -59,7 +59,6 @@
 #include "third_party/blink/renderer/platform/geometry/geometry_hash_traits.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/skia/sk_image_info_hash.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"

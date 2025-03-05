@@ -837,8 +837,8 @@
   },
   {
     "name": "back-forward-transitions",
-    "owners": [ "liuwilliam@google.com", "chrome-seamless-core@google.com" ],
-    "expiry_milestone": 136
+    "owners": [ "liuwilliam@google.com", "acondor@google.com", "chrome-seamless-core@google.com" ],
+    "expiry_milestone": 139
   },
   {
     "name": "backdrop-filter-mirror-edge",
@@ -4093,11 +4093,6 @@
     "name": "enable-waitable-swap-chain",
     "owners": [ "alex.forrence@gmail.com", "sunnyps@chromium.org" ],
     "expiry_milestone": 120
-  },
-  {
-    "name": "enable-web-app-system-media-controls",
-    "owners": [ "stahon@microsoft.com", "liahiscock@microsoft.com", "dmurph@chromium.org", "steimel@chromium.org" ],
-    "expiry_milestone": 135
   },
   {
     "name": "enable-web-bluetooth",

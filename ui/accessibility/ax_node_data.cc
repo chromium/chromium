@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -1737,7 +1738,7 @@ std::string AXNodeData::ToString(bool verbose) const {
 
   for (const std::pair<ax::mojom::BoolAttribute, bool>& bool_attribute :
        bool_attributes) {
-    std::string value = bool_attribute.second ? "true" : "false";
+    std::string value = base::ToString(bool_attribute.second);
     switch (bool_attribute.first) {
       case ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot:
         result += " non_atomic_text_field_root=" + value;

@@ -2499,6 +2499,15 @@ test("content_unittests") {
     "../browser/browsing_topics/browsing_topics_site_data_storage_unittest.cc",
     "../browser/browsing_topics/browsing_topics_url_loader_unittest.cc",
     "../browser/browsing_topics/header_util_unittest.cc",
+    "../browser/btm/btm_bounce_detector_unittest.cc",
+    "../browser/btm/btm_database_migrator_unittest.cc",
+    "../browser/btm/btm_database_unittest.cc",
+    "../browser/btm/btm_page_visit_observer_unittest.cc",
+    "../browser/btm/btm_service_unittest.cc",
+    "../browser/btm/btm_storage_unittest.cc",
+    "../browser/btm/btm_utils_unittest.cc",
+    "../browser/btm/cookie_access_filter_unittest.cc",
+    "../browser/btm/persistent_repeating_timer_unittest.cc",
     "../browser/buckets/bucket_manager_host_unittest.cc",
     "../browser/buckets/bucket_utils_unittest.cc",
     "../browser/byte_stream_unittest.cc",
@@ -2962,6 +2971,7 @@ test("content_unittests") {
   fuzztests = [
     "BiddingAndAuctionSerializerTargetSizeEstimator.DoesNotCrashForAnyInput",
     "ActionsParserFuzzTest.ParsesJSONCorrectly",
+    "FirstPartySetFuzzer.ParsesSetsCorrectly",
   ]
 
   if (is_mac) {
@@ -3060,9 +3070,10 @@ test("content_unittests") {
     data = [
       "$root_out_dir/content_shell.pak",
       "data/",
-      "//media/test/data/",
       "//content/test/data/attribution_reporting/databases/",
       "//content/test/data/browsing_topics/",
+      "//content/test/data/btm/",
+      "//media/test/data/",
     ]
   }
   if (is_ios) {
@@ -3131,7 +3142,6 @@ test("content_unittests") {
     "//content/browser/attribution_reporting:mojo_bindings",
     "//content/browser/attribution_reporting:registration_result_mojom",
     "//content/browser/background_fetch:background_fetch_proto",
-    "//content/browser/btm:unit_tests",
     "//content/browser/cache_storage:cache_storage_proto",
     "//content/browser/devtools:devtools_background_services_proto",
     "//content/browser/download:proto",
@@ -3153,6 +3163,7 @@ test("content_unittests") {
     "//content/services/auction_worklet:tests",
     "//content/services/auction_worklet/public/cpp:test_support",
     "//content/services/auction_worklet/public/mojom:for_content_tests",
+    "//content/test:test_support",
     "//crypto",
     "//device/bluetooth",
     "//device/bluetooth:mocks",
@@ -3250,6 +3261,7 @@ test("content_unittests") {
     "//ui/latency:test_support",
     "//ui/shell_dialogs:shell_dialogs",
     "//ui/webui:test_support",
+    "//url",
   ]
 
   if (enable_nocompile_tests) {
@@ -3478,7 +3490,6 @@ test("content_unittests") {
       deps += [
         "//components/soda:constants",
         "//components/soda:utils",
-        "//content/test:test_support",
         "//media/mojo/mojom:speech_recognition",
       ]
     }

@@ -134,15 +134,7 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
   void InvokePendingMojoCalls() { notification_presenter_->FlushForTesting(); }
 
   void SignIntoAccount() {
-    TestSessionControllerClient* test_session_client =
-        GetSessionControllerClient();
-    test_session_client->AddUserSession(
-        kTestUserEmail, user_manager::UserType::kRegular,
-        /*pref_service=*/nullptr, false /* is_new_profile */);
-    test_session_client->SetSessionState(session_manager::SessionState::ACTIVE);
-    test_session_client->SwitchActiveUser(
-        AccountId::FromUserEmail(kTestUserEmail));
-
+    SimulateUserLogin({kTestUserEmail});
     InvokePendingMojoCalls();
     EXPECT_TRUE(fake_multidevice_setup_->delegate().is_bound());
   }

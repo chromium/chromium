@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_2d_color_params.h"
 
 #include "base/notreached.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 
 namespace blink {
