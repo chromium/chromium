@@ -249,12 +249,6 @@ const char kContentPushNotificationsName[] = "Content Push Notifications";
 const char kContentPushNotificationsDescription[] =
     "Enables the content push notifications.";
 
-extern const char kContextualPanelForceShowEntrypointName[] =
-    "Force show Contextual Panel entrypoint";
-extern const char kContextualPanelForceShowEntrypointDescription[] =
-    "When enabled, the Contextual Panel entrypoint will be shown regardless of "
-    "appearance prerequisites.";
-
 const char kContextualPanelName[] = "Contextual Panel";
 const char kContextualPanelDescription[] =
     "Enables the contextual panel feature.";
