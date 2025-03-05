@@ -272,7 +272,7 @@ TEST_F(PasswordSettingsViewControllerTest,
 
 TEST_F(PasswordSettingsViewControllerTest,
        DisplaysChangeGPMPinButtonForEligibleUser) {
-  [controller() setupChangeGPMPinButton];
+  [controller() setCanChangeGPMPin:YES];
 
   TableViewImageItem* changeGPMPinDescription =
       static_cast<TableViewImageItem*>(GetTableViewItem(
@@ -294,7 +294,7 @@ TEST_F(PasswordSettingsViewControllerTest,
 
 TEST_F(PasswordSettingsViewControllerTest,
        CallsPresentationDelegateOnGPMPinButtonTap) {
-  [controller() setupChangeGPMPinButton];
+  [controller() setCanChangeGPMPin:YES];
 
   id mockPresentationDelegate =
       OCMProtocolMock(@protocol(PasswordSettingsPresentationDelegate));
