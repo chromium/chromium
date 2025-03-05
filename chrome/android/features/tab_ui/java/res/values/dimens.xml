@@ -125,8 +125,8 @@ found in the LICENSE file.
     <dimen name="tab_group_share_notice_bottom_sheet_subtitle_margin_top">4dp</dimen>
     <dimen name="tab_group_share_notice_bottom_sheet_title_margin_top">12dp</dimen>
 
-    <!-- Dimens for TabGroupShare features-->
-    <dimen name="tab_group_share_tiles_padding">14dp</dimen>
+    <!-- Dimens for TabGroupShare features. -->
+    <dimen name="tab_group_share_tiles_padding">8dp</dimen>
     <dimen name="tab_group_removed_card_horizontal_padding">16dp</dimen>
 
     <!-- Dimens for DataSharing within TabGridDialog -->

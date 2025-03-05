@@ -39,7 +39,6 @@ import java.time.Clock;
 public class TabGroupRowView extends LinearLayout {
     private TabGroupFaviconCluster mTabGroupFaviconCluster;
     private View mColorView;
-    private View mMenuLayout;
     private TextView mTitleTextView;
     private TextView mSubtitleTextView;
     private FrameLayout mImageTilesContainer;
@@ -58,8 +57,7 @@ public class TabGroupRowView extends LinearLayout {
         mTitleTextView = findViewById(R.id.tab_group_title);
         mSubtitleTextView = findViewById(R.id.tab_group_subtitle);
         mImageTilesContainer = findViewById(R.id.image_tiles_container);
-        mListMenuButton = findViewById(R.id.more);
-        mMenuLayout = findViewById(R.id.tab_group_menu);
+        mListMenuButton = findViewById(R.id.tab_group_menu);
     }
 
     void updateCornersForClusterData(ClusterData clusterData) {
@@ -109,7 +107,7 @@ public class TabGroupRowView extends LinearLayout {
         mListMenuButton.setDelegate(() -> getListMenu(openRunnable, deleteRunnable, leaveRunnable));
         boolean shouldMenuBeVisible =
                 openRunnable != null || deleteRunnable != null || leaveRunnable != null;
-        mMenuLayout.setVisibility(shouldMenuBeVisible ? VISIBLE : GONE);
+        mListMenuButton.setVisibility(shouldMenuBeVisible ? VISIBLE : GONE);
     }
 
     void setSharedImageTilesView(@Nullable SharedImageTilesView sharedImageTilesView) {

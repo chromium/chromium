@@ -87,7 +87,6 @@ public class TabGroupRowViewUnitTest {
     private TextView mSubtitleTextView;
     private FrameLayout mImageTilesContainer;
     private ListMenuButton mListMenuButton;
-    private View mMenuLayout;
     private PropertyModel mPropertyModel;
 
     @Before
@@ -111,8 +110,7 @@ public class TabGroupRowViewUnitTest {
         mTitleTextView = mTabGroupRowView.findViewById(R.id.tab_group_title);
         mSubtitleTextView = mTabGroupRowView.findViewById(R.id.tab_group_subtitle);
         mImageTilesContainer = mTabGroupRowView.findViewById(R.id.image_tiles_container);
-        mListMenuButton = mTabGroupRowView.findViewById(R.id.more);
-        mMenuLayout = mTabGroupRowView.findViewById(R.id.tab_group_menu);
+        mListMenuButton = mTabGroupRowView.findViewById(R.id.tab_group_menu);
 
         PropertyModelChangeProcessor.create(
                 mPropertyModel, mTabGroupRowView, TabGroupRowViewBinder::bind);
@@ -300,12 +298,12 @@ public class TabGroupRowViewUnitTest {
     @Test
     public void testDisableMenu() {
         remakeWithModel(new PropertyModel.Builder(ALL_KEYS).with(OPEN_RUNNABLE, null).build());
-        assertEquals(View.GONE, mMenuLayout.getVisibility());
+        assertEquals(View.GONE, mListMenuButton.getVisibility());
     }
 
     @Test
     public void testEnableMenu() {
         remakeWithModel(new PropertyModel.Builder(ALL_KEYS).with(OPEN_RUNNABLE, () -> {}).build());
-        assertEquals(View.VISIBLE, mMenuLayout.getVisibility());
+        assertEquals(View.VISIBLE, mListMenuButton.getVisibility());
     }
 }
