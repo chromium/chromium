@@ -7772,9 +7772,6 @@ const char kPdfUseSkiaRendererDescription[] =
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_VR)
-const char kWebXrHandInputName[] = "WebXR Hand Input";
-const char kWebXrHandInputDescription[] =
-    "Enables access to articulated hand tracking sensor input in WebXR.";
 const char kWebXrProjectionLayersName[] = "WebXR Projection Layers";
 const char kWebXrProjectionLayersDescription[] =
     "Enables use of XRProjectionLayers.";

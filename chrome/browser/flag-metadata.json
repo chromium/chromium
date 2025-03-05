@@ -9431,11 +9431,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "webxr-hand-input",
-    "owners": [ "//components/webxr/OWNERS", "xr-dev@chromium.org" ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "webxr-incubations",
     "owners": [ "//third_party/blink/renderer/modules/xr/OWNERS", "xr-dev@chromium.org" ],
     "expiry_milestone": 142

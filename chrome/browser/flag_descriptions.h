@@ -2359,9 +2359,6 @@ extern const char kWebXrHandAnonymizationChoiceNone[];
 extern const char kWebXrHandAnonymizationChoiceRuntime[];
 extern const char kWebXrHandAnonymizationChoiceFallback[];
 
-extern const char kWebXrHandInputName[];
-extern const char kWebXrHandInputDescription[];
-
 extern const char kWebXrProjectionLayersName[];
 extern const char kWebXrProjectionLayersDescription[];
 
