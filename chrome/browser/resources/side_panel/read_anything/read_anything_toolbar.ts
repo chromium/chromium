@@ -380,7 +380,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       link.media = 'all';
       link.rel = 'stylesheet';
       this.setFontsLoaded();
-    });
+    }, {once: true});
 
     document.head.appendChild(link);
   }
