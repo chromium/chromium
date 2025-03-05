@@ -318,9 +318,6 @@ extern const char kInProductHelpDemoModeDescription[];
 extern const char kIOSInterruptibleCoordinatorAlwaysDismissedName[];
 extern const char kIOSInterruptibleCoordinatorAlwaysDismissedDescription[];
 
-extern const char kIOSInterruptibleCoordinatorStoppedSynchronouslyName[];
-extern const char kIOSInterruptibleCoordinatorStoppedSynchronouslyDescription[];
-
 extern const char kIOSBrowserEditMenuMetricsName[];
 extern const char kIOSBrowserEditMenuMetricsDescription[];
 

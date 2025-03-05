@@ -74,10 +74,7 @@ enum class SigninAddAccountToDeviceResult : int {
 
 // Interrupts the add account view. `action` controls
 // whether the dimissal is done and whether it is animated.
-// If the flag kIOSInterruptibleCoordinatorStoppedSynchronously is enabled,
-// `completion` is invoked directly. If
-// kIOSInterruptibleCoordinatorStoppedSynchronously is disabled, `completion`
-// will be invoked asynchronously.
+// `completion` is invoked synchronously.
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion;
 

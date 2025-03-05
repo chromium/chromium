@@ -12164,21 +12164,6 @@
             ]
         }
     ],
-    "IOSInterruptibleCoordinatorStoppedSynchronously": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "IOSInterruptibleCoordinatorStoppedSynchronously",
-                    "enable_features": [
-                        "IOSInterruptibleCoordinatorStoppedSynchronously"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSKeepsRenderProcessAlive": [
         {
             "platforms": [

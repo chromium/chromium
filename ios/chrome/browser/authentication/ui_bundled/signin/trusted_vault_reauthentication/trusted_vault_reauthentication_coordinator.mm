@@ -105,16 +105,9 @@ using l10n_util::GetNSStringF;
     [self stopErrorAlertCoordinator];
     // Checks that `cancelCompletion` is executed synchronously.
     CHECK(!self.signinCompletion, base::NotFatalUntil::M126);
-  } else if (IsInterruptibleCoordinatorStoppedSynchronouslyEnabled()) {
+  } else {
     std::move(_dialogCancelCallback).Run(animated, nil);
     cancelCompletion();
-  } else {
-    if (IsInterruptibleCoordinatorStoppedSynchronouslyEnabled()) {
-      std::move(_dialogCancelCallback).Run(animated, nil);
-      cancelCompletion();
-    } else {
-      std::move(_dialogCancelCallback).Run(animated, cancelCompletion);
-    }
   }
 }
 

@@ -148,18 +148,10 @@
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion {
   if (self.addAccountSigninCoordinator) {
-    if (IsInterruptibleCoordinatorStoppedSynchronouslyEnabled()) {
-      [self.addAccountSigninCoordinator interruptWithAction:action
-                                                 completion:nil];
-
-      if (completion) {
-        completion();
-      }
-    } else {
-      [self.addAccountSigninCoordinator interruptWithAction:action
-                                                 completion:completion];
-    }
-  } else if (completion) {
+    [self.addAccountSigninCoordinator interruptWithAction:action
+                                               completion:nil];
+  }
+  if (completion) {
     completion();
   }
 }
