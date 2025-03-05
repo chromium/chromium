@@ -104,11 +104,12 @@ scoped_refptr<RefcountedKeyedService>
   if (profile->IsOffTheRecord() && !profile->IsGuestSession())
     GetForProfile(original_profile);
 
+  bool should_record_metrics = profiles::IsRegularUserProfile(profile);
   scoped_refptr<HostContentSettingsMap> settings_map(new HostContentSettingsMap(
       profile->GetPrefs(),
       profile->IsOffTheRecord() || profile->IsGuestSession(),
       /*store_last_modified=*/true, profile->ShouldRestoreOldSessionCookies(),
-      profiles::IsRegularUserProfile(profile)));
+      should_record_metrics));
 
   auto allowlist_provider = std::make_unique<WebUIAllowlistProvider>(
       WebUIAllowlist::GetOrCreate(profile));
@@ -162,7 +163,8 @@ scoped_refptr<RefcountedKeyedService>
 
   settings_map->RegisterProvider(
       ProviderType::kJavascriptOptimizerAndroidProvider,
-      std::make_unique<JavascriptOptimizerProviderAndroid>());
+      std::make_unique<JavascriptOptimizerProviderAndroid>(
+          should_record_metrics));
 #endif  // defined (OS_ANDROID)
   auto one_time_permission_provider =
       std::make_unique<OneTimePermissionProvider>(

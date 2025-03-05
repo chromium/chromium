@@ -16,10 +16,11 @@ class JavascriptOptimizerProviderAndroid
   // Javascript Optimizer.
   typedef base::RepeatingCallback<bool()> CheckPermissionCallback;
 
-  JavascriptOptimizerProviderAndroid();
+  explicit JavascriptOptimizerProviderAndroid(bool should_record_metrics);
 
   // The callback must be thread-safe.
-  explicit JavascriptOptimizerProviderAndroid(CheckPermissionCallback);
+  JavascriptOptimizerProviderAndroid(CheckPermissionCallback,
+                                     bool should_record_metrics);
 
   JavascriptOptimizerProviderAndroid(
       const JavascriptOptimizerProviderAndroid&) = delete;
@@ -55,6 +56,10 @@ class JavascriptOptimizerProviderAndroid
   void ShutdownOnUIThread() override;
 
  private:
+  bool QueryHasPermission() const;
+
+  void RecordHistogramMetrics();
+
   // Thread-safe.
   CheckPermissionCallback has_permission_callback_;
 };
