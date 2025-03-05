@@ -440,18 +440,18 @@ public class TabGroupRowMediatorUnitTest {
         GroupData shareGroup =
                 new GroupData(
                         COLLABORATION_ID1,
-                        TITLE,
+                        /* displayName= */ null,
                         new GroupMember[] {GROUP_MEMBER1, GROUP_MEMBER2},
                         /* accessToken= */ null);
         when(mCollaborationService.getGroupData(eq(COLLABORATION_ID1))).thenReturn(shareGroup);
         when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
                 .thenReturn(MemberRole.MEMBER);
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_CURRENT);
-        PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
+        PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1, mUrl2);
 
         assertNull(propertyModel.get(DELETE_RUNNABLE));
         assertNotNull(propertyModel.get(LEAVE_RUNNABLE));
         propertyModel.get(LEAVE_RUNNABLE).run();
-        verify(mActionConfirmationManager).processLeaveGroupAttempt(eq(TITLE), any());
+        verify(mActionConfirmationManager).processLeaveGroupAttempt(eq("2 tabs"), any());
     }
 }
