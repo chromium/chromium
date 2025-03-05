@@ -16510,7 +16510,6 @@
     "PartitionAllocParameterTuning": [
         {
             "platforms": [
-                "android",
                 "android_weblayer",
                 "android_webview",
                 "chromeos",
@@ -16520,6 +16519,23 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "enable_features": [
+                        "BlinkUseLargeEmptySlotSpanRingForBufferRoot",
+                        "PartitionAllocAdjustSizeWhenInForeground",
+                        "PartitionAllocLargeEmptySlotSpanRing"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PartitionAllocParameterTuningAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20250305",
                     "enable_features": [
                         "BlinkUseLargeEmptySlotSpanRingForBufferRoot",
                         "PartitionAllocAdjustSizeWhenInForeground",
