@@ -125,6 +125,17 @@ void PrefetchStreamingURLLoader::CancelIfNotServing() {
 }
 
 void PrefetchStreamingURLLoader::DisconnectPrefetchURLLoaderMojo() {
+  // If this is going to be deleted while waiting for redirect handling from
+  // `PrefetchService`, treat it as a redirect failure.
+  if (is_waiting_handle_redirect_from_prefetch_service_) {
+    is_waiting_handle_redirect_from_prefetch_service_ = false;
+    if (response_reader_) {
+      response_reader_->HandleRedirect(PrefetchRedirectStatus::kFail, {}, {});
+    }
+    if (on_determined_head_callback_) {
+      std::move(on_determined_head_callback_).Run();
+    }
+  }
   prefetch_url_loader_.reset();
   prefetch_url_loader_client_receiver_.reset();
   timeout_timer_.Stop();
@@ -189,6 +200,7 @@ void PrefetchStreamingURLLoader::OnReceiveResponse(
 void PrefetchStreamingURLLoader::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr redirect_head) {
+  is_waiting_handle_redirect_from_prefetch_service_ = true;
   CHECK(on_prefetch_redirect_callback_);
   on_prefetch_redirect_callback_.Run(redirect_info, std::move(redirect_head));
 }
@@ -197,12 +209,12 @@ void PrefetchStreamingURLLoader::HandleRedirect(
     PrefetchRedirectStatus redirect_status,
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr redirect_head) {
-  CHECK(redirect_head);
-
-  // If the prefetch_url_loader_ is no longer connected, mark this as failed.
-  if (!prefetch_url_loader_) {
-    redirect_status = PrefetchRedirectStatus::kFail;
+  if (!is_waiting_handle_redirect_from_prefetch_service_) {
+    // The redirect should have already been handled.
+    return;
   }
+  is_waiting_handle_redirect_from_prefetch_service_ = false;
+  CHECK(redirect_head);
 
   switch (redirect_status) {
     case PrefetchRedirectStatus::kFollow:
@@ -250,6 +262,7 @@ void PrefetchStreamingURLLoader::OnTransferSizeUpdated(
 
 void PrefetchStreamingURLLoader::OnComplete(
     const network::URLLoaderCompletionStatus& completion_status) {
+  is_waiting_handle_redirect_from_prefetch_service_ = false;
   DisconnectPrefetchURLLoaderMojo();
 
   if (response_reader_) {

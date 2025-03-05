@@ -1215,11 +1215,13 @@ void PrefetchContainer::SetStreamingURLLoader(
   streaming_loader_ = std::move(streaming_loader);
 }
 
-const base::WeakPtr<PrefetchStreamingURLLoader>&
+base::WeakPtr<PrefetchStreamingURLLoader>
 PrefetchContainer::GetStreamingURLLoader() const {
-  // Streaming loaders scheduled for deletion shouldn't be used.
-  CHECK(!streaming_loader_ ||
-        !streaming_loader_->IsDeletionScheduledForCHECK());
+  // Streaming loaders already deleted or scheduled to be deleted shouldn't be
+  // used.
+  if (!streaming_loader_ || streaming_loader_->IsDeletionScheduledForCHECK()) {
+    return nullptr;
+  }
   return streaming_loader_;
 }
 
@@ -1517,11 +1519,11 @@ PrefetchContainer::ServableState PrefetchContainer::GetServableState(
   }
 
   DVLOG(1) << *this << "(GetServableState)"
-           << "(streaming_loader=" << streaming_loader_.get()
+           << "(streaming_loader=" << GetStreamingURLLoader().get()
            << ", LoadState=" << load_state_ << ")";
   // Can only block until head if the request has been started using a
   // streaming URL loader and head/failure/redirect hasn't been received yet.
-  if (streaming_loader_ &&
+  if (GetStreamingURLLoader() &&
       redirect_chain_.back()->response_reader_->IsWaitingForResponse()) {
     return ServableState::kShouldBlockUntilHeadReceived;
   }
