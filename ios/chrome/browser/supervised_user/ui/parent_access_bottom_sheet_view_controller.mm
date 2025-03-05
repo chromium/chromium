@@ -5,14 +5,43 @@
 #import "ios/chrome/browser/supervised_user/ui/parent_access_bottom_sheet_view_controller.h"
 
 #import "base/functional/callback.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/supervised_user/ui/constants.h"
+#import "ios/chrome/browser/supervised_user/ui/parent_access_bottom_sheet_view_controller_presentation_delegate.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ui/base/device_form_factor.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+constexpr CGFloat kCloseButtonPadding = 16;
+
 // Custom detent identifier for when the bottom sheet is expanded.
 NSString* const kCustomBottomSheetDetentIdentifier = @"customBottomSheetDetent";
+
+UIImage* CloseButtonImage(BOOL highlighted) {
+  NSArray<UIColor*>* palette = @[
+    [UIColor colorNamed:kGrey500Color],
+    [UIColor colorNamed:kGrey100Color],
+  ];
+
+  if (highlighted) {
+    NSMutableArray<UIColor*>* transparentPalette =
+        [[NSMutableArray alloc] init];
+    [palette enumerateObjectsUsingBlock:^(UIColor* color, NSUInteger idx,
+                                          BOOL* stop) {
+      [transparentPalette addObject:[color colorWithAlphaComponent:0.6]];
+    }];
+    palette = [transparentPalette copy];
+  }
+
+  return SymbolWithPalette(
+      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, 30), palette);
+}
+
 }  // namespace
 
 @interface ParentAccessBottomSheetViewController ()
@@ -25,6 +54,8 @@ NSString* const kCustomBottomSheetDetentIdentifier = @"customBottomSheetDetent";
 @implementation ParentAccessBottomSheetViewController {
   // Whether the web view should be hidden.
   BOOL _webViewHidden;
+  // The button to close the view.
+  UIButton* _closeButton;
 }
 
 #pragma mark - UIViewController
@@ -56,6 +87,7 @@ NSString* const kCustomBottomSheetDetentIdentifier = @"customBottomSheetDetent";
   _webView.hidden = _webViewHidden;
   [self.view addSubview:_webView];
   AddSameConstraints(_webView, self.view);
+  [self addCloseButton];
 }
 
 - (void)setWebViewHidden:(BOOL)hidden {
@@ -137,6 +169,57 @@ NSString* const kCustomBottomSheetDetentIdentifier = @"customBottomSheetDetent";
           kCustomBottomSheetDetentIdentifier;
       break;
   }
+}
+
+- (void)closeButtonTapped {
+  // Hide the WebView to prevent a white flash in dark mode.
+  [self setWebViewHidden:YES];
+  [self.presentationDelegate closeButtonTapped:self];
+}
+
+// Creates, initializes, and adds `_closeButton` to the bottom sheet.
+- (void)addCloseButton {
+  UIButtonConfiguration* closeButtonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  closeButtonConfiguration.contentInsets = NSDirectionalEdgeInsetsZero;
+  closeButtonConfiguration.buttonSize = UIButtonConfigurationSizeSmall;
+  closeButtonConfiguration.accessibilityLabel =
+      l10n_util::GetNSString(IDS_CLOSE);
+
+  __weak __typeof(self) weakSelf = self;
+  _closeButton = [UIButton
+      buttonWithConfiguration:closeButtonConfiguration
+                primaryAction:[UIAction actionWithHandler:^(UIAction* action) {
+                  [weakSelf closeButtonTapped];
+                }]];
+
+  _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+  _closeButton.accessibilityIdentifier =
+      kParentAccessCloseButtonAccessibilityIdentifier;
+  _closeButton.pointerInteractionEnabled = YES;
+
+  _closeButton.configurationUpdateHandler = ^(UIButton* button) {
+    UIButtonConfiguration* updatedConfig = button.configuration;
+    switch (button.state) {
+      case UIControlStateHighlighted:
+        updatedConfig.image = CloseButtonImage(/*highlighted=*/YES);
+        break;
+      case UIControlStateNormal:
+        updatedConfig.image = CloseButtonImage(/*highlighted=*/NO);
+        break;
+    }
+    button.configuration = updatedConfig;
+  };
+
+  [self.view addSubview:_closeButton];
+
+  // Place the close button at the top right.
+  [NSLayoutConstraint activateConstraints:@[
+    [_closeButton.topAnchor constraintEqualToAnchor:self.view.topAnchor
+                                           constant:kCloseButtonPadding],
+    [_closeButton.rightAnchor constraintEqualToAnchor:self.view.rightAnchor
+                                             constant:-kCloseButtonPadding]
+  ]];
 }
 
 @end

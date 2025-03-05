@@ -10,6 +10,9 @@
 // Accessibility identifier for the parent access bottom sheet view.
 extern NSString* const kParentAccessViewAccessibilityIdentifier;
 
+// Accessibility identifier for the parent access bottom sheet close button.
+extern NSString* const kParentAccessCloseButtonAccessibilityIdentifier;
+
 // Accessibility identifier for the 'Close' button in the parent access
 // snackbar.
 extern NSString* const kParentAccessSnackbarClose;
