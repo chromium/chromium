@@ -5884,6 +5884,54 @@ TEST_F(PrefetchServiceNewLimitsTest, NextPrefetchQueuedImmediatelyAfterReset) {
   VerifyCommonRequestState(url_2);
 }
 
+// Tests that the prefetch queue is stuck when resetting the running prefetch
+// during waiting its response.
+// Regression test for crbug.com/400233773, which is currently not fixed.
+TEST_F(PrefetchServiceNewLimitsTest,
+       PrefetchQueueStuckWhenResettingRunningPrefetch) {
+  NavigateAndCommit(GURL("https://example.com"));
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
+          /*num_on_prefetch_likely_calls=*/0));
+
+  const auto url_1 = GURL("https://example.com/one");
+  const auto url_2 = GURL("https://example.com/two");
+  const auto url_3 = GURL("https://example.com/three");
+  auto handle_1 =
+      MakePrefetchFromBrowserContext(url_1, std::nullopt, {}, nullptr);
+  auto handle_2 =
+      MakePrefetchFromBrowserContext(url_2, std::nullopt, {}, nullptr);
+
+  PrefetchService* prefetch_service =
+      BrowserContextImpl::From(browser_context())->GetPrefetchService();
+  base::WeakPtr<PrefetchContainer> prefetch_container1, prefetch_container2;
+  std::tie(std::ignore, prefetch_container1) =
+      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchContainer::Key(std::nullopt, url_1))[0];
+  std::tie(std::ignore, prefetch_container2) =
+      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchContainer::Key(std::nullopt, url_2))[0];
+
+  ASSERT_EQ(prefetch_container1->GetLoadState(),
+            PrefetchContainer::LoadState::kStarted);
+  ASSERT_EQ(prefetch_container2->GetLoadState(),
+            PrefetchContainer::LoadState::kEligible);
+
+  // Reset the first prefetch during waiting its response. Note that it will
+  // eventually destruct the loader.
+  handle_1.reset();
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(prefetch_container1);
+  // The second prefetch will not be started until next `Prefetch()` call.
+  // TODO(crbug.com/400233773): Fix this behavior to proceed the queue.git
+  EXPECT_EQ(prefetch_container2->GetLoadState(),
+            PrefetchContainer::LoadState::kEligible);
+  auto handle_3 =
+      MakePrefetchFromBrowserContext(url_3, std::nullopt, {}, nullptr);
+  EXPECT_EQ(prefetch_container2->GetLoadState(),
+            PrefetchContainer::LoadState::kStarted);
+}
+
 TEST_F(PrefetchServiceNewLimitsTest, PrefetchFailsAndIsReset) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
