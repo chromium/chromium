@@ -76,6 +76,8 @@ crbug.com/1209223 [ Linux ] external/wpt/html/browsers/browsing-the-web/navigati
 crbug.com/1209223 [ Linux ] external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/400832116 external/wpt/html/canvas/offscreen/manual/text/canvas.2d.offscreen.worker.lang.html [ Failure Pass Skip ]
+crbug.com/400832116 external/wpt/html/canvas/offscreen/manual/text/canvas.2d.offscreen.worker.lang.inherit.html [ Failure Pass Skip ]
 crbug.com/398894517 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?5-6 [ Crash Failure ]
 crbug.com/396460424 external/wpt/html/semantics/the-button-element/command-and-commandfor/button-event-dispatch.tentative.html [ Crash Failure ]
 crbug.com/395462245 external/wpt/wasm/core/simd/simd_f32x4_pmin_pmax.wast.js.html [ Timeout ]
