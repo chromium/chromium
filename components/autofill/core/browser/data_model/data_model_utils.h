@@ -14,10 +14,6 @@ namespace autofill::data_util {
 // A date consists of a year, month, and day.
 // Zero values represent that the value is absent.
 struct Date {
-  bool is_null() const { return *this == Date(); }
-  bool is_complete() const { return year != 0 && month != 0 && day != 0; }
-  bool is_valid() const;
-
   friend bool operator==(const Date&, const Date&) = default;
 
   int year = 0;
@@ -56,6 +52,18 @@ bool IsValidDateFormat(std::u16string_view format);
 bool ParseDate(std::u16string_view date,
                std::u16string_view format,
                Date& result);
+
+// Returns true iff all values requested by `format` are valid in `date`:
+// - If `format` contains a year, the date's year must be in the range 1 to 9999
+//   (inclusive).
+// - If `format` contains a month, the date's month must be in the range 1 to 12
+//   (inclusive).
+// - If `format` contains a day, the date's day must be in the range 1 to 28,
+//   29, 30, or 31 (inclusive) depending on the month and year in the date. If
+//   the date's month and/or year are zero, the function leans towards the
+//   maximum (i.e., it assumes the year is a leap year and/or the month has 31
+//   days).
+bool IsValidDateForFormat(const Date& date, std::u16string_view format);
 
 // Replaces the occurrences of YYYY, YY, MM, M, DD, D in `format` with the
 // values from `date`.

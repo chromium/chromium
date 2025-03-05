@@ -16,8 +16,8 @@ TEST(DateInfo, SetDateIncrementally) {
   EXPECT_EQ(info.GetDate(u"YYYY-MM-DD"), u"");
 
   info.SetDate(u"12/2022", u"MM/YYYY");
-  EXPECT_EQ(info.GetDate(u"YYYY-MM"), u"");
-  EXPECT_EQ(info.GetDate(u"YYYY-MM-DD"), u"");
+  EXPECT_EQ(info.GetDate(u"YYYY-MM"), u"2022-12");
+  EXPECT_EQ(info.GetDate(u"YYYY-MM-DD"), u"");  // Because `info` has no day.
 
   info.SetDate(u"16", u"DD");
   EXPECT_EQ(info.GetDate(u""), u"");

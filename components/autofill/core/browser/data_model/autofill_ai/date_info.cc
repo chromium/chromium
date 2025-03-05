@@ -39,7 +39,7 @@ void DateInfo::SetDate(std::u16string_view date, std::u16string_view format) {
 }
 
 std::u16string DateInfo::GetDate(std::u16string_view format) const {
-  if (!date_.is_complete()) {
+  if (!data_util::IsValidDateForFormat(date_, format)) {
     return {};
   }
   return data_util::FormatDate(date_, format);
