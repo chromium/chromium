@@ -8818,11 +8818,6 @@ crbug.com/339041663 external/wpt/mediacapture-insertable-streams/legacy/MediaStr
 crbug.com/339041663 external/wpt/mediacapture-insertable-streams/tentative/VideoTrackGenerator.https.html [ Crash Failure Timeout ]
 # failure from enabling swiftshader on headless shell, combined with a preexisting flaky Crash/Timeout
 crbug.com/626703 crbug.com/339041663 external/wpt/css/css-grid/subgrid/scrollbar-gutter-002.html [ Crash Failure Pass Timeout ]
-# More tests that exhibit antialiasing differences only on headless shell, not on content_shell, when run under Fontations
-crbug.com/397880053 external/wpt/css/css-multicol/multicol-height-002-print.xht [ Failure ]
-crbug.com/397880053 external/wpt/css/css-page/margin-boxes/auto-margins-001-print.html [ Failure ]
-crbug.com/397880053 external/wpt/css/css-page/margin-boxes/auto-margins-002-print.html [ Failure ]
-crbug.com/397880053 external/wpt/css/css-page/page-box-009-print.html [ Failure ]
 
 # Gardener 2024-10-31
 crbug.com/376589790 [ Win11-arm64 ] fast/js/toString-stack-overflow.html [ Failure Pass ]
