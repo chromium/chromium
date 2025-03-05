@@ -231,12 +231,6 @@ class FormStructure {
   // is available for at least one field.
   void SetFieldTypesFromAutocompleteAttribute();
 
-  // Resets each field's section and sets it based on the `parsed_autocomplete`
-  // member when available.
-  // Returns whether at least one field's `parsed_autocomplete` section is
-  // correctly defined by the web developer.
-  bool SetSectionsFromAutocompleteOrReset();
-
   // Returns the values that can be filled into the form structure for the
   // given type. For example, there's no way to fill in a value of "The Moon"
   // into ADDRESS_HOME_STATE if the form only has a
