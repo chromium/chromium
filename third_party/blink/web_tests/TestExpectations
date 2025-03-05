@@ -9036,8 +9036,9 @@ crbug.com/398165466 [ Debug Mac14 ] http/tests/inspector-protocol/tracing/screen
 
 crbug.com/387898495 fast/mediastream/MediaStreamTrack-applyConstraints.html [ Failure Pass ]
 
-# Test is flaky because of heuristics, will fix shortly but don't want to block builds for now.
+# Test is flaky because of window activation, will fix shortly but don't want to block builds for now.
 crbug.com/340606651 external/wpt/partitioned-popins/partitioned-popins.cookies-blocked.tentative.sub.https.window.html [ Pass Failure ]
+crbug.com/340606651 external/wpt/partitioned-popins/partitioned-popins.cookies-allowed.tentative.sub.https.window.html [ Pass Failure ]
 
 # Gardener 2025-03-03
 crbug.com/381238355 [ Mac11 ] virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-fit-fill-img.html [ Failure Pass ]

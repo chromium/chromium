@@ -338,14 +338,6 @@ void StorageAccessGrantPermissionContext::DecidePermission(
       CookieSettingsFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context()));
   net::CookieSettingOverrides overrides = rfh->GetCookieSettingOverrides();
-  if (rfh->ShouldPartitionAsPopin()) {
-    // TODO(crbug.com/340606651): Popins bypass the heuristics grant as
-    // otherwise, by virtue of having opened them, they would be granting
-    // themselves access. Ideally we would want to prevent popins from counting
-    // when grants are issued, but making a change to that database seems like
-    // a worse path given popins haven't yet reached origin trial.
-    overrides.Put(net::CookieSettingOverride::kSkipTPCDHeuristicsGrant);
-  }
   if (overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible) ||
       overrides.Has(
           net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader)) {
