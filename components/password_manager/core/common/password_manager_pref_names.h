@@ -211,6 +211,12 @@ inline constexpr char kPasswordGenerationBottomSheetDismissCount[] =
 inline constexpr char kShouldShowPostPasswordMigrationSheetAtStartup[] =
     "should_show_post_password_migration_sheet_at_startup";
 
+// Whether the auto-exported CSV should be deleted. Normally, it's deleted
+// immediately after export, but if that fails, this pref is used as a signal
+// that deletion should be retried.
+inline constexpr char kUpmAutoExportCsvNeedsDeletion[] =
+    "profile.upm_auto_export_csv_needs_deletion";
+
 // Whether the passwords who couldn't be migrated to UPM have been
 // saved as a CSV. The user can then choose to export the CSV out of Chrome
 // via a separate flow. The pref is also set to true if there were no

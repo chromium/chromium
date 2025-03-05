@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.password_manager;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.user_prefs.UserPrefs;
 
 import java.io.File;
 
@@ -33,7 +35,10 @@ public class LoginDbDeprecationUtilBridge {
     public static boolean hasPasswordsInCsv(Profile profile) {
         String path = getAutoExportCsvFilePath(profile);
         File file = new File(path);
-        return file.exists();
+        // If the file is scheduled for deletion, it means that there is no more use for it and
+        // the only reason it's still there is that the deletion failed.
+        return file.exists()
+                && !UserPrefs.get(profile).getBoolean(Pref.UPM_AUTO_EXPORT_CSV_NEEDS_DELETION);
     }
 
     @NativeMethods

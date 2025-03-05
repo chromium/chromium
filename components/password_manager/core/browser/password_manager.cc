@@ -465,6 +465,7 @@ void PasswordManager::RegisterProfilePrefs(
       prefs::kPasswordAccessLossWarningShownAtStartupTimestamp, base::Time());
   registry->RegisterTimePref(prefs::kPasswordAccessLossWarningShownTimestamp,
                              base::Time());
+  registry->RegisterBooleanPref(prefs::kUpmAutoExportCsvNeedsDeletion, false);
   registry->RegisterBooleanPref(prefs::kUpmUnmigratedPasswordsExported, false);
 #endif  // BUILDFLAG(IS_ANDROID)
 
