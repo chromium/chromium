@@ -424,9 +424,6 @@ crbug.com/1477318 [ mac ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
 crbug.com/354748635 [ mac amd-0x7340 angle-opengl ] Pixel_OffscreenCanvasAccelerated2D [ RetryOnFailure ]
 crbug.com/354748635 [ mac amd-0x7340 angle-opengl ] Pixel_OffscreenCanvasAccelerated2DWorker [ Failure ]
 
-# The yellow border doesn't draw properly with graphite which needs investigation.
-crbug.com/395060191 [ android android-sm-a236b no-passthrough graphite-enabled ] Pixel_OffscreenCanvasTransferAfterStyleResize [ Failure ]
-crbug.com/395060191 [ android android-sm-a236b no-passthrough graphite-enabled ] Pixel_OffscreenCanvasTransferBeforeStyleResize [ Failure ]
 
 # Fails with hung renderer
 crbug.com/1372149 [ android android-sm-a236b no-passthrough renderer-skia-vulkan ] Pixel_WebGLFloat [ Failure ]
@@ -466,8 +463,6 @@ crbug.com/372055518 [ mac amd-0x67ef angle-opengl graphite-disabled ] Pixel_WebG
 # Flaky hang on Mac AMD GL ASAN
 crbug.com/40277254 [ mac amd angle-opengl asan ] Pixel_WebGPUDisplayP3 [ Failure ]
 
-# Flaky timeout on Mac Retina Debug (AMD) pixel_skia_gold_metal_passthrough_graphite_test
-crbug.com/389654097 [ mac amd debug angle-metal graphite-enabled ] Pixel_CSSFilterEffects [ Failure ]
 
 # Flaky bad image
 crbug.com/393314286 [ amd angle-metal debug graphite-enabled mac ] Pixel_ViewTransitionsCapture [ RetryOnFailure ]
