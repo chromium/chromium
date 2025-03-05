@@ -453,6 +453,13 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     // is the same as the current priority of the request, this is a no-op.
     void SetPriority(ClientSocketHandle* handle, RequestPriority priority);
 
+    // Disables failing for requests in the group when an alias
+    // returned during DNS host resolution requires a proxy override, by setting
+    // `fail_if_alias_requires_proxy_override_` to false. If any request does
+    // not require the override , this method will be called, ensuring the group
+    // reflects the condition of all requests
+    void DisableFailIfAliasRequiresProxyOverride();
+
     void IncrementActiveSocketCount() { active_socket_count_++; }
     void DecrementActiveSocketCount() { active_socket_count_--; }
 
@@ -472,6 +479,9 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
       return never_assigned_job_count_;
     }
     int64_t generation() const { return generation_; }
+    bool fail_if_alias_requires_proxy_override() {
+      return fail_if_alias_requires_proxy_override_;
+    }
 
    private:
     // Returns the iterator's unbound request after removing it from
@@ -567,6 +577,14 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     // but as that only happens once there are no outstanding sockets or
     // requests associated with the group, that's harmless.
     int64_t generation_ = 0;
+
+    // Bool that indicates whether all requests in the group should fail with
+    // the net error `ERR_PROXY_REQUIRED` if CNAME cloaking is detected.
+    // Initialized to `true` by default, assuming that all requests will require
+    // a proxy override unless proven otherwise. This ensures that the group is
+    // only marked as `false` if any request explicitly does not require the
+    // override.
+    bool fail_if_alias_requires_proxy_override_ = true;
   };
 
   using GroupMap = std::map<GroupId, raw_ptr<Group, CtnExperimental>>;
@@ -646,7 +664,8 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
                                  const base::TimeTicks& now,
                                  const char* net_log_reason_utf8);
 
-  Group* GetOrCreateGroup(const GroupId& group_id);
+  Group* GetOrCreateGroup(const GroupId& group_id,
+                          bool disable_fail_if_alias_require_proxy_override);
   void RemoveGroup(const GroupId& group_id);
   GroupMap::iterator RemoveGroup(GroupMap::iterator it);
 
