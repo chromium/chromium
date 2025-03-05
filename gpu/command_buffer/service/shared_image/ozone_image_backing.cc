@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/not_fatal_until.h"
@@ -141,6 +142,7 @@ OzoneImageBacking::GetSinglePlaneGpuMemoryBufferHandle(uint32_t index) {
 #else
   DCHECK(gmb_handle.native_pixmap_handle.modifier == 0);
   auto& planes = gmb_handle.native_pixmap_handle.planes;
+  CHECK(!planes.empty());
   DCHECK(index < planes.size());
   gfx::NativePixmapPlane plane = std::move(planes[index]);
   planes.clear();
@@ -352,6 +354,10 @@ OzoneImageBacking::ProduceSkiaGanesh(
       }
       vulkan_images.push_back(std::move(vulkan_image));
     } else {
+      // Set debug_label crash key for the OzoneImageBacking with multiplanar
+      // formats where we fail to get proper GpuMemoryBufferHandle.
+      SCOPED_CRASH_KEY_STRING32("ozone image backing", "debug label",
+                                debug_label());
       // For multi-planar SharedImages, we create a VkImage per plane. We
       // also need to pass the correct plane when creating the VulkanImage.
       for (int i = 0; i < format().NumberOfPlanes(); i++) {
