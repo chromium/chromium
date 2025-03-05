@@ -17,7 +17,9 @@ android_library_factory("public_java") {
 }
 
 android_library("internal_java") {
-  deps =
-      [ "//chrome/android/features/keyboard_accessory/internal:internal_java" ]
+  deps = [
+    "//chrome/android/features/keyboard_accessory/internal:internal_java",
+    "//chrome/android/features/keyboard_accessory/public:public_java",
+  ]
   sources = _factory_sources
 }

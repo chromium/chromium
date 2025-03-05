@@ -169,6 +169,7 @@ robolectric_library("junit") {
       [ "java/src/org/chromium/components/messages/MessageWrapperTest.java" ]
   deps = [
     ":java",
+    ":jni_headers_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",

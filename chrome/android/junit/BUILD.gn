@@ -286,6 +286,7 @@ if (is_android) {
     "//components/page_info/core:proto_java",
     "//components/paint_preview/browser/android:java",
     "//components/paint_preview/player/android:java",
+    "//components/password_manager/core/browser:password_manager_java_enums",
     "//components/payments/content/android:java",
     "//components/payments/content/android:service_java",
     "//components/payments/content/android/ui:java",

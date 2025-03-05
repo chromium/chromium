@@ -436,6 +436,7 @@ android_library("unit_device_javatests") {
   deps = [
     ":browser_binding_unit_device_javatests",
     ":java",
+    ":service_java",
     "//base:base_java_test_support",
     "//components/payments/mojom:mojom_java",
     "//content/public/test/android:content_java_test_support",
