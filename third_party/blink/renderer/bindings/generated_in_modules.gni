@@ -1994,8 +1994,6 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_rewriter_factory.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_rewriter.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_rewriter.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_summarizer_capabilities.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_summarizer_capabilities.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_summarizer_factory.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_summarizer_factory.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_summarizer.cc",

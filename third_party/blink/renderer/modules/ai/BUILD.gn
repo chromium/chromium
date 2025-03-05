@@ -31,8 +31,6 @@ blink_modules_sources("ai") {
     "ai_rewriter_factory.h",
     "ai_summarizer.cc",
     "ai_summarizer.h",
-    "ai_summarizer_capabilities.cc",
-    "ai_summarizer_capabilities.h",
     "ai_summarizer_factory.cc",
     "ai_summarizer_factory.h",
     "ai_utils.cc",

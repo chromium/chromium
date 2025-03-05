@@ -104,16 +104,9 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method destroy
 [Worker]     method summarize
 [Worker]     method summarizeStreaming
-[Worker] interface AISummarizerCapabilities
-[Worker]     attribute @@toStringTag
-[Worker]     getter available
-[Worker]     method constructor
-[Worker]     method createOptionsAvailable
-[Worker]     method languageAvailable
 [Worker] interface AISummarizerFactory
 [Worker]     attribute @@toStringTag
 [Worker]     method availability
-[Worker]     method capabilities
 [Worker]     method constructor
 [Worker]     method create
 [Worker] interface AITranslator

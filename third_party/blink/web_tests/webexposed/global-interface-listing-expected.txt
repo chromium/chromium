@@ -103,16 +103,9 @@ interface AISummarizer
     method destroy
     method summarize
     method summarizeStreaming
-interface AISummarizerCapabilities
-    attribute @@toStringTag
-    getter available
-    method constructor
-    method createOptionsAvailable
-    method languageAvailable
 interface AISummarizerFactory
     attribute @@toStringTag
     method availability
-    method capabilities
     method constructor
     method create
 interface AITranslator
