@@ -5348,12 +5348,6 @@ const char kWasmTtsComponentUpdaterEnabledDescription[] =
     "Component Updater.";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-const char kWebAppSystemMediaControlsName[] = "Web App System Media Controls";
-const char kWebAppSystemMediaControlsDescription[] =
-    "Enable instanced system media controls for web apps";
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-
 const char kWebAuthenticationPermitEnterpriseAttestationName[] =
     "Web Authentication Enterprise Attestation";
 const char kWebAuthenticationPermitEnterpriseAttestationDescription[] =
