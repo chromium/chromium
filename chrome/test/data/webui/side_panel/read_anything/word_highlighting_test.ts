@@ -5,10 +5,11 @@
 import {PauseActionSource, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, createSpeechSynthesisVoice, emitEvent, playFromSelectionWithMockTimer, setSimpleAxTreeWithText} from './common.js';
+import {createAndSetVoices, createApp, createSpeechSynthesisVoice, emitEvent, playFromSelectionWithMockTimer, setSimpleAxTreeWithText} from './common.js';
+import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 
 suite('WordHighlighting', () => {
   let app: AppElement;
@@ -215,5 +216,37 @@ suite('WordHighlighting', () => {
         app.$.container.querySelector('.current-read-highlight');
     assertTrue(currentHighlight !== undefined);
     assertEquals(sentence, currentHighlight!.textContent);
+  });
+
+  test('highlight index updates with too long text', () => {
+    const synth = new FakeSpeechSynthesis();
+    synth.setMaxSegments(2);
+    app.synth = synth;
+    createAndSetVoices(app, synth, [
+      {lang: 'en-us', name: 'Google Gatsby (Natural)', localService: true},
+    ]);
+    const longSentence = 'Can you see through the mist- Look out this way, ' +
+        'Can you see the green light- Just \'cross the bay, Sometimes it\'s ' +
+        'winking, Sometimes it\'s warning- Blinking its message to me until ' +
+        'morning- it\'s a lighthouse, it\'s a signal flare Stay back Come ' +
+        'quick Move on Stay there Only we know what we\'re going through- If ' +
+        'I save you, will you save me too- Can you see through the mist, ' +
+        'Look, cross the bay Can you see the green light, It\'s yours, ' +
+        'Daisy Fay.';
+    assertGT(longSentence.length, app.maxSpeechLengthForWordBoundaries);
+    setSimpleAxTreeWithText(longSentence);
+
+    const lastIndex =
+        longSentence.substring(0, app.maxSpeechLengthForWordBoundaries)
+            .lastIndexOf(',');
+    app.updateBoundary(lastIndex);
+    app.playSpeech();
+    app.updateBoundary(3);
+
+    //<if expr="not is_chromeos">
+    const state = app.wordBoundaryState;
+    assertEquals(lastIndex, state.tooLongTextOffset);
+    assertEquals(lastIndex + 3, state.previouslySpokenIndex);
+    // </if>
   });
 });
