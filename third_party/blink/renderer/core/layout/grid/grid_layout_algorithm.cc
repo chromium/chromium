@@ -419,12 +419,9 @@ wtf_size_t GridLayoutAlgorithm::BuildGridSizingSubtree(
   const auto subgrid_area = SubgriddedAreaInParent(opt_subgrid_data);
   const auto writing_mode = GetConstraintSpace().GetWritingMode();
 
-  auto& sizing_node = sizing_tree->CreateSizingData(
-      opt_subgrid_data ? opt_subgrid_data->node : node);
-
-  const wtf_size_t column_auto_repetitions =
+  const auto column_auto_repetitions =
       ComputeAutomaticRepetitions(subgrid_area.columns, kForColumns);
-  const wtf_size_t row_auto_repetitions =
+  const auto row_auto_repetitions =
       ComputeAutomaticRepetitions(subgrid_area.rows, kForRows);
 
   // Initialize this grid's line resolver.
@@ -435,19 +432,29 @@ wtf_size_t GridLayoutAlgorithm::BuildGridSizingSubtree(
           : GridLineResolver(style, column_auto_repetitions,
                              row_auto_repetitions);
 
+  const bool has_standalone_columns = subgrid_area.columns.IsIndefinite();
+  const bool has_standalone_rows = subgrid_area.rows.IsIndefinite();
+
+  GridItems* non_subgridded_items = nullptr;
+  bool has_nested_subgrid = false;
   wtf_size_t column_start_offset = 0;
   wtf_size_t row_start_offset = 0;
-  bool has_nested_subgrid = false;
 
   if (!must_ignore_children) {
     // Construct grid items that are not subgridded.
-    sizing_node.SetGridItems(
+    non_subgridded_items =
         node.ConstructGridItems(line_resolver, &must_invalidate_placement_cache,
-                                opt_oof_children, &has_nested_subgrid));
+                                opt_oof_children, &has_nested_subgrid);
 
     column_start_offset = node.CachedPlacementData().column_start_offset;
     row_start_offset = node.CachedPlacementData().row_start_offset;
   }
+
+  auto& sizing_node = sizing_tree->CreateSizingTreeNode(
+      node, non_subgridded_items, has_standalone_columns, has_standalone_rows);
+
+  auto& grid_items = sizing_node.GetGridItems();
+  auto& layout_data = sizing_node.layout_data;
 
   auto BuildSizingCollection = [&](GridTrackSizingDirection track_direction) {
     GridRangeBuilder range_builder(
@@ -456,8 +463,7 @@ wtf_size_t GridLayoutAlgorithm::BuildGridSizingSubtree(
                                          : row_start_offset);
 
     bool must_create_baselines = false;
-    for (auto& grid_item :
-         sizing_node.GetGridItems().IncludeSubgriddedItems()) {
+    for (auto& grid_item : grid_items.IncludeSubgriddedItems()) {
       if (grid_item.IsConsideredForSizing(track_direction)) {
         must_create_baselines |= grid_item.IsBaselineSpecified(track_direction);
       }
@@ -471,14 +477,10 @@ wtf_size_t GridLayoutAlgorithm::BuildGridSizingSubtree(
       }
     }
 
-    sizing_node.layout_data.SetTrackCollection(
-        std::make_unique<GridSizingTrackCollection>(
-            range_builder.FinalizeRanges(), must_create_baselines,
-            track_direction));
+    layout_data.SetTrackCollection(std::make_unique<GridSizingTrackCollection>(
+        range_builder.FinalizeRanges(), must_create_baselines,
+        track_direction));
   };
-
-  const bool has_standalone_columns = subgrid_area.columns.IsIndefinite();
-  const bool has_standalone_rows = subgrid_area.rows.IsIndefinite();
 
   if (has_standalone_columns) {
     BuildSizingCollection(kForColumns);
@@ -487,58 +489,35 @@ wtf_size_t GridLayoutAlgorithm::BuildGridSizingSubtree(
     BuildSizingCollection(kForRows);
   }
 
-  auto AddSubgriddedItemLookupData = [&](const GridItemData& grid_item) {
-    // We don't want to add lookup data for grid items that are not going to be
-    // subgridded to the parent grid. We need to check for both axes:
-    //   - If it's standalone, then this subgrid's items won't be subgridded.
-    //   - Otherwise, if the grid item is a subgrid itself and its respective
-    //   axis is also subgridded, we won't need its lookup data.
-    if ((has_standalone_columns || grid_item.has_subgridded_columns) &&
-        (has_standalone_rows || grid_item.has_subgridded_rows)) {
-      return;
-    }
-    sizing_tree->AddSubgriddedItemLookupData(
-        SubgriddedItemData(&grid_item, sizing_node.layout_data, writing_mode));
-  };
-
   if (!has_nested_subgrid) {
-    for (const auto& grid_item : sizing_node.GetGridItems()) {
-      AddSubgriddedItemLookupData(grid_item);
-    }
     return sizing_node.subtree_size;
   }
 
-  InitializeTrackCollection(opt_subgrid_data, kForColumns,
-                            &sizing_node.layout_data);
-  InitializeTrackCollection(opt_subgrid_data, kForRows,
-                            &sizing_node.layout_data);
+  InitializeTrackCollection(opt_subgrid_data, kForColumns, &layout_data);
+  InitializeTrackCollection(opt_subgrid_data, kForRows, &layout_data);
 
   if (has_standalone_columns) {
-    sizing_node.layout_data.SizingCollection(kForColumns)
-        .CacheDefiniteSetsGeometry();
+    layout_data.SizingCollection(kForColumns).CacheDefiniteSetsGeometry();
   }
   if (has_standalone_rows) {
-    sizing_node.layout_data.SizingCollection(kForRows)
-        .CacheDefiniteSetsGeometry();
+    layout_data.SizingCollection(kForRows).CacheDefiniteSetsGeometry();
   }
 
-  // |AppendSubgriddedItems| rely on the cached placement data of a subgrid to
+  // `AppendSubgriddedItems` rely on the cached placement data of a subgrid to
   // construct its grid items, so we need to build their subtrees beforehand.
-  for (auto& grid_item : sizing_node.GetGridItems()) {
-    AddSubgriddedItemLookupData(grid_item);
-
-    if (!grid_item.IsSubgrid())
+  for (auto& grid_item : grid_items) {
+    if (!grid_item.IsSubgrid()) {
       continue;
+    }
 
     // TODO(ethavar): Currently we have an issue where we can't correctly cache
     // the set indices of this grid item to determine its available space. This
     // happens because subgridded items are not considered by the range builder
     // since they can't be placed before we recurse into subgrids.
-    grid_item.ComputeSetIndices(sizing_node.layout_data.Columns());
-    grid_item.ComputeSetIndices(sizing_node.layout_data.Rows());
+    grid_item.ComputeSetIndices(layout_data.Columns());
+    grid_item.ComputeSetIndices(layout_data.Rows());
 
-    const auto space =
-        CreateConstraintSpaceForLayout(grid_item, sizing_node.layout_data);
+    const auto space = CreateConstraintSpaceForLayout(grid_item, layout_data);
     const auto fragment_geometry =
         CalculateInitialFragmentGeometryForSubgrid(grid_item, space);
 
@@ -547,16 +526,16 @@ wtf_size_t GridLayoutAlgorithm::BuildGridSizingSubtree(
 
     sizing_node.subtree_size += subgrid_algorithm.BuildGridSizingSubtree(
         sizing_tree, /*opt_oof_children=*/nullptr,
-        SubgriddedItemData(&grid_item, sizing_node.layout_data, writing_mode),
+        SubgriddedItemData(grid_item, layout_data, writing_mode),
         &line_resolver, must_invalidate_placement_cache);
 
     // After we accommodate subgridded items in their respective sizing track
     // collections, their placement indices might be incorrect, so we want to
-    // recompute them when we call |InitializeTrackSizes|.
+    // recompute them when we call `InitializeTrackSizes`.
     grid_item.ResetPlacementIndices();
   }
 
-  node.AppendSubgriddedItems(&sizing_node.GetGridItems());
+  node.AppendSubgriddedItems(&grid_items);
 
   // We need to recreate the track builder collections to ensure track coverage
   // for subgridded items; it would be ideal to have them accounted for already,
@@ -578,20 +557,23 @@ GridSizingTree GridLayoutAlgorithm::BuildGridSizingTree(
   if (const auto* layout_subtree =
           GetConstraintSpace().GetGridLayoutSubtree()) {
     const auto& node = Node();
-    auto& sizing_data = sizing_tree.CreateSizingData(node);
+
     bool must_invalidate_placement_cache = false;
-    sizing_data.SetGridItems(node.ConstructGridItems(
-        node.CachedLineResolver(), &must_invalidate_placement_cache,
-        opt_oof_children));
+    auto& sizing_node = sizing_tree.CreateSizingTreeNode(
+        node, node.ConstructGridItems(node.CachedLineResolver(),
+                                      &must_invalidate_placement_cache,
+                                      opt_oof_children));
 
     DCHECK(!must_invalidate_placement_cache)
         << "We shouldn't need to invalidate the placement cache if we relied "
            "on the cached line resolver; it must produce the same placement.";
 
-    sizing_data.layout_data = layout_subtree->LayoutData();
-    for (auto& grid_item : sizing_data.GetGridItems()) {
-      grid_item.ComputeSetIndices(sizing_data.layout_data.Columns());
-      grid_item.ComputeSetIndices(sizing_data.layout_data.Rows());
+    const auto& layout_data = layout_subtree->LayoutData();
+    sizing_node.layout_data = layout_data;
+
+    for (auto& grid_item : sizing_node.GetGridItems()) {
+      grid_item.ComputeSetIndices(layout_data.Columns());
+      grid_item.ComputeSetIndices(layout_data.Rows());
     }
   } else {
     BuildGridSizingSubtree(&sizing_tree, opt_oof_children);
@@ -602,12 +584,11 @@ GridSizingTree GridLayoutAlgorithm::BuildGridSizingTree(
 GridSizingTree GridLayoutAlgorithm::BuildGridSizingTreeIgnoringChildren()
     const {
   GridSizingTree sizing_tree;
-  BuildGridSizingSubtree(
-      &sizing_tree, /*opt_oof_children=*/nullptr,
-      /*opt_subgrid_data=*/SubgriddedItemData::NoSubgriddedItemData(),
-      /*opt_parent_line_resolver=*/nullptr,
-      /*must_invalidate_placement_cache=*/false,
-      /*must_ignore_children=*/true);
+  BuildGridSizingSubtree(&sizing_tree, /*opt_oof_children=*/nullptr,
+                         /*opt_subgrid_data=*/kNoSubgriddedItemData,
+                         /*opt_parent_line_resolver=*/nullptr,
+                         /*must_invalidate_placement_cache=*/false,
+                         /*must_ignore_children=*/true);
   return sizing_tree;
 }
 
@@ -884,7 +865,7 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
   const auto subgridded_item =
       grid_item->is_subgridded_to_parent_grid
           ? sizing_subtree.LookupSubgriddedItemData(*grid_item)
-          : SubgriddedItemData(grid_item, sizing_subtree.LayoutData(),
+          : SubgriddedItemData(*grid_item, sizing_subtree.LayoutData(),
                                writing_mode);
 
   // TODO(ikilpatrick): We'll need to record if any child used an indefinite
@@ -1357,7 +1338,7 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
     const auto subgridded_item =
         grid_item.is_subgridded_to_parent_grid
             ? sizing_subtree.LookupSubgriddedItemData(grid_item)
-            : SubgriddedItemData(&grid_item, sizing_subtree.LayoutData(),
+            : SubgriddedItemData(grid_item, sizing_subtree.LayoutData(),
                                  writing_mode);
 
     LayoutUnit inline_offset, block_offset;
@@ -1565,10 +1546,9 @@ void GridLayoutAlgorithm::InitializeTrackSizes(
 void GridLayoutAlgorithm::InitializeTrackSizes(
     const GridSizingTree& sizing_tree,
     const std::optional<GridTrackSizingDirection>& opt_track_direction) const {
-  InitializeTrackSizes(
-      GridSizingSubtree(sizing_tree),
-      /* opt_subgrid_data */ SubgriddedItemData::NoSubgriddedItemData(),
-      opt_track_direction);
+  InitializeTrackSizes(GridSizingSubtree(sizing_tree),
+                       /*opt_subgrid_data=*/kNoSubgriddedItemData,
+                       opt_track_direction);
 }
 
 namespace {
@@ -1791,15 +1771,14 @@ void GridLayoutAlgorithm::CompleteTrackSizingAlgorithm(
 
   ValidateMinMaxSizesCache(Node(), sizing_subtree, track_direction);
 
-  ComputeBaselineAlignment(
-      sizing_tree.FinalizeTree(), sizing_subtree,
-      /* opt_subgrid_data */ SubgriddedItemData::NoSubgriddedItemData(),
-      track_direction, sizing_constraint);
+  ComputeBaselineAlignment(sizing_tree.FinalizeTree(), sizing_subtree,
+                           /*opt_subgrid_data=*/kNoSubgriddedItemData,
+                           track_direction, sizing_constraint);
 
-  CompleteTrackSizingAlgorithm(
-      sizing_subtree,
-      /* opt_subgrid_data */ SubgriddedItemData::NoSubgriddedItemData(),
-      track_direction, sizing_constraint, opt_needs_additional_pass);
+  CompleteTrackSizingAlgorithm(sizing_subtree,
+                               /*opt_subgrid_data=*/kNoSubgriddedItemData,
+                               track_direction, sizing_constraint,
+                               opt_needs_additional_pass);
 }
 
 void GridLayoutAlgorithm::ComputeBaselineAlignment(
@@ -1858,8 +1837,8 @@ void GridLayoutAlgorithm::CompleteFinalBaselineAlignment(
     const GridSizingTree& sizing_tree) const {
   ComputeBaselineAlignment(
       sizing_tree.FinalizeTree(), GridSizingSubtree(sizing_tree),
-      /* opt_subgrid_data */ SubgriddedItemData::NoSubgriddedItemData(),
-      /* opt_track_direction */ std::nullopt, SizingConstraint::kLayout);
+      /*opt_subgrid_data=*/kNoSubgriddedItemData,
+      /*opt_track_direction=*/std::nullopt, SizingConstraint::kLayout);
 }
 
 template <typename CallbackFunc>
@@ -1891,7 +1870,7 @@ void GridLayoutAlgorithm::ForEachSubgrid(
 
     DCHECK(next_subgrid_subtree);
     callback_func(subgrid_algorithm, next_subgrid_subtree,
-                  SubgriddedItemData(&grid_item, layout_data,
+                  SubgriddedItemData(grid_item, layout_data,
                                      GetConstraintSpace().GetWritingMode()));
 
     next_subgrid_subtree = next_subgrid_subtree.NextSibling();
