@@ -831,6 +831,8 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 
 // Runs `_signInCompletion` asynchronously when the flow failed.
 - (void)completeWithFailureStep {
+  // TODO(crbug.com/375605482): If there was a primary identity at the beginning
+  // of the flow, this primary identity should be restored if possible.
   DCHECK(_signInCompletion)
       << "`completeSignInWithResult` should not be called twice.";
   if (_didSignIn) {
