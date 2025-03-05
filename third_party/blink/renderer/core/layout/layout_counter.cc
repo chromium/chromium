@@ -92,6 +92,7 @@ void LayoutCounter::UpdateCounter(Vector<int> counter_values) {
 }
 
 const CounterStyle* LayoutCounter::NullableCounterStyle() const {
+  NOT_DESTROYED();
   // Note: CSS3 spec doesn't allow 'none' but CSS2.1 allows it. We currently
   // allow it for backward compatibility.
   // See https://github.com/w3c/csswg-drafts/issues/5795 for details.
@@ -103,6 +104,7 @@ const CounterStyle* LayoutCounter::NullableCounterStyle() const {
 }
 
 bool LayoutCounter::IsDirectionalSymbolMarker() const {
+  NOT_DESTROYED();
   const auto* counter_style = NullableCounterStyle();
   if (!counter_style || !counter_style->IsPredefinedSymbolMarker()) {
     return false;
@@ -113,6 +115,7 @@ bool LayoutCounter::IsDirectionalSymbolMarker() const {
 }
 
 const AtomicString& LayoutCounter::Separator() const {
+  NOT_DESTROYED();
   return counter_->Separator();
 }
 

@@ -368,6 +368,7 @@ void LayoutInline::AddChildIgnoringContinuation(LayoutObject* new_child,
 
 void LayoutInline::AddChildAsBlockInInline(LayoutObject* new_child,
                                            LayoutObject* before_child) {
+  NOT_DESTROYED();
   DCHECK(!new_child->IsInline());
   LayoutBlockFlow* anonymous_box;
   if (!before_child) {
@@ -431,6 +432,7 @@ LayoutBox* LayoutInline::CreateAnonymousBoxToSplit(
 }
 
 void LayoutInline::MarkMayHaveAnchorQuery() {
+  NOT_DESTROYED();
   LayoutBoxModelObject::MarkMayHaveAnchorQuery();
   // If this is an anchor, it cannot be a culled inline.
   UpdateShouldCreateBoxFragment();
@@ -462,6 +464,7 @@ void LayoutInline::CollectLineBoxRects(
 
 bool LayoutInline::AbsoluteTransformDependsOnPoint(
     const LayoutObject& object) const {
+  NOT_DESTROYED();
   const LayoutObject* current = &object;
   const LayoutObject* container = object.Container();
   while (container) {
@@ -476,6 +479,7 @@ bool LayoutInline::AbsoluteTransformDependsOnPoint(
 void LayoutInline::QuadsInAncestorInternal(Vector<gfx::QuadF>& quads,
                                            const LayoutBoxModelObject* ancestor,
                                            MapCoordinatesFlags mode) const {
+  NOT_DESTROYED();
   QuadsForSelfInternal(quads, ancestor, mode, true);
 }
 
@@ -878,6 +882,7 @@ void LayoutInline::DirtyLinesFromChangedChild(LayoutObject* child) {
 }
 
 LayoutUnit LayoutInline::FirstLineHeight() const {
+  NOT_DESTROYED();
   return LayoutUnit(FirstLineStyle()->ComputedLineHeight());
 }
 

@@ -45,6 +45,7 @@ LayoutTextCombine* LayoutTextCombine::CreateAnonymous(LayoutText* text_child) {
 }
 
 String LayoutTextCombine::GetTextContent() const {
+  NOT_DESTROYED();
   DCHECK(!NeedsCollectInlines() && GetInlineNodeData()) << this;
   return GetInlineNodeData()->ItemsData(false).text_content;
 }
@@ -65,6 +66,7 @@ void LayoutTextCombine::AssertStyleIsValid(const ComputedStyle& style) {
 }
 
 float LayoutTextCombine::DesiredWidth() const {
+  NOT_DESTROYED();
   DCHECK_EQ(StyleRef().GetFont()->GetFontDescription().Orientation(),
             FontOrientation::kHorizontal);
   const float one_em = StyleRef().ComputedFontSize();
@@ -82,6 +84,7 @@ float LayoutTextCombine::DesiredWidth() const {
 }
 
 float LayoutTextCombine::ComputeInlineSpacing() const {
+  NOT_DESTROYED();
   DCHECK_EQ(StyleRef().GetFont()->GetFontDescription().Orientation(),
             FontOrientation::kHorizontal);
   DCHECK(scale_x_);
@@ -91,6 +94,7 @@ float LayoutTextCombine::ComputeInlineSpacing() const {
 
 PhysicalOffset LayoutTextCombine::ApplyScaleX(
     const PhysicalOffset& offset) const {
+  NOT_DESTROYED();
   DCHECK(scale_x_.has_value());
   const float spacing = ComputeInlineSpacing();
   return PhysicalOffset(LayoutUnit(offset.left * *scale_x_ + spacing),
@@ -98,17 +102,20 @@ PhysicalOffset LayoutTextCombine::ApplyScaleX(
 }
 
 PhysicalRect LayoutTextCombine::ApplyScaleX(const PhysicalRect& rect) const {
+  NOT_DESTROYED();
   DCHECK(scale_x_.has_value());
   return PhysicalRect(ApplyScaleX(rect.offset), ApplyScaleX(rect.size));
 }
 
 PhysicalSize LayoutTextCombine::ApplyScaleX(const PhysicalSize& size) const {
+  NOT_DESTROYED();
   DCHECK(scale_x_.has_value());
   return PhysicalSize(LayoutUnit(size.width * *scale_x_), size.height);
 }
 
 PhysicalOffset LayoutTextCombine::UnapplyScaleX(
     const PhysicalOffset& offset) const {
+  NOT_DESTROYED();
   DCHECK(scale_x_.has_value());
   const float spacing = ComputeInlineSpacing();
   return PhysicalOffset(LayoutUnit((offset.left - spacing) / *scale_x_),
@@ -117,6 +124,7 @@ PhysicalOffset LayoutTextCombine::UnapplyScaleX(
 
 PhysicalOffset LayoutTextCombine::AdjustOffsetForHitTest(
     const PhysicalOffset& offset_in_container) const {
+  NOT_DESTROYED();
   if (!scale_x_) {
     return offset_in_container;
   }
@@ -125,6 +133,7 @@ PhysicalOffset LayoutTextCombine::AdjustOffsetForHitTest(
 
 PhysicalOffset LayoutTextCombine::AdjustOffsetForLocalCaretRect(
     const PhysicalOffset& offset_in_container) const {
+  NOT_DESTROYED();
   if (!scale_x_) {
     return offset_in_container;
   }
@@ -133,6 +142,7 @@ PhysicalOffset LayoutTextCombine::AdjustOffsetForLocalCaretRect(
 
 PhysicalRect LayoutTextCombine::AdjustRectForBoundingBox(
     const PhysicalRect& rect) const {
+  NOT_DESTROYED();
   if (!scale_x_) {
     return rect;
   }
@@ -152,12 +162,14 @@ PhysicalRect LayoutTextCombine::ComputeTextBoundsRectForHitTest(
 }
 
 void LayoutTextCombine::ResetLayout() {
+  NOT_DESTROYED();
   compressed_font_ = nullptr;
   scale_x_.reset();
 }
 
 LayoutUnit LayoutTextCombine::AdjustTextLeftForPaint(
     LayoutUnit position) const {
+  NOT_DESTROYED();
   if (!scale_x_) {
     return position;
   }
@@ -166,6 +178,7 @@ LayoutUnit LayoutTextCombine::AdjustTextLeftForPaint(
 }
 
 LayoutUnit LayoutTextCombine::AdjustTextTopForPaint(LayoutUnit text_top) const {
+  NOT_DESTROYED();
   DCHECK_EQ(StyleRef().GetFont()->GetFontDescription().Orientation(),
             FontOrientation::kHorizontal);
   const SimpleFontData& font_data = *StyleRef().GetFont()->PrimaryFont();
@@ -177,6 +190,7 @@ LayoutUnit LayoutTextCombine::AdjustTextTopForPaint(LayoutUnit text_top) const {
 
 AffineTransform LayoutTextCombine::ComputeAffineTransformForPaint(
     const PhysicalOffset& paint_offset) const {
+  NOT_DESTROYED();
   DCHECK(NeedsAffineTransformInPaint());
   AffineTransform matrix;
   if (UsingSyntheticOblique()) {
@@ -200,11 +214,13 @@ AffineTransform LayoutTextCombine::ComputeAffineTransformForPaint(
 }
 
 bool LayoutTextCombine::NeedsAffineTransformInPaint() const {
+  NOT_DESTROYED();
   return scale_x_.has_value() || UsingSyntheticOblique();
 }
 
 LineRelativeRect LayoutTextCombine::ComputeTextFrameRect(
     const PhysicalOffset paint_offset) const {
+  NOT_DESTROYED();
   const ComputedStyle& style = Parent()->StyleRef();
   DCHECK(style.GetFont()->GetFontDescription().IsVerticalBaseline());
 
@@ -217,6 +233,7 @@ LineRelativeRect LayoutTextCombine::ComputeTextFrameRect(
 
 PhysicalRect LayoutTextCombine::RecalcContentsInkOverflow(
     const InlineCursor& cursor) const {
+  NOT_DESTROYED();
   const ComputedStyle& style = Parent()->StyleRef();
   DCHECK(style.GetFont()->GetFontDescription().IsVerticalBaseline());
 
@@ -263,6 +280,7 @@ PhysicalRect LayoutTextCombine::RecalcContentsInkOverflow(
 
 gfx::Rect LayoutTextCombine::VisualRectForPaint(
     const PhysicalOffset& paint_offset) const {
+  NOT_DESTROYED();
   DCHECK_EQ(PhysicalFragmentCount(), 1u);
   PhysicalRect ink_overflow = GetPhysicalFragment(0)->InkOverflowRect();
   ink_overflow.Move(paint_offset);
@@ -270,6 +288,7 @@ gfx::Rect LayoutTextCombine::VisualRectForPaint(
 }
 
 void LayoutTextCombine::SetScaleX(float new_scale_x) {
+  NOT_DESTROYED();
   DCHECK_GT(new_scale_x, 0.0f);
   DCHECK(!scale_x_.has_value());
   DCHECK(!compressed_font_);
@@ -279,12 +298,14 @@ void LayoutTextCombine::SetScaleX(float new_scale_x) {
 }
 
 void LayoutTextCombine::SetCompressedFont(const Font* font) {
+  NOT_DESTROYED();
   DCHECK(!compressed_font_);
   DCHECK(!scale_x_.has_value());
   compressed_font_ = font;
 }
 
 bool LayoutTextCombine::UsingSyntheticOblique() const {
+  NOT_DESTROYED();
   return Parent()
       ->StyleRef()
       .GetFont()

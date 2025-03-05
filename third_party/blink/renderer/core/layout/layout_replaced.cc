@@ -156,6 +156,7 @@ void LayoutReplaced::RecalcVisualOverflow() {
 
 std::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
     const PhysicalNaturalSizingInfo& sizing_info) const {
+  NOT_DESTROYED();
   const BasicShape* object_view_box = StyleRef().ObjectViewBox();
   if (!object_view_box) [[likely]] {
     return std::nullopt;
@@ -195,6 +196,7 @@ std::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
 PhysicalRect LayoutReplaced::ComputeReplacedContentRect(
     const PhysicalRect& base_content_rect,
     const PhysicalNaturalSizingInfo& sizing_info) const {
+  NOT_DESTROYED();
   // |intrinsic_size| provides the size of the embedded content rendered in the
   // replaced element. This is the reference size that object-view-box applies
   // to.
@@ -450,11 +452,13 @@ PhysicalRect LayoutReplaced::LocalSelectionVisualRect() const {
 }
 
 bool LayoutReplaced::RespectsCSSOverflow() const {
+  NOT_DESTROYED();
   const Element* element = DynamicTo<Element>(GetNode());
   return element && element->IsReplacedElementRespectingCSSOverflow();
 }
 
 bool LayoutReplaced::ClipsToContentBox() const {
+  NOT_DESTROYED();
   if (!RespectsCSSOverflow()) {
     // If an svg is clipped, it is guaranteed to be clipped to the element's
     // content box.

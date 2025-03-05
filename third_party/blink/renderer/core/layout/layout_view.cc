@@ -225,6 +225,7 @@ void LayoutView::ClearHitTestCache() {
 }
 
 LayoutUnit LayoutView::ComputeMinimumWidth() {
+  NOT_DESTROYED();
   const ComputedStyle& style = StyleRef();
   WritingMode mode = style.GetWritingMode();
   ConstraintSpaceBuilder builder(mode, style.GetWritingDirection(),
@@ -236,6 +237,7 @@ LayoutUnit LayoutView::ComputeMinimumWidth() {
 }
 
 void LayoutView::AddChild(LayoutObject* new_child, LayoutObject* before_child) {
+  NOT_DESTROYED();
   if (new_child->StyleRef().StyleType() == kPseudoIdViewTransition) {
     // The view-transition pseudo tree is needs to be laid out within the
     // "snapshot containing block". This is implemented by inserting an
@@ -368,11 +370,13 @@ void LayoutView::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
 }
 
 LogicalSize LayoutView::InitialContainingBlockSize() const {
+  NOT_DESTROYED();
   return LogicalSize(LayoutUnit(ViewLogicalWidthForBoxSizing()),
                      LayoutUnit(ViewLogicalHeightForBoxSizing()));
 }
 
 TrackedDescendantsMap& LayoutView::SvgTextDescendantsMap() {
+  NOT_DESTROYED();
   if (!svg_text_descendants_)
     svg_text_descendants_ = MakeGarbageCollected<TrackedDescendantsMap>();
   return *svg_text_descendants_;
@@ -381,22 +385,26 @@ TrackedDescendantsMap& LayoutView::SvgTextDescendantsMap() {
 void LayoutView::RegisterVariableLengthTransformResult(
     const LayoutText& text,
     const VariableLengthTransformResult& result) {
+  NOT_DESTROYED();
   CHECK(text.HasVariableLengthTransform());
   text_to_variable_length_transform_result_.Set(&text, result);
 }
 
 void LayoutView::UnregisterVariableLengthTransformResult(
     const LayoutText& text) {
+  NOT_DESTROYED();
   text_to_variable_length_transform_result_.erase(&text);
 }
 
 VariableLengthTransformResult LayoutView::GetVariableLengthTransformResult(
     const LayoutText& text) {
+  NOT_DESTROYED();
   CHECK(text.HasVariableLengthTransform());
   return text_to_variable_length_transform_result_.at(&text);
 }
 
 LayoutViewTransitionRoot* LayoutView::GetViewTransitionRoot() const {
+  NOT_DESTROYED();
   // Returns nullptr if LastChild isn't a ViewTransitionRoot.
   return DynamicTo<LayoutViewTransitionRoot>(LastChild());
 }
@@ -694,6 +702,7 @@ void LayoutView::CalculateScrollbarModes(
 }
 
 AtomicString LayoutView::NamedPageAtIndex(wtf_size_t page_index) const {
+  NOT_DESTROYED();
   // If layout is dirty, it's not possible to look up page names reliably.
   DCHECK_GE(GetDocument().Lifecycle().GetState(),
             DocumentLifecycle::kLayoutClean);
@@ -771,6 +780,7 @@ const LayoutBox& LayoutView::RootBox() const {
 }
 
 void LayoutView::InvalidateSvgRootsWithRelativeLengthDescendents() {
+  NOT_DESTROYED();
   if (GetDocument().SvgExtensions() && !ShouldUsePaginatedLayout()) {
     GetDocument()
         .AccessSVGExtensions()
@@ -1014,6 +1024,7 @@ Vector<gfx::Rect> LayoutView::GetTickmarks() const {
 }
 
 bool LayoutView::IsFragmentationContextRoot() const {
+  NOT_DESTROYED();
   return ShouldUsePaginatedLayout();
 }
 

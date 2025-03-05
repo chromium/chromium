@@ -515,6 +515,7 @@ void LayoutBox::WillBeDestroyed() {
 }
 
 void LayoutBox::DisassociatePhysicalFragments() {
+  NOT_DESTROYED();
   if (FirstInlineFragmentItemIndex()) {
     FragmentItems::LayoutObjectWillBeDestroyed(*this);
     ClearFirstInlineFragmentItemIndex();
@@ -1655,6 +1656,7 @@ PhysicalRect LayoutBox::ClippingRect(const PhysicalOffset& location) const {
 }
 
 gfx::PointF LayoutBox::PerspectiveOrigin(const PhysicalSize* size) const {
+  NOT_DESTROYED();
   if (!HasTransformRelatedProperty())
     return gfx::PointF();
 
@@ -2521,6 +2523,7 @@ bool LayoutBox::PhysicalFragmentList::Contains(
 }
 
 void LayoutBox::AddMeasureLayoutResult(const LayoutResult* result) {
+  NOT_DESTROYED();
   // Ensure the given result is valid for the measure cache.
   if (result->Status() != LayoutResult::kSuccess) {
     return;
@@ -2630,6 +2633,7 @@ void LayoutBox::SetLayoutResult(const LayoutResult* result, wtf_size_t index) {
 }
 
 void LayoutBox::AppendLayoutResult(const LayoutResult* result) {
+  NOT_DESTROYED();
   const auto& fragment = To<PhysicalBoxFragment>(result->GetPhysicalFragment());
   // |layout_results_| is particularly critical when side effects are disabled.
   DCHECK(!DisableLayoutSideEffectsScope::IsDisabled());
@@ -2682,6 +2686,7 @@ void LayoutBox::ReplaceLayoutResult(const LayoutResult* result,
 }
 
 void LayoutBox::FinalizeLayoutResults() {
+  NOT_DESTROYED();
   DCHECK(!layout_results_.empty());
   DCHECK(!layout_results_.back()->GetPhysicalFragment().GetBreakToken());
 #if EXPENSIVE_DCHECKS_ARE_ON()
@@ -2696,6 +2701,7 @@ void LayoutBox::FinalizeLayoutResults() {
 }
 
 void LayoutBox::RebuildFragmentTreeSpine() {
+  NOT_DESTROYED();
   DCHECK(PhysicalFragmentCount());
   // If this box has an associated layout-result, rebuild the spine of the
   // fragment-tree to ensure consistency.
@@ -2817,6 +2823,7 @@ const LayoutResult* LayoutBox::GetSingleCachedLayoutResult() const {
 }
 
 const LayoutResult* LayoutBox::GetSingleCachedMeasureResultForTesting() const {
+  NOT_DESTROYED();
   return measure_cache_ ? measure_cache_->GetLastForTesting() : nullptr;
 }
 
@@ -3421,6 +3428,7 @@ void LayoutBox::AddContentsVisualOverflow(const PhysicalRect& rect) {
 
 void LayoutBox::UpdateHasSubpixelVisualEffectOutsets(
     const PhysicalBoxStrut& outsets) {
+  NOT_DESTROYED();
   if (!VisualOverflowIsSet()) {
     return;
   }
@@ -3431,6 +3439,7 @@ void LayoutBox::UpdateHasSubpixelVisualEffectOutsets(
 
 void LayoutBox::SetVisualOverflow(const PhysicalRect& self,
                                   const PhysicalRect& contents) {
+  NOT_DESTROYED();
   ClearVisualOverflow();
   AddSelfVisualOverflow(self);
   AddContentsVisualOverflow(contents);
@@ -3596,6 +3605,7 @@ bool LayoutBox::IsMonolithic() const {
 }
 
 LayoutUnit LayoutBox::FirstLineHeight() const {
+  NOT_DESTROYED();
   if (IsAtomicInlineLevel()) {
     return FirstLineStyle()->IsHorizontalWritingMode()
                ? MarginHeight() + Size().height
@@ -3605,6 +3615,7 @@ LayoutUnit LayoutBox::FirstLineHeight() const {
 }
 
 PhysicalBoxStrut LayoutBox::BorderOutsetsForClipping() const {
+  NOT_DESTROYED();
   auto padding_box = -BorderOutsets();
   if (!ShouldApplyOverflowClipMargin())
     return padding_box;
@@ -3673,6 +3684,7 @@ PhysicalRect LayoutBox::VisualOverflowRectAllowingUnset() const {
 }
 
 void LayoutBox::CheckIsVisualOverflowComputed() const {
+  NOT_DESTROYED();
   // TODO(crbug.com/1205708): There are still too many failures. Disable the
   // the check for now. Need to investigate the reason.
   return;
@@ -3932,6 +3944,7 @@ static bool HasInsetBoxShadow(const ComputedStyle& style) {
 // If all borders and scrollbars are opaque, then background-clip: border-box
 // is equivalent to background-clip: padding-box.
 bool LayoutBox::BackgroundClipBorderBoxIsEquivalentToPaddingBox() const {
+  NOT_DESTROYED();
   const auto* scrollable_area = GetScrollableArea();
   if (scrollable_area) {
     if (auto* scrollbar = scrollable_area->HorizontalScrollbar()) {
@@ -4095,6 +4108,7 @@ bool LayoutBox::ComputeCanCompositeBackgroundAttachmentFixed() const {
 
 bool LayoutBox::IsFixedToView(
     const LayoutObject* container_for_fixed_position) const {
+  NOT_DESTROYED();
   if (!IsFixedPositioned())
     return false;
 
@@ -4121,6 +4135,7 @@ PhysicalRect LayoutBox::ComputeStickyConstrainingRect() const {
 }
 
 AnchorPositionScrollData* LayoutBox::GetAnchorPositionScrollData() const {
+  NOT_DESTROYED();
   if (Element* element = DynamicTo<Element>(GetNode())) {
     return element->GetAnchorPositionScrollData();
   }
@@ -4128,6 +4143,7 @@ AnchorPositionScrollData* LayoutBox::GetAnchorPositionScrollData() const {
 }
 
 bool LayoutBox::NeedsAnchorPositionScrollAdjustment() const {
+  NOT_DESTROYED();
   if (auto* data = GetAnchorPositionScrollData()) {
     return data->NeedsScrollAdjustment();
   }
@@ -4136,6 +4152,7 @@ bool LayoutBox::NeedsAnchorPositionScrollAdjustment() const {
 
 bool LayoutBox::AnchorPositionScrollAdjustmentAfectedByViewportScrolling()
     const {
+  NOT_DESTROYED();
   if (auto* data = GetAnchorPositionScrollData()) {
     return data->NeedsScrollAdjustment() &&
            data->IsAffectedByViewportScrolling();
@@ -4144,6 +4161,7 @@ bool LayoutBox::AnchorPositionScrollAdjustmentAfectedByViewportScrolling()
 }
 
 PhysicalOffset LayoutBox::AnchorPositionScrollTranslationOffset() const {
+  NOT_DESTROYED();
   if (auto* data = GetAnchorPositionScrollData()) {
     return data->TranslationAsPhysicalOffset();
   }
@@ -4200,6 +4218,7 @@ void AssertSameDataOnLayoutResults(
 
 const LayoutObject* LayoutBox::FindTargetAnchor(
     const ScopedCSSName& anchor_name) const {
+  NOT_DESTROYED();
   if (!IsOutOfFlowPositioned()) {
     return nullptr;
   }
@@ -4220,6 +4239,7 @@ const LayoutObject* LayoutBox::FindTargetAnchor(
 }
 
 const LayoutObject* LayoutBox::AcceptableImplicitAnchor() const {
+  NOT_DESTROYED();
   if (!IsOutOfFlowPositioned()) {
     return nullptr;
   }
@@ -4244,6 +4264,7 @@ const LayoutObject* LayoutBox::AcceptableImplicitAnchor() const {
 
 const HeapVector<NonOverflowingScrollRange>*
 LayoutBox::NonOverflowingScrollRanges() const {
+  NOT_DESTROYED();
   const auto& layout_results = GetLayoutResults();
   if (layout_results.empty()) {
     return nullptr;
@@ -4261,6 +4282,7 @@ LayoutBox::NonOverflowingScrollRanges() const {
 }
 
 const BoxStrut& LayoutBox::OutOfFlowInsetsForGetComputedStyle() const {
+  NOT_DESTROYED();
   const auto& layout_results = GetLayoutResults();
   // We should call this function only after the node is laid out.
   CHECK(layout_results.size());
@@ -4275,6 +4297,7 @@ const BoxStrut& LayoutBox::OutOfFlowInsetsForGetComputedStyle() const {
 }
 
 Element* LayoutBox::AccessibilityAnchor() const {
+  NOT_DESTROYED();
   const auto& layout_results = GetLayoutResults();
   if (layout_results.empty()) {
     return nullptr;
@@ -4284,6 +4307,7 @@ Element* LayoutBox::AccessibilityAnchor() const {
 
 const HeapHashSet<Member<Element>>* LayoutBox::DisplayLocksAffectedByAnchors()
     const {
+  NOT_DESTROYED();
   const auto& layout_results = GetLayoutResults();
   if (layout_results.empty()) {
     return nullptr;
@@ -4295,6 +4319,7 @@ void LayoutBox::NotifyContainingDisplayLocksForAnchorPositioning(
     const HeapHashSet<Member<Element>>* past_display_locks_affected_by_anchors,
     const HeapHashSet<Member<Element>>* display_locks_affected_by_anchors)
     const {
+  NOT_DESTROYED();
   auto notify_display_locks =
       [](const HeapHashSet<Member<Element>>* display_locks) {
         if (!display_locks) {
@@ -4311,6 +4336,7 @@ void LayoutBox::NotifyContainingDisplayLocksForAnchorPositioning(
 }
 
 bool LayoutBox::NeedsAnchorPositionScrollAdjustmentInX() const {
+  NOT_DESTROYED();
   const auto& layout_results = GetLayoutResults();
   if (layout_results.empty()) {
     return false;
@@ -4326,6 +4352,7 @@ bool LayoutBox::NeedsAnchorPositionScrollAdjustmentInX() const {
 }
 
 bool LayoutBox::NeedsAnchorPositionScrollAdjustmentInY() const {
+  NOT_DESTROYED();
   const auto& layout_results = GetLayoutResults();
   if (layout_results.empty()) {
     return false;
@@ -4341,11 +4368,13 @@ bool LayoutBox::NeedsAnchorPositionScrollAdjustmentInY() const {
 }
 
 WritingModeConverter LayoutBox::CreateWritingModeConverter() const {
+  NOT_DESTROYED();
   return WritingModeConverter({Style()->GetWritingMode(), TextDirection::kLtr},
                               Size());
 }
 
 bool LayoutBox::IsReadingFlowContainer() const {
+  NOT_DESTROYED();
   if (!RuntimeEnabledFeatures::CSSReadingFlowEnabled()) {
     return false;
   }
@@ -4365,6 +4394,7 @@ bool LayoutBox::IsReadingFlowContainer() const {
 }
 
 const HeapVector<Member<Node>>& LayoutBox::ReadingFlowNodes() const {
+  NOT_DESTROYED();
   if (const auto* nodes = GetPhysicalFragment(0)->ReadingFlowNodes()) {
     return *nodes;
   }

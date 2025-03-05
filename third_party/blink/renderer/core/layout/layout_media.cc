@@ -187,6 +187,7 @@ LayoutUnit LayoutMedia::ComputePanelWidth(
 }
 
 RecalcScrollableOverflowResult LayoutMedia::RecalcScrollableOverflow() {
+  NOT_DESTROYED();
   return RecalcScrollableOverflowNG();
 }
 

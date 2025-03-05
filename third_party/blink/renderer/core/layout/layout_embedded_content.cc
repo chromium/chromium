@@ -95,6 +95,7 @@ EmbeddedContentView* LayoutEmbeddedContent::GetEmbeddedContentView() const {
 
 const std::optional<PhysicalSize> LayoutEmbeddedContent::FrozenFrameSize()
     const {
+  NOT_DESTROYED();
   // The `<fencedframe>` element can freeze the child frame size when navigated.
   if (const auto* fenced_frame = DynamicTo<HTMLFencedFrameElement>(GetNode()))
     return fenced_frame->FrozenFrameSize();
@@ -114,6 +115,7 @@ PhysicalNaturalSizingInfo LayoutEmbeddedContent::GetNaturalDimensions() const {
 }
 
 AffineTransform LayoutEmbeddedContent::EmbeddedContentTransform() const {
+  NOT_DESTROYED();
   auto frozen_size = FrozenFrameSize();
   if (!frozen_size || frozen_size->IsEmpty()) {
     const PhysicalOffset content_box_offset = PhysicalContentBoxOffset();
@@ -131,6 +133,7 @@ AffineTransform LayoutEmbeddedContent::EmbeddedContentTransform() const {
 
 PhysicalOffset LayoutEmbeddedContent::EmbeddedContentFromBorderBox(
     const PhysicalOffset& offset) const {
+  NOT_DESTROYED();
   gfx::PointF point(offset);
   return PhysicalOffset::FromPointFRound(
       EmbeddedContentTransform().Inverse().MapPoint(point));
@@ -138,11 +141,13 @@ PhysicalOffset LayoutEmbeddedContent::EmbeddedContentFromBorderBox(
 
 gfx::PointF LayoutEmbeddedContent::EmbeddedContentFromBorderBox(
     const gfx::PointF& point) const {
+  NOT_DESTROYED();
   return EmbeddedContentTransform().Inverse().MapPoint(point);
 }
 
 PhysicalOffset LayoutEmbeddedContent::BorderBoxFromEmbeddedContent(
     const PhysicalOffset& offset) const {
+  NOT_DESTROYED();
   gfx::PointF point(offset);
   return PhysicalOffset::FromPointFRound(
       EmbeddedContentTransform().MapPoint(point));
@@ -150,6 +155,7 @@ PhysicalOffset LayoutEmbeddedContent::BorderBoxFromEmbeddedContent(
 
 gfx::Rect LayoutEmbeddedContent::BorderBoxFromEmbeddedContent(
     const gfx::Rect& rect) const {
+  NOT_DESTROYED();
   return EmbeddedContentTransform().MapRect(rect);
 }
 
@@ -179,6 +185,7 @@ bool LayoutEmbeddedContent::PointOverResizer(
 }
 
 void LayoutEmbeddedContent::PropagateZoomFactor(double zoom_factor) {
+  NOT_DESTROYED();
   if (GetDocument().StandardizedBrowserZoomEnabled()) {
     const auto* fenced_frame = DynamicTo<HTMLFencedFrameElement>(GetNode());
     if (!fenced_frame) {

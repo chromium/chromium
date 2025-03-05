@@ -383,6 +383,7 @@ SVGImage* LayoutImage::EmbeddedSVGImage() const {
 }
 
 bool LayoutImage::IsUnsizedImage() const {
+  NOT_DESTROYED();
   const ComputedStyle& style = this->StyleRef();
   const auto explicit_width = style.LogicalWidth().IsSpecified();
   const auto explicit_height = style.LogicalHeight().IsSpecified();

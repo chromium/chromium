@@ -52,6 +52,7 @@ void LayoutHTMLCanvas::PaintReplaced(const PaintInfo& paint_info,
 
 void LayoutHTMLCanvas::DidInvalidatePaintForPlacedElement(
     Element* placedElement) {
+  NOT_DESTROYED();
   DCHECK(RuntimeEnabledFeatures::CanvasPlaceElementEnabled());
   auto* canvas = To<HTMLCanvasElement>(GetNode());
   DCHECK(canvas->HasPlacedElements());
@@ -86,6 +87,7 @@ PhysicalNaturalSizingInfo LayoutHTMLCanvas::GetNaturalDimensions() const {
 }
 
 bool LayoutHTMLCanvas::DrawsBackgroundOntoContentLayer() const {
+  NOT_DESTROYED();
   auto* canvas = To<HTMLCanvasElement>(GetNode());
   if (canvas->SurfaceLayerBridge())
     return false;
