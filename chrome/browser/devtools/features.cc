@@ -154,4 +154,9 @@ BASE_FEATURE(kDevToolsCssValueTracing,
              "DevToolsCssValueTracing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether the DevTools AI generated annotation labels in timeline are enabled.
+BASE_FEATURE(kDevToolsAiGeneratedTimelineLabels,
+             "DevToolsAiGeneratedTimelineLabels",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

@@ -1830,6 +1830,13 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
   response_dict.Set("devToolsCssValueTracing",
                     std::move(css_value_tracing_dict));
 
+  base::Value::Dict ai_generated_timeline_labels_dict;
+  ai_generated_timeline_labels_dict.Set(
+      "enabled", base::FeatureList::IsEnabled(
+                     ::features::kDevToolsAiGeneratedTimelineLabels));
+  response_dict.Set("devToolsAiGeneratedTimelineLabels",
+                    std::move(ai_generated_timeline_labels_dict));
+
   base::Value response = base::Value(std::move(response_dict));
   std::move(callback).Run(&response);
 }
