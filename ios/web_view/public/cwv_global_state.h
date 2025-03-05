@@ -31,6 +31,9 @@ CWV_EXPORT
 // Deprecated. Use `customUserAgent` instead.
 @property(nonatomic, copy, nullable) NSString* userAgentProduct;
 
+// Returns `YES` if `-[CWVGlobalState earlyInit]` has been called.
+@property(nonatomic, readonly, getter=isEarlyInitialized) BOOL earlyInitialized;
+
 // Returns `YES` if `-[CWVGlobalState start]` has been called.
 @property(nonatomic, readonly, getter=isStarted) BOOL started;
 
@@ -43,9 +46,13 @@ CWV_EXPORT
                clientID:(NSString*)clientID
            clientSecret:(NSString*)clientSecret;
 
-// Starts and initializes internal global state machinery. This should be called
-// early during the host app's launch process. For example, in
+// Initializes internal global state machinery. This should be called as early
+//  during the host app's launch process as possible. For example, in
 // `-[UIApplicationDelegate application:willFinishLaunchingWithOptions:]`.
+- (void)earlyInit;
+
+// Starts up internal global state machinery. This can be called anytime after
+// `earlyInit`, but must be called before using any other CWV* classes.
 - (void)start;
 
 // Stops and deinitializes internal global state machinery. This should be

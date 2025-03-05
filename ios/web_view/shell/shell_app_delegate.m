@@ -14,6 +14,7 @@
 
 - (BOOL)application:(UIApplication*)application
     willFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
+  [[CWVGlobalState sharedInstance] earlyInit];
   [[CWVGlobalState sharedInstance] start];
 
   // Note that initialization of the window and the root view controller must be
