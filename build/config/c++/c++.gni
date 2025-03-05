@@ -62,7 +62,7 @@ if (use_implicit_libcxx_modules) {
 
 use_explicit_libcxx_modules = use_libcxx_modules && !use_implicit_libcxx_modules
 
-assert(!use_libcxx_modules || !use_remoteexec,
+assert(!use_implicit_libcxx_modules || !use_remoteexec,
        "Implicit Clang header modules don't work with remote execution.")
 
 use_custom_libcxx =

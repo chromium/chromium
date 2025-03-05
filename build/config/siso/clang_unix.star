@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 """Siso configuration for clang/unix."""
 
+load("@builtin//lib/gn.star", "gn")
 load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./android.star", "android")
@@ -82,6 +83,10 @@ __handlers = {
 def __rules(ctx):
     gn_logs_data = gn_logs.read(ctx)
     input_root_absolute_path = gn_logs_data.get("clang_need_input_root_absolute_path") == "true"
+    if gn.args(ctx).get("use_libcxx_modules") == "true":
+        # TODO(https://crbug.com/400627160): Remove this after clang removes absolute path from
+        # module file.
+        input_root_absolute_path = True
     input_root_absolute_path_for_objc = gn_logs_data.get("clang_need_input_root_absolute_path_for_objc") == "true"
 
     canonicalize_dir = not input_root_absolute_path
