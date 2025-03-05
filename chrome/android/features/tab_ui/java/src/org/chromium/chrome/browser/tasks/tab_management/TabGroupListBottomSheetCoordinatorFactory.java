@@ -24,11 +24,13 @@ public interface TabGroupListBottomSheetCoordinatorFactory {
      * @param callback Used to follow up on tab group creation.
      * @param filter Used to read current tab groups.
      * @param controller Used to interact with the bottom sheet.
+     * @param showNewGroupRow Whether the 'New Tab Group' row should be displayed.
      */
     TabGroupListBottomSheetCoordinator create(
             Context context,
             Profile profile,
             TabGroupCreationCallback callback,
             TabGroupModelFilter filter,
-            BottomSheetController controller);
+            BottomSheetController controller,
+            boolean showNewGroupRow);
 }

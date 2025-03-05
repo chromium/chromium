@@ -305,6 +305,30 @@
           other {Group <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs}
         }
       </message>
+      <message name="IDS_ADD_TAB_TO_NEW_GROUP_MENU_ITEM" desc="This text menu item is shown in several menus and starts the UI flow for adding a tab to a new group.">
+        {TABS_COUNT, plural,
+          =1 {Add tab to new group}
+          other {Add tabs to new group}
+        }
+      </message>
+      <message name="IDS_ACCESSIBILITY_ADD_TAB_TO_NEW_GROUP_MENU_ITEM" desc="The accessibility text to read when the 'Add tab to new group' menu item is focused. When this menu item is tapped, the selected tab will be added to a new tab group.">
+        {TABS_COUNT, plural,
+          =1 {Add <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> tab to group}
+          other {Add <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> tabs to group}
+        }
+      </message>
+      <message name="IDS_ADD_TAB_TO_GROUP_MENU_ITEM" desc="This text menu item is shown in several menus and starts the UI flow for adding one or more tabs to a new or pre-existing group.">
+        {TABS_COUNT, plural,
+          =1 {Add tab to group}
+          other {Add tabs to group}
+        }
+      </message>
+      <message name="IDS_ACCESSIBILITY_ADD_TAB_TO_GROUP_MENU_ITEM" desc="The accessibility text to read when the 'Add tab to group' menu item is focused. When this menu item is tapped, the selected tabs will be added to a new or pre-existing tab group.">
+        {TABS_COUNT, plural,
+          =1 {Add <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> selected tab to group}
+          other {Add <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs to group}
+        }
+      </message>
       <message name="IDS_TAB_SELECTION_EDITOR_UNGROUP_TABS" desc="This text menu item is shown in the Tab Selection Editor menu. 'Ungroup' is a verb. When the user taps the menu item, Chrome removes the selected tabs from the group. [CHAR_LIMIT=27]">
         {TABS_COUNT, plural,
           =1 {Ungroup tab}
