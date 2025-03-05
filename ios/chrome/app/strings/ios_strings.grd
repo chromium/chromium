@@ -525,7 +525,7 @@
           No thanks
       </message>
       <message name="IDS_IOS_AUTO_DELETION_IPH_TITLE" desc="The title of the half-sheet IPH that appears to prompt the user if they would like to enable the auto-deletion feature.">
-        Auto delete your downlaods
+        Auto delete your downloads
       </message>
       <message name="IDS_IOS_BACK_FORWARD_SWIPE_IPH" desc="The text for the full screen in-product help for side swipe on the current tab to navigate.">
         You can swipe the edge to go back or forward.
