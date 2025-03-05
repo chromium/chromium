@@ -58,16 +58,6 @@ int ConsumeNumber(std::u16string_view& input,
 
 }  // namespace
 
-bool Date::is_valid() const {
-  static constexpr std::array<int, 13> kDaysOfMonth{31, 31, 28, 31, 30, 31, 30,
-                                                    31, 31, 30, 31, 30, 31};
-  auto is_leap_year = [this]() {
-    return year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
-  };
-  return 0 <= year && year <= 9999 && 0 <= month && month <= 12 && 0 <= day &&
-         day <= kDaysOfMonth[month] + (month == 2 && is_leap_year() ? 1 : 0);
-}
-
 bool IsValidDateFormat(std::u16string_view format) {
   enum Category { kYear, kMonth, kDay, kMaxValue = kDay };
 
@@ -155,6 +145,33 @@ bool ParseDate(std::u16string_view date,
     }
   }
   return date.empty() && format.empty();
+}
+
+bool IsValidDateForFormat(const Date& date, std::u16string_view format) {
+  auto max_days = [](int year, int month) {
+    if (month < 1 || month > 12) {
+      return 31;
+    }
+    static constexpr std::array<int, 12> kDaysOfMonth{31, 28, 31, 30, 31, 30,
+                                                      31, 31, 30, 31, 30, 31};
+    bool has_leap_day =
+        month == 2 && year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
+    return kDaysOfMonth[month - 1] + (has_leap_day ? 1 : 0);
+  };
+
+  bool valid = true;
+  while (!format.empty() && valid) {
+    if (Consume(format, u"YYYY") || Consume(format, u"YY")) {
+      valid = 0 < date.year && date.year <= 9999;
+    } else if (Consume(format, u"MM") || Consume(format, u"M")) {
+      valid = 0 < date.month && date.month <= 12;
+    } else if (Consume(format, u"DD") || Consume(format, u"D")) {
+      valid = 0 < date.day && date.day <= max_days(date.year, date.month);
+    } else {
+      format = format.substr(1);
+    }
+  }
+  return valid;
 }
 
 std::u16string FormatDate(Date date, std::u16string_view format) {

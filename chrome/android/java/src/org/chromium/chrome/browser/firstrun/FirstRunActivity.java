@@ -374,9 +374,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                 new FirstRunFlowSequencer(
                         getProfileProviderSupplier(), getChildAccountStatusSupplier()) {
                     @Override
-                    public void onFlowIsKnown(Bundle freProperties) {
-                        assert freProperties != null;
-                        mFreProperties = freProperties;
+                    public void onFlowIsKnown(boolean isChild) {
+                        mFreProperties = new Bundle();
                         RecordHistogram.recordTimesHistogram(
                                 "MobileFre.FromLaunch.ChildStatusAvailable",
                                 SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);

@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
-import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -39,7 +38,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 public class LegacySyncPromoView extends FrameLayout
         implements SyncService.SyncStateChangedListener {
     private SyncService mSyncService;
-    private @AccessPoint int mAccessPoint;
+    private @SigninAccessPoint int mAccessPoint;
     private boolean mInitialized;
     private boolean mInitializeNotRequired;
 
@@ -61,7 +60,7 @@ public class LegacySyncPromoView extends FrameLayout
      * @param accessPoint Where the LegacySyncPromoView is used.
      */
     public static LegacySyncPromoView create(
-            ViewGroup parent, Profile profile, @AccessPoint int accessPoint) {
+            ViewGroup parent, Profile profile, @SigninAccessPoint int accessPoint) {
         // TODO(injae): crbug.com/829548
         LegacySyncPromoView result =
                 (LegacySyncPromoView)
@@ -122,7 +121,7 @@ public class LegacySyncPromoView extends FrameLayout
      * @param profile The {@link Profile} associated with the sync promotion.
      * @param accessPoint Where this UI component is used.
      */
-    public void init(Profile profile, @AccessPoint int accessPoint) {
+    public void init(Profile profile, @SigninAccessPoint int accessPoint) {
         mSyncService = SyncServiceFactory.getForProfile(profile);
         // This promo is about enabling sync, so no sense in showing it if
         // syncing isn't possible.

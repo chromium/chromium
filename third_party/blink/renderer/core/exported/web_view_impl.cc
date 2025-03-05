@@ -3675,7 +3675,7 @@ void WebViewImpl::SetIsActive(bool active) {
 }
 
 bool WebViewImpl::IsActive() const {
-  return GetPage() ? GetPage()->GetFocusController().IsActive() : false;
+  return GetPage() && GetPage()->GetFocusController().IsActive();
 }
 
 void WebViewImpl::SetWindowFeatures(const WebWindowFeatures& features) {

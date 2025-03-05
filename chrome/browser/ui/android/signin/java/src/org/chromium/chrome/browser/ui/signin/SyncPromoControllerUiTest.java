@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
-import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
@@ -385,7 +384,9 @@ public class SyncPromoControllerUiTest {
     }
 
     private View setUpSyncPromoView(
-            @AccessPoint int accessPoint, ProfileDataCache profileDataCache, int layoutResId) {
+            @SigninAccessPoint int accessPoint,
+            ProfileDataCache profileDataCache,
+            int layoutResId) {
         View view =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {

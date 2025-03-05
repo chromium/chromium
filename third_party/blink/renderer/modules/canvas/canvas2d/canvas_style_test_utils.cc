@@ -14,7 +14,7 @@
 
 namespace blink {
 
-void SetFillStyleString(BaseRenderingContext2D* ctx,
+void SetFillStyleString(Canvas2DRecorderContext* ctx,
                         ScriptState* script_state,
                         const String& string) {
   NonThrowableExceptionState exception_state;
@@ -23,7 +23,7 @@ void SetFillStyleString(BaseRenderingContext2D* ctx,
                     exception_state);
 }
 
-void SetStrokeStyleString(BaseRenderingContext2D* ctx,
+void SetStrokeStyleString(Canvas2DRecorderContext* ctx,
                           ScriptState* script_state,
                           const String& string) {
   NonThrowableExceptionState exception_state;
@@ -32,7 +32,7 @@ void SetStrokeStyleString(BaseRenderingContext2D* ctx,
                       exception_state);
 }
 
-String GetStrokeStyleAsString(BaseRenderingContext2D* ctx,
+String GetStrokeStyleAsString(Canvas2DRecorderContext* ctx,
                               ScriptState* script_state) {
   NonThrowableExceptionState exception_state;
   auto* isolate = script_state->GetIsolate();
@@ -41,7 +41,7 @@ String GetStrokeStyleAsString(BaseRenderingContext2D* ctx,
                                                    exception_state);
 }
 
-String GetFillStyleAsString(BaseRenderingContext2D* ctx,
+String GetFillStyleAsString(Canvas2DRecorderContext* ctx,
                             ScriptState* script_state) {
   NonThrowableExceptionState exception_state;
   auto result = ctx->fillStyle(script_state);

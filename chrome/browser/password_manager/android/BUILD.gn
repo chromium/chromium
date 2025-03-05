@@ -202,13 +202,10 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreCredential.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegateBridgeImpl.java",
-    "java/src/org/chromium/chrome/browser/password_manager/settings/CallbackDelayer.java",
-    "java/src/org/chromium/chrome/browser/password_manager/settings/DialogManager.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/ExportErrorDialogFragment.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/ExportFlow.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/ExportFlowInterface.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/ExportWarningDialogFragment.java",
-    "java/src/org/chromium/chrome/browser/password_manager/settings/NonCancelableProgressBar.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessLossExportDialogBinder.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessLossExportDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessLossExportDialogFragment.java",
@@ -226,8 +223,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/password_manager/settings/ProgressBarDialogFragment.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/ReauthenticationManager.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/SavedPasswordEntry.java",
-    "java/src/org/chromium/chrome/browser/password_manager/settings/SingleThreadBarrierClosure.java",
-    "java/src/org/chromium/chrome/browser/password_manager/settings/TimedCallbackDelayer.java",
   ]
 
   resources_package = "org.chromium.chrome.browser.password_manager"
@@ -260,18 +255,37 @@ android_library("utils_java") {
     "java/src/org/chromium/chrome/browser/password_manager/GmsUpdateLauncher.java",
     "java/src/org/chromium/chrome/browser/password_manager/LoginDbDeprecationUtilBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordExportLauncher.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/CallbackDelayer.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/DialogManager.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/NonCancelableProgressBar.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/SingleThreadBarrierClosure.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/TimedCallbackDelayer.java",
   ]
 
   srcjar_deps = [ ":utils_jni_headers" ]
 
   deps = [
+    ":java_resources",
     "$google_play_services_package:google_play_services_base_java",
+    "//base:tasks_java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:factory_java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/settings/android:java",
-    "//third_party/jni_zero:gendeps_java",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/theme/android:java_resources",
+    "//components/browser_ui/widget/android:java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
+
+  resources_package = "org.chromium.chrome.browser.password_manager"
 }
 
 generate_jni("utils_jni_headers") {
@@ -306,6 +320,7 @@ robolectric_binary("password_manager_junit_tests") {
     "junit/src/org/chromium/chrome/browser/password_manager/FakePasswordSettingsAccessorFactoryImplTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/FakePasswordStoreAndroidBackendTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/GmsUpdateLauncherTest.java",
+    "junit/src/org/chromium/chrome/browser/password_manager/LoginDbDeprecationUtilBridgeTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/OutdatedGmsCoreDialogTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordCheckupClientMetricsRecorderTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordExportLauncherTest.java",

@@ -449,7 +449,7 @@ void FrameLoader::FinishedParsing() {
 
   if (Client()) {
     Client()->RunScriptsAtDocumentReady(
-        document_loader_ ? document_loader_->IsCommittedButEmpty() : true);
+        !document_loader_ || document_loader_->IsCommittedButEmpty());
   }
 
   if (frame_->View()) {

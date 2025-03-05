@@ -29,8 +29,19 @@
 @end
 
 @protocol GoogleOneController <NSObject>
-- (void)launchWithViewController:(UIViewController*)controller
+
+// Launch the GoogleOneController. This will present the Google One VC on top of
+// `viewController`.
+// `completion` is a flow completion.
+- (void)launchWithViewController:(UIViewController*)viewController
                       completion:(void (^)(NSError*))completion;
+
+// Stop the GoogleOneController.
+// This will dismiss the viewController presented by `launchWithViewController`.
+// Do not call if the flow completion was already called (the service is already
+// stopped).
+- (void)stop;
+
 @end
 
 namespace ios::provider {

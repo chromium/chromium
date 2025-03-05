@@ -6,11 +6,6 @@ found in the LICENSE file.
 -->
 
 <resources>
-    <!-- Account Signin Colors -->
-    <color name="signin_header_animation_line_light">@color/baseline_neutral_30</color>
-    <color name="signin_header_animation_line_dark">@color/baseline_neutral_30</color>
-    <color name="signin_header_animation_laptop_screen">@color/baseline_neutral_10</color>
-
     <!-- History Navigation UI colors -->
     <color name="navigation_bubble_arrow">@android:color/white</color>
 

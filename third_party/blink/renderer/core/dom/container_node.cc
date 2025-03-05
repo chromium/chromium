@@ -885,7 +885,7 @@ LayoutBox* ContainerNode::GetLayoutBoxForScrolling() const {
 }
 
 bool ContainerNode::IsReadingFlowContainer() const {
-  return GetLayoutBox() ? GetLayoutBox()->IsReadingFlowContainer() : false;
+  return GetLayoutBox() && GetLayoutBox()->IsReadingFlowContainer();
 }
 
 void ContainerNode::Trace(Visitor* visitor) const {

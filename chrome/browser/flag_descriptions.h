@@ -3599,12 +3599,6 @@ extern const char kCrostiniQtImeSupportDescription[];
 extern const char kCrostiniVirtualKeyboardSupportName[];
 extern const char kCrostiniVirtualKeyboardSupportDescription[];
 
-extern const char kCameraAppPdfOcrName[];
-extern const char kCameraAppPdfOcrDescription[];
-
-extern const char kCameraAppPreviewOcrName[];
-extern const char kCameraAppPreviewOcrDescription[];
-
 extern const char kChromeboxUsbPassthroughRestrictionsName[];
 extern const char kChromeboxUsbPassthroughRestrictionsDescription[];
 

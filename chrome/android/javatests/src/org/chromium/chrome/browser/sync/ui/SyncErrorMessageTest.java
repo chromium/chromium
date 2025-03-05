@@ -243,13 +243,13 @@ public class SyncErrorMessageTest {
         verify(mMessageDispatcher).enqueueWindowScopedMessage(mModelCaptor.capture(), anyBoolean());
         PropertyModel mModel = mModelCaptor.getValue();
         Assert.assertEquals(
-                mContext.getString(R.string.password_sync_trusted_vault_error_title_1),
+                mContext.getString(R.string.password_sync_trusted_vault_error_title),
                 mModel.get(MessageBannerProperties.TITLE));
         Assert.assertEquals(
-                mContext.getString(R.string.password_sync_trusted_vault_error_hint_1),
+                mContext.getString(R.string.password_sync_trusted_vault_error_hint),
                 mModel.get(MessageBannerProperties.DESCRIPTION));
         Assert.assertEquals(
-                mContext.getString(R.string.identity_error_card_button_verify),
+                mContext.getString(R.string.identity_error_message_button_verify),
                 mModel.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
     }
 
@@ -270,13 +270,13 @@ public class SyncErrorMessageTest {
         verify(mMessageDispatcher).enqueueWindowScopedMessage(mModelCaptor.capture(), anyBoolean());
         PropertyModel mModel = mModelCaptor.getValue();
         Assert.assertEquals(
-                mContext.getString(R.string.password_sync_trusted_vault_error_title_2),
+                mContext.getString(R.string.password_sync_trusted_vault_error_title),
                 mModel.get(MessageBannerProperties.TITLE));
         Assert.assertEquals(
-                mContext.getString(R.string.password_sync_trusted_vault_error_hint_2),
+                mContext.getString(R.string.password_sync_trusted_vault_error_hint),
                 mModel.get(MessageBannerProperties.DESCRIPTION));
         Assert.assertEquals(
-                mContext.getString(R.string.identity_error_card_button_verify),
+                mContext.getString(R.string.identity_error_card_button_okay),
                 mModel.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
     }
 

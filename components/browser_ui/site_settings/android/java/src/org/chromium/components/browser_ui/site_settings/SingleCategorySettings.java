@@ -412,6 +412,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     private CharSequence getHeaderTitle(int resourceId, int count) {
         if (getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled()) {
             SpannableStringBuilder spannable = new SpannableStringBuilder(getString(resourceId));
+            String prefCount = String.format(Locale.getDefault(), " (%d)", count);
+            spannable.append(prefCount);
 
             // Color the title blue.
             ForegroundColorSpan blueSpan =

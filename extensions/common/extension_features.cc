@@ -152,6 +152,13 @@ BASE_FEATURE(kTelemetryExtensionPendingApprovalApi,
              "TelemetryExtensionPendingApprovalApi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_WIN)
+// TODO(https://crbug.com/400119351): Remove this feature flag in M138.
+BASE_FEATURE(kWinRejectDotSpaceSuffixFilePaths,
+             "WinRejectDotSpaceSuffixFilePaths",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE(kNewWebstoreURL,
              "NewWebstoreURL",
              base::FEATURE_ENABLED_BY_DEFAULT);

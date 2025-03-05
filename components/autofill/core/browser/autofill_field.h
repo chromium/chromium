@@ -10,6 +10,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -60,6 +61,9 @@ enum class AutofillPredictionSource {
   kRationalization = 4,
   kMaxValue = kRationalization
 };
+
+std::string_view AutofillPredictionSourceToStringView(
+    AutofillPredictionSource source);
 
 class AutofillField : public FormFieldData {
  public:

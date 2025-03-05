@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/files/file_util.h"
+#include "extensions/common/extension_features.h"
 
 namespace extensions {
 
@@ -102,6 +103,20 @@ base::FilePath ExtensionResource::GetFilePath(
   // inconsistencies. See https://crbug.com/356878412.
   if (relative_path.EndsWithSeparator() && !base::DirectoryExists(full_path)) {
     return base::FilePath();
+  }
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  // Reject paths ending with '.' or ' '. Such suffix is ignored when accessing
+  // files on Windows, which causes inconsistencies. See
+  // https://crbug.com/400119351.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kWinRejectDotSpaceSuffixFilePaths) &&
+      !relative_path.empty()) {
+    const char last_char = relative_path.value().back();
+    if (last_char == '.' || last_char == ' ') {
+      return base::FilePath();
+    }
   }
 #endif
 

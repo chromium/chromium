@@ -318,7 +318,7 @@ TEST_F(CSSPropertyTest, AlternativePropertyExposure) {
       bool alternative_exposed = alternative.Exposure() != CSSExposure::kNone;
 
       // If the alternative is exposed, the main property can not be exposed.
-      EXPECT_TRUE(alternative_exposed ? !property_exposed : true);
+      EXPECT_TRUE(!alternative_exposed || !property_exposed);
     }
   }
 }

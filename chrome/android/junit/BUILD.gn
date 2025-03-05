@@ -139,6 +139,7 @@ if (is_android) {
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/password_manager/android:settings_interface_java",
     "//chrome/browser/password_manager/android:test_support_java",
+    "//chrome/browser/password_manager/android:utils_java",
     "//chrome/browser/password_manager/android/pwd_migration:java",
     "//chrome/browser/policy/android:java",
     "//chrome/browser/preferences:java",

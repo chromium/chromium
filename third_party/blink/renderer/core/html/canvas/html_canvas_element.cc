@@ -962,7 +962,7 @@ void HTMLCanvasElement::NotifyListenersCanvasChanged() {
   }
 
   const bool context_color_is_opaque =
-      context_ ? SkAlphaTypeIsOpaque(context_->GetAlphaType()) : false;
+      context_ && SkAlphaTypeIsOpaque(context_->GetAlphaType());
 
   for (CanvasDrawListener* listener : listeners_) {
     if (!listener->NeedsNewFrame())
@@ -1749,8 +1749,7 @@ void HTMLCanvasElement::WillDrawImageTo2DContext(CanvasImageSource* source) {
 }
 
 bool HTMLCanvasElement::EnableAcceleration() {
-  return GetRasterMode() == RasterMode::kCPU ? RecreateCanvasInGPURasterMode()
-                                             : true;
+  return GetRasterMode() != RasterMode::kCPU || RecreateCanvasInGPURasterMode();
 }
 
 bool HTMLCanvasElement::RecreateCanvasInGPURasterMode() {

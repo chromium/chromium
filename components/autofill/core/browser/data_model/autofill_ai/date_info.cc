@@ -30,7 +30,18 @@ DateInfo& DateInfo::operator=(DateInfo&& info) = default;
 
 DateInfo::~DateInfo() = default;
 
+void DateInfo::SetDate(std::u16string_view date, std::u16string_view format) {
+  data_util::Date d = date_;
+  if (!data_util::ParseDate(date, format, d)) {
+    d = {};
+  }
+  date_ = d;
+}
+
 std::u16string DateInfo::GetDate(std::u16string_view format) const {
+  if (!data_util::IsValidDateForFormat(date_, format)) {
+    return {};
+  }
   return data_util::FormatDate(date_, format);
 }
 

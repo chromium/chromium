@@ -46,7 +46,7 @@ class NoPasskeysBottomSheetBridgeTest : public testing::Test {
     return *no_passkeys_bridge_;
   }
 
-  void destroyNoPassleysBridge() { no_passkeys_bridge_.reset(); }
+  void destroyNoPasskeysBridge() { no_passkeys_bridge_.reset(); }
 
  private:
   raw_ptr<MockJniDelegate> mock_jni_delegate_;
@@ -89,7 +89,7 @@ TEST_F(NoPasskeysBottomSheetBridgeTest, IgnoreRedundantDismissCalls) {
           [this]() { no_passkeys_bridge().OnDismissed(/*env=*/nullptr); }));
   no_passkeys_bridge().Dismiss();
   no_passkeys_bridge().Dismiss();  // This should not trigger a second call!
-  destroyNoPassleysBridge();  // This also should not trigger a second call!
+  destroyNoPasskeysBridge();  // This also should not trigger a second call!
 }
 
 TEST_F(NoPasskeysBottomSheetBridgeTest, RunCallbackForOnClickUseAnotherDevice) {
@@ -115,5 +115,5 @@ TEST_F(NoPasskeysBottomSheetBridgeTest, DismissesOnDestruction) {
       /*on_click_use_another_device_callback=*/base::DoNothing());
 
   EXPECT_CALL(mock_jni_delegate(), Dismiss);
-  destroyNoPassleysBridge();
+  destroyNoPasskeysBridge();
 }

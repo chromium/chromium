@@ -327,9 +327,8 @@ void ScriptedIdleTaskController::RunIdleTask(
                             AtomicString(), true);
 
   bool cross_origin_isolated_capability =
-      GetExecutionContext()
-          ? GetExecutionContext()->CrossOriginIsolatedCapability()
-          : false;
+      GetExecutionContext() &&
+      GetExecutionContext()->CrossOriginIsolatedCapability();
   DEVTOOLS_TIMELINE_TRACE_EVENT(
       "FireIdleCallback", inspector_idle_callback_fire_event::Data,
       GetExecutionContext(), id, allotted_time.InMillisecondsF(),

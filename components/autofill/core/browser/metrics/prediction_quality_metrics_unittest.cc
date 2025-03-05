@@ -89,8 +89,7 @@ TEST_F(PredictionQualityMetricsTest, SaneMetricsWithCacheMismatch) {
 
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
     AutofillField* field = form_structure->field(i);
-    field->set_heuristic_type(GetActiveHeuristicSource(),
-                              heuristic_types[i]);
+    field->set_heuristic_type(GetActiveHeuristicSource(), heuristic_types[i]);
     field->set_server_predictions(
         {test::CreateFieldPrediction(server_types[i])});
     // ML predictions can be overridden when regexes predict a type that the ML
@@ -358,6 +357,126 @@ TEST_F(PredictionQualityMetricsTest,
   histogram_tester.ExpectTotalCount(
       "Autofill.FieldPredictionOverlap.AutocompleteAttributeAbsent.Overall."
       "AllTypes",
+      1);
+}
+
+TEST_F(PredictionQualityMetricsTest,
+       LogFieldPredictionOverlapMetrics_ActiveSourcesEmitted_Heuristics) {
+  base::HistogramTester histogram_tester;
+
+  AutofillField field;
+  field.set_possible_types({NAME_FIRST});
+  field.set_server_predictions({test::CreateFieldPrediction(NO_SERVER_DATA)});
+  field.set_heuristic_type(GetActiveHeuristicSource(), NAME_FIRST);
+  LogFieldPredictionOverlapMetrics(field);
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.FieldPredictionOverlap.AutocompleteAttributeAbsent."
+      "HeuristicsActive.AllTypes",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.FieldPredictionOverlap.AutocompleteAttributeAbsent."
+      "HeuristicsActive.NAME_FIRST",
+      1);
+}
+
+TEST_F(
+    PredictionQualityMetricsTest,
+    LogFieldPredictionOverlapMetrics_ActiveSourcesEmitted_ServerCrowdsourcing) {
+  base::HistogramTester histogram_tester;
+
+  AutofillField field;
+  field.set_possible_types({NAME_FIRST});
+  field.set_server_predictions({test::CreateFieldPrediction(NAME_FIRST)});
+  field.set_heuristic_type(GetActiveHeuristicSource(), UNKNOWN_TYPE);
+  LogFieldPredictionOverlapMetrics(field);
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.FieldPredictionOverlap.AutocompleteAttributeAbsent."
+      "ServerCrowdsourcingActive.AllTypes",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.FieldPredictionOverlap.AutocompleteAttributeAbsent."
+      "ServerCrowdsourcingActive.NAME_FIRST",
+      1);
+}
+
+TEST_F(PredictionQualityMetricsTest,
+       LogFieldPredictionOverlapMetrics_ActiveSourcesEmitted_ServerOverride) {
+  base::HistogramTester histogram_tester;
+
+  AutofillField field;
+  field.set_possible_types({NAME_FIRST});
+  field.set_server_predictions(
+      {test::CreateFieldPrediction(NAME_FIRST, /*is_override=*/true)});
+  field.set_heuristic_type(GetActiveHeuristicSource(), UNKNOWN_TYPE);
+  LogFieldPredictionOverlapMetrics(field);
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.FieldPredictionOverlap.AutocompleteAttributeAbsent."
+      "ServerOverrideActive.AllTypes",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.FieldPredictionOverlap.AutocompleteAttributeAbsent."
+      "ServerOverrideActive.NAME_FIRST",
+      1);
+}
+
+TEST_F(PredictionQualityMetricsTest,
+       LogFieldPredictionOverlapMetrics_ActiveSourcesEmitted_Autocomplete) {
+  base::HistogramTester histogram_tester;
+
+  AutofillField field;
+  field.set_possible_types({NAME_FIRST});
+  field.set_server_predictions({test::CreateFieldPrediction(NO_SERVER_DATA)});
+  field.set_heuristic_type(GetActiveHeuristicSource(), UNKNOWN_TYPE);
+  field.SetHtmlType(HtmlFieldType::kGivenName, HtmlFieldMode::kNone);
+  LogFieldPredictionOverlapMetrics(field);
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.FieldPredictionOverlap.AutocompleteAttributePresent."
+      "AutocompleteAttributeActive.AllTypes",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.FieldPredictionOverlap.AutocompleteAttributePresent."
+      "AutocompleteAttributeActive.NAME_FIRST",
+      1);
+}
+
+TEST_F(PredictionQualityMetricsTest,
+       LogFieldPredictionOverlapMetrics_ActiveSourcesEmitted_Rationalization) {
+  base::HistogramTester histogram_tester;
+
+  AutofillField field;
+  field.set_possible_types({NAME_FIRST});
+  field.SetTypeTo(NAME_FIRST, AutofillPredictionSource::kRationalization);
+  LogFieldPredictionOverlapMetrics(field);
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.FieldPredictionOverlap.AutocompleteAttributeAbsent."
+      "RationalizationActive.AllTypes",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.FieldPredictionOverlap.AutocompleteAttributeAbsent."
+      "RationalizationActive.NAME_FIRST",
+      1);
+}
+
+TEST_F(PredictionQualityMetricsTest,
+       LogFieldPredictionOverlapMetrics_ActiveSourcesEmitted_NoPrediction) {
+  base::HistogramTester histogram_tester;
+
+  AutofillField field;
+  field.set_possible_types({NAME_FIRST});
+  LogFieldPredictionOverlapMetrics(field);
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.FieldPredictionOverlap.AutocompleteAttributeAbsent."
+      "NoPredictionExists.AllTypes",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.FieldPredictionOverlap.AutocompleteAttributeAbsent."
+      "NoPredictionExists.NAME_FIRST",
       1);
 }
 

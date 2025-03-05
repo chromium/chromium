@@ -200,47 +200,66 @@ TEST(AutofillDataModelUtils, FormatDate) {
   EXPECT_EQ(FormatDate(Date(2000, 2, 1), u"NONSENSE D.M.Y"), u"NONSENSE 1.2.Y");
 }
 
-TEST(AutofillDataModelUtils, DateIsValid) {
-  EXPECT_TRUE(Date(0, 0, 0).is_valid());
-  EXPECT_TRUE(Date(2025, 1, 0).is_valid());
-  EXPECT_TRUE(Date(2025, 1, 31).is_valid());
-  EXPECT_FALSE(Date(2025, 1, 32).is_valid());
-  EXPECT_TRUE(Date(2025, 2, 28).is_valid());
-  EXPECT_FALSE(Date(2025, 2, 29).is_valid());
-  EXPECT_TRUE(Date(1900, 2, 28).is_valid());
-  EXPECT_FALSE(Date(1900, 2, 29).is_valid());
-  EXPECT_TRUE(Date(2000, 2, 29).is_valid());
-  EXPECT_FALSE(Date(2000, 2, 30).is_valid());
-  EXPECT_TRUE(Date(2024, 2, 29).is_valid());
-  EXPECT_FALSE(Date(2024, 2, 30).is_valid());
-  EXPECT_TRUE(Date(2025, 3, 31).is_valid());
-  EXPECT_FALSE(Date(2025, 3, 32).is_valid());
-  EXPECT_TRUE(Date(2025, 4, 30).is_valid());
-  EXPECT_FALSE(Date(2025, 4, 31).is_valid());
-  EXPECT_TRUE(Date(2025, 5, 31).is_valid());
-  EXPECT_FALSE(Date(2025, 5, 32).is_valid());
-  EXPECT_TRUE(Date(2025, 6, 30).is_valid());
-  EXPECT_FALSE(Date(2025, 6, 31).is_valid());
-  EXPECT_TRUE(Date(2025, 7, 31).is_valid());
-  EXPECT_FALSE(Date(2025, 7, 32).is_valid());
-  EXPECT_TRUE(Date(2025, 8, 31).is_valid());
-  EXPECT_FALSE(Date(2025, 8, 32).is_valid());
-  EXPECT_TRUE(Date(2025, 9, 30).is_valid());
-  EXPECT_FALSE(Date(2025, 9, 31).is_valid());
-  EXPECT_TRUE(Date(2025, 10, 31).is_valid());
-  EXPECT_FALSE(Date(2025, 10, 32).is_valid());
-  EXPECT_TRUE(Date(2025, 11, 30).is_valid());
-  EXPECT_FALSE(Date(2025, 11, 31).is_valid());
-  EXPECT_TRUE(Date(2025, 12, 31).is_valid());
-  EXPECT_FALSE(Date(2025, 12, 32).is_valid());
-  EXPECT_FALSE(Date(2025, 13, 1).is_valid());
-}
+TEST(AutofillDataModelUtils, IsValidDateForFormat) {
+  // Zero-values not requested by the format are OK.
+  EXPECT_TRUE(IsValidDateForFormat(Date(2025, 12, 16), u"YYYY-MM-DD"));
+  EXPECT_TRUE(IsValidDateForFormat(Date(2025, 12, 0), u"YYYY-MM"));
+  EXPECT_TRUE(IsValidDateForFormat(Date(2025, 0, 16), u"YYYY-DD"));
+  EXPECT_TRUE(IsValidDateForFormat(Date(0, 12, 16), u"MM-DD"));
+  // Same as above with a different format.
+  EXPECT_TRUE(IsValidDateForFormat(Date(2025, 12, 16), u"DD/MM/YYYY"));
+  EXPECT_TRUE(IsValidDateForFormat(Date(2025, 12, 0), u"MM/YYYY"));
+  EXPECT_TRUE(IsValidDateForFormat(Date(2025, 0, 16), u"DD/YYYY"));
+  EXPECT_TRUE(IsValidDateForFormat(Date(0, 12, 16), u"DD/MM"));
 
-TEST(AutofillDataModelUtils, DateIsComplete) {
-  EXPECT_TRUE(Date(2025, 12, 31).is_complete());
-  EXPECT_FALSE(Date(2025, 12, 0).is_complete());
-  EXPECT_FALSE(Date(2025, 0, 31).is_complete());
-  EXPECT_FALSE(Date(0, 12, 31).is_complete());
+  // Zero-values requested by the format aren't formattable.
+  EXPECT_FALSE(IsValidDateForFormat(Date(0, 12, 16), u"YYYY-MM-DD"));
+  EXPECT_FALSE(IsValidDateForFormat(Date(2025, 0, 16), u"YYYY-MM-DD"));
+  EXPECT_FALSE(IsValidDateForFormat(Date(2025, 12, 0), u"YYYY-MM-DD"));
+  // Same as above with a different format.
+  EXPECT_FALSE(IsValidDateForFormat(Date(0, 12, 16), u"DD/MM/YYYY"));
+  EXPECT_FALSE(IsValidDateForFormat(Date(2025, 0, 16), u"DD/MM/YYYY"));
+  EXPECT_FALSE(IsValidDateForFormat(Date(2025, 12, 0), u"DD/MM/YYYY"));
+
+  // Maximum years.
+  EXPECT_TRUE(IsValidDateForFormat(Date(9999, 12, 16), u"YYYY-MM-DD"));
+  EXPECT_FALSE(IsValidDateForFormat(Date(10000, 12, 16), u"YYYY-MM-DD"));
+
+  // Maximum months.
+  EXPECT_TRUE(IsValidDateForFormat(Date(2025, 12, 20), u"YYYY-MM-DD"));
+  EXPECT_FALSE(IsValidDateForFormat(Date(2025, 13, 20), u"YYYY-MM-DD"));
+
+  // Maximum days.
+  EXPECT_TRUE(IsValidDateForFormat(Date(2025, 12, 31), u"YYYY-MM-DD"));
+  EXPECT_FALSE(IsValidDateForFormat(Date(2025, 1, 32), u"YYYY-MM-DD"));
+  EXPECT_TRUE(IsValidDateForFormat(Date(2025, 2, 28), u"YYYY-MM-DD"));
+  EXPECT_FALSE(IsValidDateForFormat(Date(2025, 2, 29), u"YYYY-MM-DD"));
+  EXPECT_TRUE(IsValidDateForFormat(Date(1900, 2, 28), u"YYYY-MM-DD"));
+  EXPECT_FALSE(IsValidDateForFormat(Date(1900, 2, 29), u"YYYY-MM-DD"));
+  EXPECT_TRUE(IsValidDateForFormat(Date(2000, 2, 29), u"YYYY-MM-DD"));
+  EXPECT_FALSE(IsValidDateForFormat(Date(2000, 2, 30), u"YYYY-MM-DD"));
+  EXPECT_TRUE(IsValidDateForFormat(Date(2024, 2, 29), u"YYYY-MM-DD"));
+  EXPECT_FALSE(IsValidDateForFormat(Date(2024, 2, 30), u"YYYY-MM-DD"));
+  EXPECT_TRUE(IsValidDateForFormat(Date(2025, 3, 31), u"YYYY-MM-DD"));
+  EXPECT_FALSE(IsValidDateForFormat(Date(2025, 3, 32), u"YYYY-MM-DD"));
+  EXPECT_TRUE(IsValidDateForFormat(Date(2025, 4, 30), u"YYYY-MM-DD"));
+  EXPECT_FALSE(IsValidDateForFormat(Date(2025, 4, 31), u"YYYY-MM-DD"));
+  EXPECT_TRUE(IsValidDateForFormat(Date(2025, 5, 31), u"YYYY-MM-DD"));
+  EXPECT_FALSE(IsValidDateForFormat(Date(2025, 5, 32), u"YYYY-MM-DD"));
+  EXPECT_TRUE(IsValidDateForFormat(Date(2025, 6, 30), u"YYYY-MM-DD"));
+  EXPECT_FALSE(IsValidDateForFormat(Date(2025, 6, 31), u"YYYY-MM-DD"));
+  EXPECT_TRUE(IsValidDateForFormat(Date(2025, 7, 31), u"YYYY-MM-DD"));
+  EXPECT_FALSE(IsValidDateForFormat(Date(2025, 7, 32), u"YYYY-MM-DD"));
+  EXPECT_TRUE(IsValidDateForFormat(Date(2025, 8, 31), u"YYYY-MM-DD"));
+  EXPECT_FALSE(IsValidDateForFormat(Date(2025, 8, 32), u"YYYY-MM-DD"));
+  EXPECT_TRUE(IsValidDateForFormat(Date(2025, 9, 30), u"YYYY-MM-DD"));
+  EXPECT_FALSE(IsValidDateForFormat(Date(2025, 9, 31), u"YYYY-MM-DD"));
+  EXPECT_TRUE(IsValidDateForFormat(Date(2025, 10, 31), u"YYYY-MM-DD"));
+  EXPECT_FALSE(IsValidDateForFormat(Date(2025, 10, 32), u"YYYY-MM-DD"));
+  EXPECT_TRUE(IsValidDateForFormat(Date(2025, 11, 30), u"YYYY-MM-DD"));
+  EXPECT_FALSE(IsValidDateForFormat(Date(2025, 11, 31), u"YYYY-MM-DD"));
+  EXPECT_TRUE(IsValidDateForFormat(Date(2025, 12, 31), u"YYYY-MM-DD"));
+  EXPECT_FALSE(IsValidDateForFormat(Date(2025, 12, 32), u"YYYY-MM-DD"));
 }
 
 }  // namespace

@@ -4645,7 +4645,7 @@ bool LayoutObject::CanUpdateSelectionOnRootLineBoxes() const {
     return false;
 
   const LayoutBlock* containing_block = ContainingBlock();
-  return containing_block ? !containing_block->NeedsLayout() : false;
+  return containing_block && !containing_block->NeedsLayout();
 }
 
 SVGLayoutResult LayoutObject::UpdateSVGLayout(const SVGLayoutInfo&) {

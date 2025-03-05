@@ -51,6 +51,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/logging/log_macros.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/autofill_ai/core/browser/autofill_ai_client.h"
 #include "components/autofill_ai/core/browser/autofill_ai_features.h"
@@ -246,7 +247,10 @@ std::vector<std::string> GetAttributeStrikeKeys(const EntityInstance& entity,
       string_pieces.emplace_back(std::move(key));
       string_pieces.emplace_back(std::move(value));
     }
-    return base::JoinString(string_pieces, ";");
+    // Hash the result to avoid storing potentially sensitive data unencrypted
+    // on the disk.
+    return base::NumberToString(
+        autofill::StrToHash64Bit(base::JoinString(string_pieces, ";")));
   };
 
   return base::ToVector(entity.type().strike_keys(), value_for_strike_key);

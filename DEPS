@@ -285,11 +285,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '7e4323f72c9d381f608bfe467af06a2ed83923d7',
+  'skia_revision': '4cf9f0b77d4161487c7b88645faac1f5c303478e',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '60b90085ec7394e7806e3b20fda3707560dabd51',
+  'v8_revision': 'f4d18a730a5c3c4662a5daec7830acc5751cb8fe',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -361,7 +361,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
-  'crossbench_revision': 'e1e2e0403c30da1b6e3aeffd34ec33e314db94eb',
+  'crossbench_revision': '058f132365f22406d1a87741ab13c1a0e3675082',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libFuzzer
   # and whatever else without interference from each other.
@@ -377,7 +377,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'b30f3b25207146392af49a24746173a4c85ccfd3',
+  'devtools_frontend_revision': '4ae5b582b2388ef97a88b305db5e7d097cf56f97',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -401,7 +401,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': '15d27d3399af09bbe8092d1ba7ba4d2ee866e8fc',
+  'dawn_revision': '9bc4cf50aca88debc1f2e4c4762f09773f6ee6e7',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -508,7 +508,7 @@ vars = {
   'libcxx_revision':       'ac66645101e6aa55063c2a06c19865409b2ec7d1',
 
   # GN CIPD package version.
-  'gn_version': 'git_revision:eabc4de478e68adce5a645261aadbb00f2994f14',
+  'gn_version': 'git_revision:dae6a4496ecbe141b76c67ce5f1996711a3f87cd',
 
   # ninja CIPD package.
   'ninja_package': 'infra/3pp/tools/ninja/',
@@ -1128,7 +1128,7 @@ deps = {
   },
 
   'src/chrome/release_scripts': {
-      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + 'aad4bf8afbb3818173540476acfb185529bd8a4c',
+      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '70d9a3e9d8365c2f71969f2ff733e53ea48d5a3c',
       'condition': 'checkout_chrome_release_scripts',
   },
 
@@ -1457,7 +1457,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '4e6165f5052c19f633e424a7a9fd26539aec6cb5',
+    '8fce99816ee45f3fcc6de94df88780e2b358f352',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2627,7 +2627,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/r8',
-              'version': 'w5KUJIdByRgBQ6coQA_wTY1rmuuZ8IMvkfVpctohUIkC',
+              'version': 'XmGGyZBHve7V9GyuIoNw9bCzu7jot4K8f3QwfoJ7_MYC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -2818,7 +2818,7 @@ deps = {
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + 'eec79a071a1a82b8769d7496d7dea21fef013c5a',
+    Var('webrtc_git') + '/src.git' + '@' + '683a98052bcc64881aa4b3a214ff11eeaea091bf',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -2992,7 +2992,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/projector_app/app',
-        'version': 'niP3TVuYUdEd2XOgrtvt5nCKTnElsm4bwkEYlmnmVyIC',
+        'version': 'pXlP_Nd_0GFnwq4iZyycDWzOyqwvNuT8lTRMv44fYsoC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4533,7 +4533,7 @@ deps = {
 
   'src/components/test/data/autofill/heuristics-json/internal': {
       'url': Var('chrome_git') + '/chrome/test/autofill/structured_forms.git' + '@' +
-        '3a1c8e8b325874e50ea9fcbf9e3f5acaba317ee4',
+        '1b1e7c46da50f123642fa78e557019779a583bfb',
       'condition': 'checkout_chromium_autofill_test_dependencies',
   },
 
@@ -4563,7 +4563,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        'a813905134a500290b0c455d57237471115f159c',
+        '839d041ef553c34d8b32803b7caced547d15207e',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

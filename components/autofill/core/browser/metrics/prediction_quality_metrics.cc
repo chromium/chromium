@@ -907,16 +907,27 @@ void LogFieldPredictionOverlapMetrics(const AutofillField& field) {
                                       autocomplete_agrees);
 
   std::string_view field_type_str = FieldTypeToStringView(submitted_field_type);
+  std::string prediction_source =
+      field.PredictionSource().has_value()
+          ? base::StrCat({AutofillPredictionSourceToStringView(
+                              *field.PredictionSource()),
+                          "Active."})
+          : "NoPredictionExists.";
 
-  // TODO(crbug.com/376432267): Add per active source histogram as well.
+  // Autocomplete-aggreated histograms:
   {
-    // Autocomplete-aggreated histograms:
     std::string prefix =
         base::StrCat({kFieldPredictionOverlapPrefix, kAutocompleteAggregate});
+    // Sources aggregated:
     base::UmaHistogramEnumeration(
         base::StrCat({prefix, kSourcesOverall, kAllTypes}), sample);
     base::UmaHistogramEnumeration(
         base::StrCat({prefix, kSourcesOverall, field_type_str}), sample);
+    // Source-specific:
+    base::UmaHistogramEnumeration(
+        base::StrCat({prefix, prediction_source, kAllTypes}), sample);
+    base::UmaHistogramEnumeration(
+        base::StrCat({prefix, prediction_source, field_type_str}), sample);
   }
 
   // Autocomplete-specific histograms:
@@ -924,10 +935,16 @@ void LogFieldPredictionOverlapMetrics(const AutofillField& field) {
     std::string prefix = base::StrCat(
         {kFieldPredictionOverlapPrefix,
          autocomplete_present ? kAutocompletePresent : kAutocompleteAbsent});
+    // Sources aggregated:
     base::UmaHistogramEnumeration(
         base::StrCat({prefix, kSourcesOverall, kAllTypes}), sample);
     base::UmaHistogramEnumeration(
         base::StrCat({prefix, kSourcesOverall, field_type_str}), sample);
+    // Source-specific:
+    base::UmaHistogramEnumeration(
+        base::StrCat({prefix, prediction_source, kAllTypes}), sample);
+    base::UmaHistogramEnumeration(
+        base::StrCat({prefix, prediction_source, field_type_str}), sample);
   }
 }
 

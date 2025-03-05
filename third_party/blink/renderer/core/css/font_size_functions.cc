@@ -213,7 +213,7 @@ float FontSizeFunctions::FontSizeForKeyword(const Document* document,
   DCHECK_GE(keyword, 1u);
   DCHECK_LE(keyword, 8u);
   const Settings* settings = document ? document->GetSettings() : nullptr;
-  bool quirks_mode = document ? document->InQuirksMode() : false;
+  bool quirks_mode = document && document->InQuirksMode();
 
   int medium_size = 0;
   int row = RowFromMediumFontSizeInRange(settings, quirks_mode, is_monospace,

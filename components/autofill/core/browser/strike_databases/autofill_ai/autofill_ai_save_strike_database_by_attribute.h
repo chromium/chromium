@@ -11,7 +11,7 @@
 
 namespace autofill {
 
-// A strike database for AutofillAI save prompts that is keyed by
+// A strike database for AutofillAI save prompts that is keyed by a hash of
 // (entity_type;attribute_type_1;attribute_1_value;attribute_type_2;...)
 // for attribute tuples that are listed as strike keys in the entity schema.
 struct AutofillAiSaveStrikeDatabaseByAttributeTraits {

@@ -481,7 +481,7 @@ void ElementRareDataVector::DecrementImplicitlyAnchoredElementCount() {
 bool ElementRareDataVector::HasImplicitlyAnchoredElement() const {
   wtf_size_t* anchored_element_count =
       GetWrappedField<wtf_size_t>(FieldId::kImplicitlyAnchoredElementCount);
-  return anchored_element_count ? *anchored_element_count : false;
+  return anchored_element_count && *anchored_element_count;
 }
 
 void ElementRareDataVector::Trace(blink::Visitor* visitor) const {

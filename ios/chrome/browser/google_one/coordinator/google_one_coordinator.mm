@@ -23,6 +23,11 @@
   // UI blocker used while the there is only one buying flow at the time on
   // any window.
   std::unique_ptr<ScopedUIBlocker> _UIBlocker;
+  // Whether the internal controller has been stopped.
+  BOOL _controllerStopped;
+  // Whether this coordinator has been stopped, either from the controller or
+  // by an external source.
+  BOOL _stopped;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -58,13 +63,12 @@
 }
 
 - (void)stop {
-  if (self.baseViewController.presentedViewController &&
-      !self.baseViewController.presentedViewController.beingDismissed) {
-    // The VC should already be dismissed by the GoogleOne flow.
-    // If it is not the case here, it means that the VC is stopped externally.
-    // In that case, dismiss synchronously.
-    // TODO(crbug.com/388443644): Report interruption.
-    [self.baseViewController dismissViewControllerAnimated:NO completion:nil];
+  if (_stopped) {
+    return;
+  }
+  _stopped = YES;
+  if (!_controllerStopped) {
+    [_controller stop];
   }
   _UIBlocker.reset();
   [super stop];
@@ -90,9 +94,12 @@
   if (!browser) {
     return;
   }
+  _controllerStopped = YES;
   // TODO(crbug.com/388443644): handle error.
-  [HandlerForProtocol(browser->GetCommandDispatcher(), GoogleOneCommands)
-      hideGoogleOne];
+  if (!_stopped) {
+    [HandlerForProtocol(browser->GetCommandDispatcher(), GoogleOneCommands)
+        hideGoogleOne];
+  }
 }
 
 @end

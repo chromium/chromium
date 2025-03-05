@@ -2492,15 +2492,6 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SIGN_OUT_UNSAVED_DATA_PRIMARY_BUTTON" desc="Button title of a dialog shown to users when they sign out of Chrome but Chrome hasn't synced some data yet, which is parmanently deleted if the user proceeds by pressing this button">
         Delete and sign out
       </message>
-      <message name="IDS_SIGN_IN_GETTING_ACCOUNT_MANAGEMENT_POLICY" desc="Title of progress bar dialog for getting management policy">
-        Contacting Google. This may take a minute…
-      </message>
-      <message name="IDS_SIGN_IN_TIMEOUT_TITLE" desc="Title of sign in timeout alert dialog">
-        Can’t sign in
-      </message>
-      <message name="IDS_SIGN_IN_TIMEOUT_MESSAGE" desc="Message of sign in timeout alert dialog">
-        Google took too long to respond
-      </message>
 
       <!-- Sync strings -->
       <message name="IDS_SIGN_IN_MANAGED_ACCOUNT" desc="Title for prompts to sign in to managed accounts">
@@ -2800,11 +2791,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_PASSWORD_SYNC_ERROR_SUMMARY" desc="Short message shown in various UIs (e.g. Sync Error Card body) to inform that passwords can't be synced (due to missing trusted vault keys). [CHAR_LIMIT=32]">
         Password sync isn't working
       </message>
-      <message name="IDS_PASSWORD_SYNC_TRUSTED_VAULT_ERROR_TITLE_1" desc="Short message shown in various UIs (e.g. Sync Error Card body) to inform that passwords stored in the user's Google Account can't be synced to the device (due to missing trusted vault keys). The message prompts the user to fix this issue.">
-        Get access to all your passwords
-      </message>
-      <message name="IDS_PASSWORD_SYNC_TRUSTED_VAULT_ERROR_TITLE_2" desc="Short message shown in various UIs (e.g. Sync Error Card body) to inform that passwords stored in the user's Google Account can't be synced to the device (due to missing trusted vault keys).">
-        Some of your passwords aren’t available on this device
+      <message name="IDS_PASSWORD_SYNC_TRUSTED_VAULT_ERROR_TITLE" desc="Short message shown in various UIs (e.g. Sync Error Card body) to inform that passwords stored in the user's Google Account can't be synced to the device (due to missing trusted vault keys). The message prompts the user to fix this issue.">
+        Get all your passwords
       </message>
       <message name="IDS_SYNC_SETTINGS_NOT_CONFIRMED_TITLE" desc="Title of the error message shown when sync setup was not complete. [CHAR_LIMIT=60]">
         Initial sync setup not finished
@@ -2827,11 +2815,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_HINT_SYNC_RETRIEVE_KEYS_FOR_PASSWORDS" desc="Hint message to resolve sync encryption error, required to resume syncing passwords.">
         To sync your passwords, verify it's you
       </message>
-      <message name="IDS_PASSWORD_SYNC_TRUSTED_VAULT_ERROR_HINT_1" desc="Hint message that explains a sync error: Passwords stored in the user's Google Account can't be synced to the device (due to missing trusted vault keys).">
-         Verify it’s you to make sure you can access all your passwords on this device
-      </message>
-      <message name="IDS_PASSWORD_SYNC_TRUSTED_VAULT_ERROR_HINT_2" desc="Hint message to resolve sync encryption error, required to resume syncing passwords.">
-        Verify it’s you to access passwords in your Google Account
+      <message name="IDS_PASSWORD_SYNC_TRUSTED_VAULT_ERROR_HINT" desc="Hint message that explains a sync error: Passwords stored in the user's Google Account can't be synced to the device (due to missing trusted vault keys).">
+         Verify it’s you to get all your passwords on this device
       </message>
       <message name="IDS_HINT_PASSPHRASE_REQUIRED" desc="Hint message to resolve passphrase required error.">
         To start sync, enter your passphrase
@@ -2922,7 +2907,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_IDENTITY_ERROR_CARD_BUTTON_VERIFY" desc="Button label for all errors requiring re-auth (auth error, degreaded recoverability, encryption error). Also used for error message and notification title.">
         Verify it’s you
       </message>
-
+      <message name="IDS_IDENTITY_ERROR_CARD_BUTTON_OKAY" desc="Button label for the message shown in the Sync Error Card (due to missing trusted vault keys) for confirming that a user wants to get all their passwords on their device.">
+        Okay
+      </message>
       <!-- Identity error message and notification strings -->
       <message name="IDS_IDENTITY_ERROR_MESSAGE_BODY" desc="Error message/notification to resolve passphrase required error, sync encryption error, auth error, outdated client error.">
         Keep using the Chrome data in your Google Account
@@ -3710,9 +3697,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
 
       <!-- Account Signin Strings -->
-      <message name="IDS_SIGNIN_ADD_ACCOUNT" desc="Text for adding another Google Account">
-        Add account
-      </message>
       <message name="IDS_SIGNIN_ADD_ACCOUNT_TO_DEVICE" desc="Text for adding another Google Account to device in the web sign-in flow and account picker dialog, users will be asked to add an account to his device when this text is tapped">
         Add account to device
       </message>
@@ -3758,23 +3742,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
 
       <!-- Strings for Streamlined Signin and Unified Consent. -->
-      <message name="IDS_SIGNIN_TITLE" desc="Title for the screen that asks users to sign-in and turn on Sync. [CHAR_LIMIT=27]">
-        Turn on sync?
-      </message>
       <message name="IDS_HISTORY_SYNC_TITLE" desc="Title of a page that asks users to start syncing their tabs and browsing history, so they can get back to sites they visited more quickly without having to type them, for example by seeing these sites suggested in the Omnibox.">
         Save time, type less
       </message>
       <message name="IDS_HISTORY_SYNC_SUBTITLE" desc="Text of a page that asks users to start syncing their tabs and browsing history, so they can get back to sites they visited more quickly without having to type them, for example by seeing these sites suggested in the Omnibox.">
         To quickly get back to sites you’ve visited, sync your tabs and history
-      </message>
-      <message name="IDS_SIGNIN_SYNC_TITLE_WITHOUT_PASSWORDS" desc="Same as IDS_SIGNIN_SYNC_TITLE but without mentioning passwords. Title of Sync feature for the screen that asks users to sign-in and turn on Sync.">
-        Sync your bookmarks, history &amp; more on all devices
-      </message>
-      <message name="IDS_SIGNIN_SYNC_DESCRIPTION" desc="Description of Sync feature for the screen that asks users to sign-in and turn on Sync.">
-        Google may use your history to personalize Search and other Google services
-      </message>
-      <message name="IDS_SIGNIN_DETAILS_DESCRIPTION" desc="Message with a link to customize Sync settings. Shown on the screen that asks the user to turn on Sync.">
-        You can always choose what to sync in <ph name="BEGIN_LINK1">&lt;LINK1&gt;</ph>settings<ph name="END_LINK1">&lt;/LINK1&gt;</ph>.
       </message>
       <message name="IDS_HISTORY_SYNC_FOOTER_WITH_EMAIL" desc="Small text above the main button on a page that asks users to start syncing their tabs and browsing history. The first sentence reminds the user that they're signed in with a certain account. The second sentence is meant to reassure users that they can always change their mind and opt out again. The third sentence explains how history data may be used to personalise the user's experience in other services. The tone should be friendly and reassuring.">
         You are signed in as <ph name="EMAIL">%1$s<ex>jane.doe@example.com</ex></ph>. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
@@ -3786,12 +3758,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Yes, I’m in
       </message>
       <message name="IDS_HISTORY_SYNC_SECONDARY_ACTION" desc="Text for the decline button on the history sync screen that asks users to start syncing their tabs and browsing history. By clicking this button users decline to turn on history sync and dismiss the screen. [CHAR_LIMIT=20]">
-        No thanks
-      </message>
-      <message name="IDS_SIGNIN_ACCEPT_BUTTON" desc="Text for the confirmation button in the sign-in screen. By clicking this button users signs in and turns on Sync. [CHAR_LIMIT=20]">
-        Yes, I'm in
-      </message>
-      <message name="IDS_SIGNIN_SYNC_DECLINE_BUTTON" desc="Text for the decline button in the sign-in and sync screen. By clicking this button the user refuses to sign in and turn on Sync. [CHAR_LIMIT=20]" meaning= "This text means that the user refuses to sign in and turn on sync by clicking on this button.">
         No thanks
       </message>
       <message name="IDS_SIGNIN_ACCOUNT_PICKER_DIALOG_TITLE" desc="The title for the dialog that shows the list of accounts on the device and asks the user to select one of these accounts. [CHAR_LIMIT=27]">

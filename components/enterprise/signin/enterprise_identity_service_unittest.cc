@@ -10,10 +10,20 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/signin/public/identity_manager/scope_set.h"
+#include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace enterprise {
+
+namespace {
+
+constexpr char kAccessToken1[] = "access_token1";
+constexpr char kAccessToken2[] = "access_token2";
+
+}  // namespace
 
 class EnterpriseIdentityServiceTest : public testing::Test {
  protected:
@@ -153,6 +163,81 @@ TEST_F(EnterpriseIdentityServiceTest,
   ASSERT_EQ(managed_accounts.size(), 2U);
   ASSERT_THAT(managed_accounts, testing::UnorderedElementsAre(
                                     google_account, async_enterprise_account));
+}
+
+TEST_F(EnterpriseIdentityServiceTest,
+       GetManagedAccountsAccessTokens_SingleManagedUser_Success) {
+  AccountInfo account =
+      identity_env_.MakeAccountAvailable("account@enterprise.com");
+  identity_env_.SimulateSuccessfulFetchOfAccountInfo(
+      account.account_id, account.email, account.gaia,
+      /*hosted_domain=*/"enterprise.com", "Full Name", "Given Name", "en-US",
+      /*picture_url=*/"");
+
+  auto service = CreateService();
+  base::test::TestFuture<std::vector<std::string>> test_future;
+  service->GetManagedAccountsAccessTokens(test_future.GetCallback());
+
+  identity_env_
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
+          kAccessToken1, base::Time::Max(), /*id_token=*/std::string(),
+          signin::ScopeSet{GaiaConstants::kDeviceManagementServiceOAuth});
+
+  EXPECT_THAT(test_future.Get(), testing::ElementsAre(kAccessToken1));
+}
+
+TEST_F(EnterpriseIdentityServiceTest,
+       GetManagedAccountsAccessTokens_SingleManagedUser_Error) {
+  AccountInfo account =
+      identity_env_.MakeAccountAvailable("account@enterprise.com");
+  identity_env_.SimulateSuccessfulFetchOfAccountInfo(
+      account.account_id, account.email, account.gaia,
+      /*hosted_domain=*/"enterprise.com", "Full Name", "Given Name", "en-US",
+      /*picture_url=*/"");
+
+  auto service = CreateService();
+  base::test::TestFuture<std::vector<std::string>> test_future;
+  service->GetManagedAccountsAccessTokens(test_future.GetCallback());
+
+  identity_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
+
+  EXPECT_TRUE(test_future.Get().empty());
+}
+
+TEST_F(EnterpriseIdentityServiceTest,
+       GetManagedAccountsAccessTokens_MixedUsers) {
+  AccountInfo google_account =
+      identity_env_.MakeAccountAvailable("account@google.com");
+  AccountInfo async_enterprise_account =
+      identity_env_.MakeAccountAvailable("account@enterprise.com");
+  AccountInfo gmail_account =
+      identity_env_.MakeAccountAvailable("account@gmail.com");
+  AccountInfo async_consumer_account =
+      identity_env_.MakeAccountAvailable("account@consumer.com");
+
+  identity_env_.SimulateSuccessfulFetchOfAccountInfo(
+      async_enterprise_account.account_id, async_enterprise_account.email,
+      async_enterprise_account.gaia,
+      /*hosted_domain=*/"enterprise.com", "Full Name", "Given Name", "en-US",
+      /*picture_url=*/"");
+  identity_env_.SimulateSuccessfulFetchOfAccountInfo(
+      async_consumer_account.account_id, async_consumer_account.email,
+      async_consumer_account.gaia,
+      /*hosted_domain=*/"", "Full Name", "Given Name", "en-US",
+      /*picture_url=*/"");
+
+  auto service = CreateService();
+  base::test::TestFuture<std::vector<std::string>> test_future;
+  service->GetManagedAccountsAccessTokens(test_future.GetCallback());
+
+  identity_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      google_account.account_id, kAccessToken1, base::Time::Max());
+  identity_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      async_enterprise_account.account_id, kAccessToken2, base::Time::Max());
+
+  EXPECT_THAT(test_future.Get(),
+              testing::UnorderedElementsAre(kAccessToken1, kAccessToken2));
 }
 
 }  // namespace enterprise

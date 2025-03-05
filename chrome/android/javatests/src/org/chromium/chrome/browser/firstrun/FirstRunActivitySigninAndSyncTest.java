@@ -18,7 +18,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -28,20 +27,13 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.text.Spanned;
-import android.text.style.ClickableSpan;
-import android.view.View;
-import android.widget.TextView;
 
 import androidx.annotation.IdRes;
-import androidx.test.espresso.UiController;
-import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
-import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -56,7 +48,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -77,7 +68,6 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SyncButtonClicked;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
@@ -211,32 +201,6 @@ public class FirstRunActivitySigninAndSyncTest {
 
         // History sync opt-in screen should be dismissed when the primary account is cleared
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
-    }
-
-    @Test
-    @MediumTest
-    // ChildAccountStatusSupplier uses AppRestrictions to quickly detect non-supervised cases,
-    // adding at least one policy via AppRestrictions prevents that.
-    @Policies.Add(@Policies.Item(key = "ForceSafeSearch", string = "true"))
-    @DisabledTest(message = "https://crbug.com/1382901")
-    public void continueButtonClickShowsSyncConsentPageWithChildAccount() {
-        mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
-        launchFirstRunActivityAndWaitForNativeInitialization();
-        waitUntilCurrentPageIs(SigninFirstRunFragment.class);
-        onView(withId(R.id.signin_fre_selected_account)).check(matches(isDisplayed()));
-
-        // SigninChecker should have been created and have signed the user in.
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    return IdentityServicesProvider.get()
-                            .getSigninManager(ProfileManager.getLastUsedRegularProfile())
-                            .getIdentityManager()
-                            .hasPrimaryAccount(ConsentLevel.SIGNIN);
-                });
-
-        clickButton(R.id.signin_fre_continue_button);
-
-        waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
     }
 
     @Test
@@ -453,28 +417,6 @@ public class FirstRunActivitySigninAndSyncTest {
     // ChildAccountStatusSupplier uses AppRestrictions to quickly detect non-supervised cases,
     // adding at least one policy via AppRestrictions prevents that.
     @Policies.Add(@Policies.Item(key = "ForceSafeSearch", string = "true"))
-    @DisabledTest(message = "https://crbug.com/1392133")
-    public void acceptingSyncForChildAccountEndsFreAndEnablesSync() {
-        when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
-        mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
-        launchFirstRunActivityAndWaitForNativeInitialization();
-        waitUntilCurrentPageIs(SigninFirstRunFragment.class);
-        onView(withId(R.id.signin_fre_selected_account)).check(matches(isDisplayed()));
-        clickButton(R.id.signin_fre_continue_button);
-        completeAutoDeviceLockIfNeeded();
-        waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
-
-        clickButton(R.id.button_primary);
-
-        ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
-        SyncTestUtil.waitForSyncFeatureEnabled();
-    }
-
-    @Test
-    @MediumTest
-    // ChildAccountStatusSupplier uses AppRestrictions to quickly detect non-supervised cases,
-    // adding at least one policy via AppRestrictions prevents that.
-    @Policies.Add(@Policies.Item(key = "ForceSafeSearch", string = "true"))
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void refusingHistorySyncForChildAccountEndsFreAndDoesNotEnableHistorySync() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
@@ -497,55 +439,6 @@ public class FirstRunActivitySigninAndSyncTest {
                             .hasPrimaryAccount(ConsentLevel.SIGNIN);
                 });
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
-    }
-
-    @Test
-    @MediumTest
-    // ChildAccountStatusSupplier uses AppRestrictions to quickly detect non-supervised cases,
-    // adding at least one policy via AppRestrictions prevents that.
-    @Policies.Add(@Policies.Item(key = "ForceSafeSearch", string = "true"))
-    @DisabledTest(message = "https://crbug.com/1459076")
-    public void clickingSettingsThenCancelForChildAccountDoesNotEnableSync() {
-        when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
-        mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
-        launchFirstRunActivityAndWaitForNativeInitialization();
-        waitUntilCurrentPageIs(SigninFirstRunFragment.class);
-        clickButton(R.id.signin_fre_continue_button);
-        completeAutoDeviceLockIfNeeded();
-        waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
-
-        onView(withId(R.id.signin_details_description)).perform(new LinkClick());
-
-        ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
-
-        // Sync consent is granted but sync-the-feature won't become enabled until the user clicks
-        // the "Confirm" button in settings.
-        SyncTestUtil.waitForSyncConsent();
-
-        // Check that the sync consent has been cleared (but the user is still signed in), and that
-        // the sync service state changes have been undone.
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    return IdentityServicesProvider.get()
-                            .getSigninManager(ProfileManager.getLastUsedRegularProfile())
-                            .getIdentityManager()
-                            .hasPrimaryAccount(ConsentLevel.SYNC);
-                });
-
-        // Click the cancel button to exit the activity.
-        onView(withId(R.id.cancel_button)).perform(click());
-
-        // Check that the sync consent has been cleared (but the user is still signed in), and that
-        // the sync service state changes have been undone.
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    IdentityManager identityManager =
-                            IdentityServicesProvider.get()
-                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile())
-                                    .getIdentityManager();
-                    return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
-                            && !identityManager.hasPrimaryAccount(ConsentLevel.SYNC);
-                });
     }
 
     private void clickButton(@IdRes int buttonId) {
@@ -597,27 +490,5 @@ public class FirstRunActivitySigninAndSyncTest {
 
     private boolean isAutomotive() {
         return BuildInfo.getInstance().isAutomotive;
-    }
-
-    private static class LinkClick implements ViewAction {
-        @Override
-        public Matcher<View> getConstraints() {
-            return Matchers.instanceOf(TextView.class);
-        }
-
-        @Override
-        public String getDescription() {
-            return "Clicks on the one and only clickable link in the view.";
-        }
-
-        @Override
-        public void perform(UiController uiController, View view) {
-            final TextView textView = (TextView) view;
-            final Spanned spannedString = (Spanned) textView.getText();
-            final ClickableSpan[] spans =
-                    spannedString.getSpans(0, spannedString.length(), ClickableSpan.class);
-            assertEquals("There should be only one clickable link.", 1, spans.length);
-            spans[0].onClick(view);
-        }
     }
 }

@@ -70,10 +70,9 @@ std::optional<PermissionsPolicyBlockLocator> TracePermissionsPolicyBlockSource(
   bool allowed_by_current_frame = allowlist.Contains(
       current_frame->GetSecurityContext()->GetSecurityOrigin()->ToUrlOrigin());
   bool allowed_by_child_frame =
-      child_frame ? allowlist.Contains(child_frame->GetSecurityContext()
-                                           ->GetSecurityOrigin()
-                                           ->ToUrlOrigin())
-                  : true;
+      !child_frame || allowlist.Contains(child_frame->GetSecurityContext()
+                                             ->GetSecurityOrigin()
+                                             ->ToUrlOrigin());
 
   if (!allowed_by_current_frame || !allowed_by_child_frame) {
     // Feature disabled by allowlist, i.e. value in HTTP header.

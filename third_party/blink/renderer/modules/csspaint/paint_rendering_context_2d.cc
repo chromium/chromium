@@ -122,9 +122,9 @@ DOMMatrix* PaintRenderingContext2D::getTransform() {
 // of the canvas happen, we must account for the effective_zoom_ such that the
 // recording canvas would have the correct behavior.
 //
-// The BaseRenderingContext2D::setTransform calls resetTransform, so integrating
-// the effective_zoom_ in here instead of setTransform, to avoid integrating it
-// twice if we have resetTransform and setTransform API calls.
+// The BaseRenderingContext2D::setTransform calls resetTransform, so
+// integrating the effective_zoom_ in here instead of setTransform, to avoid
+// integrating it twice if we have resetTransform and setTransform API calls.
 void PaintRenderingContext2D::resetTransform() {
   BaseRenderingContext2D::resetTransform();
   BaseRenderingContext2D::transform(effective_zoom_, 0, 0, effective_zoom_, 0,

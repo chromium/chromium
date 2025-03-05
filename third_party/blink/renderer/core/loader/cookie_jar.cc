@@ -108,7 +108,7 @@ String CookieJar::Cookies() {
   base::UmaHistogramBoolean("Blink.Experimental.Cookies.IpcNeeded", ipc_needed);
   if (ipc_needed) {
     bool is_ad_tagged =
-        document_->GetFrame() ? document_->GetFrame()->IsAdFrame() : false;
+        document_->GetFrame() && document_->GetFrame()->IsAdFrame();
 
     if (!backend_->GetCookiesString(
             cookie_url, document_->SiteForCookies(),

@@ -29,6 +29,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.FragmentActivity;
 
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,6 +69,7 @@ import org.chromium.components.browser_ui.test.BrowserUiDummyFragmentActivity;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.ui.widget.ToastManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -125,6 +127,11 @@ public class PasswordAccessLossExportDialogCoordinatorTest {
         mCoordinator =
                 new PasswordAccessLossExportDialogCoordinator(
                         mActivity, mProfile, mPasswordsDeletionFinished);
+    }
+
+    @After
+    public void tearDown() {
+        ToastManager.resetForTesting();
     }
 
     private void setUpPasswordManagerHandler() {

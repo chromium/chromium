@@ -356,8 +356,7 @@ class CORE_EXPORT ConstraintSpace final {
   }
 
   bool IsTableCellWithCollapsedBorders() const {
-    return HasRareData() ? rare_data_->IsTableCellWithCollapsedBorders()
-                         : false;
+    return HasRareData() && rare_data_->IsTableCellWithCollapsedBorders();
   }
 
   const TableConstraintSpaceData* TableData() const {

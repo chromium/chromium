@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
-import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
@@ -105,7 +104,7 @@ public class SyncPromoController {
 
     private final Profile mProfile;
     private final AccountPickerBottomSheetStrings mBottomSheetStrings;
-    private final @AccessPoint int mAccessPoint;
+    private final @SigninAndHistorySyncActivityLauncher.AccessPoint int mAccessPoint;
     private final String mImpressionUserActionName;
     // TODO(b/332704829): Move the declaration of most of these access-point specific fields to the
     // Delegate.
@@ -163,7 +162,7 @@ public class SyncPromoController {
     }
 
     @VisibleForTesting
-    public static String getPromoShowCountPreferenceName(@AccessPoint int accessPoint) {
+    public static String getPromoShowCountPreferenceName(@SigninAccessPoint int accessPoint) {
         switch (accessPoint) {
             case SigninAccessPoint.BOOKMARK_MANAGER:
                 return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
@@ -190,7 +189,7 @@ public class SyncPromoController {
     public SyncPromoController(
             Profile profile,
             @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
-            @AccessPoint int accessPoint,
+            @SigninAndHistorySyncActivityLauncher.AccessPoint int accessPoint,
             SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher) {
         mProfile = profile;
         mBottomSheetStrings = bottomSheetStrings;

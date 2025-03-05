@@ -195,6 +195,27 @@ DenseSet<HtmlFieldType> BelievedHtmlTypes(FieldType heuristic_prediction,
 
 }  // namespace
 
+// LINT.IfChange(PredictionSourceTranslation)
+
+std::string_view AutofillPredictionSourceToStringView(
+    AutofillPredictionSource source) {
+  switch (source) {
+    case AutofillPredictionSource::kHeuristics:
+      return "Heuristics";
+    case AutofillPredictionSource::kServerCrowdsourcing:
+      return "ServerCrowdsourcing";
+    case AutofillPredictionSource::kServerOverride:
+      return "ServerOverride";
+    case AutofillPredictionSource::kAutocomplete:
+      return "AutocompleteAttribute";
+    case AutofillPredictionSource::kRationalization:
+      return "Rationalization";
+  }
+  NOTREACHED();
+}
+
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/histograms.xml:AutofillPredictionSources)
+
 AutofillField::AutofillField() {
   local_type_predictions_.fill(NO_SERVER_DATA);
 }

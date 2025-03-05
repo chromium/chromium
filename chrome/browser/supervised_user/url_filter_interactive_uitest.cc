@@ -414,6 +414,51 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, DesktopLocalWebApprovalGranted) {
 }
 
 IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
+                       DesktopLocalWebApprovalCancelledViaCloseButton) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPacpViewElementId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(InIntendedStateObserver,
+                                      kResetStateObserverId);
+  base::HistogramTester histogram_tester;
+
+  // Child activity is happening in this tab.
+  int tab_index = 0;
+  GURL mature_site_url(GetRoutedUrl("https://bestgore.com"));
+
+  TurnOnSync();
+
+  RunTestSequence(InAnyContext(
+      Steps(WaitForStateSeeding(kResetStateObserverId, child(),
+                                FamilyLinkSettingsState::Reset()),
+            // Supervised user navigates to inappropriate page and is blocked.
+            Log("When child is shown the interstitial"),
+            InstrumentTab(kChildElementId, tab_index, &child().browser()),
+            NavigateWebContents(kChildElementId, mature_site_url),
+            // The user clicks the local approval button.
+            WaitForStateChange(kChildElementId, LocalApprovalButtonAppeared()),
+            Log("When child requests local web approval"),
+            ChildRequestsLocalApproval(kChildElementId),
+            // The PACP dialog appears.
+            Log("When the PACP dialog shows up"),
+            WaitForShow(kLocalWebParentApprovalDialogId),
+            InstrumentNonTabWebView(kPacpViewElementId,
+                                    kLocalWebParentApprovalDialogId),
+            WaitForPacpDialogToAppear(kPacpViewElementId),
+            // The PACP dialog is dismissed via the "X" close button.
+            Log("When the user clicks the Close button"),
+            PressButton(views::BubbleFrameView::kCloseButtonElementId),
+            WaitForHide(kPacpViewElementId),
+            Log("Then the dialog is dismissed and a cancellation is recorded"),
+            Do([&]() {
+              histogram_tester.ExpectBucketCount(
+                  "FamilyLinkUser.LocalWebApprovalResult",
+                  supervised_user::LocalApprovalResult::kCanceled, 1);
+              histogram_tester.ExpectTotalCount(
+                  "FamilyLinkUser.LocalWebApprovalResult", 1);
+            }))));
+}
+
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
                        ChildInPendingStateCanReauthAndRequestApproval) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildSignInElementId);

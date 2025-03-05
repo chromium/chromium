@@ -15,7 +15,6 @@
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
@@ -32,17 +31,15 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_path.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_deferred_paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/graphics/flush_reason.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
-#include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/graphics/predefined_color_space.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -59,17 +56,7 @@
 // IWYU pragma: no_include "third_party/blink/renderer/platform/heap/visitor.h"
 
 enum class SkPathFillType;
-class SkPixmap;
 struct SkSamplingOptions;
-
-namespace base {
-class SingleThreadTaskRunner;
-}  // namespace base
-
-namespace gfx {
-class Rect;
-class Vector2d;
-}  // namespace gfx
 
 namespace ui {
 class ColorProvider;
@@ -90,7 +77,6 @@ MODULES_EXPORT BASE_DECLARE_FEATURE(kDisableCanvasOverdrawOptimization);
 class BeginLayerOptions;
 class CanvasGradient;
 class CanvasImageSource;
-class Canvas2dGPUTransferOption;
 class CanvasPattern;
 class CanvasRenderingContextHost;
 class CanvasResourceProvider;
@@ -99,12 +85,8 @@ class DOMMatrixInit;
 class ExceptionState;
 class ExecutionContext;
 class Font;
-class FontSelector;
-class GPUTexture;
 class HTMLCanvasElement;
 class Image;
-class ImageData;
-class ImageDataSettings;
 class MemoryManagedPaintRecorder;
 class Mesh2DVertexBuffer;
 class Mesh2DUVBuffer;
@@ -113,10 +95,6 @@ class OffscreenCanvas;
 class Path;
 class Path2D;
 class ScriptState;
-class TextCluster;
-class TextClusterOptions;
-class TextMetrics;
-class V8GPUTextureFormat;
 class V8UnionCanvasFilterOrString;
 struct V8CanvasStyle;
 enum class CanvasOps;
@@ -124,27 +102,13 @@ enum class ColorParseResult;
 enum RespectImageOrientationEnum : uint8_t;
 template <typename T>
 class NotShared;
-class V8CanvasFontStretch;
-class V8CanvasTextRendering;
-class V8CanvasTextAlign;
-class V8CanvasTextBaseline;
-class V8CanvasDirection;
-class V8CanvasFontKerning;
-class V8CanvasFontVariantCaps;
 
-class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
+class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
  public:
-  static constexpr unsigned kFallbackToCPUAfterReadbacks = 2;
+  Canvas2DRecorderContext(const Canvas2DRecorderContext&) = delete;
+  Canvas2DRecorderContext& operator=(const Canvas2DRecorderContext&) = delete;
 
-  // Try to restore context 4 times in the event that the context is lost. If
-  // the context is unable to be restored after 4 attempts, we discard the
-  // backing storage of the context and allocate a new one.
-  static const unsigned kMaxTryRestoreContextAttempts = 4;
-
-  BaseRenderingContext2D(const BaseRenderingContext2D&) = delete;
-  BaseRenderingContext2D& operator=(const BaseRenderingContext2D&) = delete;
-
-  ~BaseRenderingContext2D() override;
+  ~Canvas2DRecorderContext() override;
 
   v8::Local<v8::Value> strokeStyle(ScriptState* script_state) const;
   void setStrokeStyle(v8::Isolate* isolate,
@@ -212,8 +176,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   // draw the bitmap.
   void endLayer(ExceptionState& exception_state);
   int LayerCount() const { return layer_count_; }
-  virtual void reset();  // Called by the javascript interface
-  void ResetInternal();  // Called from within blink
+  virtual void reset();          // Called by the javascript interface
+  virtual void ResetInternal();  // Called from within blink
 
   void scale(double sx, double sy);
   void rotate(double angle_in_radians);
@@ -264,12 +228,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   void fillRect(double x, double y, double width, double height);
   void strokeRect(double x, double y, double width, double height);
 
-  // https://github.com/WICG/canvas-place-element
-  void placeElement(Element* element,
-                    double x,
-                    double y,
-                    ExceptionState& exception_state);
-  void OnPlaceElementStateChanged(Element& element);
   void drawImage(const V8CanvasImageSource* image_source,
                  double x,
                  double y,
@@ -334,62 +292,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
                 const V8CanvasImageSource* image,
                 ExceptionState&);
 
-  ImageData* createImageData(ImageData*, ExceptionState&) const;
-  ImageData* createImageData(int sw, int sh, ExceptionState&) const;
-  ImageData* createImageData(int sw,
-                             int sh,
-                             ImageDataSettings*,
-                             ExceptionState&) const;
-
-  // For deferred canvases this will have the side effect of drawing recorded
-  // commands in order to finalize the frame
-  ImageData* getImageData(int sx, int sy, int sw, int sh, ExceptionState&);
-  ImageData* getImageData(int sx,
-                          int sy,
-                          int sw,
-                          int sh,
-                          ImageDataSettings*,
-                          ExceptionState&);
-  virtual ImageData* getImageDataInternal(int sx,
-                                          int sy,
-                                          int sw,
-                                          int sh,
-                                          ImageDataSettings*,
-                                          ExceptionState&);
-
-  void putImageData(ImageData*, int dx, int dy, ExceptionState&);
-  void putImageData(ImageData*,
-                    int dx,
-                    int dy,
-                    int dirty_x,
-                    int dirty_y,
-                    int dirty_width,
-                    int dirty_height,
-                    ExceptionState&);
-
   bool imageSmoothingEnabled() const;
   void setImageSmoothingEnabled(bool);
   V8ImageSmoothingQuality imageSmoothingQuality() const;
   void setImageSmoothingQuality(const V8ImageSmoothingQuality&);
-
-  // Transfers a canvas' existing back-buffer to a GPUTexture for use in a
-  // WebGPU pipeline. The canvas' image can be used as a texture, or the texture
-  // can be bound as a color attachment and modified. After its texture is
-  // transferred, the canvas will be reset into an empty, freshly-initialized
-  // state.
-  GPUTexture* transferToGPUTexture(const Canvas2dGPUTransferOption*,
-                                   ExceptionState& exception_state);
-
-  // Replaces the canvas' back-buffer texture with the passed-in GPUTexture.
-  // The GPUTexture immediately becomes inaccessible to WebGPU.
-  // A GPUValidationError will occur if the GPUTexture is used after
-  // `transferBackFromGPUTexture` is called.
-  void transferBackFromGPUTexture(ExceptionState& exception_state);
-
-  // Returns the format of the GPUTexture that `transferToGPUTexture` will
-  // return. This is useful if you need to create the WebGPU render pipeline
-  // before `transferToGPUTexture` is first called.
-  V8GPUTextureFormat getTextureFormat() const;
 
   virtual bool OriginClean() const = 0;
   virtual void SetOriginTainted() = 0;
@@ -398,7 +304,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   virtual int Height() const = 0;
 
   bool IsAccelerated() const;
-  virtual bool CanCreateCanvas2dResourceProvider() const = 0;
 
   virtual RespectImageOrientationEnum RespectImageOrientation() const = 0;
 
@@ -410,7 +315,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   virtual const cc::PaintCanvas* GetPaintCanvas() const = 0;
   cc::PaintCanvas* GetPaintCanvas() {
     return const_cast<cc::PaintCanvas*>(
-        const_cast<const BaseRenderingContext2D*>(this)->GetPaintCanvas());
+        const_cast<const Canvas2DRecorderContext*>(this)->GetPaintCanvas());
   }
 
   // Returns the paint ops recorder this context uses. Can be `nullptr` if no
@@ -418,7 +323,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   virtual const MemoryManagedPaintRecorder* Recorder() const = 0;
   MemoryManagedPaintRecorder* Recorder() {
     return const_cast<MemoryManagedPaintRecorder*>(
-        const_cast<const BaseRenderingContext2D*>(this)->Recorder());
+        const_cast<const Canvas2DRecorderContext*>(this)->Recorder());
   }
 
   // Called when about to draw. When this is called GetPaintCanvas() has already
@@ -451,58 +356,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   void RestoreMatrixClipStack(cc::PaintCanvas*) const;
 
-  String lang() const;
-  void setLang(const String&);
-
-  V8CanvasDirection direction() const;
-  void setDirection(const V8CanvasDirection);
-
-  V8CanvasTextAlign textAlign() const;
-  void setTextAlign(const V8CanvasTextAlign);
-
-  V8CanvasTextBaseline textBaseline() const;
-  void setTextBaseline(const V8CanvasTextBaseline);
-
-  String letterSpacing() const;
-  void setLetterSpacing(const String&);
-
-  String wordSpacing() const;
-  void setWordSpacing(const String&);
-
-  V8CanvasTextRendering textRendering() const;
-  void setTextRendering(const V8CanvasTextRendering&);
-
-  V8CanvasFontKerning fontKerning() const;
-  void setFontKerning(const V8CanvasFontKerning);
-
-  V8CanvasFontStretch fontStretch() const;
-  void setFontStretch(const V8CanvasFontStretch&);
-
-  V8CanvasFontVariantCaps fontVariantCaps() const;
-  void setFontVariantCaps(const V8CanvasFontVariantCaps&);
-
-  String font() const;
-  void setFont(const String& new_font);
-
-  void fillText(const String& text, double x, double y);
-  void fillText(const String& text, double x, double y, double max_width);
-  void strokeText(const String& text, double x, double y);
-  void strokeText(const String& text, double x, double y, double max_width);
-  TextMetrics* measureText(const String& text);
-  // Renders a TextCluster returned by TextMetrics::getTextClusters(). If
-  // possible, the align, baseline, and font from the TextCluster will be used.
-  // The x and y parameters are added to the values from the TextCluster to
-  // position the cluster.
-  void fillTextCluster(const TextCluster* text_cluster, double x, double y);
-  void fillTextCluster(const TextCluster* text_cluster,
-                       double x,
-                       double y,
-                       const TextClusterOptions* cluster_options);
-  void strokeTextCluster(const TextCluster* text_cluster, double x, double y);
-  void strokeTextCluster(const TextCluster* text_cluster,
-                         double x,
-                         double y,
-                         const TextClusterOptions* cluster_options);
+  virtual void setFont(const String& new_font) {}
 
   void Trace(Visitor*) const override;
 
@@ -591,27 +445,13 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   };
 
   const UsageCounters& GetUsage();
-  HeapTaskRunnerTimer<BaseRenderingContext2D>
-      dispatch_context_lost_event_timer_;
-  HeapTaskRunnerTimer<BaseRenderingContext2D>
-      dispatch_context_restored_event_timer_;
-  HeapTaskRunnerTimer<BaseRenderingContext2D> try_restore_context_event_timer_;
-  unsigned try_restore_context_attempt_count_ = 0;
 
  protected:
-  explicit BaseRenderingContext2D(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  Canvas2DRecorderContext();
 
   virtual HTMLCanvasElement* HostAsHTMLCanvasElement() const;
   virtual OffscreenCanvas* HostAsOffscreenCanvas() const;
-  virtual FontSelector* GetFontSelector() const;
   const Font* AccessFont(HTMLCanvasElement* canvas);
-
-  void WillUseCurrentFont() const;
-  virtual bool WillSetFont() const;
-  virtual bool ResolveFont(const String& new_font) = 0;
-  virtual bool CurrentFontResolvedAndUpToDate() const;
-  const LayoutLocale* LocaleFromLang();
 
   ALWAYS_INLINE CanvasRenderingContext2DState& GetState() const {
     return *state_stack_.back();
@@ -640,45 +480,17 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   // CreateImageData.
   virtual PredefinedColorSpace GetDefaultImageDataColorSpace() const = 0;
 
-  virtual bool WritePixels(const SkImageInfo& orig_info,
-                           const void* pixels,
-                           size_t row_bytes,
-                           int x,
-                           int y) {
-    NOTREACHED();
-  }
-  virtual scoped_refptr<StaticBitmapImage> GetImage(FlushReason) {
-    NOTREACHED();
-  }
-
   void CheckOverdraw(const cc::PaintFlags*,
                      CanvasRenderingContext2DState::ImageType,
-                     BaseRenderingContext2D::OverdrawOp overdraw_op);
+                     Canvas2DRecorderContext::OverdrawOp overdraw_op);
 
   HeapVector<Member<CanvasRenderingContext2DState>> state_stack_;
   unsigned max_state_stack_depth_ = 1;
   // Counts how many states have been pushed with BeginLayer.
   int layer_count_ = 0;
-  AntiAliasingMode clip_antialiasing_;
-
-  virtual void FinalizeFrame(FlushReason) {}
-
-  virtual void DispatchContextLostEvent(TimerBase*);
-  virtual void DispatchContextRestoredEvent(TimerBase*);
-  virtual void TryRestoreContextEvent(TimerBase*) {}
-
-  static const char kDefaultFont[];
-  static const char kInheritString[];
+  AntiAliasingMode clip_antialiasing_ = kNotAntiAliased;
 
   virtual void DisableAcceleration() {}
-
-  // Override to prematurely disable acceleration because of a readback.
-  // BaseRenderingContext2D automatically disables acceleration after a number
-  // of readbacks, this can be overridden to disable acceleration earlier than
-  // would typically happen.
-  virtual bool ShouldDisableAccelerationBecauseOfReadback() const {
-    return false;
-  }
 
   virtual bool IsPaint2D() const { return false; }
   void WillOverwriteCanvas(OverdrawOp);
@@ -698,29 +510,19 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   // Returns if the current Document is within installed WebApp scope.
   bool IsInWebAppScope() const;
 
-  bool context_restorable_{true};
+  // TODO(crbug.com/383575391): Move context lost logic to
+  // BaseRenderingContext2D.
   CanvasRenderingContext::LostContextMode context_lost_mode_{
       CanvasRenderingContext::kNotLostContext};
 
-  // TODO(issues.chromium.org/issues/349835587): Add an observer to know if the
-  // element is detached and then remove it.
-  HeapHashMap<WeakMember<Element>, scoped_refptr<CanvasDeferredPaintRecord>>
-      placed_elements_;
+  // Sets the origin to be tainted by the content of the canvas, such
+  // as a cross-origin image. This is as opposed to some other reason
+  // such as tainting from a filter applied to the canvas.
+  void SetOriginTaintedByContent();
 
  private:
   void FillImpl(SkPathFillType winding_rule);
   void FillPathImpl(Path2D* dom_path, SkPathFillType winding_rule);
-
-  void DrawTextInternal(const String& text,
-                        double x,
-                        double y,
-                        CanvasRenderingContext2DState::PaintType paint_type,
-                        V8CanvasTextAlign align,
-                        V8CanvasTextBaseline baseline,
-                        unsigned run_start,
-                        unsigned run_end,
-                        double* max_width = nullptr,
-                        const Font* cluster_font = nullptr);
 
   // Returns the color from a string. This may return a cached value as well
   // as updating the cache (if possible).
@@ -777,11 +579,13 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
     if (BlendModeRequiresCompositedDraw(state)) {
       return true;
     }
-    if (StateHasFilter())
+    if (StateHasFilter()) {
       return true;
+    }
     if (state.ShouldDrawShadows() &&
-        ShouldUseDropShadowPaintFilter(paint_type, image_type))
+        ShouldUseDropShadowPaintFilter(paint_type, image_type)) {
       return true;
+    }
     return false;
   }
 
@@ -823,6 +627,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
                              const V8CanvasFillRule& winding_rule);
   bool IsPointInStrokeInternal(const Path&, const double x, const double y);
 
+  bool BlendModeSupportsShadowFilter(SkBlendMode) const;
+  bool BlendModeDoesntPreserveOpaqueDestinationAlpha(SkBlendMode);
+
   static bool IsFullCanvasCompositeMode(SkBlendMode);
 
   template <typename DrawFunc>
@@ -838,15 +645,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   void AdjustRectForCanvas(T& x, T& y, T& width, T& height);
 
   bool RectContainsTransformedRect(const gfx::RectF&, const SkIRect&) const;
-  // Sets the origin to be tainted by the content of the canvas, such
-  // as a cross-origin image. This is as opposed to some other reason
-  // such as tainting from a filter applied to the canvas.
-  void SetOriginTaintedByContent();
-
-  void PutByteArray(const SkPixmap& source,
-                    const gfx::Rect& source_rect,
-                    const gfx::Vector2d& dest_offset);
-  virtual bool IsCanvas2DBufferValid() const { NOTREACHED(); }
 
   virtual std::optional<cc::PaintRecord> FlushCanvas(FlushReason) = 0;
 
@@ -873,16 +671,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   bool origin_tainted_by_content_ = false;
   cc::UsePaintCache path2d_use_paint_cache_;
-  int num_readbacks_performed_ = 0;
-  unsigned read_count_ = 0;
   mojom::blink::ColorScheme color_scheme_ = mojom::blink::ColorScheme::kLight;
   // Cache of recently used colors. Maintains LRU semantics.
   HeapLinkedHashSet<Member<CachedColor>, CachedColorTraits> color_cache_;
-  Member<GPUTexture> webgpu_access_texture_ = nullptr;
-  std::unique_ptr<CanvasResourceProvider> resource_provider_from_webgpu_access_;
 };
-
-namespace {
 
 // Returns true if the blend modes is compatible with `DropShadowPaintFilter`.
 //
@@ -900,13 +692,15 @@ namespace {
 //
 // For the composite ops listed below, these two operations turns out to be
 // equivalent. We can therefore use `DropShadowPaintFilter` with them.
-ALWAYS_INLINE bool BlendModeSupportsShadowFilter(SkBlendMode blendMode) {
+ALWAYS_INLINE bool Canvas2DRecorderContext::BlendModeSupportsShadowFilter(
+    SkBlendMode blendMode) const {
   return blendMode == SkBlendMode::kSrcOver ||
          blendMode == SkBlendMode::kSrcATop ||
          blendMode == SkBlendMode::kDstOut;
 }
 
-ALWAYS_INLINE bool BlendModeDoesntPreserveOpaqueDestinationAlpha(
+ALWAYS_INLINE bool
+Canvas2DRecorderContext::BlendModeDoesntPreserveOpaqueDestinationAlpha(
     SkBlendMode blendMode) {
   return blendMode == SkBlendMode::kSrc || blendMode == SkBlendMode::kSrcIn ||
          blendMode == SkBlendMode::kDstIn ||
@@ -917,9 +711,7 @@ ALWAYS_INLINE bool BlendModeDoesntPreserveOpaqueDestinationAlpha(
          blendMode == SkBlendMode::kModulate;
 }
 
-}  // namespace
-
-ALWAYS_INLINE bool BaseRenderingContext2D::BlendModeRequiresCompositedDraw(
+ALWAYS_INLINE bool Canvas2DRecorderContext::BlendModeRequiresCompositedDraw(
     const CanvasRenderingContext2DState& state) const {
   SkBlendMode blend_mode = state.GlobalComposite();
   // The "copy" composite operation (a.k.a. `SkBlendMode::kSrc`) is handled as a
@@ -937,11 +729,11 @@ ALWAYS_INLINE bool BaseRenderingContext2D::BlendModeRequiresCompositedDraw(
          !BlendModeSupportsShadowFilter(blend_mode);
 }
 
-ALWAYS_INLINE void BaseRenderingContext2D::ResetAlphaIfNeeded(
+ALWAYS_INLINE void Canvas2DRecorderContext::ResetAlphaIfNeeded(
     cc::PaintCanvas* c,
     SkBlendMode blend_mode,
     const gfx::RectF* bounds) {
-  // TODO(skbug.com/14239): This would be unnecessary if skia had something
+  // TODO(skbug.com/40045315): This would be unnecessary if skia had something
   // like glColorMask that could be used to prevent the destination alpha from
   // being modified.
   if (!HasAlpha() &&
@@ -961,10 +753,10 @@ ALWAYS_INLINE void BaseRenderingContext2D::ResetAlphaIfNeeded(
   }
 }
 
-ALWAYS_INLINE void BaseRenderingContext2D::CheckOverdraw(
+ALWAYS_INLINE void Canvas2DRecorderContext::CheckOverdraw(
     const cc::PaintFlags* flags,
     CanvasRenderingContext2DState::ImageType image_type,
-    BaseRenderingContext2D::OverdrawOp overdraw_op) {
+    Canvas2DRecorderContext::OverdrawOp overdraw_op) {
   if (base::FeatureList::IsEnabled(kDisableCanvasOverdrawOptimization))
       [[unlikely]] {
     return;
@@ -973,8 +765,9 @@ ALWAYS_INLINE void BaseRenderingContext2D::CheckOverdraw(
   // Note on performance: because this method is inlined, all conditional
   // branches on arguments that are static at the call site can be optimized-out
   // by the compiler.
-  if (overdraw_op == OverdrawOp::kNone)
+  if (overdraw_op == OverdrawOp::kNone) {
     return;
+  }
 
   cc::PaintCanvas* c = GetPaintCanvas();
   if (!c) [[unlikely]] {
@@ -1017,10 +810,10 @@ ALWAYS_INLINE void BaseRenderingContext2D::CheckOverdraw(
   WillOverwriteCanvas(overdraw_op);
 }
 
-template <BaseRenderingContext2D::OverdrawOp CurrentOverdrawOp,
+template <Canvas2DRecorderContext::OverdrawOp CurrentOverdrawOp,
           typename DrawFunc,
           typename DrawCoversClipBoundsFunc>
-void BaseRenderingContext2D::DrawInternal(
+void Canvas2DRecorderContext::DrawInternal(
     cc::PaintCanvas* paint_canvas,
     const DrawFunc& draw_func,
     const DrawCoversClipBoundsFunc& draw_covers_clip_bounds,
@@ -1076,10 +869,10 @@ void BaseRenderingContext2D::DrawInternal(
   }
 }
 
-template <BaseRenderingContext2D::OverdrawOp CurrentOverdrawOp,
+template <Canvas2DRecorderContext::OverdrawOp CurrentOverdrawOp,
           typename DrawFunc,
           typename DrawCoversClipBoundsFunc>
-void BaseRenderingContext2D::Draw(
+void Canvas2DRecorderContext::Draw(
     const DrawFunc& draw_func,
     const DrawCoversClipBoundsFunc& draw_covers_clip_bounds,
     const gfx::RectF& bounds,
@@ -1092,8 +885,9 @@ void BaseRenderingContext2D::Draw(
 
   SkIRect clip_bounds;
   cc::PaintCanvas* paint_canvas = GetOrCreatePaintCanvas();
-  if (!paint_canvas || !paint_canvas->getDeviceClipBounds(&clip_bounds))
+  if (!paint_canvas || !paint_canvas->getDeviceClipBounds(&clip_bounds)) {
     return;
+  }
 
   if (GetState().IsFilterUnresolved()) [[unlikely]] {
     // Resolving a filter requires allocating garbage-collected objects.
@@ -1108,13 +902,13 @@ void BaseRenderingContext2D::Draw(
 }
 
 template <typename DrawFunc>
-void BaseRenderingContext2D::CompositedDraw(
+void Canvas2DRecorderContext::CompositedDraw(
     const DrawFunc& draw_func,
     cc::PaintCanvas* c,
     CanvasRenderingContext2DState::PaintType paint_type,
     CanvasRenderingContext2DState::ImageType image_type) {
   // Due to the complexity of composited draw operations, we need to grant an
-  // exception to allow multi-pass rendereing, and state finalization
+  // exception to allow multi-pass rendering, and state finalization
   // operations to proceed between the time when a flush is requested by
   // draw_func and when the flush request is fulfilled in DrawInternal. We
   // cannot fulfill flush request in the middle of a composited draw because
@@ -1179,19 +973,19 @@ void BaseRenderingContext2D::CompositedDraw(
 }
 
 template <typename T>
-bool BaseRenderingContext2D::ValidateRectForCanvas(T x,
-                                                   T y,
-                                                   T width,
-                                                   T height) {
+bool Canvas2DRecorderContext::ValidateRectForCanvas(T x,
+                                                    T y,
+                                                    T width,
+                                                    T height) {
   return (std::isfinite(x) && std::isfinite(y) && std::isfinite(width) &&
           std::isfinite(height) && (width || height));
 }
 
 template <typename T>
-void BaseRenderingContext2D::AdjustRectForCanvas(T& x,
-                                                 T& y,
-                                                 T& width,
-                                                 T& height) {
+void Canvas2DRecorderContext::AdjustRectForCanvas(T& x,
+                                                  T& y,
+                                                  T& width,
+                                                  T& height) {
   if (width < 0) {
     width = -width;
     x -= width;
@@ -1203,13 +997,13 @@ void BaseRenderingContext2D::AdjustRectForCanvas(T& x,
   }
 }
 
-ALWAYS_INLINE void BaseRenderingContext2D::SetTransform(
+ALWAYS_INLINE void Canvas2DRecorderContext::SetTransform(
     const AffineTransform& matrix) {
   GetState().SetTransform(matrix);
   SetIsTransformInvertible(matrix.IsInvertible());
 }
 
-ALWAYS_INLINE bool BaseRenderingContext2D::IsFullCanvasCompositeMode(
+ALWAYS_INLINE bool Canvas2DRecorderContext::IsFullCanvasCompositeMode(
     SkBlendMode op) {
   // See 4.8.11.1.3 Compositing
   // CompositeSourceAtop and CompositeDestinationOut are not listed here as the
@@ -1218,7 +1012,7 @@ ALWAYS_INLINE bool BaseRenderingContext2D::IsFullCanvasCompositeMode(
          op == SkBlendMode::kDstIn || op == SkBlendMode::kDstATop;
 }
 
-ALWAYS_INLINE bool BaseRenderingContext2D::StateHasFilter() {
+ALWAYS_INLINE bool Canvas2DRecorderContext::StateHasFilter() {
   const CanvasRenderingContext2DState& state = GetState();
   if (state.IsFilterUnresolved()) [[unlikely]] {
     return !!StateGetFilter();
@@ -1227,7 +1021,7 @@ ALWAYS_INLINE bool BaseRenderingContext2D::StateHasFilter() {
   return state.IsFilterResolved();
 }
 
-ALWAYS_INLINE bool BaseRenderingContext2D::ComputeDirtyRect(
+ALWAYS_INLINE bool Canvas2DRecorderContext::ComputeDirtyRect(
     const gfx::RectF& local_rect,
     const SkIRect& transformed_clip_bounds,
     SkIRect* dirty_rect) {

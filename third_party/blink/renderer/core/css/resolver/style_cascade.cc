@@ -1855,14 +1855,11 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
   if (ret_value == nullptr) {
     return false;
   }
-  // TODO(crbug.com/393924687): Use CSSVariableData directly to avoid
-  // serialization.
-  String ret_string = ret_value->CssText();
-  CSSParserTokenStream ret_value_stream(ret_string);
-  return ResolveTokensInto(ret_value_stream, function_tree_scope, resolver,
-                           context,
-                           /* function_context */ nullptr,
-                           /* stop_type */ kEOFToken, out);
+  CSSVariableData* ret_data =
+      To<CSSUnparsedDeclarationValue>(*ret_value).VariableDataValue();
+  DCHECK(ret_data && !ret_data->NeedsVariableResolution());
+  return out.Append(ret_data, ret_data->IsAttrTainted(),
+                    CSSVariableData::kMaxVariableBytes);
 }
 
 bool StyleCascade::ResolveArgumentOrLocalInto(const CSSValue* value,
@@ -1872,24 +1869,21 @@ bool StyleCascade::ResolveArgumentOrLocalInto(const CSSValue* value,
                                               const CSSParserContext& context,
                                               const TokenSequence* fallback,
                                               TokenSequence& out) {
-  // Note: `value` may be nullptr when a locals variable became invalid
+  // Note: `value` may be nullptr when a local variable became invalid
   // due to e.g. failed substitutions.
-  bool success = false;
   if (value) {
-    // TODO(crbug.com/393924687): There is nothing to resolve at this point.
-    // Just append the CSSVariableData directly.
-    String value_str = value->CssText();
-    CSSParserTokenStream value_stream(value_str);
-    success = ResolveTokensInto(value_stream, tree_scope, resolver, context,
-                                /*function_context=*/nullptr,
-                                /*stop_type=*/kEOFToken, out);
+    CSSVariableData* data =
+        To<CSSUnparsedDeclarationValue>(*value).VariableDataValue();
+    DCHECK(data && !data->NeedsVariableResolution());
+    return out.Append(data, data->IsAttrTainted(),
+                      CSSVariableData::kMaxVariableBytes);
   }
-  if (!success && fallback) {
-    success = out.AppendFallback(*fallback,
-                                 !fallback->GetAttrTaintedRanges()->empty(),
-                                 CSSVariableData::kMaxVariableBytes);
+  if (fallback) {
+    return out.AppendFallback(*fallback,
+                              !fallback->GetAttrTaintedRanges()->empty(),
+                              CSSVariableData::kMaxVariableBytes);
   }
-  return success;
+  return false;
 }
 
 // Resolves an expression within a function; in practice, either a function
@@ -1931,8 +1925,11 @@ const CSSValue* StyleCascade::ResolveFunctionExpression(
   }
   // Resolve the value as if it were a registered property, to get rid of
   // extraneous calc(), resolve lengths and so on.
-  return &StyleBuilderConverter::ConvertRegisteredPropertyValue(state_, *value,
-                                                                &context);
+  value = &StyleBuilderConverter::ConvertRegisteredPropertyValue(state_, *value,
+                                                                 &context);
+  data = StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
+      *value, data->IsAnimationTainted(), data->IsAttrTainted());
+  return MakeGarbageCollected<CSSUnparsedDeclarationValue>(data, &context);
 }
 
 void StyleCascade::ApplyLocalVariables(CascadeResolver& resolver,

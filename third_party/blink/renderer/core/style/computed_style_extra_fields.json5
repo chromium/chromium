@@ -391,6 +391,7 @@
     {
       name: "font",
       field_template: "pointer",
+      field_group: "inherited",
       include_paths: ["third_party/blink/renderer/platform/fonts/font.h"],
       type_name: "Font",
       inherited: true,
@@ -1130,7 +1131,7 @@
       // For now ComputedStyle for non-SVG elemnts always have the initial value
       // in order to disable the feature.
       name: "CssDominantBaseline",
-      field_group: "svg->svginherited",
+      field_group: "svginherited",
       field_template: "primitive",
       field_size: 4,
       type_name: "EDominantBaseline",
