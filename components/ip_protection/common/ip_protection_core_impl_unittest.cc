@@ -209,13 +209,10 @@ class IpProtectionCoreImplTest : public testing::Test {
 
   base::HistogramTester histogram_tester_;
 
-  // TODO(abhipatel): Reorder scoped_feature_list_ to be
-  // initialized before task_environment_
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 // Verify that a TRACKING PROTECTION exception is created for a given url.
