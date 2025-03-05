@@ -20,12 +20,14 @@
 #include "ash/system/notification_center/test_notifier_settings_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_command_line.h"
+#include "base/types/pass_key.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "chromeos/ash/services/federated/public/cpp/fake_service_connection.h"
 #include "chromeos/ash/services/federated/public/cpp/service_connection.h"
 #include "ui/aura/test/aura_test_helper.h"
 
+class BrowserWithTestWindowTest;
 class PrefService;
 
 namespace aura {
@@ -58,6 +60,11 @@ class SavedDeskTestHelper;
 class TestKeyboardControllerObserver;
 class TestNewWindowDelegate;
 class TestWallpaperControllerClient;
+class AshTestBase;
+
+namespace floating_workspace {
+class FloatingWorkspaceServiceTest;
+}  // namespace floating_workspace
 
 namespace hotspot_config {
 class CrosHotspotConfigTestHelper;
@@ -146,9 +153,6 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   // Stabilizes the variable UI components (such as the battery view).
   void StabilizeUIForPixelTest();
 
-  TestSessionControllerClient* test_session_controller_client() {
-    return session_controller_client_.get();
-  }
   TestNotifierSettingsController* notifier_settings_controller() {
     return notifier_settings_controller_.get();
   }
@@ -193,6 +197,15 @@ class AshTestHelper : public aura::test::AuraTestHelper {
 
   FakeDlcserviceClient* dlc_service_client() {
     return dlc_service_client_.get();
+  }
+
+  template <typename T>
+    requires std::same_as<T, ::BrowserWithTestWindowTest> ||
+             std::same_as<T, AshTestBase> ||
+             std::same_as<T, floating_workspace::FloatingWorkspaceServiceTest>
+  TestSessionControllerClient* test_session_controller_client(
+      base::PassKey<T>) {
+    return session_controller_client_.get();
   }
 
  private:

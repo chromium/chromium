@@ -386,6 +386,11 @@ class FloatingWorkspaceServiceTest : public testing::Test {
 
   AshTestHelper* ash_test_helper() { return &ash_test_helper_; }
 
+  TestSessionControllerClient* GetSessionControllerClient() {
+    return ash_test_helper()->test_session_controller_client(
+        base::PassKey<floating_workspace::FloatingWorkspaceServiceTest>());
+  }
+
   // We want to hold off on populating the apps cache before each test is run
   // because the list of initialization types do not get reset. To test that the
   // service is actually waiting for the app types to initialize, we need to
@@ -2099,10 +2104,7 @@ TEST_F(FloatingWorkspaceServiceV2Test, AutoSignoutWithDeviceInfo) {
       {syncer::DataType::DEVICE_INFO},
       syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
   test_sync_service()->FireStateChanged();
-  EXPECT_EQ(ash_test_helper()
-                ->test_session_controller_client()
-                ->request_sign_out_count(),
-            1);
+  EXPECT_EQ(GetSessionControllerClient()->request_sign_out_count(), 1);
 }
 
 TEST_F(FloatingWorkspaceServiceV2Test,
@@ -2130,10 +2132,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
       {syncer::DataType::DEVICE_INFO},
       syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
   test_sync_service()->FireStateChanged();
-  EXPECT_EQ(ash_test_helper()
-                ->test_session_controller_client()
-                ->request_sign_out_count(),
-            0);
+  EXPECT_EQ(GetSessionControllerClient()->request_sign_out_count(), 0);
 }
 
 TEST_F(FloatingWorkspaceServiceV2Test,
@@ -2159,10 +2158,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
       {syncer::DataType::DEVICE_INFO},
       syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
   test_sync_service()->FireStateChanged();
-  EXPECT_EQ(ash_test_helper()
-                ->test_session_controller_client()
-                ->request_sign_out_count(),
-            0);
+  EXPECT_EQ(GetSessionControllerClient()->request_sign_out_count(), 0);
 }
 
 TEST_F(FloatingWorkspaceServiceV2Test, AutoSignoutWithWorkspaceDesk) {
@@ -2211,10 +2207,7 @@ TEST_F(FloatingWorkspaceServiceV2Test, AutoSignoutWithWorkspaceDesk) {
       syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
   test_sync_service()->FireStateChanged();
   EXPECT_TRUE(floating_workspace_service->GetLatestFloatingWorkspaceTemplate());
-  EXPECT_EQ(ash_test_helper()
-                ->test_session_controller_client()
-                ->request_sign_out_count(),
-            1);
+  EXPECT_EQ(GetSessionControllerClient()->request_sign_out_count(), 1);
 }
 
 TEST_F(FloatingWorkspaceServiceV2Test,
@@ -2264,10 +2257,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
       syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
   test_sync_service()->FireStateChanged();
   EXPECT_TRUE(floating_workspace_service->GetLatestFloatingWorkspaceTemplate());
-  EXPECT_EQ(ash_test_helper()
-                ->test_session_controller_client()
-                ->request_sign_out_count(),
-            0);
+  EXPECT_EQ(GetSessionControllerClient()->request_sign_out_count(), 0);
 }
 
 class FloatingWorkspaceServiceMultiUserTest

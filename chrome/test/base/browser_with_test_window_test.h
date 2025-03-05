@@ -275,6 +275,8 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
 
 #if BUILDFLAG(IS_CHROMEOS)
+  ash::TestSessionControllerClient* GetSessionControllerClient();
+
   // A template method (in Design Pattern) that execute post profile creation
   // steps.
   void PostUserProfileCreation(const std::string& email, Profile* profile);
