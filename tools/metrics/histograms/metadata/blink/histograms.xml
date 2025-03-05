@@ -3228,7 +3228,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.FontFetch.{Condition}.ConnectionType"
-    enum="NetworkConnectionType" expires_after="2025-04-13">
+    enum="NetworkConnectionType" expires_after="2025-10-13">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
