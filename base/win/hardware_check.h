@@ -19,10 +19,10 @@ struct BASE_EXPORT HardwareEvaluationResult {
   bool IsEligible() const;
 };
 
-// Returns result for hardware eligibility for Win11. It is intended to be
+// Returns result for hardware requirements for Win11. It is intended to be
 // called on OS versions below Win11 and validates against min requirements.
 // This must be called from a context that allows I/O operations.
-BASE_EXPORT HardwareEvaluationResult EvaluateWin11UpgradeEligibility();
+BASE_EXPORT HardwareEvaluationResult EvaluateWin11HardwareRequirements();
 
 }  // namespace base::win
 

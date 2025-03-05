@@ -777,7 +777,7 @@ void RecordAppCompatMetrics() {
   base::UmaHistogramBoolean("Windows.AcLayersLoaded", !!mod);
 }
 
-void RecordWin11UpgradeEligibilityMetrics(
+void RecordWin11HardwareRequirementsMetrics(
     const base::win::HardwareEvaluationResult& result) {
   base::UmaHistogramBoolean("Windows.Win11UpgradeEligible",
                             result.IsEligible());
@@ -838,8 +838,8 @@ void RecordStartupMetrics() {
 
   if (base::win::OSInfo::Kernel32Version() < base::win::Version::WIN11) {
     base::win::HardwareEvaluationResult result =
-        base::win::EvaluateWin11UpgradeEligibility();
-    RecordWin11UpgradeEligibilityMetrics(result);
+        base::win::EvaluateWin11HardwareRequirements();
+    RecordWin11HardwareRequirementsMetrics(result);
   }
   key_credential_manager_support::ReportKeyCredentialManagerSupport();
 #endif  // BUILDFLAG(IS_WIN)
