@@ -7331,8 +7331,8 @@
   },
   {
     "name": "pwm-show-suggestions-on-autofocus",
-    "owners": [ "kazinova@google.com", "vasilii@chromium.org" ],
-    "expiry_milestone": 136
+    "owners": [ "kenrb@chromium.org", "derinel@google.com" ],
+    "expiry_milestone": 139
   },
   {
     "name": "query-tiles",
