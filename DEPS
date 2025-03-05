@@ -226,6 +226,11 @@ vars = {
   # needed by Cronet gn2bp CI builder.
   'checkout_copybara': False,
 
+  # By default, check out the latest press benchmark versions for local
+  # testing and debugging. Benchmarks are also hosted on publicly accessible
+  # sites as backup solution.
+  'checkout_press_benchmarks': 'checkout_configuration != "small"',
+
   # luci-go CIPD package version.
   # Make sure the revision is uploaded by infra-packagers builder.
   # https://ci.chromium.org/p/infra-internal/g/infra-packagers/console
@@ -422,6 +427,14 @@ vars = {
   # the commit queue can handle CLs rolling libexpat
   # and whatever else without interference from each other.
   'libexpat_revision': '624da0f593bb8d7e146b9f42b06d8e6c80d032a3',
+  # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling jetstream-main
+  # and whatever else without interference from each other.
+  'jetstream_main_revision': '0260caf74b5c115507ee0adb6d9cdf6aefb0965f',
+  # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling jetstream-v2.2
+  # and whatever else without interference from each other.
+  'jetstream_2.2_revision': '2145cedef4ca2777b792cb0059d3400ee2a6153c',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling wuffs
   # and whatever else without interference from each other.
@@ -2238,20 +2251,40 @@ deps = {
   'src/third_party/securemessage/src':
     Var('chromium_git') + '/external/github.com/google/securemessage.git' + '@' + Var('securemessage_revision'),
 
-  'src/third_party/speedometer/main':
-    Var('chromium_git') + '/external/github.com/WebKit/Speedometer.git' + '@' + Var('speedometer_main_revision'),
+  'src/third_party/jetstream/main': {
+    'url': Var('chromium_git') + '/external/github.com/WebKit/JetStream.git' + '@' + Var('jetstream_main_revision'),
+    'condition': 'checkout_press_benchmarks',
+  },
 
-  'src/third_party/speedometer/v3.1':
-    Var('chromium_git') + '/external/github.com/WebKit/Speedometer.git' + '@' + Var('speedometer_3.1_revision'),
+  'src/third_party/jetstream/v2.2': {
+    'url': Var('chromium_git') + '/external/github.com/WebKit/JetStream.git' + '@' + Var('jetstream_2.2_revision'),
+    'condition': 'checkout_press_benchmarks',
+  },
 
-  'src/third_party/speedometer/v3.0':
-    Var('chromium_git') + '/external/github.com/WebKit/Speedometer.git' + '@' + Var('speedometer_3.0_revision'),
+  'src/third_party/speedometer/main': {
+    'url': Var('chromium_git') + '/external/github.com/WebKit/Speedometer.git' + '@' + Var('speedometer_main_revision'),
+    'condition': 'checkout_press_benchmarks',
+  },
 
-  'src/third_party/speedometer/v2.1':
-    Var('chromium_git') + '/external/github.com/WebKit/Speedometer.git' + '@' + Var('speedometer_2.1_revision'),
+  'src/third_party/speedometer/v3.1': {
+    'url': Var('chromium_git') + '/external/github.com/WebKit/Speedometer.git' + '@' + Var('speedometer_3.1_revision'),
+    'condition': 'checkout_press_benchmarks',
+  },
 
-  'src/third_party/speedometer/v2.0':
-    Var('chromium_git') + '/external/github.com/WebKit/Speedometer.git' + '@' + Var('speedometer_2.0_revision'),
+  'src/third_party/speedometer/v3.0': {
+    'url': Var('chromium_git') + '/external/github.com/WebKit/Speedometer.git' + '@' + Var('speedometer_3.0_revision'),
+    'condition': 'checkout_press_benchmarks',
+  },
+
+  'src/third_party/speedometer/v2.1': {
+    'url': Var('chromium_git') + '/external/github.com/WebKit/Speedometer.git' + '@' + Var('speedometer_2.1_revision'),
+    'condition': 'checkout_press_benchmarks',
+  },
+
+  'src/third_party/speedometer/v2.0': {
+    'url': Var('chromium_git') + '/external/github.com/WebKit/Speedometer.git' + '@' + Var('speedometer_2.0_revision'),
+    'condition': 'checkout_press_benchmarks',
+  },
 
   'src/third_party/ukey2/src':
     Var('chromium_git') + '/external/github.com/google/ukey2.git' + '@' + Var('ukey2_revision'),
