@@ -56,9 +56,7 @@ class SupervisedUserWebContentHandlerImpl
   }
 
  private:
-  void CreateObserverFromContents(base::TimeTicks start_time,
-                                  const GURL& target_url,
-                                  content::WebContents* contents);
+  void StartObervingPacpContents(content::WebContents* contents);
 
   void CompleteUrlApprovalAndCloseOrUpdateDialog(
       const GURL& target_url,
@@ -76,6 +74,8 @@ class SupervisedUserWebContentHandlerImpl
   // Stops WebContents observation by the `dialog_web_contents_observer_`
   // and resets the unique pointer.
   void ResetDialogResultContentObserver();
+
+  bool IsLocalApprovalInProgress();
 
   std::unique_ptr<ParentAccessDialogResultObserver>
       dialog_web_contents_observer_;

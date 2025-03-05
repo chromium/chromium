@@ -163,10 +163,10 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserParentAccessObserverTest,
           base::Unretained(this));
   auto dialog_web_contents_observer =
       std::make_unique<ParentAccessDialogResultObserver>(
-          contents(),
           /*url_approval_result_callback=*/std::move(completion_callback));
-
   CHECK(dialog_web_contents_observer);
+  dialog_web_contents_observer->StartObserving(contents());
+
   GURL::Replacements result_query_param;
   if (GetParam().result_query_param.has_value()) {
     result_query_param.SetQueryStr(GetParam().result_query_param.value());

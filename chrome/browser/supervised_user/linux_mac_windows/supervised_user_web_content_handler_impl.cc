@@ -40,13 +40,26 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
     ApprovalRequestInitiatedCallback callback) {
   CHECK(base::FeatureList::IsEnabled(supervised_user::kLocalWebApprovals));
   CHECK(web_contents_);
-
   GURL target_url = url_formatter.FormatUrl(url);
   base::TimeTicks start_time = base::TimeTicks::Now();
-  // Creates web contents observer for the parent approval dialog.
+
+  if (IsLocalApprovalInProgress()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  dialog_web_contents_observer_ =
+      std::make_unique<ParentAccessDialogResultObserver>(
+          /*url_approval_result_callback=*/
+          base::BindOnce(&SupervisedUserWebContentHandlerImpl::
+                             CompleteUrlApprovalAndCloseOrUpdateDialog,
+                         weak_ptr_factory_.GetWeakPtr(), target_url,
+                         start_time));
+
+  // Observer web contents for the parent approval dialog.
   auto create_observer_callback = base::BindOnce(
-      &SupervisedUserWebContentHandlerImpl::CreateObserverFromContents,
-      weak_ptr_factory_.GetWeakPtr(), start_time, target_url);
+      &SupervisedUserWebContentHandlerImpl::StartObervingPacpContents,
+      weak_ptr_factory_.GetWeakPtr());
   auto abort_dialog_callback = base::BindOnce(
       &SupervisedUserWebContentHandlerImpl::AbortUrlApprovalDialogOnTimeout,
       weak_ptr_factory_.GetWeakPtr());
@@ -67,27 +80,19 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
 
 void SupervisedUserWebContentHandlerImpl::MaybeCloseLocalApproval() {
   // There is no local web approval instance open, do nothing.
-  if (!dialog_web_contents_observer_) {
+  if (!IsLocalApprovalInProgress()) {
     return;
   }
   CloseDialog();
 }
 
-void SupervisedUserWebContentHandlerImpl::CreateObserverFromContents(
-    base::TimeTicks start_time,
-    const GURL& target_url,
+void SupervisedUserWebContentHandlerImpl::StartObervingPacpContents(
     content::WebContents* contents) {
   CHECK(contents);
+  CHECK(dialog_web_contents_observer_);
   // The parent approval dialog and its new contents have been created. We start
   // observing them.
-  dialog_web_contents_observer_ =
-      std::make_unique<ParentAccessDialogResultObserver>(
-          contents,
-          /*url_approval_result_callback=*/
-          base::BindOnce(&SupervisedUserWebContentHandlerImpl::
-                             CompleteUrlApprovalAndCloseOrUpdateDialog,
-                         weak_ptr_factory_.GetWeakPtr(), target_url,
-                         start_time));
+  dialog_web_contents_observer_->StartObserving(contents);
 }
 
 void SupervisedUserWebContentHandlerImpl::
@@ -135,7 +140,7 @@ void SupervisedUserWebContentHandlerImpl::DisplayErrorMessageInDialog() {
 }
 
 void SupervisedUserWebContentHandlerImpl::AbortUrlApprovalDialogOnTimeout() {
-  if (!dialog_web_contents_observer_) {
+  if (!IsLocalApprovalInProgress()) {
     return;
   }
   // Sets the approval result to error and destructs the result observer.
@@ -146,9 +151,13 @@ void SupervisedUserWebContentHandlerImpl::AbortUrlApprovalDialogOnTimeout() {
 }
 
 void SupervisedUserWebContentHandlerImpl::ResetDialogResultContentObserver() {
-  if (!dialog_web_contents_observer_) {
+  if (!IsLocalApprovalInProgress()) {
     return;
   }
   dialog_web_contents_observer_->StopObserving();
   dialog_web_contents_observer_.reset();
+}
+
+bool SupervisedUserWebContentHandlerImpl::IsLocalApprovalInProgress() {
+  return dialog_web_contents_observer_ != nullptr;
 }
