@@ -264,9 +264,15 @@ class CORE_EXPORT GridLayoutAlgorithm
                         const GridLayoutData& layout_data,
                         HeapVector<LayoutUnit>& intersection_points,
                         GapFragmentData::GapGeometry* gap_geometry) const;
+  // TODO(samomekarajr): Remove this method when done with the new
+  // implementation.
   void PopulateGapIntersectionPoints(
       const HeapVector<LayoutUnit>& intersection_points,
       GapFragmentData::GapBoundaries& gap_boundaries) const;
+
+  void BuildGapIntersectionPoints(
+      const GridLayoutData& layout_data,
+      GapFragmentData::GapGeometry* gap_geometry) const;
 
   // Computes the static position, grid area and its offset of out of flow
   // elements in the grid (as provided by `oof_children`).
