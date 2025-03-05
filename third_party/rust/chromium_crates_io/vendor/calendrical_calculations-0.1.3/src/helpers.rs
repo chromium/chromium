@@ -282,7 +282,7 @@ fn test_invert_angular() {
 }
 
 /// Error returned when casting from an i32
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, displaydoc::Display)]
 #[allow(clippy::exhaustive_enums)] // enum is specific to function and has a closed set of possible values
 pub enum I32CastError {
     /// Less than i32::MIN
@@ -290,6 +290,8 @@ pub enum I32CastError {
     /// Greater than i32::MAX
     AboveMax,
 }
+
+impl core::error::Error for I32CastError {}
 
 impl I32CastError {
     pub(crate) const fn saturate(self) -> i32 {

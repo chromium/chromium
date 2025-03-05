@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.71.1"
+rust-version = "1.81"
 name = "calendrical_calculations"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -26,6 +26,7 @@ include = [
     "LICENSE",
     "README.md",
 ]
+autolib = false
 autobins = false
 autoexamples = false
 autotests = false
@@ -48,14 +49,14 @@ categories = [
 license = "Apache-2.0"
 repository = "https://github.com/unicode-org/icu4x"
 
-[package.metadata.cargo-all-features]
-denylist = ["bench"]
-
 [package.metadata.docs.rs]
 all-features = true
 
 [package.metadata.workspaces]
 independent = true
+
+[features]
+logging = ["dep:log"]
 
 [lib]
 name = "calendrical_calculations"
@@ -73,7 +74,3 @@ default-features = false
 version = "0.4.17"
 optional = true
 default-features = false
-
-[features]
-logging = ["dep:log"]
-std = []

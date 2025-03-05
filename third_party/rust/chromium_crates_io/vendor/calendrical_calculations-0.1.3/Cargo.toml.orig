@@ -10,7 +10,7 @@
 [package]
 name = "calendrical_calculations"
 description = "Calendrical calculations in Rust"
-version = "0.1.2"
+version = "0.1.3"
 categories = ["rust-patterns", "memory-management", "caching", "no-std", "data-structures"]
 keywords = ["zerocopy", "serialization", "zero-copy", "serde"]
 
@@ -38,8 +38,3 @@ log = { workspace = true, optional = true }
 
 [features]
 logging = ["dep:log"]
-std = []
-
-[package.metadata.cargo-all-features]
-# Bench feature gets tested separately and is only relevant for CI
-denylist = ["bench"]
