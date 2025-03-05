@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 126 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 162 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] xn--a (using URL)
   assert_throws_js: function "() => makeURL("url", hostTest.input)" did not throw
 [FAIL] xn--a (using URL.host)
@@ -216,6 +216,60 @@ Found 126 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "x" but got "www%20.lookout.net"
 [FAIL] www .lookout.net (using <area>.hostname)
   assert_equals: expected "x" but got "www%20.lookout.net"
+[FAIL] look᠎out.net (using URL)
+  Failed to construct 'URL': Invalid URL
+[FAIL] look᠎out.net (using URL.host)
+  assert_equals: expected "lookout.net" but got "x"
+[FAIL] look᠎out.net (using URL.hostname)
+  assert_equals: expected "lookout.net" but got "x"
+[FAIL] look᠎out.net (using <a>)
+  Failed to construct 'URL': Invalid URL
+[FAIL] look᠎out.net (using <a>.host)
+  assert_equals: expected "lookout.net" but got "x"
+[FAIL] look᠎out.net (using <a>.hostname)
+  assert_equals: expected "lookout.net" but got "x"
+[FAIL] look᠎out.net (using <area>)
+  Failed to construct 'URL': Invalid URL
+[FAIL] look᠎out.net (using <area>.host)
+  assert_equals: expected "lookout.net" but got "x"
+[FAIL] look᠎out.net (using <area>.hostname)
+  assert_equals: expected "lookout.net" but got "x"
+[FAIL] look⁫out.net (using URL)
+  Failed to construct 'URL': Invalid URL
+[FAIL] look⁫out.net (using URL.host)
+  assert_equals: expected "lookout.net" but got "x"
+[FAIL] look⁫out.net (using URL.hostname)
+  assert_equals: expected "lookout.net" but got "x"
+[FAIL] look⁫out.net (using <a>)
+  Failed to construct 'URL': Invalid URL
+[FAIL] look⁫out.net (using <a>.host)
+  assert_equals: expected "lookout.net" but got "x"
+[FAIL] look⁫out.net (using <a>.hostname)
+  assert_equals: expected "lookout.net" but got "x"
+[FAIL] look⁫out.net (using <area>)
+  Failed to construct 'URL': Invalid URL
+[FAIL] look⁫out.net (using <area>.host)
+  assert_equals: expected "lookout.net" but got "x"
+[FAIL] look⁫out.net (using <area>.hostname)
+  assert_equals: expected "lookout.net" but got "x"
+[FAIL] Ӏ.com (using URL)
+  Failed to construct 'URL': Invalid URL
+[FAIL] Ӏ.com (using URL.host)
+  assert_equals: expected "xn--s5a.com" but got "x"
+[FAIL] Ӏ.com (using URL.hostname)
+  assert_equals: expected "xn--s5a.com" but got "x"
+[FAIL] Ӏ.com (using <a>)
+  Failed to construct 'URL': Invalid URL
+[FAIL] Ӏ.com (using <a>.host)
+  assert_equals: expected "xn--s5a.com" but got "x"
+[FAIL] Ӏ.com (using <a>.hostname)
+  assert_equals: expected "xn--s5a.com" but got "x"
+[FAIL] Ӏ.com (using <area>)
+  Failed to construct 'URL': Invalid URL
+[FAIL] Ӏ.com (using <area>.host)
+  assert_equals: expected "xn--s5a.com" but got "x"
+[FAIL] Ӏ.com (using <area>.hostname)
+  assert_equals: expected "xn--s5a.com" but got "x"
 [FAIL] 㛼.com (using URL)
   Failed to construct 'URL': Invalid URL
 [FAIL] 㛼.com (using URL.host)
@@ -234,6 +288,24 @@ Found 126 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "xn--snl.com" but got "x"
 [FAIL] 㛼.com (using <area>.hostname)
   assert_equals: expected "xn--snl.com" but got "x"
+[FAIL] Ↄ.com (using URL)
+  Failed to construct 'URL': Invalid URL
+[FAIL] Ↄ.com (using URL.host)
+  assert_equals: expected "xn--r5g.com" but got "x"
+[FAIL] Ↄ.com (using URL.hostname)
+  assert_equals: expected "xn--r5g.com" but got "x"
+[FAIL] Ↄ.com (using <a>)
+  Failed to construct 'URL': Invalid URL
+[FAIL] Ↄ.com (using <a>.host)
+  assert_equals: expected "xn--r5g.com" but got "x"
+[FAIL] Ↄ.com (using <a>.hostname)
+  assert_equals: expected "xn--r5g.com" but got "x"
+[FAIL] Ↄ.com (using <area>)
+  Failed to construct 'URL': Invalid URL
+[FAIL] Ↄ.com (using <area>.host)
+  assert_equals: expected "xn--r5g.com" but got "x"
+[FAIL] Ↄ.com (using <area>.hostname)
+  assert_equals: expected "xn--r5g.com" but got "x"
 [FAIL] xn--0.com (using URL)
   assert_throws_js: function "() => makeURL("url", hostTest.input)" did not throw
 [FAIL] xn--0.com (using URL.host)
@@ -253,3 +325,4 @@ Found 126 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] xn--0.com (using <area>.hostname)
   assert_equals: expected "x" but got "xn--0.com"
 Harness: the test ran to completion.
+
