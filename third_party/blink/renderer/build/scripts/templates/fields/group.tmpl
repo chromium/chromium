@@ -19,6 +19,11 @@ class {{group.type_name}} : public GarbageCollected<{{group.type_name}}> {
 
   {% if group.all_fields|selectattr("is_inherited")|list|length > 0 and
         group.all_fields|rejectattr("is_inherited")|list|length > 0 %}
+    {{ ("You have a subgroup that contain both inherited and non-inherited"
+        "members. While the code still supports this for now, it is problematic"
+        "for performance, and you should not do it unless you are certain"
+        "it will not affect benchmarks and memory usage negatively."
+        "This line crashes Jinja on purpose, so that you can consider.")/0 }}
     // Used when constructing ComputedStyleBase, since this group contains
     // both inherited and non-inherited members.
     CORE_EXPORT {{group.type_name}}(const {{group.type_name}}& source_for_noninherited,
