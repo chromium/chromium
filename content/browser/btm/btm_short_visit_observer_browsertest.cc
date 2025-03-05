@@ -357,6 +357,8 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
       embedded_https_test_server().GetURL("b.test", "/empty.html");
   const GURL url3 =
       embedded_https_test_server().GetURL("c.test", "/empty.html");
+  const GURL url4 =
+      embedded_https_test_server().GetURL("d.test", "/empty.html");
 
   auto* btm_service = BtmServiceImpl::Get(web_contents()->GetBrowserContext());
   btm_service->SetStorageClockForTesting(&clock_);
@@ -371,16 +373,20 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
       NavigateToURLFromRendererWithoutUserGesture(web_contents(), url2));
   ASSERT_TRUE(
       NavigateToURLFromRendererWithoutUserGesture(web_contents(), url3));
+  ASSERT_TRUE(NavigateToURLFromRenderer(web_contents(), url4));
 
-  UkmEntryVector entries = GetBtmShortVisits(2, ukm_recorder);
+  UkmEntryVector entries = GetBtmShortVisits(3, ukm_recorder);
   ASSERT_THAT(EntryURLs(ukm_recorder, entries),
-              testing::ElementsAre(url1, url2));
+              testing::ElementsAre(url1, url2, url3));
   // No previous interaction.
   ukm_recorder.ExpectEntryMetric(entries[0], "TimeSinceLastInteraction", -1);
   // A typical interaction.
   ukm_recorder.ExpectEntryMetric(entries[1], "TimeSinceLastInteraction",
                                  ukm::GetSemanticBucketMinForDurationTiming(
                                      base::Hours(1).InMilliseconds()));
+  // We navigated away with a user gesture, but that shouldn't affect the
+  // metric -- still no previous interaction.
+  ukm_recorder.ExpectEntryMetric(entries[2], "TimeSinceLastInteraction", -1);
 }
 
 IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
