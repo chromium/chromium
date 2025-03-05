@@ -339,16 +339,6 @@ scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider() {
 }
 
 std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(
-    const SkImageInfo& info,
-    viz::RasterContextProvider* raster_context_provider) {
-  return CreateResourceProviderForVideoFrame(
-      gfx::Size(info.width(), info.height()),
-      viz::SkColorTypeToSinglePlaneSharedImageFormat(info.colorType()),
-      info.alphaType(), SkColorSpaceToGfxColorSpace(info.refColorSpace()),
-      raster_context_provider);
-}
-
-std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,

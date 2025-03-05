@@ -19,8 +19,6 @@
 
 // Note: Don't include "media/base/video_frame.h" here without good reason,
 // since it includes a lot of non-blink types which can pollute the namespace.
-struct SkImageInfo;
-
 namespace media {
 class PaintCanvasVideoRenderer;
 class VideoFrame;
@@ -119,15 +117,6 @@ PLATFORM_EXPORT void DrawVideoFrameIntoCanvas(
 // Extract a RasterContextProvider from the current SharedGpuContext.
 PLATFORM_EXPORT scoped_refptr<viz::RasterContextProvider>
 GetRasterContextProvider();
-
-// Creates a CanvasResourceProvider which is appropriate for drawing VideoFrame
-// objects into. Some callers to CreateImageFromVideoFrame() may choose to cache
-// their resource providers. If |raster_context_provider| is null a software
-// resource provider will be returned.
-PLATFORM_EXPORT std::unique_ptr<CanvasResourceProvider>
-CreateResourceProviderForVideoFrame(
-    const SkImageInfo& info,
-    viz::RasterContextProvider* raster_context_provider);
 
 // Creates a CanvasResourceProvider which is appropriate for drawing VideoFrame
 // objects into. Some callers to CreateImageFromVideoFrame() may choose to cache

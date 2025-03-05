@@ -390,7 +390,9 @@ class CanvasResourceProviderCache
       info_to_provider_.clear();
 
     auto provider = CreateResourceProviderForVideoFrame(
-        info, GetRasterContextProvider().get());
+        size, viz::SkColorTypeToSinglePlaneSharedImageFormat(info.colorType()),
+        info.alphaType(), SkColorSpaceToGfxColorSpace(info.refColorSpace()),
+        GetRasterContextProvider().get());
     auto* result = provider.get();
     info_to_provider_.Set(info, std::move(provider));
     return result;

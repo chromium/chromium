@@ -1801,6 +1801,7 @@ _CONFIG = [
             'media::.+',
             'viz::RasterContextProvider',
             'viz::ReleaseCallback',
+            'viz::SkColorTypeToSinglePlaneSharedImageFormat',
         ]
     },
     {
