@@ -2980,6 +2980,7 @@
       name: "NoFontAntialiasing",
       status: {
         "Win": "test",
+        "Mac": "test",
         "default": ""
       }
     },
