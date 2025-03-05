@@ -486,7 +486,8 @@ void HTMLVideoElement::EnterFullscreen() {
 void HTMLVideoElement::DidEnterFullscreen() {
   UpdateControlsVisibility();
 
-  if (GetDisplayType() == DisplayType::kPictureInPicture && !IsInAutoPIP()) {
+  if (GetDisplayType() == DisplayType::kVideoPictureInPicture &&
+      !IsInAutoPIP()) {
     PictureInPictureController::From(GetDocument())
         .ExitPictureInPicture(this, nullptr);
   }
@@ -699,7 +700,7 @@ bool HTMLVideoElement::SupportsPictureInPicture() const {
 DisplayType HTMLVideoElement::GetDisplayType() const {
   if (is_auto_picture_in_picture_ ||
       PictureInPictureController::IsElementInPictureInPicture(this)) {
-    return DisplayType::kPictureInPicture;
+    return DisplayType::kVideoPictureInPicture;
   }
 
   if (PictureInPictureController::IsInDocumentPictureInPicture(this)) {
@@ -717,7 +718,8 @@ bool HTMLVideoElement::IsInAutoPIP() const {
 }
 
 void HTMLVideoElement::OnPictureInPictureStateChange() {
-  if (GetDisplayType() != DisplayType::kPictureInPicture || IsInAutoPIP()) {
+  if (GetDisplayType() != DisplayType::kVideoPictureInPicture ||
+      IsInAutoPIP()) {
     return;
   }
 

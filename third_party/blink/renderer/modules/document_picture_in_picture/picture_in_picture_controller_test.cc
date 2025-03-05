@@ -680,7 +680,7 @@ TEST_F(PictureInPictureControllerTestWithWidget,
 
   EXPECT_NE(nullptr, PictureInPictureControllerImpl::From(GetDocument())
                          .PictureInPictureElement());
-  EXPECT_EQ(DisplayType::kPictureInPicture, Video()->GetDisplayType());
+  EXPECT_EQ(DisplayType::kVideoPictureInPicture, Video()->GetDisplayType());
 }
 
 TEST_F(PictureInPictureControllerTestWithWidget,

@@ -854,11 +854,12 @@ void WebMediaPlayerImpl::OnDisplayTypeChanged(DisplayType display_type) {
   if (surface_layer_for_video_enabled_) {
     PostCrossThreadTask(
         *vfc_task_runner_, FROM_HERE,
-        CrossThreadBindOnce(&VideoFrameCompositor::SetForceSubmit,
-                            CrossThreadUnretained(compositor_.get()),
-                            display_type == DisplayType::kPictureInPicture));
+        CrossThreadBindOnce(
+            &VideoFrameCompositor::SetForceSubmit,
+            CrossThreadUnretained(compositor_.get()),
+            display_type == DisplayType::kVideoPictureInPicture));
 
-    if (display_type == DisplayType::kPictureInPicture) {
+    if (display_type == DisplayType::kVideoPictureInPicture) {
       // In picture in picture mode, since the video is compositing in the PIP
       // windows, stop composting it in the original window. One exception is
       // for persistent video, where can happen in auto-pip mode, where the
@@ -886,8 +887,8 @@ void WebMediaPlayerImpl::OnDisplayTypeChanged(DisplayType display_type) {
       case DisplayType::kFullscreen:
         watch_time_reporter_->OnDisplayTypeFullscreen();
         break;
-      case DisplayType::kPictureInPicture:
-        watch_time_reporter_->OnDisplayTypePictureInPicture();
+      case DisplayType::kVideoPictureInPicture:
+        watch_time_reporter_->OnDisplayTypeVideoPictureInPicture();
         break;
       case DisplayType::kDocumentPictureInPicture:
         watch_time_reporter_->OnDisplayTypeDocumentPictureInPicture();
@@ -895,7 +896,7 @@ void WebMediaPlayerImpl::OnDisplayTypeChanged(DisplayType display_type) {
     }
   }
 
-  SetPersistentState(display_type == DisplayType::kPictureInPicture);
+  SetPersistentState(display_type == DisplayType::kVideoPictureInPicture);
   UpdatePlayState();
 }
 
@@ -3598,8 +3599,8 @@ void WebMediaPlayerImpl::CreateWatchTimeReporter() {
     case DisplayType::kFullscreen:
       watch_time_reporter_->OnDisplayTypeFullscreen();
       break;
-    case DisplayType::kPictureInPicture:
-      watch_time_reporter_->OnDisplayTypePictureInPicture();
+    case DisplayType::kVideoPictureInPicture:
+      watch_time_reporter_->OnDisplayTypeVideoPictureInPicture();
       break;
     case DisplayType::kDocumentPictureInPicture:
       watch_time_reporter_->OnDisplayTypeDocumentPictureInPicture();
@@ -4098,7 +4099,7 @@ void WebMediaPlayerImpl::RecordEncryptionScheme(
 
 bool WebMediaPlayerImpl::IsInVideoPictureInPicture() const {
   DCHECK(client_);
-  return client_->GetDisplayType() == DisplayType::kPictureInPicture;
+  return client_->GetDisplayType() == DisplayType::kVideoPictureInPicture;
 }
 
 void WebMediaPlayerImpl::MaybeSetContainerNameForMetrics() {

@@ -137,7 +137,7 @@ class BLINK_COMMON_EXPORT WatchTimeReporter : base::PowerStateObserver {
   // to the display type of the media.
   void OnDisplayTypeInline();
   void OnDisplayTypeFullscreen();
-  void OnDisplayTypePictureInPicture();
+  void OnDisplayTypeVideoPictureInPicture();
   void OnDisplayTypeDocumentPictureInPicture();
 
   // Mutates various properties that may change over the lifetime of a playback

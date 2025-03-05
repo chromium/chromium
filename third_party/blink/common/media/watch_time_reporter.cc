@@ -300,8 +300,8 @@ void WatchTimeReporter::OnDisplayTypeFullscreen() {
   OnDisplayTypeChanged(DisplayType::kFullscreen);
 }
 
-void WatchTimeReporter::OnDisplayTypePictureInPicture() {
-  OnDisplayTypeChanged(DisplayType::kPictureInPicture);
+void WatchTimeReporter::OnDisplayTypeVideoPictureInPicture() {
+  OnDisplayTypeChanged(DisplayType::kVideoPictureInPicture);
 }
 
 void WatchTimeReporter::OnDisplayTypeDocumentPictureInPicture() {
@@ -700,7 +700,7 @@ media::WatchTimeKey WatchTimeReporter::GetDisplayTypeKey(
       return DISPLAY_TYPE_KEY(DisplayInline);
     case DisplayType::kFullscreen:
       return DISPLAY_TYPE_KEY(DisplayFullscreen);
-    case DisplayType::kPictureInPicture:
+    case DisplayType::kVideoPictureInPicture:
     case DisplayType::kDocumentPictureInPicture:
       return DISPLAY_TYPE_KEY(DisplayPictureInPicture);
   }
