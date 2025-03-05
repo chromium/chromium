@@ -27,10 +27,12 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/site_instance.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 
 namespace web_app {
 
@@ -123,7 +125,13 @@ void WebAppTabHelper::SetState(std::optional<webapps::AppId> app_id,
                        proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
                        proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}) ||
          provider_->registrar_unsafe().IsUninstalling(*app_id));
+
   if (app_id_ == app_id && window_app_id_ == window_app_id) {
+    // This can be triggered for navigations that are happening in the same app
+    // window, like if a navigation is captured in an open window causing a page
+    // load to happen. Record the `UseCounter` there as well, as that is
+    // treated as an app launch.
+    ScheduleManifestAppliedUseCounter();
     return;
   }
 
@@ -135,6 +143,7 @@ void WebAppTabHelper::SetState(std::optional<webapps::AppId> app_id,
     OnAssociatedAppChanged(previous_app_id, app_id_);
   }
   UpdateAudioFocusGroupId();
+  ScheduleManifestAppliedUseCounter();
 }
 
 void WebAppTabHelper::SetAppId(std::optional<webapps::AppId> app_id) {
@@ -202,6 +211,12 @@ void WebAppTabHelper::PrimaryPageChanged(content::Page& page) {
 
   ReinstallPlaceholderAppIfNecessary(
       page.GetMainDocument().GetLastCommittedURL());
+}
+
+void WebAppTabHelper::DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                                    const GURL& validated_url) {
+  can_record_manifest_applied_ = true;
+  MaybeRecordManifestAppliedUseCounter();
 }
 
 void WebAppTabHelper::FlushLaunchQueueForTesting() const {
@@ -323,6 +338,29 @@ void WebAppTabHelper::MaybeNotifyTabChanged() {
   if (on_tab_details_changed_callback_) {
     std::move(on_tab_details_changed_callback_).Run();
   }
+}
+
+void WebAppTabHelper::ScheduleManifestAppliedUseCounter() {
+  bool should_measure_use_counter_for_standalone_launch =
+      app_id_.has_value() && app_id_ == window_app_id_ &&
+      !provider_->registrar_unsafe().GetAppManifestUrl(*app_id_).is_empty();
+  if (!should_measure_use_counter_for_standalone_launch) {
+    return;
+  }
+  meaure_manifest_applied_use_counter_ = true;
+  MaybeRecordManifestAppliedUseCounter();
+}
+
+void WebAppTabHelper::MaybeRecordManifestAppliedUseCounter() {
+  if (!meaure_manifest_applied_use_counter_ || !can_record_manifest_applied_) {
+    return;
+  }
+
+  page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
+      web_contents()->GetPrimaryMainFrame(),
+      blink::mojom::WebFeature::kInstalledManifestApplied);
+  meaure_manifest_applied_use_counter_ = false;
+  can_record_manifest_applied_ = false;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebAppTabHelper);

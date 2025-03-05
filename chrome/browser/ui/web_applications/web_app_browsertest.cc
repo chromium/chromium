@@ -85,6 +85,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/web_feature_histogram_tester.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -311,6 +312,112 @@ class WebAppBrowserTest : public WebAppBrowserTestBase {
     return result;
   }
 };
+
+using WebAppLaunchUseCounterBrowserTest = WebAppBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(WebAppLaunchUseCounterBrowserTest,
+                       InstallMeasuresCounterOnce) {
+  WebFeatureHistogramTester web_feature_histogram_tester;
+  GURL test_url = https_server()->GetURL("/banners/manifest_test_page.html");
+  NavigateViaLinkClickToURLAndWait(browser(), test_url);
+
+  const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
+
+  EXPECT_EQ(1, web_feature_histogram_tester.GetCount(
+                   blink::mojom::WebFeature::kInstalledManifestApplied));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppLaunchUseCounterBrowserTest,
+                       InstallAndLaunchMeasuresTwice) {
+  WebFeatureHistogramTester web_feature_histogram_tester;
+  GURL test_url = https_server()->GetURL("/banners/manifest_test_page.html");
+  NavigateViaLinkClickToURLAndWait(browser(), test_url);
+
+  const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
+  Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
+  content::WaitForLoadStop(
+      app_browser->tab_strip_model()->GetActiveWebContents());
+
+  // Measured twice, since launching creates a new app browser.
+  EXPECT_EQ(2, web_feature_histogram_tester.GetCount(
+                   blink::mojom::WebFeature::kInstalledManifestApplied));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppLaunchUseCounterBrowserTest,
+                       NonInstallableSiteNoMeasure) {
+  WebFeatureHistogramTester web_feature_histogram_tester;
+  GURL test_url = https_server()->GetURL("/banners/no_manifest_test_page.html");
+  NavigateViaLinkClickToURLAndWait(browser(), test_url);
+
+  const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
+
+  EXPECT_EQ(0, web_feature_histogram_tester.GetCount(
+                   blink::mojom::WebFeature::kInstalledManifestApplied));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppLaunchUseCounterBrowserTest,
+                       MultiNavigationsMeasureMultipleTimes) {
+  WebFeatureHistogramTester web_feature_histogram_tester;
+  GURL test_url = https_server()->GetURL("/banners/manifest_test_page.html");
+  NavigateViaLinkClickToURLAndWait(browser(), test_url);
+
+  const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
+  Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
+  content::WaitForLoadStop(
+      app_browser->tab_strip_model()->GetActiveWebContents());
+
+  EXPECT_EQ(2, web_feature_histogram_tester.GetCount(
+                   blink::mojom::WebFeature::kInstalledManifestApplied));
+
+  // Navigate the existing app window to an in scope url.
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      app_browser, test_url, /*number_of_navigations=*/1);
+  content::WaitForLoadStop(
+      app_browser->tab_strip_model()->GetActiveWebContents());
+
+  // Use counter count changes as per navigations.
+  EXPECT_EQ(3, web_feature_histogram_tester.GetCount(
+                   blink::mojom::WebFeature::kInstalledManifestApplied));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppLaunchUseCounterBrowserTest,
+                       OutOfScopeNavigationsNotMeasured) {
+  WebFeatureHistogramTester web_feature_histogram_tester;
+  GURL test_url = https_server()->GetURL("/banners/scope_a/page_1.html");
+  NavigateViaLinkClickToURLAndWait(browser(), test_url);
+
+  const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
+  Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
+  content::WaitForLoadStop(
+      app_browser->tab_strip_model()->GetActiveWebContents());
+
+  EXPECT_EQ(2, web_feature_histogram_tester.GetCount(
+                   blink::mojom::WebFeature::kInstalledManifestApplied));
+
+  GURL out_of_scope_url =
+      https_server()->GetURL("/banners/scope_b/scope_b.html");
+
+  // Navigate the existing app window to an out of scope url.
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      app_browser, out_of_scope_url, /*number_of_navigations=*/1);
+  content::WaitForLoadStop(
+      app_browser->tab_strip_model()->GetActiveWebContents());
+
+  // Use counter does not change for out of scope navigations.
+  EXPECT_EQ(2, web_feature_histogram_tester.GetCount(
+                   blink::mojom::WebFeature::kInstalledManifestApplied));
+
+  // Navigate the existing app window to an in scope url (the initial install
+  // url).
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      app_browser, test_url, /*number_of_navigations=*/1);
+  content::WaitForLoadStop(
+      app_browser->tab_strip_model()->GetActiveWebContents());
+
+  // Use counter will increment for an in-scope navigations.
+  EXPECT_EQ(3, web_feature_histogram_tester.GetCount(
+                   blink::mojom::WebFeature::kInstalledManifestApplied));
+}
 
 using WebAppWebDXManifestBrowserTest = WebAppBrowserTest;
 
