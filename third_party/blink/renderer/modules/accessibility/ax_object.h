@@ -1478,6 +1478,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Returns a string representation of this object.
   // Must only be used after `init()`has been called.
   virtual String ToString(bool verbose = true) const;
+  static String GetNodeString(Node* node);
 
   void PopulateAXRelativeBounds(ui::AXRelativeBounds& bounds,
                                 bool* clips_children) const;

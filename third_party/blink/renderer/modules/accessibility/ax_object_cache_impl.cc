@@ -2319,8 +2319,11 @@ void AXObjectCacheImpl::DiscardBadAriaHiddenBecauseOfFocus(AXObject& obj) {
             "also prevent focus. For more details, see the aria-hidden section "
             "of the WAI-ARIA specification at "
             "https://w3c.github.io/aria/#aria-hidden.\n"
-            "Element with focus: %s\nAncestor with aria-hidden: ",
-            focused_element.TagQName().ToString().Ascii().c_str()));
+            "Element with focus: %s\nAncestor with aria-hidden: %s",
+            AXObject::GetNodeString(&focused_element).Ascii().c_str(),
+            AXObject::GetNodeString(bad_aria_hidden_ancestor->GetElement())
+                .Ascii()
+                .c_str()));
 #if AX_FAIL_FAST_BUILD()
     LOG(ERROR) << "Parent chain for focused node's AXObject:\n"
                << ParentChainToStringHelper(&obj);
