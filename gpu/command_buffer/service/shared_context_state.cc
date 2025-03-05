@@ -1151,9 +1151,8 @@ void SharedContextState::PessimisticallyResetGrContext() const {
   // Calling GrContext::resetContext() is very cheap, so we do it
   // pessimistically. We could dirty less state if skia state setting
   // performance becomes an issue.
-  if (gr_context_ && GrContextIsGL() && use_virtualized_gl_contexts_) {
+  if (gr_context_ && GrContextIsGL())
     gr_context_->resetContext();
-  }
 }
 
 void SharedContextState::StoreVkPipelineCacheIfNeeded() {
