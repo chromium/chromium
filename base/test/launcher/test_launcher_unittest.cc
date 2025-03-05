@@ -43,6 +43,8 @@ using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 using ::testing::ReturnPointee;
 
+constexpr int kExcessiveBytes = 700000;
+
 TestResult GenerateTestResult(const std::string& test_name,
                               TestResult::Status status,
                               TimeDelta elapsed_td = Milliseconds(30),
@@ -615,7 +617,7 @@ TEST_F(TestLauncherTest, ExcessiveOutput) {
   command_line->AppendSwitchASCII("test-launcher-print-test-stdio", "never");
   TestResult test_result =
       GenerateTestResult("Test.firstTest", TestResult::TEST_SUCCESS,
-                         Milliseconds(30), std::string(500000, 'a'));
+                         Milliseconds(30), std::string(kExcessiveBytes, 'a'));
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
       .WillOnce(OnTestResult(&test_launcher, test_result));
   EXPECT_FALSE(test_launcher.Run(command_line.get()));
@@ -626,10 +628,11 @@ TEST_F(TestLauncherTest, OutputLimitSwitch) {
   AddMockedTests("Test", {"firstTest"});
   SetUpExpectCalls();
   command_line->AppendSwitchASCII("test-launcher-print-test-stdio", "never");
-  command_line->AppendSwitchASCII("test-launcher-output-bytes-limit", "800000");
+  command_line->AppendSwitchASCII("test-launcher-output-bytes-limit",
+                                  base::ToString(kExcessiveBytes + 100000));
   TestResult test_result =
       GenerateTestResult("Test.firstTest", TestResult::TEST_SUCCESS,
-                         Milliseconds(30), std::string(500000, 'a'));
+                         Milliseconds(30), std::string(kExcessiveBytes, 'a'));
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
       .WillOnce(OnTestResult(&test_launcher, test_result));
   EXPECT_TRUE(test_launcher.Run(command_line.get()));

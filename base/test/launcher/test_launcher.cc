@@ -231,7 +231,13 @@ const size_t kOutputSnippetLinesLimit = 5000;
 
 // Limit of output snippet size. Exceeding this limit
 // results in truncating the output and failing the test.
-const size_t kOutputSnippetBytesLimit = 300 * 1024;
+// TODO(pbos): Investigate lowering this number (it used to be 300k before
+// logging lines got longer, but even that seems excessive). If we need this to
+// be even that high then try to figure out why and document that here. The
+// author of this comment assumes that the prior limit was set to be submittable
+// with the tests that were checked in at the time rather than thinking that
+// logging 300k is a good threshold.
+const size_t kOutputSnippetBytesLimit = 500 * 1024;
 
 // Limit of seed values for gtest shuffling. Arbitrary, but based on
 // gtest's similarly arbitrary choice.

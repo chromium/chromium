@@ -60,8 +60,9 @@ class ScopedExpectDumpWithoutCrashing {
 };
 
 MATCHER_P2(LogErrorMatches, line, expected_msg, "") {
-  EXPECT_THAT(arg, testing::HasSubstr(
-                       base::StringPrintf("check_unittest.cc(%d)] ", line)));
+  EXPECT_THAT(arg,
+              testing::HasSubstr(base::StringPrintf(
+                  "%s:%d] ", base::Location::Current().file_name(), line)));
   if (std::string(expected_msg).find("=~") == 0) {
     EXPECT_THAT(std::string(arg),
                 testing::ContainsRegex(std::string(expected_msg).substr(2)));
