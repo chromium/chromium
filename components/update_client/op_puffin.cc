@@ -84,7 +84,7 @@ void Patch(
     const base::FilePath& temp_dir,
     base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
         callback) {
-  base::FilePath new_file = temp_dir.AppendASCII("puffpatch_out");
+  base::FilePath new_file = temp_dir.Append(FILE_PATH_LITERAL("puffpatch_out"));
   patcher->PatchPuffPatch(
       base::File(old_file, base::File::FLAG_OPEN | base::File::FLAG_READ),
       base::File(patch_file, base::File::FLAG_OPEN | base::File::FLAG_READ),

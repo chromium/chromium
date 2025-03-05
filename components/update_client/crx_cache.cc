@@ -89,7 +89,7 @@ class CrxCacheImpl : public CrxCacheSynchronous {
 CrxCacheImpl::CrxCacheImpl(const base::FilePath& cache_root)
     : cache_root_(cache_root),
       metadata_(base::MakeRefCounted<JsonPrefStore>(
-          cache_root_.AppendASCII("metadata.json"))) {
+          cache_root_.Append(FILE_PATH_LITERAL("metadata.json")))) {
   metadata_->ReadPrefs();
   absl::flat_hash_set<std::string> expected_basenames({"metadata.json"});
   absl::flat_hash_set<std::string> found_basenames;
@@ -108,10 +108,10 @@ CrxCacheImpl::CrxCacheImpl(const base::FilePath& cache_root)
       .ForEach([&expected_basenames,
                 &found_basenames](const base::FilePath& file_path) {
         if (!base::Contains(expected_basenames,
-                            file_path.BaseName().MaybeAsASCII())) {
+                            file_path.BaseName().AsUTF8Unsafe())) {
           base::DeleteFile(file_path);
         } else {
-          found_basenames.insert(file_path.BaseName().MaybeAsASCII());
+          found_basenames.insert(file_path.BaseName().AsUTF8Unsafe());
         }
       });
 
@@ -155,7 +155,7 @@ base::expected<base::FilePath, UnpackerError> CrxCacheImpl::GetByHash(
   if (!hashes_key->GetDict().contains(hash)) {
     return base::unexpected(UnpackerError::kCrxCacheFileNotCached);
   }
-  return cache_root_.AppendASCII(hash);
+  return cache_root_.AppendUTF8(hash);
 }
 
 base::expected<base::FilePath, UnpackerError> CrxCacheImpl::GetByFp(
@@ -169,7 +169,7 @@ base::expected<base::FilePath, UnpackerError> CrxCacheImpl::GetByFp(
     if (value.is_dict()) {
       const std::string* item_fp = value.GetDict().FindString("fp");
       if (item_fp && fp == *item_fp) {
-        return cache_root_.AppendASCII(hash);
+        return cache_root_.AppendUTF8(hash);
       }
     }
   }
@@ -182,7 +182,7 @@ base::expected<base::FilePath, UnpackerError> CrxCacheImpl::Put(
     const std::string& hash,
     const std::string& fp) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::FilePath dest = cache_root_.AppendASCII(hash);
+  base::FilePath dest = cache_root_.AppendUTF8(hash);
   if (file == dest) {
     return dest;  // Already cached.
   }
@@ -226,7 +226,7 @@ void CrxCacheImpl::RemoveAll(const std::string& app_id) {
 
 void CrxCacheImpl::Remove(const std::string& hash) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::DeleteFile(cache_root_.AppendASCII(hash));
+  base::DeleteFile(cache_root_.AppendUTF8(hash));
   metadata_->RemoveValue(base::StrCat({"hashes.", hash}), 0);
 }
 

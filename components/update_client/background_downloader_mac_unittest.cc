@@ -214,7 +214,7 @@ TEST_F(BackgroundDownloaderTest, DISABLED_DownloadDiscoveredInCache) {
   // Place a download in the cache.
   ASSERT_TRUE(base::CreateDirectory(download_cache_));
   uint32_t url_hash = base::PersistentHash(GetURL().spec());
-  base::FilePath cached_download_path = download_cache_.AppendASCII(
+  base::FilePath cached_download_path = download_cache_.Append(
       base::HexEncode(reinterpret_cast<uint8_t*>(&url_hash), sizeof(url_hash)));
   ASSERT_TRUE(base::WriteFile(cached_download_path, kSmallDownloadData));
 
@@ -464,10 +464,10 @@ TEST_F(BackgroundDownloaderPeriodicTasksTest, DISABLED_CleansStaleDownloads) {
     return base::WrapUnique<HttpResponse>(response.release());
   });
 
-  ASSERT_TRUE(base::WriteFile(download_cache_.AppendASCII("file1"),
-                              kSmallDownloadData));
-  ASSERT_TRUE(base::WriteFile(download_cache_.AppendASCII("file2"),
-                              kSmallDownloadData));
+  ASSERT_TRUE(
+      base::WriteFile(download_cache_.Append("file1"), kSmallDownloadData));
+  ASSERT_TRUE(
+      base::WriteFile(download_cache_.Append("file2"), kSmallDownloadData));
   environment_->FastForwardBy(base::Days(3));
 
   base::RunLoop run_loop;
@@ -481,8 +481,8 @@ TEST_F(BackgroundDownloaderPeriodicTasksTest, DISABLED_CleansStaleDownloads) {
   environment_->FastForwardBy(base::Minutes(30));
   environment_->RunUntilIdle();
 
-  EXPECT_FALSE(base::PathExists(download_cache_.AppendASCII("file1")));
-  EXPECT_FALSE(base::PathExists(download_cache_.AppendASCII("file2")));
+  EXPECT_FALSE(base::PathExists(download_cache_.Append("file1")));
+  EXPECT_FALSE(base::PathExists(download_cache_.Append("file2")));
 }
 
 // TODO(crbug.com/40939899): Disabled due to excessive flakiness.

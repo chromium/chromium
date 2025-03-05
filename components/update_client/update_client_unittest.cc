@@ -5300,7 +5300,7 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
                              const std::string& session_id,
                              ActionHandler::Callback callback) {
                   EXPECT_EQ("ChromeRecovery.crx3",
-                            action.BaseName().MaybeAsASCII());
+                            action.BaseName().AsUTF8Unsafe());
                   EXPECT_TRUE(!session_id.empty());
                   std::move(callback).Run(true, 1877345072, 0);
                 });
@@ -5428,8 +5428,8 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
 
   EXPECT_FALSE(unpack_path.empty());
   EXPECT_TRUE(base::DirectoryExists(unpack_path));
-  std::optional<int64_t> file_size =
-      base::GetFileSize(unpack_path.AppendASCII("ChromeRecovery.crx3"));
+  std::optional<int64_t> file_size = base::GetFileSize(
+      unpack_path.Append(FILE_PATH_LITERAL("ChromeRecovery.crx3")));
   EXPECT_TRUE(file_size.has_value());
   EXPECT_EQ(44582, file_size.value());
 
@@ -5456,7 +5456,7 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
                              const std::string& session_id,
                              ActionHandler::Callback callback) {
                   EXPECT_EQ("ChromeRecovery.crx3",
-                            action.BaseName().MaybeAsASCII());
+                            action.BaseName().AsUTF8Unsafe());
                   EXPECT_TRUE(!session_id.empty());
                   std::move(callback).Run(true, 1877345072, 0);
                 });

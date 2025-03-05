@@ -49,11 +49,12 @@ TEST_F(UnpackerTest, UnpackFullCrx) {
         EXPECT_TRUE(base::DirectoryExists(unpack_path));
         EXPECT_EQ(result.public_key, jebg_public_key);
 
-        std::optional<int64_t> file_size =
-            base::GetFileSize(unpack_path.AppendASCII("component1.dll"));
+        std::optional<int64_t> file_size = base::GetFileSize(
+            unpack_path.Append(FILE_PATH_LITERAL("component1.dll")));
         ASSERT_TRUE(file_size.has_value());
         EXPECT_EQ(file_size.value(), 1024);
-        file_size = base::GetFileSize(unpack_path.AppendASCII("manifest.json"));
+        file_size = base::GetFileSize(
+            unpack_path.Append(FILE_PATH_LITERAL("manifest.json")));
         ASSERT_TRUE(file_size.has_value());
         EXPECT_EQ(file_size.value(), 169);
 
@@ -121,7 +122,8 @@ TEST_F(UnpackerTest, UnpackWithVerifiedContents) {
         EXPECT_FALSE(unpack_path.empty());
         EXPECT_TRUE(base::DirectoryExists(unpack_path));
         std::optional<int64_t> file_size = base::GetFileSize(
-            unpack_path.AppendASCII("_metadata/verified_contents.json"));
+            unpack_path.Append(FILE_PATH_LITERAL("_metadata"))
+                .Append(FILE_PATH_LITERAL("verified_contents.json")));
         ASSERT_TRUE(file_size.has_value());
         EXPECT_EQ(file_size.value(), 1538);
         EXPECT_TRUE(base::DeletePathRecursively(unpack_path));

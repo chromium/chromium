@@ -33,12 +33,12 @@ class PuffOperationTest : public testing::Test {
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
   base::FilePath TempPath(const std::string& basename) {
-    return temp_dir_.GetPath().AppendASCII(basename);
+    return temp_dir_.GetPath().AppendUTF8(basename);
   }
 
   base::FilePath CopyToTemp(const std::string& src) {
     base::FilePath dest =
-        TempPath(base::FilePath().AppendASCII(src).BaseName().AsUTF8Unsafe());
+        TempPath(base::FilePath().AppendUTF8(src).BaseName().AsUTF8Unsafe());
     EXPECT_TRUE(base::CopyFile(GetTestFilePath(src.c_str()), dest));
     return dest;
   }

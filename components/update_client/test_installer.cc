@@ -81,7 +81,7 @@ ReadOnlyTestInstaller::~ReadOnlyTestInstaller() = default;
 
 std::optional<base::FilePath> ReadOnlyTestInstaller::GetInstalledFile(
     const std::string& file) {
-  return install_directory_.AppendASCII(file);
+  return install_directory_.AppendUTF8(file);
 }
 
 VersionedTestInstaller::VersionedTestInstaller() {
@@ -110,7 +110,7 @@ void VersionedTestInstaller::Install(
 
   const base::Version version(*version_string);
   const base::FilePath path =
-      install_directory_.AppendASCII(version.GetString());
+      install_directory_.AppendUTF8(version.GetString());
   base::CreateDirectory(path.DirName());
   if (!base::Move(unpack_path, path)) {
     InstallComplete(std::move(callback), progress_callback,
@@ -126,8 +126,8 @@ void VersionedTestInstaller::Install(
 
 std::optional<base::FilePath> VersionedTestInstaller::GetInstalledFile(
     const std::string& file) {
-  return install_directory_.AppendASCII(current_version_.GetString())
-      .AppendASCII(file);
+  return install_directory_.AppendUTF8(current_version_.GetString())
+      .AppendUTF8(file);
 }
 
 }  // namespace update_client
