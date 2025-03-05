@@ -446,7 +446,7 @@ TEST(UpdateClientProtocolParserJSONTest, Parse) {
     EXPECT_TRUE(parser->errors().empty());
     EXPECT_EQ(1u, parser->results().list.size());
     const auto* first_result = &parser->results().list[0];
-    EXPECT_STREQ("ok", first_result->status.c_str());
+    EXPECT_EQ("ok", first_result->status);
     EXPECT_EQ(1u, first_result->crx_urls.size());
     EXPECT_EQ(GURL("http://example.com/"), first_result->crx_urls[0]);
     EXPECT_EQ(GURL("http://diff.example.com/"), first_result->crx_diffurls[0]);
@@ -498,7 +498,7 @@ TEST(UpdateClientProtocolParserJSONTest, Parse) {
     EXPECT_TRUE(parser->errors().empty());
     EXPECT_FALSE(parser->results().list.empty());
     const auto* first_result = &parser->results().list[0];
-    EXPECT_STREQ("noupdate", first_result->status.c_str());
+    EXPECT_EQ("noupdate", first_result->status);
     EXPECT_EQ(first_result->extension_id, "12345");
     EXPECT_EQ(first_result->manifest.version, "");
   }
@@ -509,11 +509,11 @@ TEST(UpdateClientProtocolParserJSONTest, Parse) {
     EXPECT_EQ(2u, parser->results().list.size());
     const auto* first_result = &parser->results().list[0];
     EXPECT_EQ(first_result->extension_id, "aaaaaaaa");
-    EXPECT_STREQ("error-unknownApplication", first_result->status.c_str());
+    EXPECT_EQ("error-unknownApplication", first_result->status);
     EXPECT_TRUE(first_result->manifest.version.empty());
     const auto* second_result = &parser->results().list[1];
     EXPECT_EQ(second_result->extension_id, "bbbbbbbb");
-    EXPECT_STREQ("ok", second_result->status.c_str());
+    EXPECT_EQ("ok", second_result->status);
     EXPECT_EQ("1.2.3.4", second_result->manifest.version);
   }
   {
@@ -546,18 +546,18 @@ TEST(UpdateClientProtocolParserJSONTest, Parse) {
     EXPECT_TRUE(parser->errors().empty());
     EXPECT_FALSE(parser->results().list.empty());
     const auto* first_result = &parser->results().list[0];
-    EXPECT_STREQ("ok", first_result->status.c_str());
+    EXPECT_EQ("ok", first_result->status);
     EXPECT_EQ(first_result->extension_id, "12345");
-    EXPECT_STREQ("this", first_result->action_run.c_str());
+    EXPECT_EQ("this", first_result->action_run);
   }
   {
     EXPECT_TRUE(parser->Parse(kJSONUpdateCheckStatusNoUpdateWithRunAction));
     EXPECT_TRUE(parser->errors().empty());
     EXPECT_FALSE(parser->results().list.empty());
     const auto* first_result = &parser->results().list[0];
-    EXPECT_STREQ("noupdate", first_result->status.c_str());
+    EXPECT_EQ("noupdate", first_result->status);
     EXPECT_EQ(first_result->extension_id, "12345");
-    EXPECT_STREQ("this", first_result->action_run.c_str());
+    EXPECT_EQ("this", first_result->action_run);
   }
   {
     EXPECT_TRUE(parser->Parse(kJSONUpdateCheckStatusErrorWithRunAction));
@@ -566,7 +566,7 @@ TEST(UpdateClientProtocolParserJSONTest, Parse) {
   }
   {
     EXPECT_TRUE(parser->Parse(kJSONAppsStatusError));
-    EXPECT_STREQ("Unknown app status", parser->errors().c_str());
+    EXPECT_EQ("Unknown app status", parser->errors());
     EXPECT_EQ(8u, parser->results().list.size());
     size_t index = 0;
     for (const std::string expected_status : {
@@ -590,15 +590,14 @@ TEST(UpdateClientProtocolParserJSONTest, Parse) {
     EXPECT_TRUE(parser->errors().empty());
     EXPECT_EQ(1u, parser->results().list.size());
     const auto& result = parser->results().list[0];
-    EXPECT_STREQ("UpdaterSetup.exe", result.manifest.run.c_str());
-    EXPECT_STREQ("--arg1 --arg2", result.manifest.arguments.c_str());
+    EXPECT_EQ("UpdaterSetup.exe", result.manifest.run);
+    EXPECT_EQ("--arg1 --arg2", result.manifest.arguments);
 
     ASSERT_EQ(1u, result.data.size());
-    EXPECT_STREQ("ok", result.data[0].status.c_str());
-    EXPECT_STREQ("install", result.data[0].name.c_str());
-    EXPECT_STREQ("foobar_install_data_index",
-                 result.data[0].install_data_index.c_str());
-    EXPECT_STREQ("sampledata", result.data[0].text.c_str());
+    EXPECT_EQ("ok", result.data[0].status);
+    EXPECT_EQ("install", result.data[0].name);
+    EXPECT_EQ("foobar_install_data_index", result.data[0].install_data_index);
+    EXPECT_EQ("sampledata", result.data[0].text);
   }
 }
 

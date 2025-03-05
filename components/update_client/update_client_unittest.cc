@@ -439,9 +439,9 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
 
   EXPECT_EQ(2u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id);
   EXPECT_EQ(ComponentState::kUpToDate, items[1].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id);
 }
 
 // Tests the scenario where two CRXs are checked for updates. On CRX has
@@ -673,23 +673,23 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
 
   EXPECT_EQ(9u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id);
   EXPECT_EQ(ComponentState::kChecking, items[1].state);
-  EXPECT_STREQ("abagagagagagagagagagagagagagagag", items[1].id.c_str());
+  EXPECT_EQ("abagagagagagagagagagagagagagagag", items[1].id);
   EXPECT_EQ(ComponentState::kCanUpdate, items[2].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id);
   EXPECT_EQ(ComponentState::kDownloading, items[3].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id);
   EXPECT_EQ(ComponentState::kDownloading, items[4].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[4].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[4].id);
   EXPECT_EQ(ComponentState::kDownloading, items[5].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[5].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[5].id);
   EXPECT_EQ(ComponentState::kUpdating, items[6].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[6].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[6].id);
   EXPECT_EQ(ComponentState::kUpdated, items[7].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[7].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[7].id);
   EXPECT_EQ(ComponentState::kUpToDate, items[8].state);
-  EXPECT_STREQ("abagagagagagagagagagagagagagagag", items[8].id.c_str());
+  EXPECT_EQ("abagagagagagagagagagagagagagagag", items[8].id);
 
   std::vector<std::tuple<int64_t, int64_t>> progress_bytes = {
       {-1, -1},     {-1, -1},     {-1, -1},     {-1, -1}, {921, 1843},
@@ -916,21 +916,21 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
 
   EXPECT_EQ(8u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id);
   EXPECT_EQ(ComponentState::kChecking, items[1].state);
-  EXPECT_STREQ("abagagagagagagagagagagagagagagag", items[1].id.c_str());
+  EXPECT_EQ("abagagagagagagagagagagagagagagag", items[1].id);
   EXPECT_EQ(ComponentState::kCanUpdate, items[2].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id);
   EXPECT_EQ(ComponentState::kDownloading, items[3].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id);
   EXPECT_EQ(ComponentState::kDownloading, items[4].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[4].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[4].id);
   EXPECT_EQ(ComponentState::kUpdating, items[5].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[5].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[5].id);
   EXPECT_EQ(ComponentState::kUpdated, items[6].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[6].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[6].id);
   EXPECT_EQ(ComponentState::kUpdateError, items[7].state);
-  EXPECT_STREQ("abagagagagagagagagagagagagagagag", items[7].id.c_str());
+  EXPECT_EQ("abagagagagagagagagagagagagagagag", items[7].id);
 }
 
 // Tests the update check for two CRXs scenario when the second CRX does not
@@ -1133,19 +1133,19 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
 
   EXPECT_EQ(7u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id);
   EXPECT_EQ(ComponentState::kUpdateError, items[1].state);
-  EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id.c_str());
+  EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id);
   EXPECT_EQ(ComponentState::kCanUpdate, items[2].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id);
   EXPECT_EQ(ComponentState::kDownloading, items[3].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id);
   EXPECT_EQ(ComponentState::kDownloading, items[4].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[4].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[4].id);
   EXPECT_EQ(ComponentState::kUpdating, items[5].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[5].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[5].id);
   EXPECT_EQ(ComponentState::kUpdated, items[6].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[6].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[6].id);
 }
 
 // Tests the update check for two CRXs scenario when no CrxComponent data is
@@ -1234,9 +1234,9 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentDataAtAll) {
 
   EXPECT_EQ(2u, items.size());
   EXPECT_EQ(ComponentState::kUpdateError, items[0].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id);
   EXPECT_EQ(ComponentState::kUpdateError, items[1].state);
-  EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id.c_str());
+  EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id);
 }
 
 // Tests the scenario where there is a download timeout for the first
@@ -1516,27 +1516,27 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
 
   EXPECT_EQ(11u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id);
   EXPECT_EQ(ComponentState::kChecking, items[1].state);
-  EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id.c_str());
+  EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id);
   EXPECT_EQ(ComponentState::kCanUpdate, items[2].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id);
   EXPECT_EQ(ComponentState::kDownloading, items[3].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id);
   EXPECT_EQ(ComponentState::kDownloading, items[4].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[4].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[4].id);
   EXPECT_EQ(ComponentState::kUpdateError, items[5].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[5].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[5].id);
   EXPECT_EQ(ComponentState::kCanUpdate, items[6].state);
-  EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[6].id.c_str());
+  EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[6].id);
   EXPECT_EQ(ComponentState::kDownloading, items[7].state);
-  EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[7].id.c_str());
+  EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[7].id);
   EXPECT_EQ(ComponentState::kDownloading, items[8].state);
-  EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[8].id.c_str());
+  EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[8].id);
   EXPECT_EQ(ComponentState::kUpdating, items[9].state);
-  EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[9].id.c_str());
+  EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[9].id);
   EXPECT_EQ(ComponentState::kUpdated, items[10].state);
-  EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[10].id.c_str());
+  EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[10].id);
 }
 
 // Tests the differential update scenario for one CRX. Tests install progress
@@ -1867,25 +1867,25 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
     runloop.Run();
     EXPECT_EQ(10u, items.size());
     EXPECT_EQ(ComponentState::kChecking, items[0].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[0].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[0].id);
     EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id);
     EXPECT_EQ(ComponentState::kDownloading, items[2].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[2].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[2].id);
     EXPECT_EQ(ComponentState::kDownloading, items[3].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[3].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[3].id);
     EXPECT_EQ(ComponentState::kDownloading, items[4].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id);
     EXPECT_EQ(ComponentState::kUpdating, items[5].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[5].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[5].id);
     EXPECT_EQ(ComponentState::kUpdating, items[6].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[6].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[6].id);
     EXPECT_EQ(ComponentState::kUpdating, items[7].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[7].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[7].id);
     EXPECT_EQ(ComponentState::kUpdating, items[8].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[8].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[8].id);
     EXPECT_EQ(ComponentState::kUpdated, items[9].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[9].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[9].id);
 
     std::vector samples = {-1, -1, -1, -1, -1, -1, -1, 50, 100, 100};
     EXPECT_EQ(items.size(), samples.size());
@@ -1910,25 +1910,25 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
 
     EXPECT_EQ(10u, items.size());
     EXPECT_EQ(ComponentState::kChecking, items[0].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[0].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[0].id);
     EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id);
     EXPECT_EQ(ComponentState::kDownloading, items[2].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[2].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[2].id);
     EXPECT_EQ(ComponentState::kDownloading, items[3].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[3].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[3].id);
     EXPECT_EQ(ComponentState::kDownloading, items[4].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id);
     EXPECT_EQ(ComponentState::kUpdating, items[5].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[5].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[5].id);
     EXPECT_EQ(ComponentState::kUpdating, items[6].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[6].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[6].id);
     EXPECT_EQ(ComponentState::kUpdating, items[7].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[7].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[7].id);
     EXPECT_EQ(ComponentState::kUpdating, items[8].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[8].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[8].id);
     EXPECT_EQ(ComponentState::kUpdated, items[9].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[9].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[9].id);
 
     std::vector<int> samples = {-1, -1, -1, -1, -1, -1, -1, 50, 100, 100};
     EXPECT_EQ(items.size(), samples.size());
@@ -2170,17 +2170,17 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
 
   EXPECT_EQ(6u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id);
   EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id);
   EXPECT_EQ(ComponentState::kDownloading, items[2].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id);
   EXPECT_EQ(ComponentState::kDownloading, items[3].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id);
   EXPECT_EQ(ComponentState::kUpdating, items[4].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[4].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[4].id);
   EXPECT_EQ(ComponentState::kUpdateError, items[5].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[5].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[5].id);
 }
 
 // Tests the fallback from differential to full update scenario for one CRX.
@@ -2504,17 +2504,17 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
     runloop.Run();
     EXPECT_EQ(6u, items.size());
     EXPECT_EQ(ComponentState::kChecking, items[0].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[0].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[0].id);
     EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id);
     EXPECT_EQ(ComponentState::kDownloading, items[2].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[2].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[2].id);
     EXPECT_EQ(ComponentState::kDownloading, items[3].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[3].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[3].id);
     EXPECT_EQ(ComponentState::kUpdating, items[4].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id);
     EXPECT_EQ(ComponentState::kUpdated, items[5].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[5].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[5].id);
   }
 
   {
@@ -2533,21 +2533,21 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
 
     EXPECT_EQ(8u, items.size());
     EXPECT_EQ(ComponentState::kChecking, items[0].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[0].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[0].id);
     EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id);
     EXPECT_EQ(ComponentState::kDownloading, items[2].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[2].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[2].id);
     EXPECT_EQ(ComponentState::kDownloading, items[3].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[3].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[3].id);
     EXPECT_EQ(ComponentState::kDownloading, items[4].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id);
     EXPECT_EQ(ComponentState::kDownloading, items[5].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[5].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[5].id);
     EXPECT_EQ(ComponentState::kUpdating, items[6].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[6].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[6].id);
     EXPECT_EQ(ComponentState::kUpdated, items[7].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[7].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[7].id);
   }
 }
 
@@ -2866,17 +2866,17 @@ TEST_F(UpdateClientTest,
     runloop.Run();
     EXPECT_EQ(6u, items.size());
     EXPECT_EQ(ComponentState::kChecking, items[0].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[0].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[0].id);
     EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id);
     EXPECT_EQ(ComponentState::kDownloading, items[2].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[2].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[2].id);
     EXPECT_EQ(ComponentState::kDownloading, items[3].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[3].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[3].id);
     EXPECT_EQ(ComponentState::kUpdating, items[4].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id);
     EXPECT_EQ(ComponentState::kUpdated, items[5].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[5].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[5].id);
   }
 
   {
@@ -2895,21 +2895,21 @@ TEST_F(UpdateClientTest,
 
     EXPECT_EQ(8u, items.size());
     EXPECT_EQ(ComponentState::kChecking, items[0].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[0].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[0].id);
     EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id);
     EXPECT_EQ(ComponentState::kDownloading, items[2].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[2].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[2].id);
     EXPECT_EQ(ComponentState::kDownloading, items[3].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[3].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[3].id);
     EXPECT_EQ(ComponentState::kDownloading, items[4].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id);
     EXPECT_EQ(ComponentState::kDownloading, items[5].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[5].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[5].id);
     EXPECT_EQ(ComponentState::kUpdating, items[6].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[6].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[6].id);
     EXPECT_EQ(ComponentState::kUpdated, items[7].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[7].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[7].id);
   }
 }
 
@@ -3039,15 +3039,15 @@ TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
 
   EXPECT_EQ(2u, items1.size());
   EXPECT_EQ(ComponentState::kChecking, items1[0].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items1[0].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items1[0].id);
   EXPECT_EQ(ComponentState::kUpToDate, items1[1].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items1[1].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items1[1].id);
 
   EXPECT_EQ(2u, items2.size());
   EXPECT_EQ(ComponentState::kChecking, items2[0].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items2[0].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items2[0].id);
   EXPECT_EQ(ComponentState::kUpToDate, items2[1].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items2[1].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items2[1].id);
 }
 
 // Tests the install of one CRX. Tests the installer is invoked with the
@@ -3236,10 +3236,9 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
           ASSERT_TRUE(item.component);
           const auto* test_installer =
               static_cast<TestInstaller*>(item.component->installer.get());
-          EXPECT_STREQ("UpdaterSetup.exe",
-                       test_installer->install_params()->run.c_str());
-          EXPECT_STREQ("--arg1 --arg2",
-                       test_installer->install_params()->arguments.c_str());
+          EXPECT_EQ("UpdaterSetup.exe", test_installer->install_params()->run);
+          EXPECT_EQ("--arg1 --arg2",
+                    test_installer->install_params()->arguments);
         }));
   }
 
@@ -3258,28 +3257,25 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
 
   EXPECT_EQ(6u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id);
   EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id);
   EXPECT_EQ(ComponentState::kDownloading, items[2].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id);
   EXPECT_EQ(ComponentState::kDownloading, items[3].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id);
   EXPECT_EQ(ComponentState::kUpdating, items[4].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[4].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[4].id);
   EXPECT_EQ(ComponentState::kUpdated, items[5].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[5].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[5].id);
 
   const base::Value::Dict& dict =
       config()->GetPrefService()->GetDict("updateclientdata");
-  const std::string* pv =
-      dict.FindStringByDottedPath("apps.jebgalgnebhfojomionfpkfelancnnkf.pv");
-  ASSERT_TRUE(pv);
-  EXPECT_STREQ("1.0", pv->c_str());
-  const std::string* fingerprint =
-      dict.FindStringByDottedPath("apps.jebgalgnebhfojomionfpkfelancnnkf.fp");
-  ASSERT_TRUE(fingerprint);
-  EXPECT_STREQ("some-fingerprint", fingerprint->c_str());
+  EXPECT_EQ("1.0", CHECK_DEREF(dict.FindStringByDottedPath(
+                       "apps.jebgalgnebhfojomionfpkfelancnnkf.pv")));
+  EXPECT_EQ("some-fingerprint",
+            CHECK_DEREF(dict.FindStringByDottedPath(
+                "apps.jebgalgnebhfojomionfpkfelancnnkf.fp")));
 }
 
 // Tests the install of one CRX when no component data is provided. This
@@ -3351,7 +3347,7 @@ TEST_F(UpdateClientTest, OneCrxInstallNoCrxComponentData) {
           // is not provided. In this case, the optional |item.component|
           // instance is not present.
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
-          EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", item.id.c_str());
+          EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", item.id);
           EXPECT_FALSE(item.component);
           EXPECT_EQ(ErrorCategory::kService, item.error_category);
           EXPECT_EQ(static_cast<int>(Error::CRX_NOT_FOUND), item.error_code);
@@ -3374,7 +3370,7 @@ TEST_F(UpdateClientTest, OneCrxInstallNoCrxComponentData) {
 
   EXPECT_EQ(1u, items.size());
   EXPECT_EQ(ComponentState::kUpdateError, items[0].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id);
 }
 
 // Tests that overlapping installs of the same CRX result in an error.
@@ -3494,9 +3490,9 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
 
   EXPECT_EQ(2u, items1.size());
   EXPECT_EQ(ComponentState::kChecking, items1[0].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items1[0].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items1[0].id);
   EXPECT_EQ(ComponentState::kUpToDate, items1[1].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items1[1].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items1[1].id);
 
   EXPECT_TRUE(items2.empty());
 }
@@ -3720,13 +3716,13 @@ TEST_F(UpdateClientTest, DiskFull) {
 
   EXPECT_EQ(4u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id);
   EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id);
   EXPECT_EQ(ComponentState::kDownloading, items[2].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id);
   EXPECT_EQ(ComponentState::kUpdateError, items[3].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id);
 }
 
 TEST_F(UpdateClientTest, DiskFullDiff) {
@@ -4033,25 +4029,25 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
 
     EXPECT_EQ(10u, items.size());
     EXPECT_EQ(ComponentState::kChecking, items[0].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[0].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[0].id);
     EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id);
     EXPECT_EQ(ComponentState::kDownloading, items[2].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[2].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[2].id);
     EXPECT_EQ(ComponentState::kDownloading, items[3].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[3].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[3].id);
     EXPECT_EQ(ComponentState::kDownloading, items[4].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id);
     EXPECT_EQ(ComponentState::kUpdating, items[5].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[5].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[5].id);
     EXPECT_EQ(ComponentState::kUpdating, items[6].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[6].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[6].id);
     EXPECT_EQ(ComponentState::kUpdating, items[7].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[7].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[7].id);
     EXPECT_EQ(ComponentState::kUpdating, items[8].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[8].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[8].id);
     EXPECT_EQ(ComponentState::kUpdated, items[9].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[9].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[9].id);
 
     std::vector samples = {-1, -1, -1, -1, -1, -1, -1, 50, 100, 100};
     EXPECT_EQ(items.size(), samples.size());
@@ -4076,15 +4072,15 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
 
     EXPECT_EQ(5u, items.size());
     EXPECT_EQ(ComponentState::kChecking, items[0].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[0].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[0].id);
     EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id);
     EXPECT_EQ(ComponentState::kDownloading, items[2].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[2].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[2].id);
     EXPECT_EQ(ComponentState::kDownloading, items[3].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[3].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[3].id);
     EXPECT_EQ(ComponentState::kUpdateError, items[4].state);
-    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id.c_str());
+    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id);
   }
 }
 
@@ -4601,23 +4597,23 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
 
   EXPECT_EQ(9u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id);
   EXPECT_EQ(ComponentState::kChecking, items[1].state);
-  EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id.c_str());
+  EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id);
   EXPECT_EQ(ComponentState::kCanUpdate, items[2].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id);
   EXPECT_EQ(ComponentState::kUpdateError, items[3].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id);
   EXPECT_EQ(ComponentState::kCanUpdate, items[4].state);
-  EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id.c_str());
+  EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id);
   EXPECT_EQ(ComponentState::kDownloading, items[5].state);
-  EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[5].id.c_str());
+  EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[5].id);
   EXPECT_EQ(ComponentState::kDownloading, items[6].state);
-  EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[6].id.c_str());
+  EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[6].id);
   EXPECT_EQ(ComponentState::kUpdating, items[7].state);
-  EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[7].id.c_str());
+  EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[7].id);
   EXPECT_EQ(ComponentState::kUpdated, items[8].state);
-  EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[8].id.c_str());
+  EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[8].id);
 }
 
 // Tests all ping back events have the correct errorcode and extracode1 set in
@@ -4822,15 +4818,15 @@ TEST_F(UpdateClientTest, OneCrxUpdateDownloadTimeout) {
 
   EXPECT_EQ(5u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id);
   EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id);
   EXPECT_EQ(ComponentState::kDownloading, items[2].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id);
   EXPECT_EQ(ComponentState::kDownloading, items[3].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id);
   EXPECT_EQ(ComponentState::kUpdateError, items[4].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[4].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[4].id);
 }
 
 // Tests the scenario where the update check fails.
@@ -4935,9 +4931,9 @@ TEST_F(UpdateClientTest, OneCrxUpdateCheckFails) {
 
   EXPECT_EQ(2u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id);
   EXPECT_EQ(ComponentState::kUpdateError, items[1].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id);
 }
 
 // Tests the scenario where the server responds with different values for
@@ -5942,15 +5938,15 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
 
   EXPECT_EQ(5u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id);
   EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id);
   EXPECT_EQ(ComponentState::kDownloading, items[2].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id);
   EXPECT_EQ(ComponentState::kDownloading, items[3].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id);
   EXPECT_EQ(ComponentState::kUpdateError, items[4].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[4].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[4].id);
 }
 
 // Tests cancellation of an install before the download.
@@ -6113,11 +6109,11 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
 
   EXPECT_EQ(3u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id);
   EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id);
   EXPECT_EQ(ComponentState::kUpdateError, items[2].state);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id);
 }
 
 TEST_F(UpdateClientTest, CheckForUpdate_NoUpdate) {
@@ -6224,9 +6220,9 @@ TEST_F(UpdateClientTest, CheckForUpdate_NoUpdate) {
   runloop_.Run();
   EXPECT_EQ(items.size(), 2u);
   EXPECT_EQ(items[0].state, ComponentState::kChecking);
-  EXPECT_STREQ(items[0].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
+  EXPECT_EQ(items[0].id, "jebgalgnebhfojomionfpkfelancnnkf");
   EXPECT_EQ(items[1].state, ComponentState::kUpToDate);
-  EXPECT_STREQ(items[1].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
+  EXPECT_EQ(items[1].id, "jebgalgnebhfojomionfpkfelancnnkf");
 }
 
 TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
@@ -6371,9 +6367,9 @@ TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
   runloop_.Run();
   EXPECT_EQ(items.size(), 2u);
   EXPECT_EQ(items[0].state, ComponentState::kChecking);
-  EXPECT_STREQ(items[0].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
+  EXPECT_EQ(items[0].id, "jebgalgnebhfojomionfpkfelancnnkf");
   EXPECT_EQ(items[1].state, ComponentState::kCanUpdate);
-  EXPECT_STREQ(items[1].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
+  EXPECT_EQ(items[1].id, "jebgalgnebhfojomionfpkfelancnnkf");
 }
 
 TEST_F(UpdateClientTest, CheckForUpdate_QueueChecks) {
@@ -6498,13 +6494,13 @@ TEST_F(UpdateClientTest, CheckForUpdate_QueueChecks) {
   runloop_.Run();
   EXPECT_EQ(items.size(), 4u);
   EXPECT_EQ(items[0].state, ComponentState::kChecking);
-  EXPECT_STREQ(items[0].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
+  EXPECT_EQ(items[0].id, "jebgalgnebhfojomionfpkfelancnnkf");
   EXPECT_EQ(items[1].state, ComponentState::kUpToDate);
-  EXPECT_STREQ(items[1].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
+  EXPECT_EQ(items[1].id, "jebgalgnebhfojomionfpkfelancnnkf");
   EXPECT_EQ(items[2].state, ComponentState::kChecking);
-  EXPECT_STREQ(items[2].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
+  EXPECT_EQ(items[2].id, "jebgalgnebhfojomionfpkfelancnnkf");
   EXPECT_EQ(items[3].state, ComponentState::kUpToDate);
-  EXPECT_STREQ(items[3].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
+  EXPECT_EQ(items[3].id, "jebgalgnebhfojomionfpkfelancnnkf");
 }
 
 TEST_F(UpdateClientTest, CheckForUpdate_Stop) {
@@ -6624,9 +6620,9 @@ TEST_F(UpdateClientTest, CheckForUpdate_Stop) {
   runloop_.Run();
   EXPECT_EQ(items.size(), 2u);
   EXPECT_EQ(items[0].state, ComponentState::kChecking);
-  EXPECT_STREQ(items[0].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
+  EXPECT_EQ(items[0].id, "jebgalgnebhfojomionfpkfelancnnkf");
   EXPECT_EQ(items[1].state, ComponentState::kUpToDate);
-  EXPECT_STREQ(items[1].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
+  EXPECT_EQ(items[1].id, "jebgalgnebhfojomionfpkfelancnnkf");
 }
 
 TEST_F(UpdateClientTest, CheckForUpdate_Errors) {
@@ -6716,7 +6712,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_Errors) {
   runloop_.Run();
   EXPECT_EQ(items.size(), 1u);
   EXPECT_EQ(items[0].state, ComponentState::kUpdateError);
-  EXPECT_STREQ(items[0].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
+  EXPECT_EQ(items[0].id, "jebgalgnebhfojomionfpkfelancnnkf");
   EXPECT_EQ(items[0].error_code, static_cast<int>(Error::CRX_NOT_FOUND));
 }
 
@@ -6869,11 +6865,11 @@ TEST_F(UpdateClientTest, UpdateCheck_UpdateDisabled) {
   runloop_.Run();
   EXPECT_EQ(items.size(), 3u);
   EXPECT_EQ(items[0].state, ComponentState::kChecking);
-  EXPECT_STREQ(items[0].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
+  EXPECT_EQ(items[0].id, "jebgalgnebhfojomionfpkfelancnnkf");
   EXPECT_EQ(items[1].state, ComponentState::kCanUpdate);
-  EXPECT_STREQ(items[1].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
+  EXPECT_EQ(items[1].id, "jebgalgnebhfojomionfpkfelancnnkf");
   EXPECT_EQ(items[2].state, ComponentState::kUpdateError);
-  EXPECT_STREQ(items[2].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
+  EXPECT_EQ(items[2].id, "jebgalgnebhfojomionfpkfelancnnkf");
 }
 
 // Tests the cached update scenario for one CRX to validate that the file is
@@ -7114,21 +7110,21 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
 
     EXPECT_EQ(8u, items.size());
     EXPECT_EQ(ComponentState::kChecking, items[0].state);
-    EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id.c_str());
+    EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id);
     EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
-    EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id.c_str());
+    EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id);
     EXPECT_EQ(ComponentState::kDownloading, items[2].state);
-    EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id.c_str());
+    EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id);
     EXPECT_EQ(ComponentState::kDownloading, items[3].state);
-    EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id.c_str());
+    EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id);
     EXPECT_EQ(ComponentState::kUpdating, items[4].state);
-    EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[4].id.c_str());
+    EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[4].id);
     EXPECT_EQ(ComponentState::kUpdating, items[5].state);
-    EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[5].id.c_str());
+    EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[5].id);
     EXPECT_EQ(ComponentState::kUpdating, items[6].state);
-    EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[6].id.c_str());
+    EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[6].id);
     EXPECT_EQ(ComponentState::kUpdateError, items[7].state);
-    EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[7].id.c_str());
+    EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[7].id);
 
     std::vector samples = {-1, -1, -1, -1, -1, -1, 25, 25};
     EXPECT_EQ(items.size(), samples.size());
@@ -7153,19 +7149,19 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
 
     EXPECT_EQ(7u, items.size());
     EXPECT_EQ(ComponentState::kChecking, items[0].state);
-    EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id.c_str());
+    EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id);
     EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
-    EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id.c_str());
+    EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id);
     EXPECT_EQ(ComponentState::kUpdating, items[2].state);
-    EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id.c_str());
+    EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id);
     EXPECT_EQ(ComponentState::kUpdating, items[3].state);
-    EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id.c_str());
+    EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id);
     EXPECT_EQ(ComponentState::kUpdating, items[4].state);
-    EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[4].id.c_str());
+    EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[4].id);
     EXPECT_EQ(ComponentState::kUpdating, items[5].state);
-    EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[5].id.c_str());
+    EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[5].id);
     EXPECT_EQ(ComponentState::kUpdated, items[6].state);
-    EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[6].id.c_str());
+    EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[6].id);
 
     std::vector samples = {-1, -1, -1, -1, 50, 100, 100};
     EXPECT_EQ(items.size(), samples.size());

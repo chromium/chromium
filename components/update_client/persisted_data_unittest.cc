@@ -92,8 +92,7 @@ TEST(PersistedDataTest, Simple) {
 
   EXPECT_TRUE(metadata->GetFingerprint("someappid").empty());
   metadata->SetFingerprint("someappid", "somefingerprint");
-  EXPECT_STREQ("somefingerprint",
-               metadata->GetFingerprint("someappid").c_str());
+  EXPECT_EQ("somefingerprint", metadata->GetFingerprint("someappid"));
 }
 
 TEST(PersistedDataTest, MixedCase) {
