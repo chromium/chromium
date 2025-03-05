@@ -332,15 +332,6 @@ if (use_fuzzing_engine) {
   }
 }
 
-fuzzer_test("first_party_set_parser_fuzzer") {
-  sources =
-      [ "../../browser/first_party_sets/test/first_party_set_parser_fuzzer.cc" ]
-  deps = [ ":first_party_set_parser_fuzzer_support" ]
-  dict =
-      "../../browser/first_party_sets/test/first_party_set_parser_fuzzer.dict"
-  seed_corpus = "//third_party/grpc/source/test/core/json/corpus/"
-}
-
 fuzzer_test("first_party_set_parser_json_fuzzer") {
   sources = [
     "../../browser/first_party_sets/test/first_party_set_parser_json_fuzzer.cc",

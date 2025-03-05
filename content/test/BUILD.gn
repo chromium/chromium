@@ -2962,6 +2962,7 @@ test("content_unittests") {
   fuzztests = [
     "BiddingAndAuctionSerializerTargetSizeEstimator.DoesNotCrashForAnyInput",
     "ActionsParserFuzzTest.ParsesJSONCorrectly",
+    "FirstPartySetFuzzer.ParsesSetsCorrectly",
   ]
 
   if (is_mac) {
