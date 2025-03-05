@@ -1995,10 +1995,11 @@ VISIT_PROTO_FIELDS(
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::AutofillLoyaltyCardSpecifics& proto) {
-  VISIT(uuid);
+  VISIT(id);
   VISIT(merchant_name);
   VISIT(program_name);
   VISIT(program_logo);
+  VISIT(loyalty_card_suffix);
 }
 
 }  // namespace syncer
