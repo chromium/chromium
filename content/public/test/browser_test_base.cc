@@ -956,6 +956,20 @@ void BrowserTestBase::SetTestDohConfig(net::SecureDnsMode secure_dns_mode,
   test_doh_config_ = std::make_pair(secure_dns_mode, std::move(config));
 }
 
+void BrowserTestBase::InitializeHTTPSTestServer() {
+  CHECK(!embedded_https_test_server_)
+      << "HTTPS test server already initialized";
+
+  embedded_https_test_server_ = std::make_unique<net::EmbeddedTestServer>(
+    net::EmbeddedTestServer::TYPE_HTTPS);
+  // Default hostnames for the HTTPS test server. Test fixtures can call this
+  // with different hostnames (before starting the server) to override.
+  embedded_https_test_server_->SetCertHostnames(
+      {"example.com", "*.example.com", "foo.com", "*.foo.com", "bar.com",
+      "*.bar.com", "a.com", "*.a.com", "b.com", "*.b.com", "c.com",
+      "*.c.com"});
+}
+
 void BrowserTestBase::CreateTestServer(const base::FilePath& test_server_base) {
   embedded_test_server()->AddDefaultHandlers(test_server_base);
 }
