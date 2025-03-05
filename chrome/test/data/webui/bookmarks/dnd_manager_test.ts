@@ -4,11 +4,9 @@
 
 import type {BookmarkElement, BookmarksAppElement, BookmarksFolderNodeElement, BookmarksItemElement, BookmarksListElement, DndManager} from 'chrome://bookmarks/bookmarks.js';
 import {BookmarkManagerApiProxyImpl, BrowserProxyImpl, DragInfo, overrideFolderOpenerTimeoutDelay, setDebouncerForTesting} from 'chrome://bookmarks/bookmarks.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {middleOfNode, topLeftOfNode} from 'chrome://webui-test/mouse_mock_interactions.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBookmarkManagerApiProxy} from './test_bookmark_manager_api_proxy.js';
 import {TestBookmarksBrowserProxy} from './test_browser_proxy.js';
@@ -157,7 +155,7 @@ suite('drag and drop', function() {
           eventToPromise('viewport-filled', list.$.list),
         ])
         .then(() => {
-          flush();
+          return microtasksFinished();
         });
   });
 
@@ -455,7 +453,7 @@ suite('drag and drop', function() {
     store.data.folderOpenState.set('14', false);
     store.data.folderOpenState.set('15', false);
     store.notifyObservers();
-    flush();
+    await microtasksFinished();
 
     const dragElement = getFolderNode('15');
     await simulateDragStart(dragElement);
@@ -463,19 +461,19 @@ suite('drag and drop', function() {
     // Dragging onto folders without children doesn't open the folder.
     let dragTarget = getFolderNode('14');
     move(dragTarget);
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(dragTarget.isOpen);
 
     // Dragging onto itself doesn't open the folder.
     move(dragElement);
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(dragElement.isOpen);
 
     // Dragging onto an open folder doesn't affect the folder.
     dragTarget = getFolderNode('1');
     assertTrue(dragTarget.isOpen);
     move(dragTarget);
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(dragTarget.isOpen);
 
     dragTarget = getFolderNode('11');
@@ -483,25 +481,25 @@ suite('drag and drop', function() {
     // Dragging off of a closed folder doesn't open it.
     move(dragTarget);
     move(list);
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(dragTarget.isOpen);
 
     // Dragging onto a folder with DragStyle.BELOW doesn't open it.
     move(dragTarget, bottomRightOfNode(dragTarget));
     assertDragStyle(dragTarget, DragStyle.BELOW);
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(dragTarget.isOpen);
 
     // Dragging onto a folder with DragStyle.ABOVE doesn't open it.
     move(dragTarget, topLeftOfNode(dragTarget));
     assertDragStyle(dragTarget, DragStyle.ABOVE);
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(dragTarget.isOpen);
 
     // Dragging onto a closed folder with children opens it.
     move(dragTarget);
     assertDragStyle(dragTarget, DragStyle.ON);
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(dragTarget.isOpen);
   });
 
