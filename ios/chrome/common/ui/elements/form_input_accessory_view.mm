@@ -110,6 +110,12 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   BOOL _isTabletFormFactor;
   // Whether the size of the accessory is compact.
   BOOL _isCompact;
+  // Leading and trailing constraints in non compact mode (tablet only).
+  NSLayoutConstraint* _leadingConstraint;
+  NSLayoutConstraint* _trailingConstraint;
+  // Leading and trailing constraints in compact mode (tablet only).
+  NSLayoutConstraint* _compactLeadingConstraint;
+  NSLayoutConstraint* _compactTrailingConstraint;
 }
 
 #pragma mark - Public
@@ -178,6 +184,7 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 
   _isCompact = isCompact;
   [self adjustManualFillButtonTitle:self.manualFillButton];
+  [self setHorizontalConstraints];
 }
 
 #pragma mark - UIInputViewAudioFeedback
@@ -314,14 +321,21 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   if (_isTabletFormFactor && _largeAccessoryViewEnabled) {
     // On tablets, when using the large keyboard accessory, add padding at both
     // ends of the content view to match the keyboard's padding.
-    [NSLayoutConstraint activateConstraints:@[
-      [leadingViewContainer.leadingAnchor
-          constraintEqualToAnchor:layoutGuide.leadingAnchor
-                         constant:kKeyboardHozirontalPadding],
-      [trailingView.trailingAnchor
-          constraintEqualToAnchor:layoutGuide.trailingAnchor
-                         constant:-kKeyboardHozirontalPadding],
-    ]];
+
+    // Leading and trailing constraints in non compact mode.
+    _leadingConstraint = [leadingViewContainer.leadingAnchor
+        constraintEqualToAnchor:layoutGuide.leadingAnchor
+                       constant:kKeyboardHozirontalPadding];
+    _trailingConstraint = [trailingView.trailingAnchor
+        constraintEqualToAnchor:layoutGuide.trailingAnchor
+                       constant:-kKeyboardHozirontalPadding];
+    // Leading and trailing constraints in compact mode.
+    _compactLeadingConstraint = [leadingViewContainer.leadingAnchor
+        constraintEqualToAnchor:layoutGuide.leadingAnchor];
+    _compactTrailingConstraint = [trailingView.trailingAnchor
+        constraintEqualToAnchor:layoutGuide.trailingAnchor];
+
+    [self setHorizontalConstraints];
   } else {
     [NSLayoutConstraint activateConstraints:@[
       [leadingViewContainer.leadingAnchor
@@ -593,6 +607,19 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   return _largeAccessoryViewEnabled
              ? [UIColor colorNamed:kGroupedPrimaryBackgroundColor]
              : [UIColor colorNamed:kBackgroundColor];
+}
+
+// Applies the proper horizontal padding, depending on whether the keyboard
+// accessory is in compact mode (tablet only).
+- (void)setHorizontalConstraints {
+  if (!_isTabletFormFactor || !_largeAccessoryViewEnabled) {
+    return;
+  }
+
+  _leadingConstraint.active = !_isCompact;
+  _trailingConstraint.active = !_isCompact;
+  _compactLeadingConstraint.active = _isCompact;
+  _compactTrailingConstraint.active = _isCompact;
 }
 
 #pragma mark - UIView
