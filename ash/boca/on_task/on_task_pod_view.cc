@@ -45,7 +45,7 @@ OnTaskPodView::OnTaskPodView(OnTaskPodController* pod_controller)
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart);
   SetBackground(views::CreateRoundedRectBackground(
-      cros_tokens::kCrosSysPrimaryContainer, kPodBorderRadius));
+      cros_tokens::kCrosSysSystemBaseElevated, kPodBorderRadius));
 
   AddShortcutButtons();
 }
@@ -59,10 +59,10 @@ void OnTaskPodView::AddShortcutButtons() {
       &kKsvArrowRightIcon, IDS_ON_TASK_POD_TOGGLE_SNAP_LOCATION_ACCESSIBLE_NAME,
       /*is_togglable=*/true));
   snap_pod_button_->SetToggledVectorIcon(kKsvArrowLeftIcon);
-  snap_pod_button_->SetIconToggledColor(cros_tokens::kCrosSysOnSurface);
-  snap_pod_button_->SetBackgroundColor(cros_tokens::kCrosSysPrimaryContainer);
+  snap_pod_button_->SetIconToggledColor(
+      cros_tokens::kCrosSysSystemOnPrimaryContainer);
   snap_pod_button_->SetBackgroundToggledColor(
-      cros_tokens::kCrosSysPrimaryContainer);
+      cros_tokens::kCrosSysSystemPrimaryContainer);
 
   left_separator_ = AddChildView(std::make_unique<views::Separator>());
   left_separator_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
