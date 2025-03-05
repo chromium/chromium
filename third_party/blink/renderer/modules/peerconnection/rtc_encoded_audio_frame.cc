@@ -193,8 +193,8 @@ RTCEncodedAudioFrameMetadata* RTCEncodedAudioFrame::getMetadata(
     }
     if (std::optional<base::TimeDelta> sender_capture_time_offset =
             delegate_->SenderCaptureTimeOffset()) {
-      metadata->setSenderCaptureTimeOffset(CalculateRTCEncodedFrameTimestamp(
-          execution_context, base::TimeTicks() + *sender_capture_time_offset));
+      metadata->setSenderCaptureTimeOffset(CalculateRTCEncodedFrameTimeDelta(
+          execution_context, *sender_capture_time_offset));
     }
   }
   return metadata;
