@@ -868,9 +868,43 @@ void EmitContainerPointerRewrites(const MatchFinder::MatchResult& result,
   EmitReplacement(key, replacement_directive);
 }
 
+// Handles code that passes address to a local variable as a single element
+// buffer. Wrap it with a span of size=1. Tests are in
+// single-element-buffer-original.cc.
+static void EmitSingleVariableSpan(const std::string& key,
+                                   const MatchFinder::MatchResult& result) {
+  const clang::SourceManager& source_manager = *result.SourceManager;
+  const clang::ASTContext& ast_context = *result.Context;
+  const auto& lang_opts = ast_context.getLangOpts();
+
+  const auto* expr = result.Nodes.getNodeAs<clang::Expr>("address_expr");
+  const auto* operand_decl = result.Nodes.getNodeAs<clang::DeclaratorDecl>(
+      "address_expr_operand_decl");
+  const auto* operand_expr =
+      result.Nodes.getNodeAs<clang::Expr>("address_expr_operand");
+  if (!expr || !operand_decl || !operand_expr) {
+    llvm::errs()
+        << "\n"
+           "Error: EmitSingleVariableSpan() encountered an unexpected match.\n";
+    DumpMatchResult(result);
+    assert(false && "Unexpected match in EmitSingleVariableSpan()");
+  }
+
+  clang::SourceRange expr_range = {expr->getBeginLoc()};
+  std::string type = GetTypeAsString(operand_decl->getType(), ast_context);
+  std::string replacement_text = llvm::formatv("base::span<{0}, 1>(", type);
+  EmitReplacement(key, GetReplacementDirective(expr_range, replacement_text,
+                                               source_manager));
+  EmitReplacement(
+      key, GetReplacementDirective(
+               getExprRange(operand_expr, source_manager, lang_opts).getEnd(),
+               ")", source_manager));
+}
+
 static std::string getNodeFromSizeExpr(const clang::Expr* size_expr,
                                        const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
+  const clang::ASTContext& ast_context = *result.Context;
   const std::string key = NodeKey(size_expr, source_manager);
 
   auto replacement_range =
@@ -885,6 +919,16 @@ static std::string getNodeFromSizeExpr(const clang::Expr* size_expr,
         nullptr_expr->getBeginLoc().getLocWithOffset(7)};
     EmitReplacement(
         key, GetReplacementDirective(nullptr_range, "{}", source_manager));
+  } else if (const auto* expr =
+                 result.Nodes.getNodeAs<clang::Expr>("address_expr")) {
+    // This case occurs when an address to a variable is used as a buffer:
+    //
+    //   void UsesBarAsFloatBuffer(size_t size, float* bar);
+    //   float bar = 3.0;
+    //   UsesBarAsFloatBuffer(1, &bar);
+    //
+    // In this case, we will rewrite `&bar` to `base::span<float, 1>(&bar)`.
+    EmitSingleVariableSpan(key, result);
   }
   if (result.Nodes.getNodeAs<clang::UnaryOperator>("container_buff_address")) {
     EmitContainerPointerRewrites(result, key);
@@ -2021,27 +2065,44 @@ class Spanifier {
             has(memberExpr().bind("data_member_expr")))
             .bind("member_data_call");
 
+    // Matchers |&var| where |var| is a local variable, a parameter or member
+    // field. Doesn't match when |var| is a function.
+    auto buff_address_from_single_var =
+        unaryOperator(
+            hasOperatorName("&"),
+            hasUnaryOperand(anyOf(
+                declRefExpr(to(anyOf(varDecl(unless(exclusions))
+                                         .bind("address_expr_operand_decl"),
+                                     parmVarDecl(unless(exclusions))
+                                         .bind("address_expr_operand_decl"))))
+                    .bind("address_expr_operand"),
+                memberExpr(member(fieldDecl(unless(exclusions))
+                                      .bind("address_expr_operand_decl")))
+                    .bind("address_expr_operand"))))
+            .bind("address_expr");
+
     // Defines nodes that contain size information, these include:
     //  - nullptr => size is zero
     //  - calls to new/new[n] => size is 1/n
     //  - calls to third_party functions that we can't rewrite (they should
     //    provide a size for the pointer returned)
+    //  - address to local variable (e.g. `&foo`) => size is 1
     // TODO(353710304): Consider handling functions taking in/out args ex:
     //                  void alloc(**ptr);
     // TODO(353710304): Consider making member_data_call and size_node mutually
     //                  exclusive. We rely here on the ordering of expressions
     //                  in the anyOf matcher to first match member_data_call
     //                  which is a subset of size_node.
-    auto size_node_matcher = expr(
-        anyOf(member_data_call,
-              expr(anyOf(callExpr(callee(functionDecl(
-                             hasReturnTypeLoc(pointerTypeLoc()),
-                             anyOf(raw_ptr_plugin::isInThirdPartyLocation(),
-                                   isExpansionInSystemHeader(),
-                                   raw_ptr_plugin::isInExternCContext())))),
-                         cxxNullPtrLiteralExpr().bind("nullptr_expr"),
-                         cxxNewExpr(), buff_address_from_container))
-                  .bind("size_node")));
+    auto size_node_matcher = expr(anyOf(
+        member_data_call,
+        expr(anyOf(callExpr(callee(functionDecl(
+                       hasReturnTypeLoc(pointerTypeLoc()),
+                       anyOf(raw_ptr_plugin::isInThirdPartyLocation(),
+                             isExpansionInSystemHeader(),
+                             raw_ptr_plugin::isInExternCContext())))),
+                   cxxNullPtrLiteralExpr().bind("nullptr_expr"), cxxNewExpr(),
+                   buff_address_from_container, buff_address_from_single_var))
+            .bind("size_node")));
 
     auto rhs_expr =
         expr(ignoringParenCasts(anyOf(
