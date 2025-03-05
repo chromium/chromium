@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+## [0.4.26] - 2025-02-18
+
+## What's Changed
+* Derive `Clone` for `kv::Value` by @SpriteOvO in https://github.com/rust-lang/log/pull/668
+* Add `spdlog-rs` link to crate doc by @SpriteOvO in https://github.com/rust-lang/log/pull/669
+
+
+**Full Changelog**: https://github.com/rust-lang/log/compare/0.4.25...0.4.26
+
 ## [0.4.25] - 2025-01-14
 
 ## What's Changed
@@ -338,7 +347,8 @@ version using log 0.4.x to avoid losing module and file information.
 
 Look at the [release tags] for information about older releases.
 
-[Unreleased]: https://github.com/rust-lang-nursery/log/compare/0.4.25...HEAD
+[Unreleased]: https://github.com/rust-lang-nursery/log/compare/0.4.26...HEAD
+[0.4.26]: https://github.com/rust-lang/log/compare/0.4.25...0.4.26
 [0.4.25]: https://github.com/rust-lang/log/compare/0.4.24...0.4.25
 [0.4.24]: https://github.com/rust-lang/log/compare/0.4.23...0.4.24
 [0.4.23]: https://github.com/rust-lang/log/compare/0.4.22...0.4.23

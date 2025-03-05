@@ -115,6 +115,7 @@ impl<'v> ToValue for Value<'v> {
 /// `Display` implementation, it will serialize through `serde` as a string. If it was
 /// captured as a struct using `serde`, it will also serialize as a struct
 /// through `sval`, or can be formatted using a `Debug`-compatible representation.
+#[derive(Clone)]
 pub struct Value<'v> {
     inner: inner::Inner<'v>,
 }

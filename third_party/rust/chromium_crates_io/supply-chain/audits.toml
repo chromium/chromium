@@ -2052,6 +2052,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "0.4.22 -> 0.4.25"
 notes = "No impact on `unsafe` usage in `lib.rs`."
 
+[[audits.log]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "0.4.25 -> 0.4.26"
+notes = "Only trivial code and documentation changes."
+
 [[audits.memchr]]
 who = "Dustin J. Mitchell <djmitche@chromium.org>"
 criteria = "does-not-implement-crypto"

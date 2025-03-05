@@ -1,7 +1,7 @@
 [package]
 
 name = "log"
-version = "0.4.25" # remember to update html_root_url
+version = "0.4.26" # remember to update html_root_url
 authors = ["The Rust Project Developers"]
 license = "MIT OR Apache-2.0"
 readme = "README.md"
