@@ -14,7 +14,7 @@ const DAYS_BY_MONTH: [u8; 12] = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
 pub fn today() -> Date {
     let default = Date {
-        year: 2020,
+        year: 2025,
         month: 2,
         day: 25,
     };

@@ -24,7 +24,7 @@ pub fn parse(paren: Group, iter: Iter) -> Result<Bound> {
         }
     }
     let msg = format!(
-        "expected rustc release number like 1.31, or nightly date like {}",
+        "expected rustc release number like 1.85, or nightly date like {}",
         time::today(),
     );
     Err(Error::group(paren, msg))

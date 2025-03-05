@@ -38,7 +38,7 @@ rustversion = "1.0"
   —<br>
   True on any nightly compiler or dev build.
 
-- <b>`#[rustversion::nightly(2019-01-01)]`</b>
+- <b>`#[rustversion::nightly(2025-01-01)]`</b>
   —<br>
   True on exactly one nightly.
 
@@ -47,7 +47,7 @@ rustversion = "1.0"
   True on that stable release and any later compiler, including beta and
   nightly.
 
-- <b>`#[rustversion::since(2019-01-01)]`</b>
+- <b>`#[rustversion::since(2025-01-01)]`</b>
   —<br>
   True on that nightly and all newer ones.
 
