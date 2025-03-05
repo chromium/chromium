@@ -162,6 +162,16 @@ export interface PostMessageRequestHandler {
         /** The payload of the response. */
         payload: any,
       }|undefined>;
+
+  /** Called when each request is received. */
+  onRequestReceived(type: string): void;
+  /** Called when a request handler throws an exception. */
+  onRequestHandlerException(type: string): void;
+  /**
+   * Called when a request response is sent (will not be called if
+   * `onRequestHandlerException()` is called.).
+   */
+  onRequestCompleted(type: string): void;
 }
 
 // Receives requests over postMessage and forward them to a
@@ -195,10 +205,12 @@ export class PostMessageRequestReceiver {
     let response;
     let exception: TransferableException|undefined;
     const extras = new ResponseExtras();
+    this.handler.onRequestReceived(type);
     try {
       response =
           await this.handler.handleRawRequest(type, requestPayload, extras);
     } catch (error) {
+      this.handler.onRequestHandlerException(type);
       console.warn('Unexpected error', error);
       if (error instanceof Error) {
         exception = newTransferableException(error);
@@ -206,6 +218,10 @@ export class PostMessageRequestReceiver {
         exception =
             newTransferableException(new Error(`Unexpected error: ${error}`));
       }
+    }
+
+    if (!exception) {
+      this.handler.onRequestCompleted(type);
     }
 
     // If the message contains no `requestId`, a response is not requested.

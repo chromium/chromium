@@ -24,7 +24,7 @@ import {replaceProperties} from './conversions.js';
 import type {PostMessageRequestHandler} from './post_message_transport.js';
 import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender, ResponseExtras} from './post_message_transport.js';
 import type {AnnotatedPageDataPrivate, FocusedTabCandidatePrivate, FocusedTabDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientInitialStatePrivate} from './request_types.js';
-import {ErrorWithReasonImpl, ImageAlphaType, ImageColorType} from './request_types.js';
+import {ErrorWithReasonImpl, ImageAlphaType, ImageColorType, requestTypeToHistogramSuffix} from './request_types.js';
 
 // Implemented by the embedder of GlicApiHost.
 export interface ApiHostEmbedder {
@@ -577,6 +577,38 @@ export class GlicApiHost implements PostMessageRequestHandler {
     }
     return {payload: response};
   }
+
+
+  onRequestReceived(type: string): void {
+    this.reportRequestCountEvent(type, GlicRequestEvent.REQUEST_RECIEVED);
+  }
+
+  onRequestHandlerException(type: string): void {
+    this.reportRequestCountEvent(
+        type, GlicRequestEvent.REQUEST_HANDLER_EXCEPTION);
+  }
+
+  onRequestCompleted(type: string): void {
+    this.reportRequestCountEvent(type, GlicRequestEvent.RESPONSE_SENT);
+  }
+
+  reportRequestCountEvent(requestType: string, event: GlicRequestEvent) {
+    const suffix = requestTypeToHistogramSuffix(requestType);
+    if (suffix === undefined) {
+      return;
+    }
+    chrome.metricsPrivate.recordEnumerationValue(
+        `Glic.Api.RequestCounts.${suffix}`, event,
+        GlicRequestEvent.MAX_VALUE + 1);
+  }
+}
+
+// Must match tools/metrics/histograms/metadata/glic/enums.xml.
+enum GlicRequestEvent {
+  REQUEST_RECIEVED = 0,
+  RESPONSE_SENT = 1,
+  REQUEST_HANDLER_EXCEPTION = 2,
+  MAX_VALUE = REQUEST_HANDLER_EXCEPTION,
 }
 
 

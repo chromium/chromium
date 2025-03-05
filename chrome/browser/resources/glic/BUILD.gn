@@ -51,6 +51,7 @@ build_webui("build") {
     "//tools/typescript/definitions/web_request.d.ts",
     "//tools/typescript/definitions/webview_tag.d.ts",
     "url_pattern.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
   ]
 
   ts_composite = true

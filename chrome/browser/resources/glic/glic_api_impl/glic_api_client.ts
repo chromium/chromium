@@ -223,6 +223,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     return {payload: response};
   }
 
+  onRequestReceived(_type: string): void {}
+  onRequestHandlerException(_type: string): void {}
+  onRequestCompleted(_type: string): void {}
+
   // GlicBrowserHost implementation.
 
   getChromeVersion() {
