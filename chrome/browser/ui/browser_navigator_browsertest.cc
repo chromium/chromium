@@ -138,6 +138,7 @@ BrowserNavigatorTest::BrowserNavigatorTest() {
       {
           features::kFileSystemAccessPersistentPermissions,
           blink::features::kPartitionedPopins,
+          content_settings::features::kTrackingProtection3pcd,
       },
       {});
 }
