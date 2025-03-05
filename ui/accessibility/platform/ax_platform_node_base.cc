@@ -18,6 +18,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_allocator_dump.h"
@@ -1664,7 +1665,7 @@ void AXPlatformNodeBase::AddAttributeToList(
   DCHECK(attributes);
   bool value;
   if (GetBoolAttribute(attribute, &value)) {
-    AddAttributeToList(name, value ? "true" : "false", attributes);
+    AddAttributeToList(name, base::ToString(value), attributes);
   }
 }
 
