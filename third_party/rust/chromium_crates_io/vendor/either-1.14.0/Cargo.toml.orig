@@ -1,9 +1,9 @@
 [package]
 name = "either"
-version = "1.13.0"
+version = "1.14.0"
 authors = ["bluss"]
-edition = "2018"
-rust-version = "1.37"
+edition = "2021"
+rust-version = "1.63.0"
 
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/rayon-rs/either"

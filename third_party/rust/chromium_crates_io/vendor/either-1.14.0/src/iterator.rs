@@ -35,7 +35,7 @@ where
     where
         T: IntoIterator<Item = A>,
     {
-        for_both!(*self, ref mut inner => inner.extend(iter))
+        for_both!(self, inner => inner.extend(iter))
     }
 }
 
@@ -48,11 +48,11 @@ where
     type Item = L::Item;
 
     fn next(&mut self) -> Option<Self::Item> {
-        for_both!(*self, ref mut inner => inner.next())
+        for_both!(self, inner => inner.next())
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
-        for_both!(*self, ref inner => inner.size_hint())
+        for_both!(self, inner => inner.size_hint())
     }
 
     fn fold<Acc, G>(self, init: Acc, f: G) -> Acc
@@ -78,7 +78,7 @@ where
     }
 
     fn nth(&mut self, n: usize) -> Option<Self::Item> {
-        for_both!(*self, ref mut inner => inner.nth(n))
+        for_both!(self, inner => inner.nth(n))
     }
 
     fn collect<B>(self) -> B
@@ -100,35 +100,35 @@ where
     where
         F: FnMut(Self::Item) -> bool,
     {
-        for_both!(*self, ref mut inner => inner.all(f))
+        for_both!(self, inner => inner.all(f))
     }
 
     fn any<F>(&mut self, f: F) -> bool
     where
         F: FnMut(Self::Item) -> bool,
     {
-        for_both!(*self, ref mut inner => inner.any(f))
+        for_both!(self, inner => inner.any(f))
     }
 
     fn find<P>(&mut self, predicate: P) -> Option<Self::Item>
     where
         P: FnMut(&Self::Item) -> bool,
     {
-        for_both!(*self, ref mut inner => inner.find(predicate))
+        for_both!(self, inner => inner.find(predicate))
     }
 
     fn find_map<B, F>(&mut self, f: F) -> Option<B>
     where
         F: FnMut(Self::Item) -> Option<B>,
     {
-        for_both!(*self, ref mut inner => inner.find_map(f))
+        for_both!(self, inner => inner.find_map(f))
     }
 
     fn position<P>(&mut self, predicate: P) -> Option<usize>
     where
         P: FnMut(Self::Item) -> bool,
     {
-        for_both!(*self, ref mut inner => inner.position(predicate))
+        for_both!(self, inner => inner.position(predicate))
     }
 }
 
@@ -138,11 +138,11 @@ where
     R: DoubleEndedIterator<Item = L::Item>,
 {
     fn next_back(&mut self) -> Option<Self::Item> {
-        for_both!(*self, ref mut inner => inner.next_back())
+        for_both!(self, inner => inner.next_back())
     }
 
     fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
-        for_both!(*self, ref mut inner => inner.nth_back(n))
+        for_both!(self, inner => inner.nth_back(n))
     }
 
     fn rfold<Acc, G>(self, init: Acc, f: G) -> Acc
@@ -156,7 +156,7 @@ where
     where
         P: FnMut(&Self::Item) -> bool,
     {
-        for_both!(*self, ref mut inner => inner.rfind(predicate))
+        for_both!(self, inner => inner.rfind(predicate))
     }
 }
 
@@ -166,7 +166,7 @@ where
     R: ExactSizeIterator<Item = L::Item>,
 {
     fn len(&self) -> usize {
-        for_both!(*self, ref inner => inner.len())
+        for_both!(self, inner => inner.len())
     }
 }
 

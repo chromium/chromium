@@ -10,11 +10,17 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
-edition = "2018"
-rust-version = "1.37"
+edition = "2021"
+rust-version = "1.63.0"
 name = "either"
-version = "1.13.0"
+version = "1.14.0"
 authors = ["bluss"]
+build = false
+autolib = false
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = """
 The enum `Either` with variants `Left` and `Right` is a general purpose sum type with two cases.
 """
@@ -41,6 +47,14 @@ features = ["serde"]
 no-dev-version = true
 tag-name = "{{version}}"
 
+[features]
+default = ["use_std"]
+use_std = []
+
+[lib]
+name = "either"
+path = "src/lib.rs"
+
 [dependencies.serde]
 version = "1.0"
 features = ["derive"]
@@ -48,7 +62,3 @@ optional = true
 
 [dev-dependencies.serde_json]
 version = "1.0.0"
-
-[features]
-default = ["use_std"]
-use_std = []
