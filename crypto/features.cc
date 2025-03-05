@@ -12,9 +12,9 @@ BASE_FEATURE(kProcessBoundStringEncryption,
              "ProcessBoundStringEncryption",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enabled by default on M135. Disable on or after M138.
+// Disabled by default.
 BASE_FEATURE(kLabelWindowsUnexportableKeys,
              "LabelWindowsUnexportableKeys",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace crypto::features
