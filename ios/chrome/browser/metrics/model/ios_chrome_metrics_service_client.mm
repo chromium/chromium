@@ -593,15 +593,13 @@ void IOSChromeMetricsServiceClient::OnProfileLoaded(ProfileManagerIOS* manager,
 void IOSChromeMetricsServiceClient::OnProfileUnloaded(
     ProfileManagerIOS* manager,
     ProfileIOS* profile) {
-  // Nothing to do, the observer unregister themselves when the KeyedService
-  // as part of the ProfileIOS destruction.
+  // Nothing to do.
 }
 
 void IOSChromeMetricsServiceClient::OnProfileMarkedForPermanentDeletion(
     ProfileManagerIOS* manager,
     ProfileIOS* profile) {
-  // Nothing to do, the observer unregister themselves when the KeyedService
-  // as part of the ProfileIOS destruction.
+  // Nothing to do.
 }
 
 void IOSChromeMetricsServiceClient::OnBrowserAdded(
@@ -632,6 +630,11 @@ void IOSChromeMetricsServiceClient::OnBrowserRemoved(
     case Browser::Type::kTemporary:
       break;
   }
+}
+
+void IOSChromeMetricsServiceClient::OnBrowserListShutdown(
+    BrowserList* browser_list) {
+  StopObservingBrowserList(browser_list);
 }
 
 void IOSChromeMetricsServiceClient::WebStateListDidChange(
