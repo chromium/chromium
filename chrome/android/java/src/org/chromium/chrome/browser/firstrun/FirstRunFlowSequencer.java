@@ -111,12 +111,12 @@ public abstract class FirstRunFlowSequencer {
     private Boolean mIsChild;
 
     /**
-     * Callback that is called once the flow is determined.
-     * If the properties is null, the First Run experience needs to finish and
-     * restart the original intent if necessary.
-     * @param freProperties Properties to be used in the First Run activity, or null.
+     * Callback that is called once the flow is determined. If the properties is null, the First Run
+     * experience needs to finish and restart the original intent if necessary.
+     *
+     * @param isChild A boolean value indicating child status.
      */
-    public abstract void onFlowIsKnown(Bundle freProperties);
+    public abstract void onFlowIsKnown(boolean isChild);
 
     public FirstRunFlowSequencer(
             OneshotSupplier<ProfileProvider> profileSupplier,
@@ -172,11 +172,7 @@ public abstract class FirstRunFlowSequencer {
 
         if (mIsFlowKnown) return;
         mIsFlowKnown = true;
-
-        Bundle freProperties = new Bundle();
-        freProperties.putBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, mIsChild);
-
-        onFlowIsKnown(freProperties);
+        onFlowIsKnown(mIsChild);
     }
 
     /**
