@@ -862,7 +862,7 @@ class Browser : public TabStripModelObserver,
   BrowserWindowFeatures& GetFeatures() override;
   web_modal::WebContentsModalDialogHost*
   GetWebContentsModalDialogHostForWindow() override;
-  bool IsActive() override;
+  bool IsActive() const override;
   base::CallbackListSubscription RegisterDidBecomeActive(
       DidBecomeActiveCallback callback) override;
   base::CallbackListSubscription RegisterDidBecomeInactive(
