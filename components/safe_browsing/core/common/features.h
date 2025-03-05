@@ -266,13 +266,6 @@ extern const base::FeatureParam<std::string> kRedWarningSurveyReportTypeFilter;
 // Specifies the HaTS survey's identifier.
 extern const base::FeatureParam<std::string> kRedWarningSurveyTriggerId;
 
-#if BUILDFLAG(IS_IOS)
-// Controls whether asynchronous real-time check is enabled. When enabled, the
-// navigation can be committed before real-time Safe Browsing check is
-// completed.
-BASE_DECLARE_FEATURE(kSafeBrowsingAsyncRealTimeCheck);
-#endif
-
 // Enables client side phishing daily reports limit to be configured via Finch
 // for ESB and SBER users
 BASE_DECLARE_FEATURE(kSafeBrowsingDailyPhishingReportsLimit);

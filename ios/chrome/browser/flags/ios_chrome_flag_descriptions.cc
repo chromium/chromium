@@ -1084,12 +1084,6 @@ const char kRemoveExcessNTPsExperimentDescription[] =
     "When enabled, extra tabs with the New Tab Page open and no navigation "
     "history will be removed.";
 
-const char kSafeBrowsingAsyncRealTimeCheckName[] =
-    "Safe Browsing Async Real Time Check";
-const char kSafeBrowsingAsyncRealTimeCheckDescription[] =
-    "Safe Browsing real-time checks are conducted asynchronously. They no "
-    "longer delay page load.";
-
 const char kSafeBrowsingAvailableName[] = "Make Safe Browsing available";
 const char kSafeBrowsingAvailableDescription[] =
     "When enabled, navigation URLs are compared to Safe Browsing blocklists, "
