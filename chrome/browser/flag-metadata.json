@@ -6918,11 +6918,6 @@
     "expiry_milestone": 138
   },
   {
-    "name": "password-suggestion-bottom-sheet-v2",
-    "owners": ["atsvirchkova@google.com", "vasilii@chromium.org", "derinel@google.com"],
-    "expiry_milestone": 135
-  },
-  {
     "name": "payment-link-detection",
     "owners": [ "junhuihe@google.com", "chrome-payments-team@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 140
@@ -9281,11 +9276,6 @@
     "name": "web-authentication-align-error-type-for-payment-credential-create",
     "owners": ["smcgruer@chromium.org", "chrome-payments-team@google.com" ],
     "expiry_milestone": 140
-  },
-  {
-    "name": "web-authentication-enclave-authenticator",
-    "owners": [ "kenrb@chromium.org", "chrome-webauthn@google.com" ],
-    "expiry_milestone": 132
   },
   {
     "name": "web-authentication-passkey-upgrade",
