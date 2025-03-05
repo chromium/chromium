@@ -250,7 +250,7 @@ function setUpStopRecording() {
   resetTimeout();
 }
 
-function setUpAutofillInternals() {
+function setUpAutofillInternals(autofillAiEnabled: boolean) {
   document.title = 'Autofill Internals';
   getRequiredElement('h1-title').textContent = 'Autofill Internals';
   getRequiredElement('logging-note').innerText =
@@ -263,6 +263,9 @@ function setUpAutofillInternals() {
   setUpMarker();
   setUpSubmittedFormsJSONDataDownload();
   setUpDownload('autofill');
+  if (autofillAiEnabled) {
+    addAutofillTabs();
+  }
   setUpStopRecording();
 }
 
@@ -622,6 +625,28 @@ function setUpSettingCheckboxe() {
     getRequiredElement('AutomaticallyStopRecording')
         .parentElement!.appendChild(span);
   }
+}
+
+function addTabLink(linkText: string, tabId: string) {
+  const tabsDiv = getRequiredElement('tab-links');
+  const link = document.createElement('a');
+  link.innerText = linkText;
+  link.addEventListener('click', () => {
+    const tabsContainer = getRequiredElement('tabs-container');
+    for (const tab of tabsContainer.children) {
+      if (tab instanceof HTMLElement) {
+        tab.style.display = 'none';
+      }
+    }
+    getRequiredElement(tabId).style.display = 'block';
+  });
+  tabsDiv.appendChild(link);
+}
+
+function addAutofillTabs() {
+  addTabLink('Autofill logs', 'tab-logs');
+  addTabLink('AutofillAI cache', 'tab-autofill-ai-cache');
+  getRequiredElement('tab-links').style.display = 'block';
 }
 
 document.addEventListener('DOMContentLoaded', () => {

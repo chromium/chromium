@@ -93,8 +93,10 @@ void AutofillCacheResetter::OnBrowsingDataRemoverDone(
 
 InternalsUIHandler::InternalsUIHandler(
     std::string call_on_load,
+    base::Value call_on_load_argument,
     GetLogRouterFunction get_log_router_function)
     : call_on_load_(std::move(call_on_load)),
+      call_on_load_argument_(std::move(call_on_load_argument)),
       get_log_router_function_(std::move(get_log_router_function)) {}
 
 InternalsUIHandler::~InternalsUIHandler() {
@@ -126,7 +128,7 @@ void InternalsUIHandler::OnJavascriptDisallowed() {
 
 void InternalsUIHandler::OnLoaded(const base::Value::List& args) {
   AllowJavascript();
-  FireWebUIListener(call_on_load_, base::Value());
+  FireWebUIListener(call_on_load_, call_on_load_argument_);
   // This is only available in contents, because the iOS BrowsingDataRemover
   // does not allow selectively deleting data per origin and we don't want to
   // wipe the entire cache.
