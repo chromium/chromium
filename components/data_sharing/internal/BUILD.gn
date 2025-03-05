@@ -43,6 +43,7 @@ static_library("internal") {
 
   deps = [
     "//components/data_sharing/internal/protocol",
+    "//components/data_sharing/public:logger",
     "//components/endpoint_fetcher:endpoint_fetcher",
     "//components/image_fetcher/core:core",
     "//components/signin/public/identity_manager",
@@ -112,6 +113,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/data_sharing:test_support",
+    "//components/data_sharing/public:logger",
     "//components/endpoint_fetcher",
     "//components/endpoint_fetcher:test_support",
     "//components/image_fetcher/core:core",
@@ -156,7 +158,8 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//build/android:build_java",
-      "//components/data_sharing/public:interfaces_java",
+      "//components/data_sharing/public:logger_interfaces_java",
+      "//components/data_sharing/public:logger_java",
       "//components/data_sharing/public:public_java",
       "//components/data_sharing/public/protocol:proto_java",
       "//net/android:net_java",

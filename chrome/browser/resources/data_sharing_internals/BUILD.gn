@@ -16,7 +16,7 @@ build_webui("build") {
   ]
   mojo_files_deps = [
     "//chrome/browser/ui/webui/data_sharing_internals:mojo_bindings_ts__generator",
-    "//components/data_sharing/public:interfaces_ts__generator",
+    "//components/data_sharing/public:logger_interfaces_ts__generator",
     "//components/data_sharing/public/protocol:mojo_bindings_ts__generator",
   ]
   mojo_files = [
