@@ -315,8 +315,9 @@ void BindWebNNContextProviderForRenderFrame(
 #endif
 }
 
-void BindWebNNContextProviderForDedicatedWorker(
-    DedicatedWorkerHost* host,
+template <typename WorkerHost>
+void BindWebNNContextProviderForWorker(
+    WorkerHost* host,
     mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver) {
   auto* process_host =
       static_cast<RenderProcessHostImpl*>(host->GetProcessHost());
@@ -1369,7 +1370,8 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
     // base::Unretained(host->GetProcessHost()) is safe because the map is owned
     // by |DedicatedWorkerHost::broker_|.
     map->Add<webnn::mojom::WebNNContextProvider>(base::BindRepeating(
-        &BindWebNNContextProviderForDedicatedWorker, base::Unretained(host)));
+        &BindWebNNContextProviderForWorker<DedicatedWorkerHost>,
+        base::Unretained(host)));
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1547,6 +1549,12 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
         &SharedWorkerHost::BindPressureService, base::Unretained(host)));
   }
 #endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
+  if (base::FeatureList::IsEnabled(
+          webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
+    map->Add<webnn::mojom::WebNNContextProvider>(base::BindRepeating(
+        &BindWebNNContextProviderForWorker<SharedWorkerHost>,
+        base::Unretained(host)));
+  }
   if (base::FeatureList::IsEnabled(blink::features::kBuiltInAIAPI)) {
     map->Add<blink::mojom::AIManager>(base::BindRepeating(
         &ContentBrowserClient::BindAIManager,
@@ -1718,6 +1726,12 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
       &ServiceWorkerHost::CreateBucketManagerHost, base::Unretained(host)));
   map->Add<blink::mojom::WebUsbService>(base::BindRepeating(
       &ServiceWorkerHost::BindUsbService, base::Unretained(host)));
+  if (base::FeatureList::IsEnabled(
+          webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
+    map->Add<webnn::mojom::WebNNContextProvider>(base::BindRepeating(
+        &BindWebNNContextProviderForWorker<ServiceWorkerHost>,
+        base::Unretained(host)));
+  }
   if (base::FeatureList::IsEnabled(blink::features::kBuiltInAIAPI)) {
     map->Add<blink::mojom::AIManager>(base::BindRepeating(
         &ServiceWorkerHost::BindAIManager, base::Unretained(host)));

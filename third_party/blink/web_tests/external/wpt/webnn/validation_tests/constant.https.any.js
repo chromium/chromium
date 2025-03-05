@@ -1,5 +1,5 @@
 // META: title=validation tests for WebNN API constant interface
-// META: global=window,dedicatedworker
+// META: global=window,worker
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -128,8 +128,6 @@ tests.forEach(
       const builder = new MLGraphBuilder(context);
       const buffer = new ArrayBuffer(test.buffer.byteLength);
       const bufferView = new test.buffer.type(buffer);
-      const sharedBuffer = new SharedArrayBuffer(test.buffer.byteLength);
-      const sharedBufferView = new test.buffer.type(sharedBuffer);
 
       if (test.viewTestOnly === undefined || test.viewTestOnly === false) {
         // Test building constant from ArrayBuffer.
@@ -141,15 +139,19 @@ tests.forEach(
           assert_throws_js(
               TypeError, () => builder.constant(test.descriptor, buffer));
         }
-        // Test building constant from SharedArrayBuffer.
-        if (test.output) {
-          const constantOperand =
-              builder.constant(test.descriptor, sharedBuffer);
-          assert_equals(constantOperand.dataType, test.output.dataType);
-          assert_array_equals(constantOperand.shape, test.output.shape);
-        } else {
-          assert_throws_js(
-              TypeError, () => builder.constant(test.descriptor, sharedBuffer));
+        if ('SharedArrayBuffer' in globalThis) {
+          // Test building constant from SharedArrayBuffer.
+          const sharedBuffer = new SharedArrayBuffer(test.buffer.byteLength);
+          if (test.output) {
+            const constantOperand =
+                builder.constant(test.descriptor, sharedBuffer);
+            assert_equals(constantOperand.dataType, test.output.dataType);
+            assert_array_equals(constantOperand.shape, test.output.shape);
+          } else {
+            assert_throws_js(
+                TypeError,
+                () => builder.constant(test.descriptor, sharedBuffer));
+          }
         }
       }
 
@@ -162,15 +164,19 @@ tests.forEach(
         assert_throws_js(
             TypeError, () => builder.constant(test.descriptor, bufferView));
       }
-      // Test building constant from shared ArrayBufferView.
-      if (test.output) {
-        const constantOperand =
-            builder.constant(test.descriptor, sharedBufferView);
-        assert_equals(constantOperand.dataType, test.output.dataType);
-        assert_array_equals(constantOperand.shape, test.output.shape);
-      } else {
-        assert_throws_js(
-            TypeError,
-            () => builder.constant(test.descriptor, sharedBufferView));
+      if ('SharedArrayBuffer' in globalThis) {
+        // Test building constant from shared ArrayBufferView.
+        const sharedBuffer = new SharedArrayBuffer(test.buffer.byteLength);
+        const sharedBufferView = new test.buffer.type(sharedBuffer);
+        if (test.output) {
+          const constantOperand =
+              builder.constant(test.descriptor, sharedBufferView);
+          assert_equals(constantOperand.dataType, test.output.dataType);
+          assert_array_equals(constantOperand.shape, test.output.shape);
+        } else {
+          assert_throws_js(
+              TypeError,
+              () => builder.constant(test.descriptor, sharedBufferView));
+        }
       }
     }, test.name));
