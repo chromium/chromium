@@ -62,12 +62,10 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
       continue;
     }
 
-    const std::string app_id = saved_desk_util::GetAppId(window);
-
     // Coral desk templates only contain a subset of the apps on the active
     // desk.
     if (template_type == DeskTemplateType::kCoral &&
-        !coral_app_id_allowlist.contains(app_id)) {
+        !coral_app_id_allowlist.contains(*window->GetProperty(kAppIDKey))) {
       continue;
     }
 
@@ -91,6 +89,7 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
     }
 
     // Skip windows that do not associate with a full restore app id.
+    const std::string app_id = saved_desk_util::GetAppId(window);
     if (!Shell::Get()
              ->overview_controller()
              ->disable_app_id_check_for_saved_desks() &&
