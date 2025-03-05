@@ -32,6 +32,7 @@
 #include "chrome/browser/themes/theme_properties.h"  // nogncheck
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
+#include "ui/base/ime/text_edit_commands.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
@@ -459,12 +460,10 @@ int QtUi::GetCursorThemeSize() {
   return 0;
 }
 
-bool QtUi::GetTextEditCommandsForEvent(
-    const ui::Event& event,
-    int text_flags,
-    std::vector<ui::TextEditCommandAuraLinux>* commands) {
+ui::TextEditCommand QtUi::GetTextEditCommandForEvent(const ui::Event& event,
+                                                     int text_flags) {
   // QT doesn't have "key themes" (eg. readline bindings) like GTK.
-  return false;
+  return ui::TextEditCommand::INVALID_COMMAND;
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)

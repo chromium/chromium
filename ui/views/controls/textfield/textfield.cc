@@ -791,18 +791,18 @@ bool Textfield::OnKeyPressed(const ui::KeyEvent& event) {
   }
 
 #if BUILDFLAG(IS_LINUX)
-  auto* linux_ui = ui::LinuxUi::instance();
-  std::vector<ui::TextEditCommandAuraLinux> commands;
-  if (!handled && linux_ui &&
-      linux_ui->GetTextEditCommandsForEvent(event, ui::TEXT_INPUT_FLAG_NONE,
-                                            &commands)) {
-    for (const auto& command : commands) {
-      if (IsTextEditCommandEnabled(command.command())) {
-        ExecuteTextEditCommand(command.command());
-        handled = true;
+  if (!handled) {
+    if (auto* linux_ui = ui::LinuxUi::instance()) {
+      const auto command =
+          linux_ui->GetTextEditCommandForEvent(event, ui::TEXT_INPUT_FLAG_NONE);
+      if (command != ui::TextEditCommand::INVALID_COMMAND) {
+        if (IsTextEditCommandEnabled(command)) {
+          ExecuteTextEditCommand(command);
+          return true;
+        }
+        return false;
       }
     }
-    return handled;
   }
 #endif
 
@@ -977,14 +977,9 @@ void Textfield::AboutToRequestFocusFromTabTraversal(bool reverse) {
 bool Textfield::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
 #if BUILDFLAG(IS_LINUX)
   // Skip any accelerator handling that conflicts with custom keybindings.
-  auto* linux_ui = ui::LinuxUi::instance();
-  std::vector<ui::TextEditCommandAuraLinux> commands;
-  if (linux_ui && linux_ui->GetTextEditCommandsForEvent(
-                      event, ui::TEXT_INPUT_FLAG_NONE, &commands)) {
-    const auto is_enabled = [this](const auto& command) {
-      return IsTextEditCommandEnabled(command.command());
-    };
-    if (std::ranges::any_of(commands, is_enabled)) {
+  if (auto* linux_ui = ui::LinuxUi::instance()) {
+    if (IsTextEditCommandEnabled(linux_ui->GetTextEditCommandForEvent(
+            event, ui::TEXT_INPUT_FLAG_NONE))) {
       return true;
     }
   }

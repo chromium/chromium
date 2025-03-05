@@ -1807,11 +1807,9 @@ TEST_F(TextfieldTest, OnKeyPressBinding) {
 
     ~TestDelegate() override = default;
 
-    bool GetTextEditCommandsForEvent(
-        const ui::Event& event,
-        int text_flags,
-        std::vector<ui::TextEditCommandAuraLinux>* commands) override {
-      return false;
+    ui::TextEditCommand GetTextEditCommandForEvent(const ui::Event& event,
+                                                   int text_flags) override {
+      return ui::TextEditCommand::INVALID_COMMAND;
     }
   };
 
