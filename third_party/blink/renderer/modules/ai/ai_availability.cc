@@ -84,6 +84,29 @@ AIAvailability HandleTranslatorAvailabilityCheckResult(
   }
 }
 
+AIAvailability HandleLanguageDetectionModelCheckResult(
+    ExecutionContext* execution_context,
+    language_detection::mojom::blink::LanguageDetectionModelStatus result) {
+  switch (result) {
+    case language_detection::mojom::blink::LanguageDetectionModelStatus::
+        kReadily:
+      return HandleModelAvailabilityCheckResult(
+          execution_context, AIMetrics::AISessionType::kLanguageDetector,
+          mojom::blink::ModelAvailabilityCheckResult::kAvailable);
+    case language_detection::mojom::blink::LanguageDetectionModelStatus::
+        kAfterDownload:
+      return HandleModelAvailabilityCheckResult(
+          execution_context, AIMetrics::AISessionType::kLanguageDetector,
+          mojom::blink::ModelAvailabilityCheckResult::kDownloadable);
+    case language_detection::mojom::blink::LanguageDetectionModelStatus::
+        kNotAvailable:
+      return HandleModelAvailabilityCheckResult(
+          execution_context, AIMetrics::AISessionType::kLanguageDetector,
+          mojom::blink::ModelAvailabilityCheckResult::
+              kUnavailableLanguageDetectionModelNotAvailable);
+  }
+}
+
 V8AIAvailability AIAvailabilityToV8(AIAvailability availability) {
   switch (availability) {
     case AIAvailability::kUnavailable:
