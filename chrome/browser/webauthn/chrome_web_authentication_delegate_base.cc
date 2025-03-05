@@ -173,8 +173,9 @@ ChromeWebAuthenticationDelegateBase::MaybeGetRequestProxy(
   NOTIMPLEMENTED();
   return nullptr;
 }
-void ChromeWebAuthenticationDelegateBase::DeletePasskey(
+void ChromeWebAuthenticationDelegateBase::PasskeyUnrecognized(
     content::WebContents* web_contents,
+    const url::Origin& origin,
     const std::vector<uint8_t>& passkey_credential_id,
     const std::string& relying_party_id) {
   NOTIMPLEMENTED();

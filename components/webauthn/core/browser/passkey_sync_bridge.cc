@@ -353,6 +353,21 @@ bool PasskeySyncBridge::DeletePasskey(const std::string& credential_id,
   return true;
 }
 
+bool PasskeySyncBridge::SetPasskeyHidden(const std::string& credential_id,
+                                         bool hidden) {
+  return UpdateSinglePasskey(
+      credential_id,
+      base::BindOnce(
+          [](bool hidden,
+             sync_pb::WebauthnCredentialSpecifics* passkey) -> bool {
+            passkey->set_hidden(hidden);
+            passkey->set_hidden_time(
+                base::Time::Now().InMillisecondsSinceUnixEpoch());
+            return true;
+          },
+          hidden));
+}
+
 // The following implementation is more efficient than the simple one which
 // would iterate over all passkeys and delete them one by one.
 // Deleting all passkeys individually would also send out a notification to

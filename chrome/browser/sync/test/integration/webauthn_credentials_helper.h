@@ -177,6 +177,16 @@ MATCHER_P(EntityHasDisplayName, expected_display_name, "") {
          expected_display_name;
 }
 
+MATCHER_P(EntityHasHidden, expected_hidden, "") {
+  return arg.specifics().webauthn_credential().hidden() == expected_hidden;
+}
+
+MATCHER(EntityHasCurrentHiddenTime, "") {
+  base::Time hidden_time = base::Time::FromMillisecondsSinceUnixEpoch(
+      arg.specifics().webauthn_credential().hidden_time());
+  return (base::Time::Now() - hidden_time) < base::Seconds(5);
+}
+
 MATCHER_P(EntityHasLastUsedTime, expected_last_used_time, "") {
   return arg.specifics()
              .webauthn_credential()

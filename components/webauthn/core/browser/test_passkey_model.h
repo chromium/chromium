@@ -36,6 +36,7 @@ class TestPasskeyModel : public PasskeyModel {
   GetPasskeysForRelyingPartyId(const std::string& rp_id) const override;
   bool DeletePasskey(const std::string& credential_id,
                      const base::Location& location) override;
+  bool SetPasskeyHidden(const std::string& credential_id, bool hidden) override;
   void DeleteAllPasskeys() override;
   bool UpdatePasskey(const std::string& credential_id,
                      PasskeyUpdate change,
