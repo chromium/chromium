@@ -7,7 +7,6 @@
     "llvm_force_head_revision": true,
     "target_cpu": "arm64",
     "target_os": "android",
-    "use_reclient": false,
     "use_siso": true
   }
 }

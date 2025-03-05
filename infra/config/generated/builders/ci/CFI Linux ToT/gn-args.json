@@ -11,7 +11,6 @@
     "use_cfi_cast": true,
     "use_cfi_diag": true,
     "use_cfi_icall": true,
-    "use_reclient": false,
     "use_siso": true,
     "use_thin_lto": true
   }
