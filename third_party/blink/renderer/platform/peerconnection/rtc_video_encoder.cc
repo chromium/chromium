@@ -36,6 +36,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_switches.h"
@@ -712,6 +713,32 @@ bool UseSoftwareForLowResolution(const webrtc::VideoCodecType codec,
 
   return false;
 }
+
+scoped_refptr<gpu::ClientSharedImage> CreateClientSharedImage(
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    gfx::Size size) {
+  const auto buffer_format = gfx::BufferFormat::YUV_420_BIPLANAR;
+  const auto si_format = viz::GetSharedImageFormat(buffer_format);
+  const auto buffer_usage =
+      gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
+
+  // Setting some default usage in order to get a mappable shared image.
+  const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+  gpu::SharedImageInterface* sii = gpu_factories->SharedImageInterface();
+  if (!sii) {
+    return nullptr;
+  }
+
+  auto shared_image = sii->CreateSharedImage(
+      {si_format, size, gfx::ColorSpace(), gpu::SharedImageUsageSet(si_usage),
+       "RTCVideoEncoder"},
+      gpu::kNullSurfaceHandle, buffer_usage);
+  LOG_IF(ERROR, !shared_image) << "Unable to create a mappable shared image";
+  return shared_image;
+}
+
 }  // namespace
 
 namespace features {
@@ -2268,29 +2295,13 @@ bool RTCVideoEncoder::Impl::CreateBlackMappableSIFrame(
     const gfx::Size& natural_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const auto buffer_format = gfx::BufferFormat::YUV_420_BIPLANAR;
-  const auto si_format = viz::GetSharedImageFormat(buffer_format);
-  const auto buffer_usage =
-      gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
-
-  // Setting some default usage in order to get a mappable shared image.
-  const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
-                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  auto shared_image = CreateClientSharedImage(gpu_factories_, natural_size);
+  if (!shared_image) {
+    return false;
+  }
 
   auto* sii = gpu_factories_->SharedImageInterface();
-  if (!sii) {
-    return false;
-  }
-
-  auto shared_image = sii->CreateSharedImage(
-      {si_format, natural_size, gfx::ColorSpace(),
-       gpu::SharedImageUsageSet(si_usage), "RTCVideoEncoder"},
-      gpu::kNullSurfaceHandle, buffer_usage);
-  if (!shared_image) {
-    LOG(ERROR) << "Unable to create a mappable shared image.";
-    return false;
-  }
-
+  CHECK(sii);
   // Map in order to write to it.
   auto mapping = shared_image->Map();
   if (!mapping) {

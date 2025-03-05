@@ -15,6 +15,8 @@ include_rules = [
     "+base/task/bind_post_task.h",
     "+base/task/task_traits.h",
     "+components/viz/common/resources/shared_image_format_utils.h",
+    "+gpu/command_buffer/client/client_shared_image.h",
+    "+gpu/command_buffer/client/shared_image_interface.h",
     "+media/base",
     "+media/capture/capture_switches.h",
     "+media/capture/video/video_capture_feedback.h",
