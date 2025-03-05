@@ -13,17 +13,17 @@ namespace webnn::ort {
 // a `QueueableResourceState`.
 class BufferContentOrt {
  public:
-  explicit BufferContentOrt(ScopedOrtValuePtr tensor);
+  explicit BufferContentOrt(ScopedOrtValue tensor);
 
   BufferContentOrt(const BufferContentOrt&) = delete;
   BufferContentOrt& operator=(const BufferContentOrt&) = delete;
 
   ~BufferContentOrt();
 
-  OrtValue* tensor() const { return tensor_.Get(); }
+  OrtValue* tensor() const { return tensor_.get(); }
 
  private:
-  ScopedOrtValuePtr tensor_;
+  ScopedOrtValue tensor_;
 };
 
 }  // namespace webnn::ort

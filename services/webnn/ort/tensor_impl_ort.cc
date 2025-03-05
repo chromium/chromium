@@ -7,6 +7,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/webnn/ort/context_impl_ort.h"
 #include "services/webnn/ort/error_ort.h"
+#include "services/webnn/ort/scoped_ort_types.h"
 #include "services/webnn/ort/utils_ort.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/resource_task.h"
@@ -39,14 +40,14 @@ TensorImplOrt::Create(
   // Convert the shape from uint32_t to int64_t.
   std::vector<int64_t> ort_shape(tensor_info->descriptor.shape().begin(),
                                  tensor_info->descriptor.shape().end());
-  ScopedOrtValuePtr tensor;
+  ScopedOrtValue tensor;
   if (ORT_CALL_FAILED(ort_api->CreateTensorAsOrtValue(
           allocator, ort_shape.data(), ort_shape.size(), ort_data_type,
-          tensor.GetAddressOf()))) {
+          ScopedOrtValue::Receiver(tensor).get()))) {
     return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
                                               "Failed to create tensor."));
   }
-  CHECK(tensor.Get());
+  CHECK(tensor.get());
 
   auto buffer_content = std::make_unique<BufferContentOrt>(std::move(tensor));
   auto buffer_state =

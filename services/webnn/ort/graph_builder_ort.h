@@ -17,7 +17,6 @@
 #include "base/memory/stack_allocated.h"
 #include "base/types/expected.h"
 #include "services/webnn/ort/ort_model_editor.h"
-#include "services/webnn/ort/scoped_ort_types.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"

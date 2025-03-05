@@ -26,7 +26,7 @@ class OrtModelEditor {
     ModelInfo& operator=(const ModelInfo&) = delete;
     ~ModelInfo();
 
-    ScopedOrtModelPtr model;
+    ScopedOrtModel model;
 
     // TODO(https://github.com/shiyi9801/chromium/issues/49): Consider reusing
     // constant operands instead of copying them to `external_data`.
@@ -50,19 +50,19 @@ class OrtModelEditor {
 
   // Add an initializer to the graph. It will use raw data if byte size
   // of the data is less than 128.
-  [[nodiscard]] ScopedOrtStatusPtr AddInitializer(
+  [[nodiscard]] ScopedOrtStatus AddInitializer(
       std::string_view name,
       base::span<const int64_t> shape,
       base::span<const uint8_t> data,
       ONNXTensorElementDataType data_type);
 
-  [[nodiscard]] ScopedOrtStatusPtr AddInitializerAsRawData(
+  [[nodiscard]] ScopedOrtStatus AddInitializerAsRawData(
       std::string_view name,
       base::span<const int64_t> shape,
       base::span<const uint8_t> data,
       ONNXTensorElementDataType data_type);
 
-  [[nodiscard]] ScopedOrtStatusPtr AddInitializerAsExternalData(
+  [[nodiscard]] ScopedOrtStatus AddInitializerAsExternalData(
       std::string_view name,
       base::span<const int64_t> shape,
       base::span<const uint8_t> data,
@@ -74,7 +74,7 @@ class OrtModelEditor {
                                       base::span<const int64_t>,
                                       base::span<const float>,
                                       base::span<const char*>>;
-  ScopedOrtOpAttrPtr CreateAttribute(std::string_view name, OrtOpAttrData data);
+  ScopedOrtOpAttr CreateAttribute(std::string_view name, OrtOpAttrData data);
 
   // Node will own attributes.
   void AddNode(std::string_view op_type,
@@ -86,11 +86,11 @@ class OrtModelEditor {
   std::unique_ptr<ModelInfo> BuildAndTakeModelInfo();
 
  private:
-  std::vector<ScopedOrtValueInfoPtr> inputs_;
-  std::vector<ScopedOrtValueInfoPtr> outputs_;
+  std::vector<ScopedOrtValueInfo> inputs_;
+  std::vector<ScopedOrtValueInfo> outputs_;
 
-  ScopedOrtMemoryInfoPtr memory_info_;
-  ScopedOrtGraphPtr graph_;
+  ScopedOrtMemoryInfo memory_info_;
+  ScopedOrtGraph graph_;
 
   std::unique_ptr<ModelInfo> model_info_;
 };

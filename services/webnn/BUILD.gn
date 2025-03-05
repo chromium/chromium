@@ -168,7 +168,6 @@ component("webnn_service") {
       "ort/ort_model_editor.h",
       "ort/platform_functions_ort.cc",
       "ort/platform_functions_ort.h",
-      "ort/scoped_ort_types.cc",
       "ort/scoped_ort_types.h",
       "ort/tensor_impl_ort.cc",
       "ort/tensor_impl_ort.h",

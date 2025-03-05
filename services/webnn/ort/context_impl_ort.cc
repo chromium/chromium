@@ -6,7 +6,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/notimplemented.h"
 #include "services/webnn/error.h"
 #include "services/webnn/ort/error_ort.h"
@@ -39,7 +38,7 @@ ContextImplOrt::ContextImplOrt(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
     mojom::CreateContextOptionsPtr options,
-    ScopedOrtEnvPtr env)
+    ScopedOrtEnv env)
     : WebNNContextImpl(std::move(receiver),
                        context_provider,
                        GetContextProperties(),

@@ -258,9 +258,10 @@ void WebNNContextProviderImpl::CreateWebNNContext(
     // `OrtEnv` instance. The following invocations return the reference of the
     // same instance.  It is released upon the last reference is removed via
     // `ReleaseEnv()`.
-    ort::ScopedOrtEnvPtr env;
+    ort::ScopedOrtEnv env;
     if (ORT_CALL_FAILED(ort::GetOrtApi()->CreateEnv(
-            ORT_LOGGING_LEVEL_WARNING, "WebNN", env.GetAddressOf()))) {
+            ORT_LOGGING_LEVEL_WARNING, "WebNN",
+            ort::ScopedOrtEnv::Receiver(env).get()))) {
       std::move(callback).Run(ToError<mojom::CreateContextResult>(
           mojom::Error::Code::kNotSupportedError,
           "Failed to create a WebNN context."));

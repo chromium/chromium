@@ -16,6 +16,7 @@
 #include "services/webnn/ort/context_impl_ort.h"
 #include "services/webnn/ort/error_ort.h"
 #include "services/webnn/ort/platform_functions_ort.h"
+#include "services/webnn/ort/scoped_ort_types.h"
 #include "services/webnn/ort/tensor_impl_ort.h"
 #include "services/webnn/ort/utils_ort.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
@@ -49,8 +50,8 @@ constexpr char kOVDeviceCPU[] = "CPU";
 constexpr char kOVDeviceNPU[] = "NPU";
 
 struct Session {
-  Session(ScopedOrtEnvPtr env,
-          ScopedOrtSessionPtr session,
+  Session(ScopedOrtEnv env,
+          ScopedOrtSession session,
           std::vector<base::HeapArray<uint8_t>> external_data)
       : external_data(std::move(external_data)),
         env(std::move(env)),
@@ -59,15 +60,15 @@ struct Session {
   Session& operator=(const Session&) = delete;
   ~Session() = default;
 
-  OrtSession* GetSession() { return session.Get(); }
+  OrtSession* GetSession() { return session.get(); }
 
   std::vector<base::HeapArray<uint8_t>> external_data;
 
   // `env` should be prior to `session`. That ensures releasing `env` after
   // releasing the session. This avoids unloading the providers DLLs being
   // used during `session` destruction.
-  ScopedOrtEnvPtr env;
-  ScopedOrtSessionPtr session;
+  ScopedOrtEnv env;
+  ScopedOrtSession session;
 };
 
 base::flat_map<std::string,
@@ -187,9 +188,9 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
                        std::move(constant_operands)));
 
   const OrtApi* ort_api = GetOrtApi();
-  ScopedOrtSessionOptionsPtr session_options;
-  if (ORT_CALL_FAILED(
-          ort_api->CreateSessionOptions(session_options.GetAddressOf()))) {
+  ScopedOrtSessionOptions session_options;
+  if (ORT_CALL_FAILED(ort_api->CreateSessionOptions(
+          ScopedOrtSessionOptions::Receiver(session_options).get()))) {
     return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
                                               "Failed to create graph."));
   }
@@ -206,16 +207,16 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
     if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kWebNNOrtUseOpenvino)) {
       CALL_ORT_FUNC(ort_api->SetOptimizedModelFilePath(
-          session_options, dump_path.value().c_str()));
+          session_options.get(), dump_path.value().c_str()));
     } else {
       CALL_ORT_FUNC(ort_api->AddSessionConfigEntry(
-          session_options, kOrtSessionOptionEpContextEnable,
+          session_options.get(), kOrtSessionOptionEpContextEnable,
           /*config_value=*/"1"));
       CALL_ORT_FUNC(ort_api->AddSessionConfigEntry(
-          session_options, kOrtSessionOptionEpContextEmbedMode,
+          session_options.get(), kOrtSessionOptionEpContextEmbedMode,
           /*config_value=*/"1"));
       CALL_ORT_FUNC(ort_api->AddSessionConfigEntry(
-          session_options, kOrtSessionOptionEpContextFilePath,
+          session_options.get(), kOrtSessionOptionEpContextFilePath,
           base::SysWideToUTF8(dump_path.value()).c_str()));
     }
 
@@ -228,7 +229,8 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebNNOrtDisableCpuFallback)) {
     CALL_ORT_FUNC(ort_api->AddSessionConfigEntry(
-        session_options, /*config_key=*/kOrtSessionOptionsDisableCPUEPFallback,
+        session_options.get(),
+        /*config_key=*/kOrtSessionOptionsDisableCPUEPFallback,
         /*config_value=*/"1"));
   }
 
@@ -281,11 +283,11 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
     // backend.
     // https://onnxruntime.ai/docs/execution-providers/OpenVINO-ExecutionProvider.html#other-configuration-settings
     CALL_ORT_FUNC(ort_api->SetSessionGraphOptimizationLevel(
-        session_options, GraphOptimizationLevel::ORT_DISABLE_ALL));
+        session_options.get(), GraphOptimizationLevel::ORT_DISABLE_ALL));
 
     if (ORT_CALL_FAILED(
             ort_api->SessionOptionsAppendExecutionProvider_OpenVINO_V2(
-                session_options, provider_options_keys.data(),
+                session_options.get(), provider_options_keys.data(),
                 provider_options_values.data(),
                 provider_options_keys.size()))) {
       return base::unexpected(
@@ -299,23 +301,24 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
     // to apply layout optimizations (ORT_ENABLE_ALL).
     // https://onnxruntime.ai/docs/performance/model-optimizations/graph-optimizations.html#layout-optimizations
     CALL_ORT_FUNC(ort_api->SetSessionGraphOptimizationLevel(
-        session_options, GraphOptimizationLevel::ORT_ENABLE_BASIC));
+        session_options.get(), GraphOptimizationLevel::ORT_ENABLE_BASIC));
   }
 
   // `CreateEnv()` will increase the reference count and return the reference of
   // the existing `OrtEnv` instance that is created by context provider. `env`
   // will be owned by `GraphImplOrt::Session` that ensures releasing `OrtEnv`
   // reference after releasing `OrtSession`.
-  ScopedOrtEnvPtr env;
+  ScopedOrtEnv env;
   if (ORT_CALL_FAILED(ort_api->CreateEnv(ORT_LOGGING_LEVEL_WARNING, "WebNN",
-                                         env.GetAddressOf()))) {
+                                         ScopedOrtEnv::Receiver(env).get()))) {
     return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
                                               "Failed to create graph."));
   }
 
-  ScopedOrtSessionPtr session;
+  ScopedOrtSession session;
   if (ORT_CALL_FAILED(GetOrtModelEditorApi()->CreateSessionFromModel(
-          env, model_info->model, session_options, session.GetAddressOf()))) {
+          env.get(), model_info->model.get(), session_options.get(),
+          ScopedOrtSession::Receiver(session).get()))) {
     return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
                                               "Failed to build graph."));
   }

@@ -22,7 +22,7 @@ class ContextImplOrt final : public WebNNContextImpl {
   ContextImplOrt(mojo::PendingReceiver<mojom::WebNNContext> receiver,
                  WebNNContextProviderImpl* context_provider,
                  mojom::CreateContextOptionsPtr options,
-                 ScopedOrtEnvPtr env);
+                 ScopedOrtEnv env);
 
   ContextImplOrt(const WebNNContextImpl&) = delete;
   ContextImplOrt& operator=(const ContextImplOrt&) = delete;
@@ -47,7 +47,7 @@ class ContextImplOrt final : public WebNNContextImpl {
       mojom::TensorInfoPtr tensor_info,
       CreateTensorImplCallback callback) override;
 
-  ScopedOrtEnvPtr env_;
+  ScopedOrtEnv env_;
 
   base::WeakPtrFactory<ContextImplOrt> weak_factory_{this};
 };
