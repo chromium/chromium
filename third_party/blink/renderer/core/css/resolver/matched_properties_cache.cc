@@ -117,7 +117,18 @@ const CachedMatchedProperties::Entry* MatchedPropertiesCache::Find(
     cache_.erase(it);
     return nullptr;
   }
-  for (CachedMatchedProperties::Entry& entry : cache_item->entries) {
+
+  // Scanning backwards to find the most recent entries first
+  // seems to give faster hits than going from the front,
+  // so we do that.
+  for (auto it2 = cache_item->entries.rbegin();
+       it2 != cache_item->entries.rend(); ++it2) {
+    CachedMatchedProperties::Entry& entry = *it2;
+
+    if (!style_resolver_state.ParentStyle()->InheritedDataShared(
+            *entry.parent_computed_style)) {
+      continue;
+    }
     if (IsAtShadowBoundary(&style_resolver_state.GetElement()) &&
         entry.parent_computed_style->UserModify() !=
             ComputedStyleInitialValues::InitialUserModify()) {
@@ -139,24 +150,21 @@ const CachedMatchedProperties::Entry* MatchedPropertiesCache::Find(
       // ComputedStyle when it was cached in display:none but is now rendered.
       continue;
     }
-    if (style_resolver_state.ParentStyle()->InheritedDataShared(
-            *entry.parent_computed_style)) {
-      entry.last_used = clock_++;
+    entry.last_used = clock_++;
 
-      // Since we have a cache hit, refresh it using the most recent property
-      // sets (in case they have differing pointers but same content); the key
-      // is weak, and using more recently seen sets make it less likely that
-      // they will go away and GC the entry.
-      //
-      // Ideally, we would not be using weak pointers in the MPC at all,
-      // but CSSValues keep StyleImages alive (see
-      // StyleImageCacheTest.WeakReferenceGC), so if we used regular pointers,
-      // we'd need to find some other way of making sure these images do not
-      // live forever in the cache.
-      cache_item->RefreshKey(key.result_.GetMatchedProperties());
+    // Since we have a cache hit, refresh it using the most recent property
+    // sets (in case they have differing pointers but same content); the key
+    // is weak, and using more recently seen sets make it less likely that
+    // they will go away and GC the entry.
+    //
+    // Ideally, we would not be using weak pointers in the MPC at all,
+    // but CSSValues keep StyleImages alive (see
+    // StyleImageCacheTest.WeakReferenceGC), so if we used regular pointers,
+    // we'd need to find some other way of making sure these images do not
+    // live forever in the cache.
+    cache_item->RefreshKey(key.result_.GetMatchedProperties());
 
-      return &entry;
-    }
+    return &entry;
   }
   return nullptr;
 }
