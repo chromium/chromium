@@ -73,9 +73,10 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   base::WeakPtr<DisplayResourceProvider> GetWeakPtr();
 
 #if BUILDFLAG(IS_ANDROID)
-  // Indicates if this resource is backed by an Android SurfaceTexture, and thus
-  // can't really be promoted to an overlay.
-  bool IsBackedBySurfaceTexture(ResourceId id) const;
+  // Indicates if this resource is backed by an Android SurfaceView, and thus
+  // can be promoted to an overlay via legacy (SurfaceView/Dialog) overlay
+  // system.
+  bool IsBackedBySurfaceView(ResourceId id) const;
 #endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)

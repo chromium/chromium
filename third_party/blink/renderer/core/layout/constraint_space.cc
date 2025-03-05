@@ -21,11 +21,9 @@ namespace {
 
 struct SameSizeAsConstraintSpace {
   LogicalSize available_size;
-  union {
-    BfcOffset bfc_offset;
-    void* rare_data;
-  };
+  BfcOffset bfc_offset;
   ExclusionSpace exclusion_space;
+  Member<void*> rare_data;
   unsigned bitfields[1];
 };
 

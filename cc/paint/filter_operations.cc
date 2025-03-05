@@ -112,9 +112,9 @@ bool FilterOperations::HasFilterThatMovesPixels() const {
 
 gfx::Rect FilterOperations::ExpandRectForPixelMovement(
     const gfx::Rect& rect) const {
-  if (base::FeatureList::IsEnabled(features::kUseMapRectForPixelMovement)) {
-    return MapRect(rect);
-  }
+  // Since this function is deprecated, we should only reach it if the
+  // replacement feature is not enabled.
+  DCHECK(!base::FeatureList::IsEnabled(features::kUseMapRectForPixelMovement));
 
   gfx::RectF expanded_rect(rect);
   expanded_rect.Outset(MaximumPixelMovement());

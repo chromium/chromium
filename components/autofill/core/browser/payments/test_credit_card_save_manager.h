@@ -52,6 +52,10 @@ class TestCreditCardSaveManager : public CreditCardSaveManager {
 
   payments::UploadCardRequestDetails* upload_request();
 
+  bool should_request_expiration_date_from_user();
+
+  bool should_request_name_from_user();
+
   void InitVirtualCardEnroll(
       const CreditCard& credit_card,
       std::optional<payments::GetDetailsForEnrollmentResponseDetails>

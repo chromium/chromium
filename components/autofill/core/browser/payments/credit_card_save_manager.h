@@ -430,19 +430,6 @@ class CreditCardSaveManager {
   raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
 
   base::WeakPtrFactory<CreditCardSaveManager> weak_ptr_factory_{this};
-
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardSaveManagerTest,
-      UploadCreditCard_ShouldRequestCardholderName_ResetBetweenConsecutiveSaves);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardSaveManagerTest,
-      UploadCreditCard_ShouldRequestExpirationDate_ResetBetweenConsecutiveSaves);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardSaveManagerTest,
-      UploadCreditCard_WalletSyncTransportEnabled_ShouldNotRequestExpirationDate);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardSaveManagerTest,
-      UploadCreditCard_WalletSyncTransportNotEnabled_ShouldRequestExpirationDate);
 };
 
 }  // namespace autofill

@@ -11,14 +11,8 @@
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
 
 namespace headless {
-
-// Return display that the window belongs or is closest to.
-std::optional<display::Display> GetDisplayFromWindow(
-    const std::vector<display::Display>& displays,
-    gfx::NativeWindow window);
 
 // Return display that the screen rectangle belongs or is closest to.
 std::optional<display::Display> GetDisplayFromScreenRect(

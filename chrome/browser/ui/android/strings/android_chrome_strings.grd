@@ -4204,6 +4204,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ADAPTIVE_TOOLBAR_BUTTON_NEW_TAB_IPH" desc="An in-product-help message for the new tab button.">
         Quickly open a new tab. To edit this shortcut, touch and hold.
       </message>
+      <message name="IDS_ADAPTIVE_TOOLBAR_BUTTON_OPEN_IN_BROWSER_IPH" desc="An in-product-help message for the open in browser button.">
+        Quickly open in browser. To edit this shortcut, touch and hold.
+      </message>
         <message name="IDS_ADAPTIVE_TOOLBAR_BUTTON_SHARE_IPH" desc="An in-product-help message for the share button.">
         Quickly share this page. To edit this shortcut, touch and hold.
       </message>

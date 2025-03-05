@@ -226,6 +226,11 @@ vars = {
   # needed by Cronet gn2bp CI builder.
   'checkout_copybara': False,
 
+  # By default, check out the latest press benchmark versions for local
+  # testing and debugging. Benchmarks are also hosted on publicly accessible
+  # sites as backup solution.
+  'checkout_press_benchmarks': 'checkout_configuration != "small"',
+
   # luci-go CIPD package version.
   # Make sure the revision is uploaded by infra-packagers builder.
   # https://ci.chromium.org/p/infra-internal/g/infra-packagers/console
@@ -285,7 +290,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '4cf9f0b77d4161487c7b88645faac1f5c303478e',
+  'skia_revision': 'd7dc6bae0cc6842ad09c1c2110c803699e373b29',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -305,7 +310,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
-  'boringssl_revision': 'a57d1b883707d1246f7e6fe4488c8dc4eba0ee00',
+  'boringssl_revision': '783ffa84ecf0017dccd5c82151729b0e68974a9e',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Fuchsia sdk
   # and whatever else without interference from each other.
@@ -423,6 +428,14 @@ vars = {
   # and whatever else without interference from each other.
   'libexpat_revision': '624da0f593bb8d7e146b9f42b06d8e6c80d032a3',
   # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling jetstream-main
+  # and whatever else without interference from each other.
+  'jetstream_main_revision': '0260caf74b5c115507ee0adb6d9cdf6aefb0965f',
+  # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling jetstream-v2.2
+  # and whatever else without interference from each other.
+  'jetstream_2.2_revision': '2145cedef4ca2777b792cb0059d3400ee2a6153c',
+  # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling wuffs
   # and whatever else without interference from each other.
   'wuffs_revision': 'e3f919ccfe3ef542cfc983a82146070258fb57f8',
@@ -501,7 +514,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling llvm-libc
   # and whatever else without interference from each other.
-  'llvm_libc_revision':    'a35441f9bbcc779f89ffc049ef643a6e6d1b93fe',
+  'llvm_libc_revision':    'e12bb2ed8b7df34d40872cc8690dd3ebd046bf12',
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
@@ -1128,7 +1141,7 @@ deps = {
   },
 
   'src/chrome/release_scripts': {
-      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '70d9a3e9d8365c2f71969f2ff733e53ea48d5a3c',
+      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '2f6396703b3e06d60d2be2e8a487af0433a64c0f',
       'condition': 'checkout_chrome_release_scripts',
   },
 
@@ -1457,12 +1470,12 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '2bc2befef43e3144307a096382f473b306133d1a',
+    '4205af8329d93c52f825ba2210641f6c0b380d2e',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
   'src/docs/website': {
-    'url': Var('chromium_git') + '/website.git' + '@' + '15e8c937306ce8a0a6df3d68648cb84f056f1007',
+    'url': Var('chromium_git') + '/website.git' + '@' + 'cbe3327ec68701f85cc50758b1770eda8223595c',
   },
 
   'src/ios/third_party/earl_grey2/src': {
@@ -1952,7 +1965,7 @@ deps = {
 
 
   'src/third_party/depot_tools':
-    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '6d817fd7f4c19cde114d7cfb62fc5b313521776b',
+    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + 'f40ddcd8d51626fb7be3ab3c418b3f3be801623f',
 
   'src/third_party/devtools-frontend/src':
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
@@ -2238,20 +2251,40 @@ deps = {
   'src/third_party/securemessage/src':
     Var('chromium_git') + '/external/github.com/google/securemessage.git' + '@' + Var('securemessage_revision'),
 
-  'src/third_party/speedometer/main':
-    Var('chromium_git') + '/external/github.com/WebKit/Speedometer.git' + '@' + Var('speedometer_main_revision'),
+  'src/third_party/jetstream/main': {
+    'url': Var('chromium_git') + '/external/github.com/WebKit/JetStream.git' + '@' + Var('jetstream_main_revision'),
+    'condition': 'checkout_press_benchmarks',
+  },
 
-  'src/third_party/speedometer/v3.1':
-    Var('chromium_git') + '/external/github.com/WebKit/Speedometer.git' + '@' + Var('speedometer_3.1_revision'),
+  'src/third_party/jetstream/v2.2': {
+    'url': Var('chromium_git') + '/external/github.com/WebKit/JetStream.git' + '@' + Var('jetstream_2.2_revision'),
+    'condition': 'checkout_press_benchmarks',
+  },
 
-  'src/third_party/speedometer/v3.0':
-    Var('chromium_git') + '/external/github.com/WebKit/Speedometer.git' + '@' + Var('speedometer_3.0_revision'),
+  'src/third_party/speedometer/main': {
+    'url': Var('chromium_git') + '/external/github.com/WebKit/Speedometer.git' + '@' + Var('speedometer_main_revision'),
+    'condition': 'checkout_press_benchmarks',
+  },
 
-  'src/third_party/speedometer/v2.1':
-    Var('chromium_git') + '/external/github.com/WebKit/Speedometer.git' + '@' + Var('speedometer_2.1_revision'),
+  'src/third_party/speedometer/v3.1': {
+    'url': Var('chromium_git') + '/external/github.com/WebKit/Speedometer.git' + '@' + Var('speedometer_3.1_revision'),
+    'condition': 'checkout_press_benchmarks',
+  },
 
-  'src/third_party/speedometer/v2.0':
-    Var('chromium_git') + '/external/github.com/WebKit/Speedometer.git' + '@' + Var('speedometer_2.0_revision'),
+  'src/third_party/speedometer/v3.0': {
+    'url': Var('chromium_git') + '/external/github.com/WebKit/Speedometer.git' + '@' + Var('speedometer_3.0_revision'),
+    'condition': 'checkout_press_benchmarks',
+  },
+
+  'src/third_party/speedometer/v2.1': {
+    'url': Var('chromium_git') + '/external/github.com/WebKit/Speedometer.git' + '@' + Var('speedometer_2.1_revision'),
+    'condition': 'checkout_press_benchmarks',
+  },
+
+  'src/third_party/speedometer/v2.0': {
+    'url': Var('chromium_git') + '/external/github.com/WebKit/Speedometer.git' + '@' + Var('speedometer_2.0_revision'),
+    'condition': 'checkout_press_benchmarks',
+  },
 
   'src/third_party/ukey2/src':
     Var('chromium_git') + '/external/github.com/google/ukey2.git' + '@' + Var('ukey2_revision'),
@@ -2885,7 +2918,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/mac-amd64',
-          'version': 'dd92wAzkVOkqYNdHKbG1PgtODtzTfTAM-IdVDacENC8C',
+          'version': 'J6jd6q-lIqYw3lwXZqUgINwrOoHMVWs-Qt_LZA3wsN4C',
         },
       ],
       'dep_type': 'cipd',

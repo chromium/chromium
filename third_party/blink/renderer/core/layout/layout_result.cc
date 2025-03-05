@@ -393,6 +393,7 @@ void LayoutResult::AssertSoleBoxFragment() const {
 #endif
 
 void LayoutResult::Trace(Visitor* visitor) const {
+  visitor->Trace(space_);
   visitor->Trace(physical_fragment_);
   visitor->Trace(rare_data_);
 }

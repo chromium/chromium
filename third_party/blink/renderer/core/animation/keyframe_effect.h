@@ -180,6 +180,11 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
 
   Priority priority_;
 
+  // A keyframe effect with model ids has an animation on the compositor;
+  // however, it may be in the process of being cancelled and the animation
+  // should not be treated as if running on the compositor from the perspective
+  // of paint.  Composited animations are cancelled asynchronously, to avoid
+  // blocking the main thread in a protected sequence longer than necessary.
   Vector<int> compositor_keyframe_model_ids_;
 
   bool ignore_css_keyframes_;

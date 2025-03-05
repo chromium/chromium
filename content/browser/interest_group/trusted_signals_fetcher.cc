@@ -30,6 +30,7 @@
 #include "bidding_and_auction_server_key_fetcher.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
+#include "content/browser/interest_group/auction_downloader_delegate.h"
 #include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
@@ -414,7 +415,7 @@ void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
       /*request_initiator=*/script_origin, std::move(trusted_params),
       base::BindOnce(&TrustedSignalsFetcher::OnRequestComplete,
                      base::Unretained(this)),
-      /*network_events_delegate=*/nullptr);
+      AuctionDownloaderDelegate::MaybeCreate(frame_tree_node_id));
   ohttp_context_ = std::make_unique<quiche::ObliviousHttpRequest::Context>(
       std::move(maybe_ciphertext_request_body).value().ReleaseContext());
 }

@@ -36,6 +36,8 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_switches.h"
@@ -712,6 +714,32 @@ bool UseSoftwareForLowResolution(const webrtc::VideoCodecType codec,
 
   return false;
 }
+
+scoped_refptr<gpu::ClientSharedImage> CreateClientSharedImage(
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    gfx::Size size) {
+  const auto buffer_format = gfx::BufferFormat::YUV_420_BIPLANAR;
+  const auto si_format = viz::GetSharedImageFormat(buffer_format);
+  const auto buffer_usage =
+      gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
+
+  // Setting some default usage in order to get a mappable shared image.
+  const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+  gpu::SharedImageInterface* sii = gpu_factories->SharedImageInterface();
+  if (!sii) {
+    return nullptr;
+  }
+
+  auto shared_image = sii->CreateSharedImage(
+      {si_format, size, gfx::ColorSpace(), gpu::SharedImageUsageSet(si_usage),
+       "RTCVideoEncoder"},
+      gpu::kNullSurfaceHandle, buffer_usage);
+  LOG_IF(ERROR, !shared_image) << "Unable to create a mappable shared image";
+  return shared_image;
+}
+
 }  // namespace
 
 namespace features {
@@ -845,6 +873,7 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // a frame to VEA.
   struct InputBufferResource {
     std::unique_ptr<base::MappedReadOnlyRegion> i420_shmem = nullptr;
+    scoped_refptr<gpu::ClientSharedImage> nv12_shared_image = nullptr;
   };
 
   void RequestEncodingParametersChangeInternal(
@@ -868,6 +897,9 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // Create I420 memory based VideoFrame from |frame_buffer|.
   scoped_refptr<media::VideoFrame> CreateI420MemoryFrame(
       webrtc::VideoFrameBuffer& frame_buffer);
+  scoped_refptr<media::VideoFrame> CreateNV12SharedImageFrame(
+      webrtc::VideoFrameBuffer& frame_buffer,
+      const gfx::Rect& visible_rect);
 
   // Perform encoding on an input frame from the input queue.
   void EncodeOneFrame(FrameChunk frame_chunk);
@@ -2146,6 +2178,82 @@ scoped_refptr<media::VideoFrame> RTCVideoEncoder::Impl::CreateI420MemoryFrame(
   return CreateI420SharedMemoryFrameByLibyuv(frame_buffer);
 }
 
+scoped_refptr<media::VideoFrame>
+RTCVideoEncoder::Impl::CreateNV12SharedImageFrame(
+    webrtc::VideoFrameBuffer& frame_buffer,
+    const gfx::Rect& visible_rect) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!input_buffers_free_.empty());
+  TRACE_EVENT1("webrtc", "RTCVideoEncoder::Impl::CreateNV12SharedImageFrame",
+               "visible_rect", visible_rect.ToString());
+  const int index = input_buffers_free_.back();
+  scoped_refptr<gpu::ClientSharedImage>& nv12_shared_image =
+      input_buffers_[index].nv12_shared_image;
+  if (!nv12_shared_image || nv12_shared_image->size() != visible_rect.size()) {
+    nv12_shared_image =
+        CreateClientSharedImage(gpu_factories_, visible_rect.size());
+    if (!nv12_shared_image) {
+      NotifyErrorStatus({media::EncoderStatus::Codes::kSystemAPICallError,
+                         "Failed to allocate shared image"});
+      return nullptr;
+    }
+  }
+
+  TRACE_EVENT_BEGIN0("webrtc", "CreateNV12SharedImageFrame-ToI420");
+  rtc::scoped_refptr<webrtc::I420BufferInterface> i420_buffer =
+      frame_buffer.ToI420();
+  CHECK(i420_buffer);
+  TRACE_EVENT_END0("webrtc", "CreateNV12SharedImageFrame-ToI420");
+
+  // Map in order to write to it.
+  auto mapping = nv12_shared_image->Map();
+  if (!mapping) {
+    NotifyErrorStatus({media::EncoderStatus::Codes::kSystemAPICallError,
+                       "Failed to map shared image"});
+    return nullptr;
+  }
+
+  TRACE_EVENT_BEGIN0("webrtc", "CreateNV12SharedImageFrame-I420ToNV12");
+  uint8_t* dst_y = mapping->GetMemoryForPlane(0).data();
+  uint8_t* dst_uv = mapping->GetMemoryForPlane(1).data();
+  const size_t dst_y_stride = mapping->Stride(0);
+  const size_t dst_uv_stride = mapping->Stride(1);
+  const size_t width = visible_rect.width();
+  const size_t height = visible_rect.height();
+  if (libyuv::I420ToNV12(i420_buffer->DataY(), i420_buffer->StrideY(),
+                         i420_buffer->DataU(), i420_buffer->StrideU(),
+                         i420_buffer->DataV(), i420_buffer->StrideV(), dst_y,
+                         dst_y_stride, dst_uv, dst_uv_stride, width, height)) {
+    NotifyErrorStatus({media::EncoderStatus::Codes::kFormatConversionError,
+                       "Failed to convert I420 to NV12 SharedImage"});
+    return nullptr;
+  }
+  TRACE_EVENT_END0("webrtc", "CreateNV12SharedImageFrame-I420ToNV12");
+
+  TRACE_EVENT_BEGIN0("webrtc",
+                     "CreateNV12SharedImageFrame-GenVerifiedSyncToken");
+  auto* sii = gpu_factories_->SharedImageInterface();
+  CHECK(sii);
+  gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
+  TRACE_EVENT_END0("webrtc", "CreateNV12SharedImageFrame-GenVerifiedSyncToken");
+  // The timestamp is set later in EncodeOneFrameWithNativeInput().
+  auto frame = media::VideoFrame::WrapMappableSharedImage(
+      nv12_shared_image, sync_token, base::NullCallback(), visible_rect,
+      visible_rect.size(), base::TimeDelta());
+  if (!frame) {
+    NotifyErrorStatus({media::EncoderStatus::Codes::kEncoderFailedEncode,
+                       "Failed to create video frame"});
+    return nullptr;
+  }
+
+  input_buffers_free_.pop_back();
+  frame->AddDestructionObserver(
+      base::BindPostTaskToCurrentDefault(WTF::BindOnce(
+          &RTCVideoEncoder::Impl::InputBufferReleased, weak_this_, index)));
+
+  return frame;
+}
+
 void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
   DVLOG(3) << "Impl::EncodeOneFrame()";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -2235,14 +2343,16 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
   } else {
     frame = static_cast<WebRtcVideoFrameAdapterInterface*>(frame_buffer.get())
                 ->getMediaVideoFrame();
+    if (frame->storage_type() != media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+      frame = CreateNV12SharedImageFrame(*frame_buffer, frame->visible_rect());
+      if (!frame) {
+        return;
+      }
+    }
   }
-  frame->set_timestamp(base::Microseconds(frame_chunk.timestamp_us));
 
-  if (frame->storage_type() != media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    NotifyErrorStatus({media::EncoderStatus::Codes::kInvalidInputFrame,
-                       "frame isn't mappable shared image based VideoFrame"});
-    return;
-  }
+  frame->set_timestamp(base::Microseconds(frame_chunk.timestamp_us));
+  CHECK_EQ(frame->storage_type(), media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
 
   if (!failed_timestamp_match_) {
     DCHECK(!base::Contains(submitted_frames_, frame->timestamp(),
@@ -2268,29 +2378,13 @@ bool RTCVideoEncoder::Impl::CreateBlackMappableSIFrame(
     const gfx::Size& natural_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const auto buffer_format = gfx::BufferFormat::YUV_420_BIPLANAR;
-  const auto si_format = viz::GetSharedImageFormat(buffer_format);
-  const auto buffer_usage =
-      gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
-
-  // Setting some default usage in order to get a mappable shared image.
-  const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
-                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  auto shared_image = CreateClientSharedImage(gpu_factories_, natural_size);
+  if (!shared_image) {
+    return false;
+  }
 
   auto* sii = gpu_factories_->SharedImageInterface();
-  if (!sii) {
-    return false;
-  }
-
-  auto shared_image = sii->CreateSharedImage(
-      {si_format, natural_size, gfx::ColorSpace(),
-       gpu::SharedImageUsageSet(si_usage), "RTCVideoEncoder"},
-      gpu::kNullSurfaceHandle, buffer_usage);
-  if (!shared_image) {
-    LOG(ERROR) << "Unable to create a mappable shared image.";
-    return false;
-  }
-
+  CHECK(sii);
   // Map in order to write to it.
   auto mapping = shared_image->Map();
   if (!mapping) {
@@ -2298,7 +2392,6 @@ bool RTCVideoEncoder::Impl::CreateBlackMappableSIFrame(
     sii->DestroySharedImage(gpu::SyncToken(), std::move(shared_image));
     return false;
   }
-
   // Fills the NV12 frame with YUV black (0x00, 0x80, 0x80).
   std::ranges::fill(mapping->GetMemoryForPlane(0), 0x0);
   std::ranges::fill(mapping->GetMemoryForPlane(1), 0x80);
@@ -2314,7 +2407,6 @@ void RTCVideoEncoder::Impl::InputBufferReleased(int index) {
   TRACE_EVENT0("webrtc", "RTCVideoEncoder::Impl::InputBufferReleased");
   DVLOG(3) << "Impl::InputBufferReleased(): index=" << index;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!use_native_input_);
 
   // NotfiyError() has been called. Don't proceed the frame completion.
   if (!video_encoder_) {
@@ -2328,7 +2420,11 @@ void RTCVideoEncoder::Impl::InputBufferReleased(int index) {
   while (!pending_frames_.empty() && !input_buffers_free_.empty()) {
     auto chunk = std::move(pending_frames_.front());
     pending_frames_.pop_front();
-    EncodeOneFrame(std::move(chunk));
+    if (use_native_input_) {
+      EncodeOneFrameWithNativeInput(std::move(chunk));
+    } else {
+      EncodeOneFrame(std::move(chunk));
+    }
   }
 }
 

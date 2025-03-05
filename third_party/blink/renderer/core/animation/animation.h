@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/animation_effect_owner.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
+#include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/timeline_offset.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -327,7 +328,7 @@ class CORE_EXPORT Animation : public EventTarget,
       CompositorPendingReason reason =
           CompositorPendingReason::kPendingRestart);
   void CancelIncompatibleAnimationsOnCompositor();
-  bool HasActiveAnimationsOnCompositor();
+  bool HasActiveAnimationsOnCompositor() const;
 
   void NotifyReady(AnimationTimeDelta ready_time);
   void CommitPendingPlay(AnimationTimeDelta ready_time);
@@ -371,6 +372,7 @@ class CORE_EXPORT Animation : public EventTarget,
     return compositor_state_ &&
            compositor_state_->pending_action == CompositorAction::kCancel;
   }
+  bool CompositorPendingCancelOrEffectChange() const;
 
   // Methods for handling removal and persistence of animations.
   bool IsReplaceable();

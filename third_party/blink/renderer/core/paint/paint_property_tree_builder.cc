@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/svg_root_painter.h"
 #include "third_party/blink/renderer/core/paint/transform_utils.h"
+#include "third_party/blink/renderer/core/paint/view_painter.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
@@ -3627,13 +3628,41 @@ void PaintPropertyTreeBuilder::UpdatePaintingLayer() {
   DCHECK(context_.painting_layer == object_.PaintingLayer());
 }
 
+// https://www.w3.org/TR/compositing-1/#pagebackdrop
+// We need to paint the view background in the root-element group if the
+// root element has some effects.
+static bool NeedsRootElementGroupForViewBackground(const LayoutObject& object) {
+  if (!IsA<LayoutView>(object)) {
+    return false;
+  }
+  const Document& document = object.GetDocument();
+  if (!ViewPainter::ShouldApplyRootBackgroundBehavior(document)) {
+    return false;
+  }
+  if (const Element* root = document.documentElement()) {
+    if (const LayoutObject* root_object = root->GetLayoutObject()) {
+      if (NeedsEffectIgnoringClipPathAnd2DScale(
+              *root_object,
+              CompositingReasonFinder::DirectReasonsForPaintProperties(
+                  *root_object))) {
+        return true;
+      }
+      if (NeedsClipPathClipOrMask(*root_object)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 void PaintPropertyTreeBuilder::UpdateForSelf() {
   // These are not inherited from the parent context but calculated here.
   context_.direct_compositing_reasons =
       CompositingReasonFinder::DirectReasonsForPaintProperties(
           object_, context_.container_for_fixed_position);
   if (const auto* box = DynamicTo<LayoutBox>(object_)) {
-    box->GetMutableForPainting().UpdateBackgroundPaintLocation();
+    box->GetMutableForPainting().UpdateBackgroundPaintLocation(
+        NeedsRootElementGroupForViewBackground(object_));
     if (auto* scrollable_area = box->GetScrollableArea()) {
       bool force_prefer_compositing =
           CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(

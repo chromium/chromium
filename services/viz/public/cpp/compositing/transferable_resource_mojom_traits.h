@@ -72,12 +72,12 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
     return resource.is_overlay_candidate;
   }
 
-  static bool is_backed_by_surface_texture(
+  static bool is_backed_by_surface_view(
       const viz::TransferableResource& resource) {
 #if BUILDFLAG(IS_ANDROID)
     // TransferableResource has this in an #ifdef, but mojo doesn't let us.
     // TODO(crbug.com/40496893)
-    return resource.is_backed_by_surface_texture;
+    return resource.is_backed_by_surface_view;
 #else
     return false;
 #endif

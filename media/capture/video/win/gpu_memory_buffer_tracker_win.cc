@@ -124,8 +124,18 @@ bool GpuMemoryBufferTrackerWin::Init(const gfx::Size& dimensions,
 
   gfx::GpuMemoryBufferHandle gmb_handle;
   gmb_handle.type = gfx::DXGI_SHARED_HANDLE;
-  gmb_handle.set_dxgi_handle(
-      gfx::DXGIHandle(CreateNV12Texture(d3d_device_.Get(), dimensions)));
+  base::win::ScopedHandle scoped_handle =
+      CreateNV12Texture(d3d_device_.Get(), dimensions);
+  if (!scoped_handle.IsValid()) {
+    return false;
+  }
+
+  gfx::DXGIHandle dxgi_handle = gfx::DXGIHandle(std::move(scoped_handle));
+  if (!dxgi_handle.IsValid()) {
+    return false;
+  }
+
+  gmb_handle.set_dxgi_handle(std::move(dxgi_handle));
   return CreateBufferInternal(std::move(gmb_handle), std::move(dimensions));
 }
 

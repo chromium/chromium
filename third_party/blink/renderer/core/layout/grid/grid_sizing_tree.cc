@@ -45,8 +45,11 @@ GridLayoutTreePtr GridSizingTree::FinalizeTree() const {
   return base::MakeRefCounted<GridLayoutTree>(std::move(layout_tree_data));
 }
 
-GridSizingTree::GridTreeNode& GridSizingTree::CreateSizingData(
-    const BlockNode& grid_node) {
+GridSizingTree::GridTreeNode& GridSizingTree::CreateSizingTreeNode(
+    const BlockNode& grid_node,
+    GridItems* non_subgridded_items,
+    bool has_standalone_columns,
+    bool has_standalone_rows) {
 #if DCHECK_IS_ON()
   // In debug mode, we want to insert the root grid node into the lookup map
   // since it will be queried by `GridSizingSubtree::HasValidRootFor`.
@@ -55,22 +58,40 @@ GridSizingTree::GridTreeNode& GridSizingTree::CreateSizingData(
   const bool needs_to_insert_root_grid_for_lookup = !tree_data_.empty();
 #endif
 
+  const auto current_subgrid_index = tree_data_.size();
   if (needs_to_insert_root_grid_for_lookup) {
     const auto* grid_layout_box = grid_node.GetLayoutBox();
 
     DCHECK(!subgrid_index_lookup_map_.Contains(grid_layout_box));
-    subgrid_index_lookup_map_.insert(grid_layout_box, tree_data_.size());
+    subgrid_index_lookup_map_.insert(grid_layout_box, current_subgrid_index);
   }
-  return *tree_data_.emplace_back(MakeGarbageCollected<GridTreeNode>());
-}
 
-void GridSizingTree::AddSubgriddedItemLookupData(
-    SubgriddedItemData&& subgridded_item_data) {
-  const auto* item_layout_box = subgridded_item_data->node.GetLayoutBox();
+  auto* tree_node = MakeGarbageCollected<GridTreeNode>();
+  tree_node->writing_mode = grid_node.Style().GetWritingMode();
+  tree_node->SetGridItems(non_subgridded_items);
 
-  DCHECK(!subgridded_item_data_lookup_map_.Contains(item_layout_box));
-  subgridded_item_data_lookup_map_.insert(item_layout_box,
-                                          std::move(subgridded_item_data));
+  for (wtf_size_t current_item_index = 0;
+       const auto& grid_item : tree_node->GetGridItems()) {
+    // We don't want to add lookup data for grid items that are not going to be
+    // subgridded to the parent grid. We need to check for both axes:
+    //   - If it's standalone, then this subgrid's items won't be subgridded.
+    //   - Otherwise, if the grid item is a subgrid itself and its respective
+    //   axis is also subgridded, we won't need its lookup data.
+    if ((has_standalone_columns || grid_item.has_subgridded_columns) &&
+        (has_standalone_rows || grid_item.has_subgridded_rows)) {
+      ++current_item_index;
+      continue;
+    }
+
+    const auto* item_layout_box = grid_item.node.GetLayoutBox();
+    const SubgriddedItemIndices subgridded_item_indices(current_item_index++,
+                                                        current_subgrid_index);
+
+    DCHECK(!subgridded_item_data_lookup_map_.Contains(item_layout_box));
+    subgridded_item_data_lookup_map_.insert(item_layout_box,
+                                            subgridded_item_indices);
+  }
+  return *tree_data_.emplace_back(tree_node);
 }
 
 SubgriddedItemData GridSizingTree::LookupSubgriddedItemData(
@@ -78,7 +99,14 @@ SubgriddedItemData GridSizingTree::LookupSubgriddedItemData(
   const auto* item_layout_box = grid_item.node.GetLayoutBox();
 
   DCHECK(subgridded_item_data_lookup_map_.Contains(item_layout_box));
-  return subgridded_item_data_lookup_map_.at(item_layout_box);
+  const auto subgridded_item_indices =
+      subgridded_item_data_lookup_map_.at(item_layout_box);
+
+  const auto& subgrid_tree_node = At(subgridded_item_indices.parent_grid_index);
+  return SubgriddedItemData(subgrid_tree_node.GetGridItems().At(
+                                subgridded_item_indices.item_index_in_parent),
+                            subgrid_tree_node.layout_data,
+                            subgrid_tree_node.writing_mode);
 }
 
 wtf_size_t GridSizingTree::LookupSubgridIndex(

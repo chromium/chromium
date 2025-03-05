@@ -257,6 +257,29 @@ TEST_F(GlicMetricsTest, SegmentationChroMenuDetachedAudio) {
                                       /*expected_count=*/1);
 }
 
+TEST_F(GlicMetricsTest, SessionDuration_LogsDuration) {
+  metrics_->OnGlicWindowOpen(/*attached=*/true, InvocationSource::kOsButton);
+  int minutes = 10;
+  task_environment_.FastForwardBy(base::Minutes(minutes));
+  metrics_->OnGlicWindowClose();
+
+  histogram_tester_.ExpectTotalCount("Glic.Session.Duration", 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "Glic.Session.Duration", base::Minutes(minutes), /*expected_count=*/1);
+}
+
+TEST_F(GlicMetricsTest, SessionDuration_LogsError) {
+  // Trigger a call to |OnGlicWindowClose()| without opening the window first.
+  metrics_->OnGlicWindowClose();
+
+  histogram_tester_.ExpectTotalCount("Glic.Session.Duration", 0);
+  histogram_tester_.ExpectTotalCount("Glic.Metrics.Error", 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Metrics.Error",
+      /*Error::kWindowCloseWithoutWindowOpen=*/3,
+      /*expected_count=*/1);
+}
+
 TEST_F(GlicMetricsTest, ImpressionBeforeFre) {
   profile_.GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, false);
 

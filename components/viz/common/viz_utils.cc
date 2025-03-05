@@ -10,8 +10,10 @@
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
+#include "cc/base/features.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
+#include "components/viz/common/quads/render_pass_draw_quad_internal.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rrect_f.h"
@@ -147,15 +149,39 @@ gfx::Rect ClippedQuadRectangle(const DrawQuad* quad) {
   return gfx::ToEnclosingRect(ClippedQuadRectangleF(quad));
 }
 
-gfx::Rect GetExpandedRectWithPixelMovingForegroundFilter(
-    const DrawQuad& rpdq,
+gfx::Rect GetTargetExpandedRectForPixelMovingFilters(
+    const RenderPassDrawQuadInternal& rpdq,
     const cc::FilterOperations& filters) {
   const SharedQuadState* shared_quad_state = rpdq.shared_quad_state;
-  gfx::Rect expanded_rect = filters.ExpandRectForPixelMovement(rpdq.rect);
-
-  // expanded_rect in the target space
+  gfx::Rect expanded_rect = GetExpandedRectForPixelMovingFilters(rpdq, filters);
   return cc::MathUtil::MapEnclosingClippedRect(
       shared_quad_state->quad_to_target_transform, expanded_rect);
+}
+
+gfx::Rect GetExpandedRectForPixelMovingFilters(
+    const RenderPassDrawQuadInternal& rpdq,
+    const cc::FilterOperations& filters) {
+  if (!base::FeatureList::IsEnabled(features::kUseMapRectForPixelMovement)) {
+    // ExpandRectForPixelMovement() has several problems that
+    // GetExpandedRectForPixelMovingFilters() by calling MapRect instead.
+    // 1. ExpandRectForPixelMovement's bounds propagation logic does not
+    //    perfectly match how the underlying SkImageFilters compose together.
+    // 2. It doesn't handle reference image filters, and assumes a fixed outset.
+    // 3. It is unaware of the RPDQ's filters_origin and filters_scale, which
+    //    define the matrix that must be passed into MapRect.
+    //
+    // When the MapRect feature is disabled, this preserves historic behavior
+    // for callsites that used to call ExpandRectForPixelMovement directly, or
+    // for callers of GetExpandedRectWithPixelMovingForegroundFilter (which is
+    // now equivalent to GetTargetExpandedRectForPixelMovingFilters).
+    return filters.ExpandRectForPixelMovement(rpdq.rect);
+  }
+
+  SkMatrix local_matrix =
+      SkMatrix::Translate(rpdq.filters_origin.x(), rpdq.filters_origin.y());
+  local_matrix.postScale(rpdq.filters_scale.x(), rpdq.filters_scale.y());
+
+  return filters.MapRect(rpdq.visible_rect, local_matrix);
 }
 
 gfx::Transform GetViewTransitionTransform(

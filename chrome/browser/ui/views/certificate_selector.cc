@@ -61,8 +61,7 @@ bool IsForGlic(content::WebContents* contents) {
   content::WebContents* outer = contents->GetOutermostWebContents();
   glic::GlicKeyedService* glic_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-          outer->GetBrowserContext(),
-          /*create=*/false);
+          outer->GetBrowserContext());
   if (glic_service) {
     auto& window_controller = glic_service->window_controller();
     return window_controller.attached_browser() &&
@@ -238,8 +237,7 @@ void CertificateSelector::Show() {
   if (UseGlicDevFlow(web_contents_)) {
     glic::GlicKeyedService* glic_service =
         glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-            web_contents_->GetBrowserContext(),
-            /*create=*/false);
+            web_contents_->GetBrowserContext());
     // Technically there can be a TOCTTOU bug, but this is a dev-only flow we
     // want to error out quickly.
     CHECK(glic_service);

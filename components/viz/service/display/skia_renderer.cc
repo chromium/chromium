@@ -46,6 +46,7 @@
 #include "components/viz/common/resources/platform_color.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/skia_helper.h"
+#include "components/viz/common/viz_utils.h"
 #include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/display/delegated_ink_handler.h"
 #include "components/viz/service/display/delegated_ink_point_renderer_skia.h"
@@ -3270,22 +3271,22 @@ void SkiaRenderer::DrawRenderPassQuad(
               seen_render_pass_ids_.contains(quad->render_pass_id)));
 
       // This is derived from |DirectRenderer::ShouldSkipQuad|.
-      gfx::Rect target_rect = quad->visible_rect;
+      gfx::Rect visible_rect = quad->visible_rect;
       SCOPED_CRASH_KEY_STRING32("missing rp backing", "1-visible rect",
-                                target_rect.ToString());
+                                visible_rect.ToString());
       auto filter_it = render_pass_filters_.find(quad->render_pass_id);
       if (filter_it != render_pass_filters_.end()) {
-        target_rect =
-            filter_it->second->ExpandRectForPixelMovement(target_rect);
+        visible_rect =
+            GetExpandedRectForPixelMovingFilters(*quad, *filter_it->second);
       }
       SCOPED_CRASH_KEY_STRING32("missing rp backing", "2-filter expansion",
                                 filter_it != render_pass_filters_.end()
-                                    ? target_rect.ToString()
+                                    ? visible_rect.ToString()
                                     : "no filter expansion");
 
       const gfx::QuadF target_quad =
           quad->shared_quad_state->quad_to_target_transform.MapQuad(
-              gfx::QuadF(gfx::RectF(target_rect)));
+              gfx::QuadF(gfx::RectF(visible_rect)));
       SCOPED_CRASH_KEY_STRING256("missing rp backing", "3-rpdq in draw",
                                  target_quad.IsRectilinear()
                                      ? target_quad.BoundingBox().ToString()

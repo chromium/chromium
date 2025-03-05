@@ -1885,10 +1885,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kContextualPanel,
                                     kContextualPanelEntrypointArmVariations,
                                     "ContextualPanel")},
-    {"contextual-panel-force-show-entrypoint",
-     flag_descriptions::kContextualPanelForceShowEntrypointName,
-     flag_descriptions::kContextualPanelForceShowEntrypointDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kContextualPanelForceShowEntrypoint)},
     {"enable-ipad-feed-ghost-cards",
      flag_descriptions::kEnableiPadFeedGhostCardsName,
      flag_descriptions::kEnableiPadFeedGhostCardsDescription, flags_ui::kOsIos,
@@ -2484,6 +2480,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"non-modal-sign-in-promo", flag_descriptions::kNonModalSignInPromoName,
      flag_descriptions::kNonModalSignInPromoDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kNonModalSignInPromo)},
+    {"suggest-strong-password-in-add-password",
+     flag_descriptions::kSuggestStrongPasswordInAddPasswordName,
+     flag_descriptions::kSuggestStrongPasswordInAddPasswordDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kSuggestStrongPasswordInAddPassword)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

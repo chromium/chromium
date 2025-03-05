@@ -42,7 +42,9 @@ GlicBackgroundModeManager::GlicBackgroundModeManager(StatusTray* status_tray)
   UpdateState();
 }
 
-GlicBackgroundModeManager::~GlicBackgroundModeManager() = default;
+GlicBackgroundModeManager::~GlicBackgroundModeManager() {
+  g_browser_process->profile_manager()->RemoveObserver(this);
+}
 
 GlicBackgroundModeManager* GlicBackgroundModeManager::GetInstance() {
   return g_browser_process->GetFeatures()->glic_background_mode_manager();

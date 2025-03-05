@@ -799,7 +799,7 @@ public class TabListMediatorUnitTest {
     public void updatesFaviconFetcher_TabGroup_Gts() {
         assertNotNull(mModelList.get(0).model.get(TabProperties.FAVICON_FETCHER));
         mModelList.get(0).model.set(TabProperties.FAVICON_FETCHER, null);
-        // Assert that tab1 is in a group.
+        // Assert that tab1 is in a tab group.
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         createTabGroup(Arrays.asList(mTab1, newTab), TAB1_ID, TAB_GROUP_ID);
 
@@ -1742,7 +1742,7 @@ public class TabListMediatorUnitTest {
     @Test
     public void testCloseTabInGroup_withArchivedTabsMessagePresent() {
         mMediator.setActionOnAllRelatedTabsForTesting(true);
-        when(mTabGroupModelFilter.tabGroupExistsForRootId(anyInt())).thenReturn(true);
+        when(mTabGroupModelFilter.tabGroupExists(any())).thenReturn(true);
 
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, newTab));
@@ -4237,7 +4237,7 @@ public class TabListMediatorUnitTest {
         assertEquals(2, mModelList.size());
 
         mMediator.setActionOnAllRelatedTabsForTesting(true);
-        doReturn(true).when(mTabGroupModelFilter).tabGroupExistsForRootId(TAB1_ID);
+        doReturn(true).when(mTabGroupModelFilter).tabGroupExists(TAB_GROUP_ID);
         doReturn(false).when(mTab1).isClosing();
 
         mTabModelObserverCaptor.getValue().willCloseTab(tab3, true);
@@ -4264,7 +4264,7 @@ public class TabListMediatorUnitTest {
         assertEquals(2, mModelList.size());
 
         mMediator.setActionOnAllRelatedTabsForTesting(true);
-        doReturn(true).when(mTabGroupModelFilter).tabGroupExistsForRootId(TAB1_ID);
+        doReturn(true).when(mTabGroupModelFilter).tabGroupExists(TAB_GROUP_ID);
         doReturn(true).when(mTab1).isClosing();
 
         mTabModelObserverCaptor.getValue().willCloseTab(tab3, true);
@@ -4290,7 +4290,7 @@ public class TabListMediatorUnitTest {
         assertEquals(2, mModelList.size());
 
         mMediator.setActionOnAllRelatedTabsForTesting(false);
-        doReturn(true).when(mTabGroupModelFilter).tabGroupExistsForRootId(TAB1_ID);
+        doReturn(true).when(mTabGroupModelFilter).tabGroupExists(TAB_GROUP_ID);
 
         mTabModelObserverCaptor.getValue().willCloseTab(mTab1, true);
 

@@ -81,9 +81,8 @@ display::Display HeadlessScreenMac::GetDisplayNearestView(
     }
 
     const gfx::Rect bounds = gfx::ScreenRectFromNSRect([ns_view frame]);
-    std::optional<display::Display> display =
-        GetDisplayFromScreenRect(display_list().displays(), bounds);
-    if (display) {
+    if (std::optional<display::Display> display =
+            GetDisplayFromScreenRect(display_list().displays(), bounds)) {
       return display.value();
     }
   }

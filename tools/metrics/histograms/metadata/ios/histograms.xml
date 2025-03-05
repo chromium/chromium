@@ -263,7 +263,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Bookmarks.BulkAddURLsCount" units="count"
-    expires_after="2025-04-01">
+    expires_after="2026-01-31">
   <owner>nicolasmacbeth@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -1466,7 +1466,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ExternalAction" enum="IOSExternalAction"
-    expires_after="2025-04-15">
+    expires_after="2026-01-31">
   <owner>nicolasmacbeth@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -3994,7 +3994,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ReadingList.BulkAddURLsCount" units="count"
-    expires_after="2025-04-01">
+    expires_after="2026-01-31">
   <owner>nicolasmacbeth@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>

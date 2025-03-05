@@ -976,7 +976,7 @@ TEST_P(WebMediaPlayerMSTest, PictureInPictureStateChangeNotCalled) {
   if (enable_surface_layer_for_video_) {
     EXPECT_CALL(*submitter_ptr_, StartRendering());
     EXPECT_CALL(*this, GetDisplayType())
-        .WillRepeatedly(Return(DisplayType::kPictureInPicture));
+        .WillRepeatedly(Return(DisplayType::kVideoPictureInPicture));
 
   } else {
     EXPECT_CALL(*this, DoSetCcLayer(true));

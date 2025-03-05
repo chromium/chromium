@@ -54,7 +54,8 @@ class CONTENT_EXPORT ManifestIconDownloader final {
       IconFetchCallback callback,
       bool square_only = true,
       const GlobalRenderFrameHostId& initiator_frame_routing_id =
-          GlobalRenderFrameHostId());
+          GlobalRenderFrameHostId(),
+      bool suppress_warnings = false);
 
   // This threshold has been chosen arbitrarily and is open to any necessary
   // changes in the future.
@@ -68,6 +69,7 @@ class CONTENT_EXPORT ManifestIconDownloader final {
                             bool square_only,
                             base::WeakPtr<WebContents> web_contents,
                             IconFetchCallback callback,
+                            bool suppress_warnings,
                             int id,
                             int http_status_code,
                             const GURL& url,

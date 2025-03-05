@@ -118,6 +118,8 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHAndroidTabDeclutter);
 FEATURE_CONSTANTS_DECLARE_FEATURE(
     kIPHAdaptiveButtonInTopToolbarCustomizationNewTabFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(
+    kIPHAdaptiveButtonInTopToolbarCustomizationOpenInBrowserFeature);
+FEATURE_CONSTANTS_DECLARE_FEATURE(
     kIPHAdaptiveButtonInTopToolbarCustomizationShareFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(
     kIPHAdaptiveButtonInTopToolbarCustomizationVoiceSearchFeature);

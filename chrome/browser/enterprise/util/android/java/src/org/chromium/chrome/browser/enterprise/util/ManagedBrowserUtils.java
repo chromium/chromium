@@ -8,10 +8,12 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Util methods for interacting with managed browser (enterprise) state. */
 @JNINamespace("enterprise_util")
+@NullMarked
 public class ManagedBrowserUtils {
     /** Wrapper around native call to determine if the browser is managed. */
     public static boolean isBrowserManaged(Profile profile) {

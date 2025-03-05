@@ -23,30 +23,21 @@ namespace {
 class GlicEnablingTest : public testing::Test {
  public:
   void SetUp() override {
+    testing::Test::SetUp();
+
     // Enable kGlic and kTabstripComboButton by default for testing.
     scoped_feature_list_.InitWithFeatures(
         {features::kGlic, features::kTabstripComboButton}, {});
-
-    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(testing_profile_manager_->SetUp());
-    profile_ = testing_profile_manager_->CreateTestingProfile("profile");
-
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
   }
 
   void TearDown() override {
-    TestingBrowserProcess::GetGlobal()->GetFeatures()->Shutdown();
     scoped_feature_list_.Reset();
+    testing::Test::TearDown();
   }
 
-  Profile* profile() { return profile_; }
-
  protected:
-  content::BrowserTaskEnvironment task_environment;
+  content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  raw_ptr<Profile> profile_ = nullptr;
 };
 
 // Test
@@ -66,14 +57,6 @@ TEST_F(GlicEnablingTest, TabStripComboButtonFeatureNotEnabledTest) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures({}, {features::kTabstripComboButton});
   EXPECT_EQ(GlicEnabling::IsEnabledByFlags(), false);
-}
-
-TEST_F(GlicEnablingTest, EnabledForProfileTest) {
-  ASSERT_FALSE(GlicEnabling::IsEnabledForProfile(nullptr));
-
-  ASSERT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
-  ForceSigninAndModelExecutionCapability(profile());
-  ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
 }
 
 }  // namespace

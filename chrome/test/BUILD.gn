@@ -6406,6 +6406,7 @@ test("unit_tests") {
     "//chrome/browser:active_use_util",
     "//chrome/browser:buildflags",
     "//chrome/browser:font_pref",
+    "//chrome/browser:global_features",
     "//chrome/browser:primitives",
     "//chrome/browser/accessibility:utils",
     "//chrome/browser/ai",

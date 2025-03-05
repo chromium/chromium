@@ -258,6 +258,82 @@ suite('SpeechUsesMaxTextLength', () => {
     });
   });
 
+  test('commas in numbers ignored', () => {
+    const invalidCommaSplices = '525,600 minutes 525,000 moments so dear';
+    const validCommaSplice = '525,600 minutes, 525,000 moments so dear';
+
+    // When there are no other commas in a phrase, we don't splice on the
+    // commas within numbers.
+    let boundary = app.getAccessibleTextLength(invalidCommaSplices);
+    assertEquals(
+        invalidCommaSplices, invalidCommaSplices.substring(0, boundary));
+
+    // When there is a valid comma in a string, we splice on that instead of
+    // on the commas within numbers
+    boundary = app.getAccessibleTextLength(validCommaSplice);
+    assertEquals('525,600 minutes', validCommaSplice.substring(0, boundary));
+  });
+
+  test('hyphens in numbers ignored', () => {
+    const invalidHyphenSplices =
+        '10-4 is not a valid place to splice nor is 6-2=4';
+    const validHyphenSplice =
+        'This is okay- but five hundred twenty-five thousand and ' +
+        '10-4 are not okay';
+
+    // When there are no other hyphens in a phrase, we don't splice on the
+    // hyphens within numbers.
+    let boundary = app.getAccessibleTextLength(invalidHyphenSplices);
+    assertEquals(
+        invalidHyphenSplices, invalidHyphenSplices.substring(0, boundary));
+
+    // When there is a valid hyphen in a string, we splice on that instead of
+    // on the hyphens within numbers
+    boundary = app.getAccessibleTextLength(validHyphenSplice);
+    assertEquals('This is okay', validHyphenSplice.substring(0, boundary));
+  });
+
+  test('non-surrounding numbers used', () => {
+    const numberBeforeComma = 'If we end on a 2, we should splice';
+    const numberAfterComma = 'But if after the comma,40 appears we also splice';
+    const numberBeforeHyphen = 'I want 2- no 3';
+    const numberAfterHyphen = 'Should I splice -4 sure';
+
+    let boundary = app.getAccessibleTextLength(numberBeforeComma);
+    assertEquals('If we end on a 2', numberBeforeComma.substring(0, boundary));
+
+    boundary = app.getAccessibleTextLength(numberAfterComma);
+    assertEquals(
+        'But if after the comma', numberAfterComma.substring(0, boundary));
+
+    boundary = app.getAccessibleTextLength(numberBeforeHyphen);
+    assertEquals('I want 2', numberBeforeHyphen.substring(0, boundary));
+
+    boundary = app.getAccessibleTextLength(numberAfterHyphen);
+    assertEquals('Should I splice ', numberAfterHyphen.substring(0, boundary));
+  });
+
+  test('splices allowed on non-comma and hyphens ', () => {
+    let nonCommaHyphenSplice =
+        'One 1(7)1 and Two 2[300]2 and Three 3{12}3 should all splice';
+    const expectedSplices = [
+      'One 1',
+      '(7',
+      ')1 and Two 2',
+      '[300',
+      ']2 and Three 3',
+      '{12',
+      '}3 should all splice',
+    ];
+
+    for (let i = 0; i < expectedSplices.length; i++) {
+      const expectedSplice = expectedSplices[i];
+      const boundary = app.getAccessibleTextLength(nonCommaHyphenSplice);
+      assertEquals(expectedSplice, nonCommaHyphenSplice.substring(0, boundary));
+      nonCommaHyphenSplice = nonCommaHyphenSplice.substring(boundary);
+    }
+  });
+
   suite('on long sentence with commas after max speech length', () => {
     let firstBoundary: number;
 

@@ -568,3 +568,114 @@ TEST_F(PrivacySandboxNoticeRestrictedDialogHandlerTest, HandleAcknowledge) {
 
   ASSERT_EQ(web_ui()->call_data().size(), 0U);
 }
+
+class PrivacySandboxNoticeDialogHandlerCallbackDNETest
+    : public PrivacySandboxDialogHandlerTest {
+ public:
+  void SetDialogCallbackToNull() {
+    handler()->SetDialogCallbackForTesting(base::NullCallback());
+  }
+
+ protected:
+  std::unique_ptr<PrivacySandboxDialogHandler> CreateHandler() override {
+    // base::Unretained is safe because the created handler does not outlive the
+    // mock.
+    return std::make_unique<PrivacySandboxDialogHandler>(
+        base::BindRepeating(
+            &MockPrivacySandboxDialogView::AdsDialogNoArgsCallback,
+            base::Unretained(dialog_mock())),
+        base::BindOnce(&MockPrivacySandboxDialogView::ResizeNativeView,
+                       base::Unretained(dialog_mock())),
+        PrivacySandboxService::PromptType::kM1NoticeROW);
+  }
+  base::HistogramTester histogram_tester_;
+};
+
+TEST_F(PrivacySandboxNoticeDialogHandlerCallbackDNETest,
+       CallbackUnknownBeforeShown_EmitsMetrics) {
+  EXPECT_DEATH(
+      {
+        SetDialogCallbackToNull();
+        base::Value::List args;
+        args.Append(static_cast<int>(
+            PrivacySandboxService::PromptAction::kNoticeAcknowledge));
+        IdempotentPromptActionOccurred(args);
+        histogram_tester_.ExpectBucketCount(
+            "PrivacySandbox.Notice.CloseDialogCallbackState",
+            PrivacySandboxDialogCallbackState::kCallbackUnknownBeforeShown, 1);
+      },
+      "");
+}
+
+TEST_F(PrivacySandboxNoticeDialogHandlerCallbackDNETest,
+       CallbackSingleActionCallbackDNE_EmitsMetrics) {
+  EXPECT_DEATH(
+      {
+        ShowDialog(PrivacySandboxService::PromptAction::kNoticeShown);
+        SetDialogCallbackToNull();
+        base::Value::List args;
+        args.Append(static_cast<int>(
+            PrivacySandboxService::PromptAction::kNoticeAcknowledge));
+        EXPECT_CALL(*mock_privacy_sandbox_service(),
+                    PromptActionOccurred(
+                        PrivacySandboxService::PromptAction::kNoticeAcknowledge,
+                        PrivacySandboxService::SurfaceType::kDesktop));
+        IdempotentPromptActionOccurred(args);
+        histogram_tester_.ExpectBucketCount(
+            "PrivacySandbox.Notice.CloseDialogCallbackState",
+            PrivacySandboxDialogCallbackState::kSingleActionCallbackDNE, 1);
+      },
+      "");
+}
+
+class PrivacySandboxNoticeMultiActionDialogHandlerCallbackDNETest
+    : public PrivacySandboxNoticeDialogHandlerCallbackDNETest,
+      public testing::WithParamInterface<PrivacySandboxService::PromptAction> {
+};
+
+TEST_P(PrivacySandboxNoticeMultiActionDialogHandlerCallbackDNETest,
+       CallbackSameMultiActionCallbackDNE_EmitsMetrics) {
+  EXPECT_DEATH(
+      {
+        ShowDialog(PrivacySandboxService::PromptAction::kNoticeShown);
+        EXPECT_CALL(
+            *mock_privacy_sandbox_service(),
+            PromptActionOccurred(GetParam(),
+                                 PrivacySandboxService::SurfaceType::kDesktop))
+            .Times(1);
+        EXPECT_CALL(*mock_privacy_sandbox_service(),
+                    PromptActionOccurred(
+                        PrivacySandboxService::PromptAction::kNoticeAcknowledge,
+                        PrivacySandboxService::SurfaceType::kDesktop))
+            .Times(1);
+        EXPECT_CALL(*dialog_mock(), AdsDialogNoArgsCallback(kCloseDialog));
+
+        // Mimics double action taken on one notice.
+        base::Value::List args;
+        args.Append(static_cast<int>(GetParam()));
+        IdempotentPromptActionOccurred(args);
+        SetDialogCallbackToNull();
+        handler()->AllowJavascriptForTesting();
+        base::Value::List ack_args;
+        ack_args.Append(static_cast<int>(
+            PrivacySandboxService::PromptAction::kNoticeAcknowledge));
+        IdempotentPromptActionOccurred(ack_args);
+
+        ASSERT_EQ(web_ui()->call_data().size(), 0U);
+
+        histogram_tester_.ExpectBucketCount(
+            "PrivacySandbox.Notice.CloseDialogCallbackState",
+            PrivacySandboxDialogCallbackState::kMultiActionCallbackDNE, 1);
+      },
+      "");
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PrivacySandboxNoticeMultiActionDialogHandlerCallbackDNETest,
+    PrivacySandboxNoticeMultiActionDialogHandlerCallbackDNETest,
+    testing::ValuesIn(std::vector<PrivacySandboxService::PromptAction>{
+        PrivacySandboxService::PromptAction::kNoticeAcknowledge,
+        PrivacySandboxService::PromptAction::kRestrictedNoticeAcknowledge,
+        PrivacySandboxService::PromptAction::kNoticeDismiss,
+        PrivacySandboxService::PromptAction::kRestrictedNoticeOpenSettings,
+        PrivacySandboxService::PromptAction::kNoticeOpenSettings}));

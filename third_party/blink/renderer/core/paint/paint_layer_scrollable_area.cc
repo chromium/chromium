@@ -110,6 +110,7 @@
 #include "third_party/blink/renderer/core/paint/paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_fragment.h"
+#include "third_party/blink/renderer/core/paint/view_painter.h"
 #include "third_party/blink/renderer/core/scroll/programmatic_scroll_animator.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
@@ -3170,7 +3171,7 @@ gfx::Rect PaintLayerScrollableArea::ScrollingBackgroundVisualRect(
   // in such cases.
   const Document& document = box->GetDocument();
   if (IsA<LayoutView>(box) &&
-      (document.IsXMLDocument() || document.IsHTMLDocument())) {
+      ViewPainter::ShouldApplyRootBackgroundBehavior(document)) {
     if (const auto* document_element = document.documentElement()) {
       if (const auto* document_element_object =
               document_element->GetLayoutObject()) {

@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.password_manager.settings;
 
 import android.os.Handler;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** An implementation of {@link CallbackDelayer} which runs callbacks after a fixed time delay. */
+@NullMarked
 public final class TimedCallbackDelayer implements CallbackDelayer {
     /** The {@link Handler} used to delay the callbacks. */
     private final Handler mHandler = new Handler();

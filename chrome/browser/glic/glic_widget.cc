@@ -7,6 +7,7 @@
 #include "chrome/browser/glic/glic_view.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/common/chrome_features.h"
+#include "ui/display/screen.h"
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -44,6 +45,16 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
                                   kGlicWidgetIdentifier);
 
   return widget;
+}
+
+display::Display GlicWidget::GetDisplay() {
+  std::optional<display::Display> display = GetNearestDisplay();
+  if (display) [[likely]] {
+    return *display;
+  }
+
+  // This should not happen after Widget::Init().
+  return display::Screen::GetScreen()->GetPrimaryDisplay();
 }
 
 }  // namespace glic

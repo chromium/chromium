@@ -61,8 +61,7 @@ class CORE_EXPORT GridLayoutAlgorithm
   wtf_size_t BuildGridSizingSubtree(
       GridSizingTree* sizing_tree,
       HeapVector<Member<LayoutBox>>* opt_oof_children,
-      const SubgriddedItemData& opt_subgrid_data =
-          SubgriddedItemData::NoSubgriddedItemData(),
+      const SubgriddedItemData& opt_subgrid_data = kNoSubgriddedItemData,
       const GridLineResolver* opt_parent_line_resolver = nullptr,
       bool must_invalidate_placement_cache = false,
       bool must_ignore_children = false) const;

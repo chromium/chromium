@@ -1,9 +1,9 @@
 Name: libc
 URL: https://crates.io/crates/libc
-Version: 0.2.169
-Revision: bb5944c67d6f7f3ead944120ec30561731b427de
+Version: 0.2.170
+Revision: 61d269893fc88f8e576d98432aa0aa639e64dbaf
 License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/libc-0.2.169/LICENSE-APACHE
+License File: //third_party/rust/chromium_crates_io/vendor/libc-0.2.170/LICENSE-APACHE
 Shipped: yes
 Security Critical: yes
 

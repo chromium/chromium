@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.password_manager;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -14,6 +15,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import java.io.File;
 
 /** Bridge allowing Java code to query details about the login DB deprecation state. */
+@NullMarked
 public class LoginDbDeprecationUtilBridge {
 
     /**

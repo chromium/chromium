@@ -116,9 +116,9 @@ base::WeakPtr<DisplayResourceProvider> DisplayResourceProvider::GetWeakPtr() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-bool DisplayResourceProvider::IsBackedBySurfaceTexture(ResourceId id) const {
+bool DisplayResourceProvider::IsBackedBySurfaceView(ResourceId id) const {
   const ChildResource* resource = GetResource(id);
-  return resource->transferable.is_backed_by_surface_texture;
+  return resource->transferable.is_backed_by_surface_view;
 }
 #endif
 

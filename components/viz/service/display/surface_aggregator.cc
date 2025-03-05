@@ -487,9 +487,8 @@ void SurfaceAggregator::AddRenderPassFilterDamageToDamageList(
   if (child_render_pass.filters.HasFilterThatMovesPixels()) {
     // The size of pixel-moving foreground filter is allowed to expand.
     // No intersecting shared_quad_state->clip_rect for the expanded rect.
-    damage_rect_in_target_space =
-        GetExpandedRectWithPixelMovingForegroundFilter(
-            *render_pass_quad, child_render_pass.filters);
+    damage_rect_in_target_space = GetTargetExpandedRectForPixelMovingFilters(
+        *render_pass_quad, child_render_pass.filters);
   } else if (child_render_pass.backdrop_filters.HasFilterThatMovesPixels()) {
     const auto* shared_quad_state = render_pass_quad->shared_quad_state;
     damage_rect_in_target_space = cc::MathUtil::MapEnclosingClippedRect(
@@ -1936,7 +1935,7 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
       // has pixel-moving foreground filter.
       if (child_render_pass.filters.HasFilterThatMovesPixels()) {
         gfx::Rect expanded_rect_in_target_space =
-            GetExpandedRectWithPixelMovingForegroundFilter(
+            GetTargetExpandedRectForPixelMovingFilters(
                 *render_pass_quad, child_render_pass.filters);
 
         if (expanded_rect_in_target_space.Intersects(damage_rect) ||

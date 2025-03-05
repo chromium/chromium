@@ -8,11 +8,14 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
 #include "content/public/browser/frame_tree_node_id.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
 namespace content {
@@ -50,6 +53,23 @@ std::optional<std::string> GetUserAgentOverrideForProtectedAudience(
   }
   return GetUserAgentOverrideForProtectedAudience(
       FrameTreeNode::GloballyFindByID(frame_tree_node_id));
+}
+
+void SetUpDevtoolsForRequest(FrameTreeNode* frame_tree_node,
+                             network::ResourceRequest& request) {
+  request.throttling_profile_id =
+      frame_tree_node->current_frame_host()->devtools_frame_token();
+
+  bool network_instrumentation_enabled = false;
+  devtools_instrumentation::ApplyAuctionNetworkRequestOverrides(
+      frame_tree_node, &request, &network_instrumentation_enabled);
+  if (network_instrumentation_enabled) {
+    request.enable_load_timing = true;
+    if (request.trusted_params.has_value()) {
+      request.trusted_params->devtools_observer =
+          NetworkServiceDevToolsObserver::MakeSelfOwned(frame_tree_node);
+    }
+  }
 }
 
 }  // namespace content

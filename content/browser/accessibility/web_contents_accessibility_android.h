@@ -382,6 +382,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void HandleTextContentChanged(int32_t unique_id);
   void HandleTextSelectionChanged(int32_t unique_id);
   void HandleEditableTextChanged(int32_t unique_id);
+  void HandleImageAnnotationChanged(int32_t unique_id);
   void HandleSliderChanged(int32_t unique_id);
   void SendDelayedWindowContentChangedEvent();
   bool OnHoverEvent(const ui::MotionEventAndroid& event);

@@ -1474,7 +1474,7 @@ TEST_P(AnimationAnimationTestCompositing, AsynchronousCancel) {
   ASSERT_TRUE(animation->HasActiveAnimationsOnCompositor());
 
   animation->cancel();
-  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
   EXPECT_TRUE(animation->CompositorPending());
   EXPECT_TRUE(animation->CompositorPendingCancel());
 
@@ -1682,9 +1682,8 @@ TEST_P(AnimationAnimationTestCompositing,
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
       gfx::SizeF(200, 200));
   // Cancel is deferred to PreCommit.
-  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
   EXPECT_TRUE(animation->CompositorPendingCancel());
-
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
   GetDocument().GetPendingAnimations().Update(nullptr, true);
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
   EXPECT_FALSE(animation->CompositorPendingCancel());
@@ -1693,7 +1692,9 @@ TEST_P(AnimationAnimationTestCompositing,
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
       gfx::SizeF(200, 300));
   EXPECT_TRUE(animation->CompositorPendingCancel());
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
   GetDocument().GetPendingAnimations().Update(nullptr, true);
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
   EXPECT_FALSE(animation->CompositorPendingCancel());
 }
 
@@ -1735,9 +1736,8 @@ TEST_P(AnimationAnimationTestCompositing,
   // Width change forces a restart.
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
       gfx::SizeF(200, 300));
-  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
   EXPECT_TRUE(animation->CompositorPendingCancel());
-
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
   GetDocument().GetPendingAnimations().Update(nullptr, true);
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
   EXPECT_FALSE(animation->CompositorPendingCancel());
@@ -1780,7 +1780,7 @@ TEST_P(AnimationAnimationTestCompositing,
   // Height change forces a restart.
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
       gfx::SizeF(300, 400));
-  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
   EXPECT_TRUE(animation->CompositorPending());
   EXPECT_TRUE(animation->CompositorPendingCancel());
 

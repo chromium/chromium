@@ -141,9 +141,6 @@ extern const char kContentNotificationProvisionalIgnoreConditionsDescription[];
 extern const char kContentPushNotificationsName[];
 extern const char kContentPushNotificationsDescription[];
 
-extern const char kContextualPanelForceShowEntrypointName[];
-extern const char kContextualPanelForceShowEntrypointDescription[];
-
 extern const char kContextualPanelName[];
 extern const char kContextualPanelDescription[];
 
@@ -708,6 +705,9 @@ extern const char kSpotlightNeverRetainIndexDescription[];
 
 extern const char kStartSurfaceName[];
 extern const char kStartSurfaceDescription[];
+
+extern const char kSuggestStrongPasswordInAddPasswordName[];
+extern const char kSuggestStrongPasswordInAddPasswordDescription[];
 
 extern const char kSupervisedUserLocalWebApprovalsName[];
 extern const char kSupervisedUserLocalWebApprovalsDescription[];

@@ -17,6 +17,11 @@
 
 namespace device {
 
+// As a workaround for https://crbug.com/40155239, this class owns a global
+// CLLocationManager instance which is created at startup and used for all
+// geolocation requests. It was observed that macOS would revoke location
+// permission if there was a pending update (and therefore the signing state was
+// corrupt) if a CLLocationManager instance was created on demand.
 class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceApple
     : public SystemGeolocationSource,
       public net::NetworkChangeNotifier::NetworkChangeObserver {

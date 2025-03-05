@@ -49,11 +49,14 @@
 #include "components/webapps/common/constants.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/url_constants.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -781,6 +784,11 @@ void FetchManifestAndInstallCommand::StartPreloadingScreenshots() {
                                 : screenshot->image.sizes[0];
     screenshot_sizes_.push_back(size_to_use);
 
+    // Suppress console warnings by the `ManifestIconDownloader` if installation
+    // is triggered for a chrome:// url.
+    bool suppress_warnings =
+        screenshot->image.src.SchemeIs(content::kChromeUIScheme);
+
     // Do not pass in a maximum icon size so that screenshots larger than
     // kMaximumScreenshotSizeInPx are not downscaled to the maximum size by
     // `ManifestIconDownloader::Download`. Screenshots with size larger than
@@ -792,7 +800,8 @@ void FetchManifestAndInstallCommand::StartPreloadingScreenshots() {
         base::BindOnce(&FetchManifestAndInstallCommand::OnScreenshotFetched,
                        weak_ptr_factory_.GetWeakPtr(), count_screenshots - 1,
                        screenshot->label),
-        /*square_only=*/false);
+        /*square_only=*/false, content::GlobalRenderFrameHostId(),
+        suppress_warnings);
   }
 }
 

@@ -352,6 +352,12 @@
 [submodule "third_party/securemessage/src"]
 	path = third_party/securemessage/src
 	url = https://chromium.googlesource.com/external/github.com/google/securemessage
+[submodule "third_party/jetstream/main"]
+	path = third_party/jetstream/main
+	url = https://chromium.googlesource.com/external/github.com/WebKit/JetStream
+[submodule "third_party/jetstream/v2.2"]
+	path = third_party/jetstream/v2.2
+	url = https://chromium.googlesource.com/external/github.com/WebKit/JetStream
 [submodule "third_party/speedometer/main"]
 	path = third_party/speedometer/main
 	url = https://chromium.googlesource.com/external/github.com/WebKit/Speedometer

@@ -19,22 +19,22 @@ namespace blink {
 // relative to its parent's area and writing mode) and a pointer to the actual
 // `GridLayoutData` of the grid that directly contains the subgridded item.
 class SubgriddedItemData {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
  public:
   SubgriddedItemData() = default;
 
-  SubgriddedItemData(const GridItemData* item_data_in_parent,
+  SubgriddedItemData(const GridItemData& item_data_in_parent,
                      const GridLayoutData& parent_layout_data,
                      WritingMode parent_writing_mode)
-      : item_data_in_parent_(item_data_in_parent),
+      : item_data_in_parent_(&item_data_in_parent),
         parent_layout_data_(&parent_layout_data),
         parent_writing_mode_(parent_writing_mode) {}
 
   explicit operator bool() const { return item_data_in_parent_ != nullptr; }
 
   const GridItemData* operator->() const {
-    DCHECK(item_data_in_parent_.Get());
+    DCHECK(item_data_in_parent_);
     return item_data_in_parent_;
   }
 
@@ -46,6 +46,8 @@ class SubgriddedItemData {
 
   const GridLayoutTrackCollection& Columns(
       std::optional<WritingMode> container_writing_mode = std::nullopt) const {
+    DCHECK(parent_layout_data_);
+
     return (!container_writing_mode ||
             IsParallelWritingMode(*container_writing_mode,
                                   parent_writing_mode_))
@@ -55,6 +57,8 @@ class SubgriddedItemData {
 
   const GridLayoutTrackCollection& Rows(
       std::optional<WritingMode> container_writing_mode = std::nullopt) const {
+    DCHECK(parent_layout_data_);
+
     return (!container_writing_mode ||
             IsParallelWritingMode(*container_writing_mode,
                                   parent_writing_mode_))
@@ -62,23 +66,13 @@ class SubgriddedItemData {
                : parent_layout_data_->Columns();
   }
 
-  const GridLayoutData& ParentLayoutData() const {
-    DCHECK(parent_layout_data_);
-    return *parent_layout_data_;
-  }
-
-  static const SubgriddedItemData& NoSubgriddedItemData() {
-    static SubgriddedItemData no_subgridded_item_data;
-    return no_subgridded_item_data;
-  }
-
-  void Trace(Visitor* visitor) const { visitor->Trace(item_data_in_parent_); }
-
  private:
-  Member<const GridItemData> item_data_in_parent_;
+  const GridItemData* item_data_in_parent_{nullptr};
   const GridLayoutData* parent_layout_data_{nullptr};
   WritingMode parent_writing_mode_{WritingMode::kHorizontalTb};
 };
+
+inline constexpr SubgriddedItemData kNoSubgriddedItemData;
 
 // This class represents a grid tree (see `grid_subtree.h`) and contains the
 // necessary data to perform the track sizing algorithm of its nested subgrids.
@@ -103,6 +97,7 @@ class CORE_EXPORT GridSizingTree {
 
     GridLayoutData layout_data;
     wtf_size_t subtree_size{1};
+    WritingMode writing_mode;
 
    private:
     mutable Member<GridItems> grid_items;
@@ -113,7 +108,10 @@ class CORE_EXPORT GridSizingTree {
   GridSizingTree& operator=(GridSizingTree&&) = default;
   GridSizingTree& operator=(const GridSizingTree&) = delete;
 
-  GridTreeNode& CreateSizingData(const BlockNode& grid_node);
+  GridTreeNode& CreateSizingTreeNode(const BlockNode& grid_node,
+                                     GridItems* non_subgridded_items,
+                                     bool has_standalone_columns = true,
+                                     bool has_standalone_rows = true);
 
   GridTreeNode& At(wtf_size_t index) const {
     DCHECK_LT(index, tree_data_.size());
@@ -134,8 +132,6 @@ class CORE_EXPORT GridSizingTree {
     return tree_data_[index]->subtree_size;
   }
 
-  void AddSubgriddedItemLookupData(SubgriddedItemData&& subgridded_item_data);
-
   SubgriddedItemData LookupSubgriddedItemData(
       const GridItemData& grid_item) const;
 
@@ -148,15 +144,20 @@ class CORE_EXPORT GridSizingTree {
   }
 
  private:
+  struct SubgriddedItemIndices {
+    wtf_size_t item_index_in_parent;
+    wtf_size_t parent_grid_index;
+  };
+
   // Stores a subgrid's index in the grid sizing tree; this is useful when we
   // want to create a `GridSizingSubtree` for an arbitrary subgrid.
   HeapHashMap<Member<const LayoutBox>, wtf_size_t> subgrid_index_lookup_map_;
 
   // In order to correctly determine the available space of a subgridded item,
   // which might be measured by a different grid than its parent grid, this map
-  // stores the item's `SubgriddedItemData`, whose layout data should be used
+  // recovers the item's `SubgriddedItemData`, whose layout data should be used
   // to compute its span size within its parent grid's tracks.
-  HeapHashMap<Member<const LayoutBox>, SubgriddedItemData>
+  HeapHashMap<Member<const LayoutBox>, SubgriddedItemIndices>
       subgridded_item_data_lookup_map_;
 
   HeapVector<Member<GridTreeNode>, 16> tree_data_;

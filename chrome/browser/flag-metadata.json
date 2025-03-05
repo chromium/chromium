@@ -1578,11 +1578,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "contextual-panel-force-show-entrypoint",
-    "owners": [ "nicolasmacbeth@google.com", "rkgibson@google.com", "gujen@google.com", "bling-mony-pod@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "contextual-search-debug",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
     // This is used to enable debugging of server and backend code.
@@ -8225,6 +8220,11 @@
       "wjmaclean@google.com"
     ],
     "expiry_milestone": 142
+  },
+  {
+      "name": "suggest-strong-password-in-add-password",
+      "owners": [ "prasanaa@google.com", "adamta@google.com" ],
+      "expiry_milestone": 150
   },
   {
     "name": "summarization-api-for-gemini-nano",

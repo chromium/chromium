@@ -139,6 +139,10 @@ public final class EventConstants {
     public static final String ADAPTIVE_TOOLBAR_CUSTOMIZATION_NEW_TAB_OPENED =
             "adaptive_toolbar_customization_new_tab_opened";
 
+    /** AdaptiveButtonInTopToolbarCustomization open in browser events. */
+    public static final String ADAPTIVE_TOOLBAR_CUSTOMIZATION_OPEN_IN_BROWSER_OPENED =
+            "adaptive_toolbar_customization_open_in_browser_opened";
+
     /** AdaptiveButtonInTopToolbarCustomization share events. */
     public static final String ADAPTIVE_TOOLBAR_CUSTOMIZATION_SHARE_OPENED =
             "adaptive_toolbar_customization_share_opened";

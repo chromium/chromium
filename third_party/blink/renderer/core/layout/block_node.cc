@@ -694,7 +694,8 @@ const LayoutResult* BlockNode::SimplifiedLayout(
          box_->ChildLayoutBlockedByDisplayLock());
 
   // Perform layout on ourselves using the previous constraint space.
-  const ConstraintSpace space(previous_result->GetConstraintSpaceForCaching());
+  const ConstraintSpace& space =
+      previous_result->GetConstraintSpaceForCaching();
   const LayoutResult* result = Layout(space, /* break_token */ nullptr);
 
   if (result->Status() != LayoutResult::kSuccess) {

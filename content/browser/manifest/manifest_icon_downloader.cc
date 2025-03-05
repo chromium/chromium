@@ -29,7 +29,8 @@ bool ManifestIconDownloader::Download(
     int maximum_icon_size_in_px,
     IconFetchCallback callback,
     bool square_only,
-    const GlobalRenderFrameHostId& initiator_frame_routing_id) {
+    const GlobalRenderFrameHostId& initiator_frame_routing_id,
+    bool suppress_warnings) {
   DCHECK(minimum_icon_size_in_px <= ideal_icon_size_in_px);
   if (!web_contents || !icon_url.is_valid())
     return false;
@@ -44,7 +45,7 @@ bool ManifestIconDownloader::Download(
       base::BindOnce(&ManifestIconDownloader::OnIconFetched,
                      ideal_icon_size_in_px, minimum_icon_size_in_px,
                      square_only, web_contents->GetWeakPtr(),
-                     std::move(callback)));
+                     std::move(callback), suppress_warnings));
   return true;
 }
 
@@ -54,6 +55,7 @@ void ManifestIconDownloader::OnIconFetched(
     bool square_only,
     base::WeakPtr<WebContents> web_contents,
     IconFetchCallback callback,
+    bool suppress_warnings,
     int id,
     int http_status_code,
     const GURL& url,
@@ -62,7 +64,7 @@ void ManifestIconDownloader::OnIconFetched(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (bitmaps.empty()) {
-    if (web_contents) {
+    if (web_contents && !suppress_warnings) {
       web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,
           "Error while trying to use the following icon from the Manifest: " +
@@ -77,7 +79,7 @@ void ManifestIconDownloader::OnIconFetched(
       ideal_icon_size_in_px, minimum_icon_size_in_px, square_only, bitmaps);
 
   if (closest_index == -1) {
-    if (web_contents) {
+    if (web_contents && !suppress_warnings) {
       web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,
           "Error while trying to use the following icon from the Manifest: " +

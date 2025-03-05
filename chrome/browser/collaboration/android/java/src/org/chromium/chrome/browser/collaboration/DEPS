@@ -1,0 +1,4 @@
+include_rules = [
+  # Minimize dependencies on internal code, but allow service construction.
+  "+components/data_sharing/internal/android/java/src/org/chromium/components/data_sharing/DataSharingServiceImpl.java",
+]

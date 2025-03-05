@@ -211,6 +211,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="12" label="Price Insights"/>
   <int value="13" label="Page summary"/>
   <int value="14" label="Discounts"/>
+  <int value="15" label="Open in browser"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/android/toolbar/adaptive_toolbar_enums.h:AdaptiveToolbarButtonVariant) -->
@@ -22832,6 +22833,16 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/privacy_sandbox/android/java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxDebouncedOnClick.java:PrivacySandboxClickEventAndroid) -->
+
+<!-- LINT.IfChange(PrivacySandboxDialogCallbackState) -->
+
+<enum name="PrivacySandboxDialogCallbackState">
+  <int value="0" label="SingleActionCallbackDNE"/>
+  <int value="1" label="MultiActionCallbackDNE"/>
+  <int value="2" label="CallbackUnknownBeforeShown"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_handler.h:PrivacySandboxDialogCallbackState) -->
 
 <!-- LINT.IfChange(PrivacySandboxNoticeAction) -->
 

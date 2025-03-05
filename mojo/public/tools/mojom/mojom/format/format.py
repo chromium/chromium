@@ -344,10 +344,24 @@ def _write_method(node, state):
         lw.write(f'@{node.ordinal.value}')
     lw.write('(')
     state.write(lw.finish())
+    lw = LineWrapper(base_indent=state.get_indent())
 
     _write_parameter_list(node.parameter_list, state, '')
     if node.response_parameter_list:
         _write_parameter_list(node.response_parameter_list, state, '=> (')
+
+    if node.result_response:
+        result_response = node.result_response
+        expr = '=> result<'\
+               f'{result_response.success_type}, '\
+               f'{result_response.failure_type}>'
+        if (state.col + len(' ') + len(expr)) < LINE_LENGTH:
+            state.write(' ')
+            state.write(expr)
+        else:
+            state.write_line()
+            state.write(' ' * (state.get_indent() + CONTINUATION_SHIFT))
+            state.write(expr)
     state.write(';')
     _write_eol(node, state)
 

@@ -249,12 +249,6 @@ const char kContentPushNotificationsName[] = "Content Push Notifications";
 const char kContentPushNotificationsDescription[] =
     "Enables the content push notifications.";
 
-extern const char kContextualPanelForceShowEntrypointName[] =
-    "Force show Contextual Panel entrypoint";
-extern const char kContextualPanelForceShowEntrypointDescription[] =
-    "When enabled, the Contextual Panel entrypoint will be shown regardless of "
-    "appearance prerequisites.";
-
 const char kContextualPanelName[] = "Contextual Panel";
 const char kContextualPanelDescription[] =
     "Enables the contextual panel feature.";
@@ -1200,6 +1194,12 @@ const char kSpotlightNeverRetainIndexName[] = "Don't retain spotlight index";
 const char kSpotlightNeverRetainIndexDescription[] =
     "Tentative spotlight memory improvement by not storing a strong pointer to "
     "the spotlight default index";
+
+const char kSuggestStrongPasswordInAddPasswordName[] =
+    "Suggest Strong password in add password page";
+const char kSuggestStrongPasswordInAddPasswordDescription[] =
+    "Add field suggest strong password in add password page if the user is "
+    "signed in and syncing passwords to their Google Account.";
 
 const char kSupervisedUserLocalWebApprovalsName[] =
     "Enable local web approvals feature";

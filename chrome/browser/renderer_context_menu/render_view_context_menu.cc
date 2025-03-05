@@ -822,8 +822,8 @@ bool IsGlicWindow(RenderViewContextMenu* menu,
                   content::BrowserContext* browser_context) {
 #if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsEnabledByFlags()) {
-    auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-        browser_context, false);
+    auto* glic_service =
+        glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser_context);
     return glic_service && glic_service->IsActiveWebContents(
                                menu->GetWebContents()->GetOuterWebContents());
   }
@@ -3312,8 +3312,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     case IDC_CONTENT_CONTEXT_RELOAD_GLIC:
 #if BUILDFLAG(ENABLE_GLIC)
       if (glic::GlicEnabling::IsEnabledByFlags()) {
-        auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-            browser_context_, false);
+        auto* glic_service = glic::GlicKeyedService::Get(browser_context_);
         if (glic_service) {
           glic_service->Reload();
         }
@@ -3324,8 +3323,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     case IDC_CONTENT_CONTEXT_CLOSE_GLIC:
 #if BUILDFLAG(ENABLE_GLIC)
       if (glic::GlicEnabling::IsEnabledByFlags()) {
-        auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-            browser_context_, false);
+        auto* glic_service = glic::GlicKeyedService::Get(browser_context_);
         if (glic_service) {
           glic_service->Shutdown();
         }

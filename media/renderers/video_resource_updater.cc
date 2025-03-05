@@ -931,8 +931,14 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwareFrame(
   transfer_resource.ycbcr_info = video_frame->ycbcr_info();
 
 #if BUILDFLAG(IS_ANDROID)
-  transfer_resource.is_backed_by_surface_texture =
-      video_frame->metadata().texture_owner;
+  // VideoFrame is backed by SurfaceView only if it was produced by hardware
+  // video decoder, which matches here STREAM_TEXTURE and it doesn't have a
+  // texture owner.
+  // TODO(crbug.com/396584155): Flip VideoFrameMetadata too, so we don't need to
+  // check resource type here.
+  transfer_resource.is_backed_by_surface_view =
+      external_resource.type == VideoFrameResourceType::STREAM_TEXTURE &&
+      !video_frame->metadata().texture_owner;
 #endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)

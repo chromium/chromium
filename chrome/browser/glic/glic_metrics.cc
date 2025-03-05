@@ -273,7 +273,7 @@ void GlicMetrics::OnGlicWindowClose() {
     base::UmaHistogramEnumeration("Glic.Metrics.Error",
                                   Error::kWindowCloseWithoutWindowOpen);
   } else {
-    base::TimeDelta open_time = base::TimeTicks() - session_start_time_;
+    base::TimeDelta open_time = base::TimeTicks::Now() - session_start_time_;
     base::UmaHistogramCustomTimes("Glic.Session.Duration", open_time,
                                   /*min=*/base::Seconds(1),
                                   /*max=*/base::Days(10), /*buckets=*/50);

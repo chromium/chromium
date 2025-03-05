@@ -68,6 +68,8 @@ class CC_PAINT_EXPORT FilterOperations {
 
   // Expands `rect` to add any additional area that applying pixel moving
   // filters will modify.
+  // DEPRECATED: Once features::kUseMapRectForPixelMovement is enabled and
+  // stable, this will be removed. Use MapRect() with an appropriate transform.
   gfx::Rect ExpandRectForPixelMovement(const gfx::Rect& rect) const;
 
   bool HasFilterThatAffectsOpacity() const;
@@ -103,6 +105,7 @@ class CC_PAINT_EXPORT FilterOperations {
   std::string ToString() const;
 
  private:
+  // DEPRECATED: Can be removed when ExpandRectForPixelMovement() is removed.
   float MaximumPixelMovement() const;
 
   std::vector<FilterOperation> operations_;

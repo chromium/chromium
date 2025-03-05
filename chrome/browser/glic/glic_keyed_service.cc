@@ -55,11 +55,18 @@ GlicKeyedService::GlicKeyedService(Profile* profile,
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
   metrics_->SetControllers(window_controller_.get(), &focused_tab_manager_);
 
-  profile_manager->MaybeAutoOpenGlicPanel();
+  if (profile_manager_) {
+    profile_manager_->MaybeAutoOpenGlicPanel();
+  }
 }
 
 GlicKeyedService::~GlicKeyedService() {
   metrics_->SetControllers(nullptr, nullptr);
+}
+
+// static
+GlicKeyedService* GlicKeyedService::Get(content::BrowserContext* context) {
+  return GlicKeyedServiceFactory::GetGlicKeyedService(context);
 }
 
 void GlicKeyedService::Shutdown() {
