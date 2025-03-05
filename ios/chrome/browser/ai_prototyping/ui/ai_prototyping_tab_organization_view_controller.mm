@@ -101,6 +101,8 @@ using optimization_guide::proto::
   _responseContainer.layer.borderColor = [primaryColor CGColor];
   _responseContainer.layer.borderWidth = kBorderWidth;
   _responseContainer.textContainer.lineBreakMode = NSLineBreakByWordWrapping;
+  _responseContainer.text =
+      l10n_util::GetNSString(IDS_IOS_AI_PROTOTYPING_RESULT_PLACEHOLDER);
 
   UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
     label, _groupingStrategyButton, _groupTabsButton, _responseContainer
