@@ -158,6 +158,15 @@ class WebClient implements GlicWebClient {
 
 const client = new WebClient();
 
+// This allows browser tests using this test client to be able to access and
+// call the glic API directly (using ExecuteJs and similar methods).
+declare global {
+  interface Window {
+    client: WebClient;
+  }
+}
+window.client = client;
+
 function getBrowser(): GlicBrowserHost|undefined {
   return client?.browser;
 }
