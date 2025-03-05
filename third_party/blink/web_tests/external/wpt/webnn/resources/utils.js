@@ -249,23 +249,22 @@ const sizeOfShape = (array) => {
 /**
  * Get bitwise of the given value.
  * @param {Number} value
- * @param {String} dataType - A data type string, like "float32", "float16",
- *     more types, please see:
- *     https://www.w3.org/TR/webnn/#enumdef-mloperanddatatype
- * @return {Number} A 64-bit signed integer.
+ * @param {String} dataType - A data type string; currently only "float32" is
+ *     supported by this function.
+ * @return {BigInt} A 64-bit signed integer.
  */
 const getBitwise = (value, dataType) => {
   const buffer = new ArrayBuffer(8);
   const int64Array = new BigInt64Array(buffer);
-  int64Array[0] = value < 0 ? ~BigInt(0) : BigInt(0);
   let typedArray;
   if (dataType === "float32") {
     typedArray = new Float32Array(buffer);
   } else {
     throw new AssertionError(`Data type ${dataType} is not supported`);
   }
-  typedArray[0] = value;
-  return int64Array[0];
+  typedArray[0] = Math.abs(value);
+  const int64 = int64Array[0];
+  return (value < 0) ? -int64 : int64;
 };
 
 /**
