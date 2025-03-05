@@ -383,6 +383,7 @@ void LocationBarView::Init() {
       .icon_insets = GetLayoutInsets(LOCATION_BAR_PAGE_ACTION_ICON_PADDING),
       .between_icon_spacing = kBetweenIconSpacing,
       .icon_label_bubble_delegate = this,
+      .font_list = &page_action_font_list,
       .hide_icon_on_space_constraint = false};
   page_action_container_ =
       AddChildView(std::make_unique<page_actions::PageActionContainerView>(

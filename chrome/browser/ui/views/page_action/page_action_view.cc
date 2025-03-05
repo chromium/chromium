@@ -30,6 +30,10 @@ PageActionView::PageActionView(
       chip_state_changed_callback_(chip_state_changed_callback) {
   CHECK(action_item_->GetActionId().has_value());
 
+  if (params.font_list) {
+    SetFontList(*params.font_list);
+  }
+
   image_container_view()->SetFlipCanvasOnPaintForRTLUI(true);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 

@@ -15,8 +15,8 @@ struct PageActionViewParams {
   int icon_size = 0;
   gfx::Insets icon_insets;
   int between_icon_spacing = 0;
-  const raw_ptr<IconLabelBubbleView::Delegate> icon_label_bubble_delegate =
-      nullptr;
+  raw_ptr<IconLabelBubbleView::Delegate> icon_label_bubble_delegate = nullptr;
+  raw_ptr<const gfx::FontList> font_list = nullptr;
   // This is a temporary flag required while transitioning from the legacy
   // page actions framework to the new one.
   // If set to true, `PageActionContainer` will insert spacing on the right to
