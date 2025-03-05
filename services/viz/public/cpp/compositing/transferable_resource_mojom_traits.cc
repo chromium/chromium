@@ -80,7 +80,7 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
   out->needs_detiling = data.needs_detiling();
 
 #if BUILDFLAG(IS_ANDROID)
-  out->is_backed_by_surface_texture = data.is_backed_by_surface_texture();
+  out->is_backed_by_surface_view = data.is_backed_by_surface_view();
 #endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)

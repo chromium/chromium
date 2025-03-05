@@ -192,16 +192,11 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   std::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
 
 #if BUILDFLAG(IS_ANDROID)
-  // Indicates whether this resource may not be overlaid on Android, since
-  // it's not backed by a SurfaceView.  This may be set in combination with
-  // |is_overlay_candidate|, to find out if switching the resource to a
-  // a SurfaceView would result in overlay promotion.  It's good to find this
+  // Indicates whether this resource may be overlaid on Android via legacy
+  // overlay flow, since it's backed by a SurfaceView. It's good to find this
   // out in advance, since one has no fallback path for displaying a
-  // SurfaceView except via promoting it to an overlay.  Ideally, one _could_
-  // promote SurfaceTexture via the overlay path, even if one ended up just
-  // drawing a quad in the compositor.  However, for now, we use this flag to
-  // refuse to promote so that the compositor will draw the quad.
-  bool is_backed_by_surface_texture = false;
+  // SurfaceView except via promoting it to an overlay.
+  bool is_backed_by_surface_view = false;
 #endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
@@ -228,7 +223,7 @@ struct VIZ_COMMON_EXPORT TransferableResource {
            color_space == o.color_space && hdr_metadata == o.hdr_metadata &&
            is_overlay_candidate == o.is_overlay_candidate &&
 #if BUILDFLAG(IS_ANDROID)
-           is_backed_by_surface_texture == o.is_backed_by_surface_texture &&
+           is_backed_by_surface_view == o.is_backed_by_surface_view &&
            wants_promotion_hint == o.wants_promotion_hint &&
 #elif BUILDFLAG(IS_WIN)
            wants_promotion_hint == o.wants_promotion_hint &&
