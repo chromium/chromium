@@ -127,15 +127,15 @@ class WaveShaperProcessor final : public AudioDSPKernelProcessor {
     }
   }
 
-  Vector<float>* Curve() const { return curve_.get(); }
+  const Vector<float>* Curve() const { return curve_.get(); }
 
-  void SetOversample(WaveShaperHandler::OverSampleType oversample) {
+  void SetOversample(V8OverSampleType::Enum oversample) {
     // This synchronizes with process().
     base::AutoLock process_locker(process_lock_);
 
     oversample_ = oversample;
 
-    if (oversample != WaveShaperHandler::kOverSampleNone) {
+    if (oversample != V8OverSampleType::Enum::kNone) {
       for (auto& i : kernels_) {
         WaveShaperDSPKernel* kernel =
             static_cast<WaveShaperDSPKernel*>(i.get());
@@ -144,7 +144,7 @@ class WaveShaperProcessor final : public AudioDSPKernelProcessor {
     }
   }
 
-  WaveShaperHandler::OverSampleType Oversample() const { return oversample_; }
+  V8OverSampleType::Enum Oversample() const { return oversample_; }
 
  private:
   // WaveShaperDSPKernel is an AudioDSPKernel and is responsible for non-linear
@@ -159,7 +159,7 @@ class WaveShaperProcessor final : public AudioDSPKernelProcessor {
           v1_(4 * RenderQuantumFrames()),
           v2_(4 * RenderQuantumFrames()),
           f_(4 * RenderQuantumFrames()) {
-      if (processor->Oversample() != WaveShaperHandler::kOverSampleNone) {
+      if (processor->Oversample() != V8OverSampleType::Enum::kNone) {
         LazyInitializeOversampling();
       }
     }
@@ -169,13 +169,13 @@ class WaveShaperProcessor final : public AudioDSPKernelProcessor {
                  float* destination,
                  uint32_t frames_to_process) override {
       switch (GetWaveShaperProcessor()->Oversample()) {
-        case WaveShaperHandler::kOverSampleNone:
+        case V8OverSampleType::Enum::kNone:
           ProcessCurve(source, destination, frames_to_process);
           break;
-        case WaveShaperHandler::kOverSample2x:
+        case V8OverSampleType::Enum::k2X:
           ProcessCurve2x(source, destination, frames_to_process);
           break;
-        case WaveShaperHandler::kOverSample4x:
+        case V8OverSampleType::Enum::k4X:
           ProcessCurve4x(source, destination, frames_to_process);
           break;
 
@@ -197,13 +197,13 @@ class WaveShaperProcessor final : public AudioDSPKernelProcessor {
       WaveShaperDSPKernel* kernel = const_cast<WaveShaperDSPKernel*>(this);
 
       switch (kernel->GetWaveShaperProcessor()->Oversample()) {
-        case WaveShaperHandler::kOverSampleNone:
+        case V8OverSampleType::Enum::kNone:
           break;
-        case WaveShaperHandler::kOverSample2x:
+        case V8OverSampleType::Enum::k2X:
           latency_frames += up_sampler_->LatencyFrames();
           latency_frames += down_sampler_->LatencyFrames();
           break;
-        case WaveShaperHandler::kOverSample4x: {
+        case V8OverSampleType::Enum::k4X: {
           // Account for first stage upsampling.
           latency_frames += up_sampler_->LatencyFrames();
           latency_frames += down_sampler_->LatencyFrames();
@@ -452,14 +452,14 @@ class WaveShaperProcessor final : public AudioDSPKernelProcessor {
       DCHECK(destination);
       DCHECK(GetWaveShaperProcessor());
 
-      Vector<float>* curve = GetWaveShaperProcessor()->Curve();
+      const Vector<float>* curve = GetWaveShaperProcessor()->Curve();
       if (!curve) {
         // Act as "straight wire" pass-through if no curve is set.
         memcpy(destination, source, sizeof(float) * frames_to_process);
         return;
       }
 
-      float* curve_data = curve->data();
+      const float* curve_data = curve->data();
       int curve_length = curve->size();
 
       DCHECK(curve_data);
@@ -541,8 +541,7 @@ class WaveShaperProcessor final : public AudioDSPKernelProcessor {
   // m_curve represents the non-linear shaping curve.
   std::unique_ptr<Vector<float>> curve_;
 
-  WaveShaperHandler::OverSampleType oversample_ =
-      WaveShaperHandler::kOverSampleNone;
+  V8OverSampleType::Enum oversample_ = V8OverSampleType::Enum::kNone;
 };
 
 scoped_refptr<WaveShaperHandler> WaveShaperHandler::Create(AudioNode& node,
@@ -552,18 +551,22 @@ scoped_refptr<WaveShaperHandler> WaveShaperHandler::Create(AudioNode& node,
 
 void WaveShaperHandler::SetCurve(const float* curve_data,
                                  unsigned curve_length) {
+  DCHECK(IsMainThread());
   GetWaveShaperProcessor()->SetCurve(curve_data, curve_length);
 }
 
-Vector<float>* WaveShaperHandler::Curve() {
+const Vector<float>* WaveShaperHandler::Curve() const {
+  DCHECK(IsMainThread());
   return GetWaveShaperProcessor()->Curve();
 }
 
-void WaveShaperHandler::SetOversample(OverSampleType oversample) {
+void WaveShaperHandler::SetOversample(V8OverSampleType::Enum oversample) {
+  DCHECK(IsMainThread());
   GetWaveShaperProcessor()->SetOversample(oversample);
 }
 
-WaveShaperHandler::OverSampleType WaveShaperHandler::Oversample() {
+V8OverSampleType::Enum WaveShaperHandler::Oversample() const {
+  DCHECK(IsMainThread());
   return GetWaveShaperProcessor()->Oversample();
 }
 
@@ -678,6 +681,10 @@ unsigned WaveShaperHandler::NumberOfChannels() {
 
 WaveShaperProcessor* WaveShaperHandler::GetWaveShaperProcessor() {
   return static_cast<WaveShaperProcessor*>(Processor());
+}
+
+const WaveShaperProcessor* WaveShaperHandler::GetWaveShaperProcessor() const {
+  return static_cast<const WaveShaperProcessor*>(Processor());
 }
 
 }  // namespace blink
