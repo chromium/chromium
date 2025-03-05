@@ -127,13 +127,13 @@ class FaviconLoaderImplTest
 // LargeIconService.
 TEST_P(FaviconLoaderImplTest, FaviconForPageUrl) {
   int call_count = 0;
-  FaviconForUrl(
-      GURL(kTestFaviconURL),
-      base::BindRepeating(
-          [](int& counter, FaviconAttributes* attrs) {
-            ++counter;
-            EXPECT_TRUE(attrs.faviconImage);
-          }, std::ref(call_count)));
+  FaviconForUrl(GURL(kTestFaviconURL),
+                base::BindRepeating(
+                    [](int& counter, FaviconAttributes* attrs) {
+                      ++counter;
+                      EXPECT_TRUE(attrs.faviconImage);
+                    },
+                    std::ref(call_count)));
   EXPECT_GE(call_count, 1);
 }
 
@@ -141,22 +141,22 @@ TEST_P(FaviconLoaderImplTest, FaviconForPageUrl) {
 // LargeIconService.
 TEST_P(FaviconLoaderImplTest, FallbackIcon) {
   int call_count = 0;
-  FaviconForUrl(
-      GURL(kTestFallbackURL),
-      base::BindRepeating(
-          [](int& counter, FaviconAttributes* attrs) {
-            ++counter;
-            if (counter == 1) {
-              // Check that a placeholder image is received.
-              EXPECT_TRUE(attrs.faviconImage);
-            } else if (counter == 2) {
-              // Check that a monogram is used as a fallback.
-              EXPECT_FALSE(attrs.faviconImage);
-              EXPECT_TRUE(attrs.monogramString);
-              EXPECT_TRUE(attrs.textColor);
-              EXPECT_TRUE(attrs.backgroundColor);
-            }
-          }, std::ref(call_count)));
+  FaviconForUrl(GURL(kTestFallbackURL),
+                base::BindRepeating(
+                    [](int& counter, FaviconAttributes* attrs) {
+                      ++counter;
+                      if (counter == 1) {
+                        // Check that a placeholder image is received.
+                        EXPECT_TRUE(attrs.faviconImage);
+                      } else if (counter == 2) {
+                        // Check that a monogram is used as a fallback.
+                        EXPECT_FALSE(attrs.faviconImage);
+                        EXPECT_TRUE(attrs.monogramString);
+                        EXPECT_TRUE(attrs.textColor);
+                        EXPECT_TRUE(attrs.backgroundColor);
+                      }
+                    },
+                    std::ref(call_count)));
   EXPECT_EQ(call_count, 2);
 }
 
@@ -165,24 +165,22 @@ TEST_P(FaviconLoaderImplTest, Cache) {
   // Favicon retrieval that should put it in the cache.
   {
     int call_count = 0;
-    FaviconForUrl(
-        GURL(kTestFaviconURL),
-        base::BindRepeating(
-            [](int& counter, FaviconAttributes* attrs) {
-              ++counter;
-          }, std::ref(call_count)));
+    FaviconForUrl(GURL(kTestFaviconURL),
+                  base::BindRepeating(
+                      [](int& counter, FaviconAttributes* attrs) { ++counter; },
+                      std::ref(call_count)));
     ASSERT_EQ(call_count, 2);
   }
 
   // The callback should be immediately executed.
   int call_count = 0;
-  FaviconForUrl(
-      GURL(kTestFaviconURL),
-      base::BindRepeating(
-          [](int& counter, FaviconAttributes* attrs) {
-            ++counter;
-            EXPECT_TRUE(attrs.faviconImage);
-          }, std::ref(call_count)));
+  FaviconForUrl(GURL(kTestFaviconURL),
+                base::BindRepeating(
+                    [](int& counter, FaviconAttributes* attrs) {
+                      ++counter;
+                      EXPECT_TRUE(attrs.faviconImage);
+                    },
+                    std::ref(call_count)));
   EXPECT_EQ(call_count, 1);
 }
 
