@@ -332,6 +332,11 @@ export class SiteEntryElement extends SiteEntryElementBase {
     return !!this.siteGroup && this.siteGroup.rwsOwner !== undefined;
   }
 
+  private showRwsLabel_(): boolean {
+    return this.isRwsMember_() &&
+        !(this.isRelatedWebsiteSetsV2UiEnabled_ && this.isRwsFiltered);
+  }
+
   /**
    * Evaluates whether the three dot menu should be shown for the site entry.
    * @returns True if site group is a related website set member and filter by
@@ -359,14 +364,13 @@ export class SiteEntryElement extends SiteEntryElementBase {
   private updateRwsMembershipLabel_() {
     if (!this.siteGroup.rwsOwner) {
       this.rwsMembershipLabel_ = '';
+    } else if (this.isRelatedWebsiteSetsV2UiEnabled_) {
+      this.rwsMembershipLabel_ = this.i18n('allSitesRwsMembershipLabel');
     } else {
-      if (this.isRelatedWebsiteSetsV2UiEnabled_) {
-        this.rwsMembershipLabel_ = this.i18n('allSitesRwsMembershipLabel');
-      } else {
-        this.browserProxy.getRwsMembershipLabel(
-            this.siteGroup.rwsNumMembers!, this.siteGroup.rwsOwner)
-            .then(label => this.rwsMembershipLabel_ = label);
-      }
+      this.browserProxy
+          .getRwsMembershipLabel(
+              this.siteGroup.rwsNumMembers!, this.siteGroup.rwsOwner)
+          .then(label => this.rwsMembershipLabel_ = label);
     }
   }
 
