@@ -1264,6 +1264,8 @@ source_set("browser") {
     "interest_group/interest_group_update_manager.h",
     "interest_group/noiser_and_bucketer.cc",
     "interest_group/noiser_and_bucketer.h",
+    "interest_group/protected_audience_network_util.cc",
+    "interest_group/protected_audience_network_util.h",
     "interest_group/storage_interest_group.cc",
     "interest_group/storage_interest_group.h",
     "interest_group/subresource_url_authorizations.cc",
