@@ -13,7 +13,6 @@
 //! See also [`ryu`] for printing floating point primitives.
 //!
 //! [libcore]: https://github.com/rust-lang/rust/blob/b8214dc6c6fc20d0a660fb5700dca9ebf51ebe89/src/libcore/fmt/num.rs#L201-L254
-//! [`core::fmt::Formatter`]: https://doc.rust-lang.org/std/fmt/struct.Formatter.html
 //! [`ryu`]: https://github.com/dtolnay/ryu
 //!
 //! # Example
@@ -30,7 +29,7 @@
 //!
 //! ![performance](https://raw.githubusercontent.com/dtolnay/itoa/master/performance.png)
 
-#![doc(html_root_url = "https://docs.rs/itoa/1.0.14")]
+#![doc(html_root_url = "https://docs.rs/itoa/1.0.15")]
 #![no_std]
 #![allow(
     clippy::cast_lossless,

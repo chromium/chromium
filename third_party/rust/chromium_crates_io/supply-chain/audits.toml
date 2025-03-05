@@ -1932,6 +1932,12 @@ notes = """
 Unsafe review at https://crrev.com/c/6051067
 """
 
+[[audits.itoa]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.14 -> 1.0.15"
+notes = "Only minor rustdoc changes."
+
 [[audits.ixdtf]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]

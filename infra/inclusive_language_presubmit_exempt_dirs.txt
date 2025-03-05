@@ -699,9 +699,9 @@ third_party/rust/chromium_crates_io/vendor/icu_normalizer-2.0.0-beta1/benches/da
 third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1 4 3
 third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/.github/workflows 4 1
 third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/.github/workflows 1 1
-third_party/rust/chromium_crates_io/vendor/itoa-1.0.14 2 1
-third_party/rust/chromium_crates_io/vendor/itoa-1.0.14/.github/workflows 2 1
-third_party/rust/chromium_crates_io/vendor/itoa-1.0.14/src 1 1
+third_party/rust/chromium_crates_io/vendor/itoa-1.0.15 2 1
+third_party/rust/chromium_crates_io/vendor/itoa-1.0.15/.github/workflows 2 1
+third_party/rust/chromium_crates_io/vendor/itoa-1.0.15/src 1 1
 third_party/rust/chromium_crates_io/vendor/libm-0.2.11 1 1
 third_party/rust/chromium_crates_io/vendor/log-0.4.25 1 1
 third_party/rust/chromium_crates_io/vendor/log-0.4.25/.github/workflows 8 1
