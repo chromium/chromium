@@ -40,7 +40,8 @@ class CORE_EXPORT RenderBlockingResourceManager final
   }
   bool HasNonFontRenderBlockingResources() const {
     return pending_stylesheet_owner_nodes_.size() || pending_scripts_.size() ||
-           element_render_blocking_links_->HasElement();
+           element_render_blocking_links_->HasElement(
+               RenderBlockingLevel::kBlock);
   }
   bool HasRenderBlockingFonts() const {
     return pending_font_preloads_.size() || imperative_font_loading_count_;
@@ -86,7 +87,7 @@ class CORE_EXPORT RenderBlockingResourceManager final
  private:
   friend class RenderBlockingResourceManagerTest;
 
-  void OnRenderBlockingElementLinkEmpty();
+  void OnRenderBlockingElementLinkEmpty(RenderBlockingLevel level);
   void RenderBlockingResourceUnblocked();
 
   // Exposed to unit tests only.
