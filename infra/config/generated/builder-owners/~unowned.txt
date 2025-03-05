@@ -3,13 +3,18 @@ ci/3pp-mac-amd64-packager
 ci/ASAN Release Media
 ci/Comparison Android (reclient)
 ci/Comparison Android (reclient) (reproxy cache)
+ci/Comparison Android (reclient)(CQ)
 ci/Comparison Mac (reclient)
+ci/Comparison Mac (reclient)(CQ)
 ci/Comparison Mac arm64 (reclient)
 ci/Comparison Mac arm64 on arm64 (reclient)
 ci/Comparison Simple Chrome (reclient)
+ci/Comparison Simple Chrome (reclient)(CQ)
 ci/Comparison Windows (8 cores) (reclient)
 ci/Comparison Windows (reclient)
+ci/Comparison Windows (reclient)(CQ)
 ci/Comparison ios (reclient)
+ci/Comparison ios (reclient)(CQ)
 ci/Leak Detection Linux
 ci/Linux Viz
 ci/Mac ASAN Release Media
@@ -113,6 +118,7 @@ findit/test-single-revision
 flaky-reproducer/runner
 infra/autosharder
 reclient/Comparison Linux (reclient)
+reclient/Comparison Linux (reclient)(CQ)
 reclient/Linux Builder (canonical wd) (reclient compare)
 reclient/Linux Builder reclient staging
 reclient/Linux Builder reclient staging untrusted

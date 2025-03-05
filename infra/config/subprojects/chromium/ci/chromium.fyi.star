@@ -1901,6 +1901,119 @@ fyi_mac_reclient_comparison_builder(
     xcode = xcode.xcode_default,
 )
 
+fyi_reclient_comparison_builder(
+    name = "Comparison Android (reclient)(CQ)",
+    description_html = """\
+This builder measures Android build performance with reclient prod vs test in cq configuration.<br/>\
+The bot specs should be in sync with {}.\
+""".format(linkify_builder("try", "android-arm64-rel-compilator")),
+    cores = 32,
+    os = os.LINUX_DEFAULT,
+    ssd = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "android|cq",
+        short_name = "cmp",
+    ),
+    execution_timeout = 15 * time.hour,
+    reclient_cache_silo = "Comparison Android CQ - cache siloed",
+    shadow_siso_project = siso.project.TEST_UNTRUSTED,
+    siso_enabled = True,
+    siso_project = siso.project.TEST_UNTRUSTED,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
+)
+
+fyi_mac_reclient_comparison_builder(
+    name = "Comparison Mac (reclient)(CQ)",
+    description_html = """\
+This builder measures Mac build performance with reclient prod vs test in cq configuration.<br/>\
+The bot specs should be in sync with {}.\
+""".format(linkify_builder("try", "mac-rel-compilator")),
+    schedule = "0 */4 * * *",
+    builderless = True,
+    cores = None,
+    cpu = cpu.ARM64,
+    ssd = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "mac|cq",
+        short_name = "cmp",
+    ),
+    execution_timeout = 14 * time.hour,
+    reclient_bootstrap_env = {
+        "GLOG_vmodule": "bridge*=2",
+    },
+    reclient_cache_silo = "Comparison Mac CQ - cache siloed",
+    shadow_siso_project = siso.project.TEST_UNTRUSTED,
+    siso_project = siso.project.TEST_UNTRUSTED,
+    siso_remote_jobs = 150,
+)
+
+fyi_reclient_comparison_builder(
+    name = "Comparison Windows (reclient)(CQ)",
+    description_html = """\
+This builder measures Windows build performance with reclient prod vs test in cq configuration.<br/>\
+The bot specs should be in sync with {}.\
+""".format(linkify_builder("try", "win-rel-compilator")),
+    builderless = True,
+    cores = 32,
+    os = os.WINDOWS_DEFAULT,
+    ssd = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "win|cq",
+        short_name = "re",
+    ),
+    execution_timeout = 14 * time.hour,
+    reclient_cache_silo = "Comparison Windows CQ - cache siloed",
+    shadow_siso_project = siso.project.TEST_UNTRUSTED,
+    siso_enabled = True,
+    siso_project = siso.project.TEST_UNTRUSTED,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
+)
+
+fyi_reclient_comparison_builder(
+    name = "Comparison Simple Chrome (reclient)(CQ)",
+    description_html = """\
+This builder measures Simple Chrome build performance with reclient prod vs test in cq configuration.<br/>\
+The bot specs should be in sync with {}.\
+""".format(linkify_builder("try", "linux-chromeos-rel-compilator")),
+    builderless = True,
+    cores = 32,
+    os = os.LINUX_DEFAULT,
+    ssd = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "cros x64|cq",
+        short_name = "cmp",
+    ),
+    execution_timeout = 14 * time.hour,
+    reclient_cache_silo = "Comparison Simple Chrome CQ - cache siloed",
+    shadow_siso_project = siso.project.TEST_UNTRUSTED,
+    siso_enabled = True,
+    siso_project = siso.project.TEST_UNTRUSTED,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
+)
+
+fyi_mac_reclient_comparison_builder(
+    name = "Comparison ios (reclient)(CQ)",
+    description_html = """\
+This builder measures iOS build performance with reclient prod vs test in cq configuration.<br/>\
+The bot specs should be in sync with {}.\
+""".format(linkify_builder("try", "ios-simulator")),
+    schedule = "0 */4 * * *",
+    builderless = True,
+    cores = None,
+    cpu = cpu.ARM64,
+    ssd = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "ios|cq",
+        short_name = "cmp",
+    ),
+    execution_timeout = 10 * time.hour,
+    reclient_cache_silo = "Comparison ios CQ - cache siloed",
+    shadow_siso_project = siso.project.TEST_UNTRUSTED,
+    siso_project = siso.project.TEST_UNTRUSTED,
+    siso_remote_jobs = 150,
+    xcode = xcode.xcode_default,
+)
+
 ci.builder(
     name = "Win x64 Builder (reclient)",
     builder_spec = builder_config.builder_spec(
