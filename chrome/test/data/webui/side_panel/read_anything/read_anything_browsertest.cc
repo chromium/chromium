@@ -23,7 +23,7 @@ class ReadAnythingMochaBrowserTest : public WebUIMochaBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {features::kReadAnythingReadAloud,
          features::kReadAnythingImagesViaAlgorithm},
-        {});
+        {features::kReadAnythingReadAloudPhraseHighlighting});
   }
 
   void RunSidePanelTest(const std::string& file, const std::string& trigger) {
@@ -210,41 +210,25 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ToolbarOverflow) {
                    "mocha.run()");
 }
 
-// Integration tests that need the actual Read Aloud flag enabled because they
-// use the full C++ pipeline
-class ReadAnythingReadAloudMochaTest : public ReadAnythingMochaBrowserTest {
- protected:
-  ReadAnythingReadAloudMochaTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingReadAloud},
-        {features::kReadAnythingReadAloudPhraseHighlighting});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
-                       LinksToggledIntegration) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LinksToggledIntegration) {
   RunSidePanelTest("side_panel/read_anything/links_toggled_integration_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
-                       SpeechUsesMaxTextLength) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechUsesMaxTextLength) {
   RunSidePanelTest(
       "side_panel/read_anything/speech_uses_max_text_length_test.js",
       "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest,
                        ReadAloud_UpdateContentSelection) {
   RunSidePanelTest(
       "side_panel/read_anything/read_aloud_update_content_selection_test.js",
       "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest,
                        ReadAloud_UpdateContentSelectionPDF) {
   RunSidePanelTest(
       "side_panel/read_anything/"
@@ -252,56 +236,37 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
       "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest, ReadAloudHighlight) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ReadAloudHighlight) {
   RunSidePanelTest("side_panel/read_anything/read_aloud_highlighting_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
-                       WordBoundariesUsedForSpeech) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, WordBoundariesUsedForSpeech) {
   RunSidePanelTest("side_panel/read_anything/word_boundaries_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest, Speech) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Speech) {
   RunSidePanelTest("side_panel/read_anything/speech_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest, UpdateContentSelection) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, UpdateContentSelection) {
   RunSidePanelTest("side_panel/read_anything/update_content_selection_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
-                       UpdateContentIntegration) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, UpdateContentIntegration) {
   RunSidePanelTest(
       "side_panel/read_anything/update_content_integration_test.js",
       "mocha.run()");
 }
 
-// Integration tests that need the actual Read Aloud flag enabled and the word
-// highlighting flag because they use the full C++ pipeline
-class ReadAnythingReadAloudWordHighlightingMochaTest
-    : public ReadAnythingMochaBrowserTest {
- protected:
-  ReadAnythingReadAloudWordHighlightingMochaTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingReadAloud},
-        {features::kReadAnythingReadAloudPhraseHighlighting});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudWordHighlightingMochaTest,
-                       WordHighlighting) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, WordHighlighting) {
   RunSidePanelTest("side_panel/read_anything/word_highlighting_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudWordHighlightingMochaTest,
-                       HighlightToggle) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, HighlightToggle) {
   RunSidePanelTest("side_panel/read_anything/highlight_toggle_test.js",
                    "mocha.run()");
 }
