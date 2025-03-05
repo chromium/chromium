@@ -45,7 +45,7 @@ class SystemToastViewPixelTest : public AshTestBase {
         views::Builder<views::FlexLayoutView>()
             .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
             .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-            .SetBackground(views::CreateThemedSolidBackground(
+            .SetBackground(views::CreateSolidBackground(
                 cros_tokens::kCrosSysSystemBaseElevated))
             .Build());
   }

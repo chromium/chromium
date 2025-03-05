@@ -193,8 +193,7 @@ PopupRowView::PopupRowView(
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetNotifyEnterExitOnChild(true);
   SetProperty(views::kMarginsKey, gfx::Insets::VH(0, GetHorizontalMargin()));
-  SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
+  SetBackground(views::CreateSolidBackground(ui::kColorDropdownBackground));
 
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>());
@@ -483,7 +482,7 @@ void PopupRowView::UpdateBackground() {
     // is being hovered.
     return !suggestion_is_acceptable_ && selected_cell_;
   }();
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       is_highlighted ? ui::kColorDropdownBackgroundSelected
                      : ui::kColorDropdownBackground,
       ChromeLayoutProvider::Get()->GetCornerRadiusMetric(

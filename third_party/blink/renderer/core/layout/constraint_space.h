@@ -841,6 +841,13 @@ class CORE_EXPORT ConstraintSpace final {
         rare_data_->decoration_percentage_resolution_type);
   }
 
+  LogicalBoxSides IgnoreMarginsForStretch() const {
+    if (!HasRareData()) {
+      return {false, false, false, false};
+    }
+    return rare_data_->ignore_margins_for_stretch;
+  }
+
   const GridLayoutSubtree* GetGridLayoutSubtree() const {
     return HasRareData() ? rare_data_->GetGridLayoutSubtree() : nullptr;
   }
@@ -973,6 +980,7 @@ class CORE_EXPORT ConstraintSpace final {
           page_name(other.page_name),
           fragmentainer_block_size(other.fragmentainer_block_size),
           fragmentainer_offset(other.fragmentainer_offset),
+          ignore_margins_for_stretch(other.ignore_margins_for_stretch),
           data_union_type(other.data_union_type),
           is_pushed_by_floats(other.is_pushed_by_floats),
           is_restricted_block_size_table_cell(
@@ -1105,7 +1113,8 @@ class CORE_EXPORT ConstraintSpace final {
           should_text_box_trim_inside_when_line_clamp !=
               other.should_text_box_trim_inside_when_line_clamp ||
           decoration_percentage_resolution_type !=
-              other.decoration_percentage_resolution_type) {
+              other.decoration_percentage_resolution_type ||
+          ignore_margins_for_stretch != other.ignore_margins_for_stretch) {
         return false;
       }
 
@@ -1148,7 +1157,8 @@ class CORE_EXPORT ConstraintSpace final {
           should_text_box_trim_fragmentainer_end ||
           should_force_text_box_trim_end ||
           should_text_box_trim_inside_when_line_clamp ||
-          decoration_percentage_resolution_type) {
+          decoration_percentage_resolution_type ||
+          !ignore_margins_for_stretch.IsEmpty()) {
         return false;
       }
 
@@ -1396,6 +1406,7 @@ class CORE_EXPORT ConstraintSpace final {
     AtomicString page_name;
     LayoutUnit fragmentainer_block_size = kIndefiniteSize;
     LayoutUnit fragmentainer_offset;
+    LogicalBoxSides ignore_margins_for_stretch = {false, false, false, false};
 
     unsigned data_union_type : 3 = static_cast<unsigned>(DataUnionType::kNone);
 

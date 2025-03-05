@@ -45,7 +45,7 @@ PromoCodeLabelButton::PromoCodeLabelButton(PressedCallback callback,
       ui::ImageModel::FromVectorIcon(vector_icons::kContentCopyIcon,
                                      kColorPaymentsPromoCodeForegroundPressed,
                                      kContentCopyIconSizePx));
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       kColorPaymentsPromoCodeBackground,
       ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
           views::Emphasis::kMedium)));

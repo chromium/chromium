@@ -19,6 +19,7 @@
 #include "base/functional/function_ref.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_math.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
@@ -241,29 +242,30 @@ size_t AllocationSamplingFrequency(const base::Feature& feature,
 // reasons. When both features are enabled, we prefer GWP-ASan to
 // compensate for its lower sampling rate.
 bool IsMutuallyExclusiveFeatureAllowed(const base::Feature& feature) {
-  static auto disabled_features = []() {
-    constexpr double kGwpAsanPickProbability = 0.9;
+  static base::NoDestructor<base::flat_set<const base::Feature*>>
+      disabled_features([]() {
+        constexpr double kGwpAsanPickProbability = 0.9;
 
-    base::flat_set<const base::Feature*> disabled_features;
+        base::flat_set<const base::Feature*> disabled_features;
 
-    bool gwp_asan_enabled =
-        base::FeatureList::IsEnabled(internal::kGwpAsanMalloc) ||
-        base::FeatureList::IsEnabled(internal::kGwpAsanPartitionAlloc);
-    bool lud_enabled =
-        base::FeatureList::IsEnabled(internal::kLightweightUafDetector);
-    if (gwp_asan_enabled && lud_enabled) {
-      if (base::RandDouble() <= kGwpAsanPickProbability) {
-        disabled_features.emplace(&internal::kLightweightUafDetector);
-      } else {
-        disabled_features.emplace(&internal::kGwpAsanMalloc);
-        disabled_features.emplace(&internal::kGwpAsanPartitionAlloc);
-      }
-    }
+        bool gwp_asan_enabled =
+            base::FeatureList::IsEnabled(internal::kGwpAsanMalloc) ||
+            base::FeatureList::IsEnabled(internal::kGwpAsanPartitionAlloc);
+        bool lud_enabled =
+            base::FeatureList::IsEnabled(internal::kLightweightUafDetector);
+        if (gwp_asan_enabled && lud_enabled) {
+          if (base::RandDouble() <= kGwpAsanPickProbability) {
+            disabled_features.emplace(&internal::kLightweightUafDetector);
+          } else {
+            disabled_features.emplace(&internal::kGwpAsanMalloc);
+            disabled_features.emplace(&internal::kGwpAsanPartitionAlloc);
+          }
+        }
 
-    return disabled_features;
-  }();
+        return disabled_features;
+      }());
 
-  return disabled_features.find(&feature) == disabled_features.end();
+  return disabled_features->find(&feature) == disabled_features->end();
 }
 
 }  // namespace

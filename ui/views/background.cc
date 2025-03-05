@@ -14,6 +14,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/color/color_variant.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/painter.h"
@@ -200,12 +201,16 @@ std::optional<gfx::RoundedCornersF> Background::GetRoundedCornerRadii() const {
 // Factory methods implementations:
 /////////////////////////////////////////////////////////////////////////////
 
-std::unique_ptr<Background> CreateSolidBackground(SkColor color) {
-  return std::make_unique<SolidBackground>(color);
+std::unique_ptr<Background> CreateSolidBackground(ui::ColorVariant color) {
+  if (auto color_id = color.GetColorId()) {
+    return std::make_unique<ThemedSolidBackground>(*color_id);
+  }
+
+  return std::make_unique<SolidBackground>(*color.GetSkColor());
 }
 
 std::unique_ptr<Background> CreateRoundedRectBackground(
-    SkColor color,
+    ui::ColorVariant color,
     float radius,
     int for_border_thickness) {
   return CreateRoundedRectBackground(color, gfx::RoundedCornersF{radius},
@@ -213,7 +218,19 @@ std::unique_ptr<Background> CreateRoundedRectBackground(
 }
 
 std::unique_ptr<Background> CreateRoundedRectBackground(
-    SkColor color,
+    ui::ColorVariant color,
+    float top_radius,
+    float bottom_radius,
+    int for_border_thickness) {
+  return CreateRoundedRectBackground(
+      color,
+      gfx::RoundedCornersF{top_radius, top_radius, bottom_radius,
+                           bottom_radius},
+      for_border_thickness);
+}
+
+std::unique_ptr<Background> CreateRoundedRectBackground(
+    ui::ColorVariant color,
     const gfx::RoundedCornersF& radii,
     int for_border_thickness) {
   // If the radii is not set, fallback to SolidBackground since it results in
@@ -222,42 +239,13 @@ std::unique_ptr<Background> CreateRoundedRectBackground(
     return CreateSolidBackground(color);
   }
 
-  return std::make_unique<RoundedRectBackground>(color, radii,
-                                                 for_border_thickness);
-}
-
-std::unique_ptr<Background> CreateThemedRoundedRectBackground(
-    ui::ColorId color_id,
-    float radius,
-    int for_border_thickness) {
-  return CreateThemedRoundedRectBackground(
-      color_id, gfx::RoundedCornersF{radius}, for_border_thickness);
-}
-
-std::unique_ptr<Background> CreateThemedRoundedRectBackground(
-    ui::ColorId color_id,
-    float top_radius,
-    float bottom_radius,
-    int for_border_thickness) {
-  return CreateThemedRoundedRectBackground(
-      color_id,
-      gfx::RoundedCornersF{top_radius, top_radius, bottom_radius,
-                           bottom_radius},
-      for_border_thickness);
-}
-
-std::unique_ptr<Background> CreateThemedRoundedRectBackground(
-    ui::ColorId color_id,
-    const gfx::RoundedCornersF& radii,
-    int for_border_thickness) {
-  // If the radii is not set, fallback to SolidBackground since it results in
-  // more efficient tiling by cc. See crbug.com/1464128.
-  if (radii.IsEmpty() && for_border_thickness == 0) {
-    return CreateThemedSolidBackground(color_id);
+  if (auto color_id = color.GetColorId()) {
+    return std::make_unique<ThemedRoundedRectBackground>(*color_id, radii,
+                                                         for_border_thickness);
   }
 
-  return std::make_unique<ThemedRoundedRectBackground>(color_id, radii,
-                                                       for_border_thickness);
+  return std::make_unique<RoundedRectBackground>(*color.GetSkColor(), radii,
+                                                 for_border_thickness);
 }
 
 std::unique_ptr<Background> CreateThemedVectorIconBackground(
@@ -265,32 +253,9 @@ std::unique_ptr<Background> CreateThemedVectorIconBackground(
   return std::make_unique<ThemedVectorIconBackground>(icon);
 }
 
-std::unique_ptr<Background> CreateThemedSolidBackground(ui::ColorId color_id) {
-  return std::make_unique<ThemedSolidBackground>(color_id);
-}
-
 std::unique_ptr<Background> CreateBackgroundFromPainter(
     std::unique_ptr<Painter> painter) {
   return std::make_unique<BackgroundPainter>(std::move(painter));
-}
-
-std::unique_ptr<Background> CreateSolidOrThemedBackground(
-    ui::ColorVariant color) {
-  if (auto color_id = color.GetColorId()) {
-    return CreateThemedSolidBackground(*color_id);
-  } else {
-    return CreateSolidBackground(*color.GetSkColor());
-  }
-}
-
-std::unique_ptr<Background> CreateSolidOrThemedRoundedRectBackground(
-    ui::ColorVariant color,
-    const gfx::RoundedCornersF& radii) {
-  if (auto color_id = color.GetColorId()) {
-    return CreateThemedRoundedRectBackground(*color_id, radii);
-  } else {
-    return CreateRoundedRectBackground(*color.GetSkColor(), radii);
-  }
 }
 
 }  // namespace views

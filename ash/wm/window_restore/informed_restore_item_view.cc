@@ -192,7 +192,7 @@ void InformedRestoreItemView::OnAllFaviconsLoaded(
       builder
           .SetImage(ui::ImageModel::FromVectorIcon(
               kDefaultAppIcon, cros_tokens::kCrosSysOnPrimary))
-          .SetBackground(views::CreateThemedRoundedRectBackground(
+          .SetBackground(views::CreateRoundedRectBackground(
               cros_tokens::kCrosSysPrimary, kFaviconPreferredSize.width()));
     } else {
       builder.SetImage(ui::ImageModel::FromImageSkia(
@@ -221,7 +221,7 @@ void InformedRestoreItemView::OnAllFaviconsLoaded(
                     ? informed_restore::kScreenshotIconRowImageViewSize
                     : kTabCountPreferredSize)
             .SetEnabledColor(cros_tokens::kCrosSysOnPrimaryContainer)
-            .SetBackground(views::CreateThemedRoundedRectBackground(
+            .SetBackground(views::CreateRoundedRectBackground(
                 cros_tokens::kCrosSysPrimaryContainer,
                 inside_screenshot_
                     ? informed_restore::kScreenshotIconRowIconSize / 2

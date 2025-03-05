@@ -196,7 +196,7 @@ class CircularImageButton : public views::ImageButton {
 
     const SkScalar kButtonRadius = button_size_ / 2.0f;
     if (has_background_color_) {
-      SetBackground(views::CreateThemedRoundedRectBackground(
+      SetBackground(views::CreateRoundedRectBackground(
           kColorProfileMenuIconButtonBackground, kButtonRadius));
       views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(false);
       views::InkDrop::Get(this)->GetInkDrop()->SetShowHighlightOnHover(true);
@@ -1312,7 +1312,7 @@ void ProfileMenuViewBase::BuildIdentityInfoColorCallback(
     const ui::ColorProvider* color_provider) {
   if (switches::IsImprovedSigninUIOnDesktopEnabled() &&
       !profile_background_container_) {
-    const int background_color =
+    const SkColor background_color =
         color_provider->GetColor(kColorProfileMenuIdentityInfoBackground);
     // No need to set rounded corners on the background, because the container
     // is painted in a layer that has rounded corners already.

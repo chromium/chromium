@@ -78,8 +78,7 @@ SplitViewDividerView::SplitViewDividerView(SplitViewDivider* divider)
   SetPaintToLayer(ui::LAYER_TEXTURED);
   layer()->SetFillsBoundsOpaquely(false);
 
-  SetBackground(
-      views::CreateThemedSolidBackground(cros_tokens::kCrosSysSystemBase));
+  SetBackground(views::CreateSolidBackground(cros_tokens::kCrosSysSystemBase));
 
   SetBorder(std::make_unique<views::HighlightBorder>(
       /*corner_radius=*/0,
@@ -344,7 +343,7 @@ void SplitViewDividerView::RefreshDividerHandler() {
                              handler_long_side, handler_short_side);
   }
 
-  handler_view_->SetBackground(views::CreateThemedRoundedRectBackground(
+  handler_view_->SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysOutline, should_enlarge
                                         ? kDividerHandlerEnlargedCornerRadius
                                         : kDividerHandlerCornerRadius));

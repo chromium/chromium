@@ -331,7 +331,7 @@ void FilesPolicyWarnDialog::MaybeAddJustificationPanel() {
   justification_field_container->SetLayoutManager(
       std::make_unique<views::FillLayout>());
   justification_field_container->SetBackground(
-      views::CreateThemedRoundedRectBackground(
+      views::CreateRoundedRectBackground(
           ash::kColorAshControlBackgroundColorInactive, 8, 0));
 
   justification_field_ = justification_field_container->AddChildView(

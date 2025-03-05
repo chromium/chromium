@@ -145,8 +145,8 @@ class DropDownCheckbox::MenuView : public views::View {
     menu_item_group_ =
         AddChildView(std::make_unique<CheckboxMenuOptionGroup>());
     UpdateMenuContent();
-    SetBackground(views::CreateThemedRoundedRectBackground(
-        kMenuBackgroundColorId, kMenuRoundedCorners));
+    SetBackground(views::CreateRoundedRectBackground(kMenuBackgroundColorId,
+                                                     kMenuRoundedCorners));
     // Set border.
     SetBorder(std::make_unique<views::HighlightBorder>(
         kMenuRoundedCorners,
@@ -452,7 +452,7 @@ void DropDownCheckbox::ShowDropDownMenu() {
   menu_->SetContentsView(std::move(menu_view));
   menu_->Show();
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       kDropDownCheckboxActiveColorId, kDropDownCheckboxRoundedCorners));
   title_->SetEnabledColor(kActiveTitleAndIconColorId);
   drop_down_arrow_->SetImage(ui::ImageModel::FromVectorIcon(

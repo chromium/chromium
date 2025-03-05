@@ -198,10 +198,10 @@ LauncherSearchIphView::LauncherSearchIphView(
   CreateChips(actions_container);
 
   if (is_in_tablet_mode || location_ == UiLocation::kAssistantPage) {
-    box_layout_view->SetBackground(views::CreateThemedRoundedRectBackground(
+    box_layout_view->SetBackground(views::CreateRoundedRectBackground(
         kColorAshControlBackgroundColorInactive, kBackgroundRadiusTablet));
   } else {
-    box_layout_view->SetBackground(views::CreateThemedRoundedRectBackground(
+    box_layout_view->SetBackground(views::CreateRoundedRectBackground(
         kColorAshControlBackgroundColorInactive,
         base::i18n::IsRTL() ? kBackgroundRadiiClamshellRTL
                             : kBackgroundRadiiClamshellLTR));

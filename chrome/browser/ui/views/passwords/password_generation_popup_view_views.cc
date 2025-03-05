@@ -373,8 +373,7 @@ void PasswordGenerationPopupViewViews::ButtonSelectionUpdated() {
 }
 
 void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
-  SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
+  SetBackground(views::CreateSolidBackground(ui::kColorDropdownBackground));
 
   views::BoxLayout* box_layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(

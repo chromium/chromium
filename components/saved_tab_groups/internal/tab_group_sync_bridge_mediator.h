@@ -20,6 +20,10 @@
 
 class PrefService;
 
+namespace data_sharing {
+class Logger;
+}  // namespace data_sharing
+
 namespace syncer {
 class DataTypeControllerDelegate;
 }  // namespace syncer
@@ -41,6 +45,7 @@ class TabGroupSyncBridgeMediator : public SavedTabGroupModelObserver {
   TabGroupSyncBridgeMediator(
       SavedTabGroupModel* model,
       PrefService* pref_service,
+      data_sharing::Logger* logger,
       std::unique_ptr<SyncDataTypeConfiguration> saved_tab_group_configuration,
       std::unique_ptr<SyncDataTypeConfiguration>
           shared_tab_group_configuration);

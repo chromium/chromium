@@ -41,7 +41,7 @@ std::unique_ptr<views::WebView> CreateWebView(
   // Set background of webview to the same background as the toolbar. This is to
   // prevent personal color themes from showing in the side panel when
   // navigating to a new results panel.
-  web_view->SetBackground(views::CreateThemedSolidBackground(kColorToolbar));
+  web_view->SetBackground(views::CreateSolidBackground(kColorToolbar));
   return web_view;
 }
 }  // namespace

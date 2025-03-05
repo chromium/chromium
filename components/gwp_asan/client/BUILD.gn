@@ -22,7 +22,11 @@ source_set("features") {
     ":export",
     "//base",
   ]
-  configs += [ ":gwp_asan_implementation" ]
+  configs += [
+    ":gwp_asan_implementation",
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
 
   if (is_android) {
     sources += [ "feature_map.cc" ]
@@ -76,6 +80,11 @@ component("client") {
       "sampling_partitionalloc_shims.h",
     ]
   }
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
 
   deps = [
     ":export",

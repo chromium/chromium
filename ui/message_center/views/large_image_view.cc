@@ -21,8 +21,8 @@ LargeImageView::LargeImageView(const gfx::Size& max_size)
   SetID(NotificationViewBase::kLargeImageView);
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  SetBackground(views::CreateThemedSolidBackground(
-      ui::kColorNotificationImageBackground));
+  SetBackground(
+      views::CreateSolidBackground(ui::kColorNotificationImageBackground));
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 

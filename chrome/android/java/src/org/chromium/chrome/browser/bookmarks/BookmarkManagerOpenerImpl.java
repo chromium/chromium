@@ -21,6 +21,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
+import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
+import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderPickerActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -52,6 +54,36 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
                     activity, activity.getComponentName(), url, profile.isOffTheRecord());
         } else {
             showBookmarkManagerOnPhone(activity, url, profile);
+        }
+    }
+
+    @Override
+    public void startEditActivity(Context context, Profile profile, BookmarkId bookmarkId) {
+        RecordUserAction.record("MobileBookmarkManagerEditBookmark");
+        Intent intent = getEditActivityIntent(context, profile, bookmarkId);
+        if (context instanceof BookmarkActivity bookmarkActivity) {
+            bookmarkActivity.startActivityForResult(
+                    intent, BookmarkActivity.EDIT_BOOKMARK_REQUEST_CODE);
+        } else {
+            context.startActivity(intent);
+        }
+    }
+
+    @Override
+    public void startFolderPickerActivity(
+            Context context, Profile profile, BookmarkId... bookmarkIds) {
+        Intent intent = new Intent(context, BookmarkFolderPickerActivity.class);
+        intent.putStringArrayListExtra(
+                BookmarkFolderPickerActivity.INTENT_BOOKMARK_IDS,
+                BookmarkUtils.bookmarkIdsToStringList(bookmarkIds));
+        ProfileIntentUtils.addProfileToIntent(profile, intent);
+        context.startActivity(intent);
+    }
+
+    @Override
+    public void finishActivityOnPhone(Context context) {
+        if (context instanceof BookmarkActivity bookmarkActivity) {
+            bookmarkActivity.finish();
         }
     }
 
@@ -115,5 +147,12 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
         }
 
         return TextUtils.isEmpty(url) ? UrlConstants.BOOKMARKS_URL : url;
+    }
+
+    private Intent getEditActivityIntent(Context context, Profile profile, BookmarkId bookmarkId) {
+        Intent intent = new Intent(context, BookmarkEditActivity.class);
+        intent.putExtra(BookmarkEditActivity.INTENT_BOOKMARK_ID, bookmarkId.toString());
+        ProfileIntentUtils.addProfileToIntent(profile, intent);
+        return intent;
     }
 }

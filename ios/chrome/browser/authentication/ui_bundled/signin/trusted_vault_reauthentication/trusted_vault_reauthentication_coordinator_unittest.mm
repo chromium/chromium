@@ -176,16 +176,9 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestInterruptWithDismiss) {
                  EXPECT_TRUE(signin_completion_called);
                  interrupt_completion_called = true;
                }];
-  if (IsInterruptibleCoordinatorStoppedSynchronouslyEnabled()) {
-    // Sign-in and interrupt completion blocks should be called synchronously.
-    EXPECT_TRUE(signin_completion_called);
-    EXPECT_TRUE(interrupt_completion_called);
-  } else {
-    // The sign-in and interrupt completion blocks should be called
-    // asynchronously, after the UI is dismissed.
-    EXPECT_FALSE(signin_completion_called);
-    EXPECT_FALSE(interrupt_completion_called);
-  };
+  // Sign-in and interrupt completion blocks should be called synchronously.
+  EXPECT_TRUE(signin_completion_called);
+  EXPECT_TRUE(interrupt_completion_called);
   // Test the completion block.
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^bool() {

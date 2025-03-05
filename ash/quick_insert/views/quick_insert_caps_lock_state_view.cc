@@ -74,7 +74,7 @@ QuickInsertCapsLockStateView::QuickInsertCapsLockStateView(
 
   BubbleDialogDelegateView::CreateBubble(this);
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       kQuickInsertContainerBackgroundColor, kQuickInsertContainerBorderRadius));
 
   caret_bounds.Outset(kArrowGap);

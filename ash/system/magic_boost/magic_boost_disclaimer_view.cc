@@ -172,7 +172,7 @@ MagicBoostDisclaimerView::MagicBoostDisclaimerView(
       .CopyAddressTo(&disclaimer_view)
       .SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical))
-      .SetBackground(views::CreateThemedRoundedRectBackground(
+      .SetBackground(views::CreateRoundedRectBackground(
           cros_tokens::kCrosSysDialogContainer, kRadius))
       .SetPaintToLayer()
       .AddChildren(

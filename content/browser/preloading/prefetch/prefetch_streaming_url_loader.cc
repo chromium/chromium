@@ -29,7 +29,7 @@ PrefetchStreamingURLLoader::PrefetchStreamingURLLoader(
       on_determined_head_callback_(std::move(on_determined_head_callback)) {}
 
 void PrefetchStreamingURLLoader::Start(
-    network::mojom::URLLoaderFactory* url_loader_factory,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const network::ResourceRequest& request,
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
     base::TimeDelta timeout_duration) {
@@ -79,7 +79,7 @@ PrefetchStreamingURLLoader::~PrefetchStreamingURLLoader() = default;
 // static
 base::WeakPtr<PrefetchStreamingURLLoader>
 PrefetchStreamingURLLoader::CreateAndStart(
-    network::mojom::URLLoaderFactory* url_loader_factory,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const network::ResourceRequest& request,
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
     base::TimeDelta timeout_duration,
@@ -98,7 +98,7 @@ PrefetchStreamingURLLoader::CreateAndStart(
 
   streaming_loader->SetResponseReader(std::move(response_reader));
 
-  streaming_loader->Start(url_loader_factory, request,
+  streaming_loader->Start(std::move(url_loader_factory), request,
                           network_traffic_annotation,
                           std::move(timeout_duration));
 

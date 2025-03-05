@@ -111,7 +111,7 @@ bool HardwareEvaluationResult::IsEligible() const {
   return this->cpu && this->memory && this->disk && this->firmware && this->tpm;
 }
 
-HardwareEvaluationResult EvaluateWin11UpgradeEligibility() {
+HardwareEvaluationResult EvaluateWin11HardwareRequirements() {
   static constexpr int64_t kMinTotalDiskSpace = 64 * 1024 * 1024;
   static constexpr uint64_t kMinTotalPhysicalMemory = 4 * 1024 * 1024;
 

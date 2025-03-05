@@ -558,7 +558,7 @@ std::unique_ptr<views::View> PhoneHubRecentAppsView::GenerateMoreAppsButton() {
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromImageSkia(
           gfx::ImageSkiaOperations::ExtractSubset(image, kMoreAppsButtonArea)));
-  more_apps_button->SetBackground(views::CreateThemedRoundedRectBackground(
+  more_apps_button->SetBackground(views::CreateRoundedRectBackground(
       kColorAshControlBackgroundColorInactive, kMoreAppsButtonRadius));
   more_apps_button->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_FULL_APPS_LIST_BUTTON_TITLE));

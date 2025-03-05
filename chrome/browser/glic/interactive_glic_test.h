@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_cookie_synchronizer.h"
+#include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -139,8 +140,11 @@ class InteractiveGlicTestT : public T {
 
     Browser* browser = InProcessBrowserTest::browser();
 
-    glic_test_environment_ =
-        std::make_unique<glic::GlicTestEnvironment>(browser->profile());
+    // Individual test could disable the glic feature.
+    if (GlicEnabling::IsProfileEligible(browser->profile())) {
+      glic_test_environment_ =
+          std::make_unique<glic::GlicTestEnvironment>(browser->profile());
+    }
   }
 
   // Ensures that the WebContents for some combination of glic host and contents

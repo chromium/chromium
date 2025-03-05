@@ -69,6 +69,7 @@ public class BookmarkSaveFlowMediatorUnitTest {
     @Mock private IdentityManager mIdentityManager;
     @Mock private PriceTrackingUtils.Natives mMockPriceTrackingUtilsJni;
     @Mock private PriceDropNotificationManager mMockNotificationManager;
+    @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
     @Captor private ArgumentCaptor<SubscriptionsObserver> mSubscriptionsObserverCaptor;
 
     @Before
@@ -89,7 +90,8 @@ public class BookmarkSaveFlowMediatorUnitTest {
                         mShoppingService,
                         mBookmarkImageFetcher,
                         mProfile,
-                        mIdentityManager);
+                        mIdentityManager,
+                        mBookmarkManagerOpener);
         mMediator.setSubscriptionForTesting(mSubscription);
         Mockito.verify(mShoppingService)
                 .addSubscriptionsObserver(mSubscriptionsObserverCaptor.capture());

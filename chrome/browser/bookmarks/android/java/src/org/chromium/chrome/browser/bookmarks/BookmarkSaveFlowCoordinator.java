@@ -72,7 +72,8 @@ public class BookmarkSaveFlowCoordinator {
             @NonNull ShoppingService shoppingService,
             @NonNull UserEducationHelper userEducationHelper,
             @NonNull Profile profile,
-            @NonNull IdentityManager identityManager) {
+            @NonNull IdentityManager identityManager,
+            @NonNull BookmarkManagerOpener bookmarkManagerOpener) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mUserEducationHelper = userEducationHelper;
@@ -110,7 +111,8 @@ public class BookmarkSaveFlowCoordinator {
                         shoppingService,
                         bookmarkImageFetcher,
                         mProfile,
-                        identityManager);
+                        identityManager,
+                        bookmarkManagerOpener);
     }
 
     /**

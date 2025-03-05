@@ -121,7 +121,7 @@ CastDeviceSelectorView::CastDeviceSelectorView(
   SetBorder(views::CreateThemedRoundedRectBorder(
       kBackgroundBorderThickness, kBackgroundCornerRadius,
       media_color_theme_.device_selector_border_color_id));
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       media_color_theme_.device_selector_background_color_id,
       kBackgroundCornerRadius));
   SetLayoutManager(std::make_unique<views::BoxLayout>(

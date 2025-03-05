@@ -20,16 +20,13 @@ source_set("public") {
     "data_sharing_ui_delegate.h",
     "group_data.cc",
     "group_data.h",
-    "logger.cc",
-    "logger.h",
-    "logger_utils.h",
     "share_url_interception_context.cc",
     "share_url_interception_context.h",
   ]
 
   public_deps = [
     ":features",
-    ":interfaces",
+    ":logger",
     "//base",
     "//components/data_sharing/public/protocol",
     "//components/keyed_service/core",
@@ -41,7 +38,16 @@ source_set("public") {
   deps = [ "//components/url_formatter:url_formatter" ]
 }
 
-mojom("interfaces") {
+source_set("logger") {
+  sources = [
+    "logger.cc",
+    "logger.h",
+    "logger_utils.h",
+  ]
+  public_deps = [ ":logger_interfaces" ]
+}
+
+mojom("logger_interfaces") {
   generate_java = true
 
   sources = [ "logger_common.mojom" ]
@@ -72,7 +78,6 @@ if (is_android) {
       "android/java/src/org/chromium/components/data_sharing/GroupData.java",
       "android/java/src/org/chromium/components/data_sharing/GroupMember.java",
       "android/java/src/org/chromium/components/data_sharing/GroupToken.java",
-      "android/java/src/org/chromium/components/data_sharing/Logger.java",
       "android/java/src/org/chromium/components/data_sharing/SharedDataPreview.java",
       "android/java/src/org/chromium/components/data_sharing/SharedTabGroupPreview.java",
       "android/java/src/org/chromium/components/data_sharing/TabPreview.java",
@@ -88,6 +93,7 @@ if (is_android) {
     ]
 
     deps = [
+      ":logger_java",
       "//base:base_java",
       "//components/data_sharing/public/protocol:proto_java",
       "//components/signin/public/android:java",
@@ -99,9 +105,13 @@ if (is_android) {
       "//url:gurl_java",
     ]
 
-    public_deps = [ ":interfaces_java" ]
-
     srcjar_deps = [ ":enums_java" ]
+  }
+
+  android_library("logger_java") {
+    sources =
+        [ "android/java/src/org/chromium/components/data_sharing/Logger.java" ]
+    public_deps = [ ":logger_interfaces_java" ]
   }
 
   java_cpp_enum("enums_java") {

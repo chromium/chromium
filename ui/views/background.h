@@ -77,48 +77,30 @@ class VIEWS_EXPORT Background {
 };
 
 // Creates a background that fills the canvas in the specified color.
-VIEWS_EXPORT std::unique_ptr<Background> CreateSolidBackground(SkColor color);
+VIEWS_EXPORT std::unique_ptr<Background> CreateSolidBackground(
+    ui::ColorVariant color);
 
 // Creates a background that fills the canvas with rounded corners.
 // If using a rounded rect border as well, pass its radius as `radius` and its
 // thickness as `for_border_thickness`.  This will inset the background properly
 // so it doesn't bleed through the border.
 VIEWS_EXPORT std::unique_ptr<Background> CreateRoundedRectBackground(
-    SkColor color,
+    ui::ColorVariant color,
     float radius,
     int for_border_thickness = 0);
 
 // Same as above except each corner radius can be different and customized.
 VIEWS_EXPORT std::unique_ptr<Background> CreateRoundedRectBackground(
-    SkColor color,
-    const gfx::RoundedCornersF& radii,
-    int for_border_thickness = 0);
-
-// Same as above except it uses the color specified by the views's ColorProvider
-// and the given color identifier.
-VIEWS_EXPORT std::unique_ptr<Background> CreateThemedRoundedRectBackground(
-    ui::ColorId color_id,
-    float radius,
-    int for_border_thickness = 0);
-
-// Same as above except its top corner radius and bottom corner radius can be
-// different and customized.
-VIEWS_EXPORT std::unique_ptr<Background> CreateThemedRoundedRectBackground(
-    ui::ColorId color_id,
+    ui::ColorVariant color,
     float top_radius,
     float bottom_radius,
     int for_border_thickness = 0);
 
 // Same as above except each corner radius can be different and customized.
-VIEWS_EXPORT std::unique_ptr<Background> CreateThemedRoundedRectBackground(
-    ui::ColorId color_id,
+VIEWS_EXPORT std::unique_ptr<Background> CreateRoundedRectBackground(
+    ui::ColorVariant color,
     const gfx::RoundedCornersF& radii,
     int for_border_thickness = 0);
-
-// Creates a background that fills the canvas in the color specified by the
-// view's ColorProvider and the given color identifier.
-VIEWS_EXPORT std::unique_ptr<Background> CreateThemedSolidBackground(
-    ui::ColorId color_id);
 
 // Creates a background from the specified Painter.
 VIEWS_EXPORT std::unique_ptr<Background> CreateBackgroundFromPainter(
@@ -127,16 +109,6 @@ VIEWS_EXPORT std::unique_ptr<Background> CreateBackgroundFromPainter(
 // Creates a background from the specified ThemedVectorIcon.
 VIEWS_EXPORT std::unique_ptr<Background> CreateThemedVectorIconBackground(
     const ui::ThemedVectorIcon& icon);
-
-// Creates a SolidBackground or ThemedSolidBackground based on `color` type.
-VIEWS_EXPORT std::unique_ptr<Background> CreateSolidOrThemedBackground(
-    ui::ColorVariant color);
-
-// Creates a SolidBackground or ThemedSolidBackground with `radii` based on
-// `color` type.
-VIEWS_EXPORT std::unique_ptr<Background>
-CreateSolidOrThemedRoundedRectBackground(ui::ColorVariant color,
-                                         const gfx::RoundedCornersF& radii);
 
 }  // namespace views
 

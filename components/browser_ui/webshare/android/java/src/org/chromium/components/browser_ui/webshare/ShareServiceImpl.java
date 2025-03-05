@@ -15,6 +15,9 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.mojo.system.MojoException;
@@ -35,6 +38,7 @@ import java.util.Set;
  * Android implementation of the ShareService service defined in
  * third_party/blink/public/mojom/webshare/webshare.mojom.
  */
+@NullMarked
 public class ShareServiceImpl implements ShareService {
     private final WebShareDelegate mDelegate;
 
@@ -152,7 +156,7 @@ public class ShareServiceImpl implements ShareService {
         ShareParams.TargetChosenCallback innerCallback =
                 new ShareParams.TargetChosenCallback() {
                     @Override
-                    public void onTargetChosen(ComponentName chosenComponent) {
+                    public void onTargetChosen(@Nullable ComponentName chosenComponent) {
                         RecordHistogram.recordEnumeratedHistogram(
                                 "WebShare.ShareOutcome",
                                 WEBSHARE_OUTCOME_SUCCESS,
@@ -208,6 +212,8 @@ public class ShareServiceImpl implements ShareService {
             }
 
             @Override
+            // NullAway is failing due to the lambda.
+            @NullUnmarked
             protected Boolean doInBackground() {
                 ArrayList<Uri> fileUris = new ArrayList<>(files.length);
                 ArrayList<BlobReceiver> blobReceivers = new ArrayList<>(files.length);

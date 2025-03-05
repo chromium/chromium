@@ -51,7 +51,7 @@ public class BookmarkPage extends BasicNativePage {
                         profile,
                         new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()),
                         mBookmarkOpener,
-                        componentName);
+                        new BookmarkManagerOpenerImpl());
         mBookmarkManagerCoordinator.setBasicNativePage(this);
         initWithView(mBookmarkManagerCoordinator.getView());
     }

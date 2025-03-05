@@ -72,8 +72,8 @@ class SystemUIComponentsStyleViewerClientView : public views::ClientView {
     // client-view is responsible for rounding the bottom corners.
 
     const gfx::RoundedCornersF radii(0, 0, corner_radius, corner_radius);
-    contents_view()->SetBackground(views::CreateThemedRoundedRectBackground(
-        ui::kColorDialogBackground, radii));
+    contents_view()->SetBackground(
+        views::CreateRoundedRectBackground(ui::kColorDialogBackground, radii));
   }
 };
 
@@ -152,7 +152,7 @@ SystemUIComponentsStyleViewerView::SystemUIComponentsStyleViewerView()
           AddChildView(std::make_unique<views::ScrollView>())) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
-  SetBackground(views::CreateThemedSolidBackground(ui::kColorDialogBackground));
+  SetBackground(views::CreateSolidBackground(ui::kColorDialogBackground));
   SetBorder(
       views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, kBottomSpacing, 0)));
 

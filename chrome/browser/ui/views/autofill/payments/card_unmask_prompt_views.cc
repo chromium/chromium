@@ -411,7 +411,7 @@ void CardUnmaskPromptViews::InitIfNecessary() {
           .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
           .SetVisible(false)
           .SetBackground(
-              views::CreateThemedSolidBackground(ui::kColorDialogBackground))
+              views::CreateSolidBackground(ui::kColorDialogBackground))
           .AddChildren(
               views::Builder<views::Throbber>().CopyAddressTo(
                   &progress_throbber_),

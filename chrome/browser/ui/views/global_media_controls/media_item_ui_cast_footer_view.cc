@@ -46,8 +46,8 @@ class StopCastingButton : public views::LabelButton {
     SetImageLabelSpacing(kImageLabelSpacing);
     SetBorder(views::CreateEmptyBorder(kButtonInsets));
 
-    SetBackground(views::CreateThemedRoundedRectBackground(background_color_id,
-                                                           kButtonHeight / 2));
+    SetBackground(views::CreateRoundedRectBackground(background_color_id,
+                                                     kButtonHeight / 2));
     SetFocusRingCornerRadius(kButtonHeight / 2);
     views::FocusRing::Get(this)->SetColorId(focus_ring_color_id);
   }

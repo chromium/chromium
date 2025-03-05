@@ -196,7 +196,7 @@ void ResultView::SetDesign(Design design) {
   phonetics_audio_button_->SetBackground(
       design == Design::kCurrent
           ? nullptr
-          : views::CreateThemedRoundedRectBackground(
+          : views::CreateRoundedRectBackground(
                 ui::ColorIds::kColorSysStateHoverOnSubtle,
                 kPhoneticsAudioButtonBackgroundRadiusDip));
   phonetics_audio_button_->SetProperty(

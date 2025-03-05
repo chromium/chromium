@@ -167,7 +167,7 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       chromeos::features::IsSystemBlurEnabled()
           ? cros_tokens::kCrosSysScrim2
           : cros_tokens::kCrosSysSystemBaseElevatedOpaque,

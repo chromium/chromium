@@ -163,8 +163,8 @@ std::unique_ptr<views::Background> CreateNotificationBackground(
                                               background_radii);
   }
 
-  return views::CreateThemedRoundedRectBackground(background_color_id,
-                                                  background_radii);
+  return views::CreateRoundedRectBackground(background_color_id,
+                                            background_radii);
 }
 
 void StyleNotificationPopup(message_center::MessageView* notification_view) {

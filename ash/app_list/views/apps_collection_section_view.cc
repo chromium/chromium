@@ -97,7 +97,7 @@ AppsCollectionSectionView::AppsCollectionSectionView(
   apps_container_->SetLayoutManager(
       std::make_unique<SimpleGridLayout>(kAppsPerColumn));
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase, kCornerRadius));
 }
 

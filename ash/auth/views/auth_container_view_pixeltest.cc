@@ -130,7 +130,7 @@ TEST_F(AuthContainerPixelTest, PasswordOnlyTest) {
 TEST_F(AuthContainerPixelTest, PinStatusTest) {
   // For better visibility
   container_view_->SetBackground(
-      views::CreateThemedSolidBackground(cros_tokens::kCrosSysBaseElevated));
+      views::CreateSolidBackground(cros_tokens::kCrosSysBaseElevated));
 
   // Turn off the PIN factor availability.
   test_api_->GetView()->SetHasPin(false);
@@ -154,7 +154,7 @@ TEST_F(AuthContainerPixelTest, PinStatusTest) {
 TEST_F(AuthContainerPixelTest, PasswordWithFingerprintTest) {
   // For better visibility
   container_view_->SetBackground(
-      views::CreateThemedSolidBackground(cros_tokens::kCrosSysBaseElevated));
+      views::CreateSolidBackground(cros_tokens::kCrosSysBaseElevated));
 
   test_api_->GetView()->SetHasPin(false);
   // Turn on the fingerprint factor availability.
@@ -172,7 +172,7 @@ TEST_F(AuthContainerPixelTest, PasswordWithFingerprintTest) {
 TEST_F(AuthContainerPixelTest, PasswordAndPinWithFingerprintTest) {
   // For better visibility
   container_view_->SetBackground(
-      views::CreateThemedSolidBackground(cros_tokens::kCrosSysBaseElevated));
+      views::CreateSolidBackground(cros_tokens::kCrosSysBaseElevated));
 
   test_api_->GetView()->SetHasPin(true);
   // Turn on the fingerprint factor availability.

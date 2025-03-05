@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/buildflags_paint_preview.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//chrome/common/features.gni")
 import("//components/nacl/features.gni")
@@ -42,9 +41,6 @@ grit("resources") {
     "//url/mojom:url_mojom_origin_js",
   ]
   if (is_chromeos) {
-    deps += [ "//chromeos/components/remote_apps/mojom:mojom_js" ]
-  }
-  if (is_chromeos_ash) {
     deps += [
       # The JS binding files of seal.mojom will be imported to Google3 via
       # copybara.
@@ -53,6 +49,7 @@ grit("resources") {
       "//chromeos/ash/components/enhanced_network_tts/mojom:mojom_js",
       "//chromeos/ash/services/ime/public/mojom:mojom_js",
       "//chromeos/ash/services/orca/public/mojom:mojom_js",
+      "//chromeos/components/remote_apps/mojom:mojom_js",
       "//chromeos/services/tts/public/mojom:mojom_js",
     ]
   }
@@ -432,7 +429,7 @@ static_library("renderer") {
     }
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "ash_merge_session_loader_throttle.cc",
       "ash_merge_session_loader_throttle.h",

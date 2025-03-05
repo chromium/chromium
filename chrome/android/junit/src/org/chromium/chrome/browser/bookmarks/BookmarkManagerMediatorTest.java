@@ -191,6 +191,7 @@ public class BookmarkManagerMediatorTest {
     @Mock private BookmarkMoveSnackbarManager mBookmarkMoveSnackbarManager;
     @Mock private BasicNativePage mNativePage;
     @Mock private ReauthenticatorBridge mReauthenticatorMock;
+    @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
 
     @Captor private ArgumentCaptor<BookmarkModelObserver> mBookmarkModelObserverArgumentCaptor;
     @Captor private ArgumentCaptor<SelectionObserver> mSelectionObserver;
@@ -533,7 +534,8 @@ public class BookmarkManagerMediatorTest {
                         mSnackbarManager,
                         mCanShowPromo,
                         mOnScrollListenerConsumer,
-                        mBookmarkMoveSnackbarManager);
+                        mBookmarkMoveSnackbarManager,
+                        mBookmarkManagerOpener);
         mMediator.addUiObserver(mBookmarkUiObserver);
     }
 

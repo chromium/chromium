@@ -93,9 +93,11 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
+  auto* data_sharing_service =
+      data_sharing::DataSharingServiceFactory::GetForProfile(profile);
   auto collaboration_finder =
       std::make_unique<collaboration::CollaborationFinderImpl>(
-          data_sharing::DataSharingServiceFactory::GetForProfile(profile));
+          data_sharing_service);
   auto service = CreateTabGroupSyncService(
       chrome::GetChannel(), DataTypeStoreServiceFactory::GetForProfile(profile),
       pref_service,
@@ -103,7 +105,8 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
           ->GetDeviceInfoTracker(),
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
-      std::move(collaboration_finder), synthetic_field_trial_helper_.get());
+      std::move(collaboration_finder), synthetic_field_trial_helper_.get(),
+      data_sharing_service->GetLogger());
 
   std::unique_ptr<TabGroupSyncDelegate> delegate;
 #if BUILDFLAG(IS_ANDROID)

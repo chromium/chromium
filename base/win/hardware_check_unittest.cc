@@ -17,10 +17,10 @@ TEST(HardwareEvaluationResult, Eligible) {
   EXPECT_FALSE(result.IsEligible());
 }
 
-TEST(EvaluateWin11UpgradeEligibility, ExpectNoCrash) {
+TEST(EvaluateWin11HardwareRequirements, ExpectNoCrash) {
   // It's not worthwhile to check the validity of the return value
   // so just check for crashes.
-  EvaluateWin11UpgradeEligibility();
+  EvaluateWin11HardwareRequirements();
 }
 
 }  // namespace base::win

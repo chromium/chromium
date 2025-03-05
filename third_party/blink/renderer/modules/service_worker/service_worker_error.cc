@@ -53,60 +53,57 @@ struct ExceptionParams {
   String message;
 };
 
-ExceptionParams GetExceptionParams(const WebServiceWorkerError& web_error) {
-  switch (web_error.error_type) {
+ExceptionParams GetExceptionParams(
+    mojom::blink::ServiceWorkerErrorType error_type,
+    const String& message) {
+  switch (error_type) {
     case mojom::blink::ServiceWorkerErrorType::kAbort:
       return ExceptionParams(DOMExceptionCode::kAbortError,
                              "The Service Worker operation was aborted.",
-                             web_error.message);
+                             message);
     case mojom::blink::ServiceWorkerErrorType::kActivate:
       // Not currently returned as a promise rejection.
       // TODO: Introduce new ActivateError type to ExceptionCodes?
       return ExceptionParams(DOMExceptionCode::kAbortError,
-                             "The Service Worker activation failed.",
-                             web_error.message);
+                             "The Service Worker activation failed.", message);
     case mojom::blink::ServiceWorkerErrorType::kDisabled:
       return ExceptionParams(DOMExceptionCode::kNotSupportedError,
-                             "Service Worker support is disabled.",
-                             web_error.message);
+                             "Service Worker support is disabled.", message);
     case mojom::blink::ServiceWorkerErrorType::kInstall:
       // TODO: Introduce new InstallError type to ExceptionCodes?
       return ExceptionParams(DOMExceptionCode::kAbortError,
                              "The Service Worker installation failed.",
-                             web_error.message);
+                             message);
     case mojom::blink::ServiceWorkerErrorType::kScriptEvaluateFailed:
       return ExceptionParams(DOMExceptionCode::kAbortError,
                              "The Service Worker script failed to evaluate.",
-                             web_error.message);
+                             message);
     case mojom::blink::ServiceWorkerErrorType::kNavigation:
       // ErrorTypeNavigation should have bailed out before calling this.
       NOTREACHED();
     case mojom::blink::ServiceWorkerErrorType::kNetwork:
       return ExceptionParams(DOMExceptionCode::kNetworkError,
-                             "The Service Worker failed by network.",
-                             web_error.message);
+                             "The Service Worker failed by network.", message);
     case mojom::blink::ServiceWorkerErrorType::kNotFound:
       return ExceptionParams(
           DOMExceptionCode::kNotFoundError,
-          "The specified Service Worker resource was not found.",
-          web_error.message);
+          "The specified Service Worker resource was not found.", message);
     case mojom::blink::ServiceWorkerErrorType::kSecurity:
       return ExceptionParams(
           DOMExceptionCode::kSecurityError,
-          "The Service Worker security policy prevented an action.",
-          web_error.message);
+          "The Service Worker security policy prevented an action.", message);
     case mojom::blink::ServiceWorkerErrorType::kState:
       return ExceptionParams(DOMExceptionCode::kInvalidStateError,
                              "The Service Worker state was not valid.",
-                             web_error.message);
+                             message);
     case mojom::blink::ServiceWorkerErrorType::kTimeout:
       return ExceptionParams(DOMExceptionCode::kAbortError,
                              "The Service Worker operation timed out.",
-                             web_error.message);
+                             message);
     case mojom::blink::ServiceWorkerErrorType::kUnknown:
       return ExceptionParams(DOMExceptionCode::kUnknownError,
                              "An unknown error occurred within Service Worker.",
-                             web_error.message);
+                             message);
     case mojom::blink::ServiceWorkerErrorType::kNone:
     case mojom::blink::ServiceWorkerErrorType::kType:
       // ErrorTypeType should have been handled before reaching this point.
@@ -118,39 +115,33 @@ ExceptionParams GetExceptionParams(const WebServiceWorkerError& web_error) {
 }  // namespace
 
 // static
-DOMException* ServiceWorkerError::Take(ScriptPromiseResolverBase*,
-                                       const WebServiceWorkerError& web_error) {
-  ExceptionParams params = GetExceptionParams(web_error);
+DOMException* ServiceWorkerError::AsException(
+    mojom::blink::ServiceWorkerErrorType error_type,
+    const String& message) {
+  ExceptionParams params = GetExceptionParams(error_type, message);
   return MakeGarbageCollected<DOMException>(params.code, params.message);
 }
 
 // static
-DOMException* ServiceWorkerError::GetException(
-    ScriptPromiseResolverBase* resolver,
-    mojom::blink::ServiceWorkerErrorType error,
-    const String& error_msg) {
-  return Take(resolver, WebServiceWorkerError(error, error_msg));
-}
-
-// static
-v8::Local<v8::Value> ServiceWorkerErrorForUpdate::Take(
-    ScriptPromiseResolverBase* resolver,
-    const WebServiceWorkerError& web_error) {
-  ScriptState* script_state = resolver->GetScriptState();
-  switch (web_error.error_type) {
+v8::Local<v8::Value> ServiceWorkerErrorForUpdate::AsJSException(
+    ScriptState* script_state,
+    mojom::blink::ServiceWorkerErrorType error_type,
+    const String& message) {
+  switch (error_type) {
     case mojom::blink::ServiceWorkerErrorType::kNetwork:
     case mojom::blink::ServiceWorkerErrorType::kNotFound:
     case mojom::blink::ServiceWorkerErrorType::kScriptEvaluateFailed:
       // According to the spec, these errors during update should result in
       // a TypeError.
       return V8ThrowException::CreateTypeError(
-          script_state->GetIsolate(), GetExceptionParams(web_error).message);
+          script_state->GetIsolate(),
+          GetExceptionParams(error_type, message).message);
     case mojom::blink::ServiceWorkerErrorType::kType:
       return V8ThrowException::CreateTypeError(script_state->GetIsolate(),
-                                               web_error.message);
+                                               message);
     default:
       return ToV8Traits<DOMException>::ToV8(
-          script_state, ServiceWorkerError::Take(resolver, web_error));
+          script_state, ServiceWorkerError::AsException(error_type, message));
   }
 }
 

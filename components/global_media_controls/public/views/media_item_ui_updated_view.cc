@@ -77,7 +77,7 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
     : id_(id), item_(std::move(item)), media_color_theme_(media_color_theme) {
   CHECK(item_);
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       media_color_theme_.background_color_id, kBackgroundCornerRadius));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, kBackgroundInsets,
@@ -208,7 +208,7 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
       play_pause_button_container, static_cast<int>(MediaSessionAction::kPlay),
       vector_icons::kPlayArrowIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY);
-  play_pause_button_->SetBackground(views::CreateThemedRoundedRectBackground(
+  play_pause_button_->SetBackground(views::CreateRoundedRectBackground(
       media_color_theme_.play_button_container_color_id,
       kPlayPauseButtonSize.height() / 2));
 
@@ -392,7 +392,7 @@ void MediaItemUIUpdatedView::UpdateWithMediaSessionInfo(
         static_cast<int>(MediaSessionAction::kPause), vector_icons::kPauseIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PAUSE,
         media_color_theme_.pause_button_foreground_color_id);
-    play_pause_button_->SetBackground(views::CreateThemedRoundedRectBackground(
+    play_pause_button_->SetBackground(views::CreateRoundedRectBackground(
         media_color_theme_.pause_button_container_color_id,
         kPlayPauseButtonSize.height() / 2));
   } else {
@@ -401,7 +401,7 @@ void MediaItemUIUpdatedView::UpdateWithMediaSessionInfo(
         vector_icons::kPlayArrowIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY,
         media_color_theme_.play_button_foreground_color_id);
-    play_pause_button_->SetBackground(views::CreateThemedRoundedRectBackground(
+    play_pause_button_->SetBackground(views::CreateRoundedRectBackground(
         media_color_theme_.play_button_container_color_id,
         kPlayPauseButtonSize.height() / 2));
   }

@@ -115,7 +115,7 @@ std::unique_ptr<views::Widget> CreateWidget(
           .SetCancelCallback(std::move(learn_more_callback))
           .SetTopContentView(
               views::Builder<views::ImageView>()
-                  .SetBackground(views::CreateThemedRoundedRectBackground(
+                  .SetBackground(views::CreateRoundedRectBackground(
                       cros_tokens::kCrosSysIlloColor12,
                       kFeatureTourDialogIllustrationCornerRadii))
                   .SetImage(GetIllustration()))

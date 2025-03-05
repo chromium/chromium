@@ -158,7 +158,7 @@ class InfoPane : public views::BoxLayoutView {
     SetInsideBorderInsets(
         provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG));
     SetOrientation(views::BoxLayout::Orientation::kVertical);
-    SetBackground(views::CreateThemedRoundedRectBackground(
+    SetBackground(views::CreateRoundedRectBackground(
         ui::kColorSubtleEmphasisBackground, kInfoPaneCornerRadius));
     SetData(metadata);
   }

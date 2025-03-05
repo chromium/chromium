@@ -98,8 +98,8 @@ std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
           .Build();
   const float corner_radius =
       contents_view->GetPreferredSize({}).height() / 2.0f;
-  contents_view->SetBackground(views::CreateThemedRoundedRectBackground(
-      ui::kColorSysSurface3, corner_radius));
+  contents_view->SetBackground(
+      views::CreateRoundedRectBackground(ui::kColorSysSurface3, corner_radius));
   contents_view->SetBorder(std::make_unique<views::HighlightBorder>(
       corner_radius, views::HighlightBorder::Type::kHighlightBorderOnShadow));
 

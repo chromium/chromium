@@ -28,6 +28,11 @@ component("shell_dialogs") {
     "shell_dialogs_export.h",
   ]
 
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   defines = [ "SHELL_DIALOGS_IMPLEMENTATION" ]
 
   deps = [

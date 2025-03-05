@@ -219,8 +219,8 @@ SystemDialogDelegateView::SystemDialogDelegateView() {
           kRoundedCornerRadius,
           views::HighlightBorder::Type::kHighlightBorderOnShadow),
       kBorderInsets));
-  SetBackground(views::CreateThemedRoundedRectBackground(kBackgroundColorId,
-                                                         kRoundedCornerRadius));
+  SetBackground(views::CreateRoundedRectBackground(kBackgroundColorId,
+                                                   kRoundedCornerRadius));
 
   // Set shadow.
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(

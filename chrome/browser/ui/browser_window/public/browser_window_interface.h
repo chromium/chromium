@@ -125,7 +125,7 @@ class BrowserWindowInterface : public content::PageNavigator {
   // the top level widget has focus and doesn't account for child widgets.
   // Note that this does not work correctly for mac PWA windows, as those are
   // hosted in a separate application with a stub in the browser process.
-  virtual bool IsActive() = 0;
+  virtual bool IsActive() const = 0;
 
   // Register for these two callbacks to detect changes to IsActive().
   using DidBecomeActiveCallback =

@@ -16,6 +16,7 @@
 #include "base/functional/concurrent_closures.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -697,16 +698,16 @@ std::vector<std::string> AiDataKeyedService::GetAllowlistedExtensions() {
   std::vector<std::string> allowlisted_extensions =
       base::SplitString(kAllowlistedExtensions.Get(), ",",
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  static const std::vector<std::string> kHardcodedAllowlistedExtensions = {
-      // https://issues.chromium.org/373645534
-      "hpkopmikdojpadgmioifjjodbmnjjjca",
-      // https://issues.chromium.org/377129777
-      "bgbpcgpcobgjpnpiginpidndjpggappi",
-      // https://issues.chromium.org/376699519
-      "eefninhhiifgcimjkmkongegpoaikmhm"};
+  static const base::NoDestructor<std::vector<std::string>>
+      kHardcodedAllowlistedExtensions({// https://issues.chromium.org/373645534
+                                       "hpkopmikdojpadgmioifjjodbmnjjjca",
+                                       // https://issues.chromium.org/377129777
+                                       "bgbpcgpcobgjpnpiginpidndjpggappi",
+                                       // https://issues.chromium.org/376699519
+                                       "eefninhhiifgcimjkmkongegpoaikmhm"});
   allowlisted_extensions.insert(allowlisted_extensions.end(),
-                                kHardcodedAllowlistedExtensions.begin(),
-                                kHardcodedAllowlistedExtensions.end());
+                                kHardcodedAllowlistedExtensions->begin(),
+                                kHardcodedAllowlistedExtensions->end());
   std::vector<std::string> blocklisted_extensions =
       base::SplitString(kBlocklistedExtensions.Get(), ",",
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);

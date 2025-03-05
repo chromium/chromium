@@ -1690,24 +1690,6 @@
             ]
         }
     ],
-    "AutofillDisableLocalCardMigration": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillDisableLocalCardMigration"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillDynamicallyLoadsFieldsForAddressInput": [
         {
             "platforms": [
@@ -6066,6 +6048,45 @@
                     "enable_features": [
                         "IPH_PriceInsightsPageActionIconLabelFeature",
                         "PriceInsights"
+                    ]
+                }
+            ]
+        }
+    ],
+    "CommitAvailableMemoryPressureThresholds": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "LowerThresholds",
+                    "params": {
+                        "CommitAvailableCriticalThresholdMB": "100",
+                        "CommitAvailableModerateThresholdMB": "300"
+                    },
+                    "enable_features": [
+                        "CommitAvailableMemoryPressureThresholds"
+                    ]
+                },
+                {
+                    "name": "MediumThresholds",
+                    "params": {
+                        "CommitAvailableCriticalThresholdMB": "300",
+                        "CommitAvailableModerateThresholdMB": "750"
+                    },
+                    "enable_features": [
+                        "CommitAvailableMemoryPressureThresholds"
+                    ]
+                },
+                {
+                    "name": "HigherThresholds",
+                    "params": {
+                        "CommitAvailableCriticalThresholdMB": "400",
+                        "CommitAvailableModerateThresholdMB": "1000"
+                    },
+                    "enable_features": [
+                        "CommitAvailableMemoryPressureThresholds"
                     ]
                 }
             ]
@@ -11520,6 +11541,26 @@
             ]
         }
     ],
+    "HstsTopLevelNavigationsOnly": [
+        {
+            "platforms": [
+                "android_webview",
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HstsTopLevelNavigationsOnly"
+                    ]
+                }
+            ]
+        }
+    ],
     "HttpCacheNoVarySearch": [
         {
             "platforms": [
@@ -12118,21 +12159,6 @@
                     "name": "IOSInterruptibleCoordinatorAlwaysDismissed",
                     "enable_features": [
                         "IOSInterruptibleCoordinatorAlwaysDismissed"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSInterruptibleCoordinatorStoppedSynchronously": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "IOSInterruptibleCoordinatorStoppedSynchronously",
-                    "enable_features": [
-                        "IOSInterruptibleCoordinatorStoppedSynchronously"
                     ]
                 }
             ]

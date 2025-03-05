@@ -288,6 +288,12 @@ void CollectNPUInformation(GPUInfo* gpu_info) {
         device.luid =
             CHROME_LUID{instance_luid.LowPart, instance_luid.HighPart};
       }
+      char* driver_description = nullptr;
+      if (SUCCEEDED(dxcore_adapter->GetProperty(
+              DXCoreAdapterProperty::DriverDescription, &driver_description))) {
+        CHECK(driver_description);
+        device.device_string = std::string(driver_description);
+      }
       gpu_info->npus.push_back(device);
     }
   }

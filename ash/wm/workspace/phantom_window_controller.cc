@@ -227,7 +227,7 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreatePhantomWidget(
 
   phantom_widget->SetContentsView(
       views::Builder<views::View>()
-          .SetBackground(views::CreateThemedRoundedRectBackground(
+          .SetBackground(views::CreateRoundedRectBackground(
               kColorAshPhantomWindowBackgroundColor,
               kPhantomWindowCornerRadius))
           .SetBorder(std::make_unique<views::HighlightBorder>(
@@ -270,7 +270,7 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreateMaximizeCue(
           .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
           .SetInsideBorderInsets(gfx::Insets::VH(kMaximizeCueVerticalInsets,
                                                  kMaximizeCueHorizontalInsets))
-          .SetBackground(views::CreateThemedRoundedRectBackground(
+          .SetBackground(views::CreateRoundedRectBackground(
               kColorAshShieldAndBase20, kPhantomWindowCornerRadius))
           .SetBorder(std::make_unique<views::HighlightBorder>(
               kPhantomWindowCornerRadius,

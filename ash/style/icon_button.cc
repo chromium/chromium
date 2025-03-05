@@ -181,15 +181,15 @@ bool IsProminentFloatingType(IconButton::Type type) {
 std::unique_ptr<views::Background> CreateThemedBackground(
     ui::ColorId color_id,
     IconButton::Type type) {
-  return views::CreateThemedRoundedRectBackground(
-      color_id, GetButtonSizeOnType(type) / 2);
+  return views::CreateRoundedRectBackground(color_id,
+                                            GetButtonSizeOnType(type) / 2);
 }
 
 // Create a solid color fully rounded rect background for icon button.
 std::unique_ptr<views::Background> CreateSolidBackground(
     ui::ColorVariant color,
     IconButton::Type type) {
-  return views::CreateSolidOrThemedRoundedRectBackground(
+  return views::CreateRoundedRectBackground(
       color, gfx::RoundedCornersF(GetButtonSizeOnType(type) / 2));
 }
 

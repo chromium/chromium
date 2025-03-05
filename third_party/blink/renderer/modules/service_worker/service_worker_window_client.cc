@@ -6,7 +6,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_visibility_state.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -34,8 +33,8 @@ void DidFocus(ScriptPromiseResolver<ServiceWorkerWindowClient>* resolver,
     case mojom::blink::FocusResult::Tag::kErrorCode: {
       switch (result->get_error_code()) {
         case mojom::blink::FocusError::CLIENT_NOT_FOUND:
-          resolver->Reject(ServiceWorkerError::GetException(
-              resolver, mojom::blink::ServiceWorkerErrorType::kNotFound,
+          resolver->Reject(ServiceWorkerError::AsException(
+              mojom::blink::ServiceWorkerErrorType::kNotFound,
               "The client was not found."));
           return;
 

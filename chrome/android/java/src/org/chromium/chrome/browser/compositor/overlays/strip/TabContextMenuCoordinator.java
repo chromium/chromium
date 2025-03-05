@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
 import org.chromium.chrome.tab_ui.R;
@@ -53,6 +54,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
     private TabContextMenuCoordinator(
             Supplier<TabModel> tabModelSupplier,
             TabGroupModelFilter tabGroupModelFilter,
+            TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
             ShareDelegate shareDelegate,
             ActionConfirmationManager actionConfirmationManager,
             ModalDialogManager modalDialogManager,
@@ -66,6 +68,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                         windowAndroid.getActivity().get(),
                         tabModelSupplier,
                         tabGroupModelFilter,
+                        tabGroupListBottomSheetCoordinator,
                         shareDelegate,
                         actionConfirmationManager,
                         modalDialogManager,
@@ -82,6 +85,10 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
      *
      * @param tabModel The tab model.
      * @param tabGroupModelFilter The {@link TabGroupModelFilter} to act on.
+     * @param tabGroupListBottomSheetCoordinator The {@link TabGroupListBottomSheetCoordinator} that
+     *     will be used to show a bottom sheet when the user selects the "Add to group" option.
+     * @param shareDelegate The {@link ShareDelegate} that will be used to share the tab's URL when
+     *     the user selects the "Share" option.
      * @param actionConfirmationManager Used to show a confirmation dialog.
      * @param windowAndroid The {@link WindowAndroid} current window.
      * @param dataSharingTabManager The {@link DataSharingTabManager} managing communication between
@@ -90,6 +97,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
     public static TabContextMenuCoordinator createContextMenuCoordinator(
             TabModel tabModel,
             TabGroupModelFilter tabGroupModelFilter,
+            TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
             ShareDelegate shareDelegate,
             ActionConfirmationManager actionConfirmationManager,
             ModalDialogManager modalDialogManager,
@@ -106,6 +114,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
         return new TabContextMenuCoordinator(
                 () -> tabModel,
                 tabGroupModelFilter,
+                tabGroupListBottomSheetCoordinator,
                 shareDelegate,
                 actionConfirmationManager,
                 modalDialogManager,
@@ -120,6 +129,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
             Activity activity,
             Supplier<TabModel> tabModelSupplier,
             TabGroupModelFilter tabGroupModelFilter,
+            TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
             ShareDelegate shareDelegate,
             ActionConfirmationManager actionConfirmationManager,
             ModalDialogManager modalDialogManager,
@@ -129,8 +139,8 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
             Tab tab = tabModelSupplier.get().getTabById(tabId);
             if (tab == null) return;
 
-            // TODO(crbug.com/397249431): Implement menu actions.
             if (menuId == R.id.add_to_tab_group) {
+                tabGroupListBottomSheetCoordinator.showBottomSheet(List.of(tab));
                 recordUserAction("AddToTabGroup");
             } else if (menuId == R.id.remove_from_tab_group) {
                 tabGroupModelFilter
@@ -174,7 +184,6 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
         var tab = mTabModelSupplier.get().getTabById(id);
         if (tab == null) return;
 
-        // TODO(crbug.com/398042939): Add items to the tab context menu under the correct conditions
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItem(
                         R.string.add_tab_to_group, R.id.add_to_tab_group, /* startIconId= */ 0));

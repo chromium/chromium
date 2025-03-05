@@ -150,7 +150,7 @@ CandidateView::CandidateView(PressedCallback callback,
   if (orientation == ui::CandidateWindow::VERTICAL) {
     infolist_icon_ =
         AddChildView(views::Builder<views::View>()
-                         .SetBackground(views::CreateThemedSolidBackground(
+                         .SetBackground(views::CreateSolidBackground(
                              ui::kColorFocusableBorderFocused))
                          .Build());
   }
@@ -202,8 +202,8 @@ void CandidateView::SetHighlighted(bool highlighted) {
 
   highlighted_ = highlighted;
   if (highlighted) {
-    SetBackground(views::CreateThemedSolidBackground(
-        ui::kColorTextfieldSelectionBackground));
+    SetBackground(
+        views::CreateSolidBackground(ui::kColorTextfieldSelectionBackground));
     SetBorder(
         views::CreateThemedSolidBorder(1, ui::kColorFocusableBorderFocused));
 

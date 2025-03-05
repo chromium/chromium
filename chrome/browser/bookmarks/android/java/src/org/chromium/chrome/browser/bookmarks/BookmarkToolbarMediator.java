@@ -79,6 +79,7 @@ class BookmarkToolbarMediator
     private final Runnable mEndSearchRunnable;
     private final BookmarkMoveSnackbarManager mBookmarkMoveSnackbarManager;
     private final BooleanSupplier mIncognitoEnabledSupplier;
+    private final BookmarkManagerOpener mBookmarkManagerOpener;
 
     // TODO(crbug.com/40255666): Remove reference to BookmarkDelegate if possible.
     private @Nullable BookmarkDelegate mBookmarkDelegate;
@@ -99,7 +100,8 @@ class BookmarkToolbarMediator
             BookmarkAddNewFolderCoordinator bookmarkAddNewFolderCoordinator,
             Runnable endSearchRunnable,
             BookmarkMoveSnackbarManager bookmarkMoveSnackbarManager,
-            BooleanSupplier incognitoEnabledSupplier) {
+            BooleanSupplier incognitoEnabledSupplier,
+            BookmarkManagerOpener bookmarkManagerOpener) {
         mContext = context;
         mProfile = profile;
         mModel = model;
@@ -117,6 +119,7 @@ class BookmarkToolbarMediator
         mEndSearchRunnable = endSearchRunnable;
         mBookmarkMoveSnackbarManager = bookmarkMoveSnackbarManager;
         mIncognitoEnabledSupplier = incognitoEnabledSupplier;
+        mBookmarkManagerOpener = bookmarkManagerOpener;
 
         mModel.set(BookmarkToolbarProperties.SORT_MENU_IDS, SORT_MENU_IDS);
         mModel.set(
@@ -186,22 +189,22 @@ class BookmarkToolbarMediator
             mModel.set(BookmarkToolbarProperties.CHECKED_VIEW_MENU_ID, id);
             return true;
         } else if (id == R.id.edit_menu_id) {
-            BookmarkUtils.startEditActivity(mContext, mProfile, mCurrentFolder);
+            mBookmarkManagerOpener.startEditActivity(mContext, mProfile, mCurrentFolder);
             return true;
         } else if (id == R.id.close_menu_id) {
-            BookmarkUtils.finishActivityOnPhone(mContext);
+            mBookmarkManagerOpener.finishActivityOnPhone(mContext);
             return true;
         } else if (id == R.id.selection_mode_edit_menu_id) {
             List<BookmarkId> list = mSelectionDelegate.getSelectedItemsAsList();
             assert list.size() == 1;
             BookmarkItem item = mBookmarkModel.getBookmarkById(list.get(0));
-            BookmarkUtils.startEditActivity(mContext, mProfile, item.getId());
+            mBookmarkManagerOpener.startEditActivity(mContext, mProfile, item.getId());
             return true;
         } else if (id == R.id.selection_mode_move_menu_id) {
             List<BookmarkId> list = mSelectionDelegate.getSelectedItemsAsList();
             if (list.size() >= 1) {
                 mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(
-                        list.toArray(new BookmarkId[0]));
+                        mBookmarkManagerOpener, list.toArray(new BookmarkId[0]));
                 RecordUserAction.record("MobileBookmarkManagerMoveToFolderBulk");
             }
             return true;

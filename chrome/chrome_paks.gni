@@ -4,7 +4,6 @@
 
 import("//ash/ambient/resources/resources.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/locales.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
@@ -70,7 +69,7 @@ template("chrome_repack_percent") {
         "//ui/views/resources",
       ]
     }
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       sources += [
         "$root_gen_dir/ash/login/resources/login_resources_${percent}_percent.pak",
         "$root_gen_dir/chrome/chromeos_app_icon_resources_${percent}_percent.pak",
@@ -247,7 +246,7 @@ template("chrome_extra_paks") {
         deps += [ "//chrome/browser/resources/settings_shared:resources" ]
       }
     }
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       sources += [
         "$root_gen_dir/ash/public/cpp/resources/ash_public_unscaled_resources.pak",
         "$root_gen_dir/ash/quick_insert/resources/quick_insert_resources.pak",
@@ -298,10 +297,12 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/bluetooth_pairing_dialog_resources.pak",
         "$root_gen_dir/chrome/borealis_installer_resources.pak",
         "$root_gen_dir/chrome/cloud_upload_resources.pak",
+        "$root_gen_dir/chrome/common/chromeos/extensions/chromeos_system_extensions_resources.pak",
         "$root_gen_dir/chrome/cros_styles_resources.pak",
         "$root_gen_dir/chrome/crostini_installer_resources.pak",
         "$root_gen_dir/chrome/crostini_upgrader_resources.pak",
         "$root_gen_dir/chrome/desk_api_resources.pak",
+        "$root_gen_dir/chrome/dlp_internals_resources.pak",
         "$root_gen_dir/chrome/edu_coexistence_resources.pak",
         "$root_gen_dir/chrome/emoji_picker_resources.pak",
         "$root_gen_dir/chrome/enterprise_reporting_resources.pak",
@@ -310,6 +311,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/healthd_internals_resources.pak",
         "$root_gen_dir/chrome/internet_config_dialog_resources.pak",
         "$root_gen_dir/chrome/internet_detail_dialog_resources.pak",
+        "$root_gen_dir/chrome/kerberos_resources.pak",
         "$root_gen_dir/chrome/launcher_internals_resources.pak",
         "$root_gen_dir/chrome/lock_screen_reauth_resources.pak",
         "$root_gen_dir/chrome/manage_mirrorsync_resources.pak",
@@ -320,6 +322,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/network_ui_resources.pak",
         "$root_gen_dir/chrome/notification_tester_resources.pak",
         "$root_gen_dir/chrome/office_fallback_resources.pak",
+        "$root_gen_dir/chrome/office_web_app_resources.pak",
         "$root_gen_dir/chrome/oobe_resources.pak",
         "$root_gen_dir/chrome/orca_resources.pak",
         "$root_gen_dir/chrome/os_settings_resources.pak",
@@ -393,6 +396,10 @@ template("chrome_extra_paks") {
         "//ash/webui/status_area_internals/resources:resources",
         "//ash/webui/vc_background_ui/resources:resources",
         "//ash/wm/overview/birch/resources:coral_resources",
+        "//chrome/browser/resources:office_web_app_resources",
+        "//chrome/browser/resources/chromeos/dlp_internals:resources",
+        "//chrome/browser/resources/chromeos/kerberos:resources",
+        "//chrome/common/chromeos/extensions:resources",
         "//chromeos/ash/components/emoji:resources",
         "//chromeos/ash/components/kiosk/vision/webui:resources",
         "//chromeos/ash/experiences/arc/input_overlay/resources",
@@ -418,21 +425,7 @@ template("chrome_extra_paks") {
         deps += [ "//ash/ambient/resources:lottie_resources" ]
       }
     }
-    if (is_chromeos) {
-      sources += [
-        "$root_gen_dir/chrome/common/chromeos/extensions/chromeos_system_extensions_resources.pak",
-        "$root_gen_dir/chrome/dlp_internals_resources.pak",
-        "$root_gen_dir/chrome/kerberos_resources.pak",
-        "$root_gen_dir/chrome/office_web_app_resources.pak",
-      ]
-      deps += [
-        "//chrome/browser/resources:office_web_app_resources",
-        "//chrome/browser/resources/chromeos/dlp_internals:resources",
-        "//chrome/browser/resources/chromeos/kerberos:resources",
-        "//chrome/common/chromeos/extensions:resources",
-      ]
-    }
-    if (!is_android && !is_chromeos_ash) {
+    if (!is_android && !is_chromeos) {
       sources += [
         "$root_gen_dir/chrome/intro_resources.pak",
         "$root_gen_dir/chrome/profile_picker_resources.pak",
@@ -460,19 +453,20 @@ template("chrome_extra_paks") {
       ]
     }
 
-    if (is_win || is_mac || is_linux || is_chromeos_ash) {
-      sources += [ "$root_gen_dir/chrome/connectors_internals_resources.pak" ]
-      deps += [ "//chrome/browser/resources/connectors_internals:resources" ]
+    if (is_win || is_mac || is_linux || is_chromeos) {
+      sources += [
+        "$root_gen_dir/chrome/connectors_internals_resources.pak",
+        "$root_gen_dir/chrome/discards_resources.pak",
+      ]
+      deps += [
+        "//chrome/browser/resources/connectors_internals:resources",
+        "//chrome/browser/resources/discards:resources",
+      ]
     }
 
     if (is_win || is_mac || is_linux) {
       sources += [ "$root_gen_dir/chrome/browser_switch_resources.pak" ]
       deps += [ "//chrome/browser/resources/browser_switch:resources" ]
-    }
-
-    if (is_win || is_mac || is_linux || is_chromeos) {
-      sources += [ "$root_gen_dir/chrome/discards_resources.pak" ]
-      deps += [ "//chrome/browser/resources/discards:resources" ]
     }
 
     if (!is_android) {

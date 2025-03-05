@@ -33,6 +33,7 @@
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_utils.h"
 #include "third_party/tflite/src/tensorflow/compiler/mlir/lite/schema/schema_generated.h"
+#include "third_party/tflite/src/tensorflow/compiler/mlir/lite/tools/optimize/reduced_precision_metadata.h"
 
 namespace webnn::tflite {
 
@@ -365,12 +366,18 @@ GraphBuilderTflite::CreateAndBuild(
   GraphBuilderTflite builder(std::move(context_properties), graph_info,
                              constant_operands);
 
+  bool graph_requires_fp32_precision = false;
   for (const mojom::OperationPtr& operation : graph_info.operations) {
+    if (!graph_requires_fp32_precision &&
+        builder.RequiresFloat32Precision(*operation)) {
+      graph_requires_fp32_precision = true;
+    }
     RETURN_IF_ERROR(builder.SerializeOperation(*operation));
   }
 
   return builder.FinishAndTakeResult(graph_info.input_operands,
-                                     graph_info.output_operands);
+                                     graph_info.output_operands,
+                                     graph_requires_fp32_precision);
 }
 
 // static
@@ -1100,9 +1107,148 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
   return base::ok();
 }
 
+bool GraphBuilderTflite::RequiresFloat32Precision(const mojom::Operation& op) {
+  uint64_t input_operand_id;
+
+  // Only need to check the first input for operation with multiple inputs,
+  // because they all require to be the same data type.
+  switch (op.which()) {
+    // Ignore `quantizeLinear` and `cast` from float32. A graph is considered a
+    // fp16 graph if it casts input float32 to float16 and performs all
+    // other operations in float16.
+    // Ignore no-op `identity` operation.
+    case mojom::Operation::Tag::kElementWiseUnary: {
+      mojom::ElementWiseUnaryPtr& operation = op.get_element_wise_unary();
+      if (operation->kind == mojom::ElementWiseUnary::Kind::kIdentity ||
+          operation->kind == mojom::ElementWiseUnary::Kind::kCast) {
+        return false;
+      }
+      input_operand_id = operation->input_operand_id;
+      break;
+    }
+    case mojom::Operation::Tag::kQuantizeLinear:
+      return false;
+    // These operations just move data around and don't do arithmetic, so they
+    // don't care about precision.
+    case mojom::Operation::Tag::kConcat:
+    case mojom::Operation::Tag::kExpand:
+    case mojom::Operation::Tag::kGather:
+    case mojom::Operation::Tag::kGatherElements:
+    case mojom::Operation::Tag::kGatherNd:
+    case mojom::Operation::Tag::kPad:
+    case mojom::Operation::Tag::kReshape:
+    case mojom::Operation::Tag::kReverse:
+    case mojom::Operation::Tag::kScatterElements:
+    case mojom::Operation::Tag::kScatterNd:
+    case mojom::Operation::Tag::kSlice:
+    case mojom::Operation::Tag::kSplit:
+    case mojom::Operation::Tag::kTile:
+    case mojom::Operation::Tag::kTranspose:
+    case mojom::Operation::Tag::kTriangular:
+    case mojom::Operation::Tag::kWhere:
+      return false;
+    case mojom::Operation::Tag::kArgMinMax:
+      input_operand_id = op.get_arg_min_max()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kBatchNormalization:
+      input_operand_id = op.get_batch_normalization()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kClamp:
+      input_operand_id = op.get_clamp()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kConv2d:
+      input_operand_id = op.get_conv2d()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kCumulativeSum:
+      input_operand_id = op.get_cumulative_sum()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kDequantizeLinear:
+      input_operand_id = op.get_dequantize_linear()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kElementWiseBinary:
+      input_operand_id = op.get_element_wise_binary()->lhs_operand_id;
+      break;
+    case mojom::Operation::Tag::kElu:
+      input_operand_id = op.get_elu()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kGelu:
+      input_operand_id = op.get_gelu()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kGemm:
+      input_operand_id = op.get_gemm()->a_operand_id;
+      break;
+    case mojom::Operation::Tag::kGru:
+      input_operand_id = op.get_gru()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kGruCell:
+      input_operand_id = op.get_gru_cell()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kHardSigmoid:
+      input_operand_id = op.get_hard_sigmoid()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kHardSwish:
+      input_operand_id = op.get_hard_swish()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kLayerNormalization:
+      input_operand_id = op.get_layer_normalization()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kInstanceNormalization:
+      input_operand_id = op.get_instance_normalization()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kLeakyRelu:
+      input_operand_id = op.get_leaky_relu()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kLinear:
+      input_operand_id = op.get_linear()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kLstm:
+      input_operand_id = op.get_lstm()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kLstmCell:
+      input_operand_id = op.get_lstm_cell()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kMatmul:
+      input_operand_id = op.get_matmul()->a_operand_id;
+      break;
+    case mojom::Operation::Tag::kPool2d:
+      input_operand_id = op.get_pool2d()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kPrelu:
+      input_operand_id = op.get_prelu()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kReduce:
+      input_operand_id = op.get_reduce()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kRelu:
+      input_operand_id = op.get_relu()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kResample2d:
+      input_operand_id = op.get_resample2d()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kSigmoid:
+      input_operand_id = op.get_sigmoid()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kSoftmax:
+      input_operand_id = op.get_softmax()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kSoftplus:
+      input_operand_id = op.get_softplus()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kSoftsign:
+      input_operand_id = op.get_softsign()->input_operand_id;
+      break;
+    case mojom::Operation::Tag::kTanh:
+      input_operand_id = op.get_tanh()->input_operand_id;
+      break;
+  }
+  return (GetOperand(input_operand_id).descriptor.data_type() ==
+          OperandDataType::kFloat32);
+}
+
 auto GraphBuilderTflite::FinishAndTakeResult(
     base::span<const uint64_t> input_operands,
-    base::span<const uint64_t> output_operands) -> Result {
+    base::span<const uint64_t> output_operands,
+    bool graph_requires_fp32_precision) -> Result {
   CHECK(!is_created_model_);
 
   auto get_index = [&](uint64_t operand_id) {
@@ -1155,6 +1301,25 @@ auto GraphBuilderTflite::FinishAndTakeResult(
   StringOffset description =
       builder_.CreateString("TFLite model converted from WebNN Graph");
 
+  std::vector<flatbuffers::Offset<::tflite::Metadata>> metadata;
+  if (!graph_requires_fp32_precision) {
+    const auto precision_mask =
+        ::tflite::optimize::ReducedPrecisionSupport::Float16Inference |
+        ::tflite::optimize::ReducedPrecisionSupport::Float16Accumulation;
+    const std::pair<std::string, std::string> precision_metadata =
+        MetadataForReducedPrecisionSupport(precision_mask);
+    base::span<const uint8_t> metadata_value =
+        base::as_byte_span(precision_metadata.second);
+
+    buffers_.push_back(::tflite::CreateBuffer(
+        builder_,
+        builder_.CreateVector(metadata_value.data(), metadata_value.size())));
+
+    metadata.push_back(::tflite::CreateMetadata(
+        builder_, builder_.CreateString(precision_metadata.first),
+        /*buffer=*/buffers_.size() - 1));
+  }
+
   // The operator codes used in this model are kept in order because operators
   // carry an index into this std::vector.
   // There is only one subgraph in the model. The buffers of the model must be
@@ -1163,7 +1328,9 @@ auto GraphBuilderTflite::FinishAndTakeResult(
       builder_, TFLITE_SCHEMA_VERSION,
       builder_.CreateVector(operator_codes_.data(), operator_codes_.size()),
       builder_.CreateVector(&subgraph, 1), description,
-      builder_.CreateVector(buffers_.data(), buffers_.size()));
+      builder_.CreateVector(buffers_.data(), buffers_.size()),
+      /*metadata_buffer=*/0,  // deprecated, metadata buffer is in `buffers_`.
+      builder_.CreateVector(metadata));
 
   ::tflite::FinishModelBuffer(builder_, model_buffer);
   is_created_model_ = true;

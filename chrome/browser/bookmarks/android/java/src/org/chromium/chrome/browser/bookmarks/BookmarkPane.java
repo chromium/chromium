@@ -145,7 +145,7 @@ public class BookmarkPane implements Pane {
                             originalProfile,
                             new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()),
                             mBookmarkOpener,
-                            componentName);
+                            new BookmarkManagerOpenerImpl());
             mBookmarkManager.updateForUrl(UrlConstants.BOOKMARKS_URL);
             mRootView.addView(mBookmarkManager.getView());
         } else if (loadHint == LoadHint.COLD) {

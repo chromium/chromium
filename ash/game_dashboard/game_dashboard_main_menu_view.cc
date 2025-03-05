@@ -258,7 +258,7 @@ views::BoxLayout* ConfigureFeatureRowLayout(views::Button* button,
       views::BoxLayout::CrossAxisAlignment::kCenter);
   button->SetNotifyEnterExitOnChild(true);
   button->SetEnabled(enabled);
-  button->SetBackground(views::CreateThemedRoundedRectBackground(
+  button->SetBackground(views::CreateRoundedRectBackground(
       enabled ? cros_tokens::kCrosSysSystemOnBase
               : cros_tokens::kCrosSysSystemOnBaseOpaque,
       corners));
@@ -307,9 +307,9 @@ class FeatureHeader : public views::View {
 
     // Add icon.
     icon_view_ = AddChildView(std::make_unique<views::ImageView>());
-    icon_view_->SetBackground(views::CreateThemedRoundedRectBackground(
-        cros_tokens::kCrosSysSystemOnBase,
-        /*radius=*/12.0f));
+    icon_view_->SetBackground(
+        views::CreateRoundedRectBackground(cros_tokens::kCrosSysSystemOnBase,
+                                           /*radius=*/12.0f));
     icon_view_->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(6, 6)));
     icon_view_->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, 16));
 
@@ -632,7 +632,7 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
   }
 
   void UpdateColors(bool enabled) {
-    SetBackground(views::CreateThemedRoundedRectBackground(
+    SetBackground(views::CreateRoundedRectBackground(
         enabled ? cros_tokens::kCrosSysSystemOnBase
                 : cros_tokens::kCrosSysSystemOnBaseOpaque,
         kTopMultiRowCorners));
@@ -1360,16 +1360,15 @@ void GameDashboardMainMenuView::AddWelcomeDialogSettingsRow() {
   welcome_settings_container->SetOrientation(
       views::BoxLayout::Orientation::kHorizontal);
   welcome_settings_container->SetInsideBorderInsets(gfx::Insets::VH(16, 16));
-  welcome_settings_container->SetBackground(
-      views::CreateThemedRoundedRectBackground(
-          cros_tokens::kCrosSysSystemOnBase, kBubbleCornerRadius));
+  welcome_settings_container->SetBackground(views::CreateRoundedRectBackground(
+      cros_tokens::kCrosSysSystemOnBase, kBubbleCornerRadius));
 
   // Add icon.
   auto* icon_container = welcome_settings_container->AddChildView(
       std::make_unique<views::FlexLayoutView>());
-  icon_container->SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemOnBase,
-      /*radius=*/12.0f));
+  icon_container->SetBackground(
+      views::CreateRoundedRectBackground(cros_tokens::kCrosSysSystemOnBase,
+                                         /*radius=*/12.0f));
   icon_container->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(6, 6)));
   icon_container->SetProperty(views::kMarginsKey,
                               gfx::Insets::TLBR(0, 0, 0, 16));

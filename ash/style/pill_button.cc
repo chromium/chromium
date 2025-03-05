@@ -259,7 +259,7 @@ void PillButton::UpdateBackgroundColor() {
   if (enable_background_blur_) {
     blurred_background_->SetColor(background_color);
   } else {
-    SetBackground(views::CreateSolidOrThemedRoundedRectBackground(
+    SetBackground(views::CreateRoundedRectBackground(
         background_color, gfx::RoundedCornersF(corner_radius)));
   }
 }

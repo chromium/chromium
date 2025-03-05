@@ -348,7 +348,6 @@ android_library("chrome_java_integration_test_support") {
     "javatests/src/org/chromium/chrome/test/ReducedModeNativeTestRule.java",
     "javatests/src/org/chromium/chrome/test/TestContentProvider.java",
     "javatests/src/org/chromium/chrome/test/batch/BlankCTATabInitialStateRule.java",
-    "javatests/src/org/chromium/chrome/test/gcore/MockChromeGoogleApiClient.java",
     "javatests/src/org/chromium/chrome/test/invalidation/IntentSavingContext.java",
     "javatests/src/org/chromium/chrome/test/util/BookmarkTestRule.java",
     "javatests/src/org/chromium/chrome/test/util/BookmarkTestUtil.java",

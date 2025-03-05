@@ -146,7 +146,8 @@ TEST_P(Mp4MuxerTest, ForwardsFrames) {
   }
   if (GetParam().has_video) {
     Muxer::VideoParameters video_params(gfx::Size(40, 30), 30,
-                                        VideoCodec::kH264, gfx::ColorSpace());
+                                        VideoCodec::kH264, gfx::ColorSpace(),
+                                        media::kNoTransformation);
     std::string str1 = "v1";
     std::string str2 = "v2";
     EXPECT_CALL(
@@ -178,7 +179,8 @@ TEST_P(Mp4MuxerTest, DoesntFlushOnInsufficientlySpacedFrames) {
   }
   CreateMuxer(base::Seconds(2));
   Muxer::VideoParameters video_params(gfx::Size(40, 30), 30, VideoCodec::kH264,
-                                      gfx::ColorSpace());
+                                      gfx::ColorSpace(),
+                                      media::kNoTransformation);
   auto buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span("v1"));
   buffer->set_is_key_frame(true);
   muxer_->PutFrame(
@@ -208,7 +210,8 @@ TEST_P(Mp4MuxerTest, FlushesOnSufficientlySpacedFramesForVideo) {
   }
   CreateMuxer(base::Seconds(2));
   Muxer::VideoParameters video_params(gfx::Size(40, 30), 30, VideoCodec::kH264,
-                                      gfx::ColorSpace());
+                                      gfx::ColorSpace(),
+                                      media::kNoTransformation);
   auto buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span("v1"));
   buffer->set_is_key_frame(true);
   muxer_->PutFrame(

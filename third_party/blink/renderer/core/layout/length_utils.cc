@@ -52,8 +52,18 @@ LayoutUnit ResolveInlineLengthInternal(
       }
       DCHECK_GE(available_size, LayoutUnit());
       const BoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
+      LayoutUnit margins_to_subtract = margins.InlineSum();
+      if (length.GetType() == Length::kStretch) [[unlikely]] {
+        const LogicalBoxSides& ignore_margin_sides =
+            constraint_space.IgnoreMarginsForStretch();
+        margins_to_subtract = ignore_margin_sides.inline_start
+                                  ? LayoutUnit()
+                                  : margins.inline_start;
+        margins_to_subtract +=
+            ignore_margin_sides.inline_end ? LayoutUnit() : margins.inline_end;
+      }
       return std::max(border_padding.InlineSum(),
-                      available_size - margins.InlineSum());
+                      available_size - margins_to_subtract);
     }
     case Length::kPercent:
     case Length::kFixed:
@@ -167,12 +177,19 @@ LayoutUnit ResolveBlockLengthInternal(
                    : kIndefiniteSize;
       }
       DCHECK_GE(available_size, LayoutUnit());
-      // TODO(https://crbug.com/41253915): This is where 'stretch' and
-      // '-webkit-fill-available' will be different. We won't always subtract
-      // both margins for 'stretch'.
       const BoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
+      LayoutUnit margins_to_subtract = margins.BlockSum();
+      if (length.GetType() == Length::kStretch) [[unlikely]] {
+        const LogicalBoxSides& ignore_margin_sides =
+            constraint_space.IgnoreMarginsForStretch();
+        margins_to_subtract = ignore_margin_sides.block_start
+                                  ? LayoutUnit()
+                                  : margins.block_start;
+        margins_to_subtract +=
+            ignore_margin_sides.block_end ? LayoutUnit() : margins.block_end;
+      }
       return std::max(border_padding.BlockSum(),
-                      available_size - margins.BlockSum());
+                      available_size - margins_to_subtract);
     }
     case Length::kPercent:
     case Length::kFixed:

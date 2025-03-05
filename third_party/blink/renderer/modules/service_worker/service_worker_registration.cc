@@ -39,16 +39,15 @@ void DidUpdate(ScriptPromiseResolver<ServiceWorkerRegistration>* resolver,
                ServiceWorkerRegistration* registration,
                mojom::ServiceWorkerErrorType error,
                const String& error_msg) {
-  if (!resolver->GetExecutionContext() ||
-      resolver->GetExecutionContext()->IsContextDestroyed()) {
+  if (!resolver->GetExecutionContext()) {
     return;
   }
 
+  ScriptState::Scope scope(resolver->GetScriptState());
   if (error != mojom::ServiceWorkerErrorType::kNone) {
     DCHECK(!error_msg.IsNull());
-    ScriptState::Scope scope(resolver->GetScriptState());
-    resolver->Reject(ServiceWorkerErrorForUpdate::Take(
-        resolver, WebServiceWorkerError(error, error_msg)));
+    resolver->Reject(ServiceWorkerErrorForUpdate::AsJSException(
+        resolver->GetScriptState(), error, error_msg));
     return;
   }
   resolver->Resolve(registration);
@@ -65,8 +64,7 @@ void DidUnregister(ScriptPromiseResolver<IDLBoolean>* resolver,
   if (error != mojom::ServiceWorkerErrorType::kNone &&
       error != mojom::ServiceWorkerErrorType::kNotFound) {
     DCHECK(!error_msg.IsNull());
-    resolver->Reject(
-        ServiceWorkerError::GetException(resolver, error, error_msg));
+    resolver->Reject(ServiceWorkerError::AsException(error, error_msg));
     return;
   }
   resolver->Resolve(error == mojom::ServiceWorkerErrorType::kNone);
@@ -82,8 +80,7 @@ void DidEnableNavigationPreload(ScriptPromiseResolver<IDLUndefined>* resolver,
 
   if (error != mojom::ServiceWorkerErrorType::kNone) {
     DCHECK(!error_msg.IsNull());
-    resolver->Reject(
-        ServiceWorkerError::GetException(resolver, error, error_msg));
+    resolver->Reject(ServiceWorkerError::AsException(error, error_msg));
     return;
   }
   resolver->Resolve();
@@ -101,8 +98,7 @@ void DidGetNavigationPreloadState(
 
   if (error != mojom::ServiceWorkerErrorType::kNone) {
     DCHECK(!error_msg.IsNull());
-    resolver->Reject(
-        ServiceWorkerError::GetException(resolver, error, error_msg));
+    resolver->Reject(ServiceWorkerError::AsException(error, error_msg));
     return;
   }
   NavigationPreloadState* dict = NavigationPreloadState::Create();
@@ -122,22 +118,13 @@ void DidSetNavigationPreloadHeader(
 
   if (error != mojom::ServiceWorkerErrorType::kNone) {
     DCHECK(!error_msg.IsNull());
-    resolver->Reject(
-        ServiceWorkerError::GetException(resolver, error, error_msg));
+    resolver->Reject(ServiceWorkerError::AsException(error, error_msg));
     return;
   }
   resolver->Resolve();
 }
 
 }  // namespace
-
-ServiceWorkerRegistration* ServiceWorkerRegistration::Take(
-    ScriptPromiseResolverBase* resolver,
-    WebServiceWorkerRegistrationObjectInfo info) {
-  return ServiceWorkerContainer::From(
-             *To<LocalDOMWindow>(resolver->GetExecutionContext()))
-      ->GetOrCreateServiceWorkerRegistration(std::move(info));
-}
 
 ServiceWorkerRegistration::ServiceWorkerRegistration(
     ExecutionContext* execution_context,

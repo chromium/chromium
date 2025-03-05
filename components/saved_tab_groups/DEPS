@@ -1,4 +1,7 @@
 include_rules = [
+  "+components/data_sharing/public/logger.h",
+  "+components/data_sharing/public/logger_utils.h",
+  "+components/data_sharing/public/logger_common.mojom.h",
   "+components/keyed_service",
   "+components/optimization_guide",
   "+components/prefs",

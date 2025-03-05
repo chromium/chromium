@@ -53,8 +53,8 @@ LockedTpmMessageView::LockedTpmMessageView() {
   SetPreferredSize(gfx::Size(kWidthDp, kHeightDp));
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      kColorAshShieldAndBaseOpaque, kRoundedCornerRadiusDp, 0));
+  SetBackground(views::CreateRoundedRectBackground(kColorAshShieldAndBaseOpaque,
+                                                   kRoundedCornerRadiusDp, 0));
 
   message_icon_ = AddChildView(std::make_unique<views::ImageView>());
   message_icon_->SetImage(ui::ImageModel::FromVectorIcon(

@@ -76,6 +76,11 @@ component("platform") {
     "inspect/ax_tree_indexer.h",
   ]
 
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   deps = [
     "//ui/strings:auto_image_annotation_strings",
     "//ui/strings:ax_strings",

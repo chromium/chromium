@@ -195,7 +195,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
       chromeos::features::IsSystemBlurEnabled()
           ? cros_tokens::kCrosSysSystemBaseElevated
           : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       background_color_id, kPinRequestViewRoundedCornerRadiusDp));
 
   SetBorder(std::make_unique<views::HighlightBorder>(

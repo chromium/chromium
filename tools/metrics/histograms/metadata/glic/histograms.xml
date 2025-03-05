@@ -32,6 +32,48 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Api.RequestCounts.{ApiRequestType}"
+    enum="GlicRequestEvent" expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <summary>
+    Recorded whenever a glic API request event has occurred. See
+    GlicRequestEvent.
+  </summary>
+<!-- LINT.IfChange(ApiRequestType) -->
+
+  <token key="ApiRequestType">
+    <variant name="AttachPanel"/>
+    <variant name="CaptureScreenshot"/>
+    <variant name="ClosePanel"/>
+    <variant name="CreateTab"/>
+    <variant name="DetachPanel"/>
+    <variant name="GetContextFromFocusedTab"/>
+    <variant name="GetUserProfileInfo"/>
+    <variant name="OnResponseRated"/>
+    <variant name="OnResponseStarted"/>
+    <variant name="OnResponseStopped"/>
+    <variant name="OnSessionTerminated"/>
+    <variant name="OnUserInputSubmitted"/>
+    <variant name="OpenGlicSettingsPage"/>
+    <variant name="RefreshSignInCookies"/>
+    <variant name="ResizeWindow"/>
+    <variant name="ScrollTo"/>
+    <variant name="SetAudioDucking"/>
+    <variant name="SetContextAccessIndicator"/>
+    <variant name="SetLocationPermissionState"/>
+    <variant name="SetMicrophonePermissionState"/>
+    <variant name="SetSyntheticExperimentState"/>
+    <variant name="SetTabContextPermissionState"/>
+    <variant name="SetWindowDraggableAreas"/>
+    <variant name="ShowProfilePicker"/>
+    <variant name="WebClientCreated"/>
+    <variant name="WebClientInitialized"/>
+  </token>
+<!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/request_types.ts:ApiRequestType) -->
+
+</histogram>
+
 <histogram name="Glic.ChromeClient.MultiProfileSyntheticTrialConflictDetected"
     enum="BooleanEnabled" expires_after="2026-01-15">
   <owner>birnie@chromium.org</owner>

@@ -369,7 +369,8 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   magic_boost_state_ash_ = std::make_unique<ash::MagicBoostStateAsh>();
 
   read_write_cards_manager_ =
-      std::make_unique<chromeos::ReadWriteCardsManagerImpl>();
+      std::make_unique<chromeos::ReadWriteCardsManagerImpl>(
+          g_browser_process->shared_url_loader_factory());
 
   if (base::FeatureList::IsEnabled(ash::features::kReadaheadForLogin)) {
     login_readahead_performer_.emplace(ash::SessionManagerClient::Get());

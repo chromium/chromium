@@ -540,7 +540,7 @@ std::unique_ptr<views::View> TaskManagerView::CreateSearchBar(
   search_bar_layout->set_cross_axis_alignment(views::LayoutAlignment::kStart);
 
   auto search_bar_container = std::make_unique<views::View>();
-  search_bar_container->SetBackground(views::CreateThemedRoundedRectBackground(
+  search_bar_container->SetBackground(views::CreateRoundedRectBackground(
       kColorTaskManagerSearchBarBackground, search_bar_container_radius));
   search_bar_container->SetLayoutManager(std::move(search_bar_layout));
   const gfx::Size search_bar_size{

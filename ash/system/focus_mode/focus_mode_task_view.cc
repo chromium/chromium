@@ -505,7 +505,7 @@ void FocusModeTaskView::UpdateStyle(bool show_selected_state,
                           : kUnselectedStateBoxInsets));
   textfield_container_->SetBackground(
       show_selected_state ? nullptr
-                          : views::CreateThemedRoundedRectBackground(
+                          : views::CreateRoundedRectBackground(
                                 cros_tokens::kCrosSysInputFieldOnShaded,
                                 kTextfieldCornerRadius));
 

@@ -13,8 +13,8 @@
 #include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/hash/sha1.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_controller_impl.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
@@ -35,12 +35,13 @@ namespace chromeos {
 
 using OptInFeatures = crosapi::mojom::MagicBoostController::OptInFeatures;
 
-ReadWriteCardsManagerImpl::ReadWriteCardsManagerImpl()
+ReadWriteCardsManagerImpl::ReadWriteCardsManagerImpl(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
     : quick_answers_controller_(
           std::make_unique<QuickAnswersControllerImpl>(ui_controller_)) {
   quick_answers_controller_->SetClient(
       std::make_unique<quick_answers::QuickAnswersClient>(
-          g_browser_process->shared_url_loader_factory(),
+          shared_url_loader_factory,
           quick_answers_controller_->GetQuickAnswersDelegate()));
 
   if (chromeos::features::IsOrcaEnabled() ||

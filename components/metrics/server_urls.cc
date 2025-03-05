@@ -13,6 +13,7 @@
 
 #include <string>
 
+#include "base/no_destructor.h"
 #include "components/metrics/grit/metrics_server_urls.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -37,28 +38,30 @@ const char kMetricsMimeType[] = "application/vnd.chrome.uma";
 const char kUkmMimeType[] = "application/vnd.chrome.ukm";
 
 GURL GetMetricsServerUrl() {
-  static const GURL url = GetUrl(IDS_METRICS_SERVER_URL);
-  return url;
+  static const base::NoDestructor<GURL> url(GetUrl(IDS_METRICS_SERVER_URL));
+  return *url;
 }
 
 GURL GetInsecureMetricsServerUrl() {
-  static const GURL url = GetUrl(IDS_INSECURE_METRICS_SERVER_URL);
-  return url;
+  static const base::NoDestructor<GURL> url(
+      GetUrl(IDS_INSECURE_METRICS_SERVER_URL));
+  return *url;
 }
 
 GURL GetCastMetricsServerUrl() {
-  static const GURL url = GetUrl(IDS_CAST_METRICS_SERVER_URL);
-  return url;
+  static const base::NoDestructor<GURL> url(
+      GetUrl(IDS_CAST_METRICS_SERVER_URL));
+  return *url;
 }
 
 GURL GetUkmServerUrl() {
-  static const GURL url = GetUrl(IDS_UKM_SERVER_URL);
-  return url;
+  static const base::NoDestructor<GURL> url(GetUrl(IDS_UKM_SERVER_URL));
+  return *url;
 }
 
 GURL GetDwaServerUrl() {
-  static const GURL url = GetUrl(IDS_DWA_SERVER_URL);
-  return url;
+  static const base::NoDestructor<GURL> url(GetUrl(IDS_DWA_SERVER_URL));
+  return *url;
 }
 
 }  // namespace metrics

@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.creator.CreatorCoordinator;
@@ -106,7 +107,8 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
                             new GURL(url),
                             mSnackbarManager,
                             mProfile,
-                            mBottomSheetController);
+                            mBottomSheetController,
+                            new BookmarkManagerOpenerImpl());
                 });
     }
 

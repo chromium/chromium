@@ -79,5 +79,16 @@ JNI_FeedProcessScopeDependencyProvider_GetExperimentIds(JNIEnv* env) {
   return base::android::ToJavaIntArray(env, experiment_ids);
 }
 
+static base::android::ScopedJavaLocalRef<jbyteArray>
+JNI_FeedProcessScopeDependencyProvider_GetFeedLaunchCuiMetadata(JNIEnv* env) {
+  std::string feed_launch_cui_metadata;
+  FeedService* service = FeedServiceFactory::GetForBrowserContext(
+      ProfileManager::GetLastUsedProfile());
+  if (service) {
+    feed_launch_cui_metadata = service->GetFeedLaunchCuiMetadata();
+  }
+  return base::android::ToJavaByteArray(env, feed_launch_cui_metadata);
+}
+
 }  // namespace android
 }  // namespace feed

@@ -116,7 +116,7 @@ class SectionContainer : public views::BoxLayoutView {
 
     SetOrientation(views::BoxLayout::Orientation::kVertical);
     SetInsideBorderInsets(gfx::Insets::VH(vertical_margin, horizontal_margin));
-    SetBackground(views::CreateThemedRoundedRectBackground(
+    SetBackground(views::CreateRoundedRectBackground(
         kColorExtensionsMenuContainerBackground, kContainerBackgroundRadius));
   }
   SectionContainer(const SectionContainer&) = delete;

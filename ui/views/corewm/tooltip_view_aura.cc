@@ -32,8 +32,7 @@ TooltipViewAura::TooltipViewAura()
   render_text_->SetWordWrapBehavior(gfx::WRAP_LONG_WORDS);
   render_text_->SetMultiline(true);
 
-  SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorTooltipBackground));
+  SetBackground(views::CreateSolidBackground(ui::kColorTooltipBackground));
   SetBorder(views::CreatePaddedBorder(
       views::CreateThemedSolidBorder(kTooltipBorderThickness,
                                      ui::kColorTooltipForeground),

@@ -217,7 +217,7 @@ std::unique_ptr<views::corewm::TooltipViewAura>
 StyleUtil::CreateAshStyleTooltipView() {
   auto tooltip_view = std::make_unique<views::corewm::TooltipViewAura>();
   // Apply ash style background, border, and font.
-  tooltip_view->SetBackground(views::CreateThemedRoundedRectBackground(
+  tooltip_view->SetBackground(views::CreateRoundedRectBackground(
       ui::kColorTooltipBackground, kTooltipRoundedCornerRadius));
   tooltip_view->SetBorder(views::CreateEmptyBorder(kTooltipBorderInset));
   tooltip_view->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(

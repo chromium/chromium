@@ -30,7 +30,7 @@ constexpr int kBadgeCornerRadius = 9;
 ExperimentBadge::ExperimentBadge() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       ui::kColorCrosSysComplementVariant, kBadgeCornerRadius));
 
   label_ = AddChildView(std::make_unique<views::Label>(

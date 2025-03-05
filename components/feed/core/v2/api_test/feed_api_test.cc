@@ -997,6 +997,9 @@ bool FeedApiTest::IsOffline() {
 std::string FeedApiTest::GetCountry() {
   return country_;
 }
+void FeedApiTest::SetFeedLaunchCuiMetadata(const std::string& metadata) {
+  feed_launch_cui_metadata_ = metadata;
+}
 AccountInfo FeedApiTest::GetAccountInfo() {
   return account_info_;
 }

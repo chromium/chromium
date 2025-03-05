@@ -4,10 +4,10 @@
 
 #include "components/update_client/crx_cache.h"
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
-#include <vector>
 
 #include "base/check.h"
 #include "base/files/file_enumerator.h"
@@ -32,7 +32,7 @@ namespace update_client {
 class CrxCacheSynchronous {
  public:
   virtual ~CrxCacheSynchronous() = default;
-  virtual absl::flat_hash_set<std::string> ListHashes() const = 0;
+  virtual std::multimap<std::string, std::string> ListHashesByAppId() const = 0;
   virtual base::expected<base::FilePath, UnpackerError> GetByHash(
       const std::string& hash) const = 0;
   virtual base::expected<base::FilePath, UnpackerError> GetByFp(
@@ -66,7 +66,7 @@ class CrxCacheImpl : public CrxCacheSynchronous {
   ~CrxCacheImpl() override;
 
   // Overrides for CrxCacheSynchronous:
-  absl::flat_hash_set<std::string> ListHashes() const override;
+  std::multimap<std::string, std::string> ListHashesByAppId() const override;
   base::expected<base::FilePath, UnpackerError> GetByHash(
       const std::string& hash) const override;
   base::expected<base::FilePath, UnpackerError> GetByFp(
@@ -126,15 +126,21 @@ CrxCacheImpl::CrxCacheImpl(const base::FilePath& cache_root)
 // Note: `~JsonPrefStore` calls `JsonPrefStore::CommitPendingWrite()`.
 CrxCacheImpl::~CrxCacheImpl() = default;
 
-absl::flat_hash_set<std::string> CrxCacheImpl::ListHashes() const {
+std::multimap<std::string, std::string> CrxCacheImpl::ListHashesByAppId()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  absl::flat_hash_set<std::string> hashes;
+  std::multimap<std::string, std::string> hashes;
   const base::Value* hashes_key = nullptr;
   if (!metadata_->GetValue("hashes", &hashes_key) || !hashes_key->is_dict()) {
     return hashes;
   }
-  for (const auto [key, value] : hashes_key->GetDict()) {
-    hashes.insert(key);
+  for (const auto [hash, value] : hashes_key->GetDict()) {
+    if (value.is_dict()) {
+      const std::string* item_appid = value.GetDict().FindString("appid");
+      if (item_appid) {
+        hashes.insert({*item_appid, hash});
+      }
+    }
   }
   return hashes;
 }
@@ -234,7 +240,7 @@ class CrxCacheError : public CrxCacheSynchronous {
   ~CrxCacheError() override = default;
 
   // Overrides for CrxCache:
-  absl::flat_hash_set<std::string> ListHashes() const override {
+  std::multimap<std::string, std::string> ListHashesByAppId() const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return {};
   }
@@ -276,11 +282,11 @@ CrxCache::CrxCache(std::optional<base::FilePath> path) {
 
 CrxCache::~CrxCache() = default;
 
-void CrxCache::ListHashes(
-    base::OnceCallback<void(const absl::flat_hash_set<std::string>&)> callback)
-    const {
+void CrxCache::ListHashesByAppId(
+    base::OnceCallback<void(const std::multimap<std::string, std::string>&)>
+        callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  delegate_.AsyncCall(&CrxCacheSynchronous::ListHashes)
+  delegate_.AsyncCall(&CrxCacheSynchronous::ListHashesByAppId)
       .Then(std::move(callback));
 }
 

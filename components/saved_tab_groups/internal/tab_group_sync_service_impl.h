@@ -36,6 +36,10 @@
 
 class PrefService;
 
+namespace data_sharing {
+class Logger;
+}  // namespace data_sharing
+
 namespace tab_groups {
 
 struct SyncDataTypeConfiguration;
@@ -56,7 +60,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
       signin::IdentityManager* identity_manager,
-      std::unique_ptr<CollaborationFinder> collaboration_finder);
+      std::unique_ptr<CollaborationFinder> collaboration_finder,
+      data_sharing::Logger* logger);
   ~TabGroupSyncServiceImpl() override;
 
   // Disallow copy/assign.
@@ -345,6 +350,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
 
   // For finding collaboration availability info from DataSharingService.
   std::unique_ptr<CollaborationFinder> collaboration_finder_;
+
+  // Logger for logging to debug UI.
+  raw_ptr<data_sharing::Logger> logger_ = nullptr;
 
   // The pref service for storing migration status.
   raw_ptr<PrefService> pref_service_ = nullptr;

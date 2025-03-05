@@ -18,6 +18,7 @@
 #include "base/hash/sha1.h"
 #include "base/i18n/char_iterator.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -176,9 +177,9 @@ constexpr std::string_view kSkeletonsOfPopularKeywordsForCSQ[] = {
 const size_t kMinBrandNameLengthForComboSquatting = 4;
 
 ComboSquattingParams* GetComboSquattingParams() {
-  static ComboSquattingParams params{kBrandNamesForCSQ,
-                                     kSkeletonsOfPopularKeywordsForCSQ};
-  return &params;
+  static base::NoDestructor<ComboSquattingParams> params(
+      {kBrandNamesForCSQ, kSkeletonsOfPopularKeywordsForCSQ});
+  return params.get();
 }
 
 bool SkeletonsMatch(const url_formatter::Skeletons& skeletons1,

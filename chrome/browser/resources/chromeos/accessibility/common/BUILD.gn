@@ -65,6 +65,7 @@ ts_modules = [
   "cursors/recovery_strategy.ts",
   "event_generator.ts",
   "event_handler.ts",
+  "features.ts",
   "flags.ts",
   "mv2/instance_checker.ts",
   "mv3/instance_checker.ts",

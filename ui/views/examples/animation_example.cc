@@ -175,7 +175,7 @@ void AnimationExample::CreateExampleView(View* container) {
       BoxLayout::Orientation::kVertical, gfx::Insets(), 10));
 
   View* squares_container = container->AddChildView(std::make_unique<View>());
-  squares_container->SetBackground(CreateThemedSolidBackground(
+  squares_container->SetBackground(CreateSolidBackground(
       ExamplesColorIds::kColorAnimationExampleBackground));
   squares_container->SetPaintToLayer();
   squares_container->layer()->SetMasksToBounds(true);

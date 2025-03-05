@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/demo_mode/demo_mode_idle_handler.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/metrics/demo_session_metrics_recorder.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
@@ -22,6 +23,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -178,6 +180,25 @@ TEST_F(DemoModeIdleHandlerTest, ResetWallpaper) {
   FastForwardBy(kReLuanchDemoAppIdleDuration);
   EXPECT_EQ(wallpaper_controller()->GetWallpaperType(),
             WallpaperType::kDefault);
+}
+
+TEST_F(DemoModeIdleHandlerTest, ResetPrefs) {
+  auto* pref = profile()->GetPrefs();
+  const int default_brightness =
+      pref->GetInteger(prefs::kPowerAcScreenBrightnessPercent);
+
+  SimulateUserActivity();
+  // Simulate user change screen brightness pref.
+  pref->SetInteger(prefs::kPowerAcScreenBrightnessPercent, 10);
+
+  EXPECT_NE(pref->GetInteger(prefs::kPowerAcScreenBrightnessPercent),
+            default_brightness);
+
+  FastForwardBy(kReLuanchDemoAppIdleDuration);
+
+  // Expect the pref reset to default after idle.
+  EXPECT_EQ(pref->GetInteger(prefs::kPowerAcScreenBrightnessPercent),
+            default_brightness);
 }
 
 TEST_F(DemoModeIdleHandlerTest, ReLaunchDemoApp) {

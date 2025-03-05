@@ -54,8 +54,8 @@ class SystemNudgeViewPixelTest : public AshTestBase {
         views::Builder<views::FlexLayoutView>()
             .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
             .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-            .SetBackground(views::CreateThemedSolidBackground(
-                cros_tokens::kCrosSysSystemBase))
+            .SetBackground(
+                views::CreateSolidBackground(cros_tokens::kCrosSysSystemBase))
             .Build());
   }
 

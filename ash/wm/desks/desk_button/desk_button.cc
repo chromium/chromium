@@ -383,7 +383,7 @@ void DeskButton::UpdateShelfAutoHideDisabler(
 }
 
 void DeskButton::UpdateBackground() {
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       is_activated_ ? cros_tokens::kCrosSysSystemPrimaryContainer
                     : (zero_state_ ? cros_tokens::kCrosSysSystemOnBase
                                    : cros_tokens::kCrosSysSystemOnBase1),

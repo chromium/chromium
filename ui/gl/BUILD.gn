@@ -153,7 +153,12 @@ component("gl") {
     "trace_util.h",
   ]
 
-  configs += [ "//build/config:precompiled_headers" ]
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+    "//build/config:precompiled_headers",
+  ]
+
   defines = [ "GL_IMPLEMENTATION" ]
   if (enable_gpu_service_logging) {
     defines += [ "GPU_ENABLE_SERVICE_LOGGING" ]

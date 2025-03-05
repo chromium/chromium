@@ -884,11 +884,8 @@ void CrostiniManager::CrostiniRestarter::SharePathsFinished(
   }
   if (base::FeatureList::IsEnabled(ash::features::kCrostiniContainerless)) {
     StartStage(mojom::InstallerState::kConfigureContainer);
-    // TODO(crbug.com/377377749): eventually username should come from
-    // requests_[0].options.container_username once vsh knows how to connect to
-    // the right username
     crostini_manager_->SetUpBaguetteUser(
-        container_id_.vm_name, "chronos",
+        container_id_.vm_name, requests_[0].options.container_username,
         base::BindOnce(&CrostiniRestarter::SetUpBaguetteUserFinished,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
@@ -3821,6 +3818,12 @@ void CrostiniManager::OnRemoveTermina(bool success) {
     return;
   }
 
+  if (base::FeatureList::IsEnabled(ash::features::kCrostiniContainerless)) {
+    // container prefs seem to be wiped as some part of lxd container removal
+    // callbacks in the regular flow, so we must remove them manually here for
+    // baguette.
+    profile_->GetPrefs()->ClearPref(guest_os::prefs::kGuestOsContainers);
+  }
   profile_->GetPrefs()->SetBoolean(prefs::kCrostiniEnabled, false);
   profile_->GetPrefs()->ClearPref(prefs::kCrostiniLastDiskSize);
   guest_os::RemoveVmFromPrefs(profile_, kCrostiniDefaultVmType);

@@ -53,19 +53,6 @@ const mojom::ClientSecurityState* ChooseClientSecurityState(
   return request_client_security_state;
 }
 
-std::optional<net::IPAddress> ParsePrivateIpFromUrl(const GURL& url) {
-  net::IPAddress address;
-  if (!address.AssignFromIPLiteral(url.HostNoBracketsPiece())) {
-    return std::nullopt;
-  }
-
-  if (IPAddressToIPAddressSpace(address) != mojom::IPAddressSpace::kPrivate) {
-    return std::nullopt;
-  }
-
-  return address;
-}
-
 }  // namespace
 
 PrivateNetworkAccessChecker::PrivateNetworkAccessChecker(

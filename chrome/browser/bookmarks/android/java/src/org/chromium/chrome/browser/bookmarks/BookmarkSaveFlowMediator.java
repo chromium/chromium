@@ -51,6 +51,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
     private final ShoppingService mShoppingService;
     private final Profile mProfile;
     private final IdentityManager mIdentityManager;
+    private final BookmarkManagerOpener mBookmarkManagerOpener;
 
     private BookmarkId mBookmarkId;
     private PowerBookmarkMeta mPowerBookmarkMeta;
@@ -70,6 +71,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
      * @param bookmarkImageFetcher Used to fetch images/favicons for bookmarks.
      * @param profile The current chrome profile.
      * @param identityManager The {@link IdentityManager} which supplies the account data.
+     * @param bookmarkManagerOpener The BookmarkManagerOpener used to open bookmark activites.
      */
     public BookmarkSaveFlowMediator(
             @NonNull BookmarkModel bookmarkModel,
@@ -79,7 +81,8 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
             @NonNull ShoppingService shoppingService,
             @NonNull BookmarkImageFetcher bookmarkImageFetcher,
             @NonNull Profile profile,
-            @NonNull IdentityManager identityManager) {
+            @NonNull IdentityManager identityManager,
+            @NonNull BookmarkManagerOpener bookmarkManagerOpener) {
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.addObserver(this);
 
@@ -95,6 +98,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
         mBookmarkImageFetcher = bookmarkImageFetcher;
         mProfile = profile;
         mIdentityManager = identityManager;
+        mBookmarkManagerOpener = bookmarkManagerOpener;
     }
 
     /**
@@ -357,7 +361,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
 
     private void onEditClicked(View v) {
         RecordUserAction.record("MobileBookmark.SaveFlow.EditBookmark");
-        BookmarkUtils.startEditActivity(mContext, mProfile, mBookmarkId);
+        mBookmarkManagerOpener.startEditActivity(mContext, mProfile, mBookmarkId);
         mCloseRunnable.run();
     }
 

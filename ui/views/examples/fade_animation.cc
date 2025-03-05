@@ -64,7 +64,7 @@ FadingView::FadingView() {
               .SetBorder(CreateThemedRoundedRectBorder(
                   1, kCornerRadius,
                   ExamplesColorIds::kColorFadeAnimationExampleBorder))
-              .SetBackground(CreateThemedRoundedRectBackground(
+              .SetBackground(CreateRoundedRectBackground(
                   ExamplesColorIds::kColorFadeAnimationExampleBackground,
                   kCornerRadius, 1))
               .SetPaintToLayer()
@@ -86,7 +86,7 @@ FadingView::FadingView() {
               .SetBorder(CreateThemedRoundedRectBorder(
                   1, kCornerRadius,
                   ExamplesColorIds::kColorFadeAnimationExampleBorder))
-              .SetBackground(CreateThemedRoundedRectBackground(
+              .SetBackground(CreateRoundedRectBackground(
                   ExamplesColorIds::kColorFadeAnimationExampleBackground,
                   kCornerRadius, 1))
               .SetPaintToLayer()
@@ -149,7 +149,7 @@ FadeAnimationExample::FadeAnimationExample() : ExampleBase("Fade Animation") {}
 FadeAnimationExample::~FadeAnimationExample() = default;
 
 void FadeAnimationExample::CreateExampleView(View* container) {
-  container->SetBackground(CreateThemedSolidBackground(
+  container->SetBackground(CreateSolidBackground(
       ExamplesColorIds::kColorFadeAnimationExampleBackground));
   container->SetLayoutManager(std::make_unique<CenteringLayoutManager>());
   container->AddChildView(std::make_unique<FadingView>());

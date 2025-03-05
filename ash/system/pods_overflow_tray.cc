@@ -116,7 +116,7 @@ void PodsOverflowTray::ShowBubble() {
     pods_container_->AddChildView(
         views::Builder<views::View>()
             .SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize))
-            .SetBackground(views::CreateThemedRoundedRectBackground(
+            .SetBackground(views::CreateRoundedRectBackground(
                 cros_tokens::kCrosSysSystemOnBase, kPodsBubbleCornerRadius))
             .Build());
   }

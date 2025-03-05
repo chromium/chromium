@@ -113,25 +113,16 @@
 
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion {
-  __weak __typeof(self) weakSelf = self;
-  ProceduralBlock dismissCompletion = ^() {
-    [weakSelf viewWasDismissedWithResult:SigninCoordinatorResultInterrupted];
-    if (completion) {
-      completion();
-    }
-  };
   switch (action) {
     case SigninCoordinatorInterrupt::DismissWithAnimation:
     case SigninCoordinatorInterrupt::DismissWithoutAnimation: {
       BOOL animated =
           SigninCoordinatorInterrupt::DismissWithAnimation == action;
-      if (IsInterruptibleCoordinatorStoppedSynchronouslyEnabled()) {
-        [_navigationController dismissViewControllerAnimated:animated
-                                                  completion:nil];
-        dismissCompletion();
-      } else {
-        [_navigationController dismissViewControllerAnimated:animated
-                                                  completion:dismissCompletion];
+      [_navigationController dismissViewControllerAnimated:animated
+                                                completion:nil];
+      [self viewWasDismissedWithResult:SigninCoordinatorResultInterrupted];
+      if (completion) {
+        completion();
       }
       break;
     }

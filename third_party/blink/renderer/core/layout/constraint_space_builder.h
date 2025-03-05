@@ -346,6 +346,19 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
       space_.EnsureRareData()->SetBlockStartAnnotationSpace(space);
   }
 
+  void SetIgnoreMarginsForStretch(WritingMode parent_mode,
+                                  LineLogicalBoxSides sides) {
+#if DCHECK_IS_ON()
+    DCHECK(!is_ignored_margins_set_);
+    is_ignored_margins_set_ = true;
+#endif
+    if (!sides.IsEmpty()) {
+      space_.EnsureRareData()->ignore_margins_for_stretch =
+          PhysicalBoxSides(sides, parent_mode)
+              .ToLogical(space_.GetWritingDirection());
+    }
+  }
+
   void SetMarginStrut(const MarginStrut& margin_strut) {
 #if DCHECK_IS_ON()
     DCHECK(!is_margin_strut_set_);
@@ -637,6 +650,7 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
   bool is_table_row_data_set_ = false;
   bool is_table_section_data_set_ = false;
   bool is_grid_layout_subtree_set_ = false;
+  bool is_ignored_margins_set_ = false;
 
   bool to_constraint_space_called_ = false;
 #endif

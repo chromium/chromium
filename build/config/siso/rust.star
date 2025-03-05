@@ -11,6 +11,7 @@ load("@builtin//struct.star", "module")
 load("./ar.star", "ar")
 load("./config.star", "config")
 load("./fuchsia.star", "fuchsia")
+load("./win_sdk.star", "win_sdk")
 
 def __filegroups(ctx):
     fg = {
@@ -161,20 +162,15 @@ def __step_config(ctx, step_config):
     platform_ref = "large"  # Rust actions run faster on large workers.
 
     remote = True
-
-    # TODO: crbug.com/382399126 - Remote rust link is not supported
-    # for Windows target builds, yet.
-    if "args.gn" in ctx.metadata:
-        gn_args = gn.args(ctx)
-        if gn_args.get("target_os") == '"win"':
-            remote = False
     if runtime.os != "linux":
         remote = False
-
     clang_inputs = [
         "build/linux/debian_bullseye_amd64-sysroot:rustlink",
         "third_party/llvm-build/Release+Asserts:rustlink",
     ]
+    if win_sdk.enabled(ctx):
+        clang_inputs.append(win_sdk.toolchain_dir(ctx) + ":libs")
+
     rust_toolchain = [
         # TODO(b/285225184): use precomputed subtree
         "third_party/rust-toolchain:toolchain",

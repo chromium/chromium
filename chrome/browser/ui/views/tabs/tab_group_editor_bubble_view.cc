@@ -1135,8 +1135,7 @@ TabGroupEditorBubbleView::Footer::Footer(const Browser* browser) {
       .SetMainAxisAlignment(views::LayoutAlignment::kStart)
       .SetCollapseMargins(true);
 
-  SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorBubbleFooterBackground));
+  SetBackground(views::CreateSolidBackground(ui::kColorBubbleFooterBackground));
 
   // Get the keyed service and check if saved.
   views::StyledLabel* footer_label =

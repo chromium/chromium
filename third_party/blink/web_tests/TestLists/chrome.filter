@@ -28,6 +28,12 @@ external/wpt/ai/translator/*
 # Storage Access API is implemented in the `//chrome` layer.
 external/wpt/storage-access-api/*
 external/wpt/fedcm/fedcm-storage-access-api-autogrant.tentative.https.sub.html
+external/wpt/partitioned-popins/partitioned-popins.cookies-allowed.tentative.sub.https.window.html
+external/wpt/partitioned-popins/partitioned-popins.cookies-blocked.tentative.sub.https.window.html
+external/wpt/partitioned-popins/partitioned-popins.localStorage.tentative.sub.https.window.html
+virtual/partitioned-popins-disabled/external/wpt/partitioned-popins/partitioned-popins.cookies-allowed.tentative.sub.https.window.html
+virtual/partitioned-popins-disabled/external/wpt/partitioned-popins/partitioned-popins.cookies-blocked.tentative.sub.https.window.html
+virtual/partitioned-popins-disabled/external/wpt/partitioned-popins/partitioned-popins.localStorage.tentative.sub.https.window.html
 
 # Device Bound Session Credentials relies on the `//chrome` layer.
 virtual/dbsc-enabled/external/wpt/device-bound-session-credentials/*

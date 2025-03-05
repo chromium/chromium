@@ -47,7 +47,7 @@ class RoundedPreviewImageView : public views::ImageView {
  public:
   explicit RoundedPreviewImageView(const gfx::Size image_size, int radius) {
     SetImageSize(image_size);
-    SetBackground(views::CreateThemedRoundedRectBackground(
+    SetBackground(views::CreateRoundedRectBackground(
         cros_tokens::kCrosSysSeparator, radius));
     SkPath mask;
     mask.addRoundRect(gfx::RectToSkRect(gfx::Rect(image_size)), radius, radius);

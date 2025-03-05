@@ -80,8 +80,8 @@ class MockMessagePumpDelegate : public MessagePump::Delegate {
 
   void BeforeWait() override {}
   void BeginNativeWorkBeforeDoWork() override {}
-  MOCK_METHOD0(DoWork, MessagePump::Delegate::NextWorkInfo());
-  MOCK_METHOD0(DoIdleWork, void());
+  MOCK_METHOD(MessagePump::Delegate::NextWorkInfo, DoWork, ());
+  MOCK_METHOD(void, DoIdleWork, ());
 
   // Functions invoked directly by the message pump.
   void OnBeginWorkItem() override {
@@ -124,8 +124,8 @@ class MockMessagePumpDelegate : public MessagePump::Delegate {
   }
 
   // Mock functions for asserting.
-  MOCK_METHOD0(MockOnBeginWorkItem, void(void));
-  MOCK_METHOD1(MockOnEndWorkItem, void(int));
+  MOCK_METHOD(void, MockOnBeginWorkItem, ());
+  MOCK_METHOD(void, MockOnEndWorkItem, (int));
 
   // If native events are covered in the current configuration it's not
   // possible to precisely test all assertions related to work items. This is

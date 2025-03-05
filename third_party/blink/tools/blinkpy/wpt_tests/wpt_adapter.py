@@ -447,7 +447,7 @@ class WPTAdapter:
             logger.error('No tests to run.')
             sys.exit(exit_codes.NO_TESTS_EXIT_STATUS)
 
-        return self._prepare_tests_for_wptrunner(tests_to_run)
+        return tests_to_run, tests_to_skip
 
     def _lookup_subsuite_args(self, subsuite_name):
         for suite in self.port.virtual_test_suites():
@@ -489,7 +489,14 @@ class WPTAdapter:
 
     def _set_up_runner_tests(self, runner_options, tmp_dir):
         if not self.using_upstream_wpt:
-            include_tests, subsuite_json = self._collect_tests()
+            tests_to_run, tests_to_skip = self._collect_tests()
+            include_tests, subsuite_json = self._prepare_tests_for_wptrunner([
+                *tests_to_run,
+                # Pass skipped tests to wptrunner too so that they're added to
+                # the log and test results, but the Blink-side `TestLoader`
+                # will generate metadata that disables them.
+                *tests_to_skip,
+            ])
             if subsuite_json:
                 config_path = self.fs.join(tmp_dir, 'subsuite.json')
                 with self.fs.open_text_file_for_writing(
@@ -511,6 +518,9 @@ class WPTAdapter:
             runner_options.total_chunks = 1
             runner_options.this_chunk = 1
             runner_options.default_exclude = True
+
+            TestLoader.install(self.port, self._expectations,
+                               runner_options.include, tests_to_skip)
         else:
             self._set_up_runner_sharding_options(runner_options)
             runner_options.retry_unexpected = 0
@@ -551,8 +561,6 @@ class WPTAdapter:
                 tests_root = self.tools_root
             else:
                 tests_root = self.finder.path_from_wpt_tests()
-                TestLoader.install(self.port, self._expectations,
-                                   runner_options.include)
             runner_options.tests_root = tests_root
             runner_options.metadata_root = tests_root
             logger.debug('Using WPT tests (external) from %s', tests_root)

@@ -257,18 +257,10 @@ using base::UserMetricsAction;
     UIViewController* presentingViewController =
         weakNavigationController.presentingViewController;
     if (presentingViewController) {
-      if (IsInterruptibleCoordinatorStoppedSynchronouslyEnabled()) {
-        [presentingViewController dismissViewControllerAnimated:animated
-                                                     completion:nil];
-        finishCompletion();
-      } else {
-        [presentingViewController
-            dismissViewControllerAnimated:animated
-                               completion:finishCompletion];
-      }
-    } else {
-      finishCompletion();
+      [presentingViewController dismissViewControllerAnimated:animated
+                                                   completion:nil];
     }
+    finishCompletion();
   };
 
   // Interrupt the child coordinator UI first before dismissing the new

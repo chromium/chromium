@@ -681,7 +681,7 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
           ? cros_tokens::kCrosSysSystemBaseElevated
           : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
   background_view_->SetBackground(
-      views::CreateThemedSolidBackground(background_color_id));
+      views::CreateSolidBackground(background_color_id));
   background_view_->SetVisible(false);
 
   animating_background_ = AddChildView(std::make_unique<views::View>());

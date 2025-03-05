@@ -130,7 +130,7 @@ void LoginBigUserView::OnWallpaperBlurChanged() {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
     const ui::ColorId background_color_id = cros_tokens::kCrosSysScrim2;
-    SetBackground(views::CreateThemedRoundedRectBackground(
+    SetBackground(views::CreateRoundedRectBackground(
         background_color_id, login::kNonBlurredWallpaperBackgroundRadiusDp, 0));
   }
 }

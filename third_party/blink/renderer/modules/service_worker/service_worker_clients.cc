@@ -9,7 +9,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -76,8 +75,7 @@ void DidClaim(ScriptPromiseResolver<IDLUndefined>* resolver,
 
   if (error != mojom::blink::ServiceWorkerErrorType::kNone) {
     DCHECK(!error_msg.IsNull());
-    resolver->Reject(
-        ServiceWorkerError::GetException(resolver, error, error_msg));
+    resolver->Reject(ServiceWorkerError::AsException(error, error_msg));
     return;
   }
   DCHECK(error_msg.IsNull());

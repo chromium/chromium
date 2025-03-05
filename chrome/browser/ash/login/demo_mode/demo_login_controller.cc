@@ -236,7 +236,7 @@ void SendDemoAccountRequest(
                                kMaxResponseSize);
 }
 
-void LogServerResponseError(std::string error_response, bool is_setup) {
+void LogServerResponseError(const std::string& error_response, bool is_setup) {
   if (error_response.empty()) {
     return;
   }
@@ -441,7 +441,10 @@ void DemoLoginController::OnSetupDemoAccountComplete(
                                   std::move(response_body));
   } else {
     OnSetupDemoAccountError(result);
-    LogServerResponseError(*response_body, /*is_setup*/ true);
+    // `response_body` could be nullptr when network is not connected.
+    if (response_body) {
+      LogServerResponseError(*response_body, /*is_setup*/ true);
+    }
   }
 }
 
@@ -594,7 +597,10 @@ void DemoLoginController::OnCleanUpDemoAccountComplete(
     // Report success to the metrics.
     DemoSessionMetricsRecorder::ReportDemoAccountCleanupResult(result);
   } else {
-    LogServerResponseError(*response_body, /*is_setup*/ false);
+    // `response_body` could be nullptr when network is not connected.
+    if (response_body) {
+      LogServerResponseError(*response_body, /*is_setup*/ false);
+    }
     OnCleanUpDemoAccountError(result);
   }
   url_loader_.reset();

@@ -15,18 +15,37 @@
 #include "components/user_manager/user_names.h"
 
 namespace user_manager {
+namespace {
 
-// static
-void TestHelper::RegisterPersistedUser(PrefService& local_state,
-                                       const AccountId& account_id) {
+void RegisterPersistedUserInternal(PrefService& local_state,
+                                   const AccountId& account_id,
+                                   UserType user_type) {
   {
     ScopedListPrefUpdate update(&local_state, prefs::kRegularUsersPref);
     update->Append(account_id.GetUserEmail());
   }
   {
+    ScopedDictPrefUpdate update(&local_state, prefs::kUserType);
+    update->Set(account_id.GetAccountIdKey(), static_cast<int>(user_type));
+  }
+  {
     KnownUser known_user(&local_state);
     known_user.UpdateId(account_id);
   }
+}
+
+}  // namespace
+
+// static
+void TestHelper::RegisterPersistedUser(PrefService& local_state,
+                                       const AccountId& account_id) {
+  RegisterPersistedUserInternal(local_state, account_id, UserType::kRegular);
+}
+
+// static
+void TestHelper::RegisterPersistedChildUser(PrefService& local_state,
+                                            const AccountId& account_id) {
+  RegisterPersistedUserInternal(local_state, account_id, UserType::kChild);
 }
 
 // static

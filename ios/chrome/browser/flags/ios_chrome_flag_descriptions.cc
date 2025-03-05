@@ -558,12 +558,6 @@ const char kIOSInterruptibleCoordinatorAlwaysDismissedDescription[] =
     "IOSInterruptibleCoordinatorStoppedSynchronously "
     "to be enabled.";
 
-const char kIOSInterruptibleCoordinatorStoppedSynchronouslyName[] =
-    "Stop interruptible coordinators synchronously";
-const char kIOSInterruptibleCoordinatorStoppedSynchronouslyDescription[] =
-    "When enabled, the interruptible coordinator’s completion method are "
-    "called synchronously during interrupt.";
-
 const char kIOSBrowserEditMenuMetricsName[] = "Browser edit menu metrics";
 const char kIOSBrowserEditMenuMetricsDescription[] =
     "Collect metrics for edit menu usage.";

@@ -1084,6 +1084,12 @@ NavigationEntryImpl* NavigationControllerImpl::GetLastCommittedEntry() {
   return entries_[last_committed_entry_index_].get();
 }
 
+const NavigationEntryImpl* NavigationControllerImpl::GetLastCommittedEntry()
+    const {
+  CHECK_NE(last_committed_entry_index_, -1);
+  return entries_[last_committed_entry_index_].get();
+}
+
 bool NavigationControllerImpl::CanViewSource() {
   const std::string& mime_type = frame_tree_->root()
                                      ->current_frame_host()

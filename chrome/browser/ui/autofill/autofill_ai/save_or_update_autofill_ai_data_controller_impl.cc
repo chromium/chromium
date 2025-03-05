@@ -31,16 +31,15 @@ namespace {
 using autofill::AutofillAiDelegate;
 using enum SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType;
 
-// Returns whether user interacted with the bubble, based on its closed reason.
-bool GetUserInteractionFromAutofillAiBubbleClosedReason(
+bool DidUserDeclineExplicitly(
     SaveOrUpdateAutofillAiDataController::AutofillAiBubbleClosedReason
         closed_reason) {
   using enum SaveOrUpdateAutofillAiDataController::AutofillAiBubbleClosedReason;
   switch (closed_reason) {
-    case kAccepted:
     case kCancelled:
     case kClosed:
       return true;
+    case kAccepted:
     case kUnknown:
     case kNotInteracted:
     case kLostFocus:
@@ -222,8 +221,7 @@ void SaveOrUpdateAutofillAiDataControllerImpl::OnBubbleClosed(
   if (!save_prompt_acceptance_callback_.is_null()) {
     std::move(save_prompt_acceptance_callback_)
         .Run(
-            {/*did_user_interact=*/
-             GetUserInteractionFromAutofillAiBubbleClosedReason(closed_reason),
+            {DidUserDeclineExplicitly(closed_reason),
              /*entity=*/closed_reason == AutofillAiBubbleClosedReason::kAccepted
                  ? std::exchange(new_entity_, std::nullopt)
                  : std::nullopt});

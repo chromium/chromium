@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.bookmarks;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -27,16 +26,12 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
-import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
-import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderPickerActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
@@ -68,6 +63,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /** A class holding static util functions for bookmark. */
+// TODO(crbug.com/400793886): Audit arg ordering for functions.
 public class BookmarkUtils {
     private static final String TAG = "BookmarkUtils";
     private static final int READING_LIST_SESSION_LENGTH_MS = (int) TimeUnit.HOURS.toMillis(1);
@@ -97,10 +93,12 @@ public class BookmarkUtils {
             Activity activity,
             @BookmarkType int bookmarkType,
             Callback<BookmarkId> callback,
-            boolean fromExplicitTrackUi) {
+            boolean fromExplicitTrackUi,
+            BookmarkManagerOpener bookmarkManagerOpener) {
         assert bookmarkModel.isBookmarkModelLoaded();
         if (existingBookmarkItem != null) {
-            startEditActivity(activity, tab.getProfile(), existingBookmarkItem.getId());
+            bookmarkManagerOpener.startEditActivity(
+                    activity, tab.getProfile(), existingBookmarkItem.getId());
             callback.onResult(existingBookmarkItem.getId());
             return;
         }
@@ -132,7 +130,8 @@ public class BookmarkUtils {
                 newBookmarkId,
                 fromExplicitTrackUi,
                 /* wasBookmarkMoved= */ false,
-                /* isNewBookmark= */ true);
+                /* isNewBookmark= */ true,
+                bookmarkManagerOpener);
         callback.onResult(newBookmarkId);
     }
 
@@ -157,7 +156,8 @@ public class BookmarkUtils {
             @Nullable BookmarkId bookmarkId,
             boolean fromExplicitTrackUi,
             boolean wasBookmarkMoved,
-            boolean isNewBookmark) {
+            boolean isNewBookmark,
+            BookmarkManagerOpener bookmarkManagerOpener) {
         if (bookmarkId == null) {
             Log.e(TAG, "Null bookmark found when showing the save flow, aborting.");
             return;
@@ -178,7 +178,8 @@ public class BookmarkUtils {
                         shoppingService,
                         userEducationHelper,
                         profile,
-                        identityManager);
+                        identityManager,
+                        bookmarkManagerOpener);
         bookmarkSaveFlowCoordinator.show(
                 bookmarkId, fromExplicitTrackUi, wasBookmarkMoved, isNewBookmark);
     }
@@ -191,7 +192,8 @@ public class BookmarkUtils {
             SnackbarManager snackbarManager,
             Activity activity,
             boolean fromCustomTab,
-            @BookmarkType int bookmarkType) {
+            @BookmarkType int bookmarkType,
+            BookmarkManagerOpener bookmarkManagerOpener) {
         BookmarkId parentId = null;
         if (bookmarkType == BookmarkType.READING_LIST) {
             parentId = bookmarkModel.getDefaultReadingListFolder();
@@ -227,7 +229,8 @@ public class BookmarkUtils {
                     bookmarkModel.getBookmarkTitle(
                             bookmarkModel.getBookmarkById(bookmarkId).getParentId());
             SnackbarController snackbarController =
-                    createSnackbarControllerForEditButton(activity, tab.getProfile(), bookmarkId);
+                    createSnackbarControllerForEditButton(
+                            activity, tab.getProfile(), bookmarkId, bookmarkManagerOpener);
             if (getLastUsedParent() == null) {
                 if (fromCustomTab) {
                     String packageLabel = BuildInfo.getInstance().hostPackageLabel;
@@ -285,7 +288,8 @@ public class BookmarkUtils {
             @NonNull GURL url,
             @NonNull SnackbarManager snackbarManager,
             @NonNull Profile profile,
-            @NonNull BottomSheetController bottomSheetController) {
+            @NonNull BottomSheetController bottomSheetController,
+            @NonNull BookmarkManagerOpener bookmarkManagerOpener) {
         assert bookmarkModel.isBookmarkModelLoaded();
         BookmarkId bookmarkId =
                 addBookmarkInternal(
@@ -310,7 +314,8 @@ public class BookmarkUtils {
                     bookmarkId,
                     /* fromExplicitTrackUi= */ false,
                     /* wasBookmarkMoved= */ false,
-                    /* isNewBookmark= */ true);
+                    /* isNewBookmark= */ true,
+                    bookmarkManagerOpener);
         } else {
             Snackbar snackbar =
                     Snackbar.make(
@@ -340,7 +345,8 @@ public class BookmarkUtils {
             Activity activity,
             @NonNull BookmarkModel bookmarkModel,
             @NonNull List<Tab> tabList,
-            @NonNull SnackbarManager snackbarManager) {
+            @NonNull SnackbarManager snackbarManager,
+            @NonNull BookmarkManagerOpener bookmarkManagerOpener) {
         // TODO(crbug.com/40879467): Refactor the bookmark folder select activity to allow for the
         // view to display in a dialog implementation approach.
         assert bookmarkModel != null;
@@ -353,7 +359,8 @@ public class BookmarkUtils {
                     snackbarManager,
                     activity,
                     false,
-                    BookmarkType.NORMAL);
+                    BookmarkType.NORMAL,
+                    bookmarkManagerOpener);
             return;
         }
 
@@ -395,7 +402,8 @@ public class BookmarkUtils {
                 "Android.TabMultiSelectV2.BookmarkTabsCount", tabsBookmarkedCount);
 
         SnackbarController snackbarController =
-                createSnackbarControllerForBookmarkFolderEditButton(activity, profile, newFolder);
+                createSnackbarControllerForBookmarkFolderEditButton(
+                        activity, profile, newFolder, bookmarkManagerOpener);
         Snackbar snackbar =
                 Snackbar.make(
                         activity.getString(R.string.bookmark_page_saved_default),
@@ -497,7 +505,10 @@ public class BookmarkUtils {
      * created bookmark.
      */
     private static SnackbarController createSnackbarControllerForEditButton(
-            final Activity activity, Profile profile, final BookmarkId bookmarkId) {
+            final Activity activity,
+            Profile profile,
+            final BookmarkId bookmarkId,
+            BookmarkManagerOpener bookmarkManagerOpener) {
         return new SnackbarController() {
             @Override
             public void onDismissNoAction(Object actionData) {
@@ -507,7 +518,7 @@ public class BookmarkUtils {
             @Override
             public void onAction(Object actionData) {
                 RecordUserAction.record("EnhancedBookmarks.EditAfterCreateButtonClicked");
-                startEditActivity(activity, profile, bookmarkId);
+                bookmarkManagerOpener.startEditActivity(activity, profile, bookmarkId);
             }
         };
     }
@@ -517,7 +528,10 @@ public class BookmarkUtils {
      * bookmarks folder with bulk added bookmarks
      */
     private static SnackbarController createSnackbarControllerForBookmarkFolderEditButton(
-            Context context, Profile profile, BookmarkId folder) {
+            Activity activity,
+            Profile profile,
+            BookmarkId folder,
+            BookmarkManagerOpener bookmarkManagerOpener) {
         return new SnackbarController() {
             @Override
             public void onDismissNoAction(Object actionData) {
@@ -527,7 +541,7 @@ public class BookmarkUtils {
             @Override
             public void onAction(Object actionData) {
                 RecordUserAction.record("TabMultiSelectV2.BookmarkTabsSnackbarEditClicked");
-                BookmarkUtils.startEditActivity(context, profile, folder);
+                bookmarkManagerOpener.startEditActivity(activity, profile, folder);
             }
         };
     }
@@ -561,27 +575,6 @@ public class BookmarkUtils {
                 preferences.readString(ChromePreferenceKeys.BOOKMARKS_LAST_USED_PARENT, null));
     }
 
-    @VisibleForTesting
-    public static Intent getEditActivityIntent(
-            Context context, Profile profile, BookmarkId bookmarkId) {
-        Intent intent = new Intent(context, BookmarkEditActivity.class);
-        intent.putExtra(BookmarkEditActivity.INTENT_BOOKMARK_ID, bookmarkId.toString());
-        ProfileIntentUtils.addProfileToIntent(profile, intent);
-        return intent;
-    }
-
-    /** Starts an {@link BookmarkEditActivity} for the given {@link BookmarkId}. */
-    public static void startEditActivity(Context context, Profile profile, BookmarkId bookmarkId) {
-        RecordUserAction.record("MobileBookmarkManagerEditBookmark");
-        Intent intent = getEditActivityIntent(context, profile, bookmarkId);
-        if (context instanceof BookmarkActivity) {
-            ((BookmarkActivity) context)
-                    .startActivityForResult(intent, BookmarkActivity.EDIT_BOOKMARK_REQUEST_CODE);
-        } else {
-            context.startActivity(intent);
-        }
-    }
-
     /** Given the {@link BookmarkId}s, return a list of those ids serialized to string. */
     public static ArrayList<String> bookmarkIdsToStringList(BookmarkId... bookmarkIds) {
         ArrayList<String> bookmarkStrings = new ArrayList<>(bookmarkIds.length);
@@ -606,17 +599,6 @@ public class BookmarkUtils {
             }
         }
         return bookmarkIds;
-    }
-
-    /** Starts an {@link BookmarkFolderPickerActivity} for the given {@link BookmarkId}s. */
-    public static void startFolderPickerActivity(
-            Context context, Profile profile, BookmarkId... bookmarkIds) {
-        Intent intent = new Intent(context, BookmarkFolderPickerActivity.class);
-        intent.putStringArrayListExtra(
-                BookmarkFolderPickerActivity.INTENT_BOOKMARK_IDS,
-                BookmarkUtils.bookmarkIdsToStringList(bookmarkIds));
-        ProfileIntentUtils.addProfileToIntent(profile, intent);
-        context.startActivity(intent);
     }
 
     /**
@@ -657,13 +639,6 @@ public class BookmarkUtils {
         }
 
         return ColorStateList.valueOf(context.getColor(R.color.default_icon_color_tint_list));
-    }
-
-    /** Closes the {@link BookmarkActivity} on Phone. Does nothing on tablet. */
-    public static void finishActivityOnPhone(Context context) {
-        if (context instanceof BookmarkActivity) {
-            ((Activity) context).finish();
-        }
     }
 
     /**

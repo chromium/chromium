@@ -67,7 +67,7 @@ InformedRestoreItemsOverflowView::InformedRestoreItemsOverflowView(
           .CopyAddressTo(&outer_box_view)
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
-          .SetBackground(views::CreateThemedRoundedRectBackground(
+          .SetBackground(views::CreateRoundedRectBackground(
               informed_restore::kIconBackgroundColorId,
               kOverflowBackgroundRounding))
           .Build());
@@ -89,7 +89,7 @@ InformedRestoreItemsOverflowView::InformedRestoreItemsOverflowView(
               .SetText(base::FormatNumber(num_elements - kOverflowMaxThreshold))
               .SetPreferredSize(kOverflowCountPreferredSize)
               .SetEnabledColor(cros_tokens::kCrosSysOnPrimaryContainer)
-              .SetBackground(views::CreateThemedRoundedRectBackground(
+              .SetBackground(views::CreateRoundedRectBackground(
                   cros_tokens::kCrosSysPrimaryContainer,
                   kOverflowCountBackgroundRounding))
               .Build());

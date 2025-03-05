@@ -775,7 +775,7 @@
   {
     "name": "autofill-sync-ewallet-accounts",
     "owners": ["junhuihe@chromium.org", "chrome-payments-team@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "autofill-third-party-mode-content-provider",
@@ -4039,7 +4039,7 @@
   {
     "name": "enable-touchscreen-mapping",
     "owners": [ "dpad@google.org", "cros-device-enablement@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 145
   },
   {
     "name": "enable-touchscreens-in-diagnostics-app",
@@ -4344,7 +4344,7 @@
   {
     "name": "ewallet-payments",
     "owners": [ "junhuihe@google.com", "chrome-payments-team@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "exclude-display-in-mirror-mode",
@@ -5329,14 +5329,6 @@
   },
   {
     "name": "ios-interruptible-coordinator-always-dismissed",
-    "owners": [
-      "arthurmilchior@google.com",
-      "chrome-signin-team@google.com"
-    ],
-    "expiry_milestone": 137
-  },
-  {
-    "name": "ios-interruptible-coordinator-stop-synchronously",
     "owners": [
       "arthurmilchior@google.com",
       "chrome-signin-team@google.com"
@@ -6943,7 +6935,7 @@
   {
     "name": "payment-link-detection",
     "owners": [ "junhuihe@google.com", "chrome-payments-team@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "pcie-billboard-notification",
@@ -7225,7 +7217,7 @@
     "owners": [
       "jacobstanley@google.com",
       "koilos@google.com"],
-    "expiry_milestone": 136
+    "expiry_milestone": 137
   },
   {
     "name": "privacy-sandbox-internals",
@@ -7504,7 +7496,7 @@
   {
     "name": "read-anything-read-aloud",
     "owners": [ "kristislee@google.com", "lwinston@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 136
+    "expiry_milestone": 140
   },
   {
     "name": "read-anything-read-aloud-phrase-highlighting",
@@ -7514,7 +7506,7 @@
       "ajitnarayanan@google.com",
       "//ui/accessibility/OWNERS"
     ],
-    "expiry_milestone": 136
+    "expiry_milestone": 140
   },
   {
     "name": "read-printer-capabilities-with-xps",
@@ -7897,11 +7889,6 @@
     "name": "search-in-cct-alternate-tap-handling",
     "owners": [ "edmundw@google.com", "ender@google.com", "aga-cct@google.com", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 140
-  },
-  {
-    "name": "search-suggestion-for-prerender2",
-    "owners": [ "//content/browser/preloading/prerender/OWNERS" ],
-    "expiry_milestone": 122
   },
   {
     "name" : "search-web-in-side-panel",
@@ -9241,7 +9228,7 @@
       "lwinston@google.com",
       "//ui/accessibility/OWNERS"
     ],
-    "expiry_milestone": 136
+    "expiry_milestone": 140
   },
   {
     "name": "wayland-linux-drm-syncobj",
@@ -9364,8 +9351,8 @@
   },
   {
     "name": "web-identity-digital-credentials",
-    "owners": ["goto@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 135
+    "owners": ["mamir@chromium.org", "goto@chromium.org", "web-identity-eng@google.com"],
+    "expiry_milestone": 140
   },
   {
     "name": "web-identity-digital-credentials-creation",

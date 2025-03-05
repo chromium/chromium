@@ -119,7 +119,7 @@ void PlaybackImageButton::SetPlayButtonBackground() {
           media::kVideoPictureInPictureControlsUpdate2024)) {
     return;
   }
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       ui::kColorSysSecondaryContainer, kPlaybackButtonSize / 2));
 }
 

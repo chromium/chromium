@@ -117,7 +117,7 @@ std::u16string GetFormattedDueTime(const base::Time& due) {
 
 std::unique_ptr<views::View> BuildIcon() {
   return views::Builder<views::ImageView>()
-      .SetBackground(views::CreateThemedRoundedRectBackground(
+      .SetBackground(views::CreateRoundedRectBackground(
           cros_tokens::kCrosSysSystemOnBase1, kIconViewBackgroundRadius))
       .SetID(base::to_underlying(GlanceablesViewId::kClassroomItemIcon))
       .SetImage(ui::ImageModel::FromVectorIcon(

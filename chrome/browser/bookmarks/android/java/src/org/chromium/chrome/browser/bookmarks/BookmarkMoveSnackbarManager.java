@@ -122,15 +122,17 @@ public class BookmarkMoveSnackbarManager implements ActivityStateListener {
     /**
      * Starts the folder picker and observes the resulting moves for the given bookmarkIds.
      *
+     * @param bookmarkManagerOpener Helper used to open the folder picker activity.
      * @param bookmarkIds The {@link BookmarkId} that are being moved.
      */
-    public void startFolderPickerAndObserveResult(BookmarkId... bookmarkIds) {
+    public void startFolderPickerAndObserveResult(
+            BookmarkManagerOpener bookmarkManagerOpener, BookmarkId... bookmarkIds) {
         // Snackbars will only be shown when the feature is enabled.
         mIsObserving = mBookmarkModel.areAccountBookmarkFoldersActive();
         mBookmarkIds = Arrays.asList(bookmarkIds);
 
         // TODO(crbug.com/1465757): Record user action.
-        BookmarkUtils.startFolderPickerActivity(mContext, mProfile, bookmarkIds);
+        bookmarkManagerOpener.startFolderPickerActivity(mContext, mProfile, bookmarkIds);
     }
 
     // ActivityStateListener implementation.

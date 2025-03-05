@@ -239,7 +239,7 @@ void RichAnswersView::AddResultTypeIcon() {
   // a circle background behind the icon.
   auto* vector_icon_container =
       main_view_->AddChildView(std::make_unique<views::FlexLayoutView>());
-  vector_icon_container->SetBackground(views::CreateThemedRoundedRectBackground(
+  vector_icon_container->SetBackground(views::CreateRoundedRectBackground(
       ui::kColorSysPrimary, kRichAnswersIconContainerRadius));
   vector_icon_container->SetBorder(
       views::CreateEmptyBorder(kRichAnswersIconBorderDip));

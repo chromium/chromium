@@ -15,6 +15,10 @@ source_set("browser") {
     "histogram_suffixes.cc",
     "histogram_suffixes.h",
   ]
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
   deps = [
     "//base",
     "//components/crash/core/common:crash_key",

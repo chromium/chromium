@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -377,9 +378,9 @@ bool MaybeUntranslateAddress(IPAddress* addr) {
     return false;
   }
 
-  static const IPAddress kTranslated6To4(0, 0x64, 0xff, 0x9b, 0, 0, 0, 0, 0, 0,
-                                         0, 0, 0, 0, 0, 0);
-  if (!IPAddressMatchesPrefix(*addr, kTranslated6To4, 96)) {
+  static const base::NoDestructor<IPAddress> kTranslated6To4(
+      0, 0x64, 0xff, 0x9b, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+  if (!IPAddressMatchesPrefix(*addr, *kTranslated6To4, 96)) {
     return false;
   }
 
@@ -402,56 +403,57 @@ bool MaybeTruncateIPv6(IPAddress* addr) {
 
 // Returns an appropriately scrubbed version of |addr| if applicable.
 std::string MaybeScrubIPAddress(const std::string& addr) {
-  struct {
+  struct IPAddresScrub {
     IPAddress ip_addr;
     int prefix_length;
     bool scrub;
-  } static const kNonIdentifyingIPRanges[] = {
-      // Private.
-      {IPAddress(10, 0, 0, 0), 8, true},
-      {IPAddress(172, 16, 0, 0), 12, true},
-      {IPAddress(192, 168, 0, 0), 16, true},
-      // Chrome OS containers and VMs.
-      {IPAddress(100, 115, 92, 0), 24, false},
-      // Loopback.
-      {IPAddress(127, 0, 0, 0), 8, true},
-      // Any.
-      {IPAddress(0, 0, 0, 0), 8, true},
-      // DNS.
-      {IPAddress(8, 8, 8, 8), 32, false},
-      {IPAddress(8, 8, 4, 4), 32, false},
-      {IPAddress(1, 1, 1, 1), 32, false},
-      // Multicast.
-      {IPAddress(224, 0, 0, 0), 4, true},
-      // Link local.
-      {IPAddress(169, 254, 0, 0), 16, true},
-      {IPAddress(0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 10,
-       true},
-      // Broadcast.
-      {IPAddress(255, 255, 255, 255), 32, false},
-      // IPv6 loopback, unspecified and non-address strings.
-      {IPAddress::IPv6AllZeros(), 112, false},
-      // IPv6 multicast all nodes and routers.
-      {IPAddress(0xff, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1), 128,
-       false},
-      {IPAddress(0xff, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2), 128,
-       false},
-      {IPAddress(0xff, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1), 128,
-       false},
-      {IPAddress(0xff, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2), 128,
-       false},
-      // IPv6 other multicast (link and interface local).
-      {IPAddress(0xff, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 16,
-       true},
-      {IPAddress(0xff, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 16,
-       true},
-
   };
+  static const base::NoDestructor<std::vector<IPAddresScrub>>
+      kNonIdentifyingIPRanges({
+          // Private.
+          {IPAddress(10, 0, 0, 0), 8, true},
+          {IPAddress(172, 16, 0, 0), 12, true},
+          {IPAddress(192, 168, 0, 0), 16, true},
+          // Chrome OS containers and VMs.
+          {IPAddress(100, 115, 92, 0), 24, false},
+          // Loopback.
+          {IPAddress(127, 0, 0, 0), 8, true},
+          // Any.
+          {IPAddress(0, 0, 0, 0), 8, true},
+          // DNS.
+          {IPAddress(8, 8, 8, 8), 32, false},
+          {IPAddress(8, 8, 4, 4), 32, false},
+          {IPAddress(1, 1, 1, 1), 32, false},
+          // Multicast.
+          {IPAddress(224, 0, 0, 0), 4, true},
+          // Link local.
+          {IPAddress(169, 254, 0, 0), 16, true},
+          {IPAddress(0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 10,
+           true},
+          // Broadcast.
+          {IPAddress(255, 255, 255, 255), 32, false},
+          // IPv6 loopback, unspecified and non-address strings.
+          {IPAddress::IPv6AllZeros(), 112, false},
+          // IPv6 multicast all nodes and routers.
+          {IPAddress(0xff, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1), 128,
+           false},
+          {IPAddress(0xff, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2), 128,
+           false},
+          {IPAddress(0xff, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1), 128,
+           false},
+          {IPAddress(0xff, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2), 128,
+           false},
+          // IPv6 other multicast (link and interface local).
+          {IPAddress(0xff, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 16,
+           true},
+          {IPAddress(0xff, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 16,
+           true},
+      });
   IPAddress input_addr;
   if (input_addr.AssignFromIPLiteral(addr) && input_addr.IsValid()) {
     bool mapped = MaybeUnmapAddress(&input_addr);
     bool translated = !mapped ? MaybeUntranslateAddress(&input_addr) : false;
-    for (const auto& range : kNonIdentifyingIPRanges) {
+    for (const auto& range : *kNonIdentifyingIPRanges) {
       if (IPAddressMatchesPrefix(input_addr, range.ip_addr,
                                  range.prefix_length)) {
         std::string prefix;

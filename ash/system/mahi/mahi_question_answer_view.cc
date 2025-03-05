@@ -120,7 +120,7 @@ views::Builder<views::FlexLayoutView> CreateTextBubbleBuilder(
     bool is_question) {
   return views::Builder<views::FlexLayoutView>()
       .SetInteriorMargin(kTextBubbleInteriorMargin)
-      .SetBackground(views::CreateThemedRoundedRectBackground(
+      .SetBackground(views::CreateRoundedRectBackground(
           is_question ? cros_tokens::kCrosSysSystemPrimaryContainer
                       : cros_tokens::kCrosSysSystemOnBase,
           gfx::RoundedCornersF(kTextBubbleCornerRadius)))

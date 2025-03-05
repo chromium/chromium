@@ -6,10 +6,13 @@ package org.chromium.components.permissions;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Placeholder provider class to query whether the operating system has granted various security
  * permissions.
  */
+@NullMarked
 public abstract class OsAdditionalSecurityPermissionProvider {
     /**
      * Returns whether the operating system has granted permission to enable javascript optimizers.

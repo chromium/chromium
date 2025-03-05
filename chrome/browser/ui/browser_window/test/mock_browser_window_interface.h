@@ -39,7 +39,7 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
               GetWebContentsModalDialogHostForWindow,
               (),
               (override));
-  MOCK_METHOD(bool, IsActive, (), (override));
+  MOCK_METHOD(bool, IsActive, (), (const, override));
   MOCK_METHOD(base::CallbackListSubscription,
               RegisterDidBecomeActive,
               (DidBecomeActiveCallback callback),

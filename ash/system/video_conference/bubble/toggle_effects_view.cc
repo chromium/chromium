@@ -285,8 +285,8 @@ void ToggleEffectsButton::UpdateColorsAndBackground() {
   ui::ColorId background_color_id =
       toggled_ ? cros_tokens::kCrosSysSystemPrimaryContainer
                : cros_tokens::kCrosSysSystemOnBase;
-  SetBackground(views::CreateThemedRoundedRectBackground(background_color_id,
-                                                         kButtonCornerRadius));
+  SetBackground(views::CreateRoundedRectBackground(background_color_id,
+                                                   kButtonCornerRadius));
 
   ui::ColorId foreground_color_id =
       toggled_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer

@@ -54,7 +54,7 @@ TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
           background_diameter, background_diameter,
           app_list_config->GetShortcutHostBadgeIconContainerDimension() / 2,
           background_diameter);
-      icon_background_->SetBackground(views::CreateThemedRoundedRectBackground(
+      icon_background_->SetBackground(views::CreateRoundedRectBackground(
           cros_tokens::kCrosSysSystemOnBaseOpaque, rounded_corners, 0));
     }
   }
@@ -78,7 +78,7 @@ TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
         views::BoxLayout::Orientation::kHorizontal,
         gfx::Insets(
             app_list_config->shortcut_host_badge_icon_border_margin())));
-    badge_container_->SetBackground(views::CreateThemedRoundedRectBackground(
+    badge_container_->SetBackground(views::CreateRoundedRectBackground(
         cros_tokens::kCrosSysSystemOnBaseOpaque,
         app_list_config->GetShortcutHostBadgeIconContainerDimension() / 2));
     if (item_in_folder_icon_) {

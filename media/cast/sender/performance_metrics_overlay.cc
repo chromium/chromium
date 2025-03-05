@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -43,8 +44,8 @@ constexpr int kPixelsPerChar = (kCharacterWidth + kCharacterSpacing) * kScale;
 // A map from an ASCII character to the set of rectangles corresponding to how
 // it should be rendered on the frame.
 const auto& GetCharacterRenderMap() {
-  static const base::flat_map<char, std::vector<gfx::Rect>>
-      kCharacterRenderMap = {
+  static const base::NoDestructor<base::flat_map<char, std::vector<gfx::Rect>>>
+      kCharacterRenderMap({
           {'!', {gfx::Rect(1, 0, 1, 3), gfx::Rect(1, 4, 1, 1)}},
           {'%',
            {gfx::Rect(0, 0, 1, 1), gfx::Rect(2, 1, 1, 1), gfx::Rect(1, 2, 1, 1),
@@ -92,9 +93,9 @@ const auto& GetCharacterRenderMap() {
           {'x',
            {gfx::Rect(0, 1, 1, 1), gfx::Rect(2, 1, 1, 1), gfx::Rect(1, 2, 1, 1),
             gfx::Rect(0, 3, 1, 1), gfx::Rect(2, 3, 1, 1)}},
-      };
+      });
 
-  return kCharacterRenderMap;
+  return *kCharacterRenderMap;
 }
 
 scoped_refptr<VideoFrame> CopyVideoFrame(scoped_refptr<VideoFrame> source) {

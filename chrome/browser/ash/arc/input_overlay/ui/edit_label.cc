@@ -187,7 +187,7 @@ void EditLabel::SetTextLabel(const std::u16string& text) {
   SetText(text);
   UpdateAccessibleName();
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       text == kUnknownBind && !action_->is_new()
           ? cros_tokens::kCrosSysErrorHighlight
           : cros_tokens::kCrosSysHighlightShape,

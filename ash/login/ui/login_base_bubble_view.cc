@@ -156,8 +156,8 @@ LoginBaseBubbleView::LoginBaseBubbleView(base::WeakPtr<views::View> anchor_view,
           ? cros_tokens::kCrosSysSystemBaseElevated
           : cros_tokens::kCrosSysSystemBaseElevatedOpaque);
 
-  SetBackground(views::CreateThemedRoundedRectBackground(background_color_id,
-                                                         kBubbleBorderRadius));
+  SetBackground(views::CreateRoundedRectBackground(background_color_id,
+                                                   kBubbleBorderRadius));
   SetBorder(std::make_unique<views::HighlightBorder>(
       kBubbleBorderRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));

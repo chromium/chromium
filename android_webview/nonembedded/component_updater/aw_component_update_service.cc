@@ -5,6 +5,7 @@
 #include "android_webview/nonembedded/component_updater/aw_component_update_service.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -27,7 +28,7 @@
 #include "base/files/important_file_writer.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -292,9 +293,9 @@ void AwComponentUpdateService::UpdateMetadataFiles(
     base::Value::Dict metadata_file_contents;
     metadata_file_contents.Set(component_updater::kMetadataFileCohortIdKey,
                                GetCohortId(component_id));
-    std::string metadata_file_contents_json;
-    JSONStringValueSerializer serializer(&metadata_file_contents_json);
-    if (!serializer.Serialize(metadata_file_contents)) {
+    std::optional<std::string> metadata_file_contents_json =
+        base::WriteJson(metadata_file_contents);
+    if (!metadata_file_contents_json.has_value()) {
       LOG(ERROR) << "Failed to serialize metadata for component "
                  << component_id;
       continue;
@@ -304,7 +305,7 @@ void AwComponentUpdateService::UpdateMetadataFiles(
     base::FilePath metadata_file_path =
         dest_path.Append("aw_extra_component_metadata.json");
     if (!base::ImportantFileWriter::WriteFileAtomically(
-            metadata_file_path, metadata_file_contents_json)) {
+            metadata_file_path, metadata_file_contents_json.value())) {
       LOG(ERROR) << "Failed to write metadata file for component "
                  << component_id << " at " << metadata_file_path;
     }

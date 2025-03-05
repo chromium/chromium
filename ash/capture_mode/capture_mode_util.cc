@@ -337,7 +337,7 @@ std::unique_ptr<views::View> CreateBannerView() {
           kBannerIconTextSpacingDip));
 
   const ui::ColorId background_color_id = cros_tokens::kCrosSysPrimary;
-  banner_view->SetBackground(views::CreateThemedRoundedRectBackground(
+  banner_view->SetBackground(views::CreateRoundedRectBackground(
       background_color_id, kBannerViewTopRadius, kBannerViewBottomRadius));
 
   views::ImageView* icon =
@@ -373,7 +373,7 @@ std::unique_ptr<views::View> CreatePlayIconView() {
       kCaptureModePlayIcon, kColorAshIconColorPrimary, kPlayIconSizeDip));
   play_view->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   play_view->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
-  play_view->SetBackground(views::CreateThemedRoundedRectBackground(
+  play_view->SetBackground(views::CreateRoundedRectBackground(
       kColorAshShieldAndBase80, kPlayIconBackgroundCornerRadiusDip));
   return play_view;
 }

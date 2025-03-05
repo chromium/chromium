@@ -401,7 +401,9 @@ void AutofillAiManager::HandleSavePromptResult(
     const autofill::EntityInstance& entity,
     AutofillAiClient::SaveOrUpdatePromptResult result) {
   if (!result.entity) {
-    AddStrikeForSaveAttempt(form_url, entity);
+    if (result.did_user_decline) {
+      AddStrikeForSaveAttempt(form_url, entity);
+    }
     return;
   }
 
@@ -418,7 +420,9 @@ void AutofillAiManager::HandleUpdatePromptResult(
     const base::Uuid& entity_uuid,
     AutofillAiClient::SaveOrUpdatePromptResult result) {
   if (!result.entity) {
-    AddStrikeForUpdateAttempt(entity_uuid);
+    if (result.did_user_decline) {
+      AddStrikeForUpdateAttempt(entity_uuid);
+    }
     return;
   }
 

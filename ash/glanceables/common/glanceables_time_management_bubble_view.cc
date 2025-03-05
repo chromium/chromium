@@ -330,7 +330,7 @@ void GlanceablesTimeManagementBubbleView::RemoveObserver(Observer* observer) {
 }
 
 void GlanceablesTimeManagementBubbleView::CreateElevatedBackground() {
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBaseOpaque, 16.f));
   UpdateInteriorMargin();
 

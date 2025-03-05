@@ -272,8 +272,7 @@ base::expected<bool, std::string> SidePanelService::OpenSidePanelForTab(
         "The specified tab does not belong to the specified window.");
   }
 
-  // Next, determine if we an active side panel (contextual or global) for that
-  // tab.
+  // Verify that an active side panel (contextual or global) exists for the tab.
   api::side_panel::PanelOptions panel_options = GetOptions(extension, tab_id);
   if (!panel_options.path || !panel_options.enabled.has_value() ||
       !(*panel_options.enabled)) {

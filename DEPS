@@ -229,7 +229,7 @@ vars = {
   # luci-go CIPD package version.
   # Make sure the revision is uploaded by infra-packagers builder.
   # https://ci.chromium.org/p/infra-internal/g/infra-packagers/console
-  'luci_go': 'git_revision:71ab1beddc9b9329a0655effd0c2065e5dec47bf',
+  'luci_go': 'git_revision:b7196a984610cef94ac3f0d38d1a9527469bdebc',
 
   # This can be overridden, e.g. with custom_vars, to build clang from HEAD
   # instead of downloading the prebuilt pinned revision.
@@ -258,7 +258,7 @@ vars = {
   'screen_ai_windows_386': 'version:127.21',
 
   # siso CIPD package version.
-  'siso_version': 'git_revision:3d58d66552de848b17cd585cfa6d5018124892ea',
+  'siso_version': 'git_revision:ef01a689b77e0a3c98e841310bf3cdea737707ab',
 
   # download libaom test data
   'download_libaom_testdata': False,
@@ -281,19 +281,19 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': '3809a09fef35358ea03a494ea72454d449642ef0',
+  'src_internal_revision': 'cd498be64c496b943e002a018d0907739c19799d',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '6ca926db528a7c0346649495ad19457ee76461ed',
+  'skia_revision': '03a3f653d64ee101aa27adb4ef3402bb2e655a40',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '4c9f0bc7cfaa2e503fecdaa71fb9b7b1fd5bf85e',
+  'v8_revision': '60b90085ec7394e7806e3b20fda3707560dabd51',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': '1cc27b60b7ad706660790d2fa77c6a91cbde2fe1',
+  'angle_revision': '6b10ae3386b706624893d6f654f3af953840b3a2',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -301,11 +301,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling PDFium
   # and whatever else without interference from each other.
-  'pdfium_revision': '3875d6c15f1ff4d0bb02abf86c1437335c8ab9d8',
+  'pdfium_revision': 'a769c3f17b555a3a093c3e2525e3dcddeeb3109b',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
-  'boringssl_revision': '2f81008a7dded7053f1adf164a57671efbcbf0e5',
+  'boringssl_revision': '757f994823ea53c3978947e116da115b59ea413e',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Fuchsia sdk
   # and whatever else without interference from each other.
@@ -353,7 +353,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling catapult
   # and whatever else without interference from each other.
-  'catapult_revision': '1a3be5fe4758a8e88ac820b79d7fbbf2bd9126dc',
+  'catapult_revision': '518773bc430760cbb5bdb78cc0b22713cb743741',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling chromium_variations
   # and whatever else without interference from each other.
@@ -401,7 +401,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': '383faa9e5ebf96647dd5f789f87af51c9c19f800',
+  'dawn_revision': '15d27d3399af09bbe8092d1ba7ba4d2ee866e8fc',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -508,7 +508,7 @@ vars = {
   'libcxx_revision':       'ac66645101e6aa55063c2a06c19865409b2ec7d1',
 
   # GN CIPD package version.
-  'gn_version': 'git_revision:4a8016dc391553fa1644c0740cc04eaac844121e',
+  'gn_version': 'git_revision:eabc4de478e68adce5a645261aadbb00f2994f14',
 
   # ninja CIPD package.
   'ninja_package': 'infra/3pp/tools/ninja/',
@@ -1128,7 +1128,7 @@ deps = {
   },
 
   'src/chrome/release_scripts': {
-      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '408c0a2e3ad21a20eeaec6aa003e9d7c9b699b0f',
+      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + 'acd7d0f0f3b3dd0d99ba049c5e285d4005ddfeeb',
       'condition': 'checkout_chrome_release_scripts',
   },
 
@@ -1457,7 +1457,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '14bc5bab6694ed9e08378f2de835e418a70977e9',
+    '8ea1c48e6ddc39ad1319e9de069dae2a71778339',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1616,7 +1616,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': '5NS6xAPD_EKIXkvaP020Y6IRLfYPkjUjtg8tDyrfAK0C',
+          'version': '_Bhe1NVOUuknB63edc17jRkgdwtpTbCSVWVHcVGDuckC',
       },
     ],
     'condition': 'checkout_android and non_git_source',
@@ -1952,7 +1952,7 @@ deps = {
 
 
   'src/third_party/depot_tools':
-    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '5825f91d8c7c7076d286cf84484d59ff36095693',
+    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '6d817fd7f4c19cde114d7cfb62fc5b313521776b',
 
   'src/third_party/devtools-frontend/src':
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
@@ -2818,7 +2818,7 @@ deps = {
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + 'fa3b0a5720d09efef183756c44c0fd2f7edeb94c',
+    Var('webrtc_git') + '/src.git' + '@' + '74c5a213ad5f5b27678d021c9f97590c11471c74',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -2864,7 +2864,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/linux-amd64',
-          'version': 'AuDeAKQzLbYc3kahYogRlH8aZDAaB0e2_AMxf48kHoYC',
+          'version': 'uLQB_1WxcmRdlgGWxlAm-iVcWjyluWWVqk9bd5iOK6wC',
         },
       ],
       'dep_type': 'cipd',
@@ -2874,7 +2874,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/windows-amd64',
-          'version': '2o8pc5D0fHzvbDxCUhjMlOLr4WWYCrquaMipy366ZBUC',
+          'version': 'LZpmI-6e2-R1o2X3Zgl_O54JicwHEzFp8T_XTBBs8zoC',
         },
       ],
       'dep_type': 'cipd',
@@ -2885,7 +2885,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/mac-amd64',
-          'version': 'W1I-AXOQevA4-i0y0O0ilXOuxms9Lwwly4HjmThjxEEC',
+          'version': 'dd92wAzkVOkqYNdHKbG1PgtODtzTfTAM-IdVDacENC8C',
         },
       ],
       'dep_type': 'cipd',
@@ -2896,7 +2896,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/mac-arm64',
-          'version': '22JOKr5onwhOUslaBz2is6mBDm5aXOxMCSeuKWH32_gC',
+          'version': 'ZhEAr6v2tWN1oxK6leQvyRjaNwUi4vrXZAyCwv5veegC',
         },
       ],
       'dep_type': 'cipd',
@@ -4563,7 +4563,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        'df6661c138a716d7ffcc6ba85596c93851454367',
+        'a813905134a500290b0c455d57237471115f159c',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

@@ -117,7 +117,8 @@ public class BookmarkSaveFlowTest {
                                     mShoppingService,
                                     mUserEducationHelper,
                                     ProfileManager.getLastUsedRegularProfile(),
-                                    mIdentityManager);
+                                    mIdentityManager,
+                                    new BookmarkManagerOpenerImpl());
                 });
 
         loadBookmarkModel();

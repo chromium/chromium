@@ -510,7 +510,7 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
       chromeos::features::IsSystemBlurEnabled()
           ? cros_tokens::kCrosSysSystemBaseElevated
           : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       background_color_id, mahi_constants::kPanelCornerRadius));
 
   // Create a layer for the view for background blur and rounded corners.
@@ -681,7 +681,7 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
           .AddChildren(
               views::Builder<views::FlexLayoutView>()
                   .CopyAddressTo(&ask_question_container)
-                  .SetBackground(views::CreateThemedRoundedRectBackground(
+                  .SetBackground(views::CreateRoundedRectBackground(
                       cros_tokens::kCrosSysSystemOnBase,
                       gfx::RoundedCornersF(kAskQuestionContainerCornerRadius)))
                   .SetInteriorMargin(kAskQuestionContainerInteriorMargin)

@@ -52,6 +52,7 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
   ExtensionPrefsHelperFactory::GetInstance();
   ExtensionRegistrarFactory::GetInstance();
   ImageLoaderFactory::GetInstance();
+  MessageTracker::GetFactory();
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   MimeHandlerStreamManager::EnsureFactoryBuilt();
 #endif
@@ -65,7 +66,6 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ExtensionNavigationRegistry::GetFactoryInstance();
   WebRequestEventRouterFactory::GetInstance();
-  MessageTracker::GetFactory();
 #endif
 }
 

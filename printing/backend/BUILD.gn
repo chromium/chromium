@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//printing/buildflags/buildflags.gni")
 if (use_cups && is_chromeos) {
   import("//printing/backend/tools/code_generator.gni")
@@ -131,8 +130,7 @@ component("backend") {
         "ipp_handlers.h",
         ipp_handler_map_path,
       ]
-    }
-    if (!is_chromeos_ash) {
+    } else {
       # TODO(crbug.com/40122734): Remove the original CUPS backend for macOS
       # when Cloud Print support is terminated. Follow up after Jan 1, 2021.
       sources += [

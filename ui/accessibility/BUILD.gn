@@ -108,6 +108,11 @@ component("ax_base") {
     ]
   }
 
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   public_deps = [
     ":ax_constants_mojo",
     ":ax_enums_mojo",
@@ -211,6 +216,11 @@ component("accessibility_internal") {
     "null_ax_action_target.h",
   ]
 
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   deps = [
     "//base",
     "//components/crash/core/common:crash_key",
@@ -241,6 +251,11 @@ if (is_android || is_chromeos) {
     sources = [
       "ax_assistant_structure.cc",
       "ax_assistant_structure.h",
+    ]
+
+    configs += [
+      "//build/config/compiler:wexit_time_destructors",
+      "//build/config/compiler:wglobal_constructors",
     ]
 
     deps = [ ":accessibility" ]

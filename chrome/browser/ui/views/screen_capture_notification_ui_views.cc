@@ -235,7 +235,7 @@ ScreenCaptureNotificationUIViews::ScreenCaptureNotificationUIViews(
   view_observations_.AddObservation(stop_button_.get());
   view_observations_.AddObservation(hide_link_.get());
 
-  SetBackground(views::CreateThemedSolidBackground(ui::kColorDialogBackground));
+  SetBackground(views::CreateSolidBackground(ui::kColorDialogBackground));
 }
 
 ScreenCaptureNotificationUIViews::~ScreenCaptureNotificationUIViews() {

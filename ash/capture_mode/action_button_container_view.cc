@@ -95,7 +95,7 @@ ActionButtonContainerView::ErrorView::ErrorView()
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetInsideBorderInsets(kErrorViewBorderInsets);
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated,
       gfx::RoundedCornersF(kErrorViewCornerRadius)));
   SetPaintToLayer();

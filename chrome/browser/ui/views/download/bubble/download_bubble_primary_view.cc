@@ -83,7 +83,7 @@ void DownloadBubblePrimaryView::MaybeAddOtrInfoRow(Browser* browser) {
       views::BoxLayout::CrossAxisAlignment::kStart);
   header_info_row->SetBorder(
       views::CreateEmptyBorder(GetLayoutInsets(DOWNLOAD_ROW)));
-  header_info_row->SetBackground(views::CreateThemedRoundedRectBackground(
+  header_info_row->SetBackground(views::CreateRoundedRectBackground(
       kColorDownloadBubbleInfoBackground,
       ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
           views::Emphasis::kHigh)));

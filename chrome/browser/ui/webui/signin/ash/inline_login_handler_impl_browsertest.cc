@@ -17,10 +17,12 @@
 #include "base/values.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/test/child_logged_in_browser_test_mixin.h"
+#include "chrome/browser/ash/test/regular_logged_in_browser_test_mixin.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_promo.h"
@@ -37,7 +39,7 @@
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/user_manager/known_user.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -160,14 +162,34 @@ class MockAccountAppsAvailabilityObserver
               (override));
 };
 
+std::unique_ptr<InProcessBrowserTestMixin> CreateLoginMixin(
+    const DeviceAccountInfo& info,
+    InProcessBrowserTestMixinHost* host) {
+  switch (info.user_type) {
+    case user_manager::UserType::kRegular:
+      return std::make_unique<ash::RegularLoggedInBrowserTestMixin>(
+          host, AccountId::FromUserEmailGaiaId(info.email, GaiaId(info.id)));
+    case user_manager::UserType::kChild:
+      return std::make_unique<ash::ChildLoggedInBrowserTestMixin>(
+          host, AccountId::FromUserEmailGaiaId(info.email, GaiaId(info.id)));
+    case user_manager::UserType::kGuest:
+    case user_manager::UserType::kPublicAccount:
+    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskIWA:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 class InlineLoginHandlerTest
-    : public InProcessBrowserTest,
+    : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<DeviceAccountInfo> {
  public:
   InlineLoginHandlerTest()
-      : embedded_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+      : login_mixin_(CreateLoginMixin(GetDeviceAccountInfo(), &mixin_host_)),
+        embedded_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     embedded_test_server_.RegisterRequestHandler(base::BindRepeating(
         &FakeGaia::HandleRequest, base::Unretained(&fake_gaia_)));
   }
@@ -175,10 +197,12 @@ class InlineLoginHandlerTest
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server_.InitializeAndListen());
-    InProcessBrowserTest::SetUp();
+    MixinBasedInProcessBrowserTest::SetUp();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
+
     // Configure embedded test server.
     const GURL& base_url = embedded_test_server_.base_url();
     command_line->AppendSwitchASCII(::switches::kGaiaUrl, base_url.spec());
@@ -188,25 +212,23 @@ class InlineLoginHandlerTest
     fake_gaia_.Initialize();
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
-    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    MixinBasedInProcessBrowserTest::SetUpLocalStatePrefService(local_state);
 
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &InlineLoginHandlerTest::OnWillCreateBrowserContextServices,
-                base::Unretained(this)));
+    // Setup a default device id for the primary user.
+    const auto& info = GetDeviceAccountInfo();
+    user_manager::KnownUser known_user(local_state);
+    known_user.SetDeviceId(
+        AccountId::FromUserEmailGaiaId(info.email, GaiaId(info.id)),
+        kFakeDeviceId);
   }
 
   void SetUpOnMainThread() override {
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+
     embedded_test_server_.StartAcceptingConnections();
 
-    // Setup user.
-    auto user_manager = std::make_unique<FakeChromeUserManager>();
-    const user_manager::User* user;
     if (GetDeviceAccountInfo().user_type == user_manager::UserType::kChild) {
-      user = user_manager->AddChildUser(AccountId::FromUserEmailGaiaId(
-          GetDeviceAccountInfo().email, GaiaId(GetDeviceAccountInfo().id)));
       profile()->GetPrefs()->SetString(prefs::kSupervisedUserId,
                                        GetDeviceAccountInfo().id);
       // This is required for Child users, otherwise an account cannot be added.
@@ -214,25 +236,13 @@ class InlineLoginHandlerTest
           std::make_unique<EduCoexistenceLoginHandler>(base::DoNothing());
       edu_handler_->set_web_ui_for_test(web_ui());
       edu_handler_->RegisterMessages();
-    } else {
-      user = user_manager->AddUser(AccountId::FromUserEmailGaiaId(
-          GetDeviceAccountInfo().email, GaiaId(GetDeviceAccountInfo().id)));
     }
-    primary_account_id_ = user->GetAccountId();
-    user_manager->LoginUser(primary_account_id_);
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
-
-    ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile());
 
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
     identity_test_env_profile_adaptor_->identity_test_env()
         ->MakePrimaryAccountAvailable(GetDeviceAccountInfo().email,
                                       signin::ConsentLevel::kSignin);
-    // Setup a default device id for the primary user.
-    user_manager::KnownUser known_user{g_browser_process->local_state()};
-    known_user.SetDeviceId(primary_account_id_, kFakeDeviceId);
 
     // Setup web ui with cookies.
     web_ui_.set_web_contents(web_contents());
@@ -265,18 +275,24 @@ class InlineLoginHandlerTest
     base::RunLoop().RunUntilIdle();
   }
 
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    MixinBasedInProcessBrowserTest::SetUpBrowserContextKeyedServices(context);
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+    if (GetDeviceAccountInfo().user_type == user_manager::UserType::kChild) {
+      Profile::FromBrowserContext(context)
+          ->GetProfilePolicyConnector()
+          ->OverrideIsManagedForTesting(true);
+    }
   }
 
   void TearDownOnMainThread() override {
     handler_.reset();
-    edu_handler_.reset();
     identity_test_env_profile_adaptor_.reset();
+    edu_handler_.reset();
     base::RunLoop().RunUntilIdle();
-    GetFakeUserManager()->RemoveUserFromList(primary_account_id_);
-    user_manager_enabler_.reset();
+    MixinBasedInProcessBrowserTest::TearDownOnMainThread();
   }
 
   void CompleteConsentLogForChildUser(const std::string& secondary_email) {
@@ -313,11 +329,6 @@ class InlineLoginHandlerTest
     return call_data.arg3()->GetString();
   }
 
-  FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
-
   DeviceAccountInfo GetDeviceAccountInfo() const { return GetParam(); }
 
   content::WebContents* web_contents() {
@@ -332,16 +343,19 @@ class InlineLoginHandlerTest
     return identity_test_env_profile_adaptor_->identity_test_env();
   }
 
-  const AccountId& primary_account_id() { return primary_account_id_; }
+  const AccountId& primary_account_id() {
+    return user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId();
+  }
 
  private:
+  // Mixin structure to set up a user with the appropriate type.
+  std::unique_ptr<InProcessBrowserTestMixin> login_mixin_;
+
   std::unique_ptr<TestInlineLoginHandler> handler_;
   std::unique_ptr<EduCoexistenceLoginHandler> edu_handler_;
   content::TestWebUI web_ui_;
   net::EmbeddedTestServer embedded_test_server_;
   FakeGaia fake_gaia_;
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-  AccountId primary_account_id_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
   base::CallbackListSubscription create_services_subscription_;

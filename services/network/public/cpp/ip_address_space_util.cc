@@ -386,4 +386,21 @@ mojom::IPAddressSpace CalculateResourceAddressSpace(
   return IPEndPointToIPAddressSpace(endpoint);
 }
 
+std::optional<net::IPAddress> ParsePrivateIpFromUrl(const GURL& url) {
+  net::IPAddress address;
+  if (!address.AssignFromIPLiteral(url.HostNoBracketsPiece())) {
+    return std::nullopt;
+  }
+
+  if (IPAddressToIPAddressSpace(address) != mojom::IPAddressSpace::kPrivate) {
+    return std::nullopt;
+  }
+
+  return address;
+}
+
+bool IsRFC6762LocalDomain(const GURL& url) {
+  return url.DomainIs("local");
+}
+
 }  // namespace network

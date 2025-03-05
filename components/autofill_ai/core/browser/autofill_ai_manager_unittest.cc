@@ -296,7 +296,7 @@ class AutofillAiManagerImportFormTest : public AutofillAiManagerTest {
 TEST_F(AutofillAiManagerImportFormTest, StrikesForSavePromptsPerUrl) {
   constexpr char16_t kOtherPassportNumber[] = u"67867";
   AutofillAiClient::SaveOrUpdatePromptResult decline = {
-      /*did_user_interact=*/true, std::nullopt};
+      /*did_user_decline=*/true, std::nullopt};
 
   MockFunction<void()> check;
   {
@@ -339,11 +339,17 @@ TEST_F(AutofillAiManagerImportFormTest, StrikesForSavePromptsPerUrl) {
 TEST_F(AutofillAiManagerImportFormTest, StrikesForSavePromptsPerAttribute) {
   constexpr char16_t kOtherPassportNumber[] = u"567435";
   AutofillAiClient::SaveOrUpdatePromptResult decline = {
-      /*did_user_interact=*/true, std::nullopt};
+      /*did_user_decline=*/true, std::nullopt};
+  AutofillAiClient::SaveOrUpdatePromptResult ignore = {
+      /*did_user_decline=*/false, std::nullopt};
 
   MockFunction<void()> check;
   {
     InSequence s;
+    EXPECT_CALL(client(), ShowSaveOrUpdateBubble(
+                              PassportWithNumber(kDefaultPassportNumber), _, _))
+        .Times(2)
+        .WillRepeatedly(RunOnceCallbackRepeatedly<2>(ignore));
     EXPECT_CALL(client(), ShowSaveOrUpdateBubble(
                               PassportWithNumber(kDefaultPassportNumber), _, _))
         .Times(3)
@@ -357,7 +363,9 @@ TEST_F(AutofillAiManagerImportFormTest, StrikesForSavePromptsPerAttribute) {
   manager().MaybeImportForm(CreatePassportForm(), base::DoNothing());
   manager().MaybeImportForm(CreatePassportForm(), base::DoNothing());
   manager().MaybeImportForm(CreatePassportForm(), base::DoNothing());
-  // The fourth attempt is ignored, even though it is a different domain.
+  manager().MaybeImportForm(CreatePassportForm(), base::DoNothing());
+  manager().MaybeImportForm(CreatePassportForm(), base::DoNothing());
+  // The next attempt is ignored, even though it is a different domain.
   manager().MaybeImportForm(
       CreatePassportForm(kDefaultPassportNumber, "https://other.com"),
       base::DoNothing());
@@ -376,9 +384,11 @@ TEST_F(AutofillAiManagerImportFormTest, StrikesForUpdates) {
   constexpr char16_t kOtherPassportNumber2[] = u"6785634567";
 
   AutofillAiClient::SaveOrUpdatePromptResult decline = {
-      /*did_user_interact=*/true, std::nullopt};
+      /*did_user_decline=*/true, std::nullopt};
+  AutofillAiClient::SaveOrUpdatePromptResult ignore = {
+      /*did_user_decline=*/false, std::nullopt};
   AutofillAiClient::SaveOrUpdatePromptResult accept = {
-      /*did_user_interact=*/true,
+      /*did_user_decline=*/false,
       GetPassportEntityInstance({.number = kDefaultPassportNumber})};
 
   {
@@ -397,7 +407,14 @@ TEST_F(AutofillAiManagerImportFormTest, StrikesForUpdates) {
                               PassportWithNumber(kOtherPassportNumber), _, _))
         .WillOnce(RunOnceCallback<2>(accept));
 
-    // Only three more prompts will be shown for the next update.
+    // If the user just ignores the prompt, no strikes are recorded.
+    EXPECT_CALL(client(), ShowSaveOrUpdateBubble(
+                              PassportWithNumber(kOtherPassportNumber2), _, _))
+        .Times(2)
+        .WillRepeatedly(RunOnceCallbackRepeatedly<2>(ignore));
+
+    // Only three more prompts will be shown for the next update because the
+    // user declines explicitly.
     EXPECT_CALL(client(), ShowSaveOrUpdateBubble(
                               PassportWithNumber(kOtherPassportNumber2), _, _))
         .Times(3)
@@ -416,7 +433,12 @@ TEST_F(AutofillAiManagerImportFormTest, StrikesForUpdates) {
   manager().MaybeImportForm(CreatePassportForm(kOtherPassportNumber),
                             base::DoNothing());
 
-  // Simulate four more submissions - only three prompts are shown.
+  // Simulate six more submissions - five prompts are shown because the first
+  // two prompts are ignored.
+  manager().MaybeImportForm(CreatePassportForm(kOtherPassportNumber2),
+                            base::DoNothing());
+  manager().MaybeImportForm(CreatePassportForm(kOtherPassportNumber2),
+                            base::DoNothing());
   manager().MaybeImportForm(CreatePassportForm(kOtherPassportNumber2),
                             base::DoNothing());
   manager().MaybeImportForm(CreatePassportForm(kOtherPassportNumber2),
@@ -436,7 +458,7 @@ TEST_F(AutofillAiManagerImportFormTest, AcceptingResetsStrikesPerUrl) {
   AutofillAiClient::SaveOrUpdatePromptResult decline{/*did_user_interact=*/true,
                                                      std::nullopt};
   AutofillAiClient::SaveOrUpdatePromptResult accept = {
-      /*did_user_interact=*/true,
+      /*did_user_decline=*/false,
       GetPassportEntityInstance({.number = kDefaultPassportNumber})};
   MockFunction<void()> check;
   {
@@ -496,9 +518,9 @@ TEST_F(AutofillAiManagerImportFormTest, AcceptingResetsStrikesPerUrl) {
 // for the strike key attributes of that entity.
 TEST_F(AutofillAiManagerImportFormTest, AcceptingResetsStrikesPerAttribute) {
   AutofillAiClient::SaveOrUpdatePromptResult decline = {
-      /*did_user_interact=*/true, std::nullopt};
+      /*did_user_decline=*/true, std::nullopt};
   AutofillAiClient::SaveOrUpdatePromptResult accept = {
-      /*did_user_interact=*/true,
+      /*did_user_decline=*/false,
       GetPassportEntityInstance({.number = kDefaultPassportNumber})};
   {
     InSequence s;
@@ -562,7 +584,7 @@ TEST_F(AutofillAiManagerImportFormTest,
   // Accept the bubble.
   std::move(save_callback)
       .Run(AutofillAiClient::SaveOrUpdatePromptResult(
-          /*did_user_interact=*/true, new_entity));
+          /*did_user_decline=*/false, new_entity));
   // Tests that the expected entity was saved.
   base::span<const EntityInstance> saved_entities = GetEntityInstances();
   ASSERT_EQ(saved_entities.size(), 1u);
@@ -681,7 +703,7 @@ TEST_F(AutofillAiManagerImportFormTest, NewEntity_ShowPromptAndAccept) {
   // Accept the bubble.
   std::move(save_callback)
       .Run(AutofillAiClient::SaveOrUpdatePromptResult(
-          /*did_user_interact=*/true, entity));
+          /*did_user_decline=*/false, entity));
   // Tests that the expected entity was saved.
   base::span<const EntityInstance> saved_entities = GetEntityInstances();
   ASSERT_EQ(saved_entities.size(), 2u);

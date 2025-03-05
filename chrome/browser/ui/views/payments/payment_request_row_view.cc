@@ -127,7 +127,7 @@ void PaymentRequestRowView::UpdateBottomSeparatorVisualState() {
 
 void PaymentRequestRowView::SetHighlighted(bool highlighted) {
   if (highlighted) {
-    SetBackground(views::CreateThemedSolidBackground(
+    SetBackground(views::CreateSolidBackground(
         kColorPaymentsRequestRowBackgroundHighlighted));
     SetBottomSeparatorVisible(false);
     if (previous_row_) {

@@ -9,7 +9,6 @@
     "target_cpu": "x86",
     "target_os": "android",
     "use_clang_coverage": true,
-    "use_reclient": false,
     "use_siso": true
   }
 }

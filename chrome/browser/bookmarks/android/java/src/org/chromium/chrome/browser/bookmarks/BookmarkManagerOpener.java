@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import android.app.Activity;
+import android.content.Context;
 
 import androidx.annotation.Nullable;
 
@@ -35,6 +36,30 @@ public interface BookmarkManagerOpener {
      *     recent folder. Can be null.
      */
     void showBookmarkManager(Activity activity, Profile profile, @Nullable BookmarkId folderId);
+
+    /**
+     * Starts an {@link BookmarkEditActivity} for the given {@link BookmarkId}.
+     *
+     * @param activity A context to start the manager with, if null then the application context
+     *     will be used instead.
+     * @param profile The profile associated with the bookmarks.
+     * @param bookmarkId The bookmark to open.
+     */
+    void startEditActivity(Context context, Profile profile, BookmarkId bookmarkId);
+
+    /**
+     * Starts an {@link BookmarkFolderPickerActivity} for the given {@link BookmarkId}s.
+     *
+     * @param context A context to start the manager with, if null then the application context will
+     *     be used instead.
+     * @param profile The profile associated with the bookmarks.
+     * @param bookmarkIds The bookmarks that are being moved via the picker.
+     */
+    void startFolderPickerActivity(Context context, Profile profile, BookmarkId... bookmarkIds);
+
+    /** Closes the {@link BookmarkActivity} on Phone. Does nothing on tablet. */
+    // TODO(crbug.com/400793505): Remove this function.
+    void finishActivityOnPhone(Context context);
 
     /** Returns the last used URL for the bookmarks manager. */
     String getLastUsedUrl();

@@ -361,6 +361,7 @@
       "chrome://eche-app/*",
       "chrome://extensions/*",
       "chrome://file-manager/*",
+      "chrome://glic/*",
       "chrome://help-app/*",
       "chrome://history/*",
       "chrome://new-tab-page/*",

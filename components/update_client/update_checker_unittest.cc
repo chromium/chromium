@@ -390,14 +390,14 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   EXPECT_TRUE(results_);
   EXPECT_EQ(1u, results_->list.size());
   const auto& result = results_->list.front();
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", result.extension_id.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", result.extension_id);
   EXPECT_EQ("1.0", result.manifest.version);
   EXPECT_EQ(1u, result.manifest.packages.size());
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf.crx",
-               result.manifest.packages.front().name.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf.crx",
+            result.manifest.packages.front().name);
   EXPECT_EQ(1u, result.crx_urls.size());
   EXPECT_EQ(GURL("http://localhost/download/"), result.crx_urls.front());
-  EXPECT_STREQ("this", result.action_run.c_str());
+  EXPECT_EQ("this", result.action_run);
 
   // Check the DDOS protection header values.
   const auto extra_request_headers =
@@ -1166,7 +1166,7 @@ TEST_P(UpdateCheckerTest, SameVersionUpdateAllowed) {
     ASSERT_TRUE(root);
     const auto& app =
         (*root->GetDict().FindListByDottedPath("request.app"))[0].GetDict();
-    EXPECT_STREQ(kUpdateItemId, app.FindString("appid")->c_str());
+    EXPECT_EQ(kUpdateItemId, CHECK_DEREF(app.FindString("appid")));
     EXPECT_TRUE(app.FindDict("updatecheck"));
     EXPECT_FALSE(app.FindByDottedPath("updatecheck.sameversionupdate"));
   }
@@ -1190,7 +1190,7 @@ TEST_P(UpdateCheckerTest, SameVersionUpdateAllowed) {
     ASSERT_TRUE(root);
     const auto& app =
         (*root->GetDict().FindListByDottedPath("request.app"))[0].GetDict();
-    EXPECT_STREQ(kUpdateItemId, app.FindString("appid")->c_str());
+    EXPECT_EQ(kUpdateItemId, CHECK_DEREF(app.FindString("appid")));
     EXPECT_EQ(app.FindBoolByDottedPath("updatecheck.sameversionupdate"), true);
   }
 }
@@ -1220,9 +1220,9 @@ TEST_P(UpdateCheckerTest, NoUpdateActionRun) {
   EXPECT_TRUE(results_);
   EXPECT_EQ(1u, results_->list.size());
   const auto& result = results_->list.front();
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", result.extension_id.c_str());
-  EXPECT_STREQ("noupdate", result.status.c_str());
-  EXPECT_STREQ("this", result.action_run.c_str());
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", result.extension_id);
+  EXPECT_EQ("noupdate", result.status);
+  EXPECT_EQ("this", result.action_run);
 }
 
 TEST_P(UpdateCheckerTest, UpdatePauseResume) {
@@ -1344,7 +1344,7 @@ TEST_P(UpdateCheckerTest, ParseErrorAppStatusErrorUnknownApplication) {
   EXPECT_TRUE(results_);
   EXPECT_EQ(1u, results_->list.size());
   const auto& result = results_->list.front();
-  EXPECT_STREQ("error-unknownApplication", result.status.c_str());
+  EXPECT_EQ("error-unknownApplication", result.status);
 }
 
 TEST_P(UpdateCheckerTest, DomainJoined) {

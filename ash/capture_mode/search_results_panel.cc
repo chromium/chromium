@@ -106,7 +106,7 @@ class SunfishSearchBoxView : public views::View,
             .SetBorder(nullptr)
             .Build());
 
-    SetBackground(views::CreateThemedRoundedRectBackground(
+    SetBackground(views::CreateRoundedRectBackground(
         cros_tokens::kCrosSysSystemOnBase1, kSearchBoxRadius));
 
     SetPreferredSize(gfx::Size(capture_mode::kSearchResultsPanelWebViewWidth,
@@ -239,7 +239,7 @@ SearchResultsPanel::SearchResultsPanel() {
                                       kSearchResultsViewSpacing);
   }
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated, kPanelCornerRadius));
   SetPaintToLayer();
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kPanelCornerRadius});

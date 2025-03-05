@@ -35,7 +35,7 @@ class AutofillAiClient {
   // prompt.
   struct SaveOrUpdatePromptResult final {
     SaveOrUpdatePromptResult();
-    SaveOrUpdatePromptResult(bool did_user_interact,
+    SaveOrUpdatePromptResult(bool did_user_decline,
                              std::optional<autofill::EntityInstance> entity);
     SaveOrUpdatePromptResult(const SaveOrUpdatePromptResult&);
     SaveOrUpdatePromptResult(SaveOrUpdatePromptResult&&);
@@ -43,7 +43,8 @@ class AutofillAiClient {
     SaveOrUpdatePromptResult& operator=(SaveOrUpdatePromptResult&&);
     ~SaveOrUpdatePromptResult();
 
-    bool did_user_interact = false;
+    // Whether the user explicitly declined the dialog.
+    bool did_user_decline = false;
 
     // Non-empty iff the prompt was accepted.
     std::optional<autofill::EntityInstance> entity;

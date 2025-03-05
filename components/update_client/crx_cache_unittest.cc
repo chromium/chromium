@@ -4,6 +4,7 @@
 
 #include "components/update_client/crx_cache.h"
 
+#include <map>
 #include <memory>
 #include <string>
 
@@ -41,10 +42,11 @@ auto ExpectError(UnpackerError error) {
       error);
 }
 
-auto ExpectHashes(const absl::flat_hash_set<std::string>& expected_hashes) {
+auto ExpectHashes(
+    const std::multimap<std::string, std::string>& expected_hashes) {
   return base::BindOnce(
-      [](const absl::flat_hash_set<std::string>& expected_hashes,
-         const absl::flat_hash_set<std::string>& result) {
+      [](const std::multimap<std::string, std::string>& expected_hashes,
+         const std::multimap<std::string, std::string>& result) {
         EXPECT_EQ(result, expected_hashes);
       },
       expected_hashes);
@@ -144,21 +146,23 @@ TEST_F(CrxCacheTest, CacheNotProvided) {
   cache->GetByFp("fp", ExpectError(UnpackerError::kCrxCacheNotProvided));
   cache->GetByHash("hash", ExpectError(UnpackerError::kCrxCacheNotProvided));
   cache->RemoveAll("appid");
-  cache->ListHashes(ExpectHashes({}).Then(Quit()));
+  cache->ListHashesByAppId(ExpectHashes({}).Then(Quit()));
   RunLoop();
 }
 
-TEST_F(CrxCacheTest, ListHashes) {
+TEST_F(CrxCacheTest, ListHashesByAppId) {
   scoped_refptr<CrxCache> cache =
       base::MakeRefCounted<CrxCache>(TempPath("cache_dir"));
-  cache->ListHashes(ExpectHashes({}));
+  cache->ListHashesByAppId(ExpectHashes({}));
   cache->Put(MakeFile(), "appid", "hash", "fp", ExpectPathExists());
-  cache->ListHashes(ExpectHashes({"hash"}));
+  cache->ListHashesByAppId(ExpectHashes({{"appid", "hash"}}));
   cache->Put(MakeFile(), "appid2", "hash2", "fp2", ExpectPathExists());
-  cache->ListHashes(ExpectHashes({"hash", "hash2"}).Then(Quit()));
+  cache->ListHashesByAppId(
+      ExpectHashes({{"appid", "hash"}, {"appid2", "hash2"}}).Then(Quit()));
   RunLoop();
   cache->Put(MakeFile(), "appid", "hash3", "fp3", ExpectPathExists());
-  cache->ListHashes(ExpectHashes({"hash3", "hash2"}).Then(Quit()));
+  cache->ListHashesByAppId(
+      ExpectHashes({{"appid", "hash3"}, {"appid2", "hash2"}}).Then(Quit()));
   RunLoop();
 }
 
@@ -167,13 +171,14 @@ TEST_F(CrxCacheTest, RemoveAll) {
       base::MakeRefCounted<CrxCache>(TempPath("cache_dir"));
   cache->Put(MakeFile(), "appid", "hash", "fp", ExpectPathExists());
   cache->Put(MakeFile(), "appid2", "hash2", "fp2", ExpectPathExists());
-  cache->ListHashes(ExpectHashes({"hash", "hash2"}).Then(Quit()));
+  cache->ListHashesByAppId(
+      ExpectHashes({{"appid", "hash"}, {"appid2", "hash2"}}).Then(Quit()));
   RunLoop();
   cache->RemoveAll("appid");
-  cache->ListHashes(ExpectHashes({"hash2"}).Then(Quit()));
+  cache->ListHashesByAppId(ExpectHashes({{"appid2", "hash2"}}).Then(Quit()));
   RunLoop();
   cache->RemoveAll("appid2");
-  cache->ListHashes(ExpectHashes({}).Then(Quit()));
+  cache->ListHashesByAppId(ExpectHashes({}).Then(Quit()));
   RunLoop();
 }
 

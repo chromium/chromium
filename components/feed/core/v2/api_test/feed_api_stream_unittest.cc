@@ -3663,6 +3663,25 @@ TEST_F(FeedApiTest, InvalidateFeedCache_DoesNotRefreshOtherFeed) {
   EXPECT_TRUE(response_translator_.InjectedResponseConsumed());
 }
 
+TEST_F(FeedApiTest, PassFeedLaunchCuiMetadata) {
+  // Test the case that the metadata is read from the network response.
+  RefreshResponseData response;
+  response.model_update_request = MakeTypicalInitialModelState();
+  response.feed_launch_cui_metadata = "hello";
+  response_translator_.InjectResponse(std::move(response));
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  EXPECT_EQ("hello", feed_launch_cui_metadata_);
+
+  // Test the case that the metadata should be persisted to the store. It should
+  // be read from the store on restart.
+  feed_launch_cui_metadata_ = "";
+  CreateStream();  // Simulate a Chrome restart.
+  TestForYouSurface surface2(stream_.get());
+  WaitForIdleTaskQueue();
+  EXPECT_EQ("hello", feed_launch_cui_metadata_);
+}
+
 class FeedCloseRefreshTest : public FeedApiTest {
  public:
   void SetUp() override {

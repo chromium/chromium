@@ -30,9 +30,15 @@ namespace {
 
 class MockEnvironment : public Environment {
  public:
-  MOCK_METHOD2(GetVar, bool(std::string_view, std::string* result));
-  MOCK_METHOD2(SetVar, bool(std::string_view, const std::string& new_value));
-  MOCK_METHOD1(UnSetVar, bool(std::string_view));
+  MOCK_METHOD(bool,
+              GetVar,
+              (std::string_view, std::string* result),
+              (override));
+  MOCK_METHOD(bool,
+              SetVar,
+              (std::string_view, const std::string& new_value),
+              (override));
+  MOCK_METHOD(bool, UnSetVar, (std::string_view), (override));
 };
 
 // Needs to be const char* to make gmock happy.

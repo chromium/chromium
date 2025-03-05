@@ -206,6 +206,56 @@ export declare interface WebClientRequestTypes {
   };
 }
 
+
+type RemoveStringPrefix<S extends string, Prefix extends string> =
+    S extends `${Prefix}${infer Rest}` ? Rest : 'prefixNotFound!';
+
+type HostRequestEnumNamesType = {
+  [K in keyof HostRequestTypes as RemoveStringPrefix<K, 'glicBrowser'>]: 0;
+};
+
+() => {
+  // LINT.IfChange(ApiRequestType)
+  // The sole purpose of this is to prompt you to update histograms.xml!
+  const apiRequestTypes: HostRequestEnumNamesType = {
+    WebClientCreated: 0,
+    WebClientInitialized: 0,
+    CreateTab: 0,
+    OpenGlicSettingsPage: 0,
+    ClosePanel: 0,
+    ShowProfilePicker: 0,
+    GetContextFromFocusedTab: 0,
+    CaptureScreenshot: 0,
+    ResizeWindow: 0,
+    SetWindowDraggableAreas: 0,
+    SetMicrophonePermissionState: 0,
+    SetLocationPermissionState: 0,
+    SetTabContextPermissionState: 0,
+    SetContextAccessIndicator: 0,
+    GetUserProfileInfo: 0,
+    RefreshSignInCookies: 0,
+    AttachPanel: 0,
+    DetachPanel: 0,
+    SetAudioDucking: 0,
+    OnUserInputSubmitted: 0,
+    OnResponseStarted: 0,
+    OnResponseStopped: 0,
+    OnSessionTerminated: 0,
+    OnResponseRated: 0,
+    ScrollTo: 0,
+    SetSyntheticExperimentState: 0,
+  };
+  return apiRequestTypes;
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/histograms.xml:ApiRequestType)
+};
+
+export function requestTypeToHistogramSuffix(type: string): string|undefined {
+  if (!type.startsWith('glicBrowser')) {
+    return undefined;
+  }
+  return type.substring(11);
+}
+
 export type AllRequestTypes = HostRequestTypes&WebClientRequestTypes;
 // All request types which do not provide a return.
 export type AllRequestTypesWithoutReturn = {

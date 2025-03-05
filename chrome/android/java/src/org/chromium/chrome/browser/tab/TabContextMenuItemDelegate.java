@@ -23,6 +23,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -345,7 +346,8 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                             url,
                             mSnackbarManagerSupplier.get(),
                             mTab.getProfile(),
-                            mBottomSheetControllerSupplier.get());
+                            mBottomSheetControllerSupplier.get(),
+                            new BookmarkManagerOpenerImpl());
                     TrackerFactory.getTrackerForProfile(profile)
                             .notifyEvent(EventConstants.READ_LATER_CONTEXT_MENU_TAPPED);
 

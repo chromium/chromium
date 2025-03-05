@@ -28,6 +28,7 @@
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/histogram_snapshot_manager.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/time/clock.h"
@@ -215,9 +216,8 @@ metrics::SystemProfileProto::OS::XdgCurrentDesktop ToProtoCurrentDesktop(
 // Gets the hash of this session. A random hash is generated the first time this
 // is called (which is cached and returned for the remainder of the session).
 uint64_t GetSessionHash() {
-  static const std::vector<uint8_t> session_hash =
-      crypto::RandBytesAsVector(/*length=*/8);
-  return *reinterpret_cast<const uint64_t*>(session_hash.data());
+  static const uint64_t session_hash = base::RandUint64();
+  return session_hash;
 }
 
 }  // namespace

@@ -184,7 +184,7 @@ void AuthInputRowView::CreateAndConfigureInputRow() {
 
   input_row_ =
       input_row_container->AddChildView(std::make_unique<views::View>());
-  input_row_->SetBackground(views::CreateThemedRoundedRectBackground(
+  input_row_->SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase, kInputRowCornerRadiusDp));
 
   input_row_->SetBorder(std::make_unique<views::HighlightBorder>(

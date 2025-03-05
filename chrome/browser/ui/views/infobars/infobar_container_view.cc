@@ -78,7 +78,7 @@ InfoBarContainerView::InfoBarContainerView(Delegate* delegate)
   views::SetCascadingColorProviderColor(this, views::kCascadingBackgroundColor,
                                         kColorToolbar);
   SetBackground(
-      views::CreateThemedSolidBackground(kColorInfoBarContentAreaSeparator));
+      views::CreateSolidBackground(kColorInfoBarContentAreaSeparator));
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
   GetViewAccessibility().SetName(

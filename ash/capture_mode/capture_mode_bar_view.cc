@@ -94,7 +94,7 @@ CaptureModeBarView::CaptureModeBarView()
     : shadow_(SystemShadow::CreateShadowOnTextureLayer(
           SystemShadow::Type::kElevation12)) {
   SetPaintToLayer();
-  SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
+  SetBackground(views::CreateSolidBackground(kColorAshShieldAndBase80));
 
   const int border_radius = capture_mode::kCaptureBarHeight / 2;
   layer()->SetFillsBoundsOpaquely(false);

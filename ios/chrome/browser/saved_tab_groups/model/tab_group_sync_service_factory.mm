@@ -57,14 +57,17 @@ std::unique_ptr<KeyedService> BuildService(
           ->GetDeviceInfoTracker();
   auto* opt_guide = OptimizationGuideServiceFactory::GetForProfile(profile);
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  auto* data_sharing_service =
+      data_sharing::DataSharingServiceFactory::GetForProfile(profile);
   auto collaboration_finder =
       std::make_unique<collaboration::CollaborationFinderImpl>(
-          data_sharing::DataSharingServiceFactory::GetForProfile(profile));
+          data_sharing_service);
 
   std::unique_ptr<TabGroupSyncService> sync_service = CreateTabGroupSyncService(
       ::GetChannel(), DataTypeStoreServiceFactory::GetForProfile(profile),
       profile->GetPrefs(), device_info_tracker, opt_guide, identity_manager,
-      std::move(collaboration_finder), synthetic_field_trial_helper);
+      std::move(collaboration_finder), synthetic_field_trial_helper,
+      data_sharing_service->GetLogger());
 
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
   std::unique_ptr<TabGroupLocalUpdateObserver> local_update_observer =

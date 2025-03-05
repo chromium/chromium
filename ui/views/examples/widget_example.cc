@@ -71,8 +71,8 @@ LabelButton* WidgetExample::BuildButton(View* container,
 void WidgetExample::CreateDialogWidget(View* sender, bool modal) {
   auto dialog = std::make_unique<DialogDelegateView>();
   dialog->SetTitle(IDS_WIDGET_WINDOW_TITLE);
-  dialog->SetBackground(CreateThemedSolidBackground(
-      ExamplesColorIds::kColorWidgetExampleDialogBorder));
+  dialog->SetBackground(
+      CreateSolidBackground(ExamplesColorIds::kColorWidgetExampleDialogBorder));
   dialog->SetLayoutManager(std::make_unique<BoxLayout>(
       BoxLayout::Orientation::kVertical, gfx::Insets(10), 10));
   dialog->SetExtraView(std::make_unique<MdTextButton>(
@@ -106,7 +106,7 @@ void WidgetExample::ShowWidget(View* sender, Widget::InitParams::Type type) {
     View* contents = widget->SetContentsView(std::make_unique<View>());
     contents->SetLayoutManager(
         std::make_unique<BoxLayout>(BoxLayout::Orientation::kHorizontal));
-    contents->SetBackground(CreateThemedSolidBackground(
+    contents->SetBackground(CreateSolidBackground(
         ExamplesColorIds::kColorWidgetExampleContentBorder));
     BuildButton(contents, GetStringUTF16(IDS_WIDGET_CLOSE_BUTTON_LABEL))
         ->SetCallback(

@@ -22,6 +22,11 @@ static_library("redaction_tool") {
     "url_parse.h",
   ]
 
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   public_deps = [ "//base" ]
 
   deps = [

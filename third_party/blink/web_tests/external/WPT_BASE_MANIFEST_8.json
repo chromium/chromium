@@ -4187,6 +4187,20 @@
        {}
       ]
      ],
+     "scroll-marker-with-content-visibility-hidden-ancestor-crash.html": [
+      "451e9e9709a9a5b1bc2c371884249a26cfb6e391",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scroll-marker-with-content-visibility-hidden-crash.html": [
+      "7e6fee214ca5db129a52564b4fbf0fd818fc1091",
+      [
+       null,
+       {}
+      ]
+     ],
      "scroll-markers-container-query-crash.html": [
       "c835943807493c70b22298c50863be9ecfdd693c",
       [
@@ -5169,6 +5183,13 @@
     },
     "css-text-decor": {
      "crashtests": {
+      "pseudo-element-text-decoration-under-pseudo-first-line-crash.html": [
+       "6f6c5ecac0b8f4ce0fac7e56426078e29c5ed662",
+       [
+        null,
+        {}
+       ]
+      ],
       "text-decoration-first-line-multi-crash.html": [
        "f6176334ad6e6ef2662a8f89785f601f48a762cf",
        [
@@ -95679,7 +95700,7 @@
       ]
      ],
      "rounded-clipped-border.html": [
-      "60f4dfd8ba64ddfa5b70b400414a31d5d24b0563",
+      "fe48fd3bccabb87d47ad4f2e366ff8f1180a80fc",
       [
        null,
        [
@@ -95695,11 +95716,11 @@
           [
            [
             0,
-            15
+            75
            ],
            [
             0,
-            900
+            1200
            ]
           ]
          ]
@@ -148824,7 +148845,7 @@
       ]
      ],
      "object-fit-none-png-001c.html": [
-      "8819de8015172f9585506905539e38763a203901",
+      "fe483baa96345ad682987f9a4bc222644c8c1cf2",
       [
        null,
        [
@@ -148833,23 +148854,7 @@
          "=="
         ]
        ],
-       {
-        "fuzzy": [
-         [
-          null,
-          [
-           [
-            0,
-            1
-           ],
-           [
-            0,
-            50
-           ]
-          ]
-         ]
-        ]
-       }
+       {}
       ]
      ],
      "object-fit-none-png-001e.html": [
@@ -148905,7 +148910,7 @@
       ]
      ],
      "object-fit-none-png-002c.html": [
-      "a240681abec12f33e34fd3b1b9201e437712e6c5",
+      "09bc836d024bffd1f614f97067f50ece6fdb76ed",
       [
        null,
        [
@@ -148914,23 +148919,7 @@
          "=="
         ]
        ],
-       {
-        "fuzzy": [
-         [
-          null,
-          [
-           [
-            0,
-            1
-           ],
-           [
-            0,
-            50
-           ]
-          ]
-         ]
-        ]
-       }
+       {}
       ]
      ],
      "object-fit-none-png-002e.html": [
@@ -149298,7 +149287,7 @@
       ]
      ],
      "object-fit-scale-down-png-001c.html": [
-      "d897dc24f76abddb0bc1e02f06a923deb1165295",
+      "5b8116ecbcb6e3343c0316e6d5a1f31c97afe3bd",
       [
        null,
        [
@@ -149307,23 +149296,7 @@
          "=="
         ]
        ],
-       {
-        "fuzzy": [
-         [
-          null,
-          [
-           [
-            0,
-            1
-           ],
-           [
-            0,
-            50
-           ]
-          ]
-         ]
-        ]
-       }
+       {}
       ]
      ],
      "object-fit-scale-down-png-001e.html": [
@@ -149379,7 +149352,7 @@
       ]
      ],
      "object-fit-scale-down-png-002c.html": [
-      "9bdafced56520eaa5ce8ff09a547a4487397cd7e",
+      "626f379f1c7ca6934e57e22fc3b2cd1fa0fad6bc",
       [
        null,
        [
@@ -149388,23 +149361,7 @@
          "=="
         ]
        ],
-       {
-        "fuzzy": [
-         [
-          null,
-          [
-           [
-            0,
-            1
-           ],
-           [
-            0,
-            50
-           ]
-          ]
-         ]
-        ]
-       }
+       {}
       ]
      ],
      "object-fit-scale-down-png-002e.html": [
@@ -150045,7 +150002,7 @@
       ]
      ],
      "object-view-box-fit-contain-img.html": [
-      "d2e4c08a0512d3984e5403af9422babf0436264b",
+      "4fe44e0c3418461d5f7e062bd02025e6ac1d3469",
       [
        null,
        [
@@ -150054,7 +150011,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            2
+           ],
+           [
+            0,
+            200
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "object-view-box-fit-contain-svg.html": [
@@ -150201,7 +150174,7 @@
       ]
      ],
      "object-view-box-fit-none-img.html": [
-      "f4a7412297fc432b535697ab26d41d88477143b7",
+      "16c569a4413ff2abd97706d1000d0e88dc2bd5cf",
       [
        null,
        [
@@ -150210,7 +150183,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            2
+           ],
+           [
+            0,
+            5
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "object-view-box-fit-none-svg.html": [
@@ -226050,7 +226039,7 @@
       ]
      ],
      "transform-compound-001.html": [
-      "1f5ed4ca07fa57ce4556d85468261c511d9c98fa",
+      "233bce908b983eece583c99f7bede6731573d2c1",
       [
        null,
        [
@@ -226067,7 +226056,23 @@
          "!="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            30
+           ],
+           [
+            0,
+            500
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "transform-containing-block-and-scrolling-area-for-fixed.html": [
@@ -249879,804 +249884,6 @@
        {}
       ]
      ],
-     "layered-capture": {
-      "border-image.tentative.html": [
-       "ad48b639fc0fe06c119a1e4179747544dc07ba46",
-       [
-        null,
-        [
-         [
-          "/css/css-view-transitions/layered-capture/border-image-ref.tentative.html",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             10
-            ],
-            [
-             0,
-             200000
-            ]
-           ]
-          ]
-         ]
-        }
-       ]
-      ],
-      "border-offset-with-padding-inline.tentative.html": [
-       "ca0be4179c6a7f7d90c0716be602e4a36c354610",
-       [
-        null,
-        [
-         [
-          "/css/css-view-transitions/layered-capture/border-offset-with-padding-inline-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "border-offset-with-padding-nested.tentative.html": [
-       "446d35e36613b797eab55638cd6165acac376eb5",
-       [
-        null,
-        [
-         [
-          "/css/css-view-transitions/layered-capture/border-offset-ref.tentative.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "border-offset-with-padding.tentative.html": [
-       "e3255677506b7cf39e0f384e2fa593839c6ec985",
-       [
-        null,
-        [
-         [
-          "/css/css-view-transitions/layered-capture/border-offset-ref.tentative.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "border-offset.tentative.html": [
-       "7fb6a9a622481175a39b4436f74f55cbc622efbb",
-       [
-        null,
-        [
-         [
-          "/css/css-view-transitions/layered-capture/border-offset-ref.tentative.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "border-uneven.tentative.html": [
-       "eeec263e27aa4bc920b24b99033f400038519709",
-       [
-        null,
-        [
-         [
-          "/css/css-view-transitions/layered-capture/border-uneven-ref.html",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             255
-            ],
-            [
-             0,
-             515
-            ]
-           ]
-          ]
-         ]
-        }
-       ]
-      ],
-      "box-decorations.tentative.html": [
-       "436ba4d3ded5c16d9f65f5788b7dd1790276f102",
-       [
-        null,
-        [
-         [
-          "/css/css-view-transitions/layered-capture/box-decorations-ref.tentative.html",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             10
-            ],
-            [
-             0,
-             200000
-            ]
-           ]
-          ]
-         ]
-        }
-       ]
-      ],
-      "box-model-capture-nested.tentative.html": [
-       "be8eea0cf70d6285520fbc88682d2bcfc22a01b6",
-       [
-        null,
-        [
-         [
-          "/css/css-view-transitions/layered-capture/box-model-capture-nested-ref.html",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             10
-            ],
-            [
-             0,
-             200000
-            ]
-           ]
-          ]
-         ]
-        }
-       ]
-      ],
-      "box-model-capture.tentative.sub.html": [
-       "c4ca0dca97b091069e582d43bfa23af6c865a014",
-       [
-        "css/css-view-transitions/layered-capture/box-model-capture.tentative.sub.html?sizing=border-box",
-        [
-         [
-          "/css/css-view-transitions/layered-capture/box-model-capture-ref.sub.html?sizing=border-box",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             10
-            ],
-            [
-             0,
-             200000
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-view-transitions/layered-capture/box-model-capture.tentative.sub.html?sizing=content-box",
-        [
-         [
-          "/css/css-view-transitions/layered-capture/box-model-capture-ref.sub.html?sizing=content-box",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             10
-            ],
-            [
-             0,
-             200000
-            ]
-           ]
-          ]
-         ]
-        }
-       ]
-      ],
-      "capture-mode-flat.tentative.html": [
-       "beed17c89735e419a8bcd33d903d913aa7c7227b",
-       [
-        null,
-        [
-         [
-          "/css/css-view-transitions/layered-capture/nested-opacity-ref.html",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             255
-            ],
-            [
-             0,
-             515
-            ]
-           ]
-          ]
-         ]
-        }
-       ]
-      ],
-      "capture-mode-layered.tentative.html": [
-       "d1f190343b0c6e1526dbc44ee207b2896732ec06",
-       [
-        null,
-        [
-         [
-          "/css/css-view-transitions/layered-capture/nested-opacity-ref.html",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             255
-            ],
-            [
-             0,
-             515
-            ]
-           ]
-          ]
-         ]
-        }
-       ]
-      ],
-      "nested-opacity-backdrop-blend-animated.tentative.html": [
-       "73100015cddd61558b01b092c18f25be6ae3ad08",
-       [
-        null,
-        [
-         [
-          "/css/css-view-transitions/layered-capture/nested-opacity-ref.html",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             255
-            ],
-            [
-             0,
-             515
-            ]
-           ]
-          ]
-         ]
-        }
-       ]
-      ],
-      "nested-opacity-backdrop-blend.tentative.html": [
-       "0042d9676f2fbb26f2140ae8843995d478ab0942",
-       [
-        null,
-        [
-         [
-          "/css/css-view-transitions/layered-capture/nested-opacity-ref.html",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             255
-            ],
-            [
-             0,
-             515
-            ]
-           ]
-          ]
-         ]
-        }
-       ]
-      ],
-      "nested-overflow.tentative.sub.html": [
-       "e513e63fc61eaccef5d5acaacc648b897bdab446",
-       [
-        "css/css-view-transitions/layered-capture/nested-overflow.tentative.sub.html?overflow=clip&margin=0&contain=none&radius=0",
-        [
-         [
-          "/css/css-view-transitions/layered-capture/nested-overflow-ref.sub.html?overflow=clip&margin=0&contain=none&radius=0",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             255
-            ],
-            [
-             0,
-             515
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-view-transitions/layered-capture/nested-overflow.tentative.sub.html?overflow=clip&margin=0&contain=none&radius=10px",
-        [
-         [
-          "/css/css-view-transitions/layered-capture/nested-overflow-ref.sub.html?overflow=clip&margin=0&contain=none&radius=10px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             255
-            ],
-            [
-             0,
-             515
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-view-transitions/layered-capture/nested-overflow.tentative.sub.html?overflow=clip&margin=10px&contain=non&radius=0",
-        [
-         [
-          "/css/css-view-transitions/layered-capture/nested-overflow-ref.sub.html?overflow=clip&margin=10px&contain=non&radius=0",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             255
-            ],
-            [
-             0,
-             515
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-view-transitions/layered-capture/nested-overflow.tentative.sub.html?overflow=clip&margin=10px&contain=none&radius=3px",
-        [
-         [
-          "/css/css-view-transitions/layered-capture/nested-overflow-ref.sub.html?overflow=clip&margin=10px&contain=none&radius=3px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             255
-            ],
-            [
-             0,
-             515
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-view-transitions/layered-capture/nested-overflow.tentative.sub.html?overflow=hidden&margin=0&contain=none&radius=0",
-        [
-         [
-          "/css/css-view-transitions/layered-capture/nested-overflow-ref.sub.html?overflow=hidden&margin=0&contain=none&radius=0",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             255
-            ],
-            [
-             0,
-             515
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-view-transitions/layered-capture/nested-overflow.tentative.sub.html?overflow=hidden&margin=0&contain=none&radius=10px",
-        [
-         [
-          "/css/css-view-transitions/layered-capture/nested-overflow-ref.sub.html?overflow=hidden&margin=0&contain=none&radius=10px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             255
-            ],
-            [
-             0,
-             515
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-view-transitions/layered-capture/nested-overflow.tentative.sub.html?overflow=visible&margin=0&contain=none&radius=0",
-        [
-         [
-          "/css/css-view-transitions/layered-capture/nested-overflow-ref.sub.html?overflow=visible&margin=0&contain=none&radius=0",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             255
-            ],
-            [
-             0,
-             515
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-view-transitions/layered-capture/nested-overflow.tentative.sub.html?overflow=visible&margin=0&contain=paint&radius=0",
-        [
-         [
-          "/css/css-view-transitions/layered-capture/nested-overflow-ref.sub.html?overflow=visible&margin=0&contain=paint&radius=0",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             255
-            ],
-            [
-             0,
-             515
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-view-transitions/layered-capture/nested-overflow.tentative.sub.html?overflow=visible&margin=20px&contain=paint&radius=0",
-        [
-         [
-          "/css/css-view-transitions/layered-capture/nested-overflow-ref.sub.html?overflow=visible&margin=20px&contain=paint&radius=0",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             255
-            ],
-            [
-             0,
-             515
-            ]
-           ]
-          ]
-         ]
-        }
-       ]
-      ],
-      "opacity-capture-observable-when-flat.tentative.html": [
-       "6d4ddbe86b175ff0cae19b3ed4a4cb0d827e22ec",
-       [
-        null,
-        [
-         [
-          "/css/css-view-transitions/layered-capture/nested-opacity-ref.html",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             255
-            ],
-            [
-             0,
-             515
-            ]
-           ]
-          ]
-         ]
-        }
-       ]
-      ],
-      "opacity-resets-after-done.tentative.html": [
-       "7616638dc5ee816a3f9c9442a00eea3e32c73741",
-       [
-        null,
-        [
-         [
-          "/css/css-view-transitions/layered-capture/nested-opacity-ref.html",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             255
-            ],
-            [
-             0,
-             515
-            ]
-           ]
-          ]
-         ]
-        }
-       ]
-      ],
-      "opacity-resets-after-skip.tentative.html": [
-       "e7a11ebe33125707f381c15f848c5f10ed25d50a",
-       [
-        null,
-        [
-         [
-          "/css/css-view-transitions/layered-capture/nested-opacity-ref.html",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             255
-            ],
-            [
-             0,
-             515
-            ]
-           ]
-          ]
-         ]
-        }
-       ]
-      ],
-      "tree-effects.tentative.sub.html": [
-       "31bb324e633117f3a2e4fd7d6fb0826fae4dce0b",
-       [
-        "css/css-view-transitions/layered-capture/tree-effects.tentative.sub.html?prop=clip-path&old=inset(10px 10px)&new=inset(20px 20px)",
-        [
-         [
-          "/css/css-view-transitions/layered-capture/tree-effects-ref.sub.html?prop=clip-path&old=inset(10px 10px)&new=inset(20px 20px)",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             10
-            ],
-            [
-             0,
-             200000
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-view-transitions/layered-capture/tree-effects.tentative.sub.html?prop=filter&old=blur(3px)&new=blur(10px)",
-        [
-         [
-          "/css/css-view-transitions/layered-capture/tree-effects-ref.sub.html?prop=filter&old=blur(3px)&new=blur(10px)",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             10
-            ],
-            [
-             0,
-             200000
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-view-transitions/layered-capture/tree-effects.tentative.sub.html?prop=mask&old=linear-gradient(red,blue) luminance&new=none",
-        [
-         [
-          "/css/css-view-transitions/layered-capture/tree-effects-ref.sub.html?prop=mask&old=linear-gradient(red,blue) luminance&new=none",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             10
-            ],
-            [
-             0,
-             200000
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-view-transitions/layered-capture/tree-effects.tentative.sub.html?prop=mask-image&old=linear-gradient(rgb(0 0 0 / 80%), transparent)&new=none",
-        [
-         [
-          "/css/css-view-transitions/layered-capture/tree-effects-ref.sub.html?prop=mask-image&old=linear-gradient(rgb(0 0 0 / 80%), transparent)&new=none",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             10
-            ],
-            [
-             0,
-             200000
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-view-transitions/layered-capture/tree-effects.tentative.sub.html?prop=opacity&old=0.3&new=1",
-        [
-         [
-          "/css/css-view-transitions/layered-capture/tree-effects-ref.sub.html?prop=opacity&old=0.3&new=1",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             10
-            ],
-            [
-             0,
-             200000
-            ]
-           ]
-          ]
-         ]
-        }
-       ]
-      ]
-     },
      "massive-element-below-and-on-top-of-viewport-partially-onscreen-new.html": [
       "65b14a6c4b85f90ba382dbb93e3fd591c8be85f7",
       [
@@ -306260,7 +305467,7 @@
        ]
       ],
       "foreign-object-scale-scroll.html": [
-       "72ce40dc5c04a647bb81dcf88020ec762c3408e1",
+       "d79d85454b33f33f7ca20b1c837471b6b04d5021",
        [
         null,
         [
@@ -306269,7 +305476,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             10
+            ],
+            [
+             0,
+             10
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "foreign-object-size.html": [
@@ -364297,7 +363520,7 @@
       []
      ],
      "transform-compound-ref.html": [
-      "5122ad98c209f7a46fe9cad2a81497db2001cee2",
+      "5a98a1384cd1c3a86e0b9070d8f595754a0917be",
       []
      ],
      "transform-containing-block-and-scrolling-area-for-fixed-ref.html": [
@@ -367118,10 +366341,6 @@
       "62e5b97914a9555093b252a240589fae90093663",
       []
      ],
-     "calc-infinity-nan-computed-expected.txt": [
-      "55657ae4eee621c2192386b48d8286fe643e72de",
-      []
-     ],
      "calc-infinity-nan-serialize-length-expected.txt": [
       "095830023778eece99e09294da5c48a23da7eac1",
       []
@@ -367186,8 +366405,8 @@
       "38d79990aa9ea7a3611edff0d4b1d4ae9dbbae53",
       []
      ],
-     "calc-sibling-function-in-shadow-dom-expected.txt": [
-      "511b375ec5b8a3b8d148611076d0d70134ed7836",
+     "calc-sibling-function-expected.txt": [
+      "6573c5b5d54c076aec4abbc9ad3f2eee709d3d39",
       []
      ],
      "calc-size": {
@@ -367406,6 +366625,10 @@
        []
       ]
      },
+     "sibling-function-invalidation-expected.txt": [
+      "3a55b1341f8fef176130ae2d3616e129375d781f",
+      []
+     ],
      "signs-abs-computed-expected.txt": [
       "142e70c40b680a202e0e221e2f8130dc5cc439ff",
       []
@@ -368078,24 +367301,6 @@
       "ac05756f050ed5afcc13f8e9e925978a558762d2",
       []
      ],
-     "layered-capture": {
-      "border-offset-with-padding-inline-ref.html": [
-       "976c10cb4148e9e2cab471b9f1af36c4a86b4536",
-       []
-      ],
-      "border-uneven-ref.html": [
-       "15b27166371ed989b41c33eb8f48a1ae0f588ecf",
-       []
-      ],
-      "box-model-capture-nested-ref.html": [
-       "6610adc9f71ce8c5b9bbf0980111cb0745652e3a",
-       []
-      ],
-      "nested-opacity-ref.html": [
-       "7db20046e030aaa08582d44e3024cafe93f3fb2a",
-       []
-      ]
-     },
      "massive-element-below-and-on-top-of-viewport-partially-onscreen-ref.html": [
       "e251196cbf8e2535e7df168e163c5de6fc0c9d46",
       []
@@ -374787,12 +373992,16 @@
      "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
      []
     ],
-    "clear_server_state_and_end_sessions.py": [
-     "f0174019e96e06a518f87b11a43b5f94b1dc0856",
+    "configure_server.py": [
+     "6700fdef7b6286d98e2a831628b7cf522545d437",
+     []
+    ],
+    "end_session_via_clear_site_data.py": [
+     "eb54398169a482ebe2217a3af0eeb23ab544673d",
      []
     ],
     "helper.js": [
-     "24756220682e67a59042d4c7850502fe909f52d9",
+     "c4cfcfc1f7540a12e105bdd7d3c2ab97727dbeb1",
      []
     ],
     "jwt_helper.py": [
@@ -374800,19 +374009,27 @@
      []
     ],
     "login.py": [
-     "9934488283ac0d8997473d0157e3cf12e81665fa",
+     "2e2d93a8e47e627a4e4fe56c7d9bc200ad3a8edc",
      []
     ],
     "refresh_session.py": [
-     "4d83c86b47b74c7a3ed099fc01fbb283ff4298b9",
+     "9b39118ce714ab25363e8e6e4584d18189c1a083",
      []
     ],
-    "session_provider.py": [
-     "fe31b2509694410eb0dec0d19ee09bc10c020954",
+    "request_early_challenge.py": [
+     "e3e429ee76fb6c14d22d8aff91b578f58553890b",
+     []
+    ],
+    "session_manager.py": [
+     "bba15ccd1a59204aab964e4eccee9222b0750209",
+     []
+    ],
+    "setup_sharded_server_state.py": [
+     "8e5f3a67134c6982c826a481cd20f4464c7d1229",
      []
     ],
     "start_session.py": [
-     "ce3f899562e9467601c41f476910759b24404380",
+     "7e07f21dacc12b3a28fa9202a6dae6b025d538c7",
      []
     ],
     "verify_authenticated.py": [
@@ -376095,6 +375312,10 @@
     ],
     "XMLSerializer-serializeToString-expected.txt": [
      "875cc37ded295a0a66c746936544fc1eab0a49c2",
+     []
+    ],
+    "idlharness.window-expected.txt": [
+     "31efe1ae4180158a5df60a37a7c90b5d2ffc628e",
      []
     ],
     "innerhtml-01-expected.txt": [
@@ -404777,10 +403998,6 @@
      "d4a6377ebb30af39a7c3f470d4d2139179986285",
      []
     ],
-    "DOM-Parsing.idl": [
-     "af2626079364fa841ecd7092b9bb4f1dac832267",
-     []
-    ],
     "EXT_blend_minmax.idl": [
      "fd7d26e7fb7970a9dfc0d50990f63d0d5771498c",
      []
@@ -405382,7 +404599,7 @@
      []
     ],
     "html.idl": [
-     "f48fd37028109f05cf87dec346740f6a3cc148a6",
+     "505551a4597d23185b366f5ee4531fe01caaf3e0",
      []
     ],
     "idle-detection.idl": [
@@ -405634,7 +404851,7 @@
      []
     ],
     "ppa.idl": [
-     "a00d2deba872fdd62dbae9dc7489ee87e3c4fa6f",
+     "1b263a28a429ee33e5a87b7f41210681a9f95f97",
      []
     ],
     "prefer-current-tab.idl": [
@@ -405770,7 +404987,7 @@
      []
     ],
     "shared-storage.idl": [
-     "941c7414c4f0510bbe283fe9bf8d439829e08eda",
+     "e3e221a3aa75dbab227f8bcbd706167358fb10fb",
      []
     ],
     "speech-api.idl": [
@@ -405818,7 +405035,7 @@
      []
     ],
     "turtledove.idl": [
-     "2f34d7637220efb116449c02b32e34067ff66657",
+     "64b7ee9c6e7dea212566173f9dd849fc6fcda02c",
      []
     ],
     "ua-client-hints.idl": [
@@ -405978,11 +405195,11 @@
      []
     ],
     "webnn.idl": [
-     "63554edbffd491147db93653d1d4ae9cee3580e3",
+     "7c026d4c0a475c2b5cf1880e8339ce98841fd0b2",
      []
     ],
     "webrtc-encoded-transform.idl": [
-     "0db2f2b9a81a9d9f6525ff60b533434f3fe5d3c7",
+     "8a6ba816016e7385a2402734a23a6a40cc0b07bb",
      []
     ],
     "webrtc-ice.idl": [
@@ -486472,7 +485689,7 @@
       ]
      ],
      "CSSAnimation-effect.tentative.html": [
-      "04812d24e589c22f2266522877a2eb41fa17dcd1",
+      "591ffe770b65ed3f4da7794d9f405430dc5c06ac",
       [
        null,
        {
@@ -502685,6 +501902,13 @@
        {}
       ]
      ],
+     "function-layer.html": [
+      "aa01a48dc46fb5ac784caf76af958eadc3c70bb1",
+      [
+       null,
+       {}
+      ]
+     ],
      "function-media-dynamic.html": [
       "0b2e57bd12cf4d0ed3077fd4ba4c70a610aec6de",
       [
@@ -507370,7 +506594,7 @@
        ]
       ],
       "snap-area-overflow-boundary-viewport-covering.tentative.html": [
-       "fe2c38acda719d5f1047a66fb392c8364314ec09",
+       "1c6caf224acf4ffa75d7d85013239dc0fa861cf2",
        [
         null,
         {
@@ -511474,7 +510698,7 @@
       ]
      ],
      "fixed-layout-2.html": [
-      "3b7f65feccf578e7ead60186bf48517d750428be",
+      "8b805af7669ed914dc5f0d007a2ff8171f45d60a",
       [
        null,
        {}
@@ -519922,7 +519146,7 @@
       ]
      ],
      "calc-sibling-function-in-shadow-dom.html": [
-      "54faa9417978e5d775ec6d7af7828038ae346f5e",
+      "92fb6ce3351b9c37b3616445b4f83969a5f30b63",
       [
        null,
        {}
@@ -519936,7 +519160,7 @@
       ]
      ],
      "calc-sibling-function.html": [
-      "368f305f6a5699245b850ba1bf4494869790fcbe",
+      "20a1a675a531c1ebac6df2a20c709cd8c804cdab",
       [
        null,
        {}
@@ -520706,6 +519930,13 @@
        {}
       ]
      ],
+     "sibling-function-invalidation.html": [
+      "74f4995f5f72413330e577a3a4c72ce095479225",
+      [
+       null,
+       {}
+      ]
+     ],
      "signed-zero.html": [
       "6ede4bbb0ecb67ea40ec26e1f41c516d2e9d3a88",
       [
@@ -521295,31 +520526,6 @@
        }
       ]
      ],
-     "layered-capture": {
-      "opacity-computed-style.tentative.html": [
-       "f370b7b03d268f9abdaa0e3782e2ef41d4a17f00",
-       [
-        null,
-        {}
-       ]
-      ],
-      "parsing": {
-       "view-transition-capture-mode-invalid.tentative.html": [
-        "6bcd77cdae03e0399a039c846caa273b7f054a0c",
-        [
-         null,
-         {}
-        ]
-       ],
-       "view-transition-capture-mode-valid.tentative.html": [
-        "2b739fcfe289127f6d88b9235d84417a0746d3a3",
-        [
-         null,
-         {}
-        ]
-       ]
-      }
-     },
      "mix-blend-mode-only-on-transition.html": [
       "4149142cf326e0de0deed808e99561ca89d9870a",
       [
@@ -529147,15 +528353,50 @@
     ]
    },
    "device-bound-session-credentials": {
+    "clear-cookies-site-data.https.html": [
+     "501e273bb8c4ad3897e1a632e4da40a62ffe1364",
+     [
+      null,
+      {}
+     ]
+    ],
     "create-session.https.html": [
-     "09c76b7e9edaef6df7c02e4ada4cd5268255e6a0",
+     "cddfd1797978d80f5344740b0224a671acf550b8",
      [
       null,
       {}
      ]
     ],
     "not-secure-connection.html": [
-     "e19f737962953dbecfc965cbee0dfc81ef5e6143",
+     "93736c0b5966ea627f0df45c4bf59dec724c4c7e",
+     [
+      null,
+      {}
+     ]
+    ],
+    "refresh-with-continue-false.https.html": [
+     "9ebec2209775511a3b34c47aa1c1760a6d0e2d5c",
+     [
+      null,
+      {}
+     ]
+    ],
+    "session-cookie-has-no-attributes.https.html": [
+     "9e5264193078fec1de3304414446c1a3af9459cf",
+     [
+      null,
+      {}
+     ]
+    ],
+    "set-authorization.https.html": [
+     "3cfe23331d1826c32c2306de0b1d4c8835f122c3",
+     [
+      null,
+      {}
+     ]
+    ],
+    "set-early-challenge.https.html": [
+     "112c87d4aee807520bdc50cd97c129e290fefd98",
      [
       null,
       {}
@@ -535091,7 +534332,7 @@
       ]
      ],
      "edit-context-input.tentative.html": [
-      "45fd1613faccb8b34f55f1a2783e9db35596d2d1",
+      "ea0eebc76986244d083a12d0d0aaeea216935062",
       [
        null,
        {
@@ -538150,7 +537391,7 @@
       ]
      ],
      "merge-span-with-style-after-backspace-having-contenteditable.html": [
-      "b76a44818edb1741fa38a84d1be80c9891f5b71c",
+      "651ec1c56c8ec8526ddc763d5d9fc0368371286f",
       [
        null,
        {
@@ -538159,7 +537400,7 @@
       ]
      ],
      "merge-span-with-style-after-forwarddelete-having-contenteditable.html": [
-      "720180ba092f67f4809ade037ea73c393c62ac9e",
+      "687f69816ddbea439625c86e4c4af10c8af76116",
       [
        null,
        {
@@ -538168,7 +537409,7 @@
       ]
      ],
      "merge-span-with-style-after-pressing-enter-followed-by-backspace-in-contenteditable-div.html": [
-      "d0d62962bc00b69bc4eb07b7eb219f51044593be",
+      "5603edd95b26c1d77b47692f89166dee3b029458",
       [
        null,
        {
@@ -639572,7 +638813,7 @@
          ]
         ],
         "switch-picker-appearance.tentative.html": [
-         "95d2da1bbf744a1775f03e96bd1b64b5d1c63ff5",
+         "6d768f4efd0b288a45059767268ac00568ad1514",
          [
           null,
           {
@@ -654477,6 +653718,13 @@
       {}
      ]
     ],
+    "clip-path-animation.html": [
+     "bc8adb8b1e7cd9d4a3966a939bf75e1559019b10",
+     [
+      null,
+      {}
+     ]
+    ],
     "clip-path.html": [
      "89f6d865b27df8c5ab340309fe97897e6974b1d2",
      [
@@ -659973,7 +659221,7 @@
      ]
     ],
     "URL-createObjectURL-revoke.html": [
-     "c5e18d4fd5854998988be91665d6895773287e5b",
+     "5d15bda69d6e1eca5b996549a818448ea30b33ed",
      [
       null,
       {}
@@ -719815,6 +719063,13 @@
      },
      "svg-baseval-in-display-none.html": [
       "9d3693623f949c90f14303fc39ba633f6a311d98",
+      [
+       null,
+       {}
+      ]
+     ],
+     "svg-get-bounding-client-rect-in-non-rendered-elements.html": [
+      "41f3fb6bc906b05a2537af20ca1eacb6a4c41935",
       [
        null,
        {}
@@ -810427,50 +809682,6 @@
      ]
     },
     "css-view-transitions": {
-     "layered-capture": {
-      "border-image-ref.tentative.html": [
-       "8cf3d5eeafb69c14e047188d879d3844a61bed9b",
-       [
-        null,
-        {}
-       ]
-      ],
-      "border-offset-ref.tentative.html": [
-       "ca8ee77528463426948101d4047574226c7639a1",
-       [
-        null,
-        {}
-       ]
-      ],
-      "box-decorations-ref.tentative.html": [
-       "5221c7689af0dfc46a5c2c75430587170608daaa",
-       [
-        null,
-        {}
-       ]
-      ],
-      "box-model-capture-ref.sub.html": [
-       "36401abca0d146f5b76053b2360ec0f3573f7b6c",
-       [
-        null,
-        {}
-       ]
-      ],
-      "nested-overflow-ref.sub.html": [
-       "31e9f63529b208751a22bf2c3ca591d92691f9e3",
-       [
-        null,
-        {}
-       ]
-      ],
-      "tree-effects-ref.sub.html": [
-       "e068b2918f1e8300e6c97c17a6ae2330ce1fbc81",
-       [
-        null,
-        {}
-       ]
-      ]
-     },
      "shared-transition-author-style.manual.html": [
       "d757c8cf0dc3972e360c9e91b2ea900b97a16b47",
       [

@@ -35,7 +35,10 @@ static_library("core_internal") {
     "metrics.h",
   ]
 
-  deps = [ "//components/sync/service:service" ]
+  deps = [
+    "//components/data_sharing/public:logger",
+    "//components/sync/service:service",
+  ]
 
   public_deps = [
     "//base",

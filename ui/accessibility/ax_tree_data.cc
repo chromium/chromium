@@ -6,6 +6,7 @@
 
 #include <set>
 
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -96,8 +97,8 @@ bool operator!=(const AXTreeData& lhs, const AXTreeData& rhs) {
 }
 
 const AXTreeData& AXTreeDataUnknown() {
-  static const AXTreeData ax_tree_data_unknown;
-  return ax_tree_data_unknown;
+  static const base::NoDestructor<AXTreeData> ax_tree_data_unknown;
+  return *ax_tree_data_unknown;
 }
 
 }  // namespace ui

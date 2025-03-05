@@ -87,7 +87,7 @@ RefreshBannerView::RefreshBannerView(MahiUiController* ui_controller)
 
   SetUseDefaultFillLayout(true);
   SetID(mahi_constants::ViewId::kRefreshView);
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemPrimaryContainer, /*radius=*/0));
   SetVisible(false);
 

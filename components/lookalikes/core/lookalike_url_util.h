@@ -150,6 +150,9 @@ struct ComboSquattingParams {
 
   // List of popular keywords such as "login", "online".
   base::raw_span<const std::string_view> popular_keywords;
+
+  // Needed to provide a non-trivial destructor so NoDestructor can be used.
+  ~ComboSquattingParams() {}
 };
 
 struct DomainInfo {

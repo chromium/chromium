@@ -81,7 +81,8 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase {
     // `ReadWriteCardsManagerImpl` will initialize `QuickAnswersState`
     // indirectly. `QuickAnswersState` depends on `MagicBoostState`.
     magic_boost_state_ = std::make_unique<ash::MagicBoostStateAsh>();
-    manager_ = std::make_unique<ReadWriteCardsManagerImpl>();
+    manager_ = std::make_unique<ReadWriteCardsManagerImpl>(
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
   }
 
   void TearDown() override {

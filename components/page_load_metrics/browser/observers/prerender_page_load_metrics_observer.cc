@@ -5,6 +5,7 @@
 #include "components/page_load_metrics/browser/observers/prerender_page_load_metrics_observer.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
@@ -28,7 +29,7 @@ void RecordShiftedTimeHistogram(const std::string& histogram_name,
   // Generated with Histogram::InitializeBucketRanges. Firstly generate an array
   // by `Histogram::InitializeBucketRanges(0, 60000, ranges)`, and then expand
   // the array to two sides of the axis of 60000.
-  static const std::vector<int> ranges = {
+  static const int ranges[] = {
       0,     11600, 20957, 28505, 34594, 39506, 43468, 46664,  49242, 51322,
       53000, 54353, 55445, 56326, 57036, 57609, 58071, 58444,  58745, 58988,
       59184, 59342, 59469, 59572, 59655, 59722, 59776, 59819,  59854, 59882,
@@ -40,7 +41,8 @@ void RecordShiftedTimeHistogram(const std::string& histogram_name,
       61255, 61556, 61929, 62391, 62964, 63674, 64555, 65647,  67000, 68678,
       70758, 73336, 76532, 80494, 85406, 91495, 99043, 108400, 120000};
   base::HistogramBase* time_histogram = base::CustomHistogram::FactoryGet(
-      histogram_name, ranges, base::HistogramBase::kUmaTargetedHistogramFlag);
+      histogram_name, base::CustomHistogram::ArrayToCustomEnumRanges(ranges),
+      base::HistogramBase::kUmaTargetedHistogramFlag);
   time_histogram->Add(time.InMilliseconds());
 }
 

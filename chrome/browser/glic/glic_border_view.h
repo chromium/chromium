@@ -40,11 +40,6 @@ class GlicBorderView : public views::View,
   // `ui::CompositorObserver`:
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
 
-  // TODO(crbug.com/390233842): These should be private once we can end-to-end
-  // test the UI behaviors.
-  void Show();
-  void StopShowing();
-
   bool IsShowing() const;
 
   // TODO(crbug.com/384712084): Ideally we shouldn't expose these internals for
@@ -62,12 +57,16 @@ class GlicBorderView : public views::View,
     virtual base::TimeTicks GetTestCreationTime() = 0;
     virtual void AnimationStarted() = 0;
     virtual void EmphasisRestarted() = 0;
+    virtual void RampDownStarted() = 0;
   };
   void set_tester(Tester* tester) { tester_ = tester; }
 
   float GetEffectTimeForTesting() const;
 
  private:
+  void Show();
+  void StopShowing();
+
   // A value from 0 to 1 indicating how much the border is to be emphasized.
   float GetEmphasis(base::TimeDelta delta) const;
 

@@ -522,7 +522,7 @@ PaymentHandlerWebFlowViewController::GetHeaderBackground(
     views::View* header_view) {
   DCHECK(header_view);
   auto default_header_background =
-      views::CreateThemedSolidBackground(ui::kColorDialogBackground);
+      views::CreateSolidBackground(ui::kColorDialogBackground);
   if (web_contents() && header_view->GetWidget()) {
     // Make sure the color is actually set before using it.
     default_header_background->OnViewThemeChanged(header_view);

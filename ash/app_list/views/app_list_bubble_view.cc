@@ -178,8 +178,8 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate)
       chromeos::features::IsSystemBlurEnabled()
           ? cros_tokens::kCrosSysSystemBaseElevated
           : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
-  SetBackground(views::CreateThemedRoundedRectBackground(background_color_id,
-                                                         kBubbleCornerRadius));
+  SetBackground(views::CreateRoundedRectBackground(background_color_id,
+                                                   kBubbleCornerRadius));
 
   SetBorder(std::make_unique<views::HighlightBorder>(
       kBubbleCornerRadius,

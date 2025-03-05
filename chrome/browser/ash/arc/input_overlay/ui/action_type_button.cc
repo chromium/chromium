@@ -81,7 +81,7 @@ void ActionTypeButton::RefreshColors() {
                                : ash::kColorAshIconSecondaryDisabledColor;
   SetEnabledTextColors(active_color_id);
   SetTextColor(ButtonState::STATE_DISABLED, disabled_color_id);
-  SetBackground(is_selected ? views::CreateThemedRoundedRectBackground(
+  SetBackground(is_selected ? views::CreateRoundedRectBackground(
                                   cros_tokens::kCrosSysHighlightShape,
                                   /*radius=*/kCornerRadius)
                             : views::CreateRoundedRectBackground(

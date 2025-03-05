@@ -88,6 +88,7 @@ source_set("browser_tests") {
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/account_manager",
+    "//chrome/browser/ash/test:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/ash/edu_coexistence",

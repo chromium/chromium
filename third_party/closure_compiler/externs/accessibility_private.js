@@ -282,6 +282,7 @@ chrome.accessibilityPrivate.AccessibilityFeature = {
   DICTATION_CONTEXT_CHECKING: 'dictationContextChecking',
   FACE_GAZE: 'faceGaze',
   GOOGLE_TTS_HIGH_QUALITY_VOICES: 'googleTtsHighQualityVoices',
+  CAPTIONS_ON_BRAILLE_DISPLAY: 'captionsOnBrailleDisplay',
 };
 
 /**
@@ -601,8 +602,8 @@ chrome.accessibilityPrivate.setPointScanState = function(state) {};
 /**
  * Sets current ARC app to use native ARC support.
  * @param {boolean} enabled True for ChromeVox (native), false for TalkBack.
- * @param {function(!chrome.accessibilityPrivate.SetNativeChromeVoxResponse):
- *     void} callback Callback function.
+ * @param {function(!chrome.accessibilityPrivate.SetNativeChromeVoxResponse): void}
+ *     callback Callback function.
  */
 chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp = function(enabled, callback) {};
 

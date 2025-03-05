@@ -211,8 +211,7 @@ class PrefRegistrySyncable;
 // order.
 // When the coordinator is interrupted with `DismissWithoutAnimation` or
 // `DismissWithAnimation`, the view is dismissed first.
-// `signinCompletion()` and then `completion()` are called synchronously
-// kIOSInterruptibleCoordinatorStoppedSynchronously is enabled.
+// `signinCompletion()` and then `completion()` are called synchronously.
 //
 // It is still mandatory to call `-[SigninCoordinator stop]` once
 // `signinCompletion()` is called.
