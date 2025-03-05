@@ -37,7 +37,7 @@ enum class ExceptionSource : int {
   USER_BYPASS = 1,
   COOKIES = 2,
   REFRESH_HEURISTIC = 3,
-  EXCEPTION_SOURCE_MAX = 4,
+  EXCEPTION_SOURCE_MAX = REFRESH_HEURISTIC,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:FingerprintingProtectionExceptionSource)
 
