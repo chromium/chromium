@@ -17,6 +17,7 @@ import android.text.style.RelativeSizeSpan;
 import android.text.style.SuperscriptSpan;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.Lifecycle;
@@ -30,6 +31,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.autofill.settings.SettingsNavigationHelper;
@@ -120,7 +122,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_SAFETY_HUB = "safety_hub";
     public static final String PREF_ADDRESS_BAR = "address_bar";
     public static final String PREF_APPEARANCE = "appearance";
-    @VisibleForTesting static final int ADDRESS_BAR_NEW_LABEL_MAX_VIEW_COUNT = 6;
+    @VisibleForTesting static final int NEW_LABEL_MAX_VIEW_COUNT = 6;
 
     private final Map<String, Preference> mAllPreferences = new HashMap<>();
 
@@ -372,6 +374,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         updateAutofillPreferences();
         updatePlusAddressesPreference();
         updateAddressBarPreference();
+        updateAppearancePreference();
 
         boolean isTabGroupSyncAutoOpenConfigurable =
                 TabGroupSyncFeatures.isTabGroupSyncEnabled(getProfile())
@@ -560,51 +563,70 @@ public class MainSettings extends ChromeBaseSettingsFragment
         if (showSetting) {
             Preference addressBarPreference = addPreferenceIfAbsent(PREF_ADDRESS_BAR);
             addressBarPreference.setSummary(ToolbarPositionController.getToolbarPositionResId());
-            addressBarPreference.setTitle(getAddressBarPreferenceTitle());
-            addressBarPreference.setOnPreferenceClickListener(
-                    (unused) -> {
-                        ChromeSharedPreferences.getInstance()
-                                .writeBoolean(
-                                        ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_CLICKED, true);
-                        return false;
-                    });
+            updateNewPreferenceAndIncrementViewCount(
+                    addressBarPreference,
+                    AddressBarSettingsFragment.getTitle(getContext()),
+                    ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_CLICKED,
+                    ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_VIEW_COUNT);
         } else {
             removePreferenceIfPresent(PREF_ADDRESS_BAR);
         }
     }
 
-    CharSequence getAddressBarPreferenceTitle() {
-        SharedPreferencesManager sharedPreferences = ChromeSharedPreferences.getInstance();
+    private void updateAppearancePreference() {
+        if (ChromeFeatureList.sAndroidAppearanceSettings.isEnabled()) {
+            updateNewPreferenceAndIncrementViewCount(
+                    findPreference(PREF_APPEARANCE),
+                    AppearanceSettingsFragment.getTitle(getContext()),
+                    ChromePreferenceKeys.APPEARANCE_SETTINGS_CLICKED,
+                    ChromePreferenceKeys.APPEARANCE_SETTINGS_VIEW_COUNT);
+        }
+    }
+
+    private void updateNewPreferenceAndIncrementViewCount(
+            @NonNull Preference pref,
+            @NonNull String title,
+            @NonNull String clickedPrefKey,
+            @NonNull String viewCountPrefKey) {
+        final SharedPreferencesManager sharedPreferences = ChromeSharedPreferences.getInstance();
+
         boolean clicked;
         try {
-            clicked =
-                    sharedPreferences.readBoolean(
-                            ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_CLICKED, false);
+            clicked = sharedPreferences.readBoolean(clickedPrefKey, false);
         } catch (ClassCastException e) {
             // Clean up pref value mis-written as int.
-            sharedPreferences.writeBoolean(ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_CLICKED, true);
+            sharedPreferences.writeBoolean(clickedPrefKey, true);
             clicked = true;
         }
 
-        int viewCount =
-                sharedPreferences.readInt(ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_VIEW_COUNT, 0);
-        boolean showNewLabelForAddressBarPref =
-                !clicked && viewCount < ADDRESS_BAR_NEW_LABEL_MAX_VIEW_COUNT;
-        Context context = getContext();
-        if (showNewLabelForAddressBarPref) {
-            sharedPreferences.incrementInt(ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_VIEW_COUNT);
-            return SpanApplier.applySpans(
-                    context.getString(R.string.address_bar_settings),
-                    new SpanInfo(
-                            "<new>",
-                            "</new>",
-                            new SuperscriptSpan(),
-                            new RelativeSizeSpan(0.75f),
-                            new ForegroundColorSpan(
-                                    SemanticColorUtils.getDefaultTextColorAccent1(context))));
-        } else {
-            return AddressBarSettingsFragment.getTitleWithoutSpans(context);
+        final int viewCount = sharedPreferences.readInt(viewCountPrefKey, 0);
+        final boolean showNewLabelForPref = !clicked && viewCount < NEW_LABEL_MAX_VIEW_COUNT;
+
+        if (!showNewLabelForPref) {
+            pref.setTitle(title);
+            pref.setOnPreferenceClickListener(null);
+            return;
         }
+
+        sharedPreferences.incrementInt(viewCountPrefKey);
+
+        final Context context = getContext();
+        pref.setTitle(
+                SpanApplier.applySpans(
+                        context.getString(R.string.prefs_new_label, title),
+                        new SpanInfo(
+                                "<new>",
+                                "</new>",
+                                new SuperscriptSpan(),
+                                new RelativeSizeSpan(0.75f),
+                                new ForegroundColorSpan(
+                                        SemanticColorUtils.getDefaultTextColorAccent1(context)))));
+
+        pref.setOnPreferenceClickListener(
+                (unused) -> {
+                    ChromeSharedPreferences.getInstance().writeBoolean(clickedPrefKey, true);
+                    return false;
+                });
     }
 
     private void setOnOffSummary(Preference pref, boolean isOn) {

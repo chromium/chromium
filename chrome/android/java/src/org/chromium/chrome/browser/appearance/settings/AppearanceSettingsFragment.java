@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.appearance.settings;
 
+import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplier;
@@ -30,7 +32,7 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
-        mPageTitle.set(getString(R.string.appearance_settings));
+        mPageTitle.set(getTitle(getContext()));
         SettingsUtils.addPreferencesFromResource(this, R.xml.appearance_preferences);
 
         // LINT.IfChange(InitPrefToolbarShortcut)
@@ -67,6 +69,10 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     @Override
     public ObservableSupplier<String> getPageTitle() {
         return mPageTitle;
+    }
+
+    public static @NonNull String getTitle(@NonNull Context context) {
+        return context.getString(R.string.appearance_settings);
     }
 
     // CustomDividerFragment implementation.
