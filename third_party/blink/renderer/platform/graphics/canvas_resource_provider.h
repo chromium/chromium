@@ -228,7 +228,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   // Returns true iff the resource provider is (a) using a GPU channel for
   // software SharedImages and (b) that channel has been lost.
-  virtual bool IsSharedBitmapGpuChannelLost() const;
+  virtual bool IsSoftwareSharedImageGpuChannelLost() const;
   virtual bool WritePixels(const SkImageInfo& orig_info,
                            const void* pixels,
                            size_t row_bytes,

@@ -684,7 +684,7 @@ void OffscreenCanvas::CheckForGpuContextLost() {
 
   // For software rendering.
   if (!shared_bitmap_gpu_channel_lost() && ResourceProvider() &&
-      ResourceProvider()->IsSharedBitmapGpuChannelLost()) {
+      ResourceProvider()->IsSoftwareSharedImageGpuChannelLost()) {
     set_shared_bitmap_gpu_channel_lost(true);
     NotifyGpuContextLost();
   }
