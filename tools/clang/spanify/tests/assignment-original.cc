@@ -78,4 +78,6 @@ void fct() {
   gg = (condition) ? ctn1.data() : ctn2.data();
 
   gg += 1;  // Buffer usage, leads gg to be rewritten.
+
+  gg += index * 2;  // Buffer usage
 }
