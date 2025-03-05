@@ -9053,3 +9053,4 @@ crbug.com/400528100 [ Win11-arm64 ] scrollbars/scaled-rendering/scrollbars-scale
 
 # Gardener 2025-03-05
 crbug.com/400811282 [ Mac ] external/wpt/media-source/URL-createObjectURL-revoke.html [ Failure ]
+crbug.com/400739988 [ Win ] external/wpt/css/css-ruby/line-spacing.html [ Failure Pass ]
