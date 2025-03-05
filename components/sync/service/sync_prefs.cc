@@ -300,19 +300,27 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
         type_enabled =
             pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin);
 #endif
-      } else if (type == UserSelectableType::kBookmarks ||
-                 type == UserSelectableType::kReadingList) {
-        type_enabled = true;
-        // Consider kBookmarks and kReadingList off by default until
+      } else if (type == UserSelectableType::kBookmarks) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+        type_enabled =
+            base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
+#else
+        // Bookmarks require a specific explicit sign in.
+        type_enabled = SigninPrefs(*pref_service_)
+                           .GetBookmarksExplicitBrowserSignin(gaia_id) ||
+                       base::FeatureList::IsEnabled(
+                           kEnableBookmarksSelectedTypeOnSigninForTesting);
+#endif
+      } else if (type == UserSelectableType::kReadingList) {
+        // Consider kReadingList off by default until
         // `kReplaceSyncPromosWithSignInPromos` is enabled. For existing clients
         // at the time the feature transitions from disabled to enabled, the
         // state at the time is captured as explicit value in
         // `MaybeMigratePrefsForSyncToSigninPart1()`.
-        if (!base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) &&
-            !base::FeatureList::IsEnabled(
-                kEnableBookmarksSelectedTypeOnSigninForTesting)) {
-          type_enabled = false;
-        }
+        type_enabled =
+            base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) ||
+            base::FeatureList::IsEnabled(
+                kEnableBookmarksSelectedTypeOnSigninForTesting);
       } else if (type == UserSelectableType::kExtensions) {
         // Extensions require a specific explicit sign in.
         type_enabled = SigninPrefs(*pref_service_)
@@ -443,6 +451,16 @@ void SyncPrefs::SetSelectedTypeForAccount(
   SetAccountKeyedPrefDictEntry(
       pref_service_, prefs::internal::kSelectedTypesPerAccount, gaia_id_hash,
       GetPrefNameForType(type), base::Value(is_type_on));
+}
+
+void SyncPrefs::ResetSelectedTypeForAccount(
+    UserSelectableType type,
+    const signin::GaiaIdHash& gaia_id_hash) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  RemoveAccountKeyedPrefDictEntry(pref_service_,
+                                  prefs::internal::kSelectedTypesPerAccount,
+                                  gaia_id_hash, GetPrefNameForType(type));
 }
 
 void SyncPrefs::KeepAccountSettingsPrefsOnlyForUsers(

@@ -2336,9 +2336,16 @@ TEST_F(SyncServiceImplTest,
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class SyncServiceImplWithBatchUploadDesktopTest : public SyncServiceImplTest {
+  void SetUp() override {
+    SyncServiceImplTest::SetUp();
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{switches::kBatchUploadDesktop,
+                              switches::kExplicitBrowserSigninUIOnDesktop},
+        {});
+  }
+
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kBatchUploadDesktop};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(SyncServiceImplWithBatchUploadDesktopTest,

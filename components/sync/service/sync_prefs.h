@@ -142,6 +142,10 @@ class SyncPrefs {
   void SetSelectedTypeForAccount(UserSelectableType type,
                                  bool is_type_on,
                                  const signin::GaiaIdHash& gaia_id_hash);
+  // Used to reset user's selected types prefs in Sync-the-transport mode to its
+  // default value. Note: this is used for signed-in not syncing users.
+  void ResetSelectedTypeForAccount(UserSelectableType type,
+                                   const signin::GaiaIdHash& gaia_id_hash);
 
   // Used to clear per account prefs for all users *except* the ones in the
   // passed-in `available_gaia_ids`.

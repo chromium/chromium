@@ -81,6 +81,13 @@ void TestSyncUserSettings::SetSelectedType(UserSelectableType type,
   }
 }
 
+void TestSyncUserSettings::ResetSelectedType(UserSelectableType type) {
+  // In the real implementation, this would reset the selected type to its
+  // default value. Since `selected_types_` is populated with all types by
+  // default, this can be considered resetting.
+  selected_types_.Put(type);
+}
+
 void TestSyncUserSettings::KeepAccountSettingsPrefsOnlyForUsers(
     const std::vector<signin::GaiaIdHash>& available_gaia_ids) {}
 

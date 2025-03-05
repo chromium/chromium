@@ -212,6 +212,14 @@ void SyncUserSettingsImpl::SetSelectedType(UserSelectableType type,
   }
 }
 
+void SyncUserSettingsImpl::ResetSelectedType(UserSelectableType type) {
+  CHECK_EQ(SyncPrefs::SyncAccountState::kSignedInNotSyncing,
+           delegate_->GetSyncAccountStateForPrefs());
+  signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
+      delegate_->GetSyncAccountInfoForPrefs().gaia);
+  prefs_->ResetSelectedTypeForAccount(type, gaia_id_hash);
+}
+
 void SyncUserSettingsImpl::KeepAccountSettingsPrefsOnlyForUsers(
     const std::vector<signin::GaiaIdHash>& available_gaia_ids) {
   prefs_->KeepAccountSettingsPrefsOnlyForUsers(available_gaia_ids);
