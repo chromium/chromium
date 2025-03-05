@@ -9241,7 +9241,7 @@
       "lwinston@google.com",
       "//ui/accessibility/OWNERS"
     ],
-    "expiry_milestone": 136
+    "expiry_milestone": 140
   },
   {
     "name": "wayland-linux-drm-syncobj",
