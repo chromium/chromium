@@ -23,10 +23,10 @@ class TestMethodsMac : public TestMethods {
  public:
   base::FilePath GetTestExePath() override {
     return base::PathService::CheckedGet(base::DIR_EXE)
-        .AppendASCII("EnterpriseCompanionTestApp")
-        .AppendASCII(base::StrCat({PRODUCT_FULLNAME_STRING, ".app"}))
-        .Append(FILE_PATH_LITERAL("Contents/MacOS"))
-        .AppendASCII(FILE_PATH_LITERAL(PRODUCT_FULLNAME_STRING));
+        .Append("EnterpriseCompanionTestApp")
+        .Append(base::StrCat({PRODUCT_FULLNAME_STRING, ".app"}))
+        .Append("Contents/MacOS")
+        .Append(PRODUCT_FULLNAME_STRING);
   }
 
   void Clean() override {

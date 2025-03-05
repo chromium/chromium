@@ -421,7 +421,7 @@ std::optional<base::File> OpenDefaultEventLoggerCookieFile() {
   if (!install_dir) {
     return std::nullopt;
   }
-  return base::File(install_dir->AppendASCII("logging_cookie"),
+  return base::File(install_dir->Append(FILE_PATH_LITERAL("logging_cookie")),
                     base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
                         base::File::FLAG_WRITE);
 }

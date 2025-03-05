@@ -29,7 +29,7 @@ namespace enterprise_companion {
 namespace {
 
 // The filename of the companion app binary under test.
-constexpr char kTestExe[] = "enterprise_companion_test.exe";
+constexpr wchar_t kTestExe[] = L"enterprise_companion_test.exe";
 
 }  // namespace
 
@@ -52,7 +52,7 @@ class InstallerTest : public ::testing::Test {
   // Run the installer and expect success or failure.
   void RunInstaller(bool expect_success) {
     base::FilePath installer_exe_path =
-        base::PathService::CheckedGet(base::DIR_EXE).AppendASCII(kTestExe);
+        base::PathService::CheckedGet(base::DIR_EXE).Append(kTestExe);
     ASSERT_TRUE(base::PathExists(installer_exe_path));
 
     base::CommandLine command_line(installer_exe_path);
@@ -81,20 +81,20 @@ class InstallerTest : public ::testing::Test {
 TEST_F(InstallerTest, FirstInstall) {
   RunInstaller(true);
 
-  ASSERT_TRUE(base::PathExists(install_dir_.AppendASCII(kExecutableName)));
+  ASSERT_TRUE(base::PathExists(install_dir_.AppendUTF8(kExecutableName)));
   ExpectUpdaterRegistration();
 }
 
 TEST_F(InstallerTest, Overinstall) {
   SetUpdaterRegistration(L"0.0.0.1", L"Prehistoric Enterprise Companion");
   ASSERT_TRUE(base::CreateDirectory(install_dir_));
-  ASSERT_TRUE(base::WriteFile(install_dir_.AppendASCII(kExecutableName), ""));
+  ASSERT_TRUE(base::WriteFile(install_dir_.AppendUTF8(kExecutableName), ""));
 
   RunInstaller(true);
 
-  ASSERT_TRUE(base::PathExists(install_dir_.AppendASCII(kExecutableName)));
+  ASSERT_TRUE(base::PathExists(install_dir_.AppendUTF8(kExecutableName)));
   std::optional<int64_t> exe_size =
-      base::GetFileSize(install_dir_.AppendASCII(kExecutableName));
+      base::GetFileSize(install_dir_.AppendUTF8(kExecutableName));
   ASSERT_TRUE(exe_size.has_value());
   EXPECT_GT(exe_size.value(), 0);
 
@@ -114,16 +114,16 @@ TEST_F(InstallerTest, OverinstallFakeLocationDifferentArch) {
     GTEST_SKIP() << "Test not applicable on x86 hosts.";
   }
   const base::FilePath incorrect_install_dir =
-      program_files_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
-          .AppendASCII(PRODUCT_FULLNAME_STRING);
+      program_files_dir.Append(FILE_PATH_LITERAL(COMPANY_SHORTNAME_STRING))
+          .Append(FILE_PATH_LITERAL(PRODUCT_FULLNAME_STRING));
   SetUpdaterRegistration(L"0.0.0.1", L"Fake Enterprise Companion");
   ASSERT_TRUE(base::CreateDirectory(incorrect_install_dir));
   ASSERT_TRUE(
-      base::WriteFile(incorrect_install_dir.AppendASCII(kExecutableName), ""));
+      base::WriteFile(incorrect_install_dir.AppendUTF8(kExecutableName), ""));
 
   RunInstaller(true);
 
-  ASSERT_TRUE(base::PathExists(install_dir_.AppendASCII(kExecutableName)));
+  ASSERT_TRUE(base::PathExists(install_dir_.AppendUTF8(kExecutableName)));
   ASSERT_TRUE(base::PathExists(incorrect_install_dir));
 
   ASSERT_TRUE(base::DeletePathRecursively(incorrect_install_dir));

@@ -151,8 +151,9 @@ TEST(DMStorage, StoreEnrollmentToken) {
   ASSERT_TRUE(cache_root.CreateUniqueTempDir());
   const base::FilePath cache_root_path = cache_root.GetPath();
   auto storage = CreateDMStorage(
-      cache_root_path, cache_root_path.AppendASCII("enrollment_token_file"),
-      cache_root_path.AppendASCII("dm_token_file"));
+      cache_root_path,
+      cache_root_path.Append(FILE_PATH_LITERAL("enrollment_token_file")),
+      cache_root_path.Append(FILE_PATH_LITERAL("dm_token_file")));
   EXPECT_TRUE(storage->GetEnrollmentToken().empty());
 
   EXPECT_TRUE(storage->StoreEnrollmentToken("enrollment_token"));
@@ -167,8 +168,9 @@ TEST(DMStorage, DeleteEnrollmentToken) {
   ASSERT_TRUE(cache_root.CreateUniqueTempDir());
   const base::FilePath cache_root_path = cache_root.GetPath();
   auto storage = CreateDMStorage(
-      cache_root_path, cache_root_path.AppendASCII("enrollment_token_file"),
-      cache_root_path.AppendASCII("dm_token_file"));
+      cache_root_path,
+      cache_root_path.Append(FILE_PATH_LITERAL("enrollment_token_file")),
+      cache_root_path.Append(FILE_PATH_LITERAL("dm_token_file")));
   EXPECT_TRUE(storage->GetEnrollmentToken().empty());
   EXPECT_TRUE(storage->StoreEnrollmentToken("test_token"));
   EXPECT_TRUE(storage->DeleteEnrollmentToken());
@@ -224,21 +226,22 @@ TEST(DMStorage, PersistPolicies) {
   EXPECT_TRUE(storage->CanPersistPolicies());
   EXPECT_TRUE(storage->PersistPolicies(policies));
   base::FilePath policy_info_file =
-      cache_root.GetPath().AppendASCII("CachedPolicyInfo");
+      cache_root.GetPath().Append(FILE_PATH_LITERAL("CachedPolicyInfo"));
   EXPECT_FALSE(base::PathExists(policy_info_file));
 
   base::FilePath omaha_policy_file =
       cache_root.GetPath()
-          .AppendASCII("Z29vZ2xlL21hY2hpbmUtbGV2ZWwtb21haGE=")
-          .AppendASCII("PolicyFetchResponse");
+          .Append(FILE_PATH_LITERAL("Z29vZ2xlL21hY2hpbmUtbGV2ZWwtb21haGE="))
+          .Append(FILE_PATH_LITERAL("PolicyFetchResponse"));
   EXPECT_TRUE(base::PathExists(omaha_policy_file));
   std::string omaha_policy;
   EXPECT_TRUE(base::ReadFileToString(omaha_policy_file, &omaha_policy));
   EXPECT_EQ(omaha_policy, "serialized-omaha-policy-data");
 
-  base::FilePath foobar_policy_file = cache_root.GetPath()
-                                          .AppendASCII("Zm9vYmFy")
-                                          .AppendASCII("PolicyFetchResponse");
+  base::FilePath foobar_policy_file =
+      cache_root.GetPath()
+          .Append(FILE_PATH_LITERAL("Zm9vYmFy"))
+          .Append(FILE_PATH_LITERAL("PolicyFetchResponse"));
   EXPECT_TRUE(base::PathExists(foobar_policy_file));
   std::string foobar_policy;
   EXPECT_TRUE(base::ReadFileToString(foobar_policy_file, &foobar_policy));

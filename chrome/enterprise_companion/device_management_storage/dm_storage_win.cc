@@ -258,8 +258,8 @@ scoped_refptr<DMStorage> GetDefaultDMStorage() {
   }
 
   return CreateDMStorage(
-      program_filesx86_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
-          .AppendASCII("Policies"));
+      program_filesx86_dir.Append(FILE_PATH_LITERAL(COMPANY_SHORTNAME_STRING))
+          .Append(L"Policies"));
 }
 
 }  // namespace device_management_storage

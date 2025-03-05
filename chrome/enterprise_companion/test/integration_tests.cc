@@ -213,7 +213,7 @@ class IntegrationTests : public ::testing::Test {
               << "Cached policy type is not a directory";
 
           base::FilePath cached_response_path =
-              name.AppendASCII("PolicyFetchResponse");
+              name.Append(FILE_PATH_LITERAL("PolicyFetchResponse"));
           ASSERT_TRUE(base::PathExists(cached_response_path));
           std::string cached_response_contents;
           ASSERT_TRUE(base::ReadFileToString(cached_response_path,
@@ -292,8 +292,8 @@ class IntegrationTests : public ::testing::Test {
     std::optional<base::FilePath> install_dir = GetInstallDirectory();
     ASSERT_TRUE(install_dir);
     base::FilePath artifacts_dir =
-        base::FilePath::FromASCII(isolated_outdir_str)
-            .AppendASCII(base::StrCat(
+        base::FilePath::FromUTF8Unsafe(isolated_outdir_str)
+            .AppendUTF8(base::StrCat(
                 {testing::UnitTest::GetInstance()->current_test_suite()->name(),
                  ".",
                  testing::UnitTest::GetInstance()
@@ -308,16 +308,18 @@ class IntegrationTests : public ::testing::Test {
                                 const base::FilePath& artifacts_dir) {
     ASSERT_TRUE(base::CreateDirectory(artifacts_dir));
     base::FilePath log_path =
-        install_dir.AppendASCII("enterprise_companion.log");
+        install_dir.Append(FILE_PATH_LITERAL("enterprise_companion.log"));
     if (base::PathExists(log_path)) {
       ASSERT_TRUE(
           base::CopyFile(log_path, artifacts_dir.Append(log_path.BaseName())));
     }
 
-    base::FilePath crash_db_path = install_dir.AppendASCII("Crashpad");
+    base::FilePath crash_db_path =
+        install_dir.Append(FILE_PATH_LITERAL("Crashpad"));
     if (base::PathExists(crash_db_path)) {
       ASSERT_TRUE(base::CopyDirectory(
-          crash_db_path, artifacts_dir.AppendASCII("Crashpad"), true));
+          crash_db_path, artifacts_dir.Append(FILE_PATH_LITERAL("Crashpad")),
+          true));
     }
   }
 

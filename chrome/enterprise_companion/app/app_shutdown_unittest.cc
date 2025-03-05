@@ -84,9 +84,9 @@ class AppShutdownTest : public ::testing::Test {
                          ".service"});
 #elif BUILDFLAG(IS_LINUX)
     return base::GetTempDirForTesting()
-        .AppendASCII(base::StrCat({"ChromeEnterpriseCompanionTest",
-                                   base::UnguessableToken::Create().ToString(),
-                                   ".service.sk"}))
+        .AppendUTF8(base::StrCat({"ChromeEnterpriseCompanionTest",
+                                  base::UnguessableToken::Create().ToString(),
+                                  ".service.sk"}))
         .AsUTF8Unsafe();
 #elif BUILDFLAG(IS_WIN)
     return base::UTF8ToWide(
