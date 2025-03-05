@@ -40,9 +40,9 @@ namespace {
 // Enables wifi and data only, not airplane mode.
 const int kDefaultConnectionType = 6;
 
-bool KillProcess(const base::Process& process, bool kill_gracefully) {
+bool KillProcess(const base::Process& process, bool quit_gracefully) {
 #if BUILDFLAG(IS_POSIX)
-  if (!kill_gracefully) {
+  if (!quit_gracefully) {
     kill(process.Pid(), SIGKILL);
     base::TimeTicks deadline = base::TimeTicks::Now() + base::Seconds(30);
     while (base::TimeTicks::Now() < deadline) {
@@ -87,7 +87,8 @@ ChromeDesktopImpl::ChromeDesktopImpl(
     base::ScopedTempDir* extension_dir,
     bool network_emulation_enabled,
     bool autoaccept_beforeunload,
-    bool enable_extension_targets)
+    bool enable_extension_targets,
+    bool quit_gracefully)
     : ChromeImpl(std::move(browser_info),
                  std::move(window_types),
                  std::move(websocket_client),
@@ -99,7 +100,8 @@ ChromeDesktopImpl::ChromeDesktopImpl(
       process_(std::move(process)),
       command_(command),
       network_connection_enabled_(network_emulation_enabled),
-      network_connection_(kDefaultConnectionType) {
+      network_connection_(kDefaultConnectionType),
+      quit_gracefully_(quit_gracefully) {
   if (user_data_dir->IsValid())
     CHECK(user_data_dir_.Set(user_data_dir->Take()));
   if (extension_dir->IsValid())
@@ -200,11 +202,11 @@ Status ChromeDesktopImpl::QuitImpl() {
   // everything back out to the user data directory and exit cleanly. If we're
   // using a temporary user data directory, we're going to delete the temporary
   // directory anyway, so just send SIGKILL immediately.
-  bool kill_gracefully = !user_data_dir_.IsValid();
+  bool quit_gracefully = quit_gracefully_ || !user_data_dir_.IsValid();
   // If the Chrome session is being run with --log-net-log, send SIGTERM first
   // to allow Chrome to write out all the net logs to the log path.
-  kill_gracefully = kill_gracefully || command_.HasSwitch("log-net-log");
-  if (kill_gracefully) {
+  quit_gracefully = quit_gracefully || command_.HasSwitch("log-net-log");
+  if (quit_gracefully) {
     Status status = devtools_websocket_client_->SendCommandAndIgnoreResponse(
         "Browser.close", base::Value::Dict());
     // If status is not okay, we will try the old method of KillProcess
@@ -214,9 +216,10 @@ Status ChromeDesktopImpl::QuitImpl() {
     }
   }
 
-  if (!KillProcess(process_, kill_gracefully))
+  if (!KillProcess(process_, quit_gracefully)) {
     return Status(kUnknownError,
                   base::StringPrintf("cannot kill %s", kBrowserShortName));
+  }
   return Status(kOk);
 }
 

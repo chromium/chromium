@@ -887,6 +887,8 @@ Status ParseChromeOptions(
         base::BindRepeating(&ParseFilePath, &capabilities->binary);
     parser_map["detach"] =
         base::BindRepeating(&ParseBoolean, &capabilities->detach);
+    parser_map["quitGracefully"] =
+        base::BindRepeating(&ParseBoolean, &capabilities->quit_gracefully);
     parser_map["excludeSwitches"] = base::BindRepeating(&ParseExcludeSwitches);
     parser_map["extensions"] = base::BindRepeating(&ParseExtensions);
     parser_map["extensionLoadTimeout"] = base::BindRepeating(
