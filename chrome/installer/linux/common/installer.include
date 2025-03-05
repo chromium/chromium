@@ -310,6 +310,15 @@ stage_install_common() {
   process_template "${OUTPUTDIR}/installer/common/desktop.template" \
     "${STAGEDIR}/usr/share/applications/${PACKAGE}.desktop"
   chmod 644 "${STAGEDIR}/usr/share/applications/${PACKAGE}.desktop"
+  cp "${STAGEDIR}/usr/share/applications/${PACKAGE}.desktop" \
+    "${STAGEDIR}/usr/share/applications/${RDN_DESKTOP}.desktop"
+  chmod 644 "${STAGEDIR}/usr/share/applications/${RDN_DESKTOP}.desktop"
+  sed -i "/^\[Desktop Entry\]$/a \
+# This is the same as ${PACKAGE}.desktop except NoDisplay=true prevents\n\
+# duplicate menu entries. This is required to match the application ID\n\
+# used by XDG desktop portal, which has stricter naming requirements.\n\
+# The old desktop file is kept to preserve default browser settings.\n\
+NoDisplay=true" "${STAGEDIR}/usr/share/applications/${RDN_DESKTOP}.desktop"
   process_template "${OUTPUTDIR}/installer/common/default-app.template" \
     "${STAGEDIR}/usr/share/gnome-control-center/default-apps/${PACKAGE}.xml"
   chmod 644 "${STAGEDIR}/usr/share/gnome-control-center/default-apps/${PACKAGE}.xml"
