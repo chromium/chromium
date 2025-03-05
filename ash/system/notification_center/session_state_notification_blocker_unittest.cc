@@ -184,7 +184,7 @@ TEST_F(SessionStateNotificationBlockerTest, BaseTest) {
   EXPECT_FALSE(ShouldShowNotification(notifier_id));
 
   // Logged in as a normal user.
-  SimulateUserLogin("user@test.com");
+  SimulateUserLogin({"user@test.com"});
   EXPECT_EQ(1, GetStateChangedCountAndReset());
   EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
   EXPECT_TRUE(ShouldShowNotification(notifier_id));
@@ -229,7 +229,7 @@ TEST_F(SessionStateNotificationBlockerTest, AlwaysAllowedNotifier) {
   EXPECT_TRUE(ShouldShowNotification(notifier_id));
 
   // Logged in as a normal user.
-  SimulateUserLogin("user@test.com");
+  SimulateUserLogin({"user@test.com"});
   EXPECT_EQ(1, GetStateChangedCountAndReset());
   EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
   EXPECT_TRUE(ShouldShowNotification(notifier_id));
@@ -264,7 +264,7 @@ TEST_F(SessionStateNotificationBlockerTest, DelayAfterLogin) {
   GetSessionControllerClient()->SetSessionState(SessionState::LOGIN_PRIMARY);
 
   // Logged in as a normal user.
-  SimulateUserLogin("user@test.com");
+  SimulateUserLogin({"user@test.com"});
 
   // Non system notification should not be shown immediately after login.
   message_center::NotifierId notifier_id(
@@ -291,7 +291,7 @@ TEST_F(SessionStateNotificationBlockerTest, DoNotDisturbNotification) {
   EXPECT_FALSE(ShouldShowDoNotDisturbNotification());
 
   // Logged in as a normal user.
-  SimulateUserLogin("user@test.com");
+  SimulateUserLogin({"user@test.com"});
   EXPECT_TRUE(ShouldShowDoNotDisturbNotification());
 
   // Lock.
@@ -315,7 +315,7 @@ TEST_F(SessionStateNotificationBlockerTest, LockScreenNotification) {
       lock_screen_notification_controller()->CreateNotification().get()));
 
   // Logged in as a normal user.
-  SimulateUserLogin("user@test.com");
+  SimulateUserLogin({"user@test.com"});
   EXPECT_FALSE(ShouldShowNotification(
       lock_screen_notification_controller()->CreateNotification().get()));
 

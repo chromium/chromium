@@ -289,14 +289,14 @@ TEST_F(QuickAnswersStateAshTest, EligibleLocales) {
   EXPECT_FALSE(observer()->is_eligible());
 
   prefs()->SetString(language::prefs::kApplicationLocale, "pt");
-  SimulateUserLogin(kTestUser);
+  SimulateUserLogin({kTestUser});
   EXPECT_TRUE(QuickAnswersState::IsEligible());
   EXPECT_TRUE(observer()->is_eligible());
 
   ClearLogin();
 
   prefs()->SetString(language::prefs::kApplicationLocale, "en");
-  SimulateUserLogin(kTestUser);
+  SimulateUserLogin({kTestUser});
   EXPECT_TRUE(QuickAnswersState::IsEligible());
   EXPECT_TRUE(observer()->is_eligible());
 }
@@ -308,14 +308,14 @@ TEST_F(QuickAnswersStateAshTest, IneligibleLocales) {
   EXPECT_FALSE(observer()->is_eligible());
 
   prefs()->SetString(language::prefs::kApplicationLocale, "zh");
-  SimulateUserLogin(kTestUser);
+  SimulateUserLogin({kTestUser});
   EXPECT_FALSE(QuickAnswersState::IsEligible());
   EXPECT_FALSE(observer()->is_eligible());
 
   ClearLogin();
 
   prefs()->SetString(language::prefs::kApplicationLocale, "ja");
-  SimulateUserLogin(kTestUser);
+  SimulateUserLogin({kTestUser});
   EXPECT_FALSE(QuickAnswersState::IsEligible());
   EXPECT_FALSE(observer()->is_eligible());
 }

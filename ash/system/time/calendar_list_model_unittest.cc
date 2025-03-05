@@ -166,10 +166,9 @@ class CalendarListModelTest : public AshTestBase {
   }
 
   AccountId SimulateLogin(const std::string& email, bool is_child = false) {
-    auto account_id = AccountId::FromUserEmail(email);
-    SimulateUserLogin(account_id, is_child ? user_manager::UserType::kChild
-                                           : user_manager::UserType::kRegular);
-    return account_id;
+    return SimulateUserLogin({email, is_child
+                                         ? user_manager::UserType::kChild
+                                         : user_manager::UserType::kRegular});
   }
 
   CalendarListModel* calendar_list_model() {

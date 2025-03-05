@@ -378,7 +378,7 @@ void BrowserWithTestWindowTest::PostUserProfileCreation(
   if (user) {
     OnUserProfileCreated(email, profile);
     ash_test_helper()->test_session_controller_client()->AddUserSession(
-        email, user->GetType());
+        {email, user->GetType()});
   }
 }
 

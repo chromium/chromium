@@ -48,7 +48,7 @@ class ShelfContextMenuModelTest
   void SetUp() override {
     AshTestBase::SetUp();
     TestSessionControllerClient* session = GetSessionControllerClient();
-    session->AddUserSession("user1@test.com", GetUserType());
+    session->AddUserSession({"user1@test.com", GetUserType()});
     session->SetSessionState(session_manager::SessionState::ACTIVE);
     session->SwitchActiveUser(AccountId::FromUserEmail("user1@test.com"));
   }

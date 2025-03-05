@@ -4261,7 +4261,7 @@ class CameraPreviewWithHoldingSpaceTest : public CaptureModeCameraTest {
         user_account, client(), model());
 
     TestSessionControllerClient* session = GetSessionControllerClient();
-    session->AddUserSession(kTestUser);
+    session->AddUserSession({kTestUser});
     holding_space_prefs::MarkTimeOfFirstAvailability(
         session->GetUserPrefService(user_account));
     holding_space_prefs::MarkTimeOfFirstAdd(
@@ -4739,7 +4739,7 @@ TEST_F(NoSessionCaptureModeCameraTest, RequestCameraInfoAfterUserLogsIn) {
   {
     base::RunLoop loop;
     camera_controller->SetOnCameraListReceivedForTesting(loop.QuitClosure());
-    SimulateUserLogin("example@gmail.com", user_manager::UserType::kRegular);
+    SimulateUserLogin({"example@gmail.com"});
     loop.Run();
   }
 

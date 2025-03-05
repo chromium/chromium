@@ -77,7 +77,7 @@ class DetachableBaseNotificationControllerTest : public NoSessionAshTestBase {
 
 TEST_F(DetachableBaseNotificationControllerTest,
        ShowPairingNotificationIfSessionNotBlocked) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
 
   // The first detachable base used by the user - no notification expected.
   detachable_base_handler()->PairChallengeSucceeded({0x01, 0x01});
@@ -98,7 +98,7 @@ TEST_F(DetachableBaseNotificationControllerTest,
 
 TEST_F(DetachableBaseNotificationControllerTest,
        ShowNotificationOnNonAuthenticatedBases) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
 
   detachable_base_handler()->PairChallengeFailed();
   EXPECT_TRUE(IsBaseChangedNotificationVisible());
@@ -106,13 +106,13 @@ TEST_F(DetachableBaseNotificationControllerTest,
 
 TEST_F(DetachableBaseNotificationControllerTest,
        UpdateNotificationOnUserSwitch) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
 
   // The first detachable base used by the user - no notification expected.
   detachable_base_handler()->PairChallengeSucceeded({0x01, 0x01});
   EXPECT_FALSE(IsBaseChangedNotificationVisible());
 
-  SimulateUserLogin("secondary_user@test.com");
+  SimulateUserLogin({"secondary_user@test.com"});
   EXPECT_FALSE(IsBaseChangedNotificationVisible());
 
   detachable_base_handler()->PairChallengeSucceeded({0x02, 0x02});
@@ -127,13 +127,13 @@ TEST_F(DetachableBaseNotificationControllerTest,
 
 TEST_F(DetachableBaseNotificationControllerTest,
        NonAuthenticatedBaseNotificationOnUserSwitch) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
 
   detachable_base_handler()->PairChallengeFailed();
   EXPECT_TRUE(IsBaseChangedNotificationVisible());
   CloseBaseChangedNotification();
 
-  SimulateUserLogin("secondary_user@test.com");
+  SimulateUserLogin({"secondary_user@test.com"});
   EXPECT_TRUE(IsBaseChangedNotificationVisible());
 }
 
@@ -151,7 +151,7 @@ TEST_F(DetachableBaseNotificationControllerTest,
   // No active user, so the notification should not be shown, yet.
   EXPECT_FALSE(IsBaseChangedNotificationVisible());
 
-  SimulateUserLogin(kTestUser);
+  SimulateUserLogin({kTestUser});
   EXPECT_TRUE(IsBaseChangedNotificationVisible());
 }
 
@@ -173,7 +173,7 @@ TEST_F(DetachableBaseNotificationControllerTest,
   // notification when the user logs in.
   EXPECT_TRUE(
       detachable_base_handler()->SetPairedBaseAsLastUsedByUser(test_user_info));
-  SimulateUserLogin(kTestUser);
+  SimulateUserLogin({kTestUser});
   EXPECT_FALSE(IsBaseChangedNotificationVisible());
 }
 
@@ -185,12 +185,12 @@ TEST_F(DetachableBaseNotificationControllerTest,
   detachable_base_handler()->PairChallengeFailed();
   EXPECT_FALSE(IsBaseChangedNotificationVisible());
 
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   EXPECT_TRUE(IsBaseChangedNotificationVisible());
 }
 
 TEST_F(DetachableBaseNotificationControllerTest, NoNotificationOnLockScreen) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   // The first detachable base used by the user - no notification expected.
   detachable_base_handler()->PairChallengeSucceeded({0x01, 0x01});
 
@@ -205,7 +205,7 @@ TEST_F(DetachableBaseNotificationControllerTest, NoNotificationOnLockScreen) {
 
 TEST_F(DetachableBaseNotificationControllerTest,
        NoNotificationAfterLockScreenIfSetAsUsed) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   // The first detachable base used by the user - no notification expected.
   detachable_base_handler()->PairChallengeSucceeded({0x01, 0x01});
   BlockUserSession(UserSessionBlockReason::BLOCKED_BY_LOCK_SCREEN);
@@ -229,13 +229,13 @@ TEST_F(DetachableBaseNotificationControllerTest,
   detachable_base_handler()->PairChallengeFailed();
   EXPECT_FALSE(IsBaseChangedNotificationVisible());
 
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
 
   EXPECT_TRUE(IsBaseChangedNotificationVisible());
 }
 
 TEST_F(DetachableBaseNotificationControllerTest, NotificationOnUpdateRequired) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
 
   detachable_base_handler()->BaseFirmwareUpdateNeeded();
   EXPECT_TRUE(IsBaseRequiresUpdateNotificationVisible());
@@ -254,7 +254,7 @@ TEST_F(DetachableBaseNotificationControllerTest,
   EXPECT_FALSE(IsBaseRequiresUpdateNotificationVisible());
 
   // Login, expect the notification to be shown.
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   EXPECT_TRUE(IsBaseRequiresUpdateNotificationVisible());
 
   // The notification should be removed when the base gets detached.

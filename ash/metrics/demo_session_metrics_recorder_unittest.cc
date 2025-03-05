@@ -852,11 +852,9 @@ TEST_F(DemoSessionMetricsRecorderTest,
 // In MGS demo session, test user actively exits the session. Check the
 // corresponding user actions are recorded.
 TEST_F(DemoSessionMetricsRecorderTest, UserActivelyExitsMGS) {
-  TestSessionControllerClient* session = GetSessionControllerClient();
   // Simulate to enter the demo MGS.
-  session->Reset();
-  session->AddUserSession(kUserEmail, user_manager::UserType::kPublicAccount);
-  session->SetSessionState(session_manager::SessionState::ACTIVE);
+  ClearLogin();
+  SimulateUserLogin({kUserEmail, user_manager::UserType::kPublicAccount});
 
   DemoSessionMetricsRecorder::RecordExitSessionAction(
       DemoSessionMetricsRecorder::ExitSessionFrom::kShelf);
@@ -888,6 +886,9 @@ TEST_F(DemoSessionMetricsRecorderTest, UserActivelyExitsSignedInSession) {
   // Simulate a signed-in demo session.
   DemoSessionMetricsRecorder::SetCurrentSessionType(
       DemoSessionMetricsRecorder::SessionType::kSignedInDemoSession);
+
+  // Simulate to sign in the session with a regular user.
+  SimulateUserLogin({kUserEmail});
 
   // Even though it's signed-in, the generic exit demo session user actions are
   // still recorded.

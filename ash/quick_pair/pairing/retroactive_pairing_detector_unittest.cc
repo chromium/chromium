@@ -247,7 +247,7 @@ class RetroactivePairingDetectorTest
   }
 
   void Login(user_manager::UserType user_type) {
-    SimulateUserLogin(kUserEmail, user_type);
+    SimulateUserLogin({kUserEmail, user_type});
   }
 
   void SetGattServiceClientConnected(bool connected) {

@@ -65,10 +65,10 @@ class PrivacyScreenControllerTest : public NoSessionAshTestBase {
     NoSessionAshTestBase::SetUp();
 
     // Create user 1 session and simulate its login.
-    SimulateUserLogin(kUser1Email);
+    SimulateUserLogin({kUser1Email});
 
     // Create user 2 session.
-    GetSessionControllerClient()->AddUserSession(kUser2Email);
+    GetSessionControllerClient()->AddUserSession({kUser2Email});
 
     native_display_delegate_ =
         new display::test::TestNativeDisplayDelegate(logger_.get());

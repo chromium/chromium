@@ -148,10 +148,8 @@ class FocusModeControllerMultiUserTest : public NoSessionAshTestBase {
         GetSessionControllerClient();
     session_controller->Reset();
 
-    session_controller->AddUserSession(kUser1Email,
-                                       user_manager::UserType::kRegular);
-    session_controller->AddUserSession(kUser2Email,
-                                       user_manager::UserType::kRegular);
+    session_controller->AddUserSession({kUser1Email});
+    session_controller->AddUserSession({kUser2Email});
 
     user_1_prefs_ = session_controller->GetUserPrefService(GetUser1AccountId());
     user_2_prefs_ = session_controller->GetUserPrefService(GetUser2AccountId());

@@ -1975,7 +1975,7 @@ class AccessibilityControllerSigninTest
         break;
 
       case TestUserLoginType::kExistingUser:
-        SimulateUserLogin(kUserEmail);
+        SimulateUserLogin({kUserEmail});
         break;
     }
   }

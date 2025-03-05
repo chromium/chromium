@@ -758,14 +758,14 @@ TEST_F(ScannerControllerTest, NoActionsFetchedWhenNoActiveSession) {
 }
 
 TEST_F(ScannerControllerTest, ResetsScannerSessionWhenActiveUserChanges) {
-  SimulateUserLogin("user1@gmail.com");
+  SimulateUserLogin({"user1@gmail.com"});
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
   EXPECT_TRUE(scanner_controller->StartNewSession());
   EXPECT_TRUE(scanner_controller->HasActiveSessionForTesting());
 
   // Switch to a different user.
-  SimulateUserLogin("user2@gmail.com");
+  SimulateUserLogin({"user2@gmail.com"});
 
   EXPECT_FALSE(scanner_controller->HasActiveSessionForTesting());
 }
@@ -1208,8 +1208,8 @@ TEST_F(ScannerControllerTest,
             original_account);
   AccountId new_account =
       AccountId::FromUserEmailGaiaId("user@test.com", GaiaId("fakegaia"));
-  GetSessionControllerClient()->AddUserSession(
-      new_account, /*display_email=*/account_id.GetUserEmail());
+  GetSessionControllerClient()->AddUserSession({new_account.GetUserEmail()},
+                                               new_account);
   GetSessionControllerClient()->SwitchActiveUser(new_account);
   ASSERT_NE(Shell::Get()->session_controller()->GetActiveAccountId(),
             original_account);

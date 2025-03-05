@@ -43,7 +43,7 @@ class FederatedServiceControllerImplTestBase : public NoSessionAshTestBase {
 };
 
 TEST_F(FederatedServiceControllerImplTestBase, NormalUserLogin) {
-  SimulateUserLogin("user@gmail.com");
+  SimulateUserLogin({"user@gmail.com"});
   EXPECT_TRUE(controller_->IsServiceAvailable());
 
   GetSessionControllerClient()->LockScreen();
@@ -64,7 +64,7 @@ TEST_F(FederatedServiceControllerImplTestBase, NormalUserLogin) {
 }
 
 TEST_F(FederatedServiceControllerImplTestBase, ChildUserLogin) {
-  SimulateUserLogin("user@gmail.com", user_manager::UserType::kChild);
+  SimulateUserLogin({"user@gmail.com", user_manager::UserType::kChild});
   EXPECT_TRUE(controller_->IsServiceAvailable());
 }
 

@@ -85,7 +85,7 @@ class ScrollableShelfViewWithGuestModePixelTest
     if (GetParam()) {
       SimulateGuestLogin();
     } else {
-      SimulateUserLogin("user@gmail.com");
+      SimulateUserLogin({"user@gmail.com"});
     }
   }
 };

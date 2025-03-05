@@ -1029,10 +1029,12 @@ TEST_F(HomeButtonAnimationTest, NonAnimatedLayoutDuringAnimation) {
   EXPECT_EQ(1.0f, home_button_view->layer()->opacity());
 }
 
+inline constexpr LoginInfo k2ndRegularUserLoginInfo = {"user1@tray"};
+
 TEST_P(HomeButtonTest, LongPressGestureAssistant) {
   // Simulate two users with primary user as active.
-  auto primary = SimulateUserLogin(kDefaultUserEmail);
-  SimulateUserLogin(kDefaultUserEmail);
+  auto primary = SimulateUserLogin(kRegularUserLoginInfo);
+  SimulateUserLogin(k2ndRegularUserLoginInfo);
   SwitchActiveUser(primary);
 
   // Disable Sunfish and Scanner via enterprise policies.
@@ -1069,8 +1071,8 @@ TEST_P(HomeButtonTest, LongPressGestureAssistant) {
 
 TEST_P(HomeButtonTest, LongPressGestureSunfishScanner) {
   // Simulate two users with primary user as active.
-  auto primary = SimulateUserLogin(kDefaultUserEmail);
-  SimulateUserLogin(kDefaultUserEmail);
+  auto primary = SimulateUserLogin(kRegularUserLoginInfo);
+  SimulateUserLogin(k2ndRegularUserLoginInfo);
   SwitchActiveUser(primary);
 
   // Sunfish / Scanner should already be enabled.
@@ -1106,8 +1108,8 @@ TEST_P(HomeButtonTest, LongPressGestureSunfishScanner) {
 
 TEST_P(HomeButtonTest, LongPressGestureSunfishScannerWithAssistant) {
   // Simulate two users with primary user as active.
-  auto primary = SimulateUserLogin(kDefaultUserEmail);
-  SimulateUserLogin(kDefaultUserEmail);
+  auto primary = SimulateUserLogin({kDefaultUserEmail});
+  SimulateUserLogin({kDefaultUserEmail});
   SwitchActiveUser(primary);
 
   // Sunfish / Scanner should already be enabled.
@@ -1150,8 +1152,8 @@ TEST_P(HomeButtonTest, LongPressGestureSunfishScannerWithAssistant) {
 
 TEST_P(HomeButtonTest, LongPressGestureInTabletModeAssistant) {
   // Simulate two users with primary user as active.
-  auto primary = SimulateUserLogin(kDefaultUserEmail);
-  SimulateUserLogin(kDefaultUserEmail);
+  auto primary = SimulateUserLogin({kDefaultUserEmail});
+  SimulateUserLogin({kDefaultUserEmail});
   SwitchActiveUser(primary);
 
   // Disable Sunfish and Scanner via enterprise policies.
@@ -1205,8 +1207,8 @@ TEST_P(HomeButtonTest, LongPressGestureInTabletModeAssistant) {
 
 TEST_P(HomeButtonTest, LongPressGestureInTabletModeSunfishScanner) {
   // Simulate two users with primary user as active.
-  auto primary = SimulateUserLogin(kDefaultUserEmail);
-  SimulateUserLogin(kDefaultUserEmail);
+  auto primary = SimulateUserLogin({kDefaultUserEmail});
+  SimulateUserLogin({kDefaultUserEmail});
   SwitchActiveUser(primary);
 
   // Sunfish / Scanner should already be enabled.
@@ -1250,8 +1252,8 @@ TEST_P(HomeButtonTest, LongPressGestureInTabletModeSunfishScanner) {
 TEST_P(HomeButtonTest,
        LongPressGestureInTabletModeSunfishScannerWithAssistant) {
   // Simulate two users with primary user as active.
-  auto primary = SimulateUserLogin(kDefaultUserEmail);
-  SimulateUserLogin(kDefaultUserEmail);
+  auto primary = SimulateUserLogin({kDefaultUserEmail});
+  SimulateUserLogin({kDefaultUserEmail});
   SwitchActiveUser(primary);
 
   // Sunfish / Scanner should already be enabled.
@@ -1322,8 +1324,8 @@ TEST_P(HomeButtonTest, LongPressGestureWithSecondaryUserAssistant) {
 
 TEST_P(HomeButtonTest, LongPressGestureWithAssistantAndSunfishScannerDisabled) {
   // Simulate two user with primary user as active.
-  auto primary = SimulateUserLogin(kDefaultUserEmail);
-  SimulateUserLogin(kDefaultUserEmail);
+  auto primary = SimulateUserLogin(kRegularUserLoginInfo);
+  SimulateUserLogin(k2ndRegularUserLoginInfo);
   SwitchActiveUser(primary);
 
   // Disable Sunfish and Scanner via enterprise policies.

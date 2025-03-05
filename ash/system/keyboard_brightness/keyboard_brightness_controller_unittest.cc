@@ -391,7 +391,7 @@ TEST_F(KeyboardBrightnessControllerTest,
   EXPECT_FALSE(HasKeyboardBrightnessPrefValue(known_user, account_id));
 
   // Simulate user login.
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
   run_loop_.RunUntilIdle();
 
   // After login, the brightness pref should have a value equal to the initial
@@ -809,7 +809,7 @@ TEST_F(KeyboardBrightnessControllerTest,
   AccountId account_id = AccountId::FromUserEmail(kUserEmail);
   login_data_dispatcher()->NotifyFocusPod(account_id);
   LoginScreenFocusAccount(account_id);
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   // The ambient light sensor should be enabled by default.
   EXPECT_TRUE(
@@ -878,10 +878,10 @@ TEST_F(KeyboardBrightnessControllerTest,
   ClearLogin();
 
   // On the login screen, select and login with an existing user.
-  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  AccountId account_id = AccountId::FromUserEmail({kUserEmail});
   login_data_dispatcher()->NotifyFocusPod(account_id);
   LoginScreenFocusAccount(account_id);
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   // The ambient light sensor should be enabled by default.
   EXPECT_TRUE(
@@ -971,9 +971,8 @@ TEST_F(KeyboardBrightnessControllerTest,
 
   // Log in
   ClearLogin();
-  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
   user_manager::KnownUser known_user(local_state());
-  SimulateUserLogin(kUserEmail);
+  AccountId account_id = SimulateUserLogin({kUserEmail});
 
   // Set ALS to false, and set the disabled reason to be
   // USER_REQUEST_SETTINGS_APP.
@@ -1037,9 +1036,8 @@ TEST_F(KeyboardBrightnessControllerTest,
 
   // Log in
   ClearLogin();
-  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
   user_manager::KnownUser known_user(local_state());
-  SimulateUserLogin(kUserEmail);
+  AccountId account_id = SimulateUserLogin({kUserEmail});
 
   // Set ALS to false by brightness key, and set the disabled reason to be
   // BRIGHTNESS_USER_REQUEST.
@@ -1100,9 +1098,8 @@ TEST_F(KeyboardBrightnessControllerTest,
 
   // Log in
   ClearLogin();
-  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
   user_manager::KnownUser known_user(local_state());
-  SimulateUserLogin(kUserEmail);
+  AccountId account_id = SimulateUserLogin({kUserEmail});
 
   // Disable ALS using the brightness key.
   SetKeyboardAmbientLightSensorEnabled(
@@ -1142,9 +1139,8 @@ TEST_F(KeyboardBrightnessControllerTest, RestoreBrightnessSettings_NoSensor) {
 
   // Log in
   ClearLogin();
-  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
   user_manager::KnownUser known_user(local_state());
-  SimulateUserLogin(kUserEmail);
+  AccountId account_id = SimulateUserLogin({kUserEmail});
 
   // Disable ALS
   SetKeyboardAmbientLightSensorEnabled(
@@ -1197,9 +1193,8 @@ TEST_F(KeyboardBrightnessControllerTest, RestoreBrightnessSettings_HasSensor) {
 
   // Log in
   ClearLogin();
-  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
   user_manager::KnownUser known_user(local_state());
-  SimulateUserLogin(kUserEmail);
+  AccountId account_id = SimulateUserLogin({kUserEmail});
 
   // Set ALS to false.
   SetKeyboardAmbientLightSensorEnabled(
@@ -1252,7 +1247,7 @@ TEST_F(KeyboardBrightnessControllerTest,
 
   // Log in.
   ClearLogin();
-  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  AccountId account_id = AccountId::FromUserEmail({kUserEmail});
   LoginScreenFocusAccount(account_id);
   histogram_tester_->ExpectBucketCount(
       "ChromeOS.Keyboard.Startup.AmbientLightSensorEnabled", true, 1);
@@ -1507,9 +1502,8 @@ TEST_F(KeyboardBrightnessControllerTest,
 
   // Log in
   ClearLogin();
-  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
   user_manager::KnownUser known_user(local_state());
-  SimulateUserLogin(kUserEmail);
+  AccountId account_id = SimulateUserLogin({kUserEmail});
 
   // Set keyboard brightness.
   known_user.SetPath(account_id, prefs::kKeyboardBrightnessPercent,

@@ -60,7 +60,7 @@ TEST_F(FederatedClientManagerTest, ServicesAvailableAfterLogin) {
   EXPECT_FALSE(manager_->IsFederatedStringsServiceAvailable());
 
   // After login.
-  SimulateUserLogin("user@gmail.com");
+  SimulateUserLogin({"user@gmail.com"});
   EXPECT_TRUE(manager_->IsFederatedServiceAvailable());
   EXPECT_TRUE(manager_->IsFederatedStringsServiceAvailable());
 }

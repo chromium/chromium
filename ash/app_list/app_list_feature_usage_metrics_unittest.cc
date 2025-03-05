@@ -68,7 +68,7 @@ class AppListFeatureUsageMetricsTest : public NoSessionAshTestBase {
 };
 
 TEST_F(AppListFeatureUsageMetricsTest, CountsStartAtZero) {
-  SimulateUserLogin("user@gmail.com");
+  SimulateUserLogin({"user@gmail.com"});
 
   histograms_.ExpectTotalCount(kClamshellMetric, 0);
   histograms_.ExpectTotalCount(kClamshellUsetimeMetric, 0);
@@ -79,7 +79,7 @@ TEST_F(AppListFeatureUsageMetricsTest, CountsStartAtZero) {
 TEST_F(AppListFeatureUsageMetricsTest, InitialMetricsWithoutTabletModeSupport) {
   ASSERT_FALSE(Shell::Get()->tablet_mode_controller()->CanEnterTabletMode());
 
-  SimulateUserLogin("user@gmail.com");
+  SimulateUserLogin({"user@gmail.com"});
   FastForwardPastMetricsReportingInterval();
 
   histograms_.ExpectBucketCount(kClamshellMetric, kEligible, 1);
@@ -93,7 +93,7 @@ TEST_F(AppListFeatureUsageMetricsTest, InitialMetricsWithTabletModeSupport) {
   SimulateTabletModeSupport();
   ASSERT_TRUE(Shell::Get()->tablet_mode_controller()->CanEnterTabletMode());
 
-  SimulateUserLogin("user@gmail.com");
+  SimulateUserLogin({"user@gmail.com"});
   FastForwardPastMetricsReportingInterval();
 
   histograms_.ExpectBucketCount(kClamshellMetric, kEligible, 1);
@@ -114,7 +114,7 @@ TEST_F(AppListFeatureUsageMetricsTest, NotEligibleInKioskMode) {
 }
 
 TEST_F(AppListFeatureUsageMetricsTest, ShowAndHideLauncherInClamshell) {
-  SimulateUserLogin("user@gmail.com");
+  SimulateUserLogin({"user@gmail.com"});
   Shell::Get()->app_list_controller()->ShowAppList(
       AppListShowSource::kSearchKey);
   histograms_.ExpectBucketCount(kClamshellMetric, kUsedWithSuccess, 1);
@@ -131,7 +131,7 @@ TEST_F(AppListFeatureUsageMetricsTest, ShowAndHideLauncherInClamshell) {
 TEST_F(AppListFeatureUsageMetricsTest, ShowAndHideLauncherInTablet) {
   SimulateTabletModeSupport();
   ASSERT_TRUE(Shell::Get()->tablet_mode_controller()->CanEnterTabletMode());
-  SimulateUserLogin("user@gmail.com");
+  SimulateUserLogin({"user@gmail.com"});
 
   // Entering tablet mode shows the home screen launcher.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
@@ -152,7 +152,7 @@ TEST_F(AppListFeatureUsageMetricsTest,
        EnterTabletModeWithLauncherAndWindowOpen) {
   SimulateTabletModeSupport();
   ASSERT_TRUE(Shell::Get()->tablet_mode_controller()->CanEnterTabletMode());
-  SimulateUserLogin("user@gmail.com");
+  SimulateUserLogin({"user@gmail.com"});
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   Shell::Get()->app_list_controller()->ShowAppList(
@@ -174,7 +174,7 @@ TEST_F(AppListFeatureUsageMetricsTest,
 
 TEST_F(AppListFeatureUsageMetricsTest, OpenClamshellThenTabletThenExit) {
   SimulateTabletModeSupport();
-  SimulateUserLogin("user@gmail.com");
+  SimulateUserLogin({"user@gmail.com"});
 
   Shell::Get()->app_list_controller()->ShowAppList(
       AppListShowSource::kSearchKey);

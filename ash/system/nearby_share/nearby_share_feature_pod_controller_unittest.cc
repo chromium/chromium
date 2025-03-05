@@ -101,14 +101,14 @@ TEST_F(NearbyShareFeaturePodControllerTest, ButtonVisibilityNotLoggedIn) {
 }
 
 TEST_F(NearbyShareFeaturePodControllerTest, ButtonVisibilityLoggedIn) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   SetUpButton();
   // If logged in, it should be visible.
   EXPECT_TRUE(IsButtonVisible());
 }
 
 TEST_F(NearbyShareFeaturePodControllerTest, ButtonVisibilityLocked) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   BlockUserSession(UserSessionBlockReason::BLOCKED_BY_LOCK_SCREEN);
 
   // Showing the lock screen closes the system tray bubble, so re-show it before
@@ -121,7 +121,7 @@ TEST_F(NearbyShareFeaturePodControllerTest, ButtonVisibilityLocked) {
 }
 
 TEST_F(NearbyShareFeaturePodControllerTest, ButtonVisibilityLoginScreen) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   BlockUserSession(UserSessionBlockReason::BLOCKED_BY_LOGIN_SCREEN);
   SetUpButton();
   // If the login screen is showing (e.g. multi-user signin), it should not be
@@ -130,7 +130,7 @@ TEST_F(NearbyShareFeaturePodControllerTest, ButtonVisibilityLoginScreen) {
 }
 
 TEST_F(NearbyShareFeaturePodControllerTest, ButtonVisiblilityHiddenByDelegate) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   test_delegate_->set_is_pod_button_visible(false);
   SetUpButton();
   // If NearbyShareDelegate::IsPodButtonVisible() returns false, it should
@@ -140,7 +140,7 @@ TEST_F(NearbyShareFeaturePodControllerTest, ButtonVisiblilityHiddenByDelegate) {
 
 TEST_F(NearbyShareFeaturePodControllerTest,
        ButtonToggledByHighVisibilityEnabledEvent) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   SetUpButton();
   ASSERT_FALSE(IsButtonToggled());
   nearby_share_controller_->HighVisibilityEnabledChanged(true);
@@ -150,7 +150,7 @@ TEST_F(NearbyShareFeaturePodControllerTest,
 }
 
 TEST_F(NearbyShareFeaturePodControllerTest, ButtonPressTogglesHighVisibility) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   SetUpButton();
   test_delegate_->method_calls().clear();
 
@@ -168,7 +168,7 @@ TEST_F(NearbyShareFeaturePodControllerTest, ButtonPressTogglesHighVisibility) {
 }
 
 TEST_F(NearbyShareFeaturePodControllerTest, IconUMATracking) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   SetUpButton();
 
   std::string histogram_prefix;
@@ -197,7 +197,7 @@ TEST_F(NearbyShareFeaturePodControllerTest, IconUMATracking) {
 }
 
 TEST_F(NearbyShareFeaturePodControllerTest, ButtonEnabledStateVisibility) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   test_delegate_->set_is_enabled(false);
   SetUpButton();
   // If NearbyShareDelegate::IsEnabled() returns false, the button should
@@ -208,7 +208,7 @@ TEST_F(NearbyShareFeaturePodControllerTest, ButtonEnabledStateVisibility) {
 TEST_F(NearbyShareFeaturePodControllerTest,
        QuickShareV2_ButtonToggledOnYourDevicesVisibility) {
   EnableQuickShareV2();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   // Default visibility is Your devices.
   SetUpButton();
   EXPECT_TRUE(IsButtonToggled());
@@ -217,7 +217,7 @@ TEST_F(NearbyShareFeaturePodControllerTest,
 TEST_F(NearbyShareFeaturePodControllerTest,
        QuickShareV2_ButtonToggledOnContactsVisibility) {
   EnableQuickShareV2();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   test_delegate_->set_visibility(
       ::nearby_share::mojom::Visibility::kAllContacts);
   SetUpButton();
@@ -227,7 +227,7 @@ TEST_F(NearbyShareFeaturePodControllerTest,
 TEST_F(NearbyShareFeaturePodControllerTest,
        QuickShareV2_ButtonToggledOnSelectedContactsVisibility) {
   EnableQuickShareV2();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   test_delegate_->set_visibility(
       ::nearby_share::mojom::Visibility::kSelectedContacts);
   SetUpButton();
@@ -237,7 +237,7 @@ TEST_F(NearbyShareFeaturePodControllerTest,
 TEST_F(NearbyShareFeaturePodControllerTest,
        QuickShareV2_ButtonToggledOnHiddenVisibility) {
   EnableQuickShareV2();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   test_delegate_->set_visibility(::nearby_share::mojom::Visibility::kNoOne);
   SetUpButton();
   EXPECT_TRUE(IsButtonToggled());
@@ -246,7 +246,7 @@ TEST_F(NearbyShareFeaturePodControllerTest,
 TEST_F(NearbyShareFeaturePodControllerTest,
        QuickShareV2_ButtonToggledOn_HighVisibilityEnabled) {
   EnableQuickShareV2();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   test_delegate_->set_is_high_visibility_on(true);
   SetUpButton();
   EXPECT_TRUE(IsButtonToggled());
@@ -255,7 +255,7 @@ TEST_F(NearbyShareFeaturePodControllerTest,
 TEST_F(NearbyShareFeaturePodControllerTest,
        QuickShareV2_ButtonToggledOn_QuickShareEnabled) {
   EnableQuickShareV2();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   test_delegate_->SetEnabled(true);
   SetUpButton();
   EXPECT_TRUE(IsButtonToggled());
@@ -264,7 +264,7 @@ TEST_F(NearbyShareFeaturePodControllerTest,
 TEST_F(NearbyShareFeaturePodControllerTest,
        QuickShareV2_ButtonToggledOff_QuickShareDisabled) {
   EnableQuickShareV2();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   test_delegate_->SetEnabled(false);
   SetUpButton();
   EXPECT_FALSE(IsButtonToggled());
@@ -273,7 +273,7 @@ TEST_F(NearbyShareFeaturePodControllerTest,
 TEST_F(NearbyShareFeaturePodControllerTest,
        QuickShareV2_IconTogglesButtonOn_QuickShareOn_OnPress) {
   EnableQuickShareV2();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   test_delegate_->SetEnabled(false);
   SetUpButton();
   EXPECT_FALSE(IsButtonToggled());
@@ -286,7 +286,7 @@ TEST_F(NearbyShareFeaturePodControllerTest,
 TEST_F(NearbyShareFeaturePodControllerTest,
        QuickShareV2_IconTogglesButtonOff_QuickShareOff_OnPress) {
   EnableQuickShareV2();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   test_delegate_->SetEnabled(true);
   SetUpButton();
   EXPECT_TRUE(IsButtonToggled());
@@ -299,7 +299,7 @@ TEST_F(NearbyShareFeaturePodControllerTest,
 TEST_F(NearbyShareFeaturePodControllerTest,
        QuickShareV2_ButtonToggles_OnQuickShareToggled) {
   EnableQuickShareV2();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin({kDefaultUserEmail});
   test_delegate_->SetEnabled(true);
   SetUpButton();
   EXPECT_TRUE(IsButtonToggled());

@@ -340,7 +340,7 @@ TEST_F(PowerPrefsTest, LoginScreen) {
 
 TEST_F(PowerPrefsTest, UserSession) {
   const char kUserEmail[] = "user@example.net";
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
   PrefService* prefs = GetUserPrefService(kUserEmail);
   ASSERT_TRUE(prefs);
   EXPECT_EQ(GetExpectedPowerPolicyForPrefs(prefs, ScreenLockState::UNLOCKED),
@@ -352,7 +352,7 @@ TEST_F(PowerPrefsTest, UserSession) {
 TEST_F(PowerPrefsTest, PrimaryUserPrefs) {
   // Add a user with restrictive prefs.
   const char kFirstUserEmail[] = "user1@example.net";
-  SimulateUserLogin(kFirstUserEmail);
+  SimulateUserLogin({kFirstUserEmail});
   PrefService* first_prefs = GetUserPrefService(kFirstUserEmail);
   ASSERT_TRUE(first_prefs);
   first_prefs->SetBoolean(prefs::kPowerAllowScreenWakeLocks, false);
@@ -361,7 +361,7 @@ TEST_F(PowerPrefsTest, PrimaryUserPrefs) {
 
   // Add a second user with lenient prefs.
   const char kSecondUserEmail[] = "user2@example.net";
-  SimulateUserLogin(kSecondUserEmail);
+  SimulateUserLogin({kSecondUserEmail});
   PrefService* second_prefs = GetUserPrefService(kSecondUserEmail);
   ASSERT_TRUE(second_prefs);
   second_prefs->SetBoolean(prefs::kPowerAllowScreenWakeLocks, true);
@@ -379,7 +379,7 @@ TEST_F(PowerPrefsTest, PrimaryUserPrefs) {
 
 TEST_F(PowerPrefsTest, AvoidLockDelaysAfterInactivity) {
   const char kUserEmail[] = "user@example.net";
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
   PrefService* prefs = GetUserPrefService(kUserEmail);
   ASSERT_TRUE(prefs);
   EXPECT_EQ(GetExpectedPowerPolicyForPrefs(prefs, ScreenLockState::UNLOCKED),
@@ -408,7 +408,7 @@ TEST_F(PowerPrefsTest, AvoidLockDelaysAfterInactivity) {
 
 TEST_F(PowerPrefsTest, DisabledLockScreen) {
   const char kUserEmail[] = "user@example.net";
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
   PrefService* prefs = GetUserPrefService(kUserEmail);
   ASSERT_TRUE(prefs);
 
@@ -627,7 +627,7 @@ TEST_F(PowerPrefsTest, QuickDimMetrics) {
             login_screen_buckets);
 
   // Loading a new pref service isn't a manual update, so shouldn't be logged.
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
   EXPECT_EQ(histogram_tester_.GetAllSamples(qd_metrics::kEnabledHistogramName),
             login_screen_buckets);
 

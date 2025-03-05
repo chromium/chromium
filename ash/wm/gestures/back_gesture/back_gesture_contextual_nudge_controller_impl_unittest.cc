@@ -60,8 +60,8 @@ class BackGestureContextualNudgeControllerTest : public NoSessionAshTestBase {
     }
     NoSessionAshTestBase::SetUp(std::move(delegate));
 
-    GetSessionControllerClient()->AddUserSession(kUser1Email);
-    GetSessionControllerClient()->AddUserSession(kUser2Email);
+    GetSessionControllerClient()->AddUserSession({kUser1Email});
+    GetSessionControllerClient()->AddUserSession({kUser2Email});
 
     // Simulate login of user 1.
     SwitchActiveUser(kUser1Email);

@@ -356,7 +356,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordMetricOncePerKeyboard) {
   settings_internal.top_row_are_fkeys = true;
 
   base::HistogramTester histogram_tester;
-  SimulateUserLogin(kUser1);
+  SimulateUserLogin({kUser1});
   manager_.get()->RecordKeyboardInitialMetrics(keyboard_external);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Keyboard.External.TopRowAreFKeys.Initial",
@@ -376,7 +376,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordMetricOncePerKeyboard) {
 
   // Call RecordKeyboardInitialMetrics with the different user but same
   // keyboard, ExpectTotalCount for Internal metric will increase.
-  SimulateUserLogin(kUser2);
+  SimulateUserLogin({kUser2});
   manager_.get()->RecordKeyboardInitialMetrics(keyboard_internal);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Keyboard.Internal.TopRowAreFKeys.Initial",
@@ -407,7 +407,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordMouseSettings) {
       key_event_for_mouse->Clone()));
 
   base::HistogramTester histogram_tester;
-  SimulateUserLogin(kUser1);
+  SimulateUserLogin({kUser1});
   manager_.get()->RecordMouseInitialMetrics(mouse);
 
   histogram_tester.ExpectTotalCount(
@@ -492,7 +492,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordMouseSettings) {
 
   // Call RecordMouseInitialMetrics with the different user but same
   // mouse, ExpectTotalCount for mouse metric will increase.
-  SimulateUserLogin(kUser2);
+  SimulateUserLogin({kUser2});
   manager_.get()->RecordMouseInitialMetrics(mouse);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Mouse.Sensitivity.Initial",
@@ -615,7 +615,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordPointingStickSettings) {
   pointing_stick.settings->sensitivity = kSampleSensitivity;
 
   base::HistogramTester histogram_tester;
-  SimulateUserLogin(kUser1);
+  SimulateUserLogin({kUser1});
   manager_.get()->RecordPointingStickInitialMetrics(pointing_stick);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.PointingStick.Sensitivity.Initial",
@@ -630,7 +630,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordPointingStickSettings) {
 
   // Call RecordPointingStickInitialMetrics with the different user but
   // same pointing stick, expectTotalCount for the metric will increase.
-  SimulateUserLogin(kUser2);
+  SimulateUserLogin({kUser2});
   manager_.get()->RecordPointingStickInitialMetrics(pointing_stick);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.PointingStick.Sensitivity.Initial",
@@ -670,7 +670,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordTouchpadSettings) {
   touchpad_external.settings->haptic_sensitivity = kSampleSensitivity;
 
   base::HistogramTester histogram_tester;
-  SimulateUserLogin(kUser1);
+  SimulateUserLogin({kUser1});
   manager_.get()->RecordTouchpadInitialMetrics(touchpad_external);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Touchpad.External.Sensitivity.Initial",
@@ -694,7 +694,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordTouchpadSettings) {
 
   // Call RecordTouchpadInitialMetrics with the different user but same
   // touchpad, ExpectTotalCount for external touchpad metric will increase.
-  SimulateUserLogin(kUser2);
+  SimulateUserLogin({kUser2});
   manager_.get()->RecordTouchpadInitialMetrics(touchpad_external);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Touchpad.External.Sensitivity.Initial",
@@ -782,7 +782,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordGraphicsTabletSettings) {
                                   key_event_for_tablet->Clone()));
 
   base::HistogramTester histogram_tester;
-  SimulateUserLogin(kUser1);
+  SimulateUserLogin({kUser1});
   manager_.get()->RecordGraphicsTabletInitialMetrics(graphics_tablet);
 
   // AcceleratorAction button remappings:
@@ -867,7 +867,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordGraphicsTabletSettings) {
 
   // Call RecordGraphicsTabletInitialMetrics with the different user but same
   // graphics tablet, ExpectTotalCount for the metric will increase.
-  SimulateUserLogin(kUser2);
+  SimulateUserLogin({kUser2});
   manager_.get()->RecordGraphicsTabletInitialMetrics(graphics_tablet);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
@@ -1045,7 +1045,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordGraphicsTabletPenSettings) {
                                   key_event_for_pen->Clone()));
 
   base::HistogramTester histogram_tester;
-  SimulateUserLogin(kUser1);
+  SimulateUserLogin({kUser1});
   manager_.get()->RecordGraphicsTabletInitialMetrics(graphics_tablet);
 
   // AcceleratorAction button remappings:
@@ -1130,7 +1130,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordGraphicsTabletPenSettings) {
 
   // Call RecordGraphicsTabletInitialMetrics with the different user but same
   // graphics tablet, ExpectTotalCount for the metric will increase.
-  SimulateUserLogin(kUser2);
+  SimulateUserLogin({kUser2});
   manager_.get()->RecordGraphicsTabletInitialMetrics(graphics_tablet);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.GraphicsTabletPen.ButtonRemapping."
@@ -1343,7 +1343,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest,
   };
   base::HistogramTester histogram_tester;
 
-  SimulateUserLogin(kUser1);
+  SimulateUserLogin({kUser1});
 
   manager_.get()->RecordKeyboardInitialMetrics(keyboard);
   // Test the hash code is correct with manually computed value.
@@ -1363,7 +1363,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest,
       {ui::mojom::ModifierKey::kAssistant, ui::mojom::ModifierKey::kVoid},
   };
 
-  SimulateUserLogin(kUser2);
+  SimulateUserLogin({kUser2});
   manager_.get()->RecordKeyboardInitialMetrics(keyboard);
 
   // Test the hash code is correct with manually computed value.
@@ -1381,7 +1381,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest,
       ui::mojom::ModifierKey::kAssistant,
   };
 
-  SimulateUserLogin(kUser3);
+  SimulateUserLogin({kUser3});
 
   manager_.get()->RecordKeyboardInitialMetrics(keyboard);
   // Test the hash code is correct with manually computed value.
@@ -1415,7 +1415,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest,
   default_settings->modifier_remappings = {
       {ui::mojom::ModifierKey::kControl, ui::mojom::ModifierKey::kMeta},
       {ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kControl}};
-  SimulateUserLogin(kUser1);
+  SimulateUserLogin({kUser1});
   manager_.get()->RecordKeyboardNumberOfKeysReset(*keyboard, *default_settings);
   // Test the number of reset keys is correct.
   histogram_tester.ExpectUniqueSample(

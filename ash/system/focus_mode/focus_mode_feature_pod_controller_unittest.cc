@@ -130,7 +130,7 @@ TEST_F(FocusModeFeaturePodControllerTest, TileVisibilityForUserTypes) {
   for (const auto& test_case : kUserTypeTestCases) {
     SCOPED_TRACE(test_case.trace);
     ClearLogin();
-    SimulateUserLogin("example@gmail.com", test_case.user_type);
+    SimulateUserLogin({"example@gmail.com", test_case.user_type});
 
     CreateFakeFocusModeTile();
     EXPECT_EQ(test_case.is_tile_visible, tile_->GetVisible());

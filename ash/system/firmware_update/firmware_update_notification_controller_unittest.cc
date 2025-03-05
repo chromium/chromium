@@ -166,7 +166,7 @@ class FirmwareUpdateStartupNotificationTest : public NoSessionAshTestBase {
 TEST_F(FirmwareUpdateStartupNotificationTest,
        StartupNotificationShownRegularUser) {
   // Notification should be shown at login.
-  SimulateUserLogin("user1@email.com");
+  SimulateUserLogin({"user1@email.com"});
   InitializeNotificationController();
   SimulateFetchingUpdates();
   EXPECT_TRUE(message_center()->FindVisibleNotificationById(
@@ -176,7 +176,7 @@ TEST_F(FirmwareUpdateStartupNotificationTest,
 TEST_F(FirmwareUpdateStartupNotificationTest,
        StartupNotificationShownGuestUser) {
   // Notification should not be shown at login if the user is a guest.
-  SimulateUserLogin("user1@email.com", user_manager::UserType::kGuest);
+  SimulateGuestLogin();
   InitializeNotificationController();
   SimulateFetchingUpdates();
   EXPECT_FALSE(message_center()->FindVisibleNotificationById(
@@ -185,7 +185,7 @@ TEST_F(FirmwareUpdateStartupNotificationTest,
 
 TEST_F(FirmwareUpdateStartupNotificationTest, StartupNotificationShownKiosk) {
   // Notification should not be shown at login if the user is in kiosk mode.
-  SimulateUserLogin("user1@email.com", user_manager::UserType::kKioskApp);
+  SimulateUserLogin({"user1@email.com", user_manager::UserType::kKioskApp});
   InitializeNotificationController();
   SimulateFetchingUpdates();
   EXPECT_FALSE(message_center()->FindVisibleNotificationById(
@@ -195,7 +195,7 @@ TEST_F(FirmwareUpdateStartupNotificationTest, StartupNotificationShownKiosk) {
 TEST_F(FirmwareUpdateStartupNotificationTest,
        StartupNotificationShownKioskPWA) {
   // Notification should not be shown at login if the user is in kiosk mode.
-  SimulateUserLogin("user1@email.com", user_manager::UserType::kWebKioskApp);
+  SimulateUserLogin({"user1@email.com", user_manager::UserType::kWebKioskApp});
   InitializeNotificationController();
   SimulateFetchingUpdates();
   EXPECT_FALSE(message_center()->FindVisibleNotificationById(

@@ -404,12 +404,10 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
   // Add a primary and secondary user session for the first time. This should
   // *not* trigger the Welcome Tour to start.
   auto* const session_controller_client = GetSessionControllerClient();
-  session_controller_client->AddUserSession(
-      primary_account_id.GetUserEmail(), user_manager::UserType::kRegular,
-      /*pref_service=*/nullptr, /*is_new_profile=*/true);
-  session_controller_client->AddUserSession(
-      secondary_account_id.GetUserEmail(), user_manager::UserType::kRegular,
-      /*pref_service=*/nullptr, /*is_new_profile=*/true);
+  session_controller_client->AddUserSession({.is_new_profile = true},
+                                            primary_account_id);
+  session_controller_client->AddUserSession({.is_new_profile = true},
+                                            secondary_account_id, );
 
   // Activate the primary user session. This *should* trigger the Welcome Tour
   // to be registered and started as well as notify observers. Note that
@@ -784,13 +782,10 @@ TEST_P(WelcomeTourControllerChromeVoxTest,
 // supported but is enabled.
 TEST_P(WelcomeTourControllerChromeVoxTest,
        MaybePreventTourFromStartingIfChromeVoxEnabled) {
-  const auto primary_account_id = AccountId::FromUserEmail("primary@test");
-
   base::HistogramTester histogram_tester;
   TestSessionControllerClient* const session = GetSessionControllerClient();
-  session->AddUserSession(primary_account_id.GetUserEmail(),
-                          user_manager::UserType::kRegular,
-                          /*pref_service=*/nullptr, /*is_new_profile=*/true);
+  const auto primary_account_id = session->AddUserSession(
+      {.display_email = "primary@test", .is_new_profile = true});
   session->SwitchActiveUser(primary_account_id);
 
   // Enable the spoken feedback after the pref service is ready and before the
@@ -947,20 +942,6 @@ class WelcomeTourControllerUserEligibilityTest
   // WelcomeTourControllerTest:
   void SetUp() override {
     WelcomeTourControllerTest::SetUp();
-
-    // Provide an implementation of `IsNewUser()` which returns whether a given
-    // user should be considered "new" cross-device based on test
-    // parameterization.
-    ON_CALL(*user_education_delegate(), IsNewUser)
-        .WillByDefault(ReturnRefOfCopy(IsNewUserCrossDevice()));
-
-    // Add a user based on test parameterization.
-    TestSessionControllerClient* const session = GetSessionControllerClient();
-    session->AddUserSession(primary_account_id_.GetUserEmail(), GetUserType(),
-                            /*pref_service=*/nullptr,
-                            /*is_new_profile=*/IsNewUserLocally(),
-                            /*given_name=*/std::string(), IsManagedUser());
-    session->SwitchActiveUser(primary_account_id_);
   }
 
   // Used to conditionally force user eligibility based on test
@@ -1028,8 +1009,18 @@ TEST_P(WelcomeTourControllerUserEligibilityTest, EnforcesUserEligibility) {
 
   base::HistogramTester histogram_tester;
 
-  // Activate the user session and verify expectations.
-  GetSessionControllerClient()->SetSessionState(SessionState::ACTIVE);
+  // Provide an implementation of `IsNewUser()` which returns whether a given
+  // user should be considered "new" cross-device based on test
+  // parameterization.
+  ON_CALL(*user_education_delegate(), IsNewUser)
+      .WillByDefault(ReturnRefOfCopy(IsNewUserCrossDevice()));
+
+  // Login into the user session and verify expectations.
+  SimulateUserLogin({.display_email = "primary@test",
+                     .user_type = GetUserType(),
+                     .is_new_profile = IsNewUserLocally(),
+                     .is_account_managed = IsManagedUser()});
+
   Mock::VerifyAndClearExpectations(user_education_delegate());
 
   // Verify histograms.

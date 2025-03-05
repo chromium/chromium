@@ -228,7 +228,7 @@ TEST_F(LoginShelfViewTest,
        ShouldUpdateUiAfterShutdownPolicyChangeAtLockScreen) {
   EXPECT_TRUE(ShowsShelfButtons({}));
 
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
@@ -252,7 +252,7 @@ TEST_F(LoginShelfViewTest, ShouldUpdateUiBasedOnShutdownPolicyInActiveSession) {
   // The initial state of |reboot_on_shutdown| is false.
   EXPECT_TRUE(ShowsShelfButtons({}));
 
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifyShutdownPolicyChanged(true /*reboot_on_shutdown*/);
 
   NotifySessionStateChanged(SessionState::LOCKED);
@@ -270,7 +270,7 @@ TEST_F(LoginShelfViewTest, ShouldNotShowAppsButtonAfterSessionStarted) {
   EXPECT_TRUE(
       login_shelf_view_->GetViewByID(LoginShelfView::kApps)->GetVisible());
 
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   EXPECT_FALSE(
       login_shelf_view_->GetViewByID(LoginShelfView::kApps)->GetVisible());
 }
@@ -470,7 +470,7 @@ TEST_F(LoginShelfViewTest, ClickShutdownButton) {
 }
 
 TEST_F(LoginShelfViewTest, ClickShutdownButtonOnLockScreen) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   ShutdownAndConfirm();
   EXPECT_TRUE(Shell::Get()->lock_state_controller()->ShutdownRequested());
@@ -480,13 +480,13 @@ TEST_F(LoginShelfViewTest, ClickShutdownButtonOnLockScreen) {
 // session that starts with side shelf. See https://crbug.com/1050192.
 TEST_F(LoginShelfViewTest,
        ClickShutdownButtonOnLockScreenWithVerticalInSessionShelf) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   SetShelfAlignmentPref(
       Shell::Get()->session_controller()->GetPrimaryUserPrefService(),
       GetPrimaryDisplay().id(), ShelfAlignment::kLeft);
   ClearLogin();
 
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
 
   ShutdownAndConfirm();
@@ -495,7 +495,7 @@ TEST_F(LoginShelfViewTest,
 
 TEST_F(LoginShelfViewTest, ClickRestartButton) {
   // The Restart button is not available in OOBE session state.
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
 
   NotifyShutdownPolicyChanged(true /*reboot_on_shutdown*/);
@@ -507,7 +507,7 @@ TEST_F(LoginShelfViewTest, ClickRestartButton) {
 }
 
 TEST_F(LoginShelfViewTest, ClickSignOutButton) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   EXPECT_EQ(session_manager::SessionState::ACTIVE,
             Shell::Get()->session_controller()->GetSessionState());
 
@@ -520,7 +520,7 @@ TEST_F(LoginShelfViewTest, ClickSignOutButton) {
 TEST_F(LoginShelfViewTest, ClickCancelButton) {
   auto client = std::make_unique<MockLoginScreenClient>();
   EXPECT_CALL(*client, CancelAddUser());
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOGIN_SECONDARY);
   Click(LoginShelfView::kCancel);
 }
@@ -544,7 +544,7 @@ TEST_F(LoginShelfViewTest, ClickEnterpriseEnrollmentButton) {
 }
 
 TEST_F(LoginShelfViewTest, TabGoesFromShelfToStatusAreaAndBackToShelf) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
@@ -584,7 +584,7 @@ TEST_F(LoginShelfViewTest, TabGoesFromShelfToStatusAreaAndBackToShelf) {
 }
 
 TEST_F(LoginShelfViewTest, LoginShelfButtonTooltipText) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
@@ -638,7 +638,7 @@ TEST_F(LoginShelfViewTest, LoginShelfButtonTooltipText) {
 }
 
 TEST_F(LoginShelfViewTest, LoginShelfButtonTooltipTextAccessibility) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
@@ -837,7 +837,7 @@ TEST_F(LoginShelfViewTest, ParentAccessButtonVisibility) {
 }
 
 TEST_F(LoginShelfViewTest, ParentAccessButtonVisibilityChangeOnLockScreen) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
@@ -949,7 +949,7 @@ TEST_F(LoginShelfViewTest, MouseWheelOnLoginShelf) {
     test_mouse_wheel_noop(location);
   }
 
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
 
   for (const auto& location : kLocations) {
@@ -1045,7 +1045,7 @@ TEST_F(LoginShelfViewTest, AccessiblePreviousAndNextFocus) {
 
   // Simulate the lock screen scenario to verify the previous focus is updated.
   Shell::Get()->login_screen_controller()->ShowLockScreen();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
 
   data = ui::AXNodeData();
@@ -1199,7 +1199,7 @@ class LoginShelfViewWithShutdownConfirmationTest : public LoginShelfViewTest {
 // shutdown button on the lockscreen
 TEST_F(LoginShelfViewWithShutdownConfirmationTest,
        ShouldShowAfterShutdownButtonLockSession) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
@@ -1242,7 +1242,7 @@ TEST_F(LoginShelfViewWithShutdownConfirmationTest,
 // cancel button on the shutdown confirmation bubble and could be shown again.
 TEST_F(LoginShelfViewWithShutdownConfirmationTest,
        ShouldCloseAfterCancelButton) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
@@ -1283,7 +1283,7 @@ TEST_F(LoginShelfViewWithShutdownConfirmationTest,
 // down.
 TEST_F(LoginShelfViewWithShutdownConfirmationTest,
        ShouldCloseAndShutdownAfterConfirmButton) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
@@ -1311,7 +1311,7 @@ TEST_F(LoginShelfViewWithShutdownConfirmationTest,
 
 // Checks that shutdown confirmation bubble disappears after inactive.
 TEST_F(LoginShelfViewWithShutdownConfirmationTest, ShouldCloseAfterInactive) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
@@ -1341,7 +1341,7 @@ TEST_F(LoginShelfViewWithShutdownConfirmationTest, ShouldCloseAfterInactive) {
 // Checks that shutdown confirmation was first cancelled, then confirmed
 TEST_F(LoginShelfViewWithShutdownConfirmationTest,
        ShouldCloseAndShutdownAfterCancelAndConfirmButton) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
@@ -1444,7 +1444,7 @@ TEST_F(LoginShelfViewWithShutdownConfirmationTest, DisplayOff) {
 }
 
 TEST_F(LoginShelfViewWithShutdownConfirmationTest, ClickRestartButton) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
@@ -1460,7 +1460,7 @@ TEST_F(LoginShelfViewWithShutdownConfirmationTest, ClickRestartButton) {
 
 TEST_F(LoginShelfViewWithShutdownConfirmationTest,
        ShelfShutdownConfirmationBubbleAccessibleProperties) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   Click(LoginShelfView::kShutdown);
   auto* confirmation_bubble =

@@ -255,11 +255,11 @@ TEST_P(PrivacyHubMicrophoneControllerTest, SetSystemMuteOnLogin) {
     const AccountId user1_account_id =
         Shell::Get()->session_controller()->GetActiveAccountId();
 
-    SimulateUserLogin("other@user.test");
+    SimulateUserLogin({"other@user.test"});
     SetUserPref(microphone_muted);
     EXPECT_EQ(CrasAudioHandler::Get()->IsInputMuted(), microphone_allowed);
 
-    SimulateUserLogin(user1_account_id);
+    SwitchActiveUser(user1_account_id);
     EXPECT_EQ(CrasAudioHandler::Get()->IsInputMuted(), microphone_muted);
   }
 }

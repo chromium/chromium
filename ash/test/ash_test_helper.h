@@ -132,13 +132,15 @@ class AshTestHelper : public aura::test::AuraTestHelper {
 
   display::Display GetSecondaryDisplay() const;
 
-  // Simulates a user sign-in. It creates a new user session, adds it to
-  // existing user sessions and makes it the active user session.
-  // `is_new_profile` indicates whether the logged-in account is new.
-  void SimulateUserLogin(
-      const AccountId& account_id,
-      user_manager::UserType user_type = user_manager::UserType::kRegular,
-      bool is_new_profile = false,
+  // Simulates a user sign-in. It creates and adds a new session based on the
+  // information provided in `login_info`, `account_id` and `pref_service',
+  // switches the active user, then may enter to the active session state if
+  // `LoginInfo.activate_session` is true. It returns AccountId for the new
+  // session.  Please see `TestSessionControllerClient::AddUserSession` for more
+  // details.
+  AccountId SimulateUserLogin(
+      LoginInfo login_info,
+      std::optional<AccountId> account_id,
       std::unique_ptr<PrefService> pref_service = nullptr);
 
   // Stabilizes the variable UI components (such as the battery view).

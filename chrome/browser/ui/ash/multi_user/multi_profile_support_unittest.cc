@@ -126,7 +126,9 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
  public:
   MultiProfileSupportTest()
       : fake_user_manager_(new FakeChromeUserManager),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())) {}
+        user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())) {
+    set_start_session(false);
+  }
 
   MultiProfileSupportTest(const MultiProfileSupportTest&) = delete;
   MultiProfileSupportTest& operator=(const MultiProfileSupportTest&) = delete;
@@ -197,7 +199,9 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
         ->test_session_controller_client()
         ->SetUnownedUserPrefService(account_id, profile->GetPrefs());
     ash_test_helper()->test_session_controller_client()->AddUserSession(
-        account_id, user->GetDisplayEmail(), user->GetType());
+        {user->GetDisplayEmail(), user->GetType()}, account_id);
+    ash_test_helper()->test_session_controller_client()->SetSessionState(
+        session_manager::SessionState::ACTIVE);
   }
 
   void LoginTestUsers(std::vector<AccountId> ids) {
@@ -1202,6 +1206,8 @@ TEST_F(MultiProfileSupportTest, AnimationSteps) {
 // Test that the screen coverage is properly determined.
 TEST_F(MultiProfileSupportTest, AnimationStepsScreenCoverage) {
   SetUpForThisManyWindows(3);
+  LoginTestUser(AccountId::FromUserEmail("a"));
+
   // Maximizing, fully covering the screen by bounds or fullscreen mode should
   // make CoversScreen return true.
   WindowState::Get(window(0))->Maximize();

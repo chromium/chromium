@@ -199,7 +199,7 @@ class FastPairPresenterImplTest : public AshTestBase {
   }
 
   void Login(user_manager::UserType user_type) {
-    SimulateUserLogin(kUserEmail, user_type);
+    SimulateUserLogin({kUserEmail, user_type});
   }
 
   void OnDiscoveryAction(scoped_refptr<Device> device, DiscoveryAction action) {

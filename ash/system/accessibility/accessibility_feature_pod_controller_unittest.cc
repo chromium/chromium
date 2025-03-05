@@ -95,7 +95,7 @@ TEST_F(AccessibilityFeaturePodControllerTest, ButtonVisibilityNotLoggedIn) {
 }
 
 TEST_F(AccessibilityFeaturePodControllerTest, ButtonVisibilityLoggedIn) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   GetPrimaryUnifiedSystemTray()->ShowBubble();
   auto* tile = views::AsViewClass<FeatureTile>(
       GetPrimaryUnifiedSystemTray()->bubble()->GetBubbleView()->GetViewByID(

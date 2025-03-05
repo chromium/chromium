@@ -14,6 +14,7 @@
 
 #include "ash/public/cpp/session/session_controller_client.h"
 #include "ash/public/cpp/session/session_types.h"
+#include "ash/test/login_info.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/token.h"
@@ -77,43 +78,20 @@ class TestSessionControllerClient final : public SessionControllerClient {
   void SetIsRunningInAppMode(bool app_mode);
   void SetIsDemoSession();
 
-  // Adds a user session from a given display email. If `provide_pref_service`
-  // is true, eagerly inject a PrefService for this user. `is_new_profile`
-  // indicates whether the user has a newly created profile on the device.
+  // Adds a user session from a given LoginInfo, `acount_id' and `pref_service`.
+  // For convenience, `LoginInfo.user_email` can be used to create an AccountId,
+  // in which case, the `account_id` should be std::nulopt.  For testing
+  // behavior where |AccountId|s are compared, prefer the method of the same
+  // name that takes an |AccountId| created with a valid storage key
+  // instead. See the documentation for|AccountId::GetUserEmail| for discussion.
   //
-  // For convenience `display_email` is used to create an `AccountId`. For
-  // testing behavior where `AccountId`s are compared, prefer the method of the
-  // same name that takes an `AccountId` created with a valid storage key
-  // instead. See the documentation for`AccountId::GetUserEmail` for discussion.
-  //
-  // Here is how PrefService creation behaves.
-  // a) If `pref_service` is provided, the account will use this provided pref
-  // service.
-  // b) If `pref_service` is `nullptr` and `provide_pref_service_` is
-  // set to true, it will automatically create a new pref service for the
-  // account.  The pref service for the account should not exist, or it will
-  // result in CHECK failure.
-  // c) However, if ClearLogin was called before, the sessions is allowed to
-  // reuse the existing pref service. This is to allow a test to emulate the
-  // situation that logining in a same user will use the pref service updated by
-  // previous login.
-  void AddUserSession(
-      std::string_view display_email,
-      user_manager::UserType user_type = user_manager::UserType::kRegular,
-      std::unique_ptr<PrefService> pref_service = nullptr,
-      bool is_new_profile = false,
-      const std::string& given_name = std::string(),
-      bool is_account_managed = false);
-
-  // Adds a user session from a given AccountId.
-  void AddUserSession(
-      const AccountId& account_id,
-      std::string_view display_email,
-      user_manager::UserType user_type = user_manager::UserType::kRegular,
-      std::unique_ptr<PrefService> pref_service = nullptr,
-      bool is_new_profile = false,
-      const std::string& given_name = std::string(),
-      bool is_account_managed = false);
+  // If `pref_service1 is provided, the new session will use it, or it will
+  // create a new PrefService. However, if `pref_service_must_exist_` is set to
+  // true, the PrefService for the account must already exist, or it will result
+  // in CHCEK failure.
+  AccountId AddUserSession(LoginInfo login_info,
+                           std::optional<AccountId> account_id = std::nullopt,
+                           std::unique_ptr<PrefService> pref_service = nullptr);
 
   // Synchronously lock screen by requesting screen lock and waiting for the
   // request to complete.

@@ -103,9 +103,8 @@ TEST_F(UserChooserDetailedViewControllerTest,
 
 TEST_F(UserChooserDetailedViewControllerTest, SwitchUserWithOverview) {
   // Add a secondary user.
-  const AccountId secondary_user =
-      AccountId::FromUserEmail("secondary@gmail.com");
-  GetSessionControllerClient()->AddUserSession(secondary_user.GetUserEmail());
+  const auto secondary_user =
+      GetSessionControllerClient()->AddUserSession({"secondary@gmail.com"});
   ASSERT_NE(GetActiveUser(), secondary_user);
 
   // Create an activatable widget.
@@ -139,7 +138,7 @@ TEST_F(UserChooserDetailedViewControllerTest,
   GetSessionControllerClient()->Reset();
 
   // Log in as a child user.
-  SimulateUserLogin("child@gmail.com", user_manager::UserType::kChild);
+  SimulateUserLogin({"child@gmail.com", user_manager::UserType::kChild});
 
   EXPECT_FALSE(UserChooserDetailedViewController::IsUserChooserEnabled());
 }

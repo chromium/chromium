@@ -102,31 +102,29 @@ void TestSessionControllerClient::SetIsDemoSession() {
   controller_->SetSessionInfo(session_info_);
 }
 
-void TestSessionControllerClient::AddUserSession(
-    std::string_view display_email,
-    user_manager::UserType user_type,
-    std::unique_ptr<PrefService> pref_service,
-    bool is_new_profile,
-    const std::string& given_name,
-    bool is_account_managed) {
-  auto account_id =
-      AccountId::FromUserEmail(gaia::CanonicalizeEmail(display_email));
-  AddUserSession(account_id, display_email, user_type, std::move(pref_service),
-                 is_new_profile, given_name, is_account_managed);
-}
+AccountId TestSessionControllerClient::AddUserSession(
+    LoginInfo login_info,
+    std::optional<AccountId> opt_account_id,
+    std::unique_ptr<PrefService> pref_service) {
+  CHECK(opt_account_id || login_info.display_email);
 
-void TestSessionControllerClient::AddUserSession(
-    const AccountId& account_id,
-    std::string_view display_email,
-    user_manager::UserType user_type,
-    std::unique_ptr<PrefService> pref_service,
-    bool is_new_profile,
-    const std::string& given_name,
-    bool is_account_managed) {
+  std::string_view display_email = login_info.display_email.value_or(
+      opt_account_id ? opt_account_id->GetUserEmail() : std::string_view());
+
+  // value_or can't be used because user_email may be nullopt.
+  AccountId account_id = opt_account_id.value_or(
+      AccountId::FromUserEmail(gaia::CanonicalizeEmail(display_email)));
+
+  // When both `account_id` and `display_email` is specified, the account_id's
+  // user email must be same as cannonicalized display email.
+  CHECK_EQ(account_id.GetUserEmail(), gaia::CanonicalizeEmail(display_email));
+
   // Set is_ephemeral in user_info to true if the user type is guest or public
   // account.
-  bool is_ephemeral = user_type == user_manager::UserType::kGuest ||
-                      user_type == user_manager::UserType::kPublicAccount;
+  bool is_ephemeral =
+      login_info.user_type == user_manager::UserType::kGuest ||
+      login_info.user_type == user_manager::UserType::kPublicAccount ||
+      login_info.is_ephemeral;
   if (pref_service_must_exist_) {
     CHECK(!pref_service);
     CHECK(GetUserPrefService(account_id));
@@ -143,20 +141,22 @@ void TestSessionControllerClient::AddUserSession(
 
   UserSession session;
   session.session_id = ++fake_session_id_;
-  session.user_info.type = user_type;
+  session.user_info.type = login_info.user_type;
   session.user_info.account_id = account_id;
-  session.user_info.display_name = "Über tray Über tray Über tray Über tray";
+  session.user_info.display_name = "über tray über tray über tray über tray";
   session.user_info.display_email = display_email;
   session.user_info.is_ephemeral = is_ephemeral;
-  session.user_info.is_new_profile = is_new_profile;
-  session.user_info.given_name = given_name;
+  session.user_info.is_new_profile = login_info.is_new_profile;
+  session.user_info.given_name =
+      login_info.given_name.value_or(std::string_view());
   session.user_info.has_gaia_account =
       account_id.GetAccountType() == AccountType::GOOGLE &&
       !account_id.GetGaiaId().empty();
-  session.user_info.is_managed = is_account_managed;
+  session.user_info.is_managed = login_info.is_account_managed;
   controller_->UpdateUserSession(std::move(session));
 
   MaybeNotifyFirstSessionReady();
+  return account_id;
 }
 
 void TestSessionControllerClient::LockScreen() {
