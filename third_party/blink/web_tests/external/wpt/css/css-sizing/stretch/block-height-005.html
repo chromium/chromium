@@ -6,7 +6,7 @@
 <script src='/resources/testharnessreport.js'></script>
 <script src="/resources/check-layout-th.js"></script>
 <meta name="assert"
-  content="preceding floats don't prevent margin adjoiningness for stretch sizing purposes">
+  content="stretch sizing treating margins as 0 isn't affected by preceding floats">
 
 <style>
   .outer {
@@ -22,20 +22,12 @@
     height: 30px;
     background: skyblue;
   }
-
-  p {
-    margin-top: 20px;
-    margin-bottom: 0px;
-  }
 </style>
 
-<p>This test asserts the behavior seemingly agreed upon through
-  https://github.com/w3c/csswg-drafts/issues/11044#issuecomment-2486935794. This
-  is unlikely to be the final specified behavior, hence the test is marked
-  tentative.</p>
+<p>These tests assert the behavior described at
+  https://github.com/w3c/csswg-drafts/issues/11044#issuecomment-2599101601
+</p>
 
-<p>New BFC fits next to float, so top margins will collapse, so we want the
-  stretched height to match .outer's height.</p>
 <div class="outer">
   <div class="float"></div>
   <div
@@ -44,8 +36,6 @@
   </div>
 </div>
 
-<p>New BFC does not fit next to float, so margins DON'T collapse, but for
-  simplicity we still ignore margins when stretch sizing</p>
 <div class="outer">
   <div class="float"></div>
   <div
@@ -54,8 +44,6 @@
   </div>
 </div>
 
-<p>In-flow child overlaps the float, so margins DO collapse, so we want the
-  stretched height to match .outer's height.</p>
 <div class="outer">
   <div class="float"></div>
   <div
@@ -64,8 +52,6 @@
   </div>
 </div>
 
-<p>In-flow child clears the float, so margins DON'T collapse, but for
-  simplicity we still ignore margins when stretch sizing</p>
 <div class="outer">
   <div class="float"></div>
   <div
