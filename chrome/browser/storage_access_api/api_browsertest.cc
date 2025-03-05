@@ -3554,6 +3554,10 @@ class StorageAccessAPIWindowOpenTestBase
 
   virtual std::string MainFrameHost() const = 0;
 
+  bool Are3PCFullyEnabled() const {
+    return Are3PCEnabled() && !AreTrackingProtectionsEnabled();
+  }
+
   void SetupPromptFactoryForNewWebContents(
       content::WebContents* new_web_contents) {
     new_prompt_factory_ =
@@ -3610,9 +3614,10 @@ class StorageAccessAPIWindowOpenTestBase
       std::string_view host) {
     return content::EvalJs(
         frame,
-        content::JsReplace("document.requestStorageAccess("
-                           "  {localStorage: true}"
-                           ").then("
+        content::JsReplace("document.requestStorageAccess({"
+                           "  localStorage: true,"
+                           "  cookies: true,"
+                           "}).then("
                            "  (handle) => !!handle &&"
                            "              !!handle.localStorage.getItem($1),"
                            "  () => false"
@@ -3723,13 +3728,9 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIWindowOpenMainFrameTest,
                        popin_web_contents->GetPrimaryMainFrame(), kHostB));
 
   // Expect 3p cookies only if enabled.
-  // TODO(crbug.com/340606651): Popins are granting their own 1p cookie access
-  // via heuristics. This should be prevented, but would require changing a data
-  // structure so will likely not be done for the origin trial stage.
   const auto& cookie_before =
       ReadCookies(popin_web_contents->GetPrimaryMainFrame(), MainFrameHost());
-  if (!IsCrossOriginToOpenerFrame() || Are3PCEnabled() ||
-      AreTrackingProtectionsEnabled()) {
+  if (!IsCrossOriginToOpenerFrame() || Are3PCFullyEnabled()) {
     EXPECT_EQ(cookie_before, CookieBundle("cross-site=" + MainFrameHost()));
   } else {
     EXPECT_EQ(cookie_before, kNoCookies);
@@ -3741,15 +3742,15 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIWindowOpenMainFrameTest,
   // Expect handle returned for popin if the popin is same-origin, if it accepts
   // all prompts, or if 3pc are enabled and tracking protection is disabled.
   EXPECT_EQ(!IsCrossOriginToOpenerFrame() || ArePermissionPromptsAccepted() ||
-                (Are3PCEnabled() && !AreTrackingProtectionsEnabled()),
+                Are3PCFullyEnabled(),
             DoesFrameAllowRequestStorageAccessForHost(
                 popin_web_contents->GetPrimaryMainFrame(), MainFrameHost()));
 
   // Expect 3p cookies added only if granted.
   const auto& cookie_after =
       ReadCookies(popin_web_contents->GetPrimaryMainFrame(), MainFrameHost());
-  if (!IsCrossOriginToOpenerFrame() || Are3PCEnabled() ||
-      AreTrackingProtectionsEnabled()) {
+  if (!IsCrossOriginToOpenerFrame() || ArePermissionPromptsAccepted() ||
+      Are3PCFullyEnabled()) {
     EXPECT_EQ(cookie_after, CookieBundle("cross-site=" + MainFrameHost()));
   } else {
     EXPECT_EQ(cookie_after, kNoCookies);
@@ -3757,8 +3758,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIWindowOpenMainFrameTest,
 
   // Expect custom content settings related to storage access if an explicit
   // deny/allow occurred.
-  if (!IsCrossOriginToOpenerFrame() ||
-      (Are3PCEnabled() && !AreTrackingProtectionsEnabled())) {
+  if (!IsCrossOriginToOpenerFrame() || Are3PCFullyEnabled()) {
     ExpectNoStorageAccessGrants();
   } else {
     ExpectOneStorageAccessGrantFor(kHostB, kHostA);
@@ -3856,13 +3856,8 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIWindowOpenSubFrameTest,
             DoesFrameHaveLocalStorageForHost(popin_sub_frame_host, kHostC));
 
   // Expect 3p cookies only if enabled.
-  // TODO(crbug.com/340606651): Popins are granting their own 1p cookie access
-  // via heuristics. This should be prevented, but would require changing a data
-  // structure so will likely not be done for the origin trial stage.
   const auto& cookie_before = ReadCookies(popin_sub_frame_host, SubFrameHost());
-  if (!IsCrossOriginToOpenerOrMainFrame() ||
-      (AreTrackingProtectionsEnabled() && !IsCrossOriginToMainFrame()) ||
-      (Are3PCEnabled() && !AreTrackingProtectionsEnabled())) {
+  if (!IsCrossOriginToOpenerOrMainFrame() || Are3PCFullyEnabled()) {
     EXPECT_EQ(cookie_before, CookieBundle("cross-site=" + SubFrameHost()));
   } else {
     EXPECT_EQ(cookie_before, kNoCookies);
@@ -3874,15 +3869,14 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIWindowOpenSubFrameTest,
   // Expect handle returned for popin if subframe is same-origin, if it accepts
   // all prompts, or if 3pc are enabled and tracking protection is disabled.
   EXPECT_EQ(!IsCrossOriginToOpenerFrame() || ArePermissionPromptsAccepted() ||
-                (Are3PCEnabled() && !AreTrackingProtectionsEnabled()),
+                Are3PCFullyEnabled(),
             DoesFrameAllowRequestStorageAccessForHost(popin_sub_frame_host,
                                                       SubFrameHost()));
 
   // Expect 3p cookies added only if granted.
   const auto& cookie_after = ReadCookies(popin_sub_frame_host, SubFrameHost());
-  if (!IsCrossOriginToOpenerOrMainFrame() ||
-      (AreTrackingProtectionsEnabled() && !IsCrossOriginToMainFrame()) ||
-      (Are3PCEnabled() && !AreTrackingProtectionsEnabled())) {
+  if (!IsCrossOriginToOpenerFrame() || ArePermissionPromptsAccepted() ||
+      Are3PCFullyEnabled()) {
     EXPECT_EQ(cookie_after, CookieBundle("cross-site=" + SubFrameHost()));
   } else {
     EXPECT_EQ(cookie_after, kNoCookies);
@@ -3890,8 +3884,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIWindowOpenSubFrameTest,
 
   // Expect custom content settings related to storage access if an explicit
   // deny/allow occurred.
-  if (!IsCrossOriginToOpenerFrame() ||
-      (Are3PCEnabled() && !AreTrackingProtectionsEnabled())) {
+  if (!IsCrossOriginToOpenerFrame() || Are3PCFullyEnabled()) {
     ExpectNoStorageAccessGrants();
   } else {
     ExpectOneStorageAccessGrantFor(SubFrameHost(), kHostA);

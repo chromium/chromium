@@ -4,19 +4,6 @@
 
 // https://github.com/WICG/writing-assistance-apis
 
-[
-  Exposed=(Window,Worker),
-  RuntimeEnabled=AISummarizationAPI,
-  SecureContext
-]
-interface AISummarizerCapabilities {
-  readonly attribute AICapabilityAvailability available;
-
-  AICapabilityAvailability createOptionsAvailable(AISummarizerCreateCoreOptions options);
-
-  AICapabilityAvailability languageAvailable(DOMString languageTag);
-};
-
 enum AISummarizerType { "tl;dr", "key-points", "teaser", "headline" };
 enum AISummarizerFormat { "plain-text", "markdown" };
 enum AISummarizerLength { "short", "medium", "long" };
@@ -58,12 +45,4 @@ interface AISummarizerFactory {
   Promise<AIAvailability> availability(
     optional AISummarizerCreateCoreOptions options = {}
   );
-
-  // TODO(crbug.com/390477782): Deprecate this method.
-  [
-    Measure,
-    CallWith=ScriptState,
-    RaisesException
-  ]
-  Promise<AISummarizerCapabilities> capabilities();
 };

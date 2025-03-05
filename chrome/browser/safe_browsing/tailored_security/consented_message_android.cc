@@ -105,7 +105,7 @@ TailoredSecurityConsentedModalAndroid::TailoredSecurityConsentedModalAndroid(
     icon_resource_id =
         base::FeatureList::IsEnabled(safe_browsing::kEsbAsASyncedSetting)
             ? ResourceMapper::MapToJavaDrawableId(
-                  IDR_ANDROID_ABOUT_THIS_SITE_LOGO_24DP)
+                  IDR_ANDROID_INFO_OUTLINE_LOGO_24DP)
             : ResourceMapper::MapToJavaDrawableId(
                   IDR_ANDROID_MESSAGE_SHIELD_GRAY);
     message_->DisableIconTint();

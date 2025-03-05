@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_AI_AUTOFILL_AI_MODEL_CACHE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_AI_AUTOFILL_AI_MODEL_CACHE_H_
 
+#include <map>
+
+#include "components/autofill/core/browser/proto/autofill_ai_model_cache.pb.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/proto/features/forms_classifications.pb.h"
@@ -16,6 +19,7 @@ namespace autofill {
 class AutofillAiModelCache : public KeyedService {
  public:
   using CacheEntry = optimization_guide::proto::AutofillAiTypeResponse;
+  using CacheEntryWithMetadata = AutofillAiModelCacheEntryWithMetadata;
 
   // Updates the `entry` with key `form_signature`. If the `form_signature` is
   // not yet known to the cache, it is added to it.
@@ -23,6 +27,11 @@ class AutofillAiModelCache : public KeyedService {
 
   // Returns whether the cache contains an entry with `form_signature`.
   virtual bool Contains(FormSignature form_signature) const = 0;
+
+  // Returns the entire content of the cache, including metadata (such as
+  // creation dates).
+  virtual std::map<FormSignature, CacheEntryWithMetadata> GetAllEntries()
+      const = 0;
 };
 
 }  // namespace autofill

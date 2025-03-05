@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_detector_create_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/ai/ai_availability.h"
 #include "third_party/blink/renderer/modules/ai/on_device_translation/ai_language_detector.h"
 #include "third_party/blink/renderer/modules/ai/on_device_translation/ai_language_detector_capabilities.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -28,6 +29,10 @@ class AILanguageDetectorFactory final : public ScriptWrappable,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   void Trace(Visitor* visitor) const override;
+
+  // Checks the availability of the Language Detection model.
+  ScriptPromise<V8AIAvailability> availability(ScriptState* script_state,
+                                               ExceptionState& exception_state);
 
   // Creates an `AILanguageDetector`, with a model ready to use.
   ScriptPromise<AILanguageDetector> create(

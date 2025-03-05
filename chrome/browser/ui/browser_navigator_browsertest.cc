@@ -2612,8 +2612,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinHttpRedirectNavigation) {
                 .ExtractString());
 }
 
-// Verify that a popin can access cookies when opened from a cross-site context.
-// This scenario was crashing before crrev.com/c/5845330
+// Verify that a popin cannot access third-party cookies when opened from a
+// cross-site context. This scenario was crashing before crrev.com/c/5845330
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                        PopinFromCrossSiteContextAccessCookies) {
   // Setup server.
@@ -2632,9 +2632,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 
   // Set a cookie for a.test.
   const GURL url_a_root = embedded_https_test_server().GetURL("a.test", "/");
-  ASSERT_TRUE(
-      content::SetCookie(tab_web_contents->GetBrowserContext(), url_a_root,
-                         "site_a=cookie;Partitioned;SameSite=None;Secure"));
+  ASSERT_TRUE(content::SetCookie(tab_web_contents->GetBrowserContext(),
+                                 url_a_root,
+                                 "site_a=cookie;SameSite=None;Secure"));
 
   // Navigate the iframe to b.test and set a cookie.
   const GURL url_b =
@@ -2658,9 +2658,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   EXPECT_TRUE(popin_web_contents);
   nav_observer.Wait();
 
-  // Read cookies from the popin. Only site A's cookie should be accessible.
-  EXPECT_EQ(content::EvalJs(popin_web_contents, "document.cookie"),
-            "site_a=cookie");
+  // Read cookies from the popin. No cookies should be visible.
+  EXPECT_EQ(content::EvalJs(popin_web_contents, "document.cookie"), "");
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

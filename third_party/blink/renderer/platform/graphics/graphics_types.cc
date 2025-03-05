@@ -27,110 +27,14 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
-
-namespace {
-
-// TODO(vmpstr): Move these closer to canvas, along with the parsing code.
-constexpr auto kCanvasCompositeOperatorNames = std::to_array<const char* const>(
-    {"clear", "copy", "source-over", "source-in", "source-out", "source-atop",
-     "destination-over", "destination-in", "destination-out",
-     "destination-atop", "xor", "lighter"});
-
-constexpr auto kCanvasBlendModeNames = std::to_array<const char* const>(
-    {"normal", "multiply", "screen", "overlay", "darken", "lighten",
-     "color-dodge", "color-burn", "hard-light", "soft-light", "difference",
-     "exclusion", "hue", "saturation", "color", "luminosity"});
-
-}  // namespace
-
-bool ParseCanvasCompositeAndBlendMode(const String& s,
-                                      CompositeOperator& op,
-                                      BlendMode& blend_op) {
-  if (auto it = std::ranges::find(kCanvasCompositeOperatorNames, s);
-      it != kCanvasCompositeOperatorNames.end()) {
-    op = static_cast<CompositeOperator>(
-        std::distance(kCanvasCompositeOperatorNames.begin(), it));
-    blend_op = BlendMode::kNormal;
-    return true;
-  }
-
-  if (auto it = std::ranges::find(kCanvasBlendModeNames, s);
-      it != kCanvasBlendModeNames.end()) {
-    blend_op = static_cast<BlendMode>(
-        std::distance(kCanvasBlendModeNames.begin(), it));
-    op = kCompositeSourceOver;
-    return true;
-  }
-
-  return false;
-}
-
-String CanvasCompositeOperatorName(CompositeOperator op, BlendMode blend_op) {
-  DCHECK_GE(op, 0);
-  DCHECK_LT(op, kCanvasCompositeOperatorNames.size());
-  DCHECK_GE(static_cast<int>(blend_op), 0);
-  DCHECK_LT(static_cast<size_t>(blend_op), kCanvasBlendModeNames.size());
-  if (blend_op != BlendMode::kNormal)
-    return kCanvasBlendModeNames[static_cast<unsigned>(blend_op)];
-  return kCanvasCompositeOperatorNames[op];
-}
 
 InterpolationQuality GetDefaultInterpolationQuality() {
   if (RuntimeEnabledFeatures::UseLowQualityInterpolationEnabled()) {
     return InterpolationQuality::kInterpolationLow;
   }
   return InterpolationQuality::kInterpolationMedium;
-}
-
-bool ParseLineCap(const String& s, LineCap& cap) {
-  if (s == "butt") {
-    cap = kButtCap;
-    return true;
-  }
-  if (s == "round") {
-    cap = kRoundCap;
-    return true;
-  }
-  if (s == "square") {
-    cap = kSquareCap;
-    return true;
-  }
-  return false;
-}
-
-String LineCapName(LineCap cap) {
-  DCHECK_GE(cap, 0);
-  DCHECK_LT(cap, 3);
-  constexpr std::array<const char* const, 3> kNames = {"butt", "round",
-                                                       "square"};
-  return kNames[cap];
-}
-
-bool ParseLineJoin(const String& s, LineJoin& join) {
-  if (s == "miter") {
-    join = kMiterJoin;
-    return true;
-  }
-  if (s == "round") {
-    join = kRoundJoin;
-    return true;
-  }
-  if (s == "bevel") {
-    join = kBevelJoin;
-    return true;
-  }
-  return false;
-}
-
-String LineJoinName(LineJoin join) {
-  DCHECK_GE(join, 0);
-  DCHECK_LT(join, 3);
-  constexpr std::array<const char* const, 3> kNames = {"miter", "round",
-                                                       "bevel"};
-  return kNames[join];
 }
 
 }  // namespace blink

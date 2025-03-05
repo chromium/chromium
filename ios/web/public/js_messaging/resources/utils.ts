@@ -105,3 +105,47 @@ export function trim(str: string): string {
   }
   return str.replace(/^\s+|\s+$/g, '');
 }
+
+/**
+ * Returns if an element is a text field.
+ * This returns true for all of textfield-looking types such as text,
+ * password, search, email, url, and number.
+ *
+ * This method aims to provide the same logic as method
+ *     bool WebInputElement::isTextField() const
+ * in chromium/src/third_party/WebKit/Source/WebKit/chromium/src/
+ * WebInputElement.cpp, where this information is from
+ *     bool HTMLInputElement::isTextField() const
+ *     {
+ *       return m_inputType->isTextField();
+ *     }
+ * (chromium/src/third_party/WebKit/Source/WebCore/html/HTMLInputElement.cpp)
+ *
+ * The implementation here is based on the following:
+ *
+ * - Method bool InputType::isTextField() defaults to be false and it is
+ *   override to return true only in HTMLInputElement's subclass
+ *   TextFieldInputType (chromium/src/third_party/WebKit/Source/WebCore/html/
+ *   TextFieldInputType.h).
+ *
+ * - The implementation here considers all the subclasses of
+ *   TextFieldInputType: NumberInputType and BaseTextInputType, which has
+ *   subclasses EmailInputType, PasswordInputType, SearchInputType,
+ *   TelephoneInputType, TextInputType, URLInputType. (All these classes are
+ *   defined in chromium/src/third_party/WebKit/Source/WebCore/html/)
+ *
+ */
+export function isTextField(element: Element): boolean {
+  if (!(element instanceof HTMLInputElement) || element.type === 'hidden') {
+    return false;
+  }
+  return [
+    'text',
+    'email',
+    'password',
+    'search',
+    'tel',
+    'url',
+    'number',
+  ].includes(element.type);
+}

@@ -23,18 +23,15 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/webauthn/enclave_manager_interface.h"
-#include "chrome/browser/webauthn/unexportable_key_utils.h"
-#include "components/keyed_service/core/keyed_service.h"
+#include "chrome/browser/webauthn/local_authentication_token.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "content/public/browser/global_routing_id.h"
 #include "crypto/user_verifying_key.h"
 #include "device/fido/enclave/types.h"
 #include "device/fido/network_context_factory.h"
-#include "services/network/public/mojom/network_context.mojom-forward.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/common/chrome_version.h"
-#include "crypto/scoped_lacontext.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 class GaiaId;
@@ -50,7 +47,8 @@ class RefCountedUserVerifyingSigningKey;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace ash {
 class WebAuthNDialogController;
-}
+class ActiveSessionAuthController;
+}  // namespace ash
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -132,10 +130,9 @@ class EnclaveManager : public EnclaveManagerInterface {
         dialog_controller;
 #endif
 
-#if BUILDFLAG(IS_MAC)
-    // An optional LAcontext to pass to apple keychain operations.
-    std::optional<crypto::ScopedLAContext> lacontext;
-#endif  // BUILDFLAG(IS_MAC)
+    // An optional auth context. Currently only used to pass LAcontext to Apple
+    // Keychain operations.
+    std::optional<webauthn::LocalAuthenticationToken> local_auth_token;
   };
 
   EnclaveManager(

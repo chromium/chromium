@@ -185,6 +185,13 @@ void RedirectHeuristicTabHelper::RecordRedirectHeuristic(
 
 void RedirectHeuristicTabHelper::CreateAllRedirectHeuristicGrants(
     const GURL& first_party_url) {
+  if (web_contents()->IsPartitionedPopin()) {
+    // Skip heuristics if this is a popin as we should treat this context as as
+    // embedded and not its own window for storage access purposes.
+    // See https://explainers-by-googlers.github.io/partitioned-popins/
+    return;
+  }
+
   base::TimeDelta grant_duration =
       content_settings::features::kTpcdWriteRedirectHeuristicGrants.Get();
   if (!base::FeatureList::IsEnabled(

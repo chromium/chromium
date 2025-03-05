@@ -377,7 +377,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'a2ced3f5c713983d56c8b365667a066fea488d83',
+  'devtools_frontend_revision': '2380d438d1c56f2e46883ee3910dc33706cf3b7d',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -2896,7 +2896,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/mac-arm64',
-          'version': 'ZhEAr6v2tWN1oxK6leQvyRjaNwUi4vrXZAyCwv5veegC',
+          'version': 'hD1Vv8Z7IQMShv-PK0PEaSkXuaQi3EgzFIY49YR9ApkC',
         },
       ],
       'dep_type': 'cipd',
@@ -2959,7 +2959,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': '9ulVPGZEbPJ1xV_sclF4olnIkCIE7oNIJzpswMZQ-1oC',
+        'version': 'uRIE2MEfbyE82t5DMGF_fLACNV28-xlKhx5eqRR4_6AC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',

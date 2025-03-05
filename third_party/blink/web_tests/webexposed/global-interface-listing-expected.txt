@@ -29,6 +29,7 @@ interface AILanguageDetectorCapabilities
     method languageAvailable
 interface AILanguageDetectorFactory
     attribute @@toStringTag
+    method availability
     method capabilities
     method constructor
     method create
@@ -48,19 +49,9 @@ interface AILanguageModel : EventTarget
     method prompt
     method promptStreaming
     setter oncontextoverflow
-interface AILanguageModelCapabilities
-    attribute @@toStringTag
-    getter available
-    getter defaultTemperature
-    getter defaultTopK
-    getter maxTemperature
-    getter maxTopK
-    method constructor
-    method languageAvailable
 interface AILanguageModelFactory
     attribute @@toStringTag
     method availability
-    method capabilities
     method constructor
     method create
     method params
@@ -102,16 +93,9 @@ interface AISummarizer
     method destroy
     method summarize
     method summarizeStreaming
-interface AISummarizerCapabilities
-    attribute @@toStringTag
-    getter available
-    method constructor
-    method createOptionsAvailable
-    method languageAvailable
 interface AISummarizerFactory
     attribute @@toStringTag
     method availability
-    method capabilities
     method constructor
     method create
 interface AITranslator

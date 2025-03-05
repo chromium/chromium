@@ -66,8 +66,8 @@ void InternalsUIHandler::RegisterMessages() {
 
 void InternalsUIHandler::OnLoaded(const base::Value::List& args) {
   base::Value load_event(call_on_load_);
-  base::Value empty;
-  base::ValueView load_args[] = {load_event, empty};
+  base::Value load_arg(false);
+  base::ValueView load_args[] = {load_event, load_arg};
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", load_args);
 
   ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());

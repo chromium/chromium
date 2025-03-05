@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/ax_tree_update.h"
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_tree_checks.h"
@@ -27,29 +28,32 @@ std::string AXTreeUpdate::ToString(bool verbose, int max_items) const {
   std::string result;
 
   if (has_tree_data) {
-    result += "AXTreeUpdate tree data:" + tree_data.ToString() + "\n";
+    base::StrAppend(&result,
+                    {"AXTreeUpdate tree data:", tree_data.ToString(), "\n"});
   }
 
   if (node_id_to_clear != kInvalidAXNodeID) {
-    result += "AXTreeUpdate: clear node " +
-              base::NumberToString(node_id_to_clear) + "\n";
+    base::StrAppend(&result, {"AXTreeUpdate: clear node ",
+                              base::NumberToString(node_id_to_clear), "\n"});
   }
 
   if (root_id != kInvalidAXNodeID) {
-    result += "AXTreeUpdate: root id " + base::NumberToString(root_id) + "\n";
+    base::StrAppend(&result, {"AXTreeUpdate: root id ",
+                              base::NumberToString(root_id), "\n"});
   }
 
-  if (event_from != ax::mojom::EventFrom::kNone)
-    result += "event_from=" + std::string(ui::ToString(event_from)) + "\n";
-  if (event_from_action != ax::mojom::Action::kNone)
-    result +=
-        "event_from_action=" + std::string(ui::ToString(event_from_action)) +
-        "\n";
+  if (event_from != ax::mojom::EventFrom::kNone) {
+    base::StrAppend(&result, {"event_from=", ui::ToString(event_from), "\n"});
+  }
+  if (event_from_action != ax::mojom::Action::kNone) {
+    base::StrAppend(
+        &result, {"event_from_action=", ui::ToString(event_from_action), "\n"});
+  }
 
   if (!event_intents.empty()) {
     result += "event_intents=[\n";
     for (const auto& event_intent : event_intents)
-      result += "  " + event_intent.ToString() + "\n";
+      base::StrAppend(&result, {"  ", event_intent.ToString(), "\n"});
     result += "]\n";
   }
 
@@ -64,8 +68,8 @@ std::string AXTreeUpdate::ToString(bool verbose, int max_items) const {
       break;
     }
     int indent = id_to_indentation[node_data.id];
-    result += std::string(2 * indent, ' ');
-    result += node_data.ToString(/*verbose*/ verbose) + "\n";
+    result.append(2 * indent, ' ');
+    base::StrAppend(&result, {node_data.ToString(/*verbose=*/verbose), "\n"});
     for (AXNodeID child_id : node_data.child_ids)
       id_to_indentation[child_id] = indent + 1;
   }

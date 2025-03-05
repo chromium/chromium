@@ -53,6 +53,7 @@
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/window_open_disposition.h"
@@ -172,12 +173,11 @@ class OpenerHeuristicBrowserTest : public ContentBrowserTest,
 
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
-        {
-            {content_settings::features::kTpcdHeuristicsGrants,
-             tpcd_heuristics_grants_params_},
-            {network::features::kSkipTpcdMitigationsForAds,
-             {{"SkipTpcdMitigationsForAdsHeuristics", "true"}}},
-        },
+        {{content_settings::features::kTpcdHeuristicsGrants,
+          tpcd_heuristics_grants_params_},
+         {network::features::kSkipTpcdMitigationsForAds,
+          {{"SkipTpcdMitigationsForAdsHeuristics", "true"}}},
+         {blink::features::kPartitionedPopins, {}}},
         {});
 
     OpenerHeuristicTabHelper::SetClockForTesting(&clock_);
@@ -449,6 +449,31 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   ASSERT_TRUE(
       ExecJs(web_contents,
              JsReplace("window.open($1, '', 'popup,noopener');", popup_url)));
+  observer.Wait();
+
+  auto* popup_tab_helper =
+      OpenerHeuristicTabHelper::FromWebContents(observer.popup());
+  ASSERT_TRUE(popup_tab_helper);
+  ASSERT_FALSE(popup_tab_helper->popup_observer_for_testing());
+}
+
+// TODO(crbug.com/40925352): Flaky on android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PopinsDoNotHavePopupState DISABLED_PopinsDoNotHavePopupState
+#else
+#define MAYBE_PopinsDoNotHavePopupState PopinsDoNotHavePopupState
+#endif
+IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
+                       MAYBE_PopinsDoNotHavePopupState) {
+  GURL https_url = https_server_.GetURL("a.test", "/title1.html");
+  WebContents* web_contents = GetActiveWebContents();
+
+  // Initialize popup and interaction.
+  ASSERT_TRUE(NavigateToURL(web_contents, https_url));
+
+  PopupObserver observer(web_contents);
+  ASSERT_TRUE(ExecJs(web_contents,
+                     JsReplace("window.open($1, '', 'popin');", https_url)));
   observer.Wait();
 
   auto* popup_tab_helper =

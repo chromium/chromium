@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ai/ai.h"
 #include "third_party/blink/renderer/modules/ai/ai_availability.h"
-#include "third_party/blink/renderer/modules/ai/ai_capability_availability.h"
 #include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/ai_language_model.h"
 #include "third_party/blink/renderer/modules/ai/ai_language_model_params.h"
@@ -185,68 +184,6 @@ void AILanguageModelFactory::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(ai_);
-}
-
-// TODO(crbug.com/390459309): remove `OnGetModelInfoComplete()`.
-void AILanguageModelFactory::OnGetModelInfoComplete(
-    ScriptPromiseResolver<AILanguageModelCapabilities>* resolver,
-    AILanguageModelCapabilities* capabilities,
-    mojom::blink::AILanguageModelParamsPtr params) {
-  CHECK(params);
-  capabilities->SetDefaultTopK(params->default_sampling_params->top_k);
-  capabilities->SetDefaultTemperature(
-      params->default_sampling_params->temperature);
-  capabilities->SetMaxTopK(params->max_sampling_params->top_k);
-  capabilities->SetMaxTemperature(params->max_sampling_params->temperature);
-
-  resolver->Resolve(capabilities);
-}
-
-// TODO(crbug.com/390459309): remove `OnCanCreateSessionComplete()`.
-void AILanguageModelFactory::OnCanCreateSessionComplete(
-    ScriptPromiseResolver<AILanguageModelCapabilities>* resolver,
-    mojom::blink::ModelAvailabilityCheckResult check_result) {
-  AICapabilityAvailability availability =
-      AIAvailabilityToAICapabilityAvailability(
-          HandleModelAvailabilityCheckResult(
-              GetExecutionContext(), AIMetrics::AISessionType::kLanguageModel,
-              check_result));
-  auto* capabilities = MakeGarbageCollected<AILanguageModelCapabilities>(
-      AICapabilityAvailabilityToV8(availability));
-  if (availability != AICapabilityAvailability::kReadily) {
-    resolver->Resolve(capabilities);
-    return;
-  }
-
-  ai_->GetAIRemote()->GetLanguageModelParams(WTF::BindOnce(
-      &AILanguageModelFactory::OnGetModelInfoComplete, WrapPersistent(this),
-      WrapPersistent(resolver), WrapPersistent(capabilities)));
-}
-
-// TODO(crbug.com/390459309): remove `capabilities()`.
-ScriptPromise<AILanguageModelCapabilities> AILanguageModelFactory::capabilities(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid()) {
-    ThrowInvalidContextException(exception_state);
-    return ScriptPromise<AILanguageModelCapabilities>();
-  }
-
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<AILanguageModelCapabilities>>(
-          script_state);
-  auto promise = resolver->Promise();
-
-  base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
-                                    AIMetrics::AISessionType::kLanguageModel),
-                                AIMetrics::AIAPI::kCanCreateSession);
-
-  ai_->GetAIRemote()->CanCreateLanguageModel(
-      std::nullopt,
-      WTF::BindOnce(&AILanguageModelFactory::OnCanCreateSessionComplete,
-                    WrapPersistent(this), WrapPersistent(resolver)));
-
-  return promise;
 }
 
 void AILanguageModelFactory::OnCanCreateLanguageModelComplete(

@@ -792,7 +792,7 @@ public class PageInfoViewTest {
         loadUrlAndOpenPageInfo(url);
         setRwsInfo(hostName);
         onView(withId(R.id.page_info_cookies_row)).perform(click());
-        onViewWaiting(allOf(withText(R.string.page_info_rws_enhanced_button_title), isDisplayed()));
+        onViewWaiting(allOf(withText(R.string.page_info_rws_v2_button_title), isDisplayed()));
         Context context = ApplicationProvider.getApplicationContext();
         String subtitle =
                 context.getString(R.string.page_info_rws_v2_button_subtitle_android, hostName);

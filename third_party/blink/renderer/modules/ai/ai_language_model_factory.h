@@ -13,12 +13,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_availability.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_create_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/modules/ai/ai_capability_availability.h"
-#include "third_party/blink/renderer/modules/ai/ai_language_model_capabilities.h"
 #include "third_party/blink/renderer/modules/ai/ai_language_model_params.h"
 
 namespace blink {
@@ -40,10 +39,6 @@ class AILanguageModelFactory final : public ScriptWrappable,
       ScriptState* script_state,
       const AILanguageModelCreateOptions* options,
       ExceptionState& exception_state);
-  // TODO(crbug.com/390459309): remove `capabilities()`.
-  ScriptPromise<AILanguageModelCapabilities> capabilities(
-      ScriptState* script_state,
-      ExceptionState& exception_state);
   ScriptPromise<V8AIAvailability> availability(
       ScriptState* script_state,
       const AILanguageModelCreateCoreOptions* options,
@@ -55,15 +50,6 @@ class AILanguageModelFactory final : public ScriptWrappable,
   ~AILanguageModelFactory() override = default;
 
  private:
-  // TODO(crbug.com/390459309): remove `OnGetModelInfoComplete()`.
-  void OnGetModelInfoComplete(
-      ScriptPromiseResolver<AILanguageModelCapabilities>* resolver,
-      AILanguageModelCapabilities* capabilities,
-      mojom::blink::AILanguageModelParamsPtr params);
-  // TODO(crbug.com/390459309): remove `OnCanCreateSessionComplete()`.
-  void OnCanCreateSessionComplete(
-      ScriptPromiseResolver<AILanguageModelCapabilities>* resolver,
-      mojom::blink::ModelAvailabilityCheckResult check_result);
   void OnCanCreateLanguageModelComplete(
       ScriptPromiseResolver<V8AIAvailability>* resolver,
       mojom::blink::ModelAvailabilityCheckResult check_result);

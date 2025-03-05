@@ -60,6 +60,13 @@ base::Clock* OpenerHeuristicTabHelper::SetClockForTesting(base::Clock* clock) {
 void OpenerHeuristicTabHelper::InitPopup(
     const GURL& popup_url,
     base::WeakPtr<OpenerHeuristicTabHelper> opener) {
+  if (web_contents()->IsPartitionedPopin()) {
+    // Skip heuristics if this is a popin as we should treat this context as as
+    // embedded and not its own window for storage access purposes.
+    // See https://explainers-by-googlers.github.io/partitioned-popins/
+    return;
+  }
+
   popup_observer_ =
       std::make_unique<PopupObserver>(web_contents(), popup_url, opener);
 

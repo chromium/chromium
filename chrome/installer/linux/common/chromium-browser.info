@@ -38,3 +38,5 @@ DEVELOPER_NAME="The Chromium Authors"
 BUGTRACKERURL="https://www.chromium.org/for-testers/bug-reporting-guidelines"
 
 HELPURL="https://chromium.googlesource.com/chromium/src/+/main/docs/linux/debugging.md"
+
+RDN="org.chromium.Chromium"

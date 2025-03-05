@@ -4,12 +4,14 @@
 
 package org.chromium.components.data_sharing;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.data_sharing.mojom.LogSource;
 
 /**
  * Helper class to facilitate storing Data Sharing logs and exposing them to
  * chrome://data-sharing-internals.
  */
+@NullMarked
 public interface Logger {
     /**
      * Stores a log entry to be viewed later in chrome://data-sharing-internals. May do nothing if

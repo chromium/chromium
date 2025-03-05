@@ -22,10 +22,4 @@ BASE_FEATURE(kImmersiveFullscreenOverlayWindowDebug,
              "ImmersiveFullscreenOverlayWindowDebug",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Keeps the "thin" titlebar accessory view controller permanently in
-// browser windows, instead of inserting it on immersive fullscreen enablement.
-// Addresses a race condition in PWAs (see https://crbug.com/373722654)
-BASE_FEATURE(kFullscreenPermanentThinController,
-             "FullscreenPermanentThinController",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace remote_cocoa::features

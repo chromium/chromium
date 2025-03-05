@@ -1,0 +1,20 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (!is_android) {
+  source_set("impl") {
+    sources = [
+      "ax_tree_fixing_services_router.cc",
+      "ax_tree_fixing_services_router.h",
+      "ax_tree_fixing_services_router_factory.cc",
+      "ax_tree_fixing_services_router_factory.h",
+    ]
+
+    deps = [
+      "//base",
+      "//components/keyed_service/content:content",
+      "//content/public/browser:browser",
+    ]
+  }
+}

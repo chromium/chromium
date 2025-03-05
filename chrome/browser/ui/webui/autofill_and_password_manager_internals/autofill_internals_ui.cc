@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/webui/autofill_and_password_manager_internals/internals_ui_handler.h"
 #include "chrome/common/url_constants.h"
 #include "components/autofill/content/browser/autofill_log_router_factory.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
@@ -18,6 +19,8 @@ AutofillInternalsUI::AutofillInternalsUI(content::WebUI* web_ui)
       Profile::FromWebUI(web_ui), chrome::kChromeUIAutofillInternalsHost);
   web_ui->AddMessageHandler(std::make_unique<autofill::InternalsUIHandler>(
       "setup-autofill-internals",
+      base::Value(base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAiServerModel)),
       base::BindRepeating(
           &autofill::AutofillLogRouterFactory::GetForBrowserContext)));
 }

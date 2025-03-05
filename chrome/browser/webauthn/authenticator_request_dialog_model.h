@@ -18,6 +18,7 @@
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
+#include "chrome/browser/webauthn/local_authentication_token.h"
 #include "chrome/browser/webauthn/password_credential_controller.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
@@ -28,10 +29,6 @@
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-
-#if BUILDFLAG(IS_MAC)
-#include "crypto/scoped_lacontext.h"
-#endif  // BUILDFLAG(IS_MAC)
 
 namespace content {
 class RenderFrameHost;
@@ -175,8 +172,8 @@ using UIPresentation =
   AUTHENTICATOR_REQUEST_EVENT_1(OnHavePIN, std::u16string)                    \
   /* Called when a local Touch ID prompt finishes. The first parameter is */  \
   /* true for success, false for failure. */                                  \
-  /* On success, the emitter must set the model's |lacontext| to an */        \
-  /* authenticated LAContext. */                                              \
+  /* On success, the emitter must set the model's `local_auth_token` to an */ \
+  /* authenticated one. In MacOS this is a ScopedLAContext. */                \
   AUTHENTICATOR_REQUEST_EVENT_1(OnTouchIDComplete, bool)                      \
   /* Called when GAIA reauth has completed. The argument is the reauth */     \
   /* proof token. */                                                          \
@@ -508,11 +505,10 @@ struct AuthenticatorRequestDialogModel
   // except for the cancel button.
   bool ui_disabled_ = false;
 
-#if BUILDFLAG(IS_MAC)
-  // lacontext contains an authenticated LAContext after a successful Touch ID
-  // prompt.
-  std::optional<crypto::ScopedLAContext> lacontext;
-#endif  // BUILDFLAG(IS_MAC)
+  // local_auth_token contains an authentication token after a successful local
+  // authentication. In MacOS this is a wrapped LAContext and it is after a
+  // successful Touch ID prompt.
+  std::optional<webauthn::LocalAuthenticationToken> local_auth_token;
 
   // Returns the AccountInfo for the profile associated with the request.
   std::optional<AccountInfo> GetGpmAccountInfo();

@@ -68,6 +68,11 @@ bool AutofillAiModelCacheImpl::Contains(FormSignature form_signature) const {
              SerializeTime(base::Time::Now() - max_cache_age_);
 }
 
+std::map<FormSignature, AutofillAiModelCache::CacheEntryWithMetadata>
+AutofillAiModelCacheImpl::GetAllEntries() const {
+  return in_memory_cache_;
+}
+
 void AutofillAiModelCacheImpl::TrimEntries() {
   // Transform the cache into an ordered list of (creation_time, FormSignature)
   // pairs.

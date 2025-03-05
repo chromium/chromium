@@ -2,18 +2,6 @@
 // META: timeout=long
 
 promise_test(async () => {
-  const capabilities = await ai.summarizer.capabilities();
-  assert_not_equals(capabilities.available, "no");
-  assert_not_equals(capabilities.createOptionsAvailable({
-    type: "tl;dr",
-    format: "plain-text",
-    length: "medium"
-  }), "no");
-  assert_not_equals(capabilities.languageAvailable("en"), "no");
-  assert_equals(capabilities.languageAvailable("es"), "no");
-}, 'AISummarizerFactory.capabilities');
-
-promise_test(async () => {
   const availability = await ai.summarizer.availability({
     type: "tl;dr",
     format: "plain-text",

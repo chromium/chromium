@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/modules/ai/ai.h"
-#include "third_party/blink/renderer/modules/ai/ai_capability_availability.h"
 #include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
@@ -220,41 +219,6 @@ ScriptPromise<V8AIAvailability> AISummarizerFactory::availability(
                 factory->GetExecutionContext(),
                 AIMetrics::AISessionType::kSummarizer, result);
             resolver->Resolve(AIAvailabilityToV8(availability));
-          },
-          WrapPersistent(resolver), WrapPersistent(this)));
-  return promise;
-}
-
-ScriptPromise<AISummarizerCapabilities> AISummarizerFactory::capabilities(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid()) {
-    ThrowInvalidContextException(exception_state);
-    return ScriptPromise<AISummarizerCapabilities>();
-  }
-
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<AISummarizerCapabilities>>(
-          script_state);
-  auto promise = resolver->Promise();
-  if (!ai_->GetAIRemote().is_connected()) {
-    RejectPromiseWithInternalError(resolver);
-    return promise;
-  }
-
-  ai_->GetAIRemote()->CanCreateSummarizer(
-      /*options=*/nullptr,
-      WTF::BindOnce(
-          [](ScriptPromiseResolver<AISummarizerCapabilities>* resolver,
-             AISummarizerFactory* factory,
-             mojom::blink::ModelAvailabilityCheckResult result) {
-            AICapabilityAvailability availability =
-                AIAvailabilityToAICapabilityAvailability(
-                    HandleModelAvailabilityCheckResult(
-                        factory->GetExecutionContext(),
-                        AIMetrics::AISessionType::kSummarizer, result));
-            resolver->Resolve(MakeGarbageCollected<AISummarizerCapabilities>(
-                AICapabilityAvailabilityToV8(availability)));
           },
           WrapPersistent(resolver), WrapPersistent(this)));
   return promise;

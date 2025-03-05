@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.management;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
@@ -18,12 +17,10 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.graphics.drawable.DrawableCompat;
 
+import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
-import org.chromium.ui.drawable.StateListDrawableBuilder;
 
 /**
  * The View that renders the ManagementPage (chrome://management). Consists of an medium size image
@@ -89,7 +86,7 @@ public class ManagementView extends ScrollView {
         mThreatProtectionMore.setCompoundDrawablesWithIntrinsicBounds(
                 /* left= */ null,
                 /* top= */ null,
-                /* right= */ createExpandArrow(),
+                /* right= */ SettingsUtils.createExpandArrow(getContext()),
                 /* bottom= */ null);
         mThreatProtectionMore.setChecked(false);
         mThreatProtectionMore.setOnClickListener(
@@ -329,27 +326,5 @@ public class ManagementView extends ScrollView {
         } else {
             mUiConfig.updateDisplayStyle();
         }
-    }
-
-    /** Returns the arrow to be put next to the "More about Chrome Enterprise Connectors" text. */
-    // TODO(crbug.com/399691053, crbug.com/324562205): Refactor this to one code location.
-    private Drawable createExpandArrow() {
-        StateListDrawableBuilder builder = new StateListDrawableBuilder(getContext());
-        StateListDrawableBuilder.State checked =
-                builder.addState(
-                        R.drawable.ic_expand_less_black_24dp, android.R.attr.state_checked);
-        StateListDrawableBuilder.State unchecked =
-                builder.addState(R.drawable.ic_expand_more_black_24dp);
-        builder.addTransition(
-                checked, unchecked, R.drawable.transition_expand_less_expand_more_black_24dp);
-        builder.addTransition(
-                unchecked, checked, R.drawable.transition_expand_more_expand_less_black_24dp);
-
-        Drawable tintableDrawable = DrawableCompat.wrap(builder.build());
-        DrawableCompat.setTintList(
-                tintableDrawable,
-                AppCompatResources.getColorStateList(
-                        getContext(), R.color.default_icon_color_tint_list));
-        return tintableDrawable;
     }
 }

@@ -1725,9 +1725,6 @@ extern const char kAutoWebContentsDarkModeDescription[];
 extern const char kForcedColorsName[];
 extern const char kForcedColorsDescription[];
 
-extern const char kImprovedSemanticsActivityIndicatorsName[];
-extern const char kImprovedSemanticsActivityIndicatorsDescription[];
-
 extern const char kLeftHandSideActivityIndicatorsName[];
 extern const char kLeftHandSideActivityIndicatorsDescription[];
 

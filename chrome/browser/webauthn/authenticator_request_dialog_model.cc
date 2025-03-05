@@ -103,13 +103,13 @@ std::u16string AuthenticatorRequestDialogModel::GetMechanismDescription(
   int message;
   switch (cred.source) {
     case device::AuthenticatorType::kWinNative:
-      message = IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO_NEW;
+      message = IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO;
       break;
     case device::AuthenticatorType::kTouchID:
-      message = IDS_WEBAUTHN_SOURCE_CHROME_PROFILE_NEW;
+      message = IDS_WEBAUTHN_SOURCE_CHROME_PROFILE;
       break;
     case device::AuthenticatorType::kICloudKeychain:
-      message = IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN_NEW;
+      message = IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN;
       break;
     case device::AuthenticatorType::kEnclave:
       message = IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER;
