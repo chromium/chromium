@@ -178,9 +178,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa
   void OnPrimaryDisplayChanged() override;
 
   // See comment for `thin_titlebar_view_controller_`. These helpers abstract
-  // the fact that on macOS < 13, the controller is added and removed as needed,
-  // and on macOS 13+, it is permanent.
-  // TODO(https://crbug.com/373722654): Clean these up when macOS 13 is minimum.
+  // manipulating it for the `kFullscreenPermanentThinController` feature.
+  // TODO(https://crbug.com/373722654): Clean these up.
   void CreateThinControllerIfNecessary();
   void DisableThinControllerIfNecessary();
 
