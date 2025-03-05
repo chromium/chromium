@@ -4,11 +4,14 @@
 
 #include "components/enterprise/browser/promotion/promotion_eligibility_checker.h"
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
 
@@ -19,18 +22,38 @@ constexpr char kOauthConsumerName[] = "promotion_eligibility_checker";
 namespace enterprise_promotion {
 
 PromotionEligibilityChecker::PromotionEligibilityChecker(
+    const std::string& profile_id,
+    policy::CloudPolicyClient* client,
     signin::IdentityManager* identity_manager)
-    : identity_manager_(identity_manager) {}
+    : identity_manager_(std::move(identity_manager)) {
+  if (!client || !client->is_registered()) {
+    return;
+  }
+
+  promotion_query_client_ = std::make_unique<policy::CloudPolicyClient>(
+      profile_id, client->service(), client->GetURLLoaderFactory(),
+      policy::CloudPolicyClient::DeviceDMTokenCallback());
+
+  promotion_query_client_->SetupRegistration(
+      client->dm_token(), client->client_id(), client->user_affiliation_ids());
+}
 
 PromotionEligibilityChecker::~PromotionEligibilityChecker() = default;
 
-void PromotionEligibilityChecker::FetchAccessToken(
-    const CoreAccountId account_id) {
+void PromotionEligibilityChecker::MaybeCheckPromotionEligibility(
+    const CoreAccountId account_id,
+    PromotionEligibilityChecker::PromotionEligibilityCallback callback) {
   DCHECK(!access_token_fetcher_);
   // The caller must supply a username.
   DCHECK(!account_id.empty());
   DCHECK(identity_manager_->HasAccountWithRefreshToken(account_id));
-
+  DCHECK(callback);
+  callback_ = std::move(callback);
+  if (!promotion_query_client_ || !promotion_query_client_->is_registered()) {
+    std::move(callback_).Run(
+        enterprise_management::GetUserEligiblePromotionsResponse());
+    return;
+  }
   signin::ScopeSet scopes;
   scopes.insert(GaiaConstants::kDeviceManagementServiceOAuth);
   scopes.insert(GaiaConstants::kGoogleUserInfoEmail);
@@ -45,11 +68,32 @@ void PromotionEligibilityChecker::FetchAccessToken(
 void PromotionEligibilityChecker::OnAuthTokenFetched(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo token_info) {
+  if (error.state() != GoogleServiceAuthError::NONE) {
+    std::move(callback_).Run(
+        enterprise_management::GetUserEligiblePromotionsResponse());
+    return;
+  }
+
   oauth_token_ = token_info.token;
+
+  if (oauth_token_.empty()) {
+    std::move(callback_).Run(
+        enterprise_management::GetUserEligiblePromotionsResponse());
+    return;
+  }
+
+  CheckPromotionEligibilityWithAuthToken(oauth_token_);
 }
 
-std::string PromotionEligibilityChecker::GetFetchedTokenForTesting() {
-  return oauth_token_;
+void PromotionEligibilityChecker::CheckPromotionEligibilityWithAuthToken(
+    std::string oauth_token) {
+  promotion_query_client_->SetOAuthTokenAsAdditionalAuth(oauth_token);
+  promotion_query_client_->DeterminePromotionEligibility(std::move(callback_));
+}
+
+void PromotionEligibilityChecker::SetCloudPolicyClientForTesting(
+    std::unique_ptr<policy::CloudPolicyClient> testing_client) {
+  promotion_query_client_ = std::move(testing_client);
 }
 
 }  // namespace enterprise_promotion

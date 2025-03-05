@@ -172,6 +172,7 @@ source_set("unit_tests") {
     "//components/policy/core/common:test_support",
     "//components/prefs:test_support",
     "//components/version_info",
+    "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/content_analysis_sdk:liblcasdk",
