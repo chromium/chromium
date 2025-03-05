@@ -486,10 +486,10 @@ bool TranslateLanguageList::SetSupportedLanguages(
   //   "tl": {"XX": "LanguageName", ...}
   // }
   // Where "tl" is set in kTargetLanguagesKey.
-  std::optional<base::Value> json_value =
-      base::JSONReader::Read(language_list, base::JSON_ALLOW_TRAILING_COMMAS);
+  std::optional<base::Value::Dict> json_value = base::JSONReader::ReadDict(
+      language_list, base::JSON_ALLOW_TRAILING_COMMAS);
 
-  if (!json_value || !json_value->is_dict()) {
+  if (!json_value) {
     NotifyEvent(__LINE__, "Language list is invalid");
     base::debug::DumpWithoutCrashing();
     return false;
@@ -497,8 +497,8 @@ bool TranslateLanguageList::SetSupportedLanguages(
   // The first level dictionary contains two sub-dicts, first for source
   // languages and second for target languages. We want to use the target
   // languages.
-  const base::Value::Dict* target_languages = json_value->GetDict().FindDict(
-      TranslateLanguageList::kTargetLanguagesKey);
+  const base::Value::Dict* target_languages =
+      json_value->FindDict(TranslateLanguageList::kTargetLanguagesKey);
   if (!target_languages) {
     NotifyEvent(__LINE__, "Target languages are not found in the response");
     base::debug::DumpWithoutCrashing();
