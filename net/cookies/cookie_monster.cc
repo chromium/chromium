@@ -1533,7 +1533,8 @@ void CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
     }
     // If cookie's domain is in legacy mode, check to make sure we are not
     // setting an aliasing cookie.
-    if (cookie_being_set_key == cur_existing_cookie->UniqueKey() ||
+    if (cookie_being_set.IsEquivalent(cookie_being_set_key,
+                                      *cur_existing_cookie) ||
         (cookie_being_set_scope_semantics == CookieScopeSemantics::LEGACY &&
          cookie_being_set.LegacyUniqueKey() ==
              cur_existing_cookie->LegacyUniqueKey())) {
