@@ -1499,7 +1499,7 @@ static bool NeedsEffectForViewTransition(const LayoutObject& object) {
          !object.IsLayoutView();
 }
 
-// Scale transforms need effects so that they can be considered for
+// Scale transforms need effects, so that they can be considered for
 // promotion to render surfaces if possible to improve quality of
 // renerdering. See crbug.com/40084005.
 bool FragmentPaintPropertyTreeBuilder::NeedsEffectFor2DScaleTransform() const {
@@ -1507,11 +1507,6 @@ bool FragmentPaintPropertyTreeBuilder::NeedsEffectFor2DScaleTransform() const {
       object_.IsLayoutReplaced()) {
     return false;
   }
-  if (object_.StyleRef().HasWillChangeTransformHint() ||
-      object_.StyleRef().IsRunningTransformAnimationOnCompositor()) {
-    return false;
-  }
-
   return has_scale2d_transform_ && !has_non_scale2d_transform_;
 }
 
@@ -3971,17 +3966,6 @@ bool PaintPropertyTreeBuilder::CanDoDeferredTransformNodeUpdate(
   // Cannot directly update properties if they have not been created yet.
   if (!properties || !properties->Transform())
     return false;
-
-  if (auto* effect = properties->Effect()) {
-    // If there is already potentially an optimization to allocate a render
-    // surface for a scale transform (see crbug.com/40084005), we can't use
-    // the fast path. (However, we intentionally allow the fast path to
-    // happen when changing *to* a scale transform, to avoid performance
-    // problems detecting this situation.
-    if (effect->Has2DScaleTransform()) {
-      return false;
-    }
-  }
 
   return true;
 }
