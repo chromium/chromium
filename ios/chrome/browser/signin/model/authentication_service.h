@@ -160,6 +160,11 @@ class AuthenticationService : public KeyedService,
   friend class AuthenticationServiceTestBase;
   friend class FakeAuthenticationService;
 
+  // If the current profile is being opened for the first time, this performs
+  // any necessary first-time setup (notably, signing in the assigned managed
+  // account to a managed profile), and then marks the profile as initialized.
+  void PerformFirstTimeProfileInitializationIfNecessary();
+
   // Returns the cached MDM errors associated with `identity`. If the cache
   // is stale for `identity`, the entry might be removed.
   id<RefreshAccessTokenError> GetCachedMDMError(id<SystemIdentity> identity);

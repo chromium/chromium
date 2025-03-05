@@ -174,56 +174,7 @@ void AuthenticationService::Initialize(
                                   signed_in_state);
   }
 
-  // If opening a managed profile, the user needs to be signed in automatically.
-  // TODO(crbug.com/375605572): Move the entire logic below into a continuation.
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
-    // Skip if the feature is not enabled.
-    return;
-  }
-  ProfileManagerIOS* profile_manager =
-      GetApplicationContext()->GetProfileManager();
-  if (!profile_manager) {
-    // Skip if there is no profile manager, but this is possible only for test.
-    CHECK_IS_TEST();
-    return;
-  }
-  ProfileAttributesStorageIOS* attributes_storage =
-      profile_manager->GetProfileAttributesStorage();
-
-  std::string profile_name = account_manager_service_->GetProfileName();
-
-  // If the profile was already initialized before, nothing to do here.
-  if (attributes_storage->GetAttributesForProfileWithName(profile_name)
-          .IsFullyInitialized()) {
-    return;
-  }
-
-  // Once this method returns, the profile is considered fully initialized.
-  base::ScopedClosureRunner mark_profile_initialized(base::BindOnce(
-      [](ProfileAttributesStorageIOS* attributes_storage,
-         std::string_view profile_name) {
-        attributes_storage->UpdateAttributesForProfileWithName(
-            profile_name, base::BindOnce([](ProfileAttributesIOS& attrs) {
-              attrs.SetFullyInitialized();
-            }));
-      },
-      attributes_storage, profile_name));
-
-  if (profile_name == attributes_storage->GetPersonalProfileName()) {
-    // Nothing to do if the current profile is the default profile.
-    return;
-  }
-  NSArray<id<SystemIdentity>>* identities_for_profile =
-      account_manager_service_->GetAllIdentities();
-  // TODO(crbug.com/375605572): Evaluate if there is no race condition with
-  // this CHECK.
-  CHECK_EQ(identities_for_profile.count, 1ul);
-  if (HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-    // Nothing to do if the profile is already signed in.
-    return;
-  }
-  // TODO(crbug.com/375605572): Need to set the right access point.
-  SignIn(identities_for_profile[0], signin_metrics::AccessPoint::kUnknown);
+  PerformFirstTimeProfileInitializationIfNecessary();
 }
 
 void AuthenticationService::Shutdown() {
@@ -513,6 +464,59 @@ void AuthenticationService::SignOut(
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(callback_closure));
   }
+}
+
+void AuthenticationService::PerformFirstTimeProfileInitializationIfNecessary() {
+  ProfileManagerIOS* profile_manager =
+      GetApplicationContext()->GetProfileManager();
+  if (!profile_manager) {
+    // Skip if there is no profile manager, but this is possible only for test.
+    CHECK_IS_TEST();
+    return;
+  }
+  ProfileAttributesStorageIOS* attributes_storage =
+      profile_manager->GetProfileAttributesStorage();
+
+  const std::string profile_name = account_manager_service_->GetProfileName();
+
+  // If the profile was already initialized before, nothing to do here.
+  if (attributes_storage->GetAttributesForProfileWithName(profile_name)
+          .IsFullyInitialized()) {
+    return;
+  }
+
+  // Once this method returns, the profile is considered fully initialized.
+  base::ScopedClosureRunner mark_profile_initialized(base::BindOnce(
+      [](ProfileAttributesStorageIOS* attributes_storage,
+         std::string_view profile_name) {
+        attributes_storage->UpdateAttributesForProfileWithName(
+            profile_name, base::BindOnce([](ProfileAttributesIOS& attrs) {
+              attrs.SetFullyInitialized();
+            }));
+      },
+      attributes_storage, profile_name));
+
+  // When opening a managed profile for the first time, the user needs to be
+  // signed in automatically.
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    return;
+  }
+
+  if (profile_name == attributes_storage->GetPersonalProfileName()) {
+    // Nothing to do if the current profile is the personal profile.
+    return;
+  }
+  NSArray<id<SystemIdentity>>* identities_for_profile =
+      account_manager_service_->GetAllIdentities();
+  // TODO(crbug.com/375605572): Evaluate if there is no race condition with
+  // this CHECK.
+  CHECK_EQ(identities_for_profile.count, 1ul);
+  if (HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    // Nothing to do if the profile is already signed in.
+    return;
+  }
+  // TODO(crbug.com/375605572): Need to set the right access point.
+  SignIn(identities_for_profile[0], signin_metrics::AccessPoint::kUnknown);
 }
 
 id<RefreshAccessTokenError> AuthenticationService::GetCachedMDMError(
