@@ -483,8 +483,9 @@ void MediaFoundationService::IsKeySystemSupported(
     return;
   }
 
+  // Use empty software secure capability as it is not used.
   auto sw_cdm_capability_or_status =
-      GetCdmCapability(cdm_factory, key_system, /*is_hw_secure=*/false);
+      base::unexpected(CdmCapabilityQueryStatus::kNoSupportedVideoCodec);
   auto hw_cdm_capability_or_status =
       GetCdmCapability(cdm_factory, key_system, /*is_hw_secure=*/true);
   auto key_system_capability = KeySystemCapability(sw_cdm_capability_or_status,
