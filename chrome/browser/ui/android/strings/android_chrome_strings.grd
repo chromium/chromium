@@ -2791,11 +2791,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_PASSWORD_SYNC_ERROR_SUMMARY" desc="Short message shown in various UIs (e.g. Sync Error Card body) to inform that passwords can't be synced (due to missing trusted vault keys). [CHAR_LIMIT=32]">
         Password sync isn't working
       </message>
-      <message name="IDS_PASSWORD_SYNC_TRUSTED_VAULT_ERROR_TITLE_1" desc="Short message shown in various UIs (e.g. Sync Error Card body) to inform that passwords stored in the user's Google Account can't be synced to the device (due to missing trusted vault keys). The message prompts the user to fix this issue.">
-        Get access to all your passwords
-      </message>
-      <message name="IDS_PASSWORD_SYNC_TRUSTED_VAULT_ERROR_TITLE_2" desc="Short message shown in various UIs (e.g. Sync Error Card body) to inform that passwords stored in the user's Google Account can't be synced to the device (due to missing trusted vault keys).">
-        Some of your passwords aren’t available on this device
+      <message name="IDS_PASSWORD_SYNC_TRUSTED_VAULT_ERROR_TITLE" desc="Short message shown in various UIs (e.g. Sync Error Card body) to inform that passwords stored in the user's Google Account can't be synced to the device (due to missing trusted vault keys). The message prompts the user to fix this issue.">
+        Get all your passwords
       </message>
       <message name="IDS_SYNC_SETTINGS_NOT_CONFIRMED_TITLE" desc="Title of the error message shown when sync setup was not complete. [CHAR_LIMIT=60]">
         Initial sync setup not finished
@@ -2818,11 +2815,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_HINT_SYNC_RETRIEVE_KEYS_FOR_PASSWORDS" desc="Hint message to resolve sync encryption error, required to resume syncing passwords.">
         To sync your passwords, verify it's you
       </message>
-      <message name="IDS_PASSWORD_SYNC_TRUSTED_VAULT_ERROR_HINT_1" desc="Hint message that explains a sync error: Passwords stored in the user's Google Account can't be synced to the device (due to missing trusted vault keys).">
-         Verify it’s you to make sure you can access all your passwords on this device
-      </message>
-      <message name="IDS_PASSWORD_SYNC_TRUSTED_VAULT_ERROR_HINT_2" desc="Hint message to resolve sync encryption error, required to resume syncing passwords.">
-        Verify it’s you to access passwords in your Google Account
+      <message name="IDS_PASSWORD_SYNC_TRUSTED_VAULT_ERROR_HINT" desc="Hint message that explains a sync error: Passwords stored in the user's Google Account can't be synced to the device (due to missing trusted vault keys).">
+         Verify it’s you to get all your passwords on this device
       </message>
       <message name="IDS_HINT_PASSPHRASE_REQUIRED" desc="Hint message to resolve passphrase required error.">
         To start sync, enter your passphrase
@@ -2913,7 +2907,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_IDENTITY_ERROR_CARD_BUTTON_VERIFY" desc="Button label for all errors requiring re-auth (auth error, degreaded recoverability, encryption error). Also used for error message and notification title.">
         Verify it’s you
       </message>
-
+      <message name="IDS_IDENTITY_ERROR_CARD_BUTTON_OKAY" desc="Button label for the message shown in the Sync Error Card (due to missing trusted vault keys) for confirming that a user wants to get all their passwords on their device.">
+        Okay
+      </message>
       <!-- Identity error message and notification strings -->
       <message name="IDS_IDENTITY_ERROR_MESSAGE_BODY" desc="Error message/notification to resolve passphrase required error, sync encryption error, auth error, outdated client error.">
         Keep using the Chrome data in your Google Account
