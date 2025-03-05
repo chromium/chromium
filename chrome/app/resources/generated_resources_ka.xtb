@@ -1709,7 +1709,6 @@
 <translation id="2178545675770638239">აირჩიეთ პაროლი</translation>
 <translation id="2178585470774851578">თქვენ აპირებთ, ჩართოთ ChromeOS Flex-ის გამართვის ფუნქციები, რომელთა მიერაც დაყენდება sshd daemon და გააქტიურდება ჩატვირთვა USB დისკებიდან.</translation>
 <translation id="2178614541317717477">CA კომპრომისი</translation>
-<translation id="2179850495466791921">თქვენ ახლა გაქვთ <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> და სხვა</translation>
 <translation id="2180620921879609685">კონტენტის დაბლოკვა ნებისმიერ გვერდზე</translation>
 <translation id="2181821976797666341">წესები</translation>
 <translation id="2182058453334755893">დაკოპირდა თქვენს გაცვლის ბუფერში</translation>
@@ -3125,7 +3124,6 @@
 <translation id="3167562202484086668"><ph name="BRAND" />-ის ყველა მონაცემის წაშლა</translation>
 <translation id="3169930038976362151">აირჩიეთ თქვენი საჭიროებების შესაბამისი თემა. თემის, ფონის, ეკრანმზოგის და სხვა დაკავშირებული პარამეტრების შესაცვლელად ხანგრძლივად შეეხეთ დესკტოპს.</translation>
 <translation id="3170072451822350649">შეგიძლიათ ასევე გამოტოვოთ შესვლის ეტაპი და <ph name="LINK_START" />დაათვალიეროთ სტუმრის სტატუსით<ph name="LINK_END" />.</translation>
-<translation id="3171499217959105722">თქვენ ახლა გაქვთ <ph name="NUMBERED_ITEM" /> და სხვა</translation>
 <translation id="3175067642577044620">ძირითადი ტექსტი</translation>
 <translation id="3175862692832442091">ტყე</translation>
 <translation id="3176347586396987181">გამოიყენეთ „z“, რომ ხანგრძლივად დააჭიროთ მაუსის ღილაკს</translation>
@@ -3810,6 +3808,7 @@
 <translation id="3670229581627177274">Bluetooth-ის ჩართვა</translation>
 <translation id="3670480940339182416">საიტებს შეუძლია V8 ოპტიმიზატორის გამოყენება</translation>
 <translation id="3671764914317109892">დათვალიერების ისტორიაში ძიებისას გამოიყენეთ სალაპარაკო ენა. შეგიძლიათ, დასვათ შეკითხვებიც და მიიღოთ პასუხები თქვენი დათვალიერების ისტორიის საფუძველზე.</translation>
+<translation id="3671982238795754537">შეიტყვეთ მეტი წვდომის გასაღებების შესახებ</translation>
 <translation id="3672681487849735243">აღმოჩენილია ქარხნული შეცდომა</translation>
 <translation id="3673097791729989571">შესვლის ჰოსტია <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">თქვენი PIN-კოდი განახლდა</translation>
@@ -3937,7 +3936,6 @@
 <translation id="3744219658596020825">თქვენი პაროლების იმპორტირება ვერ მოხერხდა</translation>
 <translation id="3745306754941902605">სამზარეულო</translation>
 <translation id="3747077776423672805">აპების ამოსაშლელად გადადით აქ: პარამეტრები &gt; Google Play Store &gt; Android პარამეტრების მართვა &gt; აპები ან აპლიკაციების მენეჯერი. შემდეგ შეეხეთ აპს, რომლის დეინსტალაციაც გსურთ (აპის საპოვნელად შეიძლება დაგჭირდეთ მარჯვნივ ან მარცხნივ გადაფურცვლა). ბოლოს კი შეეხეთ დეინსტალაციას ან გათიშვას.</translation>
-<translation id="3747552357646973221">თქვენ ახლა გაქვთ <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> და სხვა</translation>
 <translation id="3748424433435232460">ამ ანგარიშის პაროლი უკვე შენახულია ამ მოწყობილობაზე</translation>
 <translation id="3748706263662799310">ხარვეზის შესახებ შეტყობინება</translation>
 <translation id="3749724428455457489">შეიტყვეთ მეტი საიტების მიერ შემოთავაზებული რეკლამის შესახებ</translation>
@@ -4071,6 +4069,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{გაფართოება დადასტურდა}other{# გაფართოება დადასტურდა}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux-ის გამოსაყენებლად რეკომენდებულია მინიმუმ <ph name="INSTALL_SIZE" />.</translation>
+<translation id="3824203811509979971">შეაჯამეთ კონტენტი ან დასვით შეკითხვები</translation>
 <translation id="3824621460022590830">მოწყობილობის რეგისტრაციის ჟეტონი არასწორია. დაუკავშირდით მოწყობილობის მფლობელს ან ადმინისტრატორს. შეცდომის კოდი: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">სხვა მოწყობილობებიდან ჩანართების სანახავად შედით სისტემაში</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{ჩემი არჩევანის დამახსოვრება ფაილის შემდეგი ტიპისთვის: <ph name="FILE_TYPES" />}other{ჩემი არჩევანის დამახსოვრება ფაილების შემდეგი ტიპებისთვის: <ph name="FILE_TYPES" />}}</translation>
@@ -4257,6 +4256,7 @@
 <translation id="3948985214866944547">მომხმარებელთა უმრავლესობა ბლოკავს ზუსტი მდებარეობის ამ საიტისთვის გაზიარებას</translation>
 <translation id="394984172568887996">IE-დან იმპორტირებული</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, ფაილების ჩამოტვირთვა უფრო უსაფრთხო რომ იყოს</translation>
+<translation id="3950479158728806902">წვდომის გასაღების ავტომატურად შექმნა სწრაფად შესასვლელად</translation>
 <translation id="3950820424414687140">შესვლა</translation>
 <translation id="3950841222883198950">ხმოვანი აკრეფა</translation>
 <translation id="3953834000574892725">ჩემი ანგარიშები</translation>
@@ -4725,6 +4725,7 @@
 <translation id="4289540628985791613">მიმოხილვა</translation>
 <translation id="428963538941819373">ამ საიტებს შეუძლია გამოიყენონ მათ მიერ თქვენ შესახებ შენახული ინფორმაცია, როცა <ph name="HOST" />-ს ათვალიერებთ</translation>
 <translation id="4289732974614035569">აირჩიეთ PIN-კოდი</translation>
+<translation id="4290526909608432059">Chrome აპების მხარდაჭერა მალე დასრულდება. თქვენი ვარიანტების შესახებ მეტის გასაგებად დაუკავშირდით აპის დეველოპერს ან თქვენს IT მხარდაჭერის გუნდს.</translation>
 <translation id="4290791284969893584">გვერდის დახურვის შემდეგ, თქვენ მიერ დაყენებული ამოცანები, შესაძლოა, არ დასრულდეს</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> წევრი</translation>
 <translation id="4290898381118933198">გადაფურცლეთ გვერდებს შორის ნავიგაციისთვის</translation>
@@ -5185,6 +5186,7 @@
 <translation id="4624054169152573743">ფერთა თემა</translation>
 <translation id="4625078469366263107">აპის ჩართვა</translation>
 <translation id="4625905218692741757">ნაგულისხმევი ნაცრისფერი ფერი</translation>
+<translation id="4627107755957573804">ნება დართეთ ვებსაიტებსა და აპებს, განაახლოს არსებული ანგარიშები, რათა გამოიყენოთ წვდომის გასაღებები</translation>
 <translation id="4627442949885028695">სხვა მოწყობილობიდან გაგრძელება</translation>
 <translation id="4628762811416793313">Linux კონტეინერის დაყენება არ დასრულებულა. გთხოვთ, ცადოთ ხელახლა.</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" />-ის პროფილის გახსნა</translation>
@@ -5768,6 +5770,7 @@
 <translation id="5053233576223592551">მომხმარებლის სახელის დამატება</translation>
 <translation id="505347685865235222">უსახელო ჯგუფი — <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{ახლავე უნდა შეცვალოთ}other{ახლავე უნდა შეცვალოთ}}</translation>
+<translation id="5056587122125565772">სურათის შექმნა</translation>
 <translation id="5056950756634735043">მიმდინარეობს კონტეინერთან დაკავშირება</translation>
 <translation id="5057110919553308744">გაფართოებაზე დაწკაპუნებისას</translation>
 <translation id="5057127674016624293">სკანირებას მოსალოდნელზე მეტი დრო სჭირდება</translation>
@@ -5878,6 +5881,7 @@
 <translation id="512642543295077915">search + backspace</translation>
 <translation id="5126611267288187364">ცვლილებების ნახვა</translation>
 <translation id="5127620150973591153">დაცული კავშირის ID: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">შეაჯამეთ კონტენტი ან დასვით შეკითხვები.</translation>
 <translation id="5127881134400491887">ქსელური კავშირების მართვა</translation>
 <translation id="5127934926273826089">ყვავილები</translation>
 <translation id="5127986747308934633">თქვენი ადმინისტრატორი აკონტროლებს თქვენს მოწყობილობას</translation>
@@ -8516,6 +8520,7 @@
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> — დაკავშირებულია თანმიმდევრული პორტი</translation>
 <translation id="7033616203784997570">შენატანის სიგრძე უნდა იყოს მაქსიმუმ 62 სიმბოლო</translation>
 <translation id="7034692021407794547">პირველ რიგში, ბილინგის მართვის პრივილეგიების მქონე ადმინისტრატორი უნდა დაეთანხმოს Google Meet აპარატურის მომსახურების პირობებს, რომლებიც მოცემულია ადმინისტრატორის კონსოლის „Google Meet აპარატურის“ სექციაში.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" />-მა შექმნა წვდომის გასაღები თქვენი ანგარიშისთვის. წვდომის გასაღებები წარმოადგენს შესვლის სწრაფ და უსაფრთხო გზას და ისინი ინახება Google პაროლების მმართველში <ph name="USER" />-ისთვის. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Linux-ისთვის რეკომენდებულია მინიმუმ <ph name="DISK_SIZE" />. მეხსიერების გათავისუფლება შეგიძლიათ მოწყობილობიდან ფაილების წაშლით.</translation>
 <translation id="7037157058268992880">PIN-კოდი დამავიწყდა</translation>
 <translation id="7037509989619051237">გადასახედი ტექსტი</translation>
@@ -10145,6 +10150,7 @@
 <translation id="8195854162863398249">გაითიშოს „<ph name="FEATURE_NAME" />“</translation>
 <translation id="8195920051450756553">დაყოვნება იმავე კლავიშის აქტივაციამდე</translation>
 <translation id="8197673340773315084">დაამატეთ სახელი ან ლეიბლი, მაგალითად, „სამსახურის“ ან „პირადი“</translation>
+<translation id="8198181050118789419">თემა: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">მიმდინარეობს ჩანართის ტრანსლირება</translation>
 <translation id="8199300056570174101">ქსელის (სერვისი) და მოწყობილობის მახასიათებლები</translation>
 <translation id="8200772114523450471">გაგრძელება</translation>
@@ -10555,6 +10561,7 @@
 <translation id="8477178913400731244">მონაცემების წაშლა</translation>
 <translation id="8477241577829954800">შეცვლილი</translation>
 <translation id="8477384620836102176">ძ&amp;ირითადი</translation>
+<translation id="8477446666255316832">შემდეგ ჯერზე უფრო სწრაფად შედით სისტემაში</translation>
 <translation id="8479176401914456949">კოდი არასწორია. ცადეთ ხელახლა.</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" />-ის უცნობი მოწყობილობა</translation>
 <translation id="8481187309597259238">USB-ის ნებართვის დადასტურება</translation>
@@ -11401,6 +11408,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB მაუსი შეერთებულია</translation>
 <translation id="9075413375877487220">გაძლიერებული Safe Browsing არ ენდობა ამ გაფართოებას.</translation>
+<translation id="9075985558450420812">შეიყვანეთ მორგებული მოთხოვნა ან გამოყავით ტექსტი, რომ შექმნათ სურათი.</translation>
 <translation id="9076523132036239772">სამწუხაროდ, თქვენი ელფოსტის ან პაროლის გადამოწმება ვერ მოხერხდა. ჯერ სცადეთ დაუკავშირდეთ ქსელს.</translation>
 <translation id="9076821103818989526">გვერდითი პანელი</translation>
 <translation id="9076977315710973122">გაზიარება SMB პროტოკოლით</translation>

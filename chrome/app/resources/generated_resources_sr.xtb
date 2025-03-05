@@ -1707,7 +1707,6 @@
 <translation id="2178545675770638239">Изаберите лозинку</translation>
 <translation id="2178585470774851578">Омогућавате Chrome OS Flex функције за отклањање грешака које ће подесити sshd системску услугу и омогућити укључивање са USB дискова.</translation>
 <translation id="2178614541317717477">CA је компромитован</translation>
-<translation id="2179850495466791921">Тренутно имате <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> и друго</translation>
 <translation id="2180620921879609685">да блокира садржај на било којој страници</translation>
 <translation id="2181821976797666341">Смернице</translation>
 <translation id="2182058453334755893">Копирано је у привремену меморију</translation>
@@ -3123,7 +3122,6 @@
 <translation id="3167562202484086668">Избриши све податке типа <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Одаберите тему која одговара вашим потребама. Да бисте променили тему, позадину, чувар екрана и друго, само додирните и задржите радну површину.</translation>
 <translation id="3170072451822350649">Можете и да прескочите пријављивање и да <ph name="LINK_START" />прегледате као гост<ph name="LINK_END" />.</translation>
-<translation id="3171499217959105722">Тренутно имате <ph name="NUMBERED_ITEM" /> и друго</translation>
 <translation id="3175067642577044620">Садржај</translation>
 <translation id="3175862692832442091">Шума</translation>
 <translation id="3176347586396987181">Користите „z“ да бисте притиснули и задржали дугме миша</translation>
@@ -3808,6 +3806,7 @@
 <translation id="3670229581627177274">Укључи Bluetooth</translation>
 <translation id="3670480940339182416">Сајтови могу да користе V8 оптимизатор</translation>
 <translation id="3671764914317109892">Користите свакодневни језик да бисте претраживали историју прегледања. Можете и да постављате питања и добијате одговоре на основу историје прегледања.</translation>
+<translation id="3671982238795754537">Сазнајте више о приступним кључевима</translation>
 <translation id="3672681487849735243">Откривена је фабричка грешка</translation>
 <translation id="3673097791729989571">Пријављивање хостује <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">PIN је ажуриран</translation>
@@ -3935,7 +3934,6 @@
 <translation id="3744219658596020825">Лозинке нису увезене</translation>
 <translation id="3745306754941902605">Кухиња</translation>
 <translation id="3747077776423672805">Да бисте уклонили апликације, идите у одељак Подешавања &gt; Google Play продавница &gt; Управљајте Android подешавањима &gt; Апликације или Менаџер апликација. Додирните апликацију коју желите да деинсталирате (можда ћете морати да превучете надесно или налево да бисте пронашли апликацију). Онда додирните Деинсталирај или Онемогући.</translation>
-<translation id="3747552357646973221">Тренутно имате <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> и друго</translation>
 <translation id="3748424433435232460">Лозинка за овај налог је већ сачувана на овом уређају</translation>
 <translation id="3748706263662799310">Пријавите грешку</translation>
 <translation id="3749724428455457489">Сазнајте више о огласима које предлаже сајт</translation>
@@ -4069,6 +4067,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Додатак је одобрен}one{# додатак је одобрен}few{# додатка су одобрена}other{# додатака је одобрено}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">За Linux се препоручује најмање <ph name="INSTALL_SIZE" /> простора.</translation>
+<translation id="3824203811509979971">Резимирајте садржај или постављајте питања</translation>
 <translation id="3824621460022590830">Токен за регистрацију уређаја је неважећи. Обратите се власнику уређаја или администратору. Кôд грешке: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Пријавите се да бисте видели картице са других уређаја</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Запамти мој избор за овај тип фајла: <ph name="FILE_TYPES" />}one{Запамти мој избор за ове типове фајлова: <ph name="FILE_TYPES" />}few{Запамти мој избор за ове типове фајлова: <ph name="FILE_TYPES" />}other{Запамти мој избор за ове типове фајлова: <ph name="FILE_TYPES" />}}</translation>
@@ -4255,6 +4254,7 @@
 <translation id="3948985214866944547">Већина људи блокира дељење прецизне локације за овај сајт</translation>
 <translation id="394984172568887996">Увезено из IE прегледача</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> да би преузимање фајлова било безбедније</translation>
+<translation id="3950479158728806902">Аутоматски направи приступни кључ да бисте се брже пријављивали</translation>
 <translation id="3950820424414687140">Пријави ме</translation>
 <translation id="3950841222883198950">Унос текста гласом</translation>
 <translation id="3953834000574892725">Моји налози</translation>
@@ -4723,6 +4723,7 @@
 <translation id="4289540628985791613">Преглед</translation>
 <translation id="428963538941819373">Ови сајтови могу да користе информације које су сачували о вама током прегледања <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Изаберите PIN</translation>
+<translation id="4290526909608432059">Подршка за Chrome апликације ће ускоро престати. Да бисте сазнали више о опцијама, обратите се програмеру апликације или тиму за ИТ подршку.</translation>
 <translation id="4290791284969893584">После затварања странице задаци које сте започели се можда неће довршити</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> члан</translation>
 <translation id="4290898381118933198">Превуците да бисте прелазили с једне странице на другу</translation>
@@ -5183,6 +5184,7 @@
 <translation id="4624054169152573743">Тема са бојом</translation>
 <translation id="4625078469366263107">Омогући апликацију</translation>
 <translation id="4625905218692741757">Подразумевана сива боја</translation>
+<translation id="4627107755957573804">Дозволите сајтовима и апликацијама да надограђују постојеће налоге како би користили приступне кључеве</translation>
 <translation id="4627442949885028695">Наставите на другом уређају</translation>
 <translation id="4628762811416793313">Подешавање Linux контејнера није довршено. Пробајте поново.</translation>
 <translation id="4629521233550547305">Отвори профил <ph name="PROFILE_NAME" /></translation>
@@ -5766,6 +5768,7 @@
 <translation id="5053233576223592551">Додај корисничко име</translation>
 <translation id="505347685865235222">Група без назива – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{Одмах то промените}one{Одмах их промените}few{Одмах их промените}other{Одмах их промените}}</translation>
+<translation id="5056587122125565772">Направи слику</translation>
 <translation id="5056950756634735043">Повезује се са контејнером</translation>
 <translation id="5057110919553308744">Када кликнете на додатак</translation>
 <translation id="5057127674016624293">Скенирање траје дуже него што је очекивано</translation>
@@ -5876,6 +5879,7 @@
 <translation id="512642543295077915">тастер за претрагу + backspace</translation>
 <translation id="5126611267288187364">Прегледајте промене</translation>
 <translation id="5127620150973591153">ИД безбедне везе: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">Резимирајте садржај или постављајте питања.</translation>
 <translation id="5127881134400491887">Управљање мрежним везама</translation>
 <translation id="5127934926273826089">Цвеће</translation>
 <translation id="5127986747308934633">Администратор контролише уређај</translation>
@@ -8518,6 +8522,7 @@
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – серијски порт је повезан</translation>
 <translation id="7033616203784997570">Унос може да има највише 62 знака</translation>
 <translation id="7034692021407794547">Администратор са привилегијама Управљање обрачуном мора прво да прихвати услове коришћења услуге за Google Meet хардвер у одељку Google Meet хардвер на администраторској конзоли.</translation>
+<translation id="7036550011779986598">Сајт <ph name="RP_ID" /> је управо направио приступни кључ за ваш налог. Приступни кључеви нуде бржи и безбеднији начин за пријављивање и чувају се у Google менаџеру лозинки за <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">За Linux се препоручује <ph name="DISK_SIZE" /> простора. Да бисте ослободили простор, избришите датотеке са уређаја.</translation>
 <translation id="7037157058268992880">Заборавио/ла сам PIN</translation>
 <translation id="7037509989619051237">Текст за преглед</translation>
@@ -10149,6 +10154,7 @@
 <translation id="8195854162863398249">Онемогући <ph name="FEATURE_NAME" /></translation>
 <translation id="8195920051450756553">Одлагање поновне активације истог тастера</translation>
 <translation id="8197673340773315084">Додајте назив или ознаку као што су Пословни или Лични</translation>
+<translation id="8198181050118789419">Тема: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Пребацује се картица</translation>
 <translation id="8199300056570174101">Својства мреже (услуга) и уређаја</translation>
 <translation id="8200772114523450471">Настави</translation>
@@ -10559,6 +10565,7 @@
 <translation id="8477178913400731244">Избриши податке</translation>
 <translation id="8477241577829954800">Замењено</translation>
 <translation id="8477384620836102176">&amp;Опште</translation>
+<translation id="8477446666255316832">Пријавите се брже следећи пут</translation>
 <translation id="8479176401914456949">Кôд је неважећи. Пробајте поново.</translation>
 <translation id="8480869669560681089">Непознат уређај произвођача <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Потврдите дозволу за USB</translation>
@@ -11407,6 +11414,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB миш је повезан</translation>
 <translation id="9075413375877487220">Побољшано безбедно прегледање не сматра овај додатак поузданим.</translation>
+<translation id="9075985558450420812">Унесите прилагођени упит или истакните текст да бисте направили слику.</translation>
 <translation id="9076523132036239772">Жао нам је, нисмо успели да верификујемо имејл адресу или лозинку. Прво покушајте да се повежете са мрежом.</translation>
 <translation id="9076821103818989526">Бочна табла</translation>
 <translation id="9076977315710973122">Дељење SMB-а</translation>

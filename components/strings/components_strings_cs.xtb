@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">Načíst stránku později</translation>
 <translation id="1010225406377140704">Kontaktujte odesílatele a požádejte ho o nový odkaz</translation>
 <translation id="1011206368273183593">Příprava souborů</translation>
+<translation id="1012264210825687872">Po kontrole objednávky se musíte přihlásit nebo si vytvořit účet <ph name="BNPL_ISSUER_NAME" />. Tento účet pak bude automaticky propojen se službou Google Pay.</translation>
 <translation id="1014509239502131234">Vracení výsledku zpět</translation>
 <translation id="1015730422737071372">Zadejte další podrobnosti</translation>
 <translation id="1019413721762100891">Vypnuto</translation>
@@ -660,6 +661,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2145193671493396738">Ekonomické zprávy</translation>
 <translation id="214556005048008348">Zrušit platbu</translation>
 <translation id="2147117373852943630">Hudební nástroje</translation>
+<translation id="2147254250314124496">Web <ph name="EMBEDDED_URL" /> chce použít informace, které si o vás uložil</translation>
 <translation id="2148613324460538318">Přidat kartu</translation>
 <translation id="2148716181193084225">Dnes</translation>
 <translation id="2149968176347646218">Připojení není zabezpečené</translation>
@@ -691,6 +693,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2187317261103489799">Rozpoznat (výchozí)</translation>
 <translation id="2188375229972301266">Několik děr dole</translation>
 <translation id="2194856509914051091">Co je třeba zvážit</translation>
+<translation id="2198071643181968308">Další informace o službě <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="2200678913752027654">Tlačítko Palec dolů, stisknutím klávesy Enter otevřete formulář k odeslání podrobné zpětné vazby, proč se vám tenhle návrh nelíbí</translation>
 <translation id="2202627062836089804">zadní strana karty</translation>
 <translation id="2204482073374652408">Aktualizace byla dokončena!</translation>
@@ -2314,6 +2317,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome potřebuje přístup k tomuto prostředku vašeho zařízení: <ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">Lepenka (s uzavřenými okraji)</translation>
+<translation id="5106648964679263509">Byla vyplněna virtuální karta pro <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="5108881358339761672">Web není bezpečný</translation>
 <translation id="5109892411553231226">Spravovat platební metody</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2509,6 +2513,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
             <ph name="LIST_ITEM" />údaje zadané do formulářů.
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Obrácené pořadí lícem nahoru</translation>
+<translation id="5445340838622821110">Při placení se vyplní jednorázové číslo virtuální karty. Toto číslo platí jen pro tento nákup. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Povolit webu <ph name="SITE" /> používat informace, které si o vás uložil</translation>
 <translation id="5452270690849572955">Tuto stránku na webu <ph name="HOST_NAME" /> nelze najít</translation>
 <translation id="5452923259299906094">Platit pomocí elektronické peněženky a služby Pix</translation>
@@ -3327,6 +3332,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6917795328362592458">Právě použité heslo bylo nalezeno na seznamu hesel uniklých při incidentu porušení zabezpečení údajů. K zabezpečení vašich účtů doporučuje Správce hesel zkontrolovat uložená hesla.</translation>
 <translation id="6917873303492266709">Pokud chcete sdílet skupiny karet, připojovat se k nim a spolupracovat na nich, otevřete nastavení a zapněte možnost Povolit přihlášení do Chromu</translation>
 <translation id="6921197121276419421">Instalace webových aplikací byla povolena</translation>
+<translation id="69238565902785824">Když účet necháte připojený, budete moct pomocí služby <ph name="BNPL_ISSUER_NAME" /> platit rychleji, ale na stránce <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /> ho můžete odpojit</translation>
 <translation id="6924013822850225188">Vyberte, zda při placení chcete zobrazit výhody karty (platí bankovní podmínky)</translation>
 <translation id="6925267999184670015">Severoamerická B+</translation>
 <translation id="6926216138694948720">Zdobení těla</translation>
@@ -3392,6 +3398,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="701757816833614688">Vzdělávání ve výtvarném umění a designu</translation>
 <translation id="702275896380648118">Tento web určuje, co se vám líbí, a pak navrhuje reklamy jiným webům. Tento web také získává témata reklam z Chromu, aby vám mohl zobrazovat relevantnější reklamy.</translation>
 <translation id="7023162328967545559">Upozornění administrátora</translation>
+<translation id="7023765275461720661">Připojit účet a zaplatit pomocí služby <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Hesla</translation>
 <translation id="7030164307377592766">upravit nastavení vyplňování platebních metod</translation>
 <translation id="7031646650991750659">Které aplikace Google Play máte nainstalované</translation>
@@ -3613,6 +3620,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="741204030948306876">Ano</translation>
 <translation id="7416351320495623771">Spravovat hesla…</translation>
 <translation id="7416898721136759658">Granty, stipendia a finanční pomoc</translation>
+<translation id="741772962178517671">Potvrdit</translation>
 <translation id="7418620734632363981">Programování</translation>
 <translation id="7419091773564635591">Počítače a elektronika</translation>
 <translation id="7419106976560586862">Cesta k profilu</translation>
@@ -3659,6 +3667,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7485085230273446323">Obchod a průmysl</translation>
 <translation id="7485870689360869515">Nebyla nalezena žádná data.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> ověří vaši způsobilost (výsledek neovlivní vaše kreditní skóre). V případě schválení vám <ph name="BNPL_ISSUER_NAME" /> nabídne různé možnosti platebních tarifů k dokončení nákupu.</translation>
 <translation id="7489392576326061356">Šampony a kondicionéry</translation>
 <translation id="7495528107193238112">Tento obsah je blokován. Požádejte vlastníka webu, aby tento problém vyřešil.</translation>
 <translation id="749865518782565832">Vodoinstalace</translation>

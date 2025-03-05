@@ -1720,7 +1720,6 @@
 <translation id="2178545675770638239">비밀번호 선택</translation>
 <translation id="2178585470774851578">sshd 데몬을 설정하고 USB 드라이브에서 부팅할 수 있도록 하는 ChromeOS Flex 디버깅 기능을 사용 설정합니다.</translation>
 <translation id="2178614541317717477">CA 손상</translation>
-<translation id="2179850495466791921">현재 <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> 등이 있습니다.</translation>
 <translation id="2180620921879609685">모든 페이지에서 콘텐츠 차단</translation>
 <translation id="2181821976797666341">정책</translation>
 <translation id="2182058453334755893">클립보드에 복사됨</translation>
@@ -3140,7 +3139,6 @@
 <translation id="3167562202484086668">모든 <ph name="BRAND" /> 데이터 삭제</translation>
 <translation id="3169930038976362151">나에게 적합한 테마를 선택하세요. 바탕화면에서 길게 터치하면 테마, 배경화면, 화면 보호기 등을 변경할 수 있습니다.</translation>
 <translation id="3170072451822350649">로그인을 건너뛰고 <ph name="LINK_START" />게스트로 로그인<ph name="LINK_END" />할 수도 있습니다.</translation>
-<translation id="3171499217959105722">현재 <ph name="NUMBERED_ITEM" /> 등이 있습니다.</translation>
 <translation id="3175067642577044620">본문</translation>
 <translation id="3175862692832442091">숲</translation>
 <translation id="3176347586396987181">마우스 버튼을 길게 누르려면 'z' 키를 사용하세요.</translation>
@@ -3952,7 +3950,6 @@
 <translation id="3744219658596020825">비밀번호를 가져오지 못했습니다.</translation>
 <translation id="3745306754941902605">주방</translation>
 <translation id="3747077776423672805">앱을 삭제하려면 설정 &gt; Google Play 스토어 &gt; Android 환경설정 관리 &gt; 앱 또는 애플리케이션 관리자로 이동합니다. 그런 다음 제거하려는 앱을 탭합니다(앱을 찾으려면 오른쪽이나 왼쪽으로 스와이프해야 할 수 있음). 그런 다음 제거 또는 사용 중지를 탭합니다.</translation>
-<translation id="3747552357646973221">현재 <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> 등이 있습니다.</translation>
 <translation id="3748424433435232460">이 계정의 비밀번호가 기기에 이미 저장되어 있습니다.</translation>
 <translation id="3748706263662799310">버그 신고</translation>
 <translation id="3749724428455457489">사이트 추천 광고에 관해 자세히 알아보기</translation>
@@ -4086,6 +4083,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{확장 프로그램 1개 승인됨}other{확장 프로그램 #개 승인됨}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux를 사용하려면 최소 <ph name="INSTALL_SIZE" />의 여유 공간이 권장됩니다.</translation>
+<translation id="3824203811509979971">콘텐츠를 요약하거나 질문하세요</translation>
 <translation id="3824621460022590830">기기 등록 토큰이 잘못되었습니다. 기기 소유자 또는 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="3824757763656550700">다른 기기의 탭을 보려면 로그인하세요.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{<ph name="FILE_TYPES" /> 파일 형식에 대한 내 선택사항 기억하기}other{<ph name="FILE_TYPES" /> 파일 형식에 대한 내 선택사항 기억하기}}</translation>
@@ -4272,6 +4270,7 @@
 <translation id="3948985214866944547">대부분의 사용자가 이 사이트의 정확한 위치 공유를 차단합니다</translation>
 <translation id="394984172568887996">IE에서 가져온 북마크</translation>
 <translation id="3949999964543783947">파일을 더 안전하게 다운로드하려면 <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
+<translation id="3950479158728806902">패스키를 자동으로 생성하여 더 빠르게 로그인</translation>
 <translation id="3950820424414687140">로그인</translation>
 <translation id="3950841222883198950">음성 입력</translation>
 <translation id="3953834000574892725">내 계정</translation>
@@ -5199,6 +5198,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4624054169152573743">색상 테마</translation>
 <translation id="4625078469366263107">앱 사용</translation>
 <translation id="4625905218692741757">회색 기본 색상</translation>
+<translation id="4627107755957573804">사이트 및 앱에서 기존 계정을 업그레이드하여 패스키를 사용하도록 허용</translation>
 <translation id="4627442949885028695">다른 기기에서 계속</translation>
 <translation id="4628762811416793313">Linux 컨테이너 설정이 완료되지 않았습니다. 다시 시도해 주세요.</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> 프로필 열기</translation>
@@ -5782,6 +5782,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5053233576223592551">사용자 이름 추가</translation>
 <translation id="505347685865235222">이름이 지정되지 않은 그룹 - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{지금 변경해야 합니다}other{지금 변경해야 합니다}}</translation>
+<translation id="5056587122125565772">이미지 만들기</translation>
 <translation id="5056950756634735043">컨테이너에 연결 중입니다.</translation>
 <translation id="5057110919553308744">확장 프로그램을 클릭할 경우</translation>
 <translation id="5057127674016624293">스캔이 예상보다 오래 걸리고 있음</translation>
@@ -5892,6 +5893,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="512642543295077915">검색 + 백스페이스</translation>
 <translation id="5126611267288187364">변경사항 보기</translation>
 <translation id="5127620150973591153">보안 연결 ID: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">콘텐츠를 요약하거나 질문하세요.</translation>
 <translation id="5127881134400491887">네트워크 연결 관리</translation>
 <translation id="5127934926273826089">꽃</translation>
 <translation id="5127986747308934633">관리자가 내 기기를 제어하는 중임</translation>
@@ -10162,6 +10164,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> 사용 안함</translation>
 <translation id="8195920051450756553">동일한 키를 다시 활성화하기 전 지연</translation>
 <translation id="8197673340773315084">'직장', '개인'과 같은 이름 또는 라벨 추가</translation>
+<translation id="8198181050118789419">테마: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">탭 전송 중</translation>
 <translation id="8199300056570174101">네트워크(서비스) 및 기기 속성</translation>
 <translation id="8200772114523450471">다시 시작</translation>
@@ -11418,6 +11421,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9074739597929991885">블루투스</translation>
 <translation id="9074836595010225693">USB 마우스 연결됨</translation>
 <translation id="9075413375877487220">향상된 세이프 브라우징에서 신뢰하지 않는 확장 프로그램입니다.</translation>
+<translation id="9075985558450420812">맞춤 프롬프트를 입력하거나 텍스트를 강조 표시하여 이미지를 만드세요.</translation>
 <translation id="9076523132036239772">이메일이나 비밀번호를 확인할 수 없습니다. 먼저 네트워크에 연결해 주세요.</translation>
 <translation id="9076821103818989526">측면 패널</translation>
 <translation id="9076977315710973122">SMB 공유</translation>

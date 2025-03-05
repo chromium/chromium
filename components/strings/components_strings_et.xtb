@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">Laadi leht hiljem</translation>
 <translation id="1010225406377140704">Võtke uue lingi küsimiseks ühendust saatjaga</translation>
 <translation id="1011206368273183593">Failide ettevalmistamine</translation>
+<translation id="1012264210825687872">Kui olete tellimuse üle vaadanud, peate teenuse <ph name="BNPL_ISSUER_NAME" /> kontole sisse logima või konto looma. See konto lingitakse automaatselt Google Payga.</translation>
 <translation id="1014509239502131234">Tulemuse tagasivõtmine</translation>
 <translation id="1015730422737071372">Esitage lisateavet</translation>
 <translation id="1019413721762100891">Väljas</translation>
@@ -251,6 +252,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1419305130220238697">Nupp Chrome'i allalaadimiste haldamine, aktiveerige nupp Chrome'is allalaaditud failide haldamiseks</translation>
 <translation id="1420345875188552368">Selle makse tegemiseks võidakse kasutada teie salvestatud automaatmakse viisi. E-rahakottide väljalülitamiseks Chrome'is avage oma <ph name="BEGIN_LINK1" />makseseaded<ph name="END_LINK1" />.</translation>
 <translation id="1420920093772172268">Sidumise lubamiseks <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="1421484961346698724">Kustutatud konto</translation>
 <translation id="14222610277930434">Külastate sageli</translation>
 <translation id="1422930527989633628">Saab küsida luba läheduses asuvate Bluetooth-seadmete tuvastamiseks</translation>
 <translation id="1426410128494586442">Jah</translation>
@@ -692,6 +694,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2187317261103489799">Tuvasta (vaikimisi)</translation>
 <translation id="2188375229972301266">Mitu auku all</translation>
 <translation id="2194856509914051091">Olulised aspektid</translation>
+<translation id="2198071643181968308">Lisateave teenuse <ph name="BNPL_ISSUER_NAME" /> kohta</translation>
 <translation id="2200678913752027654">Nupp Ei meeldi; vajutage sisestusklahvi, et avada tagasiside vorm, kus saate üksikasjalikult põhjendada, miks soovitus teile ei meeldi</translation>
 <translation id="2202627062836089804">kaardi tagaküljel</translation>
 <translation id="2204482073374652408">Värskendamine lõpetatud!</translation>
@@ -2319,6 +2322,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome'ile on vajalik teie seadme <ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">Papp (suletud otsad)</translation>
+<translation id="5106648964679263509">Teenuse <ph name="BNPL_ISSUER_NAME" /> virtuaalkaart on täidetud</translation>
 <translation id="5108881358339761672">Sait pole turvaline</translation>
 <translation id="5109892411553231226">Makseviiside haldamine</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2514,6 +2518,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
             <ph name="LIST_ITEM" />vormidesse sisestatud teavet
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Vastupidine järjestus, esikülg ülespoole</translation>
+<translation id="5445340838622821110">Aja jooksul makseid tehes täidetakse ühekordne virtuaalkaardi number. See number kehtib ainult selle ostu korral. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Lubage saidil <ph name="SITE" /> kasutada teavet, mille on teie kohta salvestanud</translation>
 <translation id="5452270690849572955">Hosti <ph name="HOST_NAME" /> lehte ei leita</translation>
 <translation id="5452923259299906094">Maksmine e-rahakoti ja Pixiga</translation>
@@ -3334,6 +3339,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6917795328362592458">Äsja kasutatud parool leiti andmetega seotud rikkumisest. Teie kontode turvalisuse kaitsmiseks soovitab Paroolihaldur teil kontrollida oma salvestatud paroole.</translation>
 <translation id="6917873303492266709">Vahelehegruppide jagamiseks, nendega liitumiseks ja nendes koos töötamiseks avage seaded ja lülitage sisse valik Luba Chrome'i sisselogimine</translation>
 <translation id="6921197121276419421">Veebirakenduste installimine on lubatud</translation>
+<translation id="69238565902785824">Konto lingituna hoidmine võimaldab teenusega <ph name="BNPL_ISSUER_NAME" /> kiiremini maksta, aga kui soovite linkimise tühistada, minge saidile <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /></translation>
 <translation id="6924013822850225188">Valige, kas näete kassas oma kaardi eeliseid (kehtivad pangatingimused)</translation>
 <translation id="6925267999184670015">Põhja-Ameerika B+</translation>
 <translation id="6926216138694948720">Kehamaalingud</translation>
@@ -3399,6 +3405,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="701757816833614688">Visuaalse kunsti ja disaini haridus</translation>
 <translation id="702275896380648118">See sait tuvastab asjad, mis teile meeldivad, ja soovitab seejärel teistele saitidele reklaame. Samuti hangib see sait Chrome'ist teie reklaamiteemad, et näidata teile asjakohasemaid reklaame.</translation>
 <translation id="7023162328967545559">Administraatori hoiatus</translation>
+<translation id="7023765275461720661">Kas linkida konto ja maksta teenusega <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Paroolid</translation>
 <translation id="7030164307377592766">muuda makseviiside sisestamise seadeid</translation>
 <translation id="7031646650991750659">Millised Google Play rakendused olete installinud</translation>
@@ -3621,6 +3628,7 @@ Lisateave:
 <translation id="741204030948306876">Jah, sobib</translation>
 <translation id="7416351320495623771">Halda paroole …</translation>
 <translation id="7416898721136759658">Uurimistoetused, stipendiumid ja rahaline abi</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">Programmeerimine</translation>
 <translation id="7419091773564635591">Arvutid ja elektroonika</translation>
 <translation id="7419106976560586862">Profiili tee</translation>
@@ -3667,6 +3675,7 @@ Lisateave:
 <translation id="7485085230273446323">Ettevõtlus ja tööstus</translation>
 <translation id="7485870689360869515">Andmeid ei leitud.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> kontrollib teie sobilikkust (see ei mõjuta teie krediidiskoori). Kui see kinnitatakse, pakub <ph name="BNPL_ISSUER_NAME" /> teile makseplaane, mille vahel saate valida ja ostu lõpule viia.</translation>
 <translation id="7489392576326061356">Šampoonid ja palsamid</translation>
 <translation id="7495528107193238112">See sisu on blokeeritud. Probleemi lahendamiseks võtke ühendust saidi omanikuga.</translation>
 <translation id="749865518782565832">Torutööd</translation>

@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Heimnetzwerk, kein Roaming</translation>
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1328223165223065150">Hintergrundfarbe</translation>
+<translation id="1329478709358066995">Transkript:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">An Scanbereich anpassen</translation>
 <translation id="1343442362630695901">Salzsee</translation>
@@ -1129,7 +1130,6 @@
 <translation id="6325525973963619867">Fehlgeschlagen</translation>
 <translation id="6327262166342360252">Dieser Hintergrund wurde mit KI anhand des Prompts „<ph name="PROMPT" />“ erstellt.</translation>
 <translation id="6331191339300272798">Automatisches dunkles Design</translation>
-<translation id="6335228876613776082">Modell heruntergeladen</translation>
 <translation id="6340526405444716530">Personalisierung</translation>
 <translation id="6348252528297699679">Du kannst die Standortermittlung deaktivieren, indem du die Einstellungen &gt; „Datenschutz und Sicherheit“ &gt; „Datenschutzeinstellungen“ &gt; „Standortzugriff“ aufrufst. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Nutzername und Passwort</translation>
@@ -1274,6 +1274,7 @@
 <translation id="6930597342185648547">Informationen zum Hintergrund</translation>
 <translation id="6939667434404433010">Aufnahme suchen</translation>
 <translation id="6939766318048400022">Café</translation>
+<translation id="6942253772720771875">Gib uns Feedback oder beschreibe das Problem</translation>
 <translation id="6943893908656559156">Remote-Identität (optional)</translation>
 <translation id="6953137545147683679">goldenen</translation>
 <translation id="6957231940976260713">Name des Dienstes</translation>
@@ -1598,6 +1599,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8395584934117017006">Dieses Gerät (<ph name="DEVICE_TYPE" />) wird von einem Unternehmen verwaltet</translation>
 <translation id="8398927464629426868">Die Stromstärke, mit der das Gerät momentan geladen oder entladen wird</translation>
 <translation id="8403988360557588704">Gemälde von „<ph name="ART_FEATURE" />“ in der Stilrichtung <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">Generierte Zusammenfassung:</translation>
 <translation id="8410244574650205435">Automatisch erkannt</translation>
 <translation id="8420955526972171689">Tests und Fehlerbehebungsschritte bei Hardwareproblemen</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1644,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8626489604350149811">Weitere Aktionen für „<ph name="APN_NAME" />“</translation>
 <translation id="86356131183441916">Hellviolett</translation>
 <translation id="8647595191512746911">Audiotranskript</translation>
+<translation id="8648578954147795914">Generierte Namen:</translation>
 <translation id="8650852232143958317">Gmail- und Google Drive-Dateien mitnehmen</translation>
 <translation id="8651481478098336970">Stummschalten</translation>
 <translation id="8655295600908251630">Kanal</translation>
@@ -1670,7 +1673,6 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Fotos-Album</translation>
 <translation id="8775713578693478175">Modem‑APN</translation>
-<translation id="877735394245039557">Modell wird heruntergeladen</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Dieses Netzwerk hat möglicherweise ein Captive Portal</translation>
 <translation id="8797082062139985406">Name mit Google AI erstellen</translation>
@@ -1784,6 +1786,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="9218016617214286986">Bekannte APNs anzeigen</translation>
 <translation id="932327136139879170">Startseite</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Prüfe, ob das Mikrofon angeschlossen ist, oder starte dein Chromebook neu</translation>
 <translation id="945522503751344254">Feedback geben</translation>
 <translation id="950520315903467048">Taste für „<ph name="DIRECTION" />“ fehlt. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Stimmen in der Aufnahme vergleichen, damit im Transkript korrekt wiedergegeben wird, welcher Sprecher wann spricht</translation>

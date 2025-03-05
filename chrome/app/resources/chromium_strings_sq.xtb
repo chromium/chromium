@@ -319,6 +319,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="5579324208890605088">Gabim në nisje: ekzekuto instaluesin si përdorues i rregullt, jo si administrator.</translation>
 <translation id="5596627076506792578">Më shumë opsione</translation>
 <translation id="5605834417512968703">Zgjidh çdo gjë për të kërkuar me "Kërkimin nëpërmjet imazheve" ose shtyp tastin "Escape" për të dalë nga "Kërkimi nëpërmjet imazheve"</translation>
+<translation id="5618818588972826921">Zgjidh një tekst ose imazh çfarëdo për të kërkuar me "Kërkimin i imazheve" ose shtyp tastin "Escape" për të dalë nga "Kërkimi i imazheve"</translation>
 <translation id="5623402015214259806">{0,plural, =0{Ofrohet një përditësim i Chromium}=1{Ofrohet një përditësim i Chromium}other{Një përditësim i Chromium ofrohet prej # ditësh}}</translation>
 <translation id="5643865575100044307">Fshi gjithmonë të dhënat e sajteve nga pajisja jote kur të mbyllësh Chromium</translation>
 <translation id="5653831366781983928">Rinise Chromium tani</translation>
@@ -594,5 +595,6 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="983803489796659991">Instalimi dështoi sepse serveri i përditësimit nuk ka të dhëna të hash-it për aplikacionin.</translation>
 <translation id="985498048907240953">Përdor Chromium pa pasur llogari</translation>
 <translation id="985602178874221306">Autorët e Chromium</translation>
+<translation id="989970834842471429">Zgjidh një tekst ose imazh çfarëdo për të kërkuar me "Kërkimin e imazheve"</translation>
 <translation id="992780518932311116">Për të përdorur vendndodhjen tënde, jepi Chromium qasje te <ph name="BEGIN_LINK" />cilësimet e sistemit<ph name="END_LINK" /></translation>
 </translationbundle>

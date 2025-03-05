@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">Кнопка "Управлять скачанными файлами в Chrome". Нажмите ее, чтобы управлять файлами, скачанными в Chrome.</translation>
 <translation id="1420345875188552368">Для этого платежа можно использовать сохраненный способ автоматической оплаты. Чтобы отключить электронные кошельки в Chrome, откройте <ph name="BEGIN_LINK1" />платежные настройки<ph name="END_LINK1" />.</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, чтобы разрешить подключение</translation>
+<translation id="1421484961346698724">Аккаунт удален</translation>
 <translation id="14222610277930434">Часто посещаете</translation>
 <translation id="1422930527989633628">Разрешено отправлять запрос на поиск устройств Bluetooth поблизости</translation>
 <translation id="1426410128494586442">Да</translation>
@@ -661,6 +662,7 @@
 <translation id="2145193671493396738">Экономические новости</translation>
 <translation id="214556005048008348">Отменить оплату</translation>
 <translation id="2147117373852943630">Музыкальные инструменты</translation>
+<translation id="2147254250314124496">Сайт <ph name="EMBEDDED_URL" /> запрашивает разрешение на использование сохраненной информации о вас</translation>
 <translation id="2148613324460538318">Добавить карту</translation>
 <translation id="2148716181193084225">Сегодня</translation>
 <translation id="2149968176347646218">Подключение не защищено</translation>

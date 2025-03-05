@@ -22,6 +22,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1058009965971887428">Fikr-mulohaza yuborish</translation>
 <translation id="1059120031266247284">Sizga ulashilgan</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> va olib tashlash tugmasi</translation>
 <translation id="1062407476771304334">Almashtirish</translation>
 <translation id="1073899992769346247">Batareyani almashtiring yoki quvvatlang</translation>
 <translation id="1081015718268701546">Linux ilovalari hozirda ishlamaydi. Boshqa ilovalar saqlanadi.</translation>
@@ -323,6 +324,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2083190527011054446">Xayrli tun, <ph name="GIVEN_NAME" /></translation>
 <translation id="2086334242442703436">Emoji tanlagichni ochish</translation>
 <translation id="2088116547584365419">oʻyinlar</translation>
+<translation id="2092517835716911174">Oʻqishda yordam va matn yordamchisi funksiyalaridan foydalanish uchun 18 yoshga kirgan boʻlishingiz lozim.</translation>
 <translation id="209965399369889474">Tarmoqqa ulanmagan</translation>
 <translation id="2107581415810719320">Boshqa tugma: <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C kabelingiz Thunderbolt qurilmalar bilan ishlamaydi. Qurilma samaradorligi cheklanishi mumkin.</translation>
@@ -1228,6 +1230,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="5043679421800073804">Paneldagi oxirgi belgi ustiga bosish</translation>
 <translation id="504465286040788597">Avvalgi xatboshi</translation>
 <translation id="5045550434625856497">Parol noto‘g‘ri</translation>
+<translation id="5056587122125565772">Rasm yaratish</translation>
 <translation id="5058794129231928255">Google Doc hujjati yaratilmadi</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Ovozsiz rejimda gapirsangiz ham bildirishnoma olasiz. Audio faqat qurilmada saqlanadi.</translation>
@@ -1276,6 +1279,7 @@ Klaviatura tezkor tugmalaridan foydalanishingiz ham mumkin. Avval matnni belgila
 <translation id="5222676887888702881">Tizimdan chiqish</translation>
 <translation id="5228195526683428788">Ekranni ikkiga ajratish chizigʻi</translation>
 <translation id="5229343007215035173">Maxfiylik ekranini yoqish/oʻchirish</translation>
+<translation id="5229860525743792999">Taklif etilgan guruhdan <ph name="ITEM_LABEL" /> elementini olib tashlash</translation>
 <translation id="5230516054153933099">Oyna</translation>
 <translation id="5234764350956374838">Yopish</translation>
 <translation id="523505283826916779">Qulayliklar sozlamalari</translation>
@@ -1758,6 +1762,7 @@ yangi oʻrnatilgan</translation>
 <translation id="6757237461819837179">Hech narsa ijro qilinmayapti</translation>
 <translation id="6760438044935091345">Oʻyin boshqaruv paneli</translation>
 <translation id="6768043681523654438">xotira</translation>
+<translation id="6769195697113506406">Rasm joylandi</translation>
 <translation id="6777216307882431711">Ulangan USB-C qurilmalar quvvatlanmoqda</translation>
 <translation id="6781002679438061620">Desk 9</translation>
 <translation id="6782182743534150858">Desk 13</translation>
@@ -1984,6 +1989,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="7571361473021531288">Batareya: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> qoldi</translation>
 <translation id="7573585051776738856">Faol oyna oʻngga mahkamlandi.</translation>
 <translation id="7579778809502851308">Ekranni suratga olish</translation>
+<translation id="7588317312481506627">Vaqtinchalik xotiraga nusxalandi.</translation>
 <translation id="7593891976182323525">Search yoki Shift</translation>
 <translation id="7598054670902114203">CPU sarfi, <ph name="CPU_USEAGE" />%. Harorat: <ph name="TEMPERATURE" /> gradus (selsiy), joriy tezlik: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="7599378375976398913">Tanlangan natija joylanmoqda</translation>
@@ -2178,6 +2184,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> axborot oynasini ochish</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> ishlatilmoqda</translation>
 <translation id="8168435359814927499">Kontent</translation>
+<translation id="81817143961839203">Rasm joylanmadi</translation>
 <translation id="8185090165691050712">Qulflash rejimi oʻlchamini oʻzgartirish uchun menyuni koʻrsatish yoki yashirish</translation>
 <translation id="8192727139462702395">Bluetooth sozlamasi oʻchganda ushbu tashqi qurilmalar <ph name="DEVICE_TYPE" /> qurilmangizdan uziladi:</translation>
 <translation id="8198456017687137612">Translatsiya varagʻi</translation>
@@ -2256,6 +2263,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8473301994082929012"><ph name="FEATURE_NAME" /> funksiyasi <ph name="ORGANIZATION_NAME" /> tomonidan <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Bekor qilish uchun Alt+Qidiruv yoki Shift tugmasini bosing.</translation>
 <translation id="8480418399907765580">Asboblar panelini chiqarish</translation>
+<translation id="8487660088084188539">Bu funksiyalar yoqilsa, kiritilgan matn, hujjat kontenti va veb sahifalarning URL manzili Google serverlariga yuboriladi. Bu maʼlumotlar yozish takliflari, xulosalar va savollarga javob yaratish hamda mahsulotni yaxshilash maqsadida ishlatiladi va bunda <ph name="LINK_TO_SERVICE_TERMS" /> amal qiladi. Shaxsiy va maxfiy axborotlarni yubormang.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Havolani yangi varaqda ochish</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> aniqlik darajasida ishlamaydi. Aniqlik darajasi <ph name="FALLBACK_RESOLUTION" /> ga qaytarildi. Tasdiqlash uchun bosing. Eski sozlamalar <ph name="TIMEOUT_SECONDS" /> dan keyin tiklanadi.</translation>
@@ -2325,6 +2333,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8725066075913043281">Qayta urinib ko‘ring</translation>
 <translation id="8725214031272624704">Mavjud kiritish usullari roʻyxati</translation>
 <translation id="8730621377337864115">Tayyor</translation>
+<translation id="8731188831050207755"><ph name="FILE_NAME" /> yuklab olinmadi.</translation>
 <translation id="8731487213223706745">Tugash vaqti: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Bu bosilayotgan tugmalarni kuzatish urinishi bo‘lishi mumkin.</translation>
 <translation id="8735678380411481005">Klaviatura orqa chirogʻi rangi</translation>

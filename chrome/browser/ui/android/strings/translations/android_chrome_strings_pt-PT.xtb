@@ -107,6 +107,7 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="1413446866325418126">Guarde os dados na sua Conta Google</translation>
 <translation id="1414981605391750300">A contactar a Google… Isto pode demorar um pouco…</translation>
 <translation id="1416550906796893042">Versão da aplicação</translation>
+<translation id="1416582024052267068">Mantenha o acesso às suas palavras-passe</translation>
 <translation id="1419753403124156396">Reiniciar o Chrome?</translation>
 <translation id="1428770807407000502">Desativar a sincronização?</translation>
 <translation id="1430915738399379752">Imprimir</translation>
@@ -269,6 +270,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2259659629660284697">Exportar palavras-passe</translation>
 <translation id="2276696007612801991">Inicie sessão na sua Conta Google para verificar as suas palavras-passe.</translation>
 <translation id="2278052315791335171">Eliminar esta palavra-passe não elimina a sua conta em <ph name="SITE" />.</translation>
+<translation id="2281243904606300427"><ph name="TAB_TITLE" />, separador de navegação anónima selecionado</translation>
 <translation id="2286841657746966508">Endereço de faturação</translation>
 <translation id="228704530595896923">Lista de opções de partilha.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Veja <ph name="TABS_COUNT_ONE" /> separador}other{Veja <ph name="TABS_COUNT_MANY" /> separadores}}</translation>
@@ -328,6 +330,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> itens eliminados</translation>
 <translation id="253498598929009420">O site vai poder ver o conteúdo do seu ecrã</translation>
 <translation id="2536728043171574184">Visualização de uma cópia offline desta página</translation>
+<translation id="2542548955756682219"><ph name="TAB_TITLE" />, separador</translation>
 <translation id="2546283357679194313">Cookies e dados de Web sites</translation>
 <translation id="2547843573592965873">O bloqueio do perfil mantém as suas informações seguras no carro, incluindo palavras-passe, pagamentos e muito mais, guardadas na sua Conta Google.</translation>
 <translation id="254973855621628293">Palavras-passe guardadas neste dispositivo</translation>
@@ -471,6 +474,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 palavra-passe e outros itens são guardados apenas neste dispositivo. Para usá-los nos seus outros dispositivos, guarde-os na sua Conta Google, <ph name="ACCOUNT_EMAIL" />.}other{# palavras-passe e outros itens são guardados apenas neste dispositivo. Para usá-los nos seus outros dispositivos, guarde-os na sua Conta Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="3187472288455401631">Medição de anúncios</translation>
+<translation id="3189635831478931757">Grupo de separadores <ph name="GROUP_TITLE" /></translation>
 <translation id="3207960819495026254">Adicionado aos marcadores</translation>
 <translation id="3208584281581115441">Rever agora</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> eliminado</translation>
@@ -515,6 +519,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="342220687432920852">{HOURS,plural, =1{Há # h}other{Há # h}}</translation>
 <translation id="3430670036890315772">Desativar o bloqueio do perfil remove as suas informações guardadas</translation>
 <translation id="3435465986463792564">Tem muitas janelas? Pode geri-las aqui</translation>
+<translation id="3435575784518354875">Para manter o acesso às suas palavras-passe, exporte-as agora, atualize os Serviços do Google Play e, de seguida, importe-as novamente para o Gestor de Palavras-passe da Google. <ph name="BEGIN_LINK" />Veja as instruções completas<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Segurança</translation>
 <translation id="3439276997620616816">Os seus separadores recentes vão ser apresentados aqui</translation>
 <translation id="3443221991560634068">Atualizar a página atual</translation>
@@ -524,6 +529,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Pode escolher o seu motor de pesquisa.</translation>
 <translation id="3479552764303398839">Agora não</translation>
+<translation id="3487903178221457900">O ficheiro exportado pode ser acedido por outras pessoas, incluindo apps. Depois de exportar, as suas palavras-passe são eliminadas do Chrome.</translation>
 <translation id="3488199663160411179">nome</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /> acerca do conteúdo sugerido</translation>
 <translation id="3495219333887281978">Secção inferior de início de sessão aberta a meia altura.</translation>
@@ -745,6 +751,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4523326818319942067">na última hora</translation>
 <translation id="452750746583162491">Rever os dados sincronizados</translation>
 <translation id="4532845899244822526">Escolher pasta</translation>
+<translation id="4535755320005483982">Grupo de separadores <ph name="GROUP_TITLE" /> partilhado</translation>
 <translation id="4543131175509360848">Nenhuma página de chaves de acesso</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> separador}other{<ph name="TAB_COUNT_MANY" /> separadores, <ph name="TAB_COUNT_INCOGNITO" /> de navegação anónima}}</translation>
 <translation id="4558311620361989323">Atalhos da página Web</translation>
@@ -1246,6 +1253,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6756507620369789050">Partilhar feedback</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="676305334223455055">Inicie sessão para ver conteúdo com base nos seus interesses</translation>
+<translation id="6764137532716892442">Grupo de separadores <ph name="GROUP_TITLE" /> partilhado com nova atividade</translation>
 <translation id="6767294960381293877">Lista de dispositivos com os quais quer partilhar um separador aberta a meia altura.</translation>
 <translation id="6785476624617658922">Termos de Utilização Adicionais do Chrome e ChromeOS</translation>
 <translation id="6795633245022906657">Abra um novo separador rapidamente. Para editar este atalho, aceda às Definições.</translation>
@@ -1312,6 +1320,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Veja <ph name="TABS_COUNT_ONE" /> separador padrão com nova atividade em grupos de separadores partilhados}other{Veja <ph name="TABS_COUNT_MANY" /> separadores padrão com nova atividade em grupos de separadores partilhados}}</translation>
 <translation id="6971862865055170158">Não aprovar</translation>
+<translation id="6976223255612495095"><ph name="TAB_TITLE" />, separador novo ou atualizado</translation>
 <translation id="6978717888677691380">Sites que bloqueou</translation>
 <translation id="6979737339423435258">Sempre</translation>
 <translation id="6983306615164277634">Também pode tocar sem soltar na barra de endereço para alterar a posição.</translation>
@@ -1705,6 +1714,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8676276370198826499">Inscreva-se no <ph name="SITE_ETLD_PLUS_ONE" /> com o fornecedor <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Validações de início de sessão</translation>
 <translation id="8683039184091909753">imagem</translation>
+<translation id="8688183792442786085"><ph name="TAB_TITLE" />, separador selecionado</translation>
 <translation id="869891660844655955">Data de expiração</translation>
 <translation id="8699120352855309748">Não se disponibilizar para traduzir estes idiomas</translation>
 <translation id="8712637175834984815">OK</translation>
@@ -1752,6 +1762,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8937772741022875483">Remover a sua atividade do Chrome do Bem-estar digital?</translation>
 <translation id="8942627711005830162">Abrir noutra janela</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Não foi possível transferir este idioma. Tente mais tarde.</translation>
+<translation id="8957528460562961174">Para manter o acesso às suas palavras-passe, exporte-as agora e, de seguida, importe-as para o seu gestor de palavras-passe preferido. O Gestor de Palavras-passe da Google deixou de funcionar porque os Serviços do Google Play não estão disponíveis.</translation>
 <translation id="8963117664422609631">Aceda às definições do site</translation>
 <translation id="8965591936373831584">pendente</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> separador de navegação anónima e mais <ph name="TAB_COUNT_ONE" /> separador serão fechados}other{<ph name="INCOGNITO_TAB_COUNT" /> separador de navegação anónima e mais <ph name="TAB_COUNT_MANY" /> separadores serão fechados}}</translation>
@@ -1837,4 +1848,5 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="988091779042748639">Para eliminar o histórico de navegação da Navegação anónima no seu dispositivo, feche todos os separadores de navegação anónima.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> separadores</translation>
 <translation id="996149300115483134">O menu do cartão do feed está fechado.</translation>
+<translation id="99907655649633293"><ph name="TAB_TITLE" />, separador de navegação anónima</translation>
 </translationbundle>

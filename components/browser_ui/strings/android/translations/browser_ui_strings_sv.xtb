@@ -115,6 +115,7 @@
 <translation id="2677748264148917807">Lämna</translation>
 <translation id="2682367912565197520">Ta bort sparad zoomnivå</translation>
 <translation id="2683434792633810741">Vill du radera och återställa?</translation>
+<translation id="2685514716378236873">Tillåts ej</translation>
 <translation id="2713106313042589954">Stäng av kameran</translation>
 <translation id="2717722538473713889">E-postadresser</translation>
 <translation id="2726059656860238749">Starta Chrome med adressfältet i fokus för att minska starttiden på mindre avancerade enheter.</translation>
@@ -184,6 +185,7 @@
 <translation id="3628308229821498208">Föreslagna sökningar</translation>
 <translation id="3658847490588580244">Ark på nedre delen av standardwebbläsaren</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> webbplats i gruppen med webbplatser som tillhör <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}other{<ph name="RWS_MEMBERS_COUNT" /> webbplatser i gruppen med webbplatser som tillhör <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}}</translation>
+<translation id="3676777756440746804">Webbplatser hindras från att be dig använda uppgifter som de har sparat om dig</translation>
 <translation id="3697164069658504920">När detta är aktiverat kan webbplatser be om att få använda USB-enheter. När detta är inaktiverat får webbplatser inte använda USB-enheter.</translation>
 <translation id="3707034683772193706">En webbplats du besöker kan spara mycket information med Chrome, främst för att kontrollera att du inte är en bot</translation>
 <translation id="3709818294139939629">Tog bort webbplatsens åtkomst</translation>
@@ -208,9 +210,11 @@
 <translation id="3922092564198021702">Öppna Inställningar på telefonen</translation>
 <translation id="3933121352599513978">Komprimera oönskade förfrågningar (rekommenderas)</translation>
 <translation id="3955193568934677022">Tillåt att skyddat innehåll spelas upp på webbplatser (rekommenderas)</translation>
+<translation id="3965467402665811906">Webbplatser får begära tillstånd att använda uppgifter som de har sparat om dig</translation>
 <translation id="3967822245660637423">Nedladdning slutförd</translation>
 <translation id="3987993985790029246">Kopiera länk</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
+<translation id="3992308058851451478"><ph name="SITE" /> kan använda dina uppgifter när du surfar</translation>
 <translation id="3992684624889376114">Om den här sidan</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4046123991198612571">Nästa spår</translation>
@@ -263,6 +267,7 @@
 <translation id="4883854917563148705">Hanterade inställningar kan inte återställas</translation>
 <translation id="4887024562049524730">Fråga innan webbplatser tillåts att använda VR-enheter och VR-data (rekommenderas)</translation>
 <translation id="4936863036653376783">Du hittar dina grupper i avsnittet Flikgrupper på alla dina enheter</translation>
+<translation id="4945443401464700059"><ph name="SITE" /> har blockerats från att använda dina uppgifter på</translation>
 <translation id="4953688446973710931">När detta är aktiverat kan webbplatser be om att ladda ned flera filer automatiskt. När detta är inaktiverat får webbplatser inte ladda ned flera filer automatiskt.</translation>
 <translation id="4962975101802056554">Återkalla alla behörigheter för enheten</translation>
 <translation id="497421865427891073">Fortsätt</translation>
@@ -532,9 +537,11 @@
 <translation id="851751545965956758">Förhindra att webbplatser ansluter till enheter</translation>
 <translation id="8525306231823319788">Helskärm</translation>
 <translation id="8541410041357371550">Webbplatsen hämtar dina annonsämnen från Chrome för att visa mer relevanta annonser för dig</translation>
+<translation id="854876774113449365">Webbplatser du besöker kan bädda in innehåll från andra webbplatser, till exempel bilder, annonser och text. Dessa andra webbplatser kan begära tillstånd att använda uppgifter som de har sparat om dig när du surfar på webbplatsen. <ph name="BEGIN_LINK" />Läs mer om inbäddat innehåll<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Så här visar du begäranden</translation>
 <translation id="8558480467877843976">Nu kan du använda Chrome varje gång du surfar eller trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="857943718398505171">Tillåten (rekommenderas)</translation>
+<translation id="8593422116412089302">När detta är aktiverat kan webbplatser be om att få använda uppgifter som de har sparat om dig. När detta är inaktiverat får webbplatser inte be dig om att använda uppgifter som de har sparat om dig.</translation>
 <translation id="8609465669617005112">Flytta upp</translation>
 <translation id="8617611086246832542">När detta är aktiverat visas datorvyn för webbplatser. När detta är inaktiverat visas mobilvyn för webbplatser.</translation>
 <translation id="8670078035093027626">Ark på nedre delen av standardwebbläsaren har öppnats på hela skärmen</translation>

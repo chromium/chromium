@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">'Chrome-ൽ ഡൗൺലോഡുകൾ മാനേജ് ചെയ്യുക' ബട്ടൺ, Chrome-ൽ നിങ്ങൾ ഡൗൺലോഡ് ചെയ്തിരിക്കുന്ന ഫയലുകൾ മാനേജ് ചെയ്യാൻ സജീവമാക്കുക</translation>
 <translation id="1420345875188552368">നിങ്ങളുടെ സംരക്ഷിച്ച ഓട്ടോപേ രീതി ഈ പേയ്‌മെന്റിനായി ഉപയോഗിച്ചേക്കാം. Chrome-ൽ ഇ-വാലറ്റുകൾ ഓഫാക്കാൻ, നിങ്ങളുടെ <ph name="BEGIN_LINK1" />പേയ്‌മെന്റ് ക്രമീകരണത്തിലേക്ക്<ph name="END_LINK1" /> പോകുക</translation>
 <translation id="1420920093772172268">ജോടിയാക്കുന്നതിന്, <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="1421484961346698724">ഇല്ലാതാക്കിയ അക്കൗണ്ട്</translation>
 <translation id="14222610277930434">നിങ്ങൾ പതിവായി സന്ദർശിക്കുന്നത്</translation>
 <translation id="1422930527989633628">സമീപത്തുള്ള Bluetooth ഉപകരണങ്ങൾ കണ്ടെത്താൻ ആവശ്യപ്പെടുക</translation>
 <translation id="1426410128494586442">അതെ</translation>
@@ -3023,6 +3024,7 @@
 <translation id="6351658970066645919">ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കുക</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ഒന്നുമില്ല}=1{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള ഒരു പാസ്‌വേഡ് (സമന്വയിപ്പിച്ചത്)}=2{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള 2 പാസ്‌വേഡുകൾ (സമന്വയിപ്പിച്ചത്)}other{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള# പാസ്‌വേഡുകൾ (സമന്വയിപ്പിച്ചത്)}}</translation>
 <translation id="6355392890578844978">കമ്പനിയോ മറ്റേതെങ്കിലും സ്ഥാപനമോ മാനേജ് ചെയ്യുന്നതല്ല ഈ ബ്രൗസർ. ഈ ഉപകരണത്തിലെ ആക്‌റ്റിവിറ്റി Chromium-ന് പുറത്ത് മാനേജ് ചെയ്തേക്കാം. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">"<ph name="GROUP_TITLE_1" />", "<ph name="GROUP_TITLE_2" />" എന്നീ ടാബ് ഗ്രൂപ്പുകൾ ഇനി ലഭ്യമല്ല</translation>
 <translation id="6358088212770985041">പേയ്‌മെന്റ് രീതികൾ എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="6358450015545214790">ഇത് അര്‍ത്ഥമാക്കുന്നതെന്താണ്?</translation>
 <translation id="6360213755783740931">മാല്‍വെയർ പരിരക്ഷയെ കുറിച്ച് കൂടുതലറിയുക</translation>

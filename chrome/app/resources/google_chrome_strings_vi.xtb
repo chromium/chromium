@@ -279,6 +279,7 @@
 <translation id="4720851490453439956">Google Updater Internal Service</translation>
 <translation id="4724676981607797757">Không cài đặt được do lỗi giao thức không được hỗ trợ.</translation>
 <translation id="4728575227883772061">Không cài đặt được do lỗi chưa xác định. Nếu Google Chrome hiện đang chạy, vui lòng đóng Google Chrome và thử lại.</translation>
+<translation id="4737281654364167024">Để tiếp tục, hãy đăng nhập vào Chrome bằng <ph name="EMAIL" />. Việc này sẽ đảm bảo các chính sách của tổ chức bạn được áp dụng.</translation>
 <translation id="4741235124132242877">Đã ghim! Bạn có thể sử dụng lại Google Ống kính trên thanh công cụ</translation>
 <translation id="4747730611090640388">Chrome có thể ước đoán mối quan tâm của bạn.  Sau đó, trang web mà bạn truy cập có thể đề nghị Chrome cho biết mối quan tâm của bạn nhằm cá nhân hoá quảng cáo mà bạn thấy.</translation>
 <translation id="475321580758063259">Cập nhật Chrome để tiếp tục sử dụng dữ liệu Chrome trong Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn</translation>
@@ -540,6 +541,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8129812357326543296">Giới thiệu về &amp;Google Chrome</translation>
 <translation id="813913629614996137">Đang khởi chạy...</translation>
 <translation id="8162006532256575008">Dùng Chrome mà không cần tài khoản</translation>
+<translation id="8177472873527554730">Không tìm thấy nội dung trong trang</translation>
 <translation id="8221491193165283816">Bạn thường chặn các thông báo. Để cho phép trang web này thông báo cho bạn, hãy nhấp vào đây.</translation>
 <translation id="8255190535488645436">Google Chrome đang sử dụng máy ảnh và micrô của bạn.</translation>
 <translation id="8257796129973882597">Bạn có thể mở dấu trang, chế độ đọc và nhiều nội dung khác từ trình đơn Chrome</translation>
@@ -586,6 +588,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8781673607513845160">Để cho phép Chrome dùng camera, hãy cấp quyền sử dụng trong phần <ph name="BEGIN_LINK" />cài đặt hệ thống<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Lỗi cài đặt: Quản trị viên mạng của bạn đã áp dụng Chính sách nhóm ngăn chặn hoạt động cài đặt: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796073561259064743">Chrome đã chặn tệp tải xuống này vì tệp có thể gây hại cho tài khoản cá nhân và tài khoản mạng xã hội của bạn, bao gồm cả <ph name="USER_EMAIL" /></translation>
+<translation id="8798550110818026746">Tổ chức của bạn có thể xem và quản lý dữ liệu duyệt web (chẳng hạn như dấu trang, nhật ký và mật khẩu). Tổ chức không thể xem dữ liệu duyệt web trong các hồ sơ Chrome khác</translation>
 <translation id="8801657293260363985">V8 là công cụ WebAssembly và JavaScript của Chrome, có tác dụng cải thiện hiệu suất của trang web</translation>
 <translation id="8821043148920470810">Để nhận các bản cập nhật Google Chrome sau này, máy tính của bạn cần sử dụng hệ điều hành Windows 10 trở lên. Hệ điều hành hiện tại là Windows 7.</translation>
 <translation id="8823341990149967727">Chrome đã lỗi thời</translation>

@@ -319,6 +319,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="5579324208890605088">Chyba při spuštění: Spusťte instalační program jako běžný uživatel, nikoli jako administrátor.</translation>
 <translation id="5596627076506792578">Další možnosti</translation>
 <translation id="5605834417512968703">Vyberte cokoli, co chcete vyhledat pomocí Vyhledávání obrázků, nebo stisknutím klávesy Escape vyhledávání obrázků ukončete</translation>
+<translation id="5618818588972826921">Vyberte libovolný text nebo obrázek, který chcete vyhledat pomocí Vyhledávání obrázků, nebo stisknutím klávesy Escape vyhledávání obrázků ukončete</translation>
 <translation id="5623402015214259806">{0,plural, =0{Je k dispozici aktualizace prohlížeče Chromium}=1{Je k dispozici aktualizace prohlížeče Chromium}few{Již # dny je k dispozici aktualizace prohlížeče Chromium}many{Již # dne je k dispozici aktualizace prohlížeče Chromium}other{Již # dní je k dispozici aktualizace prohlížeče Chromium}}</translation>
 <translation id="5643865575100044307">Při zavření prohlížeče Chromium ze zařízení vždy vymazat data webů</translation>
 <translation id="5653831366781983928">Restartujte Chromium</translation>
@@ -594,5 +595,6 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="983803489796659991">Instalace se nezdařila, protože server s aktualizací nemá hashovací data pro aplikaci.</translation>
 <translation id="985498048907240953">Použít Chromium bez účtu</translation>
 <translation id="985602178874221306">Autoři prohlížeče Chromium</translation>
+<translation id="989970834842471429">Vyberte libovolný text nebo obrázek, který chcete vyhledat pomocí Vyhledávání obrázků</translation>
 <translation id="992780518932311116">Pokud chcete používat polohu, udělte prohlížeči Chromium přístup v <ph name="BEGIN_LINK" />nastavení systému<ph name="END_LINK" /></translation>
 </translationbundle>

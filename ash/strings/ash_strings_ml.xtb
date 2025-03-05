@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">റിപ്പോർട്ട് ചെയ്തതിന്റെ ഫീഡ്ബാക്ക്</translation>
 <translation id="1059120031266247284">നിങ്ങളുമായി പങ്കിട്ടു</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> എന്നതും നീക്കം ചെയ്യുക ബട്ടണും</translation>
 <translation id="1062407476771304334">മാറ്റിസ്ഥാപിക്കുക</translation>
 <translation id="1073899992769346247">ബാറ്ററി മാറ്റുക അല്ലെങ്കിൽ റീചാർജ് ചെയ്യുക</translation>
 <translation id="1081015718268701546">Linux ആപ്പുകൾക്ക് നിലവിൽ പിന്തുണയില്ല. മറ്റ് ആപ്പുകൾ സംരക്ഷിക്കും.</translation>
@@ -323,6 +324,7 @@
 <translation id="2083190527011054446">ഗുഡ്‌നെെറ്റ് <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">ഇമോജി പിക്കർ തുറക്കുക</translation>
 <translation id="2088116547584365419">ഗെയിമുകൾ</translation>
+<translation id="2092517835716911174">എന്നെ എഴുതാൻ സഹായിക്കൂ, എന്നെ വായിക്കാൻ സഹായിക്കൂ എന്നിവ ഉപയോഗിക്കാൻ നിങ്ങൾക്ക് 18 വയസ്സെങ്കിലും പ്രായമുണ്ടായിരിക്കണം.</translation>
 <translation id="209965399369889474">നെറ്റ്‌വർക്കിൽ കണക്‌റ്റ് ചെയ്‌തിട്ടില്ല</translation>
 <translation id="2107581415810719320">മറ്റ് ബട്ടൺ <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">നിങ്ങളുടെ USB-C കേബിൾ, Thunderbolt-നെ പിന്തുണയ്ക്കുന്നില്ല. ഉപകരണ പ്രകടനം പരിമിതപ്പെട്ടേക്കാം.</translation>
@@ -1228,6 +1230,7 @@
 <translation id="5043679421800073804">ഷെൽഫിലെ അവസാന ഐക്കണിൽ ക്ലിക്ക് ചെയ്യുക അല്ലെങ്കിൽ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="504465286040788597">മുമ്പത്തെ പാരഗ്രാഫ്</translation>
 <translation id="5045550434625856497">പാസ്‍വേഡ് തെറ്റാണ്</translation>
+<translation id="5056587122125565772">ചിത്രം സൃഷ്ടിക്കുക</translation>
 <translation id="5058794129231928255">Google Doc സൃഷ്ടിക്കാനായില്ല</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">മ്യൂട്ട് ചെയ്തിരിക്കുമ്പോൾ സംസാരിക്കുകയാണെങ്കിൽ, നിങ്ങൾക്ക് അറിയിപ്പ് ലഭിക്കും. ഓഡിയോ നിങ്ങളുടെ ഉപകരണത്തിൽ നിന്ന് ഒരിക്കലും പുറത്തുപോകില്ല.</translation>
@@ -1276,6 +1279,7 @@
 <translation id="5222676887888702881">സൈൻ ഔട്ട് ചെയ്യുക</translation>
 <translation id="5228195526683428788">സ്‌ക്രീൻ വിഭജന മോഡ് ഡിവൈഡർ</translation>
 <translation id="5229343007215035173">സ്വകാര്യതാ സ്‌ക്രീൻ ഓണാക്കുക/ഓഫാക്കുക</translation>
+<translation id="5229860525743792999">നിർദ്ദേശിച്ച ഗ്രൂപ്പിൽ നിന്ന് <ph name="ITEM_LABEL" /> നീക്കം ചെയ്യുക</translation>
 <translation id="5230516054153933099">വിന്‍‌ഡോ</translation>
 <translation id="5234764350956374838">ഡിസ്മിസ്സ് ചെയ്യുക</translation>
 <translation id="523505283826916779">ഉപയോഗസഹായി ക്രമീകരണങ്ങൾ</translation>
@@ -1758,6 +1762,7 @@
 <translation id="6757237461819837179">മീഡിയയൊന്നും പ്ലേ ചെയ്യുന്നില്ല</translation>
 <translation id="6760438044935091345">ഗെയിം ഡാഷ്ബോർഡ്</translation>
 <translation id="6768043681523654438">സ്‌റ്റോറേജ്</translation>
+<translation id="6769195697113506406">ചിത്രം ചേർത്തു</translation>
 <translation id="6777216307882431711">കണക്റ്റ് ചെയ്‍ത USB-C ഉപകരണങ്ങൾ ചാർജ് ചെയ്യുന്നു</translation>
 <translation id="6781002679438061620">ഡെസ്‌ക് 9</translation>
 <translation id="6782182743534150858">ഡെസ്‌ക് 13</translation>
@@ -1985,6 +1990,7 @@
 <translation id="7571361473021531288"><ph name="BATTERY_PERCENTAGE" />% ബാറ്ററി ചാർജ് | <ph name="TIME" /> ശേഷിക്കുന്നു</translation>
 <translation id="7573585051776738856">സജീവ വിൻഡോ വലതുവശത്ത് ഡോക്ക് ചെയ്‌തു.</translation>
 <translation id="7579778809502851308">സ്‌ക്രീൻ ക്യാപ്‌ചർ</translation>
+<translation id="7588317312481506627">ക്ലിപ്പ്‌ബോർഡിലേക്ക് പകർത്തി.</translation>
 <translation id="7593891976182323525">തിരയൽ അല്ലെങ്കിൽ Shift</translation>
 <translation id="7598054670902114203">CPU ഉപയോഗത്തിന്റെ സ്‌നാപ്പ്ഷോട്ട്, <ph name="CPU_USEAGE" />%. താപനില <ph name="TEMPERATURE" /> ഡിഗ്രി സെൽഷ്യസ്, നിലവിലെ വേഗത: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="7599378375976398913">തിരഞ്ഞെടുത്ത ഫലം ചേർക്കുന്നു</translation>
@@ -2179,6 +2185,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> എന്നതിനുള്ള വിവരങ്ങളുടെ ഡയലോഗ് തുറക്കുക</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> ഉപയോഗിക്കുന്നു</translation>
 <translation id="8168435359814927499">ഉള്ളടക്കം</translation>
+<translation id="81817143961839203">ചിത്രം ചേർക്കാനായില്ല</translation>
 <translation id="8185090165691050712">ലോക്ക് മോഡിന്റെ വലുപ്പം മാറ്റാൻ മെനു ഓണാക്കുകയോ ഓഫാക്കുകയോ ചെയ്യുക</translation>
 <translation id="8192727139462702395">നിങ്ങൾ Bluetooth ഓഫാക്കിയാൽ, ഈ ബാഹ്യ ഉപകരണങ്ങൾ നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിൽ നിന്ന് വിച്ഛേദിക്കും:</translation>
 <translation id="8198456017687137612">ടാബ് കാസ്‌റ്റ് ചെയ്യുന്നു</translation>
@@ -2257,6 +2264,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> എന്ന സ്ഥാപനം <ph name="FEATURE_NAME" /> എന്ന ഫീച്ചർ <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">റദ്ദാക്കാൻ Alt+തിരയൽ അല്ലെങ്കിൽ Shift അമർത്തുക.</translation>
 <translation id="8480418399907765580">ഉപകരണബാര്‍‌ കാണിക്കുക</translation>
+<translation id="8487660088084188539">നിങ്ങൾ ഈ ഫീച്ചറുകൾ ഓണാക്കുമ്പോൾ, ഇൻപുട്ട് ടെക്സ്റ്റ്, ഡോക്യുമെന്റിലെ ഉള്ളടക്കം, വെബ്‌പേജ് URL എന്നിവ Google സെർവറുകളിലേക്ക് അയച്ചേക്കാം. <ph name="LINK_TO_SERVICE_TERMS" /> എന്നതിന് വിധേയമായി, എഴുത്ത് നിർദ്ദേശങ്ങളും സംഗ്രഹങ്ങളും ജനറേറ്റ് ചെയ്യാനും ചോദ്യങ്ങൾക്ക് ഉത്തരം നൽകാനും ഉൽപ്പന്നങ്ങൾ മെച്ചപ്പെടുത്താനും ഈ വിവരങ്ങൾ ഉപയോഗിക്കുന്നു. വ്യക്തിപരമോ സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ടതോ രസഹ്യാത്മകമോ ആയ കാര്യങ്ങളൊന്നും ഉൾപ്പെടുത്തരുത്.</translation>
 <translation id="8487699605742506766">ഹോട്ട്‌സ്‌പോട്ട്</translation>
 <translation id="8491237443345908933">പുതിയ ടാബിൽ ലിങ്ക് തുറക്കുക</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> എന്നതിനെ പിന്തുണയ്‌ക്കുന്നില്ല. റെസല്യൂഷൻ <ph name="FALLBACK_RESOLUTION" /> എന്നതിലേക്ക് മാറ്റി. മാറ്റങ്ങൾ നിലനിർത്താൻ 'സ്ഥിരീകരിക്കുക' ക്ലിക്ക് ചെയ്യുക. മുമ്പത്തെ ക്രമീകരണം <ph name="TIMEOUT_SECONDS" /> സെക്കൻഡിൽ പുനഃസ്ഥാപിക്കും.</translation>
@@ -2326,6 +2334,7 @@
 <translation id="8725066075913043281">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="8725214031272624704">ലഭ്യമായ ഇൻപുട്ട് രീതികളുടെ ലിസ്റ്റ് കാണിക്കുക</translation>
 <translation id="8730621377337864115">പൂർത്തിയാക്കി</translation>
+<translation id="8731188831050207755"><ph name="FILE_NAME" /> ഡൗൺലോഡ് ചെയ്യാനായില്ല.</translation>
 <translation id="8731487213223706745"><ph name="END_TIME" />-ന് <ph name="DAYS_ELAPSED" /> അവസാനിക്കുന്നു</translation>
 <translation id="8734991477317290293">ഇത് നിങ്ങളുടെ കീസ്ട്രോക്കുകൾ മോഷ്‌ടിക്കാൻ ശ്രമിച്ചേക്കാം.</translation>
 <translation id="8735678380411481005">കീബോർഡ് ബാക്ക്‌ലൈറ്റ് നിറം</translation>

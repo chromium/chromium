@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">Паролата ви ще бъде запазена в мениджъра на паролите в Google за <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Отваряне на нов раздел в Chrome</translation>
 <translation id="1166460004393506534">Изтриване на данните за сърфирането в Chrome</translation>
+<translation id="1171255741903316750">Включете опцията „Заключване на разделите в режим „инкогнито“ при затваряне на Chrome“.</translation>
 <translation id="1179527450541388808">Осъществявайте по-бърз достъп до Chrome от лентата Dock на началния екран на своя iPad.</translation>
 <translation id="1180362651362502943">Продължете да използвате данните от Chrome в профила си в Google.</translation>
 <translation id="1200396280085622191">Използвайте Chrome всеки път, когато докоснете връзки в съобщения и други приложения.</translation>
@@ -45,6 +46,7 @@
 <translation id="1917964099031477364">Този профил и всички незапазени данни ще бъдат премахнати от Chrome и другите приложения от Google на устройството.</translation>
 <translation id="1919130412786645364">Разрешаване на влизането в Chrome</translation>
 <translation id="1965935827552890526">Довършете действията си в другия отворен прозорец на Chrome.</translation>
+<translation id="1973910962341002002">Включете Chrome от настройките в „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“</translation>
 <translation id="1984705450038014246">Синхронизиране на данните ви в Chrome</translation>
 <translation id="1987779152850321833">Изпълнете предложените действия по-долу, за да се възползвате максимално от Chrome.</translation>
 <translation id="2055826352861631739">Използване на Chrome за iPad по подразбиране</translation>
@@ -96,10 +98,13 @@
 <translation id="3282568296779691940">Вход в Chrome</translation>
 <translation id="3303503998967553377">Използване на „Действия от Chrome“ под iOS</translation>
 <translation id="3348862487678490430">Добавяне на елемент към списъка за четене в Chrome</translation>
+<translation id="3357827134511189025">Влизайте със запазените си пароли и ключове за достъп от всяко приложение, като използвате Chrome за автоматично попълване</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Това се случва, когато Chrome не се използва в продължение на {THRESHOLD} минута}other{Това се случва, когато Chrome не се използва в продължение на {THRESHOLD} минути}}</translation>
 <translation id="3367797402528056312">Завършете настройването на Chrome</translation>
 <translation id="3371064404604898522">Задаване на Chrome като браузър по подразбиране</translation>
 <translation id="3399930248910934354">Отваряне на настройките на Chrome</translation>
+<translation id="3440830787838130530">Лесно и сигурно споделяйте копие на дадена парола със семейната си група в Google Мениджър на пароли</translation>
+<translation id="3460369101684070455">За да получавате лесно запазените си пароли в други приложения, изберете Chrome за автоматично попълване</translation>
 <translation id="3472587960215700950">Chrome използва Google Карти, за да ви предоставя упътвания и местна информация за откритите адреси.</translation>
 <translation id="3503014945441706099">Възползвайте се от подобрена защита от Безопасно сърфиране и за този потребителски профил в Chrome</translation>
 <translation id="3522659714780527202">Включете синхронизирането, за да виждате разделите си навсякъде, където използвате Chrome</translation>
@@ -181,6 +186,7 @@
 <translation id="5998675059699164418">Организацията ви изисква да влезете в профила си, за да използвате Chrome.</translation>
 <translation id="6021312115739110405">Персонализирана емисия, създадена за вас от Google. Тя включва новини, спорт и времето.</translation>
 <translation id="6022659036123304283">Персонализирайте Chrome според вкуса си</translation>
+<translation id="6132075343662013154">Chrome ще предложи да запази паролата ви.</translation>
 <translation id="6132149203299792222">Влезте с профила си в Google, за да синхронизирате паролите, отметките си и др.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Търсене в Chrome</translation>
@@ -228,6 +234,7 @@
 <translation id="7061455974939528301">Натиснете и задръжте иконата на Chrome и кликнете върху „Редактиране на началния екран“</translation>
 <translation id="7065813315247345131">Преместване на Chrome в лентата Dock</translation>
 <translation id="7124339256045485976">Поддържане на браузъра Chrome актуален</translation>
+<translation id="7145599899567697473">Запазване и автоматично попълване на паролите в Chrome</translation>
 <translation id="7161390184744336561">Google Chrome не е актуален</translation>
 <translation id="7165736900384873061">Използване на скенера за QR кодове в Google Chrome</translation>
 <translation id="7175129790242719365">Съвет за Chrome: Влезте в профила си в Chrome</translation>
@@ -261,6 +268,7 @@
 <translation id="7693590760643069321">Вече можете да използвате Chrome всеки път, когато докоснете връзки в съобщения, документи и други приложения.</translation>
 <translation id="7698568245838009292">Chrome иска достъп до камерата</translation>
 <translation id="7707877166818730835">Отваряне на последния ми раздел в Chrome</translation>
+<translation id="7747746207470479571">Лесен достъп до паролите и ключовете ви за достъп чрез Chrome за автоматично попълване</translation>
 <translation id="776305366874821582">Осъществявайте по-бърз достъп до Chrome от лентата Dock на началния екран на своя iPhone.</translation>
 <translation id="7780154209050837198">За да се възползвате максимално от Chrome, влезте в браузъра с профила си в Google.</translation>
 <translation id="7787205077729386167">Отворете настройките на Chrome на устройство с iOS, докоснете „Стандартно приложение за браузър“ и изберете Chrome.</translation>
@@ -281,6 +289,7 @@
 <translation id="8136856065410661948">Това ще даде възможност за създаване на събития в Apple Calendar чрез съдържание от Chrome и Google Обектив.</translation>
 <translation id="8154120522323162874">Възползвайте се максимално от Chrome, като продължите с настройването на браузъра си.</translation>
 <translation id="8160472928944011082">Chrome не може да се актуализира</translation>
+<translation id="8245080522851805544">Запазете сърфирането си частно чрез удостоверяване на устройството, когато затворите Chrome</translation>
 <translation id="8248887045858762645">Съвет за Chrome</translation>
 <translation id="8265730590513812063">Отваряне на менюто на Chrome</translation>
 <translation id="8317674518145175158">Начините на плащане и адресите няма да се шифроват. Историята на сърфиране от Chrome няма да се синхронизира.
@@ -324,5 +333,6 @@
 <translation id="9181628561061032322">Отваря скорошните раздели в Chrome.</translation>
 <translation id="948597495737267756">Отваря страницата с историята ви в Chrome.</translation>
 <translation id="97300214378190234">Използвайте Chrome всеки път, когато докоснете връзки в други приложения.</translation>
+<translation id="997929539742564806">Влизайте бързо в приложения и сайтове, като автоматично попълвате паролите и ключовете си за достъп от Chrome</translation>
 <translation id="998677222109959694">Управление на настройките на Chrome</translation>
 </translationbundle>

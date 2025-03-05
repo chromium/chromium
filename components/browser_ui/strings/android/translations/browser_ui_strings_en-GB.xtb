@@ -6,6 +6,7 @@
 <translation id="1044891598689252897">Sites will work normally</translation>
 <translation id="1070329623210597193">Files this site can view or edit</translation>
 <translation id="1073417869336441572">Help us improve Chrome by telling us why you allowed third-party cookies. <ph name="BEGIN_LINK" />Send feedback<ph name="END_LINK" /></translation>
+<translation id="1074758928858737435">You can ask to see the desktop version of sites</translation>
 <translation id="1085696779717592361">Use Chrome by default</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Remove</translation>
@@ -32,6 +33,7 @@
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
 <translation id="1500473259453106018">Hide price drops on tabs card</translation>
 <translation id="1510341833810331442">Sites aren't allowed to save data on your device</translation>
+<translation id="1538031354170655462">Sites usually use Near Field Communication (NFC) to work with nearby tags or devices, like scanning badges or paying contactless</translation>
 <translation id="1547123415014299762">Third-party cookies are allowed</translation>
 <translation id="1593426485665524382">New actions available near top of the screen</translation>
 <translation id="1620510694547887537">Camera</translation>
@@ -115,6 +117,7 @@
 <translation id="2677748264148917807">Leave</translation>
 <translation id="2682367912565197520">Delete saved zoom level</translation>
 <translation id="2683434792633810741">Delete and reset?</translation>
+<translation id="2685514716378236873">Not allowed</translation>
 <translation id="2713106313042589954">Turn off camera</translation>
 <translation id="2717722538473713889">Email addresses</translation>
 <translation id="2726059656860238749">Launch Chrome with the omnibox focused, reducing start-up time on low-end devices.</translation>
@@ -184,6 +187,7 @@
 <translation id="3628308229821498208">Suggested searches</translation>
 <translation id="3658847490588580244">Default browser bottom sheet</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site in <ph name="RWS_OWNER" />’s group of sites that can see your activity in the group}other{<ph name="RWS_MEMBERS_COUNT" /> sites in <ph name="RWS_OWNER" />’s group of sites that can see your activity in the group}}</translation>
+<translation id="3676777756440746804">Sites are blocked from asking you to use information that they've saved about you</translation>
 <translation id="3697164069658504920">When on, sites can ask to use USB devices. When off, sites can't use USB devices.</translation>
 <translation id="3707034683772193706">A site that you visit can save a small amount of info with Chrome, mainly to validate that you're not a bot</translation>
 <translation id="3709818294139939629">Removed site's access to file</translation>
@@ -208,12 +212,16 @@
 <translation id="3922092564198021702">On your phone, open Settings</translation>
 <translation id="3933121352599513978">Collapse unwanted requests (recommended)</translation>
 <translation id="3955193568934677022">Allow sites to play protected content (recommended)</translation>
+<translation id="3965467402665811906">Sites can ask to use information that they've saved about you</translation>
 <translation id="3967822245660637423">Download complete</translation>
+<translation id="3981465354637804599">Sites usually show ads so that they can provide content or services free of charge. But, some sites are known to show intrusive or misleading ads.</translation>
 <translation id="3987993985790029246">Copy link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
+<translation id="3992308058851451478"><ph name="SITE" /> can use your information as you browse</translation>
 <translation id="3992684624889376114">About this page</translation>
 <translation id="4002066346123236978">Title</translation>
 <translation id="4046123991198612571">Next track</translation>
+<translation id="4077310749977440510">Sites usually read your clipboard for features like keeping the formatting of text that you copied</translation>
 <translation id="4149890623864272035">Are you sure that you want to delete all local data, including cookies, and reset all permissions for this website?</translation>
 <translation id="4149994727733219643">Simplified view for web pages</translation>
 <translation id="4151930093518524179">Default zoom</translation>
@@ -221,6 +229,7 @@
 <translation id="4169549551965910670">Connected to a USB device</translation>
 <translation id="4194328954146351878">Ask before allowing sites to see and change information on NFC devices (recommended)</translation>
 <translation id="4200726100658658164">Open location settings</translation>
+<translation id="421742575134139848">Sites might play sound to provide audio for music, videos and other media</translation>
 <translation id="4226663524361240545">Notifications may vibrate the device</translation>
 <translation id="4259722352634471385">Navigation is blocked: <ph name="URL" /></translation>
 <translation id="4274673989874969668">After you leave a site, it can keep syncing to finish tasks, like uploading photos or sending a chat message</translation>
@@ -244,6 +253,7 @@
 <translation id="4566417217121906555">Mute microphone</translation>
 <translation id="4570913071927164677">Details</translation>
 <translation id="4598549027014564149">While in Incognito, sites can't use your cookies to see your browsing activity across sites, even related sites. Your browsing activity isn't used for things like personalising ads. Features on some sites may not work.</translation>
+<translation id="461356340001513807">Lets you sign in to websites using the account that you have with an identity service</translation>
 <translation id="4619615317237390068">Tabs from other devices</translation>
 <translation id="4644713492825682049">Delete and reset</translation>
 <translation id="4645575059429386691">Managed by your parent</translation>
@@ -263,6 +273,7 @@
 <translation id="4883854917563148705">Managed settings cannot be reset</translation>
 <translation id="4887024562049524730">Ask before allowing sites to use your virtual reality device and data (recommended)</translation>
 <translation id="4936863036653376783">You'll find your groups in the tab group section across all your devices</translation>
+<translation id="4945443401464700059"><ph name="SITE" /> is blocked from using your information on</translation>
 <translation id="4953688446973710931">When on, sites can ask to download multiple files automatically. When off, sites can't download multiple files automatically.</translation>
 <translation id="4962975101802056554">Revoke all permissions for device</translation>
 <translation id="497421865427891073">go forward</translation>
@@ -426,6 +437,7 @@
 <translation id="7000754031042624318">Turned off in Android settings</translation>
 <translation id="702275896380648118">This site determines things that you like and then suggests ads to other sites. This site also gets your ad topics from Chrome to show you more relevant ads.</translation>
 <translation id="7053983685419859001">Block</translation>
+<translation id="7055552182600664515">To play content protected by copyright, sites may need to use a content protection service. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 selected}other{# selected}}</translation>
 <translation id="708014373017851679">'<ph name="APP_NAME" />' is out of date. Please update the app.</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> selected. Options available near top of the screen</translation>
@@ -532,9 +544,11 @@
 <translation id="851751545965956758">Block sites from connecting to devices</translation>
 <translation id="8525306231823319788">Full screen</translation>
 <translation id="8541410041357371550">This site gets your ad topics from Chrome to show you more relevant ads</translation>
+<translation id="854876774113449365">Sites that you visit can embed content from other sites. For example, images, ads and text. These other sites can ask for permission to use information that they've saved about you as you browse the site. <ph name="BEGIN_LINK" />Learn more about embedded content<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">How to show requests</translation>
 <translation id="8558480467877843976">You can now use Chrome any time that you browse or tap links in messages, documents and other apps.</translation>
 <translation id="857943718398505171">Allowed (recommended)</translation>
+<translation id="8593422116412089302">When on, sites can ask to use information that they've saved about you. When off, sites can't ask to use info that they've saved about you.</translation>
 <translation id="8609465669617005112">Move up</translation>
 <translation id="8617611086246832542">When on, the desktop view of websites is shown. When off, the mobile view of websites is shown.</translation>
 <translation id="8670078035093027626">Default browser bottom sheet opened at full height</translation>

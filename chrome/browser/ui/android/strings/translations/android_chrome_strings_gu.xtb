@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">આ સાઇટનો અનુવાદ કરવાનું ઑફર કરશો નહીં</translation>
 <translation id="1145536944570833626">અસ્તિત્વમાંના ડેટાને ડિલીટ કરો.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chromeમાં ખુલશે. આગળ વધીને, તમે <ph name="BEGIN_LINK1" />Googleની સેવાની શરતો<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />Google Chrome તથા ChromeOSની વધારાની સેવાની શરતો<ph name="END_LINK2" /> સાથે સંમત થાઓ છો.</translation>
+<translation id="1154555449933432029">તમે Google Password Managerમાં પાસવર્ડ સાચવેલા નથી.</translation>
 <translation id="115483310321669804"><ph name="PASSWORD" /> પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="1173894706177603556">નામ બદલો</translation>
 <translation id="1174479719160874822">સ્ક્રીન નાની થાય ત્યારે દરેક વખતે Chrome, મોબાઇલ સાઇટની વિનંતી કરશે</translation>
@@ -1366,10 +1367,12 @@
 <translation id="7224097611345298931">Chrome અને <ph name="CHROME_CHANNEL" /> માટે માત્ર આ ડિવાઇસમાં સચવાયેલા બધા પાસવર્ડ મર્જ કરવામાં આવ્યા. તમે બન્ને ઍપ પર સાચવેલા તમારા બધા પાસવર્ડ ઑટોમૅટિક રીતે ભરી શકો છો.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ડાઉનલોડ બાકી}one{# ડાઉનલોડ બાકી}other{# ડાઉનલોડ બાકી}}</translation>
 <translation id="7230064152164845085">છૂપા મોડ પર સ્વિચ કરો</translation>
+<translation id="7237724030342645845">Google Password Manager કામ કરતું અટકી ગયું</translation>
 <translation id="72415438529550637">પાસવર્ડ સૂચવવાની સુવિધા બંધ છે.</translation>
 <translation id="7260367682327802201">તમારા Android ડિવાઇસમાં કદાચ આ જ સેટિંગ શામેલ હોઈ શકે. જો Chromeમાં અને તમારા Android ડિવાઇસ પર જાહેરાત માપણીની સુવિધા ચાલુ કરેલી હોય, તો કંપની તમે મુલાકાત લો છો તેવી સમગ્ર વેબસાઇટ પર અને તમે ઉપયોગ કરો છો તેવી ઍપ પર જાહેરાતની અસરકારકતાની માપણી કરી શકે છે.</translation>
 <translation id="727288900855680735"><ph name="ONE_TIME_CODE" />ને <ph name="ORIGIN" /> પર સબમિટ કરીએ?</translation>
 <translation id="7274013316676448362">અવરોધિત સાઇટ</translation>
+<translation id="7276868533747677875">જો તમે અગાઉ પાસવર્ડની નિકાસ કરી હોય, તો તમારા ડિવાઇસ પર CSV ફાઇલ શોધો અને તેને તમારા મનપસંદ પાસવર્ડ મેનેજરમાં આયાત કરો.</translation>
 <translation id="7289049772085228972">તમે Chromeની સૌથી સશક્ત સુરક્ષા ધરાવો છો</translation>
 <translation id="7289303553784750393">જો તમે ઑનલાઇન હો પરંતુ આ સમસ્યા આવવાનું ચાલુ રહે, તો તમે <ph name="SITE_ETLD_PLUS_ONE" /> પર ચાલુ રાખવા માટે અન્ય રીતો અજમાવી શકો છો.</translation>
 <translation id="7290209999329137901">નામ બદલવું ઉપલબ્ધ નથી</translation>
@@ -1544,6 +1547,7 @@
 <translation id="8027395186860110042">પાસવર્ડ કદાચ ટૂંક સમયમાં કામ કરવાનું બંધ કરશે</translation>
 <translation id="8027863900915310177">ડાઉનલોડ કરવાની જગ્યા પસંદ કરો</translation>
 <translation id="8030852056903932865">મંજૂર કરો</translation>
+<translation id="8031805944372049238">Google Password Manager વડે પાસવર્ડ સાચવવા અને વાપરવાનું શરૂ કરવા માટે, Google Play સેવાઓ અપડેટ કરો.</translation>
 <translation id="8032569120109842252">ફૉલો કરી રહ્યાં છો</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> દિવસ બાકી</translation>
 <translation id="8037801708772278989">હમણાં જ ચેક કર્યું</translation>

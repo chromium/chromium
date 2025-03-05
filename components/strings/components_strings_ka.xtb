@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">Chrome-ის მეშვეობით ჩამოტვირთული ფაილების მართვის ღილაკი, Chrome-ის მეშვეობით ჩამოტვირთული ფაილების სამართავად გაააქტიურეთ ის</translation>
 <translation id="1420345875188552368">თქვენი შენახული ავტომატური გადახდის მეთოდი შეიძლება გამოყენებული იქნას ამ გადახდისთვის. Chrome-ში ელსაფულეების გამოსართავად გადადით თქვენი <ph name="BEGIN_LINK1" />გადახდის პარამეტრებში<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268">დაწყვილების დასაშვებად, <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="1421484961346698724">წაშლილი ანგარიში</translation>
 <translation id="14222610277930434">თქვენ მიერ ხშირად მონახულებული</translation>
 <translation id="1422930527989633628">შეუძლია ახლომდებარე Bluetooth-მოწყობილობების აღმოჩენის თხოვნა</translation>
 <translation id="1426410128494586442">დიახ</translation>
@@ -3024,6 +3025,7 @@
 <translation id="6351658970066645919">დათვალიერების მონაცემების წაშლა</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{არცერთი}=1{1 პაროლი (<ph name="DOMAIN_LIST" />-ისთვის, სინქრონიზებული)}=2{2 პაროლი (<ph name="DOMAIN_LIST" />-ისთვის, სინქრონიზებული)}other{# პაროლი (<ph name="DOMAIN_LIST" />-ისთვის, სინქრონიზებული)}}</translation>
 <translation id="6355392890578844978">ამ ბრაუზერს არ მართავს კომპანია და არც სხვა ორგანიზაცია. ამ მოწყობილობაზე აქტივობა შეიძლება იმართებოდეს Chromium-ს მიღმა. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">ჩანართების ჯგუფები — „<ph name="GROUP_TITLE_1" />“ და „<ph name="GROUP_TITLE_2" />“ — აღარ არის ხელმისაწვდომი</translation>
 <translation id="6358088212770985041">გადახდის მეთოდების რედაქტირება</translation>
 <translation id="6358450015545214790">რას ნიშნავს ეს?</translation>
 <translation id="6360213755783740931">შეიტყვეთ მეტი მავნე პროგრამებისგან დაცვის შესახებ</translation>

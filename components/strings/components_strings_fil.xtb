@@ -252,6 +252,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1419305130220238697">Button na Pamahalaan ang mga download sa Chrome, i-activate para mapamahalaan ang mga file na na-download mo sa Chrome</translation>
 <translation id="1420345875188552368">Posibleng gamitin para sa pagbabayad na ito ang iyong naka-save na paraan ng awtomatikong pagbabayad. Para i-off ang mga eWallet sa Chrome, pumunta sa iyong <ph name="BEGIN_LINK1" />mga setting ng pagbabayad<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> upang payagan ang pagpapares</translation>
+<translation id="1421484961346698724">Na-delete na account</translation>
 <translation id="14222610277930434">Madalas Mong Bisitahin</translation>
 <translation id="1422930527989633628">Puwedeng hilinging tumuklas ng mga Bluetooth device na nasa malapit</translation>
 <translation id="1426410128494586442">Oo</translation>
@@ -3024,6 +3025,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6351658970066645919">I-delete ang Data mula sa Pag-browse</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Wala}=1{1 password (para sa <ph name="DOMAIN_LIST" />, naka-sync)}=2{2 password (para sa <ph name="DOMAIN_LIST" />, naka-sync)}one{# password (para sa <ph name="DOMAIN_LIST" />, naka-sync)}other{# na password (para sa <ph name="DOMAIN_LIST" />, naka-sync)}}</translation>
 <translation id="6355392890578844978">Hindi pinapamahalaan ng kumpanya o iba pang organisasyon ang browser na ito. Posibleng pinapamahalaan sa labas ng Chromium ang aktibidad sa device na ito. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Hindi na available ang mga grupo ng tab na "<ph name="GROUP_TITLE_1" />" at "<ph name="GROUP_TITLE_2" />"</translation>
 <translation id="6358088212770985041">i-edit ang mga paraan ng pagbabayad</translation>
 <translation id="6358450015545214790">Ano ang ibig sabihin ng mga ito?</translation>
 <translation id="6360213755783740931">Matuto pa tungkol sa proteksyon laban sa Malware</translation>

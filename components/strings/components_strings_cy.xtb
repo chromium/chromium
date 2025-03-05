@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">Llwytho'r dudalen yn nes ymlaen</translation>
 <translation id="1010225406377140704">Cysylltwch â'r anfonwr i ofyn am ddolen newydd</translation>
 <translation id="1011206368273183593">Wrthi'n paratoi ffeiliau</translation>
+<translation id="1012264210825687872">Ar ôl i chi adolygu'ch archeb, rhaid i chi fewngofnodi neu greu cyfrif <ph name="BNPL_ISSUER_NAME" />. Bydd y cyfrif hwn yn gysylltiedig â Google Pay yn awtomatig.</translation>
 <translation id="1014509239502131234">Wrthi'n dadwneud y canlyniad</translation>
 <translation id="1015730422737071372">Rhowch ragor o fanylion</translation>
 <translation id="1019413721762100891">Diffodd</translation>
@@ -660,6 +661,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2145193671493396738">Newyddion yr Economi</translation>
 <translation id="214556005048008348">Canslo taliad</translation>
 <translation id="2147117373852943630">Offerynnau Cerddorol</translation>
+<translation id="2147254250314124496">Mae <ph name="EMBEDDED_URL" /> eisiau defnyddio'r wybodaeth y mae wedi cadw amdanoch chi</translation>
 <translation id="2148613324460538318">Ychwanegu Cerdyn</translation>
 <translation id="2148716181193084225">Heddiw</translation>
 <translation id="2149968176347646218">Nid yw'r cysylltiad yn ddiogel</translation>
@@ -691,6 +693,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2187317261103489799">Canfod (diofyn)</translation>
 <translation id="2188375229972301266">Mwy nag un twll ar y gwaelod</translation>
 <translation id="2194856509914051091">Pethau i'w hystyried</translation>
+<translation id="2198071643181968308">Dysgu rhagor am <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="2200678913752027654">Botwm bodiau i lawr, pwyswch Enter i agor ffurflen ar gyfer cyflwyno adborth manwl ar pam nad ydych yn hoffi'r awgrym hwn</translation>
 <translation id="2202627062836089804">cefn eich cerdyn</translation>
 <translation id="2204482073374652408">Wedi gorffen diweddaru!</translation>
@@ -2318,6 +2321,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Mae angen mynediad at <ph name="PERMISSION" /> eich dyfais ar Chrome</translation>
 <translation id="510644072453496781">Cardfwrdd (Diwedd)</translation>
+<translation id="5106648964679263509">Cerdyn rhithwir ar gyfer <ph name="BNPL_ISSUER_NAME" /> wedi'i lenwi</translation>
 <translation id="5108881358339761672">Nid yw'r gwefan yn ddiogel</translation>
 <translation id="5109892411553231226">Rheoli Dulliau Talu</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2513,6 +2517,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
             <ph name="LIST_ITEM" />Gwybodaeth a roddir mewn ffurflenni
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Yn y drefn wrthol wyneb i fyny</translation>
+<translation id="5445340838622821110">Pan fyddwch yn talu dros amser, mae rhif cerdyn rhithwir un-amser yn cael ei lenwi. Mae'r rhif hwn ar gyfer y pryniant hwn yn unig. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Caniatáu i <ph name="SITE" /> ddefnyddio gwybodaeth y maent wedi cadw amdanoch chi</translation>
 <translation id="5452270690849572955">Ni ellir dod o hyd i'r dudalen <ph name="HOST_NAME" /> hon</translation>
 <translation id="5452923259299906094">Talu gydag eWallet a Pix</translation>
@@ -3019,6 +3024,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6351658970066645919">Dileu Data Pori</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Dim}=1{1 cyfrinair (ar gyfer <ph name="DOMAIN_LIST" />, cysonwyd)}=2{2 gyfrinair (ar gyfer <ph name="DOMAIN_LIST" />, cysonwyd)}few{# chyfrinair (ar gyfer <ph name="DOMAIN_LIST" />, cysonwyd)}many{# chyfrinair (ar gyfer <ph name="DOMAIN_LIST" />, cysonwyd)}other{# cyfrinair (ar gyfer <ph name="DOMAIN_LIST" />, cysonwyd)}}</translation>
 <translation id="6355392890578844978">Nid yw'r porwr hwn yn cael ei reoli gan gwmni neu sefydliad arall. Gellir rheoli gweithgarwch ar y ddyfais hon y tu allan i Chromium. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Nid yw'r grwpiau tabiau "<ph name="GROUP_TITLE_1" />" a "<ph name="GROUP_TITLE_2" />" ar gael mwyach</translation>
 <translation id="6358088212770985041">golygu dulliau talu</translation>
 <translation id="6358450015545214790">Beth mae'r rhain yn ei olygu?</translation>
 <translation id="6360213755783740931">Dysgu rhagor am ddiogelwch Maleiswedd</translation>
@@ -3332,6 +3338,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6917795328362592458">Canfuwyd y cyfrinair rydych newydd ei ddefnyddio mewn achos o dor data. Er mwyn diogelu'ch cyfrifon, mae'r Rheolwr Cyfrineiriau yn argymell gwirio'ch cyfrineiriau sydd wedi'u cadw.</translation>
 <translation id="6917873303492266709">I rannu, ymuno a chydweithio mewn grwpiau tabiau, agorwch osodiadau a throi Caniatáu mewngofnodi i Chrome ymlaen</translation>
 <translation id="6921197121276419421">Caniateir gosod apiau gwe</translation>
+<translation id="69238565902785824">Mae cadw'ch cyfrif yn gysylltiedig yn eich helpu i dalu'n gyflymach gyda <ph name="BNPL_ISSUER_NAME" />, ond gallwch ei ddatgysylltu trwy fynd i <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /></translation>
 <translation id="6924013822850225188">Dewiswch a ydych yn gweld buddion eich cerdyn wrth dalu (mae telerau banc yn berthnasol)</translation>
 <translation id="6925267999184670015">B+ Gogledd America</translation>
 <translation id="6926216138694948720">Celf Corff</translation>
@@ -3397,6 +3404,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="701757816833614688">Addysg Celfyddydau Gweledol a Dylunio</translation>
 <translation id="702275896380648118">Mae'r wefan hon yn penderfynu pethau rydych yn eu hoffi ac yn cynnig hysbysebion i wefannau eraill. Mae'r wefan hon hefyd yn cael eich pynciau hysbysebion o Chrome i ddangos hysbysebion mwy perthnasol i chi.</translation>
 <translation id="7023162328967545559">Rhybudd gweinyddwr</translation>
+<translation id="7023765275461720661">Cysylltu cyfrif a thalu gyda <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Cyfrineiriau</translation>
 <translation id="7030164307377592766">addasu gosodiadau ar gyfer llenwi dulliau talu</translation>
 <translation id="7031646650991750659">Pa apiau Google Play rydych wedi'u gosod</translation>
@@ -3618,6 +3626,7 @@ Manylion ychwanegol:
 <translation id="741204030948306876">Iawn, rwy'n cydsynio</translation>
 <translation id="7416351320495623771">Rheoli cyfrineiriau…</translation>
 <translation id="7416898721136759658">Grantiau, Ysgoloriaethau a Chymorth Ariannol</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">Rhaglennu</translation>
 <translation id="7419091773564635591">Cyfrifiaduron ac Electroneg</translation>
 <translation id="7419106976560586862">Llwybr Proffil</translation>
@@ -3664,6 +3673,7 @@ Manylion ychwanegol:
 <translation id="7485085230273446323">Busnes a Diwydiannol</translation>
 <translation id="7485870689360869515">Ni chanfuwyd unrhyw ddata.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311">Bydd <ph name="BNPL_ISSUER_NAME" /> yn gwirio eich cymhwysedd (ni fydd hyn yn effeithio eich sgôr credyd). Os caiff ei gymeradwyo, bydd <ph name="BNPL_ISSUER_NAME" /> yn darparu cynlluniau talu i chi ddewis ohonynt a chwblhau eich pryniant.</translation>
 <translation id="7489392576326061356">Siampŵ a Chyflyrydd</translation>
 <translation id="7495528107193238112">Mae'r cynnwys hwn wedi'i rwystro. Cysylltwch â pherchennog y wefan i ddatrys y broblem.</translation>
 <translation id="749865518782565832">Plymwaith</translation>

@@ -6,6 +6,7 @@
 <translation id="1044891598689252897">Saytlar xatosiz ishlaydi</translation>
 <translation id="1070329623210597193">Bu sayt ochishi yoki tahrirlashi mumkin fayllar</translation>
 <translation id="1073417869336441572">Tashqi cookie fayllarga nega ruxsat berganingiz sababini yozish orqali Chromeni yaxshilashimizga yordam bering. <ph name="BEGIN_LINK" />Fikr-mulohaza<ph name="END_LINK" /></translation>
+<translation id="1074758928858737435">Saytlarning kompyuter versiyasini ochishga ruxsat soʻrash mumkin</translation>
 <translation id="1085696779717592361">Chrome birlamchi boʻlsin</translation>
 <translation id="1178581264944972037">Pauza</translation>
 <translation id="1181037720776840403">Olib tashlash</translation>
@@ -32,6 +33,7 @@
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> ta sayt}other{<ph name="SITE_COUNT" /> ta sayt}}</translation>
 <translation id="1500473259453106018">Varaqlarda narx pasayishi bildirgisini berkitish</translation>
 <translation id="1510341833810331442">Saytlar maʼlumotlarni qurilmangizga saqlay olmaydi</translation>
+<translation id="1538031354170655462">Saytlar odatda givohnomani skanerlash yoki kontaktsiz toʻlov kabi atrofdagi teglar yoki qurilmalar bilan ishlashda yaqindagi simsiz aloqadan (NFC) foydalanadi</translation>
 <translation id="1547123415014299762">Tashqi cookie fayllariga ruxsat berilgan</translation>
 <translation id="1593426485665524382">Yangi amallar ekranning yuqoriroq qismida joylashgan</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -115,6 +117,7 @@
 <translation id="2677748264148917807">Tark etish</translation>
 <translation id="2682367912565197520">Saqlangan zum darajasini oʻchirish</translation>
 <translation id="2683434792633810741">Oʻchirib, tiklansinmi?</translation>
+<translation id="2685514716378236873">Ruxsat berilmagan</translation>
 <translation id="2713106313042589954">Kamerani faolsizlantirish</translation>
 <translation id="2717722538473713889">Email manzillar</translation>
 <translation id="2726059656860238749">Chromeni fokusdagi omniboks bilan ishga tushirish, arzon qurilmalarda ishga tushirish vaqtini kamaytiradi.</translation>
@@ -211,12 +214,14 @@
 <translation id="3955193568934677022">Saytlarga himoyalangan kontentni ijro qilish uchun ruxsat berish (tavsiya etiladi)</translation>
 <translation id="3965467402665811906">Saytlar shaxsiy maʼlumotlaringizdan foydalanishga ruxsat soʻrashi mumkin</translation>
 <translation id="3967822245660637423">Yuklab olindi</translation>
+<translation id="3981465354637804599">Saytlar odatda bepul kontent yoki xizmatlar taqdim qilish maqsadida reklama chiqaradi. Lekin ayrim saytlarda yoqimsiz yoki befoyda reklamalar chiqishi ham mumkin.</translation>
 <translation id="3987993985790029246">Nusxalash</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992308058851451478"><ph name="SITE" /> saytni kezishda shaxsiy axborotlardan foydalanishi mumkin</translation>
 <translation id="3992684624889376114">Bu sahifa haqida</translation>
 <translation id="4002066346123236978">Nomi</translation>
 <translation id="4046123991198612571">Keyingi musiqa</translation>
+<translation id="4077310749977440510">Saytlar odatda nusxalanayotgan matn formatini saqlab qolish uchun klipbord axborotini oʻqiydi</translation>
 <translation id="4149890623864272035">Qurilmadagi cookie fayllar kabi maʼlumotlarni oʻchirilib, bu saytning ruxsatlari asliga qaytarilsinmi?</translation>
 <translation id="4149994727733219643">Veb sahifalarni ko‘rish uchun oddiy rejim</translation>
 <translation id="4151930093518524179">Asosiy masshtab</translation>
@@ -224,6 +229,7 @@
 <translation id="4169549551965910670">USB qurilmaga ulandi</translation>
 <translation id="4194328954146351878">Saytlar NFC qurilmalarni koʻrishi va ulardagi axborotni oʻzgartirishidan oldin ruxsat olsin (tavsiya etiladi)</translation>
 <translation id="4200726100658658164">Joylashuv sozlamalarini ochish</translation>
+<translation id="421742575134139848">Saytlar musiqa, video va boshqa media kontent audiosini chiqarish uchun tovushlarni ijro qilishi mumkin</translation>
 <translation id="4226663524361240545">Bildirishnoma kelganida qurilma tebranishi mumkin</translation>
 <translation id="4259722352634471385">Sahifa bloklandi: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Odatda saytlar yopilganda ular rasmni yuklash yoki chat xabarini yuborish kabi amallarni yakunlash uchun sinxronlashda davom etadi</translation>
@@ -247,6 +253,7 @@
 <translation id="4566417217121906555">Mikrofonni ovozsiz qilish</translation>
 <translation id="4570913071927164677">Tafsilotlar</translation>
 <translation id="4598549027014564149">Inkognito rejimida saytlar hatto aloqador saytlarda ham cookie fayllar yordamida harakatlaringizni kuzata olmaydi. Brauzer faoliyati haqidagi maʼlumotlar, masalan, moslashtirilgan reklamalarni koʻrsatish uchun ishlatilmaydi. Ayrim saytlardagi funksiyalar ishlamay qolishi mumkin.</translation>
+<translation id="461356340001513807">Saytlarda hisobga mavjud shaxsni tasdiqlash usuli bilan kirish imkonini beradi</translation>
 <translation id="4619615317237390068">Boshqa qurilmalardan sinxronlangan varaqlar</translation>
 <translation id="4644713492825682049">Oʻchirish va tiklash</translation>
 <translation id="4645575059429386691">Ota-onangiz tomonidan boshqariladi</translation>
@@ -430,6 +437,7 @@
 <translation id="7000754031042624318">Android sozlamalari orqali faolsizlantirilgan</translation>
 <translation id="702275896380648118">Bu sayt sizga qiziq narsalarni aniqlashi va boshqa saytlarga taklif qilishi mumkin. Bu sayt ham mos reklamalarni chiqarish uchun reklamadagi mavzular haqidagi Chrome maʼlumotlaridan foydalanadi.</translation>
 <translation id="7053983685419859001">Taqiqlash</translation>
+<translation id="7055552182600664515">Mualliflik huquqi bilan himoyalangan kontentni ijro etish uchun saytlar kontentni himoya qilish xizmatidan foydalanishi kerak. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{ 1 ta belgilandi}other{# ta belgilandi}}</translation>
 <translation id="708014373017851679">“<ph name="APP_NAME" />” eskirgan. Ilovani yangilang.</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> ta element tanlandi. Parametrlar ekranning yuqoriroq qismida joylashgan</translation>

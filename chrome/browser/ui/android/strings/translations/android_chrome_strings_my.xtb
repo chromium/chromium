@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">ဤဝဘ်ဆိုက်များကို ပြန်ဆိုရန် မကမ်းလှမ်းပါနှင့်</translation>
 <translation id="1145536944570833626">လက်ရှိဒေတာများကို ဖျက်ပါ</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> ကို Chrome တွင် ဖွင့်ပါမည်။ ရှေ့ဆက်ခြင်းဖြင့် သင်သည် <ph name="BEGIN_LINK1" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />Google Chrome နှင့် ChromeOS ထပ်တိုး ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK2" /> ကို သဘောတူရာရောက်သည်။</translation>
+<translation id="1154555449933432029">Google Password Manager တွင် သိမ်းထားသောစကားဝှက် မရှိပါ။</translation>
 <translation id="115483310321669804"><ph name="PASSWORD" /> စကားဝှက်သုံးရန်</translation>
 <translation id="1173894706177603556">အမည်ပြောင်းရန်</translation>
 <translation id="1174479719160874822">ဖန်သားပြင်ကျဉ်းသွားသောအခါ Chrome သည် မိုဘိုင်းဝဘ်ဆိုက်ကို တောင်းဆိုပါမည်</translation>
@@ -106,6 +107,7 @@
 <translation id="1413446866325418126">သင့် Google Account တွင် ဒေတာသိမ်းခြင်း</translation>
 <translation id="1414981605391750300">Google ကို ဆက်သွယ်နေပါသည်။ အချိန်တစ်မိနစ်ခန့် ကြာနိုင်သည်...</translation>
 <translation id="1416550906796893042">အပလီကေးရှင်း ဗားရှင်း</translation>
+<translation id="1416582024052267068">သင့်စကားဝှက်များကို ဆက်သုံးခြင်း</translation>
 <translation id="1419753403124156396">Chrome ကို ပြန်စမလား။</translation>
 <translation id="1428770807407000502">စင့်ခ်လုပ်ခြင်းကို ပိတ်မလား။</translation>
 <translation id="1430915738399379752">ပရင့်</translation>
@@ -514,6 +516,7 @@
 <translation id="342220687432920852">{HOURS,plural, =1{ပြီးခဲ့သော # နာရီ}other{ပြီးခဲ့သော # နာရီ}}</translation>
 <translation id="3430670036890315772">ပရိုဖိုင်လော့ခ်ချခြင်းကို ပိတ်ခြင်းဖြင့် သင်၏သိမ်းထားသော အချက်အလက်ကို ဖယ်ရှားပါမည်</translation>
 <translation id="3435465986463792564">ဝင်းဒိုးများ ရပြီလား။ ၎င်းတို့ကို ဤနေရာမှ စီမံနိုင်ပါသည်</translation>
+<translation id="3435575784518354875">သင့်စကားဝှက်များကို ဆက်သုံးနိုင်ရန်အတွက် ၎င်းတို့ကို ယခုထုတ်ယူပါ။ Google Play ဝန်ဆောင်မှုများကို အပ်ဒိတ်လုပ်ပြီး ၎င်းတို့ကို Google Password Manager တွင် ပြန်ထည့်သွင်းပါ။ <ph name="BEGIN_LINK" />ညွှန်ကြားချက်အပြည့်အစုံ ကြည့်ရန်<ph name="END_LINK" />။</translation>
 <translation id="3435738964857648380">လုံခြုံရေး</translation>
 <translation id="3439276997620616816">သင်၏ လတ်တလောတဘ်များကို ဤနေရာတွင် ပြပါမည်</translation>
 <translation id="3443221991560634068">လက်ရှိစာမျက်နှာကို ပြန်ဖွင့်ရန်</translation>
@@ -523,6 +526,7 @@
 <translation id="3474624961160222204"><ph name="NAME" /> အဖြစ်​ ရှေ့ဆက်ရန်</translation>
 <translation id="3478363558367712427">သင်၏ ရှာဖွေရေးအင်ဂျင်ကို ရွေးနိုင်သည်</translation>
 <translation id="3479552764303398839">ယခု မလို</translation>
+<translation id="3487903178221457900">ထုတ်ယူထားသည့် ဖိုင်ကို အက်ပ်များအပါအဝင် အခြားအရာများက ဝင်ကြည့်နိုင်သည်။ ထုတ်ယူပြီးသည်နှင့် သင့်စကားဝှက်များကို Chrome ထံမှ ဖျက်သည်။</translation>
 <translation id="3488199663160411179">အမည်</translation>
 <translation id="3493531032208478708">အကြံပြုထားသည့် အကြောင်းအရာအကြောင်း <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">လက်မှတ်ထိုးဝင်ခြင်းဆိုင်ရာ အောက်ခြေအပိုဆောင်း စာမျက်နှာကို မြင်ကွင်းတစ်ဝက် ဖွင့်ထားသည်။</translation>
@@ -548,6 +552,7 @@
 <translation id="3566639033325271639">ဆက်တင်များ အပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="3568945271227339929">ကျိုးပေါက်ထားသည့် စကားဝှက်များ မရှိပါ</translation>
 <translation id="357465026686164600">ဖုန်းကို လုံခြုံရေးကီးအဖြစ် သုံးခြင်း</translation>
+<translation id="3575464060651642446">ဤစက်ရှိ စကားဝှက်များ စစ်ဆေးနေသည်…</translation>
 <translation id="3577473026931028326">တစ်ခုခုမှားသွားသည်။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="3577558748185201054">သင့်စိတ်ဝင်စားမှုနှင့် သတ်မှတ်ချက်များကို စီမံပါ</translation>
 <translation id="3587482841069643663">အားလုံး</translation>
@@ -1365,10 +1370,12 @@
 <translation id="7224097611345298931">Chrome နှင့် <ph name="CHROME_CHANNEL" /> အတွက် ဤစက်တွင်သာ သိမ်းထားသော စကားဝှက်အားလုံးကို ပေါင်းစည်းထားသည်။ သိမ်းထားသော သင်၏စကားဝှက်အားလုံးကို အက်ပ်နှစ်ခုစလုံးတွင် အော်တိုဖြည့်နိုင်သည်။</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{ဒေါင်းလုဒ် ၁ ခုကို စောင့်နေသည်}other{ဒေါင်းလုဒ် # ခုကို စောင့်နေသည်}}</translation>
 <translation id="7230064152164845085">‘ရုပ်ဖျက်’ သို့ ပြောင်းရန်</translation>
+<translation id="7237724030342645845">Google Password Manager လုပ်ဆောင်မှုရပ်သွားသည်</translation>
 <translation id="72415438529550637">စကားဝှက် အကြံပြုချက်ကို ပိတ်လိုက်သည်။</translation>
 <translation id="7260367682327802201">သင့် Android စက်တွင် အလားတူဆက်တင် ပါဝင်နိုင်သည်။ Chrome နှင့် သင့် Android စက်တွင် ‘ကြော်ငြာတိုင်းတာခြင်း’ ကို ဖွင့်ထားပါက ကုမ္ပဏီသည် သင်ဝင်ရောက်ကြည့်ရှုသည့် ဝဘ်ဆိုက်များနှင့် သင်အသုံးပြုသည့် အက်ပ်များတွင် ကြော်ငြာတစ်ခု၏ထိရောက်မှုကို တိုင်းတာနိုင်သည်။</translation>
 <translation id="727288900855680735"><ph name="ORIGIN" /> သို့ <ph name="ONE_TIME_CODE" /> ပို့မလား။</translation>
 <translation id="7274013316676448362">ပိတ်ထားသည့်ဆိုက်</translation>
+<translation id="7276868533747677875">ယခင်က စကားဝှက်များ ထုတ်ယူထားပါက သင့်စက်တွင် CSV ဖိုင်ကို ရှာကြည့်ပြီး နှစ်သက်ရာ Password Manager သို့ ထည့်သွင်းနိုင်သည်။</translation>
 <translation id="7289049772085228972">Chrome ၏ အမြင့်ဆုံးလုံခြုံရေးစနစ် သင့်တွင်ရှိသည်</translation>
 <translation id="7289303553784750393">သင်အွန်လိုင်းဖြစ်သော်လည်း ဤပြဿနာဆက်ဖြစ်နေပါက <ph name="SITE_ETLD_PLUS_ONE" /> တွင် အခြားနည်းလမ်းများကို စမ်းကြည့်နိုင်သည်။</translation>
 <translation id="7290209999329137901">အမည်ပြောင်း၍ မရပါ</translation>
@@ -1543,6 +1550,7 @@
 <translation id="8027395186860110042">စကားဝှက်များကို မကြာမီ သုံးနိုင်တော့မည် မဟုတ်ပါ</translation>
 <translation id="8027863900915310177">ဒေါင်းလုဒ်လုပ်ရန်နေရာ ရွေးခြင်း</translation>
 <translation id="8030852056903932865">အတည်ပြုရန်</translation>
+<translation id="8031805944372049238">Google Password Manager ဖြင့် စကားဝှက်များ စသိမ်းရန်၊ သုံးရန်အတွက် Google Play ဝန်ဆောင်မှုများကို အပ်ဒိတ်လုပ်ပါ။</translation>
 <translation id="8032569120109842252">လိုက်ကြည့်နေသည်</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> ရက် ကျန်သည်</translation>
 <translation id="8037801708772278989">ယခုလေးတင် စစ်ဆေးခဲ့သည်</translation>
@@ -1746,6 +1754,7 @@
 <translation id="8937772741022875483">'ဒစ်ဂျစ်တယ် အာရောဂျံ' မှနေ၍ သင်၏ Chrome လုပ်ဆောင်ချက်ကို ‌ဖယ်ရှားလိုပါသလား။</translation>
 <translation id="8942627711005830162">အခြားဝင်းဒိုးတွင် ဖွင့်ရန်</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - ဤဘာသာစကားကို ဒေါင်းလုဒ်လုပ်၍ မရပါ။ နောက်မှ ထပ်စမ်းပါ။</translation>
+<translation id="8957528460562961174">သင့်စကားဝှက်များကို ဆက်လက်သုံးနိုင်ရန်အတွက် ၎င်းတို့ကို ယခုထုတ်ယူပြီး သင်နှစ်သက်သည့် စကားဝှက်မန်နေဂျာတွင် ထည့်သွင်းပါ။ Google Play ဝန်ဆောင်မှုများ မရနိုင်သဖြင့် Google Password Manager အလုပ်မလုပ်တော့ပါ။</translation>
 <translation id="8963117664422609631">ဝဘ်ဆိုက်ဆက်တင်များသို့ သွားရန်</translation>
 <translation id="8965591936373831584">ဆိုင်းငံ့ထားသည်</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{ရုပ်ဖျက်တဘ် <ph name="INCOGNITO_TAB_COUNT" /> ခုနှင့် နောက်ထပ်တဘ် <ph name="TAB_COUNT_ONE" /> ခုကို ပိတ်ပါမည်}other{ရုပ်ဖျက်တဘ် <ph name="INCOGNITO_TAB_COUNT" /> ခုနှင့် နောက်ထပ်တဘ် <ph name="TAB_COUNT_MANY" /> ခုကို ပိတ်ပါမည်}}</translation>

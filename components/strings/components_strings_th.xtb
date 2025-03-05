@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">ปุ่มจัดการการดาวน์โหลดใน Chrome เปิดใช้งานเพื่อจัดการไฟล์ที่คุณดาวน์โหลดใน Chrome</translation>
 <translation id="1420345875188552368">ระบบอาจใช้วิธีการชำระเงินอัตโนมัติที่บันทึกไว้สำหรับการชำระเงินนี้ หากต้องการปิดอีวอลเล็ตใน Chrome ให้ไปที่<ph name="BEGIN_LINK1" />การตั้งค่าการชำระเงิน<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> เพื่ออนุญาตการจับคู่อุปกรณ์</translation>
+<translation id="1421484961346698724">ลบบัญชีแล้ว</translation>
 <translation id="14222610277930434">คุณเคยไปบ่อย</translation>
 <translation id="1422930527989633628">สามารถขอทำการค้นหาอุปกรณ์บลูทูธใกล้เคียงได้</translation>
 <translation id="1426410128494586442">ยอมรับ</translation>
@@ -3023,6 +3024,7 @@
 <translation id="6351658970066645919">ลบข้อมูลการท่องเว็บ</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ไม่มี}=1{มีรหัสผ่าน 1 รายการ (สำหรับ <ph name="DOMAIN_LIST" />, ซิงค์แล้ว)}=2{มีรหัสผ่าน 2 รายการ (สำหรับ <ph name="DOMAIN_LIST" />, ซิงค์แล้ว)}other{มีรหัสผ่าน # รายการ (สำหรับ <ph name="DOMAIN_LIST" />, ซิงค์แล้ว)}}</translation>
 <translation id="6355392890578844978">เบราว์เซอร์นี้ไม่ได้จัดการโดยบริษัทหรือองค์กรอื่นๆ กิจกรรมในอุปกรณ์นี้อาจมีการจัดการภายนอก Chromium <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">กลุ่มแท็บ "<ph name="GROUP_TITLE_1" />" และ "<ph name="GROUP_TITLE_2" />" ใช้งานไม่ได้อีกต่อไป</translation>
 <translation id="6358088212770985041">แก้ไขวิธีการชำระเงิน</translation>
 <translation id="6358450015545214790">นี่หมายถึงอะไร</translation>
 <translation id="6360213755783740931">ดูข้อมูลเพิ่มเติมเกี่ยวกับการป้องกันมัลแวร์</translation>

@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Роуминг емес, үй желісі</translation>
 <translation id="1327977588028644528">Шлюз</translation>
 <translation id="1328223165223065150">Тұсқағаз түсі</translation>
+<translation id="1329478709358066995">Транскрипция:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Сканерлеу аймағына сәйкестендіру</translation>
 <translation id="1343442362630695901">тұзды көл</translation>
@@ -1129,7 +1130,6 @@
 <translation id="6325525973963619867">Қате шықты</translation>
 <translation id="6327262166342360252">Бұл тұсқағазды жасанды интеллект "<ph name="PROMPT" />" мәтінін қолданып жасады.</translation>
 <translation id="6331191339300272798">Автоматты қараңғы режим</translation>
-<translation id="6335228876613776082">Модель жүктеп алынды</translation>
 <translation id="6340526405444716530">Жекелендіру</translation>
 <translation id="6348252528297699679">Локацияны "Параметрлер &gt; Құпиялық және қауіпсіздік &gt; Құпиялық параметрлері &gt; Локацияны пайдалану рұқсаты" тармағында өшіруге болады. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Пайдаланушы аты және құпия сөз</translation>
@@ -1274,6 +1274,7 @@
 <translation id="6930597342185648547">Фон туралы ақпарат</translation>
 <translation id="6939667434404433010">Жазба атауын іздеу</translation>
 <translation id="6939766318048400022">Кафе</translation>
+<translation id="6942253772720771875">Пікір жіберіңіз немесе мәселені сипаттаңыз.</translation>
 <translation id="6943893908656559156">Қашықтағы идентификация (қосымша)</translation>
 <translation id="6953137545147683679">алтын</translation>
 <translation id="6957231940976260713">Қызмет атауы</translation>
@@ -1598,6 +1599,7 @@
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> құрылғысын кәсіпорын басқарады.</translation>
 <translation id="8398927464629426868">Құрылғының зарядталу немесе зарядын жоғалту көрсеткіші.</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> стиліндегі <ph name="ART_FEATURE" /> суреті</translation>
+<translation id="8409219750150841791">Құрастырылған қорытынды:</translation>
 <translation id="8410244574650205435">Автоматты түрде анықталады</translation>
 <translation id="8420955526972171689">Сынақтар жүргізіп, жабдық ақауларын жойыңыз.</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1644,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> қосымша әрекеттері</translation>
 <translation id="86356131183441916">Ашық күлгін</translation>
 <translation id="8647595191512746911">Аудио транскрипциясы</translation>
+<translation id="8648578954147795914">Құрастырылған атаулар:</translation>
 <translation id="8650852232143958317">Gmail және Google Drive файлдарын алып қалыңыз</translation>
 <translation id="8651481478098336970">дыбысты өшіру</translation>
 <translation id="8655295600908251630">Арна</translation>
@@ -1670,7 +1673,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos альбомы</translation>
 <translation id="8775713578693478175">Модем таңдаған APN</translation>
-<translation id="877735394245039557">Модель жүктеп алынуда</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Бұл желіде адаптивті портал болуы мүмкін.</translation>
 <translation id="8797082062139985406">Google AI технологиясымен атау жасау</translation>
@@ -1784,6 +1786,7 @@
 <translation id="9218016617214286986">Белгілі APN-дерді көрсету</translation>
 <translation id="932327136139879170">Негізгі бет</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Микрофон қосылғанына көз жеткізіңіз немесе Chromebook-ты өшіріп қосып көріңіз.</translation>
 <translation id="945522503751344254">Пікір жіберу</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> бағыт үшін перне жоқ. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">транскрипцияда әр сөйлеушінің айтқан сөзі мен уақытын білу үшін жазбадағы дауыстарды салыстыру.</translation>

@@ -513,6 +513,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="813913629614996137">正在初始化…</translation>
 <translation id="8166782796394721554">開啟 Chromium 的 JavaScript 和 WebAssembly 引擎額外防護</translation>
 <translation id="81770708095080097">此檔案不安全，因此 Chromium 已封鎖此檔案。</translation>
+<translation id="8177472873527554730">在頁面上找不到內容</translation>
 <translation id="8200109504272824693">輸入用於在帳戶 <ph name="USER_EMAIL" /> 中使用及儲存 Chromium 資料的密碼短語</translation>
 <translation id="8221491193165283816">您通常會封鎖通知。如要允許此網站向您傳送通知，請按這裡。</translation>
 <translation id="8223363452568144035">如要使用攝錄機，請在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中向 Chromium 授予存取權</translation>

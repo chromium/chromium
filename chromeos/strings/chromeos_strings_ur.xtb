@@ -503,6 +503,7 @@
 <translation id="3373141842870501561">ارتھ فلو وال پیپر</translation>
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> والا <ph name="LETTERS_COLOR" /> پس منظر</translation>
 <translation id="3383623117265110236">خصوصی</translation>
+<translation id="3395147534045164351">اسنیپ مقام ٹوگل کریں</translation>
 <translation id="3404249063913988450">اسکرین سیور فعال کریں</translation>
 <translation id="3413935475507503304">اپ ڈیٹ کے ساتھ آگے بڑھنے کے لیے اگلے پر کلک کریں۔</translation>
 <translation id="3428551088151258685">آؤٹ ڈور</translation>
@@ -652,6 +653,7 @@
 <translation id="4113067922640381334">اب آپ کو نئے <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />وال پیپرز<ph name="END_LINK_WALLPAPER_SUBPAGE" /> تک رسائی حاصل ہے</translation>
 <translation id="4117637339509843559">تاریک وضع</translation>
 <translation id="4126551873361000548">‫10 سیکنڈز پیچھے جائیں</translation>
+<translation id="4128271910628504223">ایک پرامپٹ درج کریں جیسے "ایک دھندلا ہوا جنگل ڈرا کریں"</translation>
 <translation id="4130035430755296270">لے آؤٹ کے مزید اختیارات کیلئے اسکرول کرتے رہیں</translation>
 <translation id="4130750466177569591">میں متفق ہوں</translation>
 <translation id="4131410914670010031">سیاہ اور سفید</translation>
@@ -859,6 +861,7 @@
 <translation id="5050042263972837708">گروپ کا نام</translation>
 <translation id="5051044138948155788">یہ واحد صفحہ ہے۔ یہ آپ کو سکیننگ اسٹارٹ سکرین پر لے جائے گا۔</translation>
 <translation id="5053233795640754917">موقوف کریں</translation>
+<translation id="5056587122125565772">تصویر تخلیق کریں</translation>
 <translation id="5078711626843651677">صوتی ماڈلز تب تک عارضی طور پر آلہ پر اسٹور کیے جاتے ہیں جب تک کہ اسپیکر کی لیبلنگ مکمل نہ ہو جائے۔ آپ اسے کسی بھی وقت ترتیبات میں آف کر سکتے ہیں۔</translation>
 <translation id="5078983345702708852">اختراعی</translation>
 <translation id="5087864757604726239">پیچھے</translation>
@@ -1130,7 +1133,6 @@
 <translation id="6325525973963619867">ناکام</translation>
 <translation id="6327262166342360252">‏یہ وال پیپر درج ذیل ٹیکسٹ کا استعمال کرتے ہوئے AI کے ساتھ بنایا گیا: "<ph name="PROMPT" />۔"</translation>
 <translation id="6331191339300272798">خودکار گہری تھیم</translation>
-<translation id="6335228876613776082">ماڈل کا ڈاؤن لوڈ مکمل ہو گیا</translation>
 <translation id="6340526405444716530">ذاتی نوعیت سازی</translation>
 <translation id="6348252528297699679">آپ ترتیبات &gt; رازداری اور سیکیورٹی &gt; رازداری سے متعلق کنٹرولز &gt; مقام تک رسائی میں مقام کو آف کر سکتے ہیں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">صارف نام اور پاس ورڈ</translation>
@@ -1674,7 +1676,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">‏Google تصاویر کا البم</translation>
 <translation id="8775713578693478175">‏موڈم APN</translation>
-<translation id="877735394245039557">ماڈل کا ڈاؤن لوڈ پیش رفت میں ہے</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">اس نیٹ ورک میں ایک کیپٹو پورٹل ہو سکتا ہے</translation>
 <translation id="8797082062139985406">‏‫Google AI کے ذریعے نام تخلیق کریں</translation>

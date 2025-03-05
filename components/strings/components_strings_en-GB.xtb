@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">Load page later</translation>
 <translation id="1010225406377140704">Contact the sender to ask for a new link</translation>
 <translation id="1011206368273183593">Preparing files</translation>
+<translation id="1012264210825687872">Once you review your order, you must sign in to or create an <ph name="BNPL_ISSUER_NAME" /> account. This account will be automatically linked to Google Pay.</translation>
 <translation id="1014509239502131234">Undoing result</translation>
 <translation id="1015730422737071372">Provide additional details.</translation>
 <translation id="1019413721762100891">Off</translation>
@@ -251,6 +252,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1419305130220238697">Manage downloads in Chrome button, activate to manage files that you have downloaded in Chrome</translation>
 <translation id="1420345875188552368">Your saved auto-pay method may be used for this payment. To turn off eWallets in Chrome, go to your <ph name="BEGIN_LINK1" />payment settings<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> to allow pairing</translation>
+<translation id="1421484961346698724">Deleted account</translation>
 <translation id="14222610277930434">You visit often</translation>
 <translation id="1422930527989633628">Can ask to discover nearby Bluetooth devices</translation>
 <translation id="1426410128494586442">Yes</translation>
@@ -660,6 +662,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2145193671493396738">Economy news</translation>
 <translation id="214556005048008348">Cancel payment</translation>
 <translation id="2147117373852943630">Musical instruments</translation>
+<translation id="2147254250314124496"><ph name="EMBEDDED_URL" /> wants to use information that they've saved about you</translation>
 <translation id="2148613324460538318">Add Card</translation>
 <translation id="2148716181193084225">Today</translation>
 <translation id="2149968176347646218">Connection is not secure</translation>
@@ -691,6 +694,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2187317261103489799">Detect (default)</translation>
 <translation id="2188375229972301266">Multiple punch bottom</translation>
 <translation id="2194856509914051091">Things to consider</translation>
+<translation id="2198071643181968308">Learn more about <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="2200678913752027654">Thumbs-down button, press Enter to open a form for submitting detailed feedback on why you dislike this suggestion</translation>
 <translation id="2202627062836089804">back of your card</translation>
 <translation id="2204482073374652408">Finished updating!</translation>
@@ -2318,6 +2322,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome needs access to your device's <ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">Cardboard (end)</translation>
+<translation id="5106648964679263509">Virtual card for <ph name="BNPL_ISSUER_NAME" /> filled</translation>
 <translation id="5108881358339761672">Site is not secure</translation>
 <translation id="5109892411553231226">Manage Payment Methods</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2513,6 +2518,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
             <ph name="LIST_ITEM" />Information entered in forms
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Reverse order face up</translation>
+<translation id="5445340838622821110">When you pay over time, a one-time virtual card number is filled. This number is only for this purchase. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Allow <ph name="SITE" /> to use info they've saved about you</translation>
 <translation id="5452270690849572955">This <ph name="HOST_NAME" /> page can’t be found</translation>
 <translation id="5452923259299906094">Pay with eWallet and Pix</translation>
@@ -3019,6 +3025,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6351658970066645919">Delete browsing data</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{None}=1{1 password (for <ph name="DOMAIN_LIST" />, synced)}=2{2 passwords (for <ph name="DOMAIN_LIST" />, synced)}other{# passwords (for <ph name="DOMAIN_LIST" />, synced)}}</translation>
 <translation id="6355392890578844978">This browser is not managed by a company or other organisation. Activity on this device may be managed outside of Chromium. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">'<ph name="GROUP_TITLE_1" />' and '<ph name="GROUP_TITLE_2" />' tab groups no longer available</translation>
 <translation id="6358088212770985041">edit payment methods</translation>
 <translation id="6358450015545214790">What do these mean?</translation>
 <translation id="6360213755783740931">Learn more about malware protection</translation>
@@ -3332,6 +3339,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6917795328362592458">The password that you just used was found in a data breach. To secure your accounts, Password Manager recommends checking your saved passwords.</translation>
 <translation id="6917873303492266709">To share, join, and collaborate in tab groups, open settings and turn on Allow Chrome sign-in</translation>
 <translation id="6921197121276419421">Install web apps allowed</translation>
+<translation id="69238565902785824">Keeping your account linked helps you pay faster with <ph name="BNPL_ISSUER_NAME" />, but you can unlink it by going to <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /></translation>
 <translation id="6924013822850225188">Choose whether you see your card benefits at checkout (bank terms apply)</translation>
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Body art</translation>
@@ -3397,6 +3405,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="701757816833614688">Visual Arts and Design Education</translation>
 <translation id="702275896380648118">This site determines things that you like and then suggests ads to other sites. This site also gets your ad topics from Chrome to show you more relevant ads.</translation>
 <translation id="7023162328967545559">Admin warning</translation>
+<translation id="7023765275461720661">Link account and pay with <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Passwords</translation>
 <translation id="7030164307377592766">modify settings for filling payment methods</translation>
 <translation id="7031646650991750659">Which Google Play apps you have installed</translation>
@@ -3619,6 +3628,7 @@ Additional details:
 <translation id="741204030948306876">Yes, I'm in</translation>
 <translation id="7416351320495623771">Manage passwords...</translation>
 <translation id="7416898721136759658">Grants, scholarships and financial aid</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">Programming</translation>
 <translation id="7419091773564635591">Computers and electronics</translation>
 <translation id="7419106976560586862">Profile Path</translation>
@@ -3665,6 +3675,7 @@ Additional details:
 <translation id="7485085230273446323">Business and industrial</translation>
 <translation id="7485870689360869515">No data found.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> will check your eligibility (this won't affect your credit score). If approved, <ph name="BNPL_ISSUER_NAME" /> will provide payment plans for you to choose from and complete your purchase.</translation>
 <translation id="7489392576326061356">Shampoos and Conditioners</translation>
 <translation id="7495528107193238112">This content is blocked. Contact the site owner to fix the issue.</translation>
 <translation id="749865518782565832">Plumbing</translation>

@@ -460,6 +460,7 @@
 <translation id="1303101771013849280">બુકમાર્ક HTML ફાઇલ</translation>
 <translation id="1303671224831497365">કોઈ Bluetooth ડિવાઇસ મળ્યાં નથી</translation>
 <translation id="130491383855577612">Linux ઍપ અને ફાઇલો સફળતાપૂર્વક બદલી છે</translation>
+<translation id="1306373239538745517">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{1 એક્સ્ટેન્શન અને આ ડિવાઇસ પર તેના દ્વારા સાચવેલો ડેટા કાઢી નાખો}one{{ACCOUNT_EXTENSIONS_COUNT} એક્સ્ટેન્શન અને આ ડિવાઇસ પર તેના દ્વારા સાચવેલો ડેટા કાઢી નાખો}other{{ACCOUNT_EXTENSIONS_COUNT} એક્સ્ટેન્શન અને આ ડિવાઇસ પર તેના દ્વારા સાચવેલો ડેટા કાઢી નાખો}}</translation>
 <translation id="1306518237408758433"><ph name="BOOKMARK_TITLE" /> ખોલો</translation>
 <translation id="1306606229401759371">સેટિંગ બદલો</translation>
 <translation id="1307165550267142340">તમારો પિન બનાવ્યો હતો</translation>
@@ -1204,6 +1205,7 @@
 <translation id="1826192255355608658">તમારા Chrome બ્રાઉઝર બુકમાર્ક, પાસવર્ડ, ઇતિહાસ અને બીજું ઘણું બધું સિંક કરો</translation>
 <translation id="1826516787628120939">તપાસી રહ્યાં છે</translation>
 <translation id="1826657447823925402">રિવર્સ સ્ક્રોલિંગ બંધ કર્યું</translation>
+<translation id="1827416268933303617"><ph name="COLOR_NAME" /> રંગ</translation>
 <translation id="1827504459960247692">હૉટસ્પૉટનું નામ</translation>
 <translation id="1828378091493947763">આ ઉપકરણ પર આ પ્લગ-ઇન સમર્થિત નથી</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{તમામ URLને &amp;ખોલો}=1{બુકમાર્ક &amp;ખોલો}one{તમામ ({COUNT}) URLને &amp;ખોલો}other{તમામ ({COUNT}) URLને &amp;ખોલો}}</translation>
@@ -1704,7 +1706,6 @@
 <translation id="2178545675770638239">પાસવર્ડ પસંદ કરો</translation>
 <translation id="2178585470774851578">તમે ChromeOS Flexની ડિબગીંગની સુવિધાઓ ચાલુ કરી રહ્યાં છો, જે sshd daemonનું સેટઅપ કરશે અને USB ડ્રાઇવમાંથી બૂટ કરવાનું ચાલુ કરશે.</translation>
 <translation id="2178614541317717477">CA સમાધાન</translation>
-<translation id="2179850495466791921">અત્યારે તમારી પાસે <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> અને વધુ છે</translation>
 <translation id="2180620921879609685">કોઈપણ પેજ પરનું કન્ટેન્ટ બ્લૉક કરો</translation>
 <translation id="2181821976797666341">પૉલિસીઓ</translation>
 <translation id="2182058453334755893">તમારા ક્લિપબોર્ડ પર કૉપિ કરવામાં આવ્યું</translation>
@@ -3121,7 +3122,6 @@
 <translation id="3167562202484086668"><ph name="BRAND" />નો તમામ ડેટા ડિલીટ કરો</translation>
 <translation id="3169930038976362151">તમારી જરૂરિયાત પ્રમાણે થીમ પસંદ કરો. તમારી થીમ, વૉલપેપર અને સ્ક્રીન સેવર જેવું બીજું ઘણું બધું બદલવા માટે, ડેસ્કટૉપ પર માત્ર ટચ કરીને થોડીવાર દબાવી રાખો.</translation>
 <translation id="3170072451822350649">તમે સાઇન ઇન કરવાનું છોડી અને <ph name="LINK_START" />અતિથિ તરીકે બ્રાઉઝ<ph name="LINK_END" /> પણ કરી શકો છો.</translation>
-<translation id="3171499217959105722">અત્યારે તમારી પાસે <ph name="NUMBERED_ITEM" /> અને વધુ છે</translation>
 <translation id="3175067642577044620">મુખ્ય ભાગ</translation>
 <translation id="3175862692832442091">જંગલ</translation>
 <translation id="3176347586396987181">માઉસનું બટન દબાવી રાખવા માટે “z”નો ઉપયોગ કરો</translation>
@@ -3933,7 +3933,6 @@
 <translation id="3744219658596020825">તમારા પાસવર્ડ આયાત કરવામાં આવ્યા ન હતા</translation>
 <translation id="3745306754941902605">રસોડું</translation>
 <translation id="3747077776423672805">ઍપને કાઢી નાખવા માટે, સેટિંગ &gt; Google Play Store &gt; Android પસંદગીઓ મેનેજ કરો &gt; ઍપ અથવા ઍપ્લિકેશન મેનેજર પર જાઓ. પછી તમે અનઇન્સ્ટૉલ કરવા માગો છો તે ઍપ પર ટૅપ કરો (ઍપ શોધવા માટે તમારે જમણે અથવા ડાબે સ્વાઇપ કરવું જરૂરી હોય શકે છે). પછી અનઇન્સ્ટૉલ કરો અથવા બંધ કરો પર ટૅપ કરો.</translation>
-<translation id="3747552357646973221">અત્યારે તમારી પાસે <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> અને વધુ છે</translation>
 <translation id="3748424433435232460">આ એકાઉન્ટ માટેનો પાસવર્ડ પહેલેથી જ આ ડિવાઇસમાં સાચવવામાં આવ્યો છે</translation>
 <translation id="3748706263662799310">બગની જાણ કરો</translation>
 <translation id="3749724428455457489">સાઇટ દ્વારા સૂચવવામાં આવેલી જાહેરાતો વિશે વધુ જાણો</translation>
@@ -4067,6 +4066,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{એક્સ્ટેંશન મંજૂર કરવામાં આવ્યું છે}one{# એક્સ્ટેંશન મંજૂર કરવામાં આવ્યું છે}other{# એક્સ્ટેંશન મંજૂર કરવામાં આવ્યા છે}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux માટે ઓછામાં ઓછી <ph name="INSTALL_SIZE" />  ખાલી સ્પેસનો સુઝાવ આપવામાં આવે છે.</translation>
+<translation id="3824203811509979971">કન્ટેન્ટનો સારાંશ આપો અથવા પ્રશ્નો પૂછો</translation>
 <translation id="3824621460022590830">ડિવાઇસની નોંધણી માટેનું ટોકન અમાન્ય છે. કૃપા કરીને તમારા ડિવાઇસના માલિક અથવા વ્યવસ્થાપકનો સંપર્ક કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">અન્ય ડિવાઇસમાંથી ટૅબ જોવા માટે સાઇન ઇન કરો</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{ફાઇલના આ પ્રકાર માટેની મારી પસંદગી યાદ રાખો: <ph name="FILE_TYPES" />}one{ફાઇલના આ પ્રકાર માટેની મારી પસંદગી યાદ રાખો: <ph name="FILE_TYPES" />}other{ફાઇલના આ પ્રકાર માટેની મારી પસંદગી યાદ રાખો: <ph name="FILE_TYPES" />}}</translation>
@@ -4253,6 +4253,7 @@
 <translation id="3948985214866944547">મોટાભાગના લોકો આ સાઇટ માટે સચોટ લોકેશન શેર કરવાનું બ્લૉક કરે છે</translation>
 <translation id="394984172568887996">IE થી આયાત કરેલ</translation>
 <translation id="3949999964543783947">સલામત રીતે ફાઇલો ડાઉનલોડ કરવા માટે <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
+<translation id="3950479158728806902">ઝડપથી સાઇન ઇન કરવા માટે ઑટોમૅટિક રીતે પાસકી બનાવો</translation>
 <translation id="3950820424414687140">સાઇન ઇન</translation>
 <translation id="3950841222883198950">વૉઇસ ટાઇપિંગ</translation>
 <translation id="3953834000574892725">મારા એકાઉન્ટ</translation>
@@ -5181,6 +5182,7 @@
 <translation id="4624054169152573743">રંગ થીમ</translation>
 <translation id="4625078469366263107">ઍપ ચાલુ કરો</translation>
 <translation id="4625905218692741757">ડિફૉલ્ટ રંગ ગ્રે</translation>
+<translation id="4627107755957573804">પાસકીનો ઉપયોગ કરવા માટે સાઇટ અને ઍપને ઉપલબ્ધ હોય તેવા એકાઉન્ટને અપગ્રેડ કરવાની મંજૂરી આપો</translation>
 <translation id="4627442949885028695">બીજા ઉપકરણમાંથી ચાલુ કરો</translation>
 <translation id="4628762811416793313">Linux કન્ટેનર સેટઅપ પૂર્ણ થયું નથી. કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> પ્રોફાઇલ ખોલો</translation>
@@ -5764,6 +5766,7 @@
 <translation id="5053233576223592551">વપરાશકર્તાનું નામ ઉમેરો</translation>
 <translation id="505347685865235222">નામ વિનાનું ગ્રૂપ - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{તમારે હમણાં જ તે બદલવો જોઈએ}one{તમારે હમણાં જ આ બદલવો જોઈએ}other{તમારે હમણાં જ આ બદલવા જોઈએ}}</translation>
+<translation id="5056587122125565772">છબી બનાવો</translation>
 <translation id="5056950756634735043">કન્ટેનર સાથે કનેક્ટ કરી રહ્યાં છીએ</translation>
 <translation id="5057110919553308744">તમે એક્સ્ટેંશનને ક્લિક કરો ત્યારે</translation>
 <translation id="5057127674016624293">સ્કૅન કરવામાં અપેક્ષા કરતાં વધુ સમય લાગી રહ્યો છે</translation>
@@ -5874,6 +5877,7 @@
 <translation id="512642543295077915">search + backspace</translation>
 <translation id="5126611267288187364">ફેરફારો જુઓ</translation>
 <translation id="5127620150973591153">સુરક્ષિત કનેક્શન ID: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">કન્ટેન્ટનો સારાંશ આપો અથવા પ્રશ્નો પૂછો.</translation>
 <translation id="5127881134400491887">નેટવર્ક કનેક્શન્સનું સંચાલન કરો</translation>
 <translation id="5127934926273826089">ફૂલો</translation>
 <translation id="5127986747308934633">તમારા ઍડમિનિસ્ટ્રેટર તમારું ડિવાઇસ નિયંત્રિત કરી રહ્યાં છે</translation>
@@ -6719,6 +6723,7 @@
 <translation id="5749214722697335450">વપરાશ અને નિદાનનો ડેટા મોકલો. Googleને નિદાન, ડિવાઇસ અને ઍપના વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલીને તમારા Android અનુભવને બહેતર બનાવવામાં સહાય કરો. સિસ્ટમ અને ઍપની સ્થિરતા તથા અન્ય સુધારણાઓ માટે આ સહાય કરશે. કેટલોક કુલ ડેટા Googleની ઍપ અને પાર્ટનર, જેમ કે Android ડેવલપરને પણ સહાય કરશે. જો તમારું 'વધારાની વેબ અને ઍપ ઍક્ટિવિટી' સેટિંગ ચાલુ હોય, તો આ ડેટા તમારા Google એકાઉન્ટમાં સાચવવામાં આવી શકે છે. <ph name="BEGIN_LINK1" />મેટ્રિક વિશે વધુ જાણો<ph name="BEGIN_LINK1_END" />વધુ જાણો<ph name="END_LINK1" /></translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">ઇન્ટરનેટ શેર કરવાની સુવિધાની ઉપલબ્ધતા ચેક કરો</translation>
+<translation id="5752346055178471785">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{આ એક્સ્ટેન્શન તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યું છે, પરંતુ ફક્ત આ ડિવાઇસ પર તેના દ્વારા સાચવવામાં આવેલો કોઈપણ ડેટા ડિલીટ થઈ શકે છે}one{આ એક્સ્ટેન્શન તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યું છે, પરંતુ ફક્ત આ ડિવાઇસ પર તેના દ્વારા સાચવવામાં આવેલો કોઈપણ ડેટા ડિલીટ થઈ શકે છે}other{આ એક્સ્ટેન્શન તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યા છે, પરંતુ ફક્ત આ ડિવાઇસ પર તેના દ્વારા સાચવવામાં આવેલો કોઈપણ ડેટા ડિલીટ થઈ શકે છે}}</translation>
 <translation id="5753570386948603678">ઇતિહાસમાંથી ડિલીટ કરો</translation>
 <translation id="5756163054456765343">સ&amp;હાય કેન્દ્ર</translation>
 <translation id="5757187557809630523">આગલો ટ્રૅક</translation>
@@ -11398,6 +11403,7 @@ USB ડિવાઇસ</translation>
 <translation id="9074739597929991885">બ્લૂટૂથ</translation>
 <translation id="9074836595010225693">USB માઉસ કનેક્ટ કર્યું</translation>
 <translation id="9075413375877487220">આ એક્સ્ટેન્શન Safe Browsingમાં વધારેલી સુરક્ષા દ્વારા વિશ્વસનીય નથી.</translation>
+<translation id="9075985558450420812">છબી બનાવવા માટે કસ્ટમ પ્રૉમ્પ્ટ દાખલ કરો અથવા ટેક્સ્ટ હાઇલાઇટ કરો.</translation>
 <translation id="9076523132036239772">માફ કરશો, તમારો ઇમેઇલ અથવા પાસવર્ડ માન્ય કરી શકાયો નથી. સૌ પ્રથમ નેટવર્કથી કનેક્ટ કરવાનો પ્રયાસ કરો. </translation>
 <translation id="9076821103818989526">બાજુની પૅનલ</translation>
 <translation id="9076977315710973122">SMB શેર કરવાના સેટિંગ</translation>

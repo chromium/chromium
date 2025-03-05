@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">ਪੰਨਾ ਬਾਅਦ ਵਿੱਚ ਲੋਡ ਕਰੋ</translation>
 <translation id="1010225406377140704">ਨਵਾਂ ਲਿੰਕ ਮੰਗਣ ਲਈ, ਭੇਜਣ ਵਾਲੇ ਨਾਲ ਸੰਪਰਕ ਕਰੋ</translation>
 <translation id="1011206368273183593">ਫ਼ਾਈਲਾਂ ਤਿਆਰ ਹੋ ਰਹੀਆਂ ਹਨ</translation>
+<translation id="1012264210825687872">ਆਪਣੇ ਆਰਡਰ ਦੀ ਸਮੀਖਿਆ ਕਰਨ ਤੋਂ ਬਾਅਦ, ਤੁਹਾਡਾ ਸਾਈਨ-ਇਨ ਕਰਨਾ ਜਾਂ <ph name="BNPL_ISSUER_NAME" /> ਖਾਤਾ ਬਣਾਉਣਾ ਲਾਜ਼ਮੀ ਹੈ। ਇਹ ਖਾਤਾ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ Google Pay ਨਾਲ ਲਿੰਕ ਹੋ ਜਾਵੇਗਾ।</translation>
 <translation id="1014509239502131234">ਨਤੀਜੇ ਨੂੰ ਅਣਕੀਤਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="1015730422737071372">ਵਾਧੂ ਵੇਰਵੇ ਮੁਹੱਈਆ ਕਰਵਾਓ</translation>
 <translation id="1019413721762100891">ਬੰਦ</translation>
@@ -251,6 +252,7 @@
 <translation id="1419305130220238697">'Chrome ਵਿੱਚ ਡਾਊਨਲੋਡਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ' ਬਟਨ, Chrome ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਫ਼ਾਈਲਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ ਇਸਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="1420345875188552368">ਇਸ ਭੁਗਤਾਨ ਲਈ ਤੁਹਾਡੀ ਰੱਖਿਅਤ ਕੀਤੀ ਸਵੈ-ਭੁਗਤਾਨ ਵਿਧੀ ਵਰਤੀ ਜਾ ਸਕਦੀ ਹੈ। Chrome ਵਿੱਚ ਈ-ਵਾਲੇਟਾਂ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ, ਆਪਣੀਆਂ <ph name="BEGIN_LINK1" />ਭੁਗਤਾਨ ਸੈਟਿੰਗਾਂ<ph name="END_LINK1" /> ਵਿੱਚ ਜਾਓ</translation>
 <translation id="1420920093772172268">ਜੋੜਾਬੱਧ ਕਰਨ ਲਈ ਇਜਾਜ਼ਤ ਦੇਣ ਵਾਸਤੇ <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="1421484961346698724">ਖਾਤਾ ਮਿਟਾਇਆ ਗਿਆ</translation>
 <translation id="14222610277930434">ਤੁਹਾਡੇ ਵੱਲੋਂ ਅਕਸਰ ਦੇਖੀਆਂ ਜਾਂਦੀਆਂ</translation>
 <translation id="1422930527989633628">ਸਾਈਟ ਨਜ਼ਦੀਕੀ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਦਾ ਪਤਾ ਲਗਾਉਣ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="1426410128494586442">ਹਾਂ</translation>
@@ -692,6 +694,7 @@
 <translation id="2187317261103489799">ਪਤਾ ਲਗਾਓ (ਪੂਰਵ-ਨਿਰਧਾਰਤ)</translation>
 <translation id="2188375229972301266">ਹੇਠਾਂ ਇੱਕ ਤੋਂ ਵੱਧ ਮੋਰੀਆਂ</translation>
 <translation id="2194856509914051091">ਵਿਚਾਰੇ ਜਾਣ ਵਾਲੀਆਂ ਚੀਜ਼ਾਂ</translation>
+<translation id="2198071643181968308"><ph name="BNPL_ISSUER_NAME" /> ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="2200678913752027654">'ਨਾ ਸਲਾਹੋ' ਬਟਨ, ਤੁਹਾਨੂੰ ਇਹ ਸੁਝਾਅ ਨਾਪਸੰਦ ਕਿਉਂ ਹੈ, ਇਸ ਬਾਰੇ ਵੇਰਵੇ ਸਹਿਤ ਵਿਚਾਰ ਸਪੁਰਦ ਕਰਨ ਲਈ ਫ਼ਾਰਮ ਖੋਲ੍ਹਣ ਵਾਸਤੇ 'ਦਾਖਲ ਕਰੋ' ਦਬਾਓ</translation>
 <translation id="2202627062836089804">ਤੁਹਾਡੇ ਕਾਰਡ ਦੇ ਪਿਛਲੇ ਪਾਸੇ</translation>
 <translation id="2204482073374652408">ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਪ੍ਰਕਿਰਿਆ ਪੂਰੀ ਹੋਈ!</translation>
@@ -2316,6 +2319,7 @@
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome ਨੂੰ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੇ <ph name="PERMISSION" /> ਤੱਕ ਪਹੁੰਚ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="510644072453496781">ਕਾਰਡਬੋਰਡ (ਐਂਡ)</translation>
+<translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> ਦੇ ਲਈ ਆਭਾਸੀ ਕਾਰਡ ਦੀ ਜਾਣਕਾਰੀ ਭਰੀ ਗਈ</translation>
 <translation id="5108881358339761672">ਸਾਈਟ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="5109892411553231226">ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="5112422516732747637">A</translation>
@@ -2511,6 +2515,7 @@
             <ph name="LIST_ITEM" />ਫ਼ਾਰਮਾਂ ਵਿੱਚ ਦਾਖਲ ਕੀਤੀ ਜਾਣਕਾਰੀ
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">ਉਲਟੇ ਕ੍ਰਮ ਵਿੱਚ ਪਾਸਾ ਉੱਪਰ ਕੀਤੇ ਹੋਏ</translation>
+<translation id="5445340838622821110">ਜਦੋਂ ਤੁਸੀਂ ਸਮੇਂ ਦੇ ਨਾਲ ਭੁਗਤਾਨ ਕਰਦੇ ਹੋ, ਤਾਂ ਇੱਕ ਵਾਰ ਵਰਤਿਆ ਜਾਣ ਵਾਲਾ ਆਭਾਸੀ ਕਾਰਡ ਨੰਬਰ ਭਰਿਆ ਜਾਂਦਾ ਹੈ। ਇਹ ਨੰਬਰ ਸਿਰਫ਼ ਇਸ ਖਰੀਦਦਾਰੀ ਲਈ ਹੈ। <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700"><ph name="SITE" /> ਨੂੰ ਉਨ੍ਹਾਂ ਵੱਲੋਂ ਤੁਹਾਡੇ ਬਾਰੇ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਣਕਾਰੀ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="5452270690849572955">ਇਸ <ph name="HOST_NAME" /> ਪੰਨੇ ਨੂੰ ਲੱਭਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
 <translation id="5452923259299906094">ਈ-ਵਾਲੇਟ ਅਤੇ Pix ਨਾਲ ਭੁਗਤਾਨ ਕਰੋ</translation>
@@ -3016,6 +3021,7 @@
 <translation id="6351658970066645919">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਓ</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ਕੋਈ ਨਹੀਂ}=1{1 ਪਾਸਵਰਡ (<ph name="DOMAIN_LIST" /> ਲਈ, ਸਿੰਕ ਕੀਤਾ ਗਿਆ)}=2{2 ਪਾਸਵਰਡ (<ph name="DOMAIN_LIST" /> ਲਈ, ਸਿੰਕ ਕੀਤੇ ਗਏ)}other{# ਪਾਸਵਰਡ (<ph name="DOMAIN_LIST" /> ਲਈ, ਸਿੰਕ ਕੀਤੇ ਗਏ)}}</translation>
 <translation id="6355392890578844978">ਇਹ ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਪ੍ਰਬੰਧਨ ਕਿਸੇ ਕੰਪਨੀ ਜਾਂ ਹੋਰ ਸੰਸਥਾ ਵੱਲੋਂ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਇਸ ਡੀਵਾਈਸ ਦੀ ਸਰਗਰਮੀ ਦਾ ਪ੍ਰਬੰਧਨ Chromium ਤੋਂ ਬਾਹਰ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">"<ph name="GROUP_TITLE_1" />" ਅਤੇ "<ph name="GROUP_TITLE_2" />" ਟੈਬ ਗਰੁੱਪ ਹੁਣ ਉਪਲਬਧ ਨਹੀਂ ਹਨ</translation>
 <translation id="6358088212770985041">ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="6358450015545214790">ਇਹਨਾਂ ਦਾ ਕੀ ਮਤਲਬ ਹੈ?</translation>
 <translation id="6360213755783740931">ਮਾਲਵੇਅਰ ਸੁਰੱਖਿਆ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
@@ -3329,6 +3335,7 @@
 <translation id="6917795328362592458">ਤੁਹਾਡੇ ਵੱਲੋਂ ਹੁਣੇ ਹੀ ਵਰਤਿਆ ਗਿਆ ਪਾਸਵਰਡ ਡਾਟਾ ਉਲੰਘਣਾ ਵਿੱਚ ਮਿਲਿਆ ਸੀ। ਆਪਣੇ ਖਾਤਿਆਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਲਈ, Password Manager ਆਪਣੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ।</translation>
 <translation id="6917873303492266709">ਟੈਬ ਗਰੁੱਪਾਂ ਨੂੰ ਸਾਂਝਾ ਕਰਨ, ਉਨ੍ਹਾਂ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਅਤੇ ਉਨ੍ਹਾਂ ਦਾ ਸਹਿਯੋਗ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ ਅਤੇ 'Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਦੀ ਆਗਿਆ ਦਿਓ' ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="6921197121276419421">ਵੈੱਬ ਐਪਾਂ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਦੀ ਆਗਿਆ ਹੈ</translation>
+<translation id="69238565902785824">ਆਪਣੇ ਖਾਤੇ ਨੂੰ ਲਿੰਕ ਰੱਖਣ ਨਾਲ ਤੁਹਾਨੂੰ <ph name="BNPL_ISSUER_NAME" /> ਨਾਲ ਤੇਜ਼ੀ ਨਾਲ ਭੁਗਤਾਨ ਕਰਨ ਵਿੱਚ ਮਦਦ ਮਿਲਦੀ ਹੈ, ਪਰ ਤੁਸੀਂ <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /> 'ਤੇ ਜਾ ਕੇ ਇਸਨੂੰ ਅਣਲਿੰਕ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="6924013822850225188">ਚੁਣੋ ਕਿ ਕੀ ਤੁਹਾਨੂੰ ਚੈੱਕ-ਆਊਟ 'ਤੇ ਆਪਣੇ ਕਾਰਡ ਦੇ ਲਾਭ ਦਿਸਦੇ ਹਨ ਜਾਂ ਨਹੀਂ (ਬੈਂਕ ਦੇ ਨਿਯਮ ਲਾਗੂ ਹਨ)</translation>
 <translation id="6925267999184670015">ਨਾਰਥ ਅਮਰੀਕਨ B+</translation>
 <translation id="6926216138694948720">ਸਰੀਰਕ ਕਲਾ</translation>
@@ -3394,6 +3401,7 @@
 <translation id="701757816833614688">ਦ੍ਰਿਸ਼ਟੀਗਤ ਕਲਾਵਾਂ ਅਤੇ ਡਿਜ਼ਾਈਨ ਸੰਬੰਧੀ ਸਿੱਖਿਆ</translation>
 <translation id="702275896380648118">ਇਹ ਸਾਈਟ ਤੁਹਾਡੀਆਂ ਮਨਪਸੰਦ ਚੀਜ਼ਾਂ ਨੂੰ ਨਿਰਧਾਰਿਤ ਕਰਦੀ ਹੈ ਅਤੇ ਫਿਰ ਦੂਜੀਆਂ ਸਾਈਟਾਂ ਨੂੰ ਵਿਗਿਆਪਨਾਂ ਦੇ ਸੁਝਾਅ ਦਿੰਦੀ ਹੈ। ਤੁਹਾਨੂੰ ਜ਼ਿਆਦਾ ਢੁਕਵੇਂ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਲਈ, ਇਹ ਸਾਈਟ Chrome ਤੋਂ ਵੀ ਤੁਹਾਡੇ ਵਿਗਿਆਪਨ ਦੇ ਵਿਸ਼ਿਆਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰਦੀ ਹੈ।</translation>
 <translation id="7023162328967545559">ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਚਿਤਾਵਨੀ</translation>
+<translation id="7023765275461720661">ਕੀ ਖਾਤਾ ਲਿੰਕ ਕਰ ਕੇ <ph name="BNPL_ISSUER_NAME" /> ਨਾਲ ਭੁਗਤਾਨ ਕਰਨਾ ਹੈ?</translation>
 <translation id="7029809446516969842">ਪਾਸਵਰਡ</translation>
 <translation id="7030164307377592766">ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਨੂੰ ਭਰਨ ਲਈ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸੋਧ ਕਰੋ</translation>
 <translation id="7031646650991750659">ਤੁਸੀਂ ਕਿਹੜੀਆਂ Google Play ਐਪਾਂ ਸਥਾਪਤ ਕੀਤੀਆਂ ਹੋਈਆਂ ਹਨ</translation>
@@ -3615,6 +3623,7 @@
 <translation id="741204030948306876">ਹਾਂ, ਸਹਿਮਤ ਹਾਂ</translation>
 <translation id="7416351320495623771">ਪਾਸਵਰਡਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ…</translation>
 <translation id="7416898721136759658">ਅਨੁਦਾਨ, ਵਜ਼ੀਫ਼ੇ ਅਤੇ ਵਿੱਤੀ ਸਹਾਇਤਾ</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">ਪ੍ਰੋਗਰਾਮਿੰਗ</translation>
 <translation id="7419091773564635591">ਕੰਪਿਊਟਰ ਅਤੇ ਇਲੈਕਟ੍ਰਾਨਿਕਸ</translation>
 <translation id="7419106976560586862">ਪ੍ਰੋਫਾਈਲ ਪਾਥ</translation>
@@ -3661,6 +3670,7 @@
 <translation id="7485085230273446323">ਕਾਰੋਬਾਰ ਅਤੇ ਉਦਯੋਗਿਕ</translation>
 <translation id="7485870689360869515">ਕੋਈ ਡਾਟਾ ਨਹੀਂ ਮਿਲਿਆ।</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> ਤੁਹਾਡੀ ਯੋਗਤਾ ਦੀ ਜਾਂਚ ਕਰੇਗਾ (ਇਹ ਤੁਹਾਡੇ ਕ੍ਰੈਡਿਟ ਸਕੋਰ ਨੂੰ ਪ੍ਰਭਾਵਿਤ ਨਹੀਂ ਕਰੇਗਾ)। ਜੇ ਮਨਜ਼ੂਰੀ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਤਾਂ <ph name="BNPL_ISSUER_NAME" /> ਤੁਹਾਨੂੰ ਚੁਣਨ ਅਤੇ ਤੁਹਾਡੀ ਖਰੀਦ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ ਭੁਗਤਾਨ ਯੋਜਨਾਵਾਂ ਮੁਹੱਈਆ ਕਰਵਾਏਗਾ।</translation>
 <translation id="7489392576326061356">ਸ਼ੈਂਪੂ ਅਤੇ ਕੰਡੀਸ਼ਨਰ</translation>
 <translation id="7495528107193238112">ਇਹ ਸਮੱਗਰੀ ਬਲਾਕ ਕੀਤੀ ਗਈ ਹੈ। ਸਮੱਸਿਆ ਨੂੰ ਠੀਕ ਕਰਨ ਲਈ ਸਾਈਟ ਦੇ ਮਾਲਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="749865518782565832">ਨਲਸਾਜ਼ੀ</translation>

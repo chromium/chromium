@@ -184,6 +184,7 @@
 <translation id="3628308229821498208">Navrhovaná vyhledávání</translation>
 <translation id="3658847490588580244">Spodní panel výchozího prohlížeče</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> web ve skupině webů vlastníka <ph name="RWS_OWNER" />, které vidí vaši aktivitu ve skupině}few{<ph name="RWS_MEMBERS_COUNT" /> weby ve skupině webů vlastníka <ph name="RWS_OWNER" />, které vidí vaši aktivitu ve skupině}many{<ph name="RWS_MEMBERS_COUNT" /> webu ve skupině webů vlastníka <ph name="RWS_OWNER" />, které vidí vaši aktivitu ve skupině}other{<ph name="RWS_MEMBERS_COUNT" /> webů ve skupině webů vlastníka <ph name="RWS_OWNER" />, které vidí vaši aktivitu ve skupině}}</translation>
+<translation id="3676777756440746804">Weby nemohou žádat o použití informací, které o vás uložily</translation>
 <translation id="3697164069658504920">Když je tato možnost zapnutá, weby mohou žádat o použití zařízení USB. Když je vypnutá, weby zařízení USB používat nemohou.</translation>
 <translation id="3707034683772193706">Navštívené weby mohou do Chromu uložit malé množství informací (zejména k ověření, že nejste robot)</translation>
 <translation id="3709818294139939629">Odebrán přístup webu k souboru</translation>
@@ -208,9 +209,11 @@
 <translation id="3922092564198021702">V telefonu přejděte do Nastavení</translation>
 <translation id="3933121352599513978">Sbalit nechtěné žádosti (doporučeno)</translation>
 <translation id="3955193568934677022">Povolit webům přehrávat chráněný obsah (doporučeno)</translation>
+<translation id="3965467402665811906">Weby mohou žádat o použití informací, které o vás uložily</translation>
 <translation id="3967822245660637423">Stahování bylo dokončeno</translation>
 <translation id="3987993985790029246">Kopírovat odkaz</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
+<translation id="3992308058851451478"><ph name="SITE" /> může při procházení používat vaše informace</translation>
 <translation id="3992684624889376114">O této stránce</translation>
 <translation id="4002066346123236978">Název</translation>
 <translation id="4046123991198612571">Další skladba</translation>
@@ -263,6 +266,7 @@
 <translation id="4883854917563148705">Spravovaná nastavení nelze resetovat</translation>
 <translation id="4887024562049524730">Předtím, než webům bude povoleno použít zařízení a data pro virtuální realitu, se zeptat (doporučeno)</translation>
 <translation id="4936863036653376783">Skupiny najdete v sekci skupin karet an všech svých zařízeních</translation>
+<translation id="4945443401464700059"><ph name="SITE" /> má zablokováno používání vašich údajů na</translation>
 <translation id="4953688446973710931">Když je tato možnost zapnutá, weby mohou žádat o automatické stažení více souborů. Když je vypnutá, weby nemohou stahovat automaticky více souborů.</translation>
 <translation id="4962975101802056554">Zrušit všechna oprávnění pro zařízení</translation>
 <translation id="497421865427891073">Vpřed</translation>
@@ -532,9 +536,11 @@
 <translation id="851751545965956758">Bránit webům v připojení k zařízením</translation>
 <translation id="8525306231823319788">Celá obrazovka</translation>
 <translation id="8541410041357371550">Tento web získává témata reklam z Chromu, aby vám mohl zobrazovat relevantnější reklamy</translation>
+<translation id="854876774113449365">Navštívené weby mohou zahrnovat vložený obsah z jiných webů, například obrázky, reklamy a text. Tyto další weby mohou při procházení webu žádat o povolení používat informace, které o vás uložily. <ph name="BEGIN_LINK" />Další informace o vloženém obsahu<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Způsob zobrazování žádostí</translation>
 <translation id="8558480467877843976">Nyní můžete Chrome použít při každém procházení a pokaždé, když klepnete na odkazy ve zprávách, dokumentech a jiných aplikacích.</translation>
 <translation id="857943718398505171">Povoleno (doporučeno)</translation>
+<translation id="8593422116412089302">Když je tato možnost zapnutá, mohou weby žádat o použití informací, které si o vás uložily. Když je vypnutá, weby o použití informací, které si o vás uložily, žádat nemohou.</translation>
 <translation id="8609465669617005112">Posunout nahoru</translation>
 <translation id="8617611086246832542">Když je tato možnost zapnutá, zobrazuje se verze webů pro počítače. Když je vypnutá, zobrazuje se verze webů pro mobilní zařízení.</translation>
 <translation id="8670078035093027626">Spodní panel výchozího prohlížeče je otevřený na celou výšku</translation>

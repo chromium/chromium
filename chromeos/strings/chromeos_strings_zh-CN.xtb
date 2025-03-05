@@ -503,6 +503,7 @@
 <translation id="3373141842870501561">“地球的风景变化”壁纸</translation>
 <translation id="33736539805963175">包含字母 <ph name="LETTERS_LETTER" /> 的<ph name="LETTERS_COLOR" />背景</translation>
 <translation id="3383623117265110236">专有</translation>
+<translation id="3395147534045164351">切换贴靠位置</translation>
 <translation id="3404249063913988450">启用屏保功能</translation>
 <translation id="3413935475507503304">若要继续更新，请点击“下一步”。</translation>
 <translation id="3428551088151258685">室外</translation>
@@ -652,6 +653,7 @@
 <translation id="4113067922640381334">现在，您可以使用新的<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />壁纸<ph name="END_LINK_WALLPAPER_SUBPAGE" />了</translation>
 <translation id="4117637339509843559">深色模式</translation>
 <translation id="4126551873361000548">后退 10 秒</translation>
+<translation id="4128271910628504223">输入一条提示，例如“画一片雾气蒙蒙的森林”</translation>
 <translation id="4130035430755296270">将鼠标指针悬停于此处可查看更多布局选项</translation>
 <translation id="4130750466177569591">我同意</translation>
 <translation id="4131410914670010031">黑白色</translation>
@@ -859,6 +861,7 @@
 <translation id="5050042263972837708">群组名称</translation>
 <translation id="5051044138948155788">这是目前仅有的一个页面了。此操作会将您转到扫描开始屏幕。</translation>
 <translation id="5053233795640754917">暂停</translation>
+<translation id="5056587122125565772">创建图片</translation>
 <translation id="5078711626843651677">语音模型会暂存在设备上，直到讲者标签添加完毕。您随时可在“设置”中关闭此功能。</translation>
 <translation id="5078983345702708852">未来主义</translation>
 <translation id="5087864757604726239">后退</translation>
@@ -1130,7 +1133,6 @@
 <translation id="6325525973963619867">失败</translation>
 <translation id="6327262166342360252">此壁纸是通过 AI 使用以下文字制作的：“<ph name="PROMPT" />”。</translation>
 <translation id="6331191339300272798">自动深色主题</translation>
-<translation id="6335228876613776082">模型下载完毕</translation>
 <translation id="6340526405444716530">个性化</translation>
 <translation id="6348252528297699679">您可依次前往“设置”&gt;“隐私和安全”&gt;“隐私控制”&gt;“位置信息使用权”，关闭位置信息服务。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">用户名和密码</translation>
@@ -1674,7 +1676,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google 相册中的相册</translation>
 <translation id="8775713578693478175">调制解调器 APN</translation>
-<translation id="877735394245039557">正在下载模型</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">此网络可能有强制门户</translation>
 <translation id="8797082062139985406">使用 Google AI 创建名称</translation>

@@ -107,6 +107,7 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chrome-opl
 <translation id="1413446866325418126">Gem data på din Google-konto</translation>
 <translation id="1414981605391750300">Kontakter Google. Dette kan tage et øjeblik…</translation>
 <translation id="1416550906796893042">Appversion</translation>
+<translation id="1416582024052267068">Bevar adgangen til dine adgangskoder</translation>
 <translation id="1419753403124156396">Vil du genstarte Chrome?</translation>
 <translation id="1428770807407000502">Vil du deaktivere synkronisering?</translation>
 <translation id="1430915738399379752">Udskriv</translation>
@@ -515,6 +516,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="342220687432920852">{HOURS,plural, =1{For # t. siden}one{# hr ago}other{For # t. siden}}</translation>
 <translation id="3430670036890315772">Hvis du deaktiverer din profillås, fjernes dine gemte oplysninger</translation>
 <translation id="3435465986463792564">Har du mange åbne vinduer? Du kan administrere dem herfra</translation>
+<translation id="3435575784518354875">Hvis du fortsat vil have adgang til dine adgangskoder, skal du eksportere dem nu, opdatere Google Play-tjenester og derefter importere dem til Google Adgangskodeadministrator igen. <ph name="BEGIN_LINK" />Se hele vejledningen<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Sikkerhed</translation>
 <translation id="3439276997620616816">Her finder du dine seneste faner</translation>
 <translation id="3443221991560634068">Genindlæs den aktuelle side</translation>
@@ -524,6 +526,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3474624961160222204">Fortsæt som <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Du kan vælge din søgemaskine</translation>
 <translation id="3479552764303398839">Ikke nu</translation>
+<translation id="3487903178221457900">Den eksporterede fil kan være tilgængelig for andre, herunder apps. Efter eksporten slettes dine adgangskoder fra Chrome.</translation>
 <translation id="3488199663160411179">navn</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /> om anbefalet indhold</translation>
 <translation id="3495219333887281978">Loginfeltet i bunden er åbnet i halv højde.</translation>
@@ -549,6 +552,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3566639033325271639">Opdater indstillinger</translation>
 <translation id="3568945271227339929">Der er ingen kompromitterede adgangskoder</translation>
 <translation id="357465026686164600">Telefon som sikkerhedsnøgle</translation>
+<translation id="3575464060651642446">Tjekker adgangskoder på denne enhed…</translation>
 <translation id="3577473026931028326">Der opstod en fejl. Prøv igen.</translation>
 <translation id="3577558748185201054">Administrer dine interesser og præferencer</translation>
 <translation id="3587482841069643663">Alle</translation>
@@ -1751,6 +1755,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8937772741022875483">Vil du fjerne din Chrome-aktivitet fra Digital balance?</translation>
 <translation id="8942627711005830162">Åbn i et andet vindue</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Dette sprog kunne ikke downloades. Prøv igen senere.</translation>
+<translation id="8957528460562961174">Hvis du fortsat vil have adgang til dine adgangskoder, skal du eksportere dem nu og derefter importere dem til din foretrukne adgangskodeadministrator. Google Adgangskodeadministrator stoppede med at fungere, fordi Google Play-tjenester ikke er tilgængelige.</translation>
 <translation id="8963117664422609631">Gå til indstillingerne for websitet</translation>
 <translation id="8965591936373831584">afventer</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofane og <ph name="TAB_COUNT_ONE" /> anden fane lukkes}one{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofane og <ph name="TAB_COUNT_MANY" /> anden fane lukkes}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofane og <ph name="TAB_COUNT_MANY" /> andre faner lukkes}}</translation>

@@ -107,6 +107,7 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="1413446866325418126">Salva i dati nel tuo Account Google</translation>
 <translation id="1414981605391750300">Connessione a Google in corso. L'operazione potrebbe richiedere un minuto…</translation>
 <translation id="1416550906796893042">Versione applicazione</translation>
+<translation id="1416582024052267068">Mantieni l'accesso alle tue password</translation>
 <translation id="1419753403124156396">Vuoi riavviare Chrome?</translation>
 <translation id="1428770807407000502">Vuoi disattivare la sincronizzazione?</translation>
 <translation id="1430915738399379752">Stampa</translation>
@@ -515,6 +516,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="342220687432920852">{HOURS,plural, =1{# ora fa}other{# ore fa}}</translation>
 <translation id="3430670036890315772">Se disattivi il blocco del profilo, le informazioni salvate verranno rimosse</translation>
 <translation id="3435465986463792564">Hai tante finestre? Puoi gestirle da qui</translation>
+<translation id="3435575784518354875">Per continuare ad accedere alle tue password, esportale ora, aggiorna Google Play Services e poi importale in Gestore delle password di Google. <ph name="BEGIN_LINK" />Visualizza le istruzioni complete<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Sicurezza</translation>
 <translation id="3439276997620616816">Qui troverai le schede recenti</translation>
 <translation id="3443221991560634068">Ricarica la pagina corrente</translation>
@@ -524,6 +526,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3474624961160222204">Continua come <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Puoi scegliere il motore di ricerca</translation>
 <translation id="3479552764303398839">Non adesso</translation>
+<translation id="3487903178221457900">Il file esportato potrebbe essere accessibile da altri utenti, anche da app. Una volta eseguita l'esportazione, le tue password vengono eliminate da Chrome.</translation>
 <translation id="3488199663160411179">nome</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /> sui contenuti suggeriti</translation>
 <translation id="3495219333887281978">Riquadro inferiore di accesso aperto nella parte inferiore dello schermo.</translation>
@@ -549,6 +552,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3566639033325271639">Aggiorna impostazioni</translation>
 <translation id="3568945271227339929">Nessuna password compromessa</translation>
 <translation id="357465026686164600">Smartphone come token di sicurezza</translation>
+<translation id="3575464060651642446">Controllo delle password su questo dispositivo in corso…</translation>
 <translation id="3577473026931028326">Si è verificato un errore. Riprova.</translation>
 <translation id="3577558748185201054">Gestisci i tuoi interessi e le tue preferenze</translation>
 <translation id="3587482841069643663">Tutti</translation>
@@ -1751,6 +1755,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8937772741022875483">Vuoi rimuovere la tua attività di Chrome da Benessere digitale?</translation>
 <translation id="8942627711005830162">Apri nell'altra finestra</translation>
 <translation id="8945143127965743188"><ph name="LANG" />: impossibile scaricare questa lingua. Riprova più tardi.</translation>
+<translation id="8957528460562961174">Per mantenere l'accesso alle tue password, esportale ora e poi importale nel gestore delle password che preferisci. Gestore delle password di Google ha smesso di funzionare perché Google Play Services non è disponibile.</translation>
 <translation id="8963117664422609631">Vai alle Impostazioni sito</translation>
 <translation id="8965591936373831584">in attesa</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> scheda di navigazione in incognito e <ph name="TAB_COUNT_ONE" /> altra scheda verranno chiuse}other{<ph name="INCOGNITO_TAB_COUNT" /> schede di navigazione in incognito e altre <ph name="TAB_COUNT_MANY" /> schede verranno chiuse}}</translation>

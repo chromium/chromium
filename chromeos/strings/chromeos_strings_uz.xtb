@@ -503,6 +503,7 @@
 <translation id="3373141842870501561">Yer manzaralari fon rasmi</translation>
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> harfli <ph name="LETTERS_COLOR" /> fon</translation>
 <translation id="3383623117265110236">Ekskluziv</translation>
+<translation id="3395147534045164351">Joyni biriktirish tugmasi</translation>
 <translation id="3404249063913988450">Ekran lavhasini faollashtirish</translation>
 <translation id="3413935475507503304">Yangilashda davom etish uchun Keyingisi tugmasini bosing</translation>
 <translation id="3428551088151258685">tashqarida</translation>
@@ -652,6 +653,7 @@
 <translation id="4113067922640381334">Endi yangi <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fon rasmlarini<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ishlatish mumkin</translation>
 <translation id="4117637339509843559">Tungi rejim</translation>
 <translation id="4126551873361000548">10 soniya orqaga</translation>
+<translation id="4128271910628504223">“Tumanli oʻrmon chizish” kabi soʻrov kiriting</translation>
 <translation id="4130035430755296270">Boshqa dizayn variantlari uchun kursorni shu joyda ushlab turing</translation>
 <translation id="4130750466177569591">Men roziman</translation>
 <translation id="4131410914670010031">Oq-qora</translation>
@@ -859,6 +861,7 @@
 <translation id="5050042263972837708">Guruh nomi</translation>
 <translation id="5051044138948155788">Faqat shu sahifa bor. Skanerlash boshlanadigan ekran ochiladi.</translation>
 <translation id="5053233795640754917">Pauza</translation>
+<translation id="5056587122125565772">Rasm yaratish</translation>
 <translation id="5078711626843651677">Ovozli modellari gapiruvchini belgilash tugaguniga qadar qurilmada vaqtincha saqlanadi. Buni istalgan vaqtda Sozlamalarda faolsizlantirish mumkin.</translation>
 <translation id="5078983345702708852">futuristik</translation>
 <translation id="5087864757604726239">ortga</translation>
@@ -1130,7 +1133,6 @@
 <translation id="6325525973963619867">Amalga oshmadi</translation>
 <translation id="6327262166342360252">Bu fon rasmi quyidagi matndan foydalanib AI yordamida yaratildi: “<ph name="PROMPT" />.”</translation>
 <translation id="6331191339300272798">Avtomatik tungi mavzu</translation>
-<translation id="6335228876613776082">Model yuklab olindi</translation>
 <translation id="6340526405444716530">Personalizatsiya</translation>
 <translation id="6348252528297699679">Joylashuv ruxsatini faolsizlantirish uchun Sozlamalar &gt; Maxfiylik va xavfsizlik &gt; Daxlsizlik nazorati&gt; Joylashuv axborotiga ruxsat sahifasini oching. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Foydalanuvchi nomi va parol</translation>
@@ -1674,7 +1676,6 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos albomi</translation>
 <translation id="8775713578693478175">Modem APN</translation>
-<translation id="877735394245039557">Model yuklab olinmoqda</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Bu tarmoqda autentifikatsiya portali boʻlishi mumkin</translation>
 <translation id="8797082062139985406">Google AI yordamida nomlash</translation>

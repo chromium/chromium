@@ -252,6 +252,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1419305130220238697">Przycisk Zarządzaj pobranymi plikami w Chrome; aktywuj, aby zarządzać pobranymi plikami w Chrome</translation>
 <translation id="1420345875188552368">Do tej płatności może zostać użyta zapisana forma płatności automatycznej. Aby wyłączyć e-portfele w Chrome, otwórz <ph name="BEGIN_LINK1" />ustawienia płatności<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, by umożliwić sparowanie</translation>
+<translation id="1421484961346698724">Usunięte konto</translation>
 <translation id="14222610277930434">Często odwiedzasz</translation>
 <translation id="1422930527989633628">Może prosić o zgodę na wykrywanie urządzeń Bluetooth w pobliżu</translation>
 <translation id="1426410128494586442">Tak</translation>
@@ -3024,6 +3025,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6351658970066645919">Usuń dane przeglądania</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Brak}=1{1 hasło (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}=2{2 hasła (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}few{# hasła (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}many{# haseł (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}other{# hasła (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}}</translation>
 <translation id="6355392890578844978">Ta przeglądarka nie jest zarządzana przez firmę ani inną organizację. Aktywność na tym urządzeniu może być zarządzana poza Chromium. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Grupy kart „<ph name="GROUP_TITLE_1" />” i „<ph name="GROUP_TITLE_2" />” nie są już dostępne</translation>
 <translation id="6358088212770985041">edytować formy płatności</translation>
 <translation id="6358450015545214790">Co to oznacza?</translation>
 <translation id="6360213755783740931">Więcej informacji o ochronie przed złośliwym oprogramowaniem</translation>

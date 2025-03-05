@@ -320,6 +320,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="5579324208890605088">Startup error: Please run the installer as a regular user, not as administrator.</translation>
 <translation id="5596627076506792578">More options</translation>
 <translation id="5605834417512968703">Select anything to search with image search or press escape to exit image search</translation>
+<translation id="5618818588972826921">Select any text or image to search with image search or press Escape to exit image search</translation>
 <translation id="5623402015214259806">{0,plural, =0{A Chromium update is available}=1{A Chromium update is available}other{A Chromium update has been available for # days}}</translation>
 <translation id="5643865575100044307">Always delete site data from your device when you close Chromium</translation>
 <translation id="5653831366781983928">Please restart Chromium now</translation>
@@ -513,6 +514,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="813913629614996137">Initialising...</translation>
 <translation id="8166782796394721554">Turn on additional protection in Chromium’s JavaScript and WebAssembly engine</translation>
 <translation id="81770708095080097">This file is dangerous, so Chromium has blocked it.</translation>
+<translation id="8177472873527554730">Can't find content in page</translation>
 <translation id="8200109504272824693">Enter your passphrase to use and save Chromium data in your account, <ph name="USER_EMAIL" /></translation>
 <translation id="8221491193165283816">You usually block notifications. To let this site notify you, click here.</translation>
 <translation id="8223363452568144035">To use your camera, give Chromium access in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" /></translation>
@@ -595,5 +597,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="983803489796659991">Installation failed because the update server does not have any hash data for the application.</translation>
 <translation id="985498048907240953">Use Chromium without an account</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
+<translation id="989970834842471429">Select any text or image to search with image search</translation>
 <translation id="992780518932311116">To use your location, give Chromium access in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" /></translation>
 </translationbundle>

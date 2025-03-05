@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">Unganikezeli ukuhumusha la masayithi</translation>
 <translation id="1145536944570833626">Susa idatha ekhona.</translation>
 <translation id="1150263420752757504">I-<ph name="APP_NAME" /> izovuleka ku-Chrome. Ngokuqhubeka, uvumelana <ph name="BEGIN_LINK1" />Nemigomo Yesevisi ye-Google<ph name="END_LINK1" />, kanye <ph name="BEGIN_LINK2" />ne-Google Chrome Nemigomo Yesevisi ye-ChromeOS Engeziwe<ph name="END_LINK2" />.</translation>
+<translation id="1154555449933432029">Awunawo amaphasiwedi alondolozwe Kumphathi Wephasiwedi yeGoogle.</translation>
 <translation id="115483310321669804">Sebenzisa iphasiwedi <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Qamba kabusha</translation>
 <translation id="1174479719160874822">I-Chrome izocela isayithi leselula uma isikrini sincane</translation>
@@ -548,6 +549,7 @@ Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. 
 <translation id="3566639033325271639">Buyekeza amasethingi</translation>
 <translation id="3568945271227339929">Awekho amaphasiwedi onakalisiwe</translation>
 <translation id="357465026686164600">Ifoni njengokhiye wokuqinisekisa ubunikazi</translation>
+<translation id="3575464060651642446">Kuhlolwa iphasiwedi kule divayisi…</translation>
 <translation id="3577473026931028326">Kunento engahambanga kahle. Zama futhi.</translation>
 <translation id="3577558748185201054">Lawula izintshisekelo zakho nokuthandayo</translation>
 <translation id="3587482841069643663">Konke</translation>
@@ -1366,10 +1368,12 @@ Ukuze ushintshe le sethingi, <ph name="BEGIN_LINK" />sula idatha yakho ye-Chrome
 <translation id="7224097611345298931">Wonke amaphasiwedi alondolozwe kule divayisi yeChrome ne-<ph name="CHROME_CHANNEL" /> kuphela ahlanganisiwe. Ungagcwalisa ngokuzenzakalelayo wonke amaphasiwedi wakho alondoloziwe kuwo womabili ama-app.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ukulanda kulindile}one{# ukulanda kulindile}other{# ukulanda kulindile}}</translation>
 <translation id="7230064152164845085">Shintshela ku-Incognito</translation>
+<translation id="7237724030342645845">Umphathi Wephasiwedi yeGoogle uyekile ukusebenza</translation>
 <translation id="72415438529550637">Isiphakamiso sephasiwedi sivaliwe.</translation>
 <translation id="7260367682327802201">Idivayisi yakho ye-Android ingase ihlanganise isethingi efanayo. Uma ukulinganisa kwesikhangiso kuvuliwe ku-Chrome nakudivayisi yakho ye-Android, inkampani ingase ikwazi ukulinganisela ukusebenza kahle kwesikhangiso kuwo wonke amawebhusayithi owavakashelayo nama-app owasebenzisayo.</translation>
 <translation id="727288900855680735">Thumela i-<ph name="ONE_TIME_CODE" /> ku-<ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Isayithi elivinjiwe</translation>
+<translation id="7276868533747677875">Uma ngaphambilini uthumele amaphasiwedi, bheka ifayela le-CSV kudivayisi yakho bese uwangenisa kusiphathi sephasiwedi osithandayo.</translation>
 <translation id="7289049772085228972">Unokuvikeleka okuqine kakhulu kwe-Chrome</translation>
 <translation id="7289303553784750393">Uma uku-inthanethi kodwa le nkinga iqhubeka yenzeka, ungazama ezinye izindlela zokuqhubeka ku-<ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Ukuqamba kabusha akutholakali</translation>
@@ -1544,6 +1548,7 @@ Ukuze ushintshe le sethingi, <ph name="BEGIN_LINK" />sula idatha yakho ye-Chrome
 <translation id="8027395186860110042">Amaphasiwedi angase ayeke ukusebenza maduze</translation>
 <translation id="8027863900915310177">Khetha ukuthi ulande kuphi</translation>
 <translation id="8030852056903932865">Gunyaza</translation>
+<translation id="8031805944372049238">Ukuze uqale ukulondoloza nokusebenzisa amaphasiwedi Ngomphathi Wephasiwedi YeGoogle buyekeza amasevisi weGoogle Play.</translation>
 <translation id="8032569120109842252">Ukulandela</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> izinsuku ezisele</translation>
 <translation id="8037801708772278989">Kuhlolwe khona manje</translation>

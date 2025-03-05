@@ -1710,7 +1710,6 @@
 <translation id="2178545675770638239">پاس ورڈ منتخب کریں</translation>
 <translation id="2178585470774851578">‏آپ ChromeOS Flex کی ڈیبگنگ خصوصیات کو فعال کر رہے ہیں جو sshd daemon سیٹ اپ کریں گی اور USB ڈرائیوز سے بوٹنگ کو فعال کریں گی۔</translation>
 <translation id="2178614541317717477">‏CA سمجھوتہ</translation>
-<translation id="2179850495466791921">آپ کے پاس فی الحال <ph name="NUMBERED_ITEM_1" />، <ph name="NUMBERED_ITEM_2" />، <ph name="NUMBERED_ITEM_3" /> اور مزید ہیں</translation>
 <translation id="2180620921879609685">کسی بھی صفحے پر مواد کو مسدود کریں</translation>
 <translation id="2181821976797666341">پالیسیاں</translation>
 <translation id="2182058453334755893">آپ کے کلپ بورڈ پر کاپی کر دیا گیا</translation>
@@ -3127,7 +3126,6 @@
 <translation id="3167562202484086668">سبھی <ph name="BRAND" /> ڈیٹا حذف کریں</translation>
 <translation id="3169930038976362151">وہ تھیم منتخب کریں جو آپ کی ضروریات کے مطابق ہو۔ اپنی تھیم، وال پیپر، اسکرین سیور اور مزید کو تبدیل کرنے کے لیے، بس ڈیسک ٹاپ پر ٹچ کریں اور دبائے رکھیں۔</translation>
 <translation id="3170072451822350649">آپ سائن ان کرنے کو بھی نظر انداز کر سکتے ہیں اور <ph name="LINK_START" />مہمان کے بطور براؤز کر سکتے ہیں<ph name="LINK_END" />۔</translation>
-<translation id="3171499217959105722">آپ کے فی الحال <ph name="NUMBERED_ITEM" /> اور مزید ہیں</translation>
 <translation id="3175067642577044620">جسم</translation>
 <translation id="3175862692832442091">جنگل</translation>
 <translation id="3176347586396987181">‏ماؤس کے بٹن کو دبانے اور ہولڈ کرنے کیلئے "z" کا استعمال کریں</translation>
@@ -3937,7 +3935,6 @@
 <translation id="3744219658596020825">آپ کے پاس ورڈز درآمد نہیں کیے گئے تھے</translation>
 <translation id="3745306754941902605">باورچی خانہ</translation>
 <translation id="3747077776423672805">‏ایپس ہٹانے کے لیے، ترتیبات &gt; Google Play اسٹور &gt; Android کی ترجیحات کا نظم کریں &gt; ایپس یا ایپلیکیشن مینیجر پر جائیں۔ پھر اس ایپ پر تھپتھپائیں جسے آپ اَن انسٹال کرنا چاہتے ہیں (ممکن ہے کہ ایپ تلاش کرنے کے لیے آپ کو دائیں یا بائیں سوائپ کرنا پڑے)۔ پھر 'اَن انسٹال کریں' یا 'غیر فعال کریں' پر تھپتھپائیں۔</translation>
-<translation id="3747552357646973221">آپ کے پاس فی الحال <ph name="NUMBERED_ITEM_1" />، <ph name="NUMBERED_ITEM_2" /> اور مزید ہیں</translation>
 <translation id="3748424433435232460">اس اکاؤنٹ کا پاس ورڈ پہلے ہی اس آلے پر محفوظ ہے</translation>
 <translation id="3748706263662799310">بگ کی اطلاع دیں</translation>
 <translation id="3749724428455457489">سائٹ کے تجویز کردہ اشتہارات کے بارے میں مزید جانیں</translation>
@@ -4071,6 +4068,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{ایک ایکسٹینشن کی منظوری دی گئی ہے}other{# ایکسٹینشنز کی منظوری دی گئی ہے}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">‏کم از کم <ph name="INSTALL_SIZE" />  خالی جگہ Linux کے لیے تجویز کی جاتی ہے۔</translation>
+<translation id="3824203811509979971">مواد کا خلاصہ کریں یا سوالات پوچھیں</translation>
 <translation id="3824621460022590830">آلہ کے اندراج کا ٹوکن غلط ہے۔ براہ کرم اپنے آلہ کے مالک یا منتظم سے رابطہ کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
 <translation id="3824757763656550700">دوسرے آلات سے ٹیبز دیکھنے کے لیے سائن ان کریں</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{فائل کی اس قسم کے لیے میرا انتخاب یاد رکھیں: <ph name="FILE_TYPES" />}other{فائل کی ان اقسام کے لیے میرا انتخاب یاد رکھیں: <ph name="FILE_TYPES" />}}</translation>
@@ -4257,6 +4255,7 @@
 <translation id="3948985214866944547">زیادہ تر لوگ اس سائٹ کے لیے قطعی مقام کے اشتراک کو مسدود کر دیتے ہیں</translation>
 <translation id="394984172568887996">‏IE سے درآمد کردہ</translation>
 <translation id="3949999964543783947">فائلز ڈاؤن لوڈ کرنا محفوظ تر بنانے کے لیے <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
+<translation id="3950479158728806902">تیزی سے سائن ان کرنے کے لیے خودکار طور پر ایک پاس کی بنائیں</translation>
 <translation id="3950820424414687140">سائن ان کریں</translation>
 <translation id="3950841222883198950">صوتی ٹائپنگ</translation>
 <translation id="3953834000574892725">میرے اکاؤنٹس</translation>
@@ -5185,6 +5184,7 @@
 <translation id="4624054169152573743">رنگ کی تھیم</translation>
 <translation id="4625078469366263107">ایپ فعال کریں</translation>
 <translation id="4625905218692741757">سرمئی ڈیفالٹ رنگ</translation>
+<translation id="4627107755957573804">سائٹس اور ایپس کو پاس کیز استعمال کرنے کے لیے موجودہ اکاؤنٹس کو اپ گریڈ کرنے کی اجازت دیں</translation>
 <translation id="4627442949885028695">کسی دوسرے آلہ سے جاری رکھیں</translation>
 <translation id="4628762811416793313">‏Linux کنٹینر کا سیٹ اپ مکمل نہیں ہوا۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> پروفائل کھولیں</translation>
@@ -5767,6 +5767,7 @@
 <translation id="5053233576223592551">صارف نام شامل کریں</translation>
 <translation id="505347685865235222">بغیر نام کے گروپ - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{آپ کو اسے ابھی تبدیل کر دینا چاہیے}other{آپ کو اب انہیں تبدیل کرنا چاہیے}}</translation>
+<translation id="5056587122125565772">تصویر تخلیق کریں</translation>
 <translation id="5056950756634735043">کنٹینر سے منسلک ہو رہا ہے</translation>
 <translation id="5057110919553308744">جب آپ ایکسٹینشن پر کلک کرتے ہیں</translation>
 <translation id="5057127674016624293">اسکیننگ میں توقع سے زیادہ وقت لگ رہا ہے</translation>
@@ -5877,6 +5878,7 @@
 <translation id="512642543295077915">search + backspace</translation>
 <translation id="5126611267288187364">تبدیلیاں دیکھیں</translation>
 <translation id="5127620150973591153">‏محفوظ کنکشن ID: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">مواد کا خلاصہ کریں یا سوالات پوچھیں۔</translation>
 <translation id="5127881134400491887">نیٹ ورک کنکشنز کا نظم کریں</translation>
 <translation id="5127934926273826089">پھول</translation>
 <translation id="5127986747308934633">آپ کا منتظم آپ کے آلے کو کنٹرول کر رہا ہے</translation>
@@ -10143,6 +10145,7 @@
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> غیر فعال کریں</translation>
 <translation id="8195920051450756553">اسی کلید کو دوبارہ فعال کرنے سے پہلے تاخیر کریں</translation>
 <translation id="8197673340773315084">کوئی نام یا لیبل شامل کریں جیسے دفتر یا ذاتی</translation>
+<translation id="8198181050118789419">تھیم: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">کاسٹنگ ٹیب</translation>
 <translation id="8199300056570174101">نیٹ ورک (سروس) اور آلہ کی خصوصیات</translation>
 <translation id="8200772114523450471">دوبارہ شروع کریں</translation>
@@ -11399,6 +11402,7 @@
 <translation id="9074739597929991885">بلوٹوتھ</translation>
 <translation id="9074836595010225693">‏USB ماؤس منسلک ہے</translation>
 <translation id="9075413375877487220">بہتر کردہ محفوظ براؤزنگ کے مطابق یہ ایکسٹینشن بھروسہ مند نہیں ہے۔</translation>
+<translation id="9075985558450420812">تصویر بنانے کے لیے حسب ضرورت پرامپٹ درج کریں یا ٹیکسٹ کو نمایاں کریں۔</translation>
 <translation id="9076523132036239772">معذرت، آپ کے ای میل یا پاس ورڈ کی توثیق نہیں کی جا سکی۔ پہلے ایک نیٹ ورک سے منسلک ہونے کی کوشش کریں۔</translation>
 <translation id="9076821103818989526">سائیڈ پینل</translation>
 <translation id="9076977315710973122">‏SMB کا اشتراک</translation>

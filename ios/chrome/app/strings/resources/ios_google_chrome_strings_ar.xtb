@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">‏سيتم حفظ كلمة المرور في "مدير كلمات المرور" من Google لعنوان البريد الإلكتروني <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">‏فتح علامة تبويب جديدة في Chrome</translation>
 <translation id="1166460004393506534">‏حذف بيانات التصفّح في Chrome</translation>
+<translation id="1171255741903316750">‏يجب تفعيل خيار "قفل علامات التبويب في وضع التصفّح المتخفي عند إغلاق Chrome"</translation>
 <translation id="1179527450541388808">‏يمكنك الوصول إلى Chrome بشكل أسرع من خلال شريط التطبيقات في الشاشة الرئيسية على جهاز iPad.</translation>
 <translation id="1180362651362502943">‏يمكنك مواصلة استخدام بيانات Chrome في حسابك على Google.</translation>
 <translation id="1200396280085622191">‏يؤدي هذا الإعداد إلى فتح Chrome عند النقر على الروابط في الرسائل والتطبيقات الأخرى.</translation>
@@ -45,6 +46,7 @@
 <translation id="1917964099031477364">‏ستتم إزالة هذا الحساب بالإضافة إلى أي بيانات لم يتم حفظها من Chrome وتطبيقات Google الأخرى على هذا الجهاز.</translation>
 <translation id="1919130412786645364">‏السماح بتسجيل الدخول إلى Chrome</translation>
 <translation id="1965935827552890526">‏يجب إنهاء ما كنت تفعله في نافذة Chrome المفتوحة الأخرى.</translation>
+<translation id="1973910962341002002">‏في إعدادات "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />"، يُرجى تفعيل Chrome</translation>
 <translation id="1984705450038014246">‏مزامنة بيانات Chrome</translation>
 <translation id="1987779152850321833">‏يمكنك إكمال هذه الإجراءات المقترَحة أدناه للاستفادة إلى أقصى حدّ من Chrome.</translation>
 <translation id="2055826352861631739">‏استخدام Chrome كمتصفّح تلقائي على جهاز iPad</translation>
@@ -96,10 +98,13 @@
 <translation id="3282568296779691940">‏تسجيل الدخول إلى Chrome</translation>
 <translation id="3303503998967553377">‏استخدام ميزة "إجراءات Chrome" على نظام التشغيل iOS</translation>
 <translation id="3348862487678490430">‏إضافة عنصر "قائمة القراءة" إلى متصفِّح Chrome</translation>
+<translation id="3357827134511189025">‏مع ميزة "الملء التلقائي" في Chrome، أصبح تسجيل الدخول إلى أي تطبيق سهلاً باستخدام كلمات المرور ومفاتيح المرور المحفوظة</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة دقيقة واحدة ({THRESHOLD}).}zero{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة {THRESHOLD} دقيقة.}two{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة دقيقتَين ({THRESHOLD}).}few{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة {THRESHOLD} دقائق.}many{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة {THRESHOLD} دقيقة.}other{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة {THRESHOLD} دقيقة.}}</translation>
 <translation id="3367797402528056312">‏إنهاء عملية إعداد Chrome</translation>
 <translation id="3371064404604898522">‏ضبط Chrome كمتصفِّح تلقائي</translation>
 <translation id="3399930248910934354">‏افتَح إعدادات Chrome.</translation>
+<translation id="3440830787838130530">‏يتيح لك "مدير كلمات المرور في Google" الآن مشاركة أي كلمة مرور مع مجموعة عائلتك بسهولة وأمان</translation>
+<translation id="3460369101684070455">‏للوصول بسهولة إلى كلمات المرور المحفوظة واستخدامها في تطبيقاتك الأخرى، ما عليك سوى استخدام ميزة "الملء التلقائي" في Chrome</translation>
 <translation id="3472587960215700950">‏يستخدم Chrome "خرائط Google" لإعلامك بالاتجاهات مع معلومات محلية عن العناوين المكتشفة.</translation>
 <translation id="3503014945441706099">‏يمكنك الاستفادة من ميزة "الحماية المحسّنة للتصفّح الآمن" لهذا الملف الشخصي على Chrome أيضًا.</translation>
 <translation id="3522659714780527202">‏للاطّلاع على علامات التبويب من أي جهاز تستخدم فيه Chrome، فعِّل المزامنة.</translation>
@@ -181,6 +186,7 @@
 <translation id="5998675059699164418">‏تطلُب المؤسسة منك تسجيل الدخول للتمكّن من استخدام Chrome.</translation>
 <translation id="6021312115739110405">‏اطّلِع على خلاصة مخصَّصة لك من Google تشمل محتوى عن الأخبار والرياضة والطقس وغير ذلك.</translation>
 <translation id="6022659036123304283">‏اجعل Chrome متصفِّحك الدائم</translation>
+<translation id="6132075343662013154">‏سيعرض Chrome خيار حفظ كلمة المرور</translation>
 <translation id="6132149203299792222">‏يمكنك تسجيل الدخول باستخدام حسابك على Google لمزامنة كلمات المرور والإشارات المرجعية وغير ذلك.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">‏البحث في Chrome</translation>
@@ -228,6 +234,7 @@
 <translation id="7061455974939528301">‏اضغط مع الاستمرار على رمز Chrome وانقر على "تعديل الشاشة الرئيسية" (Edit home screen)</translation>
 <translation id="7065813315247345131">‏نقل Chrome إلى "شريط التطبيقات" (Dock)</translation>
 <translation id="7124339256045485976">‏تحديث متصفِّح Chrome باستمرار</translation>
+<translation id="7145599899567697473">‏يتيح لك Chrome حفظ كلمات المرور وملؤها تلقائيًا بسهولة</translation>
 <translation id="7161390184744336561">‏إصدار Google Chrome قديم.</translation>
 <translation id="7165736900384873061">‏بدء استخدام الماسح الضوئي للاستجابة السريعة في Google Chrome</translation>
 <translation id="7175129790242719365">‏نصيحة من Chrome: سجِّل الدخول إلى Chrome</translation>
@@ -261,6 +268,7 @@
 <translation id="7693590760643069321">‏يمكنك الآن استخدام Chrome في أي وقت تنقر فيه على الروابط في الرسائل والمستندات والتطبيقات الأخرى.</translation>
 <translation id="7698568245838009292">‏متصفِّح Chrome يريد الوصول إلى الكاميرا</translation>
 <translation id="7707877166818730835">‏فتح آخر علامة تبويب في Chrome</translation>
+<translation id="7747746207470479571">‏للوصول بسهولة إلى كلمات المرور ومفاتيح المرور، ما عليك سوى استخدام ميزة "الملء التلقائي" في Chrome</translation>
 <translation id="776305366874821582">‏يمكنك الوصول إلى Chrome بشكل أسرع من خلال شريط التطبيقات في الشاشة الرئيسية على هاتف iPhone.</translation>
 <translation id="7780154209050837198">‏للاستفادة إلى أقصى حدّ من Chrome، سجِّل الدخول إلى متصفِّح Chrome باستخدام حسابك على Google.</translation>
 <translation id="7787205077729386167">‏افتح إعدادات Chrome في نظام التشغيل iOS، ثم انقر على "تطبيق المتصفِّح التلقائي" واختَر Chrome.</translation>
@@ -281,6 +289,7 @@
 <translation id="8136856065410661948">‏سيتم استخدام هذه البيانات لإنشاء الأحداث في Apple Calendar (تطبيق "التقويم" من Apple) من Chrome و"عدسة Google".</translation>
 <translation id="8154120522323162874">‏يمكنك الاستفادة إلى أقصى حدّ من متصفّح Chrome من خلال مواصلة إعداده.</translation>
 <translation id="8160472928944011082">‏يتعذّر تحديث Chrome.</translation>
+<translation id="8245080522851805544">‏للحفاظ على خصوصية بيانات التصفُّح المتخفي، ننصحك بتفعيل خيار مصادقة الجهاز عند إغلاق Chrome</translation>
 <translation id="8248887045858762645">‏معلومة مفيدة عن Chrome</translation>
 <translation id="8265730590513812063">‏فتح قائمة Chrome</translation>
 <translation id="8317674518145175158">‏لن يتم تشفير طُرق الدفع والعناوين. ولن تتم مزامنة سجلّ التصفُّح من Chrome.
@@ -324,5 +333,6 @@
 <translation id="9181628561061032322">‏فتح علامات التبويب الأخيرة في Chrome</translation>
 <translation id="948597495737267756">‏يؤدي هذا الاختصار إلى فتح صفحة "سجلّ Chrome".</translation>
 <translation id="97300214378190234">‏يؤدي هذا الإعداد إلى فتح Chrome عند النقر على الروابط في التطبيقات الأخرى.</translation>
+<translation id="997929539742564806">‏يمكنك تسجيل الدخول بسرعة إلى التطبيقات والمواقع الإلكترونية من خلال ملء كلمات المرور ومفاتيح المرور تلقائيًا من Chrome</translation>
 <translation id="998677222109959694">‏إدارة إعدادات Chrome</translation>
 </translationbundle>

@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">ປຸ່ມຈັດການການດາວໂຫຼດໃນ Chrome, ເປີດນຳໃຊ້ເພື່ອຈັດການໄຟລ໌ທີ່ທ່ານໄດ້ດາວໂຫຼດໃນ Chrome</translation>
 <translation id="1420345875188552368">ວິທີການຈ່າຍເງິນອັດຕະໂນມັດທີ່ທ່ານບັນທຶກໄວ້ອາດຈະຖືກນຳໃຊ້ສຳລັບວິທີການຈ່າຍເງິນນີ້. ເພື່ອປິດ eWallet ໃນ Chrome, ໃຫ້ໄປຫາ <ph name="BEGIN_LINK1" />ການຕັ້ງຄ່າການຈ່າຍເງິນ<ph name="END_LINK1" /> ຂອງທ່ານ</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> ເພື່ອອະນຸຍາດການຈັບຄູ່</translation>
+<translation id="1421484961346698724">ບັນຊີທີ່ຖືກລຶບ</translation>
 <translation id="14222610277930434">ທ່ານເຂົ້າເບິ່ງເລື້ອຍໆ</translation>
 <translation id="1422930527989633628">ສາມາດຂໍຄົ້ນພົບອຸປະກອນ Bluetooth ທີ່ຢູ່ໃກ້ຄຽງ</translation>
 <translation id="1426410128494586442">ແມ່ນແລ້ວ</translation>
@@ -3024,6 +3025,7 @@
 <translation id="6351658970066645919">ລຶບຂໍ້ມູນການທ່ອງເວັບ</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ບໍ່ມີ}=1{1 ລະຫັດຜ່ານ (ສຳລັບ <ph name="DOMAIN_LIST" />, ຊິ້ງຂໍ້ມູນແລ້ວ)}=2{2 ລະຫັດຜ່ານ (ສຳລັບ <ph name="DOMAIN_LIST" />, ຊິ້ງຂໍ້ມູນແລ້ວ)}other{# ລະຫັດຜ່ານ (ສຳລັບ <ph name="DOMAIN_LIST" />, ຊິ້ງຂໍ້ມູນແລ້ວ)}}</translation>
 <translation id="6355392890578844978">ໂປຣແກຣມທ່ອງເວັບນີ້ບໍ່ໄດ້ຖືກຈັດການໂດຍບໍລິສັດ ຫຼື ອົງການອື່ນ. ການເຄື່ອນໄຫວຢູ່ອຸປະກອນນີ້ອາດຖືກຈັດການຢູ່ນອກ Chromium ໄດ້. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">ກຸ່ມແຖບ "<ph name="GROUP_TITLE_1" />" ແລະ "<ph name="GROUP_TITLE_2" />" ບໍ່ສາມາດໃຊ້ໄດ້ອີກຕໍ່ໄປ</translation>
 <translation id="6358088212770985041">ແກ້ໄຂວິທີການຈ່າຍເງິນ</translation>
 <translation id="6358450015545214790">ສິ່ງ​ທີ່​ເຫຼົ່າ​ນີ້​ຫມາຍ​ຄວາມ​ວ່າ​ແນວໃດ?</translation>
 <translation id="6360213755783740931">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການປົກປ້ອງເມົາແວ</translation>

@@ -107,6 +107,7 @@
 <translation id="1413446866325418126">‏حفظ البيانات في حسابك على Google</translation>
 <translation id="1414981605391750300">‏جارٍ الاتصال بـ Google. قد يستغرق ذلك دقيقة واحدة...</translation>
 <translation id="1416550906796893042">إصدار التطبيق</translation>
+<translation id="1416582024052267068">كيفية الحفاظ على إمكانية الوصول إلى كلمات المرور</translation>
 <translation id="1419753403124156396">‏هل تريد إعادة تشغيل Chrome؟</translation>
 <translation id="1428770807407000502">هل تريد إيقاف المزامنة؟</translation>
 <translation id="1430915738399379752">طباعة</translation>
@@ -517,6 +518,7 @@
 <translation id="342220687432920852">{HOURS,plural, =1{قبل ساعة واحدة}zero{قبل # ساعة}two{قبل ساعتَين}few{قبل # ساعات}many{قبل # ساعة}other{قبل # ساعة}}</translation>
 <translation id="3430670036890315772">إيقاف قفل الملف الشخصي سيؤدي إلى إزالة معلوماتك المحفوظة.</translation>
 <translation id="3435465986463792564">هل لديك العديد من النوافذ؟ يمكنك إدارتها من هنا.</translation>
+<translation id="3435575784518354875">‏للحفاظ على إمكانية الوصول إلى كلمات المرور، عليك تصديرها الآن وتحديث "خدمات Google Play" ثمّ استيرادها مرة أخرى إلى "مدير كلمات المرور في Google". <ph name="BEGIN_LINK" />الاطّلاع على التعليمات الكاملة<ph name="END_LINK" /></translation>
 <translation id="3435738964857648380">أمن المعلومات</translation>
 <translation id="3439276997620616816">ستظهر لك هنا علامات التبويب الأخيرة.</translation>
 <translation id="3443221991560634068">إعادة تحميل الصفحة الحالية</translation>
@@ -526,6 +528,7 @@
 <translation id="3474624961160222204">المتابعة بحساب "<ph name="NAME" />"</translation>
 <translation id="3478363558367712427">يمكنك استخدام محرّك بحث آخر.</translation>
 <translation id="3479552764303398839">ليس الآن</translation>
+<translation id="3487903178221457900">‏قد يكون بإمكان الخدمات الأخرى (بما في ذلك التطبيقات) الوصول إلى الملف الذي تم تصديره. وبعد تصدير كلمات المرور، يتم حذفها من Chrome.</translation>
 <translation id="3488199663160411179">الاسم</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /> حول المحتوى المقترح</translation>
 <translation id="3495219333887281978">تم فتح البطاقة السفلية لتسجيل الدخول في نصف الشاشة.</translation>
@@ -551,6 +554,7 @@
 <translation id="3566639033325271639">تعديل الإعدادات</translation>
 <translation id="3568945271227339929">ما مِن كلمات مرور معرّضة للاختراق.</translation>
 <translation id="357465026686164600">استخدام الهاتف كمفتاح أمان</translation>
+<translation id="3575464060651642446">جارٍ التحقّق من كلمات المرور على هذا الجهاز…</translation>
 <translation id="3577473026931028326">حدث خطأ. يُرجى إعادة المحاولة.</translation>
 <translation id="3577558748185201054">يمكنك إدارة اهتماماتك وتفضيلاتك</translation>
 <translation id="3587482841069643663">الكل</translation>
@@ -1755,6 +1759,7 @@
 <translation id="8937772741022875483">‏هل تريد إزالة نشاط Chrome من الرفاهية الرقمية؟</translation>
 <translation id="8942627711005830162">فتح في نافذة أخرى</translation>
 <translation id="8945143127965743188">تعذَّر تنزيل حزمة اللغة <ph name="LANG" />. يُرجى إعادة المحاولة لاحقًا.</translation>
+<translation id="8957528460562961174">‏للحفاظ على إمكانية الوصول إلى كلمات المرور، يمكنك تصديرها الآن ثم استيرادها إلى خدمتك المفضّلة لإدارة كلمات المرور. وتوقَّف "مدير كلمات المرور في Google" عن العمل بسبب عدم توفُّر "خدمات Google Play".</translation>
 <translation id="8963117664422609631">الانتقال إلى إعدادات الموقع الإلكتروني</translation>
 <translation id="8965591936373831584">في الانتظار</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{سيتم إغلاق <ph name="INCOGNITO_TAB_COUNT" /> علامة تبويب في وضع التصفّح المتخفي وعلامة تبويب واحدة (<ph name="TAB_COUNT_ONE" />) أخرى.}zero{سيتم إغلاق <ph name="INCOGNITO_TAB_COUNT" /> علامة تبويب في وضع التصفّح المتخفي و<ph name="TAB_COUNT_MANY" /> علامة تبويب أخرى.}two{سيتم إغلاق <ph name="INCOGNITO_TAB_COUNT" /> علامة تبويب في وضع التصفّح المتخفي و علامتَي تبويب (<ph name="TAB_COUNT_MANY" />) أُخريان.}few{سيتم إغلاق <ph name="INCOGNITO_TAB_COUNT" /> علامة تبويب في وضع التصفّح المتخفي و<ph name="TAB_COUNT_MANY" /> علامات تبويب أخرى.}many{سيتم إغلاق <ph name="INCOGNITO_TAB_COUNT" /> علامة تبويب في وضع التصفّح المتخفي و<ph name="TAB_COUNT_MANY" /> علامة تبويب أخرى.}other{سيتم إغلاق <ph name="INCOGNITO_TAB_COUNT" /> علامة تبويب في وضع التصفّح المتخفي و<ph name="TAB_COUNT_MANY" /> علامة تبويب أخرى.}}</translation>

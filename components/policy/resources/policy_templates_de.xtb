@@ -424,6 +424,23 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird anhand der Einstell
 Die separate Richtlinie „<ph name="HTTP_ALLOWLIST_POLICY_NAME" />“ kann verwendet werden, um bestimmte Hostnamen oder Hostnamenmuster von der Aktualisierung auf HTTPS durch diese Funktion auszuschließen.</translation>
 <translation id="1342918903685430097">Konfiguriere die für das Gerät erforderliche Mindestversion von <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="1343128241903870688">Melden der App-Informationen auf Geräten deaktivieren</translation>
+<translation id="1345276795096570241">Deaktiviere die Einmalanmeldung über <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> für die aufgeführten Identitätsanbieter.
+
+Wenn du den Wert „<ph name="POLICY_VALUE_ALL" />“ hinzufügst, werden alle unterstützten Identitätsanbieter für die Einmalanmeldung deaktiviert.
+
+Wenn du den Wert „<ph name="POLICY_VALUE_MICROSOFT" />“ hinzufügst, wird die Unterstützung für die Einmalanmeldung für den Microsoft®-Cloud-Identitätsanbieter in Chrome deaktiviert.
+
+Wenn du diese Richtlinie nicht konfigurierst, werden alle Identitätsanbieter aktiviert, die von <ph name="PRODUCT_NAME" /> unterstützt werden.
+
+Für Identitätsanbieter, die in <ph name="PRODUCT_NAME" /> aktiviert und vom Administrator auf dem Gerät konfiguriert sind, können Nutzer, die sich über diesen Identitätsanbieter einmal in einer Anwendung anmelden, die <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> unterstützt, über diesen Identitätsanbieter automatisch in Web-Properties angemeldet werden. Informationen zu den Authentifizierungsdaten des Nutzers werden bei jedem Authentifizierungsereignis an den Cloud-Identitätsanbieter des Nutzers gesendet.
+
+Hinweise:
+
+<ph name="PRODUCT_NAME" /> unterstützt nicht die Einmalanmeldung über <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> im Inkognito- oder Gastmodus.
+
+<ph name="PRODUCT_NAME" /> unterstützt die Einmalanmeldung über <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> nur für den folgenden Identitätsanbieter: Microsoft.
+
+Diese Funktion ist unter <ph name="MAC_OS_NAME" /> 10.15 und höher verfügbar.</translation>
 <translation id="1347198119056266798">Diese Richtlinie wurde eingestellt. Verwende statt ihrer "<ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />" und "<ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />". Diese Richtlinie wird ignoriert, wenn entweder die Richtlinie "<ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />", "<ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />" oder die veraltete Richtlinie "<ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" />" konfiguriert ist.
 
       Erzwingt die Ausführung der Google Websuche mit aktivierter SafeSearch-Funktion und verhindert, dass Nutzer diese Einstellung ändern. Durch diese Einstellung wird auf YouTube auch der moderate eingeschränkte Modus erzwungen.

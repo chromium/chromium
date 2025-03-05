@@ -503,6 +503,7 @@
 <translation id="3373141842870501561">ຮູບພື້ນຫຼັງການເຄື່ອນທີ່ຂອງໂລກ</translation>
 <translation id="33736539805963175">ພາບພື້ນຫຼັງ <ph name="LETTERS_COLOR" /> ທີ່ມີຕົວອັກສອນ <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">ພິເສດສະເພາະ</translation>
+<translation id="3395147534045164351">ເປີດ/ປິດການແບ່ງປັນສະຖານທີ່ແບບດ່ວນ</translation>
 <translation id="3404249063913988450">ເປີດການນຳໃຊ້ສະກຣີນເຊັບເວີແລ້ວ</translation>
 <translation id="3413935475507503304">ເພື່ອດຳເນີນການຕໍ່ກັບອັບເດດ, ໃຫ້ຄລິກຕໍ່ໄປ</translation>
 <translation id="3428551088151258685">ກາງແຈ້ງ</translation>
@@ -652,6 +653,7 @@
 <translation id="4113067922640381334">ຕອນນີ້ທ່ານມີສິດເຂົ້າເຖິງ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ຮູບພື້ນຫຼັງ<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ໃໝ່ແລ້ວ</translation>
 <translation id="4117637339509843559">ໂໝດມືດ</translation>
 <translation id="4126551873361000548">ຍ້ອນກັບຄືນ 10 ວິນາທີ</translation>
+<translation id="4128271910628504223">ລະບຸພຣອມ ເຊັ່ນ: "ແຕ້ມຮູບປ່າທີ່ປົກຄຸມດ້ວຍໝອກ"</translation>
 <translation id="4130035430755296270">ສືບຕໍ່ເລື່ອນເມົ້າສຳລັບຕົວເລືອກໂຄງຮ່າງເພີ່ມເຕີມ</translation>
 <translation id="4130750466177569591">ຂ້ອຍເຫັນ​ດີ</translation>
 <translation id="4131410914670010031">ຂາວດໍາ</translation>
@@ -859,6 +861,7 @@
 <translation id="5050042263972837708">ຊື່​ກຸ່ມ​</translation>
 <translation id="5051044138948155788">ນີ້ແມ່ນໜ້າດຽວເທົ່ານັ້ນ. ນີ້ຈະພາທ່ານໄປໜ້າຈໍເລີ່ມຕົ້ນການສະແກນ.</translation>
 <translation id="5053233795640754917">ຢຸດຊົ່ວຄາວ</translation>
+<translation id="5056587122125565772">ສ້າງຮູບ</translation>
 <translation id="5078711626843651677">ລະບົບຈະຈັດເກັບຮູບແບບສຽງໄວ້ຢູ່ອຸປະກອນຊົ່ວຄາວຈົນກວ່າການຕິດປ້າຍກຳກັບຜູ້ເວົ້າຈະສຳເລັດ. ທ່ານສາມາດປິດການດຳເນີນການນີ້ໄດ້ທຸກເວລາໃນການຕັ້ງຄ່າ.</translation>
 <translation id="5078983345702708852">ລ້ຳສະໄໝ</translation>
 <translation id="5087864757604726239">ກັບ​ຄືນ​</translation>
@@ -1130,7 +1133,6 @@
 <translation id="6325525973963619867">ບໍ່ສຳເລັດ</translation>
 <translation id="6327262166342360252">ຮູບພື້ນຫຼັງນີ້ຖືກສ້າງຂຶ້ນດ້ວຍ AI ໂດຍໃຊ້ຂໍ້ຄວາມຕໍ່ໄປນີ້: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">ຮູບແບບສີສັນມືດອັດຕະໂນມັດ</translation>
-<translation id="6335228876613776082">ດາວໂຫຼດໂມເດວສຳເລັດແລ້ວ</translation>
 <translation id="6340526405444716530">ການປັບແຕ່ງໃຫ້ເປັນແບບສ່ວນຕົວ</translation>
 <translation id="6348252528297699679">ທ່ານສາມາດປິດສະຖານທີ່ໄດ້ໃນ ການຕັ້ງຄ່າ &gt; ຄວາມເປັນສ່ວນຕົວ ແລະ ຄວາມປອດໄພ &gt; ການຄວບຄຸມຄວາມເປັນສ່ວນຕົວ &gt; ສິດເຂົ້າເຖິງສະຖານທີ່. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">ຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານ</translation>
@@ -1675,7 +1677,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">ອະລະບໍ້າ Google ຮູບພາບ</translation>
 <translation id="8775713578693478175">APN ຂອງໂມເດັມ</translation>
-<translation id="877735394245039557">ກຳລັງດາວໂຫຼດໂມເດວ</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">ເຄືອຂ່າຍນີ້ອາດມີຊ່ອງ​ທາງ​ເຂົ້າ​ຮັກ​ສາ​ໄວ້</translation>
 <translation id="8797082062139985406">ສ້າງຊື່ໂດຍໃຊ້ Google AI</translation>

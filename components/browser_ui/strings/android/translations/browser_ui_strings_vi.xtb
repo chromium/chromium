@@ -6,6 +6,7 @@
 <translation id="1044891598689252897">Các trang web vẫn hoạt động bình thường</translation>
 <translation id="1070329623210597193">Các tệp mà trang web này có thể xem hoặc chỉnh sửa</translation>
 <translation id="1073417869336441572">Hãy chia sẻ lý do bạn cho phép cookie của bên thứ ba để giúp chúng tôi cải thiện Chrome. <ph name="BEGIN_LINK" />Gửi phản hồi<ph name="END_LINK" /></translation>
+<translation id="1074758928858737435">Bạn có thể yêu cầu xem phiên bản trang web dành cho máy tính</translation>
 <translation id="1085696779717592361">Sử dụng Chrome theo mặc định</translation>
 <translation id="1178581264944972037">Tạm dừng</translation>
 <translation id="1181037720776840403">Xóa</translation>
@@ -32,6 +33,7 @@
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> trang web}other{<ph name="SITE_COUNT" /> trang web}}</translation>
 <translation id="1500473259453106018">Ẩn thẻ thông báo giảm giá trên thẻ</translation>
 <translation id="1510341833810331442">Các trang web không được phép lưu dữ liệu trên thiết bị của bạn</translation>
+<translation id="1538031354170655462">Các trang web thường sử dụng công nghệ giao tiếp phạm vi gần (NFC) để hoạt động với thẻ hoặc thiết bị lân cận, chẳng hạn như quét huy hiệu hoặc thanh toán không tiếp xúc</translation>
 <translation id="1547123415014299762">Cho phép sử dụng cookie của bên thứ ba</translation>
 <translation id="1593426485665524382">Có các thao tác mới ở gần đầu màn hình</translation>
 <translation id="1620510694547887537">Camera</translation>
@@ -115,6 +117,7 @@
 <translation id="2677748264148917807">Rời khỏi</translation>
 <translation id="2682367912565197520">Xoá mức thu phóng đã lưu</translation>
 <translation id="2683434792633810741">Xoá và đặt lại?</translation>
+<translation id="2685514716378236873">Không được phép</translation>
 <translation id="2713106313042589954">Tắt máy ảnh</translation>
 <translation id="2717722538473713889">Địa chỉ email</translation>
 <translation id="2726059656860238749">Mở Chrome với chế độ tập trung vào Thanh địa chỉ, giúp giảm thời gian khởi động trên thiết bị cấp thấp.</translation>
@@ -211,12 +214,14 @@
 <translation id="3955193568934677022">Cho phép trang web phát nội dung được bảo vệ (được đề xuất)</translation>
 <translation id="3965467402665811906">Các trang web có thể yêu cầu bạn cho phép sử dụng thông tin mà trang web đã lưu về bạn</translation>
 <translation id="3967822245660637423">Đã tải xuống xong</translation>
+<translation id="3981465354637804599">Các trang web thường hiện quảng cáo để có thể cung cấp miễn phí nội dung hoặc dịch vụ. Tuy nhiên, một số trang web được xác định là hiện quảng cáo xâm nhập hoặc quảng cáo gây hiểu nhầm.</translation>
 <translation id="3987993985790029246">Sao chép liên kết</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="3992308058851451478"><ph name="SITE" /> có thể sử dụng thông tin của bạn khi bạn duyệt web</translation>
 <translation id="3992684624889376114">Giới thiệu về trang này</translation>
 <translation id="4002066346123236978">Tiêu đề</translation>
 <translation id="4046123991198612571">Bản nhạc tiếp theo</translation>
+<translation id="4077310749977440510">Các trang web thường đọc bảng nhớ tạm để áp dụng những tính năng như giữ nguyên định dạng của văn bản mà bạn đã sao chép</translation>
 <translation id="4149890623864272035">Bạn có chắc chắn muốn xoá toàn bộ dữ liệu cục bộ, kể cả cookie, và đặt lại mọi quyền cho trang web này không?</translation>
 <translation id="4149994727733219643">Chế độ xem đơn giản cho trang web</translation>
 <translation id="4151930093518524179">Thu phóng mặc định</translation>
@@ -224,6 +229,7 @@
 <translation id="4169549551965910670">Đã kết nối với một thiết bị USB</translation>
 <translation id="4194328954146351878">Hỏi trước khi cho phép các trang web xem và thay đổi thông tin trên thiết bị NFC (nên chọn)</translation>
 <translation id="4200726100658658164">Mở phần Cài đặt vị trí</translation>
+<translation id="421742575134139848">Các trang web có thể phát âm thanh để cung cấp âm thanh cho nhạc, video và nội dung nghe nhìn khác</translation>
 <translation id="4226663524361240545">Thông báo có thể làm rung thiết bị</translation>
 <translation id="4259722352634471385">Điều hướng bị chặn: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Sau khi bạn rời khỏi một trang web, trang web đó có thể tiếp tục đồng bộ hóa để hoàn tất những việc như tải ảnh lên hoặc gửi một tin nhắn trò chuyện</translation>
@@ -247,6 +253,7 @@
 <translation id="4566417217121906555">Tắt micrô</translation>
 <translation id="4570913071927164677">Chi tiết</translation>
 <translation id="4598549027014564149">Ở chế độ Ẩn danh, các trang web không thể dùng cookie để xem hoạt động duyệt web của bạn trên nhiều trang web, ngay cả các trang web có liên quan. Hoạt động duyệt web của bạn không được dùng cho các mục đích như cá nhân hoá quảng cáo. Các tính năng của một số trang web có thể không hoạt động.</translation>
+<translation id="461356340001513807">Giúp bạn đăng nhập vào các trang web bằng tài khoản có dịch vụ định danh</translation>
 <translation id="4619615317237390068">Thẻ trên các thiết bị khác</translation>
 <translation id="4644713492825682049">Xoá và đặt lại</translation>
 <translation id="4645575059429386691">Do cha mẹ của bạn quản lý</translation>
@@ -430,6 +437,7 @@
 <translation id="7000754031042624318">Đã tắt trong phần Cài đặt Android</translation>
 <translation id="702275896380648118">Trang web này xác định sở thích của bạn, sau đó đề xuất quảng cáo mà các trang web khác nên hiển thị. Trang web này cũng thu thập thông tin về chủ đề quảng cáo bạn quan tâm qua Chrome để hiển thị cho bạn những quảng cáo phù hợp hơn.</translation>
 <translation id="7053983685419859001">Chặn</translation>
+<translation id="7055552182600664515">Để phát nội dung được bảo vệ bản quyền, các trang web có thể cần dùng một dịch vụ bảo vệ nội dung <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Đã chọn 1 mục}other{Đã chọn # mục}}</translation>
 <translation id="708014373017851679">"<ph name="APP_NAME" />" đã lỗi thời. Vui lòng cập nhật ứng dụng.</translation>
 <translation id="7087918508125750058">Đã chọn <ph name="ITEM_COUNT" /> mục. Bạn có thể sử dụng các tùy chọn ở gần đầu màn hình</translation>

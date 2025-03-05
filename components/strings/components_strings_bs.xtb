@@ -8,7 +8,7 @@
 <translation id="1010200102790553230">Učitaj stranicu kasnije</translation>
 <translation id="1010225406377140704">Kontaktirajte pošiljaoca da zatražite novi link</translation>
 <translation id="1011206368273183593">Pripremanje fajlova</translation>
-<translation id="1012264210825687872">Nakon što pregledate narudžbu, morate se prijaviti na <ph name="BNPL_ISSUER_NAME" /> račun ili ga izraditi. Taj će se račun automatski povezati s Google Payom.</translation>
+<translation id="1012264210825687872">Nakon što pregledate narudžbu, morate se prijaviti na <ph name="BNPL_ISSUER_NAME" />račun ili ga kreirati. Račun će se automatski povezati s Google Payom.</translation>
 <translation id="1014509239502131234">Poništavanje rezultata</translation>
 <translation id="1015730422737071372">Navedite dodatne detalje</translation>
 <translation id="1019413721762100891">Isključeno</translation>
@@ -252,6 +252,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1419305130220238697">Dugme Upravljaj preuzimanjima u Chromeu, aktivirajte da upravljate fajlovima koje ste preuzeli u Chromeu</translation>
 <translation id="1420345875188552368">Sačuvani način automatskog plaćanja se može upotrijebiti za ovo plaćanje. Da isključite e-novčanike u Chromeu, idite u <ph name="BEGIN_LINK1" />postavke plaćanja<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> da omogućite uparivanje</translation>
+<translation id="1421484961346698724">Račun je izbrisan</translation>
 <translation id="14222610277930434">Često posjećujete</translation>
 <translation id="1422930527989633628">Može tražiti da otkriva Bluetooth uređaje u blizini</translation>
 <translation id="1426410128494586442">Da</translation>
@@ -661,7 +662,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2145193671493396738">Vijesti iz privrede</translation>
 <translation id="214556005048008348">Otkaži plaćanje</translation>
 <translation id="2147117373852943630">Muzički instrumenti</translation>
-<translation id="2147254250314124496">Web-lokacija <ph name="EMBEDDED_URL" /> želi upotrijebiti podatke koje je spremila o vama</translation>
+<translation id="2147254250314124496"><ph name="EMBEDDED_URL" /> želi koristiti sačuvane informacije o vama</translation>
 <translation id="2148613324460538318">Dodaj karticu</translation>
 <translation id="2148716181193084225">Danas</translation>
 <translation id="2149968176347646218">Veza nije sigurna</translation>
@@ -2321,7 +2322,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome treba pristup funkciji "<ph name="PERMISSION" />" na uređaju</translation>
 <translation id="510644072453496781">Karton (korice)</translation>
-<translation id="5106648964679263509">Virtualna kartica za uslugu <ph name="BNPL_ISSUER_NAME" /> ispunjena</translation>
+<translation id="5106648964679263509">Virtuelna kartica za uslugu <ph name="BNPL_ISSUER_NAME" /> je popunjena</translation>
 <translation id="5108881358339761672">Web lokacija nije sigurna</translation>
 <translation id="5109892411553231226">Upravljajte načinima plaćanja</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2517,7 +2518,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
             <ph name="LIST_ITEM" />informacije unesene u obrasce
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Obrnuti redoslijed s odštampanom stranom prema gore</translation>
-<translation id="5445340838622821110">Kad plaćate obročno, ispunjava se jednokratni broj virtualne kartice. Taj je broj namijenjen samo za ovu kupnju. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
+<translation id="5445340838622821110">Ako plaćate na rate, popunit će se jednokratni broj virtuelne kartice. Taj broj je namijenjen samo za ovu kupovinu. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Dozvolite web lokaciji <ph name="SITE" /> da koristi informacije koje je sačuvala o vama</translation>
 <translation id="5452270690849572955">Nije moguće pronaći stranicu <ph name="HOST_NAME" /></translation>
 <translation id="5452923259299906094">Plaćajte putem e-novčanika i Pixa</translation>
@@ -3024,6 +3025,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6351658970066645919">Izbriši podatke pregledanja</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ništa}=1{1 lozinka (za <ph name="DOMAIN_LIST" />, sinhronizirano)}=2{2 lozinke (za <ph name="DOMAIN_LIST" />, sinhronizirano)}one{# lozinka (za <ph name="DOMAIN_LIST" />, sinhronizirano)}few{# lozinke (za <ph name="DOMAIN_LIST" />, sinhronizirano)}other{# lozinki (za <ph name="DOMAIN_LIST" />, sinhronizirano)}}</translation>
 <translation id="6355392890578844978">Ovim preglednikom ne upravlja kompanija ili neka druga organizacija. Aktivnostima na ovom uređaju se može upravljati van Chromiuma. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Grupe kartica <ph name="GROUP_TITLE_1" /> i <ph name="GROUP_TITLE_2" /> više nisu dostupne</translation>
 <translation id="6358088212770985041">urediti načine plaćanja</translation>
 <translation id="6358450015545214790">Šta ovo znači?</translation>
 <translation id="6360213755783740931">Saznajte više o zaštiti od zlonamjernog softvera</translation>
@@ -3337,7 +3339,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6917795328362592458">Lozinka koju ste upravo koristili pronađena je prilikom narušavanja podataka. Da osigura vaše račune, Upravitelj lozinki preporučuje da provjerite sačuvane lozinke.</translation>
 <translation id="6917873303492266709">Da dijelite grupe kartica, pridružite im se i sarađujete u njima, otvorite postavke i uključite opciju Dozvoli prijavu u Chrome</translation>
 <translation id="6921197121276419421">Instaliranje web aplikacija je dozvoljeno</translation>
-<translation id="69238565902785824">Ako vaš račun ostane povezan, moći ćete brže plaćati putem usluge <ph name="BNPL_ISSUER_NAME" />, no tu vezu možete prekinuti na web-lokaciji <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /></translation>
+<translation id="69238565902785824">Održavanje računa povezanim vam pomaže da brže plaćate putem usluge <ph name="BNPL_ISSUER_NAME" />, ali možete prekinuti povezanost odlaskom na <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /></translation>
 <translation id="6924013822850225188">Odaberite hoće li vam se prikazivati pogodnosti kartice prilikom nastavka na plaćanje (primjenjuju se uslovi banke)</translation>
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Body art</translation>
@@ -3403,7 +3405,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="701757816833614688">Obrazovanje u oblasti likovne umjetnosti i dizajna</translation>
 <translation id="702275896380648118">Ova web lokacija utvrđuje stvari koje vam se sviđaju, a zatim predlaže oglase drugim web lokacijama. Ova web lokacija prikuplja i vaše teme oglasa iz Chromea da vam prikazuje relevantnije oglase.</translation>
 <translation id="7023162328967545559">Upozorenje administratora</translation>
-<translation id="7023765275461720661">Želite li povezati račun i platiti putem usluge <ph name="BNPL_ISSUER_NAME" />?</translation>
+<translation id="7023765275461720661">Povezati račun i platiti putem usluge <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Lozinke</translation>
 <translation id="7030164307377592766">izmijeniti postavke za popunjavanje načina plaćanja</translation>
 <translation id="7031646650991750659">Koje Google Play aplikacije ste instalirali</translation>
@@ -3673,7 +3675,7 @@ Dodatni detalji:
 <translation id="7485085230273446323">Poslovanje i industrija</translation>
 <translation id="7485870689360869515">Nije pronađen nijedan rezultat.</translation>
 <translation id="7486880426035242089">OneDriveu</translation>
-<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> će provjeriti ispunjavate li kriterije (to ne utječe na vašu ocjenu kreditne sposobnosti). Ako se prijava odobri, <ph name="BNPL_ISSUER_NAME" /> će vam ponuditi da odaberete plan plaćanja i dovršite kupnju.</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> će provjeriti ispunjavate li uslove (ovo neće uticati na vaš kreditni rejting). Ako dobijete odobrenje, <ph name="BNPL_ISSUER_NAME" /> će vam dati da odaberete jedan od planova plaćanja i dovršite kupovinu.</translation>
 <translation id="7489392576326061356">Šamponi i regeneratori</translation>
 <translation id="7495528107193238112">Ovaj sadržaj je blokiran. Kontaktirajte vlasnika web lokacije da riješite problem.</translation>
 <translation id="749865518782565832">Vodoinstalacije</translation>

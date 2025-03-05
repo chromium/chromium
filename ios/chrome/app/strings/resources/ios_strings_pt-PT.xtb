@@ -291,6 +291,7 @@
 <translation id="2161446265348023004">Mudar para a janela aberta</translation>
 <translation id="2164946989711475905">Iniciar sessão…</translation>
 <translation id="2175927920773552910">Código QR</translation>
+<translation id="218350106843433823">Preencher automaticamente palavras-passe e chaves de acesso</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="219283042927675668">Separadores no grupo</translation>
 <translation id="2194856509914051091">Aspetos a considerar</translation>
@@ -380,6 +381,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2511117522375201202">Tem <ph name="NUMBER_OF_PASSWORDS" /> palavras-passe comprometidas que podem pôr a sua segurança em risco.</translation>
 <translation id="2513103768503127042">Os seus grupos de separadores vão ser apresentados aqui</translation>
 <translation id="251837347827266434">A sua sessão vai ser terminada, os separadores vão ser fechados e os dados de navegação vão ser eliminados</translation>
+<translation id="2520787026086861736">Para desativar esta funcionalidade, aceda a <ph name="BEGIN_LINK" />Preenchimento automático e palavras-passe<ph name="END_LINK" /></translation>
 <translation id="2529021024822217800">Abrir todos</translation>
 <translation id="2536991091671391962">Pode usar palavras-passe guardadas em qualquer dispositivo. São guardadas no Gestor de Palavras-passe da Google de <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Palavra-passe oculta</translation>
@@ -658,7 +660,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="385051799172605136">Anterior</translation>
 <translation id="3851938967634752633">As palavras-passe de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e outros <ph name="NUMBER_OF_ACCOUNTS" /> URLs vão ser apagadas. As suas contas não vão ser apagadas.</translation>
 <translation id="3858860766373142691">Nome</translation>
-<translation id="3861908220442487587">Este endereço só é guardado neste dispositivo. Para usá-lo nos seus outros dispositivos, mova-o para a sua Conta Google, <ph name="USER_EMAIL" /></translation>
 <translation id="3868495844258915202">Mostrar URL completo</translation>
 <translation id="3875783148670536197">Mostrar-me como</translation>
 <translation id="3876833929577368454">Perguntar-me sempre</translation>
@@ -679,6 +680,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3940195383040445971">Monitorize os preços nos separadores.</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Fechar {COUNT} separador}other{Fechar {COUNT} separadores}}</translation>
 <translation id="3948600256434252210">Pode deslizar rapidamente para a direita para navegar na Navegação anónima.</translation>
+<translation id="3950479158728806902">Criar automaticamente uma chave de acesso para iniciar sessão mais rápido</translation>
 <translation id="3950820424414687140">Iniciar sessão</translation>
 <translation id="3955740319737378355">Concluir</translation>
 <translation id="3955822496205734389">Tem palavras-passe fracas.</translation>
@@ -703,6 +705,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4018440314314549819">Preencha automaticamente as palavras-passe guardadas</translation>
 <translation id="4021447724486050609">Atualize o navegador</translation>
 <translation id="4021931095789478915">Adicione ${url} à Lista de leitura</translation>
+<translation id="4026496154402824012">Para desativar esta funcionalidade, aceda a <ph name="BEGIN_LINK" />Opções de palavra-passe<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Guardar na conta…</translation>
 <translation id="4038354071007134711">Nenhuma app neste disp. pode abrir o ficheiro.</translation>
 <translation id="4042870976416480368">Localizar na página</translation>
@@ -838,6 +841,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4619564267100705184">Validar identidade</translation>
 <translation id="4619615317237390068">Separadores de outros dispositivos</translation>
 <translation id="4624080227980645783">Nova janela de navegação anónima</translation>
+<translation id="4627107755957573804">Permitir que os sites e as apps atualizem as contas existentes para usarem chaves de acesso</translation>
 <translation id="4630212057753624203">Balão de amostra</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> palavras-passe reutilizadas</translation>
 <translation id="4631890462758052414">Novo separador de navegação anónima</translation>
@@ -1136,6 +1140,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5859715514067755465">Avançar</translation>
 <translation id="5860033963881614850">Desativado</translation>
 <translation id="5860491529813859533">Ativar</translation>
+<translation id="5868644772996939262">Preencha automaticamente palavras-passe e chaves de acesso</translation>
 <translation id="5869522115854928033">Palavras-passe guardadas</translation>
 <translation id="5878899964490256268"><ph name="EMAIL" />. Gerido pela sua organização.</translation>
 <translation id="5888889603768021126">Com sessão iniciada com</translation>
@@ -1823,7 +1828,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8679900250380464358">Adicionar à Lista de leitura</translation>
 <translation id="8680786875305615692">Ajude a melhorar a segurança na Web para todos</translation>
 <translation id="8680787084697685621">Os detalhes de início de sessão na conta estão desactualizados.</translation>
-<translation id="8683563711222071415">Mover endereço para a conta</translation>
 <translation id="8690752723634292147">Confirmar eliminação</translation>
 <translation id="8692689525339542358">Proteja-se contra transferências, extensões e sites perigosos.</translation>
 <translation id="8694281486652655615">Mostra este artigo</translation>

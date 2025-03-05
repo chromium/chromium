@@ -460,6 +460,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1303101771013849280">HTML-skrá bókamerkja</translation>
 <translation id="1303671224831497365">Engin Bluetooth-tæki fundust</translation>
 <translation id="130491383855577612">Linux-forritum og -skrám var skipt út</translation>
+<translation id="1306373239538745517">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Eyða einni viðbót og gögnunum sem hún hefur vistað í þessu tæki}one{Eyða {ACCOUNT_EXTENSIONS_COUNT} viðbót og gögnunum sem þær hafa vistað í þessu tæki}other{Eyða {ACCOUNT_EXTENSIONS_COUNT} viðbótum og gögnunum sem þær hafa vistað í þessu tæki}}</translation>
 <translation id="1306518237408758433">Opna <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="1306606229401759371">Breyta stillingum</translation>
 <translation id="1307165550267142340">PIN-númerið þitt var búið til</translation>
@@ -1217,6 +1218,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1826192255355608658">Samstilltu bókamerki, aðgangsorð, feril og annað í Chrome vafranum</translation>
 <translation id="1826516787628120939">Kannar</translation>
 <translation id="1826657447823925402">Slökkt á flettingu aftur á bak</translation>
+<translation id="1827416268933303617"><ph name="COLOR_NAME" /> litur</translation>
 <translation id="1827504459960247692">Heiti á heitum reit</translation>
 <translation id="1828378091493947763">Þessi viðbót er ekki studd á þessu tæki</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Opna allt}=1{&amp;Opna bókamerki}one{&amp;Opna allt ({COUNT})}other{&amp;Opna allt ({COUNT})}}</translation>
@@ -1718,7 +1720,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2178545675770638239">Veldu aðgangsorð</translation>
 <translation id="2178585470774851578">Þú ert að gera villuleitareiginleika ChromeOS Flex virka en við það verður sett upp sshd-bakgrunnsforrit og ræsing af USB-drifum gerð virk.</translation>
 <translation id="2178614541317717477">CA-öryggisbrestur</translation>
-<translation id="2179850495466791921">Eins og er ertu með <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> og fleira</translation>
 <translation id="2180620921879609685">Útiloka efni á öllum síðum</translation>
 <translation id="2181821976797666341">Reglur</translation>
 <translation id="2182058453334755893">Afritað á klippiborðið</translation>
@@ -3137,7 +3138,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3167562202484086668">Eyða öllum gögnum í „<ph name="BRAND" />“</translation>
 <translation id="3169930038976362151">Veldu þemað sem hentar þér best. Haltu inni á skjáborðinu til að skipta um þema, veggfóður, skjávara og fleira.</translation>
 <translation id="3170072451822350649">Þú getur líka sleppt því að skrá þig inn og verið <ph name="LINK_START" />gestanotandi<ph name="LINK_END" />.</translation>
-<translation id="3171499217959105722">Eins og er ertu með <ph name="NUMBERED_ITEM" /> og fleira</translation>
 <translation id="3175067642577044620">Meginmál</translation>
 <translation id="3175862692832442091">Skógur</translation>
 <translation id="3176347586396987181">Notaðu „z“ til að halda inni músarhnappi</translation>
@@ -3949,7 +3949,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3744219658596020825">Aðgangsorðin þín voru ekki flutt inn</translation>
 <translation id="3745306754941902605">Eldhús</translation>
 <translation id="3747077776423672805">Til að fjarlægja forrit skaltu fara í Stillingar &gt; Google Play Store &gt; Hafa umsjón með stillingum Android &gt; Forrit eða Forritastjórnun. Ýttu síðan á forritið sem þú vilt fjarlægja (þú gætir þurft að fletta til hægri eða vinstri til að finna forritið). Ýttu svo á „Fjarlægja“ eða „Gera óvirkt“.</translation>
-<translation id="3747552357646973221">Eins og er ertu með <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> og fleira</translation>
 <translation id="3748424433435232460">Aðgangsorð fyrir þennan reikning er nú þegar vistað í tækinu</translation>
 <translation id="3748706263662799310">Tilkynna villu</translation>
 <translation id="3749724428455457489">Nánar um auglýsingatillögur vefsvæða</translation>
@@ -6734,6 +6733,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5749214722697335450">Sendu notkunar- og greiningargögn. Hjálpaðu okkur að bæta upplifun þína af Android með því að senda greiningargögn og gögn um notkun tækis og forrita sjálfkrafa til Google. Gögnin hjálpa okkur að stuðla að stöðugleika kerfa og forrita sem og öðrum endurbótum. Sum samantekin gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android. Ef kveikt er á ítarlegri vef- og forritavirkni kunna þessi gögn að vera vistuð á Google-reikningnum þínum. <ph name="BEGIN_LINK1" />Nánar um mæligildi<ph name="BEGIN_LINK1_END" />Nánar<ph name="END_LINK1" /></translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Athuga stöðu tjóðrunar</translation>
+<translation id="5752346055178471785">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Þessi viðbót er vistuð á Google-reikningnum þínum en öllum gögnum sem hún hefur aðeins vistað í þessu tæki kann að verða eytt}one{Þessar viðbætur eru vistaðar á Google-reikningnum þínum en öllum gögnum sem þær hafa aðeins vistað í þessu tæki kann að verða eytt}other{Þessar viðbætur eru vistaðar á Google-reikningnum þínum en öllum gögnum sem þær hafa aðeins vistað í þessu tæki kann að verða eytt}}</translation>
 <translation id="5753570386948603678">Eyða úr ferli</translation>
 <translation id="5756163054456765343">Hjálparmiðstöð</translation>
 <translation id="5757187557809630523">næsta lag</translation>
@@ -8981,7 +8981,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7380459290951585794">Gakktu úr skugga um að síminn sé nálægt, ólæstur og með kveikt á Bluetooth og Wi-Fi</translation>
 <translation id="7380622428988553498">Heiti tækis inniheldur ógilda stafi</translation>
 <translation id="7380768571499464492">Uppfært <ph name="PRINTER_NAME" /></translation>
-<translation id="7382009635620830394">Ef slökkt er á þessu spjaldi verður líka slökkt á Microsoft-spjöldunum þínum, eins og SharePoint og OneDrive-skrám, sem og Outlook-dagatali.</translation>
+<translation id="7382009635620830394">Ef slökkt er á þessu spjaldi verður líka slökkt á Microsoft-spjöldunum þínum, eins og SharePoint- og OneDrive-skrám, sem og Outlook-dagatali.</translation>
 <translation id="7382085868019811559">Stuðningur við eldri vafra heimilar opnun tiltekinna vefslóðamynstra í öðrum vafra sem styður eldri eiginleika sem þarf til að keyra þessi vefsvæði sem skyldi.</translation>
 <translation id="7382980704744807223">Grunsamlegt</translation>
 <translation id="738322632977123193">Ekki hægt að hlaða upp. Notaðu mynd á einu af eftirfarandi sniðum: .jpg, .gif, .png, .bmp, .tif eða .webp</translation>

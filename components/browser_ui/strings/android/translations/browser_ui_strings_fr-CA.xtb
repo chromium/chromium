@@ -184,6 +184,7 @@
 <translation id="3628308229821498208">Recherches suggérées</translation>
 <translation id="3658847490588580244">Zone de contenu dans le bas de l'écran du navigateur par défaut</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site du groupe de sites de <ph name="RWS_OWNER" /> peut voir votre activité dans le groupe}one{<ph name="RWS_MEMBERS_COUNT" /> site du groupe de sites de <ph name="RWS_OWNER" /> peut voir votre activité dans le groupe}other{<ph name="RWS_MEMBERS_COUNT" /> sites du groupe de sites de <ph name="RWS_OWNER" /> peut voir votre activité dans le groupe}}</translation>
+<translation id="3676777756440746804">Les sites ne sont pas autorisés à vous demander d'utiliser les informations qu'ils ont enregistrées à votre sujet</translation>
 <translation id="3697164069658504920">Lorsque cette option est activée, les sites peuvent demander à utiliser des appareils USB. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser d'appareils USB.</translation>
 <translation id="3707034683772193706">Un site que vous visitez peut enregistrer une petite quantité d'informations avec Chrome, principalement pour confirmer que vous n'êtes pas un robot</translation>
 <translation id="3709818294139939629">Accès du site au fichier retiré</translation>
@@ -208,9 +209,11 @@
 <translation id="3922092564198021702">Sur votre téléphone, ouvrez Paramètres.</translation>
 <translation id="3933121352599513978">Réduire les requêtes indésirables (recommandé)</translation>
 <translation id="3955193568934677022">Autoriser les sites à lire le contenu protégé (recommandé)</translation>
+<translation id="3965467402665811906">Les sites peuvent demander d'utiliser les informations qu'ils ont enregistrées à votre sujet</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
 <translation id="3987993985790029246">Copier lien</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
+<translation id="3992308058851451478"><ph name="SITE" /> peut utiliser vos informations pendant que vous naviguez</translation>
 <translation id="3992684624889376114">À propos de cette page</translation>
 <translation id="4002066346123236978">Titre</translation>
 <translation id="4046123991198612571">Chanson suivante</translation>
@@ -263,6 +266,7 @@
 <translation id="4883854917563148705">Les paramètres gérés ne peuvent pas être réinitialisés</translation>
 <translation id="4887024562049524730">Demander avant d'autoriser les sites à utiliser votre appareil et vos données de réalité virtuelle (recommandé)</translation>
 <translation id="4936863036653376783">Vous trouverez vos groupes dans la section des groupes d'onglets sur tous vos appareils</translation>
+<translation id="4945443401464700059"><ph name="SITE" /> n'est pas autorisé à utiliser vos informations sur</translation>
 <translation id="4953688446973710931">Lorsque cette option est activée, les sites peuvent demander de télécharger automatiquement plusieurs fichiers. Lorsqu'elle est désactivée, les sites ne peuvent pas télécharger automatiquement plusieurs fichiers.</translation>
 <translation id="4962975101802056554">Révoquer toutes les autorisations pour l'appareil</translation>
 <translation id="497421865427891073">Avancer</translation>
@@ -532,9 +536,11 @@
 <translation id="851751545965956758">Empêcher les sites de se connecter à des appareils</translation>
 <translation id="8525306231823319788">Plein écran</translation>
 <translation id="8541410041357371550">Ce site récupère vos sujets d'annonces à partir de Chrome pour vous montrer des annonces plus pertinentes</translation>
+<translation id="854876774113449365">Les sites que vous visitez peuvent intégrer du contenu provenant d'autres sites, p. ex. des images, des publicités et du texte. Ces autres sites peuvent demander l'autorisation d'utiliser les informations qu'ils ont enregistrées à votre sujet lorsque vous naviguez sur le site. <ph name="BEGIN_LINK" />En savoir plus à propos du contenu intégré<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Comment afficher les requêtes</translation>
 <translation id="8558480467877843976">Vous pouvez désormais utiliser Chrome chaque fois que vous naviguez ou que vous touchez des liens dans des messages, des documents et d'autres applications.</translation>
 <translation id="857943718398505171">Autorisée (recommandé)</translation>
+<translation id="8593422116412089302">Lorsque cette option est activée, les sites peuvent demander d'utiliser les informations qu'ils ont enregistrées à votre sujet. Lorsqu'elle est désactivée, les sites ne peuvent pas vous demander d'utiliser les informations qu'ils ont enregistrées à votre sujet.</translation>
 <translation id="8609465669617005112">Déplacer vers le haut</translation>
 <translation id="8617611086246832542">Lorsque cette option est activée, les sites Web s'afficheront au moyen de l'affichage sur ordinateur de bureau. Lorsqu'elle est désactivée, les sites Web s'afficheront au moyen de l'affichage sur appareil mobile.</translation>
 <translation id="8670078035093027626">Zone de contenu dans le bas de l'écran du navigateur par défaut à pleine hauteur</translation>

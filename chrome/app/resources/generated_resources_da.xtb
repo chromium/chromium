@@ -1720,7 +1720,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2178545675770638239">Vælg adgangskode</translation>
 <translation id="2178585470774851578">Du er ved at aktivere ChromeOS Flex-fejlretningsfunktioner, som konfigurerer sshd daemon og aktiverer systemgenstart via USB-drev.</translation>
 <translation id="2178614541317717477">Sammensat nøglecenter</translation>
-<translation id="2179850495466791921">Du har i øjeblikket <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> m.m.</translation>
 <translation id="2180620921879609685">Bloker indhold på alle sider</translation>
 <translation id="2181821976797666341">Politikker</translation>
 <translation id="2182058453334755893">Kopieret til din udklipsholder</translation>
@@ -3139,7 +3138,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3167562202484086668">Slet alle data fra <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Vælg det tema, der passer til dine behov. Du kan ændre dit tema, din baggrund, din pauseskærm og meget mere ved at holde fingeren nede på skrivebordet.</translation>
 <translation id="3170072451822350649">Du kan også springe login over og <ph name="LINK_START" />anvende som gæst<ph name="LINK_END" />.</translation>
-<translation id="3171499217959105722">Du har i øjeblikket <ph name="NUMBERED_ITEM" /> m.m.</translation>
 <translation id="3175067642577044620">Brødtekst</translation>
 <translation id="3175862692832442091">Skov</translation>
 <translation id="3176347586396987181">Brug “z” til at holde en museknap nede</translation>
@@ -3951,7 +3949,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3744219658596020825">Dine adgangskoder blev ikke importeret</translation>
 <translation id="3745306754941902605">Køkken</translation>
 <translation id="3747077776423672805">Hvis du vil fjerne apps, skal du gå til Indstillinger &gt; Google Play Butik &gt; Administrer dine Android-præferencer &gt; Apps eller Administration af apps. Tryk derefter på den app, du vil afinstallere (du skal muligvis stryge til højre eller venstre for at finde appen). Tryk derefter på Afinstaller eller Deaktiver.</translation>
-<translation id="3747552357646973221">Du har i øjeblikket <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> m.m.</translation>
 <translation id="3748424433435232460">Der er allerede gemt en adgangskode for denne konto på denne enhed</translation>
 <translation id="3748706263662799310">Rapporter en fejl</translation>
 <translation id="3749724428455457489">Få flere oplysninger om foreslåede annoncer fra websites</translation>
@@ -10163,6 +10160,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8195854162863398249">Deaktiver <ph name="FEATURE_NAME" /></translation>
 <translation id="8195920051450756553">Forsinkelse, inden samme tast aktiveres igen</translation>
 <translation id="8197673340773315084">Tilføj et navn eller en etiket, f.eks. Arbejde eller Privat</translation>
+<translation id="8198181050118789419">Tema: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Caster fane</translation>
 <translation id="8199300056570174101">Egenskaber for netværkstjeneste og enhed</translation>
 <translation id="8200772114523450471">Genoptag</translation>

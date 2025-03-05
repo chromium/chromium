@@ -252,6 +252,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1419305130220238697">Tombol Kelola download di Chrome, aktifkan untuk mengelola file yang telah Anda download di Chrome</translation>
 <translation id="1420345875188552368">Metode pembayaran otomatis Anda yang tersimpan dapat digunakan untuk pembayaran ini. Untuk menonaktifkan eWallet di Chrome, buka <ph name="BEGIN_LINK1" />setelan pembayaran<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> untuk mengizinkan penyandingan</translation>
+<translation id="1421484961346698724">Akun yang dihapus</translation>
 <translation id="14222610277930434">Sering Anda Buka</translation>
 <translation id="1422930527989633628">Dapat meminta untuk menemukan perangkat Bluetooth di sekitar</translation>
 <translation id="1426410128494586442">Ya</translation>
@@ -3024,6 +3025,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6351658970066645919">Hapus Data Penjelajahan</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Tidak ada}=1{1 sandi (untuk <ph name="DOMAIN_LIST" />, disinkronkan)}=2{2 sandi (untuk <ph name="DOMAIN_LIST" />, disinkronkan)}other{# sandi (untuk <ph name="DOMAIN_LIST" />, disinkronkan)}}</translation>
 <translation id="6355392890578844978">Browser ini tidak dikelola oleh perusahaan atau organisasi lain. Aktivitas di perangkat ini mungkin dikelola di luar Chromium. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Grup tab "<ph name="GROUP_TITLE_1" />" dan "<ph name="GROUP_TITLE_2" />" tidak lagi tersedia</translation>
 <translation id="6358088212770985041">mengedit metode pembayaran</translation>
 <translation id="6358450015545214790">Apakah maksud ini?</translation>
 <translation id="6360213755783740931">Pelajari lebih lanjut Perlindungan malware</translation>

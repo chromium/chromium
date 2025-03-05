@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">Lataa sivu myöhemmin</translation>
 <translation id="1010225406377140704">Pyydä uutta linkkiä lähettäjältä</translation>
 <translation id="1011206368273183593">Valmistellaan tiedostoja</translation>
+<translation id="1012264210825687872">Kun olet tarkistanut tilauksen, sinun on kirjauduttava palvelun <ph name="BNPL_ISSUER_NAME" /> tilille tai luotava sellainen. Tili linkitetään automaattisesti Google Payhin.</translation>
 <translation id="1014509239502131234">Kumotaan tulosta</translation>
 <translation id="1015730422737071372">Lisätietoja</translation>
 <translation id="1019413721762100891">Pois päältä</translation>
@@ -692,6 +693,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2187317261103489799">Tunnista (oletus)</translation>
 <translation id="2188375229972301266">Useita reikiä alareunassa</translation>
 <translation id="2194856509914051091">Huomioitavaa</translation>
+<translation id="2198071643181968308">Lue lisää: <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="2200678913752027654">En tykkää ‐painike, paina Enter avataksesi lomakkeen, jolla voit antaa yksityiskohtaista palautetta siitä, miksi et tykkää tästä ehdotuksesta</translation>
 <translation id="2202627062836089804">kortin takaosa</translation>
 <translation id="2204482073374652408">Päivitys valmis!</translation>
@@ -2320,6 +2322,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome tarvitsee pääsyn tähän laitteella: <ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">Pahvi (loppu)</translation>
+<translation id="5106648964679263509">Virtuaalikortin (<ph name="BNPL_ISSUER_NAME" />) tiedot täytetty</translation>
 <translation id="5108881358339761672">Sivusto ei ole turvallinen</translation>
 <translation id="5109892411553231226">Ylläpidä maksutapoja</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2515,6 +2518,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
             <ph name="LIST_ITEM" />Lomakkeisiin syötetyt tiedot
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Käänteinen järjestys tulostuspuoli ylöspäin</translation>
+<translation id="5445340838622821110">Kun maksat ajan mittaan, kertakäyttöinen virtuaalikortin numero täytetään. Numeroa käytetään vain tässä ostoksessa. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Salli, että <ph name="SITE" /> voi käyttää sinusta tallentamiaan tietoja</translation>
 <translation id="5452270690849572955">Tätä sivuston <ph name="HOST_NAME" /> sivua ei löydy.</translation>
 <translation id="5452923259299906094">Maksa sähköisellä lompakolla ja Pixillä</translation>
@@ -3021,6 +3025,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6351658970066645919">Poista selausdata</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ei mitään}=1{1 salasana: (<ph name="DOMAIN_LIST" />, synkronoitu)}=2{2 salasanaa (<ph name="DOMAIN_LIST" />, synkronoitu)}other{# salasanaa (<ph name="DOMAIN_LIST" />, synkronoitu)}}</translation>
 <translation id="6355392890578844978">Yritys tai muu organisaatio ei ylläpidä selainta. Laitteen toimintaa saatetaan ylläpitää Chromiumin ulkopuolelta. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Välilehtiryhmät "<ph name="GROUP_TITLE_1" />" ja "<ph name="GROUP_TITLE_2" />" eivät ole enää saatavilla</translation>
 <translation id="6358088212770985041">muokkaa maksutapoja</translation>
 <translation id="6358450015545214790">Mitä nämä tarkoittavat?</translation>
 <translation id="6360213755783740931">Lue lisää haittaohjelmilta suojautumisesta</translation>
@@ -3334,6 +3339,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6917795328362592458">Juuri käyttämäsi salasana on löytynyt tietosuojaloukkauksesta. Tiliesi suojaamiseksi Salasanat suosittelee, että tarkistat tallennetut salasanasi.</translation>
 <translation id="6917873303492266709">Avaa asetukset ja laita Salli Chrome-kirjautuminen päälle, jotta voit jakaa välilehtiryhmiä, liittyä niihin ja yhteiskäyttää niitä</translation>
 <translation id="6921197121276419421">Verkkosovellusten asentaminen sallittu</translation>
+<translation id="69238565902785824">Pidä tili linkitettynä, niin voit maksaa nopeammin palvelun <ph name="BNPL_ISSUER_NAME" /> avulla. Voit halutessasi poistaa linkityksen osoitteessa <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" />.</translation>
 <translation id="6924013822850225188">Valitse, näkyvätkö korttiedut kassalla (huomioi pankin ehdot)</translation>
 <translation id="6925267999184670015">Pohjoisamerikkalainen B+</translation>
 <translation id="6926216138694948720">Tatuoinnit ja lävistykset</translation>
@@ -3399,6 +3405,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="701757816833614688">Kuvataide- ja muotoilukoulutus</translation>
 <translation id="702275896380648118">Tämä sivusto päättelee, mistä pidät, ja ehdottaa sitten mainoksia muille sivustoille. Se myös saa mainosaiheesi Chromesta, jotta voit nähdä osuvampia mainoksia.</translation>
 <translation id="7023162328967545559">Varoitus järjestelmänvalvojalta</translation>
+<translation id="7023765275461720661">Haluatko linkittää tilin ja maksaa palvelussa <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Salasanat</translation>
 <translation id="7030164307377592766">muuta maksutapojen täyttämisen asetuksia</translation>
 <translation id="7031646650991750659">Asentamasi Google Play ‑sovellukset</translation>
@@ -3621,6 +3628,7 @@ Lisätietoja:
 <translation id="741204030948306876">Kyllä</translation>
 <translation id="7416351320495623771">Ylläpidä salasanoja…</translation>
 <translation id="7416898721136759658">Apurahat, stipendit ja taloudellinen tuki</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">Ohjelmointi</translation>
 <translation id="7419091773564635591">Tietokoneet ja elektroniikka</translation>
 <translation id="7419106976560586862">Profiilin polku</translation>
@@ -3667,6 +3675,7 @@ Lisätietoja:
 <translation id="7485085230273446323">Liiketoiminta ja teollisuus</translation>
 <translation id="7485870689360869515">Tietoja ei löydy.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> tarkastaa, täytätkö ehdot (tämä ei vaikuta luottokelpoisuuteesi). Jos tarkastus menee läpi, <ph name="BNPL_ISSUER_NAME" /> tarjoaa erilaisia maksusopimuksia, joista voit valita haluamasi ja viedä ostoksen loppuun.</translation>
 <translation id="7489392576326061356">Shampoot ja hoitoaineet</translation>
 <translation id="7495528107193238112">Tämä sisältö on estetty. Pyydä sivuston omistajalta apua ongelman korjaamiseen.</translation>
 <translation id="749865518782565832">Putkityöt</translation>

@@ -425,6 +425,23 @@ pode ser usada para evitar que determinados nomes de host ou padrões de nome de
 atualizados para HTTPS por esse recurso.</translation>
 <translation id="1342918903685430097">Configura a versão mínima permitida do <ph name="PRODUCT_OS_NAME" /> para o dispositivo.</translation>
 <translation id="1343128241903870688">Desativar relatórios de informações de apps do dispositivo</translation>
+<translation id="1345276795096570241">Desativar o Logon único usando o <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> para os provedores de identidade listados.
+
+Ao adicionar o valor <ph name="POLICY_VALUE_ALL" />, todos os provedores de identidade para SSO compatíveis são desativados.
+
+Ao adicionar o valor <ph name="POLICY_VALUE_MICROSOFT" />, o logon único para o provedor de identidade na nuvem da Microsoft® no Chrome é desativado.
+
+Se esta política for deixada sem definição, todos os provedores de identidade compatíveis com o <ph name="PRODUCT_NAME" /> serão ativados.
+
+Para provedores de identidade ativados no <ph name="PRODUCT_NAME" /> e configurados no dispositivo pelo administrador, os usuários que fizerem login usando esse provedor em qualquer aplicativo compatível com o <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> também poderão fazer login em propriedades da Web usando esse provedor de identidade automaticamente. As informações de autenticação do usuário são transmitidas ao provedor de identidade na nuvem para cada evento de autenticação.
+
+Observações:
+
+O <ph name="PRODUCT_NAME" /> não aceita Logon único usando o <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> nos modos de navegação anônima ou convidado.
+
+O <ph name="PRODUCT_NAME" /> só é compatível com o Logon único usando o <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> para os seguintes provedores de identidade: Microsoft.
+
+Esse recurso está disponível no <ph name="MAC_OS_NAME" /> 10.15.</translation>
 <translation id="1347198119056266798">Esta política está obsoleta. Use <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> e <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Esta política será ignorada se as políticas <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> ou <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (obsoleta) estiverem definidas.
 
       Faz com que as consultas na Pesquisa Google na Web sejam feitas com o SafeSearch ativado e evita que usuários mudem essa configuração. Esta configuração também força o Modo restrito moderado no YouTube.

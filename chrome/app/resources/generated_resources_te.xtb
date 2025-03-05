@@ -1717,7 +1717,6 @@
 <translation id="2178545675770638239">పాస్‌వర్డ్‌ను ఎంచుకోండి</translation>
 <translation id="2178585470774851578">మీరు ChromeOS Flex డీబగ్గింగ్ ఫీచర్‌లను ఎనేబుల్ చేస్తున్నారు, ఇది sshd daemonను సెటప్ చేస్తుంది అలాగే USB డిస్క్‌ల నుండి బూట్ చేయడాన్ని ఎనేబుల్ చేస్తుంది.</translation>
 <translation id="2178614541317717477">CA రాజీ</translation>
-<translation id="2179850495466791921">మీరు ప్రస్తుతం <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" />, ఇంకా మరిన్ని కలిగి ఉన్నారు</translation>
 <translation id="2180620921879609685">ఏ పేజీలోనైనా కంటెంట్‌ను బ్లాక్ చేయడం</translation>
 <translation id="2181821976797666341">విధానాలు</translation>
 <translation id="2182058453334755893">మీ క్లిప్‌బోర్డ్‌కు కాపీ చేయబడింది</translation>
@@ -3136,7 +3135,6 @@
 <translation id="3167562202484086668">మొత్తం <ph name="BRAND" /> డేటాను తొలగించండి</translation>
 <translation id="3169930038976362151">మీ అవసరాలకు తగిన రూపాన్ని ఎంచుకోండి. మీ రూపాన్ని, వాల్‌పేపర్‌ను, స్క్రీన్ సేవర్‌ను, ఇంకా మరిన్నింటిని మార్చడానికి, డెస్క్‌టాప్‌పై తాకి, నొక్కి ఉంచండి.</translation>
 <translation id="3170072451822350649">మీరు సైన్ ఇన్ చేయడాన్ని కూడా దాట వేయవచ్చు. <ph name="LINK_START" />అతిథిగా బ్రౌజ్ చేయవచ్చు<ph name="LINK_END" />.</translation>
-<translation id="3171499217959105722">మీరు ప్రస్తుతం <ph name="NUMBERED_ITEM" />, ఇంకా మరిన్ని కలిగి ఉన్నారు</translation>
 <translation id="3175067642577044620">విషయం</translation>
 <translation id="3175862692832442091">అడవి</translation>
 <translation id="3176347586396987181">మౌస్ బటన్‌ను నొక్కి పట్టుకోవడానికి “z”ను వినియోగించండి</translation>
@@ -3948,7 +3946,6 @@
 <translation id="3744219658596020825">మీ పాస్‌వర్డ్‌లు దిగుమతి చేయబడలేదు</translation>
 <translation id="3745306754941902605">వంట గది</translation>
 <translation id="3747077776423672805">యాప్‌లను తీసివేయడం కోసం, సెట్టింగ్‌లు &gt; Google Play Store &gt; Android ప్రాధాన్యతలను మేనేజ్ చేయండి &gt; యాప్‌లు లేదా అప్లికేషన్ మేనేజర్‌లోకి వెళ్లండి. ఆపై, మీరు అన్ఇన్‌స్టాల్ చేయాలనుకుంటున్న యాప్‌ని నొక్కండి (మీరు యాప్‌ని కనుగొనడం కోసం ఎడమ లేదా కుడి వైపునకు స్వైప్ చేయాల్సి రావచ్చు). ఆపై, అన్ఇన్‌స్టాల్ చేయి లేదా నిలిపివేయిని ఎంచుకోండి.</translation>
-<translation id="3747552357646973221">మీరు ప్రస్తుతం <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, ఇంకా మరిన్ని కలిగి ఉన్నారు</translation>
 <translation id="3748424433435232460">ఈ ఖాతా కోసం పాస్‌వర్డ్ ఇప్పటికే ఈ పరికరంలో సేవ్ చేయబడింది</translation>
 <translation id="3748706263662799310">ఒక బగ్‌ను రిపోర్ట్ చేయండి</translation>
 <translation id="3749724428455457489">సైట్ సూచించిన యాడ్‌ల గురించి మరింత తెలుసుకోండి</translation>
@@ -4082,6 +4079,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{ఒక ఎక్స్‌టెన్షన్ ఆమోదించబడింది}other{# ఎక్స్‌టెన్షన్‌లు ఆమోదించబడ్డాయి}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux కోసం కనీసం <ph name="INSTALL_SIZE" />  స్పేస్ కావాలి.</translation>
+<translation id="3824203811509979971">కంటెంట్‌ను సారాంశీకరించండి లేదా ప్రశ్నలు అడగండి</translation>
 <translation id="3824621460022590830">పరికర ఎన్‌రోల్‌మెంట్ టోకెన్ చెల్లదు. మీ పరికర ఓనర్‌ను లేదా అడ్మినిస్ట్రేట‌ర్‌ను దయచేసి సంప్రదించండి. ఎర్రర్ కోడ్: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">ఇతర పరికరాల నుండి ట్యాబ్‌లను చూడటానికి సైన్ ఇన్ చేయండి</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{ఈ ఫైల్ రకానికి సంబంధించి నా ఎంపికను గుర్తుంచుకోండి: <ph name="FILE_TYPES" />}other{ఈ ఫైల్ రకానికి సంబంధించి నా ఎంపికను గుర్తుంచుకోండి: <ph name="FILE_TYPES" />}}</translation>
@@ -4268,6 +4266,7 @@
 <translation id="3948985214866944547">చాలా మంది వ్యక్తులు ఈ సైట్ కోసం ఖచ్చితమైన లొకేషన్ షేర్ చేయడాన్ని బ్లాక్ చేస్తారు</translation>
 <translation id="394984172568887996">IE నుండి దిగుమతి చేయబడింది</translation>
 <translation id="3949999964543783947">ఫైల్స్‌ను మరింత సురక్షితంగా డౌన్‌లోడ్ చేయడానికి <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
+<translation id="3950479158728806902">వేగంగా సైన్ ఇన్ చేయడానికి పాస్-కీని ఆటోమేటిక్‌గా క్రియేట్ చేయండి</translation>
 <translation id="3950820424414687140">సైన్ ఇన్</translation>
 <translation id="3950841222883198950">వాయిస్ టైపింగ్</translation>
 <translation id="3953834000574892725">నా ఖాతాలు</translation>
@@ -5196,6 +5195,7 @@
 <translation id="4624054169152573743">రంగు రూపం</translation>
 <translation id="4625078469366263107">యాప్‌ను ప్రారంభించండి</translation>
 <translation id="4625905218692741757">బూడిద ఆటోమేటిక్ సెట్టింగ్ రంగు</translation>
+<translation id="4627107755957573804">పాస్-కీలను ఉపయోగించడానికి ఇప్పటికే ఉన్న ఖాతాలను అప్‌గ్రేడ్ చేయడానికి సైట్‌లు, యాప్‌లను అనుమతించండి</translation>
 <translation id="4627442949885028695">మరో పరికరం నుండి కొనసాగించండి</translation>
 <translation id="4628762811416793313">Linux కంటెయినర్ సెటప్ పూర్తి కాలేదు. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> ప్రొఫైల్‌ను తెరవు</translation>
@@ -5779,6 +5779,7 @@
 <translation id="5053233576223592551">యూజర్‌నేమ్‌ను జోడించండి</translation>
 <translation id="505347685865235222">పేరు లేని గ్రూప్ - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{ఇప్పుడే మీరు దాన్ని మార్చాలి}other{ఇప్పుడే మీరు వీటిని మార్చాలి}}</translation>
+<translation id="5056587122125565772">ఇమేజ్‌ను క్రియేట్ చేయండి</translation>
 <translation id="5056950756634735043">కంటైనర్‌కు కనెక్ట్ చేస్తోంది</translation>
 <translation id="5057110919553308744">మీరు ఎక్స్‌టెన్షన్ క్లిక్ చేసినప్పుడు</translation>
 <translation id="5057127674016624293">స్కాన్ చేయడం ఊహించిన దాని కంటే ఎక్కువ సమయం పడుతోంది</translation>
@@ -5889,6 +5890,7 @@
 <translation id="512642543295077915">సెర్చ్ + బ్యాక్‌స్పేస్</translation>
 <translation id="5126611267288187364">మార్పులను చూడండి</translation>
 <translation id="5127620150973591153">సురక్షిత కనెక్షన్ ID: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">కంటెంట్‌ను సారాంశీకరించండి లేదా ప్రశ్నలు అడగండి.</translation>
 <translation id="5127881134400491887">నెట్‌వర్క్ కనెక్షన్‌లను నిర్వహించండి</translation>
 <translation id="5127934926273826089">పుష్పాలు</translation>
 <translation id="5127986747308934633">మీ అడ్మినిస్ట్రేటర్ మీ పరికరాన్ని కంట్రోల్ చేస్తున్నారు</translation>
@@ -10154,6 +10156,7 @@
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" />‌ను డిజేబుల్ చేయండి</translation>
 <translation id="8195920051450756553">ఏదైనా కీని మళ్లీ యాక్టివేట్ చేయడానికి ముందు అది యాక్టివేట్ అవ్వకుండా ఆలస్యం అయ్యేలా చేయండి</translation>
 <translation id="8197673340773315084">'ఆఫీస్', 'వ్యక్తిగతం' వంటి లేబుల్‌ను లేదా ఏదైనా పేరును జోడించండి</translation>
+<translation id="8198181050118789419">థీమ్: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">ప్రసారం చేసే ట్యాబ్</translation>
 <translation id="8199300056570174101">నెట్‌వర్క్ (సేవ) మరియు పరికర లక్షణాలు</translation>
 <translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించండి</translation>
@@ -11410,6 +11413,7 @@
 <translation id="9074739597929991885">బ్లూటూత్</translation>
 <translation id="9074836595010225693">USB మౌస్ కనెక్ట్ చేయబడింది</translation>
 <translation id="9075413375877487220">మెరుగైన సురక్షిత బ్రౌజింగ్ ద్వారా ఈ ఎక్స్‌టెన్షన్ విశ్వసించబడదు.</translation>
+<translation id="9075985558450420812">ఇమేజ్‌ను క్రియేట్ చేయడానికి అనుకూల ప్రాంప్ట్‌ను ఎంటర్ చేయండి లేదా టెక్స్ట్‌ను హైలైట్ చేయండి.</translation>
 <translation id="9076523132036239772">క్షమించండి, మీ ఈమెయిల్‌ లేదా పాస్‌వర్డ్ ధృవీకరించబడలేదు. మొదట నెట్‌వర్క్‌కి కనెక్ట్ చేయడానికి ప్రయత్నించండి.</translation>
 <translation id="9076821103818989526">సైడ్ ప్యానెల్</translation>
 <translation id="9076977315710973122">SMB షేర్</translation>

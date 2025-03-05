@@ -503,6 +503,7 @@
 <translation id="3373141842870501561">მიწის ნაკადის ფონი</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> ფონი, რომელზეც გამოსახულია ასო <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">ექსკლუზიური</translation>
+<translation id="3395147534045164351">მდებარეობის ჩართვა</translation>
 <translation id="3404249063913988450">ეკრანმზოგის ჩართვა</translation>
 <translation id="3413935475507503304">განახლების გასაგრძელებლად დაწკაპუნებით აირჩიეთ „შემდეგი“.</translation>
 <translation id="3428551088151258685">გარე</translation>
@@ -652,6 +653,7 @@
 <translation id="4113067922640381334">ამიერიდან წვდომა გაქვთ ახალ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ფონებზე<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">მუქი რეჟიმი</translation>
 <translation id="4126551873361000548">10 წამით უკან გადახვევა</translation>
+<translation id="4128271910628504223">შეიყვანეთ მოთხოვნა, მაგალითად, „დახატე ნისლიანი ტყე“</translation>
 <translation id="4130035430755296270">განლაგებების მეტი ვარიანტებისთვის გააგრძელეთ გადატარება</translation>
 <translation id="4130750466177569591">ვეთანხმები</translation>
 <translation id="4131410914670010031">შავი და თეთრი</translation>
@@ -859,6 +861,7 @@
 <translation id="5050042263972837708">ჯგუფის სახელი</translation>
 <translation id="5051044138948155788">ეს ერთადერთი გვერდია. ეს ქმედება სკანირების საწყის ეკრანზე გადაგიყვანთ.</translation>
 <translation id="5053233795640754917">პაუზა</translation>
+<translation id="5056587122125565772">სურათის შექმნა</translation>
 <translation id="5078711626843651677">ხმის მოდელები დროებით ინახება მოწყობილობაში, სანამ მოსაუბრის ლეიბლების მიმაგრება დასრულდება. ამის გამორთვა ნებისმიერ დროს შეგიძლიათ პარამეტრებიდან.</translation>
 <translation id="5078983345702708852">ფუტურისტული</translation>
 <translation id="5087864757604726239">უკან</translation>
@@ -1130,7 +1133,6 @@
 <translation id="6325525973963619867">ვერ შესრულდა</translation>
 <translation id="6327262166342360252">ეს ფონი შეიქმნა ხელოვნური ინტელექტით, შემდეგი ტექსტის გამოყენებით: „<ph name="PROMPT" />“.</translation>
 <translation id="6331191339300272798">ავტომატური მუქი თემა</translation>
-<translation id="6335228876613776082">მოდელის ჩამოტვირთვა დასრულდა</translation>
 <translation id="6340526405444716530">პერსონალიზება</translation>
 <translation id="6348252528297699679">მდებარეობის გამორთვა შეგიძლიათ აქ: პარამეტრები &gt; კონფიდენციალურობა და უსაფრთხოება &gt; კონფიდენციალურობის მართვის პარამეტრები &gt; მდებარეობაზე წვდომა. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">მომხმარებლის სახელი და პაროლი</translation>
@@ -1436,7 +1438,7 @@
 <translation id="7618216277886673749">აირჩიეთ <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">ნეიტრალური</translation>
 <translation id="7620771111601174153">შეიტყვეთ მეტი დახმარების ცენტრში</translation>
-<translation id="7623327321610992184">OnTask Pod</translation>
+<translation id="7623327321610992184">OnTask ვიჯეტი</translation>
 <translation id="763165478673169849">ბოლო გადაყენების დრო</translation>
 <translation id="7633068090678117093">ფონური სურათი</translation>
 <translation id="763873111564339966">ინდიგო</translation>
@@ -1674,7 +1676,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ალბომი</translation>
 <translation id="8775713578693478175">მოდემის APN</translation>
-<translation id="877735394245039557">მიმდინარეობს მოდელის ჩამოტვირთვა</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">ამ ქსელს, შესაძლოა, ავტორიზაციის პორტალი ჰქონდეს</translation>
 <translation id="8797082062139985406">სახელის შექმნა Google-ის ხელოვნური ინტელექტის მეშვეობით</translation>

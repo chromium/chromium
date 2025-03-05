@@ -1715,7 +1715,6 @@
 <translation id="2178545675770638239">Нууц үг сонгоно уу</translation>
 <translation id="2178585470774851578">Та sshd daemon-г тохируулж, USB драйвуудыг ачаалахыг идэвхжүүлэх ChromeOS Flex-н дебагийн онцлогуудыг идэвхжүүлж байна.</translation>
 <translation id="2178614541317717477">CA Compromise</translation>
-<translation id="2179850495466791921">Танд одоогоор <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> болон бусад зүйл байна</translation>
 <translation id="2180620921879609685">Аливаа хуудсан дээрх контентыг блоклох</translation>
 <translation id="2181821976797666341">Тохиргоонууд</translation>
 <translation id="2182058453334755893">Түр санах ой руу хуулсан</translation>
@@ -3134,7 +3133,6 @@
 <translation id="3167562202484086668"><ph name="BRAND" />-н бүх өгөгдлийг устгах</translation>
 <translation id="3169930038976362151">Таны хэрэгцээнд тохирсон загварыг сонгоно уу. Загвар, дэлгэцийн зураг, дэлгэц амраагч болон бусад зүйлээ өөрчлөхийн тулд ердөө дэлгэц дээр удаан дарна уу.</translation>
 <translation id="3170072451822350649">Та нэвтэрч орох ажиллагааг алгасаж болох бөгөөд <ph name="LINK_START" /> зочны хувиар хайлт хийж болно<ph name="LINK_END" /> .</translation>
-<translation id="3171499217959105722">Танд одоогоор <ph name="NUMBERED_ITEM" /> болон бусад зүйл байна</translation>
 <translation id="3175067642577044620">Үндсэн хэсэг</translation>
 <translation id="3175862692832442091">Ой мод</translation>
 <translation id="3176347586396987181">Хулганын товчийг удаан дарахын тулд “z”-г ашиглана уу</translation>
@@ -3946,7 +3944,6 @@
 <translation id="3744219658596020825">Таны нууц үгнүүдийг импорт хийгээгүй</translation>
 <translation id="3745306754941902605">Гал тогоо</translation>
 <translation id="3747077776423672805">Аппуудыг устгахын тулд Тохиргоо &gt; Google Play Дэлгүүр &gt; Android-н сонголтыг удирдах &gt; Апп эсвэл Аппын менежер хэсэгт очно уу. Дараа нь устгахыг хүссэн аппаа товшино уу (та аппыг олохын тулд баруун эсвэл зүүн тийш шудрах шаардлагатай байж болзошгүй). Дараа нь Устгах эсвэл Идэвхгүй болгох гэснийг товшино уу.</translation>
-<translation id="3747552357646973221">Танд одоогоор <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> болон бусад зүйл байна</translation>
 <translation id="3748424433435232460">Энэ бүртгэлийн нууц үгийг энэ төхөөрөмж дээр аль хэдийн хадгалсан байна</translation>
 <translation id="3748706263662799310">Алдааг мэдээлэх</translation>
 <translation id="3749724428455457489">Сайтаас санал болгож буй зарын талаар нэмэлт мэдээлэл аваарай</translation>
@@ -4080,6 +4077,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Өргөтгөлийг зөвшөөрсөн}other{# өргөтгөлийг зөвшөөрсөн}}</translation>
 <translation id="3823019343150397277">Олон улсын банк акаунтны дугаар</translation>
 <translation id="3823310065043511710">Linux-д хамгийн багадаа <ph name="INSTALL_SIZE" />-н зайтай байхыг зөвлөж байна.</translation>
+<translation id="3824203811509979971">Контент хураангуйлах эсвэл асуулт асуух</translation>
 <translation id="3824621460022590830">Төхөөрөмжийн бүртгэлийн тэмдэг буруу байна. Төхөөрөмж өмчлөгч эсвэл администратортайгаа холбогдоно уу. Алдааны код: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Бусад төхөөрөмжийн табыг харахын тулд нэвтэрнэ үү</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Миний энэ файлын төрлийн сонголтыг санана уу: <ph name="FILE_TYPES" />}other{Миний эдгээр файлын төрлийн сонголтыг санана уу: <ph name="FILE_TYPES" />}}</translation>
@@ -4265,6 +4263,7 @@
 <translation id="3948985214866944547">Ихэнх хүн энэ сайтын хувьд нарийвчилсан байршил хуваалцахыг блоклодог</translation>
 <translation id="394984172568887996">IE-аас импортолж авсан</translation>
 <translation id="3949999964543783947">Файлууд татахыг илүү аюулгүй болгохын тулд <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
+<translation id="3950479158728806902">Илүү хурдан нэвтрэхийн тулд нэвтрэх түлхүүр автоматаар үүсгэх</translation>
 <translation id="3950820424414687140">Нэвтрэх</translation>
 <translation id="3950841222883198950">Дуу хоолойгоор бичих</translation>
 <translation id="3953834000574892725">Миний бүртгэл</translation>
@@ -5193,6 +5192,7 @@
 <translation id="4624054169152573743">Өнгөний загвар</translation>
 <translation id="4625078469366263107">Аппыг идэвхжүүлэх</translation>
 <translation id="4625905218692741757">Өгөгдмөл саарал өнгө</translation>
+<translation id="4627107755957573804">Сайт, аппад одоогийн бүртгэлийг нэвтрэх түлхүүр ашиглах болгож сайжруулахыг зөвшөөрнө үү</translation>
 <translation id="4627442949885028695">Өөр төхөөрөмжөөс үргэлжлүүлэх</translation>
 <translation id="4628762811416793313">Linux-н контейнерыг тохируулж дууссангүй. Дахин оролдоно уу.</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> профайлыг нээх</translation>
@@ -5776,6 +5776,7 @@
 <translation id="5053233576223592551">Хэрэглэгчийн нэр нэмэх</translation>
 <translation id="505347685865235222">Нэргүй бүлэг - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{Та үүнийг одоо өөрчлөх хэрэгтэй}other{Та эдгээрийг одоо өөрчлөх хэрэгтэй}}</translation>
+<translation id="5056587122125565772">Зураг үүсгэх</translation>
 <translation id="5056950756634735043">Агуулагчтай холбогдож байна</translation>
 <translation id="5057110919553308744">Та өргөтгөл гэснийг товших үед</translation>
 <translation id="5057127674016624293">Скан хийхэд тооцоолсноос удаж байна</translation>
@@ -5886,6 +5887,7 @@
 <translation id="512642543295077915">хайлт + ухраах</translation>
 <translation id="5126611267288187364">Өөрчлөлтийг харах</translation>
 <translation id="5127620150973591153">Аюулгүй холболтын ID: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">Контент хураангуйлах эсвэл асуулт асууна уу.</translation>
 <translation id="5127881134400491887">Сүлжээний холболтууд зохицуулах</translation>
 <translation id="5127934926273826089">Цэцэг</translation>
 <translation id="5127986747308934633">Таны администратор төхөөрөмжийг тань хянаж байна</translation>
@@ -10152,6 +10154,7 @@
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" />-г идэвхгүй болгох</translation>
 <translation id="8195920051450756553">Нэг товчийг дахин идэвхжүүлэхээс өмнөх саатал</translation>
 <translation id="8197673340773315084">Ажил эсвэл Хувийн зэрэг нэр эсвэл шошго нэмнэ үү</translation>
+<translation id="8198181050118789419">Загвар: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Табыг дамжуулж байна</translation>
 <translation id="8199300056570174101">Сүлжээ (Үйлчилгээ) болон Төхөөрөмжийн тодруулга</translation>
 <translation id="8200772114523450471">Сэргээх</translation>
@@ -11406,6 +11409,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB хулгана холбогдсон</translation>
 <translation id="9075413375877487220">Энэ өргөтгөлд Сайжруулсан аюулгүй хөтөч итгэдэггүй.</translation>
+<translation id="9075985558450420812">Зураг үүсгэхийн тулд захиалгат заавар оруулах эсвэл текстийг тодруулна уу.</translation>
 <translation id="9076523132036239772">Уучлаарай, таны и-мэйл болон нууц үгийг баталгаажуулж чадсангүй. Эхлээд сүлжээнд холбогдоно уу.</translation>
 <translation id="9076821103818989526">Хажуугийн самбар</translation>
 <translation id="9076977315710973122">SMB-г хуваалцах</translation>

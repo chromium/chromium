@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">प्रतिक्रियाका बारेमा रिपोर्ट गर्नुहोस्</translation>
 <translation id="1059120031266247284">तपाईंसँग सेयर गरिएको</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> र यसलाई हटाउन क्लिक गर्नु पर्ने बटन</translation>
 <translation id="1062407476771304334">बदल्नुहोस्</translation>
 <translation id="1073899992769346247">ब्याट्री बदल्नुहोस् वा उक्त ब्याट्री रिचार्ज गर्नुहोस्</translation>
 <translation id="1081015718268701546">Linux एपहरू हाल प्रयोग गर्न मिल्दैन। अन्य एपहरू सेभ गरिने छन्।</translation>
@@ -1228,6 +1229,7 @@
 <translation id="5043679421800073804">सेल्फमा भएको अन्तिम वस्तुमा क्लिक वा ट्याप गर्नुहोस्</translation>
 <translation id="504465286040788597">अघिल्लो अनुच्छेद</translation>
 <translation id="5045550434625856497">गलत पासवर्ड</translation>
+<translation id="5056587122125565772">फोटो बनाउनुहोस्</translation>
 <translation id="5058794129231928255">Google डकुमेन्ट बनाउन सकिएन</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">तपाईं म्युट गरिएका बेला बोल्नुभयो भने तपाईंलाई सूचित गरिने छ। अडियो तपाईंको डिभाइसमै रहन्छ।</translation>
@@ -1276,6 +1278,7 @@
 <translation id="5222676887888702881">साइन आउट गर्नुहोस्</translation>
 <translation id="5228195526683428788">स्प्लिट स्क्रिन डिभाइडर</translation>
 <translation id="5229343007215035173">प्राइभेसी स्क्रिन अन/अफ गर्नुहोस्</translation>
+<translation id="5229860525743792999">सिफारिस गरिएको समूहबाट <ph name="ITEM_LABEL" /> हटाउनुहोस्</translation>
 <translation id="5230516054153933099">विन्डो</translation>
 <translation id="5234764350956374838">खारेज गर्नुहोस्</translation>
 <translation id="523505283826916779">पहुँचक्षमता सेटिङहरू</translation>
@@ -1758,6 +1761,7 @@
 <translation id="6757237461819837179">कुनै मिडिया प्ले भइरहेको छैन</translation>
 <translation id="6760438044935091345">गेम ड्यासबोर्ड</translation>
 <translation id="6768043681523654438">भण्डारण</translation>
+<translation id="6769195697113506406">फोटो हालिएको छ</translation>
 <translation id="6777216307882431711">जडान गरिएका USB-C यन्त्रहरू चार्ज गर्दै</translation>
 <translation id="6781002679438061620">डेस्क ९</translation>
 <translation id="6782182743534150858">डेस्क १३</translation>
@@ -1984,6 +1988,7 @@
 <translation id="7571361473021531288"><ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ | <ph name="TIME" /> सम्म चल्छ</translation>
 <translation id="7573585051776738856">सक्रिय विन्डो दायाँतिर डक गरिएको छ।</translation>
 <translation id="7579778809502851308">स्क्रिन क्याप्चर</translation>
+<translation id="7588317312481506627">कपी गरेर क्लिपबोर्डमा पेस्ट गरियो।</translation>
 <translation id="7593891976182323525">सिफ्टको लागि खोज्नुहोस्</translation>
 <translation id="7598054670902114203">CPU को प्रयोगको स्न्यापसट, <ph name="CPU_USEAGE" />%. तापक्रम <ph name="TEMPERATURE" /> डिग्री सेल्सियस, हालको स्पिड: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="7599378375976398913">चयन गरिएको परिणाम हालिँदै छ</translation>
@@ -2178,6 +2183,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> को जानकारीको डायलग खोल्नुहोस्</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> प्रयोग गर्दै</translation>
 <translation id="8168435359814927499">सामग्री</translation>
+<translation id="81817143961839203">फोटो हाल्न सकिएन</translation>
 <translation id="8185090165691050712">लक मोडको आकार बदल्न मेनु टगल गरी अन/अफ गर्नुहोस्</translation>
 <translation id="8192727139462702395">तपाईंले ब्लुटुथ अफ गर्नुभयो भने तपाईंको <ph name="DEVICE_TYPE" /> बाट यी बाह्य डिभाइसहरू डिस्कनेक्ट हुने छन्:</translation>
 <translation id="8198456017687137612">ट्याब कास्ट गरिँदै छ</translation>
@@ -2256,6 +2262,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> सँग <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> छ।</translation>
 <translation id="8477270416194247200">रद्द गर्न Alt+Search वा Shift बटनमा थिच्नुहोस्।</translation>
 <translation id="8480418399907765580">टुलबार देखाउनुहोस्</translation>
+<translation id="8487660088084188539">तपाईंले यी सुविधाहरू अन गरेका खण्डमा इन्पुट टेक्स्ट, डकुमेन्टमा भएको कन्टेन्ट र वेबपेजको URL Google का सर्भरहरूमा पठाइन सक्छ। यो जानकारी <ph name="LINK_TO_SERVICE_TERMS" />बमोजिम लेखनसम्बन्धी सुझाव दिन, सारांश बनाउन, प्रश्नहरूको जवाफ दिन र उत्पादनको गुणस्तर सुधार गर्न प्रयोग गरिन्छ। कुनै पनि व्यक्तिगत, संवेदनशील वा गोप्य जानकारी समावेश नगर्नुहोस्।</translation>
 <translation id="8487699605742506766">हटस्पट</translation>
 <translation id="8491237443345908933">यो लिंक नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ले <ph name="SPECIFIED_RESOLUTION" /> समर्थन गर्दैन। रिजोल्युसन परिवर्तन गरी<ph name="FALLBACK_RESOLUTION" /> पारियो। परिवर्तनहरू सुरक्षित गर्न पुष्टि गर्नुहोस् नामक बटनमा क्लिक गर्नुहोस्। अघिल्ला सेटिङहरूलाई <ph name="TIMEOUT_SECONDS" /> भित्र पुनर्स्थापना गरिने छ।</translation>
@@ -2325,6 +2332,7 @@
 <translation id="8725066075913043281">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="8725214031272624704">उपलब्ध इनपुट विधिहरूको सूची देखाउनुहोस्</translation>
 <translation id="8730621377337864115">गरियो</translation>
+<translation id="8731188831050207755"><ph name="FILE_NAME" /> डाउनलोड गर्न सकिएन।</translation>
 <translation id="8731487213223706745"><ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /> मा समाप्त हुन्छ</translation>
 <translation id="8734991477317290293">यसले तपाईंका किस्ट्रोकहरू चोर्न खोजिरहेको हुन सक्छ</translation>
 <translation id="8735678380411481005">किबोर्डको ब्याकलाइटको रङ</translation>
@@ -2362,6 +2370,7 @@
 <translation id="8845001906332463065">मद्दत प्राप्त गर्नुहोस्</translation>
 <translation id="8847100217801213944">तापक्रम फरेनहाइटमा देखाउनुहोस्</translation>
 <translation id="8849001918648564819">लुकाइएको</translation>
+<translation id="8855792845239861369">यो भाषा प्रयोग गर्न मिल्दैन</translation>
 <translation id="8855885154700222542">फुल स्क्रिन नामक कुञ्जी</translation>
 <translation id="8858369206579825206">गोपनीयतासम्बन्धी सेटिङ</translation>
 <translation id="8860366331836346216">eSIM हाल्नुहोस्</translation>

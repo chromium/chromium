@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">ପରେ ପୃଷ୍ଠା ଲୋଡ୍‌ କରନ୍ତୁ</translation>
 <translation id="1010225406377140704">ଏକ ନୂଆ ଲିଙ୍କ ମାଗିବାକୁ ଆପଣ ପ୍ରେରକଙ୍କ ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ</translation>
 <translation id="1011206368273183593">ଫାଇଲଗୁଡ଼ିକୁ ପ୍ରସ୍ତୁତ କରାଯାଉଛି</translation>
+<translation id="1012264210825687872">ଆପଣଙ୍କର ଅର୍ଡର ସମୀକ୍ଷା କରିବା ପରେ, ଆପଣଙ୍କୁ ସାଇନ ଇନ କରିବାକୁ ପଡିବ କିମ୍ବା ଏକ <ph name="BNPL_ISSUER_NAME" /> ଆକାଉଣ୍ଟ ତିଆରି କରିବାକୁ ପଡିବ। ଏହି ଆକାଉଣ୍ଟ ସ୍ୱତଃ Google Pay ସହ ଲିଙ୍କ ହୋଇଯିବ।</translation>
 <translation id="1014509239502131234">ଫଳାଫଳ ଅନଡୁ କରାଯାଉଛି</translation>
 <translation id="1015730422737071372">ଅତିରିକ୍ତ ବିବରଣୀ ପ୍ରଦାନ କରନ୍ତୁ</translation>
 <translation id="1019413721762100891">ବନ୍ଦ ଅଛି</translation>
@@ -251,6 +252,7 @@
 <translation id="1419305130220238697">'Chromeରେ ଡାଉନଲୋଡଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ' ବଟନ, Chromeରେ ଆପଣ ଡାଉନଲୋଡ କରିଥିବା ଫାଇଲଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="1420345875188552368">ଏହି ପେମେଣ୍ଟ ପାଇଁ ଆପଣଙ୍କର ସେଭ କରାଯାଇଥିବା ଅଟୋ-ପେମେଣ୍ଟ ପଦ୍ଧତିକୁ ବ୍ୟବହାର କରାଯାଇପାରେ। Chromeରେ eWallet ବନ୍ଦ କରିବା ପାଇଁ ଆପଣଙ୍କ <ph name="BEGIN_LINK1" />ପେମେଣ୍ଟ ସେଟିଂସ<ph name="END_LINK1" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="1420920093772172268">ପେୟାରିଂକୁ ଅନୁମତି ଦେବା ପାଇଁ <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="1421484961346698724">ଆକାଉଣ୍ଟ ଡିଲିଟ ହୋଇଯାଇଛି</translation>
 <translation id="14222610277930434">ଆପଣ ପ୍ରାୟତଃ ଭିଜିଟ କରନ୍ତି</translation>
 <translation id="1422930527989633628">ଆଖପାଖର ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସଗୁଡ଼ିକୁ ଖୋଜି ପାଇବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="1426410128494586442">ହଁ</translation>
@@ -660,6 +662,7 @@
 <translation id="2145193671493396738">ଆର୍ଥିକ ସମାଚାର</translation>
 <translation id="214556005048008348">ପେମେଣ୍ଟ ବାତିଲ୍ କରନ୍ତୁ</translation>
 <translation id="2147117373852943630">ବାଦ୍ୟଯନ୍ତ୍ରଗୁଡ଼ିକ</translation>
+<translation id="2147254250314124496">ଆପଣଙ୍କ ବିଷୟରେ <ph name="EMBEDDED_URL" /> ସେଭ କରିଥିବା ସୂଚନାକୁ ଏହା ବ୍ୟବହାର କରିବା ପାଇଁ ଚାହେଁ</translation>
 <translation id="2148613324460538318">କାର୍ଡ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="2148716181193084225">ଆଜି</translation>
 <translation id="2149968176347646218">ସଂଯୋଗଟି ସୁରକ୍ଷିତ ନୁହେଁ</translation>
@@ -691,6 +694,7 @@
 <translation id="2187317261103489799">ଚିହ୍ନଟ କରନ୍ତୁ (ଡିଫଲ୍ଟ)</translation>
 <translation id="2188375229972301266">ତଳ ପଟରେ ଏକାଧିକ ପଞ୍ଚ୍</translation>
 <translation id="2194856509914051091">ବିଚାରଯୋଗ୍ୟ ବିଷୟଗୁଡ଼ିକ</translation>
+<translation id="2198071643181968308"><ph name="BNPL_ISSUER_NAME" /> ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="2200678913752027654">ଥମ୍ବସ ଡାଉନ ବଟନ, ଆପଣ ଏହି ପରାମର୍ଶକୁ କାହିଁକି ନାପସନ୍ଦ କରନ୍ତି ସେ ବିଷୟରେ ଏକ ବିସ୍ତୃତ ମତାମତ ଦାଖଲ କରିବା ପାଇଁ ଏକ ଫର୍ମ ଖୋଲିବାକୁ 'ଏଣ୍ଟର' ଦବାନ୍ତୁ</translation>
 <translation id="2202627062836089804">ଆପଣଙ୍କ କାର୍ଡର ପଛପଟେ</translation>
 <translation id="2204482073374652408">ଅପଡେଟ କରିବା ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି!</translation>
@@ -2315,6 +2319,7 @@
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome ଆପଣଙ୍କ ଡିଭାଇସର <ph name="PERMISSION" />କୁ ଆକ୍ସେସ ଆବଶ୍ୟକ କରେ</translation>
 <translation id="510644072453496781">କାର୍ଡବୋର୍ଡ (ଏଣ୍ଡ)</translation>
+<translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> ପାଇଁ ଭର୍ଚୁଆଲ କାର୍ଡ ପୂରଣ ହୋଇଛି</translation>
 <translation id="5108881358339761672">ସାଇଟ୍ ସୁରକ୍ଷିତ ନୁହେଁ</translation>
 <translation id="5109892411553231226">ପେମେଣ୍ଟ ପଦ୍ଧତିଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2510,6 +2515,7 @@
             <ph name="LIST_ITEM" />ଫର୍ମଗୁଡ଼ିକରେ ଲେଖାଯାଇଥିବା ସୂଚନା
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">ଓଲଟା ଅର୍ଡରରେ ଫେସ୍ ଅପ୍</translation>
+<translation id="5445340838622821110">ଯେତେବେଳେ ଆପଣ ସମୟ ସହିତ ପେମେଣ୍ଟ ଦିଅନ୍ତି, ସେତେବେଳେ ଏକ ଥର ପାଇଁ ଭର୍ଚୁଆଲ କାର୍ଡ ନମ୍ବର ପୂରଣ ହୁଏ। ଏହି ନମ୍ବର କେବଳ ଏହି କ୍ରୟ ପାଇଁ। <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">ଆପଣଙ୍କ ବିଷୟରେ <ph name="SITE" /> ସେଭ କରିଥିବା ସୂଚନା ବ୍ୟବହାର କରିବା ପାଇଁ ଏହି ସାଇଟକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="5452270690849572955">ଏହି <ph name="HOST_NAME" /> ପୃଷ୍ଠା ମିଳିଲା ନାହିଁ</translation>
 <translation id="5452923259299906094">eWallet ଏବଂ Pix ମାଧ୍ୟମରେ ପେମେଣ୍ଟ କରନ୍ତୁ</translation>
@@ -3328,6 +3334,7 @@
 <translation id="6917795328362592458">ଆପଣ ଏବେ ବ୍ୟବହାର କରିଥିବା ପାସୱାର୍ଡ ଏକ ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ମିଳିଛି। ଆପଣଙ୍କ ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ, Password Manager ଆପଣ ସେଭ କରିଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକର ଯାଞ୍ଚ କରିବାକୁ ସୁପାରିଶ କରେ।</translation>
 <translation id="6917873303492266709">ଟାବ ଗ୍ରୁପରେ ସେୟାର କରିବା, ଯୋଗ ଦେବା ଏବଂ ସହଯୋଗ କରିବାକୁ ସେଟିଂସ ଖୋଲନ୍ତୁ ଏବଂ 'Chromeରେ ସାଇନ-ଇନ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ'କୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="6921197121276419421">ୱେବ ଆପ୍ସ ଇନଷ୍ଟଲ କରିବାକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
+<translation id="69238565902785824"><ph name="BNPL_ISSUER_NAME" /> ବ୍ୟବହାର କରି ଆପଣଙ୍କର ଆକାଉଣ୍ଟକୁ ଲିଙ୍କ ରଖି ଆପଣଙ୍କୁ ଶୀଘ୍ର ପେମେଣ୍ଟ ଦେବାରେ ସାହାଯ୍ୟ ମିଳିଥାଏ, କିନ୍ତୁ ଆପଣ <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" />କୁ ଯାଇ ଏହାକୁ ଅନଲିଙ୍କ କରିପାରିବେ।</translation>
 <translation id="6924013822850225188">ଚେକଆଉଟ ବେଳେ ଆପଣଙ୍କ କାର୍ଡର ଲାଭଗୁଡ଼ିକୁ ଆପଣ ଦେଖିବେ ନା ନାହିଁ ତାହା ବାଛନ୍ତୁ (ବେଙ୍କର ସର୍ତ୍ତାବଳୀ ପ୍ରଯୁଜ୍ୟ)</translation>
 <translation id="6925267999184670015">ନର୍ଥ ଆମେରିକାନ B+</translation>
 <translation id="6926216138694948720">ବଡି ଆର୍ଟ</translation>
@@ -3393,6 +3400,7 @@
 <translation id="701757816833614688">ଭିଜୁଆଲ ଆର୍ଟ ଏବଂ ଡିଜାଇନ ଶିକ୍ଷା</translation>
 <translation id="702275896380648118">ଆପଣ ପସନ୍ଦ କରୁଥିବା ଜିନିଷଗୁଡ଼ିକୁ ଏହି ସାଇଟ ନିର୍ଦ୍ଧାରଣ କରେ ଏବଂ ତା'ପରେ ଅନ୍ୟ ସାଇଟଗୁଡ଼ିକୁ ବିଜ୍ଞାପନର ପରାମର୍ଶ ଦିଏ। ଆପଣଙ୍କୁ ଅଧିକ ପ୍ରାସଙ୍ଗିକ ବିଜ୍ଞାପନଗୁଡ଼ିକ ଦେଖାଇବା ପାଇଁ ମଧ୍ୟ ଏହି ସାଇଟ Chromeରୁ ଆପଣଙ୍କ ବିଜ୍ଞାପନ ବିଷୟଗୁଡ଼ିକ ପାଇଥାଏ।</translation>
 <translation id="7023162328967545559">ଆଡମିନଙ୍କ ଚେତାବନୀ</translation>
+<translation id="7023765275461720661">ଆକାଉଣ୍ଟ ଲିଙ୍କ କରି <ph name="BNPL_ISSUER_NAME" />କୁ ପେମେଣ୍ଟ କରିବେ?</translation>
 <translation id="7029809446516969842">ପାସୱାର୍ଡଗୁଡିକ</translation>
 <translation id="7030164307377592766">ପେମେଣ୍ଟ ପଦ୍ଧତି ପୂରଣ କରିବା ପାଇଁ ସେଟିଂସ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="7031646650991750659">ଆପଣ କେଉଁ Google Play ଆପ୍ସ ଇନଷ୍ଟଲ୍ କରିଛନ୍ତି</translation>
@@ -3614,6 +3622,7 @@
 <translation id="741204030948306876">ହଁ, ମୁଁ ପ୍ରସ୍ତୁତ</translation>
 <translation id="7416351320495623771">ପାସ୍‌ୱର୍ଡଗୁଡ଼ିକୁ ପରିଚାଳିତ କରନ୍ତୁ…</translation>
 <translation id="7416898721136759658">ଅନୁଦାନ, ବୃତ୍ତି ଏବଂ ଆର୍ଥିକ ସହାୟତା</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">ପ୍ରୋଗ୍ରାମିଂ</translation>
 <translation id="7419091773564635591">କମ୍ପ୍ୟୁଟର ଓ ଇଲେକ୍ଟ୍ରୋନିକ୍ସ</translation>
 <translation id="7419106976560586862">ପ୍ରୋଫାଇଲ୍ ପଥ</translation>
@@ -3660,6 +3669,7 @@
 <translation id="7485085230273446323">ବିଜିନେସ ଓ ଇଣ୍ଡଷ୍ଟ୍ରିଆଲ</translation>
 <translation id="7485870689360869515">କୌଣସି ଡାଟା ମିଳିଲା ନାହିଁ।</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> ଆପଣଙ୍କ ଯୋଗ୍ୟତା ଯାଞ୍ଚ କରିବ (ଏହା ଆପଣଙ୍କ କ୍ରେଡିଟ ସ୍କୋରକୁ ପ୍ରଭାବିତ କରିବ ନାହିଁ)। ଯଦି ଅନୁମୋଦିତ ହୁଏ, ତେବେ <ph name="BNPL_ISSUER_NAME" /> ଆପଣଙ୍କୁ ଆପଣଙ୍କ ପାଇଁ ପେମେଣ୍ଟ ପ୍ଲାନ ବାଛିବାକୁ ଏବଂ କ୍ରୟ ସମ୍ପୂର୍ଣ୍ଣ କରିବାକୁ ଦେବ।</translation>
 <translation id="7489392576326061356">ସାମ୍ପୁ ଓ କଣ୍ଡିସନର</translation>
 <translation id="7495528107193238112">ଏହି ବିଷୟବସ୍ତୁକୁ ବ୍ଲକ୍ କରାଯାଇଛି। ସମସ୍ୟାର ସମାଧାନ କରିବାକୁ ସାଇଟର ମାଲିକଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="749865518782565832">ପ୍ଲମ୍ବିଂ</translation>

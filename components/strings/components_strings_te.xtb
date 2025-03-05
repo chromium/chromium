@@ -247,6 +247,7 @@
 <translation id="1419305130220238697">'Chromeలో డౌన్‌లోడ్‌లను మేనేజ్ చేయండి' బటన్, Chromeలో మీరు డౌన్‌లోడ్ చేసిన ఫైల్స్‌ను మేనేజ్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="1420345875188552368">మీరు సేవ్ చేసిన ఆటోమేటిక్ పేమెంట్ ఆప్షన్‌ను ఈ పేమెంట్ కోసం ఉపయోగించవచ్చు. Chromeలో eWalletsను ఆఫ్ చేయడానికి, మీ <ph name="BEGIN_LINK1" />పేమెంట్ సెట్టింగ్‌ల<ph name="END_LINK1" />‌కు వెళ్లండి</translation>
 <translation id="1420920093772172268">జత చేయడాన్ని అనుమతించడానికి <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="1421484961346698724">తొలగించబడిన ఖాతా</translation>
 <translation id="14222610277930434">మీరు తరచుగా సందర్శించినది</translation>
 <translation id="1422930527989633628">సమీపంలో ఉన్న బ్లూటూత్ పరికరాలను కనుగొనడానికి సైట్ అనుమతి అడగవచ్చు</translation>
 <translation id="1426410128494586442">అవును</translation>
@@ -3019,6 +3020,7 @@
 <translation id="6351658970066645919">బ్రౌజింగ్ డేటాను తొలగించండి</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ఏవీ లేవు}=1{1 పాస్‌వర్డ్ (<ph name="DOMAIN_LIST" />కు చెందినది, సింక్ చేయబడింది)}=2{2 పాస్‌వర్డ్‌లు (<ph name="DOMAIN_LIST" />కు చెందినవి, సింక్ చేయబడ్డాయి)}other{# పాస్‌వర్డ్‌లు (<ph name="DOMAIN_LIST" />కు చెందినవి, సింక్ చేయబడ్డాయి)}}</translation>
 <translation id="6355392890578844978">ఈ బ్రౌజర్ కంపెనీ లేదా ఇతర సంస్థ ద్వారా మేనేజ్ చేయబడదు. ఈ పరికరంలోని యాక్టివిటీని Chromium వెలుపల మేనేజ్ చేస్తుండవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">"<ph name="GROUP_TITLE_1" />", "<ph name="GROUP_TITLE_2" />" ట్యాబ్ గ్రూప్‌లు ఇకపై అందుబాటులో ఉండవు</translation>
 <translation id="6358088212770985041">పేమెంట్ ఆప్షన్‌లను ఎడిట్ చేయండి</translation>
 <translation id="6358450015545214790">దీని అర్ధం ఏమిటి?</translation>
 <translation id="6360213755783740931">మాల్‌వేర్ రక్షణ గురించి మరింత తెలుసుకోండి</translation>

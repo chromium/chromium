@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">提交反馈</translation>
 <translation id="1059120031266247284">与您分享</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />：<ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" />（带有“移除”按钮）</translation>
 <translation id="1062407476771304334">替换</translation>
 <translation id="1073899992769346247">更换电池或为电池充电</translation>
 <translation id="1081015718268701546">尚不支持 Linux 应用。其他应用会被保存。</translation>
@@ -323,6 +324,7 @@
 <translation id="2083190527011054446"><ph name="GIVEN_NAME" />，晚安！</translation>
 <translation id="2086334242442703436">打开表情符号选择器</translation>
 <translation id="2088116547584365419">游戏</translation>
+<translation id="2092517835716911174">您必须年满 18 周岁，才能使用“帮我读”和“帮我写”功能。</translation>
 <translation id="209965399369889474">未连接到网络</translation>
 <translation id="2107581415810719320">其他按钮 <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">您的 USB-C 数据线不支持 Thunderbolt。设备性能可能会受到限制。</translation>
@@ -1227,6 +1229,7 @@
 <translation id="5043679421800073804">点击或点按任务栏上的最后一个图标</translation>
 <translation id="504465286040788597">上一个段落</translation>
 <translation id="5045550434625856497">密码不正确</translation>
+<translation id="5056587122125565772">创建图片</translation>
 <translation id="5058794129231928255">无法创建 Google 文档</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">如果您在静音状态下说话，会收到通知。音频只会留存在您的设备上。</translation>
@@ -1275,6 +1278,7 @@
 <translation id="5222676887888702881">退出</translation>
 <translation id="5228195526683428788">分屏分隔线</translation>
 <translation id="5229343007215035173">开启/关闭隐私保护屏幕</translation>
+<translation id="5229860525743792999">从建议的分组中移除“<ph name="ITEM_LABEL" />”</translation>
 <translation id="5230516054153933099">窗口</translation>
 <translation id="5234764350956374838">关闭</translation>
 <translation id="523505283826916779">无障碍设置</translation>
@@ -1756,6 +1760,7 @@
 <translation id="6757237461819837179">目前未播放任何媒体</translation>
 <translation id="6760438044935091345">游戏信息中心</translation>
 <translation id="6768043681523654438">存储空间</translation>
+<translation id="6769195697113506406">已插入图片</translation>
 <translation id="6777216307882431711">正在为已连接的 USB-C 设备充电</translation>
 <translation id="6781002679438061620">桌面 9</translation>
 <translation id="6782182743534150858">桌面 13</translation>
@@ -1982,6 +1987,7 @@
 <translation id="7571361473021531288">电池电量为 <ph name="BATTERY_PERCENTAGE" />% | 还需 <ph name="TIME" />才能充满</translation>
 <translation id="7573585051776738856">将活动窗口停靠在右侧。</translation>
 <translation id="7579778809502851308">截取屏幕</translation>
+<translation id="7588317312481506627">已复制到剪贴板。</translation>
 <translation id="7593891976182323525">搜索键或 Shift</translation>
 <translation id="7598054670902114203">CPU 使用概况：CPU 使用率为 <ph name="CPU_USEAGE" />%。温度为 <ph name="TEMPERATURE" /> 摄氏度，当前速度为 <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="7599378375976398913">插入所选结果</translation>
@@ -2176,6 +2182,7 @@
 <translation id="8155628902202578800">打开与 <ph name="USER_EMAIL_ADDRESS" /> 对应的信息对话框</translation>
 <translation id="8167567890448493835">目前使用的是“<ph name="LOCALE_NAME" />”</translation>
 <translation id="8168435359814927499">内容</translation>
+<translation id="81817143961839203">插入图片失败</translation>
 <translation id="8185090165691050712">开启/关闭菜单即可调整锁定模式的范围</translation>
 <translation id="8192727139462702395">关闭蓝牙后，以下外部设备将与您的 <ph name="DEVICE_TYPE" /> 断开连接：</translation>
 <translation id="8198456017687137612">正在投放标签页</translation>
@@ -2254,6 +2261,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />已<ph name="FEATURE_STATE" /><ph name="FEATURE_NAME" />。</translation>
 <translation id="8477270416194247200">按 Alt+搜索键或按 Shift 键可取消。</translation>
 <translation id="8480418399907765580">显示工具栏</translation>
+<translation id="8487660088084188539">开启这些功能后，系统可能会将输入文本、文档内容和网页网址发送到 Google 服务器。系统会根据这些信息生成写作建议、总结内容、回答问题和改进产品，并遵守 <ph name="LINK_TO_SERVICE_TERMS" />。请勿包含任何个人、敏感或机密信息。</translation>
 <translation id="8487699605742506766">热点</translation>
 <translation id="8491237443345908933">在新标签页中打开链接</translation>
 <translation id="8492573885090281069">“<ph name="DISPLAY_NAME" />”不支持 <ph name="SPECIFIED_RESOLUTION" />。分辨率已改为 <ph name="FALLBACK_RESOLUTION" />。点击“确认”即可保留更改。将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>
@@ -2323,6 +2331,7 @@
 <translation id="8725066075913043281">重试</translation>
 <translation id="8725214031272624704">显示可用输入法列表</translation>
 <translation id="8730621377337864115">完成</translation>
+<translation id="8731188831050207755">未能成功下载“<ph name="FILE_NAME" />”。</translation>
 <translation id="8731487213223706745">结束时间：<ph name="END_TIME" /><ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">当前连接的键盘可能会试图窃取您的击键操作</translation>
 <translation id="8735678380411481005">键盘背光颜色</translation>

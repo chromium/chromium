@@ -460,6 +460,7 @@
 <translation id="1303101771013849280">‏فایل HTML نشانک‌ها</translation>
 <translation id="1303671224831497365">هیچ دستگاه بلوتوثی یافت نشد</translation>
 <translation id="130491383855577612">‏برنامه‌ها و فایل‌های Linux باموفقیت جایگزین شدند</translation>
+<translation id="1306373239538745517">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{برداشتن ۱ افزونه و داده‌هایی که در این دستگاه ذخیره کرده است}one{برداشتن {ACCOUNT_EXTENSIONS_COUNT} افزونه و داده‌هایی که در این دستگاه ذخیره کرده است}other{برداشتن {ACCOUNT_EXTENSIONS_COUNT} افزونه و داده‌هایی که در این دستگاه ذخیره کرده‌اند}}</translation>
 <translation id="1306518237408758433">باز کردن <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="1306606229401759371">تغییر تنظیمات</translation>
 <translation id="1307165550267142340">پین ایجاد شد</translation>
@@ -1214,6 +1215,7 @@
 <translation id="1826192255355608658">‏همگام‌سازی نشانک‌ها، گذرواژه‌ها، سابقه، و دیگر اطلاعات مرورگر Chrome</translation>
 <translation id="1826516787628120939">در حال بررسی</translation>
 <translation id="1826657447823925402">پیمایش معکوس غیرفعال است</translation>
+<translation id="1827416268933303617">رنگ <ph name="COLOR_NAME" /></translation>
 <translation id="1827504459960247692">نام نقطه اتصال</translation>
 <translation id="1828378091493947763">این افزایه در این دستگاه پشتیبانی نمی‌شود</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{باز کردن همه}=1{باز کردن نشانک}one{باز کردن همه ({COUNT})}other{باز کردن همه ({COUNT})}}</translation>
@@ -1714,7 +1716,6 @@
 <translation id="2178545675770638239">انتخاب گذرواژه</translation>
 <translation id="2178585470774851578">‏درحال فعال کردن ویژگی‌های اشکال‌زدایی ChromeOS Flex هستید که شبح sshd را راه‌اندازی خواهد کرد و راه‌اندازی از درایوهای USB را فعال خواهد کرد.</translation>
 <translation id="2178614541317717477">‏بی اعتبارشدن CA</translation>
-<translation id="2179850495466791921">درحال‌حاضر <ph name="NUMBERED_ITEM_1" />، <ph name="NUMBERED_ITEM_2" />، <ph name="NUMBERED_ITEM_3" />، و چند مورد دیگر دارید</translation>
 <translation id="2180620921879609685">محتوای موجود در همه صفحه‌ها را مسدود کند</translation>
 <translation id="2181821976797666341">خط‌ مشی‌ها</translation>
 <translation id="2182058453334755893">در بریده‌دان کپی شد</translation>
@@ -3133,7 +3134,6 @@
 <translation id="3167562202484086668">حذف همه داده‌های <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">زمینه‌ای را انتخاب کنید که مناسب نیازهایتان باشد. برای تغییر زمینه، کاغذدیواری، محافظ صفحه‌نمایش، و موارد دیگر، کافی است میز کار را لمس کنید و نگه دارید.</translation>
 <translation id="3170072451822350649">همچنین می‌توانید از ورود به سیستم صرف‌نظر کرده، <ph name="LINK_START" />به عنوان مهمان مرور کنید<ph name="LINK_END" />.</translation>
-<translation id="3171499217959105722">درحال‌حاضر <ph name="NUMBERED_ITEM" /> و چند مورد دیگر دارید</translation>
 <translation id="3175067642577044620">نوشتار اصلی</translation>
 <translation id="3175862692832442091">جنگل</translation>
 <translation id="3176347586396987181">‏از «z» برای فشار دادن و نگه داشتن دکمه موشواره استفاده کنید</translation>
@@ -3945,7 +3945,6 @@
 <translation id="3744219658596020825">گذرواژه‌هایتان وارد نشد</translation>
 <translation id="3745306754941902605">آشپزخانه</translation>
 <translation id="3747077776423672805">‏برای حذف برنامه‌ها به «تنظیمات &gt; فروشگاه Google Play &gt; مدیریت اولویت‌های Android &gt; برنامه‌ها یا مدیر برنامه» بروید. سپس روی برنامه‌ای که می‌خواهید حذف نصب شود تک‌ضرب بزنید (ممکن است برای پیدا کردن برنامه نیاز باشد صفحه را تند به‌راست یا چپ بکشید). سپس روی «حذف نصب» یا «غیرفعال کردن» تک‌ضرب بزنید.</translation>
-<translation id="3747552357646973221">درحال‌حاضر <ph name="NUMBERED_ITEM_1" />، <ph name="NUMBERED_ITEM_2" />، و چند مورد دیگر دارید</translation>
 <translation id="3748424433435232460">درحال‌حاضر گذرواژه‌ای برای این حساب در این دستگاه ذخیره شده است</translation>
 <translation id="3748706263662799310">گزارش یک اشکال</translation>
 <translation id="3749724428455457489">درباره آگهی‌های پیشنهادی سایت بیشتر بدانید</translation>
@@ -4079,6 +4078,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{یک افزونه تأیید شد}one{# افزونه تأیید شد}other{# افزونه تأیید شد}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">‏توصیه می‌شود حداقل <ph name="INSTALL_SIZE" />  فضا برای Linux داشته باشید.</translation>
+<translation id="3824203811509979971">محتوا را خلاصه کنید یا سؤال بپرسید</translation>
 <translation id="3824621460022590830">کد ثبت‌نام دستگاه نامعتبر است. لطفاً با مالک یا سرپرست دستگاه تماس بگیرید. کد خطا: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">به سیستم وارد شوید تا برگه‌های دستگاه‌های دیگر را ببینید</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{انتخاب من برای این نوع فایل به‌خاطر سپرده شود: <ph name="FILE_TYPES" />}one{انتخاب من برای این نوع فایل به‌خاطر سپرده شود: <ph name="FILE_TYPES" />}other{انتخاب من برای این نوع فایل‌ها به‌خاطر سپرده شود: <ph name="FILE_TYPES" />}}</translation>
@@ -4265,6 +4265,7 @@
 <translation id="3948985214866944547">اکثر افراد هم‌رسانی مکان دقیق را برای این سایت مسدود می‌کنند</translation>
 <translation id="394984172568887996">‏وارد شده از IE</translation>
 <translation id="3949999964543783947">برای ایمن‌تر کردن بارگیری فایل‌ها، <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
+<translation id="3950479158728806902">ایجاد خودکار گذرکلید برای ورود سریع‌تر به سیستم</translation>
 <translation id="3950820424414687140">ورود به سیستم</translation>
 <translation id="3950841222883198950">تایپ صوتی</translation>
 <translation id="3953834000574892725">حساب‌های من</translation>
@@ -5193,6 +5194,7 @@
 <translation id="4624054169152573743">طرح‌ زمینه‌ رنگی</translation>
 <translation id="4625078469366263107">فعال کردن برنامه</translation>
 <translation id="4625905218692741757">رنگ پیش‌فرض خاکستری</translation>
+<translation id="4627107755957573804">به سایت‌ها و برنامه‌ها اجازه می‌دهد تا حساب‌های موجود را برای استفاده از گذرکلید ارتقا دهند</translation>
 <translation id="4627442949885028695">ادامه از دستگاه دیگری</translation>
 <translation id="4628762811416793313">‏راه‌اندازی محتوی Linux تکمیل نشد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="4629521233550547305">باز کردن نمایه <ph name="PROFILE_NAME" /></translation>
@@ -5776,6 +5778,7 @@
 <translation id="5053233576223592551">افزودن نام کاربری</translation>
 <translation id="505347685865235222">گروه بدون نام - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{باید این گذرواژه را همین‌حالا تغییر دهید}one{باید این گذرواژه را همین‌حالا تغییر دهید}other{باید این گذرواژه‌ها را همین‌حالا تغییر دهید}}</translation>
+<translation id="5056587122125565772">ایجاد تصویر</translation>
 <translation id="5056950756634735043">درحال اتصال به محتوی</translation>
 <translation id="5057110919553308744">وقتی روی افزونه کلیک می‌کنید</translation>
 <translation id="5057127674016624293">اسکن کردن بیش‌از حد معمول طول کشیده است</translation>
@@ -5886,6 +5889,7 @@
 <translation id="512642543295077915">جستجو + پس‌بَر</translation>
 <translation id="5126611267288187364">مشاهده تغییرات</translation>
 <translation id="5127620150973591153">شناسه اتصال ایمن: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">خلاصه کردن محتوا یا پرسیدن سؤال.</translation>
 <translation id="5127881134400491887">مدیریت اتصالات شبکه</translation>
 <translation id="5127934926273826089">گل</translation>
 <translation id="5127986747308934633">دستگاهتان تحت کنترل سرپرست است</translation>
@@ -6730,6 +6734,7 @@
 <translation id="5749214722697335450">‏داده‌های استفاده و تشخیص خرابی را ارسال کنید. با ارسال خودکار داده‌های تشخیص خرابی و داده‌های استفاده از دستگاه و برنامه به Google، به بهبود تجربه استفاده از Android کمک کنید. این داده‌ها به بهبود پایداری سیستم و برنامه و موارد دیگر کمک خواهد کرد. بعضی‌از داده‌های تجمیعی نیز به برنامه‌ها و شرکای Google (مانند توسعه‌دهندگان نرم‌افزار Android) کمک می‌کند. اگر تنظیم «دیگر فعالیت‌ها در وب و برنامه» روشن باشد، ممکن است این داده‌ها در «حساب Google» شما ذخیره شود. <ph name="BEGIN_LINK1" />درباره سنجه‌ها بیشتر بدانید<ph name="BEGIN_LINK1_END" />بیشتر بدانید<ph name="END_LINK1" /></translation>
 <translation id="5750288053043553775">۰</translation>
 <translation id="5751345516399502412">بررسی آمادگی برای اشتراک‌گذاری اینترنت</translation>
+<translation id="5752346055178471785">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{‏این افزونه در «حساب Google» شما ذخیره شده است، اما هر داده‌ای که فقط در این دستگاه ذخیره کرده باشد ممکن است حذف شود}one{‏این افزونه در «حساب Google» شما ذخیره شده است، اما هر داده‌ای که فقط در این دستگاه ذخیره کرده باشد ممکن است حذف شود}other{‏این افزونه‌ها در «حساب Google» شما ذخیره شده‌اند، اما هر داده‌ای که فقط در این دستگاه ذخیره کرده باشند ممکن است حذف شود}}</translation>
 <translation id="5753570386948603678">حذف از سابقه</translation>
 <translation id="5756163054456765343">مرکز را&amp;هنمایی</translation>
 <translation id="5757187557809630523">آهنگ بعدی</translation>
@@ -10156,6 +10161,7 @@
 <translation id="8195854162863398249">غیر فعال کردن <ph name="FEATURE_NAME" /></translation>
 <translation id="8195920051450756553">تأخیر قبل‌از فعال کردن مجدد یک کلید</translation>
 <translation id="8197673340773315084">نام یا برچسبی مثل «کاری» یا «شخصی» اضافه کنید</translation>
+<translation id="8198181050118789419">زمینه: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">فرستادن برگه</translation>
 <translation id="8199300056570174101">مشخصات دستگاه و شبکه (سرویس)</translation>
 <translation id="8200772114523450471">ازسرگیری</translation>
@@ -11413,6 +11419,7 @@
 <translation id="9074739597929991885">بلوتوث</translation>
 <translation id="9074836595010225693">‏موشواره USB متصل شد</translation>
 <translation id="9075413375877487220">این افزونه برای «مرور ایمن پیشرفته» مورداعتماد نیست.</translation>
+<translation id="9075985558450420812">برای ایجاد تصویر، پیام‌واره‌ای سفارشی وارد کنید یا نوشتار را برجسته کنید.</translation>
 <translation id="9076523132036239772">متأسفم، ایمیل و گذرواژه شما تأیید نشد. ابتدا به یک شبکه متصل شوید.</translation>
 <translation id="9076821103818989526">پانل کناری</translation>
 <translation id="9076977315710973122">‏هم‌رسانی «بلوک پیام سرور» (SMB)</translation>

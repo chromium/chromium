@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">بار کردن صفحه در فرصتی دیگر</translation>
 <translation id="1010225406377140704">برای درخواست پیوند جدید، با فرستنده تماس بگیرید</translation>
 <translation id="1011206368273183593">درحال آماده‌سازی فایل‌ها</translation>
+<translation id="1012264210825687872">‏پس‌از بررسی سفارشتان، باید به سیستم وارد شوید یا حساب <ph name="BNPL_ISSUER_NAME" /> ایجاد کنید. این حساب به‌طور خودکار به Google Pay پیوند داده خواهد شد.</translation>
 <translation id="1014509239502131234">درحال واگرداندن نتیجه</translation>
 <translation id="1015730422737071372">جزئیات اضافی ارائه دهید</translation>
 <translation id="1019413721762100891">خاموش</translation>
@@ -251,6 +252,7 @@
 <translation id="1419305130220238697">‏دکمه «مدیریت بارگیری‌ها در Chrome»؛ برای مدیریت فایل‌هایی که در Chrome بارگیری کرده‌اید، آن را فعال کنید</translation>
 <translation id="1420345875188552368">‏ممکن است از روش پرداخت خودکار ذخیره‌شده‌تان برای این پرداخت استفاده شود. برای خاموش کردن «کیف پول الکترونیکی» در Chrome، به <ph name="BEGIN_LINK1" />تنظیمات پرداخت<ph name="END_LINK1" /> بروید.</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> جهت مجاز کردن مرتبط‌سازی</translation>
+<translation id="1421484961346698724">حساب حذف‌شده</translation>
 <translation id="14222610277930434">اغلب بازدید می‌کنید</translation>
 <translation id="1422930527989633628">می‌تواند برای پیدا کردن دستگاه‌های بلوتوث اطراف درخواست دهد</translation>
 <translation id="1426410128494586442">بله</translation>
@@ -692,6 +694,7 @@
 <translation id="2187317261103489799">تشخیص (پیش‌فرض)</translation>
 <translation id="2188375229972301266">چندین سوراخ در پایین</translation>
 <translation id="2194856509914051091">مواردی که باید درنظر داشت</translation>
+<translation id="2198071643181968308">درباره <ph name="BNPL_ISSUER_NAME" /> بیشتر بدانید</translation>
 <translation id="2200678913752027654">‏دکمه رأی مخالف. برای باز کردن فرم ارسال بازخورد دقیق درباره دلیل نپسندیدن این پیشنهاد، کلید Enter را فشار دهید</translation>
 <translation id="2202627062836089804">پشت کارت</translation>
 <translation id="2204482073374652408">به‌روزرسانی تکمیل شد!</translation>
@@ -2319,6 +2322,7 @@
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">‏‌Chrome باید به <ph name="PERMISSION" /> دستگاهتان دسترسی داشته باشد</translation>
 <translation id="510644072453496781">مقوا (نهایی)</translation>
+<translation id="5106648964679263509">کارت مجازی <ph name="BNPL_ISSUER_NAME" /> تکمیل شد</translation>
 <translation id="5108881358339761672">سایت امن نیست</translation>
 <translation id="5109892411553231226">مدیریت «روش‌های پرداخت»</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2514,6 +2518,7 @@
             <ph name="LIST_ITEM" />اطلاعات واردشده در فرم‌ها
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">روبه‌بالا به‌ترتیب معکوس</translation>
+<translation id="5445340838622821110">وقتی به مرور زمان پرداخت می‌کنید، شماره کارت مجازی یک‌بار مصرف تکمیل می‌شود. این شماره فقط برای همین خرید است. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">اجازه دادن به <ph name="SITE" /> برای استفاده از اطلاعاتی که درباره شما ذخیره کرده‌اند</translation>
 <translation id="5452270690849572955">صفحه <ph name="HOST_NAME" /> پیدا نمی‌شود</translation>
 <translation id="5452923259299906094">‏پرداخت با «کیف پول الکترونیکی» و Pix</translation>
@@ -3020,6 +3025,7 @@
 <translation id="6351658970066645919">حذف کردن داده‌های مرور</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{هیچ‌کدام}=1{۱ گذرواژه (برای <ph name="DOMAIN_LIST" />، همگام‌سازی‌شده)}=2{۲ گذرواژه (برای <ph name="DOMAIN_LIST" />، همگام‌سازی‌شده)}one{# گذرواژه (برای <ph name="DOMAIN_LIST" />، همگام‌سازی‌شده)}other{# گذرواژه (برای <ph name="DOMAIN_LIST" />، همگام‌سازی‌شده)}}</translation>
 <translation id="6355392890578844978">‏شرکت یا سازمان دیگری این مرورگر را مدیریت نمی‌کند. ممکن است فعالیت‌های انجام‌شده در این دستگاه خارج از Chromium مدیریت شود. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">گروه‌های برگه «<ph name="GROUP_TITLE_1" />» و «<ph name="GROUP_TITLE_2" />» دیگر دردسترس نیستند</translation>
 <translation id="6358088212770985041">روش‌های پرداخت را ویرایش کند</translation>
 <translation id="6358450015545214790">معنی این‌ها چیست؟</translation>
 <translation id="6360213755783740931">درباره «حفاظت دربرابر بدافزار» بیشتر بدانید</translation>
@@ -3333,6 +3339,7 @@
 <translation id="6917795328362592458">گذرواژه‌ای که اکنون استفاده کردید در سرقت اطلاعات شبکه پیدا شده است. برای حفظ امنیت حساب‌هایتان، «مدیر گذرواژه» توصیه می‌کند گذرواژه‌های ذخیره‌شده‌تان را بررسی کنید.</translation>
 <translation id="6917873303492266709">‏برای هم‌رسانی، پیوستن، و مشارکت در گروه‌های برگه، تنظیمات را باز کنید و «مجاز کردن ورود به سیستم Chrome» را روشن کنید</translation>
 <translation id="6921197121276419421">نصب کردن برنامه‌های وب مجاز است</translation>
+<translation id="69238565902785824">حفظ پیوند حسابتان به پرداخت سریع‌تر با <ph name="BNPL_ISSUER_NAME" /> کمک می‌کند، اما می‌توانید با رفتن به <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" />، آن را لغو پیوند کنید.</translation>
 <translation id="6924013822850225188">انتخاب می‌کنید مزایای کارت هنگام تسویه‌حساب به شما نمایش داده شود یا نه (شرایط بانک اعمال می‌شود)</translation>
 <translation id="6925267999184670015">‏B+‎ آمریکای شمالی</translation>
 <translation id="6926216138694948720">هنر بدن</translation>
@@ -3398,6 +3405,7 @@
 <translation id="701757816833614688">آموزش هنرهای تجسمی و طراحی</translation>
 <translation id="702275896380648118">‏این سایت چیزهایی را که می‌پسندید شناسایی می‌کند و سپس به سایت‌های دیگر آگهی پیشنهاد می‌دهد. این سایت همچنین موضوع‌های آگهی شما را از Chrome دریافت می‌کند تا آگهی‌های مرتبط‌تری به شما نشان دهد.</translation>
 <translation id="7023162328967545559">هشدار سرپرست</translation>
+<translation id="7023765275461720661">حساب پیوند داده شود و پرداخت با <ph name="BNPL_ISSUER_NAME" /> انجام شود؟</translation>
 <translation id="7029809446516969842">گذرواژه‌ها</translation>
 <translation id="7030164307377592766">تنظیمات مربوط به تکمیل روش‌های پرداخت را تغییر دهد</translation>
 <translation id="7031646650991750659">‏برنامه‌های Google Play که نصب کرده‌اید</translation>
@@ -3620,6 +3628,7 @@
 <translation id="741204030948306876">بله، موافقم</translation>
 <translation id="7416351320495623771">مدیریت گذرواژه‌ها…</translation>
 <translation id="7416898721136759658">کمک‌هزینه، بورس تحصیلی، و کمک مالی</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">برنامه‌نویسی</translation>
 <translation id="7419091773564635591">رایانه و تجهیزات الکترونیکی</translation>
 <translation id="7419106976560586862">مسیر نمایه</translation>
@@ -3666,6 +3675,7 @@
 <translation id="7485085230273446323">کسب‌وکار و صنعت</translation>
 <translation id="7485870689360869515">هیچ داده‌ای یافت نشد.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311">‫<ph name="BNPL_ISSUER_NAME" /> واجدشرایط بودن شما را بررسی خواهد کرد (این کار تأثیری بر امتیاز اعتباری‌تان نخواهد داشت). درصورت تأیید شدن، <ph name="BNPL_ISSUER_NAME" /> چند طرح پرداختی به شما ارائه خواهد کرد تا از بین آن‌ها انتخاب کنید و خریدتان را تکمیل کنید.</translation>
 <translation id="7489392576326061356">شامپو و نرم‌کننده</translation>
 <translation id="7495528107193238112">این محتوا مسدود شده است. برای برطرف کردن مشکل با مالک سایت تماس بگیرید.</translation>
 <translation id="749865518782565832">لوله‌کشی</translation>
@@ -4551,7 +4561,7 @@
 <translation id="9078964945751709336">اطلاعات بیشتری نیاز است</translation>
 <translation id="9080712759204168376">خلاصه سفارش</translation>
 <translation id="9084304544887760521">اگر قیمت محصولاتی که پیگیری می‌کنید در هر سایتی کاهش پیدا کند، ایمیلی به <ph name="EMAIL" /> ارسال می‌شود.</translation>
-<translation id="9089260154716455634">خط‌مشی ساعت‌های خاموشی:</translation>
+<translation id="9089260154716455634">خط‌مشی ساعات خاموشی:</translation>
 <translation id="9090218457905363312">موسیقی کارائیبی و رگِی</translation>
 <translation id="9090243919347147717">پیوست‌ها</translation>
 <translation id="9090548458280093580">جستجوی سابقه، با بهره‌گیری از هوش مصنوعی</translation>

@@ -3417,6 +3417,7 @@ Jika kebijakan tidak disetel, navigasi browser apa pun akan dicegah saat VPN Sel
       Jika setelan ini dinonaktifkan atau tidak ditetapkan, alur login inline baru akan digunakan secara default. Pengguna tetap dapat mengaktifkan alur login berbasis web yang lama melalui tanda command line --enable-web-based-signin.
 
       Setelan eksperimental ini akan dihapus di masa mendatang setelah login inline mendukung sepenuhnya semua alur login SSO.</translation>
+<translation id="3435178885391813398">Jangan izinkan Scanner.</translation>
 <translation id="3435796032110614169">Mengizinkan histori tugas pencetakan untuk dihapus</translation>
 <translation id="3435896845095436175">Aktifkan</translation>
 <translation id="3436217793443508863">Durasi waktu tanpa input pengguna sebelum layar terkunci saat menggunakan baterai, dalam milidetik.</translation>
@@ -4603,7 +4604,7 @@ Kebijakan ini digunakan untuk menonaktifkan upgrade otomatis konten campuran di 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, perilaku default akan diterapkan.
 
       Perhatikan bahwa fitur ini hanya didukung di dalam lingkungan jaringan internal Google.</translation>
-<translation id="4269859918103560644">Izinkan pengguna untuk memutuskan</translation>
+<translation id="4269859918103560644">Izinkan pengguna menentukan</translation>
 <translation id="4271245613154024710">Menyetel kebijakan ini akan menentukan Aplikasi Web Terisolasi (IWA) mana yang dapat terhubung ke kartu smart menggunakan Web Smart Card API tanpa meminta izin kepada pengguna. Kebijakan ini tidak menerima karakter pengganti.
 
 Kebijakan ini menggantikan <ph name="POLICY_NAME" />; khususnya, nilai daftar yang tidak diizinkan <ph name="ALL_ISOLATED_WEB_APPS" /> berarti bahwa semua IWA tidak akan dapat terhubung ke pembaca kartu smart (pengguna bahkan tidak akan dimintai izin) kecuali untuk IWA yang tercantum dalam kebijakan ini.
@@ -7026,6 +7027,7 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia di instance yang dike
 
       Jika kebijakan disetel ke Nonaktif, penggunaan protokol QUIC tidak akan diizinkan.</translation>
 <translation id="5916855682471300200">Kebijakan perangkat cloud lebih diutamakan daripada kebijakan perangkat platform</translation>
+<translation id="5917092644305650513">Setelan untuk fitur Scanner</translation>
 <translation id="5917425424971710623">Jangan laporkan informasi tentang peristiwa deteksi dan respons yang diperluas (XDR)</translation>
 <translation id="5917897389577978190">Gmail (didukung sejak versi 135)</translation>
 <translation id="592036544845479336">Mengaktifkan kembali Peristiwa Mutasi yang tidak digunakan lagi/dihapus</translation>
@@ -7430,6 +7432,7 @@ Di versi 114 dan yang lebih baru, kebijakan ini bersifat opsional jika kebijakan
       tidak akan dilaporkan. Jika ditetapkan ke true, informasi laporan kerusakan akan
       dilaporkan.</translation>
 <translation id="624219423122512710">Tindakan Browser Tidak Ada Aktivitas</translation>
+<translation id="6243061183100681514">Izinkan Scanner dan tingkatkan kualitas model AI.</translation>
 <translation id="6244061205361004687">Izinkan pengguna memutuskan koneksi atau mengubah VPN secara manual</translation>
 <translation id="6244210204546589761">URL untuk membuka saat permulaan</translation>
 <translation id="624595269193747921">Apakah ingin membatasi penelusuran printer yang cocok untuk satu set printer tertentu.</translation>
@@ -8259,6 +8262,7 @@ Di <ph name="MS_WIN_NAME" />, kebijakan KDC selalu dipatuhi.</translation>
 <translation id="6661178198729301029">Aktifkan pelaporan cloud profil terkelola</translation>
 <translation id="6665670272107384733">Setel seberapa sering pengguna harus memasukkan sandi untuk menggunakan buka kunci cepat.</translation>
 <translation id="6667586534922258705">Memperlihatkan tombol tampilkan sandi pada layar login dan layar kunci</translation>
+<translation id="6667636336079341367">Izinkan Scanner tanpa meningkatkan kualitas model AI.</translation>
 <translation id="6669691206059842248">Mengonfigurasi URL alihan OAuth tambahan per ekstensi</translation>
 <translation id="6669700740683748046">Fitur ini memungkinkan tampilan URL lengkap di kolom URL.
       Jika kebijakan ini disetel ke Benar (True), URL lengkap akan ditampilkan di kolom URL, termasuk skema dan subdomain.
@@ -10832,6 +10836,17 @@ Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI g
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, informasi tidak akan dilaporkan.
       Jika kebijakan disetel ke Aktif, peristiwa CRD akan dilaporkan saat pengguna terafiliasi.</translation>
 <translation id="85723976805793612">Log aktivitas penginstalan aplikasi Android dibagikan ke Google</translation>
+<translation id="8573354257711790704">Kebijakan ini mengontrol setelan fitur Scanner untuk <ph name="PRODUCT_OS_NAME" />.
+
+Nilai 0 = Mengizinkan penggunaan fitur ini, sekaligus mengizinkan Google menggunakan data yang relevan untuk meningkatkan kualitas model AI-nya. Data yang relevan mungkin mencakup perintah, input, output, materi sumber, dan masukan tertulis, bergantung pada fiturnya. Data ini juga mungkin ditinjau secara manual untuk meningkatkan kualitas model AI. Nilai 0 adalah nilai default, kecuali jika dinyatakan lain di bawah.
+
+Nilai 1 = Mengizinkan penggunaan fitur ini, tetapi tidak mengizinkan Google meningkatkan kualitas model menggunakan konten pengguna (termasuk perintah, input, output, materi referensi, dan masukan tertulis). Nilai 1 adalah nilai default untuk pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> dan untuk akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Nilai 2 = Tidak mengizinkan penggunaan fitur ini.
+
+Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="857369585509260201">Kebijakan ini tidak digunakan lagi. Pertimbangkan untuk menggunakan BrowserSignin.
 
       Jika kebijakan ini ditetapkan ke true, pengguna harus login ke <ph name="PRODUCT_NAME" /> dengan profilnya sebelum menggunakan browser. Nilai default BrowserGuestModeEnabled akan ditetapkan ke false. Harap diperhatikan bahwa profil yang ada dan belum ditandatangani akan dikunci dan tidak dapat diakses setelah kebijakan ini diaktifkan. Untuk informasi selengkapnya, lihat artikel pusat bantuan.

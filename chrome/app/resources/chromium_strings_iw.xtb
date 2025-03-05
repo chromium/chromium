@@ -316,6 +316,7 @@
 <translation id="5579324208890605088">שגיאת הפעלה: יש להפעיל את מנהל ההתקנה כמשתמש רגיל ולא כאדמין.</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="5605834417512968703">‏אפשר לבחור משהו לחיפוש באמצעות התכונה 'חיפוש תמונות' או ללחוץ על Escape כדי לצאת מחיפוש התמונות</translation>
+<translation id="5618818588972826921">‏אפשר לבחור טקסט או תמונה לחיפוש באמצעות התכונה "חיפוש תמונות" או ללחוץ על Escape כדי לצאת מחיפוש התמונות</translation>
 <translation id="5623402015214259806">{0,plural, =0{‏יש עדכון ל-Chromium}=1{‏יש עדכון ל-Chromium}one{‏עדכון של Chromium זמין כבר # ימים}two{‏עדכון של Chromium זמין כבר # ימים}other{‏עדכון של Chromium זמין כבר # ימים}}</translation>
 <translation id="5643865575100044307">‏מחיקת נתונים מאתרים מהמכשיר בכל פעם שסוגרים את Chromium</translation>
 <translation id="5653831366781983928">‏יש להפעיל מחדש את Chromium</translation>
@@ -591,5 +592,6 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="983803489796659991">‏ההתקנה נכשלה כי שרת העדכון לא מכיל נתוני גיבוב (hash) של האפליקציה.</translation>
 <translation id="985498048907240953">‏שימוש ב-Chromium ללא חשבון</translation>
 <translation id="985602178874221306">‏מחברי Chromium</translation>
+<translation id="989970834842471429">אפשר לבחור טקסט או תמונה לחיפוש באמצעות התכונה "חיפוש תמונות"</translation>
 <translation id="992780518932311116">‏כדי להשתמש בשירותי המיקום, צריך להיכנס אל <ph name="BEGIN_LINK" />הגדרות המערכת<ph name="END_LINK" /> ולתת ל-Chromium גישה</translation>
 </translationbundle>

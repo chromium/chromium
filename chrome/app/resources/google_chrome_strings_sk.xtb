@@ -352,6 +352,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="5727531838415286053">Ak vás Chrome náhodne zapojil do aktívneho skúšobného obdobia, vaša história prehliadania ovplyvňuje zobrazované reklamy a záujmy, ktoré sú odhadnuté nižšie. Chrome priebežne odstraňuje vaše záujmy každý mesiac, aby tak chránil vaše súkromie. Záujmy sa obnovujú, pokiaľ ich neodstránite.</translation>
 <translation id="5736850870166430177">Ak sa vám určitý web pokúsi ukradnúť heslo alebo stiahnete škodlivý súbor, Chrome môže odoslať Bezpečnému prehliadaniu aj webové adresy vrátane častí obsahu stránok</translation>
 <translation id="5756509061973259733">Profil Chromu s týmto účtom už v tomto zariadení existuje</translation>
+<translation id="5759947850379142561">Vyberte nejaký text alebo obrázok na vyhľadávanie pomocou funkcie Google Lens alebo stlačením klávesa Escape Google Lens zavrite</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome sa nepodarilo spustiť. Skúste to znova.</translation>
 <translation id="5809516625706423866">Nepodarilo sa pripojiť k internetu. Chyba autorizácie HTTP 401. Skontrolujte konfiguráciu servera proxy.</translation>
@@ -454,6 +455,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7071827361006050863">Chrome čoskoro odstráni dáta prehliadania</translation>
 <translation id="7085332316435785646">Vyberte, či sa má zahrnúť história Chromu na zaistenie prispôsobenejšieho prostredia v službách Googlu</translation>
 <translation id="7088681679121566888">Chrome je aktuálny</translation>
+<translation id="7096221564931416126">Vyberte ľubovoľný text alebo obrázok a vyhľadajte ho pomocou funkcie Google Lens</translation>
 <translation id="7098166902387133879">Google Chrome používa váš mikrofón.</translation>
 <translation id="7099479769133613710">Znova spustiť a aktualizovať &amp;Chrome OS</translation>
 <translation id="7106741999175697885">Správca úloh – Google Chrome</translation>
@@ -540,6 +542,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8129812357326543296">Informácie o prehliadači &amp;Google Chrome</translation>
 <translation id="813913629614996137">Prebieha inicializácia...</translation>
 <translation id="8162006532256575008">Používať Chrome bez účtu</translation>
+<translation id="8177472873527554730">Obsah na stránke sa nepodarilo nájsť</translation>
 <translation id="8221491193165283816">Zvyčajne blokujete upozornenia. Ak chcete tomuto webu povoliť odosielanie upozornení, kliknite tu.</translation>
 <translation id="8255190535488645436">Google Chrome používa vašu kameru a mikrofón.</translation>
 <translation id="8257796129973882597">Záložky, režim čítania a ďalší obsah môžete otvoriť v Ponuke Chrome</translation>

@@ -94,6 +94,7 @@ Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer 
 <translation id="328933489847748230">{count,plural, =1{Er wordt nu 1 Chromium-venster getoond}other{Er worden nu {count} Chromium-vensters getoond}}</translation>
 <translation id="3344973607274501920">Chromium kan je wachtwoorden niet checken. Check de internetverbinding.</translation>
 <translation id="3366305173356742781">Chromium-gegevens in je account</translation>
+<translation id="33788334537425157">Zet 'Incognitotabbladen vergrendelen als je Chromium sluit' aan</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Dit gebeurt als Chromium {THRESHOLD} minuut niet wordt gebruikt. Dit kunnen onder andere de geschiedenis en gegevens voor automatisch invullen zijn.}other{Dit gebeurt als Chromium {THRESHOLD} minuten niet wordt gebruikt. Dit kunnen onder andere de geschiedenis en gegevens voor automatisch invullen zijn.}}</translation>
 <translation id="3410395242749598859">Sommige van je Chromium-gegevens zijn nog niet opgeslagen in <ph name="EMAIL" />.
 Wacht een paar minuten voordat je van account wisselt. Als je nu van account wisselt, worden deze gegevens verwijderd.</translation>
@@ -101,8 +102,10 @@ Wacht een paar minuten voordat je van account wisselt. Als je nu van account wis
 <translation id="347967311580159871">Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer instellingen die gegevens gebruiken om de functionaliteit van Chromium te verbeteren.</translation>
 <translation id="3512168799938877162">Je wachtwoord is niet gedeeld. Check je internetverbinding en zorg dat je bent ingelogd bij Chromium. Probeer het daarna opnieuw.</translation>
 <translation id="3529798650269984835">Zet Incognitotabbladen vergrendelen als je Chromium sluit aan.</translation>
+<translation id="3541247799006476453">Krijg makkelijk toegang tot je wachtwoorden en toegangssleutels met Chromium voor automatisch invullen</translation>
 <translation id="3567399274263440288">Log in bij Chromium met je Google-account om het maximale uit Chromium te halen.</translation>
 <translation id="3581385059720151202">Visuele elementen zoeken in Chromium</translation>
+<translation id="3582640969619785896">Chromium biedt aan om je wachtwoord op te slaan</translation>
 <translation id="3594315078412605236">Betaalmethoden beheren in Chromium</translation>
 <translation id="3634039384458740619">Chromium-instellingen openen</translation>
 <translation id="3639997914391704523">Chromium kan je wachtwoorden checken als je inlogt met je Google-account.</translation>
@@ -159,6 +162,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="4999538639245140991">Omdat je uitlogt van een account dat wordt beheerd door <ph name="SIGNOUT_MANAGED_DOMAIN" />, worden je Chromium-gegevens van dit apparaat verwijderd. Je gegevens blijven echter wel in je Google-account staan.</translation>
 <translation id="5042011327527167688">Tik op 'Bekijken met Google Maps in Chromium'.</translation>
 <translation id="5044871537677053278">Chromium neemt adressen waar en gebruikt Google Maps om je routes en lokale informatie te geven.</translation>
+<translation id="5048140766121299007">Zet Chromium aan in de instellingen van <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /></translation>
 <translation id="5048795749726991615">Gebruik Chromium voor automatisch invullen om je opgeslagen wachtwoorden makkelijk te gebruiken in je andere apps</translation>
 <translation id="5053429694249468757">Chromium-gegevens verwijderen…</translation>
 <translation id="5071749685031362629">Chromium voor iOS</translation>
@@ -166,6 +170,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="5124429847818367226">Je kunt Chromium nu gebruiken als je browst of op links in berichten, documenten en andere apps tikt.</translation>
 <translation id="5131565040785979529">Je organisatie, <ph name="DOMAIN" />, beheert het account waarop je bent ingelogd en hoe Chromium wordt gebruikt.</translation>
 <translation id="5134464247000681876">Open links uit Gmail, Maps, YouTube en andere apps in Chromium</translation>
+<translation id="5203244847421322551">Wachtwoorden opslaan en automatisch invullen in Chromium</translation>
 <translation id="5224391634244552924">Geen opgeslagen wachtwoorden. Chromium kan je wachtwoorden checken als je deze hebt opgeslagen.</translation>
 <translation id="5259423875997548710">Zoek visuele elementen in Chromium.</translation>
 <translation id="5308226104666789935">Chromium kan niet checken op updates</translation>
@@ -209,10 +214,12 @@ Aandachtspunten:
 <translation id="6132149203299792222">Log in met je Google-account om onder andere je wachtwoorden en bookmarks te synchroniseren.</translation>
 <translation id="6148377327556085395">Bookmarks toevoegen aan Chromium</translation>
 <translation id="6154098560469640583">Gebruik Chromium als je op links in berichten, documenten en andere apps tikt.</translation>
+<translation id="6157162508956739031">Log snel in bij apps en sites door je wachtwoorden en toegangssleutels automatisch in te vullen vanuit Chromium</translation>
 <translation id="6170619162539716595">Sta toe dat Chromium Google Maps gebruikt om je routes en lokale informatie over gevonden adressen te geven.</translation>
 <translation id="6197255575340902638">Als je <ph name="MODULE_NAME" /> verbergt, volgt Chromium je toekomstige pakketten niet meer automatisch en worden al je eerdere pakkettrackinggegevens verwijderd.</translation>
 <translation id="6247557882553405851">Google Wachtwoordmanager</translation>
 <translation id="6268381023930128611">Uitloggen bij Chromium?</translation>
+<translation id="6301717043141881464">Kies Chromium voor automatisch invullen om je opgeslagen wachtwoorden makkelijk te gebruiken in je andere apps</translation>
 <translation id="6324041800010509197">Het tabbladraster in Chromium bezoeken</translation>
 <translation id="6325378625795868881">Gebruik Chromium als je op links in berichten en andere apps tikt.</translation>
 <translation id="6424492062988593837">Chromium is nu nog beter! Er is een nieuwe versie beschikbaar.</translation>
@@ -224,6 +231,7 @@ Aandachtspunten:
 <translation id="6574750762636192517">Wachtwoorden beheren in Chromium</translation>
 <translation id="6590232959690355435">Opent de pagina met je Chromium-geschiedenis.</translation>
 <translation id="6674470628873622334">Opent een nieuw Chromium-incognitotabblad.</translation>
+<translation id="6680609900732453726">Houd je browsen privé met apparaatverificatie als je Chromium sluit</translation>
 <translation id="6752854822223394465">Je organisatie stelt Chromium in…</translation>
 <translation id="6794054469102824109">Opent de Chromium Dino-game.</translation>
 <translation id="6820823224820483452">Chromium kan niet alle wachtwoorden checken. Probeer het morgen opnieuw.</translation>
@@ -287,6 +295,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="8254729934443216898">Ontdek nieuwe functies waarmee je alles uit Chromium kunt halen.</translation>
 <translation id="8293572045658095405">Je bent in de Chromium-incognitomodus</translation>
 <translation id="830951810931292870">Hiermee worden de ingevoerde URL's in Chromium geopend in de incognitomodus.</translation>
+<translation id="8390323835464055390">Log in met je opgeslagen wachtwoorden en toegangssleutels vanuit elke app via Chromium voor automatisch invullen</translation>
 <translation id="8409374867500149834">Je hebt de krachtigste beveiliging van Chromium tegen schadelijke websites</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Dit gebeurt als Chromium {THRESHOLD} minuut niet wordt gebruikt. Gegevens die alleen op dit apparaat zijn opgeslagen terwijl je was ingelogd, worden verwijderd. Dit kunnen onder andere geschiedenis en wachtwoorden zijn.}other{Dit gebeurt als Chromium {THRESHOLD} minuten niet wordt gebruikt. Gegevens die alleen op dit apparaat zijn opgeslagen terwijl je was ingelogd, worden verwijderd. Dit kunnen onder andere geschiedenis en wachtwoorden zijn.}}</translation>
 <translation id="858114650497379505">Je kunt de wachtwoorden die je in Wachtwoordmanager hebt opgeslagen, gebruiken in andere apps op je iPhone.</translation>

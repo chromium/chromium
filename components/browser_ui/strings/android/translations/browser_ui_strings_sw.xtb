@@ -6,6 +6,7 @@
 <translation id="1044891598689252897">Tovuti zitafanya kazi kama kawaida</translation>
 <translation id="1070329623210597193">Faili ambazo tovuti hii inaweza kuona au kubadilisha</translation>
 <translation id="1073417869336441572">Tusaidie kuboresha Chrome kwa kutuambia kwa nini umeruhusu vidakuzi vya mshirika mwingine. <ph name="BEGIN_LINK" />Tuma maoni<ph name="END_LINK" /></translation>
+<translation id="1074758928858737435">Unaweza kuomba kuona toleo la eneokazi la tovuti</translation>
 <translation id="1085696779717592361">Tumia Chrome Kwa Chaguomsingi</translation>
 <translation id="1178581264944972037">Sitisha</translation>
 <translation id="1181037720776840403">Ondoa</translation>
@@ -32,6 +33,7 @@
 <translation id="146867109637325312">{COUNT,plural, =1{Tovuti <ph name="SITE_COUNT" />}other{Tovuti <ph name="SITE_COUNT" />}}</translation>
 <translation id="1500473259453106018">Ficha kadi ya "kupungua kwa bei kwenye vichupo"</translation>
 <translation id="1510341833810331442">Tovuti haziruhusiwi kuhifadhi data kwenye kifaa chako</translation>
+<translation id="1538031354170655462">Kwa kawaida tovuti hutumia mawasiliano ya vifaa vinavyokaribiana (NFC) ili kufanya kazi na vifaa au vishikizo vilivyo karibu, kama vile kuchanganua beji au kulipa kielektroniki</translation>
 <translation id="1547123415014299762">Vidakuzi vya washirika wengine vinaruhusiwa</translation>
 <translation id="1593426485665524382">Vitendo vipya vinapatikana karibu na sehemu ya juu ya skrini</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -115,6 +117,7 @@
 <translation id="2677748264148917807">Ondoka</translation>
 <translation id="2682367912565197520">Futa kiwango cha ukuzaji ulichohifadhi</translation>
 <translation id="2683434792633810741">Je, ungependa kufuta na kuweka upya?</translation>
+<translation id="2685514716378236873">Hairuhusiwi</translation>
 <translation id="2713106313042589954">Zima kamera</translation>
 <translation id="2717722538473713889">Anwani za barua pepe</translation>
 <translation id="2726059656860238749">Fungua Chrome huku Sanduku kuu likiwa limeangaziwa, hivyo kupunguza muda wa kuwasha vifaa vya uwezo wa chini.</translation>
@@ -211,12 +214,14 @@
 <translation id="3955193568934677022">Ruhusu tovuti zicheze maudhui yanayolindwa (inapendekezwa)</translation>
 <translation id="3965467402665811906">Tovuti zinaweza kuomba zitumie taarifa ambazo zimehifadhi kukuhusu</translation>
 <translation id="3967822245660637423">Imemaliza kupakua</translation>
+<translation id="3981465354637804599">Kwa kawaida tovuti huonyesha matangazo ili ziweze kutoa maudhui au huduma bila kulipia. Lakini, baadhi ya tovuti huonyesha matangazo yanayopotosha au yanayokatiza matumizi.</translation>
 <translation id="3987993985790029246">Nakili kiungo</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992308058851451478"><ph name="SITE" /> inaweza kutumia taarifa zako unapovinjari</translation>
 <translation id="3992684624889376114">Kuhusu ukurasa huu</translation>
 <translation id="4002066346123236978">Kichwa</translation>
 <translation id="4046123991198612571">Wimbo unaofuata</translation>
+<translation id="4077310749977440510">Kwa kawaida tovuti husoma ubao wako wa kunakili ili kupata vipengele kama vile kudumisha muundo wa maandishi uliyonakili</translation>
 <translation id="4149890623864272035">Je, una uhakika ungependa kufuta data yote iliyo kwenye kifaa, ikiwa ni pamoja na vidakuzi na kuweka upya ruhusa zote za tovuti hii?</translation>
 <translation id="4149994727733219643">Mwonekano uliorahisishwa kwa ajili ya kurasa za wavuti</translation>
 <translation id="4151930093518524179">Kiwango chaguomsingi cha kukuza</translation>
@@ -224,6 +229,7 @@
 <translation id="4169549551965910670">Imeunganishwa kwenye kifaa cha USB</translation>
 <translation id="4194328954146351878">Uliza kabla ya kuruhusu tovuti zione na zibadilishe maelezo kwenye vifaa vya NFC (inapendekezwa)</translation>
 <translation id="4200726100658658164">Fungua Mipangilio ya Mahali</translation>
+<translation id="421742575134139848">Huenda tovuti zikacheza sauti ili kuweka sauti ya muziki, video na maudhui mengine</translation>
 <translation id="4226663524361240545">Arifa huenda zitatetemesha kifaa</translation>
 <translation id="4259722352634471385">Kudurusu kumezuiwa: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Ukifunga tovuti, inaweza kuendelea kusawazisha ili kukamilisha majukumu, kama vile kupakia picha au kutuma ujumbe kwenye gumzo</translation>
@@ -247,6 +253,7 @@
 <translation id="4566417217121906555">Zima maikrofoni</translation>
 <translation id="4570913071927164677">Maelezo</translation>
 <translation id="4598549027014564149">Ukiwa katika hali fiche, tovuti haziwezi kutumia vidakuzi vyako ili kuangalia shughuli zako za kuvinjari kwenye tovuti, hata katika tovuti zinazohusiana. Shughuli zako za kuvinjari hazitumiki kwa mambo kama vile kuweka mapendeleo ya matangazo. Huenda vipengele visifanye kazi kwenye baadhi ya tovuti.</translation>
+<translation id="461356340001513807">Inakuwezesha kuingia katika tovuti ukitumia akaunti uliyonayo kwenye huduma za utambulisho</translation>
 <translation id="4619615317237390068">Vichupo kutoka kwenye vifaa vingine</translation>
 <translation id="4644713492825682049">Futa na uweke upya</translation>
 <translation id="4645575059429386691">Inadhibitiwa na wazazi wako</translation>
@@ -430,6 +437,7 @@
 <translation id="7000754031042624318">Imezimwa katika mipangilio ya Android</translation>
 <translation id="702275896380648118">Tovuti hii hubainisha mambo unayopendelea na kisha hupendekeza matangazo kwenye tovuti zingine. Tovuti hii pia hupata mada zako za matangazo kutoka kwenye Chrome ili kukuonyesha matangazo yanayokufaa zaidi.</translation>
 <translation id="7053983685419859001">Zuia</translation>
+<translation id="7055552182600664515">Ili ucheze maudhui yanayolindwa kwa hakimiliki, huenda tovuti zikahitaji kutumia huduma ya kulinda maudhui. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Umechagua 1}other{Umechagua #}}</translation>
 <translation id="708014373017851679">'<ph name="APP_NAME" />' imepitwa na wakati. Tafadhali sasisha programu.</translation>
 <translation id="7087918508125750058">Imechagua <ph name="ITEM_COUNT" />. Chaguo zinapatikana karibu na sehemu ya juu ya skrini</translation>

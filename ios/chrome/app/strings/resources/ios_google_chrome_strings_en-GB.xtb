@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">Your password will be saved to Google Password Manager for <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Open new tab in Chrome</translation>
 <translation id="1166460004393506534">Delete browsing data in Chrome</translation>
+<translation id="1171255741903316750">Turn on 'Lock Incognito tabs when you close Chrome'</translation>
 <translation id="1179527450541388808">Access Chrome faster from your iPad's Home Screen Dock.</translation>
 <translation id="1180362651362502943">Keep using the Chrome data in your Google Account.</translation>
 <translation id="1200396280085622191">Use Chrome anytime that you tap links in messages and other apps.</translation>
@@ -45,6 +46,7 @@ Things to consider:
 <translation id="1917964099031477364">This account and any unsaved data will be removed from Chrome and other Google apps on this device.</translation>
 <translation id="1919130412786645364">Allow Chrome sign-in</translation>
 <translation id="1965935827552890526">Finish what you were doing in your other open Chrome window.</translation>
+<translation id="1973910962341002002">From '<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />' settings, toggle 'Chrome' on</translation>
 <translation id="1984705450038014246">Sync your Chrome data</translation>
 <translation id="1987779152850321833">Complete these suggested actions below to get the most out of Chrome.</translation>
 <translation id="2055826352861631739">Use Chrome for iPad by default</translation>
@@ -96,10 +98,13 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
 <translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3303503998967553377">Use Chrome actions on iOS</translation>
 <translation id="3348862487678490430">Add reading list item to Chrome</translation>
+<translation id="3357827134511189025">Sign in with your saved passwords and passkeys from any app using Chrome for Autofill</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{This happens when Chrome isn't used for {THRESHOLD} minute}other{This happens when Chrome isn't used for {THRESHOLD} minutes}}</translation>
 <translation id="3367797402528056312">Finish setting up Chrome</translation>
 <translation id="3371064404604898522">Set Chrome as the default browser</translation>
 <translation id="3399930248910934354">Open Chrome settings</translation>
+<translation id="3440830787838130530">Easily and securely share a copy of a password with your family group in Google Password Manager</translation>
+<translation id="3460369101684070455">To easily get your saved passwords in your other apps, choose Chrome for Autofill</translation>
 <translation id="3472587960215700950">Chrome uses Google Maps to give you directions and local info on detected addresses.</translation>
 <translation id="3503014945441706099">Get Enhanced Safe Browsing for this Chrome profile, too</translation>
 <translation id="3522659714780527202">To see your tabs from wherever you use Chrome, turn on sync</translation>
@@ -181,6 +186,7 @@ Try waiting a few minutes before switching accounts. If you switch accounts now,
 <translation id="5998675059699164418">Your organisation requires you to sign in to use Chrome.</translation>
 <translation id="6021312115739110405">A custom feed made for you by Google. Including news, sports and weather.</translation>
 <translation id="6022659036123304283">Make Chrome your own</translation>
+<translation id="6132075343662013154">Chrome will offer to save your password</translation>
 <translation id="6132149203299792222">Sign in with your Google Account to sync your passwords, bookmarks and more.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Search in Chrome</translation>
@@ -228,6 +234,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="7061455974939528301">Press and hold the Chrome icon and click 'Edit home screen'</translation>
 <translation id="7065813315247345131">Move Chrome to the Dock</translation>
 <translation id="7124339256045485976">Keep Chrome up to date</translation>
+<translation id="7145599899567697473">Save and autofill passwords in Chrome</translation>
 <translation id="7161390184744336561">Google Chrome is out of date</translation>
 <translation id="7165736900384873061">Start Using Google Chrome QR Scanner</translation>
 <translation id="7175129790242719365">Chrome tip: Sign in to Chrome</translation>
@@ -261,6 +268,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="7693590760643069321">You can now use Chrome any time that you tap links in messages, documents and other apps.</translation>
 <translation id="7698568245838009292">Chrome would like to access the camera</translation>
 <translation id="7707877166818730835">Open my latest tab in Chrome</translation>
+<translation id="7747746207470479571">Get easy access to your passwords and passkeys with Chrome for Autofill</translation>
 <translation id="776305366874821582">Access Chrome faster from your iPhone's Home Screen Dock.</translation>
 <translation id="7780154209050837198">To get the most out of Chrome, sign in to Chrome with your Google Account.</translation>
 <translation id="7787205077729386167">Open Chrome settings in iOS, then tap on 'Default browser app' and select Chrome.</translation>
@@ -281,6 +289,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="8136856065410661948">This will be used to create events in your Apple Calendar from Chrome and Google Lens.</translation>
 <translation id="8154120522323162874">Get the most out of Chrome by continuing setting up your browser.</translation>
 <translation id="8160472928944011082">Chrome can't update</translation>
+<translation id="8245080522851805544">Keep your browsing private with device authentication when you close Chrome</translation>
 <translation id="8248887045858762645">Chrome tip</translation>
 <translation id="8265730590513812063">Open the Chrome menu</translation>
 <translation id="8317674518145175158">Payment methods and addresses won't be encrypted. Browsing history from Chrome won't sync.

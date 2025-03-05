@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">Не нуди превод за овие сајтови</translation>
 <translation id="1145536944570833626">Избришете ги постоечките податоци.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> ќе се отвори во Chrome. Ако продолжите, се согласувате со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Google Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
+<translation id="1154555449933432029">Немате лозинки зачувани во Google Password Manager.</translation>
 <translation id="115483310321669804">Користи ја лозинката <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Преименувај</translation>
 <translation id="1174479719160874822">Кога е тесен екранот, Chrome ќе го побара сајтот за мобилен</translation>
@@ -1366,10 +1367,12 @@
 <translation id="7224097611345298931">Сите лозинки зачувани само на овој уред за Chrome и <ph name="CHROME_CHANNEL" /> се споени. Може автоматски да ги пополнувате сите зачувани лозинки во двете апликации.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 преземање чека на ред}one{# преземање чека на ред}other{# преземања чекаат на ред}}</translation>
 <translation id="7230064152164845085">Префрли на „Инкогнито“</translation>
+<translation id="7237724030342645845">Google Password Manager престана да функционира</translation>
 <translation id="72415438529550637">Предлогот за лозинка е затворен.</translation>
 <translation id="7260367682327802201">Вашиот уред со Android може да има слична поставка. Ако мерењето реклами е вклучено во Chrome и на вашиот уред со Android, одредена компанија можеби ќе може да ја мери ефективноста на некоја реклама на веб-сајтовите што ги посетувате и апликациите што ги користите.</translation>
 <translation id="727288900855680735">Да се испрати <ph name="ONE_TIME_CODE" /> на <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Блокиран сајт</translation>
+<translation id="7276868533747677875">Ако сте извезле лозинки претходно, побарајте CSV-датотека на вашиот уред и увезете ги во претпочитаниот управувач со лозинки.</translation>
 <translation id="7289049772085228972">Ја имате најсилната безбедност на Chrome</translation>
 <translation id="7289303553784750393">Ако сте онлајн, но и натаму се соочувате со проблемов, може да испробате други начини да продолжите на <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Преименување не е достапно</translation>
@@ -1544,6 +1547,7 @@
 <translation id="8027395186860110042">Лозинките може да престанат да функционираат наскоро</translation>
 <translation id="8027863900915310177">Изберете каде да се преземе</translation>
 <translation id="8030852056903932865">Одобри</translation>
+<translation id="8031805944372049238">За да започнете со зачувување и користење лозинки со Google Password Manager, ажурирајте ја „Услуги на Google Play“.</translation>
 <translation id="8032569120109842252">Се следи</translation>
 <translation id="8037750541064988519">Останаа <ph name="DAYS" /> дена</translation>
 <translation id="8037801708772278989">Тукушто проверено</translation>

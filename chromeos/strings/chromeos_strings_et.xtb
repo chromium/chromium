@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Koduvõrk, mitte rändlus</translation>
 <translation id="1327977588028644528">Lüüs</translation>
 <translation id="1328223165223065150">Taustapildi värv</translation>
+<translation id="1329478709358066995">Transkriptsioon</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Sobita skannitava alaga</translation>
 <translation id="1343442362630695901">soolajärv</translation>
@@ -393,7 +394,7 @@
 <translation id="2717139507051041123">Luba tume värvirežiim</translation>
 <translation id="2726755229438917165">esmaspäeval</translation>
 <translation id="2728460467788544679">Kogu printimisajaloo kustutamine</translation>
-<translation id="2731700343119398978">Oodake ...</translation>
+<translation id="2731700343119398978">Palun oodake ...</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2744221223678373668">Jagatud</translation>
 <translation id="2749164457515831917">Soovitusi vahetati</translation>
@@ -502,6 +503,7 @@
 <translation id="3373141842870501561">Maa pöörlemise ekraanisäästja</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> taust tähega <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Eksklusiivne</translation>
+<translation id="3395147534045164351">Kiirasukoha lüliti</translation>
 <translation id="3404249063913988450">Ekraanisäästja lubamine</translation>
 <translation id="3413935475507503304">Värskendamisega jätkamiseks klõpsake nupul Järgmine.</translation>
 <translation id="3428551088151258685">loodus</translation>
@@ -651,6 +653,7 @@
 <translation id="4113067922640381334">Teil on nüüd juurdepääs uutele <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />taustapiltidele<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Tume režiim</translation>
 <translation id="4126551873361000548">10 sekundit tagasi kerimine</translation>
+<translation id="4128271910628504223">Sisestage päring, näiteks „joonista udune mets“</translation>
 <translation id="4130035430755296270">Jätkake hõljutamist, et näha rohkem paigutuse valikuid</translation>
 <translation id="4130750466177569591">Nõustun</translation>
 <translation id="4131410914670010031">Mustvalge</translation>
@@ -858,6 +861,7 @@
 <translation id="5050042263972837708">Grupi nimi</translation>
 <translation id="5051044138948155788">See on ainus leht. See suunab teid skannimise avakuvale.</translation>
 <translation id="5053233795640754917">Peatamine</translation>
+<translation id="5056587122125565772">Loo pilt</translation>
 <translation id="5078711626843651677">Häälemudelid salvestatakse ajutiselt seadmesse, kuni kõnelejatele siltide määramine on lõppenud. Saate selle igal ajal seadetes välja lülitada.</translation>
 <translation id="5078983345702708852">futuristlik</translation>
 <translation id="5087864757604726239">Tagasi</translation>
@@ -1129,7 +1133,6 @@
 <translation id="6325525973963619867">Ebaõnnestus</translation>
 <translation id="6327262166342360252">See taustapilt loodi AI abil, kasutades järgmist teksti: „<ph name="PROMPT" />“.</translation>
 <translation id="6331191339300272798">Automaatne tume teema</translation>
-<translation id="6335228876613776082">Mudeli allalaadimine on lõpule viidud</translation>
 <translation id="6340526405444716530">Isikupärastamine</translation>
 <translation id="6348252528297699679">Võite selle igal ajal välja lülitada menüüs Seaded &gt; Privaatsus ja turvalisus &gt; Privaatsuse seaded &gt; Juurdepääs asukohale. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Kasutajanimi ja parool</translation>
@@ -1274,6 +1277,7 @@
 <translation id="6930597342185648547">Teave tausta kohta</translation>
 <translation id="6939667434404433010">Otsige salvestise nime</translation>
 <translation id="6939766318048400022">Kohvik</translation>
+<translation id="6942253772720771875">Jagage tagasisidet või kirjeldage oma probleemi</translation>
 <translation id="6943893908656559156">Kaugidentiteet (valikuline)</translation>
 <translation id="6953137545147683679">kuldsetes toonides</translation>
 <translation id="6957231940976260713">Teenuse nimi</translation>
@@ -1598,6 +1602,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8395584934117017006">Seda seadet <ph name="DEVICE_TYPE" /> haldab ettevõte</translation>
 <translation id="8398927464629426868">Praegune seadme laadimise või tühjenemise kiirus</translation>
 <translation id="8403988360557588704">Maal nähtusest <ph name="ART_FEATURE" />, stiil: <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">Genereeritud kokkuvõte</translation>
 <translation id="8410244574650205435">Automaatselt tuvastatud</translation>
 <translation id="8420955526972171689">Käitage teste ja tehke veaotsingut, et lahendada riistvaraprobleeme</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1647,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8626489604350149811">Rohkem toiminguid: <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Helelilla</translation>
 <translation id="8647595191512746911">Heli transkribeerimine</translation>
+<translation id="8648578954147795914">Genereeritud nimed</translation>
 <translation id="8650852232143958317">Võtke oma Gmaili sisu ja Google Drive’i failid endaga kaasa</translation>
 <translation id="8651481478098336970">vaigistab heli</translation>
 <translation id="8655295600908251630">Kanal</translation>
@@ -1670,7 +1676,6 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Teenuse Google Photos album</translation>
 <translation id="8775713578693478175">Modemi APN</translation>
-<translation id="877735394245039557">Mudeli allalaadimine on pooleli</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">See võrk võib sisaldada hõiveportaali</translation>
 <translation id="8797082062139985406">Nime loomine Google'i AI abil</translation>
@@ -1784,6 +1789,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="9218016617214286986">Kuva teadaolevad APN-id</translation>
 <translation id="932327136139879170">Kodu</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Veenduge, et teie mikrofon oleks ühendatud, või proovige Chromebook taaskäivitada</translation>
 <translation id="945522503751344254">Tagasiside saatmine</translation>
 <translation id="950520315903467048">Suuna <ph name="DIRECTION" /> jaoks pole klahvi määratud. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Häälte võrdlemine kogu salvestise jooksul, et transkriptsioon kajastaks seda, mida iga kõneleja ütles ja millal</translation>

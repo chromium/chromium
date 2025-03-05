@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">Älä ehdota näiden sivustojen kääntämistä</translation>
 <translation id="1145536944570833626">Poistaa olemassa olevat tiedot.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> avautuu Chromessa. Jatkamalla hyväksyt <ph name="BEGIN_LINK1" />Googlen käyttöehdot<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />Google Chromen ja Chrome-käyttöjärjestelmän lisäkäyttöehdot<ph name="END_LINK2" />.</translation>
+<translation id="1154555449933432029">Et ole tallentanut salasanoja Google Salasanoihin.</translation>
 <translation id="115483310321669804">Käytä salasanaa <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Muuta nimeä</translation>
 <translation id="1174479719160874822">Chrome pyytää mobiilisivustoa, kun näyttö on kapea</translation>
@@ -548,6 +549,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3566639033325271639">Päivitä asetukset</translation>
 <translation id="3568945271227339929">Ei vaarantuneita salasanoja</translation>
 <translation id="357465026686164600">Puhelin suojausavaimena</translation>
+<translation id="3575464060651642446">Tarkistetaan salasanoja tällä laitteella…</translation>
 <translation id="3577473026931028326">Jotain meni pieleen. Yritä uudelleen.</translation>
 <translation id="3577558748185201054">Ylläpidä kiinnostuksen kohteita ja valintoja</translation>
 <translation id="3587482841069643663">Kaikki</translation>
@@ -1366,10 +1368,12 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7224097611345298931">Kaikki vain tälle laitteelle tallennetut Chrome- ja <ph name="CHROME_CHANNEL" /> ‑salasanat yhdistettiin. Voit täyttää kaikki tallennetut salasanat automaattisesti molemmissa sovelluksissa.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 lataus odottaa}other{# latausta odottaa}}</translation>
 <translation id="7230064152164845085">Siirry incognito-tilaan</translation>
+<translation id="7237724030342645845">Google Salasanat lakkasi toimimasta</translation>
 <translation id="72415438529550637">Salasanaehdotus on suljettu.</translation>
 <translation id="7260367682327802201">Android-laitteellasi voi olla vastaava asetus. Jos mainosten mittaus on otettu käyttöön Chromessa ja Android-laitteella, yritys voi pystyä mittaamaan mainoksen tehokkuutta kaikilla verkkosivustoilla ja käyttämissäsi sovelluksissa.</translation>
 <translation id="727288900855680735">Lähetetäänkö <ph name="ONE_TIME_CODE" /> tänne: <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Estetty sivusto</translation>
+<translation id="7276868533747677875">Jos olet aiemmin vienyt salasanoja, etsi laitteelta CSV-tiedosto ja tuo se haluamaasi salasanojen hallintatyökaluun.</translation>
 <translation id="7289049772085228972">Käytät Chromen vahvinta suojausta</translation>
 <translation id="7289303553784750393">Jos olet yhteydessä verkkoon, mutta ongelma toistuu, voit kokeilla muita tapoja jatkaa tämän käyttöä: <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Uudelleennimeäminen ei saatavilla</translation>
@@ -1544,6 +1548,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8027395186860110042">Salasanat saattavat lakata toimimasta pian</translation>
 <translation id="8027863900915310177">Valitse latauspaikka</translation>
 <translation id="8030852056903932865">Hyväksy</translation>
+<translation id="8031805944372049238">Päivitä Google Play Palvelut, jotta voit alkaa tallentamaan ja käyttämään salasanoja Google Salasanojen avulla.</translation>
 <translation id="8032569120109842252">Seurataan</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> päivää jäljellä</translation>
 <translation id="8037801708772278989">Tarkistettu juuri äsken</translation>

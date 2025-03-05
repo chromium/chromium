@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">Nenosiri lako litahifadhiwa kwenye Kidhibiti cha Manenosiri cha Google kwa ajili ya <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Fungua kichupo kipya kwenye Chrome</translation>
 <translation id="1166460004393506534">Futa data ya kuvinjari kwenye Chrome</translation>
+<translation id="1171255741903316750">Washa "Funga Vichupo vya Faraghani unapofunga Chrome"</translation>
 <translation id="1179527450541388808">Fikia Chrome kwa haraka zaidi katika sehemu iliyopachikwa kwenye skrini ya kwanza ya iPad yako.</translation>
 <translation id="1180362651362502943">Endelea kutumia data ya Chrome katika Akaunti yako ya Google.</translation>
 <translation id="1200396280085622191">Tumia Chrome wakati wowote unapogusa viungo kwenye ujumbe na programu zingine.</translation>
@@ -45,6 +46,7 @@ Mambo ya kuzingatia:
 <translation id="1917964099031477364">Akaunti hii na data yoyote ambayo haijahifadhiwa itaondolewa kwenye Chrome na programu zingine za Google kwenye kifaa hiki.</translation>
 <translation id="1919130412786645364">Ruhusu kuingia katika akaunti ya Chrome</translation>
 <translation id="1965935827552890526">Kamilisha ulichokuwa ukifanya kwenye dirisha jingine ulilofungua la Chrome.</translation>
+<translation id="1973910962341002002">Kwenye mipangilio ya "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />", washa "Chrome"</translation>
 <translation id="1984705450038014246">Sawazisha data yako kwenye Chrome</translation>
 <translation id="1987779152850321833">Kamilisha vitendo hivi vilivyopendekezwa hapa chini ili unufaike zaidi na Chrome.</translation>
 <translation id="2055826352861631739">Kutumia Chrome kwa chaguomsingi kwenye iPad</translation>
@@ -96,10 +98,13 @@ Jaribu kusubiri kwa dakika chache kabla ya kuondoka kwenye akaunti. Ukiondoka kw
 <translation id="3282568296779691940">Ingia katika Chrome</translation>
 <translation id="3303503998967553377">Tumia kipengele cha vitendo vya Chrome kwenye iOS</translation>
 <translation id="3348862487678490430">Weka kipengele cha orodha ya kusoma kwenye Chrome</translation>
+<translation id="3357827134511189025">Ingia katika akaunti ukitumia funguo za siri na manenosiri kwenye programu yoyote ukitumia Chrome ili Ujaze kiotomatiki</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Hali hii hutokea wakati hujatumia Chrome kwa dakika {THRESHOLD}}other{Hali hii hutokea wakati hujatumia Chrome kwa dakika {THRESHOLD}}}</translation>
 <translation id="3367797402528056312">Maliza kuweka mipangilio ya Chrome</translation>
 <translation id="3371064404604898522">Ifanye Chrome iwe kivinjari chaguomsingi</translation>
 <translation id="3399930248910934354">Fungua Mipangilio ya Chrome</translation>
+<translation id="3440830787838130530">Tuma nakala ya nenosiri kwenye kikundi cha familia yako kwa njia salama na rahisi katika Kidhibiti cha Manenosiri cha Google</translation>
+<translation id="3460369101684070455">Ili upate manenosiri uliyohifadhi kwa urahisi katika programu yako nyingine, chagua Chrome ili Ujaze Kiotomatiki</translation>
 <translation id="3472587960215700950">Chrome hutumia Ramani za Google kukupatia maelekezo na maelezo ya eneo husika kwenye anwani zilizotambuliwa.</translation>
 <translation id="3503014945441706099">Pia, pata Kipengele cha Kuvinjari Salama Kilichoboreshwa kwenye wasifu huu wa Chrome</translation>
 <translation id="3522659714780527202">Ili uone vichupo vyako kwenye kifaa chochote unakotumia Chrome, washa kipengele cha kusawazisha</translation>
@@ -181,6 +186,7 @@ Jaribu kusubiri dakika chache kabla ya kubadilisha akaunti. Ukibadilisha akaunti
 <translation id="5998675059699164418">Shirika lako linahitaji uingie katika akaunti ili uweze kutumia Chrome.</translation>
 <translation id="6021312115739110405">Mipasho maalum uliyoandaliwa na Google. Ikiwa ni pamoja na habari, spoti na hali ya hewa.</translation>
 <translation id="6022659036123304283">Weka mapendeleo kwenye Chrome iwe unavyopenda</translation>
+<translation id="6132075343662013154">Chrome itakuomba kuhifadhi nenosiri lako</translation>
 <translation id="6132149203299792222">Ingia katika akaunti ukitumia Akaunti yako ya Google ili usawazishe manenosiri yako, alamisho na zaidi.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Tafuta katika Chrome</translation>
@@ -228,6 +234,7 @@ Kwa mipangilio zaidi inayotumia data kuboresha hali yako ya utumiaji wa Chrome, 
 <translation id="7061455974939528301">Bonyeza na ushikilie aikoni ya Chrome kisha ubofye "Badilisha skrini ya kwanza"</translation>
 <translation id="7065813315247345131">Hamishia Chrome kwenye Sehemu ya kupachika</translation>
 <translation id="7124339256045485976">Hakikisha Chrome imesasishwa kila wakati</translation>
+<translation id="7145599899567697473">Hifadhi na ujaze manenosiri kiotomatiki kwenye Chrome</translation>
 <translation id="7161390184744336561">Toleo la Google Chrome limepitwa na wakati</translation>
 <translation id="7165736900384873061">Anza kutumia kichanganuzi cha QR cha Google Chrome</translation>
 <translation id="7175129790242719365">Kidokezo cha Chrome: Kuingia katika akaunti kwenye Chrome</translation>
@@ -261,6 +268,7 @@ Kwa mipangilio zaidi inayotumia data kuboresha hali yako ya utumiaji wa Chrome, 
 <translation id="7693590760643069321">Sasa unaweza kutumia Chrome wakati wowote unapogusa viungo kwenye ujumbe, hati na programu zingine.</translation>
 <translation id="7698568245838009292">Chrome Inataka Kufikia Kamera</translation>
 <translation id="7707877166818730835">Fungua Kichupo changu kipya kwenye Chrome</translation>
+<translation id="7747746207470479571">Pata uwezo wa kufikia funguo za siri na manenosiri yako kwa urahisi ukitumia Chrome ili Ujaze Kiotomatiki</translation>
 <translation id="776305366874821582">Fikia Chrome kwa haraka zaidi katika sehemu iliyopachikwa kwenye skrini ya kwanza ya iPhone yako.</translation>
 <translation id="7780154209050837198">Ili unufaike zaidi na Chrome, ingia kwenye Chrome ukitumia Akaunti yako ya Google.</translation>
 <translation id="7787205077729386167">Fungua mipangilio ya Chrome kwenye iOS, kisha uguse "Programu Chaguomsingi ya Kivinjari" kisha uchague Chrome.</translation>
@@ -281,6 +289,7 @@ Kwa mipangilio zaidi inayotumia data kuboresha hali yako ya utumiaji wa Chrome, 
 <translation id="8136856065410661948">Hii itatumika kuunda matukio kwenye Kalenda yako ya Apple kutoka kwenye Chrome na Lenzi ya Google.</translation>
 <translation id="8154120522323162874">Nufaika zaidi na Chrome kwa kuendelea kuweka mipangilio ya kivinjari chako.</translation>
 <translation id="8160472928944011082">Imeshindwa kusasisha Chrome</translation>
+<translation id="8245080522851805544">Weka hali yako ya kuvinjari iwe ya faragha ukitumia uthibitishaji wa kifaa unapofunga Chrome</translation>
 <translation id="8248887045858762645">Kidokezo cha Chrome</translation>
 <translation id="8265730590513812063">Fungua menyu ya Chrome</translation>
 <translation id="8317674518145175158">Njia za kulipa na anwani hazitasimbwa kwa njia fiche. Historia ya kuvinjari kwenye Chrome haitasawazishwa.
@@ -324,5 +333,6 @@ Data yako ilisimbwa kwa njia fiche kwa kutumia kauli ya siri <ph name="TIME" />.
 <translation id="9181628561061032322">Hufungua Vichupo vya Hivi Karibuni kwenye Chrome.</translation>
 <translation id="948597495737267756">Hufungua ukurasa wa Historia yako kwenye Chrome.</translation>
 <translation id="97300214378190234">Tumia Chrome wakati wowote unapogusa viungo kwenye programu zingine.</translation>
+<translation id="997929539742564806">Ingia katika programu na tovuti kwa haraka kwa kujaza kiotomatiki funguo za siri na manenosiri yako kwenye Chrome</translation>
 <translation id="998677222109959694">Dhibiti mipangilio ya Chrome</translation>
 </translationbundle>

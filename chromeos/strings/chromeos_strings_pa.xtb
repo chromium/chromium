@@ -81,6 +81,7 @@
 <translation id="131461803491198646">ਘਰੇਲੂ ਨੈੱਟਵਰਕ, ਰੋਮਿੰਗ ਨਹੀਂ</translation>
 <translation id="1327977588028644528">ਗੇਟਵੇ</translation>
 <translation id="1328223165223065150">ਵਾਲਪੇਪਰ ਦਾ ਰੰਗ</translation>
+<translation id="1329478709358066995">ਪ੍ਰਤੀਲਿਪੀ:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ਸਕੈਨ ਕਰਨ ਯੋਗ ਖੇਤਰ ਵਿੱਚ ਫਿੱਟ ਕਰੋ</translation>
 <translation id="1343442362630695901">ਸਾਲਟ ਲੇਕ</translation>
@@ -1129,7 +1130,6 @@
 <translation id="6325525973963619867">ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="6327262166342360252">ਇਹ ਵਾਲਪੇਪਰ ਅੱਗੇ ਦਿੱਤੀ ਲਿਖਤ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ AI ਨਾਲ ਬਣਾਇਆ ਗਿਆ: "<ph name="PROMPT" />।"</translation>
 <translation id="6331191339300272798">ਸਵੈਚਲਿਤ ਗੂੜ੍ਹਾ ਥੀਮ</translation>
-<translation id="6335228876613776082">ਮਾਡਲ ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6340526405444716530">ਵਿਅਕਤੀਗਤਕਰਨ</translation>
 <translation id="6348252528297699679">ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ &gt; ਪਰਦੇਦਾਰੀ ਅਤੇ ਸੁਰੱਖਿਆ &gt; ਪਰਦੇਦਾਰੀ ਕੰਟਰੋਲ &gt; ਟਿਕਾਣਾ ਪਹੁੰਚ ਵਿੱਚ ਜਾ ਕੇ ਟਿਕਾਣੇ ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">ਵਰਤੋਂਕਾਰ ਨਾਮ ਅਤੇ ਪਾਸਵਰਡ</translation>
@@ -1274,6 +1274,7 @@
 <translation id="6930597342185648547">ਬੈਕਗ੍ਰਾਊਂਡ ਬਾਰੇ</translation>
 <translation id="6939667434404433010">ਰਿਕਾਰਡਿੰਗ ਦਾ ਨਾਮ ਖੋਜੋ</translation>
 <translation id="6939766318048400022">ਕੈਫ਼ੇ</translation>
+<translation id="6942253772720771875">ਆਪਣੇ ਵਿਚਾਰ ਸਾਂਝੇ ਕਰੋ ਜਾਂ ਆਪਣੀ ਸਮੱਸਿਆ ਦਾ ਵਰਣਨ ਕਰੋ</translation>
 <translation id="6943893908656559156">ਰਿਮੋਟ ਪਛਾਣ (ਵਿਕਲਪਿਕ)</translation>
 <translation id="6953137545147683679">ਸੋਨੇ ਰੰਗਾ</translation>
 <translation id="6957231940976260713">ਸੇਵਾ ਦਾ ਨਾਮ</translation>
@@ -1598,6 +1599,7 @@
 <translation id="8395584934117017006">ਐਂਟਰਪ੍ਰਾਈਜ਼ ਵੱਲੋਂ ਇਸ <ph name="DEVICE_TYPE" /> ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="8398927464629426868">ਉਹ ਦਰ ਜਿਸ 'ਤੇ ਡੀਵਾਈਸ ਇਸ ਵੇਲੇ ਚਾਰਜ ਜਾਂ ਡਿਸਚਾਰਜ ਹੋ ਰਿਹਾ ਹੈ</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> ਸ਼ੈਲੀ ਵਿੱਚ <ph name="ART_FEATURE" /> ਦੀ ਇੱਕ ਪੇਂਟਿੰਗ</translation>
+<translation id="8409219750150841791">ਸਿਰਜਿਆ ਗਿਆ ਸਾਰਾਂਸ਼:</translation>
 <translation id="8410244574650205435">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਪਤਾ ਲਗਾਇਆ ਗਿਆ</translation>
 <translation id="8420955526972171689">ਹਾਰਡਵੇਅਰ ਸੰਬੰਧੀ ਸਮੱਸਿਆਵਾਂ ਲਈ ਟੈਸਟ ਅਤੇ ਸਮੱਸਿਆ-ਨਿਪਟਾਰਾ ਚਲਾਓ</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1644,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> ਲਈ ਹੋਰ ਕਾਰਵਾਈਆਂ</translation>
 <translation id="86356131183441916">ਹਲਕਾ ਜਾਮਨੀ</translation>
 <translation id="8647595191512746911">ਆਡੀਓ ਪ੍ਰਤੀਲਿਪੀਕਰਨ</translation>
+<translation id="8648578954147795914">ਸਿਰਜੇ ਗਏ ਨਾਮ:</translation>
 <translation id="8650852232143958317">ਆਪਣੀਆਂ Gmail ਅਤੇ Google Drive ਫ਼ਾਈਲਾਂ ਨੂੰ ਆਪਣੇ ਨਿੱਜੀ ਖਾਤੇ ਵਿੱਚ ਲਿਜਾਓ</translation>
 <translation id="8651481478098336970">ਅਵਾਜ਼ ਮਿਊਟ ਕਰੋ</translation>
 <translation id="8655295600908251630">ਚੈਨਲ</translation>
@@ -1670,7 +1673,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ਐਲਬਮ</translation>
 <translation id="8775713578693478175">ਮੋਡੈਮ APN</translation>
-<translation id="877735394245039557">ਮਾਡਲ ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">ਇਸ ਨੈੱਟਵਰਕ ਕੋਲ ਕੈਪਟਿਵ ਪੋਰਟਲ ਹੋ ਸਕਦਾ ਹੈ</translation>
 <translation id="8797082062139985406">Google AI ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਨਾਮ ਬਣਾਓ</translation>
@@ -1784,6 +1786,7 @@
 <translation id="9218016617214286986">ਜਾਣੂ APN ਦਿਖਾਓ</translation>
 <translation id="932327136139879170">ਹੋਮ</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡਾ ਮਾਈਕ ਕਨੈਕਟ ਹੈ ਜਾਂ ਆਪਣੀ Chromebook ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰ ਦੇ ਦੇਖੋ</translation>
 <translation id="945522503751344254">ਪ੍ਰਤੀਕਰਮ ਭੇਜੋ</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> ਲਈ ਕੁੰਜੀ ਮੌਜੂਦ ਨਹੀਂ ਹੈ। <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">ਸਾਰੀ ਰਿਕਾਰਡਿੰਗ ਵਿੱਚ ਅਵਾਜ਼ਾਂ ਦੀ ਤੁਲਨਾ ਕਰਦੀ ਹੈ, ਤਾਂ ਜੋ ਪ੍ਰਤੀਲਿਪੀਕਰਨ ਇਹ ਦਰਸਾ ਸਕੇ ਕਿ ਹਰੇਕ ਸਪੀਕਰ ਨੇ ਕੀ ਅਤੇ ਕਦੋਂ ਕਿਹਾ ਹੈ</translation>

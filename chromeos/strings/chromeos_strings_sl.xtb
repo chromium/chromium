@@ -1033,7 +1033,7 @@
 <translation id="590746845088109442">mačke</translation>
 <translation id="5907649332524363701">barva tipk</translation>
 <translation id="5908813850962688338">Nameščanje te posodobitve bo trajalo nekaj minut. Med prenosom posodobitve naj bo naprava priklopljena in vklopljena. Med tem postopkom se bo naprava morda sama večkrat znova zagnala in prikazan bo črn zaslon. Za dokončanje namestitve boste pozvani, da znova zaženete napravo.</translation>
-<translation id="5915794087373112615">Učitelj si bo ogledal tvoj zaslon čez <ph name="NUM_SECONDS" /> s</translation>
+<translation id="5915794087373112615">Učitelj bo videl ta zaslon čez <ph name="NUM_SECONDS" /> s</translation>
 <translation id="5916084858004523819">Onemogočeno</translation>
 <translation id="5916664084637901428">Vklopljeno</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Vaša datoteka je bila uspešno pregledana in je shranjena v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1130,7 +1130,6 @@
 <translation id="6325525973963619867">Ni uspelo</translation>
 <translation id="6327262166342360252">To zaslonsko ozadje je bilo ustvarjeno z umetno inteligenco s tem besedilom: »<ph name="PROMPT" />«.</translation>
 <translation id="6331191339300272798">Samodejna temna tema</translation>
-<translation id="6335228876613776082">Prenos modela je končan</translation>
 <translation id="6340526405444716530">Prilagoditev</translation>
 <translation id="6348252528297699679">Lokacijo lahko izklopite v Nastavitve &gt; Zasebnost in varnost &gt; Nastavitve zasebnosti &gt; Dostop do lokacije. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Uporabniško ime in geslo</translation>
@@ -1674,7 +1673,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album v Googlu Foto</translation>
 <translation id="8775713578693478175">APN modema</translation>
-<translation id="877735394245039557">Poteka prenos modela</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">To omrežje ima morda prestrezni portal.</translation>
 <translation id="8797082062139985406">Ustvarjanje imena z Googlovo umetno inteligenco</translation>

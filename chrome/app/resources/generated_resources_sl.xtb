@@ -1722,7 +1722,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2178545675770638239">Izbira gesla</translation>
 <translation id="2178585470774851578">Omogočili boste funkcije za odpravljanje napak sistema ChromeOS Flex, tako da boste nastavili sshd daemon in omogočili zagon prek pogonov USB.</translation>
 <translation id="2178614541317717477">Overitelj potrdil ni več varen</translation>
-<translation id="2179850495466791921">Trenutno imate <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> in drugo</translation>
 <translation id="2180620921879609685">Blokiranje vsebine na kateri koli strani</translation>
 <translation id="2181821976797666341">Pravilniki</translation>
 <translation id="2182058453334755893">Kopirano v odložišče</translation>
@@ -3141,7 +3140,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3167562202484086668">Izbris vseh podatkov storitve <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Izberite temo, ki ustreza vašim potrebam. Če želite spremeniti temo, zaslonsko ozadje, ohranjevalnik zaslona in drugo, se dotaknite namizja in ga pridržite.</translation>
 <translation id="3170072451822350649">Prijavo lahko tudi preskočite in <ph name="LINK_START" />brskate kot gost<ph name="LINK_END" />.</translation>
-<translation id="3171499217959105722">Trenutno imate <ph name="NUMBERED_ITEM" /> in drugo</translation>
 <translation id="3175067642577044620">Besedilo</translation>
 <translation id="3175862692832442091">Gozd</translation>
 <translation id="3176347586396987181">Uporabite »z«, če želite pritisniti in pridržati gumb miške</translation>
@@ -3953,7 +3951,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3744219658596020825">Gesla niso bila uvožena</translation>
 <translation id="3745306754941902605">Kuhinja</translation>
 <translation id="3747077776423672805">Če želite odstraniti aplikacije, pojdite v »Nastavitve« &gt; »Trgovina Google Play« &gt; »Upravljanje nastavitev Androida« &gt; »Aplikacije« ali odprite Upravitelja aplikacij. Nato se dotaknite aplikacije, ki jo želite odmestiti (morda boste morali s prstom povleči v desno ali levo, da jo boste našli). Nato se dotaknite »Odmesti« ali »Onemogoči«.</translation>
-<translation id="3747552357646973221">Trenutno imate <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> in drugo</translation>
 <translation id="3748424433435232460">Geslo za ta račun je že shranjeno v tej napravi.</translation>
 <translation id="3748706263662799310">Obvestite nas o napaki</translation>
 <translation id="3749724428455457489">Preberite več o oglasih, ki jih predlaga spletno mesto.</translation>

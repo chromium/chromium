@@ -6,6 +6,7 @@
 <translation id="1044891598689252897">Sajtovi će normalno raditi</translation>
 <translation id="1070329623210597193">Fajlovi koje ovaj sajt može da pregleda ili menja</translation>
 <translation id="1073417869336441572">Pomozite nam da poboljšamo Chrome tako što ćete nam reći zašto ste dozvolili kolačiće treće strane. <ph name="BEGIN_LINK" />Pošaljite povratne informacije<ph name="END_LINK" /></translation>
+<translation id="1074758928858737435">Možete da zatražite da vidite verziju sajtova za računare</translation>
 <translation id="1085696779717592361">Podrazumevano koristite Chrome</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1181037720776840403">Ukloni</translation>
@@ -32,6 +33,7 @@
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sajt}one{<ph name="SITE_COUNT" /> sajt}few{<ph name="SITE_COUNT" /> sajta}other{<ph name="SITE_COUNT" /> sajtova}}</translation>
 <translation id="1500473259453106018">Sakrij sniženja na karticama</translation>
 <translation id="1510341833810331442">Sajtovima nije dozvoljeno da čuvaju podatke na uređaju</translation>
+<translation id="1538031354170655462">Sajtovi obično koriste komunikaciju kratkog dometa (NFC) za rad sa oznakama ili uređajima u blizini, poput skeniranja oznaka ili beskontaktnog plaćanja</translation>
 <translation id="1547123415014299762">Kolačići trećih strana su dozvoljeni</translation>
 <translation id="1593426485665524382">Nove radnje su dostupne u vrhu ekrana</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -115,6 +117,7 @@
 <translation id="2677748264148917807">Zatvori</translation>
 <translation id="2682367912565197520">Izbriši sačuvani nivo zumiranja</translation>
 <translation id="2683434792633810741">Želite da izbrišete i resetujete?</translation>
+<translation id="2685514716378236873">Nije dozvoljeno</translation>
 <translation id="2713106313042589954">Isključi kameru</translation>
 <translation id="2717722538473713889">Imejl adrese</translation>
 <translation id="2726059656860238749">Pokrenite Chrome sa fokusom na omniboksu, čime se smanjuje vreme pokretanja na uređajima nižih performansi.</translation>
@@ -211,12 +214,14 @@
 <translation id="3955193568934677022">Dozvoli sajtovima da puštaju zaštićeni sadržaj (preporučeno)</translation>
 <translation id="3965467402665811906">Sajtovi mogu da zatraže da koriste informacije koje su sačuvali o vama</translation>
 <translation id="3967822245660637423">Preuzimanje je dovršeno</translation>
+<translation id="3981465354637804599">Sajtovi obično prikazuju oglase da bi mogli da pružaju sadržaj ili usluge bez naknade. Ali, ima i sajtova koji prikazuju oglase koji ometaju aktivnosti ili obmanjujuće oglase.</translation>
 <translation id="3987993985790029246">Kopiraj link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="3992308058851451478"><ph name="SITE" /> može da koristi vaše podatke dok pregledate</translation>
 <translation id="3992684624889376114">O ovoj stranici</translation>
 <translation id="4002066346123236978">Naslov</translation>
 <translation id="4046123991198612571">Sledeća pesma</translation>
+<translation id="4077310749977440510">Sajtovi obično čitaju privremenu memoriju za potrebe funkcija poput zadržavanja formatiranja teksta koji ste kopirali</translation>
 <translation id="4149890623864272035">Želite li stvarno da izbrišete sve lokalne podatke, uključujući kolačiće, i resetujete sve dozvole za ovaj veb-sajt?</translation>
 <translation id="4149994727733219643">Pojednostavljen prikaz veb-stranica</translation>
 <translation id="4151930093518524179">Podrazumevani zum</translation>
@@ -224,6 +229,7 @@
 <translation id="4169549551965910670">Povezano sa USB uređajem</translation>
 <translation id="4194328954146351878">Pre nego što dozvolite sajtovima da vide i menjaju informacije na NFC uređajima prikazuje se upit (preporučeno)</translation>
 <translation id="4200726100658658164">Otvorite podešavanja lokacije</translation>
+<translation id="421742575134139848">Sajtovi mogu da puštaju zvuk da biste čuli muziku, video snimke i druge medije</translation>
 <translation id="4226663524361240545">Uređaj će vibrirati kada primate obaveštenja</translation>
 <translation id="4259722352634471385">Navigacija je blokirana: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Kada napustite sajt, on obično nastavlja sinhronizaciju da bi završio zadatke poput otpremanja slika ili slanja poruke ćaskanja</translation>
@@ -247,6 +253,7 @@
 <translation id="4566417217121906555">Isključi zvuk mikrofona</translation>
 <translation id="4570913071927164677">Detalji</translation>
 <translation id="4598549027014564149">Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na svim sajtovima, čak i na srodnim sajtovima. Aktivnosti pregledanja se ne koriste za stvari kao što je personalizovanje oglasa. Funkcije na nekim sajtovima mogu da ne rade.</translation>
+<translation id="461356340001513807">Omogućava vam da se prijavljujete na veb-sajtove pomoću naloga koji imate u usluzi za identitet</translation>
 <translation id="4619615317237390068">Kartice sa drugih uređaja</translation>
 <translation id="4644713492825682049">Izbriši i resetuj</translation>
 <translation id="4645575059429386691">Ovim upravlja tvoj roditelj</translation>
@@ -430,6 +437,7 @@
 <translation id="7000754031042624318">Isključeno je u Android podešavanjima</translation>
 <translation id="702275896380648118">Ovaj sajt određuje stvari koje vam se sviđaju, a zatim predlaže oglase za druge sajtove. Ovaj sajt takođe prima podatke o vašim temama oglasa iz Chrome-a da bi vam prikazivao relevantnije oglase.</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
+<translation id="7055552182600664515">Da bi puštali sadržaj zaštićen autorskim pravima, sajtovi će možda morati da koriste uslugu zaštite sadržaja. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Izabrano: 1}one{Izabrano: #}few{Izabrano: #}other{Izabrano: #}}</translation>
 <translation id="708014373017851679">Aplikacija <ph name="APP_NAME" /> je zastarela. Ažurirajte aplikaciju.</translation>
 <translation id="7087918508125750058">Izabrali ste <ph name="ITEM_COUNT" />. Opcije su dostupne pri vrhu ekrana</translation>

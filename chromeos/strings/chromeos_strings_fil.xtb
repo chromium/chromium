@@ -503,6 +503,7 @@
 <translation id="3373141842870501561">Wallpaper na paggalaw ng mundo</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> na background na may titik <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Eksklusibo</translation>
+<translation id="3395147534045164351">I-toggle ang lokasyon ng snap</translation>
 <translation id="3404249063913988450">I-enable ang screen saver</translation>
 <translation id="3413935475507503304">Para magpatuloy sa update, i-click ang Susunod.</translation>
 <translation id="3428551088151258685">outdoor</translation>
@@ -652,6 +653,7 @@
 <translation id="4113067922640381334">May access ka na ngayon sa mga bagong <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />wallpaper<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Dark mode</translation>
 <translation id="4126551873361000548">Bumalik nang 10 segundo</translation>
+<translation id="4128271910628504223">Maglagay ng prompt tulad ng "gumuhit ng mahamog na gubat"</translation>
 <translation id="4130035430755296270">Mag-hover lang para sa higit pang opsyon sa layout</translation>
 <translation id="4130750466177569591">Sumasang-ayon ako</translation>
 <translation id="4131410914670010031">Itim at puti</translation>
@@ -859,6 +861,7 @@
 <translation id="5050042263972837708">Pangalan ng grupo</translation>
 <translation id="5051044138948155788">Ito lang ang page. Dadalhin ka nito sa screen ng pagsisimula ng pag-scan.</translation>
 <translation id="5053233795640754917">I-pause</translation>
+<translation id="5056587122125565772">Gumawa ng larawan</translation>
 <translation id="5078711626843651677">Pansamantalang sino-store sa device ang mga voice model hanggang sa makumpleto ang paglalagay ng label ng speaker. Puwede mo itong i-off sa anumang oras sa Mga Setting.</translation>
 <translation id="5078983345702708852">futuristic</translation>
 <translation id="5087864757604726239">bumalik</translation>
@@ -1130,7 +1133,6 @@
 <translation id="6325525973963619867">Nabigo</translation>
 <translation id="6327262166342360252">Ginawa ang wallpaper na ito sa pamamagitan ng AI gamit ang sumusunod na text: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">Awtomatikong madilim na tema</translation>
-<translation id="6335228876613776082">Tapos nang i-download ang modelo</translation>
 <translation id="6340526405444716530">Pag-personalize</translation>
 <translation id="6348252528297699679">Puwede mong i-off ang lokasyon sa Mga Setting &gt; Privacy at seguridad &gt; Mga kontrol sa privacy &gt; Access sa lokasyon. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Username at password</translation>
@@ -1674,7 +1676,6 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album sa Google Photos</translation>
 <translation id="8775713578693478175">Modem APN</translation>
-<translation id="877735394245039557">Kasalukuyang dina-download ang modelo</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Posibleng may captive portal ang network na ito</translation>
 <translation id="8797082062139985406">Gumawa ng pangalan gamit ang Google AI</translation>

@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">Je wachtwoord wordt opgeslagen in Google Wachtwoordmanager voor <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Nieuw tabblad openen in Chrome</translation>
 <translation id="1166460004393506534">Browsegegevens in Chrome verwijderen</translation>
+<translation id="1171255741903316750">Zet 'Incognitotabbladen vergrendelen als je Chrome sluit' aan</translation>
 <translation id="1179527450541388808">Open Chrome sneller via het dock op het startscherm van je iPad.</translation>
 <translation id="1180362651362502943">Blijf de Chrome-gegevens in je Google-account gebruiken.</translation>
 <translation id="1200396280085622191">Gebruik Chrome als je op links in berichten, documenten en andere apps tikt.</translation>
@@ -45,6 +46,7 @@ Aandachtspunten:
 <translation id="1917964099031477364">Dit account en niet-opgeslagen gegevens worden verwijderd uit Chrome en andere Google-apps op dit apparaat.</translation>
 <translation id="1919130412786645364">Inloggen bij Chrome toestaan</translation>
 <translation id="1965935827552890526">Maak af wat je aan het doen was in het andere geopende Chrome-venster.</translation>
+<translation id="1973910962341002002">Zet Chrome aan in de instellingen van <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /></translation>
 <translation id="1984705450038014246">Je Chrome-gegevens synchroniseren</translation>
 <translation id="1987779152850321833">Voer de voorgestelde acties hieronder uit om het maximale uit Chrome te halen.</translation>
 <translation id="2055826352861631739">Chrome standaard gebruiken op de iPad</translation>
@@ -96,10 +98,13 @@ Wacht een paar minuten voordat je uitlogt. Als je nu uitlogt, worden deze gegeve
 <translation id="3282568296779691940">Inloggen bij Chrome</translation>
 <translation id="3303503998967553377">Chrome-acties op iOS gebruiken</translation>
 <translation id="3348862487678490430">Item toevoegen aan leeslijst in Chrome</translation>
+<translation id="3357827134511189025">Log in met je opgeslagen wachtwoorden en toegangssleutels vanuit elke app via Chrome voor automatisch invullen</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Dit gebeurt als Chrome {THRESHOLD} minuut niet wordt gebruikt}other{Dit gebeurt als Chrome {THRESHOLD} minuten niet wordt gebruikt}}</translation>
 <translation id="3367797402528056312">Chrome instellen afronden</translation>
 <translation id="3371064404604898522">Chrome instellen als standaardbrowser</translation>
 <translation id="3399930248910934354">Chrome-instellingen openen</translation>
+<translation id="3440830787838130530">Deel makkelijk en beveiligd een kopie van een wachtwoord met je gezinsgroep in Google Wachtwoordmanager</translation>
+<translation id="3460369101684070455">Kies Chrome voor automatisch invullen om je opgeslagen wachtwoorden makkelijk te gebruiken in je andere apps</translation>
 <translation id="3472587960215700950">Chrome gebruikt Google Maps om je routes en lokale informatie te geven voor gevonden adressen.</translation>
 <translation id="3503014945441706099">Gebruik ook de uitgebreide versie van Safe Browsing voor dit Chrome-profiel</translation>
 <translation id="3522659714780527202">Zet de synchronisatie aan om je tabbladen te bekijken vanaf elk apparaat waarop je Chrome gebruikt</translation>
@@ -181,6 +186,7 @@ Wacht een paar minuten voordat je van account wisselt. Als je nu van account wis
 <translation id="5998675059699164418">Je organisatie vereist dat je inlogt om Chrome te gebruiken.</translation>
 <translation id="6021312115739110405">Een aangepaste feed die Google voor je heeft samengesteld. Inclusief nieuws, sport en weer.</translation>
 <translation id="6022659036123304283">Personaliseer Chrome voor jou</translation>
+<translation id="6132075343662013154">Chrome biedt aan om je wachtwoord op te slaan</translation>
 <translation id="6132149203299792222">Log in met je Google-account om onder andere je wachtwoorden en bookmarks te synchroniseren.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Zoeken in Chrome</translation>
@@ -228,6 +234,7 @@ Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer 
 <translation id="7061455974939528301">Houd je vinger op het Chrome-icoon en klik op Startscherm bewerken</translation>
 <translation id="7065813315247345131">Chrome naar het dock verplaatsen</translation>
 <translation id="7124339256045485976">Houd Chrome up-to-date</translation>
+<translation id="7145599899567697473">Wachtwoorden opslaan en automatisch invullen in Chrome</translation>
 <translation id="7161390184744336561">Google Chrome is verouderd</translation>
 <translation id="7165736900384873061">QR-scanner van Google Chrome gebruiken</translation>
 <translation id="7175129790242719365">Chrome-tip: Inloggen bij Chrome</translation>
@@ -261,6 +268,7 @@ Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer 
 <translation id="7693590760643069321">Je kunt Chrome nu gebruiken als je op links in berichten, documenten en andere apps tikt.</translation>
 <translation id="7698568245838009292">Chrome vraagt toegang tot de camera</translation>
 <translation id="7707877166818730835">Mijn nieuwste tabblad openen in Chrome</translation>
+<translation id="7747746207470479571">Krijg makkelijk toegang tot je wachtwoorden en toegangssleutels met Chrome voor automatisch invullen</translation>
 <translation id="776305366874821582">Open Chrome sneller via het dock op het startscherm van je iPhone.</translation>
 <translation id="7780154209050837198">Log in bij Chrome met je Google-account om het maximale uit Chrome te halen.</translation>
 <translation id="7787205077729386167">Open de Chrome-instellingen in iOS, tik op Standaard browser-app en selecteer Chrome.</translation>
@@ -281,6 +289,7 @@ Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer 
 <translation id="8136856065410661948">Hiermee worden afspraken gemaakt in je Apple-agenda vanuit Chrome en Google Lens.</translation>
 <translation id="8154120522323162874">Haal het maximale uit Chrome door verder te gaan met het instellen van je browser.</translation>
 <translation id="8160472928944011082">Chrome kan niet updaten</translation>
+<translation id="8245080522851805544">Houd je browsen privé met apparaatverificatie als je Chrome sluit</translation>
 <translation id="8248887045858762645">Chrome-tip</translation>
 <translation id="8265730590513812063">Het Chrome-menu openen</translation>
 <translation id="8317674518145175158">Betaalmethoden en adressen worden niet versleuteld. De browsegeschiedenis in Chrome wordt niet gesynchroniseerd.
@@ -324,5 +333,6 @@ Je gegevens zijn op <ph name="TIME" /> versleuteld met je wachtwoordzin. Geef de
 <translation id="9181628561061032322">Opent de recente Chrome-tabbladen.</translation>
 <translation id="948597495737267756">Opent de pagina met je Chrome-geschiedenis.</translation>
 <translation id="97300214378190234">Gebruik Chrome als je op links in andere apps tikt.</translation>
+<translation id="997929539742564806">Log snel in bij apps en sites door je wachtwoorden en toegangssleutels automatisch in te vullen vanuit Chrome</translation>
 <translation id="998677222109959694">Chrome-instellingen beheren</translation>
 </translationbundle>

@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">לטעינת הדף מאוחר יותר</translation>
 <translation id="1010225406377140704">אפשר לפנות אל השולח/ת ולבקש קישור חדש</translation>
 <translation id="1011206368273183593">הקבצים בהכנה…</translation>
+<translation id="1012264210825687872">‏אחרי בדיקת ההזמנה, צריך להיכנס לחשבון <ph name="BNPL_ISSUER_NAME" /> או ליצור חשבון חדש. החשבון הזה יקושר באופן אוטומטי ל-Google Pay.</translation>
 <translation id="1014509239502131234">מתבצע ביטול של התוצאה</translation>
 <translation id="1015730422737071372">ספק פרטים נוספים</translation>
 <translation id="1019413721762100891">כבוי</translation>
@@ -660,6 +661,7 @@
 <translation id="2145193671493396738">חדשות כלכלה</translation>
 <translation id="214556005048008348">ביטול תשלום</translation>
 <translation id="2147117373852943630">כלי נגינה</translation>
+<translation id="2147254250314124496">התקבלה בקשה מ-<ph name="EMBEDDED_URL" /> להשתמש במידע שנשמר עליך</translation>
 <translation id="2148613324460538318">הוספת כרטיס</translation>
 <translation id="2148716181193084225">היום</translation>
 <translation id="2149968176347646218">החיבור אינו מאובטח</translation>
@@ -691,6 +693,7 @@
 <translation id="2187317261103489799">זהה (ברירת מחדל)</translation>
 <translation id="2188375229972301266">ניקובים מרובים בחלק התחתון</translation>
 <translation id="2194856509914051091">מה כדאי לקחת בחשבון</translation>
+<translation id="2198071643181968308">מידע נוסף על <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="2200678913752027654">‏כפתור 'לא אהבתי', לוחצים על Enter כדי לפתוח טופס לשליחה של משוב מפורט על הסיבה לכך שלא אהבת את ההצעה הזו</translation>
 <translation id="2202627062836089804">גב הכרטיס</translation>
 <translation id="2204482073374652408">העדכון הסתיים.</translation>
@@ -2322,6 +2325,7 @@ Del</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">‏נדרשת ל-Chrome גישה ל<ph name="PERMISSION" /> של המכשיר</translation>
 <translation id="510644072453496781">Cardboard (End)</translation>
+<translation id="5106648964679263509">מספר הכרטיס הווירטואלי ל-<ph name="BNPL_ISSUER_NAME" /> הוזן</translation>
 <translation id="5108881358339761672">האתר לא מאובטח</translation>
 <translation id="5109892411553231226">ניהול של אמצעי התשלום</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2517,6 +2521,7 @@ Del</translation>
             <ph name="LIST_ITEM" />מידע שהוזן בטפסים
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">בסדר הפוך עם הפנים כלפי מעלה</translation>
+<translation id="5445340838622821110">כשמשלמים בתשלומים, מוזן מספר כרטיס וירטואלי חד-פעמי. המספר הזה רלוונטי רק לרכישה הזו. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">מתן הרשאה לאתר <ph name="SITE" /> להשתמש במידע עליך שנשמר בו</translation>
 <translation id="5452270690849572955">לא ניתן למצוא את הדף של <ph name="HOST_NAME" /></translation>
 <translation id="5452923259299906094">‏תשלום באמצעות ארנק אלקטרוני ו-Pix</translation>
@@ -3337,6 +3342,7 @@ Del</translation>
 <translation id="6917795328362592458">הסיסמה שבה השתמשת עכשיו אותרה בפרצה באבטחת מידע. כדי להגן על החשבונות שלך, לפי מנהל הסיסמאות, מומלץ לבדוק את הסיסמאות השמורות שלך.</translation>
 <translation id="6917873303492266709">‏כדי לשתף, להצטרף ולשתף פעולה בקבוצות של כרטיסיות, צריך לפתוח את ההגדרות ולהפעיל את האפשרות 'התרת כניסה אל Chrome'</translation>
 <translation id="6921197121276419421">יש הרשאה להתקין אפליקציות אינטרנט</translation>
+<translation id="69238565902785824">כדי לשלם מהר יותר עם <ph name="BNPL_ISSUER_NAME" />, כדאי להשאיר את החשבון מקושר. אבל אפשר גם לבטל את הקישור בכתובת <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /></translation>
 <translation id="6924013822850225188">אפשר לבחור אם הטבות הכרטיס יוצגו בשלב התשלום (בכפוף לתנאים של הבנק)</translation>
 <translation id="6925267999184670015">‏13x19 אינץ' (B+‎ – צפון אמריקה)</translation>
 <translation id="6926216138694948720">אומנות גוף</translation>
@@ -3402,6 +3408,7 @@ Del</translation>
 <translation id="701757816833614688">לימודי עיצוב ואומנות חזותית</translation>
 <translation id="702275896380648118">‏האתר הזה מזהה אילו דברים אהבת ולאחר מכן מציע מודעות לאתרים אחרים. האתר הזה גם מקבל מידע על נושאי המודעות שלך מ-Chrome כדי להציג לך מודעות רלוונטיות יותר.</translation>
 <translation id="7023162328967545559">אזהרה מהאדמין</translation>
+<translation id="7023765275461720661">לקשר את החשבון ולשלם עם <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">סיסמאות</translation>
 <translation id="7030164307377592766">לשנות את ההגדרות למילוי אמצעי התשלום</translation>
 <translation id="7031646650991750659">‏אילו אפליקציות התקנת מ-Google Play.</translation>
@@ -3624,6 +3631,7 @@ Del</translation>
 <translation id="741204030948306876">כן, אני רוצה</translation>
 <translation id="7416351320495623771">ניהול סיסמאות…</translation>
 <translation id="7416898721136759658">מענקים, מלגות לימוד וסיוע כספי</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">תכנות</translation>
 <translation id="7419091773564635591">מחשבים ואלקטרוניקה</translation>
 <translation id="7419106976560586862">נתיב פרופיל</translation>
@@ -3670,6 +3678,7 @@ Del</translation>
 <translation id="7485085230273446323">עסקים ותעשייה</translation>
 <translation id="7485870689360869515">לא נמצאו נתונים.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311">‫<ph name="BNPL_ISSUER_NAME" /> תבדוק את הזכאות שלך (זה לא משפיע על דירוג האשראי שלך). אם הבקשה תאושר, <ph name="BNPL_ISSUER_NAME" /> תציע לך תוכניות תשלומים לבחירה כדי להשלים את הרכישה.</translation>
 <translation id="7489392576326061356">שמפו ומרככי שיער</translation>
 <translation id="7495528107193238112">התוכן הזה חסום. יש לפנות אל הבעלים של האתר כדי לפתור את הבעיה.</translation>
 <translation id="749865518782565832">אינסטלציה</translation>

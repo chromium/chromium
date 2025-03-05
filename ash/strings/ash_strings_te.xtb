@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">ఫీడ్‌బ్యాక్‌ను రిపోర్ట్ చేయండి</translation>
 <translation id="1059120031266247284">మీతో షేర్ చేసినవి</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176">తీసివేయండి బటన్‌తో <ph name="ITEM_LABEL" /></translation>
 <translation id="1062407476771304334">భర్తీ చేయి</translation>
 <translation id="1073899992769346247">బ్యాటరీని రీప్లేస్ లేదా రీఛార్జ్ చేయండి</translation>
 <translation id="1081015718268701546">ప్రస్తుతం Linux యాప్‌లు సపోర్ట్ చేయవు. ఇతర యాప్‌లు సేవ్ చేయబడతాయి.</translation>
@@ -323,6 +324,7 @@
 <translation id="2083190527011054446">శుభరాత్రి <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">ఎమోజి పికర్‌ను తెరవండి</translation>
 <translation id="2088116547584365419">గేమ్‌లు</translation>
+<translation id="2092517835716911174">'చదవడంలో సహాయం', 'రాయడంలో సహాయం పొందండి', ఫీచర్‌ను ఉపయోగించడానికి మీకు కనీసం 18 సంవత్సరాలు నిండి ఉండాలి.</translation>
 <translation id="209965399369889474">నెట్‌వర్క్‌కు కనెక్ట్ కాలేదు</translation>
 <translation id="2107581415810719320">వేరే బటన్ <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">మీ USB-C కేబుల్ Thunderboltను సపోర్ట్ చేయదు. పరికర పనితీరు పరిమితంగా ఉండవచ్చు.</translation>
@@ -1229,6 +1231,7 @@
 <translation id="5043679421800073804">షెల్ఫ్‌లో చివరి చిహ్నాన్ని క్లిక్ లేదా ట్యాప్ చేయండి</translation>
 <translation id="504465286040788597">మునుపటి పేరా</translation>
 <translation id="5045550434625856497">సరికాని పాస్‌వర్డ్</translation>
+<translation id="5056587122125565772">ఇమేజ్‌ను క్రియేట్ చేయండి</translation>
 <translation id="5058794129231928255">Google డాక్‌ను క్రియేట్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">మ్యూట్‌లో ఉన్నప్పుడు మీరు మాట్లాడితే, మీకు నోటిఫికేషన్ అందుతుంది. ఆడియో మీ పరికరం నుండి ఎప్పుడూ బయటకు వెళ్లదు.</translation>
@@ -1277,6 +1280,7 @@
 <translation id="5222676887888702881">సైన్ ఔట్</translation>
 <translation id="5228195526683428788">స్ప్లిట్ స్క్రీన్ డివైడర్</translation>
 <translation id="5229343007215035173">గోప్యతా స్క్రీన్‌ను ఆన్/ఆఫ్ చేయండి</translation>
+<translation id="5229860525743792999">సూచించిన గ్రూప్ నుండి <ph name="ITEM_LABEL" />‌ను తీసివేయండి</translation>
 <translation id="5230516054153933099">విండో</translation>
 <translation id="5234764350956374838">తొలగించండి</translation>
 <translation id="523505283826916779">యాక్సెస్‌ సెట్టింగ్‌లు</translation>
@@ -1759,6 +1763,7 @@
 <translation id="6757237461819837179">మీడియా ఏదీ ప్లే కావడం లేదు</translation>
 <translation id="6760438044935091345">గేమ్ డ్యాష్‌బోర్డ్</translation>
 <translation id="6768043681523654438">స్టోరేజ్</translation>
+<translation id="6769195697113506406">ఇమేజ్ ఇన్‌సర్ట్ చేయబడింది</translation>
 <translation id="6777216307882431711">కనెక్ట్ చేసిన USB-C పరికరాలకు పవర్ అందిస్తోంది</translation>
 <translation id="6781002679438061620">డెస్క్ 9</translation>
 <translation id="6782182743534150858">డెస్క్ 13</translation>
@@ -1985,6 +1990,7 @@
 <translation id="7571361473021531288">బ్యాటరీ <ph name="BATTERY_PERCENTAGE" />% | బ్యాటరీ ఖాళీ కావడానికి <ph name="TIME" /> సమయం మిగిలి ఉంది</translation>
 <translation id="7573585051776738856">కుడి వైపున డాక్ చేసి ఉన్న విండోను యాక్టివేట్ చేయండి.</translation>
 <translation id="7579778809502851308">స్క్రీన్‌ను క్యాప్చర్ చేయి</translation>
+<translation id="7588317312481506627">క్లిప్‌బోర్డ్‌కు కాపీ అయింది.</translation>
 <translation id="7593891976182323525">Search లేదా Shift</translation>
 <translation id="7598054670902114203">CPU వినియోగానికి సంబంధించిన స్నాప్‌షాట్, <ph name="CPU_USEAGE" />%. ఉష్ణోగ్రత <ph name="TEMPERATURE" /> డిగ్రీల సెల్సియస్, ప్రస్తుత వేగం: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="7599378375976398913">ఎంచుకున్న ఫలితాన్ని ఇన్సర్ట్ చేస్తోంది</translation>
@@ -2179,6 +2185,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> కోసం సమాచార డైలాగ్‌ను తెరువు</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" />ని ఉపయోగిస్తోంది</translation>
 <translation id="8168435359814927499">కంటెంట్</translation>
+<translation id="81817143961839203">ఇమేజ్‌ను ఇన్‌సర్ట్ చేయడం విఫలమైంది</translation>
 <translation id="8185090165691050712">మెనూను ఆన్/ఆఫ్ చేసి, లాక్ మోడ్ సైజ్ మార్చండి</translation>
 <translation id="8192727139462702395">మీరు బ్లూటూత్‌ను ఆఫ్ చేసినప్పుడు, ఈ వెలుపలి పరికరాలు మీ <ph name="DEVICE_TYPE" /> నుండి డిస్‌కనెక్ట్ చేయబడతాయి:</translation>
 <translation id="8198456017687137612">ప్రసారం చేసే ట్యాబ్</translation>
@@ -2257,6 +2264,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_NAME" />ను <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">రద్దు చేయడానికి Alt+Search లేదా Shiftను నొక్కండి.</translation>
 <translation id="8480418399907765580">టూల్‌బార్‌ను చూపించు</translation>
+<translation id="8487660088084188539">మీరు ఈ ఫీచర్‌లను ఆన్ చేసినప్పుడు, ఇన్‌పుట్ టెక్స్ట్, డాక్యుమెంట్ కంటెంట్, అలాగే వెబ్ పేజీ URLలు Google సర్వర్‌లకు పంపబడవచ్చు. ఈ సమాచారం <ph name="LINK_TO_SERVICE_TERMS" />‌కు లోబడి, టెక్స్ట్ సూచనలను, సారాంశాలను జెనరేట్ చేయడానికి, ప్రశ్నలకు సమాధానమివ్వడానికి, ప్రోడక్ట్‌ను మెరుగుపరచడానికి ఉపయోగించబడుతుంది. అందులో వ్యక్తిగతమైన వాటిని, సున్నితమైన, లేదా గోప్యమైన అంశాలను చేర్చకండి.</translation>
 <translation id="8487699605742506766">హాట్‌స్పాట్</translation>
 <translation id="8491237443345908933">కొత్త ట్యాబ్‌లో లింక్‌ను తెరవండి</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" />ను సపోర్ట్ చేయదు. <ph name="FALLBACK_RESOLUTION" />కు రిజల్యూషన్ మార్చబడింది. మార్పులను అలాగే ఉంచడానికి 'ధృవీకరించు'ను క్లిక్ చేయండి. మునుపటి సెట్టింగ్‌లు <ph name="TIMEOUT_SECONDS" />లో రీస్టోర్ చేయబడతాయి.</translation>
@@ -2326,6 +2334,7 @@
 <translation id="8725066075913043281">మళ్ళీ ప్రయత్నించండి</translation>
 <translation id="8725214031272624704">అందుబాటులో ఉన్న ఇన్‌పుట్ విధానాల లిస్ట్‌ను చూపండి</translation>
 <translation id="8730621377337864115">పూర్తయింది</translation>
+<translation id="8731188831050207755"><ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది.</translation>
 <translation id="8731487213223706745"><ph name="DAYS_ELAPSED" /><ph name="END_TIME" />‌కు ముగుస్తుంది</translation>
 <translation id="8734991477317290293">మీ కీస్ట్రోక్‌లను దొంగిలించడానికి ఇది ప్రయత్నిస్తుండవచ్చు</translation>
 <translation id="8735678380411481005">కీబోర్డ్ బ్యాక్‌లైట్ రంగు</translation>

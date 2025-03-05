@@ -459,6 +459,7 @@
 <translation id="1303101771013849280">Lisää HTML-tiedoston kirjanmerkkeihin</translation>
 <translation id="1303671224831497365">Bluetooth-laitteita ei löytynyt</translation>
 <translation id="130491383855577612">Linux-sovellukset ja ‑tiedostot korvattu</translation>
+<translation id="1306373239538745517">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Poista 1 laajennus ja sen tälle laitteelle tallentama data}other{Poista {ACCOUNT_EXTENSIONS_COUNT} laajennusta ja niiden tälle laitteelle tallentama data}}</translation>
 <translation id="1306518237408758433">Avaa <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="1306606229401759371">Muuta asetuksia</translation>
 <translation id="1307165550267142340">PIN-koodisi luotiin</translation>
@@ -1215,6 +1216,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1826192255355608658">Synkronoi muun muassa Chrome-selaimen kirjanmerkit, salasanat ja historia</translation>
 <translation id="1826516787628120939">Tarkistetaan</translation>
 <translation id="1826657447823925402">Käänteinen vieritys pois käytöstä</translation>
+<translation id="1827416268933303617"><ph name="COLOR_NAME" /> väri</translation>
 <translation id="1827504459960247692">Hotspotin nimi</translation>
 <translation id="1828378091493947763">Laite ei tue tätä laajennusta.</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{Avaa (&amp;O) kaikki}=1{Avaa (&amp;O) kirjanmerkki}other{Avaa (&amp;O) kaikki ({COUNT})}}</translation>
@@ -1716,7 +1718,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2178545675770638239">Valitse salasana</translation>
 <translation id="2178585470774851578">Olet ottamassa käyttöön ChromeOS Flexin viankorjausominaisuudet, jotka määrittävät sshd daemon -toiminnon ja ottavat käyttöön USB-muistitikulta käynnistyksen.</translation>
 <translation id="2178614541317717477">Myöntäjäkompromissi</translation>
-<translation id="2179850495466791921">Profiili sisältää tällä hetkellä nämä: <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> ja muita</translation>
 <translation id="2180620921879609685">Estää sisällön millä tahansa sivulla</translation>
 <translation id="2181821976797666341">Käytännöt</translation>
 <translation id="2182058453334755893">Kopioitu leikepöydälle</translation>
@@ -3135,7 +3136,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3167562202484086668">Poista kaikki data: <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Valitse tarpeisiisi sopiva teema. Vaihda teemaa, taustakuvaa, näytönsäästäjää ja muuta koskettamalla työpöytää pitkään.</translation>
 <translation id="3170072451822350649">Voit myös ohittaa sisäänkirjautumisen ja <ph name="LINK_START" />selata vierailijana<ph name="LINK_END" />.</translation>
-<translation id="3171499217959105722">Profiili sisältää tällä hetkellä nämä: <ph name="NUMBERED_ITEM" /> ja muita</translation>
 <translation id="3175067642577044620">Tekstiosa</translation>
 <translation id="3175862692832442091">Metsä</translation>
 <translation id="3176347586396987181">Paina hiiren painiketta ja pidä sitä painettuna painamalla "z"</translation>
@@ -3947,7 +3947,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3744219658596020825">Salasanoja ei tuotu</translation>
 <translation id="3745306754941902605">Keittiö</translation>
 <translation id="3747077776423672805">Jos haluat poistaa sovelluksia, valitse Asetukset &gt; Google Play Kauppa &gt; Hallitse Android-asetuksia &gt; Sovellukset tai Sovellusten hallinta. Valitse sitten sovellus, jonka haluat poistaa (jos sovellusta ei näy, pyyhkäise oikealle tai vasemmalle). Valitse sitten Poista tai Poista käytöstä.</translation>
-<translation id="3747552357646973221">Profiili sisältää tällä hetkellä nämä: <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> ja muita</translation>
 <translation id="3748424433435232460">Tilin salasana on jo tallennettu tälle laitteelle</translation>
 <translation id="3748706263662799310">Ilmoita virheestä</translation>
 <translation id="3749724428455457489">Lue lisää sivustojen ehdottamista mainoksista</translation>
@@ -4081,6 +4080,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Laajennus on hyväksytty}other{# laajennusta on hyväksytty}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linuxin käyttöön suositellaan vähintään <ph name="INSTALL_SIZE" /> vapaata tilaa.</translation>
+<translation id="3824203811509979971">Luo yhteenveto sisällöstä tai kysy kysymyksiä</translation>
 <translation id="3824621460022590830">Laitteen rekisteröintitunnus on virheellinen. Ota yhteyttä laitteen omistajaan tai ylläpitäjään. Virhekoodi: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Kirjaudu sisään nähdäksesi välilehdet muilta laitteilta</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Muista valintani tälle tiedostotyypille: <ph name="FILE_TYPES" />}other{Muista valintani näille tiedostotyypeille: <ph name="FILE_TYPES" />}}</translation>
@@ -4264,6 +4264,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="3948985214866944547">Useimmat ihmiset estävät tarkan sijainnin jakamisen tälle sivustolle</translation>
 <translation id="394984172568887996">Tuotu IE:stä</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> tehdäksesi tiedostojen lataamisesta turvallisempaa</translation>
+<translation id="3950479158728806902">Luo avainkoodi automaattisesti, jotta voit kirjautua sisään nopeammin</translation>
 <translation id="3950820424414687140">Kirjaudu sisään</translation>
 <translation id="3950841222883198950">Puhekirjoitus</translation>
 <translation id="3953834000574892725">Omat tilit</translation>
@@ -5192,6 +5193,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4624054169152573743">Väriteema</translation>
 <translation id="4625078469366263107">Ota sovellus käyttöön</translation>
 <translation id="4625905218692741757">Harmaa oletusväri</translation>
+<translation id="4627107755957573804">Salli sivustojen ja sovellusten päivittää nykyiset tilit käyttämään avainkoodeja</translation>
 <translation id="4627442949885028695">Jatka siitä, mihin jäit toisella laitteella</translation>
 <translation id="4628762811416793313">Linux-säilön määritys ei onnistunut. Yritä uudelleen.</translation>
 <translation id="4629521233550547305">Avaa profiili: <ph name="PROFILE_NAME" /></translation>
@@ -5775,6 +5777,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5053233576223592551">Lisää käyttäjätunnus</translation>
 <translation id="505347685865235222">Nimetön ryhmä – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{Vaihda se nyt}other{Vaihda ne nyt}}</translation>
+<translation id="5056587122125565772">Luo kuva</translation>
 <translation id="5056950756634735043">Muodostetaan yhteyttä säilöön</translation>
 <translation id="5057110919553308744">Kun klikkaat laajennusta</translation>
 <translation id="5057127674016624293">Skannaus kestää odotettua kauemmin</translation>
@@ -5885,6 +5888,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="512642543295077915">haku + askelpalautin</translation>
 <translation id="5126611267288187364">Näytä muutokset</translation>
 <translation id="5127620150973591153">Suojatun yhteyden tunnus: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">Luo yhteenveto sisällöstä tai kysy kysymyksiä.</translation>
 <translation id="5127881134400491887">hallinnoida verkkoyhteyksiä</translation>
 <translation id="5127934926273826089">Kukat</translation>
 <translation id="5127986747308934633">Järjestelmänvalvoja ohjaa laitettasi</translation>
@@ -6729,6 +6733,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5749214722697335450">Lähetä käyttö- ja diagnostiikkadataa. Auta parantamaan Android-käyttökokemusta lähettämällä diagnostiikkadataa sekä laitteen ja sovellusten käyttödataa automaattisesti Googlelle. Datan avulla parannetaan esimerkiksi järjestelmän ja sovellusten vakautta. Koostetusta datasta on hyötyä myös Googlen sovelluksille ja kumppaneille, esim. Android-kehittäjille. Jos olet laittanut päälle muun verkko- ja sovellustoiminnan asetuksen, tätä dataa voidaan tallentaa Google-tilillesi. <ph name="BEGIN_LINK1" />Lue lisää mittareista<ph name="BEGIN_LINK1_END" />Lue lisää<ph name="END_LINK1" /></translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Tarkista valmius yhteyden jakamiseen</translation>
+<translation id="5752346055178471785">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Laajennus on tallennettu Google-tilillesi, mutta kaikki sen vain tälle laitteelle tallentama data voidaan poistaa}other{Laajennukset on tallennettu Google-tilillesi, mutta kaikki niiden vain tälle laitteelle tallentama data voidaan poistaa}}</translation>
 <translation id="5753570386948603678">Poista historiasta</translation>
 <translation id="5756163054456765343">Ohj&amp;ekeskus</translation>
 <translation id="5757187557809630523">seuraava kappale</translation>
@@ -11409,6 +11414,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB-hiiri yhdistetty</translation>
 <translation id="9075413375877487220">Parannettu selaussuoja ei luota tähän laajennukseen.</translation>
+<translation id="9075985558450420812">Lisää oma kehote tai korosta tekstiä luodaksesi kuvan.</translation>
 <translation id="9076523132036239772">Sähköpostiosoitettasi tai salasanaasi ei voi vahvistaa. Muodosta ensin verkkoyhteys.</translation>
 <translation id="9076821103818989526">Sivupaneeli</translation>
 <translation id="9076977315710973122">SMB-jako</translation>

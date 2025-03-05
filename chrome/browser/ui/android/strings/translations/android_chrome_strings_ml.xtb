@@ -107,6 +107,7 @@
 <translation id="1413446866325418126">നിങ്ങളുടെ Google Account-ൽ ഡാറ്റ സംരക്ഷിക്കുക</translation>
 <translation id="1414981605391750300">Google-നെ ബന്ധപ്പെടുന്നു. ഇതിന് ഒരു മിനിറ്റ് എടുത്തേക്കാം…</translation>
 <translation id="1416550906796893042">ആപ്പ് പതിപ്പ്</translation>
+<translation id="1416582024052267068">നിങ്ങളുടെ പാസ്‌വേഡുകളിലേക്കുള്ള ആക്‌സസ് നിലനിർത്തുക</translation>
 <translation id="1419753403124156396">Chrome റീസ്‌റ്റാർട്ട് ചെയ്യണോ?</translation>
 <translation id="1428770807407000502">സമന്വയം ഓഫാക്കണോ?</translation>
 <translation id="1430915738399379752">പ്രിന്റ് ചെയ്യുക</translation>
@@ -515,6 +516,7 @@
 <translation id="342220687432920852">{HOURS,plural, =1{# മ മുമ്പ്}other{# മ മുമ്പ്}}</translation>
 <translation id="3430670036890315772">പ്രൊഫൈൽ ലോക്ക് ഓഫാക്കുന്നത് നിങ്ങളുടെ സംരക്ഷിച്ച വിവരങ്ങൾ നീക്കം ചെയ്യും</translation>
 <translation id="3435465986463792564">നിരവധി വിൻഡോകളുണ്ടോ? അവ നിങ്ങൾക്ക് ഇവിടെ മാനേജ് ചെയ്യാം</translation>
+<translation id="3435575784518354875">നിങ്ങളുടെ പാസ്‌വേഡുകളിലേക്കുള്ള ആക്‌സസ് നിലനിർത്താൻ, അവ ഇപ്പോൾ എക്‌സ്‌പോർട്ട് ചെയ്യുക, Google Play സേവനങ്ങൾ അപ്‌ഡേറ്റ് ചെയ്യുക, തുടർന്ന് Google Password Manager-ലേക്ക് തിരികെ ഇമ്പോർട്ട് ചെയ്യുക. <ph name="BEGIN_LINK" />പൂർണ്ണമായ നിർദ്ദേശങ്ങൾ കാണുക<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">സുരക്ഷ</translation>
 <translation id="3439276997620616816">നിങ്ങളുടെ സമീപകാല ടാബുകൾ ഇവിടെ കാണാം</translation>
 <translation id="3443221991560634068">നിലവിലെ പേജ് റീലോഡ് ചെയ്യുക</translation>
@@ -524,6 +526,7 @@
 <translation id="3474624961160222204"><ph name="NAME" /> ആയി തുടരുക</translation>
 <translation id="3478363558367712427">നിങ്ങളുടെ തിരയല്‍ യന്ത്രം നിങ്ങൾക്ക് തിരഞ്ഞെടുക്കാം</translation>
 <translation id="3479552764303398839">ഇപ്പോഴല്ല</translation>
+<translation id="3487903178221457900">എക്സ്പോർട്ട് ചെയ്ത ഫയൽ, ആപ്പുകൾ ഉൾപ്പെടെ മറ്റുള്ളവർക്ക് ആക്‌സസ് ചെയ്യാൻ കഴിഞ്ഞേക്കാം. എക്‌സ്‌പോർട്ട് ചെയ്‌തുകഴിഞ്ഞാൽ, നിങ്ങളുടെ പാസ്‌വേഡുകൾ Chrome-ൽ നിന്ന് ഇല്ലാതാക്കും.</translation>
 <translation id="3488199663160411179">പേര്</translation>
 <translation id="3493531032208478708">നിർദ്ദേശിച്ച ഉള്ളടക്കത്തെക്കുറിച്ച് <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">സൈൻ ഇൻ ചെയ്യാനുള്ള ബോട്ടം ഷീറ്റ് പകുതി ഉയരത്തിൽ തുറന്നു.</translation>
@@ -549,6 +552,7 @@
 <translation id="3566639033325271639">ക്രമീകരണം അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="3568945271227339929">അപഹരിക്കപ്പെട്ട പാസ്‌വേഡുകൾ ഒന്നുമില്ല</translation>
 <translation id="357465026686164600">ഫോൺ ഒരു സുരക്ഷാ കീയായി ഉപയോഗിക്കൽ</translation>
+<translation id="3575464060651642446">ഈ ഉപകരണത്തിൽ പാസ്‌വേഡുകൾ പരിശോധിക്കുന്നു…</translation>
 <translation id="3577473026931028326">എന്തോ കുഴപ്പമുണ്ടായി. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="3577558748185201054">നിങ്ങളുടെ താൽപ്പര്യങ്ങളും മുൻഗണനകളും മാനേജ് ചെയ്യുക</translation>
 <translation id="3587482841069643663">എല്ലാം</translation>
@@ -1751,6 +1755,7 @@
 <translation id="8937772741022875483">ഡിജിറ്റൽ ആരോഗ്യത്തിൽ നിന്ന് നിങ്ങളുടെ Chrome ആക്റ്റിവിറ്റി നീക്കം ചെയ്യണോ?</translation>
 <translation id="8942627711005830162">മറ്റൊരു വിൻഡോയിൽ തുറക്കുക</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - ഈ ഭാഷ ഡൗൺലോഡ് ചെയ്യാനായില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
+<translation id="8957528460562961174">നിങ്ങളുടെ പാസ്‌വേഡുകളിലേക്കുള്ള ആക്‌സസ് നിലനിർത്താൻ, അവ ഇപ്പോൾ എക്‌സ്‌പോർട്ട് ചെയ്യുക, തുടർന്ന് നിങ്ങൾക്ക് ഇഷ്ടപ്പെട്ട Password Manager-ലേക്ക് ഇമ്പോർട്ട് ചെയ്യുക. Google Play സേവനങ്ങൾ ലഭ്യമല്ലാത്തതിനാൽ, Google Password Manager പ്രവർത്തനം നിർത്തി.</translation>
 <translation id="8963117664422609631">സൈറ്റിന്റെ ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="8965591936373831584">തീർച്ചപ്പെടുത്താത്തവ</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> അദൃശ്യ ടാബും മറ്റ് <ph name="TAB_COUNT_ONE" /> ടാബും കൂടി അടയ്ക്കും}other{<ph name="INCOGNITO_TAB_COUNT" /> അദൃശ്യ ടാബും മറ്റ് <ph name="TAB_COUNT_MANY" /> ടാബുകളും കൂടി അടയ്ക്കും}}</translation>

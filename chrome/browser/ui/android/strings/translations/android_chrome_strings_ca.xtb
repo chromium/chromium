@@ -107,6 +107,7 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="1413446866325418126">Desa les dades al teu Compte de Google</translation>
 <translation id="1414981605391750300">S'està contactant amb Google. Aquest procés pot trigar una estona…</translation>
 <translation id="1416550906796893042">Versió de l'aplicació</translation>
+<translation id="1416582024052267068">Mantén l'accés a les contrasenyes</translation>
 <translation id="1419753403124156396">Vols reiniciar Chrome?</translation>
 <translation id="1428770807407000502">Vols desactivar la sincronització?</translation>
 <translation id="1430915738399379752">Imprimeix</translation>
@@ -515,6 +516,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="342220687432920852">{HOURS,plural, =1{Fa # h}other{Fa # h}}</translation>
 <translation id="3430670036890315772">En desactivar el bloqueig de perfil, se suprimirà la informació desada</translation>
 <translation id="3435465986463792564">Tens moltes finestres obertes? Pots gestionar-les aquí.</translation>
+<translation id="3435575784518354875">Per mantenir l'accés a les contrasenyes, exporta-les ara, actualitza Serveis de Google Play i, a continuació, importa-les al gestor de contrasenyes de Google. <ph name="BEGIN_LINK" />Mostra les instruccions completes<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Seguretat</translation>
 <translation id="3439276997620616816">Trobaràs les teves pestanyes recents aquí</translation>
 <translation id="3443221991560634068">Torna a carregar la pàgina actual</translation>
@@ -524,6 +526,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3474624961160222204">Continua com a <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Pots triar el motor de cerca que prefereixis</translation>
 <translation id="3479552764303398839">Ara no</translation>
+<translation id="3487903178221457900">És possible que altres persones, i també les aplicacions, puguin accedir al fitxer exportat. Un cop l'exportes, les contrasenyes se suprimeixen de Chrome.</translation>
 <translation id="3488199663160411179">nom</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /> sobre el contingut suggerit</translation>
 <translation id="3495219333887281978">El full inferior d'inici de sessió s'ha obert a mitja alçada.</translation>
@@ -1751,6 +1754,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8937772741022875483">Vols suprimir l'activitat de Chrome a Benestar digital?</translation>
 <translation id="8942627711005830162">Obre en una altra finestra</translation>
 <translation id="8945143127965743188"><ph name="LANG" />: no s'ha pogut baixar aquest idioma. Torna-ho a provar més tard.</translation>
+<translation id="8957528460562961174">Per mantenir l'accés a les contrasenyes, exporta-les ara i després importa-les al gestor de contrasenyes que prefereixis. El gestor de contrasenyes de Google ha deixat de funcionar perquè Serveis de Google Play no està disponible.</translation>
 <translation id="8963117664422609631">Ves a la configuració del lloc web</translation>
 <translation id="8965591936373831584">pendent</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Es tancaran <ph name="INCOGNITO_TAB_COUNT" /> pestanya d'incògnit i <ph name="TAB_COUNT_ONE" /> de normal.}other{Es tancaran <ph name="INCOGNITO_TAB_COUNT" /> pestanyes d'incògnit i <ph name="TAB_COUNT_MANY" /> de normals.}}</translation>

@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">पृष्ठ पछि लोड गर्नुहोस्</translation>
 <translation id="1010225406377140704">नयाँ लिंक माग्न प्रेषकलाई सम्पर्क गर्नुहोस्</translation>
 <translation id="1011206368273183593">फाइलहरू तयार पारिँदै छन्</translation>
+<translation id="1012264210825687872">तपाईंले आफ्नो अर्डरको समीक्षा गरेपछि तपाईंले अनिवार्य रूपमा <ph name="BNPL_ISSUER_NAME" /> खातामा साइन इन गर्नु पर्ने हुन्छ वा यो खाता छैन भने नयाँ खाता बनाउनु पर्ने हुन्छ। यो खाता Google Pay मा स्वतः लिंक गरिने छ।</translation>
 <translation id="1014509239502131234">परिणाम अन्डू गरिँदै छ</translation>
 <translation id="1015730422737071372">थप विवरणहरू उपलब्ध गराउनुहोस्</translation>
 <translation id="1019413721762100891">अफ छ</translation>
@@ -251,6 +252,7 @@
 <translation id="1419305130220238697">Chrome मा डाउनलोडहरू व्यवस्थापन गर्ने बटन, आफूले Chrome मा डाउनलोड गरेका फाइलहरू व्यवस्थापन गर्न यो बटन थिच्नुहोस्</translation>
 <translation id="1420345875188552368">तपाईंले सेभ गर्नुभएको स्वतः भुक्तानी गर्ने विधि यो भुक्तानीका हकमा प्रयोग गरिन सक्छ। Chrome मा इवालेट अफ गर्न <ph name="BEGIN_LINK1" />भुक्तानीसम्बन्धी सेटिङ<ph name="END_LINK1" />मा जानुहोस्</translation>
 <translation id="1420920093772172268">कनेक्ट गर्ने प्रक्रियालाई अनुमति दिन <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="1421484961346698724">मेटाइएको खाता</translation>
 <translation id="14222610277930434">तपाईंले प्रायः खोल्ने ट्याब</translation>
 <translation id="1422930527989633628">वरपर रहेका ब्लुटुथ चल्ने डिभाइसहरू पत्ता लगाउने अनुमति माग्न सक्छ</translation>
 <translation id="1426410128494586442">हो</translation>
@@ -660,6 +662,7 @@
 <translation id="2145193671493396738">आर्थिक समाचार</translation>
 <translation id="214556005048008348">भुक्तानी रद्द गर्नुहोस्</translation>
 <translation id="2147117373852943630">बाजाहरू</translation>
+<translation id="2147254250314124496"><ph name="EMBEDDED_URL" /> ले तपाईंका बारेमा सेभ गरिएको जानकारी प्रयोग गर्ने अनुमति माग्दै छ</translation>
 <translation id="2148613324460538318">कार्ड हाल्नुहोस्</translation>
 <translation id="2148716181193084225">आज</translation>
 <translation id="2149968176347646218">इन्टरनेट सुरक्षित छैन</translation>
@@ -691,6 +694,7 @@
 <translation id="2187317261103489799">पत्ता लगाउनुहोस् (डिफल्ट मान)</translation>
 <translation id="2188375229972301266">फेदमा एकभन्दा बढी प्वाल</translation>
 <translation id="2194856509914051091">विचार गर्नु पर्ने कुराहरू</translation>
+<translation id="2198071643181968308"><ph name="BNPL_ISSUER_NAME" /> का बारेमा थप जान्नुहोस्</translation>
 <translation id="2200678913752027654">थम्ज डाउन बटन, तपाईंलाई यो सुझाव मन नपर्नुको कारणका बारेमा विस्तृत प्रतिक्रिया पेस गर्नका निम्ति फाराम खोल्न इन्टर थिच्नुहोस्</translation>
 <translation id="2202627062836089804">आफ्नो कार्डको पछाडिको भाग</translation>
 <translation id="2204482073374652408">अपडेट गर्ने कार्य सम्पन्न भयो!</translation>
@@ -1591,7 +1595,7 @@
 <translation id="3784372983762739446">ब्लुटुथ उपकरणहरू</translation>
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" सँग सबैभन्दा बढी मिल्दाजुल्दा परिणाम</translation>
 <translation id="3789155188480882154">आकार १६</translation>
-<translation id="3789841737615482174">स्थापना गर्नुहोस्</translation>
+<translation id="3789841737615482174">इन्स्टल गर्नुहोस्</translation>
 <translation id="3791118028061680614">एपहरू अदलबदल नगरिकनै भुक्तानी गर्नुहोस्</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> इन्च)</translation>
 <translation id="3792826587784915501">प्रशंसकको जमात भएका तथा इन्डी चलचित्रहरू</translation>
@@ -2316,6 +2320,7 @@
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome लाई तपाईंको डिभाइसको <ph name="PERMISSION" /> प्रयोग गर्ने अनुमति दिनु पर्ने हुन्छ</translation>
 <translation id="510644072453496781">कार्डबोर्ड (इन्ड)</translation>
+<translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> को भर्चुअल कार्डको विवरण भरियो</translation>
 <translation id="5108881358339761672">यो साइट सुरक्षित छैन</translation>
 <translation id="5109892411553231226">भुक्तानी विधिहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2511,6 +2516,7 @@
             <ph name="LIST_ITEM" />फारमहरूमा भरिएको जानकारी
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">विपरीत क्रम तर माथितिर फर्काएर</translation>
+<translation id="5445340838622821110">तपाईंले किस्तामा भुक्तानी गर्नुभयो भने एक पटके भर्चुअल कार्ड नम्बर भरिन्छ। यो नम्बर यस खरिदका लागि मात्र प्रयोग गर्न सकिन्छ। <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700"><ph name="SITE" /> लाई उक्त साइटले तपाईंका बारेमा सेभ गरेको जानकारी प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="5452270690849572955">यो <ph name="HOST_NAME" /> को पृष्ठ फेला पार्न सक्दैन</translation>
 <translation id="5452923259299906094">इवालेट र Pix प्रयोग गरी भुक्तानी गर्नुहोस्</translation>
@@ -3330,6 +3336,7 @@
 <translation id="6917795328362592458">तपाईंले भर्खरै प्रयोग गर्नुभएको पासवर्ड चोरी भएको डेटाको सङ्ग्रहमा भेटिएको छ। तपाईंका खाताको सुरक्षार्थ पासवर्ड म्यानेजर तपाईंले सेभ गरेका पासवर्डहरू सुरक्षित छन् कि छैनन् जाँच्न सिफारिस गर्छ।</translation>
 <translation id="6917873303492266709">ट्याब समूह सेयर गर्न, तिनमा सामेल हुन र सहकार्य गर्न सेटिङ खोल्नुहोस् र "Chrome मा साइन इन गर्ने अनुमति दिनुहोस्" अन गर्नुहोस्</translation>
 <translation id="6921197121276419421">वेब एप इन्स्टल गर्ने अनुमति दिइएको छ</translation>
+<translation id="69238565902785824">तपाईंले आफ्नो खाता लिंक गरिएकै अवस्थामा राख्नुभयो भने तपाईं <ph name="BNPL_ISSUER_NAME" /> मार्फत अझ छिटो भुक्तानी गर्न सक्नुहुन्छ तर तपाईं <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /> मा गएर आफ्नो खाता अनलिंक गर्न सक्नुहुन्छ</translation>
 <translation id="6924013822850225188">चेकआउट गर्ने बेलामा तपाईंलाई तपाईंका कार्डका लाभहरू देखाउने कि नदेखाउने भन्ने कुरा छनौट गर्नुहोस् (बैंकका सर्तहरू लागू हुन्छन्)</translation>
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">शरीरमा बनाइने कला</translation>
@@ -3395,6 +3402,7 @@
 <translation id="701757816833614688">भिजुअल आर्ट तथा डिजाइनसम्बन्धी शिक्षा</translation>
 <translation id="702275896380648118">यो साइटले तपाईंलाई मन पर्ने कुराहरू निर्धारण गरेर अन्य साइटहरूलाई विज्ञापनहरू सिफारिस गर्छ। यो साइटले तपाईंलाई थप सान्दर्भिक विज्ञापनहरू देखाउने प्रयोजनका लागि तपाईंले Chrome छनौट गर्नुभएका विज्ञापनका विषयसम्बन्धी जानकारी पनि प्राप्त गर्छ।</translation>
 <translation id="7023162328967545559">एड्मिनले दिएका चेतावनी</translation>
+<translation id="7023765275461720661">खाता लिंक गरी <ph name="BNPL_ISSUER_NAME" /> मार्फत भुक्तानी गर्ने हो?</translation>
 <translation id="7029809446516969842">पासवर्डहरू</translation>
 <translation id="7030164307377592766">भुक्तानी विधिसम्बन्धी जानकारी भर्नका निम्ति सेटिङ मिलाउनुहोस्</translation>
 <translation id="7031646650991750659">तपाईंले स्थापना गर्नुभएका Google Play एपहरू</translation>
@@ -3616,6 +3624,7 @@
 <translation id="741204030948306876">हुन्छ, म सहमत छु</translation>
 <translation id="7416351320495623771">पासवर्डहरूको व्यवस्थापन गर्नुहोस्…</translation>
 <translation id="7416898721136759658">अनुदान, छात्रवृत्ति तथा आर्थिक सहयोग</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">प्रोग्रामिङ</translation>
 <translation id="7419091773564635591">कम्प्युटर तथा इलेक्ट्रोनिक्स</translation>
 <translation id="7419106976560586862">प्रोफाइल मार्ग</translation>
@@ -3662,6 +3671,7 @@
 <translation id="7485085230273446323">व्यापार तथा उद्योगधन्दा</translation>
 <translation id="7485870689360869515">कुनैपनि डाटा भेटिएन।</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> ले तपाईंको योग्यता जाँच गर्ने छ (यसो गर्दा तपाईंको क्रेडिट स्कोर घटबढ हुँदैन)। स्वीकृत गरिएका खण्डमा <ph name="BNPL_ISSUER_NAME" /> ले तपाईंलाई छनौट गर्न मिल्ने भुक्तानी योजनाहरू उपलब्ध गराउने छ। त्यसपछि तपाईं भुक्तानी योजना छनौट गरेर खरिद प्रक्रिया पूरा गर्न सक्नुहुन्छ।</translation>
 <translation id="7489392576326061356">स्याम्पु तथा कन्डिसनर</translation>
 <translation id="7495528107193238112">यो सामग्रीलाई रोक लगाइएको छ। यो समस्या समाधान गर्न उक्त साइटका मालिकसँग सम्पर्क गर्नुहोस्।</translation>
 <translation id="749865518782565832">प्लम्बिङ</translation>

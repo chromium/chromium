@@ -503,6 +503,7 @@
 <translation id="3373141842870501561">Sfondo Flusso terrestre</translation>
 <translation id="33736539805963175">Sfondo <ph name="LETTERS_COLOR" /> con la lettera <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Esclusiva</translation>
+<translation id="3395147534045164351">Attiva/disattiva posizione di aggancio</translation>
 <translation id="3404249063913988450">Abilita salvaschermo</translation>
 <translation id="3413935475507503304">Per continuare con l'aggiornamento, fai clic su Avanti.</translation>
 <translation id="3428551088151258685">all'aperto</translation>
@@ -652,6 +653,7 @@
 <translation id="4113067922640381334">Ora puoi accedere a nuovi <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />sfondi<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Modalità Buio</translation>
 <translation id="4126551873361000548">Indietro di 10 secondi</translation>
+<translation id="4128271910628504223">Inserisci un prompt come "disegna una foresta nebbiosa"</translation>
 <translation id="4130035430755296270">Continua a passare il mouse sopra per altre opzioni di layout</translation>
 <translation id="4130750466177569591">Accetto</translation>
 <translation id="4131410914670010031">In bianco e nero</translation>
@@ -859,6 +861,7 @@
 <translation id="5050042263972837708">Nome del gruppo</translation>
 <translation id="5051044138948155788">Questa è l'unica pagina. Si aprirà la schermata iniziale della scansione.</translation>
 <translation id="5053233795640754917">Metti in pausa</translation>
+<translation id="5056587122125565772">Crea immagine</translation>
 <translation id="5078711626843651677">I modelli vocali vengono memorizzati temporaneamente sul dispositivo fino al completamento dell'assegnazione delle etichette di chi parla. Puoi disattivare questa funzionalità in qualsiasi momento nelle Impostazioni.</translation>
 <translation id="5078983345702708852">futuristico</translation>
 <translation id="5087864757604726239">indietro</translation>
@@ -1130,7 +1133,6 @@
 <translation id="6325525973963619867">Non riuscito</translation>
 <translation id="6327262166342360252">Questo sfondo è stato creato con l'IA utilizzando il seguente testo: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Tema scuro automatico</translation>
-<translation id="6335228876613776082">Download del modello completato</translation>
 <translation id="6340526405444716530">Personalizzazione</translation>
 <translation id="6348252528297699679">Puoi disattivare la posizione in Impostazioni &gt; Privacy e sicurezza &gt; Controlli per la privacy &gt; Accesso alla posizione. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Nome utente e password</translation>
@@ -1674,7 +1676,6 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album di Google Foto</translation>
 <translation id="8775713578693478175">APN modem</translation>
-<translation id="877735394245039557">Download del modello in corso…</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Questa rete potrebbe avere un captive portal</translation>
 <translation id="8797082062139985406">Crea nome con Google AI</translation>

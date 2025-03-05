@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">Pagina later laden</translation>
 <translation id="1010225406377140704">Je kunt contact opnemen met de afzender om een nieuwe link te vragen</translation>
 <translation id="1011206368273183593">Bestanden voorbereiden</translation>
+<translation id="1012264210825687872">Nadat je je bestelling hebt gecontroleerd, moet je inloggen op je <ph name="BNPL_ISSUER_NAME" />-account of een account maken. Dit account wordt automatisch aan Google Pay gekoppeld.</translation>
 <translation id="1014509239502131234">Resultaat ongedaan maken</translation>
 <translation id="1015730422737071372">Aanvullende gegevens verzenden</translation>
 <translation id="1019413721762100891">Uit</translation>
@@ -251,6 +252,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1419305130220238697">Knop Downloads in Chrome beheren. Activeer deze om bestanden te beheren die je hebt gedownload in Chrome.</translation>
 <translation id="1420345875188552368">Je opgeslagen methode voor automatische betalingen kan worden gebruikt voor deze betaling. Als je eWallets in Chrome wilt uitzetten, ga je naar je <ph name="BEGIN_LINK1" />betaalinstellingen<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> om te koppelen</translation>
+<translation id="1421484961346698724">Verwijderd account</translation>
 <translation id="14222610277930434">Je bezoekt deze site vaak</translation>
 <translation id="1422930527989633628">Kan vragen of deze site bluetooth-apparaten in de buurt mag vinden</translation>
 <translation id="1426410128494586442">Ja</translation>
@@ -660,6 +662,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2145193671493396738">Economisch nieuws</translation>
 <translation id="214556005048008348">Betaling annuleren</translation>
 <translation id="2147117373852943630">Muziekinstrumenten</translation>
+<translation id="2147254250314124496"><ph name="EMBEDDED_URL" /> wil de informatie gebruiken die over jou is opgeslagen</translation>
 <translation id="2148613324460538318">Kaart toevoegen</translation>
 <translation id="2148716181193084225">Vandaag</translation>
 <translation id="2149968176347646218">Verbinding is niet beveiligd</translation>
@@ -691,6 +694,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2187317261103489799">Detecteren (standaard)</translation>
 <translation id="2188375229972301266">Meerdere perforaties onder</translation>
 <translation id="2194856509914051091">Overwegingen</translation>
+<translation id="2198071643181968308">Meer informatie over <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="2200678913752027654">Knop Niet leuk, druk op Enter om een formulier te openen waarin je gedetailleerde feedback kunt geven over waarom je deze suggestie niet leuk vindt</translation>
 <translation id="2202627062836089804">achterkant van je kaart</translation>
 <translation id="2204482073374652408">Updaten voltooid</translation>
@@ -2312,6 +2316,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome heeft toegang nodig tot de <ph name="PERMISSION" /> van je apparaat</translation>
 <translation id="510644072453496781">Karton (einde)</translation>
+<translation id="5106648964679263509">Virtuele kaart voor <ph name="BNPL_ISSUER_NAME" /> ingevuld</translation>
 <translation id="5108881358339761672">Site is niet beveiligd</translation>
 <translation id="5109892411553231226">Betaalmethoden beheren</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2507,6 +2512,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <ph name="LIST_ITEM" />Informatie die je in formulieren hebt ingevoerd
 <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Omgekeerde volgorde met de bedrukte zijde omhoog</translation>
+<translation id="5445340838622821110">Als je gespreid betaalt, wordt een eenmalig virtueel kaartnummer ingevuld. Dit nummer is alleen voor deze aankoop. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Toestaan dat <ph name="SITE" /> informatie gebruikt die over jou is opgeslagen</translation>
 <translation id="5452270690849572955">Deze pagina op <ph name="HOST_NAME" /> kan niet worden gevonden</translation>
 <translation id="5452923259299906094">Betalen met eWallet en Pix</translation>
@@ -3012,6 +3018,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6351658970066645919">Browsegegevens verwijderen</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Geen}=1{1 wachtwoord (voor <ph name="DOMAIN_LIST" />, gesynchroniseerd)}=2{2 wachtwoorden (voor <ph name="DOMAIN_LIST" />, gesynchroniseerd)}other{# wachtwoorden (voor <ph name="DOMAIN_LIST" />, gesynchroniseerd)}}</translation>
 <translation id="6355392890578844978">Deze browser wordt niet beheerd door een bedrijf of andere organisatie. Activiteit op dit apparaat kan buiten Chromium worden beheerd. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Tabbladgroepen <ph name="GROUP_TITLE_1" /> en <ph name="GROUP_TITLE_2" /> zijn niet meer beschikbaar</translation>
 <translation id="6358088212770985041">betaalmethoden bewerken</translation>
 <translation id="6358450015545214790">Wat betekent dit?</translation>
 <translation id="6360213755783740931">Meer informatie over bescherming tegen malware</translation>
@@ -3325,6 +3332,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6917795328362592458">Het wachtwoord dat je net hebt gebruikt, is gevonden bij een gegevenslek. Wachtwoordmanager raadt je aan je opgeslagen wachtwoorden te checken om je accounts te beveiligen.</translation>
 <translation id="6917873303492266709">Als je tabbladgroepen wilt delen, eraan deelnemen en eraan wilt samenwerken in tabbladgroepen, open je de instellingen en zet je Inloggen bij Chrome toestaan aan</translation>
 <translation id="6921197121276419421">Web-apps installeren toegestaan</translation>
+<translation id="69238565902785824">Als je je account gekoppeld houdt, kun je sneller betalen met <ph name="BNPL_ISSUER_NAME" />. Je kunt je account ontkoppelen door naar <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /> te gaan.</translation>
 <translation id="6924013822850225188">Kies of je je kaartvoordelen wilt zien bij het afrekenen (bankvoorwaarden zijn van toepassing)</translation>
 <translation id="6925267999184670015">Noord-Amerikaanse B+</translation>
 <translation id="6926216138694948720">Bodyart</translation>
@@ -3390,6 +3398,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="701757816833614688">Design- en beeldende-kunstonderwijs</translation>
 <translation id="702275896380648118">Deze site stelt vast wat je leuk vindt en stelt daarna advertenties voor op andere sites. Deze site krijgt ook je advertentieonderwerpen van Chrome zodat de site je relevantere advertenties kan laten zien.</translation>
 <translation id="7023162328967545559">Beheerderswaarschuwing</translation>
+<translation id="7023765275461720661">Account koppelen en betalen met <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Wachtwoorden</translation>
 <translation id="7030164307377592766">instellingen voor het invullen van betaalmethoden aanpassen</translation>
 <translation id="7031646650991750659">Welke Google Play-apps je hebt geïnstalleerd</translation>
@@ -3612,6 +3621,7 @@ Aanvullende informatie:
 <translation id="741204030948306876">Ja, aanzetten</translation>
 <translation id="7416351320495623771">Wachtwoorden beheren…</translation>
 <translation id="7416898721136759658">Beurzen, toelagen en financiële ondersteuning</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">Programmeren</translation>
 <translation id="7419091773564635591">Computers en elektronica</translation>
 <translation id="7419106976560586862">Profielpad</translation>
@@ -3658,6 +3668,7 @@ Aanvullende informatie:
 <translation id="7485085230273446323">Bedrijven en industrie</translation>
 <translation id="7485870689360869515">Geen gegevens gevonden.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> controleert of je in aanmerking komt (dit heeft geen invloed op je kredietscore). Als je aanvraag wordt goedgekeurd, biedt <ph name="BNPL_ISSUER_NAME" /> betalingsplannen waaruit je kunt kiezen en kun je je aankoop afronden.</translation>
 <translation id="7489392576326061356">Shampoos en conditioners</translation>
 <translation id="7495528107193238112">Deze content is geblokkeerd. Neem contact op met de site-eigenaar om het probleem op te lossen.</translation>
 <translation id="749865518782565832">Loodgieter</translation>

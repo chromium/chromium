@@ -107,6 +107,7 @@
 <translation id="1413446866325418126">በGoogle መለያዎ ውስጥ ውሂብ ያስቀምጡ</translation>
 <translation id="1414981605391750300">Googleን በማነጋገር ላይ።  ወደ አንድ ደቂቃ ሊወስድ ይችላል…</translation>
 <translation id="1416550906796893042">የመተግበሪያ ስሪት</translation>
+<translation id="1416582024052267068">የይለፍ ቃላትዎን መዳረሻ ያቆዩ</translation>
 <translation id="1419753403124156396">Chrome ዳግም ያስጀምራሉ?</translation>
 <translation id="1428770807407000502">ስምረት ይጥፋ?</translation>
 <translation id="1430915738399379752">አትም</translation>
@@ -515,6 +516,7 @@
 <translation id="342220687432920852">{HOURS,plural, =1{ከ# ሰዓ በፊት}one{ከ# ሰዓ በፊት}other{ከ# ሰዓ በፊት}}</translation>
 <translation id="3430670036890315772">የመገለጫ መቆለፊያዎን ማጥፋት የተቀመጠ መረጃዎን ያስወግዳል</translation>
 <translation id="3435465986463792564">ብዙ መስኮቶች አሉዎት? ከዚህ ሆነው እነሱን ማስተዳደር ይችላሉ።</translation>
+<translation id="3435575784518354875">የይለፍ ቃላትዎን መዳረሻ ለማቆየት አሁን ወደ ውጪ ይላኳቸው፣Google  Play አገልግሎቶችን ያዘምኑ ከዚያም ወደ Google የይለፍ ቃል አስተዳዳሪ ያስመጧቸው። <ph name="BEGIN_LINK" />ሙሉ መመሪያዎችን አሳይ<ph name="END_LINK" />።</translation>
 <translation id="3435738964857648380">የደህንነት ጥበቃ</translation>
 <translation id="3439276997620616816">የእርስዎን የቅርብ ጊዜ ትሮች እዚህ ያገኛሉ</translation>
 <translation id="3443221991560634068">የአሁኑን ገፅ ዳግም ጫን</translation>
@@ -524,6 +526,7 @@
 <translation id="3474624961160222204">እንደ <ph name="NAME" /> ይቀጥሉ</translation>
 <translation id="3478363558367712427">የፍለጋ ፕሮግራምዎን መምረጥ ይችላሉ</translation>
 <translation id="3479552764303398839">አሁን አይደለም</translation>
+<translation id="3487903178221457900">ወደ ውጭ የተላከው ፋይል መተግበሪያዎችን ጨምሮ ለሌሎች ተደራሽ ሊሆን ይችላል። አንዴ ወደ ውጭ ከላኩ በኋላ የይለፍ ቃላትዎ ከChrome ይሰረዛሉ።</translation>
 <translation id="3488199663160411179">ስም</translation>
 <translation id="3493531032208478708">ስለሚጠቆም ይዘት <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">የመግቢያ የግርጌ ሉህ በግማሽ ቁመት ተከፍቷል።</translation>
@@ -549,6 +552,7 @@
 <translation id="3566639033325271639">ቅንብሮችን አዘምን</translation>
 <translation id="3568945271227339929">ምንም የተጠለፈ የይለፍ ቃል የለም</translation>
 <translation id="357465026686164600">ስልክ እንደ የደህንነት ቁልፍ</translation>
+<translation id="3575464060651642446">በዚህ መሣሪያ ላይ ያሉ የይለፍ ቃላትን በመፈተሽ ላይ…</translation>
 <translation id="3577473026931028326">የሆነ ችግር ተፈጥሯል። እንደገና ይሞክሩ።</translation>
 <translation id="3577558748185201054">የእርስዎን ዝንባሌዎች እና ምርጫዎች ያስተዳድሩ</translation>
 <translation id="3587482841069643663">ሁሉም</translation>
@@ -1751,6 +1755,7 @@
 <translation id="8937772741022875483">የChrome እንቅስቃሰዎ ከዲጂታል ብቁ መሆን ይወገድ?</translation>
 <translation id="8942627711005830162">በሌላ መስኮት ውስጥ ክፈት</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - ይህ ቋንቋ ሊወርድ አልቻለም ቆይተው እንደገና ይሞክሩ።</translation>
+<translation id="8957528460562961174">የይለፍ ቃላትዎን መዳረሻ ለማቆየት አሁን ወደ ውጪ ይላኳቸው ከዚያም ወደመረጡት የይለፍ ቃል አስተዳዳሪ ያስመጧቸው። Google Play አገልግሎቶች ስለማይገኝ Google የይለፍ ቃል አስተዳዳሪ መስራት አቁሟል።</translation>
 <translation id="8963117664422609631">ወደ የጣቢያ ቅንብሮች ይሂዱ</translation>
 <translation id="8965591936373831584">በመጠበቅ ላይ</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> ማንነትን የማያሳውቅ እና <ph name="TAB_COUNT_ONE" /> ተጨማሪ ትር ይዘጋል}one{<ph name="INCOGNITO_TAB_COUNT" /> ማንነትን የማያሳውቅ እና <ph name="TAB_COUNT_MANY" /> ተጨማሪ ትሮች ይዘጋሉ}other{<ph name="INCOGNITO_TAB_COUNT" /> ማንነትን የማያሳውቅ እና <ph name="TAB_COUNT_MANY" /> ተጨማሪ ትሮች ይዘጋሉ}}</translation>

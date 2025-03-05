@@ -81,6 +81,7 @@
 <translation id="131461803491198646">હોમ નેટવર્ક, રોમિંગ નહીં</translation>
 <translation id="1327977588028644528">ગેટવે</translation>
 <translation id="1328223165223065150">વૉલપેપરનો રંગ</translation>
+<translation id="1329478709358066995">ટ્રાન્સક્રિપ્ટ:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">સ્કૅન કરી શકાય એટલી જગ્યામાં બંધબેસતું કરો</translation>
 <translation id="1343442362630695901">સોલ્ટ લેક</translation>
@@ -502,6 +503,7 @@
 <translation id="3373141842870501561">અર્થ ફ્લો વૉલપેપર</translation>
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> અક્ષરવાળું <ph name="LETTERS_COLOR" /> બૅકગ્રાઉન્ડ</translation>
 <translation id="3383623117265110236">વિશેષ</translation>
+<translation id="3395147534045164351">સ્નૅપ લોકેશન ટૉગલ કરો</translation>
 <translation id="3404249063913988450">સ્ક્રીન સેવર ચાલુ કરો</translation>
 <translation id="3413935475507503304">અપડેટમાં આગળ વધવા માટે આગળ પર ક્લિક કરો.</translation>
 <translation id="3428551088151258685">આઉટડોર</translation>
@@ -651,6 +653,7 @@
 <translation id="4113067922640381334">તમે હવે નવા <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />વૉલપેપરનો<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ઍક્સેસ ધરાવો છો</translation>
 <translation id="4117637339509843559">ઘેરો મોડ</translation>
 <translation id="4126551873361000548">10 સેકન્ડ પાછળ કરો</translation>
+<translation id="4128271910628504223">કોઈ પ્રૉમ્પ્ટ દાખલ કરો, જેમ કે "કોઈ ઝાકળવાળું જંગલ દોરો"</translation>
 <translation id="4130035430755296270">લેઆઉટના વધુ વિકલ્પો માટે માઉસ ફેરવતા રહો</translation>
 <translation id="4130750466177569591">હું સંમત છું</translation>
 <translation id="4131410914670010031">કાળો અને સફેદ</translation>
@@ -858,6 +861,7 @@
 <translation id="5050042263972837708">જૂથનું નામ</translation>
 <translation id="5051044138948155788">આ એકમાત્ર પેજ છે. આ તમને સ્કૅન શરૂ કરતી સ્ક્રીન પર લઈ જશે.</translation>
 <translation id="5053233795640754917">થોભાવો</translation>
+<translation id="5056587122125565772">છબી બનાવો</translation>
 <translation id="5078711626843651677">જ્યાં સુધી સ્પીકરને લેબલ આપવાની પ્રક્રિયા પૂર્ણ ન થાય, ત્યાં સુધી વૉઇસ મૉડલને હંગામી રીતે ડિવાઇસ પર સ્ટોર કરવામાં આવે છે. તમે કોઈપણ સમયે સેટિંગમાં જઈને આને બંધ કરી શકો છો.</translation>
 <translation id="5078983345702708852">ફ્યૂચુરિસ્ટિક</translation>
 <translation id="5087864757604726239">પાછા ફરો</translation>
@@ -1129,7 +1133,6 @@
 <translation id="6325525973963619867">નિષ્ફળ થયું</translation>
 <translation id="6327262166342360252">આ વૉલપેપરને AI મારફતે નીચેની ટેક્સ્ટનો ઉપયોગ કરીને બનાવવામાં આવ્યું હતું: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">ઑટોમૅટિક ઘેરી થીમ</translation>
-<translation id="6335228876613776082">મૉડલ ડાઉનલોડ કરવાની પ્રક્રિયા પૂર્ણ થઈ</translation>
 <translation id="6340526405444716530">મનગમતું બનાવવું</translation>
 <translation id="6348252528297699679">તમે સેટિંગ &gt; પ્રાઇવસી અને સુરક્ષા &gt; પ્રાઇવસીને લગતા નિયંત્રણો &gt; લોકેશન ઍક્સેસમાં જઈને લોકેશન બંધ કરી શકો છો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">વપરાશકર્તાનું નામ અને પાસવર્ડ</translation>
@@ -1274,6 +1277,7 @@
 <translation id="6930597342185648547">બૅકગ્રાઉન્ડ વિશે</translation>
 <translation id="6939667434404433010">રેકોર્ડિંગનું નામ શોધો</translation>
 <translation id="6939766318048400022">કૅફે</translation>
+<translation id="6942253772720771875">તમારો પ્રતિસાદ શેર કરો અથવા તમારી સમસ્યાનું વર્ણન કરો</translation>
 <translation id="6943893908656559156">દૂરના સ્થાનની ઓળખ (વૈકલ્પિક)</translation>
 <translation id="6953137545147683679">સોનેરી</translation>
 <translation id="6957231940976260713">સેવાનું નામ</translation>
@@ -1598,6 +1602,7 @@
 <translation id="8395584934117017006">આ <ph name="DEVICE_TYPE" /> એન્ટરપ્રાઇઝ દ્વારા મેનેજ થાય છે</translation>
 <translation id="8398927464629426868">ડિવાઇસ હાલમાં જે ઝડપથી ચાર્જ કે ડિસ્ચાર્જ થઈ રહ્યું છે તે ઝડપ</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> શૈલીમાં <ph name="ART_FEATURE" />નું એક પેઇન્ટિંગ</translation>
+<translation id="8409219750150841791">જનરેટ કરેલો સારાંશ:</translation>
 <translation id="8410244574650205435">ઑટોમૅટિક રીતે શોધાયેલું</translation>
 <translation id="8420955526972171689">હાર્ડવેર સંબંધિત સમસ્યાઓ માટે, પરીક્ષણો અને સમસ્યા નિવારણ ચલાવો</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1647,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> માટે વધુ ક્રિયાઓ</translation>
 <translation id="86356131183441916">આછો જાંબલી</translation>
 <translation id="8647595191512746911">ઑડિયો ટ્રાન્સક્રિપ્શન</translation>
+<translation id="8648578954147795914">જનરેટ કરેલા નામ:</translation>
 <translation id="8650852232143958317">તમારા Gmail અને Google Driveની ફાઇલોને તમારી સાથે લઈ જાઓ</translation>
 <translation id="8651481478098336970">વૉલ્યૂમ મ્યૂટ કરો</translation>
 <translation id="8655295600908251630">ચેનલ</translation>
@@ -1670,7 +1676,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos આલ્બમ</translation>
 <translation id="8775713578693478175">મૉડેમ APN</translation>
-<translation id="877735394245039557">મૉડલ ડાઉનલોડ કરવાની પ્રક્રિયા ચાલુ છે</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">આ નેટવર્કમાં કૅપ્ટિવ પોર્ટલ હોઈ શકે છે</translation>
 <translation id="8797082062139985406">Google AIનો ઉપયોગ કરીને નામ બનાવો</translation>
@@ -1784,6 +1789,7 @@
 <translation id="9218016617214286986">જાણીતા APNs બતાવો</translation>
 <translation id="932327136139879170">હોમ</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">ખાતરી કરો કે તમારું માઇક કનેક્ટેડ છે અથવા તમારી Chromebookને ફરી શરૂ કરવાનો પ્રયાસ કરો</translation>
 <translation id="945522503751344254">પ્રતિસાદ મોકલો</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> માટે કી ખૂટે છે. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">સમગ્ર રેકોર્ડિંગ દરમિયાન વૉઇસની તુલના કરે છે, જેથી ટ્રાન્સક્રિપ્ટ દર્શાવી શકે કે દરેક સ્પીકર દ્વારા શું કહેવામાં આવ્યું અને ક્યારે કહેવામાં આવ્યું</translation>

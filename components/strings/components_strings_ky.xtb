@@ -661,6 +661,7 @@
 <translation id="2145193671493396738">Экономикалык жаңылыктар</translation>
 <translation id="214556005048008348">Төлөмдү жокко чыгаруу</translation>
 <translation id="2147117373852943630">Музыкалык аспаптар</translation>
+<translation id="2147254250314124496"><ph name="EMBEDDED_URL" /> сиз жөнүндө сакталган маалыматты колдонгону жатат</translation>
 <translation id="2148613324460538318">Карта кошуу</translation>
 <translation id="2148716181193084225">Бүгүн</translation>
 <translation id="2149968176347646218">Туташуу кооптуу</translation>
@@ -3022,6 +3023,7 @@
 <translation id="6351658970066645919">Серептөө дайындарын өчүрүү</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Жок}=1{1 сырсөз (<ph name="DOMAIN_LIST" /> доменде, шайкештирилген)}=2{2 сырсөз (<ph name="DOMAIN_LIST" /> доменде, шайкештирилген)}other{# сырсөз (<ph name="DOMAIN_LIST" /> доменде, шайкештирилген)}}</translation>
 <translation id="6355392890578844978">Бул серепчи компанияңыз же башка уюм тарабынан башкарылбайт. Бул түзмөктө аткарылган аракеттер Chromium'дан тышкары башкарылышы мүмкүн. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">"<ph name="GROUP_TITLE_1" />" жана "<ph name="GROUP_TITLE_2" />" өтмөктөр топтору мындан ары жеткиликсиз</translation>
 <translation id="6358088212770985041">төлөм ыкмаларын түзөтүү</translation>
 <translation id="6358450015545214790">Бул эмнени билдирет?</translation>
 <translation id="6360213755783740931">Кесепеттүү программалардан коргоо жөнүндө кеңири маалымат алыңыз</translation>

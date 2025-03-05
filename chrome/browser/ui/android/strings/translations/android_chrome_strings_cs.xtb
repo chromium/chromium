@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">Nenabízet překlad těchto webů</translation>
 <translation id="1145536944570833626">Smazat existující data.</translation>
 <translation id="1150263420752757504">Aplikace <ph name="APP_NAME" /> se otevře v Chromu. Pokračováním vyjadřujete souhlas se <ph name="BEGIN_LINK1" />smluvními podmínkami společnosti Google<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />dodatečnými smluvními podmínkami prohlížeče Chrome a systému ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="1154555449933432029">Ve Správci hesel Google nemáte uložená hesla.</translation>
 <translation id="115483310321669804">Použít heslo <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Přejmenovat</translation>
 <translation id="1174479719160874822">Když je obrazovka úzká, vyžádá si Chrome mobilní web</translation>
@@ -1366,10 +1367,12 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7224097611345298931">Všechna hesla uložená pouze na tomto zařízení pro Chrome a <ph name="CHROME_CHANNEL" /> byla sloučena. V obou aplikacích můžete automaticky vyplňovat všechna uložená hesla.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 nevyřízené stahování}few{# nevyřízená stahování}many{# nevyřízeného stahování}other{# nevyřízených stahování}}</translation>
 <translation id="7230064152164845085">Přejít do anonymního režimu</translation>
+<translation id="7237724030342645845">Správce hesel Google přestal fungovat</translation>
 <translation id="72415438529550637">Návrh hesla je zavřen.</translation>
 <translation id="7260367682327802201">Zařízení Android může obsahovat podobné nastavení. Pokud máte v Chromu a v zařízení Android zapnuté měření reklam, společnosti mohou měřit efektivitu reklamy na webech, které navštěvujete, a v aplikacích, které používáte.</translation>
 <translation id="727288900855680735">Odeslat <ph name="ONE_TIME_CODE" /> webu <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Blokovaný web</translation>
+<translation id="7276868533747677875">Pokud jste dříve exportovali hesla, vyhledejte na svém zařízení soubor CSV a importujte je do preferovaného správce hesel.</translation>
 <translation id="7289049772085228972">Máte nejsilnější zabezpečení Chromu</translation>
 <translation id="7289303553784750393">Pokud jste online, ale tento problém přetrvává, můžete na <ph name="SITE_ETLD_PLUS_ONE" /> zkusit pokračovat jinými způsoby.</translation>
 <translation id="7290209999329137901">Přejmenování není k dispozici</translation>
@@ -1544,6 +1547,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8027395186860110042">Hesla mohou brzy přestat fungovat</translation>
 <translation id="8027863900915310177">Vyberte cíl stahování</translation>
 <translation id="8030852056903932865">Schválit</translation>
+<translation id="8031805944372049238">Pokud chcete začít ukládat a používat hesla pomocí Správce hesel Google, aktualizujte služby Google Play.</translation>
 <translation id="8032569120109842252">Sledováno</translation>
 <translation id="8037750541064988519">Zbývá: <ph name="DAYS" /> d</translation>
 <translation id="8037801708772278989">Zkontrolováno právě teď</translation>

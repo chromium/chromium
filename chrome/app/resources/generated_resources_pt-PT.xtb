@@ -1709,7 +1709,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2178545675770638239">Selecione a palavra-passe</translation>
 <translation id="2178585470774851578">Está a ativar as funcionalidades de depuração do ChromeOS Flex, o que vai configurar o sshd daemon e ativar o arranque a partir de unidades USB.</translation>
 <translation id="2178614541317717477">AC comprometida</translation>
-<translation id="2179850495466791921">Atualmente, tem <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> e outros</translation>
 <translation id="2180620921879609685">Bloquear conteúdos em qualquer página</translation>
 <translation id="2181821976797666341">Políticas</translation>
 <translation id="2182058453334755893">Copiado para a área de transferência.</translation>
@@ -2577,7 +2576,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2765820627968019645">Claro</translation>
 <translation id="276582196519778359">Introduza o PIN para os controlos parentais</translation>
 <translation id="2766006623206032690">Co&amp;lar e ir</translation>
-<translation id="2766161002040448006">Pedir ao pai/mãe</translation>
+<translation id="2766161002040448006">Pede aos teus pais</translation>
 <translation id="2766629385177215776">Afixar automaticamente novos grupos de separadores criados em qualquer dispositivo à barra de marcadores</translation>
 <translation id="2767077837043621282">Não foi possível atualizar o seu Chromebook. Tente mais tarde.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> poderá editar o ficheiro <ph name="FILENAME" /> até fechar todos os separadores deste site.</translation>
@@ -3126,7 +3125,6 @@ Quer pará-lo?</translation>
 <translation id="3167562202484086668">Eliminar todos os dados do <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Escolha o tema que se adequa às suas necessidades. Para alterar o tema, a imagem de fundo, a proteção de ecrã e muito mais, basta tocar sem soltar no ambiente de trabalho.</translation>
 <translation id="3170072451822350649">Também pode ignorar o início de sessão e <ph name="LINK_START" />navegar como Convidado<ph name="LINK_END" />.</translation>
-<translation id="3171499217959105722">Atualmente, tem <ph name="NUMBERED_ITEM" /> e outros</translation>
 <translation id="3175067642577044620">Corpo</translation>
 <translation id="3175862692832442091">Floresta</translation>
 <translation id="3176347586396987181">Use "0" para premir sem soltar um botão do rato</translation>
@@ -3811,6 +3809,7 @@ Quer pará-lo?</translation>
 <translation id="3670229581627177274">Ativar o Bluetooth</translation>
 <translation id="3670480940339182416">Os sites podem usar o otimizador do V8</translation>
 <translation id="3671764914317109892">Use linguagem corrente para pesquisar o seu histórico de navegação. Também pode fazer perguntas e receber respostas com base no seu histórico de navegação.</translation>
+<translation id="3671982238795754537">Saiba mais acerca das chaves de acesso</translation>
 <translation id="3672681487849735243">Foi detetado um erro de fábrica</translation>
 <translation id="3673097791729989571">Início de sessão alojado por <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">O seu PIN foi atualizado</translation>
@@ -3938,7 +3937,6 @@ Quer pará-lo?</translation>
 <translation id="3744219658596020825">As suas palavras-passe não foram importadas</translation>
 <translation id="3745306754941902605">Cozinha</translation>
 <translation id="3747077776423672805">Para remover aplicações, aceda a Definições &gt; Google Play Store &gt; Gerir preferências do Android &gt; Apps ou Gestor de aplicações. Toque na aplicação que quer desinstalar (pode ter de deslizar rapidamente para a direita ou para a esquerda para encontrar a aplicação). Em seguida, toque em Desinstalar ou em Desativar.</translation>
-<translation id="3747552357646973221">Atualmente, tem <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> e outros</translation>
 <translation id="3748424433435232460">Já foi guardada uma palavra-passe para esta conta neste dispositivo</translation>
 <translation id="3748706263662799310">Comunicar um erro</translation>
 <translation id="3749724428455457489">Saber mais acerca dos anúncios sugeridos por sites</translation>
@@ -4072,6 +4070,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Uma extensão foi aprovada}other{# extensões foram aprovadas}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Recomenda-se, pelo menos, <ph name="INSTALL_SIZE" /> de espaço para o Linux.</translation>
+<translation id="3824203811509979971">Resuma conteúdo ou faça perguntas</translation>
 <translation id="3824621460022590830">O token de inscrição de dispositivo é inválido. Contacte o proprietário ou o gestor do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Inicie sessão para ver os separadores de outros dispositivos</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Memorizar a minha escolha para este tipo de ficheiro: <ph name="FILE_TYPES" />}other{Memorizar a minha escolha para estes tipos de ficheiros: <ph name="FILE_TYPES" />}}</translation>
@@ -4258,6 +4257,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="3948985214866944547">A maioria das pessoas bloqueia a partilha da localização exata para este site</translation>
 <translation id="394984172568887996">Importado do IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> para tornar a transferência de ficheiros mais segura</translation>
+<translation id="3950479158728806902">Criar automaticamente uma chave de acesso para iniciar sessão mais rápido</translation>
 <translation id="3950820424414687140">Iniciar sessão</translation>
 <translation id="3950841222883198950">Digitação por voz</translation>
 <translation id="3953834000574892725">As minhas contas</translation>
@@ -4726,6 +4726,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4289540628985791613">Vista geral</translation>
 <translation id="428963538941819373">Estes sites podem usar informações guardadas sobre si enquanto navega em <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Escolha um PIN</translation>
+<translation id="4290526909608432059">A compatibilidade com as Apps do Chrome vai terminar em breve. Para saber mais sobre as opções disponíveis, contacte o programador da app ou a sua equipa de apoio técnico de TI.</translation>
 <translation id="4290791284969893584">Depois de fechar uma página, as tarefas que iniciou podem não ser concluídas</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> membro</translation>
 <translation id="4290898381118933198">Deslize rapidamente para navegar entre páginas</translation>
@@ -5186,6 +5187,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4624054169152573743">Tema de cores</translation>
 <translation id="4625078469366263107">Ativar aplicação</translation>
 <translation id="4625905218692741757">Cor predefinida cinzenta</translation>
+<translation id="4627107755957573804">Permitir que os sites e as apps atualizem as contas existentes para usarem chaves de acesso</translation>
 <translation id="4627442949885028695">Continuar a partir de outro dispositivo</translation>
 <translation id="4628762811416793313">A configuração do contentor do Linux não foi concluída. Tente novamente.</translation>
 <translation id="4629521233550547305">Abrir perfil <ph name="PROFILE_NAME" /></translation>
@@ -5769,6 +5771,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5053233576223592551">Adicionar nome de utilizador</translation>
 <translation id="505347685865235222">Grupo sem nome – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{Deve alterá-la agora}other{Deve alterá-las agora}}</translation>
+<translation id="5056587122125565772">Criar imagem</translation>
 <translation id="5056950756634735043">A ligar ao contentor</translation>
 <translation id="5057110919553308744">Quando clica na extensão</translation>
 <translation id="5057127674016624293">A análise está a demorar mais do que o esperado</translation>
@@ -5879,6 +5882,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="512642543295077915">pesquisa + retrocesso</translation>
 <translation id="5126611267288187364">Ver alterações</translation>
 <translation id="5127620150973591153">ID de ligação segura: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">Resuma conteúdo ou faça perguntas.</translation>
 <translation id="5127881134400491887">Gerir ligações de rede</translation>
 <translation id="5127934926273826089">Flores</translation>
 <translation id="5127986747308934633">O administrador está a controlar o seu dispositivo</translation>
@@ -8519,6 +8523,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - porta de série associada</translation>
 <translation id="7033616203784997570">A entrada tem de ter, no máximo, 62 carateres</translation>
 <translation id="7034692021407794547">Um administrador com os privilégios Gestão de faturação tem primeiro de aceitar os Termos de Utilização do hardware Google Meet na secção hardware Google Meet da consola do administrador.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> acabou de criar uma chave de acesso para a sua conta. As chaves de acesso oferecem uma forma mais rápida e segura de iniciar sessão e são guardadas no Gestor de Palavras-passe da Google para <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Recomenda-se <ph name="DISK_SIZE" /> de espaço para o Linux. Para aumentar o espaço livre, elimine ficheiros do dispositivo.</translation>
 <translation id="7037157058268992880">Esqueci-me do PIN</translation>
 <translation id="7037509989619051237">Texto para pré-visualização</translation>
@@ -10150,6 +10155,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8195854162863398249">Desative a funcionalidade <ph name="FEATURE_NAME" /></translation>
 <translation id="8195920051450756553">Atraso antes de ativar novamente a mesma tecla</translation>
 <translation id="8197673340773315084">Adicione um nome ou uma etiqueta, como Trabalho ou Pessoal</translation>
+<translation id="8198181050118789419">Tema: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">A transmitir o separador</translation>
 <translation id="8199300056570174101">Propriedades da rede (serviço) e do dispositivo</translation>
 <translation id="8200772114523450471">Continuar</translation>
@@ -10560,6 +10566,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8477178913400731244">Eliminar dados</translation>
 <translation id="8477241577829954800">Substituído</translation>
 <translation id="8477384620836102176">&amp;Geral</translation>
+<translation id="8477446666255316832">Inicie sessão mais rapidamente da próxima vez</translation>
 <translation id="8479176401914456949">Código inválido. Tente novamente.</translation>
 <translation id="8480869669560681089">Dispositivo desconhecido de <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Confirmar autorização USB</translation>
@@ -11406,6 +11413,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Rato USB ligado</translation>
 <translation id="9075413375877487220">Esta extensão não é considerada fidedigna pela Navegação segura melhorada.</translation>
+<translation id="9075985558450420812">Introduza um comando personalizado ou realce texto para criar uma imagem.</translation>
 <translation id="9076523132036239772">Não foi possível confirmar o seu email ou a sua palavra-passe. Tente ligar primeiro a uma rede.</translation>
 <translation id="9076821103818989526">Painel lateral</translation>
 <translation id="9076977315710973122">Partilha do SMB</translation>

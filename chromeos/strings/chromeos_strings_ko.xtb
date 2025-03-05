@@ -503,6 +503,7 @@
 <translation id="3373141842870501561">지구 흐름 배경화면</translation>
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> 글자가 있는 <ph name="LETTERS_COLOR" /> 배경</translation>
 <translation id="3383623117265110236">전용</translation>
+<translation id="3395147534045164351">스냅 위치 전환</translation>
 <translation id="3404249063913988450">화면 보호기 사용</translation>
 <translation id="3413935475507503304">업데이트를 계속하려면 다음을 클릭하세요.</translation>
 <translation id="3428551088151258685">야외</translation>
@@ -652,6 +653,7 @@
 <translation id="4113067922640381334">이제 새로운 <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />배경화면<ph name="END_LINK_WALLPAPER_SUBPAGE" />에 액세스할 수 있습니다.</translation>
 <translation id="4117637339509843559">어두운 모드</translation>
 <translation id="4126551873361000548">10초 뒤로 이동</translation>
+<translation id="4128271910628504223">'안개 낀 숲을 그려 줘'와 같은 프롬프트를 입력하세요.</translation>
 <translation id="4130035430755296270">마우스를 가져가면 더 많은 레이아웃 옵션이 표시됩니다.</translation>
 <translation id="4130750466177569591">동의함</translation>
 <translation id="4131410914670010031">흑백</translation>
@@ -859,6 +861,7 @@
 <translation id="5050042263972837708">그룹 이름</translation>
 <translation id="5051044138948155788">이 페이지만 삭제합니다. 스캔 시작 화면으로 이동합니다.</translation>
 <translation id="5053233795640754917">일시중지</translation>
+<translation id="5056587122125565772">이미지 만들기</translation>
 <translation id="5078711626843651677">발화자 라벨 지정이 완료될 때까지 음성 모델이 기기에 임시로 저장됩니다. 언제든지 설정에서 이 기능을 사용 중지할 수 있습니다.</translation>
 <translation id="5078983345702708852">미래적</translation>
 <translation id="5087864757604726239">뒤로</translation>
@@ -1130,7 +1133,6 @@
 <translation id="6325525973963619867">실패</translation>
 <translation id="6327262166342360252">이 배경화면은 다음 텍스트를 사용하여 AI로 생성되었습니다. "<ph name="PROMPT" />"</translation>
 <translation id="6331191339300272798">자동 어두운 테마</translation>
-<translation id="6335228876613776082">모델 다운로드 완료</translation>
 <translation id="6340526405444716530">맞춤설정</translation>
 <translation id="6348252528297699679">설정 &gt; 개인 정보 보호 및 보안 &gt; 개인 정보 보호 설정 &gt; 위치 정보 액세스에서 위치를 사용 중지할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">사용자 이름 및 비밀번호</translation>
@@ -1674,7 +1676,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google 포토 앨범</translation>
 <translation id="8775713578693478175">모뎀 APN</translation>
-<translation id="877735394245039557">모델 다운로드 중</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">네트워크에 종속 포털이 있을 수 있습니다.</translation>
 <translation id="8797082062139985406">Google AI를 사용하여 이름 만들기</translation>

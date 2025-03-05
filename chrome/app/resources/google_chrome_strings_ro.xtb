@@ -347,6 +347,7 @@
 <translation id="5727531838415286053">Dacă Chrome te-a inclus în mod aleatoriu într-o versiune de încercare activă, istoricul tău de navigare influențează anunțurile pe care le vezi și categoriile de interese estimate de mai jos. Pentru a-ți proteja confidențialitatea, Chrome șterge categoriile de interese în permanență, în fiecare lună. Categoriile de interese se actualizează dacă nu le elimini.</translation>
 <translation id="5736850870166430177">Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chrome poate să trimită adresele URL, inclusiv fragmente din conținutul paginilor, către funcția Navigare sigură</translation>
 <translation id="5756509061973259733">Există deja un profil Chrome asociat acestui cont pe dispozitiv</translation>
+<translation id="5759947850379142561">Selectează orice text sau imagine pentru a căuta cu Google Lens sau apasă pe Escape pentru a ieși din Google Lens</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome nu a putut fi lansat. Încearcă din nou.</translation>
 <translation id="5809516625706423866">Nu se poate realiza conexiunea la internet. HTTP Eroare 401 – Acces neautorizat. Verifică-ți configurația de proxy.</translation>
@@ -449,6 +450,7 @@
 <translation id="7071827361006050863">Chrome va șterge în curând datele de navigare</translation>
 <translation id="7085332316435785646">Alege dacă se include istoricul Chrome pentru experiențe mai personalizate în serviciile Google</translation>
 <translation id="7088681679121566888">Chrome este actualizat</translation>
+<translation id="7096221564931416126">Selectează orice text sau imagine pentru a căuta cu Google Lens</translation>
 <translation id="7098166902387133879">Google Chrome utilizează microfonul.</translation>
 <translation id="7099479769133613710">Relansează pentru a actualiza sistemul de operare &amp;Chrome</translation>
 <translation id="7106741999175697885">Manager de activități - Google Chrome</translation>
@@ -535,6 +537,7 @@
 <translation id="8129812357326543296">Despre &amp;Google Chrome</translation>
 <translation id="813913629614996137">Se inițializează...</translation>
 <translation id="8162006532256575008">Folosește Chrome fără cont</translation>
+<translation id="8177472873527554730">Nu se găsește conținut în pagină</translation>
 <translation id="8221491193165283816">De obicei blochezi notificările. Ca să-i permiți acestui site să îți trimită notificări, dă clic aici.</translation>
 <translation id="8255190535488645436">Google Chrome utilizează camera foto și microfonul.</translation>
 <translation id="8257796129973882597">Poți să deschizi marcaje, modul de lectură și altele din meniul Chrome</translation>

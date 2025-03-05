@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">এইসব সাইট অনুবাদ হবে না</translation>
 <translation id="1145536944570833626">বিদ্যমান ডেটা মুছুন।</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome-এ খুলবে। চালিয়ে যাওয়ার মাধ্যমে, আপনি <ph name="BEGIN_LINK1" />Google-এর পরিষেবার শর্তাবলী<ph name="END_LINK1" /> এবং <ph name="BEGIN_LINK2" />Google Chrome ও ChromeOS-এর পরিষেবার অতিরিক্ত শর্তাবলী<ph name="END_LINK2" /> মেনে নিচ্ছেন।</translation>
+<translation id="1154555449933432029">Google Password Manager-এ আপনার সেভ করা পাসওয়ার্ড নেই।</translation>
 <translation id="115483310321669804">পাসওয়ার্ড <ph name="PASSWORD" /> ব্যবহার করুন</translation>
 <translation id="1173894706177603556">পুনঃনামকরণ</translation>
 <translation id="1174479719160874822">সরু ও লম্বা স্ক্রিন শনাক্ত করলে Chrome মোবাইল সাইট দেখানোর অনুরোধ পাঠাবে</translation>
@@ -106,6 +107,7 @@
 <translation id="1413446866325418126">আপনার Google অ্যাকাউন্টে ডেটা সেভ করুন</translation>
 <translation id="1414981605391750300">Google এর সাথে যোগাযোগ করা হচ্ছে। এতে একটু সময় লাগবে…</translation>
 <translation id="1416550906796893042">অ্যাপ্লিকেশন ভার্সন</translation>
+<translation id="1416582024052267068">আপনার পাসওয়ার্ডে অ্যাক্সেস বজায় রাখুন</translation>
 <translation id="1419753403124156396">Chrome রিস্টার্ট করতে চান?</translation>
 <translation id="1428770807407000502">সিঙ্ক করা বন্ধ করতে চান?</translation>
 <translation id="1430915738399379752">প্রিন্ট</translation>
@@ -514,6 +516,7 @@
 <translation id="342220687432920852">{HOURS,plural, =1{# ঘণ্টা আগে}one{# ঘণ্টা আগে}other{# ঘণ্টা আগে}}</translation>
 <translation id="3430670036890315772">প্রোফাইল লক বন্ধ করে দিলে সেভ করা তথ্য মুছে যাবে</translation>
 <translation id="3435465986463792564">অনেক উইন্ডো খোলা আছে? আপনি সেগুলি এখানে ম্যানেজ করতে পারেন</translation>
+<translation id="3435575784518354875">আপনার পাসওয়ার্ডে অ্যাক্সেস বজায় রাখতে, সেগুলি এখন এক্সপোর্ট, Google Play পরিষেবা আপডেট করুন এবং সেগুলি Google Password Manager-এ আবার ইমপোর্ট করুন। <ph name="BEGIN_LINK" />সম্পূর্ণ নির্দেশাবলী দেখুন<ph name="END_LINK" />।</translation>
 <translation id="3435738964857648380">নিরাপত্তা</translation>
 <translation id="3439276997620616816">আপনি নিজের সাম্প্রতিক ট্যাব এখানে খুঁজে পাবেন</translation>
 <translation id="3443221991560634068">বর্তমান পৃষ্ঠাটি রিলোড করুন</translation>
@@ -523,6 +526,7 @@
 <translation id="3474624961160222204"><ph name="NAME" /> হিসাবে চালিয়ে যান</translation>
 <translation id="3478363558367712427">আপনার সার্চ ইঞ্জিন বেছে নিতে পারেন</translation>
 <translation id="3479552764303398839">এখনই নয়</translation>
+<translation id="3487903178221457900">অ্যাপ সহ, এক্সপোর্ট করা ফাইল, অন্যরা হয়ত অ্যাক্সেস করতে পারবেন। একবার আপনি এক্সপোর্ট করলে, Chrome থেকে আপনার পাসওয়ার্ড মুছে দেওয়া হবে।</translation>
 <translation id="3488199663160411179">নাম</translation>
 <translation id="3493531032208478708">প্রস্তাবিত কন্টেন্ট সম্পর্কে <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">স্ক্রিনের নিচে অ্যাটাচ করা শিটে সাইন-ইন করার সুবিধা অর্ধেক স্ক্রিন জুড়ে খুলেছে।</translation>
@@ -1366,10 +1370,12 @@
 <translation id="7224097611345298931">Chrome-এর জন্য শুধু এই ডিভাইসে সবকটি পাসওয়ার্ড সেভ এবং <ph name="CHROME_CHANNEL" /> মার্জ করা হয়েছে। আপনি দুটি অ্যাপেই আপনার সেভ করা সবকটি পাসওয়ার্ড অটোফিল করতে পারবেন।</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{১টি ডাউনলোড বাকি আছে}one{#টি ডাউনলোড বাকি আছে}other{#টি ডাউনলোড বাকি আছে}}</translation>
 <translation id="7230064152164845085">ছদ্মবেশী মোডে যান</translation>
+<translation id="7237724030342645845">Google Password Manager কাজ করা বন্ধ করে দিয়েছে</translation>
 <translation id="72415438529550637">পাসওয়ার্ড সাজেশন দেওয়ার সুবিধা বন্ধ করা আছে।</translation>
 <translation id="7260367682327802201">আপনার Android ডিভাইসে একই ধরনের সেটিং থাকতে পারে। যদি Chrome এবং আপনার Android ডিভাইসে বিজ্ঞাপন পরিমাপ চালু থাকে, তাহলে একটি কোম্পানি আপনার ভিজিট করা ওয়েব সাইট এবং ব্যবহার করা অ্যাপ জুড়ে বিজ্ঞাপনের কার্যকারিতা পরিমাপ করতে পারে।</translation>
 <translation id="727288900855680735"><ph name="ORIGIN" />-এ <ph name="ONE_TIME_CODE" /> জমা করতে চান?</translation>
 <translation id="7274013316676448362">অবরুদ্ধ সাইট</translation>
+<translation id="7276868533747677875">আপনি আগে পাসওয়ার্ড এক্সপোর্ট করে থাকলে, আপনার ডিভাইসে CSV ফাইল খুঁজুন এবং আপনার পছন্দের Password Manager-এ ইমপোর্ট করুন।</translation>
 <translation id="7289049772085228972">আপনি Chrome-এর সবথেকে শক্তিশালী সুরক্ষা ব্যবস্থা ব্যবহার করছেন</translation>
 <translation id="7289303553784750393">আপনি অনলাইন থাকাকালীনও এই সমস্যা থেকে গেলে, <ph name="SITE_ETLD_PLUS_ONE" />-এ চালিয়ে যেতে অন্য উপায় চেষ্টা করে দেখতে পারেন।</translation>
 <translation id="7290209999329137901">আবার নামকরণের বিকল্পটি উপলভ্য নেই</translation>
@@ -1544,6 +1550,7 @@
 <translation id="8027395186860110042">পাসওয়ার্ড শীঘ্রই কাজ করা বন্ধ করে দিতে পারে</translation>
 <translation id="8027863900915310177">ডাউনলোড করা ফাইল কোথায় সেভ করে রাখবেন, তা ঠিক করে নিন</translation>
 <translation id="8030852056903932865">অনুমতি দিন</translation>
+<translation id="8031805944372049238">Google Password Manager-এর সাহায্যে পাসওয়ার্ড সেভ করা শুরু করতে এবং ব্যবহার করতে, Google Play পরিষেবা আপডেট করুন।</translation>
 <translation id="8032569120109842252">ফলো করছেন</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> দিন বাকি আছে</translation>
 <translation id="8037801708772278989">এখনই চেক করা হয়েছে</translation>
@@ -1747,6 +1754,7 @@
 <translation id="8937772741022875483">ডিজিটাল ওয়েলবিয়িং থেকে আপনার Chrome অ্যাক্টিভিটি সরিয়ে দিতে চান?</translation>
 <translation id="8942627711005830162">অন্য উইন্ডোতে খুলুন</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - এই ভাষাটি ডাউনলোড করা যায়নি। পরে আবার চেষ্টা করুন।</translation>
+<translation id="8957528460562961174">আপনার পাসওয়ার্ডে অ্যাক্সেস বজায় রাখতে, সেগুলি এখন এক্সপোর্ট করুন তারপর তা আপনার পছন্দের Password Manager-এ ইমপোর্ট করুন। Google Play পরিষেবা উপলভ্য না হওয়ার কারণে Google Password Manager কাজ করা বন্ধ করে দিয়েছে।</translation>
 <translation id="8963117664422609631">সাইট সেটিংসে যান</translation>
 <translation id="8965591936373831584">বাকি আছে</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" />টি ছদ্মবেশী এবং আরও<ph name="TAB_COUNT_ONE" />টি ট্যাব বন্ধ করা হবে}one{<ph name="INCOGNITO_TAB_COUNT" />টি ছদ্মবেশী এবং আরও<ph name="TAB_COUNT_MANY" />টি ট্যাব বন্ধ করা হবে}other{<ph name="INCOGNITO_TAB_COUNT" />টি ছদ্মবেশী এবং আরও<ph name="TAB_COUNT_MANY" />টি ট্যাব বন্ধ করা হবে}}</translation>

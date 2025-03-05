@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">আপোনাৰ পাছৱৰ্ডটো <ph name="EMAIL" />ৰ Google পাছৱৰ্ড পৰিচালকত ছেভ কৰা হ’ব।</translation>
 <translation id="1146503048444965320">Chromeত নতুন টেব খোলক</translation>
 <translation id="1166460004393506534">Chromeত ব্ৰাউজিঙৰ ডেটা মচক</translation>
+<translation id="1171255741903316750">“আপুনি Chrome বন্ধ কৰিলে ইনক’গনিট’ টেব লক কৰক” সুবিধাটো অন কৰক</translation>
 <translation id="1179527450541388808">আপোনাৰ iPadৰ গৃহ স্ক্ৰীনৰ ড’কৰ পৰা অধিক দ্ৰুতভাৱে Chrome এক্সেছ কৰক।</translation>
 <translation id="1180362651362502943">আপোনাৰ Google একাউণ্টত Chromeৰ ডেটা ব্যৱহাৰ কৰি থাকক।</translation>
 <translation id="1200396280085622191">আপুনি যিকোনো সময়তে বাৰ্তা আৰু অন্য এপত থকা কোনো লিংকত টিপিলে সেইবোৰ খুলিবলৈ Chrome ব্যৱহাৰ কৰক।</translation>
@@ -45,6 +46,7 @@
 <translation id="1917964099031477364">এই ডিভাইচত থকা Chrome আৰু অন্য Google এপ্‌সমূহৰ পৰা এই একাউণ্টটো আৰু যিকোনো ছেভ নকৰা ডেটা আঁতৰোৱা হ’ব।</translation>
 <translation id="1919130412786645364">Chromeত ছাইন ইন কৰিব দিয়ক</translation>
 <translation id="1965935827552890526">Chromeৰ খোলা থকা অন্য ৱিণ্ড’ত আপুনি কি কৰি আছিল সেয়া সমাপ্ত কৰক।</translation>
+<translation id="1973910962341002002">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ছেটিঙৰ পৰা, "Chrome" অনলৈ ট’গল কৰক</translation>
 <translation id="1984705450038014246">আপোনাৰ Chrome ডেটা ছিংক কৰক</translation>
 <translation id="1987779152850321833">Chromeৰ পৰা পাৰ্যমানে উপকৃত হ’বলৈ তলত পৰামৰ্শ দিয়া কাৰ্যসমূহ সম্পূৰ্ণ কৰক।</translation>
 <translation id="2055826352861631739">ডিফ’ল্ট হিচাপে iPadৰ বাবে Chrome ব্যৱহাৰ কৰক</translation>
@@ -96,10 +98,13 @@
 <translation id="3282568296779691940">Chromeত ছাইন-ইন কৰক</translation>
 <translation id="3303503998967553377">iOSত Chromeৰ কাৰ্য ব্যৱহাৰ কৰক</translation>
 <translation id="3348862487678490430">Chromeত পঢ়াৰ সূচীৰ বস্তু যোগ দিয়ক</translation>
+<translation id="3357827134511189025">স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধাটোৰ বাবে Chrome ব্যৱহাৰ কৰি যিকোনো এপৰ পৰা আপোনাৰ ছেভ কৰি থোৱা পাছৱৰ্ড আৰু পাছকীসমূহৰ জৰিয়তে ছাইন ইন কৰক</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Chrome {THRESHOLD} মিনিটলৈকে ব্যৱহাৰ কৰা নহ’লে এনে হয়}one{Chrome {THRESHOLD} মিনিটলৈকে ব্যৱহাৰ কৰা নহ’লে এনে হয়}other{Chrome {THRESHOLD} মিনিটলৈকে ব্যৱহাৰ কৰা নহ’লে এনে হয়}}</translation>
 <translation id="3367797402528056312">Chrome ছেট আপ কৰা সম্পূৰ্ণ কৰক</translation>
 <translation id="3371064404604898522">Chromeক ডিফ’ল্ট ব্ৰাউজাৰ হিচাপে ছেট কৰক</translation>
 <translation id="3399930248910934354">Chromeৰ ছেটিং খোলক</translation>
+<translation id="3440830787838130530">Google Password Managerত আপোনাৰ পৰিয়ালৰ গোটৰ সৈতে সহজে আৰু সুৰক্ষিতভাৱে এটা পাছৱৰ্ডৰ প্ৰতিলিপি শ্বেয়াৰ কৰক</translation>
+<translation id="3460369101684070455">আপোনাৰ অন্য এপ্‌সমূহত আপোনাৰ ছেভ কৰা পাছৱৰ্ডসমূহ সহজে পাবলৈ, স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধাৰ বাবে Chrome বাছনি কৰক</translation>
 <translation id="3472587960215700950">চিনাক্ত কৰা ঠিকনাসমূহৰ বাবে আপোনাক দিক্-নিৰ্দেশনা আৰু স্থানীয় তথ্য দিবলৈ Chromeএ Google Maps ব্যৱহাৰ কৰে।</translation>
 <translation id="3503014945441706099">Chromeৰ এই প্ৰ’ফাইলটোৰ বাবেও বৰ্ধিত সুৰক্ষিত ব্ৰাউজিঙৰ সুবিধা লাভ কৰক</translation>
 <translation id="3522659714780527202">আপুনি Chrome ব্যৱহাৰ কৰা সকলো ডিভাইচৰ পৰা নিজৰ টেবসমূহ চাবলৈ ছিংক অন কৰক</translation>
@@ -181,6 +186,7 @@
 <translation id="5998675059699164418">Chrome ব্যৱহাৰ কৰিবলৈ আপোনাৰ প্ৰতিষ্ঠানৰ বাবে আপুনি ছাইন ইন কৰাৰ আৱশ্যক।</translation>
 <translation id="6021312115739110405">Googleএ আপোনাৰ বাবে প্ৰস্তুত কৰা এটা কাষ্টম ফীড। য’ত বাতৰি, ক্ৰীড়া আৰু বতৰৰ তথ্য অন্তৰ্ভুক্ত।</translation>
 <translation id="6022659036123304283">আপোনাৰ ডিভাইচত Chromeৰ ছেট আপ কৰক</translation>
+<translation id="6132075343662013154">Chromeএ আপোনাৰ পাছৱৰ্ড ছেভ কৰিবলৈ সেৱা আগবঢ়াব</translation>
 <translation id="6132149203299792222">আপোনাৰ পাছৱৰ্ড আৰু আন বহুতো বস্তু ছিংক কৰিবলৈ আপোনাৰ Google একাউণ্টৰ জৰিয়তে ছাইন ইন কৰক।</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Chromeত সন্ধান কৰক</translation>
@@ -228,6 +234,7 @@
 <translation id="7061455974939528301">Chromeৰ চিহ্নটো টিপি হেঁচি ৰাখক আৰু "গৃহ স্ক্ৰীন সম্পাদনা কৰক"ত ক্লিক কৰক</translation>
 <translation id="7065813315247345131">Chromeক ড’কলৈ স্থানান্তৰ কৰক</translation>
 <translation id="7124339256045485976">Chrome আপ টু ডে’ট কৰি ৰাখক</translation>
+<translation id="7145599899567697473">Chromeত পাছৱৰ্ডসমূহ ছেভ আৰু স্বয়ংক্ৰিয়ভাৱে পূৰ কৰক</translation>
 <translation id="7161390184744336561">Google Chrome পুৰণি হৈছে</translation>
 <translation id="7165736900384873061">Google Chrome QR স্কেনাৰ ব্যৱহাৰ কৰিবলৈ আৰম্ভ কৰক</translation>
 <translation id="7175129790242719365">Chrome সম্পৰ্কীয় কিটিপ: Chromeত ছাইন ইন কৰক</translation>
@@ -261,6 +268,7 @@
 <translation id="7693590760643069321">এতিয়া আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত থকা কোনো লিংকত টিপিলে যিকোনো সময়তে Chrome ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="7698568245838009292">Chromeএ কেমেৰাটো এক্সেছ কৰিবলৈ বিচাৰে</translation>
 <translation id="7707877166818730835">Chromeত মোৰ শেহতীয়া টেব খোলক</translation>
+<translation id="7747746207470479571">স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধাৰ বাবে Chromeৰ জৰিয়তে আপোনাৰ পাছৱৰ্ড আৰু পাছকীসমূহ সহজে এক্সেছ কৰক</translation>
 <translation id="776305366874821582">আপোনাৰ iPhoneৰ গৃহ স্ক্ৰীনৰ ড’কৰ পৰা অধিক দ্ৰুতভাৱে Chrome এক্সেছ কৰক।</translation>
 <translation id="7780154209050837198">Chrome পাৰ্যমানে ব্যৱহাৰ কৰিবলৈ আপোনাৰ Google একাউণ্টটোৰ জৰিয়তে Chromeত ছাইন ইন কৰক।</translation>
 <translation id="7787205077729386167">iOSত Chromeৰ ছেটিং খোলক আৰু তাৰ পাছত "ডিফ’ল্ট ব্ৰাউজাৰ এপ"ত টিপক আৰু Chrome বাছনি কৰক।</translation>
@@ -281,6 +289,7 @@
 <translation id="8136856065410661948">Chrome আৰু Google Lensৰ পৰা আপোনাৰ Apple Calendarত অনুষ্ঠান সৃষ্টি কৰিবলৈ এইটো ব্যৱহাৰ কৰা হ’ব।</translation>
 <translation id="8154120522323162874">আপোনাৰ ব্ৰাউজাৰটো ছেট আপ কৰি Chromeৰ পৰা পাৰ্যমানে উপকৃত হওক।</translation>
 <translation id="8160472928944011082">Chrome আপডে’ট হ’ব নোৱাৰে</translation>
+<translation id="8245080522851805544">আপুনি Chrome বন্ধ কৰিলে ডিভাইচত বিশ্বাসযোগ্যতাৰ প্ৰমাণীকৰণৰ জৰিয়তে আপোনাৰ ব্ৰাউজিং ব্যক্তিগত কৰি ৰাখক</translation>
 <translation id="8248887045858762645">Chrome সম্পর্কীয় পৰামৰ্শ</translation>
 <translation id="8265730590513812063">Chromeৰ মেনুখন খোলক</translation>
 <translation id="8317674518145175158">পৰিশোধ পদ্ধতি আৰু ঠিকনা এনক্ৰিপ্ট কৰা নহ’ব। Chromeৰ পৰা ব্ৰাউজিঙৰ ইতিহাস ছিংক কৰা নহ’ব।
@@ -324,5 +333,6 @@
 <translation id="9181628561061032322">Chromeৰ শেহতীয়া টেব খোলে।</translation>
 <translation id="948597495737267756">আপোনাৰ Chromeত চোৱা ৱেবপেজৰ ইতিহাস পৃষ্ঠা খোলে।</translation>
 <translation id="97300214378190234">আপুনি যিকোনো সময়তে অন্য এপত থকা কোনো লিংকত টিপিলে সেইবোৰ খুলিবলৈ Chrome ব্যৱহাৰ কৰক।</translation>
+<translation id="997929539742564806">Chromeৰ পৰা আপোনাৰ পাছৱৰ্ড আৰু পাছকীসমূহ স্বয়ংক্রিয়ভাৱে পূৰ কৰি এপ্‌ আৰু ছাইটসমূহত দ্ৰুততাৰে ছাইন ইন কৰক</translation>
 <translation id="998677222109959694">Chromeৰ ছেটিং পৰিচালনা কৰক</translation>
 </translationbundle>

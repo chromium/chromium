@@ -319,6 +319,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="5579324208890605088">Chyba pri spustení: spustite inštalátor ako bežný používateľ, nie ako správca.</translation>
 <translation id="5596627076506792578">Ďalšie možnosti</translation>
 <translation id="5605834417512968703">Vyberte niečo na vyhľadávanie podľa obrázkov alebo stlačením klávesa Escape vyhľadávanie podľa obrázkov ukončite</translation>
+<translation id="5618818588972826921">Vyberte nejaký text alebo obrázok na vyhľadávanie podľa obrázkov alebo stlačením klávesa Escape vyhľadávanie podľa obrázkov ukončite</translation>
 <translation id="5623402015214259806">{0,plural, =0{Je k dispozícii aktualizácia prehliadača Chromium}=1{Je k dispozícii aktualizácia prehliadača Chromium}few{Aktualizácia prehliadača Chromium je k dispozícii už # dni}many{Aktualizácia prehliadača Chromium je k dispozícii už # dňa}other{Aktualizácia prehliadača Chromium je k dispozícii už # dní}}</translation>
 <translation id="5643865575100044307">Pred zavretím prehliadača Chromium vždy odstraňujte dáta webov zo zariadenia</translation>
 <translation id="5653831366781983928">Reštartujte Chromium</translation>
@@ -512,6 +513,7 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="813913629614996137">Prebieha inicializácia...</translation>
 <translation id="8166782796394721554">Zapnúť dodatočnú ochranu v nástroji skriptov JavaScript a WebAssembly v prehliadači Chromium</translation>
 <translation id="81770708095080097">Tento súbor je nebezpečný, a preto ho prehliadač Chromium zablokoval.</translation>
+<translation id="8177472873527554730">Obsah na stránke sa nepodarilo nájsť</translation>
 <translation id="8200109504272824693">Ak chcete používať a ukladať údaje prehliadača Chromium vo svojom účte <ph name="USER_EMAIL" />, zadajte prístupovú frázu</translation>
 <translation id="8221491193165283816">Zvyčajne blokujete upozornenia. Ak chcete tomuto webu povoliť odosielanie upozornení, kliknite tu.</translation>
 <translation id="8223363452568144035">Ak chcete používať kameru, udeľte prehliadaču Chromium prístup v <ph name="BEGIN_LINK" />nastaveniach systému<ph name="END_LINK" /></translation>
@@ -594,5 +596,6 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="983803489796659991">Nepodarilo sa nainštalovať, pretože aktualizačný server nemá žiadne údaje o haši aplikácie.</translation>
 <translation id="985498048907240953">Používať Chromium bez účtu</translation>
 <translation id="985602178874221306">Autori prehliadača Chromium</translation>
+<translation id="989970834842471429">Vyberte nejaký text alebo obrázok na vyhľadávanie podľa obrázkov</translation>
 <translation id="992780518932311116">Ak chcete používať polohu, udeľte prehliadaču Chromium prístup v <ph name="BEGIN_LINK" />nastaveniach systému<ph name="END_LINK" /></translation>
 </translationbundle>

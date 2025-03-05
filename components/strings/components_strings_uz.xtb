@@ -252,6 +252,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1419305130220238697">Chromeda yuklanmalarni boshqarish tugmasi, Chromeda yuklab olingan fayllarni boshqarish uchun faollashtiring</translation>
 <translation id="1420345875188552368">Siz saqlagan avtomatik toʻlov usuli bu toʻlov uchun ishlatilishi mumkin. Chromeda e-hamyon xizmatini <ph name="BEGIN_LINK1" />toʻlov sozlamalari<ph name="END_LINK1" /> orqali faolsizlantirish mumkin</translation>
 <translation id="1420920093772172268">Ulanishga ruxsat berish uchun <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="1421484961346698724">Oʻchirilgan hisob</translation>
 <translation id="14222610277930434">Tez-tez kirgansiz</translation>
 <translation id="1422930527989633628">Atrofdagi Bluetooth qurilmalarni tekshirish uchun ruxsat soʻrashi mumkin</translation>
 <translation id="1426410128494586442">Ha</translation>
@@ -3018,6 +3019,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6351658970066645919">Brauzer maʼlumotlarini oʻchirish</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Hech qanday}=1{1 ta parol (<ph name="DOMAIN_LIST" /> uchun, sinxronlandi)}=2{2 ta parol (<ph name="DOMAIN_LIST" /> uchun, sinxronlandi)}other{# ta parol (<ph name="DOMAIN_LIST" /> uchun, sinxronlandi)}}</translation>
 <translation id="6355392890578844978">Bu brauzer kompaniya yoki tashkilot boshqaruvida emas. Bu qurilmadagi amallar Chromiumdan tashqarida boshqarilishi mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">“<ph name="GROUP_TITLE_1" />” va “<ph name="GROUP_TITLE_2" />” varaqlar guruhlari endi mavjud emas</translation>
 <translation id="6358088212770985041">toʻlov usullarini oʻzgartirishga urinmoqda</translation>
 <translation id="6358450015545214790">Bu nima degani?</translation>
 <translation id="6360213755783740931">Zararli dasturlardan himoya haqida batafsil</translation>

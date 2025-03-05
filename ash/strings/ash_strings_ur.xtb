@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">تاثرات کی رپورٹ کریں</translation>
 <translation id="1059120031266247284">آپ کے ساتھ اشتراک کردہ</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176">ہٹائیں بٹن والا <ph name="ITEM_LABEL" /></translation>
 <translation id="1062407476771304334">بدلیں</translation>
 <translation id="1073899992769346247">بیٹری کو تبدیل یا ریچارج کریں</translation>
 <translation id="1081015718268701546">‏Linux ایپس فی الحال تعاون یافتہ نہیں ہیں۔ دیگر ایپس کو محفوظ کیا جائے گا۔</translation>
@@ -323,6 +324,7 @@
 <translation id="2083190527011054446">شب بخیر <ph name="GIVEN_NAME" />،</translation>
 <translation id="2086334242442703436">ایموجی منتخب کنندہ کھولیں</translation>
 <translation id="2088116547584365419">گیمز</translation>
+<translation id="2092517835716911174">'پڑھنے میں میری مدد کریں' اور 'لکھنے میں میری مدد کریں' کا استعمال کرنے کیلئے آپ کی عمر کم از کم 18 برس ہونی چاہیے۔</translation>
 <translation id="209965399369889474">نیٹ ورک سے منسلک نہیں ہے</translation>
 <translation id="2107581415810719320">دوسرا بٹن <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">‏آپ کی USB-C کیبل Thunderbolt کو سپورٹ نہیں کرتی ہے۔ آلے کی کارکردگی محدود ہو سکتی ہے۔</translation>
@@ -1228,6 +1230,7 @@
 <translation id="5043679421800073804">شیلف پر موجود آخری آئیکن پر کلک کریں یا تھپتھپائیں</translation>
 <translation id="504465286040788597">گزشتہ پیراگراف</translation>
 <translation id="5045550434625856497">غلط پاس ورڈ</translation>
+<translation id="5056587122125565772">تصویر تخلیق کریں</translation>
 <translation id="5058794129231928255">‏‫Google Doc تخلیق نہیں کیا جا سکا</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">اگر آپ خاموش وضع میں رہتے ہوئے بات کرتے ہیں تو آپ کو مطلع کر دیا جائے گا۔ آڈیو آپ کے آلے سے باہر نہیں جاتی ہے۔</translation>
@@ -1276,6 +1279,7 @@
 <translation id="5222676887888702881">سائن آؤٹ</translation>
 <translation id="5228195526683428788">اسپلٹ اسکرین ڈیوائیڈر</translation>
 <translation id="5229343007215035173">رازداری کی اسکرین آن/آف کریں</translation>
+<translation id="5229860525743792999">تجویز کردہ گروپ سے <ph name="ITEM_LABEL" /> کو ہٹائیں</translation>
 <translation id="5230516054153933099">ونڈو</translation>
 <translation id="5234764350956374838">برخاست کریں</translation>
 <translation id="523505283826916779">ایکسیسبیلٹی کی ترتیبات</translation>
@@ -1757,6 +1761,7 @@
 <translation id="6757237461819837179">کوئی میڈیا نہیں چل رہا ہے</translation>
 <translation id="6760438044935091345">گیم ڈیش بورڈ</translation>
 <translation id="6768043681523654438">اسٹوریج</translation>
+<translation id="6769195697113506406">تصویر داخل کر دی گئی</translation>
 <translation id="6777216307882431711">‏منسلک USB-C آلات کو پاور دی جا رہی ہے</translation>
 <translation id="6781002679438061620">ڈیسک 9</translation>
 <translation id="6782182743534150858">ڈیسک 13</translation>
@@ -1983,6 +1988,7 @@
 <translation id="7571361473021531288">بیٹری %<ph name="BATTERY_PERCENTAGE" /> | <ph name="TIME" /> باقی ہے</translation>
 <translation id="7573585051776738856">فعال ونڈو دائیں طرف ڈاک کی ہوئی ہے۔</translation>
 <translation id="7579778809502851308">اسکرین کیپچر</translation>
+<translation id="7588317312481506627">کلپ بورڈ پر کاپی ہو گئی۔</translation>
 <translation id="7593891976182323525">تلاش یا شفٹ</translation>
 <translation id="7598054670902114203">‏CPU استعمال کا سنیپ شاٹ، <ph name="CPU_USEAGE" /> فیصد۔ درجہ حرارت <ph name="TEMPERATURE" /> ڈگری سیلسیس، موجودہ رفتار:<ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="7599378375976398913">منتخب کردہ نتیجہ داخل کرنا</translation>
@@ -2177,6 +2183,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> کے لئے معلومات کا ڈائلاگ کھولیں</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> استعمال کر کے</translation>
 <translation id="8168435359814927499">مواد</translation>
+<translation id="81817143961839203">تصویر داخل نہیں ہو سکی</translation>
 <translation id="8185090165691050712">قفل موڈ کا سائز تبدیل کرنے کے لیے مینیو کو آن/آف کریں</translation>
 <translation id="8192727139462702395">جب آپ بلوٹوتھ کو آف کرتے ہیں، تو یہ بیرونی آلات آپ کے <ph name="DEVICE_TYPE" /> سے غیر منسلک ہو جائیں گے:</translation>
 <translation id="8198456017687137612">کاسٹنگ ٹیب</translation>
@@ -2255,6 +2262,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> میں <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> ہے۔</translation>
 <translation id="8477270416194247200">‏منسوخ کرنے کے لیے Alt+Search یا Shift دبائیں۔</translation>
 <translation id="8480418399907765580">ٹول بار دکھائیں</translation>
+<translation id="8487660088084188539">‏جب آپ ان خصوصیات کو آن کرتے ہیں تو ان پٹ ٹیکسٹ، دستاویز کے مواد اور ویب صفحہ کے URL کو Google سرورز کو بھیجا جا سکتا ہے۔ اس معلومات کا استعمال لکھنے سے متعلق تجویز تیار کرنے، خلاصے تیار کرنے، سوالات کے جوابات دینے اور پروڈکٹ کو بہتر بنانے کے لیے کیا جاتا ہے، جو کہ <ph name="LINK_TO_SERVICE_TERMS" /> کے ساتھ مشروط ہے۔ کوئی بھی ذاتی، حساس یا رازدارانہ چیز شامل نہ کریں۔</translation>
 <translation id="8487699605742506766">ہاٹ اسپاٹ</translation>
 <translation id="8491237443345908933">لنک کو نئے ٹیب میں کھولیں</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> کو سپورٹ نہیں کرتا ہے۔ ریزولیوشن کو تبدیل کر کے <ph name="FALLBACK_RESOLUTION" /> کر دیا گیا تھا۔ تبدیلیاں باقی رکھنے کے لیے تصدیق کریں پر کلک کریں۔ گزشتہ تبدیلیوں کو <ph name="TIMEOUT_SECONDS" /> میں بحال کر دیا جائے گا۔</translation>
@@ -2324,6 +2332,7 @@
 <translation id="8725066075913043281">دوبارہ کوشش کریں</translation>
 <translation id="8725214031272624704">دستیاب ان پٹ طریقوں کی فہرست دکھائیں</translation>
 <translation id="8730621377337864115">ہوگیا</translation>
+<translation id="8731188831050207755">‫<ph name="FILE_NAME" /> ڈاؤن لوڈ ناکام ہو گیا۔</translation>
 <translation id="8731487213223706745"><ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /> کو ختم ہوگا</translation>
 <translation id="8734991477317290293">ممکن ہے یہ آپ کی کلید کے اسٹروکس کو چوری کرنے کی کوشش کر رہا ہو</translation>
 <translation id="8735678380411481005">کی بورڈ بیک لائٹ کا رنگ</translation>

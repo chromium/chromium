@@ -503,6 +503,7 @@
 <translation id="3373141842870501561">Tapeta Ziemia</translation>
 <translation id="33736539805963175">Tło w kolorze <ph name="LETTERS_COLOR" /> z literą <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Na wyłączność</translation>
+<translation id="3395147534045164351">Przełącz lokalizację przyciągania</translation>
 <translation id="3404249063913988450">Włącz wygaszacz ekranu</translation>
 <translation id="3413935475507503304">Aby rozpocząć aktualizację, kliknij Dalej.</translation>
 <translation id="3428551088151258685">na zewnątrz</translation>
@@ -652,6 +653,7 @@
 <translation id="4113067922640381334">Teraz masz dostęp do nowych <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />tapet<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Tryb ciemny</translation>
 <translation id="4126551873361000548">Przewiń do tyłu o 10 s</translation>
+<translation id="4128271910628504223">Wpisz prompt, np. „narysuj las we mgle”</translation>
 <translation id="4130035430755296270">Najedź kursorem, aby zobaczyć więcej opcji układu</translation>
 <translation id="4130750466177569591">Zgadzam się</translation>
 <translation id="4131410914670010031">Czarno-biały</translation>
@@ -859,6 +861,7 @@
 <translation id="5050042263972837708">Nazwa grupy</translation>
 <translation id="5051044138948155788">To jedyna strona. Pojawi się ekran rozpoczęcia skanowania.</translation>
 <translation id="5053233795640754917">Wstrzymaj</translation>
+<translation id="5056587122125565772">Utwórz obraz</translation>
 <translation id="5078711626843651677">Modele głosu są tymczasowo przechowywane na urządzeniu do czasu zakończenia etykietowania rozmówców. W każdej chwili możesz wyłączyć tę funkcję w Ustawieniach.</translation>
 <translation id="5078983345702708852">futurystyczne</translation>
 <translation id="5087864757604726239">wstecz</translation>
@@ -1130,7 +1133,6 @@
 <translation id="6325525973963619867">Niepowodzenie</translation>
 <translation id="6327262166342360252">Ta tapeta została utworzona za pomocą AI przy użyciu tego tekstu: „<ph name="PROMPT" />”.</translation>
 <translation id="6331191339300272798">Automatyczny ciemny motyw</translation>
-<translation id="6335228876613776082">Model został pobrany</translation>
 <translation id="6340526405444716530">Personalizacja</translation>
 <translation id="6348252528297699679">Możesz wyłączyć lokalizację, klikając Ustawienia &gt; Prywatność i bezpieczeństwo &gt; Ustawienia prywatności &gt; Dostęp do lokalizacji. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Nazwa użytkownika i hasło</translation>
@@ -1672,7 +1674,6 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Zdjęcia Google</translation>
 <translation id="8775713578693478175">APN modemu</translation>
-<translation id="877735394245039557">Pobieram model</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">W sieci może znajdować się portal przechwytujący</translation>
 <translation id="8797082062139985406">Utwórz nazwę za pomocą AI od Google</translation>

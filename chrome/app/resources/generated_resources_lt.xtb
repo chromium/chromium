@@ -1722,7 +1722,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2178545675770638239">Slaptažodžio pasirinkimas</translation>
 <translation id="2178585470774851578">Įgalinsite „ChromeOS Flex“ derinimo funkcijas ir bus nustatyta „sshd daemon“, kad būtų galima paleisti programas iš atmintuko.</translation>
 <translation id="2178614541317717477">CA pažeidimo galimybė</translation>
-<translation id="2179850495466791921">Šiuo metu turite <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> ir kt.</translation>
 <translation id="2180620921879609685">Blokuoti turinį bet kokiame puslapyje</translation>
 <translation id="2181821976797666341">Politika</translation>
 <translation id="2182058453334755893">Nukopijuota į iškarpinę</translation>
@@ -3141,7 +3140,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3167562202484086668">Ištrinti visus paslaugos <ph name="BRAND" /> duomenis</translation>
 <translation id="3169930038976362151">Pasirinkite jūsų poreikius atitinkančią temą. Jei norite pakeisti temą, ekrano foną, ekrano užsklandą ir kt., tiesiog palieskite ir palaikykite spustelėkite darbalaukį.</translation>
 <translation id="3170072451822350649">Be to, galite praleisti prisijungimo veiksmą ir <ph name="LINK_START" />naršyti kaip svečias<ph name="LINK_END" />.</translation>
-<translation id="3171499217959105722">Šiuo metu turite <ph name="NUMBERED_ITEM" /> ir kt.</translation>
 <translation id="3175067642577044620">Turinys</translation>
 <translation id="3175862692832442091">Miškas</translation>
 <translation id="3176347586396987181">Naudokite „z“, kad paspaustumėte pelės mygtuką ir palaikytumėte</translation>
@@ -3953,7 +3951,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3744219658596020825">Jūsų slaptažodžiai nebuvo importuoti</translation>
 <translation id="3745306754941902605">Virtuvė</translation>
 <translation id="3747077776423672805">Jei norite pašalinti programas, eikite į skiltį „Nustatymai“ &gt; „Google Play“ parduotuvė“ &gt; „Tvarkyti „Android“ nuostatas“ &gt; „Programos“ arba „Programų tvarkytuvė“. Tada palieskite programą, kurią norite pašalinti (galbūt reikės perbraukti į dešinę arba į kairę, kad rastumėte programą). Tada palieskite „Pašalinti“ arba „Išjungti“.</translation>
-<translation id="3747552357646973221">Šiuo metu turite <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> ir kt.</translation>
 <translation id="3748424433435232460">Šios paskyros slaptažodis jau išsaugotas šiame įrenginyje</translation>
 <translation id="3748706263662799310">Pateikti ataskaitą apie triktį</translation>
 <translation id="3749724428455457489">Sužinokite daugiau apie svetainėje siūlomus skelbimus</translation>
@@ -4087,6 +4084,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Plėtinys patvirtintas}one{Patvirtintas # plėtinys}few{Patvirtinti # plėtiniai}many{Patvirtinta # plėtinio}other{Patvirtinta # plėtinių}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">„Linux“ rekomenduojama turėti bent <ph name="INSTALL_SIZE" /> vietos.</translation>
+<translation id="3824203811509979971">Apibendrinkite turinį arba užduokite klausimų</translation>
 <translation id="3824621460022590830">Netinkamas įrenginio registracijos prieigos raktas. Susisiekite su įrenginio savininku ar administratoriumi. Klaidos kodas: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Prisijunkite, kad peržiūrėtumėte skirtukus iš kitų įrenginių</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Prisiminti mano pasirinkimą dėl šio tipo failų: <ph name="FILE_TYPES" />}one{Prisiminti mano pasirinkimą dėl šių tipų failų: <ph name="FILE_TYPES" />}few{Prisiminti mano pasirinkimą dėl šių tipų failų: <ph name="FILE_TYPES" />}many{Prisiminti mano pasirinkimą dėl šių tipų failų: <ph name="FILE_TYPES" />}other{Prisiminti mano pasirinkimą dėl šių tipų failų: <ph name="FILE_TYPES" />}}</translation>
@@ -4273,6 +4271,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="3948985214866944547">Dauguma žmonių blokuoja tikslios vietovės bendrinimą šioje svetainėje</translation>
 <translation id="394984172568887996">Importuota iš „IE“</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, kad failai būtų atsisiunčiami saugiau</translation>
+<translation id="3950479158728806902">Automatiškai sukurti prieigos raktą, kad būtų galima greičiau prisijungti</translation>
 <translation id="3950820424414687140">Prisijungti</translation>
 <translation id="3950841222883198950">Rašymas balsu</translation>
 <translation id="3953834000574892725">Mano paskyros</translation>
@@ -5201,6 +5200,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4624054169152573743">Spalvos tema</translation>
 <translation id="4625078469366263107">Įgalinti programą</translation>
 <translation id="4625905218692741757">Pilka numatytoji spalva</translation>
+<translation id="4627107755957573804">Leiskite svetainėms ir programoms naujovinti esamas paskyras, kad būtų galima naudoti prieigos raktus</translation>
 <translation id="4627442949885028695">Tęsiama kitu įrenginiu</translation>
 <translation id="4628762811416793313">Nepavyko užbaigti „Linux“ sudėtinio rodinio. Bandykite dar kartą.</translation>
 <translation id="4629521233550547305">Atidaryti <ph name="PROFILE_NAME" /> profilį</translation>
@@ -5784,6 +5784,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5053233576223592551">Pridėti naudotojo vardą</translation>
 <translation id="505347685865235222">Grupė be pavadinimo – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{Turėtumėte pakeisti jį dabar}one{Turėtumėte pakeisti juos dabar}few{Turėtumėte pakeisti juos dabar}many{Turėtumėte pakeisti juos dabar}other{Turėtumėte pakeisti juos dabar}}</translation>
+<translation id="5056587122125565772">Sukurti vaizdą</translation>
 <translation id="5056950756634735043">Prisijungiama prie sudėtinio rodinio</translation>
 <translation id="5057110919553308744">Spustelėjus plėtinį</translation>
 <translation id="5057127674016624293">Nuskaitymas trunka ilgiau, nei tikėtasi</translation>
@@ -5894,6 +5895,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="512642543295077915">paieškos klavišas + naikinimo klavišas</translation>
 <translation id="5126611267288187364">Peržiūrėti pakeitimus</translation>
 <translation id="5127620150973591153">Saugaus ryšio ID: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">Apibendrinkite turinį arba užduokite klausimų.</translation>
 <translation id="5127881134400491887">Valdyti tinklo ryšius</translation>
 <translation id="5127934926273826089">Gėlės</translation>
 <translation id="5127986747308934633">Administratorius valdo jūsų įrenginį</translation>
@@ -10171,6 +10173,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8195854162863398249">Išjungti „<ph name="FEATURE_NAME" />“</translation>
 <translation id="8195920051450756553">Delsa prieš vėl suaktyvinant tą patį klavišą</translation>
 <translation id="8197673340773315084">Pridėkite vardą arba etiketę, pvz., „Darbo“ arba „Asmeninis“</translation>
+<translation id="8198181050118789419">Tema: „<ph name="THEME_NAME" />“</translation>
 <translation id="8198456017687137612">Perduodamas skirtukas</translation>
 <translation id="8199300056570174101">Tinklo (paslaugos) ir įrenginio nuosavybės</translation>
 <translation id="8200772114523450471">Atnaujinti</translation>
@@ -11430,6 +11433,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB pelė prijungta</translation>
 <translation id="9075413375877487220">Sustiprinto saugaus naršymo funkcija nepasitiki šiuo plėtiniu.</translation>
+<translation id="9075985558450420812">Įveskite tinkintą užklausą arba paryškinkite tekstą, kad sukurtumėte vaizdą.</translation>
 <translation id="9076523132036239772">Apgailestaujame, nepavyko patvirtinti jūsų el. pašto ir slaptažodžio. Pabandykite pirmiausia prisijungti prie tinklo.</translation>
 <translation id="9076821103818989526">Šoninis skydelis</translation>
 <translation id="9076977315710973122">SMB bendrinimas</translation>

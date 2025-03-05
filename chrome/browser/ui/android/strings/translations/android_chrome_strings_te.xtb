@@ -107,6 +107,7 @@
 <translation id="1413446866325418126">మీ Google ఖాతాలో డేటాను సేవ్ చేయండి</translation>
 <translation id="1414981605391750300">Googleని సంప్రదిస్తోంది. ఇందుకు ఒక నిమిషం పట్టవచ్చు…</translation>
 <translation id="1416550906796893042">అప్లికేషన్ వెర్షన్</translation>
+<translation id="1416582024052267068">మీ పాస్‌వర్డ్‌లకు యాక్సెస్ ఉండేలా చూడండి</translation>
 <translation id="1419753403124156396">Chromeను రీస్టార్ట్ చేయాలా?</translation>
 <translation id="1428770807407000502">సింక్‌ను ఆఫ్ చేయాలా?</translation>
 <translation id="1430915738399379752">ప్రింట్</translation>
@@ -515,6 +516,7 @@
 <translation id="342220687432920852">{HOURS,plural, =1{# గం. క్రితం}other{# గం. క్రితం}}</translation>
 <translation id="3430670036890315772">మీ ప్రొఫైల్ లాక్‌ను ఆఫ్ చేస్తే, సేవ్ చేసిన మీ సమాచారం తీసివేయబడుతుంది</translation>
 <translation id="3435465986463792564">చాలా విండోలు ఉన్నాయా? మీరు వాటిని ఇక్కడ నుండి మేనేజ్ చేయవచ్చు</translation>
+<translation id="3435575784518354875">మీ పాస్‌వర్డ్‌లకు యాక్సెస్‌ను కొనసాగించడానికి, వాటిని ఇప్పుడే ఎగుమతి చేయండి, Google Play సర్వీసులను అప్‌డేట్ చేయండి, ఆపై వాటిని తిరిగి Google Password Managerకు దిగుమతి చేయండి. <ph name="BEGIN_LINK" />పూర్తి సూచనలను చూడండి<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">భద్రత</translation>
 <translation id="3439276997620616816">మీ ఇటీవలి ట్యాబ్‌లను ఇక్కడ చూడవచ్చు</translation>
 <translation id="3443221991560634068">ప్రస్తుత పేజీని మళ్లీ లోడ్ చేయండి</translation>
@@ -524,6 +526,7 @@
 <translation id="3474624961160222204"><ph name="NAME" /> లాగా కొనసాగించండి</translation>
 <translation id="3478363558367712427">మీరు మీ సెర్చ్ ఇంజిన్‌ను ఎంచుకోవచ్చు</translation>
 <translation id="3479552764303398839">ఇప్పుడు కాదు</translation>
+<translation id="3487903178221457900">ఎగుమతి చేసిన ఫైల్‌ను యాప్‌లతో సహా ఇతరులు యాక్సెస్ చేయగలరు. మీరు ఎగుమతి చేసిన తర్వాత, మీ పాస్‌వర్డ్‌లు Chrome నుండి తొలగించబడతాయి.</translation>
 <translation id="3488199663160411179">పేరు</translation>
 <translation id="3493531032208478708">సూచించిన కంటెంట్ గురించి <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">సైన్ ఇన్ చేయదగిన దిగువున ఉన్న షీట్ సగం మేరకు తెరవబడింది.</translation>
@@ -549,6 +552,7 @@
 <translation id="3566639033325271639">సెట్టింగ్‌లను అప్‌డేట్ చేయండి</translation>
 <translation id="3568945271227339929">చోరీకి గురైన పాస్‌వర్డ్‌లు ఏవీ లేవు</translation>
 <translation id="357465026686164600">'సెక్యూరిటీ కీ'గా ఫోన్</translation>
+<translation id="3575464060651642446">ఈ పరికరంలో పాస్‌వర్డ్‌లను చెక్ చేస్తోంది…</translation>
 <translation id="3577473026931028326">ఏదో తప్పు జరిగింది. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="3577558748185201054">మీ ఆసక్తులను, ప్రాధాన్యతలను మేనేజ్ చేసుకోండి</translation>
 <translation id="3587482841069643663">మొత్తం</translation>
@@ -1749,6 +1753,7 @@
 <translation id="8937772741022875483">డిజిటల్ సంక్షేమం నుండి మీ Chrome యాక్టివిటీ తీసివేయాలా?</translation>
 <translation id="8942627711005830162">మరొక విండోలో తెరువు</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - ఈ భాషను డౌన్‌లోడ్ చేయడం సాధ్యపడదు. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
+<translation id="8957528460562961174">మీ పాస్‌వర్డ్‌లకు యాక్సెస్‌ను కొనసాగించడానికి, వాటిని ఇప్పుడే ఎగుమతి చేసి, ఆపై వాటిని మీకు నచ్చిన పాస్‌వర్డ్ మేనేజర్‌కు దిగుమతి చేసుకోండి. Google Play సర్వీసులు అందుబాటులో లేనందున Google Password Manager పనిచేయడం ఆగిపోయింది.</translation>
 <translation id="8963117664422609631">సైట్ సెట్టింగ్‌లకు వెళ్లండి</translation>
 <translation id="8965591936373831584">పెండింగ్‌లో ఉంది</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> అజ్ఞాత ట్యాబ్, ఇంకా మరో<ph name="TAB_COUNT_ONE" /> ట్యాబ్ మూసివేయబడతాయి}other{<ph name="INCOGNITO_TAB_COUNT" /> అజ్ఞాత ట్యాబ్, ఇంకా మరో<ph name="TAB_COUNT_MANY" /> ట్యాబ్‌లు మూసివేయబడతాయి}}</translation>

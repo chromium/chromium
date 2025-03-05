@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">Passordet blir lagret i Google Passordlagring for <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Åpne en ny fane i Chrome</translation>
 <translation id="1166460004393506534">Slett nettlesingsdata i Chrome</translation>
+<translation id="1171255741903316750">Slå på «Lås inkognitofaner når du lukker Chrome»</translation>
 <translation id="1179527450541388808">Få raskere tilgang til Chrome fra dokken på Hjem-skjermen på iPad.</translation>
 <translation id="1180362651362502943">Fortsett å bruke Chrome-dataene i Google-kontoen din.</translation>
 <translation id="1200396280085622191">Bruk Chrome hver gang du trykker på linker i meldinger og andre apper.</translation>
@@ -45,6 +46,7 @@ Du bør tenke på følgende:
 <translation id="1917964099031477364">Denne kontoen og eventuelle ulagrede data blir fjernet fra Chrome og andre Google-apper på enheten.</translation>
 <translation id="1919130412786645364">Tillat Chrome-pålogging</translation>
 <translation id="1965935827552890526">Gjør deg ferdig med det du holdt på med i det andre åpne Chrome-vinduet.</translation>
+<translation id="1973910962341002002">Slå på «Chrome» i «<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />»-innstillingene</translation>
 <translation id="1984705450038014246">Synkroniser Chrome-dataene dine</translation>
 <translation id="1987779152850321833">Fullfør de foreslåtte handlingene under for å få mest mulig ut av Chrome.</translation>
 <translation id="2055826352861631739">Bruk Chrome for iPad som standard</translation>
@@ -96,10 +98,13 @@ Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir di
 <translation id="3282568296779691940">Logg på Chrome</translation>
 <translation id="3303503998967553377">Bruk Chrome-handlinger i iOS</translation>
 <translation id="3348862487678490430">Legg til elementet på leselisten i Chrome</translation>
+<translation id="3357827134511189025">Logg på med de lagrede passordene og passnøklene dine fra alle apper ved å bruke Chrome for Autoutfyll</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Dette skjer når Chrome ikke har vært i bruk på {THRESHOLD} minutt}other{Dette skjer når Chrome ikke har vært i bruk på {THRESHOLD} minutter}}</translation>
 <translation id="3367797402528056312">Fullfør konfigureringen av Chrome</translation>
 <translation id="3371064404604898522">Angi Chrome som standardnettleser</translation>
 <translation id="3399930248910934354">Åpne Chrome-innstillingene</translation>
+<translation id="3440830787838130530">Del kopier av passordene dine med familiegruppen din på en enkel og sikker måte i Google Passordlagring</translation>
+<translation id="3460369101684070455">Bruk Chrome for Autoutfyll for å få enkel tilgang til de lagrede passordene dine i de andre appene dine</translation>
 <translation id="3472587960215700950">Chrome bruker Google Maps for å gi deg veibeskrivelser og lokal informasjon om registrerte adresser.</translation>
 <translation id="3503014945441706099">Få Safe Browsing med økt beskyttelse for denne Chrome-profilen også</translation>
 <translation id="3522659714780527202">For å se fanene dine overalt hvor du bruker Chrome, slå på synkronisering</translation>
@@ -181,6 +186,7 @@ Prøv å vente i noen minutter før du bytter konto. Hvis du bytter konto nå, b
 <translation id="5998675059699164418">Organisasjonen din krever at du logger på for å bruke Chrome.</translation>
 <translation id="6021312115739110405">En tilpasset feed som Google har laget for deg. Inneholder nyheter, sport og vær.</translation>
 <translation id="6022659036123304283">Gi Chrome et personlig preg</translation>
+<translation id="6132075343662013154">Chrome tilbyr å lagre passordet ditt</translation>
 <translation id="6132149203299792222">Logg på med Google-kontoen din for å synkronisere blant annet passordene og bokmerkene dine.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Søk i Chrome</translation>
@@ -228,6 +234,7 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="7061455974939528301">Trykk og hold på Chrome-ikonet, og klikk på «Endre Hjem-skjermen»</translation>
 <translation id="7065813315247345131">Flytt Chrome til dokken</translation>
 <translation id="7124339256045485976">Hold Chrome oppdatert</translation>
+<translation id="7145599899567697473">Lagre og autofyll passord i Chrome</translation>
 <translation id="7161390184744336561">Google Chrome er utdatert</translation>
 <translation id="7165736900384873061">Begynn å bruke Google Chrome QR-skanneren</translation>
 <translation id="7175129790242719365">Chrome-tips: Logg på Chrome</translation>
@@ -261,6 +268,7 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="7693590760643069321">Nå kan du bruke Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="7698568245838009292">Chrome vil ha tilgang til kameraet</translation>
 <translation id="7707877166818730835">Åpne den nyligste fanen min i Chrome</translation>
+<translation id="7747746207470479571">Få enkel tilgang til passordene og passnøklene dine med Chrome for Autoutfyll</translation>
 <translation id="776305366874821582">Få raskere tilgang til Chrome fra dokken på Hjem-skjermen på iPhone.</translation>
 <translation id="7780154209050837198">For å få mest mulig ut av Chrome, logg på Chrome med Google-kontoen din.</translation>
 <translation id="7787205077729386167">Åpne Chrome-innstillingene i iOS, trykk på «Standard nettleserapp», og velg Chrome.</translation>
@@ -281,6 +289,7 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="8136856065410661948">Dette brukes til å opprette aktiviteter i Apple-kalenderen din fra Chrome og Google Lens.</translation>
 <translation id="8154120522323162874">Få mest mulig ut av Chrome ved å fortsette å konfigurere nettleseren.</translation>
 <translation id="8160472928944011082">Kan ikke oppdatere Chrome</translation>
+<translation id="8245080522851805544">Hold nettlesingen din privat med enhetsautentisering når du lukker Chrome</translation>
 <translation id="8248887045858762645">Chrome-tips</translation>
 <translation id="8265730590513812063">Åpne Chrome-menyen</translation>
 <translation id="8317674518145175158">Betalingsmåter og adresser krypteres ikke. Nettleserloggen fra Chrome synkroniseres ikke.
@@ -324,5 +333,6 @@ Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den in
 <translation id="9181628561061032322">Åpner nylige faner fra Chrome.</translation>
 <translation id="948597495737267756">Åpner Chrome-loggsiden din.</translation>
 <translation id="97300214378190234">Bruk Chrome hver gang du trykker på linker i andre apper.</translation>
+<translation id="997929539742564806">Logg på apper og nettsteder raskt ved å autofylle passordene og passnøklene dine fra Chrome</translation>
 <translation id="998677222109959694">Administrer Chrome-innstillinger</translation>
 </translationbundle>

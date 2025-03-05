@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">‏زر إدارة عمليات التنزيل في Chrome: انقر على هذا الزر لإدارة الملفات التي تم تنزيلها في Chrome.</translation>
 <translation id="1420345875188552368">‏قد يتم استخدام طريقة الدفع التلقائي المحفوظة في إجراء عملية الدفع هذه. لإيقاف الدفع باستخدام المَحافظ الإلكترونية في Chrome، يُرجى الانتقال إلى <ph name="BEGIN_LINK1" />إعدادات الدفع<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> للسماح بالإقران</translation>
+<translation id="1421484961346698724">حساب محذوف</translation>
 <translation id="14222610277930434">تزور هذا الموقع الإلكتروني كثيرًا</translation>
 <translation id="1422930527989633628">السماح للموقع الإلكتروني بالعثور على الأجهزة المجاورة التي تتضمّن بلوتوث</translation>
 <translation id="1426410128494586442">نعم</translation>
@@ -3026,6 +3027,7 @@
 <translation id="6351658970066645919">حذف بيانات التصفّح</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ما من كلمات مرور}=1{كلمة مرور واحدة (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}=2{كلمتا مرور (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}few{# كلمات مرور (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}many{# كلمة مرور (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}other{# كلمة مرور (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}}</translation>
 <translation id="6355392890578844978">‏لا تتم إدارة هذا المتصفِّح من خلال شركة أو مؤسسة أخرى. وقد تتم إدارة النشاط على هذا الجهاز خارج Chromium. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">لم تعُد مجموعتَا علامات التبويب "<ph name="GROUP_TITLE_1" />" و"<ph name="GROUP_TITLE_2" />" متوفّرتَين</translation>
 <translation id="6358088212770985041">تعديل طُرق الدفع.</translation>
 <translation id="6358450015545214790">ماذا تعني هذه الأقسام؟</translation>
 <translation id="6360213755783740931">مزيد من المعلومات حول الحماية من البرامج الضارة</translation>

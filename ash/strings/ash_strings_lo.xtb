@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">ລາຍງານຄຳຕິຊົມ</translation>
 <translation id="1059120031266247284">ແບ່ງປັນກັບທ່ານ</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> ພ້ອມປຸ່ມລຶບອອກ</translation>
 <translation id="1062407476771304334">​ປ່ຽນ​ແທນ​</translation>
 <translation id="1073899992769346247">ປ່ຽນ ຫຼື ສາກໄຟແບັດເຕີຣີ</translation>
 <translation id="1081015718268701546">ຕອນນີ້ບໍ່ຮອງຮັບແອັບ Linux ເທື່ອ. ແອັບອື່ນໆຈະຖືກບັນທຶກໄວ້.</translation>
@@ -323,6 +324,7 @@
 <translation id="2083190527011054446">ຝັນດີ <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">ເປີດຕົວເລືອກອີໂມຈິ</translation>
 <translation id="2088116547584365419">ເກມ</translation>
+<translation id="2092517835716911174">ທ່ານຕ້ອງມີອາຍຸຢ່າງໜ້ອຍ 18 ປີຈຶ່ງຈະສາມາດໃຊ້ຄຸນສົມບັດຊ່ວຍຂ້ອຍອ່ານ ແລະ ຊ່ວຍຂ້ອຍຂຽນໄດ້.</translation>
 <translation id="209965399369889474">ບໍ່ເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍ</translation>
 <translation id="2107581415810719320">ປຸ່ມອື່ນ <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">ສາຍ USB-C ຂອງທ່ານບໍ່ຮອງຮັບ Thunderbolt. ປະສິດທິພາບອຸປະກອນອາດຖືກຈຳກັດໄວ້.</translation>
@@ -1228,6 +1230,7 @@
 <translation id="5043679421800073804">ຄລິກ ຫຼື ແຕະໄອຄອນຫຼ້າສຸດຢູ່ຖ້ານ</translation>
 <translation id="504465286040788597">ຫຍໍ້ໜ້າກ່ອນໜ້າ</translation>
 <translation id="5045550434625856497">ລະ​ຫັດ​ຜ່ານ​ບໍ່​ຖືກ​ຕ້ອງ​</translation>
+<translation id="5056587122125565772">ສ້າງຮູບ</translation>
 <translation id="5058794129231928255">ບໍ່ສາມາດສ້າງເອກະສານໃນ Google Doc ໄດ້</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">ທ່ານຈະໄດ້ຮັບການແຈ້ງເຕືອນຫາກທ່ານເວົ້າໃນລະຫວ່າງທີ່ປິດສຽງຢູ່. ໂດຍຈະບໍ່ມີການສົ່ງສຽງຜ່ານອຸປະກອນຂອງທ່ານ.</translation>
@@ -1276,6 +1279,7 @@
 <translation id="5222676887888702881">ອອກຈາກລະບົບ</translation>
 <translation id="5228195526683428788">ເສັ້ນແບ່ງໜ້າຈໍ</translation>
 <translation id="5229343007215035173">ເປີດ/ປິດໜ້າຈໍຄວາມເປັນສ່ວນຕົວ</translation>
+<translation id="5229860525743792999">ລຶບ <ph name="ITEM_LABEL" /> ອອກຈາກກຸ່ມທີ່ແນະນຳ</translation>
 <translation id="5230516054153933099">ໜ້າຈໍ</translation>
 <translation id="5234764350956374838">ປ່ອຍໄປ</translation>
 <translation id="523505283826916779">ການ​ຕັ້ງຄ່າ​ການ​ເຂົ້າ​ເຖິງ</translation>
@@ -1758,6 +1762,7 @@
 <translation id="6757237461819837179">ບໍ່ມີການຫຼິ້ນມີເດຍ</translation>
 <translation id="6760438044935091345">ແຜງໜ້າປັດເກມ</translation>
 <translation id="6768043681523654438">ບ່ອນຈັດເກັບຂໍ້ມູນ</translation>
+<translation id="6769195697113506406">ແຊກຮູບແລ້ວ</translation>
 <translation id="6777216307882431711">ກຳລັງສາກອຸປະກອນ USB-C ທີ່ເຊື່ອມຕໍ່ແລ້ວ</translation>
 <translation id="6781002679438061620">ໂຕະ 9</translation>
 <translation id="6782182743534150858">ໂຕະ 13</translation>
@@ -1984,6 +1989,7 @@
 <translation id="7571361473021531288">ແບັດເຕີຣີ <ph name="BATTERY_PERCENTAGE" />% | ໃຊ້ໄດ້ອີກ <ph name="TIME" /></translation>
 <translation id="7573585051776738856">ຈອດໜ້າຈໍທີ່ນຳໃຊ້ຢູ່ທາງຂວາແລ້ວ.</translation>
 <translation id="7579778809502851308">ການຖ່າຍຮູບໜ້າຈໍ</translation>
+<translation id="7588317312481506627">ສຳເນົາໃສ່ຄລິບບອດແລ້ວ.</translation>
 <translation id="7593891976182323525">ຄົ້ນ​ຫາ ຫຼື Shift</translation>
 <translation id="7598054670902114203">ພາບຮວມການໃຊ້ CPU, <ph name="CPU_USEAGE" />%. ອຸນຫະພູມ <ph name="TEMPERATURE" /> ອົງສາເຊວຊຽສ, ຄວາມໄວປັດຈຸບັນ: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="7599378375976398913">ການແຊກຜົນໄດ້ຮັບທີ່ເລືອກ</translation>
@@ -2178,6 +2184,7 @@
 <translation id="8155628902202578800">ເປີດກ່ອງໂຕ້ຕອງຂໍ້ມູນສຳລັບ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">ກຳລັງໃຊ້ <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">ເນື້ອ​ໃນ</translation>
+<translation id="81817143961839203">ແຊກຮູບບໍ່ສຳເລັດ</translation>
 <translation id="8185090165691050712">ເປີດ/ປິດເມນູເພື່ອປັບຂະໜາດໂໝດລັອກ</translation>
 <translation id="8192727139462702395">ເມື່ອທ່ານປິດ Bluetooth, ອຸປະກອນພາຍນອກເຫຼົ່ານີ້ຈະຍົກເລີກການເຊື່ອມຕໍ່ກັບ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ:</translation>
 <translation id="8198456017687137612">ແຖບການສົ່ງສັນຍານ</translation>
@@ -2256,6 +2263,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ມີ <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">ກົດ Alt+ຊອກຫາ ຫຼື Shift ເພື່ອຍົກເລີກ.</translation>
 <translation id="8480418399907765580">ສະແດງແຖບ​ເຄື່ອງ​ມື</translation>
+<translation id="8487660088084188539">ເມື່ອທ່ານເປີດໃຊ້ຄຸນສົມບັດເຫຼົ່ານີ້, ລະບົບອາດສົ່ງຂໍ້ຄວາມທີ່ປ້ອນ, ເນື້ອຫາເອກະສານ ແລະ URL ໜ້າເວັບໄປຫາເຊີບເວີຂອງ Google. ຂໍ້ມູນນີ້ໃຊ້ເພື່ອສ້າງການແນະນຳການຂຽນ, ສ້າງຂໍ້ມູນສະຫຼຸບ, ຕອບຄຳຖາມ ແລະ ປັບປຸງຜະລິດຕະພັນ, ໂດຍເປັນໄປຕາມ <ph name="LINK_TO_SERVICE_TERMS" />. ຢ່າລະບຸຂໍ້ມູນໃດກໍຕາມທີ່ເປັນສ່ວນຕົວ, ລະອຽດອ່ອນ ຫຼື ເປັນຄວາມລັບ.</translation>
 <translation id="8487699605742506766">ຮັອດສະປອດ</translation>
 <translation id="8491237443345908933">ເປີດລິ້ງໃນແຖບໃໝ່</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ບໍ່ຮອງຮັບ <ph name="SPECIFIED_RESOLUTION" />. ຄວາມລະອຽດໄດ້ປ່ຽນເປັນ <ph name="FALLBACK_RESOLUTION" /> ແລ້ວ. ຄລິກຢືນຢັນເພື່ອຮັກສາການປ່ຽນແປງໄວ້. ລະບົບຈະກູ້ຄືນການຕັ້ງຄ່າກ່ອນໜ້າໃນ <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2325,6 +2333,7 @@
 <translation id="8725066075913043281">ລອງໃໝ່ອີກ</translation>
 <translation id="8725214031272624704">ສະແດງລາຍຊື່ວິທີການປ້ອນຂໍ້ມູນທີ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="8730621377337864115">ສໍາເລັດ</translation>
+<translation id="8731188831050207755">ດາວໂຫຼດ <ph name="FILE_NAME" /> ບໍ່ສຳເລັດ.</translation>
 <translation id="8731487213223706745">ສິ້ນສຸດ <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">ມັນອາດຈະກຳລັງພະຍາຍາມລັກໃຊ້ການກົດແປ້ນພິມຂອງທ່ານຢູ່</translation>
 <translation id="8735678380411481005">ສີໄຟແປ້ນພິມ</translation>

@@ -81,6 +81,7 @@
 <translation id="131461803491198646">হোম নেটওয়ার্ক, রোমিং নয়</translation>
 <translation id="1327977588028644528">গেটওয়ে</translation>
 <translation id="1328223165223065150">ওয়ালপেপারের রঙ</translation>
+<translation id="1329478709358066995">ট্রানস্ক্রিপ্ট:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">স্ক্যান করতে ক্ষেত্রটি ফিট করান</translation>
 <translation id="1343442362630695901">সল্ট লেক</translation>
@@ -502,6 +503,7 @@
 <translation id="3373141842870501561">আর্থ ফ্লো ওয়ালপেপার</translation>
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> অক্ষর সহ <ph name="LETTERS_COLOR" /> ব্যাকগ্রাউন্ড</translation>
 <translation id="3383623117265110236">এক্সক্লুসিভ</translation>
+<translation id="3395147534045164351">স্ন্যাপ লোকেশন টগল করুন</translation>
 <translation id="3404249063913988450">স্ক্রিন সেভার চালু করুন</translation>
 <translation id="3413935475507503304">আপডেটগুলি ব্যবহার করে চালিয়ে যাওয়ার জন্য, 'পরবর্তী' বিকল্পে ক্লিক করুন।</translation>
 <translation id="3428551088151258685">আউটডোর</translation>
@@ -651,6 +653,7 @@
 <translation id="4113067922640381334">নতুন <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ওয়ালপেপারে<ph name="END_LINK_WALLPAPER_SUBPAGE" /> আপনার অ্যাকশন রয়েছে</translation>
 <translation id="4117637339509843559">'ডার্ক মোড'</translation>
 <translation id="4126551873361000548">১০ সেকেন্ড পিছনে যান</translation>
+<translation id="4128271910628504223">কোনও প্রম্পট লিখুন, যেমন "কুয়াশাচ্ছন্ন বনের ছবি আঁকো"</translation>
 <translation id="4130035430755296270">আরও লেআউট বিকল্পের জন্য ঘোরাতে থাকুন</translation>
 <translation id="4130750466177569591">আমি সম্মত</translation>
 <translation id="4131410914670010031">সাদা ও কালো</translation>
@@ -858,6 +861,7 @@
 <translation id="5050042263972837708">গ্রুপের নাম</translation>
 <translation id="5051044138948155788">শুধুমাত্র এই পৃষ্ঠাটি সরাতে চাই। এটি আপনাকে সেই স্ক্রিনে নিয়ে যাবে যেখানে স্ক্যান শুরু হয়।</translation>
 <translation id="5053233795640754917">পজ করুন</translation>
+<translation id="5056587122125565772">ছবি তৈরি করুন</translation>
 <translation id="5078711626843651677">স্পিকারকে লেবেল দেওয়ার প্রসেস সম্পূর্ণ না হওয়া পর্যন্ত ভয়েস মডেল অস্থায়ীভাবে ডিভাইসে স্টোর করা থাকে। 'সেটিংস' থেকে আপনি যেকোনও সময় এটি বন্ধ করে দিতে পারবেন।</translation>
 <translation id="5078983345702708852">ফিউচারিস্টিক</translation>
 <translation id="5087864757604726239">ফিরুন</translation>
@@ -1129,7 +1133,6 @@
 <translation id="6325525973963619867">ব্যর্থ</translation>
 <translation id="6327262166342360252">নিচের এই টেক্সট ব্যবহার করে এই ওয়ালপেপার AI-এর মাধ্যমে তৈরি করা হয়েছে: "<ph name="PROMPT" />"।</translation>
 <translation id="6331191339300272798">অটোমেটিক ডার্ক থিম</translation>
-<translation id="6335228876613776082">মডেল ডাউনলোড সম্পূর্ণ হয়েছে</translation>
 <translation id="6340526405444716530">নিজের পছন্দ অনুযায়ী বেছে নেওয়া</translation>
 <translation id="6348252528297699679">আপনি 'সেটিংস &gt; গোপনীয়তা ও সুরক্ষা &gt; গোপনীয়তা নিয়ন্ত্রণ &gt; লোকেশন অ্যাক্সেস' বিকল্পে গিয়ে লোকেশন বন্ধ করে দিতে পারবেন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">ইউজারনেম এবং পাসওয়ার্ড</translation>
@@ -1274,6 +1277,7 @@
 <translation id="6930597342185648547">ব্যাকগ্রাউন্ড সম্পর্কে</translation>
 <translation id="6939667434404433010">রেকর্ডিংয়ের নাম খুঁজুন</translation>
 <translation id="6939766318048400022">ক্যাফে</translation>
+<translation id="6942253772720771875">আপনার মতামত শেয়ার করুন বা সমস্যার বিবরণ দিন</translation>
 <translation id="6943893908656559156">রিমোট আইডেন্টিটি (ঐচ্ছিক)</translation>
 <translation id="6953137545147683679">গোল্ড</translation>
 <translation id="6957231940976260713">পরিষেবার নাম</translation>
@@ -1598,6 +1602,7 @@
 <translation id="8395584934117017006">এই <ph name="DEVICE_TYPE" /> এন্টারপ্রাইজ ম্যানেজ করে</translation>
 <translation id="8398927464629426868">বর্তমানে যে হারে ডিভাইসটি চার্জ হচ্ছে বা এটির চার্জ শেষ হচ্ছে</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> স্টাইলের <ph name="ART_FEATURE" /> পেন্টিং</translation>
+<translation id="8409219750150841791">জেনারেট করা সারসংক্ষেপ:</translation>
 <translation id="8410244574650205435">অটোমেটিক শনাক্ত করা হয়েছে</translation>
 <translation id="8420955526972171689">টেস্ট রান করানো ও হার্ডওয়্যার সংক্রান্ত সমস্যার সমাধান</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1647,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" />-এর জন্য আরও অ্যাকশন</translation>
 <translation id="86356131183441916">হালকা বেগুনি</translation>
 <translation id="8647595191512746911">অডিও ট্রান্সক্রিপশন</translation>
+<translation id="8648578954147795914">জেনারেট করা নাম:</translation>
 <translation id="8650852232143958317">Gmail এবং Google Drive ফাইল নিজের কাছেই রাখুন</translation>
 <translation id="8651481478098336970">ভলিউম মিউট করুন</translation>
 <translation id="8655295600908251630">চ্যানেল</translation>
@@ -1670,7 +1676,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos অ্যালবাম</translation>
 <translation id="8775713578693478175">মোডেম APN</translation>
-<translation id="877735394245039557">মডেল ডাউনলোড হচ্ছে</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">এই নেটওয়ার্কে খুব সম্ভবত ক্যাপটিভ পোর্টাল আছে</translation>
 <translation id="8797082062139985406">Google AI ব্যবহার করে নাম তৈরি করুন</translation>
@@ -1784,6 +1789,7 @@
 <translation id="9218016617214286986">পরিচিত APN দেখুন</translation>
 <translation id="932327136139879170">হোম</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">আপনা মাইক কানেক্ট করা আছে কিনা দেখুন বা আপনার Chromebook রিস্টার্ট করে দেখুন</translation>
 <translation id="945522503751344254">মতামত জানান</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" />-এর জন্য কোনও 'কী' নেই। <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">রেকর্ডিং জুড়ে ভয়েসের তুলনা করুন যাতে প্রত্যেক স্পিকার কী এবং কখন বলেছেন, ট্রান্সক্রিপ্টে তা প্রতিফলিত হয়</translation>

@@ -1719,7 +1719,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2178545675770638239">Pilih Sandi</translation>
 <translation id="2178585470774851578">Anda mengaktifkan fitur proses debug ChromeOS Flex yang akan menyiapkan daemon sshd dan memungkinkan booting dari drive USB.</translation>
 <translation id="2178614541317717477">CA Mencurigakan</translation>
-<translation id="2179850495466791921">Saat ini Anda memiliki <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" />, dan lainnya</translation>
 <translation id="2180620921879609685">Memblokir konten di halaman mana pun</translation>
 <translation id="2181821976797666341">Kebijakan</translation>
 <translation id="2182058453334755893">Disalin ke Papan Klip Anda</translation>
@@ -3138,7 +3137,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3167562202484086668">Hapus semua data <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Pilih tema yang sesuai dengan kebutuhan Anda. Cukup sentuh lama desktop untuk mengubah tema, wallpaper, screen saver, dan lainnya.</translation>
 <translation id="3170072451822350649">Anda juga dapat melewati proses masuk dan <ph name="LINK_START" />menjelajah sebagai tamu<ph name="LINK_END" />.</translation>
-<translation id="3171499217959105722">Saat ini Anda memiliki <ph name="NUMBERED_ITEM" />, dan lainnya</translation>
 <translation id="3175067642577044620">Isi</translation>
 <translation id="3175862692832442091">Hutan</translation>
 <translation id="3176347586396987181">Gunakan “z” untuk menekan lama tombol mouse</translation>
@@ -3950,7 +3948,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3744219658596020825">Sandi Anda tidak diimpor</translation>
 <translation id="3745306754941902605">Dapur</translation>
 <translation id="3747077776423672805">Untuk menghapus aplikasi, buka Setelan &gt; Google Play Store &gt; Kelola preferensi Android &gt; Aplikasi atau Pengelola aplikasi. Kemudian, ketuk aplikasi yang ingin di-uninstal (Anda mungkin perlu menggeser ke kanan atau ke kiri untuk menemukan aplikasi). Setelah itu, ketuk Uninstal atau Nonaktifkan.</translation>
-<translation id="3747552357646973221">Saat ini Anda memiliki <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, dan lainnya</translation>
 <translation id="3748424433435232460">Sandi untuk akun ini sudah disimpan di perangkat ini</translation>
 <translation id="3748706263662799310">Laporkan bug</translation>
 <translation id="3749724428455457489">Pelajari iklan yang disarankan situs lebih lanjut</translation>
@@ -4084,6 +4081,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Ekstensi telah disetujui}other{# ekstensi telah disetujui}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Sebaiknya sediakan ruang minimal <ph name="INSTALL_SIZE" /> untuk Linux.</translation>
+<translation id="3824203811509979971">Meringkas konten atau mengajukan pertanyaan</translation>
 <translation id="3824621460022590830">Token pendaftaran perangkat tidak valid. Hubungi pemilik atau administrator perangkat Anda. Kode error: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Login untuk melihat tab dari perangkat lain</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Ingat pilihan saya untuk jenis file ini: <ph name="FILE_TYPES" />}other{Ingat pilihan saya untuk jenis file ini: <ph name="FILE_TYPES" />}}</translation>
@@ -4270,6 +4268,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="3948985214866944547">Sebagian besar orang memblokir berbagi lokasi presisi untuk situs ini</translation>
 <translation id="394984172568887996">Diimpor dari IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> untuk membuat file didownload dengan lebih aman</translation>
+<translation id="3950479158728806902">Buat kunci sandi secara otomatis untuk login lebih cepat</translation>
 <translation id="3950820424414687140">Login</translation>
 <translation id="3950841222883198950">Dikte</translation>
 <translation id="3953834000574892725">Akun saya</translation>
@@ -5198,6 +5197,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4624054169152573743">Tema warna</translation>
 <translation id="4625078469366263107">Aktifkan Aplikasi</translation>
 <translation id="4625905218692741757">Warna default abu-abu</translation>
+<translation id="4627107755957573804">Izinkan situs dan aplikasi mengupgrade akun yang ada untuk menggunakan kunci sandi</translation>
 <translation id="4627442949885028695">Lanjutkan dari perangkat lain</translation>
 <translation id="4628762811416793313">Penyiapan container Linux tidak selesai. Harap coba lagi.</translation>
 <translation id="4629521233550547305">Buka profil <ph name="PROFILE_NAME" /></translation>
@@ -5781,6 +5781,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5053233576223592551">Tambahkan Nama Pengguna</translation>
 <translation id="505347685865235222">Grup tanpa nama - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{Anda harus mengubahnya sekarang}other{Anda harus mengubahnya sekarang}}</translation>
+<translation id="5056587122125565772">Buat gambar</translation>
 <translation id="5056950756634735043">Menghubungkan ke penampung</translation>
 <translation id="5057110919553308744">Saat Anda mengklik ekstensi</translation>
 <translation id="5057127674016624293">Pemindaian memerlukan waktu lebih lama dari yang diperkirakan</translation>
@@ -5891,6 +5892,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="512642543295077915">penelusuran + backspace</translation>
 <translation id="5126611267288187364">Lihat perubahan</translation>
 <translation id="5127620150973591153">ID koneksi aman: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">Meringkas konten atau mengajukan pertanyaan.</translation>
 <translation id="5127881134400491887">Mengelola koneksi jaringan</translation>
 <translation id="5127934926273826089">Bunga</translation>
 <translation id="5127986747308934633">Administrator mengontrol perangkat Anda</translation>
@@ -10160,6 +10162,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8195854162863398249">Nonaktifkan <ph name="FEATURE_NAME" /></translation>
 <translation id="8195920051450756553">Penundaan sebelum mengaktifkan tombol yang sama lagi</translation>
 <translation id="8197673340773315084">Tambahkan nama atau label, seperti Kantor atau Pribadi</translation>
+<translation id="8198181050118789419">Tema: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Mentransmisikan tab</translation>
 <translation id="8199300056570174101">Properti Perangkat dan Jaringan (Layanan)</translation>
 <translation id="8200772114523450471">Lanjutkan</translation>
@@ -11416,6 +11419,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Mouse USB terhubung</translation>
 <translation id="9075413375877487220">Ekstensi ini tidak dipercaya oleh Safe Browsing yang Disempurnakan.</translation>
+<translation id="9075985558450420812">Masukkan perintah kustom atau tandai teks untuk membuat gambar.</translation>
 <translation id="9076523132036239772">Maaf, email atau sandi Anda tidak dapat diverifikasi. Coba sambungkan ke jaringan terlebih dulu.</translation>
 <translation id="9076821103818989526">Panel samping</translation>
 <translation id="9076977315710973122">Berbagi SMB</translation>

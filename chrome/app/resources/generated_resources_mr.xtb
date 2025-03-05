@@ -1718,7 +1718,6 @@
 <translation id="2178545675770638239">पासवर्ड निवडा</translation>
 <translation id="2178585470774851578">तुम्ही ChromeOS Flex ची डीबगिंग वैशिष्‍ट्ये सुरू करत आहात, ज्यामुळे SSH daemon सेट केले जाईल आणि USB ड्राइव्‍हमधून बूट करणे सुरू केले जाईल.</translation>
 <translation id="2178614541317717477">CA तडजोड</translation>
-<translation id="2179850495466791921">तुमच्याकडे सध्या <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> आणि आणखी बरेच काही आहे</translation>
 <translation id="2180620921879609685">कोणत्याही पेजवरील आशय ब्लॉक करू शकते</translation>
 <translation id="2181821976797666341">धोरणे</translation>
 <translation id="2182058453334755893">तुमच्या क्लिपबोर्डवर कॉपी केले</translation>
@@ -3137,7 +3136,6 @@
 <translation id="3167562202484086668"><ph name="BRAND" /> चा सर्व डेटा हटवा</translation>
 <translation id="3169930038976362151">तुमच्या आवश्यकतांची पूर्तता करणारी थीम निवडा. तुमची थीम, वॉलपेपर, स्क्रीन सेव्हर आणि आणखी बरेच काही बदलण्यासाठी, डेस्कटॉपवर फक्त स्पर्श करून धरून ठेवा.</translation>
 <translation id="3170072451822350649">तुम्ही साइन इन वगळुन <ph name="LINK_START" />अतिथी म्हणून ब्राउझ<ph name="LINK_END" /> देखील करू शकता.</translation>
-<translation id="3171499217959105722">तुमच्याकडे सध्या <ph name="NUMBERED_ITEM" /> आणि आणखी बरेच काही आहे</translation>
 <translation id="3175067642577044620">मुख्य भाग</translation>
 <translation id="3175862692832442091">जंगल</translation>
 <translation id="3176347586396987181">माउस बटण प्रेस करून धरून ठेवण्यासाठी “z” वापरा</translation>
@@ -3949,7 +3947,6 @@
 <translation id="3744219658596020825">तुमचे पासवर्ड इंपोर्ट केले गेले नाहीत</translation>
 <translation id="3745306754941902605">स्वयंपाकघर</translation>
 <translation id="3747077776423672805">ॲप्स काढून टाकण्यासाठी, सेटिंग्ज &gt; Google Play स्टोअर &gt; Android प्राधान्ये व्यवस्थापित करा &gt; ॲप्स किंवा अ‍ॅप्लिकेशन व्यवस्थापक वर जा. नंतर तुम्हाला अनइंस्टॉल करायच्या असलेल्या ॲपवर टॅप करा (ॲप शोधण्‍यासाठी तुम्हाला कदाचित उजवीकडे किंवा डावीकडे स्वाइप करावे लागेल). यानंतर अनइंस्टॉल करा किंंवा बंद करा वर टॅप करा.</translation>
-<translation id="3747552357646973221">तुमच्याकडे सध्या <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> आणि आणखी बरेच काही आहे</translation>
 <translation id="3748424433435232460">या खात्याचा पासवर्ड आधीपासून या डिव्हाइसवर सेव्ह केला आहे</translation>
 <translation id="3748706263662799310">बग नोंदवा</translation>
 <translation id="3749724428455457489">साइटने सुचवलेल्या जाहिरातींबद्दल अधिक जाणून घ्या</translation>
@@ -4083,6 +4080,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{एक्स्टेंशनला मंजुरी देण्यात आली आहे}other{# एक्स्टेंशनना मंजुरी देण्यात आली आहे}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux साठी किमान <ph name="INSTALL_SIZE" /> जागेची शिफारस केली जाते.</translation>
+<translation id="3824203811509979971">आशयाचा सारांश द्या किंवा प्रश्न विचारा</translation>
 <translation id="3824621460022590830">डिव्हाइस नोंदणी टोकन चुकीचे आहे. कृपया तुमच्या डिव्हाइसच्या मालकाशी किंवा अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा. एरर कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">इतर डिव्हाइसवरील टॅब पाहण्यासाठी साइन इन करा</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{या फाइल प्रकारासाठी माझी निवड लक्षात ठेवा: <ph name="FILE_TYPES" />}other{या फाइल प्रकारांसाठी माझी निवड लक्षात ठेवा: <ph name="FILE_TYPES" />}}</translation>
@@ -4269,6 +4267,7 @@
 <translation id="3948985214866944547">बहुतेक लोक या साइटसाठी अचूक स्थान शेअर करणे ब्लॉक करतात</translation>
 <translation id="394984172568887996">IE मधून आयातित</translation>
 <translation id="3949999964543783947">फाइल डाउनलोड करणे आणखी सुरक्षित करण्यासाठी <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
+<translation id="3950479158728806902">जलद साइन इन करण्यासाठी, तुम्ही आपोआप पासकी तयार करा</translation>
 <translation id="3950820424414687140">साइन इन करा</translation>
 <translation id="3950841222883198950">व्हॉइस टायपिंग</translation>
 <translation id="3953834000574892725">माझी खाती</translation>
@@ -5195,6 +5194,7 @@
 <translation id="4624054169152573743">रंग थीम</translation>
 <translation id="4625078469366263107">अ‍ॅप सुरू करा</translation>
 <translation id="4625905218692741757">राखाडी डीफॉल्ट रंग</translation>
+<translation id="4627107755957573804">पासकी वापरण्यासाठी सद्य खाती अपग्रेड करण्याची साइट आणि अ‍ॅप्सना अनुमती द्या</translation>
 <translation id="4627442949885028695">दुसर्‍या डिव्हाइस वरून सुरू ठेवा</translation>
 <translation id="4628762811416793313">Linux कंटेनर सेटअप पूर्ण झाला नाही. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> प्रोफाइल उघडा</translation>
@@ -5778,6 +5778,7 @@
 <translation id="5053233576223592551">वापरकर्ता नाव जोडा</translation>
 <translation id="505347685865235222">निनावी गट - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{तुम्ही आता तो बदलला पाहिजे}other{तुम्ही आता ते बदलले पाहिजेत}}</translation>
+<translation id="5056587122125565772">इमेज तयार करा</translation>
 <translation id="5056950756634735043">कंटेनरशी कनेक्ट करत आहे</translation>
 <translation id="5057110919553308744">तुम्ही एक्स्टेंशनवर क्लिक करता तेव्हा</translation>
 <translation id="5057127674016624293">स्कॅनिंगला अपेक्षेपेक्षा जास्त वेळ लागत आहे</translation>
@@ -5888,6 +5889,7 @@
 <translation id="512642543295077915">search + backspace</translation>
 <translation id="5126611267288187364">बदल पहा</translation>
 <translation id="5127620150973591153">सुरक्षित कनेक्शन आयडी: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">आशयाचा सारांश द्या किंवा प्रश्न विचारा.</translation>
 <translation id="5127881134400491887">नेटवर्क कनेक्शन व्यवस्थापित करा</translation>
 <translation id="5127934926273826089">फुले</translation>
 <translation id="5127986747308934633">तुमचा अ‍ॅडमिनिस्ट्रेटर तुमचे डिव्हाइस नियंत्रित करत आहे</translation>
@@ -11416,6 +11418,7 @@ I feel - विटांची इमारत</translation>
 <translation id="9074739597929991885">ब्लूटूथ</translation>
 <translation id="9074836595010225693">USB माउस कनेक्ट केला</translation>
 <translation id="9075413375877487220">वर्धित सुरक्षित ब्राउझिंग याला या एक्स्टेंशनवर विश्वास नाही.</translation>
+<translation id="9075985558450420812">कस्टम प्रॉम्प्ट एंटर करा किंवा इमेज तयार करण्यासाठी मजकूर हायलाइट करा.</translation>
 <translation id="9076523132036239772">सॉरी, तुमच्या ईमेल किंवा पासवर्डची पडताळणी करणे शक्य नाही. सुरूवातीला एखाद्या नेटवर्कशी कनेक्ट करण्याचा प्रयत्न करा.</translation>
 <translation id="9076821103818989526">साइड पॅनल</translation>
 <translation id="9076977315710973122">SMB शेअर करा</translation>

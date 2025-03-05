@@ -461,6 +461,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1303101771013849280">Grāmatzīmju HTML fails</translation>
 <translation id="1303671224831497365">Netika atrasta neviena Bluetooth ierīce.</translation>
 <translation id="130491383855577612">Linux lietotnes un faili ir sekmīgi pārvietoti</translation>
+<translation id="1306373239538745517">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Noņemt vienu paplašinājumu un tā datus, kas ir saglabāti šajā ierīcē}zero{Noņemt {ACCOUNT_EXTENSIONS_COUNT} paplašinājumus un to datus, kas ir saglabāti šajā ierīcē}one{Noņemt {ACCOUNT_EXTENSIONS_COUNT} paplašinājumu un to datus, kas ir saglabāti šajā ierīcē}other{Noņemt {ACCOUNT_EXTENSIONS_COUNT} paplašinājumus un to datus, kas ir saglabāti šajā ierīcē}}</translation>
 <translation id="1306518237408758433">Atvērt grāmatzīmi <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="1306606229401759371">Mainīt iestatījumus</translation>
 <translation id="1307165550267142340">PIN ir izveidots</translation>
@@ -1209,6 +1210,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1826192255355608658">Sinhronizējiet pārlūkā Chrome saglabātās grāmatzīmes, paroles, vēsturi u.c. saturu</translation>
 <translation id="1826516787628120939">Pārbaude</translation>
 <translation id="1826657447823925402">Ritināšana pretējā virzienā ir atspējota</translation>
+<translation id="1827416268933303617"><ph name="COLOR_NAME" /> krāsa</translation>
 <translation id="1827504459960247692">Tīklāja nosaukums</translation>
 <translation id="1828378091493947763">Spraudnis šajā ierīcē netiek atbalstīts</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Atvērt visas}=1{&amp;Atvērt grāmatzīmi}zero{&amp;Atvērt visas ({COUNT})}one{&amp;Atvērt visas ({COUNT})}other{&amp;Atvērt visas ({COUNT})}}</translation>
@@ -1709,7 +1711,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2178545675770638239">Paroles atlase</translation>
 <translation id="2178585470774851578">Jūs iespējojat Chrome OS Flex atkļūdošanas funkcijas, kas iestatīs sshd dēmonu un iespējos palaišanu no USB diskiem.</translation>
 <translation id="2178614541317717477">CA drošības politikas apdraudējums</translation>
-<translation id="2179850495466791921">Pašlaik jums ir <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> un citi dati</translation>
 <translation id="2180620921879609685">Bloķēt saturu jebkurā lapā</translation>
 <translation id="2181821976797666341">Politikas</translation>
 <translation id="2182058453334755893">Kopēts jūsu starpliktuvē</translation>
@@ -3125,7 +3126,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3167562202484086668">Dzēst visus datus no pakalpojuma <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Izvēlieties savām vajadzībām atbilstošu motīvu. Lai mainītu motīvu, fona tapeti, ekrānsaudzētāju un citus iestatījumus, vienkārši pieskarieties un turiet darbvirsmā.</translation>
 <translation id="3170072451822350649">Varat arī izlaist pierakstīšanos un <ph name="LINK_START" />veikt pārlūkošanu kā viesis<ph name="LINK_END" />.</translation>
-<translation id="3171499217959105722">Pašlaik jums ir <ph name="NUMBERED_ITEM" /> un citi dati</translation>
 <translation id="3175067642577044620">Pamatteksts</translation>
 <translation id="3175862692832442091">Mežs</translation>
 <translation id="3176347586396987181">Lai nospiestu un turētu peles pogu, izmantojiet taustiņu “z”</translation>
@@ -3935,7 +3935,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3744219658596020825">Jūsu paroles netika importētas</translation>
 <translation id="3745306754941902605">Virtuve</translation>
 <translation id="3747077776423672805">Lai noņemtu lietotnes, pārejiet uz sadaļu Iestatījumi &gt; Google Play veikals &gt; Pārvaldīt Android preferences &gt; Lietotnes vai Lietojumprogrammu pārvaldnieks. Pēc tam pieskarieties lietotnei, kuru vēlaties atinstalēt (iespējams, būs jāvelk pa labi vai pa kreisi, lai atrastu lietotni). Pēc tam pieskarieties vienumam Atinstalēt vai Atspējot.</translation>
-<translation id="3747552357646973221">Pašlaik jums ir <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> un citi dati</translation>
 <translation id="3748424433435232460">Šī konta parole jau ir saglabāta šajā ierīcē.</translation>
 <translation id="3748706263662799310">Ziņot par blusu</translation>
 <translation id="3749724428455457489">Uzziniet vairāk par vietnēs ieteiktām reklāmām</translation>
@@ -6717,6 +6716,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5749214722697335450">Lietojuma un diagnostikas datu sūtīšana. Palīdziet uzlabot Android lietošanas pieredzi, automātiski nosūtot diagnostikas, ierīces un lietotņu lietojuma datus uzņēmumam Google. Šī informācija palīdzēs uzlabot sistēmas un lietotņu stabilitāti un daudz ko citu. Noteiktus apkopotos datus izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji. Ja ir ieslēgts iestatījums “Papildu darbības tīmeklī un lietotnēs”, šie dati var tikt saglabāti jūsu Google kontā. <ph name="BEGIN_LINK1" />Uzzināt vairāk par rādītājiem<ph name="BEGIN_LINK1_END" />Uzzināt vairāk<ph name="END_LINK1" /></translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Pārbaudīt piesaistes gatavību</translation>
+<translation id="5752346055178471785">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Šis paplašinājums ir saglabāts jūsu Google kontā, taču var tikt dzēsti visi tā dati, kas ir saglabāti tikai šajā ierīcē.}zero{Šie paplašinājumi ir saglabāti jūsu Google kontā, taču var tikt dzēsti visi to dati, kas ir saglabāti tikai šajā ierīcē.}one{Šie paplašinājumi ir saglabāti jūsu Google kontā, taču var tikt dzēsti visi to dati, kas ir saglabāti tikai šajā ierīcē.}other{Šie paplašinājumi ir saglabāti jūsu Google kontā, taču var tikt dzēsti visi to dati, kas ir saglabāti tikai šajā ierīcē.}}</translation>
 <translation id="5753570386948603678">Dzēst no vēstures</translation>
 <translation id="5756163054456765343">P&amp;alīdzības centrs</translation>
 <translation id="5757187557809630523">nākamais ieraksts</translation>

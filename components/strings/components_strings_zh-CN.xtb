@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">“管理 Chrome 中的下载内容”按钮，激活它即可管理您已在 Chrome 中下载的文件</translation>
 <translation id="1420345875188552368">系统可能会使用您已保存的自动支付方式进行此笔付款。如需在 Chrome 中关闭电子钱包，请前往<ph name="BEGIN_LINK1" />支付设置<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />以允许配对</translation>
+<translation id="1421484961346698724">已删除的账号</translation>
 <translation id="14222610277930434">您经常访问</translation>
 <translation id="1422930527989633628">可以询问能否发现附近的蓝牙设备</translation>
 <translation id="1426410128494586442">是</translation>
@@ -3019,6 +3020,7 @@
 <translation id="6351658970066645919">删除浏览数据</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{无}=1{1 个密码（用于 <ph name="DOMAIN_LIST" />，已同步）}=2{2 个密码（用于 <ph name="DOMAIN_LIST" />，已同步）}other{# 个密码（用于 <ph name="DOMAIN_LIST" />，已同步）}}</translation>
 <translation id="6355392890578844978">此浏览器并未由某个公司或其他组织管理。此设备上的活动可能在接受 Chromium 外部的管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">“<ph name="GROUP_TITLE_1" />”和“<ph name="GROUP_TITLE_2" />”标签页分组已不可用</translation>
 <translation id="6358088212770985041">修改付款方式</translation>
 <translation id="6358450015545214790">这分别意味着什么？</translation>
 <translation id="6360213755783740931">详细了解恶意软件防护</translation>

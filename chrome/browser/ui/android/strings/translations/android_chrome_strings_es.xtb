@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">No ofrecer que se traduzcan estos sitios</translation>
 <translation id="1145536944570833626">Elimina los datos actuales.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> se abrirá en Chrome. Al continuar, aceptas los <ph name="BEGIN_LINK1" />Términos del Servicio de Google<ph name="END_LINK1" /> y los <ph name="BEGIN_LINK2" />Términos del Servicio Adicionales de Google Chrome y ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="1154555449933432029">No tienes contraseñas guardadas en el Gestor de contraseñas de Google.</translation>
 <translation id="115483310321669804">Usar contraseña <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Cambiar nombre</translation>
 <translation id="1174479719160874822">Chrome solicitará el sitio web móvil cuando la pantalla sea estrecha</translation>
@@ -1366,10 +1367,12 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7224097611345298931">Se han combinado todas las contraseñas guardadas solo en este dispositivo para Chrome y <ph name="CHROME_CHANNEL" />. Puedes autocompletar todas tus contraseñas guardadas en ambas aplicaciones.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 descarga pendiente}other{# descargas pendientes}}</translation>
 <translation id="7230064152164845085">Cambiar a modo Incógnito</translation>
+<translation id="7237724030342645845">El Gestor de contraseñas de Google ha dejado de funcionar</translation>
 <translation id="72415438529550637">La sugerencia de contraseña está cerrada.</translation>
 <translation id="7260367682327802201">Es posible que tu dispositivo Android tenga una opción similar. Si la medición de anuncios está activada en Chrome y en tu dispositivo Android, una empresa podría medir la eficacia de un anuncio en los sitios web que visitas y las aplicaciones que usas.</translation>
 <translation id="727288900855680735">¿Enviar <ph name="ONE_TIME_CODE" /> a <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Sitio web bloqueado</translation>
+<translation id="7276868533747677875">Si ya has exportado contraseñas, busca un archivo CSV en tu dispositivo e impórtalo en el gestor de contraseñas que prefieras.</translation>
 <translation id="7289049772085228972">Disfrutas de la seguridad más potente de Chrome</translation>
 <translation id="7289303553784750393">Si tienes conexión a Internet, pero el problema persiste, puedes probar otras formas de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">El cambio de nombre no está disponible</translation>
@@ -1544,6 +1547,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="8027395186860110042">Es posible que las contraseñas dejen de funcionar pronto</translation>
 <translation id="8027863900915310177">Elige dónde descargarlo</translation>
 <translation id="8030852056903932865">Aprobar</translation>
+<translation id="8031805944372049238">Para empezar a guardar y usar contraseñas con el Gestor de contraseñas de Google, actualiza Servicios de Google Play.</translation>
 <translation id="8032569120109842252">Siguiendo</translation>
 <translation id="8037750541064988519">Quedan <ph name="DAYS" /> días</translation>
 <translation id="8037801708772278989">Comprobado justo ahora</translation>

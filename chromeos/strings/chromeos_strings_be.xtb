@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Хатняя сетка, не ў роўмінгу</translation>
 <translation id="1327977588028644528">Шлюз</translation>
 <translation id="1328223165223065150">Колер шпалер</translation>
+<translation id="1329478709358066995">Расшыфроўка:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Дапасаваць да вобласці сканіравання</translation>
 <translation id="1343442362630695901">салёнае возера</translation>
@@ -1129,7 +1130,6 @@
 <translation id="6325525973963619867">Збой</translation>
 <translation id="6327262166342360252">Гэтыя шпалеры былі створаны з дапамогай штучнага інтэлекту па наступным запыце: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Аўтаматычнае ўключэнне цёмнай тэмы</translation>
-<translation id="6335228876613776082">Спампоўванне мадэлі завершана</translation>
 <translation id="6340526405444716530">Персаналізацыя</translation>
 <translation id="6348252528297699679">Для выключэння вызначэння месцазнаходжання неабходна перайсці ў раздзел "Налады &gt; Прыватнасць і бяспека &gt; Налады прыватнасці &gt; Доступ да месцазнаходжання". <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Імя карыстальніка і пароль</translation>
@@ -1274,6 +1274,7 @@
 <translation id="6930597342185648547">Пра фон</translation>
 <translation id="6939667434404433010">Шукаць па назве запісу</translation>
 <translation id="6939766318048400022">Кафэ</translation>
+<translation id="6942253772720771875">Напішыце водгук або апішыце праблему</translation>
 <translation id="6943893908656559156">Аддаленае пасведчанне (неабавязкова)</translation>
 <translation id="6953137545147683679">залаты</translation>
 <translation id="6957231940976260713">Імя сэрвісу</translation>
@@ -1596,6 +1597,7 @@
 <translation id="8395584934117017006">Гэтай прыладай <ph name="DEVICE_TYPE" /> кіруе арганізацыя</translation>
 <translation id="8398927464629426868">Цяперашняя хуткасць зарадкі або разрадкі прылады</translation>
 <translation id="8403988360557588704">Карціна – <ph name="ART_FEATURE" />, стыль – <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">Згенерыраваная зводка:</translation>
 <translation id="8410244574650205435">Вызначана аўтаматычна</translation>
 <translation id="8420955526972171689">Запуск праверак, а таксама пошук і выпраўленне непаладак, звязаных з апаратным забеспячэннем</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1640,6 +1642,7 @@
 <translation id="8626489604350149811">Іншыя дзеянні з прыладай "<ph name="APN_NAME" />"</translation>
 <translation id="86356131183441916">Светла-фіялетавы</translation>
 <translation id="8647595191512746911">Расшыфроўка аўдыя</translation>
+<translation id="8648578954147795914">Згенерыраваныя назвы:</translation>
 <translation id="8650852232143958317">Прыхапіце з сабой файлы Gmail і Google Дыска</translation>
 <translation id="8651481478098336970">выключэнне гуку</translation>
 <translation id="8655295600908251630">Версія</translation>
@@ -1668,7 +1671,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Альбом Google Фота</translation>
 <translation id="8775713578693478175">APN мадэма</translation>
-<translation id="877735394245039557">Ідзе спампоўванне мадэлі</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Гэта сетка можа мець партал узаемадзеяння</translation>
 <translation id="8797082062139985406">Згенерыраваць назву з дапамогай штучнага інтэлекту ад Google</translation>
@@ -1782,6 +1784,7 @@
 <translation id="9218016617214286986">Паказаць вядомыя APN</translation>
 <translation id="932327136139879170">Галоўная старонка</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Пераканайцеся, што мікрафон падключаны, або перазапусціце Chromebook</translation>
 <translation id="945522503751344254">Адправіць водгук</translation>
 <translation id="950520315903467048">Для напрамку "<ph name="DIRECTION" />" не ўказана клавіша. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">параўноўваць галасы ва ўсім запісе, каб у расшыфроўцы было зразумела, што і калі сказаў кожны суразмоўнік.</translation>

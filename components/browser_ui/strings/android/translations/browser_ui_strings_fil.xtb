@@ -6,6 +6,7 @@
 <translation id="1044891598689252897">Gagana nang normal ang mga site</translation>
 <translation id="1070329623210597193">Mga file na puwedeng tingnan o i-edit ng site na ito</translation>
 <translation id="1073417869336441572">Tulungan kaming pahusayin ang Chrome sa pamamagitan ng pagsasabi sa amin kung bakit mo pinayagan ang third-party na cookies. <ph name="BEGIN_LINK" />Magpadala ng feedback<ph name="END_LINK" /></translation>
+<translation id="1074758928858737435">Puwede mong hilinging makita ang desktop na bersyon ng mga site</translation>
 <translation id="1085696779717592361">Gamitin ang Chrome Bilang Default</translation>
 <translation id="1178581264944972037">I-pause</translation>
 <translation id="1181037720776840403">Alisin</translation>
@@ -32,6 +33,7 @@
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}one{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> na site}}</translation>
 <translation id="1500473259453106018">I-hide ang card tungkol sa mga pagbaba ng presyo sa mga tab</translation>
 <translation id="1510341833810331442">Hindi pinapayagan ang mga site na mag-save ng data sa iyong device</translation>
+<translation id="1538031354170655462">Karaniwang gumagamit ang mga site ng near-field communication (NFC) para gumana sa malalapit na tag o device, tulad ng pag-scan ng mga badge o pagbabayad nang contactless</translation>
 <translation id="1547123415014299762">Pinapayagan ang third-party na cookies</translation>
 <translation id="1593426485665524382">Available ang mga bagong pagkilos malapit sa itaas ng screen</translation>
 <translation id="1620510694547887537">Camera</translation>
@@ -115,6 +117,7 @@
 <translation id="2677748264148917807">Umalis</translation>
 <translation id="2682367912565197520">I-delete ang naka-save na level ng pag-zoom</translation>
 <translation id="2683434792633810741">I-delete at i-reset?</translation>
+<translation id="2685514716378236873">Hindi Pinapayagan</translation>
 <translation id="2713106313042589954">I-off ang camera</translation>
 <translation id="2717722538473713889">Mga email address</translation>
 <translation id="2726059656860238749">Ilunsad ang Chrome nang nakatuon ang Omnibox, na binabawasan ang tagal ng pag-start up sa mga low-end na device.</translation>
@@ -211,12 +214,14 @@
 <translation id="3955193568934677022">Pahintulutan ang mga site na mag-play ng pinoprotektahang content (inirerekomenda)</translation>
 <translation id="3965467402665811906">Puwedeng humiling ang mga site na gumamit ng impormasyong na-save ng mga ito tungkol sa iyo</translation>
 <translation id="3967822245660637423">Tapos na ang pag-download</translation>
+<translation id="3981465354637804599">Karaniwang nagpapakita ng mga ad ang mga site para makapagbigay ang mga ito ng content o mga serbisyo nang libre. Pero, kilalang nagpapakita ng mga nakakasagabal o nakakapanlinlang na ad ang ilang site.</translation>
 <translation id="3987993985790029246">Kopyahin ang link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992308058851451478">Magagamit ng <ph name="SITE" /> ang iyong impormasyon habang nagba-browse ka</translation>
 <translation id="3992684624889376114">Tungkol sa page na ito</translation>
 <translation id="4002066346123236978">Pamagat</translation>
 <translation id="4046123991198612571">Susunod na track</translation>
+<translation id="4077310749977440510">Karaniwang binabasa ng mga site ang iyong clipboard para sa mga feature gaya ng pagpapanatili ng pag-format ng text na nakopya mo</translation>
 <translation id="4149890623864272035">Sigurado ka bang gusto mong i-delete ang lahat ng lokal na data, kabilang ang cookies, at i-reset ang lahat ng pahintulot para sa website na ito?</translation>
 <translation id="4149994727733219643">Pinasimpleng view para sa mga web page</translation>
 <translation id="4151930093518524179">Default na pag-zoom</translation>
@@ -224,6 +229,7 @@
 <translation id="4169549551965910670">Nakakonekta sa USB device</translation>
 <translation id="4194328954146351878">Magtanong bago payagan ang mga site na tingnan at baguhin ang impormasyon sa mga NFC device (inirerekomenda)</translation>
 <translation id="4200726100658658164">Buksan ang Mga Setting ng Lokasyon</translation>
+<translation id="421742575134139848">Posibleng mag-play ng tunog ang mga site para magbigay ng audio para sa musika, mga video, at iba pang media</translation>
 <translation id="4226663524361240545">Maaaring mag-vibrate ang device dahil sa mga notification</translation>
 <translation id="4259722352634471385">Naka-block ang navigation: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Pagkatapos mong umalis sa isang site, puwede itong patuloy na mag-sync para matapos ang mga gawain, tulad ng pag-upload ng mga larawan o pagpapadala ng mensahe sa chat</translation>
@@ -247,6 +253,7 @@
 <translation id="4566417217121906555">I-mute ang mikropono</translation>
 <translation id="4570913071927164677">Mga Detalye</translation>
 <translation id="4598549027014564149">Habang nasa Incognito, hindi magagamit ng mga site ang cookies mo para makita ang iyong aktibidad sa pag-browse sa lahat ng site, kahit sa mga nauugnay na site. Hindi ginagamit ang iyong aktibidad sa pag-browse para sa mga bagay tulad ng pag-personalize ng mga ad. Posibleng hindi gumana ang mga feature sa ilang site.</translation>
+<translation id="461356340001513807">Pinapayagan kang mag-sign in sa mga website gamit ang account na mayroon ka gamit ang serbisyo para sa pagkakakilanlan</translation>
 <translation id="4619615317237390068">Mga tab mula sa iba pang device</translation>
 <translation id="4644713492825682049">I-delete at i-reset</translation>
 <translation id="4645575059429386691">Pinamamahalaan ng iyong magulang</translation>
@@ -430,6 +437,7 @@
 <translation id="7000754031042624318">Naka-off sa mga setting ng Android</translation>
 <translation id="702275896380648118">Tinutukoy ng site na ito ang mga bagay na gusto mo at pagkatapos ay nagmumungkahi ito ng mga ad sa iba pang site. Kinukuha rin ng site na ito ang mga paksa ng ad mo mula sa Chrome para magpakita sa iyo ng higit pang kaugnay na ad.</translation>
 <translation id="7053983685419859001">I-block</translation>
+<translation id="7055552182600664515">Para mag-play ng content na pinoprotektahan ng copyright, posibleng kailanganin ng mga site na gumamit ng serbisyo sa pagprotekta ng content. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ang napili}one{# ang napili}other{# ang napili}}</translation>
 <translation id="708014373017851679">Luma na ang '<ph name="APP_NAME" />.' Paki-update ang app.</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> ang napili.  Available ang mga opsyon malapit sa itaas ng screen</translation>

@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">[Chrome でのダウンロードを管理] ボタンです。実行すると、Chrome でダウンロードしたファイルを管理できます</translation>
 <translation id="1420345875188552368">保存した自動支払い方法をこの支払いで使用できます。Chrome で電子ウォレットをオフにするには、<ph name="BEGIN_LINK1" />お支払い設定<ph name="END_LINK1" />に移動してください</translation>
 <translation id="1420920093772172268">ペア設定するには <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="1421484961346698724">削除されたアカウント</translation>
 <translation id="14222610277930434">頻繁にアクセス</translation>
 <translation id="1422930527989633628">近くにある Bluetooth デバイスの検出を要求できる</translation>
 <translation id="1426410128494586442">はい</translation>
@@ -3024,6 +3025,7 @@
 <translation id="6351658970066645919">閲覧履歴データの削除</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{なし}=1{<ph name="DOMAIN_LIST" /> のパスワード 1 件（同期）}=2{<ph name="DOMAIN_LIST" /> のパスワード 2 件（同期）}other{<ph name="DOMAIN_LIST" /> のパスワード # 件（同期）}}</translation>
 <translation id="6355392890578844978">このブラウザは、会社またはその他の組織によって管理されていません。このデバイス上のアクティビティは、Chromium の外部で管理されている可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">「<ph name="GROUP_TITLE_1" />」と「<ph name="GROUP_TITLE_2" />」のタブグループは使用できなくなりました</translation>
 <translation id="6358088212770985041">お支払い方法を編集します</translation>
 <translation id="6358450015545214790">ヘルプ</translation>
 <translation id="6360213755783740931">マルウェアからの保護の詳細</translation>

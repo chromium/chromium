@@ -107,6 +107,7 @@
 <translation id="1413446866325418126">將資料儲存至 Google 帳戶</translation>
 <translation id="1414981605391750300">正在連線至 Google。可能需要一分鐘的時間…</translation>
 <translation id="1416550906796893042">應用程式版本</translation>
+<translation id="1416582024052267068">繼續存取密碼</translation>
 <translation id="1419753403124156396">重新啟動 Chrome 嗎？</translation>
 <translation id="1428770807407000502">要關閉同步功能嗎？</translation>
 <translation id="1430915738399379752">列印</translation>
@@ -515,6 +516,7 @@
 <translation id="342220687432920852">{HOURS,plural, =1{# 小時前}other{# 小時前}}</translation>
 <translation id="3430670036890315772">如果關閉個人檔案鎖定，系統將移除已儲存的資料</translation>
 <translation id="3435465986463792564">開啟了很多視窗嗎？您可在此管理視窗</translation>
+<translation id="3435575784518354875">如要繼續存取密碼，請立即匯出密碼、更新 Google Play 服務，再將密碼匯入回「Google 密碼管理工具」。<ph name="BEGIN_LINK" />查閱完整指示<ph name="END_LINK" />。</translation>
 <translation id="3435738964857648380">安全性</translation>
 <translation id="3439276997620616816">最近開啟的分頁會在這裡顯示</translation>
 <translation id="3443221991560634068">重新載入目前網頁</translation>
@@ -524,6 +526,7 @@
 <translation id="3474624961160222204">以「<ph name="NAME" />」的身分繼續</translation>
 <translation id="3478363558367712427">您可以選擇搜尋引擎</translation>
 <translation id="3479552764303398839">略過</translation>
+<translation id="3487903178221457900">其他人 (包括應用程式) 或可存取匯出的檔案。匯出後，密碼就會從 Chrome 中刪除。</translation>
 <translation id="3488199663160411179">姓名</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />建議的內容</translation>
 <translation id="3495219333887281978">登入頁底面板宜家顯示喺畫面下半部。</translation>
@@ -549,6 +552,7 @@
 <translation id="3566639033325271639">更新設定</translation>
 <translation id="3568945271227339929">沒有密碼被盜用</translation>
 <translation id="357465026686164600">使用手機作為安全密鑰</translation>
+<translation id="3575464060651642446">正在檢查此裝置上的密碼…</translation>
 <translation id="3577473026931028326">發生錯誤，請再試一次。</translation>
 <translation id="3577558748185201054">管理興趣和偏好設定</translation>
 <translation id="3587482841069643663">全部</translation>
@@ -1751,6 +1755,7 @@
 <translation id="8937772741022875483">要從「健康數碼生活」移除您的 Chrome 活動記錄嗎？</translation>
 <translation id="8942627711005830162">在其他視窗中開啟</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - 無法下載此語言套件，請稍後再試。</translation>
+<translation id="8957528460562961174">如要繼續存取密碼，請立即匯出密碼，然後匯入至偏好的密碼管理工具。由於無法使用 Google Play 服務，「Google 密碼管理工具」已停止運作。</translation>
 <translation id="8963117664422609631">前往網站設定</translation>
 <translation id="8965591936373831584">正在等待下載</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕式分頁和另外 <ph name="TAB_COUNT_ONE" /> 個分頁}other{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕式分頁和另外 <ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>

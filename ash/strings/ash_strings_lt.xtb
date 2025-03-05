@@ -22,6 +22,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1058009965971887428">Pateikti atsiliepimą</translation>
 <translation id="1059120031266247284">Bendrinama su jumis</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176">„<ph name="ITEM_LABEL" />“ su pašalinimo mygtuku</translation>
 <translation id="1062407476771304334">Pakeisti</translation>
 <translation id="1073899992769346247">Pakeiskite arba įkraukite akumuliatorių</translation>
 <translation id="1081015718268701546">„Linux“ programos šiuo metu nepalaikomos. Kitos programos bus išsaugotos.</translation>
@@ -1229,6 +1230,7 @@ Prijungtas vienas įrenginys.</translation>
 <translation id="5043679421800073804">Spustelėti arba paliesti paskutinę piktogramą lentynoje</translation>
 <translation id="504465286040788597">Ankstesnė pastraipa</translation>
 <translation id="5045550434625856497">Neteisingas slaptažodis</translation>
+<translation id="5056587122125565772">Sukurti vaizdą</translation>
 <translation id="5058794129231928255">Nepavyko sukurti „Google“ dokumento</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Gausite pranešimą, jei kalbėsite nutildę. Garso įrašas visada lieka jūsų įrenginyje.</translation>
@@ -1277,6 +1279,7 @@ Taip pat galite naudoti spartųjį klavišą. Pirmiausia paryškinkite tekstą, 
 <translation id="5222676887888702881">Atsijungti</translation>
 <translation id="5228195526683428788">Išskaidyto ekrano režimo daliklis</translation>
 <translation id="5229343007215035173">Įjungti ir (arba) išjungti privatumo ekraną</translation>
+<translation id="5229860525743792999">Pašalinti „<ph name="ITEM_LABEL" />“ iš siūlomos grupės</translation>
 <translation id="5230516054153933099">Langas</translation>
 <translation id="5234764350956374838">Atsisakyti</translation>
 <translation id="523505283826916779">Pasiekiamumo nustatymai</translation>
@@ -1759,6 +1762,7 @@ Naujas įdiegimas</translation>
 <translation id="6757237461819837179">Medija neleidžiama</translation>
 <translation id="6760438044935091345">Žaidimų informacijos suvestinė</translation>
 <translation id="6768043681523654438">saugykla</translation>
+<translation id="6769195697113506406">Vaizdas įterptas</translation>
 <translation id="6777216307882431711">Teikia maitinimą prijungtiems USB-C įrenginiams</translation>
 <translation id="6781002679438061620">9 darbalaukis</translation>
 <translation id="6782182743534150858">13 darbalaukis</translation>
@@ -1985,6 +1989,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="7571361473021531288">Akumuliatoriaus įkrovimo lygis: <ph name="BATTERY_PERCENTAGE" /> % | liko <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Aktyvus langas įstatytas dešinėje.</translation>
 <translation id="7579778809502851308">Ekrano fiksavimas</translation>
+<translation id="7588317312481506627">Nukopijuota į iškarpinę.</translation>
 <translation id="7593891976182323525">Paieškos arba „Shift“</translation>
 <translation id="7598054670902114203">Centrinio procesoriaus naudojimo glausta informacija, <ph name="CPU_USEAGE" /> %. Temperatūra: <ph name="TEMPERATURE" /> laipsn. pagal Celsijų, dabartinė sparta: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Įterpiamas pasirinktas rezultatas</translation>
@@ -2179,6 +2184,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8155628902202578800">Atidaryti <ph name="USER_EMAIL_ADDRESS" /> informacijos dialogo langą</translation>
 <translation id="8167567890448493835">Naudojama: <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Turinys</translation>
+<translation id="81817143961839203">Nepavyko įterpti vaizdo</translation>
 <translation id="8185090165691050712">Įjungti ir (arba) išjungti meniu norint pakeisti užrakinimo režimo dydį</translation>
 <translation id="8192727139462702395">Kai išjungsite „Bluetooth“, šie išoriniai įrenginiai bus atjungti nuo „<ph name="DEVICE_TYPE" />“:</translation>
 <translation id="8198456017687137612">Perduodamas skirtukas</translation>
@@ -2257,6 +2263,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />: <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Jei norite atšaukti, paspauskite „Alt“ + paieškos klavišą arba „Alt“ + „Shift“.</translation>
 <translation id="8480418399907765580">Rodyti įrankių juostą</translation>
+<translation id="8487660088084188539">Kai įjungiate šias funkcijas, įvesties tekstas, dokumento turinys ir tinklalapio URL gali būti siunčiami į „Google“ serverius. Ši informacija naudojama rašymo pasiūlymams, suvestinėms generuoti, atsakyti į klausimus ir produktui tobulinti, vadovaujantis <ph name="LINK_TO_SERVICE_TERMS" />. Neįtraukite jokios asmens, neskelbtinos ar konfidencialios informacijos.</translation>
 <translation id="8487699605742506766">Viešosios interneto prieigos taškas</translation>
 <translation id="8491237443345908933">Atidaryti nuorodą naujame skirtuke</translation>
 <translation id="8492573885090281069">„<ph name="DISPLAY_NAME" />“ nepalaiko <ph name="SPECIFIED_RESOLUTION" />. Skyra buvo pakeista į <ph name="FALLBACK_RESOLUTION" />. Spustelėkite „Patvirtinti“ ir išsaugokite pakeitimus. Ankstesni nustatymai bus atkurti už <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2326,6 +2333,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8725066075913043281">Bandyti dar kartą</translation>
 <translation id="8725214031272624704">Rodyti pasiekiamų įvesties metodų sąrašą</translation>
 <translation id="8730621377337864115">Atlikta</translation>
+<translation id="8731188831050207755">Nepavyko atsisiųsti „<ph name="FILE_NAME" />“.</translation>
 <translation id="8731487213223706745">Baigiasi <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Gali būti bandoma pavogti jūsų klavišų paspaudimus</translation>
 <translation id="8735678380411481005">Klaviatūros apšvietimo spalva</translation>

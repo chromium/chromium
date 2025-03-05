@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Réseau domestique, sans itinérance</translation>
 <translation id="1327977588028644528">Passerelle</translation>
 <translation id="1328223165223065150">Couleur du fond d'écran</translation>
+<translation id="1329478709358066995">Transcription :</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajuster à la zone de numérisation</translation>
 <translation id="1343442362630695901">lac salé</translation>
@@ -502,6 +503,7 @@
 <translation id="3373141842870501561">Fond d'écran Earth Flow</translation>
 <translation id="33736539805963175">Un arrière-plan <ph name="LETTERS_COLOR" /> avec la lettre <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Exclusif</translation>
+<translation id="3395147534045164351">Basculer l'emplacement de l'aperçu</translation>
 <translation id="3404249063913988450">Activer l'écran de veille</translation>
 <translation id="3413935475507503304">Pour lancer la mise à jour, cliquez sur Suivant.</translation>
 <translation id="3428551088151258685">extérieur</translation>
@@ -651,6 +653,7 @@
 <translation id="4113067922640381334">Vous avez désormais accès à de nouveaux <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fonds d'écran<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Mode sombre</translation>
 <translation id="4126551873361000548">Reculer de 10 secondes</translation>
+<translation id="4128271910628504223">Saisissez une requête comme « dessiner une forêt brumeuse »</translation>
 <translation id="4130035430755296270">Continuez à pointer pour plus d'options de mise en page</translation>
 <translation id="4130750466177569591">J'accepte</translation>
 <translation id="4131410914670010031">Noir et blanc</translation>
@@ -858,6 +861,7 @@
 <translation id="5050042263972837708">Nom du groupe</translation>
 <translation id="5051044138948155788">C'est la seule page. Cette action vous redirigera vers l'écran du lancement de la numérisation.</translation>
 <translation id="5053233795640754917">Mettre en pause</translation>
+<translation id="5056587122125565772">Créer une image</translation>
 <translation id="5078711626843651677">Les modèles vocaux sont enregistrés temporairement sur l'appareil jusqu'à ce que l'attribution des étiquettes de locuteur soit terminée. Vous pouvez désactiver cette fonctionnalité en tout temps dans les paramètres.</translation>
 <translation id="5078983345702708852">futuriste</translation>
 <translation id="5087864757604726239">précédent</translation>
@@ -1129,7 +1133,6 @@
 <translation id="6325525973963619867">Échec</translation>
 <translation id="6327262166342360252">Ce fond d'écran a été créé avec l'IA en utilisant le texte suivant : « <ph name="PROMPT" /> ».</translation>
 <translation id="6331191339300272798">Thème sombre automatique</translation>
-<translation id="6335228876613776082">Téléchargement du modèle terminé</translation>
 <translation id="6340526405444716530">Personnalisation</translation>
 <translation id="6348252528297699679">Vous pouvez désactiver la localisation dans Paramètres &gt; Confidentialité et sécurité &gt; Paramètres de confidentialité &gt; Accès à la position. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Nom d'utilisateur et mot de passe</translation>
@@ -1274,6 +1277,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="6930597342185648547">À propos de l'arrière-plan</translation>
 <translation id="6939667434404433010">Rechercher le nom de l'enregistrement</translation>
 <translation id="6939766318048400022">Café</translation>
+<translation id="6942253772720771875">Faites-nous part de vos commentaires ou décrivez votre problème</translation>
 <translation id="6943893908656559156">Identité distante (facultative)</translation>
 <translation id="6953137545147683679">or</translation>
 <translation id="6957231940976260713">Nom du service</translation>
@@ -1598,6 +1602,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8395584934117017006">Cet appareil <ph name="DEVICE_TYPE" /> est géré par l'entreprise</translation>
 <translation id="8398927464629426868">La vitesse à laquelle l'appareil se charge ou se décharge actuellement</translation>
 <translation id="8403988360557588704">Une peinture d'un(e) <ph name="ART_FEATURE" /> dans le style <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">Résumé généré :</translation>
 <translation id="8410244574650205435">Pays détecté automatiquement</translation>
 <translation id="8420955526972171689">Réalisez des tests et des étapes de dépannage en cas de problèmes matériels</translation>
 <translation id="8422748173858722634">IIEM</translation>
@@ -1642,6 +1647,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8626489604350149811">Autres actions pour <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Mauve clair</translation>
 <translation id="8647595191512746911">Transcription audio</translation>
+<translation id="8648578954147795914">Noms générés :</translation>
 <translation id="8650852232143958317">Emporter vos fichiers Gmail et Google Disque avec vous</translation>
 <translation id="8651481478098336970">désactiver le son</translation>
 <translation id="8655295600908251630">Version</translation>
@@ -1670,7 +1676,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Photos</translation>
 <translation id="8775713578693478175">Nom de point d'accès du modem</translation>
-<translation id="877735394245039557">Téléchargement du modèle en cours…</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Ce réseau peut présenter un portail captif</translation>
 <translation id="8797082062139985406">Créer un nom à l'aide de l'IA de Google</translation>
@@ -1784,6 +1789,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="9218016617214286986">Afficher les noms de point d'accès connus</translation>
 <translation id="932327136139879170">Accueil</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Assurez-vous que votre microphone est connecté ou essayez de redémarrer votre Chromebook</translation>
 <translation id="945522503751344254">Envoyer un commentaire à Google</translation>
 <translation id="950520315903467048">La touche est manquante pour <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Comparer les voix tout au long de l'enregistrement afin que la transcription reflète ce que chaque locuteur a dit et à quel moment</translation>

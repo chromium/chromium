@@ -81,6 +81,7 @@
 <translation id="131461803491198646">ହୋମ୍ ନେଟ୍‌ୱର୍କ, ରୋମିଂ ନୁହେଁ</translation>
 <translation id="1327977588028644528">ଗେଟ୍‌ୱେ</translation>
 <translation id="1328223165223065150">ୱାଲପେପର ରଙ୍ଗ</translation>
+<translation id="1329478709358066995">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ସ୍କାନ୍ କ୍ଷେତ୍ର ଅନୁସାରେ ଫିଟ୍ କରନ୍ତୁ</translation>
 <translation id="1343442362630695901">ଲୁଣି ହ୍ରଦ</translation>
@@ -1129,7 +1130,6 @@
 <translation id="6325525973963619867">ବିଫଳ ହୋଇଛି</translation>
 <translation id="6327262166342360252">ନିମ୍ନୋକ୍ତ ଟେକ୍ସଟକୁ ବ୍ୟବହାର କରି AI ମାଧ୍ୟମରେ ଏହି ୱାଲପେପର ତିଆରି କରାଯାଇଥିଲା: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">ସ୍ୱଚାଳିତ ଗାଢ଼ା ଥିମ୍</translation>
-<translation id="6335228876613776082">ମଡେଲ ଡାଉନଲୋଡ କରିବା ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
 <translation id="6340526405444716530">ପର୍ସନାଲାଇଜେସନ</translation>
 <translation id="6348252528297699679">ଆପଣ ସେଟିଂସ&gt; ଗୋପନୀୟତା ଏବଂ ସୁରକ୍ଷା &gt; ଗୋପନୀୟତା ନିୟନ୍ତ୍ରଣ &gt; ଲୋକେସନ ଆକ୍ସେସରେ ଲୋକେସନକୁ ବନ୍ଦ କରିପାରିବେ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">ଉପଯୋଗକର୍ତ୍ତାନାମ ଏବଂ ପାସୱାର୍ଡ</translation>
@@ -1274,6 +1274,7 @@
 <translation id="6930597342185648547">ବେକଗ୍ରାଉଣ୍ଡ ବିଷୟରେ</translation>
 <translation id="6939667434404433010">ରେକର୍ଡିଂର ନାମ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="6939766318048400022">କାଫେ</translation>
+<translation id="6942253772720771875">ଆପଣଙ୍କ ମତାମତ ସେୟାର କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ ସମସ୍ୟାର ବର୍ଣ୍ଣନା କରନ୍ତୁ</translation>
 <translation id="6943893908656559156">ରିମୋଟ ପରିଚୟ (ଇଚ୍ଛାଧୀନ)</translation>
 <translation id="6953137545147683679">ଗୋଲ୍ଡ</translation>
 <translation id="6957231940976260713">ସେବାର ନାମ</translation>
@@ -1598,6 +1599,7 @@
 <translation id="8395584934117017006">ଏହି <ph name="DEVICE_TYPE" /> ଏଣ୍ଟରପ୍ରାଇଜ୍ ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="8398927464629426868">ଡିଭାଇସଟି ବର୍ତ୍ତମାନ ଯେଉଁ ହାରରେ ଚାର୍ଜ କିମ୍ବା ଡିସଚାର୍ଜ ହେଉଛି</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> ଷ୍ଟାଇଲରେ ଏକ <ph name="ART_FEATURE" />ର ପେଣ୍ଟିଂ</translation>
+<translation id="8409219750150841791">ସୃଷ୍ଟି ହୋଇଥିବା ସାରାଂଶ:</translation>
 <translation id="8410244574650205435">ସ୍ୱଚାଳିତ ଭାବେ ଚିହ୍ନଟ କରାଯାଇଛି</translation>
 <translation id="8420955526972171689">ହାର୍ଡୱେର ସମସ୍ୟାଗୁଡ଼ିକ ପାଇଁ ପରୀକ୍ଷା ଏବଂ ଟ୍ରବୁଲସୁଟିଂ ଚଲାନ୍ତୁ</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1644,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> ପାଇଁ ଅଧିକ ପଦକ୍ଷେପ</translation>
 <translation id="86356131183441916">ହାଲୁକା ବାଇଗଣୀ</translation>
 <translation id="8647595191512746911">ଅଡିଓ ଟ୍ରାନ୍ସକ୍ରିପସନ</translation>
+<translation id="8648578954147795914">ସୃଷ୍ଟି ହୋଇଥିବା ନାମ:</translation>
 <translation id="8650852232143958317">ଆପଣଙ୍କ Gmail ଏବଂ Google Drive ଫାଇଲଗୁଡ଼ିକୁ ଆପଣଙ୍କ ସହିତ ନିଅନ୍ତୁ</translation>
 <translation id="8651481478098336970">ଭଲ୍ୟୁମ୍ ମ୍ୟୁଟ୍ କରନ୍ତୁ</translation>
 <translation id="8655295600908251630">ଚ୍ୟାନେଲ୍</translation>
@@ -1670,7 +1673,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ଆଲବମ</translation>
 <translation id="8775713578693478175">ମୋଡେମ APN</translation>
-<translation id="877735394245039557">ମଡେଲ ଡାଉନଲୋଡ କରିବା ଚାଲିଛି</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">ଏହି ନେଟୱାର୍କରେ ଏକ କ୍ୟାପ୍ଟିଭ ପୋର୍ଟାଲ ଥାଇପାରେ</translation>
 <translation id="8797082062139985406">Google AIକୁ ବ୍ୟବହାର କରି ନାମ ତିଆରି କରନ୍ତୁ</translation>
@@ -1784,6 +1786,7 @@
 <translation id="9218016617214286986">ଜଣାଥିବା APNଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="932327136139879170">Home</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">ଆପଣଙ୍କ ମାଇକ ସଂଯୁକ୍ତ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ Chromebook ରିଷ୍ଟାର୍ଟ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="945522503751344254">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> ପାଇଁ କୀ ଉପଲବ୍ଧ ନାହିଁ। <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">ସମ୍ପୂର୍ଣ୍ଣ ରେକର୍ଡିଂରେ ଭଏସଗୁଡ଼ିକୁ ତୁଳନା କରିବା ଯାହା ଫଳରେ ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ପ୍ରତ୍ୟେକ ସ୍ପିକର କଣ ଏବଂ କେତେବେଳେ କହିଲେ ତାହା ପ୍ରତିଫଳିତ କରେ</translation>

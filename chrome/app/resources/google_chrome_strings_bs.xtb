@@ -355,7 +355,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="5727531838415286053">Ako vas je Chrome nasumično ubacio u aktivni probni period, vaša historija pregledanja utiče na oglase koje vidite i interesovanja, kao što je procijenjeno u nastavku. Da zaštiti vašu privatnost, Chrome automatski briše interesovanja na mjesečnoj osnovi. Interesovanja se osvježavaju ukoliko ih ne uklonite.</translation>
 <translation id="5736850870166430177">Ako web lokacija pokuša ukrasti vašu lozinku ili kada preuzimate štetan fajl, Chrome može slati i URL-ove, uključujući dijelove sadržaja stranice, u Sigurno pregledanje</translation>
 <translation id="5756509061973259733">Chrome profil s ovim računom već postoji na ovom uređaju</translation>
-<translation id="5759947850379142561">Odaberite bilo koji tekst ili sliku za pretraživanje pomoću Google objektiva ili pritisnite Escape da biste zatvorili Google objektiv</translation>
+<translation id="5759947850379142561">Pretraživanje putem Google Objektiva odabirom bilo kojeg teksta ili slike ili napuštanje Google Objektiva pritiskom na Esc</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Pokretanje Chromea nije uspjelo. Ponovite.</translation>
 <translation id="5809516625706423866">Nije moguće povezati se s internetom. HTTP 401 nije ovlašten. Provjerite konfiguraciju proksi servera.</translation>
@@ -458,7 +458,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="7071827361006050863">Chrome će uskoro izbrisati podatke o pregledanju</translation>
 <translation id="7085332316435785646">Odaberite želite li uključiti historiju Chromea da dodatno personalizirate iskustva na Googleovim uslugama</translation>
 <translation id="7088681679121566888">Chrome je ažuriran</translation>
-<translation id="7096221564931416126">Odaberite tekst ili sliku za pretraživanje pomoću Google objektiva</translation>
+<translation id="7096221564931416126">Odaberite bilo koji tekst ili sliku da pretražite putem Google Objektiva</translation>
 <translation id="7098166902387133879">Google Chrome koristi vaš mikrofon.</translation>
 <translation id="7099479769133613710">Ponovo pokrenite da ažurirate &amp;ChromeOS</translation>
 <translation id="7106741999175697885">Upravitelj zadataka – Google Chrome</translation>
@@ -545,6 +545,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="8129812357326543296">O &amp;Google Chromeu</translation>
 <translation id="813913629614996137">Pokretanje…</translation>
 <translation id="8162006532256575008">Koristi Chrome bez računa</translation>
+<translation id="8177472873527554730">Sadržaj na stranici nije pronađen</translation>
 <translation id="8221491193165283816">Obično blokirate obavještenja. Da dozvolite ovoj web lokaciji da vas obavještava, kliknite ovdje.</translation>
 <translation id="8255190535488645436">Google Chrome koristi vašu kameru i mikrofon.</translation>
 <translation id="8257796129973882597">Možete otvoriti oznake, način rada za čitanje i drugo u Chrome meniju</translation>

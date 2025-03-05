@@ -206,6 +206,7 @@
 <translation id="1827529786398596735">Mantén presionada la pantalla principal</translation>
 <translation id="1832848789136765277">Para asegurarte de que siempre puedas acceder a tus datos sincronizados, verifica tu identidad.</translation>
 <translation id="1836891464494477513">{count,plural, =1{Se guardó el favorito en tu Cuenta de Google ({email})}other{Se guardaron los favoritos en tu Cuenta de Google ({email})}}</translation>
+<translation id="1838089197478136166">¿Quieres abrir el archivo en Billetera?</translation>
 <translation id="183878838231635348">En esta tarjeta se muestran los problemas de privacidad o seguridad que la Verificación de seguridad detecta automáticamente.</translation>
 <translation id="1845230888742614096">Conservar grupo</translation>
 <translation id="1854463785401910334">Buscar pestañas abiertas</translation>
@@ -225,6 +226,7 @@
 <translation id="189531189292803889">Se restableció tu iPad recientemente y es posible que haya cambiado tu navegador predeterminado.</translation>
 <translation id="1901366738768303267">¿Cómo uso esta función?</translation>
 <translation id="1901600657316773839">Conservar la selección</translation>
+<translation id="1902277226107477495">La detección de direcciones está desactivada. Vuelve a activarla en Configuración.</translation>
 <translation id="1904580727789512086">Las URL que visitas se guardan en tu Cuenta de Google</translation>
 <translation id="1911619930368729126">Cargar a Google Drive</translation>
 <translation id="1923342640370224680">Última hora</translation>
@@ -301,6 +303,7 @@
 <translation id="2230173723195178503">Se cargó la página web</translation>
 <translation id="2236949375853147973">Mi actividad</translation>
 <translation id="2240256190924001613">Perfil de configuración disponible</translation>
+<translation id="2244080985779413662">Este sitio web quiere descargar un archivo y abrirlo en tu Billetera.</translation>
 <translation id="2245007488813216650">Traduciendo…</translation>
 <translation id="2249119578464404734">En la parte superior de la pantalla, presiona el ícono de Búsqueda</translation>
 <translation id="2251686759395008410">Menú → Historial</translation>
@@ -648,7 +651,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="385051799172605136">Atrás</translation>
 <translation id="3851938967634752633">Se borrarán las contraseñas de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> y <ph name="NUMBER_OF_ACCOUNTS" /> más. No se borrarán tus cuentas.</translation>
 <translation id="3858860766373142691">Nombre</translation>
-<translation id="3861908220442487587">Esta dirección solo se guarda en este dispositivo. Para usarla en tus otros dispositivos, muévela a tu Cuenta de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="3868495844258915202">Mostrar URL completa</translation>
 <translation id="3875783148670536197">Cómo hacerlo</translation>
 <translation id="3876833929577368454">Preguntarme siempre</translation>
@@ -1361,6 +1363,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6779455296366983087">Se borrarán tus datos de navegación</translation>
 <translation id="6790502149545262384">Pronto, cuando abras una nueva pestaña, verás historias de <ph name="CHANNEL_NAME" />.</translation>
+<translation id="6794476726485507147">Elige una fecha y hora para recibir una notificación de recordatorio para volver a visitar esta página</translation>
 <translation id="681368974849482173">Elemento creado</translation>
 <translation id="6825078212112407882">{count,plural, =1{Se guardó el favorito en tu Cuenta de Google ({email})}other{Se guardaron {count} favoritos en tu Cuenta de Google ({email})}}</translation>
 <translation id="6830728435402077660">No seguro</translation>
@@ -1488,6 +1491,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7425053386765766120">Agregar forma de pago…</translation>
 <translation id="7425346204213733349">Los cambios de tus favoritos, historial, contraseñas y otras opciones de configuración ya no se sincronizarán con tu cuenta de Google. Sin embargo, los datos existentes permanecerán almacenados en tu cuenta de Google.</translation>
 <translation id="742664698522525515">¿Quieres conservar el grupo?</translation>
+<translation id="7431851541687113774">Desactivar la detección de direcciones</translation>
 <translation id="7431991332293347422">Controla cómo se usa tu historial de navegación para personalizar la Búsqueda y mucho más</translation>
 <translation id="7435356471928173109">El administrador desactivó la función</translation>
 <translation id="7438481509621345350">Ahora, cuando abras una nueva pestaña, verás historias de <ph name="CHANNEL_NAME" />.</translation>
@@ -1641,6 +1645,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8023170444051056234">Perderás de inmediato el acceso al grupo de pestañas "<ph name="GROUP_NAME" />" y se borrará de todos tus dispositivos</translation>
 <translation id="8023878949384262191">Expande la sección.</translation>
 <translation id="8027581147000338959">Abrir en una nueva ventana</translation>
+<translation id="8029092694585014252">Fijar recordatorio</translation>
 <translation id="8032569120109842252">Siguiendo</translation>
 <translation id="8035133914807600019">Nueva carpeta…</translation>
 <translation id="8035412398498507358">Fotos</translation>
@@ -1798,7 +1803,6 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8679900250380464358">Agregar a la Lista de lectura</translation>
 <translation id="8680786875305615692">Ayuda a mejorar la seguridad en la Web para todo el mundo</translation>
 <translation id="8680787084697685621">Los datos de inicio de cuenta están desactualizados</translation>
-<translation id="8683563711222071415">Mover la dirección a la cuenta</translation>
 <translation id="8690752723634292147">Confirmar eliminación</translation>
 <translation id="8692689525339542358">Obtén protección contra sitios, descargas y extensiones peligrosos.</translation>
 <translation id="8694281486652655615">Se mostrará este elemento</translation>

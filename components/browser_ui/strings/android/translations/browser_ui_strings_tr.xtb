@@ -184,6 +184,7 @@
 <translation id="3628308229821498208">Önerilen aramalar</translation>
 <translation id="3658847490588580244">Varsayılan tarayıcı alt sayfası</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> site grubunda yer alan ve gruptaki etkinliğinizi görebilen <ph name="RWS_MEMBERS_COUNT" /> site var}other{<ph name="RWS_OWNER" /> site grubunda yer alan ve gruptaki etkinliğinizi görebilen <ph name="RWS_MEMBERS_COUNT" /> site var}}</translation>
+<translation id="3676777756440746804">Sitelerin, hakkınızda kaydettikleri bilgileri kullanmak için izin istemesi engellendi</translation>
 <translation id="3697164069658504920">Bu düğme açıkken siteler USB cihazları kullanmak isteyebilir. Düğme kapalıyken siteler USB cihazları kullanamaz.</translation>
 <translation id="3707034683772193706">Ziyaret ettiğiniz bir site, esasen bot olmadığınızı doğrulayan az miktarda bilgiyi Chrome'a kaydedebilir</translation>
 <translation id="3709818294139939629">Sitenin dosya erişimi kaldırıldı</translation>
@@ -208,9 +209,11 @@
 <translation id="3922092564198021702">Telefonunuzda Ayarlar'ı açın.</translation>
 <translation id="3933121352599513978">İstenmeyen istekleri daralt (önerilir)</translation>
 <translation id="3955193568934677022">Sitelerin korumalı içeriği oynatmasına izin ver (önerilir)</translation>
+<translation id="3965467402665811906">Siteler, hakkınızda kaydettikleri bilgileri kullanmak için izin isteyebilir</translation>
 <translation id="3967822245660637423">İndirme tamamlandı</translation>
 <translation id="3987993985790029246">Bağlantıyı kopyala</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
+<translation id="3992308058851451478"><ph name="SITE" /> siz gezinirken bilgilerinizi kullanabilir</translation>
 <translation id="3992684624889376114">Bu sayfa hakkında</translation>
 <translation id="4002066346123236978">Başlık</translation>
 <translation id="4046123991198612571">Sonraki parça</translation>
@@ -263,6 +266,7 @@
 <translation id="4883854917563148705">Yönetilen ayarlar sıfırlanamaz</translation>
 <translation id="4887024562049524730">Sitelerin sanal gerçeklik cihazıma veya verilerime erişmesine izin vermeden önce sor (önerilir)</translation>
 <translation id="4936863036653376783">Gruplarınızı tüm cihazlarınızda sekme grubu bölümünde bulabilirsiniz</translation>
+<translation id="4945443401464700059"><ph name="SITE" /> sitesinin, şu sitelerdeki bilgilerinizi kullanması engellendi:</translation>
 <translation id="4953688446973710931">Bu düğme açıkken siteler birden fazla dosyayı otomatik olarak indirmek isteyebilir. Düğme kapalıyken siteler birden fazla dosyayı otomatik olarak indiremez.</translation>
 <translation id="4962975101802056554">Cihaz için tüm izinleri iptal eder</translation>
 <translation id="497421865427891073">İlerle</translation>
@@ -532,9 +536,11 @@
 <translation id="851751545965956758">Sitelerin cihazlara bağlanmasını engelle</translation>
 <translation id="8525306231823319788">Tam ekran</translation>
 <translation id="8541410041357371550">Bu site, size daha alakalı reklamlar göstermek için Chrome'dan reklam konularınızı öğrenir</translation>
+<translation id="854876774113449365">Ziyaret ettiğiniz siteler, diğer sitelerdeki resim, reklam ve metin gibi içerikleri yerleştirebilir. Bu diğer siteler, sitede gezinirken hakkınızda kaydettikleri bilgileri kullanmak için izin isteyebilir. <ph name="BEGIN_LINK" />Yerleştirilmiş içerik hakkında daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="8549127125482561383">İstekler nasıl gösterilsin?</translation>
 <translation id="8558480467877843976">Artık mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantılara göz attığınızda veya dokunduğunuzda Chrome'u kullanabilirsiniz.</translation>
 <translation id="857943718398505171">İzin verildi (önerilir)</translation>
+<translation id="8593422116412089302">Bu düğme açıkken siteler hakkınızda kaydettikleri bilgileri kullanmak isteyebilir. Düğme kapalıyken siteler hakkınızda kaydettikleri bilgileri kullanmak isteyemez.</translation>
 <translation id="8609465669617005112">Yukarı taşı</translation>
 <translation id="8617611086246832542">Bu düğme açıkken web sitelerinin masaüstü görünümü gösterilir. Düğme kapalıyken web sitelerinin mobil cihaz görünümü gösterilir.</translation>
 <translation id="8670078035093027626">Varsayılan tarayıcı alt sayfası tam ekran olarak açıldı</translation>

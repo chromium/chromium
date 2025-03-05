@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Heimanet, ekki í reiki</translation>
 <translation id="1327977588028644528">Gátt</translation>
 <translation id="1328223165223065150">Veggfóðurslitur</translation>
+<translation id="1329478709358066995">Textauppskrift:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Laga að skönnunarsvæði</translation>
 <translation id="1343442362630695901">salt stöðuvatn</translation>
@@ -1129,7 +1130,6 @@
 <translation id="6325525973963619867">Mistókst</translation>
 <translation id="6327262166342360252">Þetta veggfóður var búið til með gervigreind með því að nota textann: „<ph name="PROMPT" />“.</translation>
 <translation id="6331191339300272798">Sjálfvirkt dökkt þema</translation>
-<translation id="6335228876613776082">Líkan sótt</translation>
 <translation id="6340526405444716530">Sérstillingar</translation>
 <translation id="6348252528297699679">Hægt er að slökkva á staðsetningu í „Stillingar &gt; Persónuvernd og öryggi &gt; Persónuverndarstillingar &gt; Aðgangur að staðsetningu“. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Notandanafn og aðgangsorð</translation>
@@ -1197,7 +1197,7 @@
 <translation id="6595046262780525922">Kveikja á umritun og sækja umritunarlíkanið?</translation>
 <translation id="6596816719288285829">IP-tala</translation>
 <translation id="6599673642868607614">Við þökkum þér fyrir ábendinguna. Ábendingin þín hjálpar okkur að bæta Chromebook-upplifunina og verður yfirfarin af teyminu okkar. Vegna fjölda tilkynninga höfum við ekki tök á því að svara.</translation>
-<translation id="6608043585557830684">Slökkt er á umritun. Kveiktu á henni í stillingum eða í <ph name="THREE_DOTS_MENU_ICON" /> valmyndinni.</translation>
+<translation id="6608043585557830684">Slökkt er á umritun. Kveiktu á henni í stillingum eða í valmyndinni <ph name="THREE_DOTS_MENU_ICON" />.</translation>
 <translation id="660846213831377756">Músarhnappar</translation>
 <translation id="6618744767048954150">Í gangi</translation>
 <translation id="6620487321149975369">Prentverk birtast í ferli nema þau séu fjarlægð handvirkt</translation>
@@ -1274,6 +1274,7 @@
 <translation id="6930597342185648547">Um bakgrunn</translation>
 <translation id="6939667434404433010">Leita eftir heiti upptöku</translation>
 <translation id="6939766318048400022">Kaffihús</translation>
+<translation id="6942253772720771875">Sendu ábendingu eða lýstu vandamálinu</translation>
 <translation id="6943893908656559156">Fjarkenni (valkvætt)</translation>
 <translation id="6953137545147683679">gulllitur</translation>
 <translation id="6957231940976260713">Heiti þjónustu</translation>
@@ -1598,6 +1599,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8395584934117017006">Þessu <ph name="DEVICE_TYPE" /> tæki er stjórnað af fyrirtæki</translation>
 <translation id="8398927464629426868">Núverandi hleðslu- eða afhleðsluhraði tækisins</translation>
 <translation id="8403988360557588704">Málverk af <ph name="ART_FEATURE" /> í <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">Samantekt sem búin var til:</translation>
 <translation id="8410244574650205435">Greint sjálfkrafa</translation>
 <translation id="8420955526972171689">Keyra prófanir og úrræðaleit fyrir vandamál í vélbúnaði</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1644,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8626489604350149811">Fleiri aðgerðir fyrir <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Ljósfjólublár</translation>
 <translation id="8647595191512746911">Hljóðumritun</translation>
+<translation id="8648578954147795914">Heiti sem búin voru til:</translation>
 <translation id="8650852232143958317">Taktu Gmail og Google Drive-skrárnar þínar með þér</translation>
 <translation id="8651481478098336970">hljóð af</translation>
 <translation id="8655295600908251630">Rás</translation>
@@ -1670,7 +1673,6 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Albúm í Google-myndum</translation>
 <translation id="8775713578693478175">Aðgangsstaður mótalds</translation>
-<translation id="877735394245039557">Sækir líkan</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Þetta netkerfi kann að innihalda innskráningarsíðu</translation>
 <translation id="8797082062139985406">Búa til heiti með gervigreind Google</translation>
@@ -1784,6 +1786,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="9218016617214286986">Sýna fyrirliggjandi aðgangsstaði</translation>
 <translation id="932327136139879170">Heim</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Gættu þess að hljóðneminn sé tengdur eða prófaðu að endurræsa Chromebook</translation>
 <translation id="945522503751344254">Senda ábendingu</translation>
 <translation id="950520315903467048">Lykil vantar fyrir „<ph name="DIRECTION" />“. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Bera saman raddir á allri upptökunni til að textauppskriftin endurspegli hvað hver mælandi segir og hvenær</translation>

@@ -429,6 +429,23 @@ para que esta función no actualice a HTTPS
 los nombres de host o patrones de nombre de host específicos.</translation>
 <translation id="1342918903685430097">Configurar la versión mínima permitida de <ph name="PRODUCT_OS_NAME" /> para el dispositivo.</translation>
 <translation id="1343128241903870688">Inhabilitar los informes de apps del dispositivo</translation>
+<translation id="1345276795096570241">Inhabilita el inicio de sesión único con <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> para los proveedores de identidad que se muestran.
+
+Si agregas el valor <ph name="POLICY_VALUE_ALL" />, se inhabilitarán todos los proveedores de identidad compatibles para SSO.
+
+Si agregas el valor <ph name="POLICY_VALUE_MICROSOFT" />, se inhabilita la compatibilidad con el inicio de sesión único para el proveedor de identidad en la nube de Microsoft® en Chrome.
+
+Si no estableces esta política, se habilitarán todos los proveedores de identidad que admita <ph name="PRODUCT_NAME" />.
+
+En el caso de los proveedores de identidad que están habilitados en <ph name="PRODUCT_NAME" /> y configurados en el dispositivo por el administrador, los usuarios que accedan a su cuenta con ese proveedor de identidad, en cualquier aplicación que admita <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />, pueden acceder a las propiedades web con ese proveedor de identidad de forma automática. La información de autenticación del usuario se transmite al proveedor de identidad en la nube del usuario para cada evento de autenticación.
+
+Notas:
+
+<ph name="PRODUCT_NAME" /> no admite el inicio de sesión único con <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> en los modos Incógnito o de invitado.
+
+<ph name="PRODUCT_NAME" /> solo admite el inicio de sesión único con <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> para los siguientes proveedores de identidad: Microsoft.
+
+Esta función está disponible a partir de la versión 10.15 de <ph name="MAC_OS_NAME" />.</translation>
 <translation id="1347198119056266798">Esta política es obsoleta; usa las políticas <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> y <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> en su lugar. Se ignorará esta política si se configuran las políticas <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> o <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (obsoleta).
 
       Esta configuración aplica el uso de la función SafeSearch para las consultas en Búsqueda web de Google y evita que los usuarios puedan cambiarla. Además, aplica el modo restringido moderado en YouTube.

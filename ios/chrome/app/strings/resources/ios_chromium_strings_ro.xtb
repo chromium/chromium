@@ -94,6 +94,7 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="328933489847748230">{count,plural, =1{Se afișează o fereastră Chromium}few{Se afișează {count} ferestre Chromium}other{Se afișează {count} de ferestre Chromium}}</translation>
 <translation id="3344973607274501920">Chromium nu a putut verifica parolele. Verifică-ți conexiunea la internet.</translation>
 <translation id="3366305173356742781">Datele Chromium din cont</translation>
+<translation id="33788334537425157">Activează Blochează filele incognito când închizi Chromium</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Acest lucru se întâmplă când Chromium nu este folosit timp de {THRESHOLD} minut. Aici pot fi incluse istoricul și completarea automată.}few{Acest lucru se întâmplă când Chromium nu este folosit timp de {THRESHOLD} minute. Aici pot fi incluse istoricul și completarea automată.}other{Acest lucru se întâmplă când Chromium nu este folosit timp de {THRESHOLD} de minute. Aici pot fi incluse istoricul și completarea automată.}}</translation>
 <translation id="3410395242749598859">Unele date Chromium nu s-au salvat încă în <ph name="EMAIL" />.
 Așteaptă câteva minute înainte să schimbi contul. Dacă schimbi conturile acum, aceste date se vor șterge.</translation>
@@ -101,8 +102,10 @@ Așteaptă câteva minute înainte să schimbi contul. Dacă schimbi conturile a
 <translation id="347967311580159871">Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experiența în Chromium, accesează <ph name="BEGIN_LINK" />Serviciile Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Parola nu a fost trimisă. Verifică-ți conexiunea la internet și asigură-te că te-ai conectat la Chromium. Apoi încearcă din nou.</translation>
 <translation id="3529798650269984835">Activează Blochează filele incognito când închizi Chromium.</translation>
+<translation id="3541247799006476453">Accesează cu ușurință parolele și cheile de acces cu Chromium pentru completare automată</translation>
 <translation id="3567399274263440288">Pentru a profita din plin de Chromium, conectează-te la Chromium folosind Contul Google.</translation>
 <translation id="3581385059720151202">Caută imagini în Chromium</translation>
+<translation id="3582640969619785896">Chromium îți va oferi salvarea parolei</translation>
 <translation id="3594315078412605236">Gestionează metodele de plată în Chromium</translation>
 <translation id="3634039384458740619">Deschide setările Chromium</translation>
 <translation id="3639997914391704523">Chromium poate să îți verifice parolele atunci când te conectezi folosind Contul Google.</translation>
@@ -159,6 +162,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chromi
 <translation id="4999538639245140991">Deoarece te deconectezi de la un cont gestionat de <ph name="SIGNOUT_MANAGED_DOMAIN" />, datele tale Chromium de pe acest dispozitiv vor fi șterse. Datele tale vor rămâne în Contul Google.</translation>
 <translation id="5042011327527167688">Atinge Vezi pe Google Maps în Chromium.</translation>
 <translation id="5044871537677053278">Chromium detectează adresele și folosește Google Maps pentru a-ți oferi indicații de orientare și informații locale.</translation>
+<translation id="5048140766121299007">Din setările <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />, activează Chromium</translation>
 <translation id="5048795749726991615">Pentru a accesa cu ușurință parolele salvate în alte aplicații, folosește Chromium pentru completare automată</translation>
 <translation id="5053429694249468757">Se șterg datele Chromium…</translation>
 <translation id="5071749685031362629">Chromium pentru iOS</translation>
@@ -166,6 +170,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chromi
 <translation id="5124429847818367226">Acum poți folosi Chromium oricând navighezi sau atingi linkuri în mesaje, documente și alte aplicații.</translation>
 <translation id="5131565040785979529">Organizația ta, <ph name="DOMAIN" />, gestionează contul la care te-ai conectat și modul în care folosești Chromium.</translation>
 <translation id="5134464247000681876">Deschide linkuri din Gmail, Maps, YouTube și alte aplicații în Chromium</translation>
+<translation id="5203244847421322551">Salvează și completează automat parolele în Chromium</translation>
 <translation id="5224391634244552924">Nu există parole salvate. Chromium îți poate verifica parolele dacă le salvezi.</translation>
 <translation id="5259423875997548710">Caută imagini în Chromium.</translation>
 <translation id="5308226104666789935">Chromium nu poate căuta actualizări.</translation>
@@ -209,10 +214,12 @@ De reținut:
 <translation id="6132149203299792222">Conectează-te cu Contul Google pentru a sincroniza parolele, marcajele și multe altele.</translation>
 <translation id="6148377327556085395">Adaugă marcaje în Chromium</translation>
 <translation id="6154098560469640583">Folosește Chromium când dai clic pe linkuri în mesaje, documente și alte aplicații</translation>
+<translation id="6157162508956739031">Conectează-te rapid la aplicații și site-uri completând automat parolele și cheile de acces din Chromium</translation>
 <translation id="6170619162539716595">Permite browserului Chromium să folosească Google Maps pentru a-ți oferi indicații de orientare și informații locale despre adresele detectate.</translation>
 <translation id="6197255575340902638">Dacă ascunzi <ph name="MODULE_NAME" />, Chromium nu va mai urmări automat coletele viitoare și va șterge toate datele anterioare despre urmărirea coletelor.</translation>
 <translation id="6247557882553405851">Manager de parole Google</translation>
 <translation id="6268381023930128611">Te deconectezi de la Chromium?</translation>
+<translation id="6301717043141881464">Pentru a accesa cu ușurință parolele salvate în alte aplicații, alege Chromium pentru completare automată</translation>
 <translation id="6324041800010509197">Accesează Grila de file din Chromium</translation>
 <translation id="6325378625795868881">Folosește Chromium oricând atingi linkuri în mesaje și alte aplicații.</translation>
 <translation id="6424492062988593837">Chromium a devenit și mai bun! Este disponibilă o nouă versiune.</translation>
@@ -224,6 +231,7 @@ De reținut:
 <translation id="6574750762636192517">Gestionează parolele în Chromium</translation>
 <translation id="6590232959690355435">Deschide pagina Istoricul Chromium.</translation>
 <translation id="6674470628873622334">Deschide o nouă filă incognito în Chromium.</translation>
+<translation id="6680609900732453726">Păstrează navigarea privată cu autentificarea dispozitivului când închizi Chromium</translation>
 <translation id="6752854822223394465">Organizația ta configurează Chromium...</translation>
 <translation id="6794054469102824109">Deschide jocul Chromium Dino.</translation>
 <translation id="6820823224820483452">Chromium nu a putut verifica toate parolele. Încearcă din nou mâine.</translation>
@@ -287,6 +295,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="8254729934443216898">Explorează noile funcții care te ajută să profiți din plin de Chromium.</translation>
 <translation id="8293572045658095405">Ești în modul incognito în Chromium</translation>
 <translation id="830951810931292870">Deschide adresele URL introduse în Chromium în modul incognito.</translation>
+<translation id="8390323835464055390">Conectează-te cu parolele și cheile de acces salvate din orice aplicație folosind Chromium pentru completare automată</translation>
 <translation id="8409374867500149834">Ai cea mai puternică securitate Chromium împotriva site-urilor dăunătoare</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Acest lucru se întâmplă când Chromium nu este folosit timp de {THRESHOLD} minut. Datele salvate numai pe acest dispozitiv în timp ce erai conectat(ă) se vor șterge. Aici pot fi incluse istoricul și parolele.}few{Acest lucru se întâmplă când Chromium nu este folosit timp de {THRESHOLD} minute. Datele salvate numai pe acest dispozitiv în timp ce erai conectat(ă) se vor șterge. Aceasta ar putea include istoricul și parolele.}other{Acest lucru se întâmplă când Chromium nu este folosit timp de {THRESHOLD} de minute. Datele salvate numai pe acest dispozitiv în timp ce erai conectat(ă) se vor șterge. Aici pot fi incluse istoricul și parolele.}}</translation>
 <translation id="858114650497379505">Poți folosi parolele salvate în Managerul de parole în alte aplicații de pe iPhone.</translation>

@@ -22,6 +22,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1058009965971887428">Envoyer vos commentaires</translation>
 <translation id="1059120031266247284">Partagé avec vous</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" /> : <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> avec le bouton Retirer</translation>
 <translation id="1062407476771304334">Remplacer</translation>
 <translation id="1073899992769346247">Remplacez ou rechargez la pile</translation>
 <translation id="1081015718268701546">Les applications Linux ne sont pas actuellement prises en charge. D'autres applications seront enregistrées.</translation>
@@ -1227,6 +1228,7 @@ Un appareil connecté.</translation>
 <translation id="5043679421800073804">Cliquer sur la dernière icône sur l'étagère ou la toucher</translation>
 <translation id="504465286040788597">Paragraphe précédent</translation>
 <translation id="5045550434625856497">Mot de passe incorrect</translation>
+<translation id="5056587122125565772">Créer une image</translation>
 <translation id="5058794129231928255">Impossible de créer un document Google</translation>
 <translation id="5062496344832867502">mémoire vive</translation>
 <translation id="5068762093486106012">Vous serez averti si vous parlez en sourdine. Les données audio ne quittent jamais votre appareil.</translation>
@@ -1275,6 +1277,7 @@ Vous pouvez également utiliser le raccourci-clavier. Tout d'abord, mettez le te
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="5228195526683428788">Séparateur d'Écran divisé</translation>
 <translation id="5229343007215035173">Activer ou désactiver l'écran de confidentialité</translation>
+<translation id="5229860525743792999">Retirer <ph name="ITEM_LABEL" /> du groupe suggéré</translation>
 <translation id="5230516054153933099">Fenêtre</translation>
 <translation id="5234764350956374838">Fermer</translation>
 <translation id="523505283826916779">Paramètres d'accessibilité</translation>
@@ -1757,6 +1760,7 @@ Nouvelle installation</translation>
 <translation id="6757237461819837179">Aucun élément multimédia en cours de lecture</translation>
 <translation id="6760438044935091345">Tableau de bord de jeu</translation>
 <translation id="6768043681523654438">stockage</translation>
+<translation id="6769195697113506406">Image insérée</translation>
 <translation id="6777216307882431711">Alimente des appareils connectés par USB-C</translation>
 <translation id="6781002679438061620">Bureau 9</translation>
 <translation id="6782182743534150858">Bureau 13</translation>
@@ -1983,6 +1987,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7571361473021531288">Pile à <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> d'autonomie</translation>
 <translation id="7573585051776738856">Fenêtre active ancrée à droite.</translation>
 <translation id="7579778809502851308">Capture d'écran</translation>
+<translation id="7588317312481506627">Copiée dans le presse-papiers.</translation>
 <translation id="7593891976182323525">Recherche ou Majuscule</translation>
 <translation id="7598054670902114203">Aperçu d'utilisation du processeur, <ph name="CPU_USEAGE" /> %. Température <ph name="TEMPERATURE" /> degrés Celsius, vitesse actuelle : <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Insertion du résultat sélectionné</translation>
@@ -2177,6 +2182,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8155628902202578800">Ouvrir la boîte de dialogue d'information pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Paramètres régionaux utilisés : <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Contenu</translation>
+<translation id="81817143961839203">Échec de l'insertion de l'image</translation>
 <translation id="8185090165691050712">Activer/désactiver le menu pour redimensionner le mode verrouiller</translation>
 <translation id="8192727139462702395">Lorsque vous désactivez le Bluetooth, les appareils externes suivants se déconnecteront de votre <ph name="DEVICE_TYPE" /> :</translation>
 <translation id="8198456017687137612">Diffusion de l'onglet en cours…</translation>
@@ -2255,6 +2261,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> a <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Appuyez sur Alt + Recherche ou Majuscule pour le désactiver.</translation>
 <translation id="8480418399907765580">Afficher la barre d'outils</translation>
+<translation id="8487660088084188539">Lorsque vous activez ces fonctionnalités, le texte saisi, le contenu du document et l'URL de la page Web peuvent être envoyés aux serveurs de Google. Ces informations sont utilisées pour générer des suggestions de rédaction, des résumés, répondre à des questions et améliorer le produit, sous réserve des <ph name="LINK_TO_SERVICE_TERMS" />. N'incluez aucun élément personnel ni aucun élément confidentiel.</translation>
 <translation id="8487699605742506766">Point d'accès sans fil</translation>
 <translation id="8491237443345908933">Ouvrir le lien dans un nouvel onglet</translation>
 <translation id="8492573885090281069">L'écran <ph name="DISPLAY_NAME" /> ne prend pas en charge la résolution de <ph name="SPECIFIED_RESOLUTION" />. La résolution a été changée à <ph name="FALLBACK_RESOLUTION" />. Cliquez sur Confirmer pour garder les changements. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2324,6 +2331,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8725066075913043281">Réessayer</translation>
 <translation id="8725214031272624704">Afficher la liste des méthodes d'entrée accessibles</translation>
 <translation id="8730621377337864115">Terminé</translation>
+<translation id="8731188831050207755">Échec du téléchargement de <ph name="FILE_NAME" /></translation>
 <translation id="8731487213223706745">Se termine à <ph name="END_TIME" /> le <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Il essaie peut-être de récupérer les touches que vous avez utilisées</translation>
 <translation id="8735678380411481005">Couleur du rétroéclairage du clavier</translation>
@@ -2360,6 +2368,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8845001906332463065">Obtenir de l'aide</translation>
 <translation id="8847100217801213944">Afficher la température en degrés Fahrenheit</translation>
 <translation id="8849001918648564819">Caché</translation>
+<translation id="8855792845239861369">Cette langue n'est pas prise en charge</translation>
 <translation id="8855885154700222542">Touche mode Plein écran</translation>
 <translation id="8858369206579825206">Paramètres de confidentialité</translation>
 <translation id="8860366331836346216">Ajouter une carte eSIM</translation>

@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">በChrome አዝራር ውስጥ ውርዶችን ያስተዳድሩ፣ በChrome ውስጥ ያወረዷቸውን ፋይሎች ለማቀናበር ያግብሩ</translation>
 <translation id="1420345875188552368">የእርስዎ የተቀመጠ የራስ-ሰር የመክፈያ ዘዴ ለዚህ ክፍያ ጥቅም ላይ መዋል ይችላል። Chrome ውስጥ ኢ-ኪስ ቦርሳ ለማጥፋት ወደ የእርስዎ <ph name="BEGIN_LINK1" />የክፍያ ቅንብሮች<ph name="END_LINK1" /> ይሂዱ</translation>
 <translation id="1420920093772172268">ማጣመርን ለመፈቀድ <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="1421484961346698724">የተሰረዘ መለያ</translation>
 <translation id="14222610277930434">እርስዎ አብዛኛውን ጊዜ የሚጎበኙት</translation>
 <translation id="1422930527989633628">በአቅራቢያ ያሉ የብሉቱዝ መሣሪያዎችን ለማግኘት መጠየቅ ይችላል</translation>
 <translation id="1426410128494586442">አዎ</translation>
@@ -661,6 +662,7 @@
 <translation id="2145193671493396738">የኢኮኖሚ ዜና</translation>
 <translation id="214556005048008348">ክፍያን ሰርዝ</translation>
 <translation id="2147117373852943630">የሙዚቃ መሣሪያዎች</translation>
+<translation id="2147254250314124496"><ph name="EMBEDDED_URL" /> ስለ እርስዎ ያስቀመጠውን መረጃ መጠቀም ይፈልጋል</translation>
 <translation id="2148613324460538318">ካርድ አክል</translation>
 <translation id="2148716181193084225">ዛሬ</translation>
 <translation id="2149968176347646218">ግንኙነትዎ ደህንነቱ የተጠበቀ አይደለም</translation>
@@ -3022,6 +3024,7 @@
 <translation id="6351658970066645919">የአሰሳ ውሂብን ይሰርዙ</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ምንም}=1{1 ይለፍ ቃል (ለ<ph name="DOMAIN_LIST" />፣ ሰምሯል)}=2{2 ይለፍ ቃላት (ለ<ph name="DOMAIN_LIST" />፣ ሰምሯል)}one{# ይለፍ ቃላት (ለ<ph name="DOMAIN_LIST" />፣ ሰምሯል)}other{# ይለፍ ቃላት (ለ<ph name="DOMAIN_LIST" />፣ ሰምሯል)}}</translation>
 <translation id="6355392890578844978">ይህ አሳሽ በኩባንያ ወይም በሌላ ድርጅት አይተዳደርም። በዚህ መሣሪያ ላይ ያለ እንቅስቃሴ ከChromium ውጭ ሊተዳደር ይችላል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">«<ph name="GROUP_TITLE_1" />» እና «<ph name="GROUP_TITLE_2" />» የትር ቡድኖች ከእንግዲህ አይገኙም</translation>
 <translation id="6358088212770985041">የመክፈያ ዘዴዎችን አርትዕ ያድርጉ።</translation>
 <translation id="6358450015545214790">እነዚህ ምን ማለት ናቸው?</translation>
 <translation id="6360213755783740931">ስለ ተንኮል አዘል ዌር የበለጠ ይወቁ</translation>

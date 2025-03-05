@@ -6,6 +6,7 @@
 <translation id="1044891598689252897">网站将能够正常运行</translation>
 <translation id="1070329623210597193">此网站可以查看或修改的文件</translation>
 <translation id="1073417869336441572">请告诉我们您允许使用第三方 Cookie 的原因，以帮助我们改进 Chrome<ph name="BEGIN_LINK" />发送反馈<ph name="END_LINK" /></translation>
+<translation id="1074758928858737435">您可以查看桌面版网站</translation>
 <translation id="1085696779717592361">默认使用 Chrome</translation>
 <translation id="1178581264944972037">暂停</translation>
 <translation id="1181037720776840403">移除</translation>
@@ -32,6 +33,7 @@
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 个网站}other{<ph name="SITE_COUNT" /> 个网站}}</translation>
 <translation id="1500473259453106018">隐藏“在标签页上显示降价通知”卡片</translation>
 <translation id="1510341833810331442">网站不得将数据保存在您的设备上</translation>
+<translation id="1538031354170655462">网站通常会通过近距离无线通信 (NFC) 与附近的标签或设备互动，例如扫描徽章或感应式付款</translation>
 <translation id="1547123415014299762">允许使用第三方 Cookie</translation>
 <translation id="1593426485665524382">屏幕顶部附近有多项可查看的新操作</translation>
 <translation id="1620510694547887537">摄像头</translation>
@@ -115,6 +117,7 @@
 <translation id="2677748264148917807">离开</translation>
 <translation id="2682367912565197520">删除已保存的缩放级别</translation>
 <translation id="2683434792633810741">删除并重置？</translation>
+<translation id="2685514716378236873">不允许</translation>
 <translation id="2713106313042589954">关闭摄像头</translation>
 <translation id="2717722538473713889">电子邮件地址</translation>
 <translation id="2726059656860238749">启动 Chrome 时将焦点放在多功能框上，从而缩短低端设备的启动时间。</translation>
@@ -211,12 +214,14 @@
 <translation id="3955193568934677022">允许网站播放受保护的内容（推荐）</translation>
 <translation id="3965467402665811906">网站可以请求使用其保存的与您相关的信息</translation>
 <translation id="3967822245660637423">下载完毕</translation>
+<translation id="3981465354637804599">网站通常会显示广告，以便能够免费提供内容或服务。但据我们所知，有些网站会展示侵扰性或误导性广告。</translation>
 <translation id="3987993985790029246">复制链接</translation>
 <translation id="3991845972263764475">已下载 <ph name="BYTES_DOWNLOADED_WITH_UNITS" />，总大小不明</translation>
 <translation id="3992308058851451478"><ph name="SITE" /> 可以在您浏览以下网站时使用您的相关信息</translation>
 <translation id="3992684624889376114">关于此页面</translation>
 <translation id="4002066346123236978">标题</translation>
 <translation id="4046123991198612571">下一曲</translation>
+<translation id="4077310749977440510">网站通常会读取您的剪贴板内容以实现某些功能，例如保留您所复制文字的格式</translation>
 <translation id="4149890623864272035">确定要删除所有本地数据（包括 Cookie）并重置此网站的所有权限吗？</translation>
 <translation id="4149994727733219643">使用简化版视图查看网页</translation>
 <translation id="4151930093518524179">默认缩放设置</translation>
@@ -224,6 +229,7 @@
 <translation id="4169549551965910670">已连接 USB 设备</translation>
 <translation id="4194328954146351878">需先询问，得到许可后才允许网站查看和更改 NFC 设备上的信息（推荐）</translation>
 <translation id="4200726100658658164">打开位置信息设置</translation>
+<translation id="421742575134139848">网站可能会播放声音来为音乐、视频和其他媒体提供音频</translation>
 <translation id="4226663524361240545">收到通知时设备会振动</translation>
 <translation id="4259722352634471385">已屏蔽 <ph name="URL" /></translation>
 <translation id="4274673989874969668">当您离开网站后，网站可保持同步以完成各项任务（例如上传照片或发送聊天消息）</translation>
@@ -247,6 +253,7 @@
 <translation id="4566417217121906555">将麦克风静音</translation>
 <translation id="4570913071927164677">详情</translation>
 <translation id="4598549027014564149">在无痕模式下，网站无法使用 Cookie 查看您在各个网站（即使是彼此相关的网站）上的浏览活动。系统不会将您的浏览活动用于展示个性化广告等用途。某些网站上的功能可能会无法正常运行。</translation>
+<translation id="461356340001513807">允许使用您在身份服务中注册的账号登录网站</translation>
 <translation id="4619615317237390068">从其他设备打开的标签页</translation>
 <translation id="4644713492825682049">删除并重置</translation>
 <translation id="4645575059429386691">由您父母管理</translation>
@@ -430,6 +437,7 @@
 <translation id="7000754031042624318">已在 Android 设置中关闭</translation>
 <translation id="702275896380648118">此网站会先判断您的喜好，然后向其他网站建议相关广告。此网站还会从 Chrome 中了解您的广告主题，从而向您展示与您更相关的广告。</translation>
 <translation id="7053983685419859001">禁止</translation>
+<translation id="7055552182600664515">网站可能需要使用一项内容保护服务，才能播放受版权保护的内容。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{已选择 1 项}other{已选择 # 项}}</translation>
 <translation id="708014373017851679">“<ph name="APP_NAME" />”版本过旧。请更新该应用。</translation>
 <translation id="7087918508125750058">已选择 <ph name="ITEM_COUNT" /> 项。选项位于屏幕顶部附近</translation>

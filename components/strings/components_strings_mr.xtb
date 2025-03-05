@@ -3024,6 +3024,7 @@
 <translation id="6351658970066645919">ब्राउझिंग डेटा हटवा</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{काहीही नाही}=1{(<ph name="DOMAIN_LIST" /> साठी) एक पासवर्ड सिंक केला}=2{(<ph name="DOMAIN_LIST" /> साठी) दोन पासवर्ड सिंक केले}other{(<ph name="DOMAIN_LIST" /> साठी) # पासवर्ड सिंक केले}}</translation>
 <translation id="6355392890578844978">हा ब्राउझर कंपनी किंवा इतर संस्थेद्वारे व्यवस्थापित केला जात नाही. या डिव्हाइसवरील अ‍ॅक्टिव्हिटी Chromium च्या बाहेर व्यवस्थापित केली जाऊ शकते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">"<ph name="GROUP_TITLE_1" />" आणि "<ph name="GROUP_TITLE_2" />" "हे टॅब गट आता उपलब्ध नाहीत</translation>
 <translation id="6358088212770985041">पेमेंट पद्धती संपादित करा</translation>
 <translation id="6358450015545214790">याचा अर्थ काय आहे?</translation>
 <translation id="6360213755783740931">मालवेअर संरक्षणाबद्दल अधिक जाणून घ्या</translation>

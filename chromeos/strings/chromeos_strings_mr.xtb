@@ -503,6 +503,7 @@
 <translation id="3373141842870501561">अर्थ फ्लो वॉलपेपर</translation>
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> या अक्षरासह <ph name="LETTERS_COLOR" /> बॅकग्राउंड</translation>
 <translation id="3383623117265110236">विशिष्ट</translation>
+<translation id="3395147534045164351">स्नॅप स्थान टॉगल करा</translation>
 <translation id="3404249063913988450">स्क्रीन सेव्हर सुरू करा</translation>
 <translation id="3413935475507503304">अपडेटसह पुढे सुरू ठेवण्यासाठी, पुढील वर क्लिक करा.</translation>
 <translation id="3428551088151258685">आउटडोअर</translation>
@@ -652,6 +653,7 @@
 <translation id="4113067922640381334">तुम्हाला आता नवीन <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />वॉलपेपर<ph name="END_LINK_WALLPAPER_SUBPAGE" /> चा अ‍ॅक्सेस आहे</translation>
 <translation id="4117637339509843559">गडद मोड</translation>
 <translation id="4126551873361000548">१० सेकंद मागे जा</translation>
+<translation id="4128271910628504223">"धुके असलेले जंगल ड्रॉ करा" यासारखा प्रॉम्प्ट एंटर करा</translation>
 <translation id="4130035430755296270">आणखी लेआउट पर्यायांसाठी फिरवत रहा</translation>
 <translation id="4130750466177569591">मला मान्य आहे</translation>
 <translation id="4131410914670010031">कृष्ण धवल</translation>
@@ -859,6 +861,7 @@
 <translation id="5050042263972837708">गट नाव</translation>
 <translation id="5051044138948155788">हे एकमेव पेज आहे. हे तुम्हाला स्कॅनिंग सुरुवात स्क्रीनवर घेऊन जाईल.</translation>
 <translation id="5053233795640754917">थांबवा</translation>
+<translation id="5056587122125565772">इमेज तयार करा</translation>
 <translation id="5078711626843651677">स्पीकरला लेबल करणे पूर्ण होईपर्यंत व्हॉइस मॉडेल डिव्हाइसवर तात्पुरती स्टोअर केली जातात. तुम्ही हे सेटिंग्ज मध्ये कधीही बंद करू शकता.</translation>
 <translation id="5078983345702708852">आधुनिक</translation>
 <translation id="5087864757604726239">मागे</translation>
@@ -1130,7 +1133,6 @@
 <translation id="6325525973963619867">अयशस्वी</translation>
 <translation id="6327262166342360252">हा वॉलपेपर AI सह खालील मजकूर वापरून तयार केला आहे: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">ऑटोमॅटिक गडद थीम</translation>
-<translation id="6335228876613776082">मॉडेल डाउनलोड करणे पूर्ण झाले आहे</translation>
 <translation id="6340526405444716530">पर्सनलायझेशन</translation>
 <translation id="6348252528297699679">तुम्ही सेटिंग्ज &gt; गोपनीयता आणि सुरक्षा &gt; गोपनीयता नियंत्रणे &gt; स्थान अ‍ॅक्सेस यामध्ये स्थान बंद करू शकता. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">वापरकर्ता नाव आणि पासवर्ड</translation>
@@ -1674,7 +1676,6 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos अल्बम</translation>
 <translation id="8775713578693478175">मोडेम APN</translation>
-<translation id="877735394245039557">मॉडेल डाउनलोड करणे प्रगतीपथावर आहे</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">या नेटवर्कवर कॅप्टिव्ह पोर्टल असू शकते</translation>
 <translation id="8797082062139985406">Google AI वापरून नाव तयार करा</translation>

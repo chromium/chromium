@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">Nu oferi traducerea acestor site-uri</translation>
 <translation id="1145536944570833626">Șterge datele existente.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> se va deschide în Chrome. Dacă alegi să continui, ești de acord cu <ph name="BEGIN_LINK1" />Termenii și condițiile Google<ph name="END_LINK1" /> și cu <ph name="BEGIN_LINK2" />Termenii și condițiile suplimentare pentru Google Chrome și ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="1154555449933432029">Nu ai parole salvate în Managerul de parole Google.</translation>
 <translation id="115483310321669804">Folosește parola <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Redenumește</translation>
 <translation id="1174479719160874822">Chrome va solicita site-ul mobil când ecranul este îngust</translation>
@@ -106,6 +107,7 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="1413446866325418126">Salvează date în Contul Google</translation>
 <translation id="1414981605391750300">Se contactează Google. Poate dura un minut...</translation>
 <translation id="1416550906796893042">Versiunea aplicației</translation>
+<translation id="1416582024052267068">Păstrează accesul la parole</translation>
 <translation id="1419753403124156396">Repornești Chrome?</translation>
 <translation id="1428770807407000502">Dezactivezi sincronizarea?</translation>
 <translation id="1430915738399379752">Printează</translation>
@@ -514,6 +516,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="342220687432920852">{HOURS,plural, =1{Acum # oră}few{Acum # ore}other{Acum # de ore}}</translation>
 <translation id="3430670036890315772">Dacă dezactivezi blocarea profilului, informațiile tale salvate vor fi șterse</translation>
 <translation id="3435465986463792564">Ai deschis multe ferestre? Gestionează-le de aici</translation>
+<translation id="3435575784518354875">Pentru a păstra accesul la parole, exportă-le acum, actualizează serviciile Google Play și apoi importă-le înapoi în Managerul de parole Google. <ph name="BEGIN_LINK" />Consultă instrucțiunile complete<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Securitate</translation>
 <translation id="3439276997620616816">Aici vei vedea filele recente</translation>
 <translation id="3443221991560634068">Reîncarcă pagina curentă</translation>
@@ -523,6 +526,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3474624961160222204">Continuă ca <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Poți alege motorul de căutare</translation>
 <translation id="3479552764303398839">Nu acum</translation>
+<translation id="3487903178221457900">Fișierul exportat poate fi accesibil altor persoane, inclusiv aplicațiilor. După ce exporți, parolele se șterg din Chrome.</translation>
 <translation id="3488199663160411179">nume</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /> despre conținutul sugerat</translation>
 <translation id="3495219333887281978">Foaia de conectare din partea de jos deschisă la jumătate din înălțime.</translation>
@@ -548,6 +552,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3566639033325271639">Actualizează setările</translation>
 <translation id="3568945271227339929">Nicio parolă compromisă</translation>
 <translation id="357465026686164600">Telefon drept cheie de securitate</translation>
+<translation id="3575464060651642446">Se verifică parolele de pe acest dispozitiv…</translation>
 <translation id="3577473026931028326">A apărut o eroare. Încearcă din nou.</translation>
 <translation id="3577558748185201054">Gestionează-ți interesele și preferințele</translation>
 <translation id="3587482841069643663">Toate</translation>
@@ -1366,10 +1371,12 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7224097611345298931">Toate parolele salvate numai pe acest dispozitiv pentru Chrome și <ph name="CHROME_CHANNEL" /> au fost îmbinate. Poți în continuare să completezi automat toate parolele salvate în ambele aplicații.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{O descărcare în așteptare}few{# descărcări în așteptare}other{# de descărcări în așteptare}}</translation>
 <translation id="7230064152164845085">Intră în modul incognito</translation>
+<translation id="7237724030342645845">Managerul de parole Google nu mai funcționează</translation>
 <translation id="72415438529550637">Sugestia de parolă se închide.</translation>
 <translation id="7260367682327802201">Dispozitivul tău Android poate avea o setare similară. În cazul în care cuantificarea anunțurilor este activată în Chrome și pe dispozitivul Android, o companie poate măsura eficiența unui anunț pe site-urile pe care le accesezi și în aplicațiile pe care le folosești.</translation>
 <translation id="727288900855680735">Trimiți <ph name="ONE_TIME_CODE" /> către <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Site blocat</translation>
+<translation id="7276868533747677875">Dacă ai exportat anterior parole, caută un fișier CSV pe dispozitiv și importă-l în managerul de parole preferat.</translation>
 <translation id="7289049772085228972">Ai cea mai puternică securitate Chrome</translation>
 <translation id="7289303553784750393">Dacă ești online, dar problema persistă, poți încerca alte metode pentru a accesa <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Nu se poate redenumi</translation>
@@ -1544,6 +1551,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="8027395186860110042">În curând, este posibil ca parolele să nu mai funcționeze</translation>
 <translation id="8027863900915310177">Alege unde vrei să descarci</translation>
 <translation id="8030852056903932865">Aprobă</translation>
+<translation id="8031805944372049238">Pentru a începe să salvezi și să folosești parole cu Managerul de parole Google, actualizează serviciile Google Play.</translation>
 <translation id="8032569120109842252">Urmărești</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> zile rămase</translation>
 <translation id="8037801708772278989">A rulat adineauri</translation>
@@ -1747,6 +1755,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="8937772741022875483">Elimini activitatea în Chrome din Bunăstarea digitală?</translation>
 <translation id="8942627711005830162">Deschide în altă fereastră</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Limba nu a putut fi descărcată. Încearcă din nou mai târziu.</translation>
+<translation id="8957528460562961174">Pentru a păstra accesul la parole, exportă-le acum și apoi importă-le în managerul de parole preferat. Managerul de parole Google nu mai funcționează deoarece serviciile Google Play nu sunt disponibile.</translation>
 <translation id="8963117664422609631">Accesează setările site-ului</translation>
 <translation id="8965591936373831584">în așteptare</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> filă incognito și încă <ph name="TAB_COUNT_ONE" /> filă vor fi închise}few{<ph name="INCOGNITO_TAB_COUNT" /> filă incognito și încă <ph name="TAB_COUNT_MANY" /> file vor fi închise}other{<ph name="INCOGNITO_TAB_COUNT" /> filă incognito și încă <ph name="TAB_COUNT_MANY" /> de file vor fi închise}}</translation>

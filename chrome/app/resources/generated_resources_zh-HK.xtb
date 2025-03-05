@@ -1719,7 +1719,6 @@
 <translation id="2178545675770638239">選取密碼</translation>
 <translation id="2178585470774851578">您即將啟用 ChromeOS Flex 偵錯功能；啟用後，系統會設定 sshd 協助程式，並啟用 USB 記憶體開機功能。</translation>
 <translation id="2178614541317717477">CA 洩露</translation>
-<translation id="2179850495466791921">目前有 <ph name="NUMBERED_ITEM_1" />、<ph name="NUMBERED_ITEM_2" />、<ph name="NUMBERED_ITEM_3" />和其他項目</translation>
 <translation id="2180620921879609685">封鎖任何頁面上的內容</translation>
 <translation id="2181821976797666341">政策</translation>
 <translation id="2182058453334755893">已複製至剪貼簿</translation>
@@ -3137,7 +3136,6 @@
 <translation id="3167562202484086668">刪除所有「<ph name="BRAND" />」資料</translation>
 <translation id="3169930038976362151">選擇切合您需要的主題。如要變更主題、桌布、螢幕保護程式和其他設定，只要輕觸並按住桌面即可。</translation>
 <translation id="3170072451822350649">您也可以略過登入程序，<ph name="LINK_START" />以訪客身分瀏覽<ph name="LINK_END" />。</translation>
-<translation id="3171499217959105722">目前有 <ph name="NUMBERED_ITEM" />和其他項目</translation>
 <translation id="3175067642577044620">內文</translation>
 <translation id="3175862692832442091">森林</translation>
 <translation id="3176347586396987181">按下「z」代表按住滑鼠按鍵</translation>
@@ -3947,7 +3945,6 @@
 <translation id="3744219658596020825">未匯入密碼</translation>
 <translation id="3745306754941902605">廚房</translation>
 <translation id="3747077776423672805">如要移除應用程式，請前往「設定」&gt;「Google Play 商店」&gt;「管理 Android 偏好設定」&gt;「應用程式」或「應用程式管理員」，然後輕按您想解除安裝的應用程式 (您可能需要向右或向左滑動，才能找到應用程式)，再輕按 [解除安裝] 或 [停用]。</translation>
-<translation id="3747552357646973221">目前有 <ph name="NUMBERED_ITEM_1" />、<ph name="NUMBERED_ITEM_2" />和其他項目</translation>
 <translation id="3748424433435232460">此帳戶的密碼已儲存在此裝置上</translation>
 <translation id="3748706263662799310">報告錯誤</translation>
 <translation id="3749724428455457489">進一步了解網站建議嘅廣告</translation>
@@ -4079,6 +4076,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{已核准 1 個擴充程式}other{已核准 # 個擴充程式}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux 需要至少 <ph name="INSTALL_SIZE" /> 的空間。</translation>
+<translation id="3824203811509979971">撮要內容或提問</translation>
 <translation id="3824621460022590830">裝置註冊憑證無效。請聯絡您的裝置擁有者或管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="3824757763656550700">登入即可查看在其他裝置上開啟的分頁</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{記住我對以下檔案類型的選擇：<ph name="FILE_TYPES" />}other{記住我對下列檔案類型的選擇：<ph name="FILE_TYPES" />}}</translation>
@@ -4265,6 +4263,7 @@
 <translation id="3948985214866944547">大部分使用者都封鎖此網站的精確位置分享功能</translation>
 <translation id="394984172568887996">從 IE 匯入</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />，以更安全的方式下載檔案</translation>
+<translation id="3950479158728806902">自動建立密鑰，加快登入速度</translation>
 <translation id="3950820424414687140">登入</translation>
 <translation id="3950841222883198950">語音輸入</translation>
 <translation id="3953834000574892725">我的帳戶</translation>
@@ -5188,6 +5187,7 @@
 <translation id="4624054169152573743">色彩主題</translation>
 <translation id="4625078469366263107">啟用應用程式</translation>
 <translation id="4625905218692741757">使用灰色作為預設顏色</translation>
+<translation id="4627107755957573804">允許網站和應用程式將現有帳戶驗證升級為密鑰</translation>
 <translation id="4627442949885028695">先前在其他裝置瀏覽的網頁</translation>
 <translation id="4628762811416793313">未完成 Linux 容器設定。請再試一次。</translation>
 <translation id="4629521233550547305">開啟 <ph name="PROFILE_NAME" /> 設定檔</translation>
@@ -5770,6 +5770,7 @@
 <translation id="5053233576223592551">新增使用者名稱</translation>
 <translation id="505347685865235222">未命名的群組 - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{你應立即更改密碼}other{你應立即更改密碼}}</translation>
+<translation id="5056587122125565772">製作圖像</translation>
 <translation id="5056950756634735043">正在連線至容器</translation>
 <translation id="5057110919553308744">當您點擊擴充程式時</translation>
 <translation id="5057127674016624293">掃瞄所需時間比預期長</translation>
@@ -5880,6 +5881,7 @@
 <translation id="512642543295077915">搜尋鍵 + Backspace 鍵</translation>
 <translation id="5126611267288187364">查看變更</translation>
 <translation id="5127620150973591153">安全連線 ID：<ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">撮要內容或提問。</translation>
 <translation id="5127881134400491887">管理網絡連線</translation>
 <translation id="5127934926273826089">花</translation>
 <translation id="5127986747308934633">管理員正在控制您的裝置</translation>
@@ -10145,6 +10147,7 @@
 <translation id="8195854162863398249">停用「<ph name="FEATURE_NAME" />」</translation>
 <translation id="8195920051450756553">再次啟動相同按鍵前的延遲時間</translation>
 <translation id="8197673340773315084">新增名稱或標籤，例如「工作」或「個人」</translation>
+<translation id="8198181050118789419">主題：<ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">正在投放分頁</translation>
 <translation id="8199300056570174101">網絡 (服務) 和裝置屬性元件</translation>
 <translation id="8200772114523450471">繼續</translation>
@@ -11399,6 +11402,7 @@
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9074836595010225693">已連接 USB 滑鼠</translation>
 <translation id="9075413375877487220">「強化安全瀏覽」不信任此擴充程式。</translation>
+<translation id="9075985558450420812">輸入自訂提示或醒目顯示文字，即可製作圖像。</translation>
 <translation id="9076523132036239772">抱歉，系統無法驗證您的電郵或密碼，請先連線至網絡。</translation>
 <translation id="9076821103818989526">側面板</translation>
 <translation id="9076977315710973122">SMB 共用</translation>
