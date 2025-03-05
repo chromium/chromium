@@ -919,6 +919,8 @@ bool ThemeSyncableService::ApplySavedLocalThemeIfExistsAndClear() {
   std::optional<sync_pb::ThemeSpecifics> local_theme_specifics =
       GetSavedLocalTheme();
   if (local_theme_specifics) {
+    // This does not trigger a notification to OnThemeChanged() and thus does
+    // not commit the theme change to sync. That is done below.
     MaybeSetTheme(GetThemeSpecificsFromCurrentTheme(), *local_theme_specifics);
     if (remote_extension_theme_pending_install_) {
       extensions::PendingExtensionManager* pending_extension_manager =
@@ -936,6 +938,9 @@ bool ThemeSyncableService::ApplySavedLocalThemeIfExistsAndClear() {
       // `remote_extension_theme_pending_install_` if it was installed.
       theme_service_->RemoveUnusedThemes();
     }
+    // Commit the theme change to sync. Note that this does not trigger a commit
+    // when called while StopSyncing().
+    OnThemeChanged();
   }
   profile_->GetPrefs()->ClearPref(prefs::kSavedLocalTheme);
   return local_theme_specifics.has_value();
