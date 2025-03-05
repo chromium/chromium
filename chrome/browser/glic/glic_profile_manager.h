@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list_types.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 
 class Profile;
@@ -22,6 +23,11 @@ class GlicProfileManager {
   GlicProfileManager();
   ~GlicProfileManager();
 
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnActiveGlicServiceChanged(GlicKeyedService* new_service) = 0;
+  };
+
   // Returns the global instance.
   static GlicProfileManager* GetInstance();
 
@@ -35,14 +41,23 @@ class GlicProfileManager {
   // Called by GlicKeyedService.
   void SetActiveGlic(GlicKeyedService* glic);
 
+  // Called by GlicKeyedService.
+  void OnServiceShutdown(GlicKeyedService* glic);
+
   // True if the given profile should be considered for preloading.
   bool ShouldPreloadForProfile(Profile* profile) const;
+
+  // Returns the active Glic service, nullptr if there is none.
+  GlicKeyedService* GetActiveGlicService() const;
 
   // Opens the panel if the "glic-open-on-startup" command line switch was used
   // and glic has not already opened like this.
   void MaybeAutoOpenGlicPanel();
 
   void ShowProfilePicker();
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Static in order to permit setting forced values before the manager is
   // constructed.
@@ -57,6 +72,7 @@ class GlicProfileManager {
   base::MemoryPressureMonitor::MemoryPressureLevel GetCurrentPressureLevel()
       const;
 
+  base::ObserverList<Observer> observers_;
   base::WeakPtr<GlicKeyedService> active_glic_;
   bool did_auto_open_ = false;
   base::WeakPtrFactory<GlicProfileManager> weak_ptr_factory_{this};

@@ -3325,7 +3325,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       if (glic::GlicEnabling::IsEnabledByFlags()) {
         auto* glic_service = glic::GlicKeyedService::Get(browser_context_);
         if (glic_service) {
-          glic_service->Shutdown();
+          glic_service->CloseUI();
         }
       }
 #endif  // BUILDFLAG(ENABLE_GLIC)

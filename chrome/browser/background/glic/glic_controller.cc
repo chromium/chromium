@@ -21,6 +21,21 @@ void GlicController::Show(InvocationSource source) {
   ToggleUI(/*prevent_close=*/true, source);
 }
 
+void GlicController::Close() {
+  GlicKeyedService* glic_keyed_service =
+      glic::GlicProfileManager::GetInstance()->GetActiveGlicService();
+  if (!glic_keyed_service) {
+    return;
+  }
+  glic_keyed_service->CloseUI();
+}
+
+bool GlicController::IsShowing() const {
+  GlicKeyedService* glic_keyed_service =
+      glic::GlicProfileManager::GetInstance()->GetActiveGlicService();
+  return glic_keyed_service && glic_keyed_service->IsWindowShowing();
+}
+
 void GlicController::ToggleUI(bool prevent_close, InvocationSource source) {
   Profile* profile =
       glic::GlicProfileManager::GetInstance()->GetProfileForLaunch();
