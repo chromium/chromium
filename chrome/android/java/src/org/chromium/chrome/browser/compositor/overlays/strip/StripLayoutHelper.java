@@ -326,15 +326,6 @@ public class StripLayoutHelper
                 }
 
                 @Override
-                public void willCloseTabGroup(Token tabGroupId, boolean isHiding) {
-                    StripLayoutGroupTitle groupTitle =
-                            StripLayoutUtils.findGroupTitle(mStripGroupTitles, tabGroupId);
-                    if (groupTitle != null && groupTitle == mDelayedReorderView) {
-                        resetDelayedReorderState();
-                    }
-                }
-
-                @Override
                 public void didRemoveTabGroup(
                         int oldRootId,
                         @Nullable Token oldTabGroupId,
@@ -378,6 +369,7 @@ public class StripLayoutHelper
     private final StripStacker mStripStacker = new ScrollingStripStacker();
     private final ScrollDelegate mScrollDelegate = new ScrollDelegate();
     private ReorderDelegate mReorderDelegate = new ReorderDelegate();
+    private final Callback<Boolean> mInReorderModeObserver = this::onInReorderModeChanged;
 
     // Common state used for animations on the strip triggered by independent actions including and
     // not limited to tab closure, tab creation/selection, and tab reordering. Not intended to be
@@ -698,6 +690,7 @@ public class StripLayoutHelper
 
         mActionConfirmationManager = actionConfirmationManager;
         mGroupIdToHideSupplier.addObserver((newIdToHide) -> rebuildStripViews());
+        mReorderDelegate.addInReorderModeObserver(mInReorderModeObserver);
 
         mIsFirstLayoutPass = true;
     }
@@ -706,6 +699,7 @@ public class StripLayoutHelper
     public void destroy() {
         mStripTabEventHandler.removeCallbacksAndMessages(null);
         mLastHoveredTab = null;
+        mReorderDelegate.removeInReorderModeObserver(mInReorderModeObserver);
         if (mTabHoverCardView != null) {
             mTabHoverCardView.destroy();
             mTabHoverCardView = null;
@@ -1402,13 +1396,7 @@ public class StripLayoutHelper
      * @param tab The tab that will be closed.
      */
     public void willCloseTab(long time, Tab tab) {
-        if (tab != null) {
-            updateGroupTextAndSharedState(tab.getRootId());
-            StripLayoutTab stripTab = findTabById(tab.getId());
-            if (stripTab != null && stripTab == mDelayedReorderView) {
-                resetDelayedReorderState();
-            }
-        }
+        if (tab != null) updateGroupTextAndSharedState(tab.getRootId());
     }
 
     /**
@@ -2591,7 +2579,6 @@ public class StripLayoutHelper
             if (!mModel.isIncognito()) mModel.commitAllTabClosures();
             mTabCreator.launchNtp();
         }
-        resetDelayedReorderState();
         mIsStripScrollInProgress = false;
     }
 
@@ -3907,6 +3894,12 @@ public class StripLayoutHelper
         }
     }
 
+    private void onInReorderModeChanged(boolean inReorderMode) {
+        if (!inReorderMode) {
+            mDelayedReorderView = null;
+        }
+    }
+
     /**
      * @param id The id of the selected tab.
      * @return The outline color if the selected tab will show its Tab Group Indicator outline.
@@ -4291,7 +4284,7 @@ public class StripLayoutHelper
     /**
      * @return The view that we'll delay enter reorder mode for.
      */
-    StripLayoutView getDelayedReorderViewForTesting() {
+    StripLayoutView getDelayedReorderView() {
         return mDelayedReorderView;
     }
 
@@ -4459,14 +4452,6 @@ public class StripLayoutHelper
 
     private boolean isTabDraggingInProgress() {
         return mTabDragSource != null && mTabDragSource.isTabDraggingInProgress();
-    }
-
-    private void resetDelayedReorderState() {
-        mDelayedReorderView = null;
-        mDelayedReorderInitialX = 0.f;
-        // It's possible for the delayed reorder view to get removed from the strip before the
-        // #onUpOrCancel for the gesture that set it. In that case, stop reorder if in progress.
-        if (mReorderDelegate.getInReorderMode()) stopReorderMode();
     }
 
     private void sendMoveWindowBroadcast(View view, float startXInView, float startYInView) {
