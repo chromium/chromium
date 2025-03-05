@@ -57,7 +57,9 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
   // A class to hold ownership of PoolResources.
   class CC_EXPORT Backing {
    public:
-    Backing();
+    Backing(const gfx::Size& size,
+            viz::SharedImageFormat format,
+            const gfx::ColorSpace& color_space);
     virtual ~Backing();
 
     void set_shared_image(scoped_refptr<gpu::ClientSharedImage> si) {
@@ -92,6 +94,9 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
 
    private:
     scoped_refptr<gpu::ClientSharedImage> shared_image_;
+    const gfx::Size size_;
+    const viz::SharedImageFormat format_;
+    const gfx::ColorSpace color_space_;
   };
 
   // Scoped move-only object returned when getting a resource from the pool.

@@ -38,7 +38,11 @@ using base::trace_event::MemoryDumpLevelOfDetail;
 
 namespace cc {
 
-ResourcePool::Backing::Backing() = default;
+ResourcePool::Backing::Backing(const gfx::Size& size,
+                               viz::SharedImageFormat format,
+                               const gfx::ColorSpace& color_space)
+    : size_(size), format_(format), color_space_(color_space) {}
+
 ResourcePool::Backing::~Backing() {
   if (!shared_image_) {
     return;
@@ -57,7 +61,8 @@ void ResourcePool::InUsePoolResource::InstallGpuBacking(
     bool is_overlay_candidate,
     bool use_gpu_rasterization,
     std::string_view debug_label) const {
-  auto backing = std::make_unique<ResourcePool::Backing>();
+  auto backing =
+      std::make_unique<ResourcePool::Backing>(size(), format(), color_space());
 
   gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                    gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
@@ -78,7 +83,8 @@ void ResourcePool::InUsePoolResource::InstallSoftwareBacking(
     scoped_refptr<gpu::SharedImageInterface> sii,
     std::string_view debug_label) const {
   CHECK(!backing());
-  auto backing = std::make_unique<ResourcePool::Backing>();
+  auto backing =
+      std::make_unique<ResourcePool::Backing>(size(), format(), color_space());
   backing->set_shared_image(sii->CreateSharedImageForSoftwareCompositor(
       {format(), size(), color_space(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
        debug_label}));

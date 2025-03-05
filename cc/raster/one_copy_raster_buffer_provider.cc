@@ -56,7 +56,9 @@ OneCopyRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
       color_space_(in_use_resource.color_space()),
       previous_content_id_(previous_content_id) {
   if (!in_use_resource.backing()) {
-    auto backing = std::make_unique<ResourcePool::Backing>();
+    auto backing = std::make_unique<ResourcePool::Backing>(
+        in_use_resource.size(), in_use_resource.format(),
+        in_use_resource.color_space());
     in_use_resource.set_backing(std::move(backing));
   }
   backing_ = in_use_resource.backing();

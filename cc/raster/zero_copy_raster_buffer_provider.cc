@@ -45,7 +45,9 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
         format_(in_use_resource.format()),
         resource_color_space_(in_use_resource.color_space()) {
     if (!in_use_resource.backing()) {
-      auto backing = std::make_unique<ResourcePool::Backing>();
+      auto backing = std::make_unique<ResourcePool::Backing>(
+          in_use_resource.size(), in_use_resource.format(),
+          in_use_resource.color_space());
       // This RasterBufferProvider will modify the resource outside of the
       // GL command stream. So resources should not become available for reuse
       // until they are not in use by the gpu anymore, which a fence is used
