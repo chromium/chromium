@@ -1007,13 +1007,6 @@ class ComputedStyle final : public ComputedStyleBase {
     return FlexDirection() == EFlexDirection::kColumn ||
            FlexDirection() == EFlexDirection::kColumnReverse;
   }
-  bool ResolvedIsRowReverseFlexDirection() const {
-    if (IsDeprecatedFlexbox()) {
-      return BoxOrient() == EBoxOrient::kHorizontal &&
-             BoxDirection() == EBoxDirection::kReverse;
-    }
-    return FlexDirection() == EFlexDirection::kRowReverse;
-  }
   bool ResolvedIsReverseFlexDirection() const {
     if (IsDeprecatedFlexbox()) {
       return BoxDirection() == EBoxDirection::kReverse;
