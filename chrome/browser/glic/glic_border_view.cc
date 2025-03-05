@@ -375,6 +375,7 @@ void GlicBorderView::OnAnimationStep(base::TimeTicks timestamp) {
 
   // TODO(liuwilliam): Ideally this should be done in paint-related methods.
   // Consider moving it to LayerDelegate::OnPaintLayer().
+  CHECK(layer());
   layer()->SetOpacity(opacity_);
 
   // Don't animate if the animations have exhausted and we haven't started
@@ -409,6 +410,16 @@ void GlicBorderView::OnAnimationStep(base::TimeTicks timestamp) {
 
 void GlicBorderView::OnCompositingShuttingDown(ui::Compositor* compositor) {
   StopShowing();
+}
+
+bool GlicBorderView::IsShowing() const {
+  // `compositor_` is set when the border starts to show and unset when the
+  // border stops to show.
+  return !!compositor_;
+}
+
+float GlicBorderView::GetEffectTimeForTesting() const {
+  return GetEffectTime();
 }
 
 void GlicBorderView::Show() {
@@ -464,16 +475,6 @@ void GlicBorderView::StopShowing() {
   // the destroyed layer.
   DestroyLayer();
   SetVisible(false);
-}
-
-bool GlicBorderView::IsShowing() const {
-  // `compositor_` is set when the border starts to show and unset when the
-  // border stops to show.
-  return !!compositor_;
-}
-
-float GlicBorderView::GetEffectTimeForTesting() const {
-  return GetEffectTime();
 }
 
 float GlicBorderView::GetEmphasis(base::TimeDelta delta) const {
@@ -558,6 +559,10 @@ void GlicBorderView::StartRampingDown() {
 
   if (!compositor_->HasAnimationObserver(this)) {
     compositor_->AddAnimationObserver(this);
+  }
+
+  if (tester_) [[unlikely]] {
+    tester_->RampDownStarted();
   }
 }
 
