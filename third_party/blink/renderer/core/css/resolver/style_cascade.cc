@@ -1630,13 +1630,6 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
                                        TokenSequence& out) {
   state_.StyleBuilder().SetAffectedByCSSFunction();
 
-  AtomicString function_name_atomic(function_name);
-  using Function = CascadeResolver::Function;
-  if (resolver.DetectCycle(Function(function_name_atomic))) {
-    return false;
-  }
-  CascadeResolver::AutoLock lock(Function(function_name_atomic), resolver);
-
   // Note that in this function, we basically have an "outer" tree scope
   // (`tree_scope`) and an "inner" tree scope (`function_tree_scope`).
   // When resolving a <dashed-function> like --foo(arg), arg is resolved
@@ -1650,10 +1643,18 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
   state_.SetHasTreeScopedReference();
   auto [/*StyleRuleFunction*/ function, function_tree_scope] =
       GetDocument().GetStyleEngine().FindFunctionAcrossScopes(
-          function_name_atomic, tree_scope);
+          AtomicString(function_name), tree_scope);
   if (!function) {
     return false;
   }
+
+  CascadeResolver::CycleNode cycle_node = {
+      .type = CascadeResolver::CycleNode::Type::kFunction,
+      .function = function};
+  if (resolver.DetectCycle(cycle_node)) {
+    return false;
+  }
+  CascadeResolver::AutoLock lock(cycle_node, resolver);
 
   // When parsing function arguments, one of three things can happen
   // (per argument):
@@ -1774,6 +1775,7 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
   // https://drafts.csswg.org/css-mixins-1/#evaluate-a-custom-function
   if (!unresolved_defaults.empty()) {
     FunctionContext default_context{
+        .function = *function,
         .tree_scope = function_tree_scope,
         .arguments = function_arguments,
         .locals = {},  // Populated by ApplyLocalVariables.
@@ -1815,6 +1817,7 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
   HashMap<String, const CSSSyntaxDefinition*> local_types;
 
   FunctionContext local_function_context{
+      .function = *function,
       .tree_scope = function_tree_scope,
       .arguments = function_arguments,
       .locals = {},  // Populated by ApplyLocalVariables.
@@ -1963,11 +1966,14 @@ const CSSValue* StyleCascade::ResolveLocalVariable(
     CascadeResolver& resolver,
     const CSSParserContext& context,
     FunctionContext& function_context) {
-  using LocalVariable = CascadeResolver::LocalVariable;
-  if (resolver.DetectCycle(LocalVariable(name))) {
+  CascadeResolver::CycleNode cycle_node = {
+      .type = CascadeResolver::CycleNode::Type::kLocalVariable,
+      .name = name,
+      .function = &function_context.function};
+  if (resolver.DetectCycle(cycle_node)) {
     return nullptr;
   }
-  CascadeResolver::AutoLock lock(LocalVariable(name), resolver);
+  CascadeResolver::AutoLock lock(cycle_node, resolver);
   return ResolveFunctionExpression(unresolved, function_context.tree_scope,
                                    type, resolver, context, &function_context);
 }
@@ -2074,11 +2080,12 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
                                    FunctionContext* function_context,
                                    TokenSequence& out) {
   AtomicString local_name = ConsumeVariableName(stream);
-  using Attribute = CascadeResolver::Attribute;
-  if (resolver.DetectCycle(Attribute(local_name))) {
+  CascadeResolver::CycleNode cycle_node = {
+      .type = CascadeResolver::CycleNode::Type::kAttribute, .name = local_name};
+  if (resolver.DetectCycle(cycle_node)) {
     return false;
   }
-  CascadeResolver::AutoLock lock(Attribute(local_name), resolver);
+  CascadeResolver::AutoLock lock(cycle_node, resolver);
   std::optional<CSSAttrType> attr_type = CSSAttrType::Consume(stream);
   if (!attr_type.has_value()) {
     attr_type = CSSAttrType::GetDefaultValue();

@@ -437,6 +437,8 @@ class CORE_EXPORT StyleCascade {
     STACK_ALLOCATED();
 
    public:
+    StyleRuleFunction& function;
+
     // The TreeScope owning the corresponding function rule.
     const TreeScope* tree_scope = nullptr;
 
