@@ -5857,38 +5857,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Stack Unwinder
       </message>
 
-      <message name="IDS_CABLEV2_PAASK_TITLE" desc="The title of an entry in settings for controlling how a phone can be used as a security key. A security key is typically a physical USB peripheral used to secure accounts. In this case, the user's phone can act as a security key.">
-        Phone as a security key
-      </message>
-
-      <message name="IDS_CABLEV2_PAASK_BODY" desc="The subheading of an entry in settings for controlling how a phone can be used as a security key. A security key is typically a physical USB peripheral used to secure accounts. In this case, the user's phone can act as a security key. 'Devices' here means phones, laptops, and desktops that the user uses Chrome on.">
-        Control which devices can sign in by using this device as a security key.
-      </message>
-
-      <message name="IDS_CABLEV2_YOUR_DEVICES" desc="A section title on a screen discussing the different devices that can use a phone as a security key. 'Devices' here means phones, laptops, and desktops that the user uses Chrome on.">
-        Your devices
-      </message>
-
-      <message name="IDS_CABLEV2_YOUR_DEVICES_BODY" desc="Text that appears under the title 'Your devices'. 'Devices' here means phones, laptops, and desktops that the user uses Chrome on. Users can sign into a Google account in Chrome on these devices and this message explains that such devices can use this phone as a security key. A security key is typically a physical USB peripheral used to secure accounts. In this case, the user's phone can act as a security key.">
-        When you’re signed into the same Google Account, other devices can use this phone as a security key.
-      </message>
-
-      <message name="IDS_CABLEV2_LINKED_DEVICES" desc="A section title on a screen discussing the different devices that can use a phone as a security key. The section above this discusses how devices (e.g. phones, laptops, and desktops) on which Chrome is signed into the same Google account can automatically use this phone as a security key. This section is about devices that the user has scanned QR codes from in order to allow them to use this phone as a security key. The word 'linked' here was chosen to be distinct from 'paired' as in 'Bluetooth pairing'. This technology does use Bluetooth, but we did not want to overload the term 'pairing'. However, the word 'pairing' does have the correct meaning.">
-        Linked devices
-      </message>
-
-      <message name="IDS_CABLEV2_LINKED_DEVICES_BODY" desc="Text that appears under the title 'Linked devices'. This section is about devices that the user has scanned QR codes from in order to allow them to use this phone as a security key. The word 'link' here was chosen to be distinct from 'pair' as in 'Bluetooth pairing'. This technology does use Bluetooth, but we did not want to overload the term 'pairing'. However, the word 'pair' does have the correct meaning. A security key is typically a physical USB peripheral used to secure accounts. In this case, the user's phone can act as a security key.">
-        When you link another device with a QR code, it can use this phone as a security key. If you remove it, you’ll have to scan a QR code to link it again.
-      </message>
-
-      <message name="IDS_CABLEV2_UNLINK_BUTTON" desc="The text on a button that, when pressed, revokes the access of all devices that could previously use this phone as a security key. The work 'linked' should match up with the translation of message IDS_CABLEV2_LINKED_DEVICES.">
-        Remove all linked devices
-      </message>
-
-      <message name="IDS_CABLEV2_UNLINK_CONFIRMATION" desc="The text in a toast that appears after clicking a button labeled 'Remove all linked devices' (IDS_CABLEV2_UNLINK_BUTTON). A 'toast' is a bubble that appears, briefly, near the bottom of the screen. (Unfortunately I was unable to capture it in the screenshot.)">
-        Removed
-      </message>
-
       <!-- QR Code -->
       <message name="IDS_QR_CODE_SHARE_ICON_LABEL" desc="Icon label for sharing with QR Code activity.">
         QR Code

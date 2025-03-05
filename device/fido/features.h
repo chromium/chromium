@@ -27,11 +27,6 @@ BASE_DECLARE_FEATURE(kWebAuthCableExtensionAnywhere);
 // passkeys from GMSCore. This is for comparison only.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnAndroidUsePasskeyCache);
-
-// Enable the "Phone as a security key" fragment in Privacy Settings. This flag
-// is now handled by Gmscore, in Android Settings > "Passkey-linked devices".
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnEnablePaaskFragment);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // These five feature flags control whether iCloud Keychain is the default
