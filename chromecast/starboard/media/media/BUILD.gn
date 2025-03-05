@@ -34,6 +34,7 @@ source_set("starboard") {
     ":mime_utils",
     ":starboard_api_wrapper",
     "//base",
+    "//chromecast/base",
     "//chromecast/public",
     "//chromecast/public/media",
     "//chromecast/starboard/chromecast/starboard_adapter",
