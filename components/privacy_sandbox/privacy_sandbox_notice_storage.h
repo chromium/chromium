@@ -33,12 +33,9 @@ enum class NoticeStartupState {
   kFlowCompletedWithOptOut = 4,
   // Prompt/notice still waiting for action.
   kPromptWaiting = 5,
-  // Prompt/notice had an action other then the specified actions performed on
-  // it.
-  kPromptOtherAction = 6,
-  // Prompt/notice timed out.
-  kTimedOut = 7,
-  kMaxValue = kTimedOut,
+  // kPromptOtherAction = 6,  // no longer used
+  // kTimedOut = 7,  // no longer used,
+  kMaxValue = kPromptWaiting,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxNoticeStartupState)
 
@@ -77,22 +74,17 @@ enum class NoticeEvent {
   kAck = 0,
   // Action taken clicking the 'x' button.
   kClosed = 1,
-  // Action taken to defer using 'Remind me later' or some other form of
-  // deferral.
-  kDeferred = 2,
   // Opted in/Consented to the notice using 'Turn it on' or some other form of
   // explicit consent.
-  kOptIn = 3,
+  kOptIn = 2,
   // Action taken to dismiss or opt out of the notice using 'No Thanks' or some
   // other form of dismissal.
-  kOptOut = 4,
+  kOptOut = 3,
   // Action taken clicking the settings button.
-  kSettings = 5,
+  kSettings = 4,
   // Notice shown.
-  kShown = 6,
-  // No action taken, the notice timed out.
-  kTimedOut = 7,
-  kMaxValue = kTimedOut,
+  kShown = 5,
+  kMaxValue = kShown,
 };
 
 // Different notice action outcomes. These values are persisted to logs. Entries
