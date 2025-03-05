@@ -34,6 +34,7 @@
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
 #include "content/common/skia_utils.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/renderer/content_renderer_client.h"
@@ -224,6 +225,11 @@ int RendererMain(MainFunctionParams parameters) {
   std::unique_ptr<blink::scheduler::WebThreadScheduler> main_thread_scheduler =
       blink::scheduler::WebThreadScheduler::CreateMainThreadScheduler(
           CreateMainThreadMessagePump());
+  bool input_scenario_priority_boost_enabled =
+      base::FeatureList::IsEnabled(features::kInputScenarioPriorityBoost);
+  if (input_scenario_priority_boost_enabled) {
+    main_thread_scheduler->EnableInputScenarioPriorityBoost();
+  }
 
   platform.PlatformInitialize();
 
@@ -273,8 +279,12 @@ int RendererMain(MainFunctionParams parameters) {
     // Consider CrRendererMain a display critical thread. While some Javascript
     // running on the main thread might not be, experiments demonstrated that
     // overall this improves user-perceived performance.
-    base::PlatformThread::SetCurrentThreadType(
-        base::ThreadType::kDisplayCritical);
+    // If kInputScenarioPriorityBoost is enabled, the main thread will only be
+    // display critical when user input is detected.
+    base::ThreadType thread_type = input_scenario_priority_boost_enabled
+                                       ? base::ThreadType::kDefault
+                                       : base::ThreadType::kDisplayCritical;
+    base::PlatformThread::SetCurrentThreadType(thread_type);
 
     std::unique_ptr<RenderProcess> render_process = RenderProcessImpl::Create();
     // It's not a memory leak since RenderThread has the same lifetime

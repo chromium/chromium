@@ -30,6 +30,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -1943,6 +1944,10 @@ void MainThreadSchedulerImpl::SetRendererProcessType(
   main_thread_only().process_type = type;
 }
 
+void MainThreadSchedulerImpl::EnableInputScenarioPriorityBoost() {
+  input_scenario_priority_boost_enabled_ = true;
+}
+
 Vector<WebInputEventAttribution>
 MainThreadSchedulerImpl::GetPendingUserInputInfo(
     bool include_continuous) const {
@@ -2257,6 +2262,28 @@ void MainThreadSchedulerImpl::OnTaskStarted(
   main_thread_only().task_priority_for_tracing =
       queue ? std::optional<TaskPriority>(queue->GetQueuePriority())
             : std::nullopt;
+
+  if (input_scenario_priority_boost_enabled_) {
+    // Check if the input scenario has changed and update the main thread
+    // priority boost accordingly.
+    performance_scenarios::InputScenario input_scenario =
+        GetInputScenario(performance_scenarios::ScenarioScope::kCurrentProcess)
+            ->load(std::memory_order_relaxed);
+
+    switch (input_scenario) {
+      case performance_scenarios::InputScenario::kNoInput:
+        if (main_thread_priority_boost_.has_value()) {
+          main_thread_priority_boost_.reset();
+        }
+        break;
+      case performance_scenarios::InputScenario::kTyping:
+        if (!main_thread_priority_boost_.has_value()) {
+          main_thread_priority_boost_.emplace(
+              base::ThreadType::kDisplayCritical);
+        }
+        break;
+    }
+  }
 }
 
 void MainThreadSchedulerImpl::OnTaskCompleted(

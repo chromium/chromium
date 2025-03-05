@@ -173,6 +173,7 @@ blink_platform_sources("scheduler") {
     "//base",
     "//cc",
     "//components/miracle_parameter/common",
+    "//components/performance_manager/scenario_api",
     "//device/base/synchronization",
     "//services/metrics/public/mojom",
     "//third_party/blink/renderer/platform:allow_discouraged_type",
