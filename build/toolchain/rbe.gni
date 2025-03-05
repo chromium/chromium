@@ -97,32 +97,24 @@ declare_args() {
   if (!use_reclient_cfgs) {
     reclient_cc_cfg_file = ""
     reclient_py_cfg_file = ""
-    reclient_py_large_cfg_file = ""
   } else if (use_reclient && host_os == "linux") {
     reclient_py_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/python/rewrapper_linux.cfg"
-    reclient_py_large_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
-                                 "/python/rewrapper_linux_large.cfg"
     reclient_cc_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/chromium-browser-clang/rewrapper_linux.cfg"
   } else if (host_os == "win") {
     reclient_py_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/python/rewrapper_windows.cfg"
-    reclient_py_large_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
-                                 "/python/rewrapper_windows_large.cfg"
     reclient_cc_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/chromium-browser-clang/rewrapper_windows.cfg"
   } else if (host_os == "mac") {
     reclient_py_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/python/rewrapper_mac.cfg"
-    reclient_py_large_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
-                                 "/python/rewrapper_mac_large.cfg"
     reclient_cc_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/chromium-browser-clang/rewrapper_mac.cfg"
   } else {
     reclient_cc_cfg_file = ""
     reclient_py_cfg_file = ""
-    reclient_py_large_cfg_file = ""
   }
 
   if (use_reclient) {
