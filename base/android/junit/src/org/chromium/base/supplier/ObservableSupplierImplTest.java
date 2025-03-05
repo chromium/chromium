@@ -85,21 +85,11 @@ public class ObservableSupplierImplTest {
     }
 
     @Test
-    public void testAddObserver_ShouldNotOmitNullOnAdd() {
-        AtomicBoolean called = new AtomicBoolean(false);
-        Callback<String> supplierObserver = ignored -> called.set(true);
-
-        mSupplier.addSyncObserverAndCall(supplierObserver); // !NotifyBehavior.OMIT_NULL_ON_ADD;
-        ShadowLooper.runUiThreadTasks();
-        assertTrue(called.get());
-    }
-
-    @Test
     public void testAddObserver_ShouldOmitNullOnAdd() {
         AtomicBoolean called = new AtomicBoolean(false);
         Callback<String> supplierObserver = ignored -> called.set(true);
 
-        mSupplier.addSyncObserverAndCallIfSet(supplierObserver);
+        mSupplier.addSyncObserverAndCallIfNonNull(supplierObserver);
         ShadowLooper.runUiThreadTasks();
         assertFalse(called.get());
 
@@ -114,7 +104,7 @@ public class ObservableSupplierImplTest {
         AtomicBoolean called = new AtomicBoolean(false);
         Callback<String> supplierObserver = ignored -> called.set(true);
 
-        mSupplier.addSyncObserverAndPostIfSet(supplierObserver);
+        mSupplier.addSyncObserverAndPostIfNonNull(supplierObserver);
         ShadowLooper.runUiThreadTasks();
         assertTrue(called.get());
     }
@@ -125,7 +115,7 @@ public class ObservableSupplierImplTest {
         AtomicBoolean called = new AtomicBoolean(false);
         Callback<String> supplierObserver = ignored -> called.set(true);
 
-        mSupplier.addSyncObserverAndCallIfSet(supplierObserver); // !NotifyBehavior.POST_ON_ADD
+        mSupplier.addSyncObserverAndCallIfNonNull(supplierObserver); // !NotifyBehavior.POST_ON_ADD
         boolean idle = ShadowLooper.shadowMainLooper().isIdle();
         assertTrue(idle);
     }

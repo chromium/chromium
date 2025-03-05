@@ -6,6 +6,7 @@ package org.chromium.base.supplier;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.function.Function;
@@ -28,8 +29,7 @@ public class TransitiveObservableSupplier<P extends @Nullable Object, T extends 
         implements ObservableSupplier<T> {
     // Used to hold observers and current state. However the current value is only valid when there
     // are observers, otherwise is may be stale.
-    private final ObservableSupplierImpl<@Nullable T> mDelegateSupplier =
-            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<T> mDelegateSupplier = new ObservableSupplierImpl<>();
     private final Callback<P> mOnParentSupplierChangeCallback = this::onParentSupplierChange;
     private final Callback<T> mOnTargetSupplierChangeCallback = this::onTargetSupplierChange;
     private final ObservableSupplier<P> mParentSupplier;
@@ -51,7 +51,7 @@ public class TransitiveObservableSupplier<P extends @Nullable Object, T extends 
     public @Nullable T addObserver(Callback<T> obs, @NotifyBehavior int behavior) {
         if (!mDelegateSupplier.hasObservers()) {
             onParentSupplierChange(
-                    mParentSupplier.addSyncObserverAndCallIfSet(mOnParentSupplierChangeCallback));
+                    mParentSupplier.addSyncObserver(mOnParentSupplierChangeCallback));
         }
         return mDelegateSupplier.addObserver(obs, behavior);
     }
@@ -91,6 +91,7 @@ public class TransitiveObservableSupplier<P extends @Nullable Object, T extends 
      * sure we keep our delegate supplier's value up to date, which is also what drives client
      * observations.
      */
+    @NullUnmarked // Needs to work where P is non-null or nullable.
     private void onParentSupplierChange(@Nullable P parentValue) {
         if (mCurrentTargetSupplier != null) {
             mCurrentTargetSupplier.removeObserver(mOnTargetSupplierChangeCallback);
@@ -100,21 +101,20 @@ public class TransitiveObservableSupplier<P extends @Nullable Object, T extends 
         // remove our observer from it.
         mCurrentTargetSupplier = parentValue == null ? null : mUnwrapFunction.apply(parentValue);
 
-        if (mCurrentTargetSupplier == null) {
-            onTargetSupplierChange(null);
-        } else {
+        @Nullable T targetValue = null;
+        if (mCurrentTargetSupplier != null) {
             // While addObserver will call us if a value is already set, we do not want to depend on
             // that for two reasons. If there is no value set, we need to null out our supplier now.
             // And if there is a value set, we're going to get invoked asynchronously, which means
             // our delegate supplier could be in an intermediately incorrect state. By just setting
             // our delegate eagerly we avoid both problems.
-            onTargetSupplierChange(
-                    mCurrentTargetSupplier.addSyncObserverAndCallIfSet(
-                            mOnTargetSupplierChangeCallback));
+            targetValue = mCurrentTargetSupplier.addSyncObserver(mOnTargetSupplierChangeCallback);
         }
+        onTargetSupplierChange(targetValue);
     }
 
-    private void onTargetSupplierChange(@Nullable T targetValue) {
+    @NullUnmarked // Needs to work where T is non-null or nullable.
+    private void onTargetSupplierChange(T targetValue) {
         mDelegateSupplier.set(targetValue);
     }
 }

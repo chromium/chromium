@@ -45,26 +45,24 @@ public class ObservableSupplierImpl<E extends @Nullable Object> implements Obser
     }
 
     @Override
-    public @Nullable E addObserver(Callback<@Nullable E> obs, @NotifyBehavior int behavior) {
+    @SuppressWarnings("NullAway") // Cannot specify that mObject is @Nullable only when E is.
+    public @Nullable E addObserver(Callback<E> obs, @NotifyBehavior int behavior) {
         // ObserverList has its own ThreadChecker.
         mObservers.addObserver(obs);
 
-        boolean notifyOnAdd = shouldNotifyOnAdd(behavior);
-        boolean omitNullOnAdd = shouldOmitNullOnAdd(behavior);
-        boolean postOnAdd = shouldPostOnAdd(behavior);
-        boolean notify = notifyOnAdd && (mObject != null || !omitNullOnAdd);
+        boolean notify = shouldNotifyOnAdd(behavior) && mObject != null;
         if (notify) {
-            final E currentObject = mObject;
-            if (postOnAdd) {
+            E currentObject = mObject;
+            if (shouldPostOnAdd(behavior)) {
                 ThreadUtils.assertOnUiThread();
                 ThreadUtils.postOnUiThread(
                         () -> {
                             if (mObject == currentObject && mObservers.hasObserver(obs)) {
-                                obs.onResult(mObject);
+                                obs.onResult(currentObject);
                             }
                         });
             } else {
-                obs.onResult(mObject);
+                obs.onResult(currentObject);
             }
         }
 
@@ -109,13 +107,6 @@ public class ObservableSupplierImpl<E extends @Nullable Object> implements Obser
     public boolean hasObservers() {
         // ObserverList has its own ThreadChecker.
         return !mObservers.isEmpty();
-    }
-
-    /**
-     * Returns whether the observer should be notified on being added if {@link #mObject} is null.
-     */
-    private static boolean shouldOmitNullOnAdd(@NotifyBehavior int behavior) {
-        return (NotifyBehavior.OMIT_NULL_ON_ADD & behavior) != 0;
     }
 
     /** Returns whether the observer should be notified on being added. */
