@@ -31,7 +31,8 @@ bool SessionMatchesFilter(
     const Session& session,
     std::optional<base::Time> created_after_time,
     std::optional<base::Time> created_before_time,
-    base::RepeatingCallback<bool(const net::SchemefulSite&)> site_matcher) {
+    base::RepeatingCallback<bool(const url::Origin&, const net::SchemefulSite&)>
+        origin_and_site_matcher) {
   if (created_before_time && *created_before_time < session.creation_date()) {
     return false;
   }
@@ -40,7 +41,8 @@ bool SessionMatchesFilter(
     return false;
   }
 
-  if (!site_matcher.is_null() && !site_matcher.Run(site)) {
+  if (!origin_and_site_matcher.is_null() &&
+      !origin_and_site_matcher.Run(session.origin(), site)) {
     return false;
   }
 
@@ -368,12 +370,13 @@ void SessionServiceImpl::AddSession(const SchemefulSite& site,
 void SessionServiceImpl::DeleteAllSessions(
     std::optional<base::Time> created_after_time,
     std::optional<base::Time> created_before_time,
-    base::RepeatingCallback<bool(const net::SchemefulSite&)> site_matcher,
+    base::RepeatingCallback<bool(const url::Origin&, const net::SchemefulSite&)>
+        origin_and_site_matcher,
     base::OnceClosure completion_callback) {
   for (auto it = unpartitioned_sessions_.begin();
        it != unpartitioned_sessions_.end();) {
     if (SessionMatchesFilter(it->first, *it->second, created_after_time,
-                             created_before_time, site_matcher)) {
+                             created_before_time, origin_and_site_matcher)) {
       it = DeleteSessionAndNotifyInternal(it, base::NullCallback());
     } else {
       ++it;

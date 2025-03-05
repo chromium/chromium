@@ -95,7 +95,9 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void DeleteAllSessions(
       std::optional<base::Time> created_after_time,
       std::optional<base::Time> created_before_time,
-      base::RepeatingCallback<bool(const net::SchemefulSite&)> site_matcher,
+      base::RepeatingCallback<bool(const url::Origin&,
+                                   const net::SchemefulSite&)>
+          origin_and_site_matcher,
       base::OnceClosure completion_callback) override;
   base::ScopedClosureRunner AddObserver(
       const GURL& url,

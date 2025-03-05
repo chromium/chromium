@@ -1,2 +1,7 @@
+import json
+
 def main(request, response):
-    return (200, [("Clear-Site-Data", '"cookies"')], "")
+    types = request.body.decode('utf-8')
+    if types == "":
+        types = '"cookies"'
+    return (200, [("Clear-Site-Data", types)], "")

@@ -101,6 +101,8 @@ class NET_EXPORT Session {
   // enter backoff mode.
   void InformOfRefreshResult(SessionError::ErrorType error_type);
 
+  const url::Origin& origin() const { return inclusion_rules_.origin(); }
+
  private:
   Session(Id id, url::Origin origin, GURL refresh);
   Session(Id id,
