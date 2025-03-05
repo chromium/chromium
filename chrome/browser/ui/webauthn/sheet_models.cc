@@ -2125,6 +2125,23 @@ CombinedSelectorSheetModel::CombinedSelectorSheetModel(
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kHidden) {}
 
+CombinedSelectorSheetModel::SelectionStatus
+CombinedSelectorSheetModel::GetSelectionStatus(size_t index) const {
+  if (dialog_model()->mechanisms.size() == 1) {
+    return SelectionStatus::kNone;
+  }
+  return selection_index_ == index ? SelectionStatus::kSelected
+                                   : SelectionStatus::kNotSelected;
+}
+
+size_t CombinedSelectorSheetModel::GetSelectionIndex() const {
+  return selection_index_;
+}
+
+void CombinedSelectorSheetModel::SetSelectionIndex(size_t index) {
+  selection_index_ = index;
+}
+
 std::u16string CombinedSelectorSheetModel::GetStepTitle() const {
   return u"";
 }
@@ -2134,15 +2151,23 @@ std::u16string CombinedSelectorSheetModel::GetStepDescription() const {
 }
 
 bool CombinedSelectorSheetModel::IsAcceptButtonVisible() const {
-  return false;
+  return true;
 }
 
 bool CombinedSelectorSheetModel::IsCancelButtonVisible() const {
-  return false;
+  return true;
+}
+
+std::u16string CombinedSelectorSheetModel::GetCancelButtonLabel() const {
+  return l10n_util::GetStringUTF16(IDS_SIGNIN_ACCESSIBLE_CLOSE_BUTTON);
 }
 
 std::u16string CombinedSelectorSheetModel::GetAcceptButtonLabel() const {
-  return u"";
+  return l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_SIGN_IN);
 }
 
-void CombinedSelectorSheetModel::OnAccept() {}
+void CombinedSelectorSheetModel::OnAccept() {
+  const auto& mech = dialog_model()->mechanisms.at(selection_index_);
+  mech.callback.Run();
+}

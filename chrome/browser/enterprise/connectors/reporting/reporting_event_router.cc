@@ -7,7 +7,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -67,19 +66,56 @@ void ReportingEventRouter::OnLoginEvent(
   }
 
   base::Value::Dict event;
-  event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyUrl, url.spec());
-  event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyIsFederated,
-            is_federated);
+  event.Set(kKeyUrl, url.spec());
+  event.Set(kKeyIsFederated, is_federated);
   if (is_federated) {
-    event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyFederatedOrigin,
-              federated_origin.Serialize());
+    event.Set(kKeyFederatedOrigin, federated_origin.Serialize());
   }
-  event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyLoginUserName,
-            MaskUsername(username));
+  event.Set(kKeyLoginUserName, MaskUsername(username));
 
-  reporting_client_->ReportRealtimeEvent(enterprise_connectors::kKeyLoginEvent,
-                                         std::move(settings.value()),
-                                         std::move(event));
+  reporting_client_->ReportRealtimeEvent(
+      kKeyLoginEvent, std::move(settings.value()), std::move(event));
+}
+
+void ReportingEventRouter::OnPasswordBreach(
+    const std::string& trigger,
+    const std::vector<std::pair<GURL, std::u16string>>& identities) {
+  std::optional<ReportingSettings> settings =
+      reporting_client_->GetReportingSettings();
+  if (!settings.has_value()) {
+    return;
+  }
+
+  std::unique_ptr<url_matcher::URLMatcher> matcher =
+      CreateURLMatcherForOptInEvent(settings.value(), kKeyPasswordBreachEvent);
+  if (!matcher) {
+    return;
+  }
+
+  base::Value::List identities_list;
+  for (const std::pair<GURL, std::u16string>& i : identities) {
+    if (!IsUrlMatched(matcher.get(), i.first)) {
+      continue;
+    }
+
+    base::Value::Dict identity;
+    identity.Set(kKeyPasswordBreachIdentitiesUrl, i.first.spec());
+    identity.Set(kKeyPasswordBreachIdentitiesUsername, MaskUsername(i.second));
+    identities_list.Append(std::move(identity));
+  }
+
+  if (identities_list.empty()) {
+    // Don't send an empty event if none of the breached identities matched a
+    // pattern in the URL filters.
+    return;
+  }
+
+  base::Value::Dict event;
+  event.Set(kKeyTrigger, trigger);
+  event.Set(kKeyPasswordBreachIdentities, std::move(identities_list));
+
+  reporting_client_->ReportRealtimeEvent(
+      kKeyPasswordBreachEvent, std::move(settings.value()), std::move(event));
 }
 
 // ---------------------------------------

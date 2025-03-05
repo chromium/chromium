@@ -38,8 +38,6 @@
 #import "ios/chrome/browser/ntp/model/features.h"
 #import "ios/chrome/browser/ntp/ui_bundled/home_start_data_source.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
-#import "ios/chrome/browser/parcel_tracking/features.h"
-#import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -57,7 +55,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_ranking_model_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_item.h"
-#import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_magic_stack_mediator.h"
@@ -88,7 +85,6 @@ using segmentation_platform::home_modules::LensEphemeralModule;
 using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 
 @interface MagicStackRankingModel () <MostVisitedTilesMediatorDelegate,
-                                      ParcelTrackingMediatorDelegate,
                                       PriceTrackingPromoMediatorDelegate,
                                       SafetyCheckMagicStackMediatorDelegate,
                                       SendTabPromoMediatorDelegate,
@@ -121,7 +117,6 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   MostVisitedTilesMediator* _mostVisitedTilesMediator;
   SetUpListMediator* _setUpListMediator;
   TabResumptionMediator* _tabResumptionMediator;
-  ParcelTrackingMediator* _parcelTrackingMediator;
   PriceTrackingPromoMediator* _priceTrackingPromoMediator;
   ShopCardMediator* _shopCardMediator;
   ShortcutsMediator* _shortcutsMediator;
@@ -176,10 +171,6 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
       } else if ([mediator isKindOfClass:[ShortcutsMediator class]]) {
         _shortcutsMediator = static_cast<ShortcutsMediator*>(mediator);
         _shortcutsMediator.delegate = self;
-      } else if ([mediator isKindOfClass:[ParcelTrackingMediator class]]) {
-        _parcelTrackingMediator =
-            static_cast<ParcelTrackingMediator*>(mediator);
-        _parcelTrackingMediator.delegate = self;
       } else if ([mediator isKindOfClass:[PriceTrackingPromoMediator class]]) {
         _priceTrackingPromoMediator =
             static_cast<PriceTrackingPromoMediator*>(mediator);
@@ -208,7 +199,6 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   _mostVisitedTilesMediator = nil;
   _setUpListMediator = nil;
   _tabResumptionMediator = nil;
-  _parcelTrackingMediator = nil;
   _priceTrackingPromoMediator = nil;
   _shortcutsMediator = nil;
   _safetyCheckMediator = nil;
@@ -335,28 +325,6 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                           didRemoveItem:_tabResumptionMediator.itemConfig
                                 animate:NO
                          withCompletion:nil];
-}
-
-#pragma mark - ParcelTrackingMediatorDelegate
-
-- (void)newParcelsAvailable {
-  MagicStackModule* item = _parcelTrackingMediator.parcelTrackingItemToShow;
-  NSArray<MagicStackModule*>* rank = [self latestMagicStackConfigRank];
-  NSUInteger index = [rank indexOfObject:item];
-  if (index == NSNotFound) {
-    return;
-  }
-  [self.delegate magicStackRankingModel:self didInsertItem:item atIndex:index];
-}
-
-- (void)parcelTrackingDisabled {
-  base::UmaHistogramEnumeration(kMagicStackModuleDisabledHistogram,
-                                ContentSuggestionsModuleType::kParcelTracking);
-  [self.delegate
-      magicStackRankingModel:self
-               didRemoveItem:_parcelTrackingMediator.parcelTrackingItemToShow
-                     animate:YES
-              withCompletion:nil];
 }
 
 - (NSUInteger)indexForMagicStackModule:
@@ -763,8 +731,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
       [magicStackOrder
           addObject:@(int(ContentSuggestionsModuleType::kTabResumption))];
     } else if (label == segmentation_platform::kParcelTracking) {
-      [magicStackOrder
-          addObject:@(int(ContentSuggestionsModuleType::kParcelTracking))];
+      // TODO(crbug.com/391002352): Remove kParcelTracking entirely.
     } else if (label == segmentation_platform::kPriceTrackingPromo) {
       [magicStackOrder
           addObject:@(int(ContentSuggestionsModuleType::kPriceTrackingPromo))];
@@ -899,13 +866,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         }
         break;
       case ContentSuggestionsModuleType::kParcelTracking:
-        if (IsIOSParcelTrackingEnabled() &&
-            !IsParcelTrackingDisabled(
-                IsHomeCustomizationEnabled() ? _prefService : _localState) &&
-            _parcelTrackingMediator.parcelTrackingItemToShow) {
-          [magicStackOrder
-              addObject:_parcelTrackingMediator.parcelTrackingItemToShow];
-        }
+        // TODO(crbug.com/391002352): Remove kParcelTracking entirely.
         break;
       default:
         // These module types should not have been added by the logic

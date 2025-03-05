@@ -1374,7 +1374,6 @@
 <translation id="1936157145127842922">Показване в папката</translation>
 <translation id="1936931585862840749">Въведете число между 1 и <ph name="MAX_COPIES" />, за да укажете колко копия да се отпечатат .</translation>
 <translation id="1937774647013465102">Архитектурата на контейнера е от тип <ph name="ARCHITECTURE_CONTAINER" /> и не може да се импортира в това устройство, което е от тип <ph name="ARCHITECTURE_DEVICE" />. Можете да опитате да възстановите контейнера на друго устройство или да използвате файловете в образа му, като го отворите в приложението „Файлове“.</translation>
-<translation id="1938116692670653897">Текуща цветова тема</translation>
 <translation id="1938351510777341717">Външен клавиш Command</translation>
 <translation id="1940221956626514677">Персонализиране на лентата с инструменти</translation>
 <translation id="1940546824932169984">Свързани устройства</translation>
@@ -4077,6 +4076,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Разширение бе одобрено}other{# разширения бяха одобрени}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">За Linux е препоръчително да разполагате с поне <ph name="INSTALL_SIZE" /> свободно място.</translation>
+<translation id="3824203811509979971">Обобщавайте съдържание или задавайте въпроси</translation>
 <translation id="3824621460022590830">Означението за регистриране на устройството е невалидно. Моля, свържете се със собственика или администратора на устройството си. Код на грешката: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Влезте в профила си, за да видите разделите от други устройства</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Запомняне на избора ми за този файлов тип: <ph name="FILE_TYPES" />}other{Запомняне на избора ми за следните файлови типове: <ph name="FILE_TYPES" />}}</translation>
@@ -4264,6 +4264,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3948985214866944547">Повечето хора блокират споделянето на точното местоположение за този сайт</translation>
 <translation id="394984172568887996">Импортирани от Internet Explorer</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, за да направите изтеглянето на файлове по-безопасно</translation>
+<translation id="3950479158728806902">Автоматично създаване на ключ за достъп за по-бързо влизане в профила</translation>
 <translation id="3950820424414687140">Вход</translation>
 <translation id="3950841222883198950">Печатане с глас</translation>
 <translation id="3953834000574892725">Моите профили</translation>
@@ -5192,6 +5193,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4624054169152573743">Цветова тема</translation>
 <translation id="4625078469366263107">Активиране на приложението</translation>
 <translation id="4625905218692741757">Сив цвят по подразбиране</translation>
+<translation id="4627107755957573804">Разрешаване на сайтовете и приложенията да надстройват съществуващите профили, така че да използват ключове за достъп</translation>
 <translation id="4627442949885028695">Продължаване от друго устройство</translation>
 <translation id="4628762811416793313">Настройването на контейнера за Linux не завърши. Моля, опитайте отново.</translation>
 <translation id="4629521233550547305">Отваряне на потребителския профил <ph name="PROFILE_NAME" /></translation>
@@ -5775,6 +5777,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5053233576223592551">Добавяне на потребителско име</translation>
 <translation id="505347685865235222">Група без име – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{Трябва да я промените сега}other{Трябва да ги промените сега}}</translation>
+<translation id="5056587122125565772">Създаване на изображение</translation>
 <translation id="5056950756634735043">Установява се връзка с контейнера</translation>
 <translation id="5057110919553308744">При кликване върху разширението</translation>
 <translation id="5057127674016624293">Сканирането отнема повече време от очакваното</translation>
@@ -5885,6 +5888,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="512642543295077915">Клавиш „търсене“ + Backspace</translation>
 <translation id="5126611267288187364">Преглед на промените</translation>
 <translation id="5127620150973591153">Идентификатор на защитената връзка: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">Обобщавайте съдържание или задавайте въпроси.</translation>
 <translation id="5127881134400491887">Управление на мрежовите връзки</translation>
 <translation id="5127934926273826089">Цветя</translation>
 <translation id="5127986747308934633">Администраторът ви управлява устройството ви</translation>
@@ -11412,6 +11416,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Мишката с USB е свързана</translation>
 <translation id="9075413375877487220">Подобрената защита от Безопасно сърфиране няма доверие на това разширение.</translation>
+<translation id="9075985558450420812">Въведете персонализирана подкана или маркирайте текст, за да създадете изображение.</translation>
 <translation id="9076523132036239772">За съжаление имейлът или паролата ви не можаха да бъдат потвърдени. Опитайте първо да се свържете с мрежа.</translation>
 <translation id="9076821103818989526">Страничен панел</translation>
 <translation id="9076977315710973122">SMB дял</translation>

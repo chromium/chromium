@@ -61,8 +61,10 @@ void SanitizerAPI::SanitizeSafeInternal(ContainerNode* element,
     }
   }
 
-  // TODO(vogelheim): Currently, no exceptions are being thrown.
-  CHECK(!exception_state.HadException());
+  if (exception_state.HadException()) {
+    return;
+  }
+
   CHECK(sanitizer);
   sanitizer->SanitizeSafe(element);
 }
@@ -99,8 +101,10 @@ void SanitizerAPI::SanitizeUnsafeInternal(ContainerNode* element,
     }
   }
 
-  // TODO(vogelheim): Currently, no exceptions are being thrown.
-  CHECK(!exception_state.HadException());
+  if (exception_state.HadException()) {
+    return;
+  }
+
   CHECK(sanitizer);
   sanitizer->SanitizeUnsafe(element);
 }

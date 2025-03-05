@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">Bydd eich cyfrinair yn cael ei gadw i Reolwr Cyfrineiriau Google ar gyfer <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Agor tab newydd yn Chrome</translation>
 <translation id="1166460004393506534">Dileu data pori yn Chrome</translation>
+<translation id="1171255741903316750">Troi "Cloi tabiau Anhysbys pan fyddwch yn cau Chrome" ymlaen</translation>
 <translation id="1179527450541388808">Cael Mynediad at Chrome yn gyflymach o ddoc sgrîn hafan eich iPad.</translation>
 <translation id="1180362651362502943">Parhewch i ddefnyddio'r data Chrome yn eich Cyfrif Google.</translation>
 <translation id="1200396280085622191">Defnyddiwch Chrome unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon ac apiau eraill.</translation>
@@ -45,6 +46,7 @@ Pethau i'w hystyried:
 <translation id="1917964099031477364">Bydd y cyfrif hwn ac unrhyw ddata sydd heb eu cadw yn cael eu tynnu o Chrome ac apiau Google eraill ar y ddyfais hon.</translation>
 <translation id="1919130412786645364">Caniatáu mewngofnodi i Chrome</translation>
 <translation id="1965935827552890526">Gorffennwch yr hyn roeddech chi'n ei wneud yn y ffenestr arall oedd ar agor gennych yn Chrome.</translation>
+<translation id="1973910962341002002">O'r gosodiadau "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />", toglwch "Chrome" ymlaen</translation>
 <translation id="1984705450038014246">Cysonwch eich data Chrome</translation>
 <translation id="1987779152850321833">Cwblhewch y gweithredoedd a awgrymir isod i gael y gorau o Chrome.</translation>
 <translation id="2055826352861631739">Defnyddiwch Chrome ar gyfer iPad yn ddiofyn</translation>
@@ -96,10 +98,13 @@ Arhoswch ychydig funudau cyn allgofnodi. Os byddwch yn allgofnodi nawr, bydd y d
 <translation id="3282568296779691940">Mewngofnodi i Chrome</translation>
 <translation id="3303503998967553377">Defnyddio gweithredoedd Chrome ar iOS</translation>
 <translation id="3348862487678490430">Ychwanegu eitem rhestr ddarllen at Chrome</translation>
+<translation id="3357827134511189025">Mewngofnodwch gyda'ch cyfrineiriau a'ch codau pas sydd wedi'u cadw o unrhyw ap gan ddefnyddio Chrome ar gyfer Awtolenwi</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Mae hyn yn digwydd pan nad yw Chrome yn cael ei ddefnyddio am {THRESHOLD} funud}zero{Mae hyn yn digwydd pan nad yw Chrome yn cael ei ddefnyddio am {THRESHOLD} munud}two{Mae hyn yn digwydd pan nad yw Chrome yn cael ei ddefnyddio am {THRESHOLD} funud}few{Mae hyn yn digwydd pan nad yw Chrome yn cael ei ddefnyddio am {THRESHOLD} munud}many{Mae hyn yn digwydd pan nad yw Chrome yn cael ei ddefnyddio am {THRESHOLD} munud}other{Mae hyn yn digwydd pan nad yw Chrome yn cael ei ddefnyddio am {THRESHOLD} munud}}</translation>
 <translation id="3367797402528056312">Gorffen gosod Chrome</translation>
 <translation id="3371064404604898522">Gosod Chrome fel porwr diofyn</translation>
 <translation id="3399930248910934354">Agorwch Osodiadau Chrome</translation>
+<translation id="3440830787838130530">Rhannu copi o gyfrinair yn hawdd ac yn ddiogel gyda'ch grŵp teulu yn Rheolwr Cyfrineiriau Google</translation>
+<translation id="3460369101684070455">I gael eich cyfrineiriau sydd wedi'u cadw yn eich apiau eraill yn hawdd, dewiswch Chrome ar gyfer Awtolenwi</translation>
 <translation id="3472587960215700950">Mae Chrome yn defnyddio Google Maps i roi cyfarwyddiadau a gwybodaeth leol i chi ar gyfeiriadau a ganfuwyd.</translation>
 <translation id="3503014945441706099">Cael Gwell Pori'n Ddiogel ar gyfer y proffil Chrome hwn hefyd</translation>
 <translation id="3522659714780527202">I weld eich tabiau o ble bynnag rydych yn defnyddio Chrome, trowch gysoni ymlaen</translation>
@@ -181,6 +186,7 @@ Arhoswch ychydig funudau cyn newid cyfrif. Os byddwch yn newid cyfrif nawr, bydd
 <translation id="5998675059699164418">Mae eich sefydliad yn gofyn i chi fewngofnodi i ddefnyddio Chrome.</translation>
 <translation id="6021312115739110405">Ffrwd bersonol wedi'i chreu ar eich cyfer gan Google. Gan gynnwys newyddion, chwaraeon a thywydd.</translation>
 <translation id="6022659036123304283">Personoleiddio Chrome</translation>
+<translation id="6132075343662013154">Bydd Chrome yn cynnig cadw eich cyfrinair</translation>
 <translation id="6132149203299792222">Mewngofnodwch gyda'ch Cyfrif Google i gysoni'ch cyfrineiriau, nodau tudalen a rhagor.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Chwilio yn Chrome</translation>
@@ -228,6 +234,7 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chrome, ewch i <ph n
 <translation id="7061455974939528301">Pwyswch a daliwch yr eicon Chrome a chliciwch ar 'Golygu'r sgrîn hafan'</translation>
 <translation id="7065813315247345131">Symud Chrome i'r Doc</translation>
 <translation id="7124339256045485976">Cadwch Chrome yn gyfoes</translation>
+<translation id="7145599899567697473">Cadw ac awtolenwi cyfrineiriau yn Chrome</translation>
 <translation id="7161390184744336561">Mae Google Chrome yn hen</translation>
 <translation id="7165736900384873061">Dechreuwch ddefnyddio sganiwr codau QR Google Chrome</translation>
 <translation id="7175129790242719365">Awgrym Chrome: Mewngofnodwch i Chrome</translation>
@@ -261,6 +268,7 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chrome, ewch i <ph n
 <translation id="7693590760643069321">Gallwch bellach ddefnyddio Chrome unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>
 <translation id="7698568245838009292">Hoffai Chrome gael mynediad at y Camera</translation>
 <translation id="7707877166818730835">Agor fy nhab diweddaraf yn Chrome</translation>
+<translation id="7747746207470479571">Cael mynediad hawdd at eich cyfrineiriau a'ch cyfrineiriau gyda Chrome ar gyfer Awtolenwi</translation>
 <translation id="776305366874821582">Cael mynediad at Chrome yn gyflymach o ddoc sgrîn hafan eich iPhone.</translation>
 <translation id="7780154209050837198">I gael y gorau o Chrome, mewngofnodwch i Chrome â'ch Cyfrif Google.</translation>
 <translation id="7787205077729386167">Agorwch y gosodiadau Chrome yn iOS yna tapiwch 'Default Browser App' a dewiswch Chrome.</translation>
@@ -281,6 +289,7 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chrome, ewch i <ph n
 <translation id="8136856065410661948">Bydd hwn yn cael ei ddefnyddio i greu digwyddiadau yn eich Apple Calendar o Chrome a Google Lens.</translation>
 <translation id="8154120522323162874">Manteisio i'r eithaf ar Chrome trwy barhau i osod eich porwr.</translation>
 <translation id="8160472928944011082">Ni all Chrome ddiweddaru</translation>
+<translation id="8245080522851805544">Cadwch eich pori yn breifat gyda dilysiad dyfais pan fyddwch yn cau Chrome</translation>
 <translation id="8248887045858762645">Awgrym Chrome</translation>
 <translation id="8265730590513812063">Agorwch y ddewislen Chrome</translation>
 <translation id="8317674518145175158">Ni fydd dulliau talu a chyfeiriadau yn cael eu hamgryptio. Ni fydd hanes pori o Chrome yn cysoni.
@@ -324,5 +333,6 @@ Cafodd eich data eu hamgryptio gyda'ch cyfrinymadrodd ar <ph name="TIME" />. Rho
 <translation id="9181628561061032322">Yn Agor y Tabiau Diweddar Chrome.</translation>
 <translation id="948597495737267756">Yn agor eich tudalen Hanes Chrome.</translation>
 <translation id="97300214378190234">Defnyddiwch Chrome unrhyw bryd y byddwch yn tapio dolenni mewn apiau eraill.</translation>
+<translation id="997929539742564806">Mewngofnodwch yn gyflym i apiau a gwefannau trwy awtolenwi'ch cyfrineiriau a'ch codau pas o Chrome</translation>
 <translation id="998677222109959694">Rheoli gosodiadau Chrome</translation>
 </translationbundle>

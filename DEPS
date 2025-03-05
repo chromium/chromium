@@ -289,7 +289,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': 'f4d18a730a5c3c4662a5daec7830acc5751cb8fe',
+  'v8_revision': 'b389260183010a183ae650c7f4556efdd248a372',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -361,7 +361,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
-  'crossbench_revision': '058f132365f22406d1a87741ab13c1a0e3675082',
+  'crossbench_revision': '24f2876a66bf7818da294dd2a8f2024a8e4d18d7',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libFuzzer
   # and whatever else without interference from each other.
@@ -377,7 +377,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '4ae5b582b2388ef97a88b305db5e7d097cf56f97',
+  'devtools_frontend_revision': 'a2ced3f5c713983d56c8b365667a066fea488d83',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -505,7 +505,7 @@ vars = {
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
-  'libcxx_revision':       'ac66645101e6aa55063c2a06c19865409b2ec7d1',
+  'libcxx_revision':       '7c3087b8a7563d8218b27b7183ba41cf52d41508',
 
   # GN CIPD package version.
   'gn_version': 'git_revision:dae6a4496ecbe141b76c67ce5f1996711a3f87cd',
@@ -1457,7 +1457,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '8fce99816ee45f3fcc6de94df88780e2b358f352',
+    'e674369492fb6c44aa8891273ad886cf23862010',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2818,7 +2818,7 @@ deps = {
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + '683a98052bcc64881aa4b3a214ff11eeaea091bf',
+    Var('webrtc_git') + '/src.git' + '@' + '3a7525ec0c8f710b3cec586d1451dc5c1ca41759',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.

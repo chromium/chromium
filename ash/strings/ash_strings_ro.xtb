@@ -22,6 +22,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1058009965971887428">Trimite feedback</translation>
 <translation id="1059120031266247284">Ți s-a permis accesul</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> cu butonul Elimină</translation>
 <translation id="1062407476771304334">Înlocuiți</translation>
 <translation id="1073899992769346247">Înlocuiește sau încarcă bateria</translation>
 <translation id="1081015718268701546">Aplicațiile Linux nu sunt acceptate momentan. Alte aplicații se vor salva.</translation>
@@ -323,6 +324,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2083190527011054446">Bună seara, <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Deschide selectorul de emoji</translation>
 <translation id="2088116547584365419">jocuri</translation>
+<translation id="2092517835716911174">Trebuie să ai cel puțin 18 ani pentru a folosi funcțiile Ajută-mă să citesc și Ajută-mă să scriu.</translation>
 <translation id="209965399369889474">Fără conexiune la rețea</translation>
 <translation id="2107581415810719320">Alt buton <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Cablul USB-C nu acceptă Thunderbolt. Este posibil ca performanța dispozitivului să fie limitată.</translation>
@@ -1228,6 +1230,7 @@ Un dispozitiv conectat.</translation>
 <translation id="5043679421800073804">Dă clic pe sau atinge ultima pictogramă de pe raft</translation>
 <translation id="504465286040788597">Paragraful anterior</translation>
 <translation id="5045550434625856497">Parolă incorectă</translation>
+<translation id="5056587122125565772">Creează o imagine</translation>
 <translation id="5058794129231928255">Nu s-a putut crea documentul Google</translation>
 <translation id="5062496344832867502">memorie ram</translation>
 <translation id="5068762093486106012">Vei primi o notificare dacă vorbești cu sunetul dezactivat. Conținutul audio nu părăsește niciodată dispozitivul.</translation>
@@ -1276,6 +1279,7 @@ Poți folosi și comanda rapidă de la tastatură. Mai întâi, evidențiază te
 <translation id="5222676887888702881">Deconectează-te</translation>
 <translation id="5228195526683428788">Separator pentru ecranul împărțit</translation>
 <translation id="5229343007215035173">Activează / dezactivează ecranul de confidențialitate</translation>
+<translation id="5229860525743792999">Elimină <ph name="ITEM_LABEL" /> din grupul sugerat</translation>
 <translation id="5230516054153933099">Fereastră</translation>
 <translation id="5234764350956374838">Închide</translation>
 <translation id="523505283826916779">Setări de accesibilitate</translation>
@@ -1758,6 +1762,7 @@ Instalare nouă</translation>
 <translation id="6757237461819837179">Nu se redă conținut media</translation>
 <translation id="6760438044935091345">Tabloul de bord al jocului</translation>
 <translation id="6768043681523654438">stocare</translation>
+<translation id="6769195697113506406">S-a inserat imaginea</translation>
 <translation id="6777216307882431711">Se încarcă dispozitivele USB-C conectate</translation>
 <translation id="6781002679438061620">Biroul 9</translation>
 <translation id="6782182743534150858">Biroul 13</translation>
@@ -1984,6 +1989,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7571361473021531288">Baterie <ph name="BATTERY_PERCENTAGE" /> % | A(u) mai rămas <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Fereastra activă a fost fixată în dreapta.</translation>
 <translation id="7579778809502851308">Captură de ecran</translation>
+<translation id="7588317312481506627">S-a copiat în clipboard.</translation>
 <translation id="7593891976182323525">Căutare sau Shift</translation>
 <translation id="7598054670902114203">Instantaneu de utilizare CPU, <ph name="CPU_USEAGE" /> %. Temperatura: <ph name="TEMPERATURE" /> grade Celsius, viteza actuală: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Se inserează rezultatul selectat</translation>
@@ -2178,6 +2184,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8155628902202578800">Deschide fereastra de dialog cu informații pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Se folosește <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Conținut</translation>
+<translation id="81817143961839203">Inserarea imaginii nu a reușit</translation>
 <translation id="8185090165691050712">Activează / dezactivează meniul pentru a redimensiona modul de blocare</translation>
 <translation id="8192727139462702395">Când dezactivezi Bluetooth, următoarele dispozitive externe se vor deconecta de la <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Se proiectează fila</translation>
@@ -2256,6 +2263,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> are <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Apasă pe Alt + tasta de căutare sau pe Shift pentru a anula.</translation>
 <translation id="8480418399907765580">Afișați bara de instrumente</translation>
+<translation id="8487660088084188539">Când activezi aceste funcții, textul introdus, conținutul documentului și adresa URL a paginii web pot fi trimise la serverele Google. Aceste informații sunt folosite pentru a genera sugestii de scris și rezumate, pentru a răspunde la întrebări și pentru a îmbunătăți produsul, în conformitate cu <ph name="LINK_TO_SERVICE_TERMS" />. Nu include conținut personal, sensibil sau confidențial.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Deschide linkul într-o filă nouă</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> nu acceptă <ph name="SPECIFIED_RESOLUTION" />. Rezoluția a fost modificată la <ph name="FALLBACK_RESOLUTION" />. Dă clic pe Confirmă pentru a păstra modificările. Setările anterioare vor fi restabilite în <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2325,6 +2333,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8725066075913043281">Încearcă din nou</translation>
 <translation id="8725214031272624704">Afișează lista de metode de introducere a textului disponibile</translation>
 <translation id="8730621377337864115">Terminat</translation>
+<translation id="8731188831050207755">Descărcare nereușită: <ph name="FILE_NAME" />.</translation>
 <translation id="8731487213223706745">Se încheie la <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Aceasta ar putea încerca să înregistreze ce taste apeși</translation>
 <translation id="8735678380411481005">Culoarea retroiluminării tastaturii</translation>

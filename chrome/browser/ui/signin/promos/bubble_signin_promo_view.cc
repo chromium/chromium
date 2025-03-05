@@ -256,7 +256,7 @@ BubbleSignInPromoView::BubbleSignInPromoView(
 
   if (account.IsEmpty()) {
     signin_button_pointer = std::make_unique<BubbleSignInPromoSignInButtonView>(
-        std::move(callback), is_autofill_promo, button_style,
+        std::move(callback), access_point, button_style,
         std::move(button_text));
 
     views::View* button_parent = AddChildView(std::make_unique<views::View>());
@@ -285,7 +285,7 @@ BubbleSignInPromoView::BubbleSignInPromoView(
           profiles::GetPlaceholderAvatarIconResourceID());
     }
     signin_button_pointer = std::make_unique<BubbleSignInPromoSignInButtonView>(
-        account, account_icon, std::move(callback), is_autofill_promo,
+        account, account_icon, std::move(callback), access_point,
         std::move(button_text), std::move(accessibility_text));
 
     signin_button_view_ = AddChildView(std::move(signin_button_pointer));

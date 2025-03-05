@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">Hasło zostanie zapisane w menedżerze haseł Google na koncie <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Otwórz nową kartę w Chrome</translation>
 <translation id="1166460004393506534">Usuń dane przeglądania w Chrome</translation>
+<translation id="1171255741903316750">Włącz opcję „Po zamknięciu Chrome blokuj karty incognito”</translation>
 <translation id="1179527450541388808">Uruchamiaj Chrome szybciej z Docka na ekranie głównym iPada.</translation>
 <translation id="1180362651362502943">Nadal korzystaj z danych Chrome na koncie Google.</translation>
 <translation id="1200396280085622191">Używaj Chrome, zawsze gdy klikasz linki w wiadomościach i w innych aplikacjach.</translation>
@@ -45,6 +46,7 @@ Pamiętaj, że:
 <translation id="1917964099031477364">To konto razem z wszelkimi niezapisanymi danymi zostanie usunięte z Chrome i innych aplikacji Google na tym urządzeniu.</translation>
 <translation id="1919130412786645364">Zezwalaj na logowanie się w Chrome</translation>
 <translation id="1965935827552890526">Dokończ czynności rozpoczęte w innym otwartym oknie Chrome.</translation>
+<translation id="1973910962341002002">W ustawieniach „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” włącz opcję „Chrome”</translation>
 <translation id="1984705450038014246">Synchronizuj dane Chrome</translation>
 <translation id="1987779152850321833">Wykonaj te sugerowane działania, aby w pełni wykorzystać możliwości Chrome.</translation>
 <translation id="2055826352861631739">Domyślnie używaj Chrome na iPada</translation>
@@ -96,10 +98,13 @@ Odczekaj kilka minut, zanim się wylogujesz. Jeśli wylogujesz się teraz, te da
 <translation id="3282568296779691940">Zaloguj się w Chrome</translation>
 <translation id="3303503998967553377">Korzystaj z Działań w Chrome na iOS</translation>
 <translation id="3348862487678490430">Dodaj element listy Do przeczytania do Chrome</translation>
+<translation id="3357827134511189025">Logowanie się za pomocą zapisanych haseł i kluczy dostępu z dowolnej aplikacji dzięki autouzupełnianiu w Chrome</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minutę}few{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minuty}many{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minut}other{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minuty}}</translation>
 <translation id="3367797402528056312">Dokończ konfigurowanie Chrome</translation>
 <translation id="3371064404604898522">Ustaw Chrome jako przeglądarkę domyślną</translation>
 <translation id="3399930248910934354">Otwórz ustawienia Chrome</translation>
+<translation id="3440830787838130530">W Menedżerze haseł Google możesz łatwo i bezpiecznie udostępniać kopie swoich haseł grupie rodzinnej</translation>
+<translation id="3460369101684070455">Aby mieć łatwy dostęp do zapisanych haseł w innych aplikacjach, użyj autouzupełniania w Chrome</translation>
 <translation id="3472587960215700950">Chrome używa Map Google, aby podawać wskazówki dojazdu i informacje lokalne o wykrytych adresach.</translation>
 <translation id="3503014945441706099">Włącz też Ulepszone Bezpieczne przeglądanie na tym profilu Chrome</translation>
 <translation id="3522659714780527202">Aby widzieć swoje karty zawsze, kiedy korzystasz z Chrome, włącz synchronizację</translation>
@@ -181,6 +186,7 @@ Zanim przełączysz się na inne konto, odczekaj kilka minut. Jeśli przełączy
 <translation id="5998675059699164418">Twoja organizacja wymaga od Ciebie zalogowania się w Chrome.</translation>
 <translation id="6021312115739110405">Spersonalizowane karty utworzone dla Ciebie przez Google. Obejmują wiadomości, sport i pogodę.</translation>
 <translation id="6022659036123304283">Dostosuj Chrome do swoich potrzeb</translation>
+<translation id="6132075343662013154">Chrome zaproponuje zapisanie hasła</translation>
 <translation id="6132149203299792222">Zaloguj się na konto Google, aby synchronizować swoje hasła, zakładki i inne dane.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Szukaj w Chrome</translation>
@@ -228,6 +234,7 @@ W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz wi�
 <translation id="7061455974939528301">Naciśnij i przytrzymaj ikonę Chrome i kliknij „Edytuj ekran główny”</translation>
 <translation id="7065813315247345131">Przenieś Chrome do Docka</translation>
 <translation id="7124339256045485976">Zawsze używaj aktualnej wersji Chrome</translation>
+<translation id="7145599899567697473">Zapisuj i automatycznie uzupełniaj hasła w Chrome</translation>
 <translation id="7161390184744336561">Masz nieaktualną wersję Google Chrome</translation>
 <translation id="7165736900384873061">Skaner QR w Google Chrome</translation>
 <translation id="7175129790242719365">Wskazówka dotycząca Chrome: zaloguj się w Chrome</translation>
@@ -261,6 +268,7 @@ W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz wi�
 <translation id="7693590760643069321">Teraz możesz używać Chrome za każdym razem, gdy klikniesz link w wiadomościach, dokumentach i w innych aplikacjach.</translation>
 <translation id="7698568245838009292">Chrome chce mieć dostęp do kamery</translation>
 <translation id="7707877166818730835">Otwórz moją ostatnio używaną kartę w Chrome</translation>
+<translation id="7747746207470479571">Korzystaj z autouzupełniania w Chrome, aby mieć łatwy dostęp do haseł i kluczy dostępu</translation>
 <translation id="776305366874821582">Uruchamiaj Chrome szybciej z Docka na ekranie głównym iPhone'a.</translation>
 <translation id="7780154209050837198">Aby w pełni wykorzystać możliwości Chrome, zaloguj się na konto Google.</translation>
 <translation id="7787205077729386167">Otwórz Ustawienia Chrome na urządzeniu z iOS, kliknij „Domyślna przeglądarka” i wybierz Chrome.</translation>
@@ -281,6 +289,7 @@ W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz wi�
 <translation id="8136856065410661948">Będziemy z tego korzystać, aby tworzyć wydarzenia z Chrome i Obiektywu Google w kalendarzu Apple.</translation>
 <translation id="8154120522323162874">Aby w pełni wykorzystywać możliwości Chrome, kontynuuj konfigurowanie przeglądarki.</translation>
 <translation id="8160472928944011082">Nie udało się zaktualizować Chrome</translation>
+<translation id="8245080522851805544">Chroń swoją prywatność podczas przeglądania dzięki uwierzytelnianiu urządzenia przy zamykaniu Chrome</translation>
 <translation id="8248887045858762645">Wskazówka dotycząca Chrome</translation>
 <translation id="8265730590513812063">Otwórz menu Chrome</translation>
 <translation id="8317674518145175158">Formy płatności i adresy nie będą zaszyfrowane. Historia przeglądania z Chrome nie będzie synchronizowana.
@@ -324,5 +333,6 @@ Dane zostały zaszyfrowane za pomocą hasła wielowyrazowego <ph name="TIME" />.
 <translation id="9181628561061032322">Otwiera ostatnie karty w Chrome.</translation>
 <translation id="948597495737267756">Otwiera stronę historii Chrome.</translation>
 <translation id="97300214378190234">Używaj Chrome, zawsze gdy klikasz linki w innych aplikacjach.</translation>
+<translation id="997929539742564806">Szybko loguj się w aplikacjach i na stronach dzięki autouzupełnianiu haseł i kluczy dostępu z Chrome</translation>
 <translation id="998677222109959694">Zarządzanie ustawieniami Chrome</translation>
 </translationbundle>

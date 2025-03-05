@@ -903,13 +903,13 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         Got it
       </message>
       <message name="IDS_PWM_DISABLED_UPDATE_DIALOG_DESCRIPTION" desc="Description text for the dialog shown to users without saved passwords for whom the password manager is unavailble because the Google Play services version installed is outdated.">
-        To start saving and using passwords with Google Password Manager, update Google Play services.
+        To start saving and using passwords with Google Password Manager, update Google Play services
       </message>
       <message name="IDS_PWM_DISABLED_UPDATE_DIALOG_CANCEL" desc="Button used to dimsiss the dialog shown to users without saved passwords who need to update Google Play services to regain access to the password manager.">
        Cancel
       </message>
       <message name="IDS_KEEP_ACCESS_TO_YOUR_PASSWORDS_DIALOG_TITLE" desc="Title for a dialog shown to users when they have unmigrated passwords left over in Chrome after Chrome's storage has been deprecated">
-        Keep access to you passwords
+        Keep access to your passwords
       </message>
       <message name="IDS_CSV_DOWNLOAD_DIALOG_WITH_GMS_PARAGRAPH1" desc="First paragraph of the description in the dialog shown to users when they have unmigrated passwords left over in Chrome after Chrome's storage has been deprecated. This text is shown to users who have Google Play Services on the device.">
         To keep access to your passwords, export them now, update Google Play Services, and then import them back to Google Password Manager. <ph name="BEGIN_LINK">&lt;link&gt;</ph>See full instructions<ph name="END_LINK">&lt;/link&gt;</ph>.

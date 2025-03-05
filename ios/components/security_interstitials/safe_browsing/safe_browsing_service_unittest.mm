@@ -762,8 +762,6 @@ TEST_F(SafeBrowsingServiceTest, HashPrefixDisabled) {
 // Verifies that Safe Browsing preference metrics are correctly recorded when
 // Safe Browsing is disabled.
 TEST_F(SafeBrowsingServiceTest, TestShouldCreateAsyncChecker) {
-  scoped_feature_list_.InitAndEnableFeature(
-      safe_browsing::kSafeBrowsingAsyncRealTimeCheck);
   TestUrlCheckerClient client(safe_browsing_service_.get(),
                               browser_state_.get(),
                               safe_browsing_client_.get());

@@ -734,6 +734,45 @@ static void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
       GetReplacementDirective(source_range, replacement_text, source_manager));
 }
 
+static void AdaptBinaryPlusEqOperation(const MatchFinder::MatchResult& result) {
+  const clang::SourceManager& source_manager = *result.SourceManager;
+  const clang::ASTContext& ast_context = *result.Context;
+  const auto& lang_opts = ast_context.getLangOpts();
+  // This function handles binary plusEq operations such as:
+  // (lhs|rhs)_expr += offset_expr;
+  // This is equivalent to:
+  // lhs_expr = rhs_expr + offset_expr (lhs_expr == rhs_expr).
+  // While we used the `rhs_expr` matcher, for the propose of this
+  // rewrite, this is the left-hand side of
+  //    buff += offset_expr.
+  // This is why we call the expr and its range as lhs_expr and lhs_expr_range
+  // respectively.
+  auto* lhs_expr = result.Nodes.getNodeAs<clang::Expr>("rhs_expr");
+  auto* binary_op_RHS = result.Nodes.getNodeAs<clang::Expr>("binary_op_RHS");
+  auto lhs_expr_range = getExprRange(lhs_expr, source_manager, lang_opts);
+  auto binary_op_rhs_range =
+      getExprRange(binary_op_RHS, source_manager, lang_opts);
+  auto source_range =
+      clang::SourceRange(lhs_expr_range.getEnd(), binary_op_rhs_range.getEnd());
+  std::string lhs_expr_text =
+      clang::Lexer::getSourceText(
+          clang::CharSourceRange::getCharRange(lhs_expr_range), source_manager,
+          lang_opts)
+          .str();
+  std::string binary_op_rhs_text =
+      clang::Lexer::getSourceText(
+          clang::CharSourceRange::getCharRange(binary_op_rhs_range),
+          source_manager, lang_opts)
+          .str();
+
+  std::string replacement_text =
+      "=" + lhs_expr_text + ".subspan(" + binary_op_rhs_text + ")";
+
+  EmitReplacement(
+      GetRHS(result),
+      GetReplacementDirective(source_range, replacement_text, source_manager));
+}
+
 // Handles boolean operations that need to be adapted after a span rewrite.
 //   if(expr) => if(!expr.empty())
 //   if(!expr) => if(expr.empty())
@@ -2260,6 +2299,16 @@ class Spanifier {
     // a + m, a + n + m, ...
     // which need to be rewritten to:
     // a.subspan(m), a.subspan(n + m), ...
+    // These expressions always appear on the right-hand side.
+    // Consider the following example:
+    // lhs_expr = rhs_expr + offset_expr
+    //            ^--------------------^ = BinaryOperation
+    //            ^------^               = BinaryOperations' LHS expr
+    //                       ^---------^ = BinaryOperation's RHS expr
+    //                     ^             = BinaryOperation's Operator
+    // Note that BinaryOperations's LHS and RHS expressions refer to what's
+    // before and after the binary operator (+) (Not to be confused with
+    // lhs_expr and rhs_expr).
     auto binary_op = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
         expr(ignoringParenCasts(binaryOperation(
@@ -2271,6 +2320,18 @@ class Spanifier {
             unless(hasParent(binaryOperation(
                 anyOf(hasOperatorName("+"), hasOperatorName("-")))))))));
     Match(binary_op, AdaptBinaryOperation);
+
+    // Handles expressions of the form:
+    // expr += offset_expr;
+    // which is equivalent to:
+    // lhs_expr = rhs_expr + offset_expr (Note: lhs_expr == rhs_expr)
+    auto binary_plus_eq_op =
+        traverse(clang::TK_IgnoreUnlessSpelledInSource,
+                 expr(ignoringParenCasts(binaryOperation(
+                          hasLHS(rhs_expr), hasOperatorName("+="),
+                          hasRHS(expr().bind("binary_op_RHS")))))
+                     .bind("binary_plus_eq_op"));
+    Match(binary_plus_eq_op, AdaptBinaryPlusEqOperation);
 
     // Handles assignment:
     // a = b;

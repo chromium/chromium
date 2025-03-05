@@ -74,9 +74,6 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
   static const char kKeyIsFederated[];
   static const char kKeyFederatedOrigin[];
   static const char kKeyLoginUserName[];
-  static const char kKeyPasswordBreachIdentities[];
-  static const char kKeyPasswordBreachIdentitiesUrl[];
-  static const char kKeyPasswordBreachIdentitiesUsername[];
   static const char kKeyUserJustification[];
   static const char kKeyUrlCategory[];
   static const char kKeyAction[];
@@ -235,10 +232,6 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       const std::string& mime_type,
       const std::string& scan_id,
       const int64_t content_size);
-
-  void OnPasswordBreach(
-      const std::string& trigger,
-      const std::vector<std::pair<GURL, std::u16string>>& identities);
 
   // Notifies listeners that the user saw an enterprise policy related
   // interstitial.

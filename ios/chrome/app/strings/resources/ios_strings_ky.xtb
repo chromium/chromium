@@ -34,7 +34,6 @@
 <translation id="1112015203684611006">Басылып чыгарылбай калды.</translation>
 <translation id="1118569444314402022">Кайтып келишиңиз менен, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Фото жана сүрөттөр</translation>
-<translation id="1125564390852150847">Жаңы өтмөк түзүү.</translation>
 <translation id="1126696498560056882">Ушул түзмөктөгү аккаунттарды тескөө</translation>
 <translation id="1126809382673880764">Кооптуу вебсайттардан, жүктөлүп алынган файлдардан жана кеңейтүүлөрдөн коргобойт. Gmail жана Издөө сыяктуу Google'дун башка кызматтарында мүмкүн болгондо Коопсуз серептөө иштетилет.</translation>
 <translation id="1142371195993008685"><ph name="FEATURE_NAME" /> каналындагы жаңылыктар тууралуу эскертмелерди өчүрүү</translation>
@@ -89,7 +88,6 @@
 <translation id="1358106883354237005">Башкарылган аккаунт</translation>
 <translation id="1358214951266274152">Көчүрүп алган шилтеме менен өтүңүз</translation>
 <translation id="1360432990279830238">Аккаунттан чыгып, шайкештирүүнү өчүрөсүзбү?</translation>
-<translation id="1362192716574455663">Учурдагы серептөө дайындары жумуш аккаунтуңузга жылдырылбайт. Дайындарды көрүү үчүн, ал аккаунттан чыгыңыз же жеке аккаунтуңузду кошуңуз.</translation>
 <translation id="1363028406613469049">Трек</translation>
 <translation id="1364367057792633742">Жаңы өтмөк</translation>
 <translation id="1365106417372288489">iPhone түзмөгүңүз жакында калыбына келтирилген. Бул демейки серепчиңизди өзгөрткөн болушу мүмкүн.</translation>
@@ -116,7 +114,6 @@
 <translation id="1455660774629812862">Жашырбоо</translation>
 <translation id="1456545332132818232"><ph name="PRODUCT_NAME" /> тууралуу сын-пикирлер, <ph name="MAX_STARS" /> ичинен <ph name="STARS" />, <ph name="DOMAIN" /></translation>
 <translation id="1460751212339734034">Азыраак терип, убакыт үнөмдөңүз</translation>
-<translation id="1466035273550360103">Ачык өтмөктөр жок</translation>
 <translation id="1469381646033328562">Аккаунтуңду ата-энең тескейт.
 <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Өзгөрдү</translation>
@@ -480,7 +477,6 @@
 <translation id="2969979262385602596">Кире албай калдңз. Бир аздн кийн аракт кылп көрңз.</translation>
 <translation id="2989523299700148168">Жакында колдонулгандар</translation>
 <translation id="2989805286512600854">Жаңы өтмөктө ачуу</translation>
-<translation id="2990025507101398383">Жашыруун өтмөктөр жок</translation>
 <translation id="2996291259634659425">Купуя сөз айкашын түзүү</translation>
 <translation id="3000900718786961632">{COUNT,plural, =1{Жаңы топтомго көз салынды}other{Жаңы топтомдорго көз салынды}}</translation>
 <translation id="3010025794097054078">Маалыматтарды бекем сактап, кооптуу вебсайттардан жана башкалардан коргонуңуз.</translation>
@@ -584,7 +580,6 @@
 <translation id="35083190962747987">${url} ачуу</translation>
 <translation id="3511519535430890904">Серептөө коргоосун кошуу</translation>
 <translation id="3517216995152707259">Серептөө дайындарыңыз өчүрүлсө, Google аккаунтуңуздан чыгарылбайсыз. Аккаунтуңуздан чыгуу үчүн <ph name="BEGIN_LINK" />Chrome'дон чыгыңыз<ph name="END_LINK" />.</translation>
-<translation id="3519193562722059437">Интернетте серептөө үчүн өтмөк ачыңыз.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Өтмөктү ачуу}other{{count} өтмөктү ачуу}}</translation>
 <translation id="3523513363815970085">"Көп кирген сайттарыңызды" жашыруу</translation>
 <translation id="3523789730715594198">Шайкештирүүнү параметрлерден каалаган убакта токтото аласыз. Google таржымалыңыздын негизинде Издөөнү жана башка кызматтарды жекелештириши мүмкүн.</translation>
@@ -985,7 +980,6 @@
 <translation id="5217329997012062137">Google Lens'ти колдонгонуңузда, барактын скриншоту Google'га жөнөтүлөт.</translation>
 <translation id="5220945116117011963">Күндөрдүн негизинде жылнаамада иш-чараларды түзүү</translation>
 <translation id="5222676887888702881">Чыгуу</translation>
-<translation id="5228579091201413441">Шайкештирүүнү иштетүү</translation>
 <translation id="5233638681132016545">Жаңы өтмөк</translation>
 <translation id="5234094073825090254">{count,plural, =1{Кыстарма Google аккаунтуңузга ({email}) сакталды.}other{Кыстармалар Google аккаунтуңузга ({email}) сакталды.}}</translation>
 <translation id="5234764350956374838">Этибарга албоо</translation>
@@ -1238,7 +1232,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> тилин которууну сунуштоо</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> каналына жазылуу токтотулду</translation>
 <translation id="6293101329759844770">Коопсуз серептөөнү күйгүзүү үчүн <ph name="BEGIN_LINK" />Google кызматтарын<ph name="END_LINK" /> ачып, Коопсуз серептөөнү таптаңыз.</translation>
-<translation id="6295434468271563378">Жүктөп алган нерселериңизди автоматтык түрдө өчүрүү</translation>
 <translation id="6295751040240588413">Картанын ылакап аты туура эмес</translation>
 <translation id="629730747756840877">Аккаунт</translation>
 <translation id="6301104306974789820">Баасы тууралуу билдирмелерди алуу</translation>
@@ -1572,7 +1565,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7669493687462784703"><ph name="WEBSITE" /> сайтынан конфигурация профили жүктөлүп алынсынбы?</translation>
 <translation id="7673346542062368520">Жашыруун режимде карап чыгуу үчүн солго сүрүп коюңуз.</translation>
 <translation id="7679915578945954324">Сайттын даректери көчүрүлдү</translation>
-<translation id="769134787192530091">Өтмөктөрүңүз шайкештирилүүдө…</translation>
 <translation id="7696316012653762532">Бул баракты которуу параметрлери</translation>
 <translation id="7700527812567437847">Google Lens менен экранда издөө</translation>
 <translation id="7701040980221191251">Эч бир</translation>
@@ -1730,7 +1722,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8283172974887967105">Коюу…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" /> билдирмелери өчүрүлдү</translation>
 <translation id="8299417921174340354">Сырсөздөрдү колдонуу үчүн адегенде, түзмөгүңүздөгү өткөрүүчү кодду жөндөп алышыңыз керек.</translation>
-<translation id="8299613349954694191">Интернетте купуя серептөө үчүн жашыруун өтмөктү ачыңыз.</translation>
 <translation id="8307481894409578819">Бул файлды жүктөп берүүгө болбойт</translation>
 <translation id="8319076807703933069">Жаңы издөө</translation>
 <translation id="833647236762414178">Сайттарга жана колдонмолорго оңой кирүү үчүн сырсөздөрдү жана киргизүүчү ачкычтарды түзүп, сактап жана тескеңиз. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>

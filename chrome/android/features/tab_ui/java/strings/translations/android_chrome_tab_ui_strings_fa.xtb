@@ -49,7 +49,6 @@
 <translation id="2671423594960767771">هم‌رسانی گروه</translation>
 <translation id="2677748264148917807">خروج</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{‫<ph name="NUM_WEEKS_ONE" /> هفته پیش به‌روز شده است}one{‫<ph name="NUM_WEEKS_MANY" /> هفته پیش به‌روز شده است}other{‫<ph name="NUM_WEEKS_MANY" /> هفته پیش به‌روز شده است}}</translation>
-<translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{‫<ph name="ONE_ADDED" /> برگه اضافه شد، <ph name="ANY_CHANGED" /> برگه تغییر کرد، <ph name="ANY_CLOSED" /> برگه بسته شد}one{‫<ph name="MANY_ADDED" /> برگه اضافه شد، <ph name="ANY_CHANGED" /> برگه تغییر کرد، <ph name="ANY_CLOSED" /> برگه بسته شد}other{‫<ph name="MANY_ADDED" /> برگه اضافه شد، <ph name="ANY_CHANGED" /> برگه تغییر کرد، <ph name="ANY_CLOSED" /> برگه بسته شد}}</translation>
 <translation id="2753877351161418426">{NUM_HOURS,plural, =1{‫<ph name="NUM_HOURS_ONE" /> ساعت پیش به‌روز شده است}one{‫<ph name="NUM_HOURS_MANY" /> ساعت پیش به‌روز شده است}other{‫<ph name="NUM_HOURS_MANY" /> ساعت پیش به‌روز شده است}}</translation>
 <translation id="2755485474385016903">همه افراد گروه تغییرات ایجادشده را می‌بینند</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{‫<ph name="NUM_HOURS_ONE" /> ساعت پیش ایجاد شد}one{‫<ph name="NUM_HOURS_MANY" /> ساعت پیش ایجاد شد}other{‫<ph name="NUM_HOURS_MANY" /> ساعت پیش ایجاد شد}}</translation>
@@ -66,7 +65,6 @@
 <translation id="3078350928901129212">نماد رنگ گروه برگه <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">فهرست گروه برگه بسته شد</translation>
 <translation id="3194464645767632461">رده‌بندی</translation>
-<translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{‫<ph name="ONE_ADDED" /> برگه اضافه شد، <ph name="ANY_CHANGED" /> برگه تغییر کرد}one{‫<ph name="MANY_ADDED" /> برگه اضافه شد، <ph name="ANY_CHANGED" /> برگه تغییر کرد}other{‫<ph name="MANY_ADDED" /> برگه اضافه شد، <ph name="ANY_CHANGED" /> برگه تغییر کرد}}</translation>
 <translation id="3328308545011660196">پیشنهاد: به نظر می‌رسد <ph name="NUMBER_OF_TABS" /> برگه مرتبط باشند. گروه‌بندی شوند؟</translation>
 <translation id="3547352561153509682">با این کار، گروه از همه دستگاه‌های واردشده به حساب <ph name="USER_EMAIL" /> حذف خواهد شد</translation>
 <translation id="3613492231657284463">پنهان کردن کادر گفتگوی برگه‌های غیرفعال</translation>
@@ -86,7 +84,6 @@
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{بستن گروه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_ONE" /> برگه، رنگ <ph name="COLOR_NAME" />.}one{بستن گروه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> برگه، رنگ <ph name="COLOR_NAME" />.}other{بستن گروه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> برگه، رنگ <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">بنفش</translation>
 <translation id="427987768447457592">گروه برگه جدید</translation>
-<translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{‫<ph name="ONE_CHANGED" /> برگه تغییر کرد، <ph name="ANY_CLOSED" /> برگه بسته شد}one{‫<ph name="MANY_CHANGED" /> برگه تغییر کرد، <ph name="ANY_CLOSED" /> برگه بسته شد}other{‫<ph name="MANY_CHANGED" /> برگه تغییر کرد، <ph name="ANY_CLOSED" /> برگه بسته شد}}</translation>
 <translation id="4371591986692297148">غیرفعال</translation>
 <translation id="4431937619879060901">دسترسی به گروه برگه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهید و این گروه از همه دستگاه‌هایتان حذف می‌شود</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{‫<ph name="NUM_DAYS_ONE" /> روز پیش به‌روز شده است}one{‫<ph name="NUM_DAYS_MANY" /> روز پیش به‌روز شده است}other{‫<ph name="NUM_DAYS_MANY" /> روز پیش به‌روز شده است}}</translation>
@@ -110,7 +107,6 @@
 <translation id="5073204694187207510">پنهان کردن شبکه تمام‌صفحه</translation>
 <translation id="5076161749301278626">می‌خواهید مرورهای فروشگاه را ببینید؟</translation>
 <translation id="5094423602314093681">برگه(ها) برداشته و گروه حذف شود؟</translation>
-<translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{‫<ph name="ONE_ADDED" /> برگه اضافه شد}one{‫<ph name="MANY_ADDED" /> برگه اضافه شد}other{‫<ph name="MANY_ADDED" /> برگه اضافه شد}}</translation>
 <translation id="5161254044473106830">عنوان مورد نیاز است</translation>
 <translation id="5339733443032484186">آخرین برگه شما</translation>
 <translation id="5380159289133845234">بایگانی کردن برگه‌های تکراری</translation>
@@ -148,7 +144,6 @@
 <translation id="6589356853295569750">اعلان درباره تغییرات «گروه برگه هم‌رسانی‌شده» به‌صورت کامل باز شده است</translation>
 <translation id="6590332670428149473">باز کردن منوِ کنش‌های گروه برگه برای گروه برگه <ph name="TITLE_OF_GROUP" /> هم‌رسانی‌شده، به‌رنگ <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">نشانم داده شود</translation>
-<translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{‫<ph name="ONE_CHANGED" /> برگه تغییر کرد}one{‫<ph name="MANY_CHANGED" /> برگه تغییر کرد}other{‫<ph name="MANY_CHANGED" /> برگه تغییر کرد}}</translation>
 <translation id="6694634756612002311">مدیریت هم‌رسانی</translation>
 <translation id="6744956528665271406">ویرایش رنگ گروه</translation>
 <translation id="6856809498882026482">پنهان کردن حالت چندانتخابی</translation>
@@ -199,7 +194,6 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{‫<ph name="NUM_MONTHS_ONE" /> ماه پیش به‌روز شده است}one{‫<ph name="NUM_MONTHS_MANY" /> ماه پیش به‌روز شده است}other{‫<ph name="NUM_MONTHS_MANY" /> ماه پیش به‌روز شده است}}</translation>
 <translation id="8398929769197326728">پوشه جدید - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">تنظیمات</translation>
-<translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{‫<ph name="ONE_ADDED" /> برگه اضافه شد، <ph name="ANY_CLOSED" /> برگه بسته شد}one{‫<ph name="MANY_ADDED" /> برگه اضافه شد، <ph name="ANY_CLOSED" /> برگه بسته شد}other{‫<ph name="MANY_ADDED" /> برگه اضافه شد، <ph name="ANY_CLOSED" /> برگه بسته شد}}</translation>
 <translation id="8633025649649592204">فعالیت اخیر</translation>
 <translation id="870736955561925754">برگه بسته و گروه حذف شود؟</translation>
 <translation id="8712637175834984815">متوجه شدم</translation>

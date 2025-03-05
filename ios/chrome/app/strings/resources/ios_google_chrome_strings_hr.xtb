@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">Zaporka će se spremiti u Google upravitelj zaporki za <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Otvaranje nove kartice u Chromeu</translation>
 <translation id="1166460004393506534">Brisanje podataka o pregledavanju u Chromeu</translation>
+<translation id="1171255741903316750">Uključite opciju Zaključaj anonimne kartice kad zatvorite Chrome</translation>
 <translation id="1179527450541388808">Brže pristupite Chromeu putem donje trake početnog zaslona na iPadu.</translation>
 <translation id="1180362651362502943">Nastavite upotrebljavati podatke iz Chromea na svom Google računu.</translation>
 <translation id="1200396280085622191">Upotrebljavajte Chrome svaki put kad dodirnete veze u porukama i drugim aplikacijama.</translation>
@@ -45,6 +46,7 @@ Važne napomene:
 <translation id="1917964099031477364">Taj račun i svi nespremljeni podaci uklonit će se iz Chromea i drugih Googleovih aplikacija na ovom uređaju.</translation>
 <translation id="1919130412786645364">Dopusti prijavu u Chrome</translation>
 <translation id="1965935827552890526">Dovršite ono što ste radili u drugom otvorenom Chromeovom prozoru.</translation>
+<translation id="1973910962341002002">U postavkama aplikacije <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> uključite Chrome</translation>
 <translation id="1984705450038014246">Sinkroniziraj podatke iz Chromea</translation>
 <translation id="1987779152850321833">Dovršite predložene radnje u nastavku da biste iskoristili sve prednosti Chromea.</translation>
 <translation id="2055826352861631739">Koristite Chrome za iPad prema zadanim postavkama</translation>
@@ -96,10 +98,13 @@ Pokušajte pričekati nekoliko minuta prije odjave. Ako se sada odjavite, ovi ć
 <translation id="3282568296779691940">Prijavite se u Chrome</translation>
 <translation id="3303503998967553377">Koristite radnje u Chromeu na iOS-u</translation>
 <translation id="3348862487678490430">Dodavanje stavke popisa za čitanje u Chrome</translation>
+<translation id="3357827134511189025">Prijavljujte se pomoću spremljenih zaporki i pristupnih ključeva iz bilo koje aplikacije pomoću Chroma za automatsko popunjavanje</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{To se događa kad se Chrome ne koristi {THRESHOLD} minutu}one{To se događa kad se Chrome ne koristi {THRESHOLD} minutu}few{To se događa kad se Chrome ne koristi {THRESHOLD} minute}other{To se događa kad se Chrome ne koristi {THRESHOLD} minuta}}</translation>
 <translation id="3367797402528056312">Dovršite postavljanje Chromea</translation>
 <translation id="3371064404604898522">Postavite Chrome kao zadani preglednik</translation>
 <translation id="3399930248910934354">Otvorite postavke Chromea</translation>
+<translation id="3440830787838130530">Jednostavno i sigurno dijelite kopiju zaporke sa svojom obiteljskom grupom u Google upravitelju zaporki</translation>
+<translation id="3460369101684070455">Da biste jednostavno dohvatili spremljene zaporke u drugim aplikacijama, upotrebljavajte Chrome za automatsko popunjavanje</translation>
 <translation id="3472587960215700950">Chrome koristi Google karte kako bi vam pružio upute i lokalne informacije o otkrivenim adresama.</translation>
 <translation id="3503014945441706099">Nabavite poboljšano sigurno pregledavanje i za ovaj profil u Chromeu</translation>
 <translation id="3522659714780527202">Da biste vidjeli svoje kartice bez obzira na to gdje koristite Chrome, uključite sinkronizaciju</translation>
@@ -181,6 +186,7 @@ Pokušajte pričekati nekoliko minuta prije prebacivanja na drugi račun. Ako sa
 <translation id="5998675059699164418">Vaša organizacija zahtijeva da se prijavite da biste koristili Chrome.</translation>
 <translation id="6021312115739110405">Prilagođeni feed koji je Google izradio za vas. Uključuje vijesti, sport i vremensku prognozu.</translation>
 <translation id="6022659036123304283">Prilagodite Chrome sebi</translation>
+<translation id="6132075343662013154">Chrome će ponuditi spremanje zaporke</translation>
 <translation id="6132149203299792222">Prijavite se Google računom da biste sinkronizirali zaporke, oznake i ostale podatke.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Pretraživanje u Chromeu</translation>
@@ -228,6 +234,7 @@ Više postavki koje upotrebljavaju podatke za poboljšanje vašeg doživljaja u 
 <translation id="7061455974939528301">Pritisnite i zadržite ikonu Chromea pa kliknite Uredite početni zaslon</translation>
 <translation id="7065813315247345131">Premjestite Chrome na donju traku</translation>
 <translation id="7124339256045485976">Ažuriranje Chromea</translation>
+<translation id="7145599899567697473">Spremanje i automatsko popunjavanje zaporki u Chromeu</translation>
 <translation id="7161390184744336561">Google Chrome je zastario</translation>
 <translation id="7165736900384873061">Upotrijebite QR skener Google Chromea</translation>
 <translation id="7175129790242719365">Savjet za Chrome: prijavite se u Chrome</translation>
@@ -261,6 +268,7 @@ Više postavki koje upotrebljavaju podatke za poboljšanje vašeg doživljaja u 
 <translation id="7693590760643069321">Sad možete koristiti Chrome svaki put kad dodirnete veze u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="7698568245838009292">Chrome želi pristupiti kameri</translation>
 <translation id="7707877166818730835">Otvaranje moje najnovije kartice u Chromeu</translation>
+<translation id="7747746207470479571">Jednostavno pristupajte svojim zaporkama i pristupnim ključevima pomoću Chromea za automatsko popunjavanje</translation>
 <translation id="776305366874821582">Brže pristupite Chromeu putem donje trake početnog zaslona na iPhoneu.</translation>
 <translation id="7780154209050837198">Da biste iskoristili sve prednosti koje vam pruža Chrome, prijavite se u Chrome Google računom.</translation>
 <translation id="7787205077729386167">Otvorite postavke Chromea na iOS-u, zatim dodirnite opciju Zadana aplikacija preglednika i odaberite Chrome.</translation>
@@ -281,6 +289,7 @@ Više postavki koje upotrebljavaju podatke za poboljšanje vašeg doživljaja u 
 <translation id="8136856065410661948">To će se upotrebljavati za izradu događaja u vašem Apple kalendaru iz Chromea i Google objektiva.</translation>
 <translation id="8154120522323162874">Iskoristite sve prednosti Chromea tako da nastavite s postavljanjem preglednika.</translation>
 <translation id="8160472928944011082">Ažuriranje Chromea nije moguće</translation>
+<translation id="8245080522851805544">Zaštitite privatnost pregledavanja autentifikacijom uređaja kada zatvorite Chrome</translation>
 <translation id="8248887045858762645">Savjet za Chrome</translation>
 <translation id="8265730590513812063">Otvorite izbornik preglednika Chrome</translation>
 <translation id="8317674518145175158">Načini plaćanja i adrese neće se šifrirati. Povijest pregledavanja iz Chromea neće se sinkronizirati.

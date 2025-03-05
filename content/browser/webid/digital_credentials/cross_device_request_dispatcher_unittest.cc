@@ -138,8 +138,7 @@ TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, Valid) {
       device::cablev2::PayloadType::kJSON,
       R"({"response": {"digital": {"data": {"vp_token" : "token"}}}})");
   ASSERT_TRUE(result.has_value());
-  ASSERT_EQ(result.value().value(),
-            base::JSONReader::Read(R"({"vp_token" : "token"})").value());
+  ASSERT_EQ(result.value()->data, R"({"vp_token":"token"})");
 }
 
 TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, InvalidJson) {
@@ -206,8 +205,7 @@ TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, NewResponseFormat) {
            }
          })");
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value().value(),
-            base::JSONReader::Read(R"({"key":"value"})").value());
+  EXPECT_EQ(result.value()->data, R"({"key":"value"})");
 }
 
 INSTANTIATE_TEST_SUITE_P(,

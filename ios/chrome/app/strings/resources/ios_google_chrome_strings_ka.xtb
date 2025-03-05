@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">თქვენი პაროლი შეინახება Google პაროლების მმართველში <ph name="EMAIL" />-ისთვის.</translation>
 <translation id="1146503048444965320">ახალი ჩანართის გახსნა Chrome-ში</translation>
 <translation id="1166460004393506534">Chrome-ში დათვალიერების მონაცემების წაშლა.</translation>
+<translation id="1171255741903316750">ჩართეთ „Chrome-ის დახურვისას ინკოგნიტო ჩანართების ჩაკეტვა“</translation>
 <translation id="1179527450541388808">იქონიეთ უფრო სწრაფი წვდომა Chrome-ზე iPad-ის მთავარ ეკრანის სამაგრიდან.</translation>
 <translation id="1180362651362502943">გააგრძელეთ Chrome-ის მონაცემების გამოყენება თქვენს Google ანგარიშში.</translation>
 <translation id="1200396280085622191">გამოიყენეთ Chrome შეტყობინებებსა და სხვა აპებში არსებულ ბმულებზე ყოველი შეხებისას.</translation>
@@ -45,6 +46,7 @@
 <translation id="1917964099031477364">ეს ანგარიში და შეუნახავი მონაცემები ამოიშლება როგორც Chrome-იდან, ისე სხვა Google აპებიდან ამ მოწყობილობაზე.</translation>
 <translation id="1919130412786645364">Chrome-ში შესვლის დაშვება</translation>
 <translation id="1965935827552890526">დაასრულეთ, რასაც Chrome-ის სხვა გახსნილ ფანჯარაში აკეთებდით.</translation>
+<translation id="1973910962341002002">„<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“-ის პარამეტრებში ჩართეთ „Chrome“</translation>
 <translation id="1984705450038014246">თქვენი Chrome მონაცემების სინქრონიზაცია</translation>
 <translation id="1987779152850321833">Chrome-ის შესაძლებლობებით მაქსიმალურად რომ ისარგებლოთ, შეასრულეთ ქვემოთ შემოთავაზებული მოქმედებები.</translation>
 <translation id="2055826352861631739">iPad-ისთვის Chrome-ის ნაგულისხმევად გამოყენება</translation>
@@ -96,10 +98,13 @@
 <translation id="3282568296779691940">შესვლა Chrome-ში</translation>
 <translation id="3303503998967553377">გამოიყენეთ „მოქმედებები Chrome-ში“ iOS-ზე</translation>
 <translation id="3348862487678490430">საკითხავი სიის ერთეულის დამატება Chrome-ში</translation>
+<translation id="3357827134511189025">შედით თქვენი შენახული პაროლებითა და წვდომის გასაღებებით ნებისმიერი აპიდან Chrome-ის ავტომატური შევსების გამოყენებით</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{ასე ხდება, როცა Chrome არ გამოიყენება {THRESHOLD} წუთის განმავლობაში}other{ასე ხდება, როცა Chrome არ გამოიყენება {THRESHOLD} წუთის განმავლობაში}}</translation>
 <translation id="3367797402528056312">დაასრულეთ Chrome-ის დაყენება</translation>
 <translation id="3371064404604898522">Chrome-ის დაყენება ნაგულისხმევ ბრაუზერად</translation>
 <translation id="3399930248910934354">Chrome-ის პარამეტრების გახსნა</translation>
+<translation id="3440830787838130530">მარტივად და დაცულად გაუზიარეთ თქვენი პაროლის ასლი ოჯახის წევრებს Google პაროლების მმართველში</translation>
+<translation id="3460369101684070455">თქვენი შენახული პაროლებით თქვენს სხვა აპებში მარტივად რომ ისარგებლოთ, გამოიყენეთ Chrome ავტომატური შევსებისთვის</translation>
 <translation id="3472587960215700950">Chrome იყენებს Google Maps-ს, რომ შემოგთავაზოთ მიმართულებები და ადგილობრივი ინფორმაცია ამოცნობილი მისამართების შესახებ.</translation>
 <translation id="3503014945441706099">ისარგებლეთ გაძლიერებული Safe Browsing-ით Chrome-ის ამ პროფილშიც.</translation>
 <translation id="3522659714780527202">იმისთვის, რომ იხილოთ თქვენი ჩანართები ნებისმიერი მოწყობილობიდან, საიდანაც Chrome-ს იყენებთ, ჩართეთ სინქრონიზაცია</translation>
@@ -181,6 +186,7 @@
 <translation id="5998675059699164418">თქვენი ორგანიზაცია მოითხოვს, რომ Chrome-ის გამოსაყენებლად სისტემაში შეხვიდეთ.</translation>
 <translation id="6021312115739110405">თქვენთვის მომზადებული არხი Google-ისგან. მათ შორის, ახალი ამბები, სპორტი და ამინდი.</translation>
 <translation id="6022659036123304283">მოირგეთ Chrome</translation>
+<translation id="6132075343662013154">Chrome შემოგთავაზებთ თქვენი პაროლის შენახვას</translation>
 <translation id="6132149203299792222">შედით სისტემაში თქვენი Google ანგარიშით თქვენი პაროლების, სანიშნეებისა და სხვა კონტენტის სინქრონიზაციისთვის.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Chrome-ში ძიება</translation>
@@ -228,6 +234,7 @@
 <translation id="7061455974939528301">ხანგრძლივად შეეხეთ Chrome-ის ხატულას და დაწკაპუნებით აირჩიეთ „მთავარი ეკრანის რედაქტირება“</translation>
 <translation id="7065813315247345131">Chrome-ის სამაგრში გადატანა</translation>
 <translation id="7124339256045485976">Chrome-ის მუდმივი განახლების უზრუნველყოფა</translation>
+<translation id="7145599899567697473">პაროლების შენახვა და ავტომატური შევსება Chrome-ში</translation>
 <translation id="7161390184744336561">Google Chrome მოძველდა</translation>
 <translation id="7165736900384873061">Google Chrome-ის QR სკანერის გამოყენების დაწყება</translation>
 <translation id="7175129790242719365">Chrome-ის მინიშნება: შედით Chrome-ში</translation>
@@ -261,6 +268,7 @@
 <translation id="7693590760643069321">ამიერიდან შეგიძლიათ გამოიყენოთ Chrome, როცა შეტყობინებებში, დოკუმენტებში ან სხვა აპებში ბმულებს ეხებით.</translation>
 <translation id="7698568245838009292">Chrome-ს კამერაზე წვდომის მიღება სურს</translation>
 <translation id="7707877166818730835">ჩემი ყველაზე ბოლო ჩანართის გახსნა Chrome-ში</translation>
+<translation id="7747746207470479571">მიიღეთ მარტივი წვდომა თქვენს პაროლებსა და წვდომის გასაღებებზე Chrome-ის ავტომატური შევსებით</translation>
 <translation id="776305366874821582">იქონიეთ უფრო სწრაფი წვდომა Chrome-ზე iPhone-ის მთავარ ეკრანის სამაგრიდან.</translation>
 <translation id="7780154209050837198">Chrome-ის შესაძლებლობები მაქსიმალურად რომ გამოიყენოთ, შედით Chrome-ში თქვენი Google ანგარიშით.</translation>
 <translation id="7787205077729386167">iOS-ში გახსენით Chrome-ის პარამეტრები, შემდეგ შეეხეთ „ბრაუზერის ნაგულისხმევ აპს“ და აირჩიეთ Chrome.</translation>
@@ -281,6 +289,7 @@
 <translation id="8136856065410661948">ამის მეშვეობით შესაძლებელი გახდება, Chrome-ისა და Google Lens-ის მეშვეობით შექმნათ მოვლენები თქვენს Apple Calendar-ში.</translation>
 <translation id="8154120522323162874">მაქსიმალურად გამოიყენეთ Chrome-ის შესაძლებლობები, რისთვისაც ბრაუზერის დაყენება უნდა განაგრძოთ.</translation>
 <translation id="8160472928944011082">Chrome ვერ განახლდება</translation>
+<translation id="8245080522851805544">დატოვეთ დათვალიერება კონფიდენციალურად მოწყობილობის ავტორიზაციით, როცა Chrome-ს დახურავთ</translation>
 <translation id="8248887045858762645">Chrome მინიშნება</translation>
 <translation id="8265730590513812063">გახსენით Chrome-ის მენიუ</translation>
 <translation id="8317674518145175158">გადახდის მეთოდები და მისამართები არ იქნება დაშიფრული. Chrome-ში არსებული დათვალიერების ისტორია არ სინქრონიზდება.

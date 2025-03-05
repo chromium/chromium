@@ -12,6 +12,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/saved_tab_groups/public/pref_names.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -71,6 +72,7 @@ class SyncUserSettingsImplTest : public testing::Test,
  protected:
   SyncUserSettingsImplTest() {
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
+    SigninPrefs::RegisterProfilePrefs(pref_service_.registry());
     SyncTransportDataPrefs::RegisterProfilePrefs(pref_service_.registry());
     signin::IdentityManager::RegisterProfilePrefs(pref_service_.registry());
     // TODO(crbug.com/368409110): Necessary for a workaround in
@@ -200,6 +202,10 @@ TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   expected_disabled_types.Put(UserSelectableType::kThemes);
+#else
+  // On platforms other than mobile, bookmarks requires a separate pref
+  // `kBookmarksExplicitBrowserSigninEnabled`.
+  expected_disabled_types.Put(UserSelectableType::kBookmarks);
 #endif
 
   EXPECT_EQ(selected_types,

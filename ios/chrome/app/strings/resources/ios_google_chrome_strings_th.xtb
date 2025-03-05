@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">ระบบจะบันทึกรหัสผ่านไว้ในเครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="EMAIL" /></translation>
 <translation id="1146503048444965320">เปิดแท็บใหม่ใน Chrome</translation>
 <translation id="1166460004393506534">ลบข้อมูลการท่องเว็บใน Chrome</translation>
+<translation id="1171255741903316750">เปิด "ล็อกแท็บที่ไม่ระบุตัวตนเมื่อปิด Chrome"</translation>
 <translation id="1179527450541388808">เข้าถึง Chrome ได้เร็วขึ้นจากแถบแอปในหน้าจอหลักของ iPad</translation>
 <translation id="1180362651362502943">ใช้ข้อมูล Chrome ในบัญชี Google ต่อไป</translation>
 <translation id="1200396280085622191">ใช้ Chrome ทุกครั้งที่คุณแตะลิงก์ในข้อความและแอปอื่นๆ</translation>
@@ -45,6 +46,7 @@
 <translation id="1917964099031477364">บัญชีนี้และข้อมูลที่ไม่ได้บันทึกจะถูกนำออกจาก Chrome และแอปอื่นๆ ของ Google ในอุปกรณ์นี้</translation>
 <translation id="1919130412786645364">อนุญาตให้ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="1965935827552890526">ทำสิ่งที่กำลังทำในหน้าต่าง Chrome ที่เปิดอยู่อีกอันให้เสร็จ</translation>
+<translation id="1973910962341002002">เปิด "Chrome" จากการตั้งค่า "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />"</translation>
 <translation id="1984705450038014246">ซิงค์ข้อมูล Chrome</translation>
 <translation id="1987779152850321833">โปรดดำเนินการตามที่แนะนําด้านล่างเพื่อได้รับประโยชน์สูงสุดจาก Chrome</translation>
 <translation id="2055826352861631739">ใช้ Chrome สำหรับ iPad โดยค่าเริ่มต้น</translation>
@@ -96,10 +98,13 @@
 <translation id="3282568296779691940">ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="3303503998967553377">ใช้การดำเนินการใน Chrome บน iOS</translation>
 <translation id="3348862487678490430">เพิ่มรายการเรื่องรออ่านใน Chrome</translation>
+<translation id="3357827134511189025">ลงชื่อเข้าใช้ด้วยรหัสผ่านและพาสคีย์ที่บันทึกไว้จากแอปใดก็ได้โดยใช้ Chrome สำหรับการป้อนข้อความอัตโนมัติ</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{การดำเนินการนี้จะเกิดขึ้นเมื่อไม่ได้ใช้ Chrome เป็นเวลา {THRESHOLD} นาที}other{การดำเนินการนี้จะเกิดขึ้นเมื่อไม่ได้ใช้ Chrome เป็นเวลา {THRESHOLD} นาที}}</translation>
 <translation id="3367797402528056312">ตั้งค่า Chrome ให้เสร็จ</translation>
 <translation id="3371064404604898522">ตั้ง Chrome เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="3399930248910934354">เปิดการตั้งค่า Chrome</translation>
+<translation id="3440830787838130530">แชร์สำเนารหัสผ่านกับกลุ่มครอบครัวได้อย่างง่ายดายและปลอดภัยในเครื่องมือจัดการรหัสผ่านบน Google</translation>
+<translation id="3460369101684070455">หากต้องการเรียกข้อมูลรหัสผ่านที่บันทึกไว้ในแอปอื่นๆ ได้อย่างง่ายดาย ให้เลือก Chrome สำหรับการป้อนข้อความอัตโนมัติ</translation>
 <translation id="3472587960215700950">Chrome ใช้ Google Maps เพื่อแสดงเส้นทางและข้อมูลในพื้นที่ของที่อยู่ที่ตรวจพบ</translation>
 <translation id="3503014945441706099">รับ Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้นสำหรับโปรไฟล์ Chrome นี้ด้วย</translation>
 <translation id="3522659714780527202">เปิดการซิงค์เพื่อดูแท็บที่เปิดไว้จากอุปกรณ์ที่คุณใช้ Chrome</translation>
@@ -181,6 +186,7 @@
 <translation id="5998675059699164418">องค์กรกำหนดให้คุณต้องลงชื่อเพื่อเข้าใช้ Chrome</translation>
 <translation id="6021312115739110405">ฟีดที่กำหนดมาเพื่อคุณโดยเฉพาะจาก Google ประกอบด้วยข่าว กีฬา และสภาพอากาศ</translation>
 <translation id="6022659036123304283">ปรับเปลี่ยน Chrome ในแบบของคุณ</translation>
+<translation id="6132075343662013154">Chrome จะเสนอให้บันทึกรหัสผ่าน</translation>
 <translation id="6132149203299792222">ลงชื่อเข้าใช้ด้วยบัญชี Google เพื่อซิงค์รหัสผ่าน บุ๊กมาร์ก และอื่นๆ</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">ค้นหาใน Chrome</translation>
@@ -228,6 +234,7 @@
 <translation id="7061455974939528301">กดไอคอน Chrome ค้างไว้แล้วคลิก "แก้ไขหน้าจอหลัก"</translation>
 <translation id="7065813315247345131">ย้าย Chrome ไปที่แถบแอป</translation>
 <translation id="7124339256045485976">อัปเดต Chrome อยู่เสมอ</translation>
+<translation id="7145599899567697473">บันทึกและป้อนรหัสผ่านอัตโนมัติใน Chrome</translation>
 <translation id="7161390184744336561">Google Chrome เป็นเวอร์ชันเก่า</translation>
 <translation id="7165736900384873061">เริ่มใช้โปรแกรมสแกนโค้ด QR ของ Google Chrome</translation>
 <translation id="7175129790242719365">เคล็ดลับสำหรับ Chrome: ลงชื่อเข้าใช้ Chrome</translation>
@@ -261,6 +268,7 @@
 <translation id="7693590760643069321">ตอนนี้คุณจะใช้ Chrome ทุกครั้งที่แตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ</translation>
 <translation id="7698568245838009292">Chrome ต้องการเข้าถึงกล้องถ่ายรูป</translation>
 <translation id="7707877166818730835">เปิดแท็บล่าสุดของฉันใน Chrome</translation>
+<translation id="7747746207470479571">เข้าถึงรหัสผ่านและพาสคีย์ได้อย่างง่ายดายด้วย Chrome สำหรับการป้อนข้อความอัตโนมัติ</translation>
 <translation id="776305366874821582">เข้าถึง Chrome ได้เร็วขึ้นจากแถบแอปในหน้าจอหลักของ iPhone</translation>
 <translation id="7780154209050837198">ลงชื่อเข้าใช้ Chrome ด้วยบัญชี Google เพื่อรับประโยชน์สูงสุดจาก Chrome</translation>
 <translation id="7787205077729386167">เปิดการตั้งค่า Chrome ใน iOS จากนั้นแตะ "แอปเบราว์เซอร์เริ่มต้น" แล้วเลือก Chrome</translation>
@@ -281,6 +289,7 @@
 <translation id="8136856065410661948">ระบบจะใช้เพื่อสร้างกิจกรรมจาก Chrome และ Google Lens ในปฏิทินของ Apple</translation>
 <translation id="8154120522323162874">รับประโยชน์สูงสุดจาก Chrome โดยการตั้งค่าเบราว์เซอร์ต่อ</translation>
 <translation id="8160472928944011082">อัปเดต Chrome ไม่ได้</translation>
+<translation id="8245080522851805544">รักษาความเป็นส่วนตัวในการท่องเว็บด้วยการตรวจสอบสิทธิ์อุปกรณ์เมื่อคุณปิด Chrome</translation>
 <translation id="8248887045858762645">เคล็ดลับสำหรับ Chrome</translation>
 <translation id="8265730590513812063">เปิดเมนู Chrome</translation>
 <translation id="8317674518145175158">จะไม่มีการเข้ารหัสวิธีการชำระเงินและที่อยู่ ประวัติการท่องเว็บจาก Chrome จะไม่ซิงค์

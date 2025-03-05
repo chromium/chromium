@@ -251,11 +251,6 @@ FakeSafeBrowsingService::CreateAsyncChecker(
 bool FakeSafeBrowsingService::ShouldCreateAsyncChecker(
     web::WebState* web_state,
     SafeBrowsingClient* client) {
-  if (!base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
-    return false;
-  }
-
   return true;
 }
 

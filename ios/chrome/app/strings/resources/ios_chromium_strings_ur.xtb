@@ -94,6 +94,7 @@
 <translation id="328933489847748230">{count,plural, =1{‏اب 1 Chromium ونڈو نظر آ رہا ہے}other{‏اب {count} Chromium ونڈوز نظر آ رہے ہیں}}</translation>
 <translation id="3344973607274501920">‏Chromium آپ کے پاس ورڈز چیک نہیں کر سکا۔ اپنا انٹرنیٹ کنکشن چیک کرنے کی کوشش کریں۔</translation>
 <translation id="3366305173356742781">‏آپ کے اکاؤنٹ میں Chromium ڈیٹا</translation>
+<translation id="33788334537425157">‏‫"Chromium بند کرنے پر پوشیدگی ٹیبز کو مقفل کریں" کو آن کریں</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{‏یہ اس وقت ہوتا ہے جب Chromium {THRESHOLD} منٹ کے لیے استعمال نہیں ہوتا ہے۔ اس میں سرگزشت اور آٹو فل شامل ہو سکتے ہیں۔}other{‏ایسا اس وقت ہوتا ہے جب Chromium {THRESHOLD} منٹوں تک استعمال نہیں ہوتا ہے۔ اس میں سرگزشت اور آٹو فل شامل ہو سکتے ہیں۔}}</translation>
 <translation id="3410395242749598859">‏آپ کا کچھ Chromium ڈیٹا ابھی تک <ph name="EMAIL" /> میں محفوظ نہیں ہوا ہے۔
 اکاؤنٹس سوئچ کرنے سے پہلے چند منٹ انتظار کرنے کی کوشش کریں۔ اگر آپ ابھی اکاؤنٹس سوئچ کرتے ہیں تو یہ ڈیٹا حذف ہو جائے گا۔</translation>
@@ -101,8 +102,10 @@
 <translation id="347967311580159871">‏آپ کے Chromium کے تجربے کو بہتر بنانے کے لیے ڈیٹا کا استعمال کرنے والی مزید ترتیبات کے لیے <ph name="BEGIN_LINK" />Google سروسز<ph name="END_LINK" /> پر جائیں۔</translation>
 <translation id="3512168799938877162">‏آپ کے پاس ورڈ کا اشتراک نہیں کیا گیا۔ اپنا انٹرنیٹ کنکشن چیک کریں اور یقینی بنائیں کہ آپ Chromium میں سائن ان ہیں۔ پھر، دوبارہ کوشش کریں۔</translation>
 <translation id="3529798650269984835">‏"جب آپ Chromium بند کرتے ہیں تو پوشیدگی ٹیبز کو مقفل کریں" کو آن کریں۔</translation>
+<translation id="3541247799006476453">‏‫Chromium برائے آٹو فل کی مدد سے اپنے پاس ورڈز اور پاس کیز تک آسان رسائی حاصل کریں</translation>
 <translation id="3567399274263440288">‏Chromium سے بھرپور فائدہ اٹھانے کے لیے اپنے Google اکاؤنٹ کے ساتھ Chromium میں سائن ان کریں۔</translation>
 <translation id="3581385059720151202">‏‫Chromium میں ویژوئلز تلاش کریں</translation>
+<translation id="3582640969619785896">‏‫Chromium آپ کا پاس ورڈ محفوظ کرنے کی پیشکش کرے گا</translation>
 <translation id="3594315078412605236">‏‫Chromium میں ادائیگی کے طریقوں کا نظم کریں</translation>
 <translation id="3634039384458740619">‏Chromium کی ترتیبات کھولیں</translation>
 <translation id="3639997914391704523">‏جب آپ اپنے Google اکاؤنٹ سے سائن ان کرتے ہیں تو Chromium آپ کے پاس ورڈز کو چیک کر سکتا ہے۔</translation>
@@ -159,6 +162,7 @@
 <translation id="4999538639245140991">‏چونکہ آپ <ph name="SIGNOUT_MANAGED_DOMAIN" /> کے زیر انتظام ایک اکاؤنٹ سے سائن آؤٹ کر رہے ہیں، لہذا آپ کا Chromium ڈیٹا اس آلہ سے حذف ہو جائے گا۔ آپ کا ڈیٹا آپ کے Google اکاؤنٹ میں رہے گا۔</translation>
 <translation id="5042011327527167688">‏"Chromium پر Google Maps کے ساتھ دیکھیں" پر تھپتھپائیں۔</translation>
 <translation id="5044871537677053278">‏Chromium پتوں کا پتا لگاتا ہے اور آپ کو ڈائریکشنز اور مقامی معلومات دینے کے لیے Google Maps کا استعمال کرتا ہے۔</translation>
+<translation id="5048140766121299007">‏"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ترتیبات سے، ٹوگل کر کے "Chromium" کو آن کریں</translation>
 <translation id="5048795749726991615">‏اپنی دیگر ایپس میں اپنے محفوظ کردہ پاس ورڈز کو آسانی سے پانے کے لیے Chromium برائے آٹو فل استعمال کریں</translation>
 <translation id="5053429694249468757">‏‫Chromium کا ڈیٹا حذف کیا جا رہا ہے…</translation>
 <translation id="5071749685031362629">‏‫Chromium برائے iOS</translation>
@@ -166,6 +170,7 @@
 <translation id="5124429847818367226">‏اب آپ کسی بھی وقت پیغامات، دستاویزات اور دیگر ایپس میں موجود لنکس کو براؤز یا تھپتھپاتے وقت Chromium استعمال کر سکتے ہیں۔</translation>
 <translation id="5131565040785979529">‏آپ کی تنظیم، <ph name="DOMAIN" />، اس اکاؤنٹ کا نظم کرتا ہے جس میں آپ سائن ان ہیں اور اس بات کا نظم کرتا ہے کہ Chromium کا استعمال کیسے کیا جاتا ہے۔</translation>
 <translation id="5134464247000681876">‏‫Gmail, Maps, YouTube اور دیگر ایپس کی لنکس کو Chromium میں کھولیں</translation>
+<translation id="5203244847421322551">‏‫Chromium میں پاس ورڈز کو محفوظ اور آٹو فل کریں</translation>
 <translation id="5224391634244552924">‏کوئی محفوظ کردہ پاس ورڈ نہیں۔ جب آپ پاس ورڈز کو محفوظ کرتے ہیں تو Chromium انہیں چیک کر سکتا ہے۔</translation>
 <translation id="5259423875997548710">‏‫Chromium میں ویژوئلز تلاش کریں۔</translation>
 <translation id="5308226104666789935">‏Chromium اپ ڈیٹس چیک نہیں کر سکتا ہے</translation>
@@ -209,10 +214,12 @@
 <translation id="6132149203299792222">‏اپنے پاس ورڈز، بُک مارکس وغیرہ کو مطابقت پذیر بنانے کیلئے، اپنے Google اکاؤنٹ کے ساتھ سائن ان کریں۔</translation>
 <translation id="6148377327556085395">‏‫Chromium میں بُک مارکس شامل کریں</translation>
 <translation id="6154098560469640583">‏جب بھی آپ پیغامات، دستاویزات اور دیگر ایپس میں لنکس پر تھپتھپاتے وقت Chromium استعمال کریں۔</translation>
+<translation id="6157162508956739031">‏‫Chromium سے اپنے پاس ورڈز اور پاس کیز کو آٹو فل کر کے ایپس اور سائٹس میں جلدی سے سائن ان کریں</translation>
 <translation id="6170619162539716595">‏Chromium کو Google Maps کا استعمال کرنے کی اجازت دیں تاکہ شناخت کردہ پتوں کے بارے میں آپ کو ڈائریکشنز اور مقامی معلومات مل سکے۔</translation>
 <translation id="6197255575340902638">‏اگر آپ "<ph name="MODULE_NAME" />" کو چھپائیں گے تو Chromium اب آپ کے مستقبل کے پیکجز کو خودکار طور پر ٹریک نہیں کرے گا اور آپ کا تمام پچھلا پیکج ٹریکنگ ڈیٹا حذف کر دے گا۔</translation>
 <translation id="6247557882553405851">‏Google پاس ورڈ مینیجر</translation>
 <translation id="6268381023930128611">‏Chromium سے سائن آؤٹ کریں؟</translation>
+<translation id="6301717043141881464">‏اپنی دیگر ایپس میں اپنے محفوظ کردہ پاس ورڈز کو آسانی سے حاصل کرنے کیلئے، Chromium برائے آٹو فل کا انتخاب کریں</translation>
 <translation id="6324041800010509197">‏Chromium میں ٹیب گرِڈ ملاحظہ کریں</translation>
 <translation id="6325378625795868881">‏جب بھی آپ پیغامات اور دیگر ایپس میں لنکس پر تھپتھپائیں تو Chromium استعمال کریں۔</translation>
 <translation id="6424492062988593837">‏Chromium اور بھی بہتر ہوگیا ہے! ایک نیا ورژن دستیاب ہے۔</translation>
@@ -224,6 +231,7 @@
 <translation id="6574750762636192517">‏‫Chromium میں پاس ورڈز کا نظم کریں</translation>
 <translation id="6590232959690355435">‏آپ کے Chromium کی سرگزشت کا صفحہ کھولتا ہے۔</translation>
 <translation id="6674470628873622334">‏‫Chromium کا نیا پوشیدگی ٹیب کھلتا ہے۔</translation>
+<translation id="6680609900732453726">‏اپنا Chromium بند کرنے پر آلے کی توثیق کی مدد سے اپنی براؤزنگ کو نجی رکھیں</translation>
 <translation id="6752854822223394465">‏آپ کی تنظیم Chromium سیٹ اپ کر رہی ہے...</translation>
 <translation id="6794054469102824109">‏Chromium ڈائنو گیم کھلتی ہے۔</translation>
 <translation id="6820823224820483452">‏Chromium سبھی پاس ورڈز چیک نہیں کر سکا۔ کل دوبارہ کوشش کریں۔</translation>
@@ -287,6 +295,7 @@
 <translation id="8254729934443216898">‏نئی خصوصیات دریافت کریں جو آپ کی Chromium سے زیادہ سے زیادہ فائدہ اٹھانے میں مدد کرتی ہیں۔</translation>
 <translation id="8293572045658095405">‏آپ Chromium پوشیدگی میں ہیں</translation>
 <translation id="830951810931292870">‏درج کردہ URLs کو Chromium میں پوشیدگی میں کھولتا ہے۔</translation>
+<translation id="8390323835464055390">‏‫Chromium برائے آٹو فل کا استعمال کرتے ہوئے کسی بھی ایپ کے محفوظ کردہ پاس ورڈز اور پاس کیز کی مدد سے سائن ان کریں</translation>
 <translation id="8409374867500149834">‏آپ کے پاس نقصان دہ ویب سائٹس کے خلاف Chromium کی مضبوط ترین سیکیورٹی ہے</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{‏ایسا اس وقت ہوتا ہے جب Chromium {THRESHOLD} منٹ تک استعمال نہیں ہوتا ہے۔ آپ کے سائن ہونے کے دوران صرف اس آلے پر محفوظ کردہ ڈیٹا کو حذف کر دیا جائے گا۔ اس میں سرگزشت اور پاس ورڈز شامل ہو سکتے ہیں۔}other{‏ایسا اس وقت ہوتا ہے جب Chromium {THRESHOLD} منٹ تک استعمال نہیں ہوتا ہے۔ آپ کے سائن ہونے کے دوران صرف اس آلے پر محفوظ کردہ ڈیٹا کو حذف کر دیا جائے گا۔ اس میں سرگزشت اور پاس ورڈز شامل ہو سکتے ہیں۔}}</translation>
 <translation id="858114650497379505">‏آپ اپنے iPhone پر پاس ورڈ مینیجر میں اپنے محفوظ کردہ پاس ورڈز کو دیگر ایپس میں استعمال کر سکتے ہیں۔</translation>

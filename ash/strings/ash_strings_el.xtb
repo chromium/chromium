@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">Αναφορά σχολίων</translation>
 <translation id="1059120031266247284">Κοινοποιήθηκε σε εσάς</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> με κουμπί κατάργησης</translation>
 <translation id="1062407476771304334">Αντικατάσταση</translation>
 <translation id="1073899992769346247">Αντικατάταση ή επαναφόρτιση της μπαταρίας</translation>
 <translation id="1081015718268701546">Οι εφαρμογές Linux δεν υποστηρίζονται προς το παρόν. Οι άλλες εφαρμογές θα αποθηκευτούν.</translation>
@@ -323,6 +324,7 @@
 <translation id="2083190527011054446">Καληνύχτα <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Άνοιγμα εργαλείου επιλογής emoji</translation>
 <translation id="2088116547584365419">παιχνίδια</translation>
+<translation id="2092517835716911174">Πρέπει να είστε τουλάχιστον 18 ετών, για να χρησιμοποιήσετε τις λειτουργίες Βοήθησέ με να διαβάσω και Βοήθησέ με να γράψω.</translation>
 <translation id="209965399369889474">Δεν υπάρχει σύνδεση στο δίκτυο</translation>
 <translation id="2107581415810719320">Άλλο κουμπί <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Το καλώδιο USB-C που έχετε δεν υποστηρίζει συσκευές Thunderbolt. Η απόδοση της συσκευής ενδέχεται να είναι περιορισμένη.</translation>
@@ -1228,6 +1230,7 @@
 <translation id="5043679421800073804">Κλικ ή πάτημα του τελευταίου εικονιδίου στο ράφι</translation>
 <translation id="504465286040788597">Προηγούμενη παράγραφος</translation>
 <translation id="5045550434625856497">Λανθασμένος κωδικός πρόσβασης</translation>
+<translation id="5056587122125565772">Δημιουργία εικόνας</translation>
 <translation id="5058794129231928255">Δεν ήταν δυνατή η δημιουργία Εγγράφου Google</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Θα ειδοποιηθείτε εάν μιλήσετε ενώ είστε σε σίγαση. Ο ήχος παραμένει πάντα στη συσκευή σας.</translation>
@@ -1276,6 +1279,7 @@
 <translation id="5222676887888702881">Έξοδος</translation>
 <translation id="5228195526683428788">Διαχωριστικό οθόνης</translation>
 <translation id="5229343007215035173">Ενεργοποίηση/απενεργοποίηση οθόνης απορρήτου</translation>
+<translation id="5229860525743792999">Κατάργηση του στοιχείου <ph name="ITEM_LABEL" /> από την προτεινόμενη ομάδα</translation>
 <translation id="5230516054153933099">Παράθυρο</translation>
 <translation id="5234764350956374838">Παράβλεψη</translation>
 <translation id="523505283826916779">Ρυθμίσεις προσβασιμότητας</translation>
@@ -1758,6 +1762,7 @@
 <translation id="6757237461819837179">Καμία αναπαραγωγή μέσων</translation>
 <translation id="6760438044935091345">Πίνακας ελέγχου παιχνιδιού</translation>
 <translation id="6768043681523654438">αποθηκευτικός χώρος</translation>
+<translation id="6769195697113506406">Έγινε εισαγωγή εικόνας</translation>
 <translation id="6777216307882431711">Ενεργοποίηση συνδεδεμένων συσκευών USB-C</translation>
 <translation id="6781002679438061620">Γραφείο 9</translation>
 <translation id="6782182743534150858">Γραφείο 13</translation>
@@ -1984,6 +1989,7 @@
 <translation id="7571361473021531288">Μπαταρία <ph name="BATTERY_PERCENTAGE" />% | Χρόνος που απομένει: <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Το ενεργό παράθυρο αγκυρώθηκε δεξιά.</translation>
 <translation id="7579778809502851308">Λήψη οθόνης</translation>
+<translation id="7588317312481506627">Αντιγράφηκε στο πρόχειρο.</translation>
 <translation id="7593891976182323525">Search ή Shift</translation>
 <translation id="7598054670902114203">Σύνοψη χρήσης CPU, <ph name="CPU_USEAGE" />%. Θερμοκρασία <ph name="TEMPERATURE" /> βαθμοί Κελσίου, τρέχουσα ταχύτητα: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Εισαγωγή επιλεγμένου αποτελέσματος</translation>
@@ -2178,6 +2184,7 @@
 <translation id="8155628902202578800">Άνοιγμα παραθύρου διαλόγου πληροφοριών για <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Χρησιμοποιείτε <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Περιεχόμενο</translation>
+<translation id="81817143961839203">Η εισαγωγή της εικόνας απέτυχε</translation>
 <translation id="8185090165691050712">Ενεργοποίηση/απενεργοποίηση μενού για λειτουργία κλειδώματος αλλαγής μεγέθους</translation>
 <translation id="8192727139462702395">Όταν απενεργοποιήσετε το Bluetooth, αυτές οι εξωτερικές συσκευές θα αποσυνδεθούν από τη συσκευή <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Καρτέλα μετάδοσης</translation>
@@ -2256,6 +2263,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> έχει <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Πατήστε Alt+Search ή Shift για ακύρωση.</translation>
 <translation id="8480418399907765580">Εμφάνιση γραμμής εργαλείων</translation>
+<translation id="8487660088084188539">Όταν ενεργοποιείτε αυτές τις λειτουργίες, το κείμενο εισόδου, το περιεχόμενο του εγγράφου και το URL της ιστοσελίδας ενδέχεται να αποστέλλονται στους διακομιστές της Google. Αυτές οι πληροφορίες χρησιμοποιούνται για τη δημιουργία προτάσεων συγγραφής, τη δημιουργία συνόψεων, την απάντηση σε ερωτήσεις και τη βελτίωση του προϊόντος, σύμφωνα με <ph name="LINK_TO_SERVICE_TERMS" />. Μη συμπεριλάβετε προσωπικό, ευαίσθητο ή εμπιστευτικό περιεχόμενο.</translation>
 <translation id="8487699605742506766">Σημείο πρόσβασης Wi-Fi</translation>
 <translation id="8491237443345908933">Άνοιγμα συνδέσμου σε νέα καρτέλα</translation>
 <translation id="8492573885090281069">Η οθόνη <ph name="DISPLAY_NAME" /> δεν υποστηρίζει <ph name="SPECIFIED_RESOLUTION" />. Η ανάλυση άλλαξε σε <ph name="FALLBACK_RESOLUTION" />. Κάντε κλικ στην Επιβεβαίωση για να κρατήσετε τις αλλαγές. Θα γίνει επαναφορά των προηγούμενων ρυθμίσεων σε <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2325,6 +2333,7 @@
 <translation id="8725066075913043281">Προσπαθήστε ξανά</translation>
 <translation id="8725214031272624704">Εμφάνιση λίστας διαθέσιμων μεθόδων εισαγωγής</translation>
 <translation id="8730621377337864115">Ολοκληρώθηκε</translation>
+<translation id="8731188831050207755">Ανεπιτυχής λήψη του αρχείου <ph name="FILE_NAME" />.</translation>
 <translation id="8731487213223706745">Λήγει στις <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Μπορεί να επιχειρεί να υποκλέψει τα πατήματα πλήκτρων σας</translation>
 <translation id="8735678380411481005">Χρώμα οπίσθιου φωτισμού</translation>

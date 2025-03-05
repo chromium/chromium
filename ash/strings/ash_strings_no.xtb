@@ -22,6 +22,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1058009965971887428">Rapporter tilbakemelding</translation>
 <translation id="1059120031266247284">Delt med deg</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> med fjern-knapp</translation>
 <translation id="1062407476771304334">Erstatt</translation>
 <translation id="1073899992769346247">Bytt eller lad batteriet</translation>
 <translation id="1081015718268701546">Linux-apper støttes ikke for øyeblikket. Andre apper blir lagret.</translation>
@@ -323,6 +324,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2083190527011054446">God natt, <ph name="GIVEN_NAME" /></translation>
 <translation id="2086334242442703436">Åpne emojivelgeren</translation>
 <translation id="2088116547584365419">spill</translation>
+<translation id="2092517835716911174">Du må være minst 18 år for å bruke Hjelp meg å lese og Hjelp meg å skrive.</translation>
 <translation id="209965399369889474">Ikke koblet til nettverket</translation>
 <translation id="2107581415810719320">Annen knapp <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C-kabelen din støtter ikke Thunderbolt. Enhetens ytelse kan være begrenset.</translation>
@@ -1228,6 +1230,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="5043679421800073804">Klikk eller trykk på det siste ikonet på hyllen</translation>
 <translation id="504465286040788597">Forrige avsnitt</translation>
 <translation id="5045550434625856497">Feil passord</translation>
+<translation id="5056587122125565772">Lag bilde</translation>
 <translation id="5058794129231928255">Kunne ikke opprette Google-dokument</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Du blir varslet hvis du snakker mens mikrofonen er avslått. Lyden forlater aldri enheten.</translation>
@@ -1276,6 +1279,7 @@ Du kan også bruke hurtigtasten. Marker først teksten, og trykk deretter på <p
 <translation id="5222676887888702881">Logg av</translation>
 <translation id="5228195526683428788">Skilleelement for delt skjerm</translation>
 <translation id="5229343007215035173">Slå personvernskjermen av eller på</translation>
+<translation id="5229860525743792999">Fjern <ph name="ITEM_LABEL" /> fra den foreslåtte gruppen</translation>
 <translation id="5230516054153933099">Vindu</translation>
 <translation id="5234764350956374838">Lukk</translation>
 <translation id="523505283826916779">Tilgjengelighetsinnstillinger</translation>
@@ -1758,6 +1762,7 @@ Nylig installert</translation>
 <translation id="6757237461819837179">Ingen medier spilles av</translation>
 <translation id="6760438044935091345">Spilloversikt</translation>
 <translation id="6768043681523654438">lagring</translation>
+<translation id="6769195697113506406">Bildet er satt inn</translation>
 <translation id="6777216307882431711">Gir strøm til tilkoblede USB-C-enheter</translation>
 <translation id="6781002679438061620">Skrivebord 9</translation>
 <translation id="6782182743534150858">Skrivebord 13</translation>
@@ -1984,6 +1989,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7571361473021531288">Batteri <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> igjen</translation>
 <translation id="7573585051776738856">Det aktive vinduet er festet på høyre side.</translation>
 <translation id="7579778809502851308">Skjermbilde</translation>
+<translation id="7588317312481506627">Kopiert til utklippstavlen.</translation>
 <translation id="7593891976182323525">Søk eller Shift</translation>
 <translation id="7598054670902114203">Øyeblikksbilde av prosessorbruken: <ph name="CPU_USEAGE" /> %. Temperatur: <ph name="TEMPERATURE" /> grader celsius. Gjeldende hastighet: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Setter inn det valgte resultatet</translation>
@@ -2178,6 +2184,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8155628902202578800">Åpne dialogboksen for informasjon om <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Bruker <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Innhold</translation>
+<translation id="81817143961839203">Bildet kunne ikke settes inn</translation>
 <translation id="8185090165691050712">Slå menyen på/av for å endre størrelsen på låsemodusen</translation>
 <translation id="8192727139462702395">Når du slår av Bluetooth, blir disse eksterne enhetene koblet fra <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Casting-fanen</translation>
@@ -2256,6 +2263,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> har <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Trykk på Alt + Søk eller Shift for å avbryte.</translation>
 <translation id="8480418399907765580">Vis verktøylinje</translation>
+<translation id="8487660088084188539">Når du slår på disse funksjonene, kan inndatateksten, dokumentinnholdet og nettadressen til nettsiden bli sendt til Googles tjenere. Denne informasjonen brukes til å generere skriveforslag, generere sammendrag, svare på spørsmål og forbedre produktet, i henhold til <ph name="LINK_TO_SERVICE_TERMS" />. Ikke ta med noe som er personlig, sensitivt eller konfidensielt.</translation>
 <translation id="8487699605742506766">Wifi-sone</translation>
 <translation id="8491237443345908933">Åpne link i en ny fane</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> støtter ikke <ph name="SPECIFIED_RESOLUTION" />. Oppløsningen ble endret til <ph name="FALLBACK_RESOLUTION" />. Klikk på bekreft for å beholde endringene. De forrige innstillingene blir gjenopprettet om <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2325,6 +2333,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8725066075913043281">Prøv på nytt</translation>
 <translation id="8725214031272624704">Vis liste over tilgjengelige inndatametoder</translation>
 <translation id="8730621377337864115">Ferdig</translation>
+<translation id="8731188831050207755">Nedlasting av <ph name="FILE_NAME" /> mislyktes.</translation>
 <translation id="8731487213223706745">Slutter kl. <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Det brukes kanskje til å stjele tastetrykkene dine.</translation>
 <translation id="8735678380411481005">Farge på tastaturets bakgrunnsbelysning</translation>

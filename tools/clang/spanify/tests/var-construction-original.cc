@@ -59,7 +59,7 @@ void fct() {
   // base::span<int> g = (condition) ? ctn1 : ctn2;
   int* g = (condition) ? ctn1.data() : ctn2.data();
 
-  g += 1;  // buffer udage: leads g to be rewritten.
+  g += 1;  // buffer usage: leads g to be rewritten.
 
   // Expected rewrite:
   // base::span<char> h = reinterpret_cast<char*>(g);

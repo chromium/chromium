@@ -25,6 +25,17 @@ class WebContents;
 // different across platforms like desktop and mobile.
 class CONTENT_EXPORT DigitalIdentityProvider {
  public:
+  struct CONTENT_EXPORT DigitalCredential {
+    DigitalCredential(std::optional<std::string> protocol, std::string data);
+    DigitalCredential(DigitalCredential&& other);
+    DigitalCredential& operator=(DigitalCredential&& other);
+    DigitalCredential(DigitalCredential& other) = delete;
+    DigitalCredential& operator=(const DigitalCredential&) = delete;
+    ~DigitalCredential();
+
+    std::optional<std::string> protocol;
+    std::string data;
+  };
   // Do not reorder or change the values because the enum values are being
   // recorded in metrics.
   // A Java counterpart will be generated for this enum.
@@ -69,7 +80,7 @@ class CONTENT_EXPORT DigitalIdentityProvider {
       DigitalIdentityInterstitialCallback callback) = 0;
 
   using DigitalIdentityCallback = base::OnceCallback<void(
-      const base::expected<std::string, RequestStatusForMetrics>&)>;
+      const base::expected<DigitalCredential, RequestStatusForMetrics>&)>;
 
   // Coordinates the call to present a digital credential between the web and
   // native apps.

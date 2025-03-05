@@ -14,6 +14,7 @@ PassesDataManager::PassesDataManager(
     scoped_refptr<AutofillWebDataService> webdata_service)
     : webdata_service_(std::move(webdata_service)) {
   CHECK(webdata_service_);
+  webdata_service_observer_.Observe(webdata_service_.get());
   LoadLoyaltyCards();
 }
 
@@ -41,6 +42,12 @@ void PassesDataManager::LoadLoyaltyCards() {
         }
       },
       weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PassesDataManager::OnAutofillChangedBySync(syncer::DataType data_type) {
+  if (data_type == syncer::DataType::AUTOFILL_LOYALTY_CARD) {
+    LoadLoyaltyCards();
+  }
 }
 
 }  // namespace autofill

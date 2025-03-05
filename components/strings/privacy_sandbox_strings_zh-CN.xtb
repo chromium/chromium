@@ -30,7 +30,6 @@
 <translation id="33479675708419823">在您登录 Chrome 后，此设置有助于确保您的 IP 地址不会外泄。如果 Chrome 怀疑某个网站可能跟踪您，或许会通过隐私保护服务器来发送您的某些流量。详细了解<ph name="LINK_BEGIN" />“IP 地址保护”的运作方式<ph name="LINK_END" /></translation>
 <translation id="3425311689852411591">依赖第三方 Cookie 的网站应该会按预期运行</translation>
 <translation id="3442071090395342573">Chromium 会在 30 天后删除您与网站分享的所有活动数据。如果您再次访问某个网站，该网站可能会重新出现在列表中。详细了解如何<ph name="BEGIN_LINK" />在 Chromium 中管理广告隐私权设置<ph name="END_LINK" />。</translation>
-<translation id="3462771089292989917">您访问的网站可以向 Chrome 请求主题信息，这些信息有助于限制网站及其广告合作伙伴可以了解您的哪些信息，用于向您展示个性化广告</translation>
 <translation id="3467081767799433066">启用广告效果衡量功能后，为了衡量各自的广告效果，网站之间会分享有限类型的数据，例如您在访问某个网站后是否购买了商品。</translation>
 <translation id="3529311220178827364">详细了解如何隐藏您的 IP 地址</translation>
 <translation id="3624583033347146597">选择第三方 Cookie 偏好设置</translation>
@@ -58,7 +57,6 @@
 <translation id="4894490899128180322">如果某个网站无法按预期运行，您可尝试临时允许您访问的特定网站使用第三方 Cookie</translation>
 <translation id="5055880590417889642">网站可以使用您的活动记录等多种信息来建议广告。关闭网站推荐广告功能后，网站仍可以向您展示广告，但这些广告可能不够个性化。详细了解</translation>
 <translation id="5117284457376555514">网站无法使用第三方 Cookie 为您提供个性化内容和广告，也无法了解您在其他网站上的操作，除非您允许相关网站访问第三方 Cookie。部分网站功能可能无法按预期运行。</translation>
-<translation id="5159179910795721586">您访问的网站可以向 Chromium 请求主题信息，这些信息有助于限制网站及其广告合作伙伴可以了解您的哪些信息，用于向您展示个性化广告</translation>
 <translation id="5165490319523240316">网站及其广告合作伙伴可以根据您的活动记录（例如您在访问网站时的具体行为），在其他网站上向您展示个性化广告。例如，如果您访问某个网站来查找晚餐食谱，该网站可能会推测您对烹饪感兴趣。之后，另一个网站可能会向您展示第一个网站建议的杂货配送服务广告。</translation>
 <translation id="544199055391706031">网站可以使用您的活动记录等多种信息来建议广告。关闭网站推荐广告功能后，网站仍可以向您展示广告，但这些广告可能不够个性化。详细了解<ph name="BEGIN_LINK" />网站推荐广告<ph name="END_LINK" />。</translation>
 <translation id="5574580428711706114">Google 要求公司公开声明，他们不会跨网站使用此类数据跟踪您。公司有责任告知您他们会如何使用您的数据。<ph name="BEGIN_LINK1" />详情请参阅《隐私权政策》<ph name="LINK_END1" />。</translation>

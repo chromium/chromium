@@ -516,8 +516,8 @@ suite('SiteEntry', function() {
   });
 
   test(
-      'related website set information showed when available',
-       function() {
+      'related website set information showed when not in filtered view',
+      function() {
         // Set unowned site group.
         testElement.siteGroup = structuredClone(TEST_SINGLE_SITE_GROUP);
         flush();
@@ -539,39 +539,44 @@ suite('SiteEntry', function() {
         assertEquals(
             '· ' + loadTimeData.getString('allSitesRwsMembershipLabel'),
             rwsMembershipLabel.innerText.trim());
+
+        testElement.isRwsFiltered = true;
+        flush();
+        // Label should be hidden in filtered view.
+        assertTrue(rwsMembershipLabel.hidden);
       });
 
-      // TODO(crbug.com/396463421): Remove once RelatedWebsiteSetsUi launched.
-      test(
-        'related website set information showed when available and isRelatedWebsiteSetsV2UiEnabled disabled',
-        async function() {
-          loadTimeData.overrideValues({
-            isRelatedWebsiteSetsV2UiEnabled: false,
-          });
-          await createPage();
-          // Set unowned site group.
-          testElement.siteGroup = structuredClone(TEST_SINGLE_SITE_GROUP);
-          flush();
+  // TODO(crbug.com/396463421): Remove once RelatedWebsiteSetsUi launched.
+  test(
+      'related website set information showed when available and isRelatedWebsiteSetsV2UiEnabled disabled',
+      async function() {
+        loadTimeData.overrideValues({
+          isRelatedWebsiteSetsV2UiEnabled: false,
+        });
+        await createPage();
+        // Set unowned site group.
+        testElement.siteGroup = structuredClone(TEST_SINGLE_SITE_GROUP);
+        flush();
 
-          const rwsMembershipLabel = testElement.$.rwsMembership;
-          // Assert related website set membership information when no rws owner
-          // is set.
-          assertTrue(rwsMembershipLabel.hidden);
+        const rwsMembershipLabel = testElement.$.rwsMembership;
+        // Assert related website set membership information when no rws owner
+        // is set.
+        assertTrue(rwsMembershipLabel.hidden);
 
-          // Update related website set information and set siteGroup
-          const fooSiteGroup = structuredClone(TEST_SINGLE_SITE_GROUP);
-          fooSiteGroup.rwsOwner = 'foo.com';
-          fooSiteGroup.rwsNumMembers = 1;
-          testElement.siteGroup = fooSiteGroup;
-          flush();
+        // Update related website set information and set siteGroup
+        const fooSiteGroup = structuredClone(TEST_SINGLE_SITE_GROUP);
+        fooSiteGroup.rwsOwner = 'foo.com';
+        fooSiteGroup.rwsNumMembers = 1;
+        testElement.siteGroup = fooSiteGroup;
+        flush();
 
         await browserProxy.whenCalled('getRwsMembershipLabel');
-          // Assert related website set membership information is set correctly.
-          assertFalse(rwsMembershipLabel.hidden);
-          assertEquals(
-              '· 1 site in foo.com\'s group',
-              rwsMembershipLabel.innerText.trim());
-        });
+        // Assert related website set membership information is set correctly.
+        assertFalse(rwsMembershipLabel.hidden);
+        assertEquals(
+            '· 1 site in foo.com\'s group',
+            rwsMembershipLabel.innerText.trim());
+      });
 
   test('related website set policy shown when managed key is true', function() {
     // Set site group with related website set information.

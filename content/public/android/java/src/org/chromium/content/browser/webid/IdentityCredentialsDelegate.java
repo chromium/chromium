@@ -37,12 +37,27 @@ public class IdentityCredentialsDelegate {
     // Arbitrary request code that is used when invoking the GMSCore API.
     private static final int REQUEST_CODE_DIGITAL_CREDENTIALS = 777;
 
+    public static class DigitalCredential {
+        @Nullable public String mProtocol;
+        public String mData;
+
+        public DigitalCredential(@Nullable String protocol, byte[] data) {
+            this.mProtocol = protocol;
+            this.mData = new String(data);
+        }
+
+        public DigitalCredential(@Nullable String protocol, String data) {
+            this.mProtocol = protocol;
+            this.mData = data;
+        }
+    }
+
     public @Nullable Promise<String> get(String origin, String request) {
         // TODO(crbug.com/40257092): implement this.
         return null;
     }
 
-    public Promise<byte[]> get(Activity window, String origin, String request) {
+    public Promise<DigitalCredential> get(Activity window, String origin, String request) {
         final IdentityCredentialClient client;
         try {
             client = IdentityCredentialManager.Companion.getClient(window);
@@ -52,7 +67,7 @@ public class IdentityCredentialsDelegate {
             return Promise.rejected();
         }
 
-        final Promise<byte[]> result = new Promise<byte[]>();
+        final Promise<DigitalCredential> result = new Promise<DigitalCredential>();
 
         ResultReceiver resultReceiver =
                 new ResultReceiver(new Handler(Looper.getMainLooper())) {
@@ -67,7 +82,10 @@ public class IdentityCredentialsDelegate {
                                     response.getCredential()
                                             .getData()
                                             .getByteArray("identityToken");
-                            result.fulfill(Objects.requireNonNull(token));
+                            // TODO(crbug.com/336329411): Extract the protocol from the `response`,
+                            // instead of always using null.
+                            result.fulfill(
+                                    new DigitalCredential(null, Objects.requireNonNull(token)));
                         } catch (Exception e) {
                             Log.e(TAG, e.toString());
 

@@ -1370,7 +1370,6 @@
 <translation id="1936157145127842922">Ցուցադրել պանակում</translation>
 <translation id="1936931585862840749">Թվերով նշեք՝ քանի օրինակ է անհրաժեշտ տպել (1-ից <ph name="MAX_COPIES" />)։</translation>
 <translation id="1937774647013465102">Կոնտեյների կառուցվածքի <ph name="ARCHITECTURE_CONTAINER" /> տեսակը չի կարող ներմուծվել այս սարք, քանի որ այն <ph name="ARCHITECTURE_DEVICE" /> է: Կարող եք փորձել վերականգնել այս կոնտեյները մեկ այլ սարքում կամ բացել կոնտեյների պատկերը «Ֆայլեր» հավելվածում և օգտվել ֆայլերից:</translation>
-<translation id="1938116692670653897">Ընթացիկ գունային թեման</translation>
 <translation id="1938351510777341717">Արտաքին Command ստեղն</translation>
 <translation id="1940221956626514677">Հարմարեցնել գործիքագոտին</translation>
 <translation id="1940546824932169984">Միացված սարքեր</translation>
@@ -10138,6 +10137,7 @@
 <translation id="8195854162863398249">Անջատել «<ph name="FEATURE_NAME" />» գործառույթը</translation>
 <translation id="8195920051450756553">Հապաղումը նախքան նույն ստեղնի նորից ակտիվացումը</translation>
 <translation id="8197673340773315084">Ավելացրեք անվանում կամ պիտակ, օրինակ՝ «Աշխատանքային» կամ «Անձնական»</translation>
+<translation id="8198181050118789419">Թեմա՝ <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Ներդիրի հեռարձակում</translation>
 <translation id="8199300056570174101">Ցանցի (ծառայության) և սարքի կարգավորումներ</translation>
 <translation id="8200772114523450471">Շարունակել</translation>

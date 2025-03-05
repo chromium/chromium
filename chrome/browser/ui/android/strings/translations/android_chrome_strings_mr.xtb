@@ -146,6 +146,7 @@
 <translation id="160275202205869636">सुरू असेल, तेव्हा Google खाते मधील डेटा वापरा आणि सेव्ह करा. बंद असेल, तेव्हा डेटा फक्त या डिव्हाइसमध्ये सेव्ह केला जातो.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 निवडलेला आयटम काढून टाका}other{# निवडलेले आयटम काढून टाका}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{१ बुकमार्क आणि इतर आयटम फक्त या डिव्हाइसवर सेव्ह केले आहेत. ते इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या <ph name="ACCOUNT_EMAIL" /> या Google खाते मध्ये सेव्ह करा.}other{# बुकमार्क आणि इतर आयटम फक्त या डिव्हाइसवर सेव्ह केले आहेत. ते इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या <ph name="ACCOUNT_EMAIL" /> या Google खाते मध्ये सेव्ह करा.}}</translation>
+<translation id="1639239467298939599">लोड करत आहे</translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउझिंग</translation>
 <translation id="164269334534774161">तुम्ही <ph name="CREATION_TIME" /> पासून या पेजची ऑफलाइन प्रत पाहत आहात</translation>
 <translation id="1644574205037202324">इतिहास</translation>
@@ -549,6 +550,7 @@
 <translation id="3566639033325271639">सेटिंग्ज अपडेट करा</translation>
 <translation id="3568945271227339929">एकही पासवर्ड धोक्यात नाही</translation>
 <translation id="357465026686164600">सिक्युरिटी की म्हणून फोन</translation>
+<translation id="3575464060651642446">या डिव्हाइसवरील पासवर्ड तपासत आहे…</translation>
 <translation id="3577473026931028326">काहीतरी चूक झाली. पुन्हा प्रयत्न करा.</translation>
 <translation id="3577558748185201054">तुमची स्वारस्ये आणि प्राधान्ये व्यवस्थापित करा</translation>
 <translation id="3587482841069643663">सर्व</translation>

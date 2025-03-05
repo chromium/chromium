@@ -337,12 +337,10 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, HoldbackHistogramTest) {
            {{permissions::feature_params::kPermissionPredictionsV2HoldbackChance
                  .name,
              "0"}}},
-          {permissions::features::kPermissionOnDeviceNotificationPredictions,
-           {{permissions::feature_params::
-                 kPermissionOnDeviceNotificationPredictionsHoldbackChance.name,
-             "0"}}},
       },
       {});
+  prediction_selector.tflite_model_holdback_probability_ = 0;
+
   EXPECT_EQ(false, prediction_selector.ShouldHoldBack(
                        /*is_on_device=*/true,
                        permissions::RequestType::kNotifications));
@@ -390,12 +388,9 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, HoldbackHistogramTest) {
            {{permissions::feature_params::kPermissionPredictionsV2HoldbackChance
                  .name,
              "1"}}},
-          {permissions::features::kPermissionOnDeviceNotificationPredictions,
-           {{permissions::feature_params::
-                 kPermissionOnDeviceNotificationPredictionsHoldbackChance.name,
-             "1"}}},
       },
       {});
+  prediction_selector.tflite_model_holdback_probability_ = 1;
 
   EXPECT_EQ(true, prediction_selector.ShouldHoldBack(
                       /*is_on_device=*/true,

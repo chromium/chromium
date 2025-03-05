@@ -21,7 +21,10 @@
 @protocol AccountMenuMediatorDelegate <SyncErrorSettingsCommandHandler>
 
 // Requests to dismiss the account menu.
-- (void)mediatorWantsToBeDismissed:(AccountMenuMediator*)mediator;
+- (void)mediatorWantsToBeDismissed:(AccountMenuMediator*)mediator
+                        withResult:(SigninCoordinatorResult)result
+                    signedIdentity:(id<SystemIdentity>)signedIdentity;
+
 // Starts the sign-in flow. Then call `completion`, with a parameter stating
 // whether the the sign-in was done.
 - (AuthenticationFlow*)

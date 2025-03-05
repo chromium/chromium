@@ -162,4 +162,71 @@ TEST_F(ReportingEventRouterTest, TestOnLoginEventFederated) {
                                         federated_origin, u"Fakeuser");
 }
 
+TEST_F(ReportingEventRouterTest, TestOnPasswordBreach) {
+  test::SetOnSecurityEventReporting(
+      profile_->GetPrefs(), /*enabled=*/true,
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/{{kKeyPasswordBreachEvent, {"*"}}});
+
+  test::EventReportValidatorBase validator(client_.get());
+  validator.ExpectPasswordBreachEvent(
+      "SAFETY_CHECK",
+      {
+          {"https://first.example.com/", u"*****"},
+          {"https://second.example.com/", u"*****@gmail.com"},
+      },
+      profile_->GetProfileUserName(), GetProfileIdentifier());
+
+  reporting_event_router_->OnPasswordBreach(
+      "SAFETY_CHECK",
+      {
+          {GURL("https://first.example.com"), u"first_user_name"},
+          {GURL("https://second.example.com"), u"second_user_name@gmail.com"},
+      });
+}
+
+TEST_F(ReportingEventRouterTest, TestOnPasswordBreachNoMatchingUrlPattern) {
+  test::SetOnSecurityEventReporting(
+      profile_->GetPrefs(), /*enabled=*/true,
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/
+      {{kKeyPasswordBreachEvent, {"notexample.com"}}});
+
+  test::EventReportValidatorBase validator(client_.get());
+  validator.ExpectNoReport();
+
+  reporting_event_router_->OnPasswordBreach(
+      "SAFETY_CHECK",
+      {
+          {GURL("https://first.example.com"), u"first_user_name"},
+          {GURL("https://second.example.com"), u"second_user_name"},
+      });
+}
+
+TEST_F(ReportingEventRouterTest,
+       TestOnPasswordBreachPartiallyMatchingUrlPatterns) {
+  test::SetOnSecurityEventReporting(
+      profile_->GetPrefs(), /*enabled=*/true,
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/
+      {{kKeyPasswordBreachEvent, {"secondexample.com"}}});
+
+  // The event is only enabled on secondexample.com, so expect only the
+  // information related to that origin to be reported.
+  test::EventReportValidatorBase validator(client_.get());
+  validator.ExpectPasswordBreachEvent(
+      "SAFETY_CHECK",
+      {
+          {"https://secondexample.com/", u"*****"},
+      },
+      profile_->GetProfileUserName(), GetProfileIdentifier());
+
+  reporting_event_router_->OnPasswordBreach(
+      "SAFETY_CHECK",
+      {
+          {GURL("https://firstexample.com"), u"first_user_name"},
+          {GURL("https://secondexample.com"), u"second_user_name"},
+      });
+}
+
 }  // namespace enterprise_connectors

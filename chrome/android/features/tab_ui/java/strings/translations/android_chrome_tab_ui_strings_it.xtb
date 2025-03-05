@@ -49,7 +49,6 @@ Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<p
 <translation id="2671423594960767771">Condividi gruppo</translation>
 <translation id="2677748264148917807">Esci</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{Ultimo aggiornamento: <ph name="NUM_WEEKS_ONE" /> settimana fa}other{Ultimo aggiornamento: <ph name="NUM_WEEKS_MANY" /> settimane fa}}</translation>
-<translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> scheda aggiunta, <ph name="ANY_CHANGED" /> modificata, <ph name="ANY_CLOSED" /> chiusa}other{<ph name="MANY_ADDED" /> schede aggiunte, <ph name="ANY_CHANGED" /> modificate, <ph name="ANY_CLOSED" /> chiuse}}</translation>
 <translation id="2753877351161418426">{NUM_HOURS,plural, =1{Ultimo aggiornamento: <ph name="NUM_HOURS_ONE" /> ora fa}other{Ultimo aggiornamento: <ph name="NUM_HOURS_MANY" /> ore fa}}</translation>
 <translation id="2755485474385016903">Le modifiche apportate sono visibili a tutti i membri del gruppo</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Creato <ph name="NUM_HOURS_ONE" /> ora fa}other{Creato <ph name="NUM_HOURS_MANY" /> ore fa}}</translation>
@@ -66,7 +65,6 @@ Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<p
 <translation id="3078350928901129212">Icona del colore del gruppo di schede <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">Elenco dei gruppi di schede chiuso</translation>
 <translation id="3194464645767632461">valutazione</translation>
-<translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> scheda aggiunta, <ph name="ANY_CHANGED" /> modificata}other{<ph name="MANY_ADDED" /> schede aggiunte, <ph name="ANY_CHANGED" /> modificate}}</translation>
 <translation id="3328308545011660196">Suggerimento: <ph name="NUMBER_OF_TABS" /> schede sembrano correlate. Vuoi raggrupparle?</translation>
 <translation id="3547352561153509682">Il gruppo verrà eliminato da tutti i dispositivi su cui è stato eseguito l'accesso a <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Nascondi finestra di dialogo schede non attive</translation>
@@ -86,7 +84,6 @@ Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<p
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Chiudi il gruppo <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />.}other{Chiudi il gruppo <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">Viola</translation>
 <translation id="427987768447457592">Nuovo gruppo di schede</translation>
-<translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> scheda modificata, <ph name="ANY_CLOSED" /> chiusa}other{<ph name="MANY_CHANGED" /> schede modificate, <ph name="ANY_CLOSED" /> chiuse}}</translation>
 <translation id="4371591986692297148">Non attivo</translation>
 <translation id="4431937619879060901">Perderai immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />", che verrà eliminato da tutti i tuoi dispositivi</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{Ultimo aggiornamento: <ph name="NUM_DAYS_ONE" /> giorno fa}other{Ultimo aggiornamento: <ph name="NUM_DAYS_MANY" /> giorni fa}}</translation>
@@ -110,7 +107,6 @@ Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<p
 <translation id="5073204694187207510">Nascondi la griglia a schermo intero</translation>
 <translation id="5076161749301278626">Vuoi visualizzare le recensioni sul negozio?</translation>
 <translation id="5094423602314093681">Rimuovere le schede ed eliminare il gruppo?</translation>
-<translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> scheda aggiunta}other{<ph name="MANY_ADDED" /> schede aggiunte}}</translation>
 <translation id="5161254044473106830">Titolo obbligatorio</translation>
 <translation id="5339733443032484186">Ultima scheda</translation>
 <translation id="5380159289133845234">Archivia le schede duplicate</translation>
@@ -148,7 +144,6 @@ Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<p
 <translation id="6589356853295569750">Avviso sulle modifiche al gruppo di schede condiviso aperto a schermo intero</translation>
 <translation id="6590332670428149473">Apri il menu Azioni del gruppo di schede condiviso <ph name="TITLE_OF_GROUP" />, colore <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Mostrami</translation>
-<translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> scheda modificata}other{<ph name="MANY_CHANGED" /> schede modificate}}</translation>
 <translation id="6694634756612002311">Gestisci condivisione</translation>
 <translation id="6744956528665271406">Modifica il colore del gruppo</translation>
 <translation id="6856809498882026482">Nascondi modalità di selezione multipla</translation>
@@ -199,7 +194,6 @@ Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<p
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{Ultimo aggiornamento: <ph name="NUM_MONTHS_ONE" /> mese fa}other{Ultimo aggiornamento: <ph name="NUM_MONTHS_MANY" /> mesi fa}}</translation>
 <translation id="8398929769197326728">Nuova cartella - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Impostazioni</translation>
-<translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> scheda aggiunta, <ph name="ANY_CLOSED" /> chiusa}other{<ph name="MANY_ADDED" /> schede aggiunte, <ph name="ANY_CLOSED" /> chiuse}}</translation>
 <translation id="8633025649649592204">Attività recente</translation>
 <translation id="870736955561925754">Chiudere la scheda ed eliminare il gruppo?</translation>
 <translation id="8712637175834984815">Ok</translation>

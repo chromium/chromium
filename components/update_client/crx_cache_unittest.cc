@@ -59,7 +59,7 @@ class CrxCacheTest : public testing::Test {
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
   base::FilePath TempPath(const std::string& basename) {
-    return temp_dir_.GetPath().AppendASCII(basename);
+    return temp_dir_.GetPath().AppendUTF8(basename);
   }
 
   base::FilePath MakeFile() {

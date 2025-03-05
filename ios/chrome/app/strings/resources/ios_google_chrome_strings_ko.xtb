@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">비밀번호가 <ph name="EMAIL" />의 Google 비밀번호 관리자에 저장됩니다.</translation>
 <translation id="1146503048444965320">Chrome에서 새 탭 열기</translation>
 <translation id="1166460004393506534">Chrome에서 인터넷 사용 기록 삭제</translation>
+<translation id="1171255741903316750">'Chrome 종료 시 시크릿 탭 잠금'을 사용 설정합니다.</translation>
 <translation id="1179527450541388808">iPad의 홈 화면 도크에서 Chrome에 더 빠르게 액세스하세요.</translation>
 <translation id="1180362651362502943">Google 계정의 Chrome 데이터를 계속 사용하세요.</translation>
 <translation id="1200396280085622191">언제든지 메시지와 기타 앱에서 링크를 탭하여 Chrome을 사용합니다.</translation>
@@ -45,6 +46,7 @@
 <translation id="1917964099031477364">이 계정 및 저장되지 않은 모든 데이터가 Chrome 및 이 기기의 기타 Google 앱에서 삭제됩니다.</translation>
 <translation id="1919130412786645364">Chrome 로그인 허용</translation>
 <translation id="1965935827552890526">열려 있는 다른 Chrome 창에서 진행 중이던 작업을 완료하세요.</translation>
+<translation id="1973910962341002002">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" 설정에서 'Chrome'을 사용 설정하세요</translation>
 <translation id="1984705450038014246">Chrome 데이터 동기화</translation>
 <translation id="1987779152850321833">아래의 추천 작업을 완료하여 Chrome을 최대한 활용하세요.</translation>
 <translation id="2055826352861631739">iPad에서 Chrome을 기본 브라우저로 사용</translation>
@@ -96,10 +98,13 @@
 <translation id="3282568296779691940">Chrome에 로그인</translation>
 <translation id="3303503998967553377">iOS에서 Chrome 작업 사용</translation>
 <translation id="3348862487678490430">Chrome에 읽기 목록 항목 추가</translation>
+<translation id="3357827134511189025">Chrome 자동 완성을 사용하여 저장된 비밀번호 및 패스키로 모든 앱에서 로그인하세요</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Chrome을 {THRESHOLD}분 동안 사용하지 않으면 유휴 상태가 됩니다}other{Chrome을 {THRESHOLD}분 동안 사용하지 않으면 유휴 상태가 됩니다}}</translation>
 <translation id="3367797402528056312">Chrome 설정 완료</translation>
 <translation id="3371064404604898522">Chrome을 기본 브라우저로 설정</translation>
 <translation id="3399930248910934354">Chrome 설정 열기</translation>
+<translation id="3440830787838130530">Google 비밀번호 관리자에서 가족 그룹과 비밀번호 사본을 간편하고 안전하게 공유하세요</translation>
+<translation id="3460369101684070455">저장된 비밀번호를 다른 앱에서 쉽게 사용하려면 Chrome 자동 완성 기능을 선택하세요</translation>
 <translation id="3472587960215700950">Chrome에서 Google 지도를 사용하여 감지된 주소의 경로 및 지역 정보를 제공합니다.</translation>
 <translation id="3503014945441706099">이 Chrome 프로필에 향상된 세이프 브라우징도 사용해 보세요.</translation>
 <translation id="3522659714780527202">Chrome을 사용하는 어느 곳에서나 탭을 확인하려면 동기화를 사용 설정하세요.</translation>
@@ -181,6 +186,7 @@
 <translation id="5998675059699164418">조직에서 Chrome을 사용하려면 로그인해야 합니다.</translation>
 <translation id="6021312115739110405">Google에서 나를 위해 제공하는 맞춤 피드이며, 뉴스, 스포츠, 날씨 정보를 포함합니다</translation>
 <translation id="6022659036123304283">나만의 Chrome 만들기</translation>
+<translation id="6132075343662013154">Chrome에서 비밀번호 저장을 제안합니다.</translation>
 <translation id="6132149203299792222">Google 계정으로 로그인하여 비밀번호, 북마크 등을 동기화하세요.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Chrome에서 검색</translation>
@@ -228,6 +234,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7061455974939528301">Chrome 아이콘을 길게 누른 후 '홈 화면 편집' 클릭</translation>
 <translation id="7065813315247345131">Chrome을 도크로 이동</translation>
 <translation id="7124339256045485976">Chrome을 최신 버전으로 업데이트하세요</translation>
+<translation id="7145599899567697473">Chrome에서 비밀번호 저장 및 자동 완성</translation>
 <translation id="7161390184744336561">Chrome이 최신 버전이 아닙니다.</translation>
 <translation id="7165736900384873061">Chrome QR 스캐너 사용 시작</translation>
 <translation id="7175129790242719365">Chrome 도움말: Chrome에 로그인하기</translation>
@@ -261,6 +268,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7693590760643069321">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chrome을 사용할 수 있습니다.</translation>
 <translation id="7698568245838009292">Chrome에서 카메라에 액세스하려고 함</translation>
 <translation id="7707877166818730835">Chrome에서 최신 내 탭 열기</translation>
+<translation id="7747746207470479571">Chrome 자동 완성으로 비밀번호 및 패스키에 쉽게 액세스하세요</translation>
 <translation id="776305366874821582">iPhone의 홈 화면 도크에서 Chrome에 더 빠르게 액세스하세요.</translation>
 <translation id="7780154209050837198">Chrome을 최대한 활용하려면 Google 계정으로 Chrome에 로그인하세요</translation>
 <translation id="7787205077729386167">iOS에서 Chrome Settings(Chrome 설정)를 열고 'Default Browser App(기본 브라우저 앱)'을 탭한 다음 Chrome을 선택합니다</translation>
@@ -281,6 +289,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8136856065410661948">Chrome 및 Google 렌즈에서 Apple 캘린더 일정을 만들 때 사용됩니다.</translation>
 <translation id="8154120522323162874">브라우저 설정을 계속하여 Chrome을 최대한 활용해 보세요.</translation>
 <translation id="8160472928944011082">Chrome을 업데이트할 수 없습니다.</translation>
+<translation id="8245080522851805544">Chrome 종료 시 기기 인증을 통해 인터넷 사용 기록을 비공개로 유지하세요</translation>
 <translation id="8248887045858762645">Chrome 도움말</translation>
 <translation id="8265730590513812063">Chrome 메뉴 열기</translation>
 <translation id="8317674518145175158">결제 수단 및 주소는 암호화되지 않습니다. Chrome 방문 기록은 동기화되지 않습니다.
@@ -324,5 +333,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="9181628561061032322">Chrome 최근 탭을 엽니다.</translation>
 <translation id="948597495737267756">Chrome 방문 기록 페이지를 엽니다.</translation>
 <translation id="97300214378190234">언제든지 다른 앱에서 링크를 탭하여 Chrome을 사용합니다.</translation>
+<translation id="997929539742564806">Chrome에서 비밀번호 및 패스키를 자동 완성하여 앱과 사이트에 빠르게 로그인하세요.</translation>
 <translation id="998677222109959694">Chrome 설정 관리</translation>
 </translationbundle>

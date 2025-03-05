@@ -22,6 +22,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1058009965971887428">Fornecer feedback</translation>
 <translation id="1059120031266247284">Compartilhado com você</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> com botão de remoção</translation>
 <translation id="1062407476771304334">Substituir</translation>
 <translation id="1073899992769346247">Substitua ou recarregue a bateria</translation>
 <translation id="1081015718268701546">No momento, não há suporte para os apps do Linux. Outros apps serão salvos.</translation>
@@ -1228,6 +1229,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="5043679421800073804">Clicar ou tocar no último ícone da estante</translation>
 <translation id="504465286040788597">Parágrafo anterior</translation>
 <translation id="5045550434625856497">Senha incorreta</translation>
+<translation id="5056587122125565772">Criar imagem</translation>
 <translation id="5058794129231928255">Não foi possível criar o documento Google</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Você receberá uma notificação se falar com o som desativado. O áudio nunca é enviado para fora do dispositivo.</translation>
@@ -1276,6 +1278,7 @@ Também é possível usar o atalho do teclado. Primeiro, destaque o texto e depo
 <translation id="5222676887888702881">Sair</translation>
 <translation id="5228195526683428788">Divisor de tela</translation>
 <translation id="5229343007215035173">Ativar/desativar a Tela de privacidade</translation>
+<translation id="5229860525743792999">Remover <ph name="ITEM_LABEL" /> do grupo sugerido</translation>
 <translation id="5230516054153933099">Janela</translation>
 <translation id="5234764350956374838">Dispensar</translation>
 <translation id="523505283826916779">Configurações de acessibilidade</translation>
@@ -1758,6 +1761,7 @@ Nova instalação</translation>
 <translation id="6757237461819837179">Nenhuma mídia em reprodução</translation>
 <translation id="6760438044935091345">Painel de jogo</translation>
 <translation id="6768043681523654438">armazenamento</translation>
+<translation id="6769195697113506406">Imagem inserida</translation>
 <translation id="6777216307882431711">Carregando dispositivos USB-C conectados</translation>
 <translation id="6781002679438061620">Espaço de trabalho 9</translation>
 <translation id="6782182743534150858">Espaço de trabalho 13</translation>
@@ -1984,6 +1988,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7571361473021531288">Bateria em <ph name="BATTERY_PERCENTAGE" />% | Tempo restante: <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Janela ativa fixada à direita.</translation>
 <translation id="7579778809502851308">Captura de tela</translation>
+<translation id="7588317312481506627">Copiada para a área de transferência.</translation>
 <translation id="7593891976182323525">Pesquisar ou Shift</translation>
 <translation id="7598054670902114203">Resumo do uso da CPU: <ph name="CPU_USEAGE" />%. Temperatura de <ph name="TEMPERATURE" /> graus Celsius, velocidade atual: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Inserindo o resultado selecionado</translation>
@@ -2178,6 +2183,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8155628902202578800">Abrir a caixa de diálogo de informações da conta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Usando <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Conteúdo</translation>
+<translation id="81817143961839203">Falha na inserção da imagem</translation>
 <translation id="8185090165691050712">Ativar/desativar o menu para redimensionar o modo de bloqueio</translation>
 <translation id="8192727139462702395">Quando você desativar o Bluetooth, estes dispositivos externos serão desconectados do <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Transmitindo guia</translation>
@@ -2256,6 +2262,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> o recurso <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Pressione Alt+Pesquisar ou Shift para cancelar.</translation>
 <translation id="8480418399907765580">Mostrar barra de ferramentas </translation>
+<translation id="8487660088084188539">Quando você ativa esses recursos, o texto de entrada, o conteúdo do documento e o URL da página da Web podem ser enviados aos servidores do Google. Essas informações são usadas para gerar sugestões de texto e resumos, responder a perguntas e melhorar o produto, de acordo com os <ph name="LINK_TO_SERVICE_TERMS" />. Não inclua informações pessoais, sensíveis ou confidenciais.</translation>
 <translation id="8487699605742506766">Ponto de acesso</translation>
 <translation id="8491237443345908933">Abrir link em uma nova guia</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> não é compatível com <ph name="SPECIFIED_RESOLUTION" />. A resolução foi modificada para <ph name="FALLBACK_RESOLUTION" />. Clique em "Confirmar" para manter as mudanças. As configurações anteriores serão restauradas em <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2325,6 +2332,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8725214031272624704">Mostrar lista de métodos de entrada disponíveis</translation>
 <translation id="8730621377337864115">Concluir</translation>
+<translation id="8731188831050207755">Falha no download de <ph name="FILE_NAME" />.</translation>
 <translation id="8731487213223706745">Término: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Ele pode estar tentando capturar sua digitação</translation>
 <translation id="8735678380411481005">Cor da luz de fundo do teclado</translation>

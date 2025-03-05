@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
 
-#import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/commerce/core/mock_shopping_service.h"
@@ -37,7 +36,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_collection_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_container_delegate.h"
-#import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/magic_stack_parcel_list_half_sheet_table_view_controller.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_variations_service.h"
 #import "ios/chrome/test/scoped_key_window.h"
@@ -122,23 +120,4 @@ TEST_F(ContentSuggestionsCoordinatorTest, TestLogEphemeralCardVisibility) {
                                                kPriceTrackingPromo];
   EXPECT_EQ(1, profile_->GetTestingPrefService()->GetInteger(
                    "ephemeral_pref_counter.price_tracking_promo_counter"));
-}
-
-// Tests that calling -seeMoreWasTappedForModuleType:kParcelTracking shows the
-// Parcel Tracking modal.
-TEST_F(ContentSuggestionsCoordinatorTest,
-       TestSeeMoreWasTappedForParcelTracking) {
-  [coordinator_ start];
-  [scoped_key_window_.Get()
-      setRootViewController:coordinator_.magicStackCollectionView];
-  [coordinator_ seeMoreWasTappedForModuleType:ContentSuggestionsModuleType::
-                                                  kParcelTracking];
-
-  UINavigationController* viewController =
-      base::apple::ObjCCastStrict<UINavigationController>(
-          coordinator_.magicStackCollectionView.presentedViewController);
-  ASSERT_EQ([MagicStackParcelListHalfSheetTableViewController class],
-            [viewController.topViewController class]);
-
-  [coordinator_ stop];
 }

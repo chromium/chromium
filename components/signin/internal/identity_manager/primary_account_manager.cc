@@ -302,14 +302,21 @@ PrimaryAccountManager::PrimaryAccountManager(
         prefs::kPrefsThemesSearchEnginesAccountStorageEnabled);
   }
 
-  // Clear the extensions explicit sign in pref if the feature flag is not
-  // enabled.
-  if (!switches::IsExtensionsExplicitBrowserSigninEnabled()) {
-    std::vector<AccountInfo> accounts_in_tracker_service =
-        account_tracker_service_->GetAccounts();
-    SigninPrefs signin_prefs = SigninPrefs(*prefs);
-    for (const auto& account : accounts_in_tracker_service) {
+  std::vector<AccountInfo> accounts_in_tracker_service =
+      account_tracker_service_->GetAccounts();
+  SigninPrefs signin_prefs(*prefs);
+
+  for (const auto& account : accounts_in_tracker_service) {
+    // Clear the extensions explicit sign in pref if the feature flag is not
+    // enabled.
+    if (!switches::IsExtensionsExplicitBrowserSigninEnabled()) {
       signin_prefs.SetExtensionsExplicitBrowserSignin(account.gaia, false);
+    }
+    // Clear the bookmarks explicit sign in pref if the feature flag is not
+    // enabled.
+    if (!base::FeatureList::IsEnabled(
+            switches::kSyncEnableBookmarksInTransportMode)) {
+      signin_prefs.SetBookmarksExplicitBrowserSignin(account.gaia, false);
     }
   }
 
@@ -811,6 +818,15 @@ void PrimaryAccountManager::ComputeExplicitBrowserSignin(
               event_details.GetCurrentState().primary_account.gaia;
           SigninPrefs(*client_->GetPrefs())
               .SetExtensionsExplicitBrowserSignin(current_gaia_id, true);
+        }
+        if (access_point == signin_metrics::AccessPoint::kBookmarkBubble &&
+            base::FeatureList::IsEnabled(
+                switches::kSyncEnableBookmarksInTransportMode)) {
+          // Record an explicit signin for bookmarks for this account only.
+          auto current_gaia_id =
+              event_details.GetCurrentState().primary_account.gaia;
+          SigninPrefs(*client_->GetPrefs())
+              .SetBookmarksExplicitBrowserSignin(current_gaia_id, true);
         }
       }
   }

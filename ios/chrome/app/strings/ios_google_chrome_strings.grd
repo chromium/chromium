@@ -775,9 +775,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       <message name="IDS_IOS_PARCEL_TRACKING_INFOBAR_PACKAGE_ALREADY_TRACKED_SUBTITLE" desc="Text for the subtitle string of the Parcel Tracking 'Package Already Tracked' infobar.">
         This package has already been tracked on Chrome.
       </message>
-      <message name="IDS_IOS_PARCEL_TRACKING_MODULE_HIDE_ALERT_DESCRIPTION" desc="Description for the alert dialog warning the user they are about to hide the parcel tracking module.">
-          If you hide "<ph name="Module_Name"><ex>Package Tracking</ex>$1</ph>", Chrome will no longer auto-track your future packages and will delete all your past package tracking data.
-      </message>
       <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_TITLE" desc="Title of the password bottom sheet. [iOS only]">
           Google Password Manager
       </message>

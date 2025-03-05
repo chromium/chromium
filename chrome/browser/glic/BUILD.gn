@@ -249,6 +249,7 @@ source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
+    "glic_annotation_manager_interactive_uitest.cc",
     "glic_border_view_interactive_uitest.cc",
     "glic_fre_controller_interactive_uitest.cc",
     "glic_settings_util_interactive_uitest.cc",

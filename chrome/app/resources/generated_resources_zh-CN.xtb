@@ -1361,7 +1361,6 @@
 <translation id="1936157145127842922">在文件夹中显示</translation>
 <translation id="1936931585862840749">请使用一个介于 1-<ph name="MAX_COPIES" /> 之间的数字来表明要打印多少份。</translation>
 <translation id="1937774647013465102">无法使用此设备（即 <ph name="ARCHITECTURE_DEVICE" />）导入容器架构类型 <ph name="ARCHITECTURE_CONTAINER" />。您既可尝试将此容器恢复到另一设备中，也可使用“文件”应用打开此容器映像内的文件以进行访问。</translation>
-<translation id="1938116692670653897">当前色彩主题</translation>
 <translation id="1938351510777341717">外部命令</translation>
 <translation id="1940221956626514677">自定义工具栏</translation>
 <translation id="1940546824932169984">已连接的设备</translation>
@@ -3798,6 +3797,7 @@
 <translation id="3670229581627177274">开启蓝牙</translation>
 <translation id="3670480940339182416">网站可以使用 V8 优化工具</translation>
 <translation id="3671764914317109892">使用日常用语搜索您的浏览记录。您还可以提出问题，系统会根据您的浏览记录提供答案。</translation>
+<translation id="3671982238795754537">详细了解通行密钥</translation>
 <translation id="3672681487849735243">检测到出厂错误</translation>
 <translation id="3673097791729989571">由 <ph name="SAML_DOMAIN" /> 托管的登录服务</translation>
 <translation id="3673287357837016374">您的 PIN 码已更新</translation>
@@ -4058,6 +4058,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{有 1 个扩展程序已获批准}other{有 # 个扩展程序已获批准}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">建议为 Linux 留出至少 <ph name="INSTALL_SIZE" /> 的空间。</translation>
+<translation id="3824203811509979971">总结内容或提问</translation>
 <translation id="3824621460022590830">设备注册令牌无效。请与设备所有者或管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="3824757763656550700">登录即可查看从其他设备打开的标签页</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{记住我对这个文件类型的选择：<ph name="FILE_TYPES" />}other{记住我对这些文件类型的选择：<ph name="FILE_TYPES" />}}</translation>
@@ -4243,6 +4244,7 @@
 <translation id="3948985214866944547">多数人阻止与此网站分享确切位置信息</translation>
 <translation id="394984172568887996">从 IE 中导入</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />可更安全地下载文件</translation>
+<translation id="3950479158728806902">自动创建通行密钥，以便更快地登录</translation>
 <translation id="3950820424414687140">登录</translation>
 <translation id="3950841222883198950">语音输入</translation>
 <translation id="3953834000574892725">我的账号</translation>
@@ -4711,6 +4713,7 @@
 <translation id="4289540628985791613">概述</translation>
 <translation id="428963538941819373">这些网站可以使用它们在您浏览 <ph name="HOST" /> 时保存的与您相关的信息</translation>
 <translation id="4289732974614035569">选择 PIN 码</translation>
+<translation id="4290526909608432059">对 Chrome 应用的支持即将停止。如需了解您有哪些选择，请与应用开发者或您的 IT 支持团队联系。</translation>
 <translation id="4290791284969893584">关闭网页后，您已启动的任务可能会无法完成</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> 位成员</translation>
 <translation id="4290898381118933198">滑动即可浏览各个页面</translation>
@@ -5171,6 +5174,7 @@
 <translation id="4624054169152573743">颜色主题</translation>
 <translation id="4625078469366263107">启用应用</translation>
 <translation id="4625905218692741757">默认颜色为灰色</translation>
+<translation id="4627107755957573804">允许网站和应用将现有账号升级为使用通行密钥</translation>
 <translation id="4627442949885028695">通过其他设备继续浏览</translation>
 <translation id="4628762811416793313">未完成 Linux 容器设置。请重试。</translation>
 <translation id="4629521233550547305">打开“<ph name="PROFILE_NAME" />”个人资料</translation>
@@ -5753,6 +5757,7 @@
 <translation id="5053233576223592551">添加用户名</translation>
 <translation id="505347685865235222">未命名的组 - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{您应立即更改该密码}other{您应立即更改这些密码}}</translation>
+<translation id="5056587122125565772">创建图片</translation>
 <translation id="5056950756634735043">正在连接到容器</translation>
 <translation id="5057110919553308744">当您点击此扩展程序时</translation>
 <translation id="5057127674016624293">扫描用时超出了预期</translation>
@@ -5863,6 +5868,7 @@
 <translation id="512642543295077915">搜索键 + 退格键</translation>
 <translation id="5126611267288187364">查看更改</translation>
 <translation id="5127620150973591153">安全配对号码：<ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">总结内容或提问。</translation>
 <translation id="5127881134400491887">管理网络连接</translation>
 <translation id="5127934926273826089">鲜花/礼品</translation>
 <translation id="5127986747308934633">您的管理员正在控制您的设备</translation>
@@ -8498,6 +8504,7 @@
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - 已连接到串行端口</translation>
 <translation id="7033616203784997570">所输入的内容不得超过 62 个字符</translation>
 <translation id="7034692021407794547">拥有结算管理权限的管理员必须先接受管理控制台的“Google Meet 设备”部分中的 Google Meet 设备服务条款。</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> 刚刚为您的账号创建了通行密钥。通行密钥提供了一种更快捷、更安全的登录方式。它们会保存在 <ph name="USER" /> 的 Google 密码管理工具中。<ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">建议为 Linux 留出 <ph name="DISK_SIZE" /> 的空间。如需增加可用空间，请从您的设备中删除文件。</translation>
 <translation id="7037157058268992880">忘记了 PIN 码</translation>
 <translation id="7037509989619051237">要试听的文字</translation>
@@ -10129,6 +10136,7 @@
 <translation id="8195854162863398249">停用“<ph name="FEATURE_NAME" />”功能</translation>
 <translation id="8195920051450756553">再次启用同一按键前的延迟时间</translation>
 <translation id="8197673340773315084">添加一个名称或标签，例如“工作”或“个人”</translation>
+<translation id="8198181050118789419">主题：<ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">正在投放标签页</translation>
 <translation id="8199300056570174101">网络（服务）和设备属性</translation>
 <translation id="8200772114523450471">继续</translation>
@@ -10539,6 +10547,7 @@
 <translation id="8477178913400731244">删除数据</translation>
 <translation id="8477241577829954800">被取代</translation>
 <translation id="8477384620836102176">基本信息(&amp;G)</translation>
+<translation id="8477446666255316832">下次登录更快速</translation>
 <translation id="8479176401914456949">代码无效。请重试。</translation>
 <translation id="8480869669560681089">由“<ph name="VENDOR_NAME" />”提供的未知设备</translation>
 <translation id="8481187309597259238">确认 USB 权限</translation>
@@ -11385,6 +11394,7 @@
 <translation id="9074739597929991885">蓝牙</translation>
 <translation id="9074836595010225693">USB鼠标已连接</translation>
 <translation id="9075413375877487220">增强型安全浏览功能不信任此扩展程序。</translation>
+<translation id="9075985558450420812">输入自定义提示或突出显示文本，以创建图片。</translation>
 <translation id="9076523132036239772">抱歉，您的电子邮件地址或密码无法进行验证。请先尝试连接到网络。</translation>
 <translation id="9076821103818989526">侧边栏</translation>
 <translation id="9076977315710973122">SMB 共享</translation>

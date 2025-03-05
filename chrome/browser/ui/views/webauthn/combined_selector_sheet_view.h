@@ -9,17 +9,23 @@
 #include <utility>
 
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
-#include "chrome/browser/ui/views/webauthn/hover_list_view.h"
+#include "chrome/browser/ui/views/webauthn/combined_selector_views.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 // Web Authentication request dialog sheet view for selecting a credential for
 // immediate mediation requests.
-class CombinedSelectorSheetView : public AuthenticatorRequestSheetView {
+class CombinedSelectorSheetView : public AuthenticatorRequestSheetView,
+                                  public CombinedSelectorRadioButton::Delegate {
   METADATA_HEADER(CombinedSelectorSheetView, AuthenticatorRequestSheetView)
 
  public:
+  static constexpr int kIllustrationHeight = 56;
+  static constexpr int kTopPadding = 8;
+  static constexpr int kMaxRowHeight = 72;
+  static constexpr int kRowGap = 4;
+
   explicit CombinedSelectorSheetView(
       std::unique_ptr<CombinedSelectorSheetModel> model);
 
@@ -35,7 +41,8 @@ class CombinedSelectorSheetView : public AuthenticatorRequestSheetView {
   std::pair<std::unique_ptr<views::View>, AutoFocus> BuildStepSpecificContent()
       override;
 
-  std::unique_ptr<HoverListView> BuildMechanismsView();
+  // CombinedSelectorRadioButton::Delegate
+  void OnRadioButtonChecked(int index) override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_COMBINED_SELECTOR_SHEET_VIEW_H_

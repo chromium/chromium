@@ -89,6 +89,10 @@ class SyncUserSettings {
   // false.
   virtual void SetSelectedType(UserSelectableType type, bool is_type_on) = 0;
 
+  // Resets an individual type selection to its default value. Must only be
+  // called for signed-in non-syncing users.
+  virtual void ResetSelectedType(UserSelectableType type) = 0;
+
   // Clears per account prefs for all users *except* the ones in the passed-in
   // `available_gaia_ids`.
   virtual void KeepAccountSettingsPrefsOnlyForUsers(

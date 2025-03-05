@@ -73,6 +73,7 @@ using net::test_server::BasicHttpResponse;
 using net::test_server::HttpMethod;
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
+using DigitalCredential = content::DigitalIdentityProvider::DigitalCredential;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::NiceMock;
@@ -1320,7 +1321,8 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
       .WillOnce(WithArg<3>(
           [kIdentityProviderResponse](
               DigitalIdentityProvider::DigitalIdentityCallback callback) {
-            std::move(callback).Run(kIdentityProviderResponse);
+            std::move(callback).Run(
+                DigitalCredential("openid4vp", kIdentityProviderResponse));
           }));
 
   EXPECT_EQ(kIdentityProviderResponse, RunDigitalIdentityValidRequest(shell()));
@@ -1363,7 +1365,8 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
       .WillOnce(WithArg<3>(
           [kIdentityProviderResponse](
               DigitalIdentityProvider::DigitalIdentityCallback callback) {
-            std::move(callback).Run(kIdentityProviderResponse);
+            std::move(callback).Run(
+                DigitalCredential("openid4vp", kIdentityProviderResponse));
           }));
 
   std::string script = base::StringPrintf(
@@ -1388,7 +1391,8 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
                 "NotAllowedError: Only one navigator.credentials.get request "
                 "may be outstanding at one time.",
                 ExtractJsError(RunDigitalIdentityValidRequest(shell())));
-            std::move(callback).Run("test-mdoc");
+            std::move(callback).Run(
+                DigitalCredential("openid4vp", "test-mdoc"));
           }));
 
   EXPECT_EQ("test-mdoc", RunDigitalIdentityValidRequest(shell()));
@@ -1430,7 +1434,8 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
   EXPECT_CALL(*digital_identity_provider, Get)
       .WillOnce(WithArg<3>(
           [](DigitalIdentityProvider::DigitalIdentityCallback callback) {
-            std::move(callback).Run("test-mdoc");
+            std::move(callback).Run(
+                DigitalCredential("openid4vp", "test-mdoc"));
           }));
 
   RunDigitalIdentityValidRequest(shell());

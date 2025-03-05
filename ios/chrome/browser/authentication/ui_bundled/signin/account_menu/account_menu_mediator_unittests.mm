@@ -307,7 +307,10 @@ TEST_P(AccountMenuMediatorTest, TestRemovePrimaryIdentity) {
       return;
     }
   }
-  OCMExpect([delegate_mock_ mediatorWantsToBeDismissed:mediator_]);
+  OCMExpect([delegate_mock_
+      mediatorWantsToBeDismissed:mediator_
+                      withResult:SigninCoordinatorResultInterrupted
+                  signedIdentity:nil]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);
   authentication_service_->SignOut(signin_metrics::ProfileSignout::kTest, ^(){
                                    });
@@ -568,7 +571,10 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedWithSuccessfulSwitch) {
 
   OCMExpect([delegate_mock_
       triggerAccountSwitchSnackbarWithIdentity:kSecondaryIdentity]);
-  OCMExpect([delegate_mock_ mediatorWantsToBeDismissed:mediator_]);
+  OCMExpect([delegate_mock_
+      mediatorWantsToBeDismissed:mediator_
+                      withResult:SigninCoordinatorResultSuccess
+                  signedIdentity:kSecondaryIdentity]);
   signinCallback(SigninCoordinatorResultSuccess);
 }
 
@@ -658,7 +664,10 @@ TEST_P(AccountMenuMediatorTest, TestSignoutFromTargetRect) {
                  }]]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);
   [mediator_ signOutFromTargetRect:rect];
-  OCMExpect([delegate_mock_ mediatorWantsToBeDismissed:mediator_]);
+  OCMExpect([delegate_mock_
+      mediatorWantsToBeDismissed:mediator_
+                      withResult:SigninCoordinatorResultCanceledByUser
+                  signedIdentity:nil]);
   completion(YES);
 }
 
@@ -695,7 +704,10 @@ TEST_P(AccountMenuMediatorTest, TestViewControllerWantToBeClosed) {
       return;
     }
   }
-  OCMExpect([delegate_mock_ mediatorWantsToBeDismissed:mediator_]);
+  OCMExpect([delegate_mock_
+      mediatorWantsToBeDismissed:mediator_
+                      withResult:SigninCoordinatorResultCanceledByUser
+                  signedIdentity:nil]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);
   [mediator_
       viewControllerWantsToBeClosed:(AccountMenuViewController*)consumer_mock_];

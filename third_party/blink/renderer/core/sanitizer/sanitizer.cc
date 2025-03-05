@@ -51,13 +51,13 @@ Sanitizer* Sanitizer::Create(const SanitizerConfig* sanitizer_config,
     // Default case: Set from builtin Sanitizer.
     sanitizer->setFrom(*(safe ? SanitizerBuiltins::GetDefaultSafe()
                               : SanitizerBuiltins::GetDefaultUnsafe()));
-  } else {
-    bool success = sanitizer->setFrom(sanitizer_config, safe);
-    // As currently implemented, all inputs will lead to successful creation
-    // of a Sanitizer instance. But the current spec discussion aims to
-    // introduce invalid configurations. Once we implement that, this will be
-    // replaced with `exception_state.ThrowTypeError(...); return nullptr;`.
-    CHECK(success);
+    return sanitizer;
+  }
+
+  bool success = sanitizer->setFrom(sanitizer_config, safe);
+  if (!success) {
+    exception_state.ThrowTypeError("Invalid Sanitizer configuration.");
+    return nullptr;
   }
   return sanitizer;
 }
@@ -108,6 +108,12 @@ void Sanitizer::allowElement(
         add_result.stored_value->value.insert(getFrom(attr));
       }
     }
+  }
+  // Remove dupes, if both allow and remove attribute lists were given.
+  if (allow_attrs_per_element_.Contains(name) &&
+      remove_attrs_per_element_.Contains(name)) {
+    allow_attrs_per_element_.find(name)->value.RemoveAll(
+        remove_attrs_per_element_.at(name));
   }
 }
 
@@ -519,7 +525,12 @@ bool Sanitizer::setFrom(const SanitizerConfig* config, bool safe) {
   }
   setComments(config->getCommentsOr(!safe));
   setDataAttributes(config->getDataAttributesOr(!safe));
-  return true;
+
+  // Error checking: The setter methods may drop invalid items (per API
+  // contract), but they will not "invent" any. Thus, we can count whether the
+  // number of items in the incoming dictionary matches the number of items in
+  // our config, and if they mismatch then there was an error.
+  return countItemsInSanitizerConfig(config) == countItemsInConfig();
 }
 
 void Sanitizer::setFrom(const Sanitizer& other) {
@@ -577,6 +588,57 @@ QualifiedName Sanitizer::getFrom(
     return g_null_name;
   }
   return getFrom(attr_namespace->name(), attr_namespace->namespaceURI());
+}
+
+int Sanitizer::countItemsInSanitizerConfig(
+    const SanitizerConfig* config) const {
+  int size =
+      (config->hasElements() ? config->elements().size() : 0) +
+      (config->hasRemoveElements() ? config->removeElements().size() : 0) +
+      (config->hasReplaceWithChildrenElements()
+           ? config->replaceWithChildrenElements().size()
+           : 0) +
+      (config->hasAttributes() ? config->attributes().size() : 0) +
+      (config->hasRemoveAttributes() ? config->removeAttributes().size() : 0);
+  if (config->hasElements()) {
+    for (const auto& element : config->elements()) {
+      size += countItemsInSanitizerElement(element);
+    }
+  }
+  return size;
+}
+
+int Sanitizer::countItemsInSanitizerElement(
+    const V8UnionSanitizerElementNamespaceWithAttributesOrString* element)
+    const {
+  CHECK(element);
+  if (!element->IsSanitizerElementNamespaceWithAttributes()) {
+    return 0;
+  }
+
+  const SanitizerElementNamespaceWithAttributes* element_dictionary =
+      element->GetAsSanitizerElementNamespaceWithAttributes();
+  return (element_dictionary->hasAttributes()
+              ? element_dictionary->attributes().size()
+              : 0) +
+         (element_dictionary->hasRemoveAttributes()
+              ? element_dictionary->removeAttributes().size()
+              : 0);
+}
+
+int sanitizerNameMapSize(const SanitizerNameMap& name_map) {
+  int size = 0;
+  for (const auto& item : name_map) {
+    size += item.value.size();
+  }
+  return size;
+}
+
+int Sanitizer::countItemsInConfig() const {
+  return allow_elements_.size() + remove_elements_.size() +
+         replace_elements_.size() + allow_attrs_.size() + remove_attrs_.size() +
+         sanitizerNameMapSize(allow_attrs_per_element_) +
+         sanitizerNameMapSize(remove_attrs_per_element_);
 }
 
 }  // namespace blink

@@ -37,6 +37,7 @@
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/sync/service/sync_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
@@ -52,6 +53,7 @@ enum class PasskeyUpgradeRequestController::RequestError {
   kPasswordStoreError,
   kNotEligible,
   kEnclaveError,
+  kOptOut,
 };
 
 enum class PasskeyUpgradeRequestController::EnclaveState {
@@ -93,6 +95,12 @@ void PasskeyUpgradeRequestController::TryUpgradePasswordToPasskey(
   delegate_ = delegate;
   rp_id_ = std::move(rp_id);
   username_ = base::UTF8ToUTF16(username);
+
+  if (!profile()->GetPrefs()->GetBoolean(
+          password_manager::prefs::kAutomaticPasskeyUpgrades)) {
+    SignalRequestFailure(RequestError::kOptOut);
+    return;
+  }
 
   switch (enclave_state_) {
     case EnclaveState::kUnknown:

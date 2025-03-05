@@ -47,10 +47,7 @@ class PredictionServiceBrowserTest : public InProcessBrowserTest {
  public:
   PredictionServiceBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPermissionOnDeviceNotificationPredictions,
-          {{feature_params::
-                kPermissionOnDeviceNotificationPredictionsHoldbackChance.name,
-            "0"}}},
+        {{features::kPermissionOnDeviceNotificationPredictions, {}},
          {optimization_guide::features::kOptimizationHints, {}},
          {optimization_guide::features::kRemoteOptimizationGuideFetching, {}},
          {features::kCpssUseTfliteSignatureRunner, {}}},
@@ -146,12 +143,23 @@ IN_PROC_BROWSER_TEST_F(PredictionServiceBrowserTest,
                        SignatureModelReturnsLikely) {
   ASSERT_TRUE(prediction_model_handler());
 
+  WebPermissionPredictionsModelMetadata metadata;
+  metadata.set_holdback_probability(0);
+  std::string serialized_metadata;
+  metadata.SerializeToString(&serialized_metadata);
+  auto any = std::make_optional<optimization_guide::proto::Any>();
+  any->set_value(serialized_metadata);
+  any->set_type_url(
+      "type.googleapis.com/"
+      "optimization_guide.protos.WebPermissionPredictionsModelMetadata");
+
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::
               OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS,
           optimization_guide::TestModelInfoBuilder()
               .SetModelFilePath(model_file_path())
+              .SetModelMetadata(any)
               .Build());
 
   prediction_model_handler()->WaitForModelLoadForTesting();

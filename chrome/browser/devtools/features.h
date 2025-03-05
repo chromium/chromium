@@ -88,6 +88,8 @@ BASE_DECLARE_FEATURE(kDevToolsWellKnown);
 
 BASE_DECLARE_FEATURE(kDevToolsCssValueTracing);
 
+BASE_DECLARE_FEATURE(kDevToolsAiGeneratedTimelineLabels);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_DEVTOOLS_FEATURES_H_

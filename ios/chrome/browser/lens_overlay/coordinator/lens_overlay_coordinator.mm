@@ -215,9 +215,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
       [[LensOverlayOverflowMenuFactory alloc] initWithBrowser:self.browser
                                          overflowMenuDelegate:self];
 
-  BOOL escapeHatchEnabled =
-      IsLVFEscapeHatchEnabled(self.browser->GetProfile()->GetPrefs());
-  config.useTrailingDismissButton = !escapeHatchEnabled;
+  config.useTrailingDismissButton = ![self shouldShowEscapeHatch];
 
   __weak __typeof(self) weakSelf = self;
   UIAction* searchWithCameraAction =
@@ -225,7 +223,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
         [weakSelf didRequestSearchWithCamera];
       }];
   NSArray<UIAction*>* precedingMenuItems =
-      escapeHatchEnabled ? @[ searchWithCameraAction ] : @[];
+      [self shouldShowEscapeHatch] ? @[ searchWithCameraAction ] : @[];
 
   NSArray<UIAction*>* additionalMenuItems = @[
     [overflowMenuFactory openUserActivityAction],
@@ -423,9 +421,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
         [self showResultsBottomSheet];
       }
     } else {
-      if (IsLVFEscapeHatchEnabled(self.browser->GetProfile()->GetPrefs())) {
-        [self scheduleTooltipHintDisplayIfNecessary];
-      }
+      [self scheduleTooltipHintDisplayIfNecessary];
     }
   }
 
@@ -827,9 +823,10 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 }
 
 - (BOOL)shouldShowTooltipHint {
-  if (_isExiting || _isStopped) {
+  if (_isExiting || _isStopped || ![self shouldShowEscapeHatch]) {
     return NO;
   }
+
   if (_entrypoint != LensOverlayEntrypoint::kLocationBar) {
     return NO;
   }
@@ -870,12 +867,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 }
 
 - (void)scheduleTooltipHintDisplayIfNecessary {
-  if (_isExiting || _isStopped) {
-    return;
-  }
-
-  if (!IsLVFEscapeHatchEnabled(self.browser->GetProfile()->GetPrefs()) ||
-      ![self shouldShowTooltipHint]) {
+  if (_isExiting || _isStopped || ![self shouldShowTooltipHint]) {
     return;
   }
 
@@ -1132,6 +1124,15 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
 - (BOOL)isResultsBottomSheetCreated {
   return _resultViewController != nil;
+}
+
+- (BOOL)shouldShowEscapeHatch {
+  if (!self.browser) {
+    return NO;
+  }
+  return IsLVFEscapeHatchEnabled(self.browser->GetProfile()->GetPrefs()) &&
+         !lens::IsLVFEntrypoint(_entrypoint) &&
+         !lens::IsImageContextMenuEntrypoint(_entrypoint);
 }
 
 // Disconnect and destroy all of the owned view controllers.

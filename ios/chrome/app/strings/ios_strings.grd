@@ -3902,9 +3902,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_TITLE" desc="Title for the long-press context menu of the parcel tracking module.">
           This card helps you keep track of your packages and give you important delivery updates.
       </message>
-      <message name="IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_UNTRACK" desc="Title for the untrack parcel option of the parcel tracking module.">
-          Untrack this package
-      </message>
       <message name="IDS_IOS_PARCEL_TRACKING_INFOBAR_NEW_PACKAGE_TRACKED_TITLE" desc="Text for the title string of the infobar that is displayed after a new package is tracked.">
         {COUNT, plural,
         =1 {New package tracked}
@@ -3932,20 +3929,11 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         =1 {Untrack this package}
         other {Untrack all packages}}
       </message>
-      <message name="IDS_IOS_PARCEL_TRACKING_MODULE_HIDE_ALERT_CANCEL" desc="Title for the item to cancel disabling the Parcel Tracking feature. ">
-          Cancel
-      </message>
-      <message name="IDS_IOS_PARCEL_TRACKING_MODULE_HIDE_ALERT_TITLE" desc="Title for the alert dialog warning the user they are about to hide the parcel tracking module.">
-          Hiding this card will turn off Package Tracking and remove all your data
-      </message>
       <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_TERTIARY_ACTION" desc="Text for the tertiary action string of the parcel tracking opt-in half-sheet screen.">
         Ask me every time
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_REPORT_AN_ISSUE" desc="Title for the option on the parcel tracking infobar to report an issue">
         Report an issue
-      </message>
-      <message name="IDS_IOS_PARCEL_TRACKING_UNTRACK_SNACKBAR_TITLE" desc="Title for the snackbar indicating a parcel has been untracked. ">
-          Stopped tracking this package
       </message>
       <message name="IDS_IOS_PARENT_ACCESS_SNACKBAR_ACTION" desc="Snackbar action for local web approval errors." translateable="false">
         Close

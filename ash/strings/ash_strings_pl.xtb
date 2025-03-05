@@ -22,6 +22,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1058009965971887428">Prześlij opinię</translation>
 <translation id="1059120031266247284">Udostępnione Tobie</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> z przyciskiem usuwania</translation>
 <translation id="1062407476771304334">Zastąp</translation>
 <translation id="1073899992769346247">Wymień lub naładuj baterię</translation>
 <translation id="1081015718268701546">Aplikacje na Linuksa nie są obecnie obsługiwane. Inne aplikacje zostaną zapisane.</translation>
@@ -323,6 +324,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2083190527011054446">Dobranoc <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Otwórz selektor emotikonów</translation>
 <translation id="2088116547584365419">gry</translation>
+<translation id="2092517835716911174">Aby korzystać z funkcji Pomóż mi czytać i Pomóż mi pisać, musisz mieć ukończone 18 lat.</translation>
 <translation id="209965399369889474">Brak połączenia z siecią</translation>
 <translation id="2107581415810719320">Inny przycisk <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Twój kabel USB-C nie obsługuje standardu Thunderbolt. Wydajność urządzenia może być ograniczona.</translation>
@@ -1228,6 +1230,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="5043679421800073804">Kliknij ostatnią ikonę na półce</translation>
 <translation id="504465286040788597">Poprzedni akapit</translation>
 <translation id="5045550434625856497">Nieprawidłowe hasło</translation>
+<translation id="5056587122125565772">Utwórz obraz</translation>
 <translation id="5058794129231928255">Nie udało się utworzyć pliku w Dokumentach Google</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">Powiadomimy Cię, gdy będziesz mówić, a mikrofon będzie wyciszony. Dźwięk nigdy nie jest wysyłany poza Twoje urządzenie.</translation>
@@ -1276,6 +1279,7 @@ Możesz też użyć skrótu klawiszowego. Zaznacz tekst, a potem naciśnij <ph 
 <translation id="5222676887888702881">Wyloguj się</translation>
 <translation id="5228195526683428788">Linia dzielenia ekranu</translation>
 <translation id="5229343007215035173">Włącz/wyłącz filtr prywatności</translation>
+<translation id="5229860525743792999">Usuń: <ph name="ITEM_LABEL" /> z sugerowanej grupy</translation>
 <translation id="5230516054153933099">Okno</translation>
 <translation id="5234764350956374838">Zamknij</translation>
 <translation id="523505283826916779">Ustawienia ułatwień dostępu</translation>
@@ -1757,6 +1761,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6757237461819837179">Multimedia nie są odtwarzane</translation>
 <translation id="6760438044935091345">Panel gier</translation>
 <translation id="6768043681523654438">miejsce na dane</translation>
+<translation id="6769195697113506406">Wstawiono obraz</translation>
 <translation id="6777216307882431711">Zasilanie podłączonych urządzeń USB-C</translation>
 <translation id="6781002679438061620">Biurko 9</translation>
 <translation id="6782182743534150858">Biurko 13</translation>
@@ -1983,6 +1988,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7571361473021531288">Bateria: <ph name="BATTERY_PERCENTAGE" />% | Zostało: <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Aktywne okno zadokowano po prawej.</translation>
 <translation id="7579778809502851308">Zrzut ekranu</translation>
+<translation id="7588317312481506627">Skopiowano do schowka.</translation>
 <translation id="7593891976182323525">Szukaj lub Shift</translation>
 <translation id="7598054670902114203">Podsumowanie wykorzystania procesora: <ph name="CPU_USEAGE" />%. Temperatura: <ph name="TEMPERATURE" /> stopni Celsjusza, aktualna szybkość: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Wstawiam wybrany wynik</translation>
@@ -2177,6 +2183,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8155628902202578800">Otwórz okno informacyjne dla konta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">W użyciu jest: <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Treść</translation>
+<translation id="81817143961839203">Nie udało się wstawić obrazu</translation>
 <translation id="8185090165691050712">Włącz/wyłącz menu, aby zmienić rozmiar trybu blokady</translation>
 <translation id="8192727139462702395">Gdy wyłączysz Bluetooth, te urządzenia zewnętrzne rozłączą się z urządzeniem <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Przesyłam kartę</translation>
@@ -2255,6 +2262,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8473301994082929012">Funkcja <ph name="FEATURE_NAME" /> w organizacji <ph name="ORGANIZATION_NAME" /> jest <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Aby anulować, naciśnij Alt + Szukaj lub Shift.</translation>
 <translation id="8480418399907765580">Pokaż pasek narzędzi</translation>
+<translation id="8487660088084188539">Gdy włączysz te funkcje, wpisany tekst, zawartość dokumentu i adres URL strony internetowej mogą być wysyłane na serwery Google. Opis tego, jak te informacje są używane do generowania propozycji tekstu, tworzenia podsumowań, odpowiadania na pytania i ulepszania usługi, zawierają <ph name="LINK_TO_SERVICE_TERMS" />. Nie podawaj żadnych danych osobowych, poufnych ani wrażliwych.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Otwórz link w nowej karcie</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> nie obsługuje ustawienia <ph name="SPECIFIED_RESOLUTION" />. Rozdzielczość została zmieniona na <ph name="FALLBACK_RESOLUTION" />. Kliknij „Potwierdź”, by zachować zmiany. Poprzednie ustawienia zostaną przywrócone za <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2324,6 +2332,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8725066075913043281">Spróbuj ponownie</translation>
 <translation id="8725214031272624704">Pokaż listę dostępnych metod wprowadzania</translation>
 <translation id="8730621377337864115">Gotowe</translation>
+<translation id="8731188831050207755">Nie udało się pobrać pliku <ph name="FILE_NAME" /></translation>
 <translation id="8731487213223706745">Zakończenie o <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Klawiatura może próbować przechwycić naciskane klawisze</translation>
 <translation id="8735678380411481005">Kolor podświetlenia klawiatury</translation>

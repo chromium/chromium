@@ -47,7 +47,6 @@
 <translation id="2671423594960767771">குழுவைப் பகிர்</translation>
 <translation id="2677748264148917807">வெளியேறு</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> வாரத்திற்கு முன் புதுப்பிக்கப்பட்டது}other{<ph name="NUM_WEEKS_MANY" /> வாரங்களுக்கு முன் புதுப்பிக்கப்பட்டது}}</translation>
-<translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> பக்கம் சேர்க்கப்பட்டது, <ph name="ANY_CHANGED" /> மாற்றப்பட்டது, <ph name="ANY_CLOSED" /> மூடப்பட்டது.}other{<ph name="MANY_ADDED" /> பக்கங்கள் சேர்க்கப்பட்டன, <ph name="ANY_CHANGED" /> மாற்றப்பட்டது, <ph name="ANY_CLOSED" /> மூடப்பட்டது.}}</translation>
 <translation id="2753877351161418426">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> மணிநேரத்திற்கு முன் புதுப்பிக்கப்பட்டது}other{<ph name="NUM_HOURS_MANY" /> மணிநேரத்திற்கு முன் புதுப்பிக்கப்பட்டது}}</translation>
 <translation id="2755485474385016903">செய்யப்பட்ட மாற்றங்கள் குழுவில் உள்ள எல்லோருக்கும் காட்டப்படும்</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> மணிநேரத்திற்கு முன் உருவாக்கப்பட்டது}other{<ph name="NUM_HOURS_MANY" /> மணிநேரத்திற்கு முன் உருவாக்கப்பட்டது}}</translation>
@@ -63,7 +62,6 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> விலை <ph name="PRICE_DROP" /> குறைந்துள்ளது</translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> பக்கக் குழுவின் வண்ணத்தைக் குறிக்கும் ஐகான்</translation>
 <translation id="3194464645767632461">ரேட்டிங்</translation>
-<translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> பக்கம் சேர்க்கப்பட்டது, <ph name="ANY_CHANGED" /> மாற்றப்பட்டது.}other{<ph name="MANY_ADDED" /> பக்கங்கள் சேர்க்கப்பட்டன, <ph name="ANY_CHANGED" /> மாற்றப்பட்டது.}}</translation>
 <translation id="3328308545011660196">பரிந்துரை: <ph name="NUMBER_OF_TABS" /> தாவல்கள் தொடர்புடையவையாகத் தெரிகின்றன. அவற்றைக் குழுவாக்கவா?</translation>
 <translation id="3547352561153509682">இவ்வாறு செய்தால் <ph name="USER_EMAIL" /> கணக்கின் மூலம் உள்நுழைந்துள்ள சாதனங்கள் அனைத்திலும் குழு நீக்கப்படும்</translation>
 <translation id="3613492231657284463">செயலில் இல்லாத பக்கங்களைக் காட்டும் உரையாடலை மறைக்கும்</translation>
@@ -82,7 +80,6 @@
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_ONE" /> பக்கத்துடன் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக் குழுவை மூடும்.}other{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_MANY" /> பக்கங்களுடன் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக் குழுவை மூடும்.}}</translation>
 <translation id="4159784952369912983">பர்பிள்</translation>
 <translation id="427987768447457592">புதிய பக்கக் குழு</translation>
-<translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> பக்கம் மாற்றப்பட்டது, <ph name="ANY_CLOSED" /> மூடப்பட்டது.}other{<ph name="MANY_CHANGED" /> பக்கங்கள் மாற்றப்பட்டன, <ph name="ANY_CLOSED" /> மூடப்பட்டது.}}</translation>
 <translation id="4371591986692297148">செயலில் இல்லை</translation>
 <translation id="4431937619879060901">“<ph name="GROUP_NAME" />” பக்கக் குழுவிற்கான அணுகலை உடனடியாக இழந்துவிடுவீர்கள். அத்துடன், உங்களின் எல்லாச் சாதனங்களில் இருந்தும் அது நீக்கப்படும்.</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> நாளுக்கு முன் புதுப்பிக்கப்பட்டது}other{<ph name="NUM_DAYS_MANY" /> நாட்களுக்கு முன் புதுப்பிக்கப்பட்டது}}</translation>
@@ -106,7 +103,6 @@
 <translation id="5073204694187207510">முழுத்திரை கட்டத்தை மூடு</translation>
 <translation id="5076161749301278626">ஸ்டோருக்குக் கிடைத்த கருத்துகளைப் பார்க்க வேண்டுமா?</translation>
 <translation id="5094423602314093681">பக்கங்களை அகற்றி குழுவை நீக்க வேண்டுமா?</translation>
-<translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> பக்கம் சேர்க்கப்பட்டது}other{<ph name="MANY_ADDED" /> பக்கங்கள் சேர்க்கப்பட்டன}}</translation>
 <translation id="5161254044473106830">தலைப்பு அவசியம்</translation>
 <translation id="5339733443032484186">உங்கள் கடைசிப் பக்கம்</translation>
 <translation id="5380159289133845234">நகல் பக்கங்களைக் காப்பிடு</translation>
@@ -144,7 +140,6 @@
 <translation id="6589356853295569750">பகிர்ந்த பக்கக் குழு தொடர்பான மாற்றங்கள் குறித்த அறிவிப்பு முழு உயரத்தில் திறக்கப்பட்டுள்ளது</translation>
 <translation id="6590332670428149473"><ph name="TITLE_OF_GROUP" /> என்ற பகிர்ந்த பக்கக் குழுவுக்கான பக்கக் குழுச் செயல் மெனுவைத் திறக்கும், <ph name="COLOR_NAME" /> வண்ணம்.</translation>
 <translation id="6615455863669487791">எனக்கு காண்பி</translation>
-<translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> பக்கம் மாற்றப்பட்டது}other{<ph name="MANY_CHANGED" /> பக்கங்கள் மாற்றப்பட்டன}}</translation>
 <translation id="6694634756612002311">பகிர்தலை நிர்வகியுங்கள்</translation>
 <translation id="6744956528665271406">குழு வண்ணத்தை மாற்று</translation>
 <translation id="6856809498882026482">பல தேர்வுப் பயன்முறையை மறைக்கும்</translation>
@@ -192,7 +187,6 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> மாதத்திற்கு முன் புதுப்பிக்கப்பட்டது}other{<ph name="NUM_MONTHS_MANY" /> மாதங்களுக்கு முன் புதுப்பிக்கப்பட்டது}}</translation>
 <translation id="8398929769197326728">புதிய ஃபோல்டர் - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">அமைப்புகள்</translation>
-<translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> பக்கம் சேர்க்கப்பட்டது, <ph name="ANY_CLOSED" /> மூடப்பட்டது.}other{<ph name="MANY_ADDED" /> பக்கங்கள் சேர்க்கப்பட்டன, <ph name="ANY_CLOSED" /> மூடப்பட்டது.}}</translation>
 <translation id="8633025649649592204">சமீபத்திய செயல்</translation>
 <translation id="870736955561925754">பக்கத்தை மூடிவிட்டு குழுவை நீக்க வேண்டுமா?</translation>
 <translation id="8712637175834984815">புரிந்தது</translation>

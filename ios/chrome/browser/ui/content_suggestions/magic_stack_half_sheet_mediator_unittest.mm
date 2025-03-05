@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/metrics/model/constants.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
-#import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -21,7 +20,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_prefs.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_variations_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -34,7 +32,7 @@ class MagicStackHalfSheetMediatorTest : public PlatformTest {
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures({kTabResumption, kNewFeedPositioning},
-                                          {kIOSDisableParcelTracking});
+                                          {});
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
 
     // Necessary set up for kIOSSetUpList.
@@ -120,10 +118,6 @@ TEST_F(MagicStackHalfSheetMediatorTest, TestConsumer) {
   mediator_.consumer = consumer_;
   EXPECT_OCMOCK_VERIFY(consumer_);
 
-  // Parcel tracking should only be shown in the US.
-  IOSChromeScopedTestingVariationsService scoped_variations_service;
-  scoped_variations_service.Get()->OverrideStoredPermanentCountry("us");
-
   mediator_ =
       [[MagicStackHalfSheetMediator alloc] initWithLocalState:local_state()
                                            profilePrefService:profile_prefs()];
@@ -134,7 +128,6 @@ TEST_F(MagicStackHalfSheetMediatorTest, TestConsumer) {
   OCMExpect([consumer_ setMostVisitedSitesEnabled:YES]);
   OCMExpect([consumer_ setSafetyCheckDisabled:NO]);
   OCMExpect([consumer_ setTabResumptionDisabled:NO]);
-  OCMExpect([consumer_ setParcelTrackingDisabled:NO]);
 
   mediator_.consumer = consumer_;
   EXPECT_OCMOCK_VERIFY(consumer_);

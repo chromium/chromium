@@ -22,6 +22,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1058009965971887428">Feedback melden</translation>
 <translation id="1059120031266247284">Met jou gedeeld</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> met verwijderknop</translation>
 <translation id="1062407476771304334">Vervangen</translation>
 <translation id="1073899992769346247">Vervang de batterij of laad hem op</translation>
 <translation id="1081015718268701546">Linux-apps worden momenteel niet ondersteund. Andere apps worden opgeslagen.</translation>
@@ -323,6 +324,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2083190527011054446">Goedenacht <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Emoji-kiezer openen</translation>
 <translation id="2088116547584365419">games</translation>
+<translation id="2092517835716911174">Je moet 18 jaar of ouder zijn om Help me met lezen en Help me met schrijven te gebruiken.</translation>
 <translation id="209965399369889474">Niet verbonden met netwerk</translation>
 <translation id="2107581415810719320">Andere knop <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Je USB-C-kabel biedt geen ondersteuning voor Thunderbolt. De prestaties van het apparaat kunnen beperkt zijn.</translation>
@@ -1228,6 +1230,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="5043679421800073804">Op het laatste icoon op de plank klikken of tikken</translation>
 <translation id="504465286040788597">Vorige alinea</translation>
 <translation id="5045550434625856497">Onjuist wachtwoord</translation>
+<translation id="5056587122125565772">Afbeelding maken</translation>
 <translation id="5058794129231928255">Kan Google-document niet maken</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Je krijgt een melding als je praat terwijl het geluid uitstaat. De audio verlaat je apparaat nooit.</translation>
@@ -1276,6 +1279,7 @@ Je kunt ook de sneltoets gebruiken. Markeer eerst de tekst en druk dan op <ph na
 <translation id="5222676887888702881">Uitloggen</translation>
 <translation id="5228195526683428788">Scheiding voor gesplitst scherm</translation>
 <translation id="5229343007215035173">Privacyscherm aan-/uitzetten</translation>
+<translation id="5229860525743792999"><ph name="ITEM_LABEL" /> verwijderen uit voorgestelde groep</translation>
 <translation id="5230516054153933099">Venster</translation>
 <translation id="5234764350956374838">Sluiten</translation>
 <translation id="523505283826916779">Toegankelijkheidsinstellingen</translation>
@@ -1758,6 +1762,7 @@ Nieuwe installatie</translation>
 <translation id="6757237461819837179">Er wordt geen media afgespeeld</translation>
 <translation id="6760438044935091345">Game Dashboard</translation>
 <translation id="6768043681523654438">opslag</translation>
+<translation id="6769195697113506406">Afbeelding ingevoegd</translation>
 <translation id="6777216307882431711">De aangesloten USB-C-apparaten worden van stroom voorzien</translation>
 <translation id="6781002679438061620">Bureau 9</translation>
 <translation id="6782182743534150858">Bureau 13</translation>
@@ -1984,6 +1989,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7571361473021531288">Batterij <ph name="BATTERY_PERCENTAGE" />% | Nog <ph name="TIME" /> over</translation>
 <translation id="7573585051776738856">Actief venster rechts vastgezet.</translation>
 <translation id="7579778809502851308">Schermopname</translation>
+<translation id="7588317312481506627">Naar klembord gekopieerd.</translation>
 <translation id="7593891976182323525">Zoeken of Shift</translation>
 <translation id="7598054670902114203">Momentopname van CPU-gebruik, <ph name="CPU_USEAGE" />%. Temperatuur <ph name="TEMPERATURE" /> graden Celsius, huidige snelheid: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Geselecteerd resultaat invoegen</translation>
@@ -2178,6 +2184,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8155628902202578800">Dialoogvenster met informatie openen voor <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> in gebruik</translation>
 <translation id="8168435359814927499">Content</translation>
+<translation id="81817143961839203">Invoegen van afbeelding is mislukt</translation>
 <translation id="8185090165691050712">Menu aan-/uitzetten om het formaat van de vergrendelde modus aan te passen</translation>
 <translation id="8192727139462702395">Als je bluetooth uitzet, wordt de verbinding van deze externe apparaten met je <ph name="DEVICE_TYPE" /> verbroken:</translation>
 <translation id="8198456017687137612">Tabblad wordt gecast</translation>
@@ -2256,6 +2263,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> heeft <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Druk op Alt+Zoeken of Shift om te annuleren.</translation>
 <translation id="8480418399907765580">Werkbalk tonen</translation>
+<translation id="8487660088084188539">Als je deze functies aanzet, kunnen de ingevoerde tekst, de documentcontent en de URL van de webpagina naar de servers van Google worden gestuurd. Deze informatie wordt gebruikt om schrijfsuggesties te genereren, samenvattingen te genereren, vragen te beantwoorden en het product te verbeteren, in overeenstemming met <ph name="LINK_TO_SERVICE_TERMS" />. Voeg geen persoonlijke, gevoelige of vertrouwelijke informatie toe.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Link openen in een nieuw tabblad</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ondersteunt <ph name="SPECIFIED_RESOLUTION" /> niet. De resolutie is gewijzigd in <ph name="FALLBACK_RESOLUTION" />. Klik op 'Bevestigen' om de wijzigingen te behouden. De vorige instellingen worden over <ph name="TIMEOUT_SECONDS" /> hersteld.</translation>
@@ -2325,6 +2333,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8725066075913043281">Opnieuw proberen</translation>
 <translation id="8725214031272624704">Lijst met beschikbare invoermethoden tonen</translation>
 <translation id="8730621377337864115">Klaar</translation>
+<translation id="8731188831050207755">Download van <ph name="FILE_NAME" /> mislukt.</translation>
 <translation id="8731487213223706745">Eindigt om <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Mogelijk wordt geprobeerd om je toetsaanslagen te stelen</translation>
 <translation id="8735678380411481005">Achtergrondverlichtingskleur van het toetsenbord</translation>

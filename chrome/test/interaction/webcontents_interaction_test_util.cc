@@ -731,7 +731,8 @@ void WebContentsInteractionTestUtil::LoadPage(const GURL& url) {
     // similarly-named `content::ExecJs()`, this helper does not actually
     // validate or wait for the script to execute; hopefully, errors from
     // navigation failures will be obvious enough in subsequent steps.
-    ExecuteJsLocal(web_contents(), content::JsReplace("location = $1", url));
+    ExecuteJsLocal(web_contents(),
+                   content::JsReplace("() => location = $1", url));
   }
 }
 

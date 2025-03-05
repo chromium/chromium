@@ -99,8 +99,8 @@ class OpDownloadTest : public testing::Test {
     scoped_refptr<TestConfigurator> config =
         base::MakeRefCounted<TestConfigurator>(pref_.get());
     config->SetCrxDownloaderFactory(base::MakeRefCounted<FakeFactory>(
-        temp_dir_.GetPath().AppendASCII("OpDownloadTest_File"), result,
-        metrics));
+        temp_dir_.GetPath().Append(FILE_PATH_LITERAL("OpDownloadTest_File")),
+        result, metrics));
     return config;
   }
 

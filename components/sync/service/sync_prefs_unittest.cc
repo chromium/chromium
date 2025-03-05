@@ -272,7 +272,7 @@ TEST_F(SyncPrefsTest, SetSelectedOsTypesTriggersPreferredDataTypesPrefChange) {
                                   UserSelectableOsTypeSet());
   sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
 }
-#endif // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(SyncPrefsTest, Basic) {
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -505,7 +505,7 @@ TEST_F(SyncPrefsTest,
                             switches::kEnableExtensionsExplicitBrowserSignin},
       /*disabled_features=*/{});
 
-  // Based on the feature flags set above, Bookmarks, ReadingList, Passwords,
+  // Based on the feature flags set above, ReadingList, Passwords,
   // Autofill, Payments, Preferences and Themes are supported and enabled by
   // default.
   // Extensions is supported, but not enabled by default. (History and Tabs are
@@ -523,8 +523,11 @@ TEST_F(SyncPrefsTest,
   expected_types.Remove(UserSelectableType::kPasswords);
   expected_types.Remove(UserSelectableType::kAutofill);
   // Because `prefs::kPrefsThemesSearchEnginesAccountStorageEnabled` is not set,
-  // kPreferences  are disabled.
+  // kPreferences are disabled.
   expected_types.Remove(UserSelectableType::kPreferences);
+  // Because `kBookmarksExplicitBrowserSigninEnabled` is not set, kBookmarks are
+  // disabled.
+  expected_types.Remove(UserSelectableType::kBookmarks);
 #endif
 
   EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(gaia_id_), expected_types);
@@ -537,6 +540,7 @@ class SyncPrefsExplicitBrowserSigninTest : public SyncPrefsTest {
   SyncPrefsExplicitBrowserSigninTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{switches::kEnableExtensionsExplicitBrowserSignin,
+                              switches::kSyncEnableBookmarksInTransportMode,
                               switches::kExplicitBrowserSigninUIOnDesktop,
                               kSeparateLocalAndAccountSearchEngines,
                               switches::kEnablePreferencesAccountStorage,
@@ -559,6 +563,8 @@ TEST_F(SyncPrefsExplicitBrowserSigninTest, DefaultWithExplicitBrowserSignin) {
       UserSelectableType::kPasswords));
   EXPECT_FALSE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_).Has(
       UserSelectableType::kExtensions));
+  EXPECT_FALSE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_).Has(
+      UserSelectableType::kBookmarks));
 
   // Set an explicit browser signin.
   pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
@@ -568,14 +574,17 @@ TEST_F(SyncPrefsExplicitBrowserSigninTest, DefaultWithExplicitBrowserSignin) {
                                    UserSelectableType::kAutofill,
                                    UserSelectableType::kPayments}));
 
-  // Set an explicit browser signin from extensions for this account.
+  // Set an explicit browser signin from extensions and bookmarks for this
+  // account.
   SigninPrefs(pref_service_).SetExtensionsExplicitBrowserSignin(gaia_id_, true);
+  SigninPrefs(pref_service_).SetBookmarksExplicitBrowserSignin(gaia_id_, true);
 
   EXPECT_EQ(
       sync_prefs_->GetSelectedTypesForAccount(gaia_id_),
       UserSelectableTypeSet(
           {UserSelectableType::kExtensions, UserSelectableType::kPasswords,
-           UserSelectableType::kAutofill, UserSelectableType::kPayments}));
+           UserSelectableType::kAutofill, UserSelectableType::kPayments,
+           UserSelectableType::kBookmarks}));
 }
 
 TEST_F(SyncPrefsExplicitBrowserSigninTest, DefaultWithNewSigninPref) {
@@ -858,16 +867,19 @@ class SyncPrefsMigrationTest : public testing::Test {
     // Enable various features that are required for data types to be supported
     // in transport mode.
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{switches::kSyncEnableBookmarksInTransportMode,
+        /*enabled_features=*/
+        {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-                              kReadingListEnableSyncTransportModeUponSignIn,
-                              switches::kExplicitBrowserSigninUIOnDesktop,
-                              kSeparateLocalAndAccountSearchEngines,
+            switches::kSyncEnableBookmarksInTransportMode,
+            kReadingListEnableSyncTransportModeUponSignIn,
+            switches::kExplicitBrowserSigninUIOnDesktop,
+            kSeparateLocalAndAccountSearchEngines,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-                              switches::kEnablePreferencesAccountStorage},
+            switches::kEnablePreferencesAccountStorage},
         /*disabled_features=*/{});
 
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
+    SigninPrefs::RegisterProfilePrefs(pref_service_.registry());
     gaia_id_ = GaiaId("account_gaia");
     gaia_id_hash_ = signin::GaiaIdHash::FromGaiaId(gaia_id_);
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -1338,8 +1350,15 @@ TEST_F(SyncPrefsMigrationTest, MigratesBookmarksOptedIn) {
     disable_sync_to_signin.InitAndDisableFeature(
         kReplaceSyncPromosWithSignInPromos);
 
-    // The user enables Bookmarks and Reading List.
+    // The user enables Bookmarks and Reading List. On non-mobile platforms set
+    // a special opt-in pref for bookmarks.
     SyncPrefs prefs(&pref_service_);
+
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+    SigninPrefs(pref_service_)
+        .SetBookmarksExplicitBrowserSignin(gaia_id_, true);
+#endif
+
     prefs.SetSelectedTypeForAccount(UserSelectableType::kBookmarks, true,
                                     gaia_id_hash_);
     prefs.SetSelectedTypeForAccount(UserSelectableType::kReadingList, true,
@@ -1400,10 +1419,14 @@ TEST_F(SyncPrefsMigrationTest, MigratesBookmarksNotOptedIn) {
 
     SyncPrefs prefs(&pref_service_);
 
-    // Sanity check: Without the migration, Bookmarks and ReadingList would now
-    // be considered enabled.
+    // Sanity check: Without the migration, ReadingList would now
+    // be considered enabled. Bookmarks is only enabled on mobile, the opt-in
+    // pref `kBookmarksExplicitBrowserSigninEnabled` would need to be set to
+    // enable it on Desktop.
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
     ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_).Has(
         UserSelectableType::kBookmarks));
+#endif
     ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_).Has(
         UserSelectableType::kReadingList));
 
@@ -1540,10 +1563,16 @@ TEST_F(SyncPrefsMigrationTest, GlobalToAccount_DefaultState) {
   // types are considered selected by default - except for kHistory and kTabs.
   // Note that this is not exhaustive - depending on feature flags, additional
   // types may be supported and default-enabled.
-  const UserSelectableTypeSet default_enabled_types{
-      UserSelectableType::kAutofill,    UserSelectableType::kBookmarks,
-      UserSelectableType::kPasswords,   UserSelectableType::kPayments,
-      UserSelectableType::kPreferences, UserSelectableType::kReadingList};
+  UserSelectableTypeSet default_enabled_types{
+      UserSelectableType::kAutofill, UserSelectableType::kPasswords,
+      UserSelectableType::kPayments, UserSelectableType::kPreferences,
+      UserSelectableType::kReadingList};
+
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+  // Bookmarks is only selected by default on mobile.
+  default_enabled_types.Put(UserSelectableType::kBookmarks);
+#endif
+
   ASSERT_TRUE(SyncPrefs(&pref_service_)
                   .GetSelectedTypesForAccount(gaia_id_)
                   .HasAll(default_enabled_types));
@@ -1583,18 +1612,23 @@ TEST_F(SyncPrefsMigrationTest, GlobalToAccount_CustomState) {
   }
 
   // Pre-migration (without any explicit per-account settings), most supported
-  // types are considered selected by default, including Bookmarks and
-  // Preferences - but not History or Tabs.
-  // Note that this is not exhaustive - depending on feature flags, additional
-  // types may be supported and default-enabled.
+  // types are considered selected by default, including Preferences - but not
+  // History or Tabs.  Note that this is not exhaustive - depending on feature
+  // flags, additional types may be supported and default-enabled.
+  UserSelectableTypeSet pre_migration_selected_types{
+      UserSelectableType::kAutofill, UserSelectableType::kPasswords,
+      UserSelectableType::kPayments, UserSelectableType::kPreferences,
+      UserSelectableType::kReadingList};
+
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+  // Bookmarks is only selected by default on mobile.
+  pre_migration_selected_types.Put(UserSelectableType::kBookmarks);
+#endif
+
   ASSERT_TRUE(SyncPrefs(&pref_service_)
                   .GetSelectedTypesForAccount(gaia_id_)
-                  .HasAll({UserSelectableType::kAutofill,
-                           UserSelectableType::kBookmarks,
-                           UserSelectableType::kPasswords,
-                           UserSelectableType::kPayments,
-                           UserSelectableType::kPreferences,
-                           UserSelectableType::kReadingList}));
+                  .HasAll(pre_migration_selected_types));
+
   ASSERT_FALSE(
       SyncPrefs(&pref_service_)
           .GetSelectedTypesForAccount(gaia_id_)
@@ -1672,10 +1706,16 @@ TEST_F(SyncPrefsMigrationTest, GlobalToAccount_CustomPassphrase) {
   // types are considered selected by default - except for kHistory and kTabs.
   // Note that this is not exhaustive - depending on feature flags, additional
   // types may be supported and default-enabled.
-  const UserSelectableTypeSet default_enabled_types{
-      UserSelectableType::kAutofill,    UserSelectableType::kBookmarks,
-      UserSelectableType::kPasswords,   UserSelectableType::kPayments,
-      UserSelectableType::kPreferences, UserSelectableType::kReadingList};
+  UserSelectableTypeSet default_enabled_types{
+      UserSelectableType::kAutofill, UserSelectableType::kPasswords,
+      UserSelectableType::kPayments, UserSelectableType::kPreferences,
+      UserSelectableType::kReadingList};
+
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+  // Bookmarks is only selected by default on mobile.
+  default_enabled_types.Put(UserSelectableType::kBookmarks);
+#endif
+
   ASSERT_TRUE(SyncPrefs(&pref_service_)
                   .GetSelectedTypesForAccount(gaia_id_)
                   .HasAll(default_enabled_types));

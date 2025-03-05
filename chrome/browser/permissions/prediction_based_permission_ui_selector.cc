@@ -177,6 +177,8 @@ void PredictionBasedPermissionUiSelector::InquireTfliteOnDeviceModelIfAvailable(
     permissions::PermissionUmaUtil::RecordPermissionPredictionSource(
         permissions::PermissionPredictionSource::ON_DEVICE_TFLITE);
     auto proto_request = GetPredictionRequestProto(features);
+    tflite_model_holdback_probability_ =
+        prediction_model_handler->HoldBackProbability();
     prediction_model_handler->ExecuteModelWithMetadata(
         base::BindOnce(
             &PredictionBasedPermissionUiSelector::LookupResponseReceived,
@@ -210,8 +212,9 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
     DecisionMadeCallback callback) {
   VLOG(1) << "[CPSS] Selector activated";
   callback_ = std::move(callback);
-  last_request_grant_likelihood_ = std::nullopt;
   last_permission_request_relevance_ = std::nullopt;
+  last_request_grant_likelihood_ = std::nullopt;
+  tflite_model_holdback_probability_ = std::nullopt;
   was_decision_held_back_ = std::nullopt;
 
   const PredictionSource prediction_source =
@@ -457,31 +460,18 @@ bool PredictionBasedPermissionUiSelector::ShouldHoldBack(
     permissions::RequestType request_type) {
   DCHECK(request_type == permissions::RequestType::kNotifications ||
          request_type == permissions::RequestType::kGeolocation);
-  // Different holdback threshold for the different experiments.
-  const double on_device_geolocation_holdback_threshold =
-      permissions::feature_params::
-          kPermissionOnDeviceGeolocationPredictionsHoldbackChance.Get();
-  const double on_device_notification_holdback_threshold =
-      permissions::feature_params::
-          kPermissionOnDeviceNotificationPredictionsHoldbackChance.Get();
-  const double server_side_holdback_threshold =
-      permissions::feature_params::kPermissionPredictionsV2HoldbackChance.Get();
 
   // Holdback probability for this request.
   const double holdback_chance = base::RandDouble();
   bool should_holdback = false;
   if (is_on_device) {
-    if (request_type == permissions::RequestType::kNotifications) {
-      should_holdback =
-          holdback_chance < on_device_notification_holdback_threshold;
-    } else if (request_type == permissions::RequestType::kGeolocation) {
-      should_holdback =
-          holdback_chance < on_device_geolocation_holdback_threshold;
-    } else {
-      NOTREACHED();
-    }
+    DCHECK(tflite_model_holdback_probability_.has_value());
+    should_holdback = holdback_chance < *tflite_model_holdback_probability_;
   } else {
-    should_holdback = holdback_chance < server_side_holdback_threshold;
+    should_holdback =
+        holdback_chance <
+        permissions::feature_params::kPermissionPredictionsV2HoldbackChance
+            .Get();
   }
   permissions::PermissionUmaUtil::RecordPermissionPredictionServiceHoldback(
       request_type, is_on_device, should_holdback);

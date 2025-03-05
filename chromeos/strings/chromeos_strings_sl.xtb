@@ -1033,7 +1033,7 @@
 <translation id="590746845088109442">mačke</translation>
 <translation id="5907649332524363701">barva tipk</translation>
 <translation id="5908813850962688338">Nameščanje te posodobitve bo trajalo nekaj minut. Med prenosom posodobitve naj bo naprava priklopljena in vklopljena. Med tem postopkom se bo naprava morda sama večkrat znova zagnala in prikazan bo črn zaslon. Za dokončanje namestitve boste pozvani, da znova zaženete napravo.</translation>
-<translation id="5915794087373112615">Učitelj si bo ogledal tvoj zaslon čez <ph name="NUM_SECONDS" /> s</translation>
+<translation id="5915794087373112615">Učitelj bo videl ta zaslon čez <ph name="NUM_SECONDS" /> s</translation>
 <translation id="5916084858004523819">Onemogočeno</translation>
 <translation id="5916664084637901428">Vklopljeno</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Vaša datoteka je bila uspešno pregledana in je shranjena v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

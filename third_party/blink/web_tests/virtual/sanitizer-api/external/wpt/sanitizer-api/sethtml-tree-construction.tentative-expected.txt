@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] Testcase #28, "<div id='div' title='div'>DIV</div>", config: "{ "elements": [{ "name": "div", "attributes": ["id"], "removeAttributes": ["id"] }]}".
-  assert_true: [object HTMLDivElement].isEqual([object HTMLDivElement]) fails. Path: <DIV> / <DIV>. expected true got false
-Harness: the test ran to completion.
-
