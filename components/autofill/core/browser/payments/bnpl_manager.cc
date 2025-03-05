@@ -154,6 +154,56 @@ void BnplManager::OnVcnDetailsFetched(
   ongoing_flow_state_.reset();
 }
 
+void BnplManager::OnIssuerSelected(const BnplIssuer& selected_issuer) {
+  ongoing_flow_state_->issuer_id = selected_issuer.issuer_id();
+
+  if (selected_issuer.payment_instrument().has_value()) {
+    // TODO(crbug.com/378518488): Add server calls for getting redirect url.
+  } else {
+    GetDetailsForCreateBnplPaymentInstrument();
+  }
+}
+
+void BnplManager::GetDetailsForCreateBnplPaymentInstrument() {
+  GetDetailsForCreateBnplPaymentInstrumentRequestDetails request_details;
+  request_details.app_locale = ongoing_flow_state_->app_locale;
+  request_details.billing_customer_number =
+      ongoing_flow_state_->billing_customer_number;
+  request_details.issuer_id = ongoing_flow_state_->issuer_id;
+
+  autofill_client_->GetPaymentsAutofillClient()
+      ->GetPaymentsNetworkInterface()
+      ->GetDetailsForCreateBnplPaymentInstrument(
+          std::move(request_details),
+          base::BindOnce(
+              &BnplManager::OnDidGetDetailsForCreateBnplPaymentInstrument,
+              weak_factory_.GetWeakPtr()));
+}
+
+void BnplManager::OnDidGetDetailsForCreateBnplPaymentInstrument(
+    PaymentsAutofillClient::PaymentsRpcResult result,
+    std::string context_token,
+    std::unique_ptr<base::Value::Dict> legal_message) {
+  if (result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
+    ongoing_flow_state_->context_token = std::move(context_token);
+
+    // BNPL TOS should only be shown if legal messages are parsed successfully.
+    CHECK(legal_message);
+    LegalMessageLines parsed_legal_message_lines;
+    if (LegalMessageLine::Parse(*legal_message, &parsed_legal_message_lines,
+                                /*escape_apostrophes=*/true)) {
+      ongoing_flow_state_->legal_message_lines =
+          std::move(parsed_legal_message_lines);
+
+      // TODO(crbug.com/378518504): Display Terms of Service dialog.
+
+      return;
+    }
+  }
+
+  // TODO(crbug.com/378518504): Display error dialog.
+}
+
 void BnplManager::MaybeUpdateSuggestionsWithBnpl(
     const AutofillSuggestionTriggerSource trigger_source,
     std::vector<absl::variant<SuggestionsShownResponse, std::optional<uint64_t>>>
