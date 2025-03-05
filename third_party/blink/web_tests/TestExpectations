@@ -394,12 +394,13 @@ crbug.com/1093709 [ Mac12-arm64 Release ] external/wpt/html/canvas/offscreen/man
 crbug.com/1093709 [ Mac13-arm64 ] external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.resize.html [ Failure Pass ]
 crbug.com/1315282 [ Mac ] external/wpt/html/canvas/element/text/direction-inherit-rtl.html [ Failure ]
 crbug.com/1315282 [ Mac ] external/wpt/html/canvas/element/text/direction-rtl.html [ Failure ]
-crbug.com/385194416 external/wpt/html/canvas/element/text/2d.text.direction.default.tentative.html [ Failure ]
-crbug.com/385194416 external/wpt/html/canvas/element/text/2d.text.direction.valid.tentative.html [ Failure ]
-crbug.com/385194416 external/wpt/html/canvas/offscreen/text/2d.text.direction.default.tentative.html [ Failure ]
-crbug.com/385194416 external/wpt/html/canvas/offscreen/text/2d.text.direction.valid.tentative.html [ Failure ]
-crbug.com/385194416 external/wpt/html/canvas/offscreen/text/2d.text.direction.default.tentative.worker.html [ Failure ]
-crbug.com/385194416 external/wpt/html/canvas/offscreen/text/2d.text.direction.valid.tentative.worker.html [ Failure ]
+crbug.com/385194416 external/wpt/html/canvas/element/text/2d.text.direction.default.html [ Failure ]
+crbug.com/385194416 external/wpt/html/canvas/element/text/2d.text.direction.valid.html [ Failure ]
+crbug.com/385194416 external/wpt/html/canvas/offscreen/text/2d.text.direction.default.html [ Failure ]
+crbug.com/385194416 external/wpt/html/canvas/offscreen/text/2d.text.direction.valid.html [ Failure ]
+crbug.com/385194416 external/wpt/html/canvas/offscreen/text/2d.text.direction.default.worker.html [ Failure ]
+crbug.com/385194416 external/wpt/html/canvas/offscreen/text/2d.text.direction.valid.worker.html [ Failure ]
+crbug.com/385194416 [ Win ] external/wpt/html/canvas/offscreen/manual/text/canvas.2d.offscreen.worker.lang.inherit.html [ Failure ]
 
 # These are testing deprecated features: https://github.com/web-platform-tests/wpt/issues/35662
 external/wpt/editing/run/inserttext.html?2001-last [ Failure ]
@@ -2607,7 +2608,6 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/400775108 [ Win ] external/wpt/html/canvas/offscreen/manual/text/canvas.2d.offscreen.worker.lang.inherit.html [ Failure ]
 crbug.com/400781219 [ Win11-arm64 ] external/wpt/mathml/presentation-markup/operators/mo-form-dynamic.html [ Failure ]
 crbug.com/400781219 [ Win10.20h2 ] external/wpt/mathml/presentation-markup/operators/mo-form-dynamic.html [ Failure ]
 crbug.com/400504661 [ Mac ] external/wpt/editing/plaintext-only/nested-with-contenteditable-true.html [ Failure ]
