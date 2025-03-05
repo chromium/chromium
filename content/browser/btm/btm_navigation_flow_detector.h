@@ -104,6 +104,12 @@ class InFlowSuccessorInteractionState {
 
 // Detects possible navigation flows with the aim of discovering how to
 // distinguish user-interest navigation flows from navigational tracking.
+//
+// For most events a navigation flow consists of three consecutive navigations
+// in a tab (A->B->C). Some events might be recorded for flows with more than
+// three navigations e.g. InFlowSuccessorInteraction where there is 4 or more
+// navigations.
+//
 // Currently only reports UKM to inform how we might identify possible
 // navigational tracking by sites that also perform user-interest activity.
 class CONTENT_EXPORT BtmNavigationFlowDetector
@@ -121,23 +127,39 @@ class CONTENT_EXPORT BtmNavigationFlowDetector
  protected:
   explicit BtmNavigationFlowDetector(WebContents* web_contents);
 
+  // Records an event describing the characteristics of a navigation flow.
   void MaybeEmitNavFlowNodeUkmForPreviousPage();
   bool CanEmitNavFlowNodeUkmForPreviousPage() const;
 
+  // Records events for flows we suspect include a tracker and have a server
+  // redirect.
   void MaybeEmitSuspectedTrackerFlowUkmForServerRedirectExit(
       const BtmRedirectInfo* exit_info,
       int32_t flow_id);
   bool CanEmitSuspectedTrackerFlowUkmForServerRedirectExit(
       const BtmRedirectInfo* exit_info) const;
+
+  // Records events for flows we suspect include a tracker and have a client
+  // redirect.
   void MaybeEmitSuspectedTrackerFlowUkmForClientRedirectExit(int32_t flow_id);
   bool CanEmitSuspectedTrackerFlowUkmForClientRedirectExit() const;
+
   bool CanEmitSuspectedTrackerFlowUkm(
       const btm::PageVisitInfo& referrer_page_info,
       const btm::EntrypointInfo& entrypoint_info,
       const btm::PageVisitInfo& exit_page_info) const;
 
+  // Records an event for flows where there was a user interaction in between,
+  // i.e. for flow A->B->C, there was a user interaction on B. This could be
+  // used as a signal that B is not a tracker.
   void MaybeEmitInFlowInteraction(int32_t flow_id);
 
+  // Records events for flows where there's a series of same-site redirects,
+  // followed by a page with a user interaction (what we consider the
+  // "successor"), followed by another series of same-site redirects that end
+  // in a cross-site redirect. For example, we would record this event for
+  // A->B1->B2->B3->C, where B2 had a user interaction. This pattern is commonly
+  // used in auth flows and could be used as a signal that B1 is not a tracker.
   void MaybeEmitInFlowSuccessorInteraction();
 
  private:
@@ -173,6 +195,16 @@ class CONTENT_EXPORT BtmNavigationFlowDetector
   void OnNavigationCommitted(NavigationHandle* navigation_handle) override;
   // end RedirectChainDetector::Observer overrides
 
+  // Navigation Flow:
+  // A navigation flow consists of three navigations in a tab (A->B->C).
+  // The infos below correspond to A, B, and C, respectively and are updated
+  // when a new primary main frame navigation commits.
+  //
+  // Note that server redirects don't commit, so if there's a server redirect
+  // from B->C, the navigation to B is not committed and we need to retrieve B's
+  // information by other means i.e. using BtmRedirectContext. In this case,
+  // `previous_page_visit_info_` corresponds to A and `current_page_visit_info_`
+  // corresponds to C.
   std::optional<btm::PageVisitInfo> two_pages_ago_visit_info_;
   std::optional<btm::PageVisitInfo> previous_page_visit_info_;
   std::optional<btm::PageVisitInfo> current_page_visit_info_;
