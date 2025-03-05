@@ -110,7 +110,6 @@
 #include "third_party/blink/renderer/core/paint/paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_fragment.h"
-#include "third_party/blink/renderer/core/paint/view_painter.h"
 #include "third_party/blink/renderer/core/scroll/programmatic_scroll_animator.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
@@ -3159,36 +3158,7 @@ gfx::Rect PaintLayerScrollableArea::ScrollingBackgroundVisualRect(
   auto scroll_size = PixelSnappedContentsSize(clip_rect.offset);
   // Ensure scrolling contents are at least as large as the scroll clip
   scroll_size.SetToMax(overflow_clip_rect.size());
-  gfx::Rect result(overflow_clip_rect.origin(), scroll_size);
-
-  // The HTML element of a document is special, in that it can have a transform,
-  // but the bounds of the painted area of the element still extends beyond
-  // its actual size to encompass the entire viewport canvas. This is
-  // accomplished in ViewPainter by starting with a rect in viewport canvas
-  // space that is equal to the size of the viewport canvas, then mapping it
-  // into the local border box space of the HTML element, and painting a rect
-  // equal to the bounding box of the result. We need to add in that mapped rect
-  // in such cases.
-  const Document& document = box->GetDocument();
-  if (IsA<LayoutView>(box) &&
-      ViewPainter::ShouldApplyRootBackgroundBehavior(document)) {
-    if (const auto* document_element = document.documentElement()) {
-      if (const auto* document_element_object =
-              document_element->GetLayoutObject()) {
-        const auto& document_element_state =
-            document_element_object->FirstFragment().LocalBorderBoxProperties();
-        const auto& view_contents_state =
-            box->FirstFragment().ContentsProperties();
-        gfx::Rect result_in_view = result;
-        GeometryMapper::SourceToDestinationRect(
-            view_contents_state.Transform(), document_element_state.Transform(),
-            result_in_view);
-        result.Union(result_in_view);
-      }
-    }
-  }
-
-  return result;
+  return gfx::Rect(overflow_clip_rect.origin(), scroll_size);
 }
 
 String
