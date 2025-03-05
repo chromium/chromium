@@ -195,13 +195,12 @@ impl UnsafeTrap {
                     uninit_event.write(event);
                 }
 
-                // Now that all elements are initialized it is sound to
-                // assume_init.
-                #[allow(deprecated)]
-                // TODO(crbug.com/394100139): MaybeUninit::slice_assume_init_mut is deprecated.
-                unsafe {
-                    mem::MaybeUninit::slice_assume_init_mut(blocking_events)
-                }
+                // SAFETY: All elements of a slice are initialized in the loop above.
+                // `struct_size` is set.  Zeroed-memory represents valid values of `flags`
+                // (`MOJO_TRAP_EVENT_FLAG_NONE`), `trigger_context` (0), `result`
+                // (`MOJO_RESULT_OK`), and `signals_state` (2 values of
+                // `MOJO_HANDLE_SIGNAL_NONE`).
+                unsafe { blocking_events.assume_init_mut() }
             });
 
         let (blocking_events_ptr, num_events_ptr) = match blocking_events.as_mut() {
