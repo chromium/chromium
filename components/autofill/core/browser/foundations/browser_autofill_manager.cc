@@ -819,61 +819,26 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     return;
   }
 
-  // Called synchronously or, if Autofill AI takes a shot, asynchronously.
-  // If called asynchronously, the manager or even the client may have been
-  // destroyed already, so they must be null-checked.
-  auto import_and_vote_and_log_metrics =
-      [](base::WeakPtr<AutofillClient> client,
-         base::WeakPtr<BrowserAutofillManager> manager,
-         ukm::SourceId ukm_source_id, LanguageCode page_language,
-         const FormData& form, SubmissionSource source,
-         base::TimeTicks initial_interaction_timestamp,
-         base::TimeTicks form_submitted_timestamp,
-         const std::u16string& last_unlocked_credit_card_cvc,
-         std::unique_ptr<FormStructure> submitted_form,
-         bool autofill_ai_shows_bubble) {
-        if (!client) {
-          return;
-        }
+  submitted_form->set_submission_source(source);
+  LogSubmissionMetrics(submitted_form.get(), form_submitted_timestamp);
 
-        submitted_form->set_submission_source(source);
-
-        if (manager) {
-          manager->LogSubmissionMetrics(submitted_form.get(),
-                                        form_submitted_timestamp);
-        }
-
-        MaybeImportFromSubmittedForm(*client, ukm_source_id, *submitted_form,
-                                     form, autofill_ai_shows_bubble);
-        MaybeAddAddressSuggestionStrikes(*client, *submitted_form);
-        client->GetVotesUploader().MaybeStartVoteUploadProcess(
-            std::move(submitted_form),
-            /*observed_submission=*/true, page_language,
-            initial_interaction_timestamp, last_unlocked_credit_card_cvc,
-            ukm_source_id);
-      };
-
+  bool autofill_ai_shows_bubble = false;
   // Try to import the `form` via the `AutofillAiDelegate`.
   // `MaybeImportFromSubmittedForm()` will be called if the import was not
   // successful.
   if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
       delegate && delegate->IsUserEligibleForFillingAndImporting()) {
-    delegate->MaybeImportForm(
-        std::move(submitted_form),
-        base::BindOnce(import_and_vote_and_log_metrics, client().GetWeakPtr(),
-                       weak_ptr_factory_.GetWeakPtr(),
-                       driver().GetPageUkmSourceId(), GetCurrentPageLanguage(),
-                       form, source, metrics_->initial_interaction_timestamp,
-                       form_submitted_timestamp,
-                       last_unlocked_credit_card_cvc_));
-  } else {
-    import_and_vote_and_log_metrics(
-        client().GetWeakPtr(), weak_ptr_factory_.GetWeakPtr(),
-        driver().GetPageUkmSourceId(), GetCurrentPageLanguage(), form, source,
-        metrics_->initial_interaction_timestamp, form_submitted_timestamp,
-        last_unlocked_credit_card_cvc_, std::move(submitted_form),
-        /*autofill_ai_shows_bubble=*/false);
+    autofill_ai_shows_bubble = delegate->MaybeImportForm(*submitted_form);
   }
+
+  MaybeImportFromSubmittedForm(client(), driver().GetPageUkmSourceId(),
+                               *submitted_form, form, autofill_ai_shows_bubble);
+  MaybeAddAddressSuggestionStrikes(client(), *submitted_form);
+  client().GetVotesUploader().MaybeStartVoteUploadProcess(
+      std::move(submitted_form),
+      /*observed_submission=*/true, GetCurrentPageLanguage(),
+      metrics_->initial_interaction_timestamp, last_unlocked_credit_card_cvc_,
+      driver().GetPageUkmSourceId());
 }
 
 void BrowserAutofillManager::UpdatePendingForm(const FormData& form) {

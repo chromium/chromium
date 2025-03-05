@@ -50,11 +50,7 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
       const autofill::AutofillField& field) const override;
   bool IsUserEligible() const override;
   bool IsUserEligibleForFillingAndImporting() const override;
-  void MaybeImportForm(
-      std::unique_ptr<autofill::FormStructure> form,
-      base::OnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
-                              bool autofill_ai_shows_bubble)> callback)
-      override;
+  bool MaybeImportForm(const autofill::FormStructure& form) override;
   bool ShouldDisplayIph(const autofill::AutofillField& field) const override;
   void OnSuggestionsShown(const autofill::DenseSet<autofill::SuggestionType>&
                               shown_suggestion_types,

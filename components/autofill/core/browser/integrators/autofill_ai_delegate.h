@@ -44,24 +44,9 @@ class AutofillAiDelegate {
   virtual bool IsUserEligibleForFillingAndImporting() const = 0;
 
   // Displays an import bubble for `form` if Autofill AI is interested in the
-  // form and then calls `autofill_callback`. It is guaranteed that `form` is
-  // non-null.
-  //
-  // CAUTION: `autofill_callback` *must* be called, independent of whether
-  // Autofill AI is interested in the form or not. The passed `FormStructure`
-  // *must* be identical to `form_structure`; in particular, it must be
-  // non-null.
-  //
-  // The purpose of `autofill_callback` is to allow Autofill to import the form
-  // on its own and/or send votes, for example. If Autofill AI has imported the
-  // form, `autofill_ai_shows_bubble` is set to true; this is to avoid
-  // conflicting import bubbles. The call happens synchronously or
-  // asynchronously.
-  virtual void MaybeImportForm(
-      std::unique_ptr<FormStructure> form_structure,
-      base::OnceCallback<void(std::unique_ptr<FormStructure> form,
-                              bool autofill_ai_shows_bubble)>
-          autofill_callback) = 0;
+  // form and then calls `autofill_callback`. Returns whether an import bubble
+  // will be shown.
+  virtual bool MaybeImportForm(const FormStructure& form_structure) = 0;
 
   // Returns whether we should suggest to the user enabling the Autofill AI pref
   // in chrome://settings.

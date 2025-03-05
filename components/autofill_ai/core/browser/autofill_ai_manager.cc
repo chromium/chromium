@@ -336,27 +336,19 @@ void AutofillAiManager::OnEditedAutofilledField(
   logger_.OnDidCorrectFillingSuggestion(form_id);
 }
 
-void AutofillAiManager::MaybeImportForm(
-    std::unique_ptr<autofill::FormStructure> form,
-    base::OnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
-                            bool autofill_ai_shows_bubble)> autofill_callback) {
+bool AutofillAiManager::MaybeImportForm(const autofill::FormStructure& form) {
   autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
   if (!entity_manager) {
-    // The import is skipped because the entity data manager service is not
-    // available.
     LOG_AF(GetCurrentLogManager())
         << LoggingScope::kAutofillAi << LogMessage::kAutofillAi
         << "Entity data manager is not available";
-
-    std::move(autofill_callback).Run(std::move(form), false);
-    return;
+    return false;
   }
   std::vector<EntityInstance> entity_instances_from_form =
       GetPossibleEntitiesFromSubmittedForm(
-          *form, client_->GetAutofillClient().GetAppLocale());
+          form, client_->GetAutofillClient().GetAppLocale());
   if (entity_instances_from_form.empty()) {
-    std::move(autofill_callback).Run(std::move(form), false);
-    return;
+    return false;
   }
 
   base::span<const EntityInstance> current_entities =
@@ -365,17 +357,16 @@ void AutofillAiManager::MaybeImportForm(
 
   for (EntityInstance& entity : entity_instances_from_form) {
     if (ShouldShowNewEntitySavePrompt(entity, current_entities)) {
-      if (IsSaveBlockedByStrikeDatabase(form->source_url(), entity)) {
+      if (IsSaveBlockedByStrikeDatabase(form.source_url(), entity)) {
         continue;
       }
       auto prompt_result_callback =
           BindOnce(&AutofillAiManager::HandleSavePromptResult, GetWeakPtr(),
-                   form->source_url(), entity);
+                   form.source_url(), entity);
       client_->ShowSaveOrUpdateBubble(std::move(entity),
                                       /*old_entity=*/std::nullopt,
                                       std::move(prompt_result_callback));
-      std::move(autofill_callback).Run(std::move(form), true);
-      return;
+      return true;
     }
     if (std::optional<std::pair<EntityInstance, EntityInstance>>
             entity_to_update = MaybeUpdateEntity(entity, current_entities)) {
@@ -389,11 +380,10 @@ void AutofillAiManager::MaybeImportForm(
       client_->ShowSaveOrUpdateBubble(std::move(new_entity),
                                       std::move(old_entity),
                                       std::move(prompt_result_callback));
-      std::move(autofill_callback).Run(std::move(form), true);
-      return;
+      return true;
     }
   }
-  std::move(autofill_callback).Run(std::move(form), false);
+  return false;
 }
 
 void AutofillAiManager::HandleSavePromptResult(

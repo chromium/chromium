@@ -6806,14 +6806,7 @@ TEST_F(BrowserAutofillManagerTest,
   // prediction improvements.
   adm.ClearProfiles();
   ASSERT_TRUE(adm.GetProfiles().empty());
-  EXPECT_CALL(delegate, MaybeImportForm)
-      .WillOnce(
-          [](std::unique_ptr<FormStructure> form,
-             base::OnceCallback<void(std::unique_ptr<FormStructure> form,
-                                     bool autofill_ai_shows_bubble)> callback) {
-            std::move(callback).Run(std::move(form),
-                                    /*autofill_ai_shows_bubble=*/true);
-          });
+  EXPECT_CALL(delegate, MaybeImportForm).WillOnce(Return(true));
   FormSubmitted(response_data);
   EXPECT_TRUE(adm.GetProfiles().empty());
 }
@@ -6841,14 +6834,7 @@ TEST_F(BrowserAutofillManagerTest,
   // that the profile is imported again.
   adm.ClearProfiles();
   ASSERT_TRUE(adm.GetProfiles().empty());
-  EXPECT_CALL(delegate, MaybeImportForm)
-      .WillOnce(
-          [](std::unique_ptr<FormStructure> form,
-             base::OnceCallback<void(std::unique_ptr<FormStructure> form,
-                                     bool autofill_ai_shows_bubble)> callback) {
-            std::move(callback).Run(std::move(form),
-                                    /*autofill_ai_shows_bubble=*/false);
-          });
+  EXPECT_CALL(delegate, MaybeImportForm).WillOnce(Return(false));
   FormSubmitted(response_data);
   EXPECT_FALSE(adm.GetProfiles().empty());
 }
