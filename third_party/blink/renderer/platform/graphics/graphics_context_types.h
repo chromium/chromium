@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2006 Apple Computer, Inc.  All rights reserved.
- * Copyright (C) 2012 Rik Cabanier (cabanier@adobe.com)
+ * Copyright (C) 2004, 2005, 2006 Apple Computer, Inc.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -24,17 +23,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRAPHICS_CONTEXT_TYPES_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRAPHICS_CONTEXT_TYPES_H_
 
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "cc/paint/paint_flags.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
 
-InterpolationQuality GetDefaultInterpolationQuality() {
-  if (RuntimeEnabledFeatures::UseLowQualityInterpolationEnabled()) {
-    return InterpolationQuality::kInterpolationLow;
-  }
-  return InterpolationQuality::kInterpolationMedium;
-}
+using DynamicRangeLimit = ::cc::PaintFlags::DynamicRangeLimitMixture;
+
+enum InterpolationQuality {
+  kInterpolationNone = static_cast<int>(cc::PaintFlags::FilterQuality::kNone),
+  kInterpolationLow = static_cast<int>(cc::PaintFlags::FilterQuality::kLow),
+  kInterpolationMedium =
+      static_cast<int>(cc::PaintFlags::FilterQuality::kMedium),
+};
+
+enum AntiAliasingMode { kNotAntiAliased, kAntiAliased };
+
+enum TextPaintOrder { kFillStroke, kStrokeFill };
+
+enum TextDrawingMode {
+  kTextModeFill = 1 << 0,
+  kTextModeStroke = 1 << 1,
+};
+typedef unsigned TextDrawingModeFlags;
+
+PLATFORM_EXPORT InterpolationQuality GetDefaultInterpolationQuality();
 
 }  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRAPHICS_CONTEXT_TYPES_H_

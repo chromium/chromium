@@ -3601,7 +3601,7 @@
       field_template: "external",
       keywords: ["standard", "high", "constrained-high"],
       typedom_types: ["Keyword"],
-      include_paths: ["third_party/blink/renderer/platform/graphics/graphics_types.h"],
+      include_paths: ["third_party/blink/renderer/platform/graphics/graphics_context_types.h"],
       default_value: "DynamicRangeLimit(cc::PaintFlags::DynamicRangeLimit::kHigh)",
       invalidate: ["paint"],
     },
