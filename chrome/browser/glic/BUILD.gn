@@ -10,6 +10,7 @@ assert(enable_glic)
 source_set("glic") {
   sources = [
     "auth_controller.h",
+    "glic_annotation_manager.cc",
     "glic_border_view.h",
     "glic_button_controller.h",
     "glic_button_controller_delegate.h",
@@ -58,7 +59,10 @@ source_set("glic") {
     "//ui/views/controls/webview",
     "//ui/webui",
   ]
-  deps = [ "//components/user_education/common" ]
+  deps = [
+    "//chrome/common",
+    "//components/user_education/common",
+  ]
 }
 
 source_set("enum") {
@@ -72,8 +76,6 @@ source_set("impl") {
     "browser_conditions.h",
     "fre_util.cc",
     "fre_util.h",
-    "glic_annotation_manager.cc",
-    "glic_annotation_manager.h",
     "glic_border_view.cc",
     "glic_button_controller.cc",
     "glic_cookie_synchronizer.cc",
@@ -105,8 +107,8 @@ source_set("impl") {
     "glic_ui.cc",
     "glic_vector_icon_manager.cc",
     "glic_view.cc",
-    "glic_widget.cc",
     "glic_widget.h",
+    "glic_widget.cc",
     "glic_window_animator.cc",
     "glic_window_animator.h",
     "glic_window_controller.cc",
@@ -120,9 +122,9 @@ source_set("impl") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":glic",
+    "//chrome/browser/background/glic",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
-    "//chrome/browser/background/glic",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/resources/glic:resources",
@@ -199,15 +201,14 @@ source_set("unit_tests") {
     "glic_enabling_unittest.cc",
     "glic_fre_controller_unittest.cc",
     "glic_metrics_unittest.cc",
-    "glic_profile_manager_unittest.cc",
   ]
   deps = [
     ":glic",
     ":impl",
     ":test_support",
     "//base/test:test_support",
-    "//chrome/browser:global_features",
     "//chrome/browser/background/glic",
+    "//chrome/browser:global_features",
     "//chrome/browser/ui",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
@@ -221,8 +222,10 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
     "glic_browsertest.cc",
+    "glic_enabling_browsertest.cc",
     "glic_fre_controller_browsertest.cc",
     "glic_policy_browsertest.cc",
+    "glic_profile_manager_browsertest.cc",
     "guest_util_browsertest.cc",
   ]
   deps = [
@@ -230,9 +233,9 @@ source_set("browser_tests") {
     ":impl",
     ":test_support",
     "//chrome/browser",
+    "//chrome/browser/background/glic",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
-    "//chrome/browser/background/glic",
     "//chrome/browser/extensions:extensions",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/ui",

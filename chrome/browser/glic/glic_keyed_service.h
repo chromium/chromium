@@ -50,6 +50,9 @@ class GlicKeyedService : public KeyedService {
   GlicKeyedService& operator=(const GlicKeyedService&) = delete;
   ~GlicKeyedService() override;
 
+  // Convenience method, may return nullptr.
+  static GlicKeyedService* Get(content::BrowserContext* context);
+
   // KeyedService
   void Shutdown() override;
 

@@ -17,8 +17,7 @@ class GlicKeyedServiceFactory : public ProfileKeyedServiceFactory {
   static GlicKeyedServiceFactory* GetInstance();
 
   static GlicKeyedService* GetGlicKeyedService(
-      content::BrowserContext* browser_context,
-      bool create = true);
+      content::BrowserContext* browser_context);
 
   GlicKeyedServiceFactory(const GlicKeyedServiceFactory&) = delete;
   GlicKeyedServiceFactory& operator=(const GlicKeyedServiceFactory&) = delete;

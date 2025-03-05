@@ -448,8 +448,7 @@
           Profile::FromBrowserContext(webContents->GetBrowserContext());
       glic::GlicEnabling::IsProfileEligible(profile)) {
     glic::GlicKeyedService* glic_service =
-        glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile,
-                                                           /*create=*/false);
+        glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
     if (glic_service && glic_service->IsActiveWebContents(webContents)) {
       return kAcceptMouseEventsInActiveApp;
     }
