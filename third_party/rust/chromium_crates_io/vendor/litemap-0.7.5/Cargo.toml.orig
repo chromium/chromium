@@ -4,7 +4,7 @@
 
 [package]
 name = "litemap"
-version = "0.7.4"
+version = "0.7.5"
 keywords = ["sorted", "vec", "map", "hashmap", "btreemap"]
 description = "A key-value Map implementation based on a flat, sorted Vec."
 documentation = "https://docs.rs/litemap"
@@ -40,7 +40,6 @@ serde_json = { workspace = true }
 criterion = { workspace = true }
 
 [features]
-bench = ["serde"]
 default = ["alloc"]
 alloc = []
 databake = ["dep:databake"]
@@ -49,10 +48,6 @@ yoke = ["dep:yoke"]
 
 # Enables the `testing` module with tools for testing custom stores.
 testing = ["alloc"]
-
-[package.metadata.cargo-all-features]
-# Bench feature gets tested separately and is only relevant for CI
-denylist = ["bench"]
 
 [lib]
 bench = false  # This option is required for Benchmark CI

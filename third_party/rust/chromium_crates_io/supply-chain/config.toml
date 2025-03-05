@@ -302,7 +302,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."link-cplusplus:1.0.10"]
 criteria = []
 
-[policy."litemap:0.7.4"]
+[policy."litemap:0.7.5"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."log:0.4.25"]
