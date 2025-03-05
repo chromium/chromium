@@ -10,7 +10,7 @@
 
 namespace blink {
 
-ScrollMarkerChooser::ScrollTargetOffsetData
+std::optional<ScrollMarkerChooser::ScrollTargetOffsetData>
 ScrollMarkerChooser::GetScrollTargetOffsetData(const Element* scroll_marker) {
   const LayoutBox* target_box = nullptr;
   if (auto* scroll_marker_pseudo =
@@ -18,7 +18,9 @@ ScrollMarkerChooser::GetScrollTargetOffsetData(const Element* scroll_marker) {
     target_box =
         scroll_marker_pseudo->UltimateOriginatingElement().GetLayoutBox();
   }
-  CHECK(target_box);
+  if (!target_box) {
+    return std::nullopt;
+  }
   const LayoutObject* scroll_marker_object = scroll_marker->GetLayoutObject();
   CHECK(scroll_marker_object);
   PhysicalBoxStrut scroll_margin =
@@ -101,9 +103,12 @@ HeapVector<Member<Element>> ScrollMarkerChooser::ChooseReserved(
   HeapVector<Member<Element>> candidates_in_range;
   std::set<int> unique_offsets;
   for (Element* candidate : candidates) {
-    ScrollTargetOffsetData candidate_data =
+    std::optional<ScrollTargetOffsetData> candidate_data =
         GetScrollTargetOffsetData(candidate);
-    float candidate_offset = candidate_data.aligned_scroll_offset;
+    if (!candidate_data) {
+      continue;
+    }
+    float candidate_offset = candidate_data->aligned_scroll_offset;
     bool keep_candidate =
         within_start ? (candidate_offset < min_position_ + reserved_length_)
                      : (candidate_offset > max_position_ - reserved_length_);
@@ -133,12 +138,15 @@ HeapVector<Member<Element>> ScrollMarkerChooser::ChooseReserved(
         candidates_in_range[winning_index_within_reserved];
 
     const ScrollTargetOffsetData winning_candidate_data =
-        GetScrollTargetOffsetData(winning_candidate);
+        *GetScrollTargetOffsetData(winning_candidate);
     const float winning_offset = winning_candidate_data.aligned_scroll_offset;
     for (Element* candidate : candidates) {
-      const ScrollTargetOffsetData offset_data =
+      const std::optional<ScrollTargetOffsetData> offset_data =
           GetScrollTargetOffsetData(candidate);
-      const float candidate_offset = offset_data.aligned_scroll_offset;
+      if (!offset_data) {
+        continue;
+      }
+      const float candidate_offset = offset_data->aligned_scroll_offset;
       // TODO: Some epsilon tolerance?
       if (candidate_offset == winning_offset) {
         selection.push_back(candidate);
@@ -154,9 +162,12 @@ HeapVector<Member<Element>> ScrollMarkerChooser::ChooseGeneric(
   HeapVector<Member<Element>> selection;
   std::optional<float> smallest_distance;
   for (Element* scroll_marker : candidates) {
-    ScrollTargetOffsetData target_data =
+    std::optional<ScrollTargetOffsetData> target_data =
         GetScrollTargetOffsetData(scroll_marker);
-    float candidate_position = target_data.aligned_scroll_offset;
+    if (!target_data) {
+      continue;
+    }
+    float candidate_position = target_data->aligned_scroll_offset;
     float candidate_distance =
         std::abs(candidate_position - intended_position_);
 
@@ -196,10 +207,14 @@ HeapVector<Member<Element>> ScrollMarkerChooser::ChooseVisual(
 
   std::optional<float> smallest_distance;
   for (Element* candidate : candidates) {
-    ScrollTargetOffsetData target_data = GetScrollTargetOffsetData(candidate);
-    float candidate_position = target_data.layout_offset;
+    std::optional<ScrollTargetOffsetData> target_data =
+        GetScrollTargetOffsetData(candidate);
+    if (!target_data) {
+      continue;
+    }
+    float candidate_position = target_data->layout_offset;
     if (within_end) {
-      candidate_position += target_data.layout_size;
+      candidate_position += target_data->layout_size;
     }
 
     float distance = std::abs(candidate_position - scroll_position);
