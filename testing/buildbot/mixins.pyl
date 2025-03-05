@@ -245,7 +245,7 @@
       '--extra-browser-args=--force_high_performance_gpu',
     ],
   },
-  'gpu_force_high_performance_gpu_for_webgl': {
+  'gpu_force_high_performance_gpu_for_webgl_metal': {
     'args': [
       '--extra-browser-args=--enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL',
     ],
