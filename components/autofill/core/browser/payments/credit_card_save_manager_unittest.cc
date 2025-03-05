@@ -19,6 +19,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -79,6 +80,7 @@ namespace autofill {
 namespace {
 
 using base::ASCIIToUTF16;
+using ::base::test::RunOnceCallback;
 using test::CreateTestAddressFormData;
 using test::CreateTestFormField;
 using ::testing::_;
@@ -98,10 +100,36 @@ using SaveCreditCardOptions =
     payments::PaymentsAutofillClient::SaveCreditCardOptions;
 using SaveCardOfferUserDecision =
     payments::PaymentsAutofillClient::SaveCardOfferUserDecision;
+using UserProvidedCardDetails =
+    payments::PaymentsAutofillClient::UserProvidedCardDetails;
 
 #if !BUILDFLAG(IS_IOS)
 base::TimeDelta kVeryLargeDelta = base::Days(365) * 75;
 #endif
+
+bool FixFlowDetectedValuesOverriddenOnIos() {
+#if BUILDFLAG(IS_IOS)
+  // On iOS, if the flag is disabled, `DetectedValues` for missing cardholder
+  // name and expiry date are defaulted as true. Tests verifying the detection
+  // bits for presence of a fix flow should skip running the test.
+  return !base::FeatureList::IsEnabled(
+      features::kAutofillDisableDefaultSaveCardFixFlowDetection);
+#else
+  return false;
+#endif
+}
+
+std::string FiveMonthsFromNow() {
+  base::Time::Exploded now;
+  base::Time::Now().LocalExplode(&now);
+  return base::StringPrintf("%02d", (now.month + 4) % 12 + 1);
+}
+
+std::string FiveYearsFromNow() {
+  base::Time::Exploded now;
+  base::Time::Now().LocalExplode(&now);
+  return base::NumberToString(now.year + 5);
+}
 
 // Used to configure form for |CreateTestCreditCardFormData|.
 struct CreditCardFormOptions {
@@ -183,6 +211,19 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
       (override));
   MOCK_METHOD(void, HideSaveCardPrompt, (), (override));
 
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(void,
+              ConfirmAccountNameFixFlow,
+              (base::OnceCallback<void(const std::u16string&)> callback),
+              (override));
+  MOCK_METHOD(void,
+              ConfirmExpirationDateFixFlow,
+              (const CreditCard& card,
+               base::OnceCallback<void(const std::u16string&,
+                                       const std::u16string&)> callback),
+              (override));
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // Used in tests to ensure that:
   // 1) ConfirmSaveCreditCardLocally() was called.
   // 2) The SaveCreditCardOptions::show_prompt matches the `prompt_shown` param.
@@ -223,15 +264,31 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
   // Used in tests to set what SaveCardOfferUserDecision the
   // ConfirmSaveCreditCardToCloud() method should call the callback with.
   void SetCloudSaveCallbackOfferDecision(
-      SaveCardOfferUserDecision offer_decision) {
+      SaveCardOfferUserDecision offer_decision,
+      UserProvidedCardDetails user_provided_details = {}) {
     ON_CALL(*this, ConfirmSaveCreditCardToCloud)
         .WillByDefault(
-            [offer_decision](
+            [offer_decision, user_provided_details](
                 const CreditCard&, const LegalMessageLines&,
                 SaveCreditCardOptions,
                 payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
-                    callback) { std::move(callback).Run(offer_decision, {}); });
+                    callback) {
+              std::move(callback).Run(offer_decision, user_provided_details);
+            });
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  void ExpectAccountFixFlow(const std::u16string& cardholder_name) {
+    EXPECT_CALL(*this, ConfirmAccountNameFixFlow)
+        .WillOnce(RunOnceCallback<0>(cardholder_name));
+  }
+
+  void ExpectExpirationDateFixFlow(const std::u16string& month,
+                                   const std::u16string& year) {
+    EXPECT_CALL(*this, ConfirmExpirationDateFixFlow)
+        .WillOnce(RunOnceCallback<1>(month, year));
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 // A mock AutofillClient using the `MockPaymentsDataManager` and
@@ -330,8 +387,7 @@ class CreditCardSaveManagerTest : public testing::Test {
   }
 
   void UserHasAcceptedCardUpload(
-      payments::PaymentsAutofillClient::UserProvidedCardDetails
-          user_provided_card_details) {
+      UserProvidedCardDetails user_provided_card_details) {
     credit_card_save_manager_->OnUserDidDecideOnUploadSave(
         SaveCardOfferUserDecision::kAccepted, user_provided_card_details);
   }
@@ -341,10 +397,30 @@ class CreditCardSaveManagerTest : public testing::Test {
   }
 
   void UserHasAcceptedCvcUpload(
-      payments::PaymentsAutofillClient::UserProvidedCardDetails
-          user_provided_card_details) {
+      UserProvidedCardDetails user_provided_card_details) {
     credit_card_save_manager_->OnUserDidDecideOnCvcUploadSave(
         SaveCardOfferUserDecision::kAccepted, user_provided_card_details);
+  }
+
+  void SetCardDetailsForFixFlow(UserProvidedCardDetails user_provided_details) {
+    // On Android, requesting expiration date or cardholder name has an
+    // additional fix flow step. A combined fix flow is not supported.
+#if BUILDFLAG(IS_ANDROID)
+    if (!user_provided_details.cardholder_name.empty()) {
+      ASSERT_TRUE(user_provided_details.expiration_date_month.empty());
+      ASSERT_TRUE(user_provided_details.expiration_date_year.empty());
+
+      payments_client().ExpectAccountFixFlow(
+          user_provided_details.cardholder_name);
+    } else {
+      payments_client().ExpectExpirationDateFixFlow(
+          user_provided_details.expiration_date_month,
+          user_provided_details.expiration_date_year);
+    }
+#else
+    payments_client().SetCloudSaveCallbackOfferDecision(
+        SaveCardOfferUserDecision::kAccepted, user_provided_details);
+#endif
   }
 
   // Returns a `FormData` with data corresponding to a simple credit card form.
@@ -1861,10 +1937,14 @@ TEST_F(CreditCardSaveManagerTest,
 }
 #endif
 
-// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
-// permanently if the test doesn't apply to iOS flow.
-#if !BUILDFLAG(IS_IOS)
+// Tests that if credit card form is submitted with a missing cardholder name,
+// the cardholder name is requested and card is uploaded on providing the name.
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoNameAvailable) {
+  if (FixFlowDetectedValuesOverriddenOnIos()) {
+    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
+                    "have been overridden.";
+  }
+
   // Add a profile without a name to the PersonalDataManager.
   AutofillProfile profile(AddressCountryCode("US"));
   profile.SetRawInfo(ADDRESS_HOME_ZIP, u"77401");
@@ -1888,6 +1968,12 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoNameAvailable) {
   // still decide to allow saving despite the missing name.
   EXPECT_CALL(payments_client(), ConfirmSaveCreditCardLocally).Times(0);
 
+  // Set a cardholder name, to be used as an user provided name for cardholder
+  // name fix flow.
+  UserProvidedCardDetails user_provided_details = {.cardholder_name =
+                                                       u"Chrome User"};
+  SetCardDetailsForFixFlow(user_provided_details);
+
   FormSubmitted(credit_card_form);
 
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
@@ -1904,8 +1990,13 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoNameAvailable) {
       autofill_metrics::UPLOAD_OFFERED |
       autofill_metrics::UPLOAD_NOT_OFFERED_NO_NAME |
       autofill_metrics::USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME);
+
+  // Verify the card details in `UploadRequest` matches the one in
+  // `UserProvidedCardDetails`.
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_NAME_FULL, "en-US"),
+            user_provided_details.cardholder_name);
 }
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(CreditCardSaveManagerTest,
@@ -2067,11 +2158,15 @@ TEST_F(CreditCardSaveManagerTest,
                   ClientBehaviorConstants::kOfferingToSaveCvc)));
 }
 
-// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
-// permanently if the test doesn't apply to iOS flow.
-#if !BUILDFLAG(IS_IOS)
+// Tests that if credit card form is submitted with a missing cardholder name,
+// the cardholder name is requested and card is uploaded on providing the name.
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_NoNameAvailableAndNoProfileAvailable) {
+  if (FixFlowDetectedValuesOverriddenOnIos()) {
+    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
+                    "have been overridden.";
+  }
+
   // Don't fill or submit an address form.
 
   // Set up our credit card form data.
@@ -2091,6 +2186,12 @@ TEST_F(CreditCardSaveManagerTest,
   // With the offer-to-save decision deferred to Google Payments, Payments can
   // still decide to allow saving despite the missing names/address.
   EXPECT_CALL(payments_client(), ConfirmSaveCreditCardLocally).Times(0);
+
+  // Set a cardholder name. Represents an user provided name for cardholder name
+  // fix flow.
+  UserProvidedCardDetails user_provided_details = {.cardholder_name =
+                                                       u"Chrome User"};
+  SetCardDetailsForFixFlow(user_provided_details);
 
   FormSubmitted(credit_card_form);
 
@@ -2112,8 +2213,13 @@ TEST_F(CreditCardSaveManagerTest,
       autofill_metrics::UPLOAD_NOT_OFFERED_NO_ADDRESS_PROFILE |
       autofill_metrics::UPLOAD_NOT_OFFERED_NO_NAME |
       autofill_metrics::USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME);
+
+  // Verify the cardholder name in `UploadRequest` matches the one in
+  // `UserProvidedCardDetails`.
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_NAME_FULL, "en-US"),
+            user_provided_details.cardholder_name);
 }
-#endif
 
 // TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
@@ -2416,11 +2522,16 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoMiddleInitialInCCForm) {
 }
 #endif
 
-// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
-// permanently if the test doesn't apply to iOS flow.
-#if !BUILDFLAG(IS_IOS)
+// Tests that if credit card form is submitted with a conflicting cardholder
+// name, the cardholder name is requested and card is uploaded on providing the
+// name.
 TEST_F(CreditCardSaveManagerTest,
-       UploadCreditCard_CCFormHasCardholderMiddleName) {
+       UploadCreditCard_CCFormHasCardholderMiddleNameNoAddressMiddleName) {
+  if (FixFlowDetectedValuesOverriddenOnIos()) {
+    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
+                    "have been overridden.";
+  }
+
   // Create, fill and submit address form without middle name.
   FormData address_form = CreateTestAddressFormData();
   FormsSeen({address_form});
@@ -2446,6 +2557,12 @@ TEST_F(CreditCardSaveManagerTest,
   // still decide to allow saving despite the mismatching names.
   EXPECT_CALL(payments_client(), ConfirmSaveCreditCardLocally).Times(0);
 
+  // Set a cardholder name, to be used as an user provided name for cardholder
+  // name fix flow.
+  UserProvidedCardDetails user_provided_details = {.cardholder_name =
+                                                       u"Chrome User"};
+  SetCardDetailsForFixFlow(user_provided_details);
+
   FormSubmitted(credit_card_form);
 
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
@@ -2462,13 +2579,24 @@ TEST_F(CreditCardSaveManagerTest,
       autofill_metrics::UPLOAD_OFFERED |
       autofill_metrics::UPLOAD_NOT_OFFERED_CONFLICTING_NAMES |
       autofill_metrics::USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME);
-}
-#endif
 
-// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
-// permanently if the test doesn't apply to iOS flow.
-#if !BUILDFLAG(IS_IOS)
-TEST_F(CreditCardSaveManagerTest, UploadCreditCard_CCFormHasAddressMiddleName) {
+  // Verify the card details in `UploadRequest` matches the one in
+  // `UserProvidedCardDetails`.
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_NAME_FULL, "en-US"),
+            user_provided_details.cardholder_name);
+}
+
+// Tests that if credit card form is submitted with a conflicting cardholder
+// name, the cardholder name is requested and card is uploaded on providing the
+// name.
+TEST_F(CreditCardSaveManagerTest,
+       UploadCreditCard_CCFormHasAddressMiddleNameNoCardholderMiddleName) {
+  if (FixFlowDetectedValuesOverriddenOnIos()) {
+    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
+                    "have been overridden.";
+  }
+
   // Create, fill and submit address form with middle name.
   FormData address_form = CreateTestAddressFormData();
   FormsSeen({address_form});
@@ -2494,6 +2622,12 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_CCFormHasAddressMiddleName) {
   // still decide to allow saving despite the mismatching names.
   EXPECT_CALL(payments_client(), ConfirmSaveCreditCardLocally).Times(0);
 
+  // Set a cardholder name, to be used as an user provided name for cardholder
+  // name fix flow.
+  UserProvidedCardDetails user_provided_details = {.cardholder_name =
+                                                       u"Chrome User"};
+  SetCardDetailsForFixFlow(user_provided_details);
+
   FormSubmitted(credit_card_form);
 
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
@@ -2510,13 +2644,23 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_CCFormHasAddressMiddleName) {
       autofill_metrics::UPLOAD_OFFERED |
       autofill_metrics::UPLOAD_NOT_OFFERED_CONFLICTING_NAMES |
       autofill_metrics::USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME);
-}
-#endif
 
-// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
-// permanently if the test doesn't apply to iOS flow.
-#if !BUILDFLAG(IS_IOS)
+  // Verify the card details in `UploadRequest` matches the one in
+  // `UserProvidedCardDetails`.
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_NAME_FULL, "en-US"),
+            user_provided_details.cardholder_name);
+}
+
+// Tests that if credit card form is submitted with a conflicting cardholder
+// name, the cardholder name is requested and card is uploaded on providing the
+// name.
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NamesCanMismatch) {
+  if (FixFlowDetectedValuesOverriddenOnIos()) {
+    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
+                    "have been overridden.";
+  }
+
   // Create, fill and submit two address forms with different names.
   FormData address_form1 = test::CreateTestAddressFormData("1");
   FormData address_form2 = test::CreateTestAddressFormData("2");
@@ -2551,6 +2695,12 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NamesCanMismatch) {
   // still decide to allow saving despite the mismatching names.
   EXPECT_CALL(payments_client(), ConfirmSaveCreditCardLocally).Times(0);
 
+  // Set a cardholder name, to be used as an user provided name for cardholder
+  // name fix flow.
+  UserProvidedCardDetails user_provided_details = {.cardholder_name =
+                                                       u"Chrome User"};
+  SetCardDetailsForFixFlow(user_provided_details);
+
   FormSubmitted(credit_card_form);
 
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
@@ -2567,8 +2717,13 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NamesCanMismatch) {
       autofill_metrics::UPLOAD_OFFERED |
       autofill_metrics::UPLOAD_NOT_OFFERED_CONFLICTING_NAMES |
       autofill_metrics::USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME);
+
+  // Verify the card details in `UploadRequest` matches the one in
+  // `UserProvidedCardDetails`.
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_NAME_FULL, "en-US"),
+            user_provided_details.cardholder_name);
 }
-#endif
 
 // TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
@@ -2617,6 +2772,9 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_IgnoreOldProfiles) {
 }
 #endif
 
+// Tests that if credit card form is submitted with a missing cardholder name by
+// a non Payments Customer, the cardholder name is requested and card is
+// uploaded on providing the name.
 TEST_F(
     CreditCardSaveManagerTest,
     UploadCreditCard_RequestCardholderNameIfNameMissingAndNoPaymentsCustomer) {
@@ -2646,6 +2804,12 @@ TEST_F(
   // still decide to allow saving despite the missing name.
   EXPECT_CALL(payments_client(), ConfirmSaveCreditCardLocally).Times(0);
 
+  // Set a cardholder name. Represents user provided name during cardholder name
+  // fix flow.
+  UserProvidedCardDetails user_provided_details = {.cardholder_name =
+                                                       u"Chrome User"};
+  SetCardDetailsForFixFlow(user_provided_details);
+
   FormSubmitted(credit_card_form);
 
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
@@ -2657,8 +2821,18 @@ TEST_F(
       autofill_metrics::USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME);
   EXPECT_TRUE(payments_network_interface().detected_values_in_upload_details() &
               CreditCardSaveManager::DetectedValue::USER_PROVIDED_NAME);
+  EXPECT_TRUE(credit_card_save_manager_->should_request_name_from_user());
+
+  // Verify the cardholder name in `UploadRequest` matches the one in
+  // `UserProvidedCardDetails`.
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_NAME_FULL, "en-US"),
+            user_provided_details.cardholder_name);
 }
 
+// Tests that if credit card form is submitted with a conflicting cardholder
+// name by a non Payments Customer, the cardholder name is requested and card is
+// uploaded on providing the name.
 TEST_F(
     CreditCardSaveManagerTest,
     UploadCreditCard_RequestCardholderNameIfNameConflictingAndNoPaymentsCustomer) {
@@ -2688,6 +2862,12 @@ TEST_F(
   // still decide to allow saving despite the missing name.
   EXPECT_CALL(payments_client(), ConfirmSaveCreditCardLocally).Times(0);
 
+  // Set a cardholder name. Represents user provided name during cardholder name
+  // fix flow.
+  UserProvidedCardDetails user_provided_details = {.cardholder_name =
+                                                       u"Chrome User"};
+  SetCardDetailsForFixFlow(user_provided_details);
+
   FormSubmitted(credit_card_form);
 
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
@@ -2699,6 +2879,13 @@ TEST_F(
       autofill_metrics::USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME);
   EXPECT_TRUE(payments_network_interface().detected_values_in_upload_details() &
               CreditCardSaveManager::DetectedValue::USER_PROVIDED_NAME);
+  EXPECT_TRUE(credit_card_save_manager_->should_request_name_from_user());
+
+  // Verify the cardholder name in `UploadRequest` matches the one in
+  // `UserProvidedCardDetails`.
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_NAME_FULL, "en-US"),
+            user_provided_details.cardholder_name);
 }
 
 TEST_F(CreditCardSaveManagerTest,
@@ -2771,12 +2958,17 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 }
 
+// Tests that if credit card form is submitted with a cardholder
+// name by a non Payments Customer, the cardholder name is not requested and
+// card is uploaded.
 TEST_F(
     CreditCardSaveManagerTest,
     UploadCreditCard_DoNotRequestCardholderNameIfNameExistsAndNoPaymentsCustomer) {
-// On iOS the cardholder name fix flow and expiration date fix flow no longer
-// apply since the user is forced to always set correct data before submitting.
-#if !BUILDFLAG(IS_IOS)
+  if (FixFlowDetectedValuesOverriddenOnIos()) {
+    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
+                    "have been overridden.";
+  }
+
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -2813,16 +3005,18 @@ TEST_F(
   EXPECT_FALSE(
       payments_network_interface().detected_values_in_upload_details() &
       CreditCardSaveManager::DetectedValue::USER_PROVIDED_NAME);
-#endif
+  EXPECT_FALSE(credit_card_save_manager_->should_request_name_from_user());
 }
 
+// On iOS, the cardholder name is required even if the user has a Google
+// Payments account.
+#if !BUILDFLAG(IS_IOS)
+// Tests that if credit card form is submitted with a missing cardholder
+// name by a Payments Customer, the cardholder name is not requested and card is
+// uploaded.
 TEST_F(
     CreditCardSaveManagerTest,
     UploadCreditCard_DoNotRequestCardholderNameIfNameMissingAndPaymentsCustomer) {
-  // On iOS the cardholder name fix flow and expiration date fix flow no longer
-  // apply since the user is forced to always set correct data before
-  // submitting.
-#if !BUILDFLAG(IS_IOS)
   // Set the billing_customer_number to designate existence of a Payments
   // account.
   personal_data().test_payments_data_manager().SetPaymentsCustomerData(
@@ -2866,16 +3060,15 @@ TEST_F(
   EXPECT_FALSE(
       payments_network_interface().detected_values_in_upload_details() &
       CreditCardSaveManager::DetectedValue::USER_PROVIDED_NAME);
-#endif
+  EXPECT_FALSE(credit_card_save_manager_->should_request_name_from_user());
 }
 
+// Tests that if credit card form is submitted with a conflicting cardholder
+// name by a Payments Customer, the cardholder name is not requested and card is
+// uploaded.
 TEST_F(
     CreditCardSaveManagerTest,
     UploadCreditCard_DoNotRequestCardholderNameIfNameConflictingAndPaymentsCustomer) {
-  // On iOS the cardholder name fix flow and expiration date fix flow no longer
-  // apply since the user is forced to always set correct data before
-  // submitting.
-#if !BUILDFLAG(IS_IOS)
   // Set the billing_customer_number to designate existence of a Payments
   // account.
   personal_data().test_payments_data_manager().SetPaymentsCustomerData(
@@ -2919,18 +3112,17 @@ TEST_F(
   EXPECT_FALSE(
       payments_network_interface().detected_values_in_upload_details() &
       CreditCardSaveManager::DetectedValue::USER_PROVIDED_NAME);
-#endif
+  EXPECT_FALSE(credit_card_save_manager_->should_request_name_from_user());
 }
 
-// This test ensures |should_request_name_from_user_| is reset between offers to
-// save.
+// Tests consecutive credit card form submissions to verify if
+// `should_request_name_from_user_` is reset correctly. First submission with a
+// missing cardholder name and no Payments account, cardholder name is
+// requested. Second submission with a missing cardholder name and existing
+// Payments account, cardholder name is not requested.
 TEST_F(
     CreditCardSaveManagerTest,
     UploadCreditCard_ShouldRequestCardholderName_ResetBetweenConsecutiveSaves) {
-  // On iOS the cardholder name fix flow and expiration date fix flow no longer
-  // apply since the user is forced to always set correct data before
-  // submitting.
-#if !BUILDFLAG(IS_IOS)
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -2955,12 +3147,25 @@ TEST_F(
   // still decide to allow saving despite the missing name.
   EXPECT_CALL(payments_client(), ConfirmSaveCreditCardLocally).Times(0);
 
+  // Set a cardholder name. Represents user provided name for cardholder name
+  // fix flow.
+  UserProvidedCardDetails user_provided_details = {.cardholder_name =
+                                                       u"Chrome User"};
+
+  SetCardDetailsForFixFlow(user_provided_details);
+
   FormSubmitted(credit_card_form);
 
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
-  // Verify the |credit_card_save_manager_| is requesting cardholder name.
-  EXPECT_TRUE(credit_card_save_manager_->should_request_name_from_user_);
+  // Verify the `credit_card_save_manager_` is requesting cardholder name.
+  EXPECT_TRUE(credit_card_save_manager_->should_request_name_from_user());
+
+  // Verify the card details in `UploadRequest` matches the one in
+  // `UserProvidedCardDetails`.
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_NAME_FULL, "en-US"),
+            user_provided_details.cardholder_name);
 
   // Set the billing_customer_number to designate existence of a Payments
   // account.
@@ -2971,22 +3176,90 @@ TEST_F(
   // that the user is a Google Payments customer).
   personal_data().test_payments_data_manager().ClearCreditCards();
   personal_data().test_address_data_manager().ClearProfiles();
+
+  payments_client().SetCloudSaveCallbackOfferDecision(
+      SaveCardOfferUserDecision::kAccepted);
+
   FormSubmitted(credit_card_form);
 
-  // Verify the |credit_card_save_manager_| is NOT requesting cardholder name.
-  EXPECT_FALSE(credit_card_save_manager_->should_request_name_from_user_);
-#endif
+  // Verify the `credit_card_save_manager_` is not requesting cardholder name.
+  EXPECT_FALSE(credit_card_save_manager_->should_request_name_from_user());
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
-// This test ensures |should_request_expiration_date_from_user_|
-// is reset between offers to save.
+#if BUILDFLAG(IS_IOS)
+// Tests if credit card form is submitted with a missing cardholder
+// name by a Payments Customer, the cardholder name is requested and card is
+// uploaded on providing the name.
+TEST_F(
+    CreditCardSaveManagerTest,
+    UploadCreditCard_RequestCardholderNameIfNameMissingForAPaymentsCustomerOnIOS) {
+  // Set the billing_customer_number to designate existence of a Payments
+  // account.
+  personal_data().test_payments_data_manager().SetPaymentsCustomerData(
+      std::make_unique<PaymentsCustomerData>(/*customer_id=*/"123456"));
+
+  // Create, fill and submit an address form in order to establish a recent
+  // profile which can be selected for the upload request.
+  FormData address_form = CreateTestAddressFormData();
+  FormsSeen(std::vector<FormData>(1, address_form));
+  // But omit the name:
+  ManuallyFillAddressForm("", "", "77401", "US", &address_form);
+  FormSubmitted(address_form);
+
+  // Set up our credit card form data.
+  FormData credit_card_form = CreateTestCreditCardFormData();
+  FormsSeen(std::vector<FormData>(1, credit_card_form));
+
+  // Edit the data, but don't include a name, and submit.
+  test_api(credit_card_form).field(1).set_value(u"4111111111111111");
+  test_api(credit_card_form)
+      .field(2)
+      .set_value(ASCIIToUTF16(test::NextMonth()));
+  test_api(credit_card_form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
+  test_api(credit_card_form).field(4).set_value(u"123");
+
+  base::HistogramTester histogram_tester;
+
+  // Set a cardholder name, to be used as an user provided name in the save card
+  // dialog after form is submitted.
+  UserProvidedCardDetails user_provided_details = {.cardholder_name =
+                                                       u"Chrome User"};
+  SetCardDetailsForFixFlow(user_provided_details);
+
+  FormSubmitted(credit_card_form);
+
+  EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
+
+  // Verify the correct histogram entry and DetectedValue for "Cardholder
+  // name explicitly requested" logged.
+  ExpectCardUploadDecision(
+      histogram_tester,
+      autofill_metrics::USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME);
+  EXPECT_TRUE(payments_network_interface().detected_values_in_upload_details() &
+              CreditCardSaveManager::DetectedValue::USER_PROVIDED_NAME);
+  EXPECT_TRUE(credit_card_save_manager_->should_request_name_from_user());
+
+  // Verify the card details in `UploadRequest` matches the one in
+  // `UserProvidedCardDetails`.
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_NAME_FULL, "en-US"),
+            user_provided_details.cardholder_name);
+}
+#endif  // BUILDFLAG(IS_IOS)
+
+// Tests consecutive credit card form submissions to verify if
+// `should_request_expiration_date_from_user_` is reset correctly. First
+// submission with a missing expiry date, it is requested. Second submission
+// with a valid expiry date and it is not requested.
 TEST_F(
     CreditCardSaveManagerTest,
     UploadCreditCard_ShouldRequestExpirationDate_ResetBetweenConsecutiveSaves) {
-  // On iOS the cardholder name fix flow and expiration date fix flow no longer
-  // apply since the user is forced to always set correct data before
-  // submitting.
-#if !BUILDFLAG(IS_IOS)
+  if (FixFlowDetectedValuesOverriddenOnIos()) {
+    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
+                    "have been overridden.";
+  }
+
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -3009,39 +3282,68 @@ TEST_F(
   // still decide to allow saving despite the missing expiration date.
   EXPECT_CALL(payments_client(), ConfirmSaveCreditCardLocally).Times(0);
 
+  // Set a valid expiry date. Represents user provided expiry date for fix flow.
+  UserProvidedCardDetails user_provided_details = {
+      .expiration_date_month = ASCIIToUTF16(test::NextMonth()),
+      .expiration_date_year = ASCIIToUTF16(test::NextYear())};
+  SetCardDetailsForFixFlow(user_provided_details);
+
   FormSubmitted(credit_card_form);
 
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
-  // Verify the |credit_card_save_manager_| is requesting expiration date.
+  // Verify the `credit_card_save_manager_` is requesting expiration date.
   EXPECT_TRUE(
-      credit_card_save_manager_->should_request_expiration_date_from_user_);
+      credit_card_save_manager_->should_request_expiration_date_from_user());
+
+  // Verify expiry details in `UploadRequest` matches the one in
+  // `UserProvidedCardDetails`.
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_EXP_MONTH, "en-US"),
+            user_provided_details.expiration_date_month);
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_EXP_4_DIGIT_YEAR, "en-US"),
+            user_provided_details.expiration_date_year);
 
   // Edit the data, include a expiration date, and submit this time.
   test_api(credit_card_form).field(0).set_value(u"Jane Doe");
   test_api(credit_card_form).field(1).set_value(u"4111111111111111");
   test_api(credit_card_form)
       .field(2)
-      .set_value(ASCIIToUTF16(test::NextMonth()));
-  test_api(credit_card_form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
+      .set_value(ASCIIToUTF16(FiveMonthsFromNow()));
+  test_api(credit_card_form)
+      .field(3)
+      .set_value(ASCIIToUTF16(FiveYearsFromNow()));
   test_api(credit_card_form).field(4).set_value(u"123");
+
+  payments_client().SetCloudSaveCallbackOfferDecision(
+      SaveCardOfferUserDecision::kAccepted);
+
   FormSubmitted(credit_card_form);
 
-  // Verify the |credit_card_save_manager_| is NOT requesting expiration date.
+  // Verify the `credit_card_save_manager_` is NOT requesting expiration date.
   EXPECT_FALSE(
-      credit_card_save_manager_->should_request_expiration_date_from_user_);
-#endif
+      credit_card_save_manager_->should_request_expiration_date_from_user());
+
+  // Verify expiry details in `UploadRequest` matches the one provided during
+  // the second form submission.
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_EXP_MONTH, "en-US"),
+            ASCIIToUTF16(FiveMonthsFromNow()));
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_EXP_4_DIGIT_YEAR, "en-US"),
+            ASCIIToUTF16(FiveYearsFromNow()));
 }
 
-// This test ensures |should_request_expiration_date_from_user_|
-// is false when Wallet Sync Transport is enabled.
-TEST_F(
-    CreditCardSaveManagerTest,
-    UploadCreditCard_WalletSyncTransportEnabled_ShouldNotRequestExpirationDate) {
-  // On iOS the cardholder name fix flow and expiration date fix flow no longer
-  // apply since the user is forced to always set correct data before
-  // submitting.
 #if !BUILDFLAG(IS_IOS)
+// On iOS, the expiration date fix flow doesn't depend on Wallet Sync Transport
+// enabled or disabled.
+
+// Tests that if credit card form is submitted with a missing expiry date and
+// Wallet Sync Transport is enabled, `Save` is not offered and card is not
+// uploaded.
+TEST_F(CreditCardSaveManagerTest,
+       DoNotUploadCreditCard_WalletSyncTransportEnabled_MissingExpirationDate) {
   // Wallet Sync Transport is enabled.
   personal_data()
       .test_payments_data_manager()
@@ -3072,18 +3374,15 @@ TEST_F(
   FormSubmitted(credit_card_form);
 
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
-#endif
+  EXPECT_TRUE(
+      credit_card_save_manager_->should_request_expiration_date_from_user());
 }
 
-// This test ensures |should_request_expiration_date_from_user_|
-// is true when Wallet Sync Transport is not enabled.
-TEST_F(
-    CreditCardSaveManagerTest,
-    UploadCreditCard_WalletSyncTransportNotEnabled_ShouldRequestExpirationDate) {
-  // On iOS the cardholder name fix flow and expiration date fix flow no longer
-  // apply since the user is forced to always set correct data before
-  // submitting.
-#if !BUILDFLAG(IS_IOS)
+// Tests that if credit card form is submitted with a missing expiry date and
+// Wallet Sync Transport disabled, `Save` is offered when valid expiry date is
+// provided and card is uploaded.
+TEST_F(CreditCardSaveManagerTest,
+       UploadCreditCard_WalletSyncTransportNotEnabled_MissingExpirationDate) {
   // Wallet Sync Transport is not enabled.
   personal_data()
       .test_payments_data_manager()
@@ -3111,23 +3410,36 @@ TEST_F(
   // still decide to allow saving despite the missing expiration date.
   EXPECT_CALL(payments_client(), ConfirmSaveCreditCardLocally).Times(0);
 
+  // Set a valid expiry date. Represents user provided expiry date for fix flow.
+  UserProvidedCardDetails user_provided_details = {
+      .expiration_date_month = ASCIIToUTF16(test::NextMonth()),
+      .expiration_date_year = ASCIIToUTF16(test::NextYear())};
+  SetCardDetailsForFixFlow(user_provided_details);
+
   FormSubmitted(credit_card_form);
 
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
-  // Verify the |credit_card_save_manager_| is requesting expiration date.
+  // Verify the `credit_card_save_manager_` is requesting expiration date.
   EXPECT_TRUE(
-      credit_card_save_manager_->should_request_expiration_date_from_user_);
-#endif
+      credit_card_save_manager_->should_request_expiration_date_from_user());
+
+  // Verify expiry details in `UploadRequest` matches the one in
+  // `UserProvidedCardDetails`.
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_EXP_MONTH, "en-US"),
+            user_provided_details.expiration_date_month);
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_EXP_4_DIGIT_YEAR, "en-US"),
+            user_provided_details.expiration_date_year);
 }
 
-TEST_F(
-    CreditCardSaveManagerTest,
-    UploadCreditCard_DoNotRequestExpirationDateIfMissingNameAndExpirationDate) {
-  // On iOS the cardholder name fix flow and expiration date fix flow no longer
-  // apply since the user is forced to always set correct data before
-  // submitting.
-#if !BUILDFLAG(IS_IOS)
+// Tests that if credit card form is submitted without a cardholder name and
+// expiry date, `Save` is not offered and card is not uploaded since combined
+// fix flow is not supported. Does not apply on iOS, where the combined fix flow
+// is supported.
+TEST_F(CreditCardSaveManagerTest,
+       DoNotUploadCreditCard_IfMissingNameAndExpirationDate) {
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -3140,7 +3452,7 @@ TEST_F(
   FormData credit_card_form = CreateTestCreditCardFormData();
   FormsSeen(std::vector<FormData>(1, credit_card_form));
 
-  // Edit the data, and submit.
+  // Edit the data, and submit without name and expiry date.
   test_api(credit_card_form).field(0).set_value(u"");
   test_api(credit_card_form).field(1).set_value(u"4111111111111111");
   test_api(credit_card_form).field(2).set_value(u"");
@@ -3154,15 +3466,78 @@ TEST_F(
   FormSubmitted(credit_card_form);
 
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
-#endif
+  EXPECT_TRUE(credit_card_save_manager_->should_request_name_from_user());
+  EXPECT_TRUE(
+      credit_card_save_manager_->should_request_expiration_date_from_user());
+}
+#endif  // !BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(IS_IOS)
+// Tests that if credit card form is submitted without a cardholder name and
+// expiry date, both the missing details are requested. `Save` is offered and
+// card is uploaded on providing the details.
+TEST_F(CreditCardSaveManagerTest,
+       UploadCreditCard_RequestMissingNameAndExpirationDateOnIOS) {
+  // Create, fill and submit an address form in order to establish a recent
+  // profile which can be selected for the upload request.
+  FormData address_form = CreateTestAddressFormData();
+  FormsSeen(std::vector<FormData>(1, address_form));
+  // But omit the name:
+  ManuallyFillAddressForm("", "", "77401", "US", &address_form);
+  FormSubmitted(address_form);
+
+  // Set up our credit card form data.
+  FormData credit_card_form = CreateTestCreditCardFormData();
+  FormsSeen(std::vector<FormData>(1, credit_card_form));
+
+  // Edit the data, and submit without name and expiry date.
+  test_api(credit_card_form).field(0).set_value(u"");
+  test_api(credit_card_form).field(1).set_value(u"4111111111111111");
+  test_api(credit_card_form).field(2).set_value(u"");
+  test_api(credit_card_form).field(3).set_value(u"");
+  test_api(credit_card_form).field(4).set_value(u"123");
+
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(payments_client(), ConfirmSaveCreditCardLocally).Times(0);
+
+  // Set a valid cardholder name and expiry date. Represents user provided
+  // cardholder name and expiry date in the save card dialog after form is
+  // submitted.
+  UserProvidedCardDetails user_provided_details = {
+      .cardholder_name = u"Chrome User",
+      .expiration_date_month = ASCIIToUTF16(test::NextMonth()),
+      .expiration_date_year = ASCIIToUTF16(test::NextYear())};
+  SetCardDetailsForFixFlow(user_provided_details);
+
+  FormSubmitted(credit_card_form);
+
+  EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
+
+  // Verify missing cardholder name and expiry date is requested.
+  EXPECT_TRUE(credit_card_save_manager_->should_request_name_from_user());
+  EXPECT_TRUE(
+      credit_card_save_manager_->should_request_expiration_date_from_user());
+
+  // Verify the details in `UploadRequest` matches the one in
+  // `UserProvidedCardDetails`.
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_NAME_FULL, "en-US"),
+            user_provided_details.cardholder_name);
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_EXP_MONTH, "en-US"),
+            user_provided_details.expiration_date_month);
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_EXP_4_DIGIT_YEAR, "en-US"),
+            user_provided_details.expiration_date_year);
 }
 
-// Tests that on iOS, DetectedValues for missing cardholder name and
+// Tests that DetectedValues for missing cardholder name and
 // expiry date are defaulted as true when
 // `kAutofillDisableDefaultSaveCardFixFlowDetection` is not enabled.
-TEST_F(CreditCardSaveManagerTest,
-       UploadCreditCard_AlwaysRequestCardholderNameAndExpirationDateOnIOS) {
-#if BUILDFLAG(IS_IOS)
+TEST_F(
+    CreditCardSaveManagerTest,
+    UploadCreditCard_AlwaysDetectMissingCardholderNameAndExpirationDate_WhenFlagNotEnabledOnIOS) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kAutofillDisableDefaultSaveCardFixFlowDetection);
@@ -3179,7 +3554,7 @@ TEST_F(CreditCardSaveManagerTest,
   FormsSeen(std::vector<FormData>(1, credit_card_form));
 
   // Edit the data, and submit.
-  test_api(credit_card_form).field(0).set_value(u"");
+  test_api(credit_card_form).field(0).set_value(u"John Smith");
   test_api(credit_card_form).field(1).set_value(u"4111111111111111");
   test_api(credit_card_form)
       .field(2)
@@ -3194,21 +3569,27 @@ TEST_F(CreditCardSaveManagerTest,
   FormSubmitted(credit_card_form);
 
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
+
+  // Verify fix flow DetectedValue bits are always set even when data is not
+  // missing.
   EXPECT_TRUE(
       payments_network_interface().detected_values_in_upload_details() &
       CreditCardSaveManager::DetectedValue::USER_PROVIDED_EXPIRATION_DATE);
   EXPECT_TRUE(payments_network_interface().detected_values_in_upload_details() &
               CreditCardSaveManager::DetectedValue::USER_PROVIDED_NAME);
-#endif
 }
+#endif  // BUILDFLAG(IS_IOS)
 
-// iOS should always provide a valid expiration date when attempting to
-// upload a Saved Card due to the Messages SaveCard modal. The manager
-// shouldn't handle expired dates.
-#if !BUILDFLAG(IS_IOS)
-
+// Tests that if credit card form is submitted without an expiry date, valid
+// expiry date is requested and card is uploaded on providing a valid expiry
+// date.
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_RequestExpirationDateViaExpDateFixFlow) {
+  if (FixFlowDetectedValuesOverriddenOnIos()) {
+    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
+                    "have been overridden.";
+  }
+
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -3230,6 +3611,12 @@ TEST_F(CreditCardSaveManagerTest,
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(payments_client(), ConfirmSaveCreditCardLocally).Times(0);
+
+  // Set a valid expiry date. Represents user provided expiry date for fix flow.
+  UserProvidedCardDetails user_provided_details = {
+      .expiration_date_month = ASCIIToUTF16(test::NextMonth()),
+      .expiration_date_year = ASCIIToUTF16(test::NextYear())};
+  SetCardDetailsForFixFlow(user_provided_details);
 
   FormSubmitted(credit_card_form);
 
@@ -3247,10 +3634,29 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_TRUE(
       payments_network_interface().detected_values_in_upload_details() &
       CreditCardSaveManager::DetectedValue::USER_PROVIDED_EXPIRATION_DATE);
+  EXPECT_TRUE(
+      credit_card_save_manager_->should_request_expiration_date_from_user());
+
+  // Verify expiry details in `UploadRequest` matches the one in
+  // `UserProvidedCardDetails`.
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_EXP_MONTH, "en-US"),
+            user_provided_details.expiration_date_month);
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_EXP_4_DIGIT_YEAR, "en-US"),
+            user_provided_details.expiration_date_year);
 }
 
+// Tests that if credit card form is submitted without an expiry month, valid
+// expiry date is requested and card is uploaded on providing a valid expiry
+// month.
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_RequestExpirationDateIfOnlyMonthMissing) {
+  if (FixFlowDetectedValuesOverriddenOnIos()) {
+    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
+                    "have been overridden.";
+  }
+
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -3273,6 +3679,13 @@ TEST_F(CreditCardSaveManagerTest,
 
   EXPECT_CALL(payments_client(), ConfirmSaveCreditCardLocally).Times(0);
 
+  // Set a valid expiry month. Represents user provided expiry date for fix
+  // flow.
+  UserProvidedCardDetails user_provided_details = {
+      .expiration_date_month = ASCIIToUTF16(test::NextMonth()),
+      .expiration_date_year = ASCIIToUTF16(FiveYearsFromNow())};
+  SetCardDetailsForFixFlow(user_provided_details);
+
   FormSubmitted(credit_card_form);
 
   // Verify that the correct histogram entry and DetectedValue for "Expiration
@@ -3288,10 +3701,29 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_TRUE(
       payments_network_interface().detected_values_in_upload_details() &
       CreditCardSaveManager::DetectedValue::USER_PROVIDED_EXPIRATION_DATE);
+  EXPECT_TRUE(
+      credit_card_save_manager_->should_request_expiration_date_from_user());
+
+  // Verify expiry details in `UploadRequest` matches the one in
+  // `UserProvidedCardDetails`.
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_EXP_MONTH, "en-US"),
+            user_provided_details.expiration_date_month);
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_EXP_4_DIGIT_YEAR, "en-US"),
+            user_provided_details.expiration_date_year);
 }
 
+// Tests that if credit card form is submitted without an expiry year, valid
+// expiry date is requested and card is uploaded on providing a valid expiry
+// year.
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_RequestExpirationDateIfOnlyYearMissing) {
+  if (FixFlowDetectedValuesOverriddenOnIos()) {
+    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
+                    "have been overridden.";
+  }
+
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -3316,6 +3748,12 @@ TEST_F(CreditCardSaveManagerTest,
 
   EXPECT_CALL(payments_client(), ConfirmSaveCreditCardLocally).Times(0);
 
+  // Set a valid expiry year. Represents user provided expiry year for fix flow.
+  UserProvidedCardDetails user_provided_details = {
+      .expiration_date_month = ASCIIToUTF16(FiveMonthsFromNow()),
+      .expiration_date_year = ASCIIToUTF16(test::NextYear())};
+  SetCardDetailsForFixFlow(user_provided_details);
+
   FormSubmitted(credit_card_form);
 
   // Verify that the correct histogram entry and DetectedValue for "Expiration
@@ -3331,10 +3769,29 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_TRUE(
       payments_network_interface().detected_values_in_upload_details() &
       CreditCardSaveManager::DetectedValue::USER_PROVIDED_EXPIRATION_DATE);
+  EXPECT_TRUE(
+      credit_card_save_manager_->should_request_expiration_date_from_user());
+
+  // Verify expiry details in `UploadRequest` matches the one in
+  // `UserProvidedCardDetails`.
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_EXP_MONTH, "en-US"),
+            user_provided_details.expiration_date_month);
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_EXP_4_DIGIT_YEAR, "en-US"),
+            user_provided_details.expiration_date_year);
 }
 
+// Tests that if credit card form is submitted with an expired date, valid
+// expiry date is requested and card is uploaded on providing a valid expiry
+// date.
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_RequestExpirationDateIfExpirationDateInputIsExpired) {
+  if (FixFlowDetectedValuesOverriddenOnIos()) {
+    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
+                    "have been overridden.";
+  }
+
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -3357,6 +3814,12 @@ TEST_F(CreditCardSaveManagerTest,
 
   EXPECT_CALL(payments_client(), ConfirmSaveCreditCardLocally).Times(0);
 
+  // Set a valid expiry date. Represents user provided expiry date for fix flow.
+  UserProvidedCardDetails user_provided_details = {
+      .expiration_date_month = ASCIIToUTF16(test::NextMonth()),
+      .expiration_date_year = ASCIIToUTF16(test::NextYear())};
+  SetCardDetailsForFixFlow(user_provided_details);
+
   FormSubmitted(credit_card_form);
 
   // Verify that the correct histogram entry and DetectedValue for "Expiration
@@ -3373,11 +3836,30 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_TRUE(
       payments_network_interface().detected_values_in_upload_details() &
       CreditCardSaveManager::DetectedValue::USER_PROVIDED_EXPIRATION_DATE);
+  EXPECT_TRUE(
+      credit_card_save_manager_->should_request_expiration_date_from_user());
+
+  // Verify expiry details in `UploadRequest` matches the one in
+  // `UserProvidedCardDetails`.
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_EXP_MONTH, "en-US"),
+            user_provided_details.expiration_date_month);
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_EXP_4_DIGIT_YEAR, "en-US"),
+            user_provided_details.expiration_date_year);
 }
 
+// Tests that if credit card form is submitted with an invalid date, valid
+// expiry date is requested and card is uploaded on providing a valid expiry
+// date.
 TEST_F(
     CreditCardSaveManagerTest,
     UploadCreditCard_RequestExpirationDateIfExpirationDateInputIsTwoDigitAndExpired) {
+  if (FixFlowDetectedValuesOverriddenOnIos()) {
+    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
+                    "have been overridden.";
+  }
+
   // Make sure that the card will be expired.
   task_environment_.FastForwardBy(base::Days(365 * 15));
 
@@ -3403,6 +3885,12 @@ TEST_F(
 
   EXPECT_CALL(payments_client(), ConfirmSaveCreditCardLocally).Times(0);
 
+  // Set a valid expiry date. Represents user provided expiry date for fix flow.
+  UserProvidedCardDetails user_provided_details = {
+      .expiration_date_month = ASCIIToUTF16(test::NextMonth()),
+      .expiration_date_year = ASCIIToUTF16(test::NextYear())};
+  SetCardDetailsForFixFlow(user_provided_details);
+
   FormSubmitted(credit_card_form);
 
   // Verify that the correct histogram entry and DetectedValue for "Expiration
@@ -3419,8 +3907,20 @@ TEST_F(
   EXPECT_TRUE(
       payments_network_interface().detected_values_in_upload_details() &
       CreditCardSaveManager::DetectedValue::USER_PROVIDED_EXPIRATION_DATE);
+  EXPECT_TRUE(
+      credit_card_save_manager_->should_request_expiration_date_from_user());
+
+  // Verify expiry details in `UploadRequest` matches the one in
+  // `UserProvidedCardDetails`.
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_EXP_MONTH, "en-US"),
+            user_provided_details.expiration_date_month);
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_EXP_4_DIGIT_YEAR, "en-US"),
+            user_provided_details.expiration_date_year);
 }
 
+#if !BUILDFLAG(IS_IOS)
 // TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_UploadDetailsFails) {
@@ -3465,7 +3965,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_UploadDetailsFails) {
   ExpectCardUploadDecisionUkm(
       autofill_metrics::UPLOAD_NOT_OFFERED_GET_UPLOAD_DETAILS_FAILED);
 }
-
 #endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(CreditCardSaveManagerTest, DuplicateMaskedCreditCard_NoUpload) {
@@ -4198,11 +4697,16 @@ TEST_F(CreditCardSaveManagerTest,
 }
 #endif
 
-// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
-// permanently if the test doesn't apply to iOS flow.
-#if !BUILDFLAG(IS_IOS)
+// Tests that if credit card form is submitted with a missing cardholder name,
+// `Save` is offered and the cardholder name is requested. The card is uploaded
+// on providing the name.
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_PaymentsDecidesOfferToSaveIfNoName) {
+  if (FixFlowDetectedValuesOverriddenOnIos()) {
+    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
+                    "have been overridden.";
+  }
+
   // Add a profile without a name to the PersonalDataManager.
   AutofillProfile profile(AddressCountryCode("US"));
   profile.SetRawInfo(ADDRESS_HOME_ZIP, u"77401");
@@ -4227,6 +4731,12 @@ TEST_F(CreditCardSaveManagerTest,
   // (Unit tests assume they reply yes and save is successful.)
   EXPECT_CALL(payments_client(), ConfirmSaveCreditCardLocally).Times(0);
 
+  // Set a cardholder name, to be used as an user provided name for cardholder
+  // name fix flow.
+  UserProvidedCardDetails user_provided_details = {.cardholder_name =
+                                                       u"Chrome User"};
+  SetCardDetailsForFixFlow(user_provided_details);
+
   FormSubmitted(credit_card_form);
 
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
@@ -4246,14 +4756,24 @@ TEST_F(CreditCardSaveManagerTest,
   ExpectMetric(UkmCardUploadDecisionType::kUploadDecisionName,
                UkmCardUploadDecisionType::kEntryName, upload_decision,
                1 /* expected_num_matching_entries */);
-}
-#endif
 
-// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
-// permanently if the test doesn't apply to iOS flow.
-#if !BUILDFLAG(IS_IOS)
+  // Verify the card details in `UploadRequest` matches the one in
+  // `UserProvidedCardDetails`.
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_NAME_FULL, "en-US"),
+            user_provided_details.cardholder_name);
+}
+
+// Tests that if credit card form is submitted with a conflicting cardholder
+// name, `Save` is offered and the cardholder name is requested. The card is
+// uploaded on providing the name.
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_PaymentsDecidesOfferToSaveIfConflictingNames) {
+  if (FixFlowDetectedValuesOverriddenOnIos()) {
+    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
+                    "have been overridden.";
+  }
+
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -4280,6 +4800,12 @@ TEST_F(CreditCardSaveManagerTest,
   // (Unit tests assume they reply yes and save is successful.)
   EXPECT_CALL(payments_client(), ConfirmSaveCreditCardLocally).Times(0);
 
+  // Set a cardholder name. Represents an user provided name for cardholder name
+  // fix flow.
+  UserProvidedCardDetails user_provided_details = {.cardholder_name =
+                                                       u"Chrome User"};
+  SetCardDetailsForFixFlow(user_provided_details);
+
   FormSubmitted(credit_card_form);
 
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
@@ -4299,8 +4825,13 @@ TEST_F(CreditCardSaveManagerTest,
   ExpectMetric(UkmCardUploadDecisionType::kUploadDecisionName,
                UkmCardUploadDecisionType::kEntryName, upload_decision,
                1 /* expected_num_matching_entries */);
+
+  // Verify the cardholder name in `UploadRequest` matches the one in
+  // `UserProvidedCardDetails`.
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_NAME_FULL, "en-US"),
+            user_provided_details.cardholder_name);
 }
-#endif
 
 // TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
@@ -4411,11 +4942,16 @@ TEST_F(CreditCardSaveManagerTest,
 }
 #endif
 
-// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
-// permanently if the test doesn't apply to iOS flow.
-#if !BUILDFLAG(IS_IOS)
+// Tests that if credit card form is submitted with a missing cardholder name,
+// `Save` is offered and the cardholder name is requested. The card is uploaded
+// on providing the name.
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_PaymentsDecidesOfferToSaveIfNothingFound) {
+  if (FixFlowDetectedValuesOverriddenOnIos()) {
+    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
+                    "have been overridden.";
+  }
+
   // Set up a new address profile without a name or postal code.
   AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
@@ -4443,6 +4979,10 @@ TEST_F(CreditCardSaveManagerTest,
   // (Unit tests assume they reply yes and save is successful.)
   EXPECT_CALL(payments_client(), ConfirmSaveCreditCardLocally).Times(0);
 
+  // Set a cardholder name. Represents an user provided name for fix flow.
+  UserProvidedCardDetails user_provided_details = {.cardholder_name =
+                                                       u"Chrome User"};
+  SetCardDetailsForFixFlow(user_provided_details);
   FormSubmitted(credit_card_form);
 
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
@@ -4467,8 +5007,13 @@ TEST_F(CreditCardSaveManagerTest,
   ExpectMetric(UkmCardUploadDecisionType::kUploadDecisionName,
                UkmCardUploadDecisionType::kEntryName, upload_decision,
                1 /* expected_num_matching_entries */);
+
+  // Verify the cardholder name in `UploadRequest` matches the one in
+  // `UserProvidedCardDetails`.
+  EXPECT_EQ(credit_card_save_manager_->upload_request()->card.GetInfo(
+                CREDIT_CARD_NAME_FULL, "en-US"),
+            user_provided_details.cardholder_name);
 }
-#endif
 
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_UploadOfLocalCard) {
   // Add a local credit card whose |TypeAndLastFourDigits| matches what we will
