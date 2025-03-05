@@ -181,7 +181,7 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
   const mojom::CreateContextOptions::Device device_type =
       context_options->device;
 
-  ASSIGN_OR_RETURN(std::unique_ptr<OrtModelBuilder::ModelInfo> model_info,
+  ASSIGN_OR_RETURN(std::unique_ptr<OrtModelEditor::ModelInfo> model_info,
                    GraphBuilderOrt::CreateAndBuild(
                        *graph_info, std::move(context_properties),
                        std::move(constant_operands)));
@@ -314,7 +314,7 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
   }
 
   ScopedOrtSessionPtr session;
-  if (ORT_CALL_FAILED(GetOrtModelBuilderApi()->CreateSessionFromModel(
+  if (ORT_CALL_FAILED(GetOrtModelEditorApi()->CreateSessionFromModel(
           env, model_info->model, session_options, session.GetAddressOf()))) {
     return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
                                               "Failed to build graph."));

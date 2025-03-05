@@ -16,7 +16,7 @@ ONNXTensorElementDataType OperandTypeToONNXTensorElementDataType(
 
 const OrtApi* GetOrtApi();
 
-const OrtModelBuilderApi* GetOrtModelBuilderApi();
+const OrtModelEditorApi* GetOrtModelEditorApi();
 
 mojom::ErrorPtr CreateError(mojom::Error::Code error_code,
                             const std::string& error_message,

@@ -16,7 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
 #include "base/types/expected.h"
-#include "services/webnn/ort/ort_model_builder.h"
+#include "services/webnn/ort/ort_model_editor.h"
 #include "services/webnn/ort/scoped_ort_types.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
@@ -56,7 +56,7 @@ class GraphBuilderOrt {
   //
   // Returns unexpected if it fails.
   [[nodiscard]] static base::expected<
-      std::unique_ptr<OrtModelBuilder::ModelInfo>,
+      std::unique_ptr<OrtModelEditor::ModelInfo>,
       mojom::ErrorPtr>
   CreateAndBuild(const mojom::GraphInfo& graph_info,
                  ContextProperties context_properties,
@@ -251,7 +251,7 @@ class GraphBuilderOrt {
       const mojom::Triangular& triangular);
   void AddWhereOperation(const mojom::Where& where);
 
-  [[nodiscard]] base::expected<std::unique_ptr<OrtModelBuilder::ModelInfo>,
+  [[nodiscard]] base::expected<std::unique_ptr<OrtModelEditor::ModelInfo>,
                                mojom::ErrorPtr>
   BuildModel();
 
@@ -271,7 +271,7 @@ class GraphBuilderOrt {
 
   const ContextProperties context_properties_;
 
-  OrtModelBuilder model_builder_;
+  OrtModelEditor model_editor_;
 };
 
 }  // namespace ort

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/webnn/ort/ort_model_builder.h"
+#include "services/webnn/ort/ort_model_editor.h"
 
 #include "base/notreached.h"
 #include "services/webnn/ort/error_ort.h"
@@ -29,8 +29,8 @@ constexpr size_t kMinExternalDataSize = 128;
 
 namespace ort {
 
-OrtModelBuilder::ModelInfo::ModelInfo() = default;
-OrtModelBuilder::ModelInfo::~ModelInfo() = default;
+OrtModelEditor::ModelInfo::ModelInfo() = default;
+OrtModelEditor::ModelInfo::~ModelInfo() = default;
 
 ScopedOrtValueInfoPtr CreateOrtValueInfo(std::string_view name,
                                          base::span<const int64_t> shape,
@@ -44,38 +44,37 @@ ScopedOrtValueInfoPtr CreateOrtValueInfo(std::string_view name,
                                           shape.data(), shape.size()));
 
   ScopedOrtTypeInfoPtr type_info;
-  CHECK_STATUS(GetOrtApi()->CreateTensorTypeInfo(tensor_type_and_shape_info,
-                                                 type_info.GetAddressOf()));
+  CHECK_STATUS(GetOrtModelEditorApi()->CreateTensorTypeInfo(
+      tensor_type_and_shape_info, type_info.GetAddressOf()));
 
   ScopedOrtValueInfoPtr value_info;
-  CHECK_STATUS(GetOrtModelBuilderApi()->CreateValueInfo(
+  CHECK_STATUS(GetOrtModelEditorApi()->CreateValueInfo(
       name.data(), type_info, value_info.GetAddressOf()));
   return value_info;
 }
 
-OrtModelBuilder::OrtModelBuilder()
-    : model_info_(std::make_unique<ModelInfo>()) {
+OrtModelEditor::OrtModelEditor() : model_info_(std::make_unique<ModelInfo>()) {
   // WebNN constants are in CPU memory.
   CHECK_STATUS(GetOrtApi()->CreateCpuMemoryInfo(
       OrtDeviceAllocator, OrtMemTypeDefault, memory_info_.GetAddressOf()));
-  CHECK_STATUS(GetOrtModelBuilderApi()->CreateGraph(graph_.GetAddressOf()));
+  CHECK_STATUS(GetOrtModelEditorApi()->CreateGraph(graph_.GetAddressOf()));
 }
 
-OrtModelBuilder::~OrtModelBuilder() = default;
+OrtModelEditor::~OrtModelEditor() = default;
 
-void OrtModelBuilder::AddInput(std::string_view name,
-                               base::span<const int64_t> shape,
-                               ONNXTensorElementDataType data_type) {
+void OrtModelEditor::AddInput(std::string_view name,
+                              base::span<const int64_t> shape,
+                              ONNXTensorElementDataType data_type) {
   inputs_.push_back(CreateOrtValueInfo(name, shape, data_type));
 }
 
-void OrtModelBuilder::AddOutput(std::string_view name,
-                                base::span<const int64_t> shape,
-                                ONNXTensorElementDataType data_type) {
+void OrtModelEditor::AddOutput(std::string_view name,
+                               base::span<const int64_t> shape,
+                               ONNXTensorElementDataType data_type) {
   outputs_.push_back(CreateOrtValueInfo(name, shape, data_type));
 }
 
-[[nodiscard]] ScopedOrtStatusPtr OrtModelBuilder::AddInitializer(
+[[nodiscard]] ScopedOrtStatusPtr OrtModelEditor::AddInitializer(
     std::string_view name,
     base::span<const int64_t> shape,
     base::span<const uint8_t> data,
@@ -88,7 +87,7 @@ void OrtModelBuilder::AddOutput(std::string_view name,
   }
 }
 
-[[nodiscard]] ScopedOrtStatusPtr OrtModelBuilder::AddInitializerAsRawData(
+[[nodiscard]] ScopedOrtStatusPtr OrtModelEditor::AddInitializerAsRawData(
     std::string_view name,
     base::span<const int64_t> shape,
     base::span<const uint8_t> data,
@@ -114,13 +113,13 @@ void OrtModelBuilder::AddOutput(std::string_view name,
       .copy_from(data);
 
   // Graph will own the initializer.
-  RETURN_STATUS_IF_FAILED(GetOrtModelBuilderApi()->AddInitializerToGraph(
+  RETURN_STATUS_IF_FAILED(GetOrtModelEditorApi()->AddInitializerToGraph(
       graph_, name.data(), initializer.Release(), /*data_is_external=*/false));
 
   return ScopedOrtStatusPtr();
 }
 
-[[nodiscard]] ScopedOrtStatusPtr OrtModelBuilder::AddInitializerAsExternalData(
+[[nodiscard]] ScopedOrtStatusPtr OrtModelEditor::AddInitializerAsExternalData(
     std::string_view name,
     base::span<const int64_t> shape,
     base::span<const uint8_t> data,
@@ -138,14 +137,14 @@ void OrtModelBuilder::AddOutput(std::string_view name,
       data_type, initializer.GetAddressOf()));
 
   // Graph will own the initializer.
-  RETURN_STATUS_IF_FAILED(GetOrtModelBuilderApi()->AddInitializerToGraph(
+  RETURN_STATUS_IF_FAILED(GetOrtModelEditorApi()->AddInitializerToGraph(
       graph_, name.data(), initializer.Release(), /*data_is_external=*/true));
 
   return ScopedOrtStatusPtr();
 }
 
-ScopedOrtOpAttrPtr OrtModelBuilder::CreateAttribute(std::string_view name,
-                                                    OrtOpAttrData data) {
+ScopedOrtOpAttrPtr OrtModelEditor::CreateAttribute(std::string_view name,
+                                                   OrtOpAttrData data) {
   ScopedOrtOpAttrPtr attribute;
   if (absl::holds_alternative<int64_t>(data)) {
     CHECK_STATUS(GetOrtApi()->CreateOpAttr(
@@ -182,29 +181,29 @@ ScopedOrtOpAttrPtr OrtModelBuilder::CreateAttribute(std::string_view name,
   return attribute;
 }
 
-void OrtModelBuilder::AddNode(std::string_view op_type,
-                              std::string_view node_name,
-                              base::span<const char*> input_names,
-                              base::span<const char*> output_names,
-                              base::span<OrtOpAttr*> attributes) {
+void OrtModelEditor::AddNode(std::string_view op_type,
+                             std::string_view node_name,
+                             base::span<const char*> input_names,
+                             base::span<const char*> output_names,
+                             base::span<OrtOpAttr*> attributes) {
   ScopedOrtNodePtr node;
-  CHECK_STATUS(GetOrtModelBuilderApi()->CreateNode(
+  CHECK_STATUS(GetOrtModelEditorApi()->CreateNode(
       op_type.data(), kOrtDomainName, node_name.data(), input_names.data(),
       input_names.size(), output_names.data(), output_names.size(),
       attributes.data(), attributes.size(), node.GetAddressOf()));
   // Graph will own the node.
-  CHECK_STATUS(GetOrtModelBuilderApi()->AddNodeToGraph(graph_, node.Release()));
+  CHECK_STATUS(GetOrtModelEditorApi()->AddNodeToGraph(graph_, node.Release()));
 }
 
-std::unique_ptr<OrtModelBuilder::ModelInfo>
-OrtModelBuilder::BuildAndTakeModelInfo() {
+std::unique_ptr<OrtModelEditor::ModelInfo>
+OrtModelEditor::BuildAndTakeModelInfo() {
   // Graph will own the input/output `OrtValueInfo`s.
   std::vector<OrtValueInfo*> graph_inputs;
   graph_inputs.reserve(inputs_.size());
   for (auto& input : inputs_) {
     graph_inputs.push_back(input.Release());
   }
-  CHECK_STATUS(GetOrtModelBuilderApi()->SetGraphInputs(
+  CHECK_STATUS(GetOrtModelEditorApi()->SetGraphInputs(
       graph_, graph_inputs.data(), graph_inputs.size()));
 
   std::vector<OrtValueInfo*> graph_outputs;
@@ -212,20 +211,20 @@ OrtModelBuilder::BuildAndTakeModelInfo() {
   for (auto& output : outputs_) {
     graph_outputs.push_back(output.Release());
   }
-  CHECK_STATUS(GetOrtModelBuilderApi()->SetGraphOutputs(
+  CHECK_STATUS(GetOrtModelEditorApi()->SetGraphOutputs(
       graph_, graph_outputs.data(), graph_outputs.size()));
 
   std::array<const char*, 2> domain_names = {kOrtDomainName, kMSDomainName};
   std::array<int32_t, 2> opset_versions = {kOrtOpsetVersion,
                                            kEPContextOpsetVersion};
 
-  CHECK_STATUS(GetOrtModelBuilderApi()->CreateModel(
+  CHECK_STATUS(GetOrtModelEditorApi()->CreateModel(
       domain_names.data(), opset_versions.data(), domain_names.size(),
       model_info_->model.GetAddressOf()));
 
   // Model will own the graph.
-  CHECK_STATUS(GetOrtModelBuilderApi()->AddGraphToModel(model_info_->model,
-                                                        graph_.Release()));
+  CHECK_STATUS(GetOrtModelEditorApi()->AddGraphToModel(model_info_->model,
+                                                       graph_.Release()));
 
   return std::move(model_info_);
 }

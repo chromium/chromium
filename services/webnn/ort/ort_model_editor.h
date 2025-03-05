@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_WEBNN_ORT_ORT_MODEL_BUILDER_H_
-#define SERVICES_WEBNN_ORT_ORT_MODEL_BUILDER_H_
+#ifndef SERVICES_WEBNN_ORT_ORT_MODEL_EDITOR_H_
+#define SERVICES_WEBNN_ORT_ORT_MODEL_EDITOR_H_
 
 #include <memory>
 #include <string>
@@ -18,7 +18,7 @@ namespace webnn {
 
 namespace ort {
 
-class OrtModelBuilder {
+class OrtModelEditor {
  public:
   struct ModelInfo {
     ModelInfo();
@@ -35,10 +35,10 @@ class OrtModelBuilder {
     std::vector<base::HeapArray<uint8_t>> external_data;
   };
 
-  OrtModelBuilder();
-  ~OrtModelBuilder();
-  OrtModelBuilder(const OrtModelBuilder&) = delete;
-  OrtModelBuilder& operator=(const OrtModelBuilder&) = delete;
+  OrtModelEditor();
+  ~OrtModelEditor();
+  OrtModelEditor(const OrtModelEditor&) = delete;
+  OrtModelEditor& operator=(const OrtModelEditor&) = delete;
 
   void AddInput(std::string_view name,
                 base::span<const int64_t> shape,
@@ -98,4 +98,4 @@ class OrtModelBuilder {
 }  // namespace ort
 }  // namespace webnn
 
-#endif  // SERVICES_WEBNN_ORT_ORT_MODEL_BUILDER_H_
+#endif  // SERVICES_WEBNN_ORT_ORT_MODEL_EDITOR_H_

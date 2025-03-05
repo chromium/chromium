@@ -26,8 +26,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) PlatformFunctions {
     return ort_get_api_base_proc_;
   }
   const OrtApi* ort_api() const { return ort_api_.get(); }
-  const OrtModelBuilderApi* ort_model_builder_api() const {
-    return ort_model_builder_api_.get();
+  const OrtModelEditorApi* ort_model_editor_api() const {
+    return ort_model_editor_api_.get();
   }
 
  private:
@@ -41,7 +41,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) PlatformFunctions {
   base::ScopedNativeLibrary ort_library_;
   OrtGetApiBaseProc ort_get_api_base_proc_ = nullptr;
   raw_ptr<const OrtApi> ort_api_ = nullptr;
-  raw_ptr<const OrtModelBuilderApi> ort_model_builder_api_ = nullptr;
+  raw_ptr<const OrtModelEditorApi> ort_model_editor_api_ = nullptr;
 };
 
 }  // namespace webnn::ort

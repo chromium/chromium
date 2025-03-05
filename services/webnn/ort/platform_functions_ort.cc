@@ -44,10 +44,9 @@ PlatformFunctions::PlatformFunctions() {
     return;
   }
 
-  const OrtModelBuilderApi* ort_model_builder_api =
-      ort_api->GetModelBuilderApi();
-  if (!ort_model_builder_api) {
-    LOG(ERROR) << "[WebNN] Failed to get OrtModelBuilderApi.";
+  const OrtModelEditorApi* ort_model_editor_api = ort_api->GetModelEditorApi();
+  if (!ort_model_editor_api) {
+    LOG(ERROR) << "[WebNN] Failed to get OrtModelEditorApi.";
     return;
   }
 
@@ -55,7 +54,7 @@ PlatformFunctions::PlatformFunctions() {
   ort_library_ = std::move(ort_library);
   ort_get_api_base_proc_ = std::move(ort_get_api_base_proc);
   ort_api_ = ort_api;
-  ort_model_builder_api_ = ort_model_builder_api;
+  ort_model_editor_api_ = ort_model_editor_api;
 }
 
 PlatformFunctions::~PlatformFunctions() = default;
@@ -70,7 +69,7 @@ PlatformFunctions* PlatformFunctions::GetInstance() {
 }
 
 bool PlatformFunctions::AllFunctionsLoaded() {
-  return ort_get_api_base_proc_ && ort_api_ && ort_model_builder_api_;
+  return ort_get_api_base_proc_ && ort_api_ && ort_model_editor_api_;
 }
 
 }  // namespace webnn::ort

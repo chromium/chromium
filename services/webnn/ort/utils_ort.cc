@@ -48,10 +48,10 @@ const OrtApi* GetOrtApi() {
   return platform_functions->ort_api();
 }
 
-const OrtModelBuilderApi* GetOrtModelBuilderApi() {
+const OrtModelEditorApi* GetOrtModelEditorApi() {
   PlatformFunctions* platform_functions = PlatformFunctions::GetInstance();
   CHECK(platform_functions);
-  return platform_functions->ort_model_builder_api();
+  return platform_functions->ort_model_editor_api();
 }
 
 mojom::ErrorPtr CreateError(mojom::Error::Code error_code,
