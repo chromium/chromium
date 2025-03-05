@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/audio_manager.h"
@@ -208,7 +209,7 @@ void InputStream::OnCreated(bool initially_muted) {
                                       "initially muted", initially_muted);
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   SendLogMessage("%s({muted=%s})", __func__,
-                 initially_muted ? "true" : "false");
+                 base::ToString(initially_muted).c_str());
 
   base::UnsafeSharedMemoryRegion shared_memory_region =
       writer_->TakeSharedMemoryRegion();

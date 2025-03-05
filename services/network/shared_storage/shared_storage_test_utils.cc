@@ -11,6 +11,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/shared_storage/shared_storage_header_utils.h"
@@ -117,7 +118,7 @@ std::ostream& operator<<(std::ostream& os,
       mojom::SharedStorageSetMethodPtr& set_method =
           wrapper.method_with_options->method->get_set_method();
       os << "Method: Set(" << set_method->key << "," << set_method->value << ","
-         << (set_method->ignore_if_present ? "true" : "false") << ")";
+         << base::ToString(set_method->ignore_if_present) << ")";
       break;
     }
     case mojom::SharedStorageModifierMethod::Tag::kAppendMethod: {
