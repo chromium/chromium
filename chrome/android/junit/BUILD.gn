@@ -1246,7 +1246,6 @@ if (is_android) {
       "src/org/chromium/chrome/browser/findinpage/FindToolbarManagerTest.java",
       "src/org/chromium/chrome/browser/flags/BadFlagsSnackbarManagerTest.java",
       "src/org/chromium/chrome/browser/fonts/FontPreloaderUnitTest.java",
-      "src/org/chromium/chrome/browser/gcore/GoogleApiClientHelperTest.java",
       "src/org/chromium/chrome/browser/gesturenav/HistoryNavigationCoordinatorUnitTest.java",
       "src/org/chromium/chrome/browser/gsa/GSAUtilsUnitTest.java",
       "src/org/chromium/chrome/browser/incognito/IncognitoTabbedSnapshotControllerTest.java",
