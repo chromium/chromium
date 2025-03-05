@@ -8,7 +8,6 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ui/base/device_form_factor.h"
@@ -27,21 +26,30 @@ bool IsInactiveTabsAvailable() {
   return base::FeatureList::IsEnabled(kInactiveTabsIPadFeature);
 }
 
-bool IsInactiveTabsEnabled() {
+bool IsInactiveTabsEnabled(PrefService* prefs) {
+  return IsInactiveTabsEnabled(
+      prefs->GetInteger(prefs::kInactiveTabsTimeThreshold));
+}
+
+bool IsInactiveTabsEnabled(int raw_threshold_value) {
   if (!IsInactiveTabsAvailable()) {
     return false;
   }
 
-  return !IsInactiveTabsExplicitlyDisabledByUser();
+  return !IsInactiveTabsExplicitlyDisabledByUser(raw_threshold_value);
 }
 
-bool IsInactiveTabsExplicitlyDisabledByUser() {
+bool IsInactiveTabsExplicitlyDisabledByUser(PrefService* prefs) {
+  return IsInactiveTabsExplicitlyDisabledByUser(
+      prefs->GetInteger(prefs::kInactiveTabsTimeThreshold));
+}
+
+bool IsInactiveTabsExplicitlyDisabledByUser(int raw_threshold_value) {
   CHECK(IsInactiveTabsAvailable());
-  return GetApplicationContext()->GetLocalState()->GetInteger(
-             prefs::kInactiveTabsTimeThreshold) == kInactiveTabsDisabledByUser;
+  return raw_threshold_value == kInactiveTabsDisabledByUser;
 }
 
-const base::TimeDelta InactiveTabsTimeThreshold() {
+const base::TimeDelta InactiveTabsTimeThreshold(PrefService* prefs) {
   CHECK(IsInactiveTabsAvailable());
 
   if (experimental_flags::ShouldUseInactiveTabsTestThreshold()) {
@@ -53,9 +61,8 @@ const base::TimeDelta InactiveTabsTimeThreshold() {
   }
 
   // Preference.
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
   int user_preference_threshold =
-      local_state->GetInteger(prefs::kInactiveTabsTimeThreshold);
+      prefs->GetInteger(prefs::kInactiveTabsTimeThreshold);
   if (user_preference_threshold > 0) {
     return base::Days(user_preference_threshold);
   }

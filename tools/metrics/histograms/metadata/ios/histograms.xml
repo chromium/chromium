@@ -1812,7 +1812,7 @@ chromium-metrics-reviews@google.com.
     enum="InactiveTabsThresholdSettingType" expires_after="2025-08-10">
   <owner>alionadangla@chromium.org</owner>
   <owner>lpromero@chromium.org</owner>
-  <summary>Logs the chosen inactive tab threshold at startup.</summary>
+  <summary>Logs the chosen inactive tab threshold at profile load.</summary>
 </histogram>
 
 <histogram name="IOS.Incognito.BiometricAuthEnabled" enum="Boolean"

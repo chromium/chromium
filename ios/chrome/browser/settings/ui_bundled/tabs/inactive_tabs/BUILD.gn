@@ -18,6 +18,7 @@ source_set("inactive_tabs") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/tabs/model/inactive_tabs",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
   ]

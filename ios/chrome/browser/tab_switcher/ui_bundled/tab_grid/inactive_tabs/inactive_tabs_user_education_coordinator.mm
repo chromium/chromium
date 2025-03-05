@@ -9,6 +9,8 @@
 #import "base/i18n/message_formatter.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs/inactive_tabs_constants.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
@@ -100,11 +102,13 @@ UIImage* ConfirmationAlertImage() {
 - (void)start {
   [super start];
 
+  PrefService* prefs = self.browser->GetProfile()->GetPrefs();
+
   _confirmationAlert = [[ConfirmationAlertViewController alloc] init];
   _confirmationAlert.titleString = base::SysUTF16ToNSString(
       base::i18n::MessageFormatter::FormatWithNumberedArgs(
           l10n_util::GetStringUTF16(IDS_IOS_INACTIVE_TABS_USER_EDU_TITLE),
-          InactiveTabsTimeThreshold().InDays()));
+          InactiveTabsTimeThreshold(prefs).InDays()));
   _confirmationAlert.titleTextStyle = UIFontTextStyleTitle2;
   _confirmationAlert.subtitleString =
       l10n_util::GetNSString(IDS_IOS_INACTIVE_TABS_USER_EDU_SUBTITLE);

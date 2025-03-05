@@ -30,17 +30,16 @@
   [super setUp];
   // Ensure that inactive tabs preference settings is set to its default state.
   [ChromeEarlGrey setIntegerValue:0
-                forLocalStatePref:prefs::kInactiveTabsTimeThreshold];
+                      forUserPref:prefs::kInactiveTabsTimeThreshold];
   GREYAssertEqual(
-      0,
-      [ChromeEarlGrey localStateIntegerPref:prefs::kInactiveTabsTimeThreshold],
+      0, [ChromeEarlGrey userIntegerPref:prefs::kInactiveTabsTimeThreshold],
       @"Inactive tabs preference is not set to default value.");
 }
 
 - (void)tearDownHelper {
   // Reset preferences back to default values.
   [ChromeEarlGrey setIntegerValue:0
-                forLocalStatePref:prefs::kInactiveTabsTimeThreshold];
+                      forUserPref:prefs::kInactiveTabsTimeThreshold];
   [super tearDownHelper];
 }
 
@@ -84,8 +83,7 @@
         selectElementWithMatcher:grey_text(inactiveTabsThresholdOptions[i])]
         performAction:grey_tap()];
     GREYAssertEqual(
-        [ChromeEarlGrey
-            localStateIntegerPref:prefs::kInactiveTabsTimeThreshold],
+        [ChromeEarlGrey userIntegerPref:prefs::kInactiveTabsTimeThreshold],
         expectedPreference[i],
         @"The inactive tabs settings selected option did not change the "
         @"preference as expected.");

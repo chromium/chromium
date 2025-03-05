@@ -7,6 +7,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "components/prefs/pref_service.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
@@ -23,7 +24,6 @@
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/utils.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -57,22 +57,17 @@ class InactiveTabsUtilsTest : public PlatformTest {
         std::make_unique<InactiveTabsFakeWebStateListDelegate>());
     SnapshotBrowserAgent::CreateForBrowser(browser_active_.get());
     SnapshotBrowserAgent::CreateForBrowser(browser_inactive_.get());
-    GetApplicationContext()->GetLocalState()->SetInteger(
-        prefs::kInactiveTabsTimeThreshold, 0);
+    profile_->GetPrefs()->SetInteger(prefs::kInactiveTabsTimeThreshold, 0);
   }
 
   ~InactiveTabsUtilsTest() override {
-    GetApplicationContext()->GetLocalState()->SetInteger(
-        prefs::kInactiveTabsTimeThreshold, 0);
+    prefs()->SetInteger(prefs::kInactiveTabsTimeThreshold, 0);
   }
 
-  PrefService* local_state() {
-    return GetApplicationContext()->GetLocalState();
-  }
+  PrefService* prefs() { return profile_->GetPrefs(); }
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_active_;
   std::unique_ptr<TestBrowser> browser_inactive_;
@@ -148,8 +143,7 @@ TEST_F(InactiveTabsUtilsTest, InactiveTabAreMovedFromActiveList) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
 
-  GetApplicationContext()->GetLocalState()->SetInteger(
-      prefs::kInactiveTabsTimeThreshold, 7);
+  prefs()->SetInteger(prefs::kInactiveTabsTimeThreshold, 7);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
@@ -205,8 +199,7 @@ TEST_F(InactiveTabsUtilsTest, InactiveTabStaysInactive) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
 
-  GetApplicationContext()->GetLocalState()->SetInteger(
-      prefs::kInactiveTabsTimeThreshold, 7);
+  prefs()->SetInteger(prefs::kInactiveTabsTimeThreshold, 7);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
@@ -236,7 +229,7 @@ TEST_F(InactiveTabsUtilsTest, RestoreAllInactive) {
   // either via the flag, or via the user pref. Disable in both places.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kInactiveTabsIPadFeature);
-  local_state()->SetInteger(prefs::kInactiveTabsTimeThreshold, -1);
+  prefs()->SetInteger(prefs::kInactiveTabsTimeThreshold, -1);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
@@ -266,8 +259,7 @@ TEST_F(InactiveTabsUtilsTest, ComplicatedMove) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
 
-  GetApplicationContext()->GetLocalState()->SetInteger(
-      prefs::kInactiveTabsTimeThreshold, 7);
+  prefs()->SetInteger(prefs::kInactiveTabsTimeThreshold, 7);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
@@ -350,7 +342,7 @@ TEST_F(InactiveTabsUtilsTest, ComplicatedRestore) {
   // either via the flag, or via the user pref. Disable in both places.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kInactiveTabsIPadFeature);
-  local_state()->SetInteger(prefs::kInactiveTabsTimeThreshold, -1);
+  prefs()->SetInteger(prefs::kInactiveTabsTimeThreshold, -1);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
@@ -449,7 +441,7 @@ TEST_F(InactiveTabsUtilsTest, RestoreAllInactiveTabsRemovesCrossDuplicates) {
   // either via the flag, or via the user pref. Disable in both places.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kInactiveTabsIPadFeature);
-  local_state()->SetInteger(prefs::kInactiveTabsTimeThreshold, -1);
+  prefs()->SetInteger(prefs::kInactiveTabsTimeThreshold, -1);
 
   // Create known identifiers and last_active_time.
   const web::WebStateID unique_identifier = web::WebStateID::NewUnique();
@@ -544,8 +536,7 @@ TEST_F(InactiveTabsUtilsTest, DoNotMoveTabInGroupToInactive) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
 
-  GetApplicationContext()->GetLocalState()->SetInteger(
-      prefs::kInactiveTabsTimeThreshold, 7);
+  prefs()->SetInteger(prefs::kInactiveTabsTimeThreshold, 7);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();

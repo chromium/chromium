@@ -9,6 +9,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller_source_from_web_state_list.h"
@@ -203,29 +204,31 @@ void MoveTabsAccordingToPolicy(Browser* source_browser,
 
 void MoveTabsFromActiveToInactive(Browser* active_browser,
                                   Browser* inactive_browser) {
-  CHECK(IsInactiveTabsEnabled());
+  PrefService* prefs = active_browser->GetProfile()->GetPrefs();
+  CHECK(IsInactiveTabsEnabled(prefs));
   CHECK_NE(active_browser, inactive_browser);
 
   MoveTabsAccordingToPolicy(
       active_browser, inactive_browser,
-      MovePolicy::InactiveOnly(InactiveTabsTimeThreshold()),
+      MovePolicy::InactiveOnly(InactiveTabsTimeThreshold(prefs)),
       "Tabs.DroppedDuplicatesCountOnMigrateActiveToInactive");
 }
 
 void MoveTabsFromInactiveToActive(Browser* inactive_browser,
                                   Browser* active_browser) {
-  CHECK(IsInactiveTabsEnabled());
+  PrefService* prefs = active_browser->GetProfile()->GetPrefs();
+  CHECK(IsInactiveTabsEnabled(prefs));
   CHECK_NE(active_browser, inactive_browser);
 
   MoveTabsAccordingToPolicy(
       inactive_browser, active_browser,
-      MovePolicy::ActiveOnly(InactiveTabsTimeThreshold()),
+      MovePolicy::ActiveOnly(InactiveTabsTimeThreshold(prefs)),
       "Tabs.DroppedDuplicatesCountOnMigrateInactiveToActive");
 }
 
 void RestoreAllInactiveTabs(Browser* inactive_browser,
                             Browser* active_browser) {
-  CHECK(!IsInactiveTabsEnabled());
+  CHECK(!IsInactiveTabsEnabled(active_browser->GetProfile()->GetPrefs()));
   CHECK_NE(active_browser, inactive_browser);
 
   // Record the number of tabs restored from the inactive browser after Inactive

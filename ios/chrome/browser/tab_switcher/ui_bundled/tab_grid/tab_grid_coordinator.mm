@@ -893,9 +893,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       _pageConfiguration != TabGridPageConfiguration::kIncognitoPageOnly) {
     CHECK(_regularGridCoordinator.gridViewController);
     self.inactiveTabsButtonMediator = [[InactiveTabsButtonMediator alloc]
-        initWithConsumer:_regularGridCoordinator.gridViewController
-            webStateList:_inactiveBrowser->GetWebStateList()
-             prefService:GetApplicationContext()->GetLocalState()];
+          initWithConsumer:_regularGridCoordinator.gridViewController
+              webStateList:_inactiveBrowser->GetWebStateList()
+        profilePrefService:_inactiveBrowser->GetProfile()->GetPrefs()];
   }
 
   baseViewController.priceCardDataSource = self.priceCardMediator;
@@ -1293,7 +1293,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)showInactiveTabs {
-  CHECK(IsInactiveTabsEnabled());
+  CHECK(IsInactiveTabsEnabled(_inactiveBrowser->GetProfile()->GetPrefs()));
   [self.inactiveTabsCoordinator show];
 }
 

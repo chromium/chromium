@@ -103,7 +103,7 @@
     [weakSelf didTapInactiveTabsSettingsLink];
   };
   header.daysThreshold = _inactiveTabsDaysThreshold;
-  header.hidden = !IsInactiveTabsEnabled();
+  header.hidden = !IsInactiveTabsEnabled(_inactiveTabsDaysThreshold);
 }
 
 // Called when the Inactive Tabs settings link is tapped.

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/tabs/inactive_tabs/inactive_tabs_settings_mediator.h"
 
+#import <memory>
+
 #import "base/memory/raw_ptr.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
@@ -23,7 +25,7 @@
 @end
 
 @implementation InactiveTabsSettingsMediator {
-  // Preference service from the application context.
+  // Preference service from the profile.
   raw_ptr<PrefService> _prefs;
   // The consumer that will be notified when the data change.
   __weak id<InactiveTabsSettingsConsumer> _consumer;
@@ -35,20 +37,20 @@
   raw_ptr<Browser> _browser;
 }
 
-- (instancetype)initWithUserLocalPrefService:(PrefService*)localPrefService
-                                     browser:(Browser*)browser
-                                    consumer:(id<InactiveTabsSettingsConsumer>)
-                                                 consumer {
+- (instancetype)initWithProfilePrefService:(PrefService*)profilePrefService
+                                   browser:(Browser*)browser
+                                  consumer:(id<InactiveTabsSettingsConsumer>)
+                                               consumer {
   self = [super init];
   if (self) {
-    DCHECK(localPrefService);
+    DCHECK(profilePrefService);
     DCHECK(consumer);
     DCHECK(browser);
-    _prefs = localPrefService;
+    _prefs = profilePrefService;
     _consumer = consumer;
     _browser = browser;
     _prefChangeRegistrar.Init(_prefs);
-    _prefObserverBridge.reset(new PrefObserverBridge(self));
+    _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
     // Register to observe any changes on pref backed values displayed by the
     // screen.
     _prefObserverBridge->ObserveChangesForPreference(
@@ -56,9 +58,9 @@
 
     // Use InactiveTabsTimeThreshold() instead of reading the pref value
     // directly as this function also manages the flag and the default value.
-    int currentThreshold = IsInactiveTabsExplicitlyDisabledByUser()
+    int currentThreshold = IsInactiveTabsExplicitlyDisabledByUser(_prefs)
                                ? kInactiveTabsDisabledByUser
-                               : InactiveTabsTimeThreshold().InDays();
+                               : InactiveTabsTimeThreshold(_prefs).InDays();
     [_consumer updateCheckedStateWithDaysThreshold:currentThreshold];
   }
   return self;

@@ -13,6 +13,8 @@ namespace base {
 class TimeDelta;
 }  // namespace base
 
+class PrefService;
+
 // Preference value when a user manually disable the feature.
 extern const int kInactiveTabsDisabledByUser;
 
@@ -25,13 +27,15 @@ bool IsInactiveTabsAvailable();
 
 // Convenience method for determining if Inactive Tabs is available and not
 // explicitly disabled by the user.
-bool IsInactiveTabsEnabled();
+bool IsInactiveTabsEnabled(PrefService* prefs);
+bool IsInactiveTabsEnabled(int raw_threshold_value);
 
 // Returns true if a user disabled the feature manually.
-bool IsInactiveTabsExplicitlyDisabledByUser();
+bool IsInactiveTabsExplicitlyDisabledByUser(PrefService* prefs);
+bool IsInactiveTabsExplicitlyDisabledByUser(int raw_threshold_value);
 
 // Convenience method for determining the tab inactivity threshold.
 // The default is 21 days.
-const base::TimeDelta InactiveTabsTimeThreshold();
+const base::TimeDelta InactiveTabsTimeThreshold(PrefService* prefs);
 
 #endif  // IOS_CHROME_BROWSER_TABS_MODEL_INACTIVE_TABS_FEATURES_H_
