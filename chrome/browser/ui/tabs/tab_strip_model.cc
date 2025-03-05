@@ -2176,7 +2176,10 @@ std::vector<int> TabStripModel::GetIndicesForCommand(int index) const {
 std::vector<int> TabStripModel::GetIndicesClosedByCommand(
     int index,
     ContextMenuCommand id) const {
-  CHECK(ContainsIndex(index));
+  std::vector<int> indices;
+  if (!ContainsIndex(index)) {
+    return indices;
+  }
   DCHECK(id == CommandCloseTabsToRight || id == CommandCloseOtherTabs);
   bool is_selected = IsTabSelected(index);
   int last_unclosed_tab = -1;
@@ -2186,7 +2189,6 @@ std::vector<int> TabStripModel::GetIndicesClosedByCommand(
   }
 
   // NOTE: callers expect the vector to be sorted in descending order.
-  std::vector<int> indices;
   for (int i = count() - 1; i > last_unclosed_tab; --i) {
     if (i != index && !IsTabPinned(i) && (!is_selected || !IsTabSelected(i))) {
       indices.push_back(i);
