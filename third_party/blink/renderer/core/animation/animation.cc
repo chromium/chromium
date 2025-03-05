@@ -751,9 +751,7 @@ bool Animation::PreCommit(
         // a previous cancel failed due to not having a layout object at the
         // time of the cancel operation. The start and stop of an animation
         // for a marquee element does not depend on having a layout object.
-        if (HasActiveAnimationsOnCompositor()) {
-          CancelAnimationOnCompositor();
-        }
+        CancelAnimationOnCompositor();
         CreateCompositorAnimation(replaced_cc_animation_id);
         StartAnimationOnCompositor(paint_artifact_compositor);
         compositor_state_ = std::make_unique<CompositorState>(*this);
@@ -2857,9 +2855,9 @@ bool Animation::ResolveTimelineOffsets(const TimelineRange& timeline_range) {
 
 void Animation::CancelAnimationOnCompositor() {
   VERIFY_PAINT_CLEAN_LOG_ONCE()
-  if (HasActiveAnimationsOnCompositor()) {
-    To<KeyframeEffect>(content_.Get())
-        ->CancelAnimationOnCompositor(GetCompositorAnimation());
+  if (KeyframeEffect* keyframe_effect =
+          DynamicTo<KeyframeEffect>(content_.Get())) {
+    keyframe_effect->CancelAnimationOnCompositor(GetCompositorAnimation());
   }
 
   // Note: We do not update the composited paint status here since already
@@ -2877,18 +2875,32 @@ void Animation::RestartAnimationOnCompositor(CompositorPendingReason reason) {
   SetCompositorPending(reason);
 }
 
+bool Animation::CompositorPendingCancelOrEffectChange() const {
+  if (!compositor_state_) {
+    return false;
+  }
+  if (compositor_state_->pending_action == CompositorAction::kCancel) {
+    return true;
+  }
+
+  if (compositor_state_->effect_changed) {
+    return true;
+  }
+
+  return false;
+}
+
 void Animation::CancelIncompatibleAnimationsOnCompositor() {
   VERIFY_PAINT_CLEAN_LOG_ONCE()
   if (auto* keyframe_effect = DynamicTo<KeyframeEffect>(content_.Get()))
     keyframe_effect->CancelIncompatibleAnimationsOnCompositor();
 }
 
-bool Animation::HasActiveAnimationsOnCompositor() {
-  auto* keyframe_effect = DynamicTo<KeyframeEffect>(content_.Get());
-  if (!keyframe_effect)
-    return false;
-
-  return keyframe_effect->HasActiveAnimationsOnCompositor();
+bool Animation::HasActiveAnimationsOnCompositor() const {
+  // TODO(crbug.com/400985367): Ensure we properly handle a composited animation
+  // with an effect change during paint.
+  return compositor_state_ &&
+         compositor_state_->pending_action != CompositorAction::kCancel;
 }
 
 // Update current time of the animation. Refer to step 1 in:

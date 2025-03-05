@@ -70,7 +70,8 @@ bool PendingAnimations::Update(
 
   for (auto& animation : animations) {
     bool had_compositor_animation =
-        animation->HasActiveAnimationsOnCompositor();
+        animation->HasActiveAnimationsOnCompositor() ||
+        animation->CompositorPendingCancel();
     // Animations with a start time or non-monotonic timeline do not participate
     // in compositor start-time grouping.
     bool has_monotonic_timeline =
@@ -166,8 +167,9 @@ bool PendingAnimations::Update(
 
   // Check if we're still waiting for any compositor animations to start.
   for (auto& animation : waiting_for_compositor_animation_start_) {
-    if (animation->HasActiveAnimationsOnCompositor())
+    if (animation->HasActiveAnimationsOnCompositor()) {
       return true;
+    }
   }
 
   // If not, go ahead and start any animations that were waiting.

@@ -851,6 +851,22 @@ class CSSAnimationsCompositorStartTest
 
 INSTANTIATE_PAINT_TEST_SUITE_P(CSSAnimationsCompositorSyncTest);
 
+// Verifies that cancel is immediately reflected in style update despite being
+// deferred on the compositor until PreCommit.
+TEST_P(CSSAnimationsCompositorSyncTest, AsyncCancel) {
+  Animation* animation = GetAnimation();
+  EXPECT_TRUE(
+      element_->GetComputedStyle()->IsRunningOpacityAnimationOnCompositor());
+  animation->cancel();
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_FALSE(
+      element_->GetComputedStyle()->IsRunningOpacityAnimationOnCompositor());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+}
+
 // Verifies that changes to the playback rate are synced with the compositor.
 TEST_P(CSSAnimationsCompositorSyncTest, UpdatePlaybackRate) {
   Animation* animation = GetAnimation();
@@ -1019,7 +1035,7 @@ TEST_P(CSSAnimationsCompositorSyncTest, PendingCancel) {
   animation->cancel();
   // Cancel is still pending. We avoid stopping on the compositor until commit
   // to prevent blocking on a protected sequence longer than necessary.
-  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
 }
@@ -1029,7 +1045,7 @@ TEST_P(CSSAnimationsCompositorSyncTest, CancelThenPlay) {
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
   animation->cancel();
   animation->play();
-  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
   UpdateAllLifecyclePhasesForTest();
   SyncAnimationOnCompositor(/*needs_start_time*/ true);
   // Animation is rewound to the start.

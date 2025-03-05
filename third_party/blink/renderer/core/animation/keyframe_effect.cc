@@ -424,7 +424,7 @@ void KeyframeEffect::StartAnimationOnCompositor(
     CompositorAnimation* compositor_animation,
     bool is_monotonic_timeline,
     bool is_boundary_aligned) {
-  DCHECK(!HasActiveAnimationsOnCompositor());
+  DCHECK(compositor_keyframe_model_ids_.empty());
   // TODO(petermayo): Maybe we should recheck that we can start on the
   // compositor if we have the compositable IDs somewhere.
 
@@ -444,7 +444,10 @@ void KeyframeEffect::StartAnimationOnCompositor(
 }
 
 bool KeyframeEffect::HasActiveAnimationsOnCompositor() const {
-  return !compositor_keyframe_model_ids_.empty();
+  if (compositor_keyframe_model_ids_.empty()) {
+    return false;
+  }
+  return GetAnimation()->HasActiveAnimationsOnCompositor();
 }
 
 bool KeyframeEffect::HasActiveAnimationsOnCompositor(
@@ -455,12 +458,16 @@ bool KeyframeEffect::HasActiveAnimationsOnCompositor(
 
 bool KeyframeEffect::CancelAnimationOnCompositor(
     CompositorAnimation* compositor_animation) {
-  if (!HasActiveAnimationsOnCompositor())
+  if (compositor_keyframe_model_ids_.empty()) {
     return false;
+  }
+
   // Don't check effect_target_->GetLayoutObject(); we might be here because
   // it's *just* been set to null.
-  if (!effect_target_)
+  if (!effect_target_) {
     return false;
+  }
+
   DCHECK(Model());
   for (const auto& compositor_keyframe_model_id :
        compositor_keyframe_model_ids_) {
@@ -482,7 +489,7 @@ void KeyframeEffect::CancelIncompatibleAnimationsOnCompositor() {
 
 void KeyframeEffect::PauseAnimationForTestingOnCompositor(
     base::TimeDelta pause_time) {
-  DCHECK(HasActiveAnimationsOnCompositor());
+  DCHECK(!compositor_keyframe_model_ids_.empty());
   if (!effect_target_ || !effect_target_->GetLayoutObject())
     return;
   DCHECK(GetAnimation());
