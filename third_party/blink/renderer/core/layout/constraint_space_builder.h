@@ -260,8 +260,9 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
   }
 
   void SetRequiresContentBeforeBreaking(bool b) {
-    if (!b && !space_.HasRareData())
+    if (!b && !space_.rare_data_) {
       return;
+    }
     space_.EnsureRareData()->requires_content_before_breaking = b;
   }
 
@@ -283,8 +284,9 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
   }
 
   void SetMinBreakAppeal(BreakAppeal min_break_appeal) {
-    if (!space_.HasRareData() && min_break_appeal == kBreakAppealLastResort)
+    if (!space_.rare_data_ && min_break_appeal == kBreakAppealLastResort) {
       return;
+    }
     space_.EnsureRareData()->min_break_appeal = min_break_appeal;
   }
 
@@ -292,8 +294,9 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
       bool propagate_child_break_values = true) {
     // Don't create rare data if `propagate_child_break_values` is already
     // false.
-    if (!space_.HasRareData() && !propagate_child_break_values)
+    if (!space_.rare_data_ && !propagate_child_break_values) {
       return;
+    }
     space_.EnsureRareData()->propagate_child_break_values =
         propagate_child_break_values;
   }
@@ -371,10 +374,7 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
 
   void SetBfcOffset(const BfcOffset& bfc_offset) {
     if (!is_new_fc_) {
-      if (space_.HasRareData())
-        space_.rare_data_->bfc_offset = bfc_offset;
-      else
-        space_.bfc_offset_ = bfc_offset;
+      space_.bfc_offset_ = bfc_offset;
     }
   }
 
