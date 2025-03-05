@@ -27,6 +27,8 @@ PredictionModelHandler::PredictionModelHandler(
           optimization_target,
           GetModelHandshakeProto()) {}
 
+PredictionModelHandler::~PredictionModelHandler() = default;
+
 void PredictionModelHandler::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
     base::optional_ref<const optimization_guide::ModelInfo> model_info) {
@@ -35,15 +37,15 @@ void PredictionModelHandler::OnModelUpdated(
       GeneratePredictionsResponse,
       const PredictionModelExecutorInput&>::OnModelUpdated(optimization_target,
                                                            model_info);
-  model_load_run_loop_.Quit();
-}
+  if (model_info.has_value()) {
+    // The parent class should always set the model availability to true after
+    // having received an updated model.
+    DCHECK(ModelAvailable());
+    prediction_model_metadata_ = ParsedSupportedFeaturesForLoadedModel<
+        WebPermissionPredictionsModelMetadata>();
+  }
 
-std::optional<WebPermissionPredictionsModelMetadata>
-PredictionModelHandler::GetModelMetaData() {
-  std::optional<WebPermissionPredictionsModelMetadata> metadata =
-      ParsedSupportedFeaturesForLoadedModel<
-          WebPermissionPredictionsModelMetadata>();
-  return metadata;
+  model_load_run_loop_.Quit();
 }
 
 void PredictionModelHandler::ExecuteModelWithMetadata(
@@ -51,7 +53,7 @@ void PredictionModelHandler::ExecuteModelWithMetadata(
     std::unique_ptr<GeneratePredictionsRequest> proto_request) {
   PredictionModelExecutorInput input;
   input.request = *proto_request;
-  input.metadata = GetModelMetaData();
+  input.metadata = prediction_model_metadata_;
   ExecuteModelWithInput(std::move(callback), input);
 }
 
@@ -86,4 +88,12 @@ PredictionModelHandler::GetModelHandshakeProto() {
   }
   return std::nullopt;
 }
+
+std::optional<float> PredictionModelHandler::HoldBackProbability() {
+  if (!prediction_model_metadata_.has_value()) {
+    return std::nullopt;
+  }
+  return prediction_model_metadata_->holdback_probability();
+}
+
 }  // namespace permissions

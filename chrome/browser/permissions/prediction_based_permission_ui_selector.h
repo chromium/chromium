@@ -130,6 +130,7 @@ class PredictionBasedPermissionUiSelector
   std::optional<PredictionGrantLikelihood> last_request_grant_likelihood_;
   std::optional<permissions::PermissionRequestRelevance>
       last_permission_request_relevance_;
+  std::optional<float> tflite_model_holdback_probability_;
   std::optional<bool> was_decision_held_back_;
 
   std::optional<PredictionGrantLikelihood> likelihood_override_for_testing_;
