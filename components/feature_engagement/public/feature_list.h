@@ -52,6 +52,9 @@ DEFINE_VARIATION_PARAM(kIPHAccountSettingsHistorySync,
 DEFINE_VARIATION_PARAM(kIPHAndroidTabDeclutter, "IPH_AndroidTabDeclutter");
 DEFINE_VARIATION_PARAM(kIPHAdaptiveButtonInTopToolbarCustomizationNewTabFeature,
                        "IPH_AdaptiveButtonInTopToolbarCustomization_NewTab");
+DEFINE_VARIATION_PARAM(
+    kIPHAdaptiveButtonInTopToolbarCustomizationOpenInBrowserFeature,
+    "IPH_AdaptiveButtonInTopToolbarCustomization_OpenInBrowser");
 DEFINE_VARIATION_PARAM(kIPHAdaptiveButtonInTopToolbarCustomizationShareFeature,
                        "IPH_AdaptiveButtonInTopToolbarCustomization_Share");
 DEFINE_VARIATION_PARAM(

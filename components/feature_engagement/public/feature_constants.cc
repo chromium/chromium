@@ -236,6 +236,9 @@ BASE_FEATURE(kIPHAndroidTabDeclutter,
 BASE_FEATURE(kIPHAdaptiveButtonInTopToolbarCustomizationNewTabFeature,
              "IPH_AdaptiveButtonInTopToolbarCustomization_NewTab",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHAdaptiveButtonInTopToolbarCustomizationOpenInBrowserFeature,
+             "IPH_AdaptiveButtonInTopToolbarCustomization_OpenInBrowser",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAdaptiveButtonInTopToolbarCustomizationShareFeature,
              "IPH_AdaptiveButtonInTopToolbarCustomization_Share",
              base::FEATURE_DISABLED_BY_DEFAULT);

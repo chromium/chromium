@@ -1161,7 +1161,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                             optionalButton,
                             mUserEducationHelper,
                             /* transitionRoot= */ CustomTabToolbar.this,
-                            () -> true,
+                            /* isAnimationAllowedPredicate= */ () -> false,
                             mTrackerSupplier);
 
             mOptionalButtonCoordinator.setBackgroundColorFilter(getBackground().getColor());

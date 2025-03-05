@@ -32,6 +32,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureOverrides;
@@ -210,6 +211,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                         mTabController,
                         mMinimizeDelegateSupplier,
                         mFeatureOverridesManagerSupplier,
+                        CallbackUtils.emptyRunnable(),
                         mEdgeToEdgeManager) {
 
                     @Nullable

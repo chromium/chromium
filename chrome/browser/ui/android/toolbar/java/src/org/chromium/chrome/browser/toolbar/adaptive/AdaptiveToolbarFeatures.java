@@ -69,6 +69,7 @@ public class AdaptiveToolbarFeatures {
             case AdaptiveToolbarButtonVariant.UNKNOWN:
             case AdaptiveToolbarButtonVariant.NONE:
             case AdaptiveToolbarButtonVariant.NEW_TAB:
+            case AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER:
             case AdaptiveToolbarButtonVariant.SHARE:
             case AdaptiveToolbarButtonVariant.VOICE:
             case AdaptiveToolbarButtonVariant.AUTO:
