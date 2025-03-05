@@ -505,6 +505,54 @@ bool PrefetchService::IsPrefetchDuplicate(
   return false;
 }
 
+bool PrefetchService::IsPrefetchAttemptFailedOrDiscardedInternal(
+    base::PassKey<PrefetchDocumentManager>,
+    PrefetchContainer::Key key) const {
+  auto it = owned_prefetches_.find(key);
+  if (it == owned_prefetches_.end() || !it->second) {
+    return true;
+  }
+
+  const std::unique_ptr<PrefetchContainer>& container = it->second;
+  if (!container->HasPrefetchStatus()) {
+    return false;  // the container is not processed yet
+  }
+
+  switch (container->GetPrefetchStatus()) {
+    case PrefetchStatus::kPrefetchSuccessful:
+    case PrefetchStatus::kPrefetchResponseUsed:
+      return false;
+    case PrefetchStatus::kPrefetchIneligibleUserHasCookies:
+    case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker:
+    case PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps:
+    case PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition:
+    case PrefetchStatus::kPrefetchIneligibleRetryAfter:
+    case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
+    case PrefetchStatus::kPrefetchIneligibleHostIsNonUnique:
+    case PrefetchStatus::kPrefetchIneligibleDataSaverEnabled:
+    case PrefetchStatus::kPrefetchIneligibleBatterySaverEnabled:
+    case PrefetchStatus::kPrefetchIneligiblePreloadingDisabled:
+    case PrefetchStatus::kPrefetchIneligibleExistingProxy:
+    case PrefetchStatus::kPrefetchIsStale:
+    case PrefetchStatus::kPrefetchNotUsedProbeFailed:
+    case PrefetchStatus::kPrefetchNotStarted:
+    case PrefetchStatus::kPrefetchNotFinishedInTime:
+    case PrefetchStatus::kPrefetchFailedNetError:
+    case PrefetchStatus::kPrefetchFailedNon2XX:
+    case PrefetchStatus::kPrefetchFailedMIMENotSupported:
+    case PrefetchStatus::kPrefetchIsPrivacyDecoy:
+    case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
+    case PrefetchStatus::kPrefetchHeldback:
+    case PrefetchStatus::kPrefetchFailedInvalidRedirect:
+    case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
+    case PrefetchStatus::
+        kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
+    case PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved:
+    case PrefetchStatus::kPrefetchEvictedForNewerPrefetch:
+      return true;
+  }
+}
+
 bool PrefetchService::IsPrefetchStale(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
   TRACE_EVENT0("loading", "PrefetchService::IsPrefetchStale");
