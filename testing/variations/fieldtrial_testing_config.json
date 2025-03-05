@@ -12794,6 +12794,22 @@
             ]
         }
     ],
+    "IdentityDiscAccountMenu2": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithSettings",
+                    "enable_features": [
+                        "IdentityConfirmationSnackbar",
+                        "IdentityDiscAccountMenu"
+                    ]
+                }
+            ]
+        }
+    ],
     "IgnoreDiscardAttemptMarker": [
         {
             "platforms": [
