@@ -5178,14 +5178,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "improved-semantics-activity-indicators",
-    "owners": [
-      "elklm@chromium.org",
-      "//components/permissions/PERMISSIONS_OWNERS"
-    ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "improved-settings-ui-on-desktop",
     "owners": [
       "uno-desktop@google.com",
