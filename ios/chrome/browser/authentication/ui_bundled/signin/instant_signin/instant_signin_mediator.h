@@ -44,7 +44,7 @@ enum class AccessPoint;
 // Stops the sign-in flow. This method can only be called once, and only after
 // `startSignInOnlyFlowWithAuthenticationFlow:` has ben called. `completion` is
 // run synchronously.
-- (void)interruptWithAction:(SigninCoordinatorInterrupt)action;
+- (void)interrupt;
 
 @end
 

@@ -88,11 +88,9 @@ class AuthenticationFlowPerformerTest : public PlatformTest {
 TEST_F(AuthenticationFlowPerformerTest,
        TestSimpleInterruptWithoutDialogDisplayed) {
   __block BOOL completion_called = NO;
-  [authentication_flow_performer_
-      interruptWithAction:SigninCoordinatorInterrupt::DismissWithAnimation
-               completion:^() {
-                 completion_called = YES;
-               }];
+  [authentication_flow_performer_ interruptWithCompletion:^() {
+    completion_called = YES;
+  }];
   EXPECT_TRUE(completion_called);
 }
 

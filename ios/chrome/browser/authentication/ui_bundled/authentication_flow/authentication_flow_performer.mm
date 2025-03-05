@@ -122,8 +122,7 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
   return self;
 }
 
-- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
-                 completion:(ProceduralBlock)completion {
+- (void)interruptWithCompletion:(ProceduralBlock)completion {
   [_managedConfirmationScreenCoordinator stop];
   _managedConfirmationScreenCoordinator = nil;
   [_managedConfirmationAlertCoordinator stop];
