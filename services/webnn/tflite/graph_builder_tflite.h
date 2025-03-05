@@ -686,10 +686,13 @@ class GraphBuilderTflite final {
   base::expected<OperatorOffset, std::string> SerializeWhere(
       const mojom::Where& where);
 
+  bool RequiresFloat32Precision(const mojom::Operation& op);
+
   // No further methods may be called on this class after calling this method
   // because the buffer of `buffer_` is now owned by the detached buffer.
   Result FinishAndTakeResult(base::span<const uint64_t> input_operands,
-                             base::span<const uint64_t> output_operands);
+                             base::span<const uint64_t> output_operands,
+                             bool has_fp32_operation);
 
   const ContextProperties context_properties_;
 
