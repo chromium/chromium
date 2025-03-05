@@ -7,6 +7,8 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
@@ -38,6 +40,11 @@ class StrikeDatabaseBase;
 // from an incognito session is persisted unintentionally.
 class EntityDataManager : public KeyedService, history::HistoryServiceObserver {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnEntityInstancesChanged() {}
+  };
+
   explicit EntityDataManager(
       scoped_refptr<AutofillWebDataService> profile_database,
       history::HistoryService* history_service,
@@ -79,6 +86,15 @@ class EntityDataManager : public KeyedService, history::HistoryServiceObserver {
   void OnHistoryDeletions(history::HistoryService*,
                           const history::DeletionInfo& deletion_info) override;
 
+  // Notifies the observers that the entity instances have changed.
+  void NotifyEntityInstancesChanged();
+
+  void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
+
+  void RemoveObserver(Observer* observer) {
+    observers_.RemoveObserver(observer);
+  }
+
  private:
   void LoadEntities();
 
@@ -97,6 +113,8 @@ class EntityDataManager : public KeyedService, history::HistoryServiceObserver {
       history_service_observation_{this};
 
   std::unique_ptr<AutofillAiSaveStrikeDatabaseByHost> save_strike_db_by_host_;
+
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<EntityDataManager> weak_ptr_factory_{this};
 };

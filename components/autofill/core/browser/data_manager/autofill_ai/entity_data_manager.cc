@@ -51,6 +51,9 @@ void EntityDataManager::LoadEntities() {
           self->entities_ =
               base::flat_set<EntityInstance, EntityInstance::CompareByGuid>(
                   std::move(result).GetValue());
+          if (!self->entities_.empty()) {
+            self->NotifyEntityInstancesChanged();
+          }
         }
       },
       weak_ptr_factory_.GetWeakPtr()));
@@ -69,6 +72,7 @@ void EntityDataManager::AddOrUpdateEntityInstance(EntityInstance entity) {
             if (!inserted) {
               *it = *eic.data_model();
             }
+            self->NotifyEntityInstancesChanged();
           },
           weak_ptr_factory_.GetWeakPtr()));
 }
@@ -83,6 +87,7 @@ void EntityDataManager::RemoveEntityInstance(base::Uuid guid) {
             }
             CHECK_EQ(eic.type(), EntityInstanceChange::REMOVE);
             self->entities_.erase(eic.key());
+            self->NotifyEntityInstancesChanged();
           },
           weak_ptr_factory_.GetWeakPtr()));
 }
@@ -110,6 +115,12 @@ void EntityDataManager::OnHistoryDeletions(
     const history::DeletionInfo& deletion_info) {
   if (save_strike_db_by_host_) {
     save_strike_db_by_host_->ClearStrikesWithHistory(deletion_info);
+  }
+}
+
+void EntityDataManager::NotifyEntityInstancesChanged() {
+  for (Observer& observer : observers_) {
+    observer.OnEntityInstancesChanged();
   }
 }
 

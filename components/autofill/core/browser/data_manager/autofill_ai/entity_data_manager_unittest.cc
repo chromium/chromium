@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -31,6 +32,17 @@ using ::testing::IsEmpty;
 using ::testing::Optional;
 using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
+
+class MockEntityDataManagerObserver : public EntityDataManager::Observer {
+ public:
+  MockEntityDataManagerObserver() = default;
+  MockEntityDataManagerObserver(const MockEntityDataManagerObserver&) = delete;
+  MockEntityDataManagerObserver& operator=(
+      const MockEntityDataManagerObserver&) = delete;
+  ~MockEntityDataManagerObserver() override = default;
+
+  MOCK_METHOD(void, OnEntityInstancesChanged, (), (override));
+};
 
 // Test fixture for the asynchronous database operations in EntityDataManager.
 class EntityDataManagerTest : public testing::Test {
@@ -86,8 +98,14 @@ class EntityDataManagerTest_InitiallyEmpty : public EntityDataManagerTest {
 
 // Tests that AddOrUpdateEntityInstance() asynchronously adds entities.
 TEST_F(EntityDataManagerTest_InitiallyEmpty, AddEntityInstance) {
+  MockEntityDataManagerObserver observer;
+  base::ScopedObservation<EntityDataManager, MockEntityDataManagerObserver>
+      observation{&observer};
+  observation.Observe(&entity_data_manager());
+
   EntityInstance pp = test::GetPassportEntityInstance();
   EntityInstance dl = test::GetDriversLicenseEntityInstance();
+  EXPECT_CALL(observer, OnEntityInstancesChanged).Times(2);
   entity_data_manager().AddOrUpdateEntityInstance(pp);
   entity_data_manager().AddOrUpdateEntityInstance(dl);
   EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, dl));
@@ -95,8 +113,14 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty, AddEntityInstance) {
 
 // Tests that AddOrUpdateEntityInstance() asynchronously updates entities.
 TEST_F(EntityDataManagerTest_InitiallyEmpty, UpdateEntityInstance) {
+  MockEntityDataManagerObserver observer;
+  base::ScopedObservation<EntityDataManager, MockEntityDataManagerObserver>
+      observation{&observer};
+  observation.Observe(&entity_data_manager());
+
   EntityInstance pp = test::GetPassportEntityInstance(
       {.date_modified = test::kJune2017 - base::Days(3)});
+  EXPECT_CALL(observer, OnEntityInstancesChanged).Times(2);
   entity_data_manager().AddOrUpdateEntityInstance(pp);
   ASSERT_THAT(GetEntityInstances(), UnorderedElementsAre(pp));
 
@@ -108,8 +132,14 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty, UpdateEntityInstance) {
 
 // Tests that RemoveEntityInstance() asynchronously removes entities.
 TEST_F(EntityDataManagerTest_InitiallyEmpty, RemoveEntityInstance) {
+  MockEntityDataManagerObserver observer;
+  base::ScopedObservation<EntityDataManager, MockEntityDataManagerObserver>
+      observation{&observer};
+  observation.Observe(&entity_data_manager());
+
   EntityInstance pp = test::GetPassportEntityInstance();
   EntityInstance dl = test::GetDriversLicenseEntityInstance();
+  EXPECT_CALL(observer, OnEntityInstancesChanged).Times(3);
   entity_data_manager().AddOrUpdateEntityInstance(pp);
   entity_data_manager().AddOrUpdateEntityInstance(dl);
   ASSERT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, dl));
@@ -135,6 +165,11 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty, RemoveEntityInstance_NonExisting) {
 // Tests that removing entities in a date range updates the cache.
 TEST_F(EntityDataManagerTest_InitiallyEmpty,
        RemoveEntityInstancesModifiedBetween) {
+  MockEntityDataManagerObserver observer;
+  base::ScopedObservation<EntityDataManager, MockEntityDataManagerObserver>
+      observation{&observer};
+  observation.Observe(&entity_data_manager());
+
   EntityInstance pp = test::GetPassportEntityInstance(
       {.date_modified = test::kJune2017 - base::Days(1)});
   EntityInstance dl = test::GetDriversLicenseEntityInstance(
@@ -143,6 +178,7 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty,
   entity_data_manager().AddOrUpdateEntityInstance(dl);
   ASSERT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, dl));
 
+  EXPECT_CALL(observer, OnEntityInstancesChanged).Times(1);
   entity_data_manager().RemoveEntityInstancesModifiedBetween(
       test::kJune2017 - base::Days(1), test::kJune2017);
   EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(dl));
