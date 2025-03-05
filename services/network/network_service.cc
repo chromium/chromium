@@ -235,7 +235,11 @@ void HandleBadMessage(const std::string& error) {
   // dump in official build or ipc fuzzer build where it is expected to received
   // bad message, and crash otherwise so that it is more visible when unexpected
   // bad message is encountered in tests.
-#if defined(OFFICIAL_BUILD) || defined(ENABLE_IPC_FUZZER)
+  // Also create dump instead of crash for builds without DCHECK on as some
+  // fuzzing tests are done using builds without ENABLE_IPC_FUZZER, but those
+  // builds are always with DCHECK disabled. As DCHECK is on for most builds,
+  // we still have enough coverage for crashing upon bad message behavior.
+#if defined(OFFICIAL_BUILD) || defined(ENABLE_IPC_FUZZER) || !DCHECK_IS_ON()
   mojo::debug::ScopedMessageErrorCrashKey crash_key_value(error);
   base::debug::DumpWithoutCrashing();
   network::debug::ClearDeserializationCrashKeyString();
