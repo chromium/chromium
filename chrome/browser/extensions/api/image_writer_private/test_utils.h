@@ -67,12 +67,12 @@ class MockOperationManager : public OperationManager {
 };
 
 #if BUILDFLAG(IS_CHROMEOS)
-// A fake for the DiskMountManager that will successfully call the unmount
+// A mock for the DiskMountManager that will successfully call the unmount
 // callback.
-class FakeDiskMountManager : public ash::disks::MockDiskMountManager {
+class UnmountingMockDiskMountManager : public ash::disks::MockDiskMountManager {
  public:
-  FakeDiskMountManager();
-  ~FakeDiskMountManager() override;
+  UnmountingMockDiskMountManager();
+  ~UnmountingMockDiskMountManager() override;
 
   void UnmountDeviceRecursively(
       const std::string& device_path,
