@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/toolbar/reading_list_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/show_promo_in_page.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_icon_view.h"
@@ -311,6 +312,18 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
           .SetMetadata(100, "siyua@chromium.org",
                        "Triggered after autofill popup appears.")));
+
+  // kIPHAutofillBnplSuggestionFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHAutofillBnplAffirmOrZipSuggestionFeature,
+          autofill::PopupViewViews::kAutofillBnplAffirmOrZipSuggestionElementId,
+          IDS_AUTOFILL_CARD_BNPL_AFFIRM_OR_ZIP_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP,
+          IDS_AUTOFILL_CARD_BNPL_AFFIRM_OR_ZIP_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
+          .SetMetadata(137, "yiwenqian@google.com",
+                       "Triggered when users see the BNPL chip.")));
 
   // kIPHAutofillCardInfoRetrievalSuggestionFeature:
   registry.RegisterFeature(std::move(

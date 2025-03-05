@@ -930,6 +930,12 @@
   <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_SUGGESTION_IPH_BUBBLE_LABEL_SCREENREADER" desc="Text shown in the `In-Product Help(IPH)` bubble for card info retrieval suggestions on Chrome Desktop. It is specifically for card info retrieval enrolled card. Card info will be copied after the user clicks the suggestion.">
       Now you can autofill your <ph name="CARD_ISSUER_NAME">$1<ex>PayPay</ex></ph> cards because your <ph name="CARD_ISSUER_NAME">$1<ex>PayPay</ex></ph> account is linked to Google Pay.
   </message>
+  <message name="IDS_AUTOFILL_CARD_BNPL_AFFIRM_OR_ZIP_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP" desc="Text shown in the `In-Product Help(IPH)` bubble to educate users when using BNPL suggestion you can pay over time on Chrome Desktop.">
+      Now you can pay over time using Affirm or Zip.
+  </message>
+  <message name="IDS_AUTOFILL_CARD_BNPL_AFFIRM_OR_ZIP_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP_SCREENREADER" desc="Text shown in the `In-Product Help(IPH)` bubble to educate users when using BNPL suggestion you can pay over time on Chrome Desktop.">
+      Now you can pay over time using Affirm or Zip.
+  </message>
   <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_SUGGESTION_IPH_BUBBLE_FALLBACK_LABEL" desc="Text shown in the `In-Product Help(IPH)` bubble for card info retrieval suggestions on Chrome Android when the issuer_id is not present in the card. It is specifically for card info retrieval enrolled card. Card info will be copied after the user clicks the suggestion.">
       You can autofill this card because your account is linked to Google Pay
   </message>
