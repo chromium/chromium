@@ -27,13 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRAPHICS_TYPES_H_
 
 #include "cc/paint/paint_flags.h"
-#include "third_party/blink/renderer/platform/geometry/path_types.h"
-#include "third_party/blink/renderer/platform/graphics/blend_mode.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-
-namespace WTF {
-class String;
-}
 
 namespace blink {
 
@@ -56,21 +50,7 @@ enum TextDrawingMode {
 };
 typedef unsigned TextDrawingModeFlags;
 
-// Note that this is only appropriate to use in canvas globalCompositeOperator
-// cases.
-// TODO(vmpstr): Move these functions to near where they are used.
-PLATFORM_EXPORT WTF::String CanvasCompositeOperatorName(CompositeOperator,
-                                                        BlendMode);
-PLATFORM_EXPORT bool ParseCanvasCompositeAndBlendMode(const WTF::String&,
-                                                      CompositeOperator&,
-                                                      BlendMode&);
 PLATFORM_EXPORT InterpolationQuality GetDefaultInterpolationQuality();
-
-PLATFORM_EXPORT WTF::String LineCapName(LineCap);
-PLATFORM_EXPORT bool ParseLineCap(const WTF::String&, LineCap&);
-
-PLATFORM_EXPORT WTF::String LineJoinName(LineJoin);
-PLATFORM_EXPORT bool ParseLineJoin(const WTF::String&, LineJoin&);
 
 }  // namespace blink
 

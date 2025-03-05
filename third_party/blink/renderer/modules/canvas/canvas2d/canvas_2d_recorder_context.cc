@@ -10,10 +10,12 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_2d_recorder_context.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 #include <optional>
 #include <ostream>  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2053)
 #include <string>  // IWYU pragma: keep (for String::Utf8())
@@ -186,6 +188,198 @@ class ScriptState;
 class SimpleFontData;
 
 using ::cc::UsePaintCache;
+
+namespace {
+
+constexpr auto kCanvasCompositeOperatorNames = std::to_array<const char* const>(
+    {"clear", "copy", "source-over", "source-in", "source-out", "source-atop",
+     "destination-over", "destination-in", "destination-out",
+     "destination-atop", "xor", "lighter"});
+
+constexpr auto kCanvasBlendModeNames = std::to_array<const char* const>(
+    {"normal", "multiply", "screen", "overlay", "darken", "lighten",
+     "color-dodge", "color-burn", "hard-light", "soft-light", "difference",
+     "exclusion", "hue", "saturation", "color", "luminosity"});
+
+bool ParseCanvasCompositeAndBlendMode(const String& s,
+                                      CompositeOperator& op,
+                                      BlendMode& blend_op) {
+  if (auto it = std::ranges::find(kCanvasCompositeOperatorNames, s);
+      it != kCanvasCompositeOperatorNames.end()) {
+    op = static_cast<CompositeOperator>(
+        std::distance(kCanvasCompositeOperatorNames.begin(), it));
+    blend_op = BlendMode::kNormal;
+    return true;
+  }
+
+  if (auto it = std::ranges::find(kCanvasBlendModeNames, s);
+      it != kCanvasBlendModeNames.end()) {
+    blend_op = static_cast<BlendMode>(
+        std::distance(kCanvasBlendModeNames.begin(), it));
+    op = kCompositeSourceOver;
+    return true;
+  }
+
+  return false;
+}
+
+String CanvasCompositeOperatorName(CompositeOperator op, BlendMode blend_op) {
+  DCHECK_GE(op, 0);
+  DCHECK_LT(op, kCanvasCompositeOperatorNames.size());
+  DCHECK_GE(static_cast<int>(blend_op), 0);
+  DCHECK_LT(static_cast<size_t>(blend_op), kCanvasBlendModeNames.size());
+  if (blend_op != BlendMode::kNormal) {
+    return kCanvasBlendModeNames[static_cast<unsigned>(blend_op)];
+  }
+  return kCanvasCompositeOperatorNames[op];
+}
+
+std::pair<CompositeOperator, BlendMode> CompositeAndBlendOpsFromSkBlendMode(
+    SkBlendMode sk_blend_mode) {
+  CompositeOperator composite_op = kCompositeSourceOver;
+  BlendMode blend_mode = BlendMode::kNormal;
+  switch (sk_blend_mode) {
+    // The following are SkBlendMode values that map to CompositeOperators.
+    case SkBlendMode::kClear:
+      composite_op = kCompositeClear;
+      break;
+    case SkBlendMode::kSrc:
+      composite_op = kCompositeCopy;
+      break;
+    case SkBlendMode::kSrcOver:
+      composite_op = kCompositeSourceOver;
+      break;
+    case SkBlendMode::kDstOver:
+      composite_op = kCompositeDestinationOver;
+      break;
+    case SkBlendMode::kSrcIn:
+      composite_op = kCompositeSourceIn;
+      break;
+    case SkBlendMode::kDstIn:
+      composite_op = kCompositeDestinationIn;
+      break;
+    case SkBlendMode::kSrcOut:
+      composite_op = kCompositeSourceOut;
+      break;
+    case SkBlendMode::kDstOut:
+      composite_op = kCompositeDestinationOut;
+      break;
+    case SkBlendMode::kSrcATop:
+      composite_op = kCompositeSourceAtop;
+      break;
+    case SkBlendMode::kDstATop:
+      composite_op = kCompositeDestinationAtop;
+      break;
+    case SkBlendMode::kXor:
+      composite_op = kCompositeXOR;
+      break;
+    case SkBlendMode::kPlus:
+      composite_op = kCompositePlusLighter;
+      break;
+
+    // The following are SkBlendMode values that map to BlendModes.
+    case SkBlendMode::kScreen:
+      blend_mode = BlendMode::kScreen;
+      break;
+    case SkBlendMode::kOverlay:
+      blend_mode = BlendMode::kOverlay;
+      break;
+    case SkBlendMode::kDarken:
+      blend_mode = BlendMode::kDarken;
+      break;
+    case SkBlendMode::kLighten:
+      blend_mode = BlendMode::kLighten;
+      break;
+    case SkBlendMode::kColorDodge:
+      blend_mode = BlendMode::kColorDodge;
+      break;
+    case SkBlendMode::kColorBurn:
+      blend_mode = BlendMode::kColorBurn;
+      break;
+    case SkBlendMode::kHardLight:
+      blend_mode = BlendMode::kHardLight;
+      break;
+    case SkBlendMode::kSoftLight:
+      blend_mode = BlendMode::kSoftLight;
+      break;
+    case SkBlendMode::kDifference:
+      blend_mode = BlendMode::kDifference;
+      break;
+    case SkBlendMode::kExclusion:
+      blend_mode = BlendMode::kExclusion;
+      break;
+    case SkBlendMode::kMultiply:
+      blend_mode = BlendMode::kMultiply;
+      break;
+    case SkBlendMode::kHue:
+      blend_mode = BlendMode::kHue;
+      break;
+    case SkBlendMode::kSaturation:
+      blend_mode = BlendMode::kSaturation;
+      break;
+    case SkBlendMode::kColor:
+      blend_mode = BlendMode::kColor;
+      break;
+    case SkBlendMode::kLuminosity:
+      blend_mode = BlendMode::kLuminosity;
+      break;
+
+    // We don't handle other SkBlendModes.
+    default:
+      break;
+  }
+  return std::make_pair(composite_op, blend_mode);
+}
+
+bool ParseLineCap(const String& s, LineCap& cap) {
+  if (s == "butt") {
+    cap = kButtCap;
+    return true;
+  }
+  if (s == "round") {
+    cap = kRoundCap;
+    return true;
+  }
+  if (s == "square") {
+    cap = kSquareCap;
+    return true;
+  }
+  return false;
+}
+
+String LineCapName(LineCap cap) {
+  DCHECK_GE(cap, 0);
+  DCHECK_LT(cap, 3);
+  constexpr std::array<const char* const, 3> kNames = {"butt", "round",
+                                                       "square"};
+  return kNames[cap];
+}
+
+bool ParseLineJoin(const String& s, LineJoin& join) {
+  if (s == "miter") {
+    join = kMiterJoin;
+    return true;
+  }
+  if (s == "round") {
+    join = kRoundJoin;
+    return true;
+  }
+  if (s == "bevel") {
+    join = kBevelJoin;
+    return true;
+  }
+  return false;
+}
+
+String LineJoinName(LineJoin join) {
+  DCHECK_GE(join, 0);
+  DCHECK_LT(join, 3);
+  constexpr std::array<const char* const, 3> kNames = {"miter", "round",
+                                                       "bevel"};
+  return kNames[join];
+}
+
+}  // namespace
 
 BASE_FEATURE(kDisableCanvasOverdrawOptimization,
              "DisableCanvasOverdrawOptimization",
