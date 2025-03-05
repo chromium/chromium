@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -75,30 +74,29 @@ template("chrome_repack_locales") {
     }
 
     if (is_chromeos) {
-      source_patterns +=
-          [ "${root_gen_dir}/ui/chromeos/strings/ui_chromeos_strings_" ]
-      deps += [ "//ui/chromeos/strings" ]
-      if (is_chrome_branded) {
-        source_patterns += [ "${root_gen_dir}/chrome/app/theme/google_chrome/chromeos/strings/chromeos_chrome_internal_strings_" ]
-        deps += [ "//chrome/app/theme/google_chrome/chromeos/strings" ]
-      }
-    }
-    if (is_chromeos_ash) {
       source_patterns += [
         "${root_gen_dir}/ash/strings/ash_strings_",
         "${root_gen_dir}/ash/webui/camera_app_ui/resources/strings/ash_camera_app_strings_",
         "${root_gen_dir}/chromeos/strings/chromeos_strings_",
         "${root_gen_dir}/remoting/resources/",
+        "${root_gen_dir}/ui/chromeos/strings/ui_chromeos_strings_",
       ]
       deps += [
         "//ash/strings",
         "//ash/webui/camera_app_ui/resources/strings",
         "//chromeos/strings",
         "//remoting/resources",
+        "//ui/chromeos/strings",
       ]
       if (is_chrome_branded) {
-        source_patterns += [ "${root_gen_dir}/chromeos/ash/resources/internal/strings/ash_internal_strings_" ]
-        deps += [ "//chromeos/ash/resources/internal/strings" ]
+        source_patterns += [
+          "${root_gen_dir}/chrome/app/theme/google_chrome/chromeos/strings/chromeos_chrome_internal_strings_",
+          "${root_gen_dir}/chromeos/ash/resources/internal/strings/ash_internal_strings_",
+        ]
+        deps += [
+          "//chrome/app/theme/google_chrome/chromeos/strings",
+          "//chromeos/ash/resources/internal/strings",
+        ]
       }
       compress = true
     }
