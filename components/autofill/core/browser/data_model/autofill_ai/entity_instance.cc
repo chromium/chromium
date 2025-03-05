@@ -60,7 +60,7 @@ AttributeInstance::~AttributeInstance() = default;
 std::u16string AttributeInstance::GetInfo(
     FieldType type,
     const std::string& app_locale,
-    std::u16string_view format_string) const {
+    base::optional_ref<const std::u16string> format_string) const {
   type = GetNormalizedType(type);
   if (type == UNKNOWN_TYPE) {
     return u"";
@@ -71,13 +71,11 @@ std::u16string AttributeInstance::GetInfo(
                          return country.GetCountryName(app_locale);
                        },
                        [&](const DateInfo& date) {
-                         if (format_string.empty()) {
-                           // TODO(crbug.com/396325496): Consider falling back
-                           // to a locale-specific format by relying on
-                           // `app_locale`.
-                           format_string = u"YYYY-MM-DD";
-                         }
-                         return date.GetDate(format_string);
+                         // TODO(crbug.com/396325496): Consider falling back
+                         // to a locale-specific format by relying on
+                         // `app_locale`.
+                         return date.GetDate(format_string ? *format_string
+                                                           : u"YYYY-MM-DD");
                        },
                        [&](const NameInfo& name) {
                          return GetRawInfo(/*pass_key=*/{}, type);

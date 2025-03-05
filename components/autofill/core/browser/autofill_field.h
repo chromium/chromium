@@ -344,7 +344,12 @@ class AutofillField : public FormFieldData {
   //
   // Only one format string is stored at a time: the one with the
   // highest-ranking `FormatStringSource`.
-  const std::string& format_string() const { return format_string_; }
+  base::optional_ref<const std::string> format_string() const {
+    if (format_string_source_ == FormatStringSource::kUnset) {
+      return std::nullopt;
+    }
+    return format_string_;
+  }
 
   FormatStringSource format_string_source() const {
     return format_string_source_;
