@@ -22,6 +22,7 @@ class SessionManager:
         self.send_challenge_early = False
         self.cookie_has_no_attributes = False
         self.scope_origin = None
+        self.registration_sends_challenge = False
 
     def create_new_session(self):
         session_id = str(len(self.session_to_key_map))
@@ -61,6 +62,10 @@ class SessionManager:
         if scope_origin is not None:
             self.scope_origin = scope_origin
 
+        registration_sends_challenge = configuration.get("registrationSendsChallenge")
+        if registration_sends_challenge is not None:
+            self.registration_sends_challenge = registration_sends_challenge
+
     def get_should_refresh_end_session(self):
         return self.should_refresh_end_session
 
@@ -69,6 +74,12 @@ class SessionManager:
 
     def get_send_challenge_early(self):
         return self.send_challenge_early
+
+    def get_registration_sends_challenge(self):
+        return self.registration_sends_challenge
+
+    def reset_registration_sends_challenge(self):
+        self.registration_sends_challenge = False
 
     def get_session_instructions_response(self, session_id, request):
         cookie_parts = ["auth_cookie=abcdef0123"]
