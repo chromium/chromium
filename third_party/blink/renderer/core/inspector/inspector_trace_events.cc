@@ -27,6 +27,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/html/html_picture_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspector_animation_agent.h"
@@ -1534,6 +1536,20 @@ void inspector_paint_image_event::Data(perfetto::TracedValue context,
   dict.Add("height", dest_rect.height());
   dict.Add("srcWidth", src_rect.width());
   dict.Add("srcHeight", src_rect.height());
+  dict.Add("isCSS", layout_image.IsGeneratedContent());
+
+  if (HTMLImageElement* imageElement =
+          DynamicTo<HTMLImageElement>(layout_image.GetNode())) {
+    dict.Add("loadingAttribute",
+             imageElement->getAttribute(html_names::kLoadingAttr));
+    dict.Add("srcsetAttribute",
+             imageElement->getAttribute(html_names::kSrcsetAttr));
+    dict.Add("isPicture", IsA<HTMLPictureElement>(imageElement->parentNode()));
+  }
+
+  if (LocalFrame* frame = layout_image.GetFrame()) {
+    dict.Add("frame", IdentifiersFactory::FrameId(frame));
+  }
 }
 
 void inspector_paint_image_event::Data(perfetto::TracedValue context,
@@ -1551,8 +1567,12 @@ void inspector_paint_image_event::Data(perfetto::TracedValue context,
                                        const gfx::RectF& src_rect,
                                        const gfx::RectF& dest_rect) {
   auto dict = std::move(context).WriteDictionary();
-  if (node)
+  if (node) {
     SetNodeInfo(dict, node, "nodeId", nullptr);
+    if (LocalFrame* frame = node->GetDocument().GetFrame()) {
+      dict.Add("frame", IdentifiersFactory::FrameId(frame));
+    }
+  }
   if (const ImageResourceContent* content = style_image.CachedImage())
     dict.Add("url", content->Url().ElidedString());
 
@@ -1562,6 +1582,7 @@ void inspector_paint_image_event::Data(perfetto::TracedValue context,
   dict.Add("height", dest_rect.height());
   dict.Add("srcWidth", src_rect.width());
   dict.Add("srcHeight", src_rect.height());
+  dict.Add("isCSS", true);
 }
 
 void inspector_paint_image_event::Data(
