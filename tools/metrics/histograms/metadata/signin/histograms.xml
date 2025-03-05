@@ -1753,7 +1753,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.IOSDeviceRestoreIdentityCountAfter" units="identities"
-    expires_after="2025-04-01">
+    expires_after="2026-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -1764,7 +1764,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.IOSDeviceRestoreIdentityCountBefore" units="identities"
-    expires_after="2025-04-01">
+    expires_after="2026-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -1795,7 +1795,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.IOSDeviceRestoreSignedInState"
-    enum="IOSDeviceRestoreSignedinState" expires_after="2025-04-01">
+    enum="IOSDeviceRestoreSignedinState" expires_after="2026-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -2685,7 +2685,7 @@ kept as long as profile signout is possible -->
 
 <histogram
     name="Signin.SSOIdentityListRequest.FetchIdentitiesWithCallback.Duration"
-    units="ms" expires_after="2025-04-01">
+    units="ms" expires_after="2026-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -2695,7 +2695,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SSOWKWebView.GetAllCookies.CookieCount" units="cookies"
-    expires_after="2025-04-01">
+    expires_after="2026-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -2707,7 +2707,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SSOWKWebView.GetAllCookies.Duration" units="ms"
-    expires_after="2025-04-01">
+    expires_after="2026-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -2721,7 +2721,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SSOWKWebView.GetAllCookies.Request"
-    enum="SigninSSOWKWebViewGetAllCookiesRequest" expires_after="2025-04-01">
+    enum="SigninSSOWKWebViewGetAllCookiesRequest" expires_after="2026-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
