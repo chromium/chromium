@@ -23,9 +23,9 @@ use no_panic::no_panic;
 /// Please check [`is_finite`] yourself before calling this function, or
 /// check [`is_nan`] and [`is_infinite`] and handle those cases yourself.
 ///
-/// [`is_finite`]: https://doc.rust-lang.org/std/primitive.f64.html#method.is_finite
-/// [`is_nan`]: https://doc.rust-lang.org/std/primitive.f64.html#method.is_nan
-/// [`is_infinite`]: https://doc.rust-lang.org/std/primitive.f64.html#method.is_infinite
+/// [`is_finite`]: f64::is_finite
+/// [`is_nan`]: f64::is_nan
+/// [`is_infinite`]: f64::is_infinite
 ///
 /// ## Safety
 ///
@@ -130,9 +130,9 @@ pub unsafe fn format64(f: f64, result: *mut u8) -> usize {
 /// Please check [`is_finite`] yourself before calling this function, or
 /// check [`is_nan`] and [`is_infinite`] and handle those cases yourself.
 ///
-/// [`is_finite`]: https://doc.rust-lang.org/std/primitive.f32.html#method.is_finite
-/// [`is_nan`]: https://doc.rust-lang.org/std/primitive.f32.html#method.is_nan
-/// [`is_infinite`]: https://doc.rust-lang.org/std/primitive.f32.html#method.is_infinite
+/// [`is_finite`]: f32::is_finite
+/// [`is_nan`]: f32::is_nan
+/// [`is_infinite`]: f32::is_infinite
 ///
 /// ## Safety
 ///

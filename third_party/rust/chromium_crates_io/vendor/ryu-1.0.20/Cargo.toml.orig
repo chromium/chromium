@@ -1,6 +1,6 @@
 [package]
 name = "ryu"
-version = "1.0.19"
+version = "1.0.20"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["value-formatting", "no-std", "no-std::no-alloc"]
 description = "Fast floating point to string conversion"
@@ -27,9 +27,11 @@ num_cpus = "1.8"
 rand = "0.9"
 rand_xorshift = "0.4"
 
-[lib]
-doc-scrape-examples = false
-
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
-rustdoc-args = ["--generate-link-to-definition"]
+rustdoc-args = [
+    "--generate-link-to-definition",
+    "--extern-html-root-url=core=https://doc.rust-lang.org",
+    "--extern-html-root-url=alloc=https://doc.rust-lang.org",
+    "--extern-html-root-url=std=https://doc.rust-lang.org",
+]

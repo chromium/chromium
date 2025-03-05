@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.36"
 name = "ryu"
-version = "1.0.19"
+version = "1.0.20"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 exclude = [
@@ -39,7 +39,12 @@ license = "Apache-2.0 OR BSL-1.0"
 repository = "https://github.com/dtolnay/ryu"
 
 [package.metadata.docs.rs]
-rustdoc-args = ["--generate-link-to-definition"]
+rustdoc-args = [
+    "--generate-link-to-definition",
+    "--extern-html-root-url=core=https://doc.rust-lang.org",
+    "--extern-html-root-url=alloc=https://doc.rust-lang.org",
+    "--extern-html-root-url=std=https://doc.rust-lang.org",
+]
 targets = ["x86_64-unknown-linux-gnu"]
 
 [features]
@@ -48,7 +53,6 @@ small = []
 [lib]
 name = "ryu"
 path = "src/lib.rs"
-doc-scrape-examples = false
 
 [[example]]
 name = "upstream_benchmark"
