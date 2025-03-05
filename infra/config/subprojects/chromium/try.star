@@ -120,7 +120,7 @@ luci.cq_group(
     acls = [
         acl.entry(
             acl.CQ_COMMITTER,
-            groups = "project-chromium-committers",
+            groups = "project-chromium-submit-access",
         ),
         acl.entry(
             acl.CQ_DRY_RUNNER,
@@ -186,7 +186,7 @@ branches.cq_group(
     acls = [
         acl.entry(
             acl.CQ_COMMITTER,
-            groups = "project-chromium-committers",
+            groups = "project-chromium-submit-access",
         ),
         acl.entry(
             acl.CQ_DRY_RUNNER,
