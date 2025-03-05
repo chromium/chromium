@@ -4,6 +4,7 @@
 
 import '../common/learn_mode_bridge.js';
 
+import {Features} from '/common/features.js';
 import {Flags} from '/common/flags.js';
 import {LocalStorage} from '/common/local_storage.js';
 import {InstanceChecker} from '/common/mv2/instance_checker.js';
@@ -90,6 +91,7 @@ export class Background extends ChromeVoxState {
 
   static async init(): Promise<void> {
     // Pre-initialization.
+    await Features.init();
     await Flags.init();
     await LocalStorage.init();
     await SettingsManager.init();

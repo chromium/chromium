@@ -22,6 +22,7 @@ import {Msgs} from '../../common/msgs.js';
 import {Personality, QueueMode, TtsCategory} from '../../common/tts_types.js';
 import {AutoScrollHandler} from '../auto_scroll_handler.js';
 import {AutomationObjectConstructorInstaller} from '../automation_object_constructor_installer.js';
+import {CaptionsHandler} from '../captions_handler.js';
 import {ChromeVox} from '../chromevox.js';
 import {ChromeVoxRange} from '../chromevox_range.js';
 import {ChromeVoxState} from '../chromevox_state.js';
@@ -229,6 +230,10 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
    * Makes an announcement without changing focus.
    */
   private onAlert_(evt: ChromeVoxEvent): void {
+    if (CaptionsHandler.instance.maybeHandleAlert(evt)) {
+      return;
+    }
+
     const node = evt.target;
     const range = CursorRange.fromNode(node);
     const output = new Output();

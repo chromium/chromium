@@ -6,7 +6,6 @@
 import {TestImportManager} from './testing/test_import_manager.js';
 
 export enum FlagName {
-  CAPTIONS_ON_BRAILLE = 'enable-accessibility-captions-on-braille-display',
   CHROMEVOX_Q1_FAST_TRACK = 'enable-chromevox-q1-fast-track-features',
   MAGNIFIER_DEBUG_DRAW_RECT = 'enable-magnifier-debug-draw-rect',
   MANIFEST_V3 = 'enable-experimental-accessibility-manifest-v3',

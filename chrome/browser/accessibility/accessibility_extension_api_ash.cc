@@ -490,6 +490,9 @@ AccessibilityPrivateIsFeatureEnabledFunction::Run() {
     case accessibility_private::AccessibilityFeature::kFaceGaze:
       enabled = ::features::IsAccessibilityFaceGazeEnabled();
       break;
+    case accessibility_private::AccessibilityFeature::kCaptionsOnBrailleDisplay:
+      enabled = ::features::IsAccessibilityCaptionsOnBrailleDisplayEnabled();
+      break;
     case accessibility_private::AccessibilityFeature::kNone:
       return RespondNow(Error("Unrecognized feature"));
   }
