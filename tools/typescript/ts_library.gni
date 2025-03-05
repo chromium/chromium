@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/node/node.gni")
 
 template("ts_library") {
@@ -162,7 +161,7 @@ template("ts_library") {
         "--platform",
         platform,
       ]
-    } else if (is_chromeos_ash) {
+    } else if (is_chromeos) {
       platform = "chromeos_ash"
       args += [
         "--platform",
