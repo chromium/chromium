@@ -17,7 +17,7 @@
 
 namespace blink {
 
-// Used by BaseRenderingContext2D to track cached colors.
+// Used by Canvas2DRecorderContext to track cached colors.
 struct CachedColor final : public GarbageCollected<CachedColor> {
   CachedColor(v8::Isolate* isolate,
               const v8::Local<v8::String>& color_string,
