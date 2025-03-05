@@ -1556,10 +1556,10 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_RWS_SETTINGS));
 
   EXPECT_EQ(rws_button->GetTitleText(),
-            l10n_util::GetStringUTF16(IDS_PAGE_INFO_RWS_ENHANCED_BUTTON_TITLE));
+            l10n_util::GetStringUTF16(IDS_PAGE_INFO_RWS_V2_BUTTON_TITLE));
   EXPECT_EQ(rws_button->GetSubtitleText(),
-            l10n_util::GetStringFUTF16(
-                IDS_PAGE_INFO_RWS_ENHANCED_BUTTON_SUBTITLE, rws_owner));
+            l10n_util::GetStringFUTF16(IDS_PAGE_INFO_RWS_V2_BUTTON_SUBTITLE,
+                                       rws_owner));
 
   // Checking if rws button opens correct page and records correctly user
   // actions.

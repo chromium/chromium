@@ -340,7 +340,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                     }
                 });
         if (getSiteSettingsDelegate().shouldShowPrivacySandboxRwsUi()) {
-            mRwsInUse.setTitle(R.string.page_info_rws_enhanced_button_title);
+            mRwsInUse.setTitle(R.string.page_info_rws_v2_button_title);
             mRwsInUse.setSummary(
                     String.format(
                             getString(R.string.page_info_rws_v2_button_subtitle_android),
