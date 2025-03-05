@@ -1976,7 +1976,7 @@ void AuthenticatorRequestDialogController::StartAutofillRequest() {
             credential.user.display_name.value_or("")));
     if (credential.source == AuthenticatorType::kPhone) {
       passkey.SetAuthenticatorLabel(l10n_util::GetStringFUTF16(
-          IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE_NEW, *priority_phone_name));
+          IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE, *priority_phone_name));
     }
   }
   ReportConditionalUiPasskeyCount(credentials.size());

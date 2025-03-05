@@ -492,7 +492,7 @@ TEST_F(PasswordSuggestionGeneratorTest, PasskeySuggestions_SingleSavedPasskey) {
           EqualsPasskeySuggestion(
               u"username",
               l10n_util::GetStringUTF16(
-                  IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO_NEW),
+                  IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO),
               favicon(),
               Suggestion::Guid(base::Base64Encode(passkey.credential_id()))),
           EqualsSuggestion(SuggestionType::kSeparator),
@@ -518,24 +518,23 @@ TEST_F(PasswordSuggestionGeneratorTest,
 
   EXPECT_THAT(
       suggestions,
-      ElementsAre(
-          EqualsPasskeySuggestion(
-              u"foo",
-              l10n_util::GetStringUTF16(
-                  IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE_NEW),
-              favicon(),
-              Suggestion::Guid(
-                  base::Base64Encode(foo_passkey.credential_id()))),
-          EqualsPasskeySuggestion(
-              u"bar",
-              l10n_util::GetStringUTF16(
-                  IDS_PASSWORD_MANAGER_PASSKEY_FROM_ICLOUD_KEYCHAIN_NEW),
-              favicon(),
-              Suggestion::Guid(
-                  base::Base64Encode(bar_passkey.credential_id()))),
-          EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsManagePasswordsSuggestion(
-              /*has_webauthn_credential=*/true)));
+      ElementsAre(EqualsPasskeySuggestion(
+                      u"foo",
+                      l10n_util::GetStringUTF16(
+                          IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE),
+                      favicon(),
+                      Suggestion::Guid(
+                          base::Base64Encode(foo_passkey.credential_id()))),
+                  EqualsPasskeySuggestion(
+                      u"bar",
+                      l10n_util::GetStringUTF16(
+                          IDS_PASSWORD_MANAGER_PASSKEY_FROM_ICLOUD_KEYCHAIN),
+                      favicon(),
+                      Suggestion::Guid(
+                          base::Base64Encode(bar_passkey.credential_id()))),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsManagePasswordsSuggestion(
+                      /*has_webauthn_credential=*/true)));
 }
 
 // Test that the password generation suggestion is not added if there're no
@@ -586,7 +585,7 @@ TEST_F(PasswordSuggestionGeneratorTest, GeneratePassword_HasSavedPasskey) {
           EqualsPasskeySuggestion(
               u"username",
               l10n_util::GetStringUTF16(
-                  IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO_NEW),
+                  IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO),
               favicon(),
               Suggestion::Guid(base::Base64Encode(passkey.credential_id()))),
           EqualsGeneratePasswordSuggestion(),
@@ -627,14 +626,14 @@ TEST_F(PasswordSuggestionGeneratorTest, DomainSuggestions_SuggestionOrder) {
           EqualsPasskeySuggestion(
               u"foo",
               l10n_util::GetStringUTF16(
-                  IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE_NEW),
+                  IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE),
               favicon(),
               Suggestion::Guid(
                   base::Base64Encode(foo_passkey.credential_id()))),
           EqualsPasskeySuggestion(
               u"bar",
               l10n_util::GetStringUTF16(
-                  IDS_PASSWORD_MANAGER_PASSKEY_FROM_ICLOUD_KEYCHAIN_NEW),
+                  IDS_PASSWORD_MANAGER_PASSKEY_FROM_ICLOUD_KEYCHAIN),
               favicon(),
               Suggestion::Guid(
                   base::Base64Encode(bar_passkey.credential_id()))),

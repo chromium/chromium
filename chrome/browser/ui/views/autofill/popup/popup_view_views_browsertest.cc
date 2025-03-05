@@ -148,7 +148,7 @@ std::vector<Suggestion> CreateWebAuthnSuggestions(
   suggestions.push_back(Suggestion(
       "coolest passkey",
       {{Suggestion::Text(l10n_util::GetStringUTF16(
-          IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER_NEW))}},
+          IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER))}},
       Suggestion::Icon::kGlobe, SuggestionType::kWebauthnCredential));
   suggestions.back().acceptability = acceptability;
 

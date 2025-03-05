@@ -109,19 +109,19 @@ std::u16string PasskeyCredential::GetAuthenticatorLabelBySourceType() const {
   int id;
   switch (source_) {
     case Source::kWindowsHello:
-      id = IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO_NEW;
+      id = IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO;
       break;
     case Source::kTouchId:
-      id = IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE_NEW;
+      id = IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE;
       break;
     case Source::kICloudKeychain:
-      id = IDS_PASSWORD_MANAGER_PASSKEY_FROM_ICLOUD_KEYCHAIN_NEW;
+      id = IDS_PASSWORD_MANAGER_PASSKEY_FROM_ICLOUD_KEYCHAIN;
       break;
     case Source::kAndroidPhone:
       id = GetAuthenticationLabelForPasskeysFromAndroid();
       break;
     case Source::kGooglePasswordManager:
-      id = IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER_NEW;
+      id = IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER;
       break;
     case Source::kOther:
       id = IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE;

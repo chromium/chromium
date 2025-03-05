@@ -17179,13 +17179,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_OTHER_DEVICES_LABEL" desc="The label for a list of passkeys and their sources the user can choose from devices other than the one they are using. The list includes both passkeys (e.g. 'Juan Perez | Passkey from Pixel 7') and devices that may have passkeys (e.g. 'USB Security Key').">
         On other devices
       </message>
-      <message name="IDS_WEBAUTHN_SOURCE_CHROME_PROFILE_NEW" desc="The subtitle shown in a button that lets the user select a passkey to sign in, indicating that the passkey resides in the user's Chrome Profile.">
+      <message name="IDS_WEBAUTHN_SOURCE_CHROME_PROFILE" desc="The subtitle shown in a button that lets the user select a passkey to sign in, indicating that the passkey resides in the user's Chrome Profile.">
         Your Chrome profile
       </message>
-      <message name="IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN_NEW" desc="The subtitle shown in a button that lets the user select a passkey to sign in, indicating that the passkey resides in the user's iCloud Keychain.">
+      <message name="IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN" desc="The subtitle shown in a button that lets the user select a passkey to sign in, indicating that the passkey resides in the user's iCloud Keychain.">
         iCloud Keychain
       </message>
-      <message name="IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO_NEW" desc="The subtitle shown in a button that lets the user select a passkey to sign in, indicating that the passkey resides in Windows Hello.">
+      <message name="IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO" desc="The subtitle shown in a button that lets the user select a passkey to sign in, indicating that the passkey resides in Windows Hello.">
         Windows Hello
       </message>
       <message name="IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER" desc="The subtitle shown in a button that lets the user select a passkey to sign in, indicating that the passkey resides in Google Password Manager.">
