@@ -2275,7 +2275,10 @@ INSTANTIATE_TEST_SUITE_P(
     TabbedMode,
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
-        testing::Values(ClientModeCombination::kAuto),
+        testing::Values(
+            ClientModeCombination::kAuto,
+            ClientModeCombination::kAppANavigateExistingAppBFocusExisting,
+            ClientModeCombination::kBothNavigateExisting),
         testing::Values(AppUserDisplayMode::kAppAStandaloneAppBTabbed,
                         AppUserDisplayMode::kAppAStandaloneAppBTabbedWithHome),
         testing::Values(LinkCapturing::kEnabled),
@@ -2437,7 +2440,10 @@ INSTANTIATE_TEST_SUITE_P(
     TabbedMode,
     NavigationCapturingTestWithAppBLaunched,
     testing::Combine(
-        testing::Values(ClientModeCombination::kAuto),
+        testing::Values(
+            ClientModeCombination::kAuto,
+            ClientModeCombination::kAppANavigateExistingAppBFocusExisting,
+            ClientModeCombination::kBothNavigateExisting),
         testing::Values(AppUserDisplayMode::kAppAStandaloneAppBTabbed,
                         AppUserDisplayMode::kAppAStandaloneAppBTabbedWithHome),
         testing::Values(LinkCapturing::kEnabled),
