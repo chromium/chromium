@@ -7,6 +7,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/types/expected.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -55,7 +57,7 @@ class ContextualCueingHelper
   void OnCueingDecision(
       std::unique_ptr<ScopedNudgeDecisionRecorder> decision_recorder,
       base::TimeTicks document_available_time,
-      std::string cue_label);
+      base::expected<std::string, NudgeDecision> decision_result);
 
   bool IsBrowserBlockingNudges(ScopedNudgeDecisionRecorder* recorder);
 

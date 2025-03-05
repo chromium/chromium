@@ -67,7 +67,12 @@ chromium-metrics-reviews@google.com.
   <int value="10"
       label="The nudge was not shown as the user already has the feature
              window open.">
-    The page was eligible for the nudge, but the user was currently
+    The page was eligible for the nudge, but the user already has the feature
+    window open.
+  </int>
+  <int value="11"
+      label="User closes the tab/window as a nudge decision is being computed.">
+    User closes the tab/window as a nudge decision is being computed.
   </int>
 </enum>
 
