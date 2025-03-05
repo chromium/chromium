@@ -100,7 +100,7 @@ std::unique_ptr<TabGroupSyncService> CreateTabGroupSyncService(
   return std::make_unique<TabGroupSyncServiceImpl>(
       std::move(model), std::move(saved_config), std::move(shared_config),
       pref_service, std::move(metrics_logger), optimization_guide,
-      identity_manager, std::move(collaboration_finder));
+      identity_manager, std::move(collaboration_finder), /*logger=*/nullptr);
 }
 
 }  // namespace tab_groups::test

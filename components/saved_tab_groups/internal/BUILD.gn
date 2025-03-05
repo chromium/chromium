@@ -27,6 +27,7 @@ source_set("internal") {
     ":tab_group_sync_bridge",
     "//base",
     "//components/data_sharing/public:features",
+    "//components/data_sharing/public:logger",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
     "//components/saved_tab_groups/delegate",
@@ -173,6 +174,7 @@ source_set("unit_tests") {
     ":tab_group_sync_bridge",
     "//base",
     "//base/test:test_support",
+    "//components/data_sharing/public:logger",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/pref_registry:pref_registry",
@@ -236,6 +238,7 @@ source_set("tab_group_sync_bridge") {
 
   deps = [
     ":model",
+    "//components/data_sharing/public:logger",
     "//components/saved_tab_groups/proto",
     "//components/saved_tab_groups/public",
     "//components/tab_groups:tab_groups",

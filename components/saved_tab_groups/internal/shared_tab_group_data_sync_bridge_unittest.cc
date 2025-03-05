@@ -20,6 +20,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/data_sharing/public/logger.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
@@ -358,7 +359,8 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
     bridge_ = std::make_unique<SharedTabGroupDataSyncBridge>(
         sync_bridge_model_wrapper_.get(),
         syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
-        processor_.CreateForwardingProcessor(), &pref_service_);
+        processor_.CreateForwardingProcessor(), &pref_service_,
+        /*logger=*/nullptr);
     observer_forwarder_ = std::make_unique<ModelObserverForwarder>(
         *saved_tab_group_model_, *bridge_);
     task_environment_.RunUntilIdle();

@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/task_environment.h"
+#include "components/data_sharing/public/logger.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
@@ -136,7 +137,8 @@ class TabGroupSyncBridgeMediatorTest : public testing::Test {
         .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }))
         .RetiresOnSaturation();
     bridge_mediator_ = std::make_unique<TabGroupSyncBridgeMediator>(
-        model_.get(), &pref_service_, std::move(saved_sync_configuration),
+        model_.get(), &pref_service_, /*logger=*/nullptr,
+        std::move(saved_sync_configuration),
         std::move(shared_sync_configuration));
     run_loop.Run();
   }
