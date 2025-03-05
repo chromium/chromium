@@ -92,11 +92,6 @@ void ContextSignalsDecorator::OnSignalsFetched(
   signals.Set(device_signals::names::kSystemDnsServers,
               ToListValue(context_info.system_dns_servers));
 
-  if (context_info.third_party_blocking_enabled) {
-    signals.Set(device_signals::names::kThirdPartyBlockingEnabled,
-                context_info.third_party_blocking_enabled.value());
-  }
-
   LogSignalsCollectionLatency(kLatencyHistogramVariant, start_time);
 
   std::move(done_closure).Run();
