@@ -105,6 +105,23 @@ StringView ConsumeUntilPeekedTypeIs(CSSParserTokenStream& stream) {
                               value_end_offset - value_start_offset);
 }
 
+const CSSValue* ParseAsCSSWideKeyword(const CSSVariableData& data) {
+  CSSParserTokenStream stream(data.OriginalText());
+  stream.ConsumeWhitespace();
+  CSSValue* value = css_parsing_utils::ConsumeCSSWideKeyword(stream);
+  return stream.AtEnd() ? value : nullptr;
+}
+
+const CSSValue* MaybeConvertToCSSWideKeyword(const CSSValue* value) {
+  if (const auto* unparsed = DynamicTo<CSSUnparsedDeclarationValue>(value)) {
+    if (const CSSValue* css_wide =
+            ParseAsCSSWideKeyword(*unparsed->VariableDataValue())) {
+      return css_wide;
+    }
+  }
+  return nullptr;
+}
+
 const CSSValue* Parse(const CSSProperty& property,
                       CSSParserTokenStream& stream,
                       const CSSParserContext* context) {
@@ -1900,7 +1917,11 @@ const CSSValue* StyleCascade::ResolveFunctionExpression(
     return nullptr;
   }
   // TODO(crbug.com/393924687): Work with CSSVariableData directly.
-  if (!type) {
+  //
+  // Note that we avoid CSSSyntaxDefinition::Parse for the universal syntax,
+  // because it currently disallows CSS-wide keywords.
+  // TODO(crbug.com/400340579): Universal syntax should allow CSS-wide keywords.
+  if (!type || type->IsUniversal()) {
     return MakeGarbageCollected<CSSUnparsedDeclarationValue>(data, &context);
   }
   const CSSValue* value = type->Parse(data->OriginalText(), context,
@@ -1974,8 +1995,35 @@ const CSSValue* StyleCascade::ResolveLocalVariable(
     return nullptr;
   }
   CascadeResolver::AutoLock lock(cycle_node, resolver);
-  return ResolveFunctionExpression(unresolved, function_context.tree_scope,
-                                   type, resolver, context, &function_context);
+  const CSSValue* resolved =
+      ResolveFunctionExpression(unresolved, function_context.tree_scope, type,
+                                resolver, context, &function_context);
+
+  // The CSS-wide keywords 'initial' and 'inherit' have special meaning
+  // for local variables: 'initial' refers the argument value of the
+  // same name, and 'inherit' refers to the value of the outer stack
+  // frame.
+  //
+  // https://drafts.csswg.org/css-mixins-1/#resolve-function-styles
+  if (const CSSValue* css_wide = MaybeConvertToCSSWideKeyword(resolved)) {
+    if (css_wide->IsInitialValue()) {
+      return FindOrNullopt(function_context.arguments, name).value_or(nullptr);
+    }
+    if (css_wide->IsInheritedValue()) {
+      // The inherited value is whatever var(`name`) would resolve to
+      // in the parent stack frame.
+      if (CSSVariableData* inherited = ResolveLikeVar(
+              name, resolver, context, function_context.parent)) {
+        return MakeGarbageCollected<CSSUnparsedDeclarationValue>(inherited,
+                                                                 &context);
+      }
+      return nullptr;
+    }
+    // Other CSS-wide keywords (e.g. 'revert') are invalid.
+    return nullptr;
+  }
+
+  return resolved;
 }
 
 void StyleCascade::FlattenFunctionBody(
@@ -2248,17 +2296,8 @@ KleeneValue StyleCascade::EvalIfStyleFeature(
   AtomicString property_name(feature.Name());
   CustomProperty property(property_name, GetDocument());
 
-  CSSVariableData* computed_data = nullptr;
-  CSSParserTokenStream property_name_stream(property_name);
-  TokenSequence computed_data_sequence;
-  // To avoid duplicating lookup logic, we pretend that we're resolving
-  // a var() with `property_name`. This will resolve to the appropriate
-  // custom property, local variable, or function argument. We also get
-  // cycle handling for free.
-  if (ResolveVarInto(property_name_stream, tree_scope, resolver, context,
-                     function_context, computed_data_sequence)) {
-    computed_data = computed_data_sequence.BuildVariableData();
-  }
+  CSSVariableData* computed_data =
+      ResolveLikeVar(property_name, resolver, context, function_context);
 
   if (resolver.InCycle()) {
     return KleeneValue::kFalse;
@@ -2414,6 +2453,28 @@ bool StyleCascade::ResolveIfInto(CSSParserTokenStream& stream,
   }
 
   return out.Append(if_result, is_attr_tainted);
+}
+
+CSSVariableData* StyleCascade::ResolveLikeVar(
+    const AtomicString& property_name,
+    CascadeResolver& resolver,
+    const CSSParserContext& context,
+    FunctionContext* function_context) {
+  CSSParserTokenStream property_name_stream(property_name);
+  TokenSequence sequence;
+  // To avoid duplicating lookup logic, we pretend that we're resolving
+  // a var() with `property_name`. This will resolve to the appropriate
+  // custom property, local variable, or function argument. We also get
+  // cycle handling for free.
+  //
+  // We can safely pass tree_scope=nullptr here; since this pretend-var()
+  // is guaranteed to not have any fallback, there is no way for it to
+  // contain any <dashed-functions> (that would require a tree-scoped lookup).
+  if (ResolveVarInto(property_name_stream, /*tree_scope=*/nullptr, resolver,
+                     context, function_context, sequence)) {
+    return sequence.BuildVariableData();
+  }
+  return nullptr;
 }
 
 CSSVariableData* StyleCascade::GetVariableData(

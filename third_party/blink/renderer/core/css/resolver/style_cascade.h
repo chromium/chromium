@@ -514,6 +514,15 @@ class CORE_EXPORT StyleCascade {
                      FunctionContext*,
                      TokenSequence&);
 
+  // Returns whatever var(`property_name`) would return (and triggers the same
+  // side-effects). Useful for evaluating the left hand side of e.g.
+  // if(style(--x:foo)), where we don't actually have a function token
+  // representing the the var().
+  CSSVariableData* ResolveLikeVar(const AtomicString& property_name,
+                                  CascadeResolver&,
+                                  const CSSParserContext&,
+                                  FunctionContext*);
+
   KleeneValue EvalIfTest(const IfCondition& node,
                          const TreeScope* tree_scope,
                          CascadeResolver& resolver,
