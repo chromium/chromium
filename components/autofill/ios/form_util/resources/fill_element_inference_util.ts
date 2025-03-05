@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {isTextField} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
  * Returns is the tag of an `element` is tag.
@@ -273,7 +274,7 @@ gCrWeb.fill.isTextInput = function(element: Element): boolean {
   if (!element) {
     return false;
   }
-  return gCrWeb.common.isTextField(element);
+  return isTextField(element);
 };
 
 /**

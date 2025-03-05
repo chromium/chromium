@@ -5,7 +5,7 @@
 import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import type {AutofillFormData} from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
+import {isTextField, sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
  * @fileoverview Installs Passwords management functions on the gCrWeb object.
@@ -252,7 +252,7 @@ function getUsernameInputElementForFill(
   if (!usernameInput) {
     return null;
   }
-  if (!gCrWeb.common.isTextField(usernameInput)) {
+  if (!isTextField(usernameInput)) {
     return null;
   }
   return usernameInput;
