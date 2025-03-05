@@ -1036,7 +1036,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
         const PhysicalSize& size,
         const PhysicalRect& visual_overflow_rect);
 
-    void UpdateBackgroundPaintLocation();
+    void UpdateBackgroundPaintLocation(bool needs_root_element_group);
 
    protected:
     friend class LayoutBox;
@@ -1367,7 +1367,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
 
   bool BackgroundClipBorderBoxIsEquivalentToPaddingBox() const;
-  BackgroundPaintLocation ComputeBackgroundPaintLocation() const;
+  BackgroundPaintLocation ComputeBackgroundPaintLocation(
+      bool needs_root_element_group) const;
 
   // Compute the border-box size from physical fragments.
   PhysicalSize ComputeSize() const;

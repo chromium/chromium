@@ -3884,9 +3884,10 @@ void LayoutBox::MutableForPainting::SetPreviousGeometryForLayoutShiftTracking(
   // invalidation and we always do full paint invalidation on reattachment.
 }
 
-void LayoutBox::MutableForPainting::UpdateBackgroundPaintLocation() {
+void LayoutBox::MutableForPainting::UpdateBackgroundPaintLocation(
+    bool needs_root_element_group) {
   GetLayoutBox().SetBackgroundPaintLocation(
-      GetLayoutBox().ComputeBackgroundPaintLocation());
+      GetLayoutBox().ComputeBackgroundPaintLocation(needs_root_element_group));
 }
 
 RasterEffectOutset LayoutBox::VisualRectOutsetForRasterEffects() const {
@@ -3987,7 +3988,8 @@ bool LayoutBox::BackgroundClipBorderBoxIsEquivalentToPaddingBox() const {
   return true;
 }
 
-BackgroundPaintLocation LayoutBox::ComputeBackgroundPaintLocation() const {
+BackgroundPaintLocation LayoutBox::ComputeBackgroundPaintLocation(
+    bool needs_root_element_group) const {
   NOT_DESTROYED();
   bool may_have_scrolling_layers_without_scrolling = IsA<LayoutView>(this);
   const auto* scrollable_area = GetScrollableArea();
@@ -3995,13 +3997,18 @@ BackgroundPaintLocation LayoutBox::ComputeBackgroundPaintLocation() const {
   if (!scrolls_overflow && !may_have_scrolling_layers_without_scrolling)
     return kBackgroundPaintInBorderBoxSpace;
 
-  // If we care about LCD text, paint root backgrounds into scrolling contents
-  // layer even if style suggests otherwise. (For non-root scrollers, we just
-  // avoid compositing - see PLSA::ComputeNeedsCompositedScrolling.)
-  if (IsA<LayoutView>(this) &&
-      GetDocument().GetSettings()->GetLCDTextPreference() ==
-          LCDTextPreference::kStronglyPreferred) {
-    return kBackgroundPaintInContentsSpace;
+  if (IsA<LayoutView>(this)) {
+    if (needs_root_element_group) {
+      // We must paint background in the contents space to apply the root
+      // element effects.
+      return kBackgroundPaintInContentsSpace;
+    }
+    if (GetDocument().GetSettings()->GetLCDTextPreference() ==
+        LCDTextPreference::kStronglyPreferred) {
+      // If we care about LCD text, paint root backgrounds into scrolling
+      // contents layer even if style suggests otherwise.
+      return kBackgroundPaintInContentsSpace;
+    }
   }
 
   // Inset box shadow is painted in the scrolling area above the background, and

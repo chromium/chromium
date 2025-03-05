@@ -154,7 +154,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   bool painted_separate_effect = false;
 
   bool should_apply_root_background_behavior =
-      document.IsHTMLDocument() || document.IsXHTMLDocument();
+      ShouldApplyRootBackgroundBehavior(document);
 
   bool should_paint_background = !paint_info.ShouldSkipBackground() &&
                                  (layout_view.HasBoxDecorationBackground() ||
@@ -451,6 +451,10 @@ PhysicalRect ViewPainter::BackgroundRect() const {
     return box_fragment_.LocalRect();
   }
   return GetLayoutView().BackgroundRect();
+}
+
+bool ViewPainter::ShouldApplyRootBackgroundBehavior(const Document& document) {
+  return document.IsHTMLDocument() || document.IsXHTMLDocument();
 }
 
 }  // namespace blink
