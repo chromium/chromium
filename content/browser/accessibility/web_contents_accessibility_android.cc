@@ -697,6 +697,17 @@ void WebContentsAccessibilityAndroid::HandleClicked(int32_t unique_id) {
   Java_WebContentsAccessibilityImpl_handleClicked(env, obj, unique_id);
 }
 
+void WebContentsAccessibilityAndroid::HandleImageAnnotationChanged(
+    int32_t unique_id) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+  Java_WebContentsAccessibilityImpl_handleImageAnnotationChanged(env, obj,
+                                                                 unique_id);
+}
+
 void WebContentsAccessibilityAndroid::HandleScrollPositionChanged(
     int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
