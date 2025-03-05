@@ -4,13 +4,9 @@
 
 source_set("parcel_tracking") {
   sources = [
-    "magic_stack_parcel_list_half_sheet_table_view_controller.h",
-    "magic_stack_parcel_list_half_sheet_table_view_controller.mm",
     "parcel_tracking_commands.h",
     "parcel_tracking_item.h",
     "parcel_tracking_item.mm",
-    "parcel_tracking_mediator.h",
-    "parcel_tracking_mediator.mm",
     "parcel_tracking_view.h",
     "parcel_tracking_view.mm",
   ]
@@ -53,7 +49,6 @@ source_set("parcel_tracking") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "parcel_tracking_mediator_unittest.mm",
     "parcel_tracking_view+testing.h",
     "parcel_tracking_view_unittest.mm",
   ]
