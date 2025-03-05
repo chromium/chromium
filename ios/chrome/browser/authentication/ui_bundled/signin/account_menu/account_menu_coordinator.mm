@@ -331,8 +331,7 @@
 
 - (void)openPassphraseDialogWithModalPresentation:(BOOL)presentModally {
   CHECK(presentModally);
-  SceneState* sceneState = self.browser->GetSceneState();
-  if (sceneState.isUIBlocked) {
+  if (self.sceneState.isUIBlocked) {
     // This could occur due to race condition with multiple windows and
     // simultaneous taps. See crbug.com/368310663.
     return;

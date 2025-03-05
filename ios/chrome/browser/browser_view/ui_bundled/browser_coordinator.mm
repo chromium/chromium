@@ -1348,7 +1348,7 @@ enum class ToolbarKind {
   self.tabLifecycleMediator.printCoordinator = self.printCoordinator;
 
   // Help should only show in regular, non-incognito.
-  if (!self.browser->GetProfile()->IsOffTheRecord()) {
+  if (!self.isOffTheRecord) {
     [self.popupMenuCoordinator startPopupMenuHelpCoordinator];
   }
 
@@ -1631,9 +1631,8 @@ enum class ToolbarKind {
   browserViewController.nonModalPromoPresentationDelegate = self;
 
   if (profile->IsOffTheRecord()) {
-    SceneState* sceneState = self.browser->GetSceneState();
     IncognitoReauthSceneAgent* reauthAgent =
-        [IncognitoReauthSceneAgent agentFromScene:sceneState];
+        [IncognitoReauthSceneAgent agentFromScene:self.sceneState];
 
     self.incognitoAuthMediator =
         [[IncognitoReauthMediator alloc] initWithReauthAgent:reauthAgent];
@@ -2121,7 +2120,7 @@ enum class ToolbarKind {
   UrlLoadParams params = UrlLoadParams::InNewTab(helpUrl);
   params.append_to = OpenPosition::kCurrentTab;
   params.user_initiated = NO;
-  params.in_incognito = self.browser->GetProfile()->IsOffTheRecord();
+  params.in_incognito = self.isOffTheRecord;
   _urlLoadingBrowserAgent->Load(params);
 }
 
@@ -2550,7 +2549,7 @@ enum class ToolbarKind {
   auto* helper = GetConcreteFindTabHelperFromWebState(activeWebState);
   helper->StartFinding([self.findBarCoordinator.findBarController searchTerm]);
 
-  if (!self.browser->GetProfile()->IsOffTheRecord()) {
+  if (!self.isOffTheRecord) {
     helper->PersistSearchTerm();
   }
 }
@@ -2689,8 +2688,7 @@ enum class ToolbarKind {
 
 - (void)showAppStoreReviewPrompt {
   if (IsAppStoreRatingEnabled()) {
-    UIWindowScene* scene = [self.browser->GetSceneState() scene];
-    [SKStoreReviewController requestReviewInScene:scene];
+    [SKStoreReviewController requestReviewInScene:self.sceneState.scene];
 
     // Apple doesn't tell whether the app store review window will show or
     // provide a callback for when it is dismissed, so alert the coordinator
@@ -2774,7 +2772,7 @@ enum class ToolbarKind {
   DUMP_WILL_BE_CHECK(!self.passwordSettingsCoordinator);
 
   // Use main browser to open the password settings.
-  SceneState* sceneState = self.browser->GetSceneState();
+  SceneState* sceneState = self.sceneState;
   self.passwordSettingsCoordinator = [[PasswordSettingsCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:sceneState.browserProviderInterface
@@ -3145,8 +3143,7 @@ enum class ToolbarKind {
 }
 
 - (void)showRestrictAccountSignedOutPrompt {
-  SceneState* sceneState = self.browser->GetSceneState();
-  if (sceneState.activationLevel >= SceneActivationLevelForegroundActive) {
+  if (self.sceneState.activationLevel >= SceneActivationLevelForegroundActive) {
     if (!self.enterprisePromptCoordinator) {
       self.enterprisePromptCoordinator = [[EnterprisePromptCoordinator alloc]
           initWithBaseViewController:self.viewController
@@ -3256,9 +3253,8 @@ enum class ToolbarKind {
 }
 
 - (void)defaultBrowserNonModalPromoWasDismissed {
-  SceneState* sceneState = self.browser->GetSceneState();
-  [[NonModalDefaultBrowserPromoSchedulerSceneAgent agentFromScene:sceneState]
-      logPromoWasDismissed];
+  [[NonModalDefaultBrowserPromoSchedulerSceneAgent
+      agentFromScene:self.sceneState] logPromoWasDismissed];
   [self.nonModalPromoCoordinator stop];
   self.nonModalPromoCoordinator = nil;
 }
@@ -3453,8 +3449,7 @@ enum class ToolbarKind {
     // When the tab strip is visible, the toolbars are not splitted or for the
     // incognito NTP, the NTP is already laid out between the toolbars, so it
     // should not be inset while snapshotting.
-    if (canShowTabStrip || !isSplitToolbarMode ||
-        self.browser->GetProfile()->IsOffTheRecord()) {
+    if (canShowTabStrip || !isSplitToolbarMode || self.isOffTheRecord) {
       return UIEdgeInsetsZero;
     }
 
@@ -3962,15 +3957,14 @@ enum class ToolbarKind {
 - (void)showQuickDeleteAndCanPerformTabsClosureAnimation:
     (BOOL)canPerformTabsClosureAnimation {
   CHECK(IsIosQuickDeleteEnabled());
-  CHECK(!self.browser->GetProfile()->IsOffTheRecord());
+  CHECK(!self.isOffTheRecord);
 
   [_quickDeleteCoordinator stop];
 
-  SceneState* sceneState = self.browser->GetSceneState();
   _quickDeleteCoordinator = [[QuickDeleteCoordinator alloc]
           initWithBaseViewController:top_view_controller::
                                          TopPresentedViewControllerFrom(
-                                             sceneState.rootViewController)
+                                             self.sceneState.rootViewController)
                              browser:self.browser
       canPerformTabsClosureAnimation:canPerformTabsClosureAnimation];
   [_quickDeleteCoordinator start];
