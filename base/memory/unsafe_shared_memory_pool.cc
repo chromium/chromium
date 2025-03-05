@@ -5,6 +5,7 @@
 #include "base/memory/unsafe_shared_memory_pool.h"
 
 #include "base/logging.h"
+#include "base/strings/to_string.h"
 
 namespace {
 constexpr size_t kMaxStoredBuffers = 32;
@@ -97,11 +98,11 @@ void UnsafeSharedMemoryPool::ReleaseBuffer(
   if (is_shutdown_ || regions_.size() >= kMaxStoredBuffers ||
       !region.IsValid() || region.GetSize() < region_size_) {
     DLOG(WARNING) << "Not returning SharedMemoryRegion to the pool:"
-                  << " is_shutdown: " << (is_shutdown_ ? "true" : "false")
+                  << " is_shutdown: " << base::ToString(is_shutdown_)
                   << " stored regions: " << regions_.size()
                   << " configured size: " << region_size_
                   << " this region size: " << region.GetSize()
-                  << " valid: " << (region.IsValid() ? "true" : "false");
+                  << " valid: " << base::ToString(region.IsValid());
     return;
   }
   regions_.emplace_back(std::move(region), std::move(mapping));

@@ -25,6 +25,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/perfetto_proto_appender.h"
 
@@ -161,7 +162,7 @@ void TraceValue::Append(unsigned char type,
                         std::string* out) const {
   switch (type) {
     case TRACE_VALUE_TYPE_BOOL:
-      *out += this->as_bool ? "true" : "false";
+      *out += base::ToString(this->as_bool);
       break;
     case TRACE_VALUE_TYPE_UINT:
       StringAppendF(out, "%" PRIu64, static_cast<uint64_t>(this->as_uint));

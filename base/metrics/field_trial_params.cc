@@ -23,6 +23,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/time/time_delta_from_string.h"
 
 namespace base {
@@ -268,7 +269,7 @@ bool GetFieldTrialParamByFeatureAsBool(const Feature& feature,
 
   if (!value_as_string.empty()) {
     LogInvalidValue(feature, "a bool", param_name, value_as_string,
-                    default_value ? "true" : "false");
+                    base::ToString(default_value));
   }
   return default_value;
 }
