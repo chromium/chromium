@@ -1930,7 +1930,7 @@ bool Node::CanStartSelection() const {
       return true;
   }
   ContainerNode* parent = FlatTreeTraversal::Parent(*this);
-  return parent ? parent->CanStartSelection() : true;
+  return !parent || parent->CanStartSelection();
 }
 
 bool Node::IsRichlyEditableForAccessibility() const {

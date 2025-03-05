@@ -1749,8 +1749,7 @@ void HTMLCanvasElement::WillDrawImageTo2DContext(CanvasImageSource* source) {
 }
 
 bool HTMLCanvasElement::EnableAcceleration() {
-  return GetRasterMode() == RasterMode::kCPU ? RecreateCanvasInGPURasterMode()
-                                             : true;
+  return GetRasterMode() != RasterMode::kCPU || RecreateCanvasInGPURasterMode();
 }
 
 bool HTMLCanvasElement::RecreateCanvasInGPURasterMode() {

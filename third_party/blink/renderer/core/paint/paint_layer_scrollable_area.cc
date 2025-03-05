@@ -3233,10 +3233,9 @@ void PaintLayerScrollableArea::
 
   auto& rare_data = EnsureRareData();
   bool scrollsnapchange =
-      (rare_data.scrollsnapchange_target_ids_
-           ? (new_target_ids.x != rare_data.scrollsnapchange_target_ids_->x ||
-              new_target_ids.y != rare_data.scrollsnapchange_target_ids_->y)
-           : true);
+      !rare_data.scrollsnapchange_target_ids_ ||
+      new_target_ids.x != rare_data.scrollsnapchange_target_ids_->x ||
+      new_target_ids.y != rare_data.scrollsnapchange_target_ids_->y;
   if (scrollsnapchange) {
     rare_data.scrollsnapchange_target_ids_ = new_target_ids;
     rare_data.snapped_query_target_ids_ = new_target_ids;

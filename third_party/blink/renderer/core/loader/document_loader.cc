@@ -1068,10 +1068,9 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   }
 
   last_navigation_had_trusted_initiator_ =
-      initiator_origin ? initiator_origin->IsSameOriginWith(
-                             frame_->DomWindow()->GetSecurityOrigin()) &&
-                             Url().ProtocolIsInHTTPFamily()
-                       : true;
+      !initiator_origin || (initiator_origin->IsSameOriginWith(
+                                frame_->DomWindow()->GetSecurityOrigin()) &&
+                            Url().ProtocolIsInHTTPFamily());
 
   last_navigation_had_transient_user_activation_ =
       has_transient_user_activation;

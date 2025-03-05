@@ -559,11 +559,9 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
   // slider is vertical by computed appearance slider-vertical, then it should
   // behave like it has direction rtl and its value should be rendered
   // bottom-to-top.
-  slider.right_to_left =
-      (IsHorizontalWritingMode(writing_mode) && !is_slider_vertical) ||
-              is_writing_mode_vertical
-          ? !style.IsLeftToRightDirection()
-          : true;
+  slider.right_to_left = !style.IsLeftToRightDirection() ||
+                         (!is_writing_mode_vertical && is_slider_vertical);
+
   if (writing_mode == WritingMode::kSidewaysLr) {
     slider.right_to_left = !slider.right_to_left;
   }

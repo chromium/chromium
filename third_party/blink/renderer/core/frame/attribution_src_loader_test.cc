@@ -755,7 +755,7 @@ TEST_F(AttributionSrcLoaderInBrowserMigrationEnabledTest,
 
     EXPECT_EQ(attribution_src_loader_->MaybeRegisterAttributionHeaders(
                   request, response),
-              is_keep_alive ? false : true);
+              !is_keep_alive);
   }
 }
 
