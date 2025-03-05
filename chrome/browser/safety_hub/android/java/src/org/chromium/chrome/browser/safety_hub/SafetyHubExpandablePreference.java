@@ -16,12 +16,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
-import org.chromium.ui.drawable.StateListDrawableBuilder;
+import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
 
@@ -79,7 +77,7 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
         }
 
         if (mDrawable == null) {
-            mDrawable = createDrawable(getContext());
+            mDrawable = SettingsUtils.createExpandArrow(getContext());
         }
 
         CheckableImageView expandButton =
@@ -190,27 +188,5 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
                 info.setLabeledBy(labelView);
             }
         };
-    }
-
-    private static Drawable createDrawable(Context context) {
-        // TODO(crbug.com/324562205): Refactor this to avoid duplication with
-        // PrivacySandboxDialogUtils & ExpandablePreferenceGroup.
-        StateListDrawableBuilder builder = new StateListDrawableBuilder(context);
-        StateListDrawableBuilder.State checked =
-                builder.addState(
-                        R.drawable.ic_expand_less_black_24dp, android.R.attr.state_checked);
-        StateListDrawableBuilder.State unchecked =
-                builder.addState(R.drawable.ic_expand_more_black_24dp);
-        builder.addTransition(
-                checked, unchecked, R.drawable.transition_expand_less_expand_more_black_24dp);
-        builder.addTransition(
-                unchecked, checked, R.drawable.transition_expand_more_expand_less_black_24dp);
-
-        Drawable tintableDrawable = DrawableCompat.wrap(builder.build());
-        DrawableCompat.setTintList(
-                tintableDrawable,
-                AppCompatResources.getColorStateList(
-                        context, R.color.default_icon_color_tint_list));
-        return tintableDrawable;
     }
 }

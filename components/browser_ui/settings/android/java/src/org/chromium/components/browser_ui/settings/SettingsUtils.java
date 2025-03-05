@@ -17,11 +17,13 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.XmlRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.ToolbarUtils;
+import org.chromium.ui.drawable.StateListDrawableBuilder;
 
 /** A helper class for Settings. */
 @NullMarked
@@ -92,5 +94,27 @@ public class SettingsUtils {
         if (toolbar == null) return false;
         ToolbarUtils.setOverflowMenuVisibility(toolbar, visibility);
         return true;
+    }
+
+    /** Returns a Drawable representing an arrow used next to an expandable text section. */
+    public static Drawable createExpandArrow(Context context) {
+        assert context != null;
+        StateListDrawableBuilder builder = new StateListDrawableBuilder(context);
+        StateListDrawableBuilder.State checked =
+                builder.addState(
+                        R.drawable.ic_expand_less_black_24dp, android.R.attr.state_checked);
+        StateListDrawableBuilder.State unchecked =
+                builder.addState(R.drawable.ic_expand_more_black_24dp);
+        builder.addTransition(
+                checked, unchecked, R.drawable.transition_expand_less_expand_more_black_24dp);
+        builder.addTransition(
+                unchecked, checked, R.drawable.transition_expand_more_expand_less_black_24dp);
+
+        Drawable tintableDrawable = DrawableCompat.wrap(builder.build());
+        DrawableCompat.setTintList(
+                tintableDrawable,
+                AppCompatResources.getColorStateList(
+                        context, R.color.default_icon_color_tint_list));
+        return tintableDrawable;
     }
 }
