@@ -926,7 +926,7 @@ TEST_F(HeapTest, HeapCollectionTypes) {
   typedef HeapHashMap<int, Member<IntWrapper>> PrimitiveMember;
 
   typedef HeapHashSet<Member<IntWrapper>> MemberSet;
-  typedef HeapHashCountedSet<Member<IntWrapper>> MemberCountedSet;
+  using MemberCountedSet = GCedHeapHashCountedSet<Member<IntWrapper>>;
 
   typedef HeapVector<Member<IntWrapper>, 2> MemberVector;
   typedef GCedHeapDeque<Member<IntWrapper>> MemberDeque;
@@ -1068,7 +1068,7 @@ TEST_F(HeapTest, HeapCollectionTypes) {
       cset1.swap(cset2);
       cset2.swap(*set2);
 
-      MemberCountedSet& c_counted_set = container->set3;
+      auto& c_counted_set = container->set3;
       set3->swap(c_counted_set);
       EXPECT_EQ(0u, set3->size());
       set3->swap(c_counted_set);
@@ -1440,7 +1440,7 @@ TEST_F(HeapTest, HeapWeakCollectionSimple) {
   typedef HeapHashMap<Member<IntWrapper>, WeakMember<IntWrapper>> StrongWeak;
   typedef HeapHashMap<WeakMember<IntWrapper>, WeakMember<IntWrapper>> WeakWeak;
   typedef HeapHashSet<WeakMember<IntWrapper>> WeakSet;
-  typedef HeapHashCountedSet<WeakMember<IntWrapper>> WeakCountedSet;
+  using WeakCountedSet = GCedHeapHashCountedSet<WeakMember<IntWrapper>>;
 
   Persistent<WeakStrong> weak_strong = MakeGarbageCollected<WeakStrong>();
   Persistent<StrongWeak> strong_weak = MakeGarbageCollected<StrongWeak>();

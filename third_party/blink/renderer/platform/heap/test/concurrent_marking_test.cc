@@ -253,22 +253,23 @@ TEST_F(ConcurrentMarkingTest, SwapLinkedHashSet) {
 // HeapHashCountedSet
 
 TEST_F(ConcurrentMarkingTest, AddToHashCountedSet) {
-  AddToCollection<HeapHashCountedSet<Member<IntegerObject>>>();
+  AddToCollection<GCedHeapHashCountedSet<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromBeginningOfHashCountedSet) {
-  RemoveFromBeginningOfCollection<HeapHashCountedSet<Member<IntegerObject>>>();
+  RemoveFromBeginningOfCollection<
+      GCedHeapHashCountedSet<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromMiddleOfHashCountedSet) {
-  RemoveFromMiddleOfCollection<HeapHashCountedSet<Member<IntegerObject>>>();
+  RemoveFromMiddleOfCollection<GCedHeapHashCountedSet<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromEndOfHashCountedSet) {
-  RemoveFromEndOfCollection<HeapHashCountedSet<Member<IntegerObject>>>();
+  RemoveFromEndOfCollection<GCedHeapHashCountedSet<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, ClearHashCountedSet) {
-  ClearCollection<HeapHashCountedSet<Member<IntegerObject>>>();
+  ClearCollection<GCedHeapHashCountedSet<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, SwapHashCountedSet) {
-  SwapCollections<HeapHashCountedSet<Member<IntegerObject>>>();
+  SwapCollections<GCedHeapHashCountedSet<Member<IntegerObject>>>();
 }
 
 // HeapVector
