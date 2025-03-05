@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_navigation_handle_user_data.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/navigation_capturing_log.h"
 #include "chrome/browser/web_applications/navigation_capturing_settings.h"
@@ -127,12 +128,27 @@ Browser* CreateWebAppWindowFromNavigationParams(
 // more information.
 void ReparentToAppBrowser(content::WebContents* old_web_contents,
                           const webapps::AppId& app_id,
+                          blink::mojom::DisplayMode target_display_mode,
                           const GURL& target_url) {
   Browser* main_browser = chrome::FindBrowserWithTab(old_web_contents);
-  Browser* target_browser = CreateWebAppWindowMaybeWithHomeTab(
-      app_id, CreateParamsForApp(
-                  app_id, /*is_popup=*/false, /*trusted_source=*/true,
-                  gfx::Rect(), main_browser->profile(), /*user_gesture=*/true));
+  Browser* target_browser = nullptr;
+  if (target_display_mode == blink::mojom::DisplayMode::kTabbed) {
+    target_browser =
+        AppBrowserController::FindForWebApp(*main_browser->profile(), app_id);
+    // If somehow we found a browser that doesn't have a tab strip (which
+    // might be possible if the manifest updated while a window is open),
+    // don't return it to use for new tabs.
+    if (target_browser && !target_browser->app_controller()->has_tab_strip()) {
+      target_browser = nullptr;
+    }
+  }
+  if (!target_browser) {
+    target_browser = CreateWebAppWindowMaybeWithHomeTab(
+        app_id,
+        CreateParamsForApp(app_id, /*is_popup=*/false, /*trusted_source=*/true,
+                           gfx::Rect(), main_browser->profile(),
+                           /*user_gesture=*/true));
+  }
   CHECK(target_browser->app_controller());
   ReparentWebContentsIntoBrowserImpl(
       main_browser, old_web_contents, target_browser,
@@ -809,7 +825,7 @@ NavigationCapturingProcess::HandleRedirect() {
     SetLaunchedAppId(*target_app_id);
     CHECK(target_display_mode != blink::mojom::DisplayMode::kBrowser);
     ReparentToAppBrowser(web_contents_for_navigation, *target_app_id,
-                         final_url);
+                         target_display_mode, final_url);
     return content::NavigationThrottle::PROCEED;
   }
   if (initial_nav_handling_result_ ==
@@ -827,7 +843,7 @@ NavigationCapturingProcess::HandleRedirect() {
       SetLaunchedAppId(*target_app_id);
       debug_data_.Set("!redirection_result", "btab to app");
       ReparentToAppBrowser(web_contents_for_navigation, *target_app_id,
-                           final_url);
+                           target_display_mode, final_url);
       return content::NavigationThrottle::PROCEED;
     }
   }
@@ -856,7 +872,7 @@ NavigationCapturingProcess::HandleRedirect() {
       SetLaunchedAppId(*target_app_id);
       debug_data_.Set("!redirection_result", "btab to app");
       ReparentToAppBrowser(web_contents_for_navigation, *target_app_id,
-                           final_url);
+                           target_display_mode, final_url);
       return content::NavigationThrottle::PROCEED;
     }
   }
@@ -896,7 +912,7 @@ NavigationCapturingProcess::HandleRedirect() {
       SetLaunchedAppId(*target_app_id);
       debug_data_.Set("!redirection_result", "app");
       ReparentToAppBrowser(web_contents_for_navigation, *target_app_id,
-                           final_url);
+                           target_display_mode, final_url);
       return content::NavigationThrottle::PROCEED;
     }
     // Handle all cases that result in a browser-tab-app.

@@ -115,7 +115,7 @@ TabbedWebAppNavigationThrottle::WillStartRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 TabbedWebAppNavigationThrottle::WillRedirectRequest() {
-  // TODO(crbug.com/40598974): Figure out how redirects should be handled.
+  // TODO(crbug.com/400761084): Figure out how redirects should be handled.
   return content::NavigationThrottle::PROCEED;
 }
 
