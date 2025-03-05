@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/webauthn/user_actions.h"
 #include "chrome/browser/ui/webauthn/webauthn_ui_helpers.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "chrome/browser/webauthn/local_authentication_token.h"
 #include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -39,7 +40,6 @@
 #include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "crypto/scoped_lacontext.h"
 #include "device/fido/mac/util.h"
 #endif
 
@@ -648,12 +648,12 @@ void AuthenticatorTouchIdSheetModel::OnAccept() {
 }
 
 void AuthenticatorTouchIdSheetModel::OnTouchIDSensorTapped(
-    std::optional<crypto::ScopedLAContext> lacontext) {
+    std::optional<webauthn::LocalAuthenticationToken> local_auth_token) {
   // Ignore Touch ID ceremony status after the user has completed the ceremony.
   if (touch_id_completed_) {
     return;
   }
-  if (!lacontext) {
+  if (!local_auth_token) {
     // Authentication failed. Update the button status and rebuild the sheet,
     // which will restart the Touch ID request if the sensor is not softlocked
     // or display a padlock icon if it is.
@@ -661,7 +661,7 @@ void AuthenticatorTouchIdSheetModel::OnTouchIDSensorTapped(
     return;
   }
   touch_id_completed_ = true;
-  dialog_model()->lacontext = std::move(lacontext);
+  dialog_model()->local_auth_token = std::move(local_auth_token);
   dialog_model()->OnTouchIDComplete(true);
 }
 

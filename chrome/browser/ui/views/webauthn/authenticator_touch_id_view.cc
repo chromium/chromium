@@ -14,9 +14,9 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/mac_authentication_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
+#include "chrome/browser/webauthn/local_authentication_token.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
-#include "crypto/scoped_lacontext.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/mac/util.h"
 #include "device/fido/strings/grit/fido_strings.h"
@@ -82,9 +82,9 @@ AuthenticatorTouchIdView::BuildStepSpecificContent() {
 }
 
 void AuthenticatorTouchIdView::OnTouchIDComplete(
-    std::optional<crypto::ScopedLAContext> lacontext) {
+    std::optional<webauthn::LocalAuthenticationToken> local_auth_token) {
   static_cast<AuthenticatorTouchIdSheetModel*>(model())->OnTouchIDSensorTapped(
-      std::move(lacontext));
+      std::move(local_auth_token));
 }
 
 BEGIN_METADATA(AuthenticatorTouchIdView)

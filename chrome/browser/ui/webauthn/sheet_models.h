@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
-#include "crypto/scoped_lacontext.h"
+#include "chrome/browser/webauthn/local_authentication_token.h"
 #include "device/fido/pin.h"
 
 namespace gfx {
@@ -266,7 +266,8 @@ class AuthenticatorTouchIdSheetModel : public AuthenticatorSheetModelBase {
       AuthenticatorRequestDialogModel* dialog_model);
 
   // Called after the user taps their Touch ID sensor.
-  void OnTouchIDSensorTapped(std::optional<crypto::ScopedLAContext> lacontext);
+  void OnTouchIDSensorTapped(
+      std::optional<webauthn::LocalAuthenticationToken> local_auth_token);
 
  private:
   // AuthenticatorSheetModelBase:
