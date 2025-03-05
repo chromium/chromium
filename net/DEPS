@@ -71,7 +71,12 @@ specific_include_rules = {
     "+third_party/fuzztest",
     "+third_party/libprotobuf-mutator",  # This is needed for LPM-based fuzzers.
     "+third_party/icu/fuzzers/fuzzer_utils.h"
-  ]
+  ],
+
+  # Fuzzers may also be included in unit tests.
+  ".*test\.cc": [
+    "+third_party/fuzztest",
+  ],
 }
 
 skip_child_includes = [

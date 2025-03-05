@@ -45,9 +45,9 @@ using signin_metrics::PromoAction;
   CHECK(!_authenticationFlow, base::NotFatalUntil::M138);
 }
 
-- (void)interruptWithAction:(SigninCoordinatorInterrupt)action {
+- (void)interrupt {
   CHECK(_authenticationFlow);
-  [_authenticationFlow interruptWithAction:action];
+  [_authenticationFlow interrupt];
 }
 
 #pragma mark - Private

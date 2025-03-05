@@ -1099,6 +1099,27 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                  /*screenshot_name=*/std::string(), /*baseline_cl=*/"5189779"));
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+                       TestSecondBubbleIsOpenedWhileFirstStillShowing) {
+  SetupPendingPassword();
+  EXPECT_TRUE(IsBubbleShowing());
+  PasswordBubbleViewBase* first_bubble =
+      PasswordBubbleViewBase::manage_password_bubble();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      GURL(
+          "data:text/html;charset=utf-8,<input type=\"password\" autofocus>")));
+  SetupPendingPassword();
+  EXPECT_TRUE(IsBubbleShowing());
+  content::RunAllPendingInMessageLoop();
+  PasswordBubbleViewBase* second_bubble =
+      PasswordBubbleViewBase::manage_password_bubble();
+  EXPECT_TRUE(second_bubble);
+  // The first bubble should be automatically closed when the second bubble
+  // opens.
+  EXPECT_NE(first_bubble, second_bubble);
+}
+
 // TODO(crbug.com/364687935): Failing on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_NavigateToManagementDetailsViewWithMoveFooterVisibleAndTakeScreenshot \

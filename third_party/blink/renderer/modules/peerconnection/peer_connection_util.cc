@@ -29,8 +29,19 @@ Performance* GetPerformanceFromExecutionContext(ExecutionContext* context) {
 DOMHighResTimeStamp CalculateRTCEncodedFrameTimestamp(
     ExecutionContext* context,
     base::TimeTicks timestamp) {
-  return GetPerformanceFromExecutionContext(context)
-      ->MonotonicTimeToDOMHighResTimeStamp(timestamp);
+  Performance* performance = GetPerformanceFromExecutionContext(context);
+  return Performance::MonotonicTimeToDOMHighResTimeStamp(
+      performance->GetTimeOriginInternal(), timestamp,
+      /*allow_negative_value=*/true,
+      performance->CrossOriginIsolatedCapability());
+}
+
+DOMHighResTimeStamp CalculateRTCEncodedFrameTimeDelta(
+    ExecutionContext* context,
+    base::TimeDelta time_delta) {
+  return Performance::ClampTimeResolution(
+      time_delta, GetPerformanceFromExecutionContext(context)
+                      ->CrossOriginIsolatedCapability());
 }
 
 }  // namespace blink

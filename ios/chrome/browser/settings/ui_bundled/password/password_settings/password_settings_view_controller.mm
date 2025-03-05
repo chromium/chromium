@@ -167,9 +167,8 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   // Whether the `turnOnPasswordsInOtherAppsItem` should be visible.
   BOOL _shouldShowTurnOnPasswordsInOtherAppsItem;
 
-  // Whether the change PIN button should be set up. This will be true when it's
-  // requested by the mediator before the model is loaded.
-  BOOL _shouldSetupChangePinButton;
+  // Whether the `changeGooglePasswordManagerPinItem` should be visible.
+  BOOL _canChangeGPMPin;
 }
 
 // State
@@ -375,8 +374,8 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
             SectionIdentifierAutomaticPasskeyUpgradesSwitch];
   }
 
-  if (_shouldSetupChangePinButton) {
-    [self setupChangeGPMPinButton];
+  if (_canChangeGPMPin) {
+    [self updateChangeGPMPinButton];
   }
 
   if (self.onDeviceEncryptionState !=
@@ -856,6 +855,15 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   [self updateAutomaticPasskeyUpgradesSwitch];
 }
 
+- (void)setCanChangeGPMPin:(BOOL)canChangeGPMPin {
+  if (_canChangeGPMPin == canChangeGPMPin) {
+    return;
+  }
+
+  _canChangeGPMPin = canChangeGPMPin;
+  [self updateChangeGPMPinButton];
+}
+
 - (void)setCanDeleteAllCredentials:(BOOL)canDeleteAllCredentials {
   if (_canDeleteAllCredentials == canDeleteAllCredentials) {
     return;
@@ -919,31 +927,6 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   }
 
   [self updateOnDeviceEncryptionSectionWithOldState:oldState];
-}
-
-- (void)setupChangeGPMPinButton {
-  _shouldSetupChangePinButton = YES;
-  if (self.modelLoadStatus == ModelNotLoaded) {
-    return;
-  }
-
-  TableViewModel* model = self.tableViewModel;
-  if ([model hasSectionForSectionIdentifier:
-                 SectionIdentifierGooglePasswordManagerPin]) {
-    return;
-  }
-
-  [model insertSectionWithIdentifier:SectionIdentifierGooglePasswordManagerPin
-                             atIndex:[self computeGPMPinSectionIndex]];
-  [model addItem:[self changeGooglePasswordManagerPinDescriptionItem]
-      toSectionWithIdentifier:SectionIdentifierGooglePasswordManagerPin];
-  [model addItem:[self changeGooglePasswordManagerPinItem]
-      toSectionWithIdentifier:SectionIdentifierGooglePasswordManagerPin];
-  NSIndexSet* indexSet = [NSIndexSet
-      indexSetWithIndex:[model sectionForSectionIdentifier:
-                                   SectionIdentifierGooglePasswordManagerPin]];
-  [self.tableView insertSections:indexSet
-                withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 #pragma mark - Actions
@@ -1433,6 +1416,42 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
     _exportPasswordsItem.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
   }
   [self reconfigureCellsForItems:@[ _exportPasswordsItem ]];
+}
+
+- (void)updateChangeGPMPinButton {
+  if (self.modelLoadStatus == ModelNotLoaded) {
+    return;
+  }
+
+  TableViewModel* model = self.tableViewModel;
+  if ([model hasSectionForSectionIdentifier:
+                 SectionIdentifierGooglePasswordManagerPin] ==
+      _canChangeGPMPin) {
+    return;
+  }
+
+  UITableView* tableView = self.tableView;
+  if (_canChangeGPMPin) {
+    [model insertSectionWithIdentifier:SectionIdentifierGooglePasswordManagerPin
+                               atIndex:[self computeGPMPinSectionIndex]];
+    [model addItem:[self changeGooglePasswordManagerPinDescriptionItem]
+        toSectionWithIdentifier:SectionIdentifierGooglePasswordManagerPin];
+    [model addItem:[self changeGooglePasswordManagerPinItem]
+        toSectionWithIdentifier:SectionIdentifierGooglePasswordManagerPin];
+    NSIndexSet* indexSet = [NSIndexSet
+        indexSetWithIndex:[model
+                              sectionForSectionIdentifier:
+                                  SectionIdentifierGooglePasswordManagerPin]];
+    [tableView insertSections:indexSet
+             withRowAnimation:UITableViewRowAnimationAutomatic];
+  } else {
+    NSInteger section = [model
+        sectionForSectionIdentifier:SectionIdentifierGooglePasswordManagerPin];
+    [model
+        removeSectionWithIdentifier:SectionIdentifierGooglePasswordManagerPin];
+    [tableView deleteSections:[NSIndexSet indexSetWithIndex:section]
+             withRowAnimation:UITableViewRowAnimationAutomatic];
+  }
 }
 
 @end

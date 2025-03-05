@@ -18,13 +18,13 @@ class PrefService;
     : NSObject <InactiveTabsSettingsTableViewControllerDelegate>
 
 // Designated initializer. All the parameters should not be null.
-// `localPrefService`: preference service from the application context.
+// `profilePrefService`: preference service from the profile.
 // `consumer`: consumer that will be notified when the data change.
 // `browser`: the current browser.
-- (instancetype)initWithUserLocalPrefService:(PrefService*)localPrefService
-                                     browser:(Browser*)browser
-                                    consumer:(id<InactiveTabsSettingsConsumer>)
-                                                 consumer
+- (instancetype)initWithProfilePrefService:(PrefService*)profilePrefService
+                                   browser:(Browser*)browser
+                                  consumer:
+                                      (id<InactiveTabsSettingsConsumer>)consumer
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -169,7 +169,7 @@
     // done. The coordinator needs to finish itself, and then call the interrupt
     // completion.
     _mediator.delegate = nil;
-    [_mediator interruptWithAction:action];
+    [_mediator interrupt];
     // Drop the activity overlay if it exists.
     [self stopActivityOverlay];
     [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
@@ -178,7 +178,7 @@
       completion();
     }
   } else {
-    [_mediator interruptWithAction:action];
+    [_mediator interrupt];
     if (completion) {
       completion();
     }

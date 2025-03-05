@@ -2396,7 +2396,9 @@ AuthenticatorRequestDialogController::IndexOfPriorityMechanism() {
 
   switch (transport_availability_.request_type) {
     case FidoRequestType::kGetAssertion:
-      return IndexOfGetAssertionPriorityMechanism();
+      return ui_presentation() == UIPresentation::kModalImmediate
+                 ? std::nullopt
+                 : IndexOfGetAssertionPriorityMechanism();
     case FidoRequestType::kMakeCredential:
       return IndexOfMakeCredentialPriorityMechanism();
   }

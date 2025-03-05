@@ -2536,8 +2536,8 @@ CanvasPattern* BaseRenderingContext2D::createPattern(
   gfx::SizeF default_object_size(Width(), Height());
   scoped_refptr<Image> image_for_rendering =
       image_source->GetSourceImageForCanvas(
-          FlushReason::kCreatePattern, &status, default_object_size,
-          CanvasImageSource::kDontChangeAlpha);
+        FlushReason::kCreatePattern, &status, default_object_size,
+        CanvasImageSource::kDontChangeAlpha);
 
   switch (status) {
     case kNormalSourceImageStatus:

@@ -946,20 +946,7 @@ bool ChromeAuthenticatorRequestDelegate::MaybeHandleImmediateMediation(
     return true;
   }
 
-  // Do not consider `kPhone` credentials as they're not locally available.
-  const auto kLocalTypes =
-      std::unordered_set{device::AuthenticatorType::kEnclave,
-                         device::AuthenticatorType::kICloudKeychain,
-                         device::AuthenticatorType::kWinNative,
-                         device::AuthenticatorType::kChromeOS,
-                         device::AuthenticatorType::kTouchID};
-  int immediate_webauthn_count = std::ranges::count_if(
-      data.recognized_credentials,
-      [&kLocalTypes](const device::AuthenticatorType& type) {
-        return kLocalTypes.contains(type);
-      },
-      &device::DiscoverableCredentialMetadata::source);
-  if (immediate_webauthn_count + passwords.size() == 0) {
+  if (data.recognized_credentials.size() + passwords.size() == 0) {
     return true;
   }
 
@@ -1126,6 +1113,20 @@ void ChromeAuthenticatorRequestDelegate::FilterRecognizedCredentials(
       }
     }
     tai->recognized_credentials = std::move(filtered_list);
+  }
+
+  const auto kImmediateTypes =
+      std::unordered_set{device::AuthenticatorType::kEnclave,
+                         device::AuthenticatorType::kICloudKeychain,
+                         device::AuthenticatorType::kWinNative,
+                         device::AuthenticatorType::kChromeOS,
+                         device::AuthenticatorType::kTouchID};
+  if (dialog_controller_->ui_presentation() ==
+      UIPresentation::kModalImmediate) {
+    std::erase_if(tai->recognized_credentials,
+                  [&kImmediateTypes](const auto& passkey) {
+                    return !kImmediateTypes.contains(passkey.source);
+                  });
   }
 }
 

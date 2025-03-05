@@ -963,6 +963,8 @@ Suggestion CreateBnplSuggestion(const std::vector<BnplIssuer>& bnpl_issuers) {
   bnpl_suggestion.labels = {{Suggestion::Text(
       l10n_util::GetStringFUTF16(IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL,
                                  GetBnplPriceLowerBound(bnpl_issuers)))}};
+  bnpl_suggestion.iph_metadata = Suggestion::IPHMetadata(
+      &feature_engagement::kIPHAutofillBnplAffirmOrZipSuggestionFeature);
 
   return bnpl_suggestion;
 }

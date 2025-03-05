@@ -49,7 +49,6 @@
 // These "headers" actually contains function definitions and thus can only be
 // included once across Chromium.
 #include "chrome/browser/webauthn/android/jni_headers/CableAuthenticatorModuleProvider_jni.h"
-#include "chrome/browser/webauthn/android/jni_headers/PrivacySettingsFragment_jni.h"
 
 using device::cablev2::authenticator::Registration;
 
@@ -448,14 +447,4 @@ static void JNI_CableAuthenticatorModuleProvider_OnHaveWorkProfileResult(
                          base::Unretained(reinterpret_cast<SystemInterface*>(
                              static_cast<uintptr_t>(system_interface_pointer))),
                          in_work_profile));
-}
-
-static void JNI_PrivacySettingsFragment_RevokeAllLinkedDevices(JNIEnv* env) {
-  // Invalidates the current cloud messaging (GCM) token and creates a new one.
-  // This causes the tunnel server to reject connection attempts with a 410
-  // (Gone) error. Since linking keys are derived from the root secret by using
-  // the GCM token, this also invalidates all existing linking keys.
-  webauthn::authenticator::GetRegistrationState()
-      ->linking_registration()
-      ->RotateContactID();
 }

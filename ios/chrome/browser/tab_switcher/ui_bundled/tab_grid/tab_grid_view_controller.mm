@@ -1812,7 +1812,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)didTapInactiveTabsButtonInGridViewController:
     (BaseGridViewController*)gridViewController {
-  CHECK(IsInactiveTabsEnabled());
   if (self.currentPage != TabGridPageRegularTabs) {
     return;
   }

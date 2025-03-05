@@ -45,11 +45,10 @@ namespace web_app {
 // required to be the active web contents in `source_browser`.
 //
 // Note: This will CHECK-fail if `contents` is not in `source_browser`.
-void ReparentWebContentsIntoBrowserImpl(
-    Browser* source_browser,
-    content::WebContents* contents,
-    Browser* target_browser,
-    bool insert_as_pinned_first_tab = false);
+void ReparentWebContentsIntoBrowserImpl(Browser* source_browser,
+                                        content::WebContents* contents,
+                                        Browser* target_browser,
+                                        bool insert_as_pinned_home_tab = false);
 
 class AppBrowserController;
 class WithAppResources;

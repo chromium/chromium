@@ -12,7 +12,7 @@ import UIKit
 
   // Weak reference to the snapshot storage which is used to store and retrieve snapshots.
   // SnapshotStorage is owned by SnapshotBrowserAgent.
-  weak var snapshotStorage: SnapshotStorage?
+  weak var snapshotStorage: Optional<SnapshotStorage>
 
   // The unique ID for WebState's snapshot.
   let snapshotID: SnapshotIDWrapper
@@ -24,6 +24,7 @@ import UIKit
   init(generator: SnapshotGenerator, snapshotID: SnapshotIDWrapper) {
     assert(snapshotID.valid(), "snapshot ID should be valid")
     self.snapshotGenerator = generator
+    self.snapshotStorage = nil
     self.snapshotID = snapshotID
     super.init()
   }

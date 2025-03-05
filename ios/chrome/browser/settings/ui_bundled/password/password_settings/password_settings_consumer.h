@@ -35,6 +35,8 @@ typedef NS_ENUM(NSInteger, PasswordSettingsOnDeviceEncryptionState) {
 
 // State machines triggering UI changes.
 
+- (void)setCanChangeGPMPin:(BOOL)canChangeGPMPin;
+
 - (void)setCanDeleteAllCredentials:(BOOL)canDeleteAllCredentials;
 
 - (void)setCanExportPasswords:(BOOL)canExportPasswords;
@@ -45,10 +47,6 @@ typedef NS_ENUM(NSInteger, PasswordSettingsOnDeviceEncryptionState) {
     (PasswordSettingsOnDeviceEncryptionState)onDeviceEncryptionState;
 
 - (void)setPasswordsInOtherAppsEnabled:(BOOL)enabled;
-
-// TODO(crbug.com/399398237): Refactor into `setCanChangeGPMPin` and act on sync
-// changes (e.g. NO should be passed when sync state changes to signed out).
-- (void)setupChangeGPMPinButton;
 
 @end
 

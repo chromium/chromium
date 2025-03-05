@@ -416,9 +416,10 @@ DEFINE_VARIATION_PARAM(kIPHTabGroupsSharedTabFeedbackFeature,
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+DEFINE_VARIATION_PARAM(kIPHAutofillBnplAffirmOrZipSuggestionFeature,
+                       "IPH_AutofillBnplAffirmOrZipSuggestion");
 DEFINE_VARIATION_PARAM(kIPHAutofillCreditCardBenefitFeature,
                        "IPH_AutofillCreditCardBenefit");
-
 DEFINE_VARIATION_PARAM(kIPHAutofillCardInfoRetrievalSuggestionFeature,
                        "IPH_AutofillCardInfoRetrievalSuggestion");
 DEFINE_VARIATION_PARAM(kIPHAutofillDisabledVirtualCardSuggestionFeature,

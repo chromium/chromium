@@ -126,8 +126,6 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
   Browser* source_browser = chrome::FindBrowserWithTab(contents);
   CHECK(contents);
 
-  TabStripModel* target_tabstrip = target_browser->tab_strip_model();
-  bool target_has_pinned_home_tab = HasPinnedHomeTab(target_tabstrip);
   if (!insert_as_pinned_home_tab) {
     MaybeAddPinnedHomeTab(target_browser, app_id);
   }
@@ -141,12 +139,6 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
   ReparentWebContentsIntoBrowserImpl(
       source_browser, contents, target_browser,
       /*insert_as_pinned_first_tab=*/insert_as_pinned_home_tab);
-  if (insert_as_pinned_home_tab) {
-    if (target_has_pinned_home_tab) {
-      target_tabstrip->DetachAndDeleteWebContentsAt(1);
-    }
-    SetWebContentsIsPinnedHomeTab(target_tabstrip->GetWebContentsAt(0));
-  }
   return target_browser;
 }
 
@@ -300,7 +292,7 @@ void RecordDiyOrCraftedAppLaunch(const WebApp& web_app) {
 void ReparentWebContentsIntoBrowserImpl(Browser* source_browser,
                                         content::WebContents* web_contents,
                                         Browser* target_browser,
-                                        bool insert_as_first_tab) {
+                                        bool insert_as_pinned_home_tab) {
   CHECK(source_browser);
   CHECK(web_contents);
   CHECK(target_browser);
@@ -346,10 +338,12 @@ void ReparentWebContentsIntoBrowserImpl(Browser* source_browser,
       source_tabstrip->DetachWebContentsAtForInsertion(found_tab_index.value());
   int location = target_browser->tab_strip_model()->count();
   int add_types = (AddTabTypes::ADD_INHERIT_OPENER | AddTabTypes::ADD_ACTIVE);
-  if (insert_as_first_tab) {
+  if (insert_as_pinned_home_tab) {
     location = 0;
     add_types |= AddTabTypes::ADD_PINNED;
   }
+  const bool target_has_pinned_home_tab =
+      HasPinnedHomeTab(target_browser->tab_strip_model());
   // This method moves a WebContents from a non-normal browser window to a
   // normal browser window. We cannot move the Tab over directly since TabModel
   // enforces the requirement that it cannot move between window types.
@@ -359,6 +353,14 @@ void ReparentWebContentsIntoBrowserImpl(Browser* source_browser,
       location, std::move(contents_move), add_types);
   CHECK_EQ(web_contents,
            target_browser->tab_strip_model()->GetActiveWebContents());
+
+  if (insert_as_pinned_home_tab) {
+    if (target_has_pinned_home_tab) {
+      target_browser->tab_strip_model()->DetachAndDeleteWebContentsAt(1);
+    }
+    SetWebContentsIsPinnedHomeTab(
+        target_browser->tab_strip_model()->GetWebContentsAt(0));
+  }
 
   if (!target_app_id) {
     IntentPickerTabHelper* helper =

@@ -61,7 +61,9 @@ GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
       depends_on_hardware_accelerated_webp_candidates_(
           depends_on_hardware_accelerated_webp_candidates) {
   if (!in_use_resource.backing()) {
-    auto backing = std::make_unique<ResourcePool::Backing>();
+    auto backing = std::make_unique<ResourcePool::Backing>(
+        in_use_resource.size(), in_use_resource.format(),
+        in_use_resource.color_space());
     backing->is_using_raw_draw =
         !client_->tile_overlay_candidate_ && client_->is_using_raw_draw_;
     in_use_resource.set_backing(std::move(backing));

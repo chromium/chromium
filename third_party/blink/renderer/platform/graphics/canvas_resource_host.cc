@@ -289,7 +289,7 @@ bool CanvasResourceHost::IsResourceValid() {
 
   // For software rendering
   if (resource_provider_ &&
-      resource_provider_->IsSharedBitmapGpuChannelLost()) {
+      resource_provider_->IsSoftwareSharedImageGpuChannelLost()) {
     shared_bitmap_gpu_channel_lost_ = true;
     ReplaceResourceProvider(nullptr);
     NotifyGpuContextLost();

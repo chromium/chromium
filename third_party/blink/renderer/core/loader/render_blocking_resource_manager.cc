@@ -153,7 +153,8 @@ void RenderBlockingResourceManager::AddPendingParsingElementLink(
     return;
   }
 
-  element_render_blocking_links_->AddLinkWithTargetElement(id, link);
+  element_render_blocking_links_->AddLinkWithTargetElement(
+      id, link, RenderBlockingLevel::kBlock);
   document_->SetHasRenderBlockingExpectLinkElements(true);
 }
 
@@ -177,11 +178,12 @@ void RenderBlockingResourceManager::RemovePendingParsingElementLink(
 }
 
 void RenderBlockingResourceManager::ClearPendingParsingElements() {
-  if (!element_render_blocking_links_->HasElement()) {
+  if (!element_render_blocking_links_->HasElement(
+          RenderBlockingLevel::kBlock)) {
     return;
   }
   element_render_blocking_links_->ForEach(WTF::BindRepeating(
-      [](Document* document, const HTMLLinkElement& link) {
+      [](Document* document, RenderBlockingLevel, const HTMLLinkElement& link) {
         document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kOther,
             mojom::blink::ConsoleMessageLevel::kWarning,
@@ -194,7 +196,11 @@ void RenderBlockingResourceManager::ClearPendingParsingElements() {
   element_render_blocking_links_->Clear();
 }
 
-void RenderBlockingResourceManager::OnRenderBlockingElementLinkEmpty() {
+void RenderBlockingResourceManager::OnRenderBlockingElementLinkEmpty(
+    RenderBlockingLevel level) {
+  if (level != RenderBlockingLevel::kBlock) {
+    return;
+  }
   document_->SetHasRenderBlockingExpectLinkElements(false);
   RenderBlockingResourceUnblocked();
 }

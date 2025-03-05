@@ -503,10 +503,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(prefs::kIosDefaultBrowserPromoLastAction, -1);
 
-  // Preferences related to tab grid.
-  // Default to 0 which is the unassigned value.
-  registry->RegisterIntegerPref(prefs::kInactiveTabsTimeThreshold, 0);
-
   // Preference related to the tab pickup feature.
   registry->RegisterBooleanPref(prefs::kTabPickupEnabled, true);
 
@@ -652,6 +648,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       prefs::kNTPHomeCustomizationNewBadgeImpressionCount, 0);
 
   registry->RegisterBooleanPref(prefs::kMigrateWidgetsPrefs, false);
+
+  // Deprecated 03/2025, migrated to profile pref.
+  registry->RegisterIntegerPref(prefs::kInactiveTabsTimeThreshold, 0);
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -998,6 +997,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Prefs related to Reminder Notifications.
   registry->RegisterDictionaryPref(prefs::kReminderNotifications);
 
+  // Preferences related to tab grid.
+  // Default to 0 which is the unassigned value.
+  registry->RegisterIntegerPref(prefs::kInactiveTabsTimeThreshold, 0);
+
   // Deprecated 09/2024.
   registry->RegisterIntegerPref(kContentSettingsWindowLastTabIndex, 0);
   registry->RegisterStringPref(kSyncPasswordHash, std::string());
@@ -1203,6 +1206,10 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   // Added 02/2025.
   MigrateIntegerPrefFromProfilePrefsToLocalStatePrefs(
       prefs::kNTPHomeCustomizationNewBadgeImpressionCount, prefs);
+
+  // Added 03/2025.
+  MigrateIntegerPrefFromLocalStatePrefsToProfilePrefs(
+      prefs::kInactiveTabsTimeThreshold, prefs);
 }
 
 void MigrateObsoleteUserDefault() {

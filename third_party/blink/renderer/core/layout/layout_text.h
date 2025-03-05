@@ -466,12 +466,14 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 };
 
 inline wtf_size_t LayoutText::FirstInlineFragmentItemIndex() const {
+  NOT_DESTROYED();
   if (!IsInLayoutNGInlineFormattingContext())
     return 0u;
   return first_fragment_item_index_;
 }
 
 inline void LayoutText::DetachAxHooksIfNeeded() {
+  NOT_DESTROYED();
   if (has_abstract_inline_text_box_) [[unlikely]] {
     DetachAxHooks();
   }

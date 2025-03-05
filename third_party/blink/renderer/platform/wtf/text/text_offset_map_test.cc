@@ -52,7 +52,7 @@ TEST(TextOffsetMapTest, MergeConstructor) {
       map23.Append(entry.source, entry.target);
     }
 
-    TextOffsetMap merged(map12, map23, /* fix_crash */ true);
+    TextOffsetMap merged(map12, map23);
     EXPECT_EQ(merged.Entries(), data.expected);
   }
 }

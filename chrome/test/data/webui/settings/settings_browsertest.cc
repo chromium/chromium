@@ -695,15 +695,9 @@ class SettingsCookiesPageTest : public SettingsBrowserTest {
       privacy_sandbox::kPrivacySandboxFirstPartySetsUI};
 };
 
-#if ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !defined(NDEBUG)) || \
-    BUILDFLAG(IS_MAC)
-#define MAYBE_CookiesPageTest DISABLED_CookiesPageTest
-#else
-#define MAYBE_CookiesPageTest CookiesPageTest
-#endif
-// TODO(crbug.com/40889245): fix flakiness on Linux and ChromeOS debug builds
-// and re-enable.
-IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, MAYBE_CookiesPageTest) {
+// TODO(crbug.com/40889245): fix flakiness on almost all platforms and
+// re-enable.
+IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, DISABLED_CookiesPageTest) {
   RunTest("settings/cookies_page_test.js", "runMochaSuite('CookiesPageTest')");
 }
 

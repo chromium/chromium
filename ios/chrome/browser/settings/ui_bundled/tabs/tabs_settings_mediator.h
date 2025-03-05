@@ -21,10 +21,10 @@ class PrefService;
 @property(nonatomic, weak) id<TabsSettingsNavigationCommands> handler;
 
 // Designated initializer. All the parameters should not be null.
-// `localPrefService`: preference service from the application context.
+// `profilePrefService`: preference service from the profile.
 // `consumer`: consumer that will be notified when the data change.
-- (instancetype)initWithUserLocalPrefService:(PrefService*)localPrefService
-                                    consumer:(id<TabsSettingsConsumer>)consumer
+- (instancetype)initWithProfilePrefService:(PrefService*)profilePrefService
+                                  consumer:(id<TabsSettingsConsumer>)consumer
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

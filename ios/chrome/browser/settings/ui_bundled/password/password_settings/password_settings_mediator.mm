@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
+#import "components/password_manager/core/browser/password_sync_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
@@ -417,6 +418,12 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   [self.consumer setUserEmail:base::SysUTF8ToNSString(
                                   _syncService->GetAccountInfo().email)];
   [self updateShowBulkMovePasswordsToAccount];
+  if (syncer::IsWebauthnCredentialSyncEnabled()) {
+    [self.consumer
+        setCanChangeGPMPin:password_manager::sync_util::GetAccountForSaving(
+                               _prefService, _syncService)
+                               .has_value()];
+  }
 }
 
 #pragma mark - Private
@@ -527,9 +534,7 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   _trustedVaultClientBackend->FetchKeys(
       _identity, trusted_vault::SecurityDomainId::kPasskeys,
       base::BindOnce(^(const std::vector<std::vector<uint8_t>>& keys) {
-        if (!keys.empty()) {
-          [weakConsumer setupChangeGPMPinButton];
-        }
+        [weakConsumer setCanChangeGPMPin:!keys.empty()];
       }));
 }
 

@@ -1005,6 +1005,7 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
   // which should wait until all SceneStates have been mapped to Profiles.
   if (nextInitStage == ProfileInitStage::kFinal) {
     [profileState removeObserver:self];
+    [MetricsMediator logProfileLoadMetrics:profileState.profile];
     [self recordLaunchMetrics];
   }
 }

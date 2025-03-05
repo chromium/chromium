@@ -26,6 +26,7 @@
 #include "components/sync/model/string_ordinal.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
@@ -126,9 +127,8 @@ void SyncExtensionHelper::DisableExtension(Profile* profile,
 
 bool SyncExtensionHelper::IsExtensionEnabled(Profile* profile,
                                              const std::string& name) const {
-  return extensions::ExtensionSystem::Get(profile)
-      ->extension_service()
-      ->IsExtensionEnabled(crx_file::id_util::GenerateId(name));
+  return extensions::ExtensionRegistrar::Get(profile)->IsExtensionEnabled(
+      crx_file::id_util::GenerateId(name));
 }
 
 void SyncExtensionHelper::IncognitoEnableExtension(Profile* profile,
@@ -220,20 +220,19 @@ SyncExtensionHelper::ExtensionStateMap SyncExtensionHelper::GetExtensionStates(
       extensions::ExtensionRegistry::Get(profile)
           ->GenerateInstalledExtensionsSet();
 
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(profile)->extension_service();
+  auto* extension_registrar = extensions::ExtensionRegistrar::Get(profile);
   for (const scoped_refptr<const Extension>& extension : extensions) {
     const std::string& id = extension->id();
     extension_state_map.emplace(
-        id, ExtensionState{extension_service->IsExtensionEnabled(id)
+        id, ExtensionState{extension_registrar->IsExtensionEnabled(id)
                                ? ExtensionState::ENABLED
                                : ExtensionState::DISABLED,
                            ExtensionPrefs::Get(profile)->GetDisableReasons(id),
                            extensions::util::IsIncognitoEnabled(id, profile)});
     DVLOG(2) << "Extension " << id << " in profile " << profile_debug_name
              << " is "
-             << (extension_service->IsExtensionEnabled(id) ? "enabled"
-                                                           : "disabled");
+             << (extension_registrar->IsExtensionEnabled(id) ? "enabled"
+                                                             : "disabled");
   }
 
   const extensions::PendingExtensionManager* pending_extension_manager =

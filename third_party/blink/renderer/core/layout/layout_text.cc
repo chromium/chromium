@@ -316,6 +316,7 @@ void LayoutText::DetachAxHooks() {
 }
 
 void LayoutText::ClearBlockFlowCachedData(const LayoutBlockFlow* block_flow) {
+  NOT_DESTROYED();
   if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
     cache->ClearBlockFlowCachedData(FragmentItemsContainer());
   }
@@ -906,9 +907,7 @@ String LayoutText::TransformAndSecureText(const String& original,
     }
     auto [masked, secure_map] = SecureText(transformed, mask);
     if (!secure_map.IsEmpty()) {
-      offset_map = TextOffsetMap(
-          offset_map, secure_map,
-          RuntimeEnabledFeatures::TextTransformAndSecurityFixEnabled());
+      offset_map = TextOffsetMap(offset_map, secure_map);
     }
     return masked;
   }
@@ -956,6 +955,7 @@ std::pair<String, TextOffsetMap> LayoutText::SecureText(const String& plain,
 void LayoutText::SetVariableLengthTransformResult(
     wtf_size_t original_length,
     const TextOffsetMap& offset_map) {
+  NOT_DESTROYED();
   if (offset_map.IsEmpty()) {
     ClearHasVariableLengthTransform();
     return;
@@ -967,6 +967,7 @@ void LayoutText::SetVariableLengthTransformResult(
 
 VariableLengthTransformResult LayoutText::GetVariableLengthTransformResult()
     const {
+  NOT_DESTROYED();
   return View()->GetVariableLengthTransformResult(*this);
 }
 
@@ -997,6 +998,7 @@ void LayoutText::ForceSetText(String text) {
 
 void LayoutText::SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
     LayoutInvalidationReasonForTracing reason) {
+  NOT_DESTROYED();
   auto* const text_combine = DynamicTo<LayoutTextCombine>(Parent());
   if (text_combine) [[unlikely]] {
     // Number of characters in text may change compressed font or scaling of

@@ -30,11 +30,11 @@ class WebStateList;
 
 // Initializer with:
 // - `webStateList`: the list of tabs to observe.
-// - `prefService`: the preference service from the application context.
+// - `prefService`: the preference service from the profile.
 // - `snapshotStorage`: the snapshot storage from the inactive browser.
 // - `tabsCloser`: the object used to implement "close all" and "undo".
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                         prefService:(PrefService*)prefService
+                  profilePrefService:(PrefService*)prefService
                      snapshotStorage:(SnapshotStorageWrapper*)snapshotStorage
                           tabsCloser:(std::unique_ptr<TabsCloser>)tabsCloser
     NS_DESIGNATED_INITIALIZER;

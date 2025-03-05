@@ -163,6 +163,9 @@ class LRUCacheBase {
 
   // Erases the item referenced by the given iterator. An iterator to the item
   // following it will be returned. The iterator must be valid.
+  // Note that caller should avoid using std::remove_if() with this container as
+  // the iterator from begin()/end() is not designed to have the key modified,
+  // see comment on begin().
   iterator Erase(iterator pos) {
     index_.erase(GetKeyFromValue()(*pos));
     return ordering_.erase(pos);
@@ -205,6 +208,10 @@ class LRUCacheBase {
   // Note that since these iterators are actually iterators over a list, you
   // can keep them as you insert or delete things (as long as you don't delete
   // the one you are pointing to) and they will still be valid.
+  // Also, caller should avoid moving the order of items around, or any
+  // operation that modifies the key in the value with these iterators, such as
+  // using std::remove_if(). This is because the key in index_ is not updated
+  // and the container will be corrupted.
   iterator begin() { return ordering_.begin(); }
   const_iterator begin() const { return ordering_.begin(); }
   iterator end() { return ordering_.end(); }

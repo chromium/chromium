@@ -6283,6 +6283,17 @@ class ScreenshotWidgetTest : public ViewsTestBase {
     widget()->Init(std::move(params));
   }
 
+  void TearDown() override {
+    // `ViewAccessibility` objects have some references to the `widget` which
+    // must be updated when the widget is freed. The function that is in charge
+    // of clearing these lists however (`OnNativeWidgetDestroying`), is never
+    // called in this test suite because we use a `MockNativeWindow` rather than
+    // a `NativeWindow`. So we make sure this clean up happens manually.
+    widget()->OnNativeWidgetDestroying();
+    native_widget_.reset();
+    ViewsTestBase::TearDown();
+  }
+
   Widget* widget() { return widget_.get(); }
   MockNativeWidget* native_widget() { return native_widget_.get(); }
   const std::optional<bool>& screenshots_allowed() {

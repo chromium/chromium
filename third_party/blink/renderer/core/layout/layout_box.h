@@ -1421,26 +1421,32 @@ struct DowncastTraits<LayoutBox> {
 };
 
 inline LayoutBox* LayoutBox::PreviousSiblingBox() const {
+  NOT_DESTROYED();
   return To<LayoutBox>(PreviousSibling());
 }
 
 inline LayoutBox* LayoutBox::NextSiblingBox() const {
+  NOT_DESTROYED();
   return To<LayoutBox>(NextSibling());
 }
 
 inline LayoutBox* LayoutBox::ParentBox() const {
+  NOT_DESTROYED();
   return To<LayoutBox>(Parent());
 }
 
 inline LayoutBox* LayoutBox::FirstChildBox() const {
+  NOT_DESTROYED();
   return To<LayoutBox>(SlowFirstChild());
 }
 
 inline LayoutBox* LayoutBox::LastChildBox() const {
+  NOT_DESTROYED();
   return To<LayoutBox>(SlowLastChild());
 }
 
 inline LayoutBox* LayoutBox::PreviousSiblingMultiColumnBox() const {
+  NOT_DESTROYED();
   DCHECK(IsLayoutMultiColumnSpannerPlaceholder() || IsLayoutMultiColumnSet());
   LayoutBox* previous_box = PreviousSiblingBox();
   if (previous_box->IsLayoutFlowThread())
@@ -1449,11 +1455,13 @@ inline LayoutBox* LayoutBox::PreviousSiblingMultiColumnBox() const {
 }
 
 inline LayoutBox* LayoutBox::NextSiblingMultiColumnBox() const {
+  NOT_DESTROYED();
   DCHECK(IsLayoutMultiColumnSpannerPlaceholder() || IsLayoutMultiColumnSet());
   return NextSiblingBox();
 }
 
 inline wtf_size_t LayoutBox::FirstInlineFragmentItemIndex() const {
+  NOT_DESTROYED();
   if (!IsInLayoutNGInlineFormattingContext())
     return 0u;
   return first_fragment_item_index_;

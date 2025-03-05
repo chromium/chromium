@@ -703,24 +703,6 @@ void FormStructure::SetFieldTypesFromAutocompleteAttribute() {
   }
 }
 
-bool FormStructure::SetSectionsFromAutocompleteOrReset() {
-  bool has_autocomplete = false;
-  for (const auto& field : fields_) {
-    if (!field->parsed_autocomplete()) {
-      field->set_section(Section());
-      continue;
-    }
-
-    field->set_section(Section::FromAutocomplete(
-        {.section = field->parsed_autocomplete()->section,
-         .mode = field->parsed_autocomplete()->mode}));
-    if (field->section()) {
-      has_autocomplete = true;
-    }
-  }
-  return has_autocomplete;
-}
-
 FieldCandidatesMap FormStructure::ParseFieldTypesWithPatterns(
     ParsingContext& context) const {
   FieldCandidatesMap field_type_map;

@@ -19,7 +19,7 @@ class WebStateList;
 // (count of inactive tabs, user setting).
 - (instancetype)initWithConsumer:(id<InactiveTabsInfoConsumer>)consumer
                     webStateList:(WebStateList*)webStateList
-                     prefService:(PrefService*)prefService
+              profilePrefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

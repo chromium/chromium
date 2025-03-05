@@ -12,6 +12,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "net/base/features.h"
@@ -623,6 +624,97 @@ TEST_P(NoVarySearchCacheTest, URLWithPasswordIsRejected) {
   cache().MaybeInsert(TestRequest(GURL("https://example.com/?a=b")),
                       TestHeaders("key-order"));
   EXPECT_FALSE(cache().Lookup(TestRequest(url_with_password)));
+}
+
+TEST_P(NoVarySearchCacheTest, ClearDataEverything) {
+  cache().MaybeInsert(TestRequest(GURL("http://example/q?a=b")),
+                      TestHeaders("key-order"));
+  const NetworkIsolationKey different_nik(
+      SchemefulSite(TestURL()),
+      SchemefulSite(GURL("https://thirdparty.example/")));
+  cache().MaybeInsert(TestRequest(GURL("http://example/q?a=b"), different_nik),
+                      TestHeaders("key-order"));
+  cache().MaybeInsert(TestRequest(GURL("https://example.com/search?q=z")),
+                      TestHeaders("key-order"));
+
+  cache().ClearData(UrlFilterType::kFalseIfMatches, {}, {}, base::Time(),
+                    base::Time::Max());
+
+  EXPECT_EQ(cache().GetSizeForTesting(), 0u);
+  EXPECT_TRUE(cache().IsTopLevelMapEmptyForTesting());
+}
+
+TEST_P(NoVarySearchCacheTest, ClearDataMatchOrigin) {
+  // Scheme differs.
+  cache().MaybeInsert(TestRequest(GURL("https://example.com/q?a=b")),
+                      TestHeaders("key-order"));
+  cache().MaybeInsert(TestRequest(GURL("http://example.com/q?a=b")),
+                      TestHeaders("key-order"));
+
+  cache().ClearData(UrlFilterType::kTrueIfMatches,
+                    {url::Origin::Create(GURL("https://example.com/"))}, {},
+                    base::Time(), base::Time::Max());
+
+  EXPECT_EQ(cache().GetSizeForTesting(), 1u);
+  EXPECT_TRUE(cache()
+                  .Lookup(TestRequest(GURL("http://example.com/q?a=b")))
+                  .has_value());
+}
+
+TEST_P(NoVarySearchCacheTest, ClearDataMatchDomain) {
+  // Scheme differs.
+  cache().MaybeInsert(TestRequest(GURL("http://example.com:80/q?a=b")),
+                      TestHeaders("key-order"));
+  cache().MaybeInsert(TestRequest(GURL("https://www.example.com:8080/q?a=b")),
+                      TestHeaders("key-order"));
+  cache().MaybeInsert(TestRequest(GURL("https://other.example/q?a=b")),
+                      TestHeaders("key-order"));
+
+  cache().ClearData(UrlFilterType::kTrueIfMatches, {}, {"example.com"},
+                    base::Time(), base::Time::Max());
+
+  EXPECT_EQ(cache().GetSizeForTesting(), 1u);
+  EXPECT_TRUE(cache()
+                  .Lookup(TestRequest(GURL("https://other.example/q?a=b")))
+                  .has_value());
+}
+
+TEST_P(NoVarySearchCacheTest, ClearDataMatchTime) {
+  base::test::TaskEnvironment task_environment(
+      base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME);
+  // Function to convert a time string in the format HH:MM:SS to a base::Time.
+  static constexpr auto time = [](std::string_view time) {
+    base::Time output;
+    const bool parsed = base::Time::FromUTCString(
+        base::StrCat({"Tue, 4 Mar 2025 ", time, " GMT"}).c_str(), &output);
+    CHECK(parsed);
+    return output;
+  };
+
+  // Advance the mock time to `when`, specified in the format HH:MM:SS.
+  const auto advance_time_to = [&](std::string_view when) {
+    base::Time target_time = time(when);
+    auto mock_now = base::Time::Now();
+    CHECK_GT(target_time, mock_now);
+    task_environment.FastForwardBy(target_time - mock_now);
+  };
+
+  advance_time_to("12:00:00");
+  Insert("a=1", "key-order");
+
+  advance_time_to("13:00:00");
+  Insert("a=2", "key-order");
+
+  advance_time_to("14:00:00");
+  Insert("a=3", "key-order");
+
+  cache().ClearData(UrlFilterType::kFalseIfMatches, {}, {}, time("12:30:00"),
+                    time("13:30:00"));
+
+  EXPECT_EQ(cache().GetSizeForTesting(), 2u);
+  EXPECT_TRUE(Exists("a=1"));
+  EXPECT_FALSE(Exists("a=2"));
+  EXPECT_TRUE(Exists("a=3"));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

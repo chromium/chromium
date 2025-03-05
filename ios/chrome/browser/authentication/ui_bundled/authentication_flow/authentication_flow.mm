@@ -351,15 +351,14 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   });
 }
 
-- (void)interruptWithAction:(SigninCoordinatorInterrupt)action {
+- (void)interrupt {
   if (_state == AuthenticationState::kDone) {
     return;
   }
   __weak __typeof(self) weakSelf = self;
-  [_performer interruptWithAction:action
-                       completion:^() {
-                         [weakSelf performerInterrupted];
-                       }];
+  [_performer interruptWithCompletion:^() {
+    [weakSelf performerInterrupted];
+  }];
 }
 
 - (void)performerInterrupted {

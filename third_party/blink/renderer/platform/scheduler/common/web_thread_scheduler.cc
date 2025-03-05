@@ -74,6 +74,10 @@ void WebThreadScheduler::SetRendererProcessType(WebRendererProcessType type) {
   NOTREACHED();
 }
 
+void WebThreadScheduler::EnableInputScenarioPriorityBoost() {
+  NOTREACHED();
+}
+
 void WebThreadScheduler::OnUrgentMessageReceived() {
   NOTREACHED();
 }

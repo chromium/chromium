@@ -229,7 +229,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
   base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
       shared_image_interface_provider_;
 
-  bool IsSharedBitmapGpuChannelLost() const override {
+  bool IsSoftwareSharedImageGpuChannelLost() const override {
     if (!is_software_) {
       return false;
     }
@@ -287,7 +287,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
   bool SupportsDirectCompositing() const override { return true; }
   bool IsValid() const final {
     if (is_software_) {
-      return !IsSharedBitmapGpuChannelLost() && GetSkSurface();
+      return !IsSoftwareSharedImageGpuChannelLost() && GetSkSurface();
     }
 
     if (!use_oop_rasterization_)
@@ -1811,7 +1811,7 @@ bool CanvasResourceProvider::IsGpuContextLost() const {
          raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
 }
 
-bool CanvasResourceProvider::IsSharedBitmapGpuChannelLost() const {
+bool CanvasResourceProvider::IsSoftwareSharedImageGpuChannelLost() const {
   return false;
 }
 

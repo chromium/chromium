@@ -420,6 +420,7 @@ void LayoutBoxModelObject::AddOutlineRectsForDescendant(
 }
 
 void LayoutBoxModelObject::RecalcVisualOverflow() {
+  NOT_DESTROYED();
   // |PaintLayer| calls this function when |HasSelfPaintingLayer|. When |this|
   // is an inline box or an atomic inline, its ink overflow is stored in
   // |FragmentItem| in the inline formatting context.
@@ -440,6 +441,7 @@ void LayoutBoxModelObject::RecalcVisualOverflow() {
 
 bool LayoutBoxModelObject::ShouldBeHandledAsInline(
     const ComputedStyle& style) const {
+  NOT_DESTROYED();
   if (style.IsDisplayInlineType()) {
     return true;
   }
@@ -470,6 +472,7 @@ void LayoutBoxModelObject::UpdateFromStyle() {
 
 void LayoutBoxModelObject::UpdateCanCompositeBackgroundAttachmentFixed(
     bool enable_composited_background_attachment_fixed) {
+  NOT_DESTROYED();
   SetCanCompositeBackgroundAttachmentFixed(
       enable_composited_background_attachment_fixed &&
       ComputeCanCompositeBackgroundAttachmentFixed());
@@ -506,6 +509,7 @@ PhysicalRect LayoutBoxModelObject::ApplyFiltersToRect(
 }
 
 LayoutBlock* LayoutBoxModelObject::StickyContainer() const {
+  NOT_DESTROYED();
   return ContainingBlock();
 }
 

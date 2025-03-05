@@ -636,9 +636,9 @@ TEST_F(IncrementalMarkingTest, HeapLinkedHashSetSwap) {
 // HeapHashCountedSet does not support copy or move.
 
 TEST_F(IncrementalMarkingTest, HeapHashCountedSetInsert) {
-  Insert<HeapHashCountedSet<Member<LinkedObject>>>();
+  Insert<GCedHeapHashCountedSet<Member<LinkedObject>>>();
   // Weak references are strongified for the current cycle.
-  Insert<HeapHashCountedSet<WeakMember<LinkedObject>>>();
+  Insert<GCedHeapHashCountedSet<WeakMember<LinkedObject>>>();
 }
 
 TEST_F(IncrementalMarkingTest, HeapHashCountedSetSwap) {
@@ -646,11 +646,11 @@ TEST_F(IncrementalMarkingTest, HeapHashCountedSetSwap) {
   {
     WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
     WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
-    HeapHashCountedSet<Member<LinkedObject>>* container1 =
-        MakeGarbageCollected<HeapHashCountedSet<Member<LinkedObject>>>();
+    GCedHeapHashCountedSet<Member<LinkedObject>>* container1 =
+        MakeGarbageCollected<GCedHeapHashCountedSet<Member<LinkedObject>>>();
     container1->insert(obj1.Get());
-    HeapHashCountedSet<Member<LinkedObject>>* container2 =
-        MakeGarbageCollected<HeapHashCountedSet<Member<LinkedObject>>>();
+    GCedHeapHashCountedSet<Member<LinkedObject>>* container2 =
+        MakeGarbageCollected<GCedHeapHashCountedSet<Member<LinkedObject>>>();
     container2->insert(obj2.Get());
     IncrementalMarkingTestDriver driver(ThreadState::Current());
     driver.StartGC();
@@ -662,11 +662,13 @@ TEST_F(IncrementalMarkingTest, HeapHashCountedSetSwap) {
   {
     WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
     WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
-    HeapHashCountedSet<WeakMember<LinkedObject>>* container1 =
-        MakeGarbageCollected<HeapHashCountedSet<WeakMember<LinkedObject>>>();
+    GCedHeapHashCountedSet<WeakMember<LinkedObject>>* container1 =
+        MakeGarbageCollected<
+            GCedHeapHashCountedSet<WeakMember<LinkedObject>>>();
     container1->insert(obj1.Get());
-    HeapHashCountedSet<WeakMember<LinkedObject>>* container2 =
-        MakeGarbageCollected<HeapHashCountedSet<WeakMember<LinkedObject>>>();
+    GCedHeapHashCountedSet<WeakMember<LinkedObject>>* container2 =
+        MakeGarbageCollected<
+            GCedHeapHashCountedSet<WeakMember<LinkedObject>>>();
     container2->insert(obj2.Get());
     IncrementalMarkingTestDriver driver(ThreadState::Current());
     driver.StartGC();
@@ -1105,7 +1107,7 @@ TEST_F(IncrementalMarkingTest, TestDriver) {
 
 TEST_F(IncrementalMarkingTest, DropBackingStore) {
   // Regression test: https://crbug.com/828537
-  using WeakStore = HeapHashCountedSet<WeakMember<LinkedObject>>;
+  using WeakStore = GCedHeapHashCountedSet<WeakMember<LinkedObject>>;
 
   Persistent<WeakStore> persistent(MakeGarbageCollected<WeakStore>());
   persistent->insert(MakeGarbageCollected<LinkedObject>());
@@ -1121,7 +1123,7 @@ TEST_F(IncrementalMarkingTest, DropBackingStore) {
 TEST_F(IncrementalMarkingTest, NoBackingFreeDuringIncrementalMarking) {
   // Regression test: https://crbug.com/870306
   // Only reproduces in ASAN configurations.
-  using WeakStore = HeapHashCountedSet<WeakMember<LinkedObject>>;
+  using WeakStore = GCedHeapHashCountedSet<WeakMember<LinkedObject>>;
 
   Persistent<WeakStore> persistent(MakeGarbageCollected<WeakStore>());
   // Prefill the collection to grow backing store. A new backing store
@@ -1141,7 +1143,7 @@ TEST_F(IncrementalMarkingTest, NoBackingFreeDuringIncrementalMarking) {
 }
 
 TEST_F(IncrementalMarkingTest, DropReferenceWithHeapCompaction) {
-  using Store = HeapHashCountedSet<Member<LinkedObject>>;
+  using Store = GCedHeapHashCountedSet<Member<LinkedObject>>;
 
   Persistent<Store> persistent(MakeGarbageCollected<Store>());
   persistent->insert(MakeGarbageCollected<LinkedObject>());

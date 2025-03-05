@@ -25,6 +25,7 @@
 #include "components/input/native_web_keyboard_event.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/widget/widget.h"
@@ -66,6 +67,8 @@ class PopupViewViews : public PopupBaseView,
   METADATA_HEADER(PopupViewViews, PopupBaseView)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+      kAutofillBnplAffirmOrZipSuggestionElementId);
   using RowPointer = absl::variant<PopupRowView*,
                                    PopupSeparatorView*,
                                    PopupTitleView*,

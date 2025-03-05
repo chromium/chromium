@@ -213,7 +213,6 @@ crbug.com/384605105 [ win nvidia ] ContextLost_WebGLContextRestoredInHiddenTab [
 # Flaky Timed out while waiting 60s for IsJavaScriptExpressionTrue
 crbug.com/365565140 [ mac ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
 
-crbug.com/395919013 [ android android-sm-a236b ] GpuCrash_GPUProcessCrashesExactlyOnce_SurfaceControlDisabled [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

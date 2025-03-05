@@ -250,6 +250,8 @@ component("net") {
     "base/network_isolation_partition.h",
     "base/parse_number.cc",
     "base/parse_number.h",
+    "base/pickle.h",
+    "base/pickle_traits.h",
     "base/platform_mime_util.h",
     "base/port_util.cc",
     "base/port_util.h",
@@ -2666,6 +2668,7 @@ target(_test_target_type, "net_unittests") {
     "base/network_interfaces_unittest.cc",
     "base/network_isolation_key_unittest.cc",
     "base/parse_number_unittest.cc",
+    "base/pickle_unittest.cc",
     "base/port_util_unittest.cc",
     "base/prioritized_dispatcher_unittest.cc",
     "base/prioritized_task_runner_unittest.cc",
@@ -3036,6 +3039,8 @@ target(_test_target_type, "net_unittests") {
   if (disable_zstd_filter) {
     defines += [ "NET_DISABLE_ZSTD" ]
   }
+
+  fuzztests = [ "PickleTest.FuzzRoundTrip" ]
 
   deps = [
     ":cronet_buildflags",
@@ -3594,6 +3599,16 @@ fuzzer_test("net_mime_sniffer_fuzzer") {
     "//net",
   ]
   dict = "data/fuzzer_dictionaries/net_mime_sniffer_fuzzer.dict"
+}
+
+fuzzer_test("net_pickle_fuzzer") {
+  sources = [ "base/pickle_fuzzer.cc" ]
+  deps = [
+    ":net_fuzzer_test_support",
+    "//base",
+    "//net",
+  ]
+  seed_corpus = "//net/data/fuzzer_data/pickle/"
 }
 
 fuzzer_test("net_parse_proxy_list_pac_fuzzer") {

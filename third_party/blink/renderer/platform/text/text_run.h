@@ -40,6 +40,9 @@ class PLATFORM_EXPORT TextRun final {
   DISALLOW_NEW();
 
  public:
+  // For all constructors, the contents of the specified string must
+  // outlive the created TextRun instance.
+
   explicit TextRun(base::span<const LChar> c) : TextRun(StringView(c)) {}
 
   explicit TextRun(base::span<const UChar> c) : TextRun(StringView(c)) {}

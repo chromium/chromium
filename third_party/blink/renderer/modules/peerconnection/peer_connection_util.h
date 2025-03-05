@@ -14,6 +14,10 @@ namespace blink {
 DOMHighResTimeStamp CalculateRTCEncodedFrameTimestamp(ExecutionContext*,
                                                       base::TimeTicks);
 
+// Returns a DOMHighResTimeStamp equivalent to the given delta
+DOMHighResTimeStamp CalculateRTCEncodedFrameTimeDelta(ExecutionContext*,
+                                                      base::TimeDelta);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_PEER_CONNECTION_UTIL_H_

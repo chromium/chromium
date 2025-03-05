@@ -6,7 +6,8 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/tabs/inactive_tabs/inactive_tabs_settings_mediator.h"
 #import "ios/chrome/browser/settings/ui_bundled/tabs/inactive_tabs/inactive_tabs_settings_table_view_controller.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 @implementation InactiveTabsSettingsCoordinator {
   // Mediator for the inactive tabs settings.
@@ -30,9 +31,9 @@
 - (void)start {
   _viewController = [[InactiveTabsSettingsTableViewController alloc] init];
   _mediator = [[InactiveTabsSettingsMediator alloc]
-      initWithUserLocalPrefService:GetApplicationContext()->GetLocalState()
-                           browser:(Browser*)self.browser
-                          consumer:_viewController];
+      initWithProfilePrefService:self.browser->GetProfile()->GetPrefs()
+                         browser:(Browser*)self.browser
+                        consumer:_viewController];
   _viewController.delegate = _mediator;
 
   [self.baseNavigationController pushViewController:_viewController

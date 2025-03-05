@@ -871,7 +871,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
     // redirection happening on the way from a source to a destination url.
     // Prevent multiple redirections from being triggered which causes a Chrome
     // error page to show up, cancelling the navigation.
-    if (did_redirect_) {
+    if (base::Contains(request.GetURL().query_piece(), "redirect")) {
       return nullptr;
     }
 
@@ -902,7 +902,11 @@ class WebAppLinkCapturingParameterizedBrowserTest
     GURL::Replacements destination_replacements;
     GURL request_url = request.GetURL();
     destination_replacements.SetRefStr(request_url.ref_piece());
-    destination_replacements.SetQueryStr(request_url.query_piece());
+    std::string new_query =
+        request_url.has_query()
+            ? base::StrCat({request_url.query_piece(), "&did_redirect"})
+            : "did_redirect";
+    destination_replacements.SetQueryStr(new_query);
     redirect_to = redirect_to.ReplaceComponents(destination_replacements);
 
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
@@ -913,7 +917,6 @@ class WebAppLinkCapturingParameterizedBrowserTest
     response->set_content(base::StringPrintf(
         "<!doctype html><p>Redirecting to %s", redirect_to.spec().c_str()));
 
-    did_redirect_ = true;
     return response;
   }
 
@@ -1350,8 +1353,11 @@ class WebAppLinkCapturingParameterizedBrowserTest
       const GURL& start_url,
       std::optional<blink::mojom::ManifestLaunchHandler_ClientMode>
           client_mode) {
+    GURL::Replacements replacements;
+    replacements.SetQueryStr("dont_redirect");
+    GURL real_start_url = start_url.ReplaceComponents(replacements);
     auto web_app_info =
-        WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+        WebAppInstallInfo::CreateWithStartUrlForTesting(real_start_url);
     web_app_info->launch_handler = blink::Manifest::LaunchHandler(client_mode);
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->display_mode = GetManifestDisplayMode(start_url);
@@ -1576,10 +1582,6 @@ class WebAppLinkCapturingParameterizedBrowserTest
     DLOG(INFO) << "Setting up.";
 
     ASSERT_TRUE(MaybeCustomPreSetup(app_a, app_b));
-    // Some custom setups launch the app in a browser or app window, which can
-    // trigger a redirection. This ensure that the redirection can happen again
-    // in the main test body.
-    did_redirect_ = false;
 
     // Setup the initial page.
     Browser* browser_a;
@@ -1782,11 +1784,6 @@ class WebAppLinkCapturingParameterizedBrowserTest
   // Current expectations for this test (parsed from the test json file).
   bool file_read_success_ = false;
   std::optional<base::Value> test_expectations_;
-
-  // Prevent multiple redirections from triggering for an intermediate step in a
-  // redirection that matches the end site, preventing an infinite loop and a
-  // Chrome error page from showing up.
-  bool did_redirect_ = false;
 };
 
 // IMPORTANT NOTE TO GARDENERS:

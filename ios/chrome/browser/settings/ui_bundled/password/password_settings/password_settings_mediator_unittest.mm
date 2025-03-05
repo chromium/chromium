@@ -308,7 +308,7 @@ TEST_F(PasswordSettingsMediatorTest, ShowsUpdateGPMPinButtonForEligibleUser) {
       }));
 
   CreateMediator();
-  [[consumer_ verify] setupChangeGPMPinButton];
+  [[consumer_ verify] setCanChangeGPMPin:YES];
 }
 
 // Tests that update GPM Pin button is not shown for a user that does not have
@@ -324,7 +324,7 @@ TEST_F(PasswordSettingsMediatorTest,
           [](auto callback) { std::move(callback).Run(/*status=*/true); }));
 
   CreateMediator();
-  [[consumer_ reject] setupChangeGPMPinButton];
+  [[consumer_ reject] setCanChangeGPMPin:YES];
 }
 
 // Tests that update GPM Pin button is not shown for a user that has not
@@ -344,7 +344,7 @@ TEST_F(PasswordSettingsMediatorTest,
           [](auto callback) { std::move(callback).Run(/*shared_keys=*/{}); }));
 
   CreateMediator();
-  [[consumer_ reject] setupChangeGPMPinButton];
+  [[consumer_ verify] setCanChangeGPMPin:NO];
 }
 
 // Tests that passwords already in account store and passkeys are not counted

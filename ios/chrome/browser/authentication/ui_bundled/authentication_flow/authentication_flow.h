@@ -55,7 +55,7 @@ class Browser;
 // `startSignInWithCompletion` with the sign-in flag set to no.
 //
 // Does noting if the sign-in flow is already done
-- (void)interruptWithAction:(SigninCoordinatorInterrupt)action;
+- (void)interrupt;
 
 // Identity to sign-in.
 @property(nonatomic, strong, readonly) id<SystemIdentity> identity;

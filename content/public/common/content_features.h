@@ -151,6 +151,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kLowerPAMemoryLimitForNonMainRenderers);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kMBIMode);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebRtcHWDecoding);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebRtcHWEncoding);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kInputScenarioPriorityBoost);
 
 enum class MBIMode {
   // In this mode, the AgentSchedulingGroup will use the process-wide legacy IPC

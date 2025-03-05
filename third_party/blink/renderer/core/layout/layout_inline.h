@@ -341,6 +341,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 };
 
 inline wtf_size_t LayoutInline::FirstInlineFragmentItemIndex() const {
+  NOT_DESTROYED();
   if (!IsInLayoutNGInlineFormattingContext())
     return 0u;
   return first_fragment_item_index_;

@@ -110,6 +110,7 @@ LayoutBlockFlow* LayoutBlockFlow::CreateAnonymous(Document* document,
 }
 
 bool LayoutBlockFlow::IsInitialLetterBox() const {
+  NOT_DESTROYED();
   return IsA<FirstLetterPseudoElement>(GetNode()) &&
          !StyleRef().InitialLetter().IsNormal();
 }
@@ -660,6 +661,7 @@ void LayoutBlockFlow::DirtyLinesFromChangedChild(LayoutObject* child) {
 }
 
 bool LayoutBlockFlow::AllowsColumns() const {
+  NOT_DESTROYED();
   // Ruby elements manage child insertion in a special way, and would mess up
   // insertion of the flow thread. The flow thread needs to be a direct child of
   // the multicol block (|this|).

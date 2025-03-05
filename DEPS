@@ -285,7 +285,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '03a3f653d64ee101aa27adb4ef3402bb2e655a40',
+  'skia_revision': '7e4323f72c9d381f608bfe467af06a2ed83923d7',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -317,7 +317,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling googletest
   # and whatever else without interference from each other.
-  'googletest_revision': '24a9e940d481f992ba852599c78bb2217362847b',
+  'googletest_revision': 'e88cb95b92acbdce9b058dd894a68e1281b38495',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling lighttpd
   # and whatever else without interference from each other.
@@ -377,7 +377,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '254aed56bbd54762ef6552cbeca56901ef55d8f9',
+  'devtools_frontend_revision': 'b30f3b25207146392af49a24746173a4c85ccfd3',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1128,7 +1128,7 @@ deps = {
   },
 
   'src/chrome/release_scripts': {
-      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + 'acd7d0f0f3b3dd0d99ba049c5e285d4005ddfeeb',
+      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + 'aad4bf8afbb3818173540476acfb185529bd8a4c',
       'condition': 'checkout_chrome_release_scripts',
   },
 
@@ -1457,7 +1457,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '8ea1c48e6ddc39ad1319e9de069dae2a71778339',
+    '4e6165f5052c19f633e424a7a9fd26539aec6cb5',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1616,7 +1616,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': '_Bhe1NVOUuknB63edc17jRkgdwtpTbCSVWVHcVGDuckC',
+          'version': 'fctKGF9iSV5EYY1z5I3sYTJLW4lCARmCDMtOtvMsNcYC',
       },
     ],
     'condition': 'checkout_android and non_git_source',
@@ -2818,7 +2818,7 @@ deps = {
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + '74c5a213ad5f5b27678d021c9f97590c11471c74',
+    Var('webrtc_git') + '/src.git' + '@' + 'eec79a071a1a82b8769d7496d7dea21fef013c5a',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -2937,7 +2937,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/boca_app/app',
-        'version': 'rHeuVSR3TYfQK6ooFX-YF2v3dodoO7Yap6D9dE58kkEC',
+        'version': 'cz4-Dpu1Iky4gjvfHRTtP63OTAZR_vZUjWH7FmhJq1YC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',

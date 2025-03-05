@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/regular/regular_grid_view_controller.h"
@@ -191,7 +192,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
       SnapshotBrowserAgent::FromBrowser(browser)->snapshot_storage();
   self.mediator = [[InactiveTabsMediator alloc]
       initWithWebStateList:browser->GetWebStateList()
-               prefService:GetApplicationContext()->GetLocalState()
+        profilePrefService:browser->GetProfile()->GetPrefs()
            snapshotStorage:snapshotStorage
                 tabsCloser:std::make_unique<TabsCloser>(
                                browser, TabsCloser::ClosePolicy::kAllTabs)];
@@ -648,7 +649,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   // Start the user education coordinator.
   self.userEducationCoordinator = [[InactiveTabsUserEducationCoordinator alloc]
       initWithBaseViewController:self.viewController
-                         browser:nullptr];
+                         browser:self.browser];
   self.userEducationCoordinator.delegate = self;
   [self.userEducationCoordinator start];
 

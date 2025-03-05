@@ -14,9 +14,11 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame_delegate.h"
+#include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/webrtc/api/test/mock_transformable_audio_frame.h"
 #include "third_party/webrtc/api/units/time_delta.h"
@@ -408,6 +410,50 @@ TEST_F(RTCEncodedAudioFrameTest, PassWebRTCDetachesFrameData) {
                                  /*detach_frame_data=*/true);
   EXPECT_NE(data, nullptr);
   EXPECT_TRUE(data->IsDetached());
+}
+
+TEST_F(RTCEncodedAudioFrameTest, FrameWithSenderCaptureTimeOffset) {
+  V8TestingScope v8_scope;
+  double sender_capture_offsets_in_millis[] = {12, -34};
+  for (int offset : sender_capture_offsets_in_millis) {
+    std::unique_ptr<MockTransformableAudioFrame> frame =
+        std::make_unique<NiceMock<MockTransformableAudioFrame>>();
+    ON_CALL(*frame, SenderCaptureTimeOffset)
+        .WillByDefault(Return(webrtc::TimeDelta::Millis(offset)));
+
+    RTCEncodedAudioFrame* encoded_frame =
+        MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(frame));
+    RTCEncodedAudioFrameMetadata* metadata =
+        encoded_frame->getMetadata(v8_scope.GetExecutionContext());
+    EXPECT_TRUE(metadata->hasSenderCaptureTimeOffset());
+    EXPECT_EQ(metadata->getSenderCaptureTimeOffsetOr(0.0), offset);
+  }
+}
+
+TEST_F(RTCEncodedAudioFrameTest, FrameWithCaptureTime) {
+  V8TestingScope v8_scope;
+  auto* performance = DOMWindowPerformance::performance(v8_scope.GetWindow());
+  const base::TimeTicks window_time_origin =
+      performance->GetTimeOriginInternal();
+  const double capture_times_in_millis[] = {12, -34};
+  for (int capture_time : capture_times_in_millis) {
+    base::TimeDelta ntp_capture_time = base::Milliseconds(capture_time) +
+                                       window_time_origin.since_origin() -
+                                       WebRTCFrameNtpEpoch().since_origin();
+    std::unique_ptr<MockTransformableAudioFrame> frame =
+        std::make_unique<NiceMock<MockTransformableAudioFrame>>();
+    ON_CALL(*frame, CaptureTime)
+        .WillByDefault(Return(
+            webrtc::Timestamp::Micros(ntp_capture_time.InMicroseconds())));
+
+    RTCEncodedAudioFrame* encoded_frame =
+        MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(frame));
+    RTCEncodedAudioFrameMetadata* metadata =
+        encoded_frame->getMetadata(v8_scope.GetExecutionContext());
+    EXPECT_TRUE(metadata->hasCaptureTime());
+    // The error is slightly more than 0.1; use 0.11 to avoid flakes.
+    EXPECT_LE(std::abs(metadata->getCaptureTimeOr(0.0) - capture_time), 0.11);
+  }
 }
 
 }  // namespace blink

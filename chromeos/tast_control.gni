@@ -93,6 +93,9 @@ tast_disabled_tests_from_chrome_all = [
   "network.AllowCACertificateManagement",
   "network.AllowClientCertificateManagement",
 
+  #b/400849446
+  "network.ARCCreateWifiInShillByCmd.manual_proxy",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
