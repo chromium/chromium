@@ -25,6 +25,14 @@
         width: 36px;
       }
 
+      #downloadedIcon {
+        display: block;
+        height: var(--site-favicon-height, 16px);
+        margin-inline-end: 8px;
+        min-width: 16px;
+        width: var(--site-favicon-width, 16px);
+      }
+
       #name-column {
         align-items: center;
         display: flex;
@@ -47,8 +55,14 @@
     <div class="list-item cr-row" role="row">
       <span role="cell" id="name-column">
         <site-favicon favicon-url="[[engine.iconURL]]" url="[[engine.url]]"
-            icon-path="[[engine.iconPath]]">
+            icon-path="[[engine.iconPath]]"
+            hidden="[[shouldShowDownloadedIcon_(showDownloadedIcon_, engine)]]">
         </site-favicon>
+        <img id="downloadedIcon" is="cr-auto-img"
+            auto-src="[[engine.iconURL]]" clear-src
+            on-load="onDownloadedIconLoadSuccess_"
+            on-error="onDownloadedIconLoadError_"
+            hidden="[[!shouldShowDownloadedIcon_(showDownloadedIcon_, engine)]]">
         <div>[[engine.displayName]]</div>
       </span>
       <span class="additional-info-column-group">

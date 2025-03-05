@@ -6,6 +6,7 @@
  * @fileoverview 'settings-search-engine-entry' is a component for showing a
  * search engine with its name, domain and query URL.
  */
+import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
@@ -28,6 +29,7 @@ export interface SettingsSearchEngineEntryElement {
     delete: HTMLButtonElement,
     makeDefault: HTMLButtonElement,
     edit: HTMLButtonElement,
+    downloadedIcon: HTMLImageElement,
   };
 }
 
@@ -45,7 +47,10 @@ export class SettingsSearchEngineEntryElement extends
 
   static get properties() {
     return {
-      engine: Object,
+      engine: {
+        type: Object,
+        observer: 'onEngineChanged_',
+      },
 
       showShortcut: {type: Boolean, value: false, reflectToAttribute: true},
 
@@ -61,6 +66,11 @@ export class SettingsSearchEngineEntryElement extends
         type: Boolean,
         computed: 'computeShowEditIcon_(engine)',
       },
+
+      showDownloadedIcon_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -71,6 +81,28 @@ export class SettingsSearchEngineEntryElement extends
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
   private showEditIcon_: boolean;
+  private showDownloadedIcon_: boolean;
+  private timeoutId_: number|null = null;
+
+  private onEngineChanged_(
+      newEngine: SearchEngine, oldEngine: SearchEngine|undefined) {
+    if (oldEngine && newEngine.iconURL === oldEngine.iconURL) {
+      return;
+    }
+    this.showDownloadedIcon_ = false;
+    if (this.timeoutId_) {
+      clearTimeout(this.timeoutId_);
+      this.timeoutId_ = null;
+    }
+    this.timeoutId_ = setTimeout(() => {
+      if (!this.$.downloadedIcon.complete) {
+        // Reset src to cancel ongoing request.
+        this.$.downloadedIcon.src = '';
+        this.showDownloadedIcon_ = false;
+      }
+      this.timeoutId_ = null;
+    }, 1000);
+  }
 
   private closePopupMenu_() {
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
@@ -149,6 +181,23 @@ export class SettingsSearchEngineEntryElement extends
     this.closePopupMenu_();
     this.browserProxy_.setIsActiveSearchEngine(
         this.engine.modelIndex, /*is_active=*/ false);
+  }
+
+  private onDownloadedIconLoadError_() {
+    this.showDownloadedIcon_ = false;
+  }
+
+  private onDownloadedIconLoadSuccess_() {
+    this.showDownloadedIcon_ = true;
+    if (this.timeoutId_) {
+      clearTimeout(this.timeoutId_);
+    }
+    this.timeoutId_ = null;
+  }
+
+  private shouldShowDownloadedIcon_(): boolean {
+    return this.showDownloadedIcon_ && !this.engine.iconPath &&
+        !!this.engine.iconURL;
   }
 
   private getMoreActionsAriaLabel_(): string {
