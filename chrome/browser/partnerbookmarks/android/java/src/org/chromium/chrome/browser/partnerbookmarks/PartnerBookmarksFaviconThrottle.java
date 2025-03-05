@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.partnerbookmarks;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.text.format.DateUtils;
@@ -11,6 +13,9 @@ import android.text.format.DateUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +25,7 @@ import java.util.Map;
  * retrieval again, as a way of throttling the number of requests made for previously failed favicon
  * fetch attempts.
  */
+@NullMarked
 public class PartnerBookmarksFaviconThrottle {
     private static final String PREFERENCES_NAME = "partner_bookmarks_favicon_throttle";
     private static final long FAVICON_RETRIEVAL_TIMEOUT_MS = DateUtils.DAY_IN_MILLIS * 30;
@@ -46,6 +52,7 @@ public class PartnerBookmarksFaviconThrottle {
      */
     @SuppressWarnings("unchecked")
     @VisibleForTesting
+    @Initializer
     void init() {
         mCurrentEntries = (Map<String, Long>) mSharedPreferences.getAll();
         mNewEntries = new HashMap<>();
@@ -86,7 +93,7 @@ public class PartnerBookmarksFaviconThrottle {
             mNewEntries.put(url, System.currentTimeMillis() + FAVICON_RETRIEVAL_TIMEOUT_MS);
         } else if (!isSuccessfulFetchResult(result)
                 && !shouldFetchFromServerIfNecessary(url)
-                && (System.currentTimeMillis() < mCurrentEntries.get(url))) {
+                && (System.currentTimeMillis() < assumeNonNull(mCurrentEntries.get(url)))) {
             // Keep storing an entry if it hasn't yet expired and we get didn't just get a success
             // response.
             mNewEntries.put(url, mCurrentEntries.get(url));
@@ -105,7 +112,7 @@ public class PartnerBookmarksFaviconThrottle {
      * @param url The page URL we need a favicon for.
      * @return Whether or not we should fetch the favicon from server if necessary.
      */
-    public boolean shouldFetchFromServerIfNecessary(String url) {
+    public boolean shouldFetchFromServerIfNecessary(@Nullable String url) {
         Long expiryTimeMs = getExpiryOf(url);
         return expiryTimeMs == null || System.currentTimeMillis() >= expiryTimeMs;
     }
@@ -120,7 +127,7 @@ public class PartnerBookmarksFaviconThrottle {
      * @return The expiry time of the favicon fetching restriction in milliseconds, if we have a
      *     corresponding entry for this URL.
      */
-    private Long getExpiryOf(String url) {
+    private @Nullable Long getExpiryOf(@Nullable String url) {
         assert mCurrentEntries != null;
 
         if (mCurrentEntries.containsKey(url)) {
