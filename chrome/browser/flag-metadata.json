@@ -758,6 +758,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "autofill-save-card-bottomsheet",
+    "owners": [ "kavitasoni@google.com", "chrome-payments-eng@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "autofill-shared-storage-server-card-data",
     "owners": [ "npnavarro@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 130

@@ -141,6 +141,12 @@ const char kAutofillPruneSuggestionsName[] = "Autofill Prune Suggestions";
 const char kAutofillPruneSuggestionsDescription[] =
     "Further limits the number of suggestions in the Autofill dropdown.";
 
+const char kAutofillSaveCardBottomSheetName[] = "Enable save card bottomsheet";
+const char kAutofillSaveCardBottomSheetDescription[] =
+    "When enabled, save card bottomsheet will be shown when the user has not "
+    "previously rejected the offer to save the card, and both a valid expiry "
+    "date and cardholder name are present.";
+
 const char kAutofillShowManualFillForVirtualCardsName[] =
     "Show Manual Fill for Virtual Cards";
 const char kAutofillShowManualFillForVirtualCardsDescription[] =
