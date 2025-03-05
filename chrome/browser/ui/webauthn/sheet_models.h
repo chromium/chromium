@@ -869,8 +869,17 @@ class AuthenticatorGPMLockedPinSheetModel : public AuthenticatorSheetModelBase {
 
 class CombinedSelectorSheetModel : public AuthenticatorSheetModelBase {
  public:
+  enum class SelectionStatus {
+    kNone,
+    kNotSelected,
+    kSelected,
+  };
   explicit CombinedSelectorSheetModel(
       AuthenticatorRequestDialogModel* dialog_model);
+
+  SelectionStatus GetSelectionStatus(size_t index) const;
+  size_t GetSelectionIndex() const;
+  void SetSelectionIndex(size_t index);
 
  private:
   // AuthenticatorSheetModelBase:
@@ -878,7 +887,11 @@ class CombinedSelectorSheetModel : public AuthenticatorSheetModelBase {
   std::u16string GetStepDescription() const override;
   bool IsAcceptButtonVisible() const override;
   bool IsCancelButtonVisible() const override;
+  std::u16string GetCancelButtonLabel() const override;
   std::u16string GetAcceptButtonLabel() const override;
   void OnAccept() override;
+
+  size_t selection_index_ = 0;
 };
+
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_SHEET_MODELS_H_
