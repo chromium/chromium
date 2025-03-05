@@ -9,7 +9,7 @@ import UIKit
   // A wrapper class for the associated WebState.
   private let webStateInfo: WebStateSnapshotInfo
   // The SnapshotGenerator delegate to obtain the information about UIView.
-  weak var delegate: SnapshotGeneratorDelegate?
+  weak var delegate: Optional<SnapshotGeneratorDelegate>
 
   // Designated initializer.
   init(webStateInfo: WebStateSnapshotInfo) {
