@@ -627,9 +627,7 @@ bool MediaVideoVisibilityTracker::MeetsVisibilityThreshold(
 
   return HasEnoughVisibleAreaRemaining(occlusion_state_.occluded_area,
                                        occlusion_state_.video_element_rect,
-                                       visibility_threshold_)
-             ? true
-             : false;
+                                       visibility_threshold_);
 }
 
 bool MediaVideoVisibilityTracker::ComputeVisibility() {

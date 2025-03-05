@@ -579,7 +579,7 @@ bool ImageDocument::ShouldShrinkToFit() const {
   // loop as the contents then resize to match the window. To prevent this,
   // disallow images from shrinking to fit for WebViews.
   bool is_wrap_content_web_view =
-      GetPage() ? GetPage()->GetSettings().GetForceZeroLayoutHeight() : false;
+      GetPage() && GetPage()->GetSettings().GetForceZeroLayoutHeight();
   return GetFrame()->IsOutermostMainFrame() && !is_wrap_content_web_view;
 }
 

@@ -663,7 +663,7 @@ WebInputEventResult SelectionController::UpdateSelectionForMouseDrag(
     return WebInputEventResult::kNotHandled;
   }
   const bool selection_is_directional =
-      should_extend_selection ? Selection().IsDirectional() : false;
+      should_extend_selection && Selection().IsDirectional();
   SetNonDirectionalSelectionIfNeeded(
       new_visible_selection,
       SetSelectionOptions::Builder()

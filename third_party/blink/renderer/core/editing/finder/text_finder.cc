@@ -162,7 +162,7 @@ static void ScrollToVisible(Range* match) {
 
   Settings* settings = first_node.GetDocument().GetSettings();
   bool smooth_find_enabled =
-      settings ? settings->GetSmoothScrollForFindEnabled() : false;
+      settings && settings->GetSmoothScrollForFindEnabled();
   mojom::blink::ScrollBehavior scroll_behavior =
       smooth_find_enabled ? mojom::blink::ScrollBehavior::kSmooth
                           : mojom::blink::ScrollBehavior::kInstant;

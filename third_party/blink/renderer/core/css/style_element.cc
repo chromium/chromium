@@ -210,7 +210,7 @@ bool StyleElement::IsLoading() const {
   if (loading_) {
     return true;
   }
-  return sheet_ ? sheet_->IsLoading() : false;
+  return sheet_ && sheet_->IsLoading();
 }
 
 bool StyleElement::SheetLoaded(Document& document) {

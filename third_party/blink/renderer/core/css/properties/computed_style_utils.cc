@@ -2076,9 +2076,8 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
 
   const bool is_subgrid_specified = computed_grid_track_list.IsSubgriddedAxis();
   const bool is_subgrid_valid =
-      (grid && grid->HasCachedPlacementData())
-          ? grid->CachedPlacementData().SubgridSpanSize(direction) != kNotFound
-          : false;
+      grid && grid->HasCachedPlacementData() &&
+      grid->CachedPlacementData().SubgridSpanSize(direction) != kNotFound;
   const bool is_subgrid = is_subgrid_specified && is_subgrid_valid;
 
   // Standalone grids with empty track lists should compute to `none`, but

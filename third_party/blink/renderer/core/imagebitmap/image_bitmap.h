@@ -111,7 +111,7 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
       const gfx::SizeF&,
       const AlphaDisposition alpha_disposition) override;
   bool WouldTaintOrigin() const override {
-    return image_ ? !image_->OriginClean() : false;
+    return image_ && !image_->OriginClean();
   }
   gfx::SizeF ElementSize(const gfx::SizeF&,
                          const RespectImageOrientationEnum) const override;

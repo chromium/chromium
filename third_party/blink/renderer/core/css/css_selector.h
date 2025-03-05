@@ -492,18 +492,15 @@ class CORE_EXPORT CSSSelector {
     return *data_.rare_data_->ident_list_;
   }
   bool ContainsPseudoInsideHasPseudoClass() const {
-    return HasRareData() ? data_.rare_data_->bits_.has_.contains_pseudo_
-                         : false;
+    return HasRareData() && data_.rare_data_->bits_.has_.contains_pseudo_;
   }
   bool ContainsComplexLogicalCombinationsInsideHasPseudoClass() const {
-    return HasRareData() ? data_.rare_data_->bits_.has_
-                               .contains_complex_logical_combinations_
-                         : false;
+    return HasRareData() &&
+           data_.rare_data_->bits_.has_.contains_complex_logical_combinations_;
   }
   bool HasArgumentMatchInShadowTree() const {
-    return HasRareData()
-               ? data_.rare_data_->bits_.has_.argument_match_in_shadow_tree_
-               : false;
+    return HasRareData() &&
+           data_.rare_data_->bits_.has_.argument_match_in_shadow_tree_;
   }
 
 #if DCHECK_IS_ON()

@@ -1730,7 +1730,7 @@ bool Node::IsShadowIncludingAncestorOf(const Node& node) const {
     return false;
 
   auto* this_node = DynamicTo<ContainerNode>(this);
-  bool has_children = this_node ? this_node->HasChildren() : false;
+  bool has_children = this_node && this_node->HasChildren();
   bool has_shadow = IsShadowHost(this);
   if (!has_children && !has_shadow)
     return false;
@@ -3558,8 +3558,7 @@ void Node::CheckSlotChange(SlotChangeType slot_change_type) {
 }
 
 bool Node::IsEffectiveRootScroller() const {
-  return GetLayoutObject() ? GetLayoutObject()->IsEffectiveRootScroller()
-                           : false;
+  return GetLayoutObject() && GetLayoutObject()->IsEffectiveRootScroller();
 }
 
 LayoutBox* Node::AutoscrollBox() {

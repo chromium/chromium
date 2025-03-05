@@ -292,17 +292,13 @@ void AutoscrollController::HandleMouseMoveForMiddleClickAutoscroll(
       pow(fabs(distance.y()), kExponent) * kMultiplier * y_signum);
 
   bool can_scroll_vertically =
-      vertical_autoscroll_possible
-          ? CanScrollDirection(vertical_autoscroll_layout_box_,
-                               frame->GetPage(),
-                               ScrollOrientation::kVerticalScroll)
-          : false;
+      vertical_autoscroll_possible &&
+      CanScrollDirection(vertical_autoscroll_layout_box_, frame->GetPage(),
+                         ScrollOrientation::kVerticalScroll);
   bool can_scroll_horizontally =
-      horizontal_autoscroll_possible
-          ? CanScrollDirection(horizontal_autoscroll_layout_box_,
-                               frame->GetPage(),
-                               ScrollOrientation::kHorizontalScroll)
-          : false;
+      horizontal_autoscroll_possible &&
+      CanScrollDirection(horizontal_autoscroll_layout_box_, frame->GetPage(),
+                         ScrollOrientation::kHorizontalScroll);
 
   if (velocity != last_velocity_) {
     last_velocity_ = velocity;

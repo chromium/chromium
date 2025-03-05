@@ -4526,9 +4526,8 @@ void LineBreaker::SetCurrentStyleForce(const ComputedStyle& style) {
 }
 
 bool LineBreaker::IsPreviousItemOfType(InlineItem::InlineItemType type) {
-  return current_.item_index > 0
-             ? Items().at(current_.item_index - 1)->Type() == type
-             : false;
+  return current_.item_index > 0 &&
+         Items().at(current_.item_index - 1)->Type() == type;
 }
 
 void LineBreaker::MoveToNextOf(const InlineItem& item) {

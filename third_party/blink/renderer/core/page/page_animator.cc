@@ -45,7 +45,7 @@ DocumentsVector GetAllDocuments(Frame* main_frame) {
     if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
       Document* document = local_frame->GetDocument();
       bool can_throttle =
-          document->View() ? document->View()->CanThrottleRendering() : false;
+          document->View() && document->View()->CanThrottleRendering();
       documents.emplace_back(std::make_pair(document, can_throttle));
     }
   }

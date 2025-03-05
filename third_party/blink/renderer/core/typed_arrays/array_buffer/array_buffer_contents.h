@@ -131,12 +131,9 @@ class CORE_EXPORT ArrayBufferContents {
   size_t MaxDataLength() const {
     return backing_store_ ? backing_store_->MaxByteLength() : 0;
   }
-  bool IsShared() const {
-    return backing_store_ ? backing_store_->IsShared() : false;
-  }
+  bool IsShared() const { return backing_store_ && backing_store_->IsShared(); }
   bool IsResizableByUserJavaScript() const {
-    return backing_store_ ? backing_store_->IsResizableByUserJavaScript()
-                          : false;
+    return backing_store_ && backing_store_->IsResizableByUserJavaScript();
   }
   bool IsValid() const { return backing_store_ && backing_store_->Data(); }
   base::span<uint8_t> ByteSpan() const {

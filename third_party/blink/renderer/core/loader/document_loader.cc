@@ -3006,18 +3006,15 @@ void DocumentLoader::CommitNavigation() {
           ? ScopedOldDocumentInfoForCommitCapturer::CurrentInfo()
           : nullptr;
   bool had_sticky_activation_before_navigation =
-      old_document_info_for_commit
-          ? old_document_info_for_commit
-                ->had_sticky_activation_before_navigation
-          : false;
+      old_document_info_for_commit &&
+      old_document_info_for_commit->had_sticky_activation_before_navigation;
   if (had_sticky_activation_before_navigation != had_sticky_activation_) {
     frame_->SetHadStickyUserActivationBeforeNavigation(had_sticky_activation_);
     frame_->GetLocalFrameHostRemote()
         .HadStickyUserActivationBeforeNavigationChanged(had_sticky_activation_);
   }
-  bool was_focused_frame = old_document_info_for_commit
-                               ? old_document_info_for_commit->was_focused_frame
-                               : false;
+  bool was_focused_frame = old_document_info_for_commit &&
+                           old_document_info_for_commit->was_focused_frame;
   if (was_focused_frame) {
     frame_->GetPage()->GetFocusController().SetFocusedFrame(frame_);
   }
