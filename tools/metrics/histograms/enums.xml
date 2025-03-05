@@ -22834,6 +22834,16 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(//chrome/browser/privacy_sandbox/android/java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxDebouncedOnClick.java:PrivacySandboxClickEventAndroid) -->
 
+<!-- LINT.IfChange(PrivacySandboxDialogCallbackState) -->
+
+<enum name="PrivacySandboxDialogCallbackState">
+  <int value="0" label="SingleActionCallbackDNE"/>
+  <int value="1" label="MultiActionCallbackDNE"/>
+  <int value="2" label="CallbackUnknownBeforeShown"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_handler.h:PrivacySandboxDialogCallbackState) -->
+
 <!-- LINT.IfChange(PrivacySandboxNoticeAction) -->
 
 <enum name="PrivacySandboxNoticeAction">

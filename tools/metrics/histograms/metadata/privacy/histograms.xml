@@ -1518,6 +1518,13 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   <token key="PSNotice" variants="PSNotice"/>
 </histogram>
 
+<histogram name="PrivacySandbox.Notice.CloseDialogCallbackState"
+    enum="PrivacySandboxDialogCallbackState" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>Records the the callback state when a notice is closed.</summary>
+</histogram>
+
 <histogram
     name="PrivacySandbox.Notice.DurationSinceLastRegisteredAction.{PSNotice}"
     units="ms" expires_after="2025-09-30">

@@ -152,16 +152,19 @@ void PrivacySandboxDialogHandler::HandlePromptActionOccurred(
     case kNoticeAcknowledge:
     case kRestrictedNoticeAcknowledge:
     case kNoticeDismiss: {
+      final_decision_count_++;
       CloseDialog();
       break;
     }
     case kNoticeOpenSettings: {
       dialog_callback_.Run(kOpenAdsPrivacySettings);
+      final_decision_count_++;
       CloseDialog();
       break;
     }
     case kRestrictedNoticeOpenSettings: {
       dialog_callback_.Run(kOpenMeasurementSettings);
+      final_decision_count_++;
       CloseDialog();
       break;
     }
@@ -194,11 +197,33 @@ void PrivacySandboxDialogHandler::HandleShowDialog(
   AllowJavascript();
 
   CHECK(dialog_callback_);
+  did_dialog_show_ = true;
   dialog_callback_.Run(kShowDialog);
 }
 
 void PrivacySandboxDialogHandler::CloseDialog() {
   did_user_make_decision_ = true;
   DisallowJavascript();
+  if (!dialog_callback_) {
+    if (!did_dialog_show_) {
+      base::UmaHistogramEnumeration(
+          "PrivacySandbox.Notice.CloseDialogCallbackState",
+          PrivacySandboxDialogCallbackState::kCallbackUnknownBeforeShown);
+    } else if (final_decision_count_ > 1) {
+      base::UmaHistogramEnumeration(
+          "PrivacySandbox.Notice.CloseDialogCallbackState",
+          PrivacySandboxDialogCallbackState::kMultiActionCallbackDNE);
+    } else {
+      base::UmaHistogramEnumeration(
+          "PrivacySandbox.Notice.CloseDialogCallbackState",
+          PrivacySandboxDialogCallbackState::kSingleActionCallbackDNE);
+    }
+  }
   dialog_callback_.Run(kCloseDialog);
+}
+
+void PrivacySandboxDialogHandler::SetDialogCallbackForTesting(
+    const base::RepeatingCallback<
+        void(PrivacySandboxService::AdsDialogCallbackNoArgsEvents)>& callback) {
+  dialog_callback_ = std::move(callback);
 }
