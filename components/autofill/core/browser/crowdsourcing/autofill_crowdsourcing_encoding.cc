@@ -883,7 +883,7 @@ void ProcessServerPredictionsQueryResponse(
       }
       if (field_suggestion->has_format_string()) {
         field->set_format_string_unless_overruled(
-            field_suggestion->format_string(),
+            base::UTF8ToUTF16(field_suggestion->format_string()),
             AutofillField::FormatStringSource::kServer);
       }
       ++field_rank_map[field->GetFieldSignature()];
