@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/autofill_field.h"
+
 #include <optional>
 
 #include "base/feature_list.h"
@@ -25,14 +26,10 @@ using ::autofill::test::EqualsPrediction;
 using ::testing::ElementsAre;
 
 constexpr FieldTypeSet kMLSupportedTypesForTesting = {
-    UNKNOWN_TYPE,
-    NAME_FIRST,
-    NAME_LAST,
-    EMAIL_ADDRESS,
-    NAME_FULL,
-    PHONE_HOME_NUMBER,
-    ADDRESS_HOME_LINE1,
-    ADDRESS_HOME_STREET_ADDRESS,
+    UNKNOWN_TYPE,       NAME_FIRST,
+    NAME_LAST,          EMAIL_ADDRESS,
+    NAME_FULL,          PHONE_HOME_NUMBER,
+    ADDRESS_HOME_LINE1, ADDRESS_HOME_STREET_ADDRESS,
     ADDRESS_HOME_CITY};
 
 class AutofillFieldTest : public testing::Test {
@@ -572,6 +569,24 @@ TEST(AutofillFieldLogEventTypeTest, AppendLogEventIfNotRepeated) {
   EXPECT_EQ(f.field_log_events().size(), 5u);
   f.AppendLogEventIfNotRepeated(a);
   EXPECT_EQ(f.field_log_events().size(), 5u);
+}
+
+TEST(AutofillPredictionSourceToStringViewTest, ConversionTest) {
+  EXPECT_EQ(AutofillPredictionSourceToStringView(
+                AutofillPredictionSource::kHeuristics),
+            "Heuristics");
+  EXPECT_EQ(AutofillPredictionSourceToStringView(
+                AutofillPredictionSource::kAutocomplete),
+            "AutocompleteAttribute");
+  EXPECT_EQ(AutofillPredictionSourceToStringView(
+                AutofillPredictionSource::kServerCrowdsourcing),
+            "ServerCrowdsourcing");
+  EXPECT_EQ(AutofillPredictionSourceToStringView(
+                AutofillPredictionSource::kServerOverride),
+            "ServerOverride");
+  EXPECT_EQ(AutofillPredictionSourceToStringView(
+                AutofillPredictionSource::kRationalization),
+            "Rationalization");
 }
 
 }  // namespace

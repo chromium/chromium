@@ -2661,6 +2661,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<!-- LINT.IfChange(AutofillPredictionSources) -->
+
 <histogram
     name="Autofill.FieldPredictionOverlap.{PerAutocompleteAttribute}.{PerActiveSource}.{PerType}"
     enum="AutofillSourcesSupersetEnum" expires_after="2025-12-20">
@@ -2680,7 +2682,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="PerActiveSource">
     <variant name="AutocompleteAttributeActive"/>
     <variant name="HeuristicsActive"/>
+    <variant name="NoPredictionExists"/>
     <variant name="Overall"/>
+    <variant name="RationalizationActive"/>
     <variant name="ServerCrowdsourcingActive"/>
     <variant name="ServerOverrideActive"/>
   </token>
@@ -2688,6 +2692,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     <variant name="AllTypes"/>
   </token>
 </histogram>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/autofill_field.cc:PredictionSourceTranslation) -->
 
 <histogram
     name="Autofill.FieldPredictionQuality.Aggregate.Heuristic.{LabelSource}"
