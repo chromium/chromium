@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/i18n/message_formatter.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/string_search.h"
@@ -738,15 +739,53 @@ std::u16string TaskManagerTableModel::GetAXNameForRow(
   DCHECK_LT(row, RowCount());
   DCHECK(!visible_column_ids.empty());
 
+  // Holds all visible column values for the `row`.
   std::vector<std::u16string> column_names;
   column_names.reserve(visible_column_ids.size());
-
   std::ranges::transform(
       visible_column_ids, std::back_inserter(column_names),
-      [this, row](const auto& ir) { return GetText(row, ir); });
-  std::erase_if(column_names, [](const auto& ir) { return ir.empty(); });
+      [this, row](const auto& col_id) { return GetText(row, col_id); });
+  std::erase_if(column_names,
+                [](const auto& column_name) { return column_name.empty(); });
 
-  return base::JoinString(column_names, u" ");
+  // Holds all other task titles in the same task group with the 'row'.
+  std::vector<std::u16string> other_task_titles;
+  if (IsTaskFirstInGroup(row)) {
+    const auto current_task = tasks_.begin() + row;
+    const base::ProcessId current_process_id =
+        observed_task_manager()->GetProcessId(tasks_[row]);
+    // Record the end of the column names for the task.
+    const auto mismatch_task = std::ranges::find_if_not(
+        current_task, tasks_.end(),
+        [this, current_process_id](const auto& task_id) {
+          return observed_task_manager()->GetProcessId(task_id) ==
+                 current_process_id;
+        });
+
+    if (mismatch_task - current_task > 1) {
+      const TaskIdList group_tasks =
+          observed_task_manager()->GetIdsOfTasksSharingSameProcess(tasks_[row]);
+      DCHECK(!group_tasks.empty());
+      other_task_titles.reserve(group_tasks.size() - 1);
+      // If there is at least one task other than the `row` in the same task
+      // group existing in `tasks_`, insert the connect text and the title of
+      // the other tasks.
+      // Add other tasks in the same task group in `other_task_titles` .
+      std::ranges::transform(
+          current_task + 1, mismatch_task,
+          std::back_inserter(other_task_titles), [this](const auto& task_id) {
+            return observed_task_manager()->GetTitle(task_id);
+          });
+    }
+  }
+
+  const int other_tasks_size = static_cast<int>(other_task_titles.size());
+
+  return base::i18n::MessageFormatter::FormatWithNamedArgs(
+      l10n_util::GetStringUTF16(IDS_TASK_MANAGER_TASK_GROUP_CONNECT_TEXT),
+      "NUM_TASKS", other_tasks_size + 1, "TASK_ROW",
+      base::JoinString(column_names, u" "), "OTHER_TASK_NUM", other_tasks_size,
+      "OTHER_TASKS", base::JoinString(other_task_titles, u" "));
 }
 
 void TaskManagerTableModel::GetRowsGroupRange(size_t row_index,
