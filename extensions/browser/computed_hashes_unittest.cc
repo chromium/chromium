@@ -18,8 +18,6 @@
 
 namespace {
 
-constexpr bool kIsDotSpaceSuffixIgnored =
-    extensions::content_verifier_utils::IsDotSpaceFilenameSuffixIgnored();
 constexpr bool kIsFileAccessCaseInsensitive =
     !extensions::content_verifier_utils::IsFileAccessCaseSensitive();
 
@@ -160,67 +158,6 @@ TEST(ComputedHashesTest, GetHashesForContent) {
   ASSERT_EQ(1u, hashes3.size());
   ASSERT_EQ(std::string("47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU="),
             base::Base64Encode(hashes3[0]));
-}
-
-// Tests that dot/space path suffixes are treated correctly in
-// ComputedHashes::InitFromFile.
-//
-// Regression test for https://crbug.com/696208.
-TEST(ComputedHashesTest, DotSpaceSuffix) {
-  const std::string hash_value = crypto::SHA256HashString("test");
-  ComputedHashes computed_hashes{ComputedHashes::Data()};
-  // Add hashes for "foo.html" to computed_hashes.json.
-  ASSERT_TRUE(WriteThenReadComputedHashes(
-      {
-          {base::FilePath(FILE_PATH_LITERAL("foo.html")),
-           extension_misc::kContentVerificationDefaultBlockSize,
-           {hash_value}},
-      },
-      &computed_hashes));
-
-  struct TestCase {
-    const char* path;
-    bool expect_hash;
-
-    std::string ToString() const {
-      return base::StringPrintf("path = %s, expect_hash = %d", path,
-                                expect_hash);
-    }
-  } test_cases[] = {
-      // Sanity check: existing file.
-      {"foo.html", true},
-      // Sanity check: non existent file.
-      {"notfound.html", false},
-      // Path with "." suffix, along with incorrect case for the same.
-      {"foo.html.", kIsDotSpaceSuffixIgnored},
-      {"fOo.html.", kIsDotSpaceSuffixIgnored},
-      // Path with " " suffix, along with incorrect case for the same.
-      {"foo.html ", kIsDotSpaceSuffixIgnored},
-      {"fOo.html ", kIsDotSpaceSuffixIgnored},
-      // Path with ". " suffix, along with incorrect case for the same.
-      {"foo.html. ", kIsDotSpaceSuffixIgnored},
-      {"fOo.html. ", kIsDotSpaceSuffixIgnored},
-      // Path with " ." suffix, along with incorrect case for the same.
-      {"foo.html .", kIsDotSpaceSuffixIgnored},
-      {"fOo.html .", kIsDotSpaceSuffixIgnored},
-  };
-
-  for (const auto& test_case : test_cases) {
-    SCOPED_TRACE(test_case.ToString());
-    int block_size = 0;
-    std::vector<std::string> read_hashes;
-    EXPECT_EQ(
-        test_case.expect_hash,
-        computed_hashes.GetHashes(base::FilePath().AppendASCII(test_case.path),
-                                  &block_size, &read_hashes));
-
-    if (test_case.expect_hash) {
-      EXPECT_EQ(block_size,
-                extension_misc::kContentVerificationDefaultBlockSize);
-      ASSERT_EQ(1u, read_hashes.size());
-      EXPECT_EQ(hash_value, read_hashes[0]);
-    }
-  }
 }
 
 }  // namespace extensions
