@@ -8,9 +8,11 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.build.annotations.NullMarked;
 
 /** Java accessor for ui/accessibility/accessibility_features.cc state */
 @JNINamespace("ui")
+@NullMarked
 public class AccessibilityFeaturesMap extends FeatureMap {
     private static final AccessibilityFeaturesMap sInstance = new AccessibilityFeaturesMap();
 
