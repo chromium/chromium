@@ -16,8 +16,6 @@ blink_modules_sources("ai") {
     "ai_create_monitor.h",
     "ai_language_model.cc",
     "ai_language_model.h",
-    "ai_language_model_capabilities.cc",
-    "ai_language_model_capabilities.h",
     "ai_language_model_factory.cc",
     "ai_language_model_factory.h",
     "ai_language_model_params.cc",

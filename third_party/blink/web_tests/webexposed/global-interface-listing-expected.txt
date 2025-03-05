@@ -49,19 +49,9 @@ interface AILanguageModel : EventTarget
     method prompt
     method promptStreaming
     setter oncontextoverflow
-interface AILanguageModelCapabilities
-    attribute @@toStringTag
-    getter available
-    getter defaultTemperature
-    getter defaultTopK
-    getter maxTemperature
-    getter maxTopK
-    method constructor
-    method languageAvailable
 interface AILanguageModelFactory
     attribute @@toStringTag
     method availability
-    method capabilities
     method constructor
     method create
     method params
