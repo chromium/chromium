@@ -1396,7 +1396,7 @@ void TabStripModel::AddToNewSplit(const std::vector<int> indices) {
   MoveTabsAndSetGroupImpl(indices, destination_index, std::nullopt);
 
   for (TabStripModelObserver& observer : observers_) {
-    observer.OnSplitViewAdded(tabs);
+    observer.OnSplitViewAdded(indices);
   }
 }
 
