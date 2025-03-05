@@ -9813,6 +9813,21 @@
             ]
         }
     ],
+    "FastPairAdvertisingFormat2025": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FastPairAdvertisingFormat2025"
+                    ]
+                }
+            ]
+        }
+    ],
     "FastPairHandshakeLongTermRefactor": [
         {
             "platforms": [
