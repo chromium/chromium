@@ -25474,29 +25474,6 @@
             ]
         }
     ],
-    "WaitForLateScrollEvents": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "DispatchScrollEventsUntilDeadline",
-                    "params": {
-                        "mode": "DispatchScrollEventsUntilDeadline"
-                    },
-                    "enable_features": [
-                        "WaitForLateScrollEvents"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebApkBackupAndRestore": [
         {
             "platforms": [
