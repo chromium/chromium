@@ -12,7 +12,11 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** The content of the tab shown in the TranslateTabLayout. */
+@NullMarked
 public class TranslateTabContent extends FrameLayout {
     private TextView mTextView;
     private ProgressBar mProgressBar;
@@ -33,7 +37,7 @@ public class TranslateTabContent extends FrameLayout {
      * Sets the text color for all the states (normal, selected, focused) to be this color.
      * @param colors The color state list of the title text.
      */
-    public void setTextColor(ColorStateList colors) {
+    public void setTextColor(@Nullable ColorStateList colors) {
         mTextView.setTextColor(colors);
     }
 
