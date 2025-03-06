@@ -463,6 +463,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.Android.Performance.SpannableCreationTime"
+    units="ms" expires_after="2025-07-27">
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the time it takes to computeText, i.e. create Spannables, for a
+    single AccessibilityNodeInfo on Android. This is used to track potential
+    performance impact of the AccessibilityTextFormatting feature and is meant
+    to be temporary. The histogram is recorded immediately before the
+    constructed Spannable is set on the node.
+  </summary>
+</histogram>
+
 <histogram
     name="Accessibility.Android.Performance.TimeUntilFirstAccessibilityFocus"
     units="ms" expires_after="2025-07-27">
