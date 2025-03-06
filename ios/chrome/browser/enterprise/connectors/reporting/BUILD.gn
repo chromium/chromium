@@ -19,6 +19,7 @@ source_set("reporting") {
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//ios/chrome/browser/enterprise/connectors",
+    "//ios/chrome/browser/enterprise/identifiers:profile_id_service_factory",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
