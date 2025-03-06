@@ -273,6 +273,8 @@ static_library("browser") {
     "page_classification_functions.h",
     "provider_state_service.cc",
     "provider_state_service.h",
+    "recently_closed_tabs_provider.cc",
+    "recently_closed_tabs_provider.h",
     "remote_suggestions_service.cc",
     "remote_suggestions_service.h",
     "scored_history_match.cc",

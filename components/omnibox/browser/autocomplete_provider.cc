@@ -87,6 +87,8 @@ const char* AutocompleteProvider::TypeToString(Type type) {
       return "EnterpriseSearchAggregator";
     case TYPE_UNSCOPED_EXTENSION:
       return "UnscopedExtension";
+    case TYPE_RECENTLY_CLOSED_TABS:
+      return "RecentlyClosedTabs";
     default:
       DUMP_WILL_BE_NOTREACHED()
           << "Unhandled AutocompleteProvider::Type " << type;
@@ -151,6 +153,7 @@ AutocompleteProvider::AsOmniboxEventProviderType() const {
     case TYPE_QUERY_TILE:
       return metrics::OmniboxEventProto::QUERY_TILE;
     case TYPE_MOST_VISITED_SITES:
+      // TODO(crbug.com/399872654): Log this as MOST_VISITED_SITES.
       return metrics::OmniboxEventProto::ZERO_SUGGEST;
     case TYPE_VERBATIM_MATCH:
       return metrics::OmniboxEventProto::ZERO_SUGGEST;
@@ -172,6 +175,8 @@ AutocompleteProvider::AsOmniboxEventProviderType() const {
       return metrics::OmniboxEventProto::ENTERPRISE_SEARCH_AGGREGATOR;
     case TYPE_UNSCOPED_EXTENSION:
       return metrics::OmniboxEventProto::UNSCOPED_EXTENSION;
+    case TYPE_RECENTLY_CLOSED_TABS:
+      return metrics::OmniboxEventProto::RECENTLY_CLOSED_TABS;
     default:
       // TODO(crbug.com/40940012) This was a NOTREACHED that we converted to
       //   help debug crbug.com/1499235 since NOTREACHED's don't log their

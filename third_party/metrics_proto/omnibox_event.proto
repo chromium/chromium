@@ -321,6 +321,12 @@ message OmniboxEventProto {
     // Suggestions from extensions that have permission to use the omnibox api
     // without requiring keyword mode.
     UNSCOPED_EXTENSION = 30;
+
+    // Recently closed tabs suggestions.
+    RECENTLY_CLOSED_TABS = 31;
+
+    // Most visited sites suggestions.
+    MOST_VISITED_SITES = 32;
   }
 
   // The result set displayed on the completion popup
