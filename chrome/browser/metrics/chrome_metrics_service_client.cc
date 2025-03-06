@@ -981,8 +981,7 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 }
 
 void ChromeMetricsServiceClient::RegisterUKMProviders() {
-  // Note: if you make changes here please also consider whether they should go
-  // in AndroidMetricsServiceClient::CreateUkmService().
+  // LINT.IfChange(UkmProviders)
   ukm_service_->RegisterMetricsProvider(
       std::make_unique<AccessibilityStateProvider>());
 
@@ -1029,6 +1028,7 @@ void ChromeMetricsServiceClient::RegisterUKMProviders() {
 
   ukm_service_->RegisterMetricsProvider(
       std::make_unique<metrics::EntropyStateProvider>(local_state));
+  // LINT.ThenChange(/ios/chrome/browser/metrics/model/ios_chrome_metrics_service_client.mm:UkmProviders)
 }
 
 void ChromeMetricsServiceClient::NotifyApplicationNotIdle() {
