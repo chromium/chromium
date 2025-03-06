@@ -41,6 +41,7 @@ source_set("smart_card") {
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/permissions",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/browser_window",
       "//components/content_settings/browser:browser",
       "//components/permissions",
       "//components/strings:components_strings_grit",
