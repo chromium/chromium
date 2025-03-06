@@ -59,7 +59,24 @@ class MEDIA_MOJO_EXPORT WatchTimeRecorder : public mojom::WatchTimeRecorder {
   void RecordUkmPlaybackData();
   bool ShouldRecordUma() const;
 
+  // Records Auto Picture in Picture whatch time when appropriate. This watch
+  // time has a subtle caveat: the Auto Picture in Picture reason may change
+  // from the time the `WatchTimeReporter` tells `this` to record the watch time
+  // and when it gets to actually record the watch time.
+  //
+  // This can happen when entering/exiting Picture in Picture before retrieving
+  // the Auto Picture in Picture reason. In other words, although the
+  // `WatchTimeReporter` has assigned the watch time to a Picture in Picture
+  // display type, the Picture in Picture window can be opened/closed (and
+  // therefore change the Auto Picture in Picture reason) by the time the `this`
+  // receives the message.
+  void MaybeRecordWatchTimeForAutoPipReason(WatchTimeKey key,
+                                            base::TimeDelta watch_time);
+
   PictureInPictureEventsInfo::AutoPipReasonCallback auto_pip_reason_cb_;
+
+  std::optional<PictureInPictureEventsInfo::AutoPipReason>
+      current_auto_pip_reason_ = std::nullopt;
 
   const mojom::PlaybackPropertiesPtr properties_;
 

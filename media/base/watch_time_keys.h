@@ -13,6 +13,7 @@ namespace media {
 
 enum class WatchTimeKey : int {
   kAudioAll = 0,
+  kAudioAutoPipMediaPlayback,
   kAudioMse,
   kAudioEme,
   kAudioSrc,
@@ -28,7 +29,11 @@ enum class WatchTimeKey : int {
   kAudioBackgroundBattery,
   kAudioBackgroundAc,
   kAudioBackgroundEmbeddedExperience,
+  kAudioDisplayFullscreen,
+  kAudioDisplayInline,
+  kAudioDisplayPictureInPicture,
   kAudioVideoAll,
+  kAudioVideoAutoPipMediaPlayback,
   kAudioVideoMse,
   kAudioVideoEme,
   kAudioVideoSrc,
