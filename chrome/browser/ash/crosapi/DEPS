@@ -80,7 +80,6 @@ include_rules = [
   "+chrome/browser/prefs",
   "+chrome/browser/printing",
   "+chrome/browser/profiles",
-  "+chrome/browser/screen_ai",
   "+chrome/browser/sharesheet",
   "+chrome/browser/signin",
   "+chrome/browser/speech",

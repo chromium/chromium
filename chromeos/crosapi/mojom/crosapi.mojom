@@ -57,7 +57,6 @@ import "chromeos/crosapi/mojom/printing_metrics.mojom";
 import "chromeos/crosapi/mojom/probe_service.mojom";
 import "chromeos/crosapi/mojom/remoting.mojom";
 import "chromeos/crosapi/mojom/resource_manager.mojom";
-import "chromeos/crosapi/mojom/screen_ai_downloader.mojom";
 import "chromeos/crosapi/mojom/structured_metrics_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_event_service.mojom";
@@ -393,12 +392,7 @@ interface Crosapi {
   // Added in M93.
   [MinVersion=32] BindRemoting@37(pending_receiver<Remoting> receiver);
 
-  // Binds the Screen AI downloader interface which allows Lacros to send
-  // component download request to Ash.
-  // Added in M117.
-  [MinVersion=110]
-  BindScreenAIDownloader@113(pending_receiver<ScreenAIDownloader> receiver);
-
+  // BindScreenAIDownloader@113 was removed.
   // BindScreenManager@1 was removed.
 
   // Binds the SensorHalClient interface for IIO sensors' data.

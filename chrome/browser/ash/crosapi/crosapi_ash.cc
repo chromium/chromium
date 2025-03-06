@@ -55,7 +55,6 @@
 #include "chrome/browser/ash/crosapi/payment_app_instance_ash.h"
 #include "chrome/browser/ash/crosapi/policy_service_ash.h"
 #include "chrome/browser/ash/crosapi/remoting_ash.h"
-#include "chrome/browser/ash/crosapi/screen_ai_downloader_ash.h"
 #include "chrome/browser/ash/crosapi/structured_metrics_service_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
@@ -201,7 +200,6 @@ CrosapiAsh::CrosapiAsh()
       remoting_ash_(std::make_unique<RemotingAsh>()),
       print_preview_webcontents_adapter_ash_(
           std::make_unique<ash::printing::PrintPreviewWebcontentsAdapterAsh>()),
-      screen_ai_downloader_ash_(std::make_unique<ScreenAIDownloaderAsh>()),
       structured_metrics_service_ash_(
           std::make_unique<StructuredMetricsServiceAsh>()),
       video_conference_manager_ash_(
@@ -551,11 +549,6 @@ void CrosapiAsh::BindRemoteAppsLacrosBridge(
 
 void CrosapiAsh::BindRemoting(mojo::PendingReceiver<mojom::Remoting> receiver) {
   remoting_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindScreenAIDownloader(
-    mojo::PendingReceiver<mojom::ScreenAIDownloader> receiver) {
-  screen_ai_downloader_ash_->Bind(std::move(receiver));
 }
 
 void CrosapiAsh::BindSensorHalClient(
