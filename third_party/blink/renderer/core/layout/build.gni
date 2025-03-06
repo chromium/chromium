@@ -757,7 +757,6 @@ blink_core_tests_layout = [
   "inline/physical_line_box_fragment_test.cc",
   "inline/ruby_utils_test.cc",
   "inline/score_line_breaker_test.cc",
-  "inline/transformed_string_test.cc",
   "inline_layout_test.cc",
   "layout_block_flow_test.cc",
   "layout_block_test.cc",

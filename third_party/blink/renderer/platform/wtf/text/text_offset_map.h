@@ -53,6 +53,13 @@ class WTF_EXPORT TextOffsetMap {
   void Append(wtf_size_t source, wtf_size_t target);
   void Append(const icu::Edits& edits);
 
+  using Length = uint32_t;
+  // This returns a list of which size is `new_length`. The Nth element of
+  // the list represents the source character length of the Nth character
+  // in the destination string.
+  Vector<Length> CreateLengthMap(wtf_size_t old_length,
+                                 wtf_size_t new_length) const;
+
  private:
   Vector<Entry> entries_;
 };
