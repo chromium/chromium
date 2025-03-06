@@ -18,6 +18,7 @@ import shutil
 import subprocess
 import tempfile
 import time
+import shlex
 import sys
 import webbrowser
 
@@ -93,7 +94,7 @@ def _EnsureEditor():
 
 
 def _OpenEditor(filepath):
-  subprocess.check_call([os.environ['EDITOR'], filepath])
+  subprocess.check_call(shlex.split(os.environ['EDITOR']) + [filepath])
 
 
 def _PrepareEnv():
@@ -377,8 +378,13 @@ class WprUpdater(object):
     Returns:
       Path to the filtered log.
     """
-    with open(log_filename) as src, tempfile.NamedTemporaryFile(
-        suffix='diff', dir=self.output_dir, delete=False) as dest:
+    with open(log_filename,
+              encoding='utf-8') as src, tempfile.NamedTemporaryFile(
+                  encoding='utf-8',
+                  mode='w+',
+                  suffix='diff',
+                  dir=self.output_dir,
+                  delete=False) as dest:
       for line in src:
         # Remove timestamps.
         line = re.sub(
@@ -393,7 +399,7 @@ class WprUpdater(object):
         # Remove random durations in ms.
         line = re.sub(r'\d+ ms', r'<duration>', line)
         dest.write(line)
-        return dest.name
+      return dest.name
 
   def _GetTargetFromConfiguration(self, configuration):
     """Returns the target that should be used for a Pinpoint job."""
