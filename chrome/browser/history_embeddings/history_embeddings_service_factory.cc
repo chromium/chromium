@@ -4,6 +4,7 @@
 
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -27,14 +28,14 @@
 #include "components/history_embeddings/mock_intent_classifier.h"
 #include "components/keyed_service/core/service_access_type.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #endif
 
 namespace {
 
 bool IsEphemeralProfile(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (ash::ProfileHelper::IsEphemeralUserProfile(profile)) {
     return true;
   }
