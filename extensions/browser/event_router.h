@@ -51,11 +51,9 @@ class BrowserContext;
 class RenderProcessHost;
 }  // namespace content
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 class FileSystemProviderProvidedFileSystemTest;
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider
 
 namespace extensions {
 class Extension;
