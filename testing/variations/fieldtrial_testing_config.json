@@ -10583,6 +10583,46 @@
             ]
         }
     ],
+    "GlicDogfood": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "GlicEnabled",
+                    "enable_features": [
+                        "ContextualCueing",
+                        "Glic"
+                    ]
+                }
+            ]
+        }
+    ],
+    "GlicDogfoodSettings": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "GlicSettingsEnabled",
+                    "params": {
+                        "has_background": "false"
+                    },
+                    "enable_features": [
+                        "GlicDevelopmentCookies",
+                        "GlicFreURLConfig",
+                        "GlicKeyboardShortcutNewBadge",
+                        "GlicURLConfig",
+                        "IPH_GlicPromo"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlobalVaapiLock": [
         {
             "platforms": [

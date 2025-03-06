@@ -253,7 +253,7 @@ void ContextualCueingHelper::MaybeCreateForWebContents(
   auto* optimization_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   if (!optimization_guide_keyed_service ||
-      !optimization_guide_keyed_service->GetModelExecutionFeaturesController()
+      !optimization_guide_keyed_service
            ->ShouldModelExecutionBeAllowedForUser()) {
     return;
   }
