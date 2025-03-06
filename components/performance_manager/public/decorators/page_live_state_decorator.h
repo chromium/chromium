@@ -10,6 +10,7 @@
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "content/public/browser/web_contents_capability_type.h"
@@ -24,9 +25,10 @@ class PageLiveStateObserver;
 // All the functions that take a WebContents* as a parameter should only be
 // called from the UI thread, the event will be forwarded to the corresponding
 // PageNode on the Performance Manager's sequence.
-class PageLiveStateDecorator : public GraphOwnedDefaultImpl,
-                               public NodeDataDescriberDefaultImpl,
-                               public PageNodeObserver {
+class PageLiveStateDecorator
+    : public GraphOwnedAndRegistered<PageLiveStateDecorator>,
+      public NodeDataDescriberDefaultImpl,
+      public PageNodeObserver {
  public:
   class Data;
 
@@ -34,6 +36,25 @@ class PageLiveStateDecorator : public GraphOwnedDefaultImpl,
   ~PageLiveStateDecorator() override;
   PageLiveStateDecorator(const PageLiveStateDecorator& other) = delete;
   PageLiveStateDecorator& operator=(const PageLiveStateDecorator&) = delete;
+
+  // Starts the given `observer` observing all PageNodes. An observer should not
+  // be passed to this function more than once.
+  //
+  // To observe a specific PageNode, use
+  // PageLiveStateDecorator::Data::AddObserver and
+  // PageLiveStateDecorator::Data::RemoveObserver.
+  static void AddAllPageObserver(PageLiveStateObserver* observer);
+
+  // Stops the given `observer` from observing all PageNodes. Does nothing if
+  // this observer was never added.
+  //
+  // To observe a specific PageNode, use
+  // PageLiveStateDecorator::Data::AddObserver and
+  // PageLiveStateDecorator::Data::RemoveObserver.
+  static void RemoveAllPageObserver(PageLiveStateObserver* observer);
+
+  // Returns whether `observer` is observing all PageNodes.
+  static bool HasAllPageObserver(PageLiveStateObserver* observer);
 
   // Must be called when the capability types used by `contents` change.
   static void OnCapabilityTypesChanged(
@@ -103,10 +124,14 @@ class PageLiveStateDecorator : public GraphOwnedDefaultImpl,
   base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
 
   // PageNodeObserver implementation:
+  void OnPageNodeAdded(const PageNode* page_node) override;
+  void OnBeforePageNodeRemoved(const PageNode* page_node) override;
   void OnTitleUpdated(const PageNode* page_node) override;
   void OnFaviconUpdated(const PageNode* page_node) override;
   void OnAboutToBeDiscarded(const PageNode* page_node,
                             const PageNode* new_page_node) override;
+
+  base::ObserverList<PageLiveStateObserver> all_page_observers_;
 
   base::WeakPtrFactory<PageLiveStateDecorator> weak_factory_{this};
 };

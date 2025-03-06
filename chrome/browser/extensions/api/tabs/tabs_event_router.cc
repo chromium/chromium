@@ -27,6 +27,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/favicon/content/content_favicon_driver.h"
+#include "components/performance_manager/public/decorators/page_live_state_decorator.h"
+#include "components/performance_manager/public/graph/page_node.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -195,9 +197,11 @@ TabsEventRouter::TabsEventRouter(Profile* profile)
   browser_tab_strip_tracker_.Init();
 
   tab_manager_scoped_observation_.Observe(g_browser_process->GetTabManager());
+  performance_manager::PageLiveStateDecorator::AddAllPageObserver(this);
 }
 
 TabsEventRouter::~TabsEventRouter() {
+  performance_manager::PageLiveStateDecorator::RemoveAllPageObserver(this);
   BrowserList::RemoveObserver(this);
 }
 
@@ -371,12 +375,12 @@ void TabsEventRouter::OnTabLifecycleStateChange(
   }
 }
 
-void TabsEventRouter::OnTabAutoDiscardableStateChange(
-    WebContents* contents,
-    bool is_auto_discardable) {
+void TabsEventRouter::OnIsAutoDiscardableChanged(
+    const performance_manager::PageNode* page_node) {
   std::set<std::string> changed_property_names;
   changed_property_names.insert(kAutoDiscardableKey);
-  DispatchTabUpdatedEvent(contents, std::move(changed_property_names));
+  DispatchTabUpdatedEvent(page_node->GetWebContents().get(),
+                          std::move(changed_property_names));
 }
 
 void TabsEventRouter::DispatchTabInsertedAt(TabStripModel* tab_strip_model,

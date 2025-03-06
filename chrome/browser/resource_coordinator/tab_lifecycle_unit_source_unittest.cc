@@ -81,10 +81,6 @@ class MockTabLifecycleObserver : public TabLifecycleObserver {
                mojom::LifecycleUnitState new_state,
                std::optional<LifecycleUnitDiscardReason> discard_reason),
               (override));
-  MOCK_METHOD(void,
-              OnTabAutoDiscardableStateChange,
-              (content::WebContents * contents, bool is_auto_discardable),
-              (override));
 };
 
 class MockLifecycleUnitObserver : public LifecycleUnitObserver {

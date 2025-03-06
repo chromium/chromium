@@ -353,10 +353,6 @@ void TabLifecycleUnitSource::TabLifecycleUnit::SetAutoDiscardable(
 
   performance_manager::PageLiveStateDecorator::SetIsAutoDiscardable(
       web_contents(), auto_discardable_);
-
-  for (auto& observer : *observers_) {
-    observer.OnTabAutoDiscardableStateChange(web_contents(), auto_discardable_);
-  }
 }
 
 void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(

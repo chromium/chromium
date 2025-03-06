@@ -29,12 +29,6 @@ class TabLifecycleObserver {
       mojom::LifecycleUnitState new_state,
       std::optional<LifecycleUnitDiscardReason> discard_reason) {}
 
-  // Invoked when the auto-discardable state of |contents| changes.
-  // |is_auto_discardable| indicates whether |contents| can be automatically
-  // discarded.
-  virtual void OnTabAutoDiscardableStateChange(content::WebContents* contents,
-                                               bool is_auto_discardable) {}
-
  protected:
   virtual ~TabLifecycleObserver() = default;
 };

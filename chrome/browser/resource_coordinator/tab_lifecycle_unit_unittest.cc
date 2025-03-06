@@ -11,7 +11,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
@@ -41,6 +43,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/test_support/test_harness_helper.h"
 #include "content/public/browser/web_contents.h"
@@ -63,6 +66,7 @@ namespace resource_coordinator {
 namespace {
 
 using LoadingState = TabLoadTracker::LoadingState;
+using PageNode = performance_manager::PageNode;
 using PageLiveStateDecorator = performance_manager::PageLiveStateDecorator;
 using PerformanceManager = performance_manager::PerformanceManager;
 
@@ -82,9 +86,14 @@ class MockTabLifecycleObserver : public TabLifecycleObserver {
                mojom::LifecycleUnitState new_state,
                std::optional<LifecycleUnitDiscardReason> discard_reason),
               (override));
+};
+
+class MockPageLiveStateObserver
+    : public performance_manager::PageLiveStateObserverDefaultImpl {
+ public:
   MOCK_METHOD(void,
-              OnTabAutoDiscardableStateChange,
-              (content::WebContents * contents, bool is_auto_discardable),
+              OnIsAutoDiscardableChanged,
+              (const PageNode* page_node),
               (override));
 };
 
@@ -258,31 +267,41 @@ TEST_F(TabLifecycleUnitTest, SetFocused) {
 }
 
 TEST_F(TabLifecycleUnitTest, AutoDiscardable) {
+  base::WeakPtr<PageNode> page_node =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents_);
+  ASSERT_TRUE(page_node);
+  auto* page_live_state_data =
+      PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node.get());
+
+  ::testing::StrictMock<MockPageLiveStateObserver> page_observer;
+  base::ScopedObservation<PageLiveStateDecorator::Data,
+                          MockPageLiveStateObserver>
+      page_observation(&page_observer);
+  page_observation.Observe(page_live_state_data);
+
   TabLifecycleUnit tab_lifecycle_unit(GetTabLifecycleUnitSource(), &observers_,
                                       web_contents_, tab_strip_model_.get());
 
   // Advance time enough that the tab is urgent discardable.
   test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
   EXPECT_TRUE(tab_lifecycle_unit.IsAutoDiscardable());
-  EXPECT_TRUE(PageLiveStateDecorator::IsAutoDiscardable(web_contents_));
+  EXPECT_TRUE(page_live_state_data->IsAutoDiscardable());
   ExpectCanDiscardTrueAllReasons(&tab_lifecycle_unit);
 
-  EXPECT_CALL(observer_,
-              OnTabAutoDiscardableStateChange(web_contents_.get(), false));
+  EXPECT_CALL(page_observer, OnIsAutoDiscardableChanged(page_node.get()));
   tab_lifecycle_unit.SetAutoDiscardable(false);
   ::testing::Mock::VerifyAndClear(&observer_);
   EXPECT_FALSE(tab_lifecycle_unit.IsAutoDiscardable());
-  EXPECT_FALSE(PageLiveStateDecorator::IsAutoDiscardable(web_contents_));
+  EXPECT_FALSE(page_live_state_data->IsAutoDiscardable());
   ExpectCanDiscardFalseAllReasons(
       &tab_lifecycle_unit,
       DecisionFailureReason::LIVE_STATE_EXTENSION_DISALLOWED);
 
-  EXPECT_CALL(observer_,
-              OnTabAutoDiscardableStateChange(web_contents_.get(), true));
+  EXPECT_CALL(page_observer, OnIsAutoDiscardableChanged(page_node.get()));
   tab_lifecycle_unit.SetAutoDiscardable(true);
   ::testing::Mock::VerifyAndClear(&observer_);
   EXPECT_TRUE(tab_lifecycle_unit.IsAutoDiscardable());
-  EXPECT_TRUE(PageLiveStateDecorator::IsAutoDiscardable(web_contents_));
+  EXPECT_TRUE(page_live_state_data->IsAutoDiscardable());
   ExpectCanDiscardTrueAllReasons(&tab_lifecycle_unit);
 }
 
