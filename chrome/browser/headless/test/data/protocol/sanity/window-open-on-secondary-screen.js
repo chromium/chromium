@@ -20,7 +20,7 @@
       <head><link rel="icon" href="data:,"></head>
       <script>
           const win = window.open('/page2.html', '_blank',
-              'popup, left=820, top=20, width=400, height=200');
+              'popup, left=820, top=20, width=600, height=400');
           if (!win) {
             console.log('Failed to create Page2');
           } else {
