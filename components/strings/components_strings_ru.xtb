@@ -3024,6 +3024,7 @@
 <translation id="6351658970066645919">Удалить данные о работе в браузере</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Нет}=1{1 пароль (для <ph name="DOMAIN_LIST" />, синхронизировано)}=2{2 пароля (для <ph name="DOMAIN_LIST" />, синхронизировано)}one{# пароль (для <ph name="DOMAIN_LIST" />, синхронизировано)}few{# пароля (для <ph name="DOMAIN_LIST" />, синхронизировано)}many{# паролей (для <ph name="DOMAIN_LIST" />, синхронизировано)}other{# пароля (для <ph name="DOMAIN_LIST" />, синхронизировано)}}</translation>
 <translation id="6355392890578844978">Компания или организация не управляет этим браузером. Действиями на этом устройстве можно управлять вне браузера Chromium. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Группы вкладок "<ph name="GROUP_TITLE_1" />" и "<ph name="GROUP_TITLE_2" />" больше не доступны.</translation>
 <translation id="6358088212770985041">изменить способы оплаты</translation>
 <translation id="6358450015545214790">Что это значит?</translation>
 <translation id="6360213755783740931">Подробнее о защите от вредоносного ПО</translation>

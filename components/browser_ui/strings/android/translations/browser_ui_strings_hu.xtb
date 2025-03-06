@@ -6,6 +6,7 @@
 <translation id="1044891598689252897">A webhelyek a megszokott módon fognak működni</translation>
 <translation id="1070329623210597193">A webhely által megtekinthető vagy szerkeszthető fájlok</translation>
 <translation id="1073417869336441572">Segítsen a Chrome fejlesztésében. Mondja el, miért engedélyezte a harmadik féltől származó cookie-kat. <ph name="BEGIN_LINK" />Visszajelzés küldése<ph name="END_LINK" /></translation>
+<translation id="1074758928858737435">Kérheti a webhelyek asztali verziójának megjelenítését.</translation>
 <translation id="1085696779717592361">A Chrome használata alapértelmezettként</translation>
 <translation id="1178581264944972037">Szünet</translation>
 <translation id="1181037720776840403">Eltávolítás</translation>
@@ -32,6 +33,7 @@
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> webhely}other{<ph name="SITE_COUNT" /> webhely}}</translation>
 <translation id="1500473259453106018">A Price drops on tabs (Árcsökkenések a lapokon) kártya elrejtése</translation>
 <translation id="1510341833810331442">Webhelyek nem menthetnek adatokat az eszközére</translation>
+<translation id="1538031354170655462">A webhelyek általában a közeli rádiófrekvenciás kommunikáció (NFC) technológiát használják a közeli címkékkel vagy eszközökkel való együttműködéshez, például jelvények beolvasásához vagy érintkezés nélküli fizetéshez.</translation>
 <translation id="1547123415014299762">A harmadik féltől származó cookie-k engedélyezve vannak</translation>
 <translation id="1593426485665524382">Új műveletek állnak rendelkezésre a képernyő tetejéhez közel</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -115,6 +117,7 @@
 <translation id="2677748264148917807">Lap elhagyása</translation>
 <translation id="2682367912565197520">Mentett nagyítási szint törlése</translation>
 <translation id="2683434792633810741">Végrehajtja a törlést és az alaphelyzetbe állítást?</translation>
+<translation id="2685514716378236873">Nincs engedélyezve</translation>
 <translation id="2713106313042589954">Kamera kikapcsolása</translation>
 <translation id="2717722538473713889">E-mail-címek</translation>
 <translation id="2726059656860238749">A Chrome elindítása a cím- és keresősávra fókuszálva, ami csökkenti az indulási időt alsóbb kategóriás eszközökön.</translation>
@@ -211,12 +214,14 @@
 <translation id="3955193568934677022">Engedélyezi a webhelyek számára a védett tartalmak lejátszását (ajánlott)</translation>
 <translation id="3965467402665811906">A webhelyek engedélyt kérhetnek arra, hogy felhasználják az Önről mentett adatokat</translation>
 <translation id="3967822245660637423">A letöltés sikeres</translation>
+<translation id="3981465354637804599">A webhelyek általában azért jelenítenek meg hirdetéseket, hogy díjmentesen kínálhassanak tartalmakat és szolgáltatásokat. Egyes webhelyek azonban köztudottan tolakodó vagy félrevezető hirdetéseket jelenítenek meg.</translation>
 <translation id="3987993985790029246">Link másolása</translation>
 <translation id="3991845972263764475">? / <ph name="BYTES_DOWNLOADED_WITH_UNITS" /></translation>
 <translation id="3992308058851451478">A(z) <ph name="SITE" /> felhasználhatja az Ön adatait böngészés közben</translation>
 <translation id="3992684624889376114">Információ az oldalról</translation>
 <translation id="4002066346123236978">Cím</translation>
 <translation id="4046123991198612571">Következő szám</translation>
+<translation id="4077310749977440510">A webhelyek általában bizonyos funkciók biztosítása (például a másolt szöveg formázásának megőrzése) érdekében olvassák le a vágólapon lévő szöveget.</translation>
 <translation id="4149890623864272035">Biztosan törli az összes helyi adatot (a cookie-kkal együtt), és alaphelyzetbe állítja a webhely összes engedélyét?</translation>
 <translation id="4149994727733219643">Weboldalak egyszerűsített nézete</translation>
 <translation id="4151930093518524179">Alapértelmezett nagyítás</translation>
@@ -224,6 +229,7 @@
 <translation id="4169549551965910670">Csatlakoztatva USB-eszközhöz</translation>
 <translation id="4194328954146351878">Kérdezzen rá, mielőtt engedélyezi a webhelyek számára az NFC-eszközökön található információk megtekintését és az ilyen eszközökkel való információcserét (ajánlott)</translation>
 <translation id="4200726100658658164">Helybeállítások megnyitása</translation>
+<translation id="421742575134139848">A webhelyek lejátszhatnak hangot, hogy a zeneszámok, videók és egyéb médiatartalmak hallhatók legyenek.</translation>
 <translation id="4226663524361240545">Az értesítések miatt rezeghet az eszköz</translation>
 <translation id="4259722352634471385">Le van tiltva az ide vezető navigáció: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Elhagyásuk után a webhelyek tovább folytathatják a szinkronizálást a feladatok (például fotók feltöltése vagy csevegőüzenetek küldése) befejezése érdekében.</translation>
@@ -247,6 +253,7 @@
 <translation id="4566417217121906555">Mikrofon némítása</translation>
 <translation id="4570913071927164677">Részletek</translation>
 <translation id="4598549027014564149">Inkognitó módban a webhelyek nem használhatják fel az Ön cookie-jait arra, hogy megfigyeljék az Ön böngészési tevékenységeit a különböző webhelyek között, még kapcsolódó webhelyek esetén sem. Böngészési tevékenységeit nem használjuk fel például a hirdetések személyre szabásához. Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek majd megfelelően.</translation>
+<translation id="461356340001513807">Lehetővé teszi, hogy identitásszolgáltató által biztosított fiókkal jelentkezzen be a webhelyekre.</translation>
 <translation id="4619615317237390068">Más eszközök lapjai</translation>
 <translation id="4644713492825682049">Törlés és alaphelyzetbe állítás</translation>
 <translation id="4645575059429386691">A szülő kezeli</translation>
@@ -430,6 +437,7 @@
 <translation id="7000754031042624318">Kikapcsolva az Android beállításaiban</translation>
 <translation id="702275896380648118">Ez a webhely kikövetkezteti az Ön által kedvelt dolgokat, majd hirdetéseket ajánl más webhelyeknek. Emellett lekéri az Önre vonatkozó hirdetéstémákat a Chrome-ból, hogy relevánsabb hirdetéseket jelenítsen meg Önnek.</translation>
 <translation id="7053983685419859001">Letiltás</translation>
+<translation id="7055552182600664515">Lehetséges, hogy a szerzői joggal védett tartalmak lejátszásához a webhelyeknek tartalomvédelmi szolgáltatásokat kell használniuk. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 elem kijelölve}other{# elem kijelölve}}</translation>
 <translation id="708014373017851679">A(z) „<ph name="APP_NAME" />” elavult. Frissítse az alkalmazást.</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> elem kiválasztva. A lehetőségek a képernyő tetején találhatók.</translation>

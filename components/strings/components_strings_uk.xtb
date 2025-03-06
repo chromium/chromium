@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">Кнопка "Керувати завантаженнями в Chrome"; активуйте, щоб керувати завантаженими файлами в Chrome</translation>
 <translation id="1420345875188552368">Для цього платежу може використовуватися збережений спосіб автоматичної оплати. Щоб вимкнути електронні гаманці в Chrome, перейдіть у <ph name="BEGIN_LINK1" />налаштування платежів<ph name="END_LINK1" />.</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, щоб підключити</translation>
+<translation id="1421484961346698724">Видалений обліковий запис</translation>
 <translation id="14222610277930434">Ви часто відвідуєте цю сторінку</translation>
 <translation id="1422930527989633628">Може просити дозвіл шукати пристрої з Bluetooth поблизу</translation>
 <translation id="1426410128494586442">Так</translation>
@@ -3024,6 +3025,7 @@
 <translation id="6351658970066645919">Видалити дані вебперегляду</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Немає}=1{1 пароль (для <ph name="DOMAIN_LIST" />, синхронізовано)}=2{2 паролі (для <ph name="DOMAIN_LIST" />, синхронізовано)}one{# пароль (для <ph name="DOMAIN_LIST" />, синхронізовано)}few{# паролі (для <ph name="DOMAIN_LIST" />, синхронізовано)}many{# паролів (для <ph name="DOMAIN_LIST" />, синхронізовано)}other{# пароля (для <ph name="DOMAIN_LIST" />, синхронізовано)}}</translation>
 <translation id="6355392890578844978">Цим веб-переглядачем не керує адміністратор компанії чи іншої організації. Діями на цьому пристрої можна керувати за межами Chromium. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Групи вкладок "<ph name="GROUP_TITLE_1" />" і "<ph name="GROUP_TITLE_2" />" більше не доступні</translation>
 <translation id="6358088212770985041">змінити способи оплати</translation>
 <translation id="6358450015545214790">Що це означає?</translation>
 <translation id="6360213755783740931">Докладніше про захист від зловмисного програмного забезпечення</translation>

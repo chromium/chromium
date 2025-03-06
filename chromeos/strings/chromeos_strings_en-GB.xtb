@@ -406,6 +406,7 @@
 <translation id="2787237339470862294">This language isn't supported at this time</translation>
 <translation id="2787435249130282949">keyboard brighter</translation>
 <translation id="2805756323405976993">Apps</translation>
+<translation id="2822702442014805146">Summary and name creation model download in progress</translation>
 <translation id="28232023175184696">Cannot connect to the Internet. Click to try again.</translation>
 <translation id="2855718259207180827">wool</translation>
 <translation id="2859243502336719778">Critical update</translation>
@@ -503,6 +504,7 @@
 <translation id="3373141842870501561">Earth flow wallpaper</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> background with the letter <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Exclusive</translation>
+<translation id="3395147534045164351">Toggle snap location</translation>
 <translation id="3404249063913988450">Enable screensaver</translation>
 <translation id="3413935475507503304">To proceed with the update, click Next.</translation>
 <translation id="3428551088151258685">outdoor</translation>
@@ -652,6 +654,7 @@
 <translation id="4113067922640381334">You now have access to new <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />wallpapers<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Dark mode</translation>
 <translation id="4126551873361000548">Backwards 10 seconds</translation>
+<translation id="4128271910628504223">Enter a prompt like 'draw a misty forest'</translation>
 <translation id="4130035430755296270">Keep hovering for more layout options</translation>
 <translation id="4130750466177569591">I agree</translation>
 <translation id="4131410914670010031">Black and white</translation>
@@ -825,6 +828,7 @@
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4897058166682006107">Device has <ph name="BATTERY_PERCENTAGE" />% left bud battery.</translation>
 <translation id="4905998861748258752">Turn the feature on to select screen saver options</translation>
+<translation id="4910853326379896417">Summary and name creation model download completed</translation>
 <translation id="4910858703033903787">APN types</translation>
 <translation id="4917385247580444890">Strong</translation>
 <translation id="4917889632206600977">Stopped – out of paper</translation>
@@ -859,8 +863,10 @@
 <translation id="5050042263972837708">Group name</translation>
 <translation id="5051044138948155788">This is the only page. This will take you to the scanning start screen.</translation>
 <translation id="5053233795640754917">Pause</translation>
+<translation id="5056587122125565772">Create image</translation>
 <translation id="5078711626843651677">Voice models are stored temporarily on-device until the speaker labelling is complete. You can turn this off at any time in Settings.</translation>
 <translation id="5078983345702708852">futuristic</translation>
+<translation id="5085224064082122501">Can't download model for summary and name creation. Try again or restart your Chromebook.</translation>
 <translation id="5087864757604726239">back</translation>
 <translation id="5088172560898466307">Server hostname</translation>
 <translation id="5089810972385038852">State</translation>
@@ -1428,6 +1434,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB touchscreen</translation>
 <translation id="757747079855995705">stone</translation>
+<translation id="7584853321964440104">Can't download. Try again or restart your Chromebook.</translation>
 <translation id="7590883480672980941">Input settings</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> left</translation>
 <translation id="7600430297804876776">The <ph name="MANAGER" /> administrator has set when this <ph name="DEVICE_TYPE" /> can be used.</translation>

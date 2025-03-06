@@ -22,6 +22,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1058009965971887428">Nahlásit zpětnou vazbu</translation>
 <translation id="1059120031266247284">Sdíleno s vámi</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> s tlačítkem k odstranění</translation>
 <translation id="1062407476771304334">Nahradit</translation>
 <translation id="1073899992769346247">Vyměňte nebo znovu nabijte baterii</translation>
 <translation id="1081015718268701546">Linuxové aplikace v současné době nejsou podporovány. Ostatní aplikace budou uloženy.</translation>
@@ -323,6 +324,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2083190527011054446">Dobrou noc, <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Otevřít výběr smajlíků</translation>
 <translation id="2088116547584365419">hry</translation>
+<translation id="2092517835716911174">Funkce Pomoz mi přečíst a Pomoz mi psát můžou používat jen uživatelé starší 18 let</translation>
 <translation id="209965399369889474">Nejste připojeni k síti</translation>
 <translation id="2107581415810719320">Jiné tlačítko <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Váš kabel USB-C nepodporuje rozhraní Thunderbolt. Výkon zařízení může být omezen.</translation>
@@ -1228,6 +1230,7 @@ Je připojeno 1 zařízení.</translation>
 <translation id="5043679421800073804">Kliknout nebo klepnout na poslední ikonu na poličce</translation>
 <translation id="504465286040788597">Předchozí odstavec</translation>
 <translation id="5045550434625856497">Nesprávné heslo</translation>
+<translation id="5056587122125565772">Vytvořit obrázek</translation>
 <translation id="5058794129231928255">Nepodařilo se vytvořit dokument Google</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Pokud budete mluvit s vypnutým zvukem, zobrazí se vám oznámení. Zvuk nikdy neopustí vaše zařízení.</translation>
@@ -1276,6 +1279,7 @@ Můžete také použít klávesovou zkratku. Nejdříve zvýrazněte text a pak
 <translation id="5222676887888702881">Odhlásit se</translation>
 <translation id="5228195526683428788">Čára rozdělující obrazovku</translation>
 <translation id="5229343007215035173">Zapnout/vypnout obrazovku ochrany soukromí</translation>
+<translation id="5229860525743792999">Odstranit položku <ph name="ITEM_LABEL" /> z navrhované skupiny</translation>
 <translation id="5230516054153933099">Okno</translation>
 <translation id="5234764350956374838">Zavřít</translation>
 <translation id="523505283826916779">Nastavení usnadnění přístupu</translation>
@@ -1758,6 +1762,7 @@ Nová instalace</translation>
 <translation id="6757237461819837179">Nepřehrává se žádný mediální obsah</translation>
 <translation id="6760438044935091345">Herní panel</translation>
 <translation id="6768043681523654438">úložiště</translation>
+<translation id="6769195697113506406">Vložen obrázek</translation>
 <translation id="6777216307882431711">Napájení připojených zařízení USB-C</translation>
 <translation id="6781002679438061620">Plocha 9</translation>
 <translation id="6782182743534150858">Plocha 13</translation>
@@ -1983,6 +1988,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7571361473021531288">Baterie: <ph name="BATTERY_PERCENTAGE" /> % | zbývá: <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Aktivní okno je zadokováno vpravo.</translation>
 <translation id="7579778809502851308">Snímky obrazovky</translation>
+<translation id="7588317312481506627">Zkopírováno do schránky.</translation>
 <translation id="7593891976182323525">Vyhledávání nebo Shift</translation>
 <translation id="7598054670902114203">Snímek využití CPU, <ph name="CPU_USEAGE" /> %. Teplota <ph name="TEMPERATURE" /> stupňů Celsia, aktuální rychlost: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Vkládání vybraného výsledku</translation>
@@ -2177,6 +2183,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8155628902202578800">Otevřít dialogové okno s informacemi o účtu <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Používá se <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Obsah</translation>
+<translation id="81817143961839203">Vložení obrázku se nezdařilo</translation>
 <translation id="8185090165691050712">Zapnout/vypnout nabídku změny velikosti zamknutého režimu</translation>
 <translation id="8192727139462702395">Když vypnete Bluetooth, od zařízení <ph name="DEVICE_TYPE" /> se odpojí tato externí zařízení:</translation>
 <translation id="8198456017687137612">Odesílání karty</translation>
@@ -2255,6 +2262,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8473301994082929012">Organizace <ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> funkci <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Vypnete jej stisknutím kombinace kláves Alt + Hledat nebo klávesy Shift.</translation>
 <translation id="8480418399907765580">Zobrazit lištu</translation>
+<translation id="8487660088084188539">Když zapnete tyto funkce, zadaný text, obsah dokumentu a adresa URL webové stránky se můžou odeslat na servery Googlu. Tyto informace se používají ke generování návrhů textu a souhrnů, odpovídání na otázky a zlepšování služby v souladu se <ph name="LINK_TO_SERVICE_TERMS" />. Neuvádějte žádné osobní, citlivé ani důvěrné informace.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Otevřít odkaz na nové kartě</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> rozlišení <ph name="SPECIFIED_RESOLUTION" /> nepodporuje. Rozlišení bylo změněno na <ph name="FALLBACK_RESOLUTION" />. Chcete-li změny ponechat, potvrďte je. Předchozí nastavení bude obnoveno za <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2324,6 +2332,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8725066075913043281">Zkusit znovu</translation>
 <translation id="8725214031272624704">Zobrazit seznam dostupných metod zadávání</translation>
 <translation id="8730621377337864115">Hotovo</translation>
+<translation id="8731188831050207755">Soubor <ph name="FILE_NAME" /> se nepodařilo stáhnout.</translation>
 <translation id="8731487213223706745">Končí v <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Je možné, že se pokouší odcizit vaše stisknutí kláves.</translation>
 <translation id="8735678380411481005">Barva podsvícení klávesnice</translation>

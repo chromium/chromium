@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">Лозинката ќе се зачува во „Управникот со лозинки на Google“ за <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Отворете нова картичка во Chrome</translation>
 <translation id="1166460004393506534">Избришете ги податоците од прелистување во Chrome</translation>
+<translation id="1171255741903316750">Вклучете „Заклучувај ги картичките „Инкогнито“ при затворање на Chrome“</translation>
 <translation id="1179527450541388808">Пристапувајте до Chrome побрзо од докот на почетниот екран на вашиот iPad.</translation>
 <translation id="1180362651362502943">Продолжете да ги користите податоците од Chrome во вашата сметка на Google.</translation>
 <translation id="1200396280085622191">Користете Chrome секогаш кога ќе допрете линкови во пораки и други апликации.</translation>
@@ -45,6 +46,7 @@
 <translation id="1917964099031477364">Сметкава и сите незачувани податоци ќе се отстранат од Chrome и другите апликации на Google на уредов.</translation>
 <translation id="1919130412786645364">Дозволете најавување на Chrome</translation>
 <translation id="1965935827552890526">Завршете го тоа што сте го започнале во другиот отворен прозорец на Chrome.</translation>
+<translation id="1973910962341002002">Вклучете го „Chrome“ од поставките „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“</translation>
 <translation id="1984705450038014246">Синхронизирајте ги податоците од Chrome</translation>
 <translation id="1987779152850321833">Завршете ги чекориве предложени подолу за да го извлечете максимумот од Chrome.</translation>
 <translation id="2055826352861631739">Користете го Chrome за iPad стандардно</translation>
@@ -96,10 +98,13 @@
 <translation id="3282568296779691940">Најави се на Chrome</translation>
 <translation id="3303503998967553377">Користете „Дејства во Chrome“ на iOS</translation>
 <translation id="3348862487678490430">Додајте ставка во „Список за читање“ на Chrome</translation>
+<translation id="3357827134511189025">Најавувајте се со зачуваните лозинки и криптографски клучеви од која било апликација користејќи Chrome for AutoFill</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Ова се случува кога Chrome не се користи {THRESHOLD} минута}one{Ова се случува кога Chrome не се користи {THRESHOLD} минута}other{Ова се случува кога Chrome не се користи {THRESHOLD} минути}}</translation>
 <translation id="3367797402528056312">Довршете го поставувањето на Chrome</translation>
 <translation id="3371064404604898522">Постави го Chrome како стандарден прелистувач</translation>
 <translation id="3399930248910934354">Отворете ги поставките за Chrome</translation>
+<translation id="3440830787838130530">Лесно и безбедно споделете копија од лозинка со вашата семејна група во Google Password Manager</translation>
+<translation id="3460369101684070455">За да ги добиете зачуваните лозинки лесно во другите апликации, користете Chrome for AutoFill</translation>
 <translation id="3472587960215700950">Chrome користи „Карти на Google“ за да ви обезбедува насоки и локални информации за откриените адреси.</translation>
 <translation id="3503014945441706099">Добијте „Подобрено безбедно прелистување“ и за овој профил на Chrome</translation>
 <translation id="3522659714780527202">За да ги гледате картичките секаде каде што користите Chrome, вклучете синхронизација</translation>
@@ -181,6 +186,7 @@
 <translation id="5998675059699164418">Вашата организација бара да се најавите за да користите Chrome.</translation>
 <translation id="6021312115739110405">Приспособена активност создадена за вас од Google. Опфаќа „Вести“, „Спорт“ и „Време“.</translation>
 <translation id="6022659036123304283">Направете го Chrome свој</translation>
+<translation id="6132075343662013154">Chrome ќе понуди да ја зачува вашата лозинка</translation>
 <translation id="6132149203299792222">Најавете се со сметката на Google за да ги синхронизирате вашите лозинки, обележувачи и друго.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Пребарувајте во Chrome</translation>
@@ -228,6 +234,7 @@
 <translation id="7061455974939528301">Притиснете и задржете ја иконата за Chrome, па кликнете „Изменете го почетниот екран“</translation>
 <translation id="7065813315247345131">Преместете го Chrome на докот</translation>
 <translation id="7124339256045485976">Одржувајте го Chrome ажурен</translation>
+<translation id="7145599899567697473">Зачувувајте и автоматски пополнувајте лозинки во Chrome</translation>
 <translation id="7161390184744336561">Google Chrome е застарен</translation>
 <translation id="7165736900384873061">Започнете со користење на QR-скенерот на Google Chrome</translation>
 <translation id="7175129790242719365">Совет за Chrome: најавете се на Chrome</translation>
@@ -261,6 +268,7 @@
 <translation id="7693590760643069321">Сега може да го користите Chrome секогаш кога ќе допрете линкови во пораките, документите и другите апликации.</translation>
 <translation id="7698568245838009292">Chrome би сакал да пристапи до камерата</translation>
 <translation id="7707877166818730835">Отвори ја мојата последна картичка во Chrome</translation>
+<translation id="7747746207470479571">Добијте лесен пристап до лозинките и криптографските клучеви со Chrome for AutoFill</translation>
 <translation id="776305366874821582">Пристапувајте до Chrome побрзо од докот на почетниот екран на вашиот iPhone.</translation>
 <translation id="7780154209050837198">За да го извлечете максимумот од Chrome, најавете се на Chrome со вашата сметка на Google.</translation>
 <translation id="7787205077729386167">Отворете ги поставките за Chrome на iOS, па допрете „Стандардна апликација за прелистување“ и изберете Chrome.</translation>
@@ -281,6 +289,7 @@
 <translation id="8136856065410661948">Ова ќе се користи за да се создаваат настани во вашиот „Календар на Apple“ од Chrome и Google Lens.</translation>
 <translation id="8154120522323162874">Извлечете го максимумот од Chrome така што ќе продолжите со поставувањето на прелистувачот.</translation>
 <translation id="8160472928944011082">Chrome не може да се ажурира</translation>
+<translation id="8245080522851805544">Чувајте го прелистувањето приватно со автентикацијата на уредот кога ќе го затворите Chrome</translation>
 <translation id="8248887045858762645">Совет за Chrome</translation>
 <translation id="8265730590513812063">Отворете го менито на Chrome</translation>
 <translation id="8317674518145175158">Начините на плаќање и адресите нема да се шифрираат. Историјата на прелистувањето од Chrome нема да се синхронизира.
@@ -324,5 +333,6 @@
 <translation id="9181628561061032322">Ги отвора неодамнешните картички во Chrome.</translation>
 <translation id="948597495737267756">Ја отвора страницата со вашата историја на Chrome.</translation>
 <translation id="97300214378190234">Користете Chrome секогаш кога ќе допрете линкови во други апликации.</translation>
+<translation id="997929539742564806">Најавувајте се брзо на апликациите и сајтовите со автоматско пополнување на лозинките и криптографските клуч од Chrome</translation>
 <translation id="998677222109959694">Управувајте со поставките за Chrome</translation>
 </translationbundle>

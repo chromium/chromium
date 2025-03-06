@@ -270,6 +270,7 @@
 <translation id="2259659629660284697">Εξαγωγή κωδικών πρόσβασης…</translation>
 <translation id="2276696007612801991">Συνδεθείτε στον Λογαριασμό σας Google για να ελέγξετε τους κωδικούς πρόσβασής σας.</translation>
 <translation id="2278052315791335171">Η κατάργηση αυτού του κωδικού πρόσβασης δεν θα διαγράψει τον λογαριασμό σας στον ιστότοπο <ph name="SITE" /></translation>
+<translation id="2281243904606300427"><ph name="TAB_TITLE" />, Επιλεγμένη καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="2286841657746966508">Διεύθυνση τιμολόγησης</translation>
 <translation id="228704530595896923">Λίστα επιλογών κοινοποίησης</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Εμφάνιση <ph name="TABS_COUNT_ONE" /> καρτέλας}other{Εμφάνιση <ph name="TABS_COUNT_MANY" /> καρτελών}}</translation>
@@ -329,6 +330,7 @@
 <translation id="2534155362429831547">Διαγράφηκαν <ph name="NUMBER_OF_ITEMS" /> στοιχεία</translation>
 <translation id="253498598929009420">Ο ιστότοπος θα μπορεί να βλέπει τα περιεχόμενα της οθόνης</translation>
 <translation id="2536728043171574184">Προβολή ενός αντιγράφου αυτής της σελίδας εκτός σύνδεσης</translation>
+<translation id="2542548955756682219"><ph name="TAB_TITLE" />, Καρτέλα</translation>
 <translation id="2546283357679194313">Cookie και δεδομένα ιστότοπου</translation>
 <translation id="2547843573592965873">Το κλείδωμα προφίλ διατηρεί ασφαλείς τις πληροφορίες σας στο αυτοκίνητο, όπως κωδικούς πρόσβασης, πληρωμές και άλλες πληροφορίες που είναι αποθηκευμένες στον Λογαριασμό σας Google.</translation>
 <translation id="254973855621628293">Οι κωδικοί πρόσβασης αποθηκεύτηκαν σε αυτή τη συσκευή</translation>
@@ -472,6 +474,7 @@
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 κωδικός πρόσβασης και κάποια άλλα στοιχεία έχουν αποθηκευτεί μόνο σε αυτή τη συσκευή. Για να τα χρησιμοποιήσετε στις άλλες συσκευές σας, αποθηκεύστε τα στον Λογαριασμό σας Google, <ph name="ACCOUNT_EMAIL" />.}other{# κωδικοί πρόσβασης και κάποια άλλα στοιχεία έχουν αποθηκευτεί μόνο σε αυτή τη συσκευή. Για να τα χρησιμοποιήσετε στις άλλες συσκευές σας, αποθηκεύστε τα στον Λογαριασμό σας Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="3187472288455401631">Μέτρηση διαφημίσεων</translation>
+<translation id="3189635831478931757">Ομάδα καρτελών <ph name="GROUP_TITLE" /></translation>
 <translation id="3207960819495026254">Προστέθηκε στους σελιδοδείκτες</translation>
 <translation id="3208584281581115441">Έλεγχος τώρα</translation>
 <translation id="3211426585530211793">Το <ph name="ITEM_TITLE" /> διαγράφηκε</translation>
@@ -748,6 +751,7 @@
 <translation id="4523326818319942067">τελευταία ώρα</translation>
 <translation id="452750746583162491">Έλεγχος συγχρονισμένων δεδομένων</translation>
 <translation id="4532845899244822526">Επιλογή φακέλου</translation>
+<translation id="4535755320005483982">Κοινόχρηστη ομάδα καρτελών <ph name="GROUP_TITLE" /></translation>
 <translation id="4543131175509360848">Δεν υπάρχουν φύλλα κλειδιών πρόσβασης</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> καρτέλα}other{<ph name="TAB_COUNT_MANY" /> καρτέλες, <ph name="TAB_COUNT_INCOGNITO" /> ανώνυμης περιήγησης}}</translation>
 <translation id="4558311620361989323">Συντομεύσεις ιστοσελίδας</translation>
@@ -1249,6 +1253,7 @@
 <translation id="6756507620369789050">Υποβολή σχολίων</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="676305334223455055">Συνδεθείτε για να λάβετε περιεχόμενο με βάση τα ενδιαφέροντά σας</translation>
+<translation id="6764137532716892442">Κοινόχρηστη ομάδα καρτελών <ph name="GROUP_TITLE" /> με νέα δραστηριότητα</translation>
 <translation id="6767294960381293877">Άνοιγμα σε μισό ύψος της λίστας συσκευών στις οποίες θα κοινοποιηθεί μια καρτέλα.</translation>
 <translation id="6785476624617658922">Πρόσθετοι Όροι Παροχής Υπηρεσιών Chrome και Chrome OS</translation>
 <translation id="6795633245022906657">Ανοίξτε γρήγορα μια νέα καρτέλα. Για να επεξεργαστείτε αυτήν τη συντόμευση, μεταβείτε στις Ρυθμίσεις.</translation>
@@ -1315,6 +1320,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Προβολή <ph name="TABS_COUNT_ONE" /> καρτέλας με νέα δραστηριότητα σε κοινόχρηστες ομάδες καρτελών}other{Προβολή <ph name="TABS_COUNT_MANY" /> καρτελών με νέα δραστηριότητα σε κοινόχρηστες ομάδες καρτελών}}</translation>
 <translation id="6971862865055170158">Δεν εγκρίνεται</translation>
+<translation id="6976223255612495095"><ph name="TAB_TITLE" />, Νέα ή ενημερωμένη καρτέλα</translation>
 <translation id="6978717888677691380">Ιστότοποι που έχετε αποκλείσει</translation>
 <translation id="6979737339423435258">Από την αρχή</translation>
 <translation id="6983306615164277634">Μπορείτε επίσης να αγγίξετε παρατεταμένα τη γραμμή διευθύνσεων για να αλλάξετε τη θέση.</translation>
@@ -1708,6 +1714,7 @@
 <translation id="8676276370198826499">Εγγραφείτε στο <ph name="SITE_ETLD_PLUS_ONE" /> με το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Επαληθεύσεις σύνδεσης</translation>
 <translation id="8683039184091909753">εικόνα</translation>
+<translation id="8688183792442786085"><ph name="TAB_TITLE" />, Επιλεγμένη καρτέλα</translation>
 <translation id="869891660844655955">Ημερομηνία λήξης</translation>
 <translation id="8699120352855309748">Να μην παρέχεται δυνατότητα μετάφρασης αυτών των γλωσσών</translation>
 <translation id="8712637175834984815">Κατάλαβα!</translation>
@@ -1841,4 +1848,5 @@
 <translation id="988091779042748639">Για να διαγράψετε το ιστορικό ανώνυμης περιήγησης από τη συσκευή σας, κλείστε όλες τις καρτέλες ανώνυμης περιήγησης.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> καρτέλες</translation>
 <translation id="996149300115483134">Το μενού της κάρτας ροής είναι κλειστό</translation>
+<translation id="99907655649633293"><ph name="TAB_TITLE" />, Καρτέλα ανώνυμης περιήγησης</translation>
 </translationbundle>

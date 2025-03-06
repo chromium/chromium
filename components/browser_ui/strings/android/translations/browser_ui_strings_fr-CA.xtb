@@ -6,6 +6,7 @@
 <translation id="1044891598689252897">Les sites fonctionneront normalement</translation>
 <translation id="1070329623210597193">Les fichiers que ce site peut afficher ou modifier</translation>
 <translation id="1073417869336441572">Aidez-nous à améliorer Chrome en nous indiquant pourquoi vous avez autorisé les témoins tiers. <ph name="BEGIN_LINK" />Envoyer des commentaires<ph name="END_LINK" /></translation>
+<translation id="1074758928858737435">Vous pouvez demander à voir la version pour ordinateur de bureau des sites</translation>
 <translation id="1085696779717592361">Utiliser Chrome par défaut</translation>
 <translation id="1178581264944972037">Interrompre</translation>
 <translation id="1181037720776840403">Supprimer</translation>
@@ -32,6 +33,7 @@
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}one{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
 <translation id="1500473259453106018">Masquer la carte Baisse de prix sur les onglets</translation>
 <translation id="1510341833810331442">Les sites ne sont pas autorisés à enregistrer des données sur votre appareil</translation>
+<translation id="1538031354170655462">Les sites utilisent généralement la communication en champ proche (CCP) pour fonctionner avec des balises ou des appareils à proximité, comme le balayage de badges ou le paiement sans contact</translation>
 <translation id="1547123415014299762">Les témoins tiers sont autorisés</translation>
 <translation id="1593426485665524382">Nouvelles actions accessibles près du haut de l'écran</translation>
 <translation id="1620510694547887537">Caméra</translation>
@@ -115,6 +117,7 @@
 <translation id="2677748264148917807">Quitter</translation>
 <translation id="2682367912565197520">Supprimer le niveau de zoom enregistré</translation>
 <translation id="2683434792633810741">Supprimer et réinitialiser?</translation>
+<translation id="2685514716378236873">Non autorisés</translation>
 <translation id="2713106313042589954">Désactiver la caméra</translation>
 <translation id="2717722538473713889">Adresses de courriel</translation>
 <translation id="2726059656860238749">Lancez Chrome avec l'omnibox focalisé, réduisant ainsi le temps de démarrage sur les appareils bas de gamme.</translation>
@@ -211,12 +214,14 @@
 <translation id="3955193568934677022">Autoriser les sites à lire le contenu protégé (recommandé)</translation>
 <translation id="3965467402665811906">Les sites peuvent demander d'utiliser les informations qu'ils ont enregistrées à votre sujet</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
+<translation id="3981465354637804599">Les sites affichent généralement des annonces afin de pouvoir proposer des contenus ou des services gratuits. Toutefois, certains sites sont connus pour afficher des annonces intrusives ou trompeuses.</translation>
 <translation id="3987993985790029246">Copier lien</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="3992308058851451478"><ph name="SITE" /> peut utiliser vos informations pendant que vous naviguez</translation>
 <translation id="3992684624889376114">À propos de cette page</translation>
 <translation id="4002066346123236978">Titre</translation>
 <translation id="4046123991198612571">Chanson suivante</translation>
+<translation id="4077310749977440510">Les sites lisent généralement votre presse-papiers pour des fonctionnalités telles que la conservation de la mise en forme du texte que vous avez copié</translation>
 <translation id="4149890623864272035">Voulez-vous vraiment supprimer toutes les données locales, y compris les témoins, et réinitialiser toutes les autorisations pour ce site Web?</translation>
 <translation id="4149994727733219643">Affichage simplifié pour les pages Web</translation>
 <translation id="4151930093518524179">Zoom par défaut</translation>
@@ -224,6 +229,7 @@
 <translation id="4169549551965910670">Connecté à un appareil USB</translation>
 <translation id="4194328954146351878">Demander l'autorisation avant de permettre aux sites de consulter et de modifier les données stockées sur les appareils CCP (recommandé)</translation>
 <translation id="4200726100658658164">Ouvrir les paramètres de localisation</translation>
+<translation id="421742575134139848">Les sites peuvent faire jouer des sons pour diffuser de la musique, des vidéos et d'autre contenu multimédia</translation>
 <translation id="4226663524361240545">Les notifications peuvent faire vibrer l'appareil</translation>
 <translation id="4259722352634471385">Navigation bloquée : <ph name="URL" /></translation>
 <translation id="4274673989874969668">Lorsque vous quittez un site, la synchronisation de celui-ci peut se poursuivre afin de terminer certaines tâches, comme téléverser des photos ou envoyer un message de clavardage</translation>
@@ -247,6 +253,7 @@
 <translation id="4566417217121906555">Désactiver le microphone</translation>
 <translation id="4570913071927164677">Détails</translation>
 <translation id="4598549027014564149">En mode navigation privée, les sites ne peuvent pas utiliser de témoins pour suivre votre activité de navigation sur les sites ni même sur les sites connexes. Votre activité de navigation n'utilise pas les options telles que la personnalisation des publicités. Les fonctionnalités de certains sites pourraient ne pas fonctionner.</translation>
+<translation id="461356340001513807">Vous permet de vous connecter à des sites Web en utilisant le compte que vous détenez auprès d'un service de vérification de l'identité</translation>
 <translation id="4619615317237390068">Onglets ouverts sur d'autres appareils</translation>
 <translation id="4644713492825682049">Supprimer et réinitialiser</translation>
 <translation id="4645575059429386691">Géré par l’un de tes parents</translation>
@@ -430,6 +437,7 @@
 <translation id="7000754031042624318">Désactivée dans les paramètres Android</translation>
 <translation id="702275896380648118">Ce site détermine ce que vous aimez et suggère ensuite des annonces à d'autres sites. Ce site récupère également les sujets de vos annonces à partir de Chrome pour vous montrer des annonces plus pertinentes.</translation>
 <translation id="7053983685419859001">Bloquer</translation>
+<translation id="7055552182600664515">Pour faire jouer du contenu protégé par les droits d'auteur, les sites peuvent devoir utiliser un service de protection du contenu. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 élément sélectionné}one{# élément sélectionné}other{# éléments sélectionnés}}</translation>
 <translation id="708014373017851679">« <ph name="APP_NAME" /> » n'est pas à jour. Veuillez mettre à jour l'application.</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> élément(s) sélectionné(s). Options disponibles vers le haut de l'écran</translation>

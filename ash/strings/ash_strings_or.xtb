@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">ମତାମତର ରିପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="1059120031266247284">ଆପଣଙ୍କ ସହ ସେୟାର କରଯାଇଛି</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176">"କାଢ଼ି ଦିଅନ୍ତୁ" ବଟନ ସହିତ <ph name="ITEM_LABEL" /></translation>
 <translation id="1062407476771304334">ପ୍ରତିସ୍ଥାପନ କରନ୍ତୁ</translation>
 <translation id="1073899992769346247">ବ୍ୟାଟେରୀ ବଦଳାନ୍ତୁ କିମ୍ବା ଏହାକୁ ରିଚାର୍ଜ କରନ୍ତୁ</translation>
 <translation id="1081015718268701546">Linux ଆପଗୁଡ଼ିକ ବର୍ତ୍ତମାନ ସମର୍ଥିତ ନୁହେଁ। ଅନ୍ୟ ଆପଗୁଡ଼ିକ ସେଭ ହୋଇଯିବ।</translation>
@@ -323,6 +324,7 @@
 <translation id="2083190527011054446">ଶୁଭ ରାତ୍ରି <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">ଇମୋଜି ପିକର୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="2088116547584365419">ଗେମଗୁଡ଼ିକ</translation>
+<translation id="2092517835716911174">ପଢ଼ିବାକୁ ମୋତେ ସାହାଯ୍ୟ କର ଏବଂ ମୋତେ ଲେଖିବାରେ ସାହାଯ୍ୟ କରକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ ବୟସ ଅତି କମରେ 18 ବର୍ଷ ହୋଇଥିବା ଆବଶ୍ୟକ।</translation>
 <translation id="209965399369889474">ନେଟ୍‌ୱାର୍କ ସହିତ ସଂଯୁକ୍ତ ହୋଇ ନାହିଁ</translation>
 <translation id="2107581415810719320">ଅନ୍ୟ ବଟନ <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">ଆପଣଙ୍କ USB-C କେବୁଲ Thunderboltକୁ ସମର୍ଥନ କରେ ନାହିଁ। ଡିଭାଇସ ପରଫରମାନ୍ସକୁ ସୀମିତ କରାଯାଇପାରେ।</translation>
@@ -1228,6 +1230,7 @@
 <translation id="5043679421800073804">ସେଲ୍ଫରେ ଥିବା ଶେଷ ଆଇକନରେ କ୍ଲିକ କିମ୍ବା ଟାପ କରନ୍ତୁ</translation>
 <translation id="504465286040788597">ପୂର୍ବବର୍ତ୍ତୀ ଅନୁଚ୍ଛେଦ</translation>
 <translation id="5045550434625856497">ଭୁଲ ପାସୱାର୍ଡ</translation>
+<translation id="5056587122125565772">ଇମେଜ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="5058794129231928255">Google Doc ତିଆରି କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">ଯଦି ଆପଣ ମ୍ୟୁଟ ଥିବା ସମୟରେ କୁହନ୍ତି ତେବେ ଆପଣଙ୍କୁ ସୂଚିତ କରାଯିବ। ଅଡିଓକୁ ଆପଣଙ୍କ ଡିଭାଇସରୁ କେବେ ବି ବାହାର କରାଯାଏ ନାହିଁ।</translation>
@@ -1276,6 +1279,7 @@
 <translation id="5222676887888702881">ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ</translation>
 <translation id="5228195526683428788">ସ୍ପ୍ଲିଟ ସ୍କ୍ରିନ ଡିଭାଇଡର</translation>
 <translation id="5229343007215035173">ଗୋପନୀୟତା ସ୍କ୍ରିନକୁ ଚାଲୁ/ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="5229860525743792999">ପ୍ରସ୍ତାବିତ ଗୋଷ୍ଠୀରୁ <ph name="ITEM_LABEL" /> କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="5230516054153933099">ୱିଣ୍ଡୋ</translation>
 <translation id="5234764350956374838">ଖାରଜ କରନ୍ତୁ</translation>
 <translation id="523505283826916779">ଆକ୍ସେସିବିଲିଟୀ ସେଟିଂସ୍‌</translation>
@@ -1757,6 +1761,7 @@
 <translation id="6757237461819837179">କୌଣସି ମିଡିଆ ଚାଲୁନାହିଁ</translation>
 <translation id="6760438044935091345">ଗେମ ଡେସବୋର୍ଡ</translation>
 <translation id="6768043681523654438">ଷ୍ଟୋରେଜ</translation>
+<translation id="6769195697113506406">ଇମେଜ ଇନସାର୍ଟ କରାଯାଇଛି</translation>
 <translation id="6777216307882431711">ସଂଯୁକ୍ତ ଥିବା USB-C ଡିଭାଇସ୍‌ଗୁଡ଼ିକୁ ଚାଲୁ କରୁଛି</translation>
 <translation id="6781002679438061620">ଡେସ୍କ 9</translation>
 <translation id="6782182743534150858">ଡେସ୍କ 13</translation>
@@ -1983,6 +1988,7 @@
 <translation id="7571361473021531288">ବେଟେରୀ <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> ବାକି ଅଛି</translation>
 <translation id="7573585051776738856">ସକ୍ରିୟ ୱିଣ୍ଡୋକୁ ଡାହାଣପଟେ ଡକ କରାଯାଇଛି।</translation>
 <translation id="7579778809502851308">ସ୍କ୍ରିନ୍ କ୍ୟାପଚର୍</translation>
+<translation id="7588317312481506627">କ୍ଲିପବୋର୍ଡକୁ କପି କରାଯାଇଛି।</translation>
 <translation id="7593891976182323525">Search କିମ୍ବା Shift</translation>
 <translation id="7598054670902114203">CPU ବ୍ୟବହାରର ସ୍ନାପସଟ, <ph name="CPU_USEAGE" />%। ତାପମାତ୍ରା <ph name="TEMPERATURE" /> ଡିଗ୍ରୀ ସେଲସିୟସ, ବର୍ତ୍ତମାନର ସ୍ପିଡ: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="7599378375976398913">ଚୟନିତ ଫଳାଫଳକୁ ଇନସାର୍ଟ କରାଯାଉଛି</translation>
@@ -2177,6 +2183,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> ପାଇଁ ସୂଚନା ଡାଏଲଗ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" />କୁ ବ୍ୟବହାର କରାଯାଉଛି</translation>
 <translation id="8168435359814927499">ବିଷୟବସ୍ତୁ</translation>
+<translation id="81817143961839203">ଇମେଜ ଇନସାର୍ଟ କରିବା ବିଫଳ ହୋଇଛି</translation>
 <translation id="8185090165691050712">ଲକ ମୋଡକୁ ରିସାଇଜ କରିବା ପାଇଁ ମେନୁକୁ ଚାଲୁ/ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="8192727139462702395">ଆପଣ ବ୍ଲୁଟୁଥ ବନ୍ଦ କଲେ, ଏହି ଏକ୍ସଟର୍ନଲ ଡିଭାଇସଗୁଡ଼ିକ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରୁ ଡିସକନେକ୍ଟ ହୋଇଯିବ:</translation>
 <translation id="8198456017687137612">କାଷ୍ଟିଂ ଟାବ୍</translation>
@@ -2255,6 +2262,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />ର <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />ଅଛି।</translation>
 <translation id="8477270416194247200">Alt+Search ଦବାନ୍ତୁ କିମ୍ବା ବାତିଲ୍‌କୁ ଶିଫ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="8480418399907765580">ଟୁଲବାର ଦେଖାନ୍ତୁ</translation>
+<translation id="8487660088084188539">ଆପଣ ଏହି ଫିଚରଗୁଡ଼ିକୁ ଚାଲୁ କଲେ, Google ସର୍ଭରକୁ ଇନପୁଟ ଟେକ୍ସଟ, ଡକ୍ୟୁମେଣ୍ଟ ବିଷୟବସ୍ତୁ ଏବଂ ୱେବ ପୃଷ୍ଠା URL ପଠାଯାଇପାରେ। ଏହି ସୂଚନାକୁ <ph name="LINK_TO_SERVICE_TERMS" /> ଅନୁଯାୟୀ ଲେଖିବା ପରାମର୍ଶ ଜେନେରେଟ କରିବା, ସାରାଂଶ ଜେନେରେଟ କରିବା, ପ୍ରଶ୍ନଗୁଡ଼ିକର ଉତ୍ତର ଦେବା ଏବଂ ପ୍ରଡକ୍ଟକୁ ଉନ୍ନତ କରିବା ପାଇଁ ବ୍ୟବହାର କରାଯାଏ। କୌଣସି ବ୍ୟକ୍ତିଗତ, ସମ୍ବେଦନଶୀଳ କିମ୍ବା ଗୋପନୀୟ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ ନାହିଁ।</translation>
 <translation id="8487699605742506766">ହଟସ୍ପଟ</translation>
 <translation id="8491237443345908933">ନୂଆ ଟାବରେ ଲିଙ୍କ ଖୋଲନ୍ତୁ</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" />କୁ ସମର୍ଥନ କରେ ନାହିଁ। ରିଜୋଲ୍ୟୁସନକୁ <ph name="FALLBACK_RESOLUTION" />ରେ ବଦଳା ଯାଇଥିଲା। ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ରଖିବା ପାଇଁ ସୁନିଶ୍ଚିତ କରନ୍ତୁରେ କ୍ଲିକ୍ କରନ୍ତୁ। ପୂର୍ବବର୍ତ୍ତୀ ସେଟିଂସ୍ <ph name="TIMEOUT_SECONDS" />ରେ ରିଷ୍ଟୋର୍ କରାଯିବ।</translation>
@@ -2324,6 +2332,7 @@
 <translation id="8725066075913043281">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="8725214031272624704">ଉପଲବ୍ଧ ଇନପୁଟ ପଦ୍ଧତିଗୁଡ଼ିକର ତାଲିକା ଦେଖାନ୍ତୁ</translation>
 <translation id="8730621377337864115">ସମାପ୍ତ ହୋଇଛି</translation>
+<translation id="8731188831050207755"><ph name="FILE_NAME" /> ଡାଉନଲୋଡ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="8731487213223706745"><ph name="END_TIME" />ରେ ଶେଷ ହେଉଛି <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">ଆପଣଙ୍କ କୀ'ଷ୍ଟ୍ରୋକ୍‌କୁ ଚୋରି କରିବାକୁ ଏହା ଏକ ପ୍ରୟାସ ହୋଇପାରେ</translation>
 <translation id="8735678380411481005">କୀବୋର୍ଡ ବ୍ୟାକଲାଇଟ ରଙ୍ଗ</translation>

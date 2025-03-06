@@ -3808,6 +3808,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3670229581627177274">Activează Bluetooth</translation>
 <translation id="3670480940339182416">Site-urile pot folosi instrumentul de optimizare pentru V8</translation>
 <translation id="3671764914317109892">Folosește limbajul cotidian pentru a căuta în istoricul de navigare. În plus, poți să adresezi întrebări și să primești răspunsuri pe baza istoricului de navigare.</translation>
+<translation id="3671982238795754537">Află mai multe despre cheile de acces</translation>
 <translation id="3672681487849735243">A fost detectată o eroare de fabricație</translation>
 <translation id="3673097791729989571">Conectare găzduită de <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">Codul PIN a fost actualizat</translation>
@@ -4724,6 +4725,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4289540628985791613">Prezentare generală</translation>
 <translation id="428963538941819373">Aceste site-uri pot folosi informațiile pe care le salvează despre tine în timp ce navighezi pe <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Alege un cod PIN</translation>
+<translation id="4290526909608432059">Asistența pentru aplicațiile Chrome se va încheia în curând. Pentru a afla despre opțiunile disponibile, contactează dezvoltatorul aplicației sau echipa de asistență IT.</translation>
 <translation id="4290791284969893584">După ce închizi o pagină, este posibil ca activitățile începute să nu se finalizeze</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> membru</translation>
 <translation id="4290898381118933198">Glisează ca să navighezi între pagini</translation>
@@ -8519,6 +8521,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Portul serial este conectat</translation>
 <translation id="7033616203784997570">Numele introdus trebuie să aibă maximum 62 de caractere</translation>
 <translation id="7034692021407794547">Un administrator cu privilegii de gestionare a facturării trebuie întâi să accepte Termenii și condițiile pentru hardware Google Meet din secțiunea Hardware Google Meet a Consolei de administrare.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> tocmai a creat o cheie de acces pentru contul tău. Cheile de acces oferă o modalitate mai rapidă și mai sigură de a te conecta și sunt salvate în Managerul de parole Google pentru <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Pentru Linux, se recomandă un spațiu de <ph name="DISK_SIZE" />. Pentru a elibera spațiu, șterge fișiere de pe dispozitiv.</translation>
 <translation id="7037157058268992880">Am uitat PIN-ul</translation>
 <translation id="7037509989619051237">Textul pentru previzualizare</translation>
@@ -10561,6 +10564,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8477178913400731244">Șterge datele</translation>
 <translation id="8477241577829954800">Depășit</translation>
 <translation id="8477384620836102176">&amp;General</translation>
+<translation id="8477446666255316832">Conectează-te mai rapid data viitoare</translation>
 <translation id="8479176401914456949">Cod nevalid. Încearcă din nou.</translation>
 <translation id="8480869669560681089">Dispozitiv necunoscut de la <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Confirmă permisiunea pentru USB</translation>

@@ -590,6 +590,7 @@
 <translation id="1407069428457324124">მუქი თემა</translation>
 <translation id="1407135791313364759">ყველას გახსნა</translation>
 <translation id="140723521119632973">მობილური ქსელის გააქტიურება</translation>
+<translation id="1407908250220330281">ეს პროფილი ამიერიდან იქნება მართული</translation>
 <translation id="1407970155431887387">დააწკაპუნეთ <ph name="SEARCH_ENGINE_NAME" />-ის რედაქტირების დიალოგის გასახსნელად</translation>
 <translation id="1408504635543854729">დაათვალიერეთ მოწყობილობის კონტენტი ფაილების აპში. კონტენტზე წვდომა შეზღუდულია ადმინისტრატორის მიერ და მისი შეცვლა ვერ მოხერხდება.</translation>
 <translation id="1408980562518920698">პერსონალური ინფორმაციის მართვა</translation>
@@ -800,6 +801,7 @@
 <translation id="1549966883323105187">ისარგებლეთ თქვენი შენახული პაროლებით უფრო სწრაფად</translation>
 <translation id="1550656959113606473">ნაგულისხმევი Chrome</translation>
 <translation id="1552301827267621511">გაფართოებამ „<ph name="EXTENSION_NAME" />“ შეცვალა ძიების პროვაიდერი <ph name="SEARCH_PROVIDER_DOMAIN" />-ით</translation>
+<translation id="1552357433305859738">ამ პროფილის სინქრონიზაციის გაგრძელება და მონაცემების გაერთიანება</translation>
 <translation id="1552752544932680961">გაფართოების მართვა</translation>
 <translation id="1553538517812678578">შეუზღუდავo</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /> თქვენს Chromebook-ზე Microsoft 365-ის შესახებ.</translation>
@@ -2240,6 +2242,7 @@
 <translation id="2530166226437958497">დეფექტების აღმოფხვრა</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_OS" /> ვერ დაინსტალირდა შეფერხების გამო.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />დამატებითი დახმარებისთვის ეწვიეთ მისამართს g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532117279786409580">მეტი ინფორმაციის მიღება</translation>
 <translation id="2532144599248877204">ახანგრძლივებს ბატარეის მუშაობის დროს, ბატარეის დაახლოებით 80%-ზე შენარჩუნების მეშვეობით. ბატარეა სრულად დაიტენება იმ დროისთვის, როცა, როგორც წესი, ელკვებას თიშავთ ხოლმე.</translation>
 <translation id="2532146950330687938">მიმდინარეობს მოწყობილობის მომზადება...</translation>
 <translation id="2532198298278778531">მართეთ დაცული DNS ChromeOS Flex-ის პარამეტრებიდან</translation>
@@ -3139,6 +3142,7 @@
 <translation id="3183139917765991655">პროფილის იმპორტიორი</translation>
 <translation id="3183143381919926261">მობილური ინტერნეტის ქსელები</translation>
 <translation id="3183700187146209259">სკანერის პროგრამული უზრუნველყოფა ვერ დაინსტალირდა</translation>
+<translation id="3183750649832309748">თქვენი ორგანიზაცია (<ph name="ACCOUNT_MANAGER" />) შეძლებს, ნახოს გარკვეული ინფორმაცია, მათ შორის:</translation>
 <translation id="3183944777708523606">მონიტორის მოწყობა</translation>
 <translation id="3184536091884214176">CUPS პრინტერების დაყენება ან მართვა. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">გამოიყენეთ ეს PIN-კოდი, რომ შეცვალოთ მშობელთა კონტროლის პარამეტრები.
@@ -3166,6 +3170,7 @@
 <translation id="3202499879214571401"><ph name="DEVICE_NAME" />-ზე ეკრანის ტრანსლირების დაპაუზება</translation>
 <translation id="3202578601642193415">უახლესი</translation>
 <translation id="3204648577100496185">ამ მოწყობილობიდან შეიძლება ამოიშალოს ამ აპთან დაკავშირებული მონაცემები</translation>
+<translation id="3204717934117444051">მონაცემები, რომლებიც მხოლოდ ამ მოწყობილობაშია შენახული, დარჩება არსებულ პროფილში. ის არ დასინქრონდება <ph name="EMAIL" />-თან</translation>
 <translation id="3207344462385471911">თქვენ ხედავთ შემოთავაზებულ ძიებებსა და საყიდლებთან დაკავშირებულ ფასდაკლებებს, რომლებმაც, შესაძლოა, დაგაინტერესოთ თვენი ბოლოდროინდელი აქტივობის მიხედვით.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4335,6 +4340,7 @@
 <translation id="3994878504415702912">&amp;მასშტაბი</translation>
 <translation id="3995138139523574647">USB-C მოწყობილობა (მარჯვენა უკანა პორტი)</translation>
 <translation id="3995963973192100066">ანიმაციის დაკვრა</translation>
+<translation id="3997537546406230684">სამსახურისთვის ახალი პროფილის შექმნა და ჩემი არსებული მონაცემების ცალკე შენახვა</translation>
 <translation id="399788104667917863">ხელსაწყოთა ზოლში ჩამაგრება</translation>
 <translation id="3998780825367526465">ჩანართების გადასახედი სურათების ჩვენება</translation>
 <translation id="3998976413398910035">პრინტერების მართვა</translation>
@@ -5781,6 +5787,7 @@
 <translation id="5059526285558225588">აირჩიეთ, რა გაზიარდეს</translation>
 <translation id="5060332552815861872">შესანახად ხელმისაწვდომია 1 პრინტერი.</translation>
 <translation id="5060419232449737386">სუბტიტრების პარამეტრები</translation>
+<translation id="5061270227873845372">თქვენ ახლა გაქვთ <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> და სხვა. თქვენი ორგანიზაცია შეძლებს ამ მონაცემების ნახვას და მართვას</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{ეს საქაღალდე შეიცავს სანიშნეს. ნამდვილად გსურთ მისი წაშლა?}other{ეს საქაღალდე შეიცავს # სანიშნეს. ნამდვილად გსურთ მისი წაშლა?}}</translation>
 <translation id="5061531353537614467">ტუნდრა</translation>
 <translation id="5062930723426326933">შესვლა ვერ განხორციელდა. დაუკავშირდით ინტერნეტს და ხელახლა სცადეთ.</translation>
@@ -9391,6 +9398,7 @@
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, <ph name="PAGE_TITLE" />-ზე.</translation>
 <translation id="7672726198839739113">დაბლოკილია. განრიგად ამჟამად განსაზღვრულია <ph name="SUNRISE_TIME" /> — <ph name="SUNSET_TIME" />. მისი განახლება შესაძლებელია მხოლოდ ხელით.</translation>
 <translation id="7673313156293624327">ChromeOS Shill-ის (კავშირების მმართველის) ჟურნალები</translation>
+<translation id="767381852303199643">არსებული პროფილის მონაცემებს რას უპირებთ?</translation>
 <translation id="7674416868315480713">Linux-ში ყველა პორტის გადამისამართების დეაქტივაცია</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> აპი</translation>
 <translation id="7674542105240814168">მდებარეობაზე წვდომა უარყოფილია</translation>
@@ -9622,6 +9630,7 @@
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">შენახული მორგებული სიტყვები აქ გამოჩნდება</translation>
 <translation id="7836577093182643605">თქვენ მიერ დაბლოკილი იმ თემების სია, რომლებიც არ გსურთ, გაზიარდეს საიტებთან</translation>
+<translation id="7836745198769390202">თქვენ ახლა გაქვთ <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> და სხვა. თქვენი ორგანიზაცია შეძლებს ამ მონაცემების ნახვას და მართვას</translation>
 <translation id="7836850009646241041">ხელახლა სცადეთ თქვენს უსაფრთხოების გასაღებზე შეხება</translation>
 <translation id="7838838951812478896">„<ph name="NETWORK_NAME" />“ ვერ შეინახა <ph name="DEVICE_NAME" />-დან</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> გაიგზავნა აქ: <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> გაიგზავნა აქ: <ph name="DEVICE_NAME" />}}</translation>
@@ -11382,6 +11391,7 @@
 <translation id="9052404922357793350">დაბლოკვის გაგრძელება</translation>
 <translation id="90528604757378587">ფონური აქტივობა და ზოგიერთი ვიზუალური ეფექტი, როგორიცაა ლივლივა გადაადგილება, შესაძლოა, შეზღუდული იყოს.</translation>
 <translation id="9053563360605707198">ორივე მხარეს ბეჭდვა</translation>
+<translation id="9055810458113674066">თქვენ ახლა გაქვთ <ph name="NUMBERED_ITEM" /> და სხვა. თქვენი ორგანიზაცია შეძლებს ამ მონაცემების ნახვას და მართვას</translation>
 <translation id="9056788090206401048">თქვენი წვდომის გასაღები სხვა მოწყობილობაზე რომ გამოიყენოთ, Bluetooth ჩართული უნდა იყოს. აღნიშნულის მართვა ნებისმიერ დროს შეგიძლიათ პარამეტრებიდან.</translation>
 <translation id="9056810968620647706">შედეგები ვერ მოიძებნა.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> ითხოვს შემდეგ კონტენტზე წვდომას:</translation>

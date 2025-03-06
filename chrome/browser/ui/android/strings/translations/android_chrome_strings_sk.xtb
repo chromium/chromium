@@ -13,6 +13,7 @@
 <translation id="1036348656032585052">Vypnúť</translation>
 <translation id="1045899828449635435">Chcete vymazať dáta aj z týchto webov?</translation>
 <translation id="1049743911850919806">Inkognito</translation>
+<translation id="1052842760770519282">Niektoré vaše heslá nie sú k dispozícii</translation>
 <translation id="1058669287135776095">Ste offline. Skontrolujte internetové pripojenie a skúste to znova.</translation>
 <translation id="10614374240317010">Nikdy neukladať</translation>
 <translation id="107147699690128016">Ak zmeníte príponu súboru, súbor sa môže otvoriť v inej aplikácii a potenciálne ohroziť vaše zariadenie.</translation>
@@ -71,6 +72,7 @@
 <translation id="1269129608791067105">Tu nájdete svoju históriu</translation>
 <translation id="1273937721055267968">Blokovať <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Klepnutím rozbaliť</translation>
+<translation id="1289129165308566697">Zobrazenie histórie v iných zariadeniach</translation>
 <translation id="129553762522093515">Nedávno zatvorené</translation>
 <translation id="1298077576058087471">Ušetrite až 60 % dát, prečítajte si dnešné správy</translation>
 <translation id="1303339473099049190">Dané heslo sa nepodarilo nájsť. Skontrolujte pravopis a skúste to znova.</translation>
@@ -270,6 +272,7 @@
 <translation id="2259659629660284697">Exportovať heslá…</translation>
 <translation id="2276696007612801991">Ak si chcete skontrolovať heslá, prihláste sa do svojho účtu Google</translation>
 <translation id="2278052315791335171">Odstránením tohto hesla nevymažete svoj účet na webe <ph name="SITE" /></translation>
+<translation id="2281243904606300427"><ph name="TAB_TITLE" />, vybraná karta inkognito</translation>
 <translation id="2286841657746966508">Fakturačná adresa</translation>
 <translation id="228704530595896923">Zoznam možností zdieľania.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Zobraziť <ph name="TABS_COUNT_ONE" /> kartu}few{Zobraziť <ph name="TABS_COUNT_MANY" /> karty}many{See <ph name="TABS_COUNT_MANY" /> tabs}other{Zobraziť <ph name="TABS_COUNT_MANY" /> kariet}}</translation>
@@ -329,6 +332,7 @@
 <translation id="2534155362429831547">Odstránené položky: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="253498598929009420">Tento web bude vidieť obsah vašej obrazovky</translation>
 <translation id="2536728043171574184">Zobrazuje sa offline kópia tejto stránky</translation>
+<translation id="2542548955756682219"><ph name="TAB_TITLE" />, karta</translation>
 <translation id="2546283357679194313">Súbory cookie a dáta webov</translation>
 <translation id="2547843573592965873">Zámka profilu uchováva vaše informácie v aute zabezpečené, a to vrátane hesiel, platieb a ďalšieho obsahu uloženého v účte Google.</translation>
 <translation id="254973855621628293">Heslá boli uložené do tohto zariadenia</translation>
@@ -363,6 +367,7 @@
 <translation id="2666092431469916601">Vrch</translation>
 <translation id="2669454659051515572">Stiahnuté súbory uvidia všetci používatelia tohto zariadenia</translation>
 <translation id="2677748264148917807">Odísť</translation>
+<translation id="2687009626279857299">Prestal fungovať v tomto zariadení</translation>
 <translation id="2702516483241149200">Novinka: zdieľajte odkaz, ktorý posunie zobrazenie na tento text</translation>
 <translation id="2705073298859543115">Vytvoriť súhrn</translation>
 <translation id="2708051474374549906">Proaktívna ochrana v reálnom čase proti nebezpečným webom, stiahnutým súborom a rozšíreniam, ktorá je založená na odosielaní vašich dát prehliadania Googlu</translation>
@@ -472,6 +477,7 @@
 <translation id="3169472444629675720">Objaviť</translation>
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 heslo a ďalšie položky sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google <ph name="ACCOUNT_EMAIL" />.}few{# heslá a ďalšie položky sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google <ph name="ACCOUNT_EMAIL" />.}many{# passwords and other items are saved only to this device. To use them on your other devices, save them in your Google Account, <ph name="ACCOUNT_EMAIL" />.}other{# hesiel a ďalších položiek je uložených iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="3187472288455401631">Meranie reklám</translation>
+<translation id="3189635831478931757">Skupina kariet <ph name="GROUP_TITLE" /></translation>
 <translation id="3207960819495026254">Pridané medzi záložky</translation>
 <translation id="3208584281581115441">Skontrolovať</translation>
 <translation id="3211426585530211793">Záložka <ph name="ITEM_TITLE" /> bola odstránená</translation>
@@ -748,6 +754,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4523326818319942067">posledná hodina</translation>
 <translation id="452750746583162491">Skontrolovať synchronizované údaje</translation>
 <translation id="4532845899244822526">Vyberte priečinok</translation>
+<translation id="4535755320005483982">Zdieľaná skupina kariet <ph name="GROUP_TITLE" /></translation>
 <translation id="4543131175509360848">Hárok so žiadnymi prístupovými kľúčmi</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta}few{<ph name="TAB_COUNT_MANY" /> karty, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}many{<ph name="TAB_COUNT_MANY" /> tabs, <ph name="TAB_COUNT_INCOGNITO" /> incognito}other{<ph name="TAB_COUNT_MANY" /> kariet, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
 <translation id="4558311620361989323">Skratky pre webové stránky</translation>
@@ -946,6 +953,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5424588387303617268">K dispozícii je <ph name="GIGABYTES" /> GB</translation>
 <translation id="543338862236136125">Upraviť heslo</translation>
 <translation id="5433691172869980887">Používateľské meno bolo skopírované</translation>
+<translation id="5436928407363358055">Ak chcete ľahko pokračovať tam, kde ste prestali, synchronizujte si históriu a karty</translation>
 <translation id="5438292632479953702">Stiahnuť znova</translation>
 <translation id="5439191312780166229">Analyzuje viac údajov z webov než štandardná ochrana a upozorňuje vás na nebezpečné weby, dokonca aj také, o ktorých Google predtým nevedel. Upozornenia z Chromu môžete preskočiť.</translation>
 <translation id="5441137934526263133">Web nefunguje? Súbory cookie tretích strán sú blokované.</translation>
@@ -1249,6 +1257,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6756507620369789050">Odoslať spätnú väzbu</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="676305334223455055">Ak chcete získavať obsah na základe záujmov, prihláste sa</translation>
+<translation id="6764137532716892442">Zdieľaná skupina kariet <ph name="GROUP_TITLE" /> s novou aktivitou</translation>
 <translation id="6767294960381293877">Zoznam zariadení, s ktorými sa má zdieľať karta, je otvorený na polovičnú výšku.</translation>
 <translation id="6785476624617658922">Dodatočné zmluvné podmienky prehliadača Chrome a systému Chrome OS</translation>
 <translation id="6795633245022906657">Skratka na rýchle otvorenie novej karty. Ak chcete skratku upraviť, prejdite do Nastavení.</translation>
@@ -1315,6 +1324,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Zobraziť <ph name="TABS_COUNT_ONE" /> kartu s novou aktivitou v zdieľaných skupinách kariet}few{Zobraziť <ph name="TABS_COUNT_MANY" /> karty s novou aktivitou v zdieľaných skupinách kariet}many{See <ph name="TABS_COUNT_MANY" /> tabs with new activity in shared tab groups}other{Zobraziť <ph name="TABS_COUNT_MANY" /> kariet s novou aktivitou v zdieľaných skupinách kariet}}</translation>
 <translation id="6971862865055170158">Neschváliť</translation>
+<translation id="6976223255612495095"><ph name="TAB_TITLE" />, nová alebo aktualizovaná karta</translation>
 <translation id="6978717888677691380">Weby, ktoré ste zablokovali</translation>
 <translation id="6979737339423435258">Celé obdobie</translation>
 <translation id="6983306615164277634">Pozíciu môžete zmeniť aj pridržaním panela s adresou.</translation>
@@ -1708,6 +1718,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8676276370198826499">Zaregistrujte sa na webe <ph name="SITE_ETLD_PLUS_ONE" /> poskytovateľa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Overenie prihlásenia</translation>
 <translation id="8683039184091909753">obrázok</translation>
+<translation id="8688183792442786085"><ph name="TAB_TITLE" />, vybraná karta</translation>
 <translation id="869891660844655955">Koniec platnosti</translation>
 <translation id="8699120352855309748">Neponúkať preklad týchto jazykov</translation>
 <translation id="8712637175834984815">Dobre</translation>
@@ -1841,4 +1852,5 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="988091779042748639">Ak chcete zo svojho zariadenia odstrániť históriu prehliadania v režime inkognito, zavrite všetky karty inkognito.</translation>
 <translation id="992745192656291733">Karty: <ph name="TAB_COUNT" /></translation>
 <translation id="996149300115483134">Ponuka karty feedu je zatvorená</translation>
+<translation id="99907655649633293"><ph name="TAB_TITLE" />, karta inkognito</translation>
 </translationbundle>

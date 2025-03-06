@@ -590,6 +590,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1407069428457324124">Dark theme</translation>
 <translation id="1407135791313364759">Open all</translation>
 <translation id="140723521119632973">Mobile activation</translation>
+<translation id="1407908250220330281">This profile will now be managed</translation>
 <translation id="1407970155431887387">Click to open Edit dialogue for <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="1408504635543854729">Explore the device's content in the Files app. The content is restricted by an admin and can’t be modified.</translation>
 <translation id="1408980562518920698">Manage personal information</translation>
@@ -801,6 +802,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1549966883323105187">Get to your saved passwords quicker</translation>
 <translation id="1550656959113606473">Default Chrome</translation>
 <translation id="1552301827267621511">The '<ph name="EXTENSION_NAME" />' extension changed search to use <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552357433305859738">Continue to sync with this profile and merge the data</translation>
 <translation id="1552752544932680961">Manage extension</translation>
 <translation id="1553538517812678578">unlimited</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /> about Microsoft 365 on your Chromebook.</translation>
@@ -2253,6 +2255,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2530166226437958497">Troubleshooting</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Something went wrong and <ph name="DEVICE_OS" /> couldn’t be installed.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />For more help, visit: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532117279786409580">Get more info</translation>
 <translation id="2532144599248877204">Extends battery life by keeping your battery around 80%. Battery will fully charge before you typically disconnect from power.</translation>
 <translation id="2532146950330687938">Getting the device ready…</translation>
 <translation id="2532198298278778531">Manage Secure DNS in Chrome OS Flex settings</translation>
@@ -3152,6 +3155,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3183139917765991655">Profile Importer</translation>
 <translation id="3183143381919926261">Mobile data networks</translation>
 <translation id="3183700187146209259">Can't install scanner software</translation>
+<translation id="3183750649832309748">Your organisation, <ph name="ACCOUNT_MANAGER" />, will be able to view some information, including</translation>
 <translation id="3183944777708523606">Monitor arrangement</translation>
 <translation id="3184536091884214176">Set up or manage CUPS printers. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">Use this PIN to change parental controls settings.
@@ -3179,6 +3183,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3202499879214571401">Pause casting screen to <ph name="DEVICE_NAME" /></translation>
 <translation id="3202578601642193415">Newest</translation>
 <translation id="3204648577100496185">Data associated with this app may be removed from this device</translation>
+<translation id="3204717934117444051">Data that is saved only on this device will remain in the existing profile. It will not sync to <ph name="EMAIL" /></translation>
 <translation id="3207344462385471911">You’re seeing suggested searches and shopping discounts that might interest you based on your recent activity.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3821,6 +3826,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3670229581627177274">Turn on Bluetooth</translation>
 <translation id="3670480940339182416">Sites can use the V8 optimiser</translation>
 <translation id="3671764914317109892">Use everyday language to search your browsing history. You can also ask questions and get answers based on your browsing history.</translation>
+<translation id="3671982238795754537">Learn more about passkeys</translation>
 <translation id="3672681487849735243">A factory error has been detected</translation>
 <translation id="3673097791729989571">Sign-in hosted by <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">Your PIN has been updated</translation>
@@ -4081,6 +4087,7 @@ This can include information about installed software, files, your browser and t
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{An extension has been approved}other{# extensions have been approved}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">At least <ph name="INSTALL_SIZE" /> of space is recommended for Linux.</translation>
+<translation id="3824203811509979971">Summarise content or ask questions</translation>
 <translation id="3824621460022590830">Device enrolment token is invalid. Please contact your device owner or administrator. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Sign in to see tabs from other devices</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Remember my choice for this file type: <ph name="FILE_TYPES" />}other{Remember my choice for these file types: <ph name="FILE_TYPES" />}}</translation>
@@ -4267,6 +4274,7 @@ This can include information about installed software, files, your browser and t
 <translation id="3948985214866944547">Most people block sharing precise location for this site</translation>
 <translation id="394984172568887996">Imported From IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> to make downloading files safer</translation>
+<translation id="3950479158728806902">Automatically create a passkey to sign in faster</translation>
 <translation id="3950820424414687140">Sign in</translation>
 <translation id="3950841222883198950">Voice typing</translation>
 <translation id="3953834000574892725">My accounts</translation>
@@ -4345,6 +4353,7 @@ This can include information about installed software, files, your browser and t
 <translation id="3994878504415702912">&amp;Zoom</translation>
 <translation id="3995138139523574647">USB-C device (right-hand-side back port)</translation>
 <translation id="3995963973192100066">Play animation</translation>
+<translation id="3997537546406230684">Create a new profile for work and keep my existing data separate</translation>
 <translation id="399788104667917863">Pin to toolbar</translation>
 <translation id="3998780825367526465">Show tab preview images</translation>
 <translation id="3998976413398910035">Manage printers</translation>
@@ -4735,6 +4744,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4289540628985791613">Overview</translation>
 <translation id="428963538941819373">These sites can use info they've saved about you as you browse <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Choose a PIN</translation>
+<translation id="4290526909608432059">Support for Chrome Apps will end soon. To learn about your options, contact the app developer or your IT support team.</translation>
 <translation id="4290791284969893584">After closing a page, tasks that you started might not finish</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> member</translation>
 <translation id="4290898381118933198">Swipe to navigate between pages</translation>
@@ -5195,6 +5205,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4624054169152573743">Colour theme</translation>
 <translation id="4625078469366263107">Enable App</translation>
 <translation id="4625905218692741757">Grey default colour</translation>
+<translation id="4627107755957573804">Allow sites and apps to upgrade existing accounts to use passkeys</translation>
 <translation id="4627442949885028695">Continue from another device</translation>
 <translation id="4628762811416793313">The Linux container setup did not complete. Please try again.</translation>
 <translation id="4629521233550547305">Open <ph name="PROFILE_NAME" /> profile</translation>
@@ -5778,6 +5789,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5053233576223592551">Add username</translation>
 <translation id="505347685865235222">Unnamed group – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{You should change it now}other{You should change these now}}</translation>
+<translation id="5056587122125565772">Create image</translation>
 <translation id="5056950756634735043">Connecting to the container</translation>
 <translation id="5057110919553308744">When you click the extension</translation>
 <translation id="5057127674016624293">Scanning is taking longer than expected</translation>
@@ -5788,6 +5800,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5059526285558225588">Choose what to share</translation>
 <translation id="5060332552815861872">There is 1 printer available to save.</translation>
 <translation id="5060419232449737386">Caption settings</translation>
+<translation id="5061270227873845372">You currently have <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> and more. Your organisation will be able to see and manage this data</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{This folder contains a bookmark. Are you sure that you want to delete it?}other{This folder contains # bookmarks. Are you sure that you want to delete it?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
 <translation id="5062930723426326933">Sign-in failed, please connect to the Internet and try again.</translation>
@@ -5888,6 +5901,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="512642543295077915">search + backspace</translation>
 <translation id="5126611267288187364">View changes</translation>
 <translation id="5127620150973591153">Secure connection ID: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">Summarise content or ask questions.</translation>
 <translation id="5127881134400491887">Manage network connections</translation>
 <translation id="5127934926273826089">Flowers</translation>
 <translation id="5127986747308934633">Your administrator is controlling your device</translation>
@@ -8527,6 +8541,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – Serial port connected</translation>
 <translation id="7033616203784997570">Input must be at most 62 characters</translation>
 <translation id="7034692021407794547">An administrator with billing management privileges must first accept the Google Meet hardware Terms of Service in the Google Meet hardware section of the Admin console.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> just created a passkey for your account. Passkeys offer a faster and safer way to sign in and are saved in Google Password Manager for <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> of space is recommended for Linux. To increase free space, delete files from your device.</translation>
 <translation id="7037157058268992880">Forgot PIN</translation>
 <translation id="7037509989619051237">Text to preview</translation>
@@ -9398,6 +9413,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, in <ph name="PAGE_TITLE" />.</translation>
 <translation id="7672726198839739113">Blocked. Schedule is currently set to <ph name="SUNRISE_TIME" /> – <ph name="SUNSET_TIME" /> and can only be updated manually.</translation>
 <translation id="7673313156293624327">ChromeOS Shill (Connection Manager) Logs</translation>
+<translation id="767381852303199643">What would you like to do with your existing profile data?</translation>
 <translation id="7674416868315480713">Deactivate all ports being forwarded in Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> apps</translation>
 <translation id="7674542105240814168">Location access denied</translation>
@@ -9629,6 +9645,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Saved custom words will appear here</translation>
 <translation id="7836577093182643605">List of topics that you blocked that you don't want shared with sites</translation>
+<translation id="7836745198769390202">You currently have <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> and more. Your organisation will be able to see and manage this data</translation>
 <translation id="7836850009646241041">Try touching your security key again</translation>
 <translation id="7838838951812478896">Couldn't save '<ph name="NETWORK_NAME" />' from <ph name="DEVICE_NAME" /></translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> sent to <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> sent to <ph name="DEVICE_NAME" />}}</translation>
@@ -10569,6 +10586,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8477178913400731244">Delete data</translation>
 <translation id="8477241577829954800">Superseded</translation>
 <translation id="8477384620836102176">&amp;General</translation>
+<translation id="8477446666255316832">Sign in faster next time</translation>
 <translation id="8479176401914456949">Invalid code. Please try again.</translation>
 <translation id="8480869669560681089">Unknown device from <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Confirm USB permission</translation>
@@ -11389,6 +11407,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9052404922357793350">Continue blocking</translation>
 <translation id="90528604757378587">Background activity and some visual effects, like smooth scrolling, may be limited.</translation>
 <translation id="9053563360605707198">Print on both sides</translation>
+<translation id="9055810458113674066">You currently have <ph name="NUMBERED_ITEM" /> and more. Your organisation will be able to see and manage this data</translation>
 <translation id="9056788090206401048">Bluetooth must be on to use your passkey on a different device. You can always manage this in settings.</translation>
 <translation id="9056810968620647706">No matches were found.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> wants to access the following content:</translation>
@@ -11415,6 +11434,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB mouse connected</translation>
 <translation id="9075413375877487220">This extension is not trusted by Enhanced Safe Browsing.</translation>
+<translation id="9075985558450420812">Enter a custom prompt or highlight text to create an image.</translation>
 <translation id="9076523132036239772">Sorry, your email or password could not be verified. Try connecting to a network first.</translation>
 <translation id="9076821103818989526">Side panel</translation>
 <translation id="9076977315710973122">SMB share</translation>

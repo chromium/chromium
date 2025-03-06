@@ -503,6 +503,7 @@
 <translation id="3373141842870501561">Жер қозғалысы бейнеленген тұсқағаз</translation>
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> әрпі бар <ph name="LETTERS_COLOR" /> фон</translation>
 <translation id="3383623117265110236">Эксклюзивті</translation>
+<translation id="3395147534045164351">Орынды байланыстыру функциясын қосу/өшіру</translation>
 <translation id="3404249063913988450">Скринсейверді қосу</translation>
 <translation id="3413935475507503304">Жаңартуды жалғастыру үшін "Келесі" түймесін басыңыз.</translation>
 <translation id="3428551088151258685">сыртқы</translation>
@@ -652,6 +653,7 @@
 <translation id="4113067922640381334">Енді жаңа <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тұсқағаздар<ph name="END_LINK_WALLPAPER_SUBPAGE" /> пайдалана алатын боласыз</translation>
 <translation id="4117637339509843559">Қараңғы режим</translation>
 <translation id="4126551873361000548">10 секунд артқа айналдыру</translation>
+<translation id="4128271910628504223">"Тұманды орманның суретін салу" деген сияқты нұсқауды енгізіңіз.</translation>
 <translation id="4130035430755296270">Тағы басқа формат опцияларын көру үшін курсорды апарыңыз.</translation>
 <translation id="4130750466177569591">Мен келісемін</translation>
 <translation id="4131410914670010031">Қара мен ақ</translation>
@@ -859,6 +861,7 @@
 <translation id="5050042263972837708">Топ атауы</translation>
 <translation id="5051044138948155788">Бұл — жалғыз бет. Содан кейін сканерлеуді бастау экранына өтесіз.</translation>
 <translation id="5053233795640754917">Кідірту</translation>
+<translation id="5056587122125565772">Сурет жасау</translation>
 <translation id="5078711626843651677">Сөйлеуші белгілері аяқталғанша, дауыс үлгілері құрылғыға уақытша сақталады. Мұны "Параметрлер" бөлімінде кез келген уақытта өшіруге болады.</translation>
 <translation id="5078983345702708852">футуристік</translation>
 <translation id="5087864757604726239">артқа</translation>
@@ -1527,7 +1530,7 @@
 <translation id="8054112564438735763">сарғыш қоңыр</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> фондағы <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
-<translation id="8065371548313750052">Аудио жазуды бастау үшін микрофонды қосыңыз.</translation>
+<translation id="8065371548313750052">Аудио жазуды бастау үшін микрофонды жалғаңыз.</translation>
 <translation id="8067126283828232460">APN қосылған.</translation>
 <translation id="8067208048261192356">қоңыр</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" /> жою</translation>

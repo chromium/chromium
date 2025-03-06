@@ -252,6 +252,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1419305130220238697">Butoni "Menaxho shkarkimet në Chrome". Aktivizoje për të menaxhuar skedarët që ke shkarkuar në Chrome</translation>
 <translation id="1420345875188552368">Mënyra jote e ruajtur e pagesës automatike mund të përdoret për këtë pagesë. Për të çaktivizuar portofolat elektronikë në Chrome, shko te <ph name="BEGIN_LINK1" />cilësimet e pagesës<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> për të lejuar çiftimin</translation>
+<translation id="1421484961346698724">Llogari e fshirë</translation>
 <translation id="14222610277930434">Ti viziton shpesh</translation>
 <translation id="1422930527989633628">Mund të kërkojë të zbulojë pajisjet me Bluetooth në afërsi</translation>
 <translation id="1426410128494586442">Po</translation>
@@ -3023,6 +3024,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6351658970066645919">Fshi të dhënat e shfletimit</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Asnjë}=1{1 fjalëkalim (për <ph name="DOMAIN_LIST" />, sinkronizuar)}=2{2 fjalëkalime (për <ph name="DOMAIN_LIST" />, sinkronizuar)}other{# fjalëkalime (për <ph name="DOMAIN_LIST" />, sinkronizuar)}}</translation>
 <translation id="6355392890578844978">Ky shfletues nuk menaxhohet nga një kompani ose organizatë tjetër. Aktiviteti në këtë pajisje mund të menaxhohet jashtë Chromium. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Grupet e skedave "<ph name="GROUP_TITLE_1" />" dhe "<ph name="GROUP_TITLE_2" />" nuk ofrohen më</translation>
 <translation id="6358088212770985041">të modifikojë mënyrat e pagesës</translation>
 <translation id="6358450015545214790">Çfarë kuptimi kanë këto?</translation>
 <translation id="6360213755783740931">Mëso më shumë rreth mbrojtjes nga softuerët keqdashës</translation>

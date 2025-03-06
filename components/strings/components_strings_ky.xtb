@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">"Chrome'до жүктөлүп алынгандарды башкаруу" баскычы, Chrome'до жүктөлүп алынган файлдарды башкаруу үчүн иштетиңиз</translation>
 <translation id="1420345875188552368">Сакталган автоматтык төлөм ыкмасы ушул төлөм үчүн колдонулушу мүмкүн. Chrome'до электрондук капчыктарды өчүрүү үчүн <ph name="BEGIN_LINK1" />төлөм параметрлерине<ph name="END_LINK1" /> өтүңүз</translation>
 <translation id="1420920093772172268">Жупташтырууга уруксат берүү үчүн <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="1421484961346698724">Аккаунт өчүрүлдү</translation>
 <translation id="14222610277930434">Тез-тез өтүп турасыз</translation>
 <translation id="1422930527989633628">Жакын жердеги Bluetooth түзмөктөрүн табууга уруксат сурай алат</translation>
 <translation id="1426410128494586442">Ооба</translation>
@@ -1436,6 +1437,7 @@
 <translation id="3536227077203206203">Бул жолу уруксат берилди</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">Экран формасы (барактар менен)</translation>
+<translation id="3541016556608204104">Chrome Enterprise Connectors жөнүндө кеңири маалымат</translation>
 <translation id="3542628208405253498">Картадагы сүрөт</translation>
 <translation id="3542768452570884558">Шилтемени жаңы терезеде ачуу</translation>
 <translation id="3543935938072367282">Автотолтуруу менен тезирээк төлөңүз</translation>

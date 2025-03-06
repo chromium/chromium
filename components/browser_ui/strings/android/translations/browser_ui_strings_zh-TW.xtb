@@ -6,6 +6,7 @@
 <translation id="1044891598689252897">網站將正常運作</translation>
 <translation id="1070329623210597193">這個網站可以查看或編輯的檔案</translation>
 <translation id="1073417869336441572">請說明你允許使用第三方 Cookie 的原因，協助我們改善 Chrome。<ph name="BEGIN_LINK" />提供意見<ph name="END_LINK" /></translation>
+<translation id="1074758928858737435">你可以要求查看電腦版網站</translation>
 <translation id="1085696779717592361">使用 Chrome 做為預設瀏覽器</translation>
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1181037720776840403">移除</translation>
@@ -32,6 +33,7 @@
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 個網站}other{<ph name="SITE_COUNT" /> 個網站}}</translation>
 <translation id="1500473259453106018">隱藏「分頁中的降價資訊」資訊卡</translation>
 <translation id="1510341833810331442">禁止網站將資料儲存到裝置</translation>
+<translation id="1538031354170655462">網站通常會使用近距離無線通訊 (NFC) 技術，與鄰近的追蹤器或裝置搭配運作，例如掃描徽章或感應支付</translation>
 <translation id="1547123415014299762">已允許第三方 Cookie</translation>
 <translation id="1593426485665524382">畫面頂端附近有可執行的新動作</translation>
 <translation id="1620510694547887537">攝影機</translation>
@@ -115,6 +117,7 @@
 <translation id="2677748264148917807">離開</translation>
 <translation id="2682367912565197520">刪除已儲存的縮放比例</translation>
 <translation id="2683434792633810741">要刪除並重設嗎？</translation>
+<translation id="2685514716378236873">不允許</translation>
 <translation id="2713106313042589954">關閉攝影機</translation>
 <translation id="2717722538473713889">電子郵件地址</translation>
 <translation id="2726059656860238749">啟動 Chrome 時將焦點置於網址列，縮短低階裝置的啟動時間。</translation>
@@ -211,12 +214,14 @@
 <translation id="3955193568934677022">允許網站播放受保護的內容 (建議)</translation>
 <translation id="3965467402665811906">網站可以要求使用與你相關的既有資訊</translation>
 <translation id="3967822245660637423">下載完成</translation>
+<translation id="3981465354637804599">網站為了提供免付費內容或服務，通常會顯示廣告。不過，有些網站經常會顯示具侵入性或誤導性的廣告。</translation>
 <translation id="3987993985790029246">複製連結</translation>
 <translation id="3991845972263764475">已下載：<ph name="BYTES_DOWNLOADED_WITH_UNITS" />，總大小：不明</translation>
 <translation id="3992308058851451478"><ph name="SITE" /> 可以在你瀏覽以下網站時使用你的資訊</translation>
 <translation id="3992684624889376114">關於本頁</translation>
 <translation id="4002066346123236978">標題</translation>
 <translation id="4046123991198612571">下一首曲目</translation>
+<translation id="4077310749977440510">網站通常會讀取剪貼簿，以提供保留複製文字的格式等功能</translation>
 <translation id="4149890623864272035">確定要刪除 Cookie 等所有本機資料，並重設這個網站的所有權限嗎？</translation>
 <translation id="4149994727733219643">使用簡易檢視模式查看網頁</translation>
 <translation id="4151930093518524179">預設縮放</translation>
@@ -224,6 +229,7 @@
 <translation id="4169549551965910670">已連接至 USB 裝置</translation>
 <translation id="4194328954146351878">系統必須先詢問你，才能允許網站在 NFC 裝置上查看和變更資訊 (建議設定)</translation>
 <translation id="4200726100658658164">開啟位置資訊設定</translation>
+<translation id="421742575134139848">網站可能會需要音效權限，才能播放音樂、影片和其他媒體的音訊</translation>
 <translation id="4226663524361240545">收到通知時裝置會震動</translation>
 <translation id="4259722352634471385">瀏覽的網址已封鎖：<ph name="URL" /></translation>
 <translation id="4274673989874969668">在你離開網站後，網站可以繼續透過同步作業完成各項工作，例如上傳相片或傳送即時通訊訊息等等</translation>
@@ -247,6 +253,7 @@
 <translation id="4566417217121906555">將麥克風設為靜音</translation>
 <translation id="4570913071927164677">詳細資料</translation>
 <translation id="4598549027014564149">在無痕模式下，網站無法使用 Cookie 瞭解你的跨網站瀏覽活動 (即使是相關網站)，因此無法根據瀏覽活動提供個人化廣告等服務。某些網站的功能可能無法運作。</translation>
+<translation id="461356340001513807">讓你透過身分識別服務，使用自己的帳戶登入網站</translation>
 <translation id="4619615317237390068">在其他裝置上開啟的分頁</translation>
 <translation id="4644713492825682049">刪除並重設</translation>
 <translation id="4645575059429386691">這個瀏覽器是由家長管理</translation>
@@ -430,6 +437,7 @@
 <translation id="7000754031042624318">已在 Android 設定中關閉</translation>
 <translation id="702275896380648118">這個網站會判斷你喜歡的內容，然後向其他網站建議廣告。這個網站也會從 Chrome 取得你的廣告主題，為你顯示更貼近需求的廣告。</translation>
 <translation id="7053983685419859001">封鎖</translation>
+<translation id="7055552182600664515">網站可能需要使用內容保護服務，才能播放受著作權保護的內容。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{已選取 1 個項目}other{已選取 # 個項目}}</translation>
 <translation id="708014373017851679">「<ph name="APP_NAME" />」版本過舊，請更新應用程式。</translation>
 <translation id="7087918508125750058">已選取 <ph name="ITEM_COUNT" /> 個項目。選項位於畫面頂端</translation>

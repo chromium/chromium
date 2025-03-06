@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">Пікір жіберу</translation>
 <translation id="1059120031266247284">Сізге берілді</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176">Өшіру түймесі бар <ph name="ITEM_LABEL" /></translation>
 <translation id="1062407476771304334">Ауыстыру</translation>
 <translation id="1073899992769346247">Батареяны ауыстырыңыз немесе зарядтаңыз.</translation>
 <translation id="1081015718268701546">Linux қолданбаларына қазір қолдау көрсетілмейді. Басқа қолданбалар сақталады.</translation>
@@ -323,6 +324,7 @@
 <translation id="2083190527011054446">Қайырлы түн, <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Эмоджи таңдағышты ашу</translation>
 <translation id="2088116547584365419">ойындар</translation>
+<translation id="2092517835716911174">"Оқуға көмектес" және "Жазуға көмек керек" функцияларын пайдалану үшін 18 жастан асқан болуыңыз керек.</translation>
 <translation id="209965399369889474">Желіге жалғанбаған.</translation>
 <translation id="2107581415810719320">Басқа <ph name="BUTTON_NUMBER" />-түйме</translation>
 <translation id="2107914222138020205">USB-C кабелі Thunderbolt стандартын қолдамайды. Құрылғының өнімділігі шектелуі мүмкін.</translation>
@@ -1228,6 +1230,7 @@
 <translation id="5043679421800073804">Сөредегі соңғы белгішені басу немесе түрту</translation>
 <translation id="504465286040788597">Алдыңғы абзац</translation>
 <translation id="5045550434625856497">Құпия сөз дұрыс емес</translation>
+<translation id="5056587122125565772">Сурет жасау</translation>
 <translation id="5058794129231928255">Google құжатын жасау мүмкін болмады.</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Дыбысы өшірілген күйде сөйлессеңіз, сізге хабарландыру келеді. Аудио құрылғыңыздан ешқашан кетпейді.</translation>
@@ -1276,6 +1279,7 @@
 <translation id="5222676887888702881">Шығу</translation>
 <translation id="5228195526683428788">Бөлінген экран бөлгіші</translation>
 <translation id="5229343007215035173">Құпиялық экранын қосу/өшіру</translation>
+<translation id="5229860525743792999"><ph name="ITEM_LABEL" /> элементін ұсынылған топтан өшіру</translation>
 <translation id="5230516054153933099">Терезе</translation>
 <translation id="5234764350956374838">Жабу</translation>
 <translation id="523505283826916779">Арнайы мүмкіндіктер параметрлері</translation>
@@ -1758,6 +1762,7 @@
 <translation id="6757237461819837179">Ешқандай медиамазмұн ойнатылып жатқан жоқ.</translation>
 <translation id="6760438044935091345">Ойын тақтасы</translation>
 <translation id="6768043681523654438">жад көлемі</translation>
+<translation id="6769195697113506406">Сурет енгізілді</translation>
 <translation id="6777216307882431711">Жалғанған USB-C құрылғыларына қуат берілуде</translation>
 <translation id="6781002679438061620">9-жұмыс үстелі</translation>
 <translation id="6782182743534150858">13-жұмыс үстелі</translation>
@@ -1984,6 +1989,7 @@
 <translation id="7571361473021531288">Батарея <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> қалды</translation>
 <translation id="7573585051776738856">Белсенді терезе оң жаққа бекітілген.</translation>
 <translation id="7579778809502851308">Экран суреті</translation>
+<translation id="7588317312481506627">Буферге көшірілді.</translation>
 <translation id="7593891976182323525">Search немесе Shift</translation>
 <translation id="7598054670902114203">Орталық процессорды пайдалану снапшоты, <ph name="CPU_USEAGE" />%. Температура: <ph name="TEMPERATURE" /> Цельсий градусы, қазіргі жылдамдығы: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> ГГц.</translation>
 <translation id="7599378375976398913">Таңдалған нәтиже енгізіліп жатыр</translation>
@@ -2178,6 +2184,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> аккаунты туралы ақпарат диалогтік терезесін ашу</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> тілін пайдалану</translation>
 <translation id="8168435359814927499">Контент</translation>
+<translation id="81817143961839203">Сурет енгізілмеді</translation>
 <translation id="8185090165691050712">Өлшем өзгертуді құлыптау режимі мәзірін қосу/өшіру</translation>
 <translation id="8192727139462702395">Bluetooth өшірілгенде, мынадай сыртқы құрылғылар <ph name="DEVICE_TYPE" /> құрылғыңыздан ажыратылады:</translation>
 <translation id="8198456017687137612">Қойынды трансляциялануда</translation>
@@ -2256,6 +2263,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ұйымы <ph name="FEATURE_NAME" /> функциясын <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Бас тарту үшін Alt+Іздеу не Shift пернесін басыңыз.</translation>
 <translation id="8480418399907765580">Құралдар тақтасын көрсету</translation>
+<translation id="8487660088084188539">Бұл функцияларды қосқан кезде, енгізілетін мәтін, құжат контенті және веб-беттің URL мекенжайы Google серверлеріне жіберілуі мүмкін. Бұл ақпарат <ph name="LINK_TO_SERVICE_TERMS" /> ережелеріне сәйкес жазу ұсыныстары мен қорытындылар жасау, сұрақтарға жауап беру және өнімді жақсарту үшін қолданылады. Жеке, шетін не құпия деректерді қоспаңыз.</translation>
 <translation id="8487699605742506766">Хотспот</translation>
 <translation id="8491237443345908933">Сілтемені жаңа қойындыда ашу</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> дисплейі <ph name="SPECIFIED_RESOLUTION" /> ажыратымдылығына қолдау көрсетпейді. Ажыратымдылық <ph name="FALLBACK_RESOLUTION" /> етіп өзгертілді. Өзгерістерді сақтау үшін "Растау" түймесін басыңыз. Алдыңғы параметрлер <ph name="TIMEOUT_SECONDS" /> кейін қалпына келтіріледі.</translation>
@@ -2325,6 +2333,7 @@
 <translation id="8725066075913043281">Әрекетті қайталау</translation>
 <translation id="8725214031272624704">Қолжетімді енгізу әдістерінің тізімін көрсету</translation>
 <translation id="8730621377337864115">Дайын</translation>
+<translation id="8731188831050207755"><ph name="FILE_NAME" /> файлы жүктеп алынбады.</translation>
 <translation id="8731487213223706745">Аяқталу уақыты: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Ол басылған пернелерді "ұрлап алу" әрекетін жасауы мүмкін.</translation>
 <translation id="8735678380411481005">Пернетақта жарығының түсі</translation>

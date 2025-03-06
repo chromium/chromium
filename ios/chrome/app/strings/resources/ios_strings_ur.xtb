@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">جاری رکھ کر آپ <ph name="BEGIN_LINK" />سروس کی شرائط<ph name="END_LINK" /> سے اتفاق کرتے ہیں۔</translation>
 <translation id="10614374240317010">کبھی بھی محفوظ نہیں کیا ہوا</translation>
 <translation id="1062138828266376352">‏آپ کا PIN تبدیل نہیں کیا گیا۔ اپنا انٹرنیٹ کنکشن چیک کریں اور دوبارہ کوشش کریں</translation>
+<translation id="1072476005125066234">آپ کی دلچسپیوں پر مبنی جائزے</translation>
 <translation id="1074827084851510304">‏آپ {password_count}} پاس ورڈز اور سائٹس اور ایپس کی فہرست حذف کرنے والے ہیں جنہیں آپ نے کبھی سائن ان معلومات محفوظ نہ کرنے کا انتخاب کیا تھا۔ جو بھی اکاؤنٹ آپ نے سائٹس اور ایپس کے لیے بنایا ہے وہ حذف نہیں ہوگا۔</translation>
 <translation id="1076421457278169141">کوڈ اسکین ہوگیا</translation>
 <translation id="1081932398873105675">{count,plural, =1{‫{count} ٹیب}other{‫{count} ٹیبز}}</translation>
@@ -267,6 +268,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" /> اکاؤنٹس ایک ہی پاس ورڈ کا استعمال کر رہے ہیں</translation>
 <translation id="2059166748188874810">میونسپلٹی</translation>
 <translation id="2060114494785549741">‫1 مہینے میں حذف کریں</translation>
+<translation id="2060638295449304809">‏یہ پتہ صرف اس آلہ میں محفوظ ہے۔ اپنے دیگر آلات پر اس کا استعمال کرنے کے لیے، اسے اپنے Google اکاؤنٹ، <ph name="USER_EMAIL" /> میں محفوظ کریں</translation>
 <translation id="20638360198452347">یونٹ کی قسم کا منتخب کنندہ</translation>
 <translation id="2067852168641682340">ہر بار اس اکاؤنٹ میں محفوظ کریں</translation>
 <translation id="2074119687904553223">{count,plural, =1{‫1 ٹیب}other{‫{count} ٹیبز}}</translation>
@@ -895,6 +897,7 @@
 <translation id="4824480232751123840">والیوم</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} اور 1 دیگر}other{{domain} اور {count} دیگر}}</translation>
 <translation id="4826588772550366629">کیمرا اور مائیکروفون</translation>
+<translation id="4828431027673677473">آپ کی دلچسپیوں پر مبنی پروڈکٹس</translation>
 <translation id="4833786495304741580">‏Google کو خودکار طور پر استعمال کے اعداد و شمار اور کریش رپورٹس بھیجتی ہے۔</translation>
 <translation id="483689884442613745">محفوظ کریں…</translation>
 <translation id="4840495572919996524">‏آپ کے بُک مارکس، سرگزشت، پاس ورڈز وغیرہ کی اب آپ کے Google اکاؤنٹ کے ساتھ مطابقت پذیری نہیں کی جائے گی۔</translation>
@@ -1244,7 +1247,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> کا ترجمہ کرنے کی پیشکش کریں</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> کی پیروی ختم کی گئی</translation>
 <translation id="6293101329759844770">‏محفوظ براؤزنگ کو آن کرنے کے لیے، <ph name="BEGIN_LINK" />Google سروسز<ph name="END_LINK" /> کھولیں اور محفوظ براؤزنگ پر تھپتھپائیں۔</translation>
-<translation id="6295434468271563378">اپنے ڈاؤن لوڈز کو خودکار طور پر حذف کریں</translation>
 <translation id="6295751040240588413">کارڈ کا غلط عرفی نام</translation>
 <translation id="629730747756840877">اکاؤنٹ</translation>
 <translation id="6301104306974789820">قیمت کی ٹریکنگ سے متعلق اطلاعات حاصل کریں</translation>
@@ -1735,6 +1737,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="828291969289324795">{count,plural, =1{نئے گروپ میں ٹیب شامل کریں}other{نئے گروپ میں ٹیبز شامل کریں}}</translation>
 <translation id="8283172974887967105">سیٹ کریں…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" /> کی اطلاعات آف کر دی گئیں</translation>
+<translation id="8290077367744012649">اپنے ٹیبز سے قیمتیں ٹریک کریں</translation>
 <translation id="8299417921174340354">پاس ورڈز استعمال کرنے کے ليے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا ہوگا۔</translation>
 <translation id="8299613349954694191">ویب کو نجی طور پر براؤز کرنے کے لیے ایک پوشیدگی ٹیب کھولیں۔</translation>
 <translation id="8307481894409578819">یہ فائل اپ لوڈ نہیں ہو سکی</translation>

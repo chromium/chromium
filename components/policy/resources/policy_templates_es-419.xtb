@@ -3408,6 +3408,7 @@ Si no estableces la política, se impedirá la navegación en el navegador cuand
       Si se inhabilita esta configuración o no se establece, se usará el nuevo flujo de acceso integrado de forma predeterminada. Los usuarios podrán seguir habilitando el flujo de acceso web anterior a través de la marca de línea de comandos --enable-web-based-signin.
 
       En el futuro, se quitará la configuración experimental, cuando el acceso integrado admita completamente todos los flujos de acceso SSO.</translation>
+<translation id="3435178885391813398">No permitir Scanner.</translation>
 <translation id="3435796032110614169">Permite borrar el historial de trabajos de impresión</translation>
 <translation id="3435896845095436175">Habilitar</translation>
 <translation id="3436217793443508863">El período sin intervención del usuario después del cual se bloquea la pantalla cuando el dispositivo esté funcionando con batería (en milisegundos)</translation>
@@ -7013,6 +7014,7 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 
       Si la inhabilitas, no se permitirá el uso de este protocolo.</translation>
 <translation id="5916855682471300200">Priorizar las políticas de máquina en la nube sobre las políticas de máquina de la plataforma</translation>
+<translation id="5917092644305650513">Configuración de la función Scanner</translation>
 <translation id="5917425424971710623">No informar eventos de detección y respuesta extendidas (XDR)</translation>
 <translation id="5917897389577978190">Gmail (compatible a partir de la versión 135)</translation>
 <translation id="592036544845479336">Volver a habilitar los eventos de mutación que quedaron obsoletos o se quitaron</translation>
@@ -7417,6 +7419,7 @@ En la versión 114 y en versiones posteriores, esta política es opcional si se 
       los informes de fallas. Si se establece como verdadera, se proporcionarán los datos de
       los informes de fallas.</translation>
 <translation id="624219423122512710">Respuestas del navegador inactivo</translation>
+<translation id="6243061183100681514">Permitir Scanner y mejorar los modelos de IA.</translation>
 <translation id="6244061205361004687">Permitir que el usuario desconecte o modifique manualmente una VPN</translation>
 <translation id="6244210204546589761">Direcciones URL que se abrirán al iniciar.</translation>
 <translation id="624595269193747921">Se debe limitar la búsqueda de la impresora a un grupo específico.</translation>
@@ -8247,6 +8250,7 @@ En <ph name="MS_WIN_NAME" />, siempre se respeta la política de KDC.</translati
 <translation id="6661178198729301029">Habilitar los informes en la nube para los perfiles administrados</translation>
 <translation id="6665670272107384733">Establecer la frecuencia con la que el usuario debe ingresar la contraseña para usar el desbloqueo rápido</translation>
 <translation id="6667586534922258705">Muestra el botón para ver la contraseña en la pantalla de inicio o de bloqueo</translation>
+<translation id="6667636336079341367">Permitir Scanner sin mejorar los modelos de IA.</translation>
 <translation id="6669691206059842248">Configurar URLs de redireccionamiento de OAuth adicionales por extensión</translation>
 <translation id="6669700740683748046">Esta función permite ver la URL completa en la barra de direcciones.
       Si estableces esta política como verdadera, se mostrará la URL completa en la barra de direcciones, incluidos sus esquemas y subdominios.
@@ -10846,6 +10850,17 @@ Para obtener más información sobre el manejo de datos de las funciones potenci
       Si inhabilitas la política o no la estableces, no se informarán los eventos.
       Si la habilitas, los eventos de CRD se informarán, en caso de que el usuario esté afiliado.</translation>
 <translation id="85723976805793612">Los registros de eventos de instalación de apps para Android se comparten con Google</translation>
+<translation id="8573354257711790704">Esta política controla la configuración de la función Scanner para <ph name="PRODUCT_OS_NAME" />.
+
+0 = Permite que se use la función y que Google use datos pertinentes para mejorar sus modelos de IA. Los datos pertinentes pueden incluir instrucciones, entradas, resultados, materiales de origen y comentarios escritos, según la función. Es posible que personas revisen los datos para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los siguientes casos.
+
+1 = Permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (lo que incluye las instrucciones, las entradas, los resultados, los materiales de origen y los comentarios escritos). 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = No permite la función.
+
+Si no estableces la política, su comportamiento se determina según la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información sobre el manejo de datos de las funciones potenciadas por IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="857369585509260201">Esta política dejó de estar disponible; considera usar la política BrowserSignin en su lugar.
 
       Si se establece esta política como verdadera, el usuario deberá acceder a <ph name="PRODUCT_NAME" /> con su perfil antes de usar el navegador. El valor predeterminado de BrowserGuestModeEnabled se establecerá como "false". Debes tener en cuenta que, una vez habilitada esta política, se bloquearán los perfiles a los que no se haya accedido, y no podrás ingresar a ellos. Para obtener más información, consulta el artículo del Centro de ayuda.

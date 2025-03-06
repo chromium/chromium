@@ -252,6 +252,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1419305130220238697">Gumb za upravljanje prenosov v Chromu, aktivirajte, če želite upravljati datoteke, ki ste jih prenesli v Chromu</translation>
 <translation id="1420345875188552368">Za to plačilo bo morda uporabljeno shranjeno plačilno sredstvo za samodejno plačevanje. Če želite izklopiti e-denarnice v Chromu, odprite <ph name="BEGIN_LINK1" />nastavitve plačil<ph name="END_LINK1" />.</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, če želite omogočiti seznanjanje</translation>
+<translation id="1421484961346698724">Izbrisan račun</translation>
 <translation id="14222610277930434">Pogosto obiskujete</translation>
 <translation id="1422930527989633628">Lahko zahteva odkrivanje naprav Bluetooth v bližini.</translation>
 <translation id="1426410128494586442">Da</translation>
@@ -3024,6 +3025,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6351658970066645919">Brisanje podatkov brskanja</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Nič}=1{Eno geslo (za <ph name="DOMAIN_LIST" />, sinhronizirano)}=2{Dve gesli (za <ph name="DOMAIN_LIST" />, sinhronizirano)}one{# geslo (za <ph name="DOMAIN_LIST" />, sinhronizirano)}two{# gesli (za <ph name="DOMAIN_LIST" />, sinhronizirano)}few{# gesla (za <ph name="DOMAIN_LIST" />, sinhronizirano)}other{# gesel (za <ph name="DOMAIN_LIST" />, sinhronizirano)}}</translation>
 <translation id="6355392890578844978">Tega brskalnika ne upravlja podjetje ali druga organizacija. Dejavnost v tej napravi morda upravljajo zunaj Chromiuma. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Skupini zavihkov »<ph name="GROUP_TITLE_1" />« in »<ph name="GROUP_TITLE_2" />« nista več na voljo</translation>
 <translation id="6358088212770985041">urediti plačilna sredstva</translation>
 <translation id="6358450015545214790">Več o teh nastavitvah</translation>
 <translation id="6360213755783740931">Več o zaščiti pred zlonamerno programsko opremo</translation>

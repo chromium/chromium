@@ -3282,6 +3282,7 @@ Wenn die Richtlinie nicht konfiguriert ist, wird die Browsernavigation verhinder
       Wenn du diese Einstellung deaktivierst oder nicht konfigurierst, wird standardmäßig die neue Inline-Anmeldung verwendet. Nutzer können die alte webbasierte Anmeldung weiterhin über das Befehlszeilenattribut "--enable-web-based-signin" aktivieren.
 
       Die experimentelle Einstellung wird in Zukunft entfernt, sobald die Inline-Anmeldung alle SSO-Anmeldeprozesse vollständig unterstützt.</translation>
+<translation id="3435178885391813398">Funktion „Scanner“ nicht zulassen.</translation>
 <translation id="3435796032110614169">Zulassen, dass der Druckauftragsverlauf gelöscht wird</translation>
 <translation id="3435896845095436175">Aktivieren</translation>
 <translation id="3436217793443508863">Zeitraum ohne Nutzereingabe im Akkubetrieb, nach dem der Bildschirm gesperrt wird, angegeben in Millisekunden.</translation>
@@ -6740,6 +6741,7 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 
       Wenn die Richtlinie deaktiviert ist, ist die Nutzung des QUIC-Protokolls nicht möglich.</translation>
 <translation id="5916855682471300200">Cloud-Richtlinien auf Maschinenebene haben Vorrang vor Plattformrichtlinien auf Maschinenebene</translation>
+<translation id="5917092644305650513">Einstellungen für die Funktion „Scanner“</translation>
 <translation id="5917425424971710623">Ereignisse vom Typ „Extended Detection and Response“ (XDR) nicht melden</translation>
 <translation id="5917897389577978190">Gmail (wird seit Version 135 unterstützt)</translation>
 <translation id="592036544845479336">Eingestellte/entfernte Mutationsereignisse wieder aktivieren</translation>
@@ -7131,6 +7133,7 @@ In Version 114 und höher ist diese Richtlinie optional, wenn die Richtlinie �
       gemeldet. Ist die Richtlinie auf "true" gesetzt, werden Informationen zu Absturzberichten
       gemeldet.</translation>
 <translation id="624219423122512710">Aktionen bei inaktivem Browser</translation>
+<translation id="6243061183100681514">Funktion „Scanner“ zulassen und KI‑Modelle verbessern.</translation>
 <translation id="6244061205361004687">Nutzern erlauben, VPN-Verbindungen manuell zu trennen oder zu ändern</translation>
 <translation id="6244210204546589761">Beim Start zu öffnende URLs</translation>
 <translation id="624595269193747921">Gibt an, ob die Suche nach dem passenden Drucker auf eine bestimmte Gruppe von Druckern beschränkt werden soll.</translation>
@@ -7875,6 +7878,7 @@ Unter <ph name="MS_WIN_NAME" /> wird die KDC-Richtlinie immer umgesetzt.</transl
 <translation id="6661178198729301029">Cloud-Berichterstellung über verwaltete Profile aktivieren</translation>
 <translation id="6665670272107384733">Festlegen, wie oft der Nutzer das Passwort eingeben muss, um das schnelle Entsperren zu verwenden</translation>
 <translation id="6667586534922258705">Schaltfläche zum Anzeigen des Passworts auf dem Start- oder Sperrbildschirm anzeigen</translation>
+<translation id="6667636336079341367">Funktion „Scanner“ zulassen, ohne KI‑Modelle zu verbessern.</translation>
 <translation id="6669691206059842248">Zusätzliche OAuth-Weiterleitungs-URLs pro Erweiterung konfigurieren</translation>
 <translation id="6669700740683748046">Durch diese Funktion wird die vollständige URL in der Adressleiste angezeigt.
       Wenn diese Richtlinie auf "True" gesetzt ist, wird die vollständige URL in der Adressleiste angezeigt, einschließlich Schemas und Subdomains.
@@ -10366,6 +10370,17 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
       Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, werden keine Informationen ausgegeben.
       Wenn die Richtlinie aktiviert ist, werden CRD-Ereignisse gemeldet, falls es sich um einen verknüpften Nutzer handelt.</translation>
 <translation id="85723976805793612">Ereignisprotokolle für die Android-App-Installation werden an Google weitergegeben</translation>
+<translation id="8573354257711790704">Mit dieser Richtlinie werden für <ph name="PRODUCT_OS_NAME" /> die Einstellungen der Funktion „Scanner“ festgelegt.
+
+„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI‑Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. Sie werden möglicherweise auch manuell überprüft, um KI‑Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
+
+„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, sowie für Konten von Bildungseinrichtungen, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion darf nicht verwendet werden.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="857369585509260201">Diese Richtlinie wird nicht mehr angeboten. Du kannst stattdessen "BrowserSignin" verwenden.
 
 Wenn diese Richtlinie auf "true" gesetzt ist, muss sich der Nutzer mit seinem Profil in <ph name="PRODUCT_NAME" /> anmelden, um den Browser zu nutzen. Außerdem wird der Standardwert von BrowserGuestModeEnabled auf "false" gesetzt. Beachte, dass vorhandene Profile ohne angemeldeten Nutzer gesperrt werden und nach Aktivieren dieser Richtlinie nicht mehr zugänglich sind. Weitere Informationen erhältst du im Hilfeartikel.

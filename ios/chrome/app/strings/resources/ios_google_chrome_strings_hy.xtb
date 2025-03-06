@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">Գաղտնաբառը կպահվի <ph name="EMAIL" /> հաշվի Google Գաղտնաբառերի կառավարիչում։</translation>
 <translation id="1146503048444965320">Բացել նոր ներդիր Chrome-ում</translation>
 <translation id="1166460004393506534">Ջնջել այցելությունների պատմությունը Chrome-ում։</translation>
+<translation id="1171255741903316750">Միացրեք «Կողպեք ինկոգնիտո ներդիրները, երբ փակեք Chrome-ը»</translation>
 <translation id="1179527450541388808">Ավելի արագ բացեք Chrome-ը ձեր iPad-ի հիմնական էկրանի Dock վահանակից։</translation>
 <translation id="1180362651362502943">Շարունակեք օգտագործել Chrome-ի տվյալները ձեր Google հաշվում։</translation>
 <translation id="1200396280085622191">Օգտագործեք Chrome-ը՝ հաղորդագրություններում և այլ հավելվածներում առկա հղումները բացելու համար։</translation>
@@ -45,6 +46,7 @@
 <translation id="1917964099031477364">Այս հաշիվը և բոլոր չպահված տվյալները կհեռացվեն Chrome-ից և Google-ի մյուս հավելվածներից այս սարքում։</translation>
 <translation id="1919130412786645364">Թույլատրել մուտքը Chrome-ում</translation>
 <translation id="1965935827552890526">Ավարտեք աշխատանքը Chrome-ի մյուս բացված պատուհանում։</translation>
+<translation id="1973910962341002002">«<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />» կարգավորումներից միացրեք «Chrome»-ը</translation>
 <translation id="1984705450038014246">Համաժամացնել Chrome-ի տվյալները</translation>
 <translation id="1987779152850321833">Կատարեք այս առաջարկվող գործողությունները՝ Chrome-ի բոլոր հնարավորություններից օգտվելու համար։</translation>
 <translation id="2055826352861631739">Օգտագործեք Chrome-ը որպես կանխադրված դիտարկիչ iPad-ի համար</translation>
@@ -96,10 +98,13 @@
 <translation id="3282568296779691940">Մուտք գործել Chrome</translation>
 <translation id="3303503998967553377">iOS սարքում ընտրեք «Գործողություններ Chrome-ում»</translation>
 <translation id="3348862487678490430">Ավելացնել ընթերցանության ցանկին Chrome-ում</translation>
+<translation id="3357827134511189025">Մուտք գործեք ձեր պահված գաղտնաբառերով և մուտքի բանալիներով ցանկացած հավելվածից՝ օգտագործելով Chrome-ը ավտոմատ լրացման համար</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Սա տեղի է ունենում, երբ Chrome-ը {THRESHOLD} րոպե չի օգտագործվում}one{Սա տեղի է ունենում, երբ Chrome-ը {THRESHOLD} րոպե չի օգտագործվում}other{Սա տեղի է ունենում, երբ Chrome-ը {THRESHOLD} րոպե չի օգտագործվում}}</translation>
 <translation id="3367797402528056312">Ավարտեք Chrome-ի կարգավորումը</translation>
 <translation id="3371064404604898522">Դարձնել Chrome-ը կանխադրված դիտարկիչ</translation>
 <translation id="3399930248910934354">Բացել Chrome-ի կարգավորումները</translation>
+<translation id="3440830787838130530">Հեշտությամբ և ապահով կերպով կիսվեք գաղտնաբառի պատճենով ձեր ընտանեկան խմբի հետ Google գաղտնաբառերի կառավարչում</translation>
+<translation id="3460369101684070455">Պահված գաղտնաբառերն այլ հավելվածներում հեշտությամբ մուտքագրելու համար ընտրեք ինքնալրացման գործառույթը Chrome-ում</translation>
 <translation id="3472587960215700950">Chrome-ն օգտագործում է Google Քարտեզները՝ ձեզ գտնված հասցեների մասին տեղեկություններ ցուցադրելու և դեպի այդ վայրեր երթուղիներ գծելու համար։</translation>
 <translation id="3503014945441706099">Կիրառեք նաև բարելավված Ապահով դիտարկումն այս Chrome պրոֆիլի համար</translation>
 <translation id="3522659714780527202">Chrome-ն օգտագործելիս ձեր բոլոր ներդիրները տեսնելու համար միացրեք համաժամացումը։</translation>
@@ -181,6 +186,7 @@
 <translation id="5998675059699164418">Ձեր կազմակերպության կանոնների համաձայն՝ դուք պետք է մուտք գործեք հաշիվ, որպեսզի կարողանաք օգտագործել Chrome-ը։</translation>
 <translation id="6021312115739110405">Հատուկ ֆիդ, որը ձեզ համար ստեղծել է Google-ը։ Ֆիդը ներառում է լուրեր, սպորտային նորություններ և եղանակի տեսություն։</translation>
 <translation id="6022659036123304283">Անհատականացրեք Chrome դիտարկիչը</translation>
+<translation id="6132075343662013154">Chrome-ը կառաջարկի պահել ձեր գաղտնաբառը</translation>
 <translation id="6132149203299792222">Մուտք գործեք Google հաշիվ՝ ձեր գաղտնաբառերը, էջանիշները և այլ տվյալներ համաժամացնելու համար։</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Որոնում Chrome-ում</translation>
@@ -228,6 +234,7 @@
 <translation id="7061455974939528301">Սեղմեք Chrome-ի պատկերակը և պահեք, ապա ընտրեք «Փոփոխել հիմնական էկրանը»</translation>
 <translation id="7065813315247345131">Տեղափոխեք Chrome-ը Dock վահանակ</translation>
 <translation id="7124339256045485976">Chrome-ը թարմացված պահեք</translation>
+<translation id="7145599899567697473">Պահեք և ավտոմատ լրացրեք գաղտնաբառերը Chrome-ում</translation>
 <translation id="7161390184744336561">Google Chrome-ը հնացած է</translation>
 <translation id="7165736900384873061">Ինչպես օգտագործել Google Chrome QR սկաները</translation>
 <translation id="7175129790242719365">Chrome-ի հուշում․ մուտք գործեք Chrome-ում</translation>
@@ -261,6 +268,7 @@
 <translation id="7693590760643069321">Այժմ հաղորդագրություններում, փաստաթղթերում և այլ հավելվածներում առկա հղումները կարող եք բացել Chrome-ում։</translation>
 <translation id="7698568245838009292">Chrome-ն ուզում է օգտագործել տեսախցիկը</translation>
 <translation id="7707877166818730835">Բացել իմ վերջին ներդիրը Chrome-ում</translation>
+<translation id="7747746207470479571">Ինքնալրացման համար Chrome-ի միջոցով հեշտությամբ մուտք գործեք ձեր գաղտնաբառեր և մուտքի բանալիներ</translation>
 <translation id="776305366874821582">Ավելի արագ բացեք Chrome-ը ձեր iPhone-ի հիմնական էկրանի Dock վահանակից։</translation>
 <translation id="7780154209050837198">Chromе-ի բոլոր գործառույթներն օգտագործելու համար մտեք Google հաշիվ։</translation>
 <translation id="7787205077729386167">Բացեք Chrome-ի կարգավորումները iOS-ում, ապա հպեք «Դիտարկիչի կանխադրված հավելված» և ընտրեք Chrome-ը։</translation>
@@ -281,6 +289,7 @@
 <translation id="8136856065410661948">Սա կօգտագործվի՝ ձեր Apple Calendar-ում Chrome-ից և Google Տեսապակուց միջոցառումներ ստեղծելու համար։</translation>
 <translation id="8154120522323162874">Օգտվեք Chrome-ի բոլոր հնարավորություններից՝ շարունակելով կարգավորել ձեր դիտարկիչը։</translation>
 <translation id="8160472928944011082">Չհաջողվեց թարմացնել Chrome-ը</translation>
+<translation id="8245080522851805544">Ձեր դիտարկումը գաղտնի պահեք սարքի իսկորոշման միջոցով, երբ փակեք Chrome-ը</translation>
 <translation id="8248887045858762645">Chrome-ին առնչվող խորհուրդներ</translation>
 <translation id="8265730590513812063">Բացեք Chrome-ի ընտրացանկը</translation>
 <translation id="8317674518145175158">Վճարման եղանակները և հասցեները չեն գաղտնագրվի։ Chrome-ի այցելությունների պատմությունը չի համաժամացվի։
@@ -324,5 +333,6 @@
 <translation id="9181628561061032322">Բացում է Chrome-ի վերջերս բեռնած ներդիրների ցանկը։</translation>
 <translation id="948597495737267756">Բացում է Chrome-ի պատմության էջը։</translation>
 <translation id="97300214378190234">Օգտագործեք Chrome-ը՝ այլ հավելվածներում առկա հղումները բացելու համար։</translation>
+<translation id="997929539742564806">Արագ մուտք գործեք հավելվածներ և կայքեր՝ ավտոմատ լրացնելով ձեր գաղտնաբառերն ու մուտքի բանալիները Chrome-ից</translation>
 <translation id="998677222109959694">Կառավարել Chrome-ի կարգավորումները</translation>
 </translationbundle>

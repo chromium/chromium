@@ -252,6 +252,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1419305130220238697">Chrome'da indirilenleri yönet düğmesi, Chrome'da indirdiğiniz dosyaları yönetmek için etkinleştirin</translation>
 <translation id="1420345875188552368">Kayıtlı otomatik ödeme yönteminiz bu ödeme için kullanılabilir. Chrome'da e-cüzdanı devre dışı bırakmak için <ph name="BEGIN_LINK1" />ödeme ayarlarınıza<ph name="END_LINK1" /> gidin.</translation>
 <translation id="1420920093772172268">Eşlemeye izin vermek için <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="1421484961346698724">Hesap silindi</translation>
 <translation id="14222610277930434">Sık ziyaret ediyorsunuz</translation>
 <translation id="1422930527989633628">Yakındaki Bluetooth cihazları bulmak isteyebilir</translation>
 <translation id="1426410128494586442">Evet</translation>
@@ -3024,6 +3025,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6351658970066645919">Tarama Verilerini Sil</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Yok}=1{1 şifre (<ph name="DOMAIN_LIST" /> için, senkronize edildi)}=2{2 şifre (<ph name="DOMAIN_LIST" /> için, senkronize edildi)}other{# şifre (<ph name="DOMAIN_LIST" /> için, senkronize edildi)}}</translation>
 <translation id="6355392890578844978">Bu tarayıcı bir şirket veya başka bir kuruluş tarafından yönetilmemektedir. Bu cihazdaki etkinlikler Chromium dışında yönetilebilir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">"<ph name="GROUP_TITLE_1" />" ve "<ph name="GROUP_TITLE_2" />" sekme grupları artık kullanılamıyor</translation>
 <translation id="6358088212770985041">ödeme yöntemlerini düzenleme</translation>
 <translation id="6358450015545214790">Bunlar ne anlama geliyor?</translation>
 <translation id="6360213755783740931">Kötü amaçlı yazılımlara karşı koruma hakkında daha fazla bilgi</translation>

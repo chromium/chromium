@@ -252,6 +252,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1419305130220238697">Knoppie om aflaaie in Chrome te bestuur; aktiveer om lêers te bestuur wat jy in Chrome afgelaai het</translation>
 <translation id="1420345875188552368">Jou gestoorde outomatiese betaalmetode kan vir hierdie betaling gebruik word. Gaan na jou <ph name="BEGIN_LINK1" />betalinginstellings<ph name="END_LINK1" /> om eWallets in Chrome af te skakel</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> om saambinding moontlik te maak</translation>
+<translation id="1421484961346698724">Rekening uitgevee</translation>
 <translation id="14222610277930434">Jy besoek gereeld</translation>
 <translation id="1422930527989633628">Kan vra om Bluetooth-toestelle in die omtrek te ontdek</translation>
 <translation id="1426410128494586442">Ja</translation>
@@ -3024,6 +3025,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6351658970066645919">Vee blaaierdata uit</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Geen}=1{1 wagwoord (vir <ph name="DOMAIN_LIST" />, gesinkroniseer)}=2{2 wagwoorde (vir <ph name="DOMAIN_LIST" />, gesinkroniseer)}other{# wagwoorde (vir <ph name="DOMAIN_LIST" /> gesinkroniseer)}}</translation>
 <translation id="6355392890578844978">Hierdie blaaier word nie deur 'n maatskappy of ander organisasie bestuur nie. Aktiwiteit op hierdie toestel kan buite Chromium bestuur word. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">“<ph name="GROUP_TITLE_1" />”- en “<ph name="GROUP_TITLE_2" />”-oortjiegroep nie meer beskikbaar nie</translation>
 <translation id="6358088212770985041">wysig betaalmetodes</translation>
 <translation id="6358450015545214790">Wat beteken dit?</translation>
 <translation id="6360213755783740931">Kry meer inligting oor wanwarebeskerming</translation>

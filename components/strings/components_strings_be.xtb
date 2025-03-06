@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">Кнопка "Кіраваць спампоўкамі ў Chrome". Каб кіраваць файламі, якія вы спампавалі ў браўзеры Chrome, націсніце яе.</translation>
 <translation id="1420345875188552368">Для гэтага плацяжу можа быць выкарыстаны спосаб аўтаматычнай аплаты, які вы захавалі. Каб выключыць электронныя кашалькі ў Chrome, перайдзіце ў <ph name="BEGIN_LINK1" />налады аплаты<ph name="END_LINK1" />.</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, каб дазволіць спалучэнне</translation>
+<translation id="1421484961346698724">Выдалены ўліковы запіс</translation>
 <translation id="14222610277930434">Вы часта наведваеце гэты вэб-сайт</translation>
 <translation id="1422930527989633628">Сайт можа запытваць дазвол выяўляць прылады з Bluetooth паблізу</translation>
 <translation id="1426410128494586442">Так</translation>
@@ -3023,6 +3024,7 @@
 <translation id="6351658970066645919">Выдаліць даныя пра работу ў браўзеры</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Няма}=1{1 пароль (для даменаў <ph name="DOMAIN_LIST" />, сінхранізаваны)}=2{2 паролі (для даменаў <ph name="DOMAIN_LIST" />, сінхранізаваны)}one{# пароль (для даменаў <ph name="DOMAIN_LIST" />, сінхранізаваны)}few{# паролі (для даменаў <ph name="DOMAIN_LIST" />, сінхранізаваны)}many{# пароляў (для даменаў <ph name="DOMAIN_LIST" />, сінхранізаваны)}other{# пароля (для даменаў <ph name="DOMAIN_LIST" />, сінхранізаваны)}}</translation>
 <translation id="6355392890578844978">Гэты браўзер не знаходзіцца пад кіраваннем кампаніі або іншай арганізацыі. Аднак сама прылада можа знаходзіцца пад знешнім кіраваннем. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Групы ўкладак "<ph name="GROUP_TITLE_1" />" і "<ph name="GROUP_TITLE_2" />" больш не даступныя</translation>
 <translation id="6358088212770985041">змяніць спосабы аплаты</translation>
 <translation id="6358450015545214790">Што яны азначаюць?</translation>
 <translation id="6360213755783740931">Даведацца больш пра абарону ад шкодных праграм</translation>

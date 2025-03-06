@@ -3799,6 +3799,7 @@
 <translation id="3670229581627177274">Bluetooth を ON にする</translation>
 <translation id="3670480940339182416">サイトでの V8 オプティマイザーの使用を許可する</translation>
 <translation id="3671764914317109892">普段使う表現で閲覧履歴を検索できます。閲覧履歴に関する質問を行って回答を取得することもできます。</translation>
+<translation id="3671982238795754537">パスキーの詳細</translation>
 <translation id="3672681487849735243">出荷時のエラーが見つかりました</translation>
 <translation id="3673097791729989571">ログインは <ph name="SAML_DOMAIN" /> でホストされています</translation>
 <translation id="3673287357837016374">PIN を更新しました</translation>
@@ -4714,6 +4715,7 @@
 <translation id="4289540628985791613">概要</translation>
 <translation id="428963538941819373">これらのサイトは、<ph name="HOST" /> を閲覧する際に、保存したあなたに関する情報を使用できます</translation>
 <translation id="4289732974614035569">PIN の入力</translation>
+<translation id="4290526909608432059">Chrome アプリのサポートはまもなく終了します。対応方法については、アプリのデベロッパーまたは IT サポートチームにお問い合わせください。</translation>
 <translation id="4290791284969893584">ページを閉じると、開始したタスクが完了できなくなります</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> 人のメンバー</translation>
 <translation id="4290898381118933198">スワイプしてページ間を移動する</translation>
@@ -8501,6 +8503,7 @@
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - シリアルポートを接続しました</translation>
 <translation id="7033616203784997570">62 文字以下で入力してください</translation>
 <translation id="7034692021407794547">「お支払いの管理」権限のある管理者は、まず管理コンソールの [Google Meet ハードウェア] で Google Meet ハードウェアの利用規約に同意する必要があります。</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> でアカウントのパスキーが作成されました。パスキーを使用すると、すばやく安全にログインできます。パスキーは <ph name="USER" /> の Google パスワード マネージャーに保存されます。<ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Linux 用の推奨される空き容量は <ph name="DISK_SIZE" /> です。空き容量を増やすには、デバイスからファイルを削除してください。</translation>
 <translation id="7037157058268992880">PIN を忘れた場合</translation>
 <translation id="7037509989619051237">テキスト読み上げの音声をプレビュー</translation>
@@ -10542,6 +10545,7 @@
 <translation id="8477178913400731244">データを削除</translation>
 <translation id="8477241577829954800">差し替えられた</translation>
 <translation id="8477384620836102176">全般(&amp;G)</translation>
+<translation id="8477446666255316832">次回からすばやくログイン</translation>
 <translation id="8479176401914456949">コードが無効です。もう一度お試しください。</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> 製の不明なデバイス</translation>
 <translation id="8481187309597259238">USB のアクセス許可の確認</translation>

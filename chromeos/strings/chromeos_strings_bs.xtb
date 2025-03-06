@@ -503,7 +503,7 @@
 <translation id="3373141842870501561">Pozadinska slika sa Zemljom</translation>
 <translation id="33736539805963175">Pozadina u boji "<ph name="LETTERS_COLOR" />" sa slovom <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Ekskluzivno</translation>
-<translation id="3395147534045164351">Uključi/isključi lokaciju poravnanja</translation>
+<translation id="3395147534045164351">Uključivanje/isključivanje lokacije prilagođavanja</translation>
 <translation id="3404249063913988450">Omogućite čuvara ekrana</translation>
 <translation id="3413935475507503304">Da nastavite s ažuriranjem, kliknite na Naprijed.</translation>
 <translation id="3428551088151258685">na otvorenom</translation>
@@ -653,7 +653,7 @@
 <translation id="4113067922640381334">Sada imate pristup novim <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />pozadinskim slikama<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Tamni način rada</translation>
 <translation id="4126551873361000548">10 s nazad</translation>
-<translation id="4128271910628504223">Unesite upit kao što je "nacrtaj maglovitu šumu"</translation>
+<translation id="4128271910628504223">Unesite upit poput "nacrtaj šumu u magli"</translation>
 <translation id="4130035430755296270">Postavite i zadržite pokazivač miša iznad za više opcija rasporeda</translation>
 <translation id="4130750466177569591">Slažem se</translation>
 <translation id="4131410914670010031">Crno-bijelo</translation>
@@ -861,7 +861,7 @@
 <translation id="5050042263972837708">Naziv grupe</translation>
 <translation id="5051044138948155788">Ovo je jedina stranica. Ovo će vas odvesti na početni ekran za skeniranje.</translation>
 <translation id="5053233795640754917">Pauza</translation>
-<translation id="5056587122125565772">Izradi sliku</translation>
+<translation id="5056587122125565772">Kreiraj sliku</translation>
 <translation id="5078711626843651677">Modeli glasova se privremeno čuvaju na uređaju dok se označavanje govornika ne izvrši. Ovo možete isključiti bilo kada u Postavkama.</translation>
 <translation id="5078983345702708852">futurističko</translation>
 <translation id="5087864757604726239">nazad</translation>

@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">「管理 Chrome 下載內容」按鈕，啟動後即可管理在 Chrome 中下載的檔案</translation>
 <translation id="1420345875188552368">系統可能會使用你儲存的自動付款方式支付這筆款項。如要在 Chrome 中關閉電子錢包，請前往<ph name="BEGIN_LINK1" />付款設定<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268">如要允許配對，請<ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="1421484961346698724">已刪除的帳戶</translation>
 <translation id="14222610277930434">經常造訪</translation>
 <translation id="1422930527989633628">可以要求搜尋附近的藍牙裝置</translation>
 <translation id="1426410128494586442">是</translation>
@@ -3022,6 +3023,7 @@
 <translation id="6351658970066645919">刪除瀏覽資料</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{無}=1{有 1 組密碼 (<ph name="DOMAIN_LIST" />，已同步處理)}=2{有 2 組密碼 (<ph name="DOMAIN_LIST" />，已同步處理)}other{有 # 組密碼 (<ph name="DOMAIN_LIST" />，已同步處理)}}</translation>
 <translation id="6355392890578844978">這個瀏覽器未受到任何公司或其他機構管理。這部裝置上的活動可透過 Chromium 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">「<ph name="GROUP_TITLE_1" />」和「<ph name="GROUP_TITLE_2" />」分頁群組已無法使用</translation>
 <translation id="6358088212770985041">編輯付款方式</translation>
 <translation id="6358450015545214790">我需要進一步資訊</translation>
 <translation id="6360213755783740931">進一步瞭解惡意軟體防護功能</translation>

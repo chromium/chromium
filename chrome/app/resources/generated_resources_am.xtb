@@ -3817,6 +3817,7 @@
 <translation id="3670229581627177274">ብሉቱዝን አብራ</translation>
 <translation id="3670480940339182416">ጣቢያዎች V8 አመቻችን መጠቀም ይችላሉ</translation>
 <translation id="3671764914317109892">የአሰሳ ታሪክዎን ለመፈለግ የዕለት ተዕለት ቋንቋን ይጠቀሙ። እንዲሁም በአሰሳ ታሪክዎ መሰረት ጥያቄዎችን መጠየቅ እና መልሶችን ማግኘት ይችላሉ።</translation>
+<translation id="3671982238795754537">ስለ የይለፍ ቁልፎች የበለጠ ይወቁ</translation>
 <translation id="3672681487849735243">አንድ የፋብሪካ ስህተት ተገኝቷል</translation>
 <translation id="3673097791729989571">በ<ph name="SAML_DOMAIN" /> የተስተናገደ በመለያ መግባት</translation>
 <translation id="3673287357837016374">የእርስዎ ፒን ተዘምኗል</translation>
@@ -4077,6 +4078,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{አንድ ቅጥያ ጸድቋል}one{# ቅጥያዎች ጸድቀዋል}other{# ቅጥያዎች ጸድቀዋል}}</translation>
 <translation id="3823019343150397277">አይ ቢ ኤ ኤን</translation>
 <translation id="3823310065043511710">ለLinux ቢያንስ <ph name="INSTALL_SIZE" /> ቦታ ይመከራል።</translation>
+<translation id="3824203811509979971">ይዘትን ያጠቃልሉ ወይም ጥያቄዎችን ይጠይቁ</translation>
 <translation id="3824621460022590830">የመሣሪያ ምዝገባ ማስመሰያ ልክ ያልሆነ ነው። እባክዎ የእርስዎን የመሣሪያ ባለቤት ወይም አስተዳዳሪ ያነጋግሩ። የስህተት ኮድ፦ <ph name="ERROR_CODE" />።</translation>
 <translation id="3824757763656550700">የሌሎች መሣሪያዎችን ትሮች ለማየት በመለያ ይግቡ</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{ለዚህ የፋይል ዓይነት ምርጫዬን አስታውስ፡- <ph name="FILE_TYPES" />}one{ለእነዚህ የፋይል አይነቶች ምርጫዬን አስታውስ፡- <ph name="FILE_TYPES" />}other{ለእነዚህ የፋይል አይነቶች ምርጫዬን አስታውስ፡- <ph name="FILE_TYPES" />}}</translation>
@@ -4263,6 +4265,7 @@
 <translation id="3948985214866944547">አብዛኛዎቹ ሰዎች ለዚህ ጣቢያ ትክክለኛ አካባቢን ማጋራት ያግዳሉ</translation>
 <translation id="394984172568887996">ከIE የመጣ</translation>
 <translation id="3949999964543783947">ፋይሎች ማውረድን የበለጠ ደህንነቱ የተጠበቀ ለማድረግ <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
+<translation id="3950479158728806902">በፍጥነት ለመግባት የይለፍ ቁልፍ በራስ-ሰር ፍጠር</translation>
 <translation id="3950820424414687140">በመለያ ይግቡ</translation>
 <translation id="3950841222883198950">በድምፅ ትየባ</translation>
 <translation id="3953834000574892725">የእኔ መለያዎች</translation>
@@ -4729,6 +4732,7 @@
 <translation id="4289540628985791613">ማጠቃለያ</translation>
 <translation id="428963538941819373">እነዚህ ጣቢያዎች እርስዎ <ph name="HOST" /> በሚያስሱበት ጊዜ ስለ እርስዎ ያስቀመጡትን መረጃ መጠቀም ይችላሉ</translation>
 <translation id="4289732974614035569">አንድ ፒን ይምረጡ</translation>
+<translation id="4290526909608432059">የChrome መተግበሪያዎች ድጋፍ በቅርቡ ያበቃል። ስለ አማራጮችዎ ለማወቅ የመተግበሪያውን ገንቢ ወይም የአይቲ የድጋፍ ቡድንዎን ያነጋግሩ።</translation>
 <translation id="4290791284969893584">አንድ ገፅ ከዘጉ በኋላ እርስዎ የጀመሯቸው ሥራዎች ላይጠናቀቁ ይችላሉ</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> አባል</translation>
 <translation id="4290898381118933198">በገጾች መካከል ለማሰስ ያንሸራትቱ</translation>
@@ -5189,6 +5193,7 @@
 <translation id="4624054169152573743">የቀለም ገጽታ</translation>
 <translation id="4625078469366263107">መተግበሪያን አንቃ</translation>
 <translation id="4625905218692741757">ግራጫ ነባሪ ቀለም</translation>
+<translation id="4627107755957573804">የይለፍ ቁልፎችን ለመጠቀም ጣቢያዎች እና መተግበሪያዎች ነባር መለያዎችን እንዲያሻሽሉ ፍቀድ</translation>
 <translation id="4627442949885028695">ከሌላ መሣሪያ ላይ ቀጥል</translation>
 <translation id="4628762811416793313">የLinux መያዣው ውቅረት አልተጠናቀቀም። እባክዎ እንደገና ይሞክሩ።</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> መገለጫን ክፈት</translation>
@@ -5772,6 +5777,7 @@
 <translation id="5053233576223592551">የተጠቃሚ ስም ይክሉ</translation>
 <translation id="505347685865235222">ያልተሰየመ ቡድን - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{እሱን አሁን መቀየር አለብዎት}one{እሱን አሁን መቀየር አለብዎት}other{እነዚህን አሁን መቀየር አለብዎት}}</translation>
+<translation id="5056587122125565772">ምስል ፍጠር</translation>
 <translation id="5056950756634735043">ከመያዣው ጋር በመገናኘት ላይ</translation>
 <translation id="5057110919553308744">ቅጥያውን ጠቅ ሲያደርጉ</translation>
 <translation id="5057127674016624293">መቃኘት ከተጠበቀው በላይ ጊዜ እየወሰደ ነው</translation>
@@ -5882,6 +5888,7 @@
 <translation id="512642543295077915">ፍለጋ + የኋሊት መደምሰሻ</translation>
 <translation id="5126611267288187364">ለውጦችን ይመልከቱ</translation>
 <translation id="5127620150973591153">ደህንነቱ የተጠበቀ የግንኙነት መታወቂያ፦ <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">ይዘትን አጠቃልል ወይም ጥያቄዎችን ጠይቅ።</translation>
 <translation id="5127881134400491887">የአውታረ መረብ ግንኙነቶች አቀናብር</translation>
 <translation id="5127934926273826089">አበባዎች</translation>
 <translation id="5127986747308934633">የእርስዎ አስተዳዳሪ መሣሪያዎን እየተቆጣጠሩት ነው</translation>
@@ -8523,6 +8530,7 @@
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - ተከታታይ ወደብ ተገናኝቷል</translation>
 <translation id="7033616203784997570">ግብዓት ቢበዛ 62 ቁምፊዎች መሆን አለበት</translation>
 <translation id="7034692021407794547">የሒሳብ አከፋፈል አስተዳደር ልዩ መብቶች ያሉት አስተዳዳሪ መጀመሪያ በአስተዳዳሪ መሥሪያው የGoogle Meet ሃርድዌር ክፍል ውስጥ የGoogle Meet ሃርድዌር የአገልግሎት ውልን መቀበል አለባቸው።</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> ለመለያዎ የይለፍ ቁልፍ ፈጥሯል። የይለፍ ቁልፎች ለመግባት ይበልጥ ፈጣን እና ደህንነቱ የተጠበቀ መንገድ ያቀርባሉ እና ለ<ph name="USER" /> በGoogle የይለፍ ቃል አስተዳዳሪ ውስጥ ይቀመጣሉ። <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">ለLinux <ph name="DISK_SIZE" /> ቦታ ይመከራል። ባዶ ቦታን ለመጨመር ከመሣሪያዎ ፋይሎችን ይሰርዙ።</translation>
 <translation id="7037157058268992880">ፒን ረሳሁ</translation>
 <translation id="7037509989619051237">ቅድሚያ የሚታይ ጽሁፍ</translation>
@@ -10570,6 +10578,7 @@ nil</translation>
 <translation id="8477178913400731244">ውሂብን ይሰርዙ</translation>
 <translation id="8477241577829954800">ተተክቷል</translation>
 <translation id="8477384620836102176">&amp;አጠቃላይ</translation>
+<translation id="8477446666255316832">በሚቀጥለው ጊዜ በፍጥነት ይግቡ</translation>
 <translation id="8479176401914456949">ልክ ያልሆነ ኮድ። እባክዎ እንደገና ይሞክሩ።</translation>
 <translation id="8480869669560681089">ያልታወቀው መሣሪያ ከ<ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">የዩኤስቢ ፈቃድን ያረጋግጡ</translation>
@@ -11417,6 +11426,7 @@ nil</translation>
 <translation id="9074739597929991885">ብሉቱዝ</translation>
 <translation id="9074836595010225693">የUSB መዳፊት ተገናኝቷል</translation>
 <translation id="9075413375877487220">ይህ ቅጥያ በተሻሻለ የደህንነት አሰሳ የታመነ አይደለም።</translation>
+<translation id="9075985558450420812">ምስል ለመፍጠር ብጁ ጥያቄ ያስገቡ ወይም ጽሑፍ ያድምቁ።</translation>
 <translation id="9076523132036239772">ይቅርታ፣ ኢሜይልዎ ወይም የይለፍ ቃልዎ ሊረጋገጥ አልቻለም። መጀመሪያ ከአውታረ መረብ ጋር ለመገናኘት ይሞክሩ።</translation>
 <translation id="9076821103818989526">የጎን ፓነል</translation>
 <translation id="9076977315710973122">የSMB ማጋራት</translation>

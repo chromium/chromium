@@ -6,6 +6,7 @@
 <translation id="1044891598689252897">Weby budou fungovat normálně</translation>
 <translation id="1070329623210597193">Soubory, které může tento web prohlížet nebo upravovat</translation>
 <translation id="1073417869336441572">Pomozte nám vylepšit Chrome tím, že nám sdělíte, proč jste povolili soubory cookie třetích stran. <ph name="BEGIN_LINK" />Odeslat zpětnou vazbu<ph name="END_LINK" /></translation>
+<translation id="1074758928858737435">Můžete požádat o zobrazení verze webů pro počítače</translation>
 <translation id="1085696779717592361">Používejte Chrome ve výchozím nastavení</translation>
 <translation id="1178581264944972037">Pozastavit</translation>
 <translation id="1181037720776840403">Odebrat</translation>
@@ -32,6 +33,7 @@
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> web}few{<ph name="SITE_COUNT" /> weby}many{<ph name="SITE_COUNT" /> webu}other{<ph name="SITE_COUNT" /> webů}}</translation>
 <translation id="1500473259453106018">Skrýt kartu Poklesy cen na kartách</translation>
 <translation id="1510341833810331442">Weby nemohou ukládat data do vašeho zařízení</translation>
+<translation id="1538031354170655462">Weby obvykle technologii NFC (Near Field Communication) používají ke komunikaci s lokátory nebo zařízeními v okolí, například ke skenování čipů nebo k bezkontaktnímu placení</translation>
 <translation id="1547123415014299762">Soubory cookie třetích stran jsou povoleny</translation>
 <translation id="1593426485665524382">V horní části obrazovky jsou k dispozici nové akce</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -115,6 +117,7 @@
 <translation id="2677748264148917807">Odejít</translation>
 <translation id="2682367912565197520">Smazat uloženou úroveň přiblížení</translation>
 <translation id="2683434792633810741">Vymazat a resetovat?</translation>
+<translation id="2685514716378236873">Nepovoleno</translation>
 <translation id="2713106313042589954">Vypnout kameru</translation>
 <translation id="2717722538473713889">E‑mailové adresy</translation>
 <translation id="2726059656860238749">Spouštět Chrome s vybraným omniboxem a zkrátit tak dobu spouštění na zařízeních nižší třídy.</translation>
@@ -211,12 +214,14 @@
 <translation id="3955193568934677022">Povolit webům přehrávat chráněný obsah (doporučeno)</translation>
 <translation id="3965467402665811906">Weby mohou žádat o použití informací, které o vás uložily</translation>
 <translation id="3967822245660637423">Stahování bylo dokončeno</translation>
+<translation id="3981465354637804599">Weby obvykle zobrazují reklamy, aby mohly poskytovat obsah nebo služby bez dalších poplatků. Některé weby ale zobrazují rušivé nebo zavádějící reklamy.</translation>
 <translation id="3987993985790029246">Kopírovat odkaz</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992308058851451478"><ph name="SITE" /> může při procházení používat vaše informace</translation>
 <translation id="3992684624889376114">O této stránce</translation>
 <translation id="4002066346123236978">Název</translation>
 <translation id="4046123991198612571">Další skladba</translation>
+<translation id="4077310749977440510">Weby obvykle čtou obsah schránky kvůli funkcím, jako je zachování formátu zkopírovaného textu</translation>
 <translation id="4149890623864272035">Opravdu chcete vymazat všechna místní data, včetně souborů cookie, a resetovat všechna oprávnění tohoto webu?</translation>
 <translation id="4149994727733219643">Zjednodušené zobrazení webových stránek</translation>
 <translation id="4151930093518524179">Výchozí přiblížení</translation>
@@ -224,6 +229,7 @@
 <translation id="4169549551965910670">Připojeno k zařízení USB</translation>
 <translation id="4194328954146351878">Pokud web bude chtít číst a měnit informace na zařízeních NFC, zobrazit dotaz (doporučeno)</translation>
 <translation id="4200726100658658164">Otevřít nastavení polohy</translation>
+<translation id="421742575134139848">Weby můžou přehrávat zvuky při přehrávání hudby, videí a dalších médií</translation>
 <translation id="4226663524361240545">Oznámení mohou aktivovat vibraci</translation>
 <translation id="4259722352634471385">Navigace je blokována: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Po opuštění web může pokračovat v synchronizaci, aby dokončil úkoly, jako je nahrání fotek nebo odeslání chatové zprávy</translation>
@@ -247,6 +253,7 @@
 <translation id="4566417217121906555">Vypnout mikrofon</translation>
 <translation id="4570913071927164677">Podrobnosti</translation>
 <translation id="4598549027014564149">V anonymním režimu weby nemohou používat soubory cookie ke sledování vaší aktivity prohlížení na webech, a to ani na souvisejících webech. Vaše aktivita prohlížení se nepoužívá například k personalizaci reklam. Některé weby mohou přestat fungovat.</translation>
+<translation id="461356340001513807">Umožňuje přihlašovat se na weby pomocí účtu služby identity</translation>
 <translation id="4619615317237390068">Karty z ostatních zařízení</translation>
 <translation id="4644713492825682049">Vymazat a resetovat</translation>
 <translation id="4645575059429386691">Spravováno vaším rodičem</translation>
@@ -430,6 +437,7 @@
 <translation id="7000754031042624318">Vypnuto v nastavení systému Android</translation>
 <translation id="702275896380648118">Tento web určuje, co se vám líbí, a pak navrhuje reklamy jiným webům. Tento web také získává témata reklam z Chromu, aby vám mohl zobrazovat relevantnější reklamy.</translation>
 <translation id="7053983685419859001">Blokovat</translation>
+<translation id="7055552182600664515">K přehrávání obsahu chráněného autorskými právy můžou weby potřebovat používat službu ochrany obsahu. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Vybráno: 1}few{Vybráno: #}many{Vybráno: #}other{Vybráno: #}}</translation>
 <translation id="708014373017851679">Aplikace <ph name="APP_NAME" /> je zastaralá. Aktualizujte ji.</translation>
 <translation id="7087918508125750058">Vybrané položky: <ph name="ITEM_COUNT" />. Možnosti jsou k dispozici u horního okraje obrazovky</translation>

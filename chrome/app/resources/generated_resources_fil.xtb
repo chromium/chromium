@@ -591,6 +591,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1407069428457324124">Madilim na tema</translation>
 <translation id="1407135791313364759">Buksan lahat</translation>
 <translation id="140723521119632973">Pag-activate ng Cellular Network</translation>
+<translation id="1407908250220330281">Papamahalaan na ngayon ang profile na ito</translation>
 <translation id="1407970155431887387">I-click para buksan ang I-edit ang dialog para sa <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="1408504635543854729">I-explore ang content ng device sa Files app. Pinaghihigpitan ng isang admin ang content at hindi maaaring baguhin.</translation>
 <translation id="1408980562518920698">Pamahalaan ang personal na impormasyon</translation>
@@ -802,6 +803,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1549966883323105187">Mas mabilis na mapuntahan ang iyong mga naka-save na password</translation>
 <translation id="1550656959113606473">Default na Chrome</translation>
 <translation id="1552301827267621511">Pinalitan ng extension na "<ph name="EXTENSION_NAME" />" ang paghahanap para magamit ang <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552357433305859738">Magpatuloy sa pag-sync sa profile na ito at i-merge ang data</translation>
 <translation id="1552752544932680961">Mamahala ng extension</translation>
 <translation id="1553538517812678578">walang limitasyon</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /> tungkol sa Microsoft 365 sa iyong Chromebook.</translation>
@@ -2254,6 +2256,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2530166226437958497">Pag-troubleshoot</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Nagkaproblema at hindi ma-install ang <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Para sa higit pang tulong, bisitahin ang: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532117279786409580">Makakuha ng higit pang impormasyon</translation>
 <translation id="2532144599248877204">Pinapatagal ang baterya sa pamamagitan ng pagpapanatili ng iyong baterya sa humigit kumulang 80%. Ganap na magcha-charge ang baterya bago ka karaniwang magdiskonekta sa kuryente.</translation>
 <translation id="2532146950330687938">Hinahanda ang device...</translation>
 <translation id="2532198298278778531">Pamahalaan ang secure na DNS sa mga setting ng ChromeOS Flex</translation>
@@ -3153,6 +3156,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3183139917765991655">Pang-import ng Profile</translation>
 <translation id="3183143381919926261">Mga mobile data network</translation>
 <translation id="3183700187146209259">Hindi ma-install ang software ng scanner</translation>
+<translation id="3183750649832309748">Makikita ng iyong organisasyong <ph name="ACCOUNT_MANAGER" /> ang ilang impormasyon, kasama ang</translation>
 <translation id="3183944777708523606">Arrangement ng monitor</translation>
 <translation id="3184536091884214176">Mag-set up o mamahala ng mga printer ng CUPS. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">Gamitin ang PIN na ito para baguhin ang mga setting ng parental controls.
@@ -3180,6 +3184,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3202499879214571401">I-pause ang pag-cast ng screen sa <ph name="DEVICE_NAME" /></translation>
 <translation id="3202578601642193415">Pinakabago</translation>
 <translation id="3204648577100496185">Posibleng alisin sa device na ito ang data na nauugnay sa app na ito</translation>
+<translation id="3204717934117444051">Mananatili sa kasalukuyang profile ang data na naka-save lang sa device na ito. Hindi ito magsi-sync sa <ph name="EMAIL" /></translation>
 <translation id="3207344462385471911">Nakakakita ka ng mga iminumungkahing paghahanap at diskwento sa pamimili na posibleng interesante sa iyo batay sa kamakailang aktibidad mo.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4349,6 +4354,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="3994878504415702912">&amp;I-zoom</translation>
 <translation id="3995138139523574647">USB-C device (port sa kanang bahagi sa likod)</translation>
 <translation id="3995963973192100066">I-play ang animation</translation>
+<translation id="3997537546406230684">Gumawa ng bagong profile para sa trabaho at panatilihing nakahiwalay ang aking kasalukuyang data</translation>
 <translation id="399788104667917863">I-pin sa toolbar</translation>
 <translation id="3998780825367526465">Ipakita ang mga preview na larawan ng tab</translation>
 <translation id="3998976413398910035">Pamahalaan ang mga printer</translation>
@@ -5795,6 +5801,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5059526285558225588">Piliin kung ano ang ibabahagi</translation>
 <translation id="5060332552815861872">May 1 printer na available na i-save.</translation>
 <translation id="5060419232449737386">Mga setting ng caption</translation>
+<translation id="5061270227873845372">Kasalukuyan kang mayroong <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" />, at higit pa. Makikita at mapapamahalaan ng iyong organisasyon ang data na ito</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Naglalaman ng bookmark ang folder na ito. Sigurado ka bang gusto mo itong i-delete?}one{Naglalaman ng # bookmark ang folder na ito. Sigurado ka bang gusto mo itong i-delete?}other{Naglalaman ng # na bookmark ang folder na ito. Sigurado ka bang gusto mo itong i-delete?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
 <translation id="5062930723426326933">Nabigo ang pag-sign in, mangyaring kumonekta sa internet at subukan ulit.</translation>
@@ -9409,6 +9416,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, sa <ph name="PAGE_TITLE" />.</translation>
 <translation id="7672726198839739113">Naka-block. Kasalukuyang nakatakda ang iskedyul sa <ph name="SUNRISE_TIME" /> - <ph name="SUNSET_TIME" /> at maa-update lang ito sa manual na paraan.</translation>
 <translation id="7673313156293624327">Mga Log ng ChromeOS Shill (Manager ng Koneksyon)</translation>
+<translation id="767381852303199643">Ano ang gusto mong gawin sa iyong kasalukuyang data ng profile?</translation>
 <translation id="7674416868315480713">I-deactivate ang lahat ng port na fino-forward sa Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> (na) app</translation>
 <translation id="7674542105240814168">Tinanggihan ang access sa lokasyon</translation>
@@ -9640,6 +9648,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Lalabas dito ang mga na-save na custom na salita</translation>
 <translation id="7836577093182643605">Listahan ng mga paksang na-block mo na ayaw mong ibahagi sa mga site</translation>
+<translation id="7836745198769390202">Kasalukuyan kang mayroong <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, at higit pa. Makikita at mapapamahalaan ng iyong organisasyon ang data na ito</translation>
 <translation id="7836850009646241041">Subukang pindutin ulit ang iyong security key</translation>
 <translation id="7838838951812478896">Hindi ma-save ang '<ph name="NETWORK_NAME" />' mula sa <ph name="DEVICE_NAME" /></translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{Nagpadala ng <ph name="ATTACHMENTS" /> sa <ph name="DEVICE_NAME" />}one{Nagpadala ng <ph name="ATTACHMENTS" /> sa <ph name="DEVICE_NAME" />}other{Nagpadala ng <ph name="ATTACHMENTS" /> sa <ph name="DEVICE_NAME" />}}</translation>
@@ -11404,6 +11413,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9052404922357793350">Patuloy na i-block</translation>
 <translation id="90528604757378587">Posibleng maging limitado ang aktibidad sa background at ilang visual effect, tulad ng maayos na pag-scroll.</translation>
 <translation id="9053563360605707198">Mag-print sa magkabilang bahagi</translation>
+<translation id="9055810458113674066">Kasalukuyan kang mayroong <ph name="NUMBERED_ITEM" />, at higit pa. Makikita at mapapamahalaan ng iyong organisasyon ang data na ito</translation>
 <translation id="9056788090206401048">Dapat naka-on ang bluetooth para magamit ang iyong passkey sa ibang device. Puwede mong pamahalaan ito anumang oras sa mga setting.</translation>
 <translation id="9056810968620647706">Walang nakitang tugma.</translation>
 <translation id="9057007989365783744">Gustong i-access ni <ph name="SUPERVISED_USER_NAME" /> ang sumusunod na content:</translation>

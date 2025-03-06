@@ -252,6 +252,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1419305130220238697">Botón Administrar descargas en Chrome: actívalo para administrar los archivos que descargaste en Chrome</translation>
 <translation id="1420345875188552368">Es posible que se use tu forma de pago automática guardada para este pago. Para desactivar la billetera electrónica en Chrome, ve a la <ph name="BEGIN_LINK1" />configuración de pagos<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> para habilitar la sincronización</translation>
+<translation id="1421484961346698724">Cuenta borrada</translation>
 <translation id="14222610277930434">Visitas con frecuencia</translation>
 <translation id="1422930527989633628">Puede solicitar permiso para establecer conexión con dispositivos Bluetooth cercanos</translation>
 <translation id="1426410128494586442">Sí</translation>
@@ -3025,6 +3026,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6351658970066645919">Borrar datos de navegación</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ninguna}=1{1 contraseña (para <ph name="DOMAIN_LIST" />, sincronizada)}=2{2 contraseñas (para <ph name="DOMAIN_LIST" />, sincronizadas)}other{# contraseñas (para <ph name="DOMAIN_LIST" />, sincronizadas)}}</translation>
 <translation id="6355392890578844978">Este navegador no es administrado por una empresa ni por otra organización. Es posible que la actividad correspondiente a este dispositivo se administre fuera de Chromium. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Los grupos de pestañas "<ph name="GROUP_TITLE_1" />" y "<ph name="GROUP_TITLE_2" />" ya no están disponibles</translation>
 <translation id="6358088212770985041">editar formas de pago</translation>
 <translation id="6358450015545214790">¿Qué significa esto?</translation>
 <translation id="6360213755783740931">Más información sobre la protección contra software malicioso</translation>

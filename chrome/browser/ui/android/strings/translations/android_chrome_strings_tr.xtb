@@ -107,6 +107,7 @@ Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <
 <translation id="1413446866325418126">Verileri Google Hesabınıza kaydedin</translation>
 <translation id="1414981605391750300">Google ile bağlantı kuruluyor. Bu işlem bir dakika sürebilir…</translation>
 <translation id="1416550906796893042">Uygulama sürümü</translation>
+<translation id="1416582024052267068">Şifrelerinize erişmeye devam edin</translation>
 <translation id="1419753403124156396">Chrome yeniden başlatılsın mı?</translation>
 <translation id="1428770807407000502">Senkronizasyon kapatılsın mı?</translation>
 <translation id="1430915738399379752">Yazdır</translation>
@@ -515,6 +516,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="342220687432920852">{HOURS,plural, =1{# sa. önce}other{# sa. önce}}</translation>
 <translation id="3430670036890315772">Profil kilidinizi devre dışı bıraktığınızda kayıtlı bilgileriniz kaldırılır</translation>
 <translation id="3435465986463792564">Çok fazla pencere mi açık? Hepsini buradan yönetebilirsiniz</translation>
+<translation id="3435575784518354875">Şifrelerinize erişmeye devam etmek için hemen dışa aktarın, Google Play Hizmetleri'ni güncelleyin ve ardından Google Şifre Yöneticisi'ne geri aktarın. <ph name="BEGIN_LINK" />Talimatların tamamına göz atın<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Güvenlik</translation>
 <translation id="3439276997620616816">Son sekmeleriniz burada gösterilir</translation>
 <translation id="3443221991560634068">Geçerli sayfayı yeniden yükler</translation>
@@ -524,6 +526,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3474624961160222204"><ph name="NAME" /> olarak devam et</translation>
 <translation id="3478363558367712427">Arama motorunuzu seçebilirsiniz</translation>
 <translation id="3479552764303398839">Şimdi değil</translation>
+<translation id="3487903178221457900">Dışa aktarılan dosyaya, uygulamalar da dahil olmak üzere başkaları tarafından erişilebilir. Dışa aktarma işlemi tamamlandıktan sonra şifreleriniz Chrome'dan silinir.</translation>
 <translation id="3488199663160411179">ad</translation>
 <translation id="3493531032208478708">Önerilen içerik hakkında <ph name="BEGIN_LINK" />daha fazla bilgi edinin<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">Oturum açma alt sayfası ekranın yarısına kadar açıldı.</translation>
@@ -549,6 +552,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3566639033325271639">Ayarları güncelle</translation>
 <translation id="3568945271227339929">Sızdırılmış şifre yok</translation>
 <translation id="357465026686164600">Telefonun, güvenlik anahtarı olarak kullanılması</translation>
+<translation id="3575464060651642446">Bu cihazdaki şifreler kontrol ediliyor…</translation>
 <translation id="3577473026931028326">Bir sorun oldu. Tekrar deneyin.</translation>
 <translation id="3577558748185201054">İlgi alanlarınızı ve tercihlerinizi yönetin</translation>
 <translation id="3587482841069643663">Tümü</translation>
@@ -1751,6 +1755,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8937772741022875483">Chrome etkinliğiniz Dijital Denge'den kaldırılsın mı?</translation>
 <translation id="8942627711005830162">Yeni pencerede aç</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Bu dil indirilemedi. Daha sonra tekrar deneyin.</translation>
+<translation id="8957528460562961174">Şifrelerinize erişmeye devam etmek için hemen dışa aktarın ve ardından tercih ettiğiniz şifre yöneticisine aktarın. Google Play Hizmetleri kullanılamadığı için Google Şifre Yöneticisi çalışmayı durdurdu.</translation>
 <translation id="8963117664422609631">Site ayarlarına gidin</translation>
 <translation id="8965591936373831584">beklemede</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> gizli sekme ve <ph name="TAB_COUNT_ONE" /> sekme daha kapatılacak}other{<ph name="INCOGNITO_TAB_COUNT" /> gizli sekme ve <ph name="TAB_COUNT_MANY" /> sekme daha kapatılacak}}</translation>

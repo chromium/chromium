@@ -13,6 +13,7 @@
 <translation id="1036348656032585052">آف کریں</translation>
 <translation id="1045899828449635435">ان سائٹس سے ڈیٹا بھی صاف کریں؟</translation>
 <translation id="1049743911850919806">پوشیدگی</translation>
+<translation id="1052842760770519282">آپ کے کچھ پاس ورڈز قابل رسائی نہیں ہیں</translation>
 <translation id="1058669287135776095">آپ آف لائن ہیں۔ اپنا انٹرنیٹ کنکشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="10614374240317010">کبھی بھی محفوظ نہیں کیا ہوا</translation>
 <translation id="107147699690128016">اگر آپ فائل ایکسٹینشن تبدیل کرتے ہیں تو فائل مختلف ایپلیکیشن میں کھل سکتی ہے اور ممکنہ طور پر آپ کے آلہ کے لیے نقصان دہ ہو سکتی ہے۔</translation>
@@ -71,6 +72,7 @@
 <translation id="1269129608791067105">آپ کو اپنی سرگزشت یہاں ملے گی</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" /> کو مسدود کریں</translation>
 <translation id="1283039547216852943">پھیلانے کیلئے تھپتھپائیں</translation>
+<translation id="1289129165308566697">دیگر آلات پر اپنی سرگزشت دیکھیں</translation>
 <translation id="129553762522093515">حال ہی میں بند کردہ</translation>
 <translation id="1298077576058087471">60 فیصد تک ڈیٹا محفوظ کریں، آج کی خبریں پڑھیں</translation>
 <translation id="1303339473099049190">وہ پاس ورڈ تلاش نہیں کیا جا سکا۔ اپنے ہجے چیک کریں اور دوبارہ کوشش کریں۔</translation>
@@ -270,6 +272,7 @@
 <translation id="2259659629660284697">پاسورڈز برآمد کریں…</translation>
 <translation id="2276696007612801991">‏اپنے پاس ورڈز چیک کرنے کے لئے اپنے Google اکاؤنٹ میں سائن ان کریں</translation>
 <translation id="2278052315791335171">اس پاس ورڈ کو حذف کرنے سے آپ کا اکاؤنٹ <ph name="SITE" /> سے حذف نہیں ہوگا</translation>
+<translation id="2281243904606300427"><ph name="TAB_TITLE" />، منتخب کردہ پوشیدگی ٹیب</translation>
 <translation id="2286841657746966508">بلنگ پتہ</translation>
 <translation id="228704530595896923">اشتراک کرنے کے اختیارات کی فہرست۔</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب دیکھیں}other{<ph name="TABS_COUNT_MANY" /> ٹیبز دیکھیں}}</translation>
@@ -329,6 +332,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> آئٹمز حذف ہو گئے</translation>
 <translation id="253498598929009420">سائٹ آپ کی اسکرین کے مواد کو دیکھ سکے گی</translation>
 <translation id="2536728043171574184">اس صفحہ کی ایک آف لائن کاپی دیکھی جا رہی ہے</translation>
+<translation id="2542548955756682219"><ph name="TAB_TITLE" />، ٹیب</translation>
 <translation id="2546283357679194313">کوکیز اور سائٹ ڈیٹا</translation>
 <translation id="2547843573592965873">‏آپ کی پروفائل لاک کار میں آپ کی معلومات کو محفوظ رکھتی ہے، بشمول پاس ورڈز، ادائیگیاں اور آپ کے Google اکاؤنٹ میں محفوظ کردہ بہت کچھ۔</translation>
 <translation id="254973855621628293">پاس ورڈز اس آلے پر محفوظ ہو گئے</translation>
@@ -363,6 +367,7 @@
 <translation id="2666092431469916601">سرفہرست</translation>
 <translation id="2669454659051515572">اس آلے کا استعمال کرنے والا کوئی بھی شخص ڈاؤن لوڈ کردہ فائلز کو دیکھ سکتا ہے</translation>
 <translation id="2677748264148917807">چھوڑیں</translation>
+<translation id="2687009626279857299">اس آلے پر کام کرنا بند کر دیا</translation>
 <translation id="2702516483241149200">نیا: اس ٹیکسٹ کو اسکرول کرنے والے لنک کا اشتراک کریں</translation>
 <translation id="2705073298859543115">خلاصہ تخليق کريں</translation>
 <translation id="2708051474374549906">‏ریئل ٹائم، خطرناک سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز کے خلاف فعال تحفظ جو آپ کے براؤزنگ ڈیٹا کی بنیاد پر Google کو بھیجے جا رہے ہیں</translation>
@@ -472,6 +477,7 @@
 <translation id="3169472444629675720">دریافت کریں</translation>
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{‏‫1 پاس ورڈ اور دیگر آئٹمز صرف اس آلے پر محفوظ ہیں۔ انہیں اپنے دیگر آلات پر استعمال کرنے کے لیے، انہیں اپنے Google اکاؤنٹ <ph name="ACCOUNT_EMAIL" /> میں محفوظ کریں۔}other{‏‫# پاس ورڈز اور دیگر آئٹمز صرف اس آلے پر محفوظ ہیں۔ انہیں اپنے دیگر آلات پر استعمال کرنے کے لیے، انہیں اپنے Google اکاؤنٹ <ph name="ACCOUNT_EMAIL" /> میں محفوظ کریں۔}}</translation>
 <translation id="3187472288455401631">اشتہار کی اثرپذیری کی پیمائش</translation>
+<translation id="3189635831478931757"><ph name="GROUP_TITLE" /> ٹیب گروپ</translation>
 <translation id="3207960819495026254">بُک مارک بنایا ہوا</translation>
 <translation id="3208584281581115441">ابھی چیک کریں</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> کو حذف کر دیا گیا</translation>
@@ -748,6 +754,7 @@
 <translation id="4523326818319942067">پچھلا گھنٹہ</translation>
 <translation id="452750746583162491">اپنے مطابقت پذیر ڈیٹا کا جائزہ لیں</translation>
 <translation id="4532845899244822526">فولڈر منتخب کریں</translation>
+<translation id="4535755320005483982">اشتراک کردہ <ph name="GROUP_TITLE" /> ٹیب گروپ</translation>
 <translation id="4543131175509360848">کوئی پاسکیز شیٹ نہیں ہے</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ٹیب}other{<ph name="TAB_COUNT_MANY" /> ٹیبز، <ph name="TAB_COUNT_INCOGNITO" /> پوشیدگی}}</translation>
 <translation id="4558311620361989323">ویب صفحہ شارٹ کٹس</translation>
@@ -946,6 +953,7 @@
 <translation id="5424588387303617268">‏<ph name="GIGABYTES" /> GB دستیاب ہے</translation>
 <translation id="543338862236136125">پاس ورڈ میں ترمیم کریں</translation>
 <translation id="5433691172869980887">صارف نام کاپی ہو گیا</translation>
+<translation id="5436928407363358055">آپ نے جہاں سے چھوڑا تھا باآسانی وہیں سے دوبارہ شروع کرنے کیلئے اپنی سرگزشت اور ٹیبز کی مطابقت پذیری کریں</translation>
 <translation id="5438292632479953702">دوبارہ ڈاؤن لوڈ کریں</translation>
 <translation id="5439191312780166229">‏معیاری تحفظ سے زیادہ سائٹس کے ڈیٹا کا تجزیہ کر کے، آپ کو خطرناک سائٹس، یہاں تک کہ جن کے بارے میں Google پہلے نہیں جانتا تھا، کے بارے میں خبردار کرتا ہے۔ آپ Chrome وارننگز کو نظر انداز کرنے کا انتخاب کر سکتے ہیں۔</translation>
 <translation id="5441137934526263133">سائٹ کام نہیں کر رہی ہے؟ فریق ثالث کوکیز مسدود ہیں</translation>
@@ -1249,6 +1257,7 @@
 <translation id="6756507620369789050">تاثرات کا اشتراک کریں</translation>
 <translation id="6762511428368667596"><ph name="NAME" />، <ph name="EMAIL" />۔</translation>
 <translation id="676305334223455055">اپنی دلچسپیوں پر مبنی مواد حاصل کرنے کیلئے سائن ان کریں</translation>
+<translation id="6764137532716892442">نئی سرگرمی کے ساتھ اشتراک کردہ <ph name="GROUP_TITLE" /> ٹیب گروپ</translation>
 <translation id="6767294960381293877">ان آلات کی فہرست جن کے ساتھ ٹیب کا اشتراک کرنا ہے نصف اونچائی پر کھلی ہوئی ہے۔</translation>
 <translation id="6785476624617658922">‏Chrome اور ChromeOS کی اضافی سروس کی شرائط</translation>
 <translation id="6795633245022906657">فوری طور پر ایک نیا ٹیب کھولیں۔ اس شارٹ کٹ میں ترمیم کرنے کے لیے، ترتیبات پر جائیں۔</translation>
@@ -1315,6 +1324,7 @@
 <translation id="6965382102122355670">ٹھیک ہے</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{اشتراک کردہ ٹیب گروپس میں نئی سرگرمی کے ساتھ <ph name="TABS_COUNT_ONE" /> ٹیب دیکھیں}other{اشتراک کردہ ٹیب گروپس میں نئی سرگرمی کے ساتھ <ph name="TABS_COUNT_MANY" /> ٹیبز دیکھیں}}</translation>
 <translation id="6971862865055170158">منظوری نہ دیں</translation>
+<translation id="6976223255612495095"><ph name="TAB_TITLE" />، نیا یا اپ ڈیٹ کردہ ٹیب</translation>
 <translation id="6978717888677691380">آپ کی مسدود کردہ سائٹس</translation>
 <translation id="6979737339423435258">ہر وقت</translation>
 <translation id="6983306615164277634">آپ پوزیشن تبدیل کرنے کے لیے ایڈریس بار کو چھو سکتے ہیں اور دبا کر رکھ سکتے ہیں۔</translation>
@@ -1708,6 +1718,7 @@
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کے ساتھ <ph name="SITE_ETLD_PLUS_ONE" /> میں سائن اپ کریں</translation>
 <translation id="8676789164135894283">سائن ان کی تصدیقیں</translation>
 <translation id="8683039184091909753">تصویر</translation>
+<translation id="8688183792442786085"><ph name="TAB_TITLE" />، منتخب کردہ ٹیب</translation>
 <translation id="869891660844655955">میعاد ختم ہونے کی تاریخ</translation>
 <translation id="8699120352855309748">ان زبانوں کو ترجمہ کرنے کی پیشکش نہ کریں</translation>
 <translation id="8712637175834984815">سمجھ آ گئی</translation>
@@ -1841,4 +1852,5 @@
 <translation id="988091779042748639">اپنے آلے سے پوشیدگی براؤزنگ کی سرگزشت کو حذف کرنے کیلئے تمام پوشیدگی ٹیبز کو بند کریں۔</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> ٹیبز</translation>
 <translation id="996149300115483134">فیڈ کارڈ مینیو بند ہے</translation>
+<translation id="99907655649633293"><ph name="TAB_TITLE" />، پوشیدگی ٹیب</translation>
 </translationbundle>

@@ -3806,6 +3806,7 @@
 <translation id="3670229581627177274">Bluetooth ચાલુ કરો</translation>
 <translation id="3670480940339182416">સાઇટ V8 ઑપ્ટિમાઇઝરનો ઉપયોગ કરી શકે છે</translation>
 <translation id="3671764914317109892">તમારા બ્રાઉઝિંગ ઇતિહાસમાં શોધવા માટે રોજિંદા વપરાશની ભાષાનો ઉપયોગ કરો. તમે તમારા બ્રાઉઝિંગ ઇતિહાસના આધારે પ્રશ્નો પણ પૂછી શકો છો અને જવાબ મેળવી શકો છો.</translation>
+<translation id="3671982238795754537">પાસકી વિશે વધુ જાણો</translation>
 <translation id="3672681487849735243">એક ફેક્ટરી ભૂલ શોધવામાં આવી છે</translation>
 <translation id="3673097791729989571"><ph name="SAML_DOMAIN" /> દ્વારા સાઇન ઇન કરવાની સુવિધા હોસ્ટ કરવામાં આવી છે</translation>
 <translation id="3673287357837016374">તમારો પિન અપડેટ કરવામાં આવ્યો છે</translation>
@@ -4722,6 +4723,7 @@
 <translation id="4289540628985791613">ઓવરવ્યૂ</translation>
 <translation id="428963538941819373">આ સાઇટ, તમે જેમ જેમ <ph name="HOST" /> બ્રાઉઝ કરો તેમ તેમ તમારા વિશે તેમણે સાચવેલી માહિતીનો ઉપયોગ કરી શકે છે</translation>
 <translation id="4289732974614035569">કોઈ પિન પસંદ કરો</translation>
+<translation id="4290526909608432059">Chrome ઍપ માટે સપોર્ટ ટૂંક સમયમાં સમાપ્ત થશે. તમારા વિકલ્પો વિશે જાણવા માટે, ઍપ ડેવલપર અથવા તમારી IT સપોર્ટ ટીમનો સંપર્ક કરો.</translation>
 <translation id="4290791284969893584">કોઈ પેજ બંધ કર્યા પછી, તમે શરૂ કરેલા કાર્ય કદાચ પૂર્ણ થઈ શકશે નહીં</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> સભ્ય</translation>
 <translation id="4290898381118933198">એક પેજ પરથી બીજા પેજ વચ્ચે નૅવિગેટ કરવા માટે સ્વાઇપ કરો</translation>
@@ -8521,6 +8523,7 @@ USB ડિવાઇસ</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - સિરીઅલ પોર્ટ કનેક્ટ કર્યું</translation>
 <translation id="7033616203784997570">ઇનપુટ વધુમાં વધુ 62 અક્ષરનું હોવું આવશ્યક છે</translation>
 <translation id="7034692021407794547">બિલિંગ મેનેજમેન્ટના વિશેષાધિકાર ધરાવતા વ્યવસ્થાપકે પહેલાં વ્યવસ્થાપક કન્સોલના Google Meet હાર્ડવેર વિભાગમાં, Google Meet હાર્ડવેરની સેવાની શરતો સ્વીકારવી આવશ્યક છે.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> દ્વારા હમણાં જ તમારા એકાઉન્ટ માટે પાસકી બનાવવામાં આવી. પાસકી સાઇન ઇન કરવાની ઝડપી અને સુરક્ષિત રીત પ્રદાન કરે છે અને <ph name="USER" /> માટે Google Password Managerમાં સાચવવામાં આવે છે. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Linux માટે <ph name="DISK_SIZE" /> સ્પેસનો સુઝાવ આપ્યો છે. ખાલી સ્પેસ વધારવા માટે, તમારા ડિવાઇસમાંથી ફાઇલો ડિલીટ કરો.</translation>
 <translation id="7037157058268992880">પિન યાદ નથી</translation>
 <translation id="7037509989619051237">ટેક્સ્ટ ટૂ સ્પીચના પ્રીવ્યૂ માટે</translation>
@@ -10146,6 +10149,7 @@ USB ડિવાઇસ</translation>
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> બંધ કરો</translation>
 <translation id="8195920051450756553">એક જ કીને ફરીથી સક્રિય થતાં પહેલાં થતો વિલંબ</translation>
 <translation id="8197673340773315084">ઑફિસ કે વ્યક્તિગત જેવું નામ કે લેબલ ઉમેરો</translation>
+<translation id="8198181050118789419">થીમ: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">ટૅબ કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="8199300056570174101">નેટવર્ક (સેવા) અને ઉપકરણના ગુણધર્મો</translation>
 <translation id="8200772114523450471">રિઝ્યુમે</translation>
@@ -10556,6 +10560,7 @@ USB ડિવાઇસ</translation>
 <translation id="8477178913400731244">ડેટા ડિલીટ કરો</translation>
 <translation id="8477241577829954800">જૂનું થયેલું</translation>
 <translation id="8477384620836102176">&amp;સામાન્ય</translation>
+<translation id="8477446666255316832">આગલી વખતે વધુ ઝડપથી સાઇન ઇન કરો</translation>
 <translation id="8479176401914456949">અમાન્ય કોડ. કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> તરફથી અજાણ્યું ઉપકરણ</translation>
 <translation id="8481187309597259238">USB પરવાનગી કન્ફર્મ કરો</translation>

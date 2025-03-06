@@ -22,6 +22,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1058009965971887428">Envoyer des commentaires</translation>
 <translation id="1059120031266247284">Partagé avec vous</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" /> : <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> avec bouton de suppression</translation>
 <translation id="1062407476771304334">Remplacer</translation>
 <translation id="1073899992769346247">Remplacez ou rechargez la batterie</translation>
 <translation id="1081015718268701546">Les applis Linux ne sont pas compatibles pour le moment. D'autres applis seront enregistrées.</translation>
@@ -323,6 +324,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2083190527011054446">Bonsoir <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Ouvrir le sélecteur d'emoji</translation>
 <translation id="2088116547584365419">jeux</translation>
+<translation id="2092517835716911174">Vous devez avoir au moins 18 ans pour utiliser M'aider à lire et M'aider à écrire.</translation>
 <translation id="209965399369889474">Aucune connexion réseau</translation>
 <translation id="2107581415810719320">Autre bouton <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Votre câble USB-C n'est pas compatible Thunderbolt. Cela peut limiter les performances de l'appareil.</translation>
@@ -1228,6 +1230,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="5043679421800073804">Cliquer ou appuyer sur la dernière icône de l'étagère</translation>
 <translation id="504465286040788597">Paragraphe précédent</translation>
 <translation id="5045550434625856497">Mot de passe incorrect</translation>
+<translation id="5056587122125565772">Créer une image</translation>
 <translation id="5058794129231928255">Impossible de créer le document Google Docs</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">Vous recevrez une notification si vous parlez lorsque le son est coupé. Les données audio ne quittent jamais votre appareil.</translation>
@@ -1276,6 +1279,7 @@ Vous pouvez aussi utiliser le raccourci clavier. Mettez d'abord le texte en surb
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="5228195526683428788">Séparateur d'écran partagé</translation>
 <translation id="5229343007215035173">Activer/Désactiver l'Écran Confidentialité</translation>
+<translation id="5229860525743792999">Supprimer <ph name="ITEM_LABEL" /> du groupe suggéré</translation>
 <translation id="5230516054153933099">Fenêtre</translation>
 <translation id="5234764350956374838">Ignorer</translation>
 <translation id="523505283826916779">Paramètres d'accessibilité</translation>
@@ -1477,7 +1481,7 @@ Aucun appareil connecté.</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> n'est pas activé.</translation>
 <translation id="5860033963881614850">Désactivé</translation>
 <translation id="5860491529813859533">Activer</translation>
-<translation id="5864691701242730005">Affichez les paramètres de Quick Share. Visibilité <ph name="VISIBILITY" /> sélectionnée</translation>
+<translation id="5864691701242730005">Affichez les paramètres de Quick Share. Visibilité de <ph name="VISIBILITY" /> sélectionnée</translation>
 <translation id="5864748620896638071"><ph name="BATTERY_PERCENTAGE" /> % de batterie</translation>
 <translation id="5867217927013474703">Récupération des infos du réseau</translation>
 <translation id="5867606971598166637">Votre administrateur système surveille vos écrans</translation>
@@ -1758,6 +1762,7 @@ Nouvelle installation</translation>
 <translation id="6757237461819837179">Aucun contenu multimédia en cours lecture</translation>
 <translation id="6760438044935091345">Tableau de bord Jeux</translation>
 <translation id="6768043681523654438">espace de stockage</translation>
+<translation id="6769195697113506406">Image insérée</translation>
 <translation id="6777216307882431711">En cours d'alimentation : plusieurs appareils USB-C connectés</translation>
 <translation id="6781002679438061620">Bureau 9</translation>
 <translation id="6782182743534150858">Bureau 13</translation>
@@ -1985,6 +1990,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7571361473021531288"><ph name="BATTERY_PERCENTAGE" /> % de batterie | Temps restant : <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Fenêtre active épinglée à droite.</translation>
 <translation id="7579778809502851308">Capture d'écran</translation>
+<translation id="7588317312481506627">Copié dans le presse-papiers.</translation>
 <translation id="7593891976182323525">Recherche ou Maj</translation>
 <translation id="7598054670902114203">Instantané d'utilisation du processeur : <ph name="CPU_USEAGE" /> %. Température : <ph name="TEMPERATURE" /> degrés Celsius. Fréquence actuelle : <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Insertion du résultat sélectionné…</translation>
@@ -2179,6 +2185,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8155628902202578800">Ouvrir la boîte de dialogue d'informations pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> en cours d'utilisation</translation>
 <translation id="8168435359814927499">Contenu</translation>
+<translation id="81817143961839203">Échec de l'insertion de l'image</translation>
 <translation id="8185090165691050712">Activer/Désactiver le menu pour redimensionner le mode verrouillé</translation>
 <translation id="8192727139462702395">Les appareils externes suivants seront alors déconnectés de votre <ph name="DEVICE_TYPE" /> :</translation>
 <translation id="8198456017687137612">Diffusion de l'onglet</translation>
@@ -2257,6 +2264,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> a <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Appuyez sur Alt+Rechercher ou Maj pour annuler.</translation>
 <translation id="8480418399907765580">Afficher la barre d'outils </translation>
+<translation id="8487660088084188539">Lorsque vous activez ces fonctionnalités, le texte saisi, le contenu du document et l'URL de la page Web peuvent être envoyés aux serveurs de Google. Ces informations sont utilisées pour générer des suggestions de texte et des résumés, répondre aux questions, et améliorer le produit, et sont soumises aux <ph name="LINK_TO_SERVICE_TERMS" />. N'incluez aucun élément personnel, sensible ou confidentiel.</translation>
 <translation id="8487699605742506766">Point d'accès</translation>
 <translation id="8491237443345908933">Ouvrir le lien dans un nouvel onglet</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> n'est pas compatible avec la résolution <ph name="SPECIFIED_RESOLUTION" />. La résolution <ph name="FALLBACK_RESOLUTION" /> sera utilisée à la place. Cliquez sur "Confirmer" pour conserver les modifications. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2326,6 +2334,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8725066075913043281">Réessayer</translation>
 <translation id="8725214031272624704">Afficher la liste des modes de saisie disponibles</translation>
 <translation id="8730621377337864115">OK</translation>
+<translation id="8731188831050207755">Échec du téléchargement de <ph name="FILE_NAME" /></translation>
 <translation id="8731487213223706745">Se termine à <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Il est possible que cet autre clavier tente d'enregistrer les touches sur lesquelles vous appuyez afin de vous soutirer des informations</translation>
 <translation id="8735678380411481005">Couleur de rétroéclairage du clavier</translation>

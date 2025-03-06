@@ -507,6 +507,7 @@
 <translation id="813913629614996137">Инициализация...</translation>
 <translation id="8166782796394721554">Включить дополнительную защиту движка JavaScript и WebAssembly в Chromium</translation>
 <translation id="81770708095080097">Chromium заблокировал этот файл как опасный.</translation>
+<translation id="8177472873527554730">На странице не обнаружен контент.</translation>
 <translation id="8200109504272824693">Чтобы использовать и сохранять данные Chromium в аккаунте <ph name="USER_EMAIL" />, введите кодовую фразу.</translation>
 <translation id="8221491193165283816">Обычно вы блокируете уведомления. Чтобы получать их с этого сайта, нажмите здесь.</translation>
 <translation id="8223363452568144035">Чтобы использовать камеру, предоставьте Chromium доступ к ней в <ph name="BEGIN_LINK" />системных настройках<ph name="END_LINK" /></translation>

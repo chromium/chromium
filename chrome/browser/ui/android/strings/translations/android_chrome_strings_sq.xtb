@@ -107,6 +107,7 @@ Për më shumë cilësime që përdorin të dhënat për të përmirësuar përv
 <translation id="1413446866325418126">Ruaj të dhëna në "Llogarinë tënde të Google"</translation>
 <translation id="1414981605391750300">Po kontakton me Google. Kjo mund të zgjasë një minutë...</translation>
 <translation id="1416550906796893042">Versioni i aplikacionit</translation>
+<translation id="1416582024052267068">Mbaj qasjen te fjalëkalimet e tua</translation>
 <translation id="1419753403124156396">Të riniset Chrome?</translation>
 <translation id="1428770807407000502">Të çaktivizohet sinkronizimi?</translation>
 <translation id="1430915738399379752">Printo</translation>
@@ -515,6 +516,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="342220687432920852">{HOURS,plural, =1{# orë më parë}other{# orë më parë}}</translation>
 <translation id="3430670036890315772">Çaktivizimi i kyçjes së profilit do të heqë informacionet e tua të ruajtura</translation>
 <translation id="3435465986463792564">Ke shumë dritare? Mund t'i menaxhosh ato nga këtu</translation>
+<translation id="3435575784518354875">Për të mbajtur qasjen te fjalëkalimet e tua, eksportoji ato tani, përditëso shërbimet e Google Play dhe më pas importoji fjalëkalimet sërish te "Menaxheri i fjalëkalimeve i Google". <ph name="BEGIN_LINK" />Shiko udhëzimet e plota<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Siguria</translation>
 <translation id="3439276997620616816">Këtu do të gjesh skedat e tua të fundit</translation>
 <translation id="3443221991560634068">Ringarko faqen aktuale</translation>
@@ -524,6 +526,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3474624961160222204">Vazhdo si <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Mund të zgjedhësh motorin tënd të kërkimit</translation>
 <translation id="3479552764303398839">Jo tani</translation>
+<translation id="3487903178221457900">Skedari i eksportuar mund të qaset nga të tjerët, duke përfshirë aplikacionet. Pas eksportimit, fjalëkalimet e tua do të fshihen nga Chrome.</translation>
 <translation id="3488199663160411179">emrin tënd</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /> mbi përmbajtjen e sugjeruar</translation>
 <translation id="3495219333887281978">Fleta e poshtme e identifikimit u hap në gjysmë lartësi.</translation>
@@ -549,6 +552,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3566639033325271639">Përditëso cilësimet</translation>
 <translation id="3568945271227339929">Asnjë fjalëkalim i komprometuar</translation>
 <translation id="357465026686164600">Telefoni si çelës sigurie</translation>
+<translation id="3575464060651642446">Po kontrollohen fjalëkalimet në këtë pajisje…</translation>
 <translation id="3577473026931028326">Ndodhi një gabim. Provo përsëri.</translation>
 <translation id="3577558748185201054">Menaxho interesat dhe preferencat e tua</translation>
 <translation id="3587482841069643663">Të gjitha</translation>
@@ -1751,6 +1755,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8937772741022875483">Dëshiron të heqësh aktivitetin tënd të Chrome nga "Mirëqenia dixhitale"?</translation>
 <translation id="8942627711005830162">Hap në një dritare tjetër</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Kjo gjuhë nuk mund të shkarkohet. Provo përsëri më vonë.</translation>
+<translation id="8957528460562961174">Për të mbajtur qasjen në fjalëkalimet e tua, eksportoji ato tani dhe më pas importoji te menaxheri yt i preferuar i fjalëkalimeve. "Menaxheri i fjalëkalimeve i Google" ndaloi së funksionuari sepse shërbimet e Google Play nuk ofrohen.</translation>
 <translation id="8963117664422609631">Shko te cilësimet e faqes</translation>
 <translation id="8965591936373831584">në pritje</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> skedë "e fshehtë" dhe <ph name="TAB_COUNT_ONE" /> skedë tjetër do të mbyllen}other{<ph name="INCOGNITO_TAB_COUNT" /> skeda "të fshehta" dhe <ph name="TAB_COUNT_MANY" /> skeda të tjera do të mbyllen}}</translation>

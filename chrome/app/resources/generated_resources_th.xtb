@@ -590,6 +590,7 @@
 <translation id="1407069428457324124">ธีมมืด</translation>
 <translation id="1407135791313364759">เปิดทั้งหมด</translation>
 <translation id="140723521119632973">การเปิดใช้งานเครือข่ายมือถือ</translation>
+<translation id="1407908250220330281">โปรไฟล์นี้จะได้รับการจัดการในตอนนี้</translation>
 <translation id="1407970155431887387">คลิกเพื่อเปิดกล่องโต้ตอบ "แก้ไข" สำหรับ <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="1408504635543854729">สำรวจเนื้อหาของอุปกรณ์ในแอป Files เนื้อหาถูกผู้ดูแลระบบจำกัดไว้และไม่สามารถแก้ไขได้</translation>
 <translation id="1408980562518920698">จัดการข้อมูลส่วนบุคคล</translation>
@@ -800,6 +801,7 @@
 <translation id="1549966883323105187">ดูรหัสผ่านที่บันทึกไว้ได้เร็วขึ้น</translation>
 <translation id="1550656959113606473">Chrome ซึ่งเป็นค่าเริ่มต้น</translation>
 <translation id="1552301827267621511">ส่วนขยาย "<ph name="EXTENSION_NAME" />" เปลี่ยนไปใช้การค้นหาโดย <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552357433305859738">ซิงค์กับโปรไฟล์นี้ต่อไปและผสานข้อมูล</translation>
 <translation id="1552752544932680961">จัดการส่วนขยาย</translation>
 <translation id="1553538517812678578">ไม่จำกัด</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" />เกี่ยวกับ Microsoft 365 ใน Chromebook</translation>
@@ -2240,6 +2242,7 @@
 <translation id="2530166226437958497">การแก้ปัญหา</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />เกิดข้อผิดพลาดขึ้นจึงติดตั้ง <ph name="DEVICE_OS" /> ไม่ได้<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ดูความช่วยเหลือเพิ่มเติมได้ที่ g.co/flex/InstallErrors<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532117279786409580">รับข้อมูลเพิ่มเติม</translation>
 <translation id="2532144599248877204">ยืดอายุการใช้งานแบตเตอรี่โดยรักษาแบตเตอรี่ไว้ที่ประมาณ 80% โดยทั่วไปแบตเตอรี่จะชาร์จจนเต็มก่อนคุณจะถอดปลั๊กออก</translation>
 <translation id="2532146950330687938">กำลังเตรียมอุปกรณ์ให้พร้อม...</translation>
 <translation id="2532198298278778531">จัดการ DNS ที่ปลอดภัยในการตั้งค่า Chrome OS Flex</translation>
@@ -3139,6 +3142,7 @@
 <translation id="3183139917765991655">ตัวนำเข้าโปรไฟล์</translation>
 <translation id="3183143381919926261">เครือข่ายอินเทอร์เน็ตมือถือ</translation>
 <translation id="3183700187146209259">ติดตั้งซอฟต์แวร์เครื่องสแกนไม่ได้</translation>
+<translation id="3183750649832309748">องค์กร <ph name="ACCOUNT_MANAGER" /> จะดูข้อมูลบางอย่างได้ ซึ่งรวมถึง</translation>
 <translation id="3183944777708523606">การจัดตำแหน่งจอภาพ</translation>
 <translation id="3184536091884214176">ตั้งค่าหรือจัดการเครื่องพิมพ์ CUPS <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">ใช้ PIN นี้เพื่อเปลี่ยนการตั้งค่าการควบคุมโดยผู้ปกครอง
@@ -3164,6 +3168,7 @@
 <translation id="3202499879214571401">หยุดแคสต์หน้าจอไปยัง <ph name="DEVICE_NAME" /> ชั่วคราว</translation>
 <translation id="3202578601642193415">ใหม่ที่สุด</translation>
 <translation id="3204648577100496185">ระบบอาจนำข้อมูลที่เชื่อมโยงกับแอปดังกล่าวออกจากอุปกรณ์เครื่องนี้</translation>
+<translation id="3204717934117444051">ข้อมูลที่บันทึกไว้ในอุปกรณ์นี้เท่านั้นที่จะยังคงอยู่ในโปรไฟล์ที่มีอยู่ โดยจะไม่ซิงค์กับ <ph name="EMAIL" /></translation>
 <translation id="3207344462385471911">คุณกำลังดูการค้นหาที่แนะนำและส่วนลดสำหรับการเลือกซื้อที่คุณอาจสนใจโดยอิงตามกิจกรรมล่าสุดของคุณ
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3806,6 +3811,7 @@
 <translation id="3670229581627177274">เปิดบลูทูธ</translation>
 <translation id="3670480940339182416">เว็บไซต์สามารถใช้เครื่องมือเพิ่มประสิทธิภาพ V8</translation>
 <translation id="3671764914317109892">ใช้ภาษาที่ใช้ในชีวิตประจำวันเพื่อค้นหาประวัติการท่องเว็บ คุณยังถามคำถามและรับคำตอบตามประวัติการท่องเว็บได้ด้วย</translation>
+<translation id="3671982238795754537">ดูข้อมูลเพิ่มเติมเกี่ยวกับพาสคีย์</translation>
 <translation id="3672681487849735243">ตรวจพบข้อผิดพลาดจากโรงงาน</translation>
 <translation id="3673097791729989571">การลงชื่อเข้าใช้ที่โฮสต์โดย <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">อัปเดต PIN ของคุณแล้ว</translation>
@@ -4332,6 +4338,7 @@
 <translation id="3994878504415702912">ซู&amp;ม</translation>
 <translation id="3995138139523574647">อุปกรณ์ USB-C (พอร์ตด้านหลังขวา)</translation>
 <translation id="3995963973192100066">เล่นภาพเคลื่อนไหว</translation>
+<translation id="3997537546406230684">สร้างโปรไฟล์ใหม่สำหรับงานและเก็บข้อมูลที่มีอยู่แยกไว้ต่างหาก</translation>
 <translation id="399788104667917863">ปักหมุดไว้บนแถบเครื่องมือ</translation>
 <translation id="3998780825367526465">แสดงรูปภาพตัวอย่างแท็บ</translation>
 <translation id="3998976413398910035">จัดการเครื่องพิมพ์</translation>
@@ -4722,6 +4729,7 @@
 <translation id="4289540628985791613">ภาพรวม</translation>
 <translation id="428963538941819373">เว็บไซต์เหล่านี้สามารถใช้ข้อมูลที่บันทึกไว้เกี่ยวกับตัวคุณขณะที่คุณเรียกดู <ph name="HOST" /></translation>
 <translation id="4289732974614035569">เลือก PIN</translation>
+<translation id="4290526909608432059">ระบบจะหยุดรองรับแอป Chrome ในเร็วๆ นี้ หากต้องการดูตัวเลือกที่คุณมี โปรดติดต่อนักพัฒนาแอปหรือทีมสนับสนุนด้านไอที</translation>
 <translation id="4290791284969893584">หลังจากปิดหน้าไปแล้ว งานที่คุณเริ่มไว้อาจไม่ดำเนินต่อจนเสร็จสิ้น</translation>
 <translation id="4290826901752066702">สมาชิก <ph name="NUM" /> ราย</translation>
 <translation id="4290898381118933198">ปัดเพื่อไปยังหน้าต่างๆ</translation>
@@ -5776,6 +5784,7 @@
 <translation id="5059526285558225588">เลือกสิ่งที่จะแชร์</translation>
 <translation id="5060332552815861872">มีเครื่องพิมพ์ 1 เครื่องให้บันทึก</translation>
 <translation id="5060419232449737386">การตั้งค่าคำบรรยาย</translation>
+<translation id="5061270227873845372">ขณะนี้คุณมี <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> และอื่นๆ องค์กรของคุณจะสามารถดูและจัดการข้อมูลนี้ได้</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{โฟลเดอร์นี้มีบุ๊กมาร์ก คุณแน่ใจไหมว่าต้องการลบโฟลเดอร์}other{โฟลเดอร์นี้มี # บุ๊กมาร์ก คุณแน่ใจไหมว่าต้องการลบโฟลเดอร์}}</translation>
 <translation id="5061531353537614467">ทุ่งหญ้าทุนดรา</translation>
 <translation id="5062930723426326933">การลงชื่อเข้าใช้ล้มเหลว โปรดเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง</translation>
@@ -8512,6 +8521,7 @@
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - เชื่อมต่อพอร์ตอนุกรมอยู่</translation>
 <translation id="7033616203784997570">ข้อมูลที่ป้อนต้องมีความยาวไม่เกิน 62 อักขระ</translation>
 <translation id="7034692021407794547">ผู้ดูแลระบบที่มีสิทธิ์จัดการการเรียกเก็บเงินต้องยอมรับข้อกำหนดในการให้บริการฮาร์ดแวร์ของ Google Meet ในส่วน "ฮาร์ดแวร์ของ Google Meet" ของคอนโซลผู้ดูแลระบบก่อน</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> เพิ่งสร้างพาสคีย์สำหรับบัญชีของคุณ พาสคีย์มอบวิธีที่รวดเร็วและปลอดภัยกว่าในการลงชื่อเข้าใช้ และระบบจะบันทึกพาสคีย์ไว้ในเครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="USER" /> <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">ขอแนะนำให้เตรียมพื้นที่ว่าง <ph name="DISK_SIZE" /> สำหรับ Linux หากต้องการเพิ่มพื้นที่ว่าง ให้ลบไฟล์ออกจากอุปกรณ์</translation>
 <translation id="7037157058268992880">ลืม PIN</translation>
 <translation id="7037509989619051237">ข้อความที่จะแสดงตัวอย่าง</translation>
@@ -9382,6 +9392,7 @@
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> ใน <ph name="PAGE_TITLE" /></translation>
 <translation id="7672726198839739113">ถูกบล็อก ปัจจุบันกำหนดเวลาตั้งค่าเป็น <ph name="SUNRISE_TIME" /> - <ph name="SUNSET_TIME" /> และสามารถอัปเดตได้ด้วยตัวเองเท่านั้น</translation>
 <translation id="7673313156293624327">บันทึก ChromeOS Shill (โปรแกรมจัดการการเชื่อมต่อ)</translation>
+<translation id="767381852303199643">คุณต้องการทำอะไรกับข้อมูลโปรไฟล์ที่มีอยู่</translation>
 <translation id="7674416868315480713">ปิดใช้งานทุกพอร์ตที่กำลังส่งต่อใน Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> แอป</translation>
 <translation id="7674542105240814168">ปฏิเสธไม่ให้เข้าถึงตำแหน่ง</translation>
@@ -9613,6 +9624,7 @@
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">คำที่กำหนดเองที่บันทึกไว้จะแสดงที่นี่</translation>
 <translation id="7836577093182643605">รายการหัวข้อที่คุณบล็อกและไม่ต้องการแชร์กับเว็บไซต์</translation>
+<translation id="7836745198769390202">ขณะนี้คุณมี <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> และอื่นๆ องค์กรของคุณจะสามารถดูและจัดการข้อมูลนี้ได้</translation>
 <translation id="7836850009646241041">ลองแตะคีย์ความปลอดภัยอีกครั้ง</translation>
 <translation id="7838838951812478896">บันทึก "<ph name="NETWORK_NAME" />" จาก <ph name="DEVICE_NAME" /> ไม่ได้</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{ส่ง <ph name="ATTACHMENTS" /> ไปยัง <ph name="DEVICE_NAME" /> แล้ว}other{ส่ง <ph name="ATTACHMENTS" /> ไปยัง <ph name="DEVICE_NAME" /> แล้ว}}</translation>
@@ -10553,6 +10565,7 @@
 <translation id="8477178913400731244">ลบข้อมูล</translation>
 <translation id="8477241577829954800">ถูกแทนที่</translation>
 <translation id="8477384620836102176">&amp;ทั่วไป</translation>
+<translation id="8477446666255316832">ลงชื่อเข้าใช้ครั้งถัดไปได้เร็วขึ้น</translation>
 <translation id="8479176401914456949">รหัสไม่ถูกต้อง โปรดลองอีกครั้ง</translation>
 <translation id="8480869669560681089">อุปกรณ์ที่ไม่รู้จักจาก <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">ยืนยันสิทธิ์ USB</translation>
@@ -11373,6 +11386,7 @@
 <translation id="9052404922357793350">บล็อกต่อไป</translation>
 <translation id="90528604757378587">ระบบอาจจำกัดกิจกรรมในเบื้องหลังและเอฟเฟกต์ภาพบางอย่าง เช่น การเลื่อนอย่างราบรื่น</translation>
 <translation id="9053563360605707198">พิมพ์ทั้ง 2 ด้าน</translation>
+<translation id="9055810458113674066">ขณะนี้คุณมี <ph name="NUMBERED_ITEM" /> และอื่นๆ องค์กรของคุณจะสามารถดูและจัดการข้อมูลนี้ได้</translation>
 <translation id="9056788090206401048">ต้องเปิดบลูทูธเพื่อใช้พาสคีย์ในอุปกรณ์อื่น คุณจัดการตัวเลือกนี้ได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="9056810968620647706">ไม่พบรายการที่ตรงกัน</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> ต้องการเข้าถึงเนื้อหาต่อไปนี้</translation>

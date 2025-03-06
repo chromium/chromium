@@ -252,6 +252,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1419305130220238697">Botón para xestionar as descargas en Chrome. Actívao para xestionar os ficheiros que descargases en Chrome</translation>
 <translation id="1420345875188552368">É posible que se use para este pago o método de pago automático que teñas gardado. Para desactivar os moedeiros electrónicos en Chrome, vai á <ph name="BEGIN_LINK1" />configuración de pago<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> para permitir a sincronización</translation>
+<translation id="1421484961346698724">Conta eliminada</translation>
 <translation id="14222610277930434">Acceso frecuente</translation>
 <translation id="1422930527989633628">Pode pedirche permiso para detectar dispositivos Bluetooth próximos</translation>
 <translation id="1426410128494586442">Si</translation>
@@ -3024,6 +3025,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6351658970066645919">Eliminar datos navegación</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ningún}=1{1 contrasinal (para <ph name="DOMAIN_LIST" />, sincronizado)}=2{2 contrasinais (para <ph name="DOMAIN_LIST" />, sincronizados)}other{# contrasinais (para <ph name="DOMAIN_LIST" />, sincronizados)}}</translation>
 <translation id="6355392890578844978">Ningunha compañía ou organización xestiona este navegador. A actividade deste dispositivo pódese xestionar fóra de Chromium. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Os grupos de pestanas "<ph name="GROUP_TITLE_1" />" e "<ph name="GROUP_TITLE_2" />" xa non están dispoñibles</translation>
 <translation id="6358088212770985041">editar os métodos de pago</translation>
 <translation id="6358450015545214790">Que significan estas seccións?</translation>
 <translation id="6360213755783740931">Máis información sobre a protección contra software malicioso</translation>

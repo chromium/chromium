@@ -270,6 +270,7 @@
 <translation id="2259659629660284697">Գաղտնաբառերի արտահանում…</translation>
 <translation id="2276696007612801991">Մտեք Google հաշիվ՝ ձեր գաղտնաբառերը ստուգելու համար</translation>
 <translation id="2278052315791335171">Եթե հեռացնեք այս գաղտնաբառը, ձեր հաշիվը չի ջնջվի <ph name="SITE" /> կայքից։</translation>
+<translation id="2281243904606300427"><ph name="TAB_TITLE" />, ընտրված ինկոգնիտո ներդիր</translation>
 <translation id="2286841657746966508">Վճարային հասցե</translation>
 <translation id="228704530595896923">Կիսվելու տարբերակների ցանկը։</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Տեսնել <ph name="TABS_COUNT_ONE" /> ներդիր}one{Տեսնել <ph name="TABS_COUNT_MANY" /> ներդիր}other{Տեսնել <ph name="TABS_COUNT_MANY" /> ներդիր}}</translation>
@@ -329,6 +330,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> տարր ջնջվեց</translation>
 <translation id="253498598929009420">Կայքը կկարողանա տեսնել ձեր էկրանի բովանդակությունը</translation>
 <translation id="2536728043171574184">Դուք դիտում եք տվյալ էջի անցանց պատճենը</translation>
+<translation id="2542548955756682219"><ph name="TAB_TITLE" />, ներդիր</translation>
 <translation id="2546283357679194313">Cookie ֆայլեր և կայքի տվյալներ</translation>
 <translation id="2547843573592965873">Պրոֆիլի կողպումը մեքենայում ապահով պահում է ձեր տեղեկությունները, այդ թվում՝ գաղտնաբառերը, վճարումների մասին տվյալները և ձեր Google հաշվում պահվող այլ տվյալներ։</translation>
 <translation id="254973855621628293">Այս սարքում պահված գաղտնաբառեր</translation>
@@ -472,6 +474,7 @@
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 գաղտնաբառ և այլ տարրեր պահվում են միայն այս սարքում։ Այդ գաղտնաբառն ու տարրերը ձեր մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում (<ph name="ACCOUNT_EMAIL" />)։}one{# գաղտնաբառ և այլ տարրեր պահվում են միայն այս սարքում։ Այդ գաղտնաբառն ու տարրերը ձեր մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում (<ph name="ACCOUNT_EMAIL" />)։}other{# գաղտնաբառ և այլ տարրեր պահվում են միայն այս սարքում։ Այդ գաղտնաբառերն ու տարրերը ձեր մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում (<ph name="ACCOUNT_EMAIL" />)։}}</translation>
 <translation id="3187472288455401631">Գովազդի արդյունավետության գնահատում</translation>
+<translation id="3189635831478931757"><ph name="GROUP_TITLE" /> ներդիրների խումբ</translation>
 <translation id="3207960819495026254">Էջանշված է</translation>
 <translation id="3208584281581115441">Ստուգել հիմա</translation>
 <translation id="3211426585530211793">Տարրը (<ph name="ITEM_TITLE" />) ջնջվեց</translation>
@@ -552,6 +555,7 @@
 <translation id="3566639033325271639">Թարմացնել կարգավորումները</translation>
 <translation id="3568945271227339929">Կոտրված գաղտնաբառեր չկան</translation>
 <translation id="357465026686164600">Հեռախոսը՝ որպես անվտանգության բանալի</translation>
+<translation id="3575464060651642446">Այս սարքի գաղտնաբառերի ստուգում…</translation>
 <translation id="3577473026931028326">Սխալ առաջացավ։ Նորից փորձեք։</translation>
 <translation id="3577558748185201054">Կառավարեք ձեր հետաքրքրությունները և նախընտրանքները</translation>
 <translation id="3587482841069643663">Բոլորը</translation>
@@ -747,6 +751,7 @@
 <translation id="4523326818319942067">վերջին 1 ժամը</translation>
 <translation id="452750746583162491">Ստուգեք ձեր համաժամացված տվյալները</translation>
 <translation id="4532845899244822526">Պանակի ընտրություն</translation>
+<translation id="4535755320005483982">Կիսված <ph name="GROUP_TITLE" /> ներդիրների խումբ</translation>
 <translation id="4543131175509360848">Հասանելի մուտքի բանալիներ չկան</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ներդիր}one{<ph name="TAB_COUNT_MANY" /> ներդիր, <ph name="TAB_COUNT_INCOGNITO" /> ինկոգնիտո ներդիր}other{<ph name="TAB_COUNT_MANY" /> ներդիր, <ph name="TAB_COUNT_INCOGNITO" /> ինկոգնիտո ներդիր}}</translation>
 <translation id="4558311620361989323">Վեբէջերի դյուրանցումներ</translation>
@@ -1248,6 +1253,7 @@
 <translation id="6756507620369789050">Կարծիք հայտնել</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />։</translation>
 <translation id="676305334223455055">Մուտք գործեք՝ ձեր հետաքրքրությունների հիման վրա բովանդակություն ստանալու համար</translation>
+<translation id="6764137532716892442">Կիսված <ph name="GROUP_TITLE" /> ներդիրների խումբ նոր ակտիվությամբ</translation>
 <translation id="6767294960381293877">Սարքերը, որոնց հետ կիսվելու եք ներդիրով, ցուցադրված են էկրանի կեսով:</translation>
 <translation id="6785476624617658922">Chrome-ի և ChromeOS-ի օգտագործման լրացուցիչ պայմաններ</translation>
 <translation id="6795633245022906657">Արագ բացեք նոր ներդիր։ Այս դյուրանցումը փոփոխելու համար անցեք կարգավորումներ։</translation>
@@ -1314,6 +1320,7 @@
 <translation id="6965382102122355670">Եղավ</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Տեսնել նոր գործողությամբ <ph name="TABS_COUNT_ONE" /> ներդիր ներդիրների ընդհանուր խմբում}one{Տեսնել նոր գործողությամբ <ph name="TABS_COUNT_MANY" /> ներդիր ներդիրների ընդհանուր խմբում}other{Տեսնել նոր գործողություններով <ph name="TABS_COUNT_MANY" /> ներդիր ներդիրների ընդհանուր խմբում}}</translation>
 <translation id="6971862865055170158">Չհաստատել</translation>
+<translation id="6976223255612495095"><ph name="TAB_TITLE" />, նոր կամ թարմացված ներդիր</translation>
 <translation id="6978717888677691380">Ձեր արգելափակած կայքերը</translation>
 <translation id="6979737339423435258">Ամբողջ ժամանակաշրջանի</translation>
 <translation id="6983306615164277634">Կարող եք նաև հպել հասցեագոտուն և պահել՝ դիրքը փոխելու համար։</translation>
@@ -1707,6 +1714,7 @@
 <translation id="8676276370198826499">Գրանցվեք <ph name="SITE_ETLD_PLUS_ONE" /> կայքում <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> հաշվով</translation>
 <translation id="8676789164135894283">Ծանուցումներ մուտքի մասին</translation>
 <translation id="8683039184091909753">պատկեր</translation>
+<translation id="8688183792442786085"><ph name="TAB_TITLE" />, ընտրված ներդիր</translation>
 <translation id="869891660844655955">Սպառման ժամկետ</translation>
 <translation id="8699120352855309748">Չառաջարկել թարգմանել այս լեզուները</translation>
 <translation id="8712637175834984815">Պատրաստ է</translation>
@@ -1840,4 +1848,5 @@
 <translation id="988091779042748639">Փակեք բոլոր ինկոգնիտո ներդիրները՝ ինկոգնիտո ռեժիմում այցելած էջերի պատմությունը սարքից ջնջելու համար։</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> ներդիր</translation>
 <translation id="996149300115483134">Լրահոսի քարտի ընտրացանկը փակված է</translation>
+<translation id="99907655649633293"><ph name="TAB_TITLE" />, ինկոգնիտո ներդիր</translation>
 </translationbundle>

@@ -13,6 +13,7 @@
 <translation id="1036348656032585052">Matikan</translation>
 <translation id="1045899828449635435">Kosongkan data?</translation>
 <translation id="1049743911850919806">Inkognito</translation>
+<translation id="1052842760770519282">Sesetengah kata laluan anda tidak dapat diakses</translation>
 <translation id="1058669287135776095">Anda di luar talian. Periksa sambungan Internet anda dan cuba lagi.</translation>
 <translation id="10614374240317010">Tidak pernah disimpan</translation>
 <translation id="107147699690128016">Jika anda menukar sambungan fail, fail itu mungkin akan dibuka dalam aplikasi lain dan berkemungkinan mendatangkan bahaya kepada peranti anda.</translation>
@@ -71,6 +72,7 @@
 <translation id="1269129608791067105">Anda dapat menemukan sejarah anda di sini</translation>
 <translation id="1273937721055267968">Sekat <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Ketik untuk kembangkan</translation>
+<translation id="1289129165308566697">Lihat sejarah anda pada peranti lain</translation>
 <translation id="129553762522093515">Ditutup baru-baru ini</translation>
 <translation id="1298077576058087471">Jimat sehingga 60% data, baca berita hari ini</translation>
 <translation id="1303339473099049190">Tidak menemukan kata laluan itu. Semak ejaan anda dan cuba lagi.</translation>
@@ -365,6 +367,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2666092431469916601">Atas</translation>
 <translation id="2669454659051515572">Sesiapa sahaja yang menggunakan peranti ini dapat melihat fail yang dimuat turun</translation>
 <translation id="2677748264148917807">Tinggalkan</translation>
+<translation id="2687009626279857299">Berhenti berfungsi pada peranti ini</translation>
 <translation id="2702516483241149200">Baharu: kongsi pautan yang menatal ke teks ini</translation>
 <translation id="2705073298859543115">Buat ringkasan</translation>
 <translation id="2708051474374549906">Perlindungan masa nyata dan proaktif terhadap laman, muat turun dan sambungan berbahaya yang berdasarkan data semakan imbas anda yang dihantar kepada Google</translation>
@@ -950,6 +953,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB tersedia</translation>
 <translation id="543338862236136125">Edit kata laluan</translation>
 <translation id="5433691172869980887">Nama pengguna disalin</translation>
+<translation id="5436928407363358055">Untuk menyambung dengan mudah dari tempat anda berhenti, segerakkan sejarah dan tab anda</translation>
 <translation id="5438292632479953702">Muat turun sekali lagi</translation>
 <translation id="5439191312780166229">Memberikan amaran kepada anda tentang laman berbahaya, termasuk laman yang tidak diketahui oleh Google sebelum ini, dengan menganalisis lebih banyak data daripada laman berbanding perlindungan standard. Anda boleh memilih untuk melangkau amaran Chrome.</translation>
 <translation id="5441137934526263133">Laman tidak berfungsi? Kuki pihak ketiga disekat</translation>

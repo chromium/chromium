@@ -270,6 +270,7 @@
 <translation id="2259659629660284697">匯出密碼…</translation>
 <translation id="2276696007612801991">登入 Google 帳戶以檢查密碼</translation>
 <translation id="2278052315791335171">刪除此密碼不會刪除您在 <ph name="SITE" /> 的帳戶</translation>
+<translation id="2281243904606300427"><ph name="TAB_TITLE" />，已選取的無痕式分頁</translation>
 <translation id="2286841657746966508">帳單地址</translation>
 <translation id="228704530595896923">分享選項清單。</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{查看 <ph name="TABS_COUNT_ONE" /> 個分頁}other{查看 <ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
@@ -329,6 +330,7 @@
 <translation id="2534155362429831547">已刪除 <ph name="NUMBER_OF_ITEMS" /> 個項目</translation>
 <translation id="253498598929009420">網站將可見到您螢幕上的內容</translation>
 <translation id="2536728043171574184">正在瀏覽此網頁的離線版本</translation>
+<translation id="2542548955756682219"><ph name="TAB_TITLE" />，分頁</translation>
 <translation id="2546283357679194313">Cookie 和網站數據</translation>
 <translation id="2547843573592965873">個人檔案鎖定功能可確保你在車上的資料安全，包括儲存在 Google 帳戶的密碼、付款資料等。</translation>
 <translation id="254973855621628293">密碼已儲存至此裝置</translation>
@@ -472,6 +474,7 @@
 <translation id="3169472444629675720">探索</translation>
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 個密碼和其他項目只會儲存至此裝置。如要在其他裝置上使用，請將這些項目儲存至 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}other{# 個密碼和其他項目只會儲存至此裝置。如要在其他裝置上使用，請將這些項目儲存至 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}}</translation>
 <translation id="3187472288455401631">廣告成效評估</translation>
+<translation id="3189635831478931757">「<ph name="GROUP_TITLE" />」分頁群組</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3208584281581115441">立即檢查</translation>
 <translation id="3211426585530211793">已刪除 <ph name="ITEM_TITLE" /></translation>
@@ -748,6 +751,7 @@
 <translation id="4523326818319942067">過去 1 小時</translation>
 <translation id="452750746583162491">查看您已同步的資料</translation>
 <translation id="4532845899244822526">選擇資料夾</translation>
+<translation id="4535755320005483982">共用的「<ph name="GROUP_TITLE" />」分頁群組</translation>
 <translation id="4543131175509360848">冇密鑰嘅工作表</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個分頁}other{<ph name="TAB_COUNT_MANY" /> 個分頁、<ph name="TAB_COUNT_INCOGNITO" /> 個無痕式分頁}}</translation>
 <translation id="4558311620361989323">網頁快速鍵</translation>
@@ -1249,6 +1253,7 @@
 <translation id="6756507620369789050">提供意見</translation>
 <translation id="6762511428368667596"><ph name="NAME" />，<ph name="EMAIL" />。</translation>
 <translation id="676305334223455055">登入即可接收系統根據你興趣提供的內容。</translation>
+<translation id="6764137532716892442">共用的「<ph name="GROUP_TITLE" />」分頁群組有新活動</translation>
 <translation id="6767294960381293877">要共用分頁嘅裝置清單宜家顯示喺畫面下半部。</translation>
 <translation id="6785476624617658922">Chrome 和 Chrome OS 的《附加服務條款》</translation>
 <translation id="6795633245022906657">快速開啟新分頁。如要編輯此捷徑，請前往「設定」。</translation>
@@ -1315,6 +1320,7 @@
 <translation id="6965382102122355670">確定</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{查看在共用分頁群組中有新活動的 <ph name="TABS_COUNT_ONE" /> 個分頁}other{查看在共用分頁群組中有新活動的 <ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="6971862865055170158">不核准</translation>
+<translation id="6976223255612495095"><ph name="TAB_TITLE" />，新分頁或已更新的分頁</translation>
 <translation id="6978717888677691380">您已封鎖的網站</translation>
 <translation id="6979737339423435258">所有時間</translation>
 <translation id="6983306615164277634">你亦可按住網址列以變更位置。</translation>
@@ -1708,6 +1714,7 @@
 <translation id="8676276370198826499">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 註冊 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">登入驗證</translation>
 <translation id="8683039184091909753">圖片</translation>
+<translation id="8688183792442786085"><ph name="TAB_TITLE" />，已選取的分頁</translation>
 <translation id="869891660844655955">到期日</translation>
 <translation id="8699120352855309748">不要詢問是否翻譯這些語言</translation>
 <translation id="8712637175834984815">我知道了</translation>
@@ -1841,4 +1848,5 @@
 <translation id="988091779042748639">如要刪除裝置上的無痕瀏覽記錄，請關閉所有無痕式分頁。</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> 個分頁</translation>
 <translation id="996149300115483134">資訊提供卡選單閂咗</translation>
+<translation id="99907655649633293"><ph name="TAB_TITLE" />，無痕式分頁</translation>
 </translationbundle>

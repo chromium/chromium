@@ -107,6 +107,7 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="1413446866325418126">Ukládat data do účtu Google</translation>
 <translation id="1414981605391750300">Kontaktování Googlu. Může to chvíli trvat…</translation>
 <translation id="1416550906796893042">Verze aplikace</translation>
+<translation id="1416582024052267068">Zachovejte si přístup k heslům</translation>
 <translation id="1419753403124156396">Restartovat Chrome?</translation>
 <translation id="1428770807407000502">Vypnout synchronizaci?</translation>
 <translation id="1430915738399379752">Tisk</translation>
@@ -515,6 +516,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="342220687432920852">{HOURS,plural, =1{před # h}few{před # h}many{před # h}other{před # h}}</translation>
 <translation id="3430670036890315772">Vypnutím zámku profilu odstraníte uložené informace</translation>
 <translation id="3435465986463792564">Otevřeli jste si víc oken? Tady je můžete spravovat</translation>
+<translation id="3435575784518354875">Pokud chcete zachovat přístup ke svým heslům, exportujte je, aktualizujte Služby Google Play a poté je importujte zpět do Správce hesel Google. <ph name="BEGIN_LINK" />Zobrazit úplné pokyny<ph name="END_LINK" /></translation>
 <translation id="3435738964857648380">Zabezpečení</translation>
 <translation id="3439276997620616816">Zde najdete své nedávno zavřené karty</translation>
 <translation id="3443221991560634068">Znovu načíst aktuální stránku</translation>
@@ -524,6 +526,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3474624961160222204">Pokračovat jako <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Můžete si vybrat vyhledávač</translation>
 <translation id="3479552764303398839">Teď ne</translation>
+<translation id="3487903178221457900">Exportovaný soubor může být přístupný ostatním, včetně aplikací. Po exportu budou vaše hesla z Chromu smazána.</translation>
 <translation id="3488199663160411179">jméno</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /> o navrhovaném obsahu</translation>
 <translation id="3495219333887281978">Spodní tabulka s přihlášením je otevřená na polovinu výšky</translation>
@@ -549,6 +552,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3566639033325271639">Aktualizovat nastavení</translation>
 <translation id="3568945271227339929">Nebyla nalezena žádná prolomená hesla</translation>
 <translation id="357465026686164600">Telefon jako bezpečnostní klíč</translation>
+<translation id="3575464060651642446">Kontrola hesel na zařízení…</translation>
 <translation id="3577473026931028326">Došlo k chybě. Zkuste to znovu.</translation>
 <translation id="3577558748185201054">Spravujte své zájmy a preference</translation>
 <translation id="3587482841069643663">Vše</translation>
@@ -1751,6 +1755,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8937772741022875483">Odstranit vaši aktivitu v Chromu z digitální rovnováhy?</translation>
 <translation id="8942627711005830162">Otevřít v jiném okně</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Tento jazyk se nepodařilo stáhnout. Zkuste to znovu později.</translation>
+<translation id="8957528460562961174">Pokud chcete zachovat přístup ke svým heslům, exportujte je a poté je importujte do preferovaného správce hesel. Správce hesel Google přestal fungovat, protože služby Google Play nejsou k dispozici.</translation>
 <translation id="8963117664422609631">Přejít do nastavení webu</translation>
 <translation id="8965591936373831584">nevyřízeno</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Zavře se <ph name="INCOGNITO_TAB_COUNT" /> anonymní a <ph name="TAB_COUNT_ONE" /> další karta}few{Zavřou se <ph name="INCOGNITO_TAB_COUNT" /> anonymní a <ph name="TAB_COUNT_MANY" /> další karty}many{Zavře se <ph name="INCOGNITO_TAB_COUNT" /> anonymní a <ph name="TAB_COUNT_MANY" /> další karty}other{Zavře se <ph name="INCOGNITO_TAB_COUNT" /> anonymních a <ph name="TAB_COUNT_MANY" /> dalších karet}}</translation>

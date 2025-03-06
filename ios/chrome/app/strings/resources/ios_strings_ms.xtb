@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">Dengan meneruskan penggunaan, anda bersetuju menerima <ph name="BEGIN_LINK" />Syarat Perkhidmatan<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Tidak pernah disimpan</translation>
 <translation id="1062138828266376352">PIN anda tidak ditukar. Periksa sambungan Internet anda, kemudian cuba lagi</translation>
+<translation id="1072476005125066234">Ulasan berdasarkan minat anda</translation>
 <translation id="1074827084851510304">Anda akan memadamkan {password_count} kata laluan serta senarai laman &amp; apl yang anda pilih untuk tidak sekali-kali menyimpan log masuk. Mana-mana akaun yang anda buat untuk laman dan apl tidak akan dipadamkan.</translation>
 <translation id="1076421457278169141">Kod diimbas</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} tab}other{{count} tab}}</translation>
@@ -267,6 +268,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" /> akaun menggunakan kata laluan yang sama</translation>
 <translation id="2059166748188874810">Perbandaran</translation>
 <translation id="2060114494785549741">Padamkan selepas 1 bulan</translation>
+<translation id="2060638295449304809">Alamat ini hanya disimpan pada peranti ini. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan tersebut dalam Google Account anda, <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">Pemilih jenis unit</translation>
 <translation id="2067852168641682340">Simpan pada akaun ini setiap kali</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 tab}other{{count} tab}}</translation>
@@ -895,6 +897,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4824480232751123840">Kelantangan</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} dan 1 yang lain}other{{domain} dan {count} yang lain}}</translation>
 <translation id="4826588772550366629">kamera dan mikrofon</translation>
+<translation id="4828431027673677473">Produk berdasarkan minat anda</translation>
 <translation id="4833786495304741580">Menghantar perangkaan penggunaan dan laporan ranap sistem secara automatik kepada Google.</translation>
 <translation id="483689884442613745">Simpan…</translation>
 <translation id="4840495572919996524">Penanda halaman, sejarah, kata laluan dan pelbagai lagi tidak akan disegerakkan ke Google Account anda.</translation>
@@ -1244,7 +1247,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6284652193729350524">Tawarkan untuk menterjemah <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Telah berhenti mengikuti <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Untuk menghidupkan Penyemakan Imbas Selamat, buka <ph name="BEGIN_LINK" />Perkhidmatan Google<ph name="END_LINK" /> dan ketik Penyemakan Imbas Selamat.</translation>
-<translation id="6295434468271563378">Autopadam muat turun anda</translation>
 <translation id="6295751040240588413">Nama panggilan kad tidak sah</translation>
 <translation id="629730747756840877">Akaun</translation>
 <translation id="6301104306974789820">Dapatkan pemberitahuan penjejakan harga</translation>
@@ -1735,6 +1737,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="828291969289324795">{count,plural, =1{Tambahkan Tab pada Kumpulan Baharu}other{Tambahkan Tab pada Kumpulan Baharu}}</translation>
 <translation id="8283172974887967105">Tetapkan…</translation>
 <translation id="8289930144142009940">Pemberitahuan <ph name="FEATURE_NAME" /> dimatikan</translation>
+<translation id="8290077367744012649">Jejaki harga daripada tab anda</translation>
 <translation id="8299417921174340354">Untuk menggunakan kata laluan, anda mesti menetapkan kod laluan pada peranti anda dahulu.</translation>
 <translation id="8299613349954694191">Buka tab Inkognito untuk menyemak imbas web secara tertutup.</translation>
 <translation id="8307481894409578819">Fail ini tidak dapat dimuat naik</translation>

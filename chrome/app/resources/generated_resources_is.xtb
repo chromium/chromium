@@ -3822,6 +3822,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3670229581627177274">Kveikja á Bluetooth</translation>
 <translation id="3670480940339182416">Vefsvæðum er heimilt að nota fínstillingu V8</translation>
 <translation id="3671764914317109892">Notaðu venjulegt orðalag til að leita í vafraferlinum þínum. Þú getur einnig spurt spurninga og fengið svör sem byggjast á vafraferlinum þínum.</translation>
+<translation id="3671982238795754537">Nánar um aðgangslykla</translation>
 <translation id="3672681487849735243">Framleiðsluvilla kom upp</translation>
 <translation id="3673097791729989571">Innskráning hýst hjá <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">PIN-númerið var uppfært</translation>
@@ -4082,6 +4083,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Viðbót var samþykkt}one{# viðbót var samþykkt}other{# viðbætur voru samþykktar}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Mælt er með að minnsta kosti <ph name="INSTALL_SIZE" /> af lausu plássi til að nota Linux.</translation>
+<translation id="3824203811509979971">Taktu saman efni eða spyrðu spurninga</translation>
 <translation id="3824621460022590830">Skráningarlykill tækis er ógildur. Hafðu samband við eiganda tækisins eða kerfisstjóra. Villukóði: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Skráðu þig inn til að sjá flipa úr öðrum tækjum</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Muna valið mitt fyrir þessa skráargerð: <ph name="FILE_TYPES" />}one{Muna valið mitt fyrir þessar skráargerðir: <ph name="FILE_TYPES" />}other{Muna valið mitt fyrir þessar skráargerðir: <ph name="FILE_TYPES" />}}</translation>
@@ -4268,6 +4270,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3948985214866944547">Flestir loka á að deila nákvæmri staðsetningu fyrir þetta vefsvæði</translation>
 <translation id="394984172568887996">Flutt inn úr IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> til að gera niðurhal skráa öruggara</translation>
+<translation id="3950479158728806902">Búa til aðgangslykil sjálfkrafa fyrir fljótlegri innskráningu</translation>
 <translation id="3950820424414687140">Skrá inn</translation>
 <translation id="3950841222883198950">Raddinnsláttur</translation>
 <translation id="3953834000574892725">Reikningarnir mínir</translation>
@@ -4736,6 +4739,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4289540628985791613">Yfirlit</translation>
 <translation id="428963538941819373">Þessi vefsvæði geta notað upplýsingar sem þau hafa vistað um þig þegar þú vafrar um <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Veldu PIN-númer</translation>
+<translation id="4290526909608432059">Stuðningi við Chrome-forrit verður hætt innan skamms. Hafðu samband við þróunaraðila forritsins eða kerfisþjónustuteymið þitt til að fá upplýsingar um þá valkosti sem standa þér til boða.</translation>
 <translation id="4290791284969893584">Þegar þú lokar síðu er óvíst að verkefnum sem þú byrjaðir á verði lokið</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> meðlimur</translation>
 <translation id="4290898381118933198">Strjúktu til að fletta á milli síðna</translation>
@@ -5196,6 +5200,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4624054169152573743">Litaþema</translation>
 <translation id="4625078469366263107">Virkja forrit</translation>
 <translation id="4625905218692741757">Sjálfgefinn grár litur</translation>
+<translation id="4627107755957573804">Leyfðu vefsvæðum og forritum að uppfæra fyrirliggjandi reikninga til að nota aðgangslykla</translation>
 <translation id="4627442949885028695">Halda áfram í öðru tæki</translation>
 <translation id="4628762811416793313">Uppsetningu á Linux-geyminum var ekki lokið. Reyndu aftur.</translation>
 <translation id="4629521233550547305">Opna prófílinn <ph name="PROFILE_NAME" /></translation>
@@ -5779,6 +5784,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5053233576223592551">Bæta notandanafni við</translation>
 <translation id="505347685865235222">Ónefndur hópur – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{Þú ættir að breyta því strax}one{Þú ættir að breyta þeim strax}other{Þú ættir að breyta þeim strax}}</translation>
+<translation id="5056587122125565772">Búa til mynd</translation>
 <translation id="5056950756634735043">Tengist geyminum</translation>
 <translation id="5057110919553308744">Þegar þú smellir á viðbótina</translation>
 <translation id="5057127674016624293">Skönnun tekur lengri tíma en áætlað var</translation>
@@ -5889,6 +5895,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="512642543295077915">leitarlykill + bakklykill</translation>
 <translation id="5126611267288187364">Skoða breytingar</translation>
 <translation id="5127620150973591153">Auðkenni öruggrar tengingar: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">Taktu saman efni eða spyrðu spurninga.</translation>
 <translation id="5127881134400491887">Stjórna nettengingum</translation>
 <translation id="5127934926273826089">Blóm</translation>
 <translation id="5127986747308934633">Stjórnandinn þinn stjórnar tækinu þínu</translation>
@@ -8529,6 +8536,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – raðtengi tengt</translation>
 <translation id="7033616203784997570">Hámarkið er 62 stafir</translation>
 <translation id="7034692021407794547">Stjórnandi með heimild til að innheimta verður fyrst að samþykkja þjónustuskilmála Google Meet vélbúnaðar í hlutanum „Google Meet vélbúnaður“ á stjórnborði stjórnanda.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> bjó til aðgangslykill fyrir reikninginn þinn rétt í þessu. Aðgangslyklar eru fljótlegri og öruggari leið til að skrá þig inn og eru vistaðir í Google-aðgangsorðastjórnun á reikningnum „<ph name="USER" />“. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> af plássi er nauðsynlegt fyrir Linux. Eyddu skrám úr tækinu til að auka geymslurýmið.</translation>
 <translation id="7037157058268992880">Gleymt PIN-númer</translation>
 <translation id="7037509989619051237">Texti til að nota sem sýnishorn</translation>
@@ -10159,6 +10167,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8195854162863398249">Slökkva á „<ph name="FEATURE_NAME" />“</translation>
 <translation id="8195920051450756553">Seinka áður en sami lykillinn er virkjaður aftur</translation>
 <translation id="8197673340773315084">Bættu við heiti eða merki eins og „Vinna“ eða „Persónulegt“.</translation>
+<translation id="8198181050118789419">Þema: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Útsendingarflipi</translation>
 <translation id="8199300056570174101">Eiginleikar netkerfis (þjónustu) og tækis</translation>
 <translation id="8200772114523450471">Halda áfram</translation>
@@ -10569,6 +10578,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8477178913400731244">Eyða gögnum</translation>
 <translation id="8477241577829954800">Leyst af hólmi</translation>
 <translation id="8477384620836102176">Almennt</translation>
+<translation id="8477446666255316832">Vertu enn fljótari að skrá þig inn næst</translation>
 <translation id="8479176401914456949">Ógildur kóði. Reyndu aftur.</translation>
 <translation id="8480869669560681089">Óþekkt tæki frá <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Staðfesta USB-heimild</translation>
@@ -11416,6 +11426,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB-mús tengd</translation>
 <translation id="9075413375877487220">Enn öruggari vefskoðun treystir ekki þessari viðbót.</translation>
+<translation id="9075985558450420812">Sláðu inn sérsniðna skipun eða yfirstrikaðu texta til að búa til mynd.</translation>
 <translation id="9076523132036239772">Því miður var ekki hægt að staðfesta netfangið þitt eða aðgangsorð. Prófaðu að tengjast neti fyrst.</translation>
 <translation id="9076821103818989526">Hliðargluggi</translation>
 <translation id="9076977315710973122">SMB-geymsla</translation>

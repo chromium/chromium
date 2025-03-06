@@ -270,6 +270,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2259659629660284697">Exporta les contrasenyes…</translation>
 <translation id="2276696007612801991">Inicia la sessió al teu Compte de Google per comprovar les contrasenyes</translation>
 <translation id="2278052315791335171">Encara que suprimeixis aquesta contrasenya, no se suprimirà el teu compte a <ph name="SITE" /></translation>
+<translation id="2281243904606300427"><ph name="TAB_TITLE" />, pestanya d'incògnit seleccionada</translation>
 <translation id="2286841657746966508">Adreça de facturació</translation>
 <translation id="228704530595896923">Llista d'opcions de compartició.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Consulta <ph name="TABS_COUNT_ONE" /> pestanya}other{Consulta <ph name="TABS_COUNT_MANY" /> pestanyes}}</translation>
@@ -329,6 +330,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> elements suprimits</translation>
 <translation id="253498598929009420">El lloc web podrà veure el contingut de la teva pantalla</translation>
 <translation id="2536728043171574184">S'està mostrant una còpia sense connexió d'aquesta pàgina</translation>
+<translation id="2542548955756682219"><ph name="TAB_TITLE" />, pestanya</translation>
 <translation id="2546283357679194313">Dades de llocs web i galetes</translation>
 <translation id="2547843573592965873">El bloqueig de perfil protegeix la teva informació al cotxe, incloses les contrasenyes, els pagaments i altres elements desats al teu Compte de Google.</translation>
 <translation id="254973855621628293">S'han desat les contrasenyes en aquest dispositiu</translation>
@@ -472,6 +474,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 contrasenya i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los als teus altres dispositius, desa'ls al teu Compte de Google, <ph name="ACCOUNT_EMAIL" />.}other{# contrasenyes i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los als teus altres dispositius, desa'ls al teu Compte de Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="3187472288455401631">Mesurament d'anuncis</translation>
+<translation id="3189635831478931757">Grup de pestanyes <ph name="GROUP_TITLE" /></translation>
 <translation id="3207960819495026254">S'ha afegit a les adreces d'interès.</translation>
 <translation id="3208584281581115441">Comprova ara</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> s'ha suprimit</translation>
@@ -552,6 +555,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3566639033325271639">Actualitza la configuració</translation>
 <translation id="3568945271227339929">No hi ha cap contrasenya en perill</translation>
 <translation id="357465026686164600">Telèfon com a clau de seguretat</translation>
+<translation id="3575464060651642446">S'estan comprovant les contrasenyes en aquest dispositiu…</translation>
 <translation id="3577473026931028326">S'ha produït un error. Torna-ho a provar.</translation>
 <translation id="3577558748185201054">Gestiona els teus interessos i les teves preferències</translation>
 <translation id="3587482841069643663">Tots</translation>
@@ -747,6 +751,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4523326818319942067">darrera hora</translation>
 <translation id="452750746583162491">Revisa les teves dades sincronitzades</translation>
 <translation id="4532845899244822526">Tria la carpeta</translation>
+<translation id="4535755320005483982">Grup de pestanyes compartit <ph name="GROUP_TITLE" /></translation>
 <translation id="4543131175509360848">No hi ha cap full de claus d'accés</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestanya}other{<ph name="TAB_COUNT_MANY" /> pestanyes, <ph name="TAB_COUNT_INCOGNITO" /> d'incògnit}}</translation>
 <translation id="4558311620361989323">Dreceres per a pàgines web</translation>
@@ -808,7 +813,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4777866634702576038">Vols suprimir el grup de pestanyes?</translation>
 <translation id="4778653490315793244">Encara no hi ha res per mostrar</translation>
 <translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> és el teu motor de cerca predeterminat</translation>
-<translation id="4784349455504343791">El lloc web <ph name="WEBSITE_ORIGIN" /> vol utilitzar informació personal de la teva cartera digital.</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> vol utilitzar informació personal de la teva cartera digital.</translation>
 <translation id="4787736314074622408">Vols suprimir <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Informació sobre com et protegeix Chrome</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -932,7 +937,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5355191726083956201">La protecció millorada està activada</translation>
 <translation id="5375374982898812658">Perdràs immediatament l'accés al grup de pestanyes "<ph name="GROUP_NAME" />" i se suprimirà de tots els teus dispositius</translation>
 <translation id="5375577065097716013">Cerca la imatge amb Lens <ph name="BEGIN_NEW" />Novetat<ph name="END_NEW" /></translation>
-<translation id="5390367025924544771">El lloc web <ph name="WEBSITE_ORIGIN" /> vol utilitzar informació personal de la teva cartera digital. Continua només si hi confies. Els llocs web perillosos poden enganyar-te perquè revelis dades com ara el teu nom legal o el número del document d'identitat.</translation>
+<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> vol utilitzar informació personal de la teva cartera digital. Continua només si hi confies. Els llocs web perillosos poden enganyar-te perquè revelis dades com ara el teu nom legal o el número del document d'identitat.</translation>
 <translation id="5394331612381306435">Surt del mode d'incògnit</translation>
 <translation id="5395376160638294582">Assegura't de poder utilitzar sempre les dades de Chrome al teu Compte de Google</translation>
 <translation id="539881862970320163">S'ha suggerit una contrasenya segura. El teclat està amagat.</translation>
@@ -1248,6 +1253,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6756507620369789050">Comparteix suggeriments</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="676305334223455055">Inicia la sessió per obtenir contingut basat en els teus interessos</translation>
+<translation id="6764137532716892442">Grup de pestanyes compartit <ph name="GROUP_TITLE" /> amb activitat nova</translation>
 <translation id="6767294960381293877">La llista de dispositius amb què es compartirà una pestanya s'ha obert a mitja alçada.</translation>
 <translation id="6785476624617658922">Condicions del servei addicionals de Chrome i Chrome OS</translation>
 <translation id="6795633245022906657">Obre ràpidament una pestanya nova. Per editar aquesta drecera, ves a Configuració.</translation>
@@ -1314,6 +1320,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6965382102122355670">D'acord</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Consulta <ph name="TABS_COUNT_ONE" /> pestanya amb activitat nova en grups de pestanyes compartits}other{Consulta <ph name="TABS_COUNT_MANY" /> pestanyes amb activitat nova en grups de pestanyes compartits}}</translation>
 <translation id="6971862865055170158">No aprovis</translation>
+<translation id="6976223255612495095"><ph name="TAB_TITLE" />, pestanya nova o actualitzada</translation>
 <translation id="6978717888677691380">Llocs web que has bloquejat</translation>
 <translation id="6979737339423435258">Sempre</translation>
 <translation id="6983306615164277634">També pots mantenir premuda la barra d'adreces per canviar la posició.</translation>
@@ -1707,6 +1714,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8676276370198826499">Registra't a <ph name="SITE_ETLD_PLUS_ONE" /> amb <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Verificacions d'inici de sessió</translation>
 <translation id="8683039184091909753">imatge</translation>
+<translation id="8688183792442786085"><ph name="TAB_TITLE" />, pestanya seleccionada</translation>
 <translation id="869891660844655955">Data de caducitat</translation>
 <translation id="8699120352855309748">No proposis traduir aquests idiomes</translation>
 <translation id="8712637175834984815">Entesos</translation>
@@ -1840,4 +1848,5 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="988091779042748639">Per suprimir l'historial de navegació d'incògnit del dispositiu, tanca totes les pestanyes d'incògnit.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> pestanyes</translation>
 <translation id="996149300115483134">El menú de la targeta del tauler està tancat</translation>
+<translation id="99907655649633293"><ph name="TAB_TITLE" />, pestanya d'incògnit</translation>
 </translationbundle>

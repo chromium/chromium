@@ -270,6 +270,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2259659629660284697">Esporta password…</translation>
 <translation id="2276696007612801991">Accedi al tuo Account Google per controllare le tue password</translation>
 <translation id="2278052315791335171">L'eliminazione di questa password non comporta l'eliminazione del tuo account su <ph name="SITE" /></translation>
+<translation id="2281243904606300427"><ph name="TAB_TITLE" />, scheda di navigazione in incognito selezionata</translation>
 <translation id="2286841657746966508">Indirizzo di fatturazione</translation>
 <translation id="228704530595896923">Elenco di opzioni di condivisione.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Visualizza <ph name="TABS_COUNT_ONE" /> scheda}other{Visualizza <ph name="TABS_COUNT_MANY" /> schede}}</translation>
@@ -329,6 +330,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> elementi eliminati</translation>
 <translation id="253498598929009420">Il sito potrà vedere i contenuti del tuo schermo</translation>
 <translation id="2536728043171574184">È visualizzata una copia offline della pagina</translation>
+<translation id="2542548955756682219"><ph name="TAB_TITLE" />, scheda</translation>
 <translation id="2546283357679194313">Cookie e dati dei siti</translation>
 <translation id="2547843573592965873">Il blocco del profilo tiene al sicuro le informazioni, ad esempio password, pagamenti e altro, salvate nel tuo Account Google.</translation>
 <translation id="254973855621628293">Password salvate su questo dispositivo</translation>
@@ -472,6 +474,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3169472444629675720">Feed personalizzato</translation>
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 password e altri elementi sono stati salvati solo su questo dispositivo. Per usarli su altri dispositivi, salvali nel tuo Account Google, <ph name="ACCOUNT_EMAIL" />.}other{# password e altri elementi sono stati salvati solo su questo dispositivo. Per usarli su altri dispositivi, salvali nel tuo Account Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="3187472288455401631">Misurazione degli annunci</translation>
+<translation id="3189635831478931757">Gruppo di schede <ph name="GROUP_TITLE" /></translation>
 <translation id="3207960819495026254">Aggiunto ai preferiti</translation>
 <translation id="3208584281581115441">Controlla ora</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> è stato eliminato</translation>
@@ -748,6 +751,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4523326818319942067">ultima ora</translation>
 <translation id="452750746583162491">Verifica i tuoi dati sincronizzati</translation>
 <translation id="4532845899244822526">Scegli cartella</translation>
+<translation id="4535755320005483982">Gruppo di schede <ph name="GROUP_TITLE" /> condiviso</translation>
 <translation id="4543131175509360848">Nessun foglio di passkey</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> scheda}other{<ph name="TAB_COUNT_MANY" /> schede, <ph name="TAB_COUNT_INCOGNITO" /> in incognito}}</translation>
 <translation id="4558311620361989323">Scorciatoie delle pagine web</translation>
@@ -1249,6 +1253,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6756507620369789050">Condividi feedback</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="676305334223455055">Accedi per ricevere contenuti basati sui tuoi interessi</translation>
+<translation id="6764137532716892442">Gruppo di schede <ph name="GROUP_TITLE" /> condiviso con nuova attività</translation>
 <translation id="6767294960381293877">Elenco di dispositivi con cui condividere una scheda aperto nella parte inferiore dello schermo.</translation>
 <translation id="6785476624617658922">Termini di servizio aggiuntivi di Chrome e ChromeOS</translation>
 <translation id="6795633245022906657">Apri rapidamente una nuova scheda. Per modificare questa scorciatoia, vai a Impostazioni.</translation>
@@ -1315,6 +1320,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Visualizza <ph name="TABS_COUNT_ONE" /> scheda con nuove attività in gruppi di schede condivisi}other{Visualizza <ph name="TABS_COUNT_MANY" /> schede con nuove attività in gruppi di schede condivisi}}</translation>
 <translation id="6971862865055170158">Non approvare</translation>
+<translation id="6976223255612495095"><ph name="TAB_TITLE" />, scheda nuova o aggiornata</translation>
 <translation id="6978717888677691380">Siti che hai bloccato</translation>
 <translation id="6979737339423435258">Dall'inizio</translation>
 <translation id="6983306615164277634">Per cambiare la posizione, puoi anche toccare e tenere premuta la barra degli indirizzi.</translation>
@@ -1708,6 +1714,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8676276370198826499">Registrati a <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Verifiche degli accessi</translation>
 <translation id="8683039184091909753">immagine</translation>
+<translation id="8688183792442786085"><ph name="TAB_TITLE" />, scheda selezionata</translation>
 <translation id="869891660844655955">Data di scadenza</translation>
 <translation id="8699120352855309748">Non proporre di tradurre queste lingue</translation>
 <translation id="8712637175834984815">Ok</translation>
@@ -1841,4 +1848,5 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="988091779042748639">Per eliminare la cronologia di navigazione in incognito dal tuo dispositivo, chiudi tutte le schede di navigazione in incognito.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> schede</translation>
 <translation id="996149300115483134">Menu scheda feed chiuso</translation>
+<translation id="99907655649633293"><ph name="TAB_TITLE" />, scheda di navigazione in incognito</translation>
 </translationbundle>

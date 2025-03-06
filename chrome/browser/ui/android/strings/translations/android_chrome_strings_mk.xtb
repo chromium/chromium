@@ -107,6 +107,7 @@
 <translation id="1413446866325418126">Зачувувајте податоци во вашата сметка на Google</translation>
 <translation id="1414981605391750300">Се воспоставува контакт со Google… Ова може да потрае</translation>
 <translation id="1416550906796893042">Верзија на апликација</translation>
+<translation id="1416582024052267068">Задржете го пристапот до лозинките</translation>
 <translation id="1419753403124156396">Да се рестартира Chrome?</translation>
 <translation id="1428770807407000502">Да се исклучи синхронизацијата?</translation>
 <translation id="1430915738399379752">Печати</translation>
@@ -515,6 +516,7 @@
 <translation id="342220687432920852">{HOURS,plural, =1{Пред # ч.}one{Пред # ч.}other{Пред # ч.}}</translation>
 <translation id="3430670036890315772">Ако го исклучите „Заклучувањето на профилот“, ќе се отстранат вашите зачувани податоци</translation>
 <translation id="3435465986463792564">Имате многу прозорци? Може да управувате со нив оттука</translation>
+<translation id="3435575784518354875">За да го задржите пристапот до лозинките, извезете ги сега, ажурирајте ја „Услуги на Google Play“, па увезете ги повторно во Google Password Manager. <ph name="BEGIN_LINK" />Погледнете ги целосните инструкции<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Безбедност</translation>
 <translation id="3439276997620616816">Вашите неодамнешни картички ќе ги најдете тука</translation>
 <translation id="3443221991560634068">Вчитајте ја тековната страница</translation>
@@ -524,6 +526,7 @@
 <translation id="3474624961160222204">Продолжете како <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Може да го изберете вашиот пребарувач</translation>
 <translation id="3479552764303398839">Не сега</translation>
+<translation id="3487903178221457900">Извезената датотека може да им биде пристапна на другите, меѓу кои и апликации. Откако ќе извезете, вашите лозинки ќе се избришат од Chrome.</translation>
 <translation id="3488199663160411179">име</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /> за предложените содржини</translation>
 <translation id="3495219333887281978">Долниот лист за најавување е отворен на половина екран.</translation>
@@ -549,6 +552,7 @@
 <translation id="3566639033325271639">Ажурирајте ги поставките</translation>
 <translation id="3568945271227339929">Нема компромитирани лозинки</translation>
 <translation id="357465026686164600">Телефон како безбедносен клуч</translation>
+<translation id="3575464060651642446">Се проверуваат лозинките на уредов…</translation>
 <translation id="3577473026931028326">Нешто тргна наопаку. Обидете се повторно.</translation>
 <translation id="3577558748185201054">Управувајте со вашите интереси и поставки</translation>
 <translation id="3587482841069643663">Сите</translation>
@@ -1751,6 +1755,7 @@
 <translation id="8937772741022875483">Да се отстрани вашата активност на Chrome од „Дигитална благосостојба“?</translation>
 <translation id="8942627711005830162">Отвори во друг прозорец</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Овој јазик не можеше да се преземе. Обидете се повторно подоцна.</translation>
+<translation id="8957528460562961174">За да го задржите пристапот до лозинките, извезете ги сега, па увезете ги во претпочитаниот управувач со лозинки. Google Password Manager престана да функционира бидејќи „Услуги на Google Play“ не е достапна.</translation>
 <translation id="8963117664422609631">Оди на поставките за сајтот</translation>
 <translation id="8965591936373831584">чека на ред</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> картичка „Инкогнито“ и уште <ph name="TAB_COUNT_ONE" /> картичка ќе се затворат}one{<ph name="INCOGNITO_TAB_COUNT" /> картичка „Инкогнито“ и уште <ph name="TAB_COUNT_MANY" /> картичка ќе се затворат}other{<ph name="INCOGNITO_TAB_COUNT" /> картичка „Инкогнито“ и уште <ph name="TAB_COUNT_MANY" /> картички ќе се затворат}}</translation>

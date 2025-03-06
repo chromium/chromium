@@ -270,6 +270,7 @@
 <translation id="2259659629660284697">የይለፍ ቃላትን ወደ ውጭ ላክ...</translation>
 <translation id="2276696007612801991">የይለፍ ቃላትዎን ለመፈተሽ ወደ Google መለያዎ ይግቡ</translation>
 <translation id="2278052315791335171">ይህን የይለፍ ቃል መሰረዝ <ph name="SITE" /> ላይ መለያዎን አይሰርዘውም</translation>
+<translation id="2281243904606300427"><ph name="TAB_TITLE" />፣ የተመረጠው ማንነት የማያሳውቅ ትር</translation>
 <translation id="2286841657746966508">የመላኪያ አድራሻ</translation>
 <translation id="228704530595896923">የማጋሪያ አማራጮች ዝርዝር።</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ትር አሳይ}one{<ph name="TABS_COUNT_MANY" /> ትር አሳይ}other{<ph name="TABS_COUNT_MANY" /> ትሮችን አሳይ}}</translation>
@@ -329,6 +330,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> ንጥሎች ተሰርዟል</translation>
 <translation id="253498598929009420">ጣቢያው የማያ ገጽዎን ይዘቶች ማየት ይችላል</translation>
 <translation id="2536728043171574184">የዚህን ገፅ የመስመር ውጭ ቅጂ በመመልከት ላይ</translation>
+<translation id="2542548955756682219"><ph name="TAB_TITLE" />፣ ትር</translation>
 <translation id="2546283357679194313">ኩኪዎች እና የጣቢያ ውሂብ</translation>
 <translation id="2547843573592965873">የእርስዎ መገለጫ መቆለፊያ የይለፍ ቃሎችን፣ ክፍያዎችን እና ሌሎች በGoogle መለያዎ ውስጥ የተቀመጡትን ጨምሮ መረጃዎን በመኪናው ውስጥ ደህንነቱን ይጠብቃል።</translation>
 <translation id="254973855621628293">በዚህ መሣሪያ ላይ የተቀመጡ የይለፍ ቃላት</translation>
@@ -472,6 +474,7 @@
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 የይለፍ ቃል እና ሌሎች ንጥሎች ብቻ በዚህ መሣሪያ ላይ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ <ph name="ACCOUNT_EMAIL" /> ውስጥ ያስቀምጡት።}one{# የይለፍ ቃላት እና ሌሎች ንጥሎች ብቻ በዚህ መሣሪያ ላይ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ <ph name="ACCOUNT_EMAIL" /> ውስጥ ያስቀምጡት።}other{# የይለፍ ቃላት እና ሌሎች ንጥሎች ብቻ በዚህ መሣሪያ ላይ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እነሱን ለመጠቀም በGoogle መለያዎ <ph name="ACCOUNT_EMAIL" /> ውስጥ ያስቀምጧቸው።}}</translation>
 <translation id="3187472288455401631">የማስታወቂያ ልኬት</translation>
+<translation id="3189635831478931757"><ph name="GROUP_TITLE" /> የትር ቡድን</translation>
 <translation id="3207960819495026254">ዕልባት ተደርጎበታል</translation>
 <translation id="3208584281581115441">አሁን ፈትሽ</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> ተሰርዟል</translation>
@@ -748,6 +751,7 @@
 <translation id="4523326818319942067">ካለፈው ሰዓት</translation>
 <translation id="452750746583162491">የሰመረ ውሂብዎን ይገምግሙ</translation>
 <translation id="4532845899244822526">አቃፊ ይምረጡ</translation>
+<translation id="4535755320005483982">የተጋራ <ph name="GROUP_TITLE" /> የትር ቡድን</translation>
 <translation id="4543131175509360848">ምንም የይለፍ ቁልፎች ሉህ የለም</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ትር}one{<ph name="TAB_COUNT_MANY" /> ትሮች፣ <ph name="TAB_COUNT_INCOGNITO" /> ማንነት የማያሳውቅ}other{<ph name="TAB_COUNT_MANY" /> ትሮች፣ <ph name="TAB_COUNT_INCOGNITO" /> ማንነት የማያሳውቅ}}</translation>
 <translation id="4558311620361989323">የድረ-ገፅ አቋራጮች</translation>
@@ -1249,6 +1253,7 @@
 <translation id="6756507620369789050">ግብረመልስ ያጋሩ</translation>
 <translation id="6762511428368667596"><ph name="NAME" />፣ <ph name="EMAIL" />።</translation>
 <translation id="676305334223455055">በእርስዎ ፍላጐቶች ላይ የተመሰረተ ይዘት ለማግኘት ይመዝገቡ</translation>
+<translation id="6764137532716892442">የተጋራ <ph name="GROUP_TITLE" /> የትር ቡድን ከአዲስ እንቅስቃሴ ጋር</translation>
 <translation id="6767294960381293877">በግማሽ ቁመቱ ላይ የተከፈተ ትር የሚጋሩ የመሣሪያዎች ዝርዝር።</translation>
 <translation id="6785476624617658922">የChrome እና የChromeOS ተጨማሪ አገልግሎት ውል</translation>
 <translation id="6795633245022906657">አዲስ ትር በፍጥነት ይክፈቱ። ይህን አቋራጭ ለማርትዕ ወደ ቅንብሮች ይሂዱ።</translation>
@@ -1315,6 +1320,7 @@
 <translation id="6965382102122355670">እሺ</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{የተጋሩ የትር ቡድኖች ውስጥ አዲስ እንቅስቃሴ ያለው <ph name="TABS_COUNT_ONE" /> ትር አሳይ}one{የተጋሩ የትር ቡድኖች ውስጥ አዲስ እንቅስቃሴ ያለው <ph name="TABS_COUNT_MANY" /> ትር አሳይ}other{የተጋሩ የትር ቡድኖች ውስጥ አዲስ እንቅስቃሴ ያላቸው <ph name="TABS_COUNT_MANY" /> ትሮች አሳይ}}</translation>
 <translation id="6971862865055170158">አታጽድቅ</translation>
+<translation id="6976223255612495095"><ph name="TAB_TITLE" />፣ አዲስ ወይም የተዘመነ ትር</translation>
 <translation id="6978717888677691380">እርስዎ ያገዷቸው ጣቢያዎች</translation>
 <translation id="6979737339423435258">የምንጊዜም</translation>
 <translation id="6983306615164277634">እንዲሁም ቦታውን ለመቀየር የአድራሻ አሞሌውን መንካት እና መያዝ ይችላሉ።</translation>
@@ -1708,6 +1714,7 @@
 <translation id="8676276370198826499">በ<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> አማካኝነት ወደ <ph name="SITE_ETLD_PLUS_ONE" /> ይመዝገቡ</translation>
 <translation id="8676789164135894283">የመግቢያ ማረጋገጫዎች</translation>
 <translation id="8683039184091909753">ምስል</translation>
+<translation id="8688183792442786085"><ph name="TAB_TITLE" />፣ የተመረጠው ትር</translation>
 <translation id="869891660844655955">የሚያበቀበት ጊዜ</translation>
 <translation id="8699120352855309748">እነዚህን ቋንቋዎች ለመተርጎም አያቅርቡ</translation>
 <translation id="8712637175834984815">ገባኝ</translation>
@@ -1841,4 +1848,5 @@
 <translation id="988091779042748639">ማንነት የማያሳውቅ የአሰሳ ታሪክን ከመሣሪያዎ ላይ ለመሰረዝ ሁሉንም ማንነት የማያሳውቁ ትሮች ይዝጉ።</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> ትሮች</translation>
 <translation id="996149300115483134">የምግብ ካርድ ምናሌ ተዘግቷል</translation>
+<translation id="99907655649633293"><ph name="TAB_TITLE" />፣ ማንነት የማያሳውቅ ትር</translation>
 </translationbundle>

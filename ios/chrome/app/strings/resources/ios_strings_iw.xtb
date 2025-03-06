@@ -125,6 +125,7 @@
 <translation id="1485907716209290998">מעקב אחר חבילה</translation>
 <translation id="1486096554574027028">חיפוש בסיסמאות</translation>
 <translation id="1491277525950327607">יש ללחוץ פעמיים כדי להחליף את מצב ההגדרה</translation>
+<translation id="1491965206608166851">רוצה להיכנס באמצעות הסיסמאות ומפתחות הגישה השמורים שלך מכל אפליקציה?</translation>
 <translation id="1492417797159476138">שם המשתמש הזה כבר נשמר לאתר זה</translation>
 <translation id="1497590942294823549">תפריט ← מנהל הסיסמאות</translation>
 <translation id="1498283581832036924">החשבון שלך ב-<ph name="WEBSITE" /> לא יימחק.</translation>
@@ -143,6 +144,7 @@
 <translation id="1540800554400757039">כתובת, שורה 1</translation>
 <translation id="154312949627292154">פתיחת כרטיסיות שהתקבלו מהמכשירים האחרים שלך ממסך הנעילה.</translation>
 <translation id="1545749641540134597">‏סריקת קוד QR</translation>
+<translation id="1547610699249301703">שיתוף סיסמאות</translation>
 <translation id="1554477036522844996">חלון חדש</translation>
 <translation id="1558391695376153246">סגירת כרטיסיות מצב אנונימי</translation>
 <translation id="1571780780926010134">כרטיסיות פרטיות</translation>
@@ -199,6 +201,7 @@
 <translation id="1810976980198522421">ביטול</translation>
 <translation id="1815941218935345331">קוד גישה</translation>
 <translation id="1818687879307252150">{count,plural, =0{אין סיסמאות שנחשפו}=1{סיסמה אחת ({count}) שנחשפה}one{‫{count} סיסמאות שנחשפו}two{‫{count} סיסמאות שנחשפו}other{‫{count} סיסמאות שנחשפו}}</translation>
+<translation id="1819374301217551116">מעקב אחר מחירים ותובנות</translation>
 <translation id="1820195936249950412">עליך להיכנס באמצעות חשבון תקין</translation>
 <translation id="1820259098641718022">נוסף לרשימת הקריאה</translation>
 <translation id="1822994441903263130">FedEx</translation>
@@ -288,6 +291,7 @@
 <translation id="2161446265348023004">מעבר לחלון פתוח</translation>
 <translation id="2164946989711475905">כניסה…</translation>
 <translation id="2175927920773552910">‏קוד QR</translation>
+<translation id="218350106843433823">מילוי אוטומטי של סיסמאות ומפתחות גישה</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="219283042927675668">כרטיסיות בקבוצה</translation>
 <translation id="2194856509914051091">מה כדאי לקחת בחשבון</translation>
@@ -377,6 +381,7 @@
 <translation id="2511117522375201202">יש לך <ph name="NUMBER_OF_PASSWORDS" /> סיסמאות שנחשפו ועלולות לסכן את האבטחה שלך.</translation>
 <translation id="2513103768503127042">קבוצות הכרטיסיות יופיעו כאן</translation>
 <translation id="251837347827266434">המערכת תוציא אותך מהחשבון, הכרטיסיות ייסגרו ונתוני הגלישה יימחקו</translation>
+<translation id="2520787026086861736">כדי להשבית את האפשרות, עוברים אל <ph name="BEGIN_LINK" />מילוי אוטומטי וסיסמאות<ph name="END_LINK" /></translation>
 <translation id="2529021024822217800">פתיחת הכול</translation>
 <translation id="2536991091671391962">‏יש לך אפשרות להשתמש בסיסמאות השמורות בכל מכשיר. הן נשמרות ב'מנהל הסיסמאות של Google' לחשבון <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">נסתר, סיסמה</translation>
@@ -389,6 +394,7 @@
 <translation id="2577522251608256362">שכונה</translation>
 <translation id="2579713773888829241">תיקיות באחסון השיתופי</translation>
 <translation id="2597486707832946298">מפיקים את המרב מדפדפן המחשב המוכר והאהוב גם באייפון.</translation>
+<translation id="2601778637777010194">מעקב אחר ירידות במחירים של מוצרים</translation>
 <translation id="260378315836159338">בחלק העליון של המסך, לוחצים על +</translation>
 <translation id="2612676031748830579">מספר הכרטיס</translation>
 <translation id="261305050785128654">יש אפשרות להגדיר את השפות שדוברים כך שהן יהיו ידועות לאתרים. יוצג בהם תוכן בשפות האלה, כשהדבר יתאפשר.</translation>
@@ -541,6 +547,7 @@
 <translation id="3280562213547448728">חיפוש קולי</translation>
 <translation id="3305294846493618482">עוד</translation>
 <translation id="3311748811247479259">כבוי</translation>
+<translation id="3312300514034250578">גרסה משופרת של גלישה בטוחה</translation>
 <translation id="3324193307694657476">כתובת, שורה 2</translation>
 <translation id="3328801116991980348">פרטי אתר</translation>
 <translation id="333229797575847124">איך מפעילים את התכונה הזו</translation>
@@ -554,6 +561,7 @@
 <translation id="3371831930909698441">‏Translate זמין. האפשרויות מוצגות בחלק התחתון של המסך.</translation>
 <translation id="3377063233124932127">עכשיו הסימניות, הסיסמאות ונתונים נוספים ששמרת מופיעים למעלה.</translation>
 <translation id="3380352560400387991">האתר הזה מנסה לפתוח אפליקציה. הפעולה הזו תוציא אותך ממצב פרטי.</translation>
+<translation id="3392923070107623576">אפשר ליצור קבוצות של כרטיסיות כדי לשמור על הסדר</translation>
 <translation id="3404232721752787413">‏שמירה ב-Google Photos</translation>
 <translation id="3404744938087714423">היציאה תשבית את הסנכרון.</translation>
 <translation id="3406506285180498376">שיתוף הדף…</translation>
@@ -561,6 +569,7 @@
 <translation id="3409785640040772790">מפות</translation>
 <translation id="3416023309465857378">25 באוקטובר 2023</translation>
 <translation id="3435738964857648380">אבטחה</translation>
+<translation id="3441673211568148613">שמירה על פרטיות הגלישה</translation>
 <translation id="3443810440409579745">כרטיסייה התקבלה.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> דק'</translation>
 <translation id="344589138074534176">‏מידע נוסף על Google Lens</translation>
@@ -671,6 +680,7 @@
 <translation id="3940195383040445971">מעקב אחר המחירים בכרטיסיות</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{סגירת כרטיסייה אחת ({COUNT})}one{סגירת {COUNT} כרטיסיות}two{סגירת {COUNT} כרטיסיות}other{סגירת {COUNT} כרטיסיות}}</translation>
 <translation id="3948600256434252210">כדי לגלוש במצב פרטי, אפשר להחליק ימינה.</translation>
+<translation id="3950479158728806902">יצירה אוטומטית של מפתח גישה כדי להיכנס לחשבון מהר יותר</translation>
 <translation id="3950820424414687140">כניסה</translation>
 <translation id="3955740319737378355">סיום</translation>
 <translation id="3955822496205734389">יש לך סיסמאות חלשות.</translation>
@@ -695,6 +705,7 @@
 <translation id="4018440314314549819">מילוי אוטומטי של סיסמאות שמורות</translation>
 <translation id="4021447724486050609">עדכון הדפדפן</translation>
 <translation id="4021931095789478915">‏הוספת הכתובת ${url} לרשימת הקריאה</translation>
+<translation id="4026496154402824012">כדי להשבית את האפשרות, עוברים אל <ph name="BEGIN_LINK" />אפשרויות של סיסמאות<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">שמירה בחשבון…</translation>
 <translation id="4038354071007134711">אין במכשיר זה אף אפליקציה שניתן לפתוח באמצעותה את הקובץ.</translation>
 <translation id="4042870976416480368">חיפוש בדף</translation>
@@ -722,6 +733,7 @@
 <translation id="4152011295694446843">הסימניות זמינות כאן</translation>
 <translation id="4154753961803534698">חיפוש באמצעות המצלמה</translation>
 <translation id="4158491215857439601">מנהל הסיסמאות</translation>
+<translation id="4161488339191275792">אפשר ליצור קבוצות של כרטיסיות כדי לארגן את הכרטיסיות הפתוחות</translation>
 <translation id="4163699139741158298">{count,plural, =1{הסימנייה נשמרה בתיקייה ‘{title}'. היא שמורה רק במכשיר הזה.}one{‫{count} סימניות נשמרו בתיקייה ‘{title}'. הן שמורות רק במכשיר הזה.}two{‫{count} סימניות נשמרו בתיקייה ‘{title}'. הן שמורות רק במכשיר הזה.}other{‫{count} סימניות נשמרו בתיקייה ‘{title}'. הן שמורות רק במכשיר הזה.}}</translation>
 <translation id="4164514562270305824">מחיקה אוטומטית של הורדות</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> המסתיים בספרות <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -785,6 +797,7 @@
 <translation id="441218095371040430">שימוש במקלדת</translation>
 <translation id="4415276339145661267">‏ניהול חשבון Google שלך</translation>
 <translation id="4430277756566635951">החשבון הנוכחי: <ph name="EMAIL" />. עליך לבחור חשבון.</translation>
+<translation id="4430505936695785931">גישה לסיסמאות שמורות באפליקציות אחרות</translation>
 <translation id="4431224949908513835">צריך לבחור אמצעי תשלום למילוי.</translation>
 <translation id="4442550905108052454">פותחים את ה<ph name="BEGIN_BOLD" />הגדרות<ph name="END_BOLD" />.</translation>
 <translation id="4445840280797509738">אפשרויות נוספות של <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
@@ -828,6 +841,7 @@
 <translation id="4619564267100705184">אימות הזהות שלך</translation>
 <translation id="4619615317237390068">כרטיסיות ממכשירים אחרים</translation>
 <translation id="4624080227980645783">חלון פרטי חדש</translation>
+<translation id="4627107755957573804">מתן הרשאה לאתרים ולאפליקציות לשדרג חשבונות קיימים לשימוש במפתחות גישה</translation>
 <translation id="4630212057753624203">בועה לדוגמה</translation>
 <translation id="4631335160486397366">יש <ph name="COUNT" /> סיסמאות בשימוש חוזר</translation>
 <translation id="4631890462758052414">כרטיסייה פרטית חדשה</translation>
@@ -855,6 +869,7 @@
 <translation id="4719927025381752090">הצגת הצעות לתרגום</translation>
 <translation id="4720530280568305198">הבחירה שלך נפתחה בכרטיסייה חדשה</translation>
 <translation id="473775607612524610">עדכון</translation>
+<translation id="474209246745757965">אפשר לקנות ולתרגם באמצעות המצלמה</translation>
 <translation id="4742407542027196863">ניהול סיסמאות…</translation>
 <translation id="4744428388659507035">כדי שהסימניות יופיעו בכל המכשירים, צריך להפעיל את האפשרות 'סימניות' בהגדרות.</translation>
 <translation id="4746926359847517643">תמיד אפשר לשחזר את הכרטיסיות האלה מההיסטוריה.</translation>
@@ -887,6 +902,7 @@
 <translation id="4850886885716139402">הצגה</translation>
 <translation id="4860895144060829044">תרימו טלפון</translation>
 <translation id="4861953997778766866">כולם יכולים לבצע שינויים בקבוצות הכרטיסיות ששיתפת</translation>
+<translation id="4865063548323785458">אפשר לשמור את הסיסמאות ולמלא אותן באופן אוטומטי כדי להיכנס בקלות לאתרים ולאפליקציות</translation>
 <translation id="4869146460927742717">המיקום של סרגל הכתובות</translation>
 <translation id="4870911314065352661">לסגור את כל הכרטיסיות?</translation>
 <translation id="4872664437015695612">פתיחה ב'הורדות'</translation>
@@ -1124,6 +1140,7 @@
 <translation id="5859715514067755465">קדימה</translation>
 <translation id="5860033963881614850">כבוי</translation>
 <translation id="5860491529813859533">הפעלה</translation>
+<translation id="5868644772996939262">מילוי אוטומטי של סיסמאות ומפתחות גישה</translation>
 <translation id="5869522115854928033">סיסמאות שמורות</translation>
 <translation id="5878899964490256268">החשבון <ph name="EMAIL" /> מנוהל על-ידי הארגון שלך.</translation>
 <translation id="5888889603768021126">נכנסת באמצעות</translation>
@@ -1227,12 +1244,12 @@
 <translation id="6284652193729350524">הצגת הצעה לתרגום <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">בוטל המעקב אחר <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">‏כדי להפעיל גלישה בטוחה, יש להיכנס ל<ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" /> וללחוץ על 'גלישה בטוחה'.</translation>
-<translation id="6295434468271563378">מחיקה אוטומטית של ההורדות</translation>
 <translation id="6295751040240588413">כינוי הכרטיס לא תקין</translation>
 <translation id="629730747756840877">חשבון</translation>
 <translation id="6301104306974789820">קבלת התראות לגבי מעקב אחר מחירים</translation>
 <translation id="6316141353357700666">בוחרים את הסיסמה שבה רוצים להשתמש מתוך הרשימה שמופיעה.</translation>
 <translation id="6321526113093607004">הוספה לסימניות</translation>
+<translation id="6331836477476466332">דפדפן בטוח ומשופר בשבילך</translation>
 <translation id="6337234675334993532">הצפנה</translation>
 <translation id="633809752005859102">משהו לגמרי השתבש. נעבוד על זה.</translation>
 <translation id="6339793034470834130">‏כדי להשתמש ב'סוקר האינטרנט', צריך להתחבר למחשב באמצעות כבל, לפתוח את Safari ולגשת ל-iPhone בתפריט 'פיתוח'. ניתן להפעיל את התפריט 'פיתוח' בקטע 'מתקדם' בהגדרות של Safari במחשב.</translation>
@@ -1348,6 +1365,7 @@
 <translation id="6681791404926413601">{count,plural, =1{אפשרות אחת ({count}) לאמצעי תשלום זמינה מעל המקלדת.}one{‫{count} אפשרויות לאמצעי תשלום זמינות מעל המקלדת.}two{‫{count} אפשרויות לאמצעי תשלום זמינות מעל המקלדת.}other{‫{count} אפשרויות לאמצעי תשלום זמינות מעל המקלדת.}}</translation>
 <translation id="6685259053455152195">קיצורי דרך לשינויים מהירים בהגדרות ולשימוש בתכונות דרך סרגל הכתובות.</translation>
 <translation id="6689685206615181381">רק המצב הפרטי זמין</translation>
+<translation id="6708501134077648845">אפשרויות של סיסמאות</translation>
 <translation id="6709964700841491574">מצב נעילה</translation>
 <translation id="6710079714193676716">מנוהל על-ידי הארגון שלך. ייתכן שחלק מהתכונות לא יהיו זמינות. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">לכניסה אל הפיד</translation>
@@ -1377,6 +1395,7 @@
 <translation id="6867400383614725881">כרטיסיית מצב אנונימי חדשה</translation>
 <translation id="686831807558000905">אני לא רוצה להיכנס</translation>
 <translation id="686899695320434745">‏הכתובות לא מוצפנות באמצעות ביטוי הסיסמה. פעולה זו מאפשרת לך להשתמש בהן בשירותי Google אחרים.</translation>
+<translation id="6871397658902960384">לגלישה</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{שמירת הסיסמה בחשבון}one{שמירת הסיסמאות בחשבון}two{שמירת הסיסמאות בחשבון}other{שמירת הסיסמאות בחשבון}}</translation>
 <translation id="6875166646976836138">אפשר גם לראות ולנהל את הפריטים האלה בסימניות, ברשימת הקריאה או במנהל הסיסמאות.</translation>
 <translation id="6882836635272038266">הגנה רגילה מפני אתרים, הורדות ותוספים שידועים כמסוכנים.</translation>
@@ -1639,6 +1658,7 @@
 <translation id="7996239959906074962">הגדרה של…</translation>
 <translation id="800361585186029508">‏פתיחת כתובות ה-URL שהוזנו ב-Google Chrome.</translation>
 <translation id="8005666035647241369">‏נשמרה במנהל הסיסמאות של Google במכשיר הזה</translation>
+<translation id="8010488806779226127">תכונות שיעזרו לך לעשות יותר בזמן הגלישה</translation>
 <translation id="8011489434346330032">סוקר האינטרנט</translation>
 <translation id="8017015647846870183">‏ממנהל הסיסמאות של Google, כולל סיסמאות ומפתחות גישה</translation>
 <translation id="802154636333426148">ההורדה נכשלה</translation>
@@ -1684,6 +1704,7 @@
 <translation id="8189615296021678665">כדי לקבל גישה נוחה לסיסמה הזו בכניסה הבאה לחשבון, צריך ללחוץ על 'שמירת הסיסמה'.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />המכשירים שלך<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">הוספת סיסמה</translation>
+<translation id="8195936400946057039">הגנה מפני איומים באינטרנט</translation>
 <translation id="8202744799033457229">הצגת ההיסטוריה</translation>
 <translation id="8205564605687841303">ביטול</translation>
 <translation id="8206354486702514201">הגדרה זו נאכפת על ידי מנהל המערכת שלך.</translation>
@@ -1723,6 +1744,7 @@
 <translation id="8364563001733875155">כדי לשנות את קוד האימות, קודם עליך להגדיר קוד גישה במכשיר.</translation>
 <translation id="8366466717204352506">מעולם לא נעשתה בדיקה</translation>
 <translation id="8368001212524806591">מעקב אחר המחיר</translation>
+<translation id="8368198938968349418">הפעלת מילוי אוטומטי…</translation>
 <translation id="8370406443343902172">מעבר להגדרות…</translation>
 <translation id="8372471489238799313">{count,plural, =1{מחיקת הכתובת}one{מחיקת הכתובות}two{מחיקת הכתובות}other{מחיקת הכתובות}}</translation>
 <translation id="8378714024927312812">מנוהל על-ידי הארגון</translation>
@@ -1734,6 +1756,7 @@
 <translation id="8402673309244746971">מעבר אל הפיד 'במעקב'</translation>
 <translation id="8407669440184693619">לא נמצאו סיסמאות בשביל האתר הזה</translation>
 <translation id="8407831512155324054">הסיסמאות נראות חזקות</translation>
+<translation id="8414283596511250978">לא שוכחים את הסיסמאות</translation>
 <translation id="842523302461531262">להגדרה כברירת מחדל בהגדרות…</translation>
 <translation id="8425826545759040372">תצוגה של כרטיסיות פרטיות</translation>
 <translation id="8428045167754449968">עיר / יישוב</translation>
@@ -1785,6 +1808,7 @@
 <translation id="8611922158252451755">צריך לשים לב עם מי משתפים את הכרטיסיות כי כל מי שיש לו את הקישור יכול לערוך את כל הכרטיסיות. תוקף הקישור יפוג בעוד 48 שעות.</translation>
 <translation id="8620640915598389714">עריכה</translation>
 <translation id="8625706492572042370">עריכה של מסך הבית</translation>
+<translation id="8631370184731241854">כרטיסיות פרטיות נעולות</translation>
 <translation id="8633025649649592204">פעילות אחרונה</translation>
 <translation id="8636825310635137004">כדי לקבל את הכרטיסיות מהמכשירים האחרים שלך, יש להפעיל את הסנכרון.</translation>
 <translation id="8637431369725868556">הגנה מפני אתרים מסוכנים.</translation>

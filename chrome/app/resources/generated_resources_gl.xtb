@@ -3810,6 +3810,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3670229581627177274">Activar Bluetooth</translation>
 <translation id="3670480940339182416">Os sitios poden usar o optimizador de V8</translation>
 <translation id="3671764914317109892">Usa frases cotiás para facer buscas no historial de navegación. Tamén podes facer preguntas e obter respostas en función do teu historial de navegación.</translation>
+<translation id="3671982238795754537">Máis información sobre as claves de acceso</translation>
 <translation id="3672681487849735243">Detectouse un erro de fábrica</translation>
 <translation id="3673097791729989571">Inicio de sesión aloxado por <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">Actualizouse o teu PIN</translation>
@@ -4070,6 +4071,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Aprobouse 1 extensión}other{Aprobáronse # extensións}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">É recomendable dispoñer polo menos de <ph name="INSTALL_SIZE" /> de espazo para Linux.</translation>
+<translation id="3824203811509979971">Resume contido ou fai preguntas</translation>
 <translation id="3824621460022590830">O token de inscrición do dispositivo non é válido. Ponte en contacto co propietario ou co administrador do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Inicia sesión para ver as pestanas doutros dispositivos</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Lembrar selección para este tipo de ficheiro: <ph name="FILE_TYPES" />}other{Lembrar selección para estes tipos de ficheiros: <ph name="FILE_TYPES" />}}</translation>
@@ -4256,6 +4258,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="3948985214866944547">A maioría das persoas non permite compartir a localización precisa para este sitio</translation>
 <translation id="394984172568887996">Importados desde Internet Explorer</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> para descargar ficheiros de forma máis segura</translation>
+<translation id="3950479158728806902">Crear automaticamente clave de acceso para iniciar sesión máis rápido</translation>
 <translation id="3950820424414687140">Iniciar sesión</translation>
 <translation id="3950841222883198950">Escritura por voz</translation>
 <translation id="3953834000574892725">As miñas contas</translation>
@@ -4724,6 +4727,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4289540628985791613">Visión xeral</translation>
 <translation id="428963538941819373">Estes sitios poden usar a información que garden sobre ti mentres navegas por <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Escolle un PIN</translation>
+<translation id="4290526909608432059">A compatibilidade coas aplicacións de Chrome finalizará pronto. Para obter máis información sobre as opcións dispoñibles, ponte en contacto con quen programou a aplicación ou co teu equipo do servizo de asistencia de TI.</translation>
 <translation id="4290791284969893584">Ao pechar unha páxina, as tarefas iniciadas poderían non finalizar</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> membro</translation>
 <translation id="4290898381118933198">Pasar o dedo para navegar entre páxinas</translation>
@@ -5184,6 +5188,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4624054169152573743">Tema de cor</translation>
 <translation id="4625078469366263107">Activar aplicación</translation>
 <translation id="4625905218692741757">Cor predeterminada gris</translation>
+<translation id="4627107755957573804">Permite que os sitios e as aplicacións actualicen as contas para poder usar claves de acceso</translation>
 <translation id="4627442949885028695">Continuar desde outro dispositivo</translation>
 <translation id="4628762811416793313">A configuración do contedor de Linux non se completou. Téntao de novo.</translation>
 <translation id="4629521233550547305">Abrir perfil de <ph name="PROFILE_NAME" /></translation>
@@ -5767,6 +5772,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5053233576223592551">Engadir nome de usuario</translation>
 <translation id="505347685865235222">Grupo sen nome: <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{Recomendámosche que o cambies agora}other{Recomendámosche que os cambies agora}}</translation>
+<translation id="5056587122125565772">Crear imaxe</translation>
 <translation id="5056950756634735043">Conectando co contedor</translation>
 <translation id="5057110919553308744">Cando fagas clic na extensión</translation>
 <translation id="5057127674016624293">A exploración está levando máis tempo do normal</translation>
@@ -5877,6 +5883,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="512642543295077915">busca + retroceso</translation>
 <translation id="5126611267288187364">Ver cambios</translation>
 <translation id="5127620150973591153">Código de conexión segura: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">Resume contido ou fai preguntas.</translation>
 <translation id="5127881134400491887">Xestionar conexións de rede</translation>
 <translation id="5127934926273826089">Flores</translation>
 <translation id="5127986747308934633">O teu administrador está controlando o dispositivo</translation>
@@ -8512,6 +8519,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Porto en serie conectado</translation>
 <translation id="7033616203784997570">O número máximo de caracteres é 62</translation>
 <translation id="7034692021407794547">Antes de nada, cómpre que un administrador con privilexios para xestionar a facturación acepte as condicións de servizo do hardware de Google Meet na sección da consola de administración Hardware de Google Meet.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> acaba de crear unha clave de acceso para a túa conta. As claves de acceso ofrecen un inicio de sesión máis rápido e seguro e gárdanse no xestor de contrasinais de Google de <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">É recomendable dispoñer de <ph name="DISK_SIZE" /> de espazo para Linux. Se queres aumentar o espazo libre, elimina ficheiros do dispositivo.</translation>
 <translation id="7037157058268992880">Esquecín o PIN</translation>
 <translation id="7037509989619051237">Texto de vista previa</translation>
@@ -10142,6 +10150,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8195854162863398249">Inhabilitar <ph name="FEATURE_NAME" /></translation>
 <translation id="8195920051450756553">Atraso antes de activar a mesma tecla de novo</translation>
 <translation id="8197673340773315084">Engade un nome ou etiqueta, como "Traballo" ou "Persoal"</translation>
+<translation id="8198181050118789419">Tema: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Recibindo emisión de pestana</translation>
 <translation id="8199300056570174101">Propiedades do dispositivo e da rede (mantemento)</translation>
 <translation id="8200772114523450471">Retomar</translation>
@@ -10552,6 +10561,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8477178913400731244">Eliminar datos</translation>
 <translation id="8477241577829954800">Substituído</translation>
 <translation id="8477384620836102176">&amp;Xeral</translation>
+<translation id="8477446666255316832">Inicia sesión máis rápido a próxima vez</translation>
 <translation id="8479176401914456949">O código non é válido. Téntao de novo.</translation>
 <translation id="8480869669560681089">Dispositivo descoñecido de <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Confirma o permiso do USB</translation>
@@ -11398,6 +11408,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Rato USB conectado</translation>
 <translation id="9075413375877487220">A función Navegación segura mellorada non confía nesta extensión.</translation>
+<translation id="9075985558450420812">Escribe unha solicitude personalizada ou destaca texto para crear unha imaxe.</translation>
 <translation id="9076523132036239772">Non se puido verificar o teu correo electrónico ou contrasinal. Primeiro tenta conectarte a unha rede.</translation>
 <translation id="9076821103818989526">Panel lateral</translation>
 <translation id="9076977315710973122">Ficheiros compartidos por SMB</translation>

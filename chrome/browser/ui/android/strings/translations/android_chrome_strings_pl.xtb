@@ -270,6 +270,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="2259659629660284697">Eksportuj hasła…</translation>
 <translation id="2276696007612801991">Aby sprawdzić swoje hasła, zaloguj się na konto Google</translation>
 <translation id="2278052315791335171">Usunięcie tego hasła nie spowoduje usunięcia Twojego konta na stronie <ph name="SITE" /></translation>
+<translation id="2281243904606300427"><ph name="TAB_TITLE" />, wybrana karta incognito</translation>
 <translation id="2286841657746966508">Adres rozliczeniowy</translation>
 <translation id="228704530595896923">Lista opcji udostępniania.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Zobacz <ph name="TABS_COUNT_ONE" /> kartę}few{Zobacz <ph name="TABS_COUNT_MANY" /> karty}many{Zobacz <ph name="TABS_COUNT_MANY" /> kart}other{Zobacz <ph name="TABS_COUNT_MANY" /> karty}}</translation>
@@ -329,6 +330,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="2534155362429831547">Usunięte elementy: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="253498598929009420">Strona będzie widzieć zawartość ekranu</translation>
 <translation id="2536728043171574184">Oglądasz kopię offline tej strony</translation>
+<translation id="2542548955756682219"><ph name="TAB_TITLE" />, karta</translation>
 <translation id="2546283357679194313">Pliki cookie i dane witryn</translation>
 <translation id="2547843573592965873">Dzięki blokadzie profilu Twoje dane w samochodzie, w tym m.in. hasła i płatności, są bezpieczne.</translation>
 <translation id="254973855621628293">Hasła zostały zapisane na tym urządzeniu</translation>
@@ -472,6 +474,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 hasło i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google <ph name="ACCOUNT_EMAIL" />.}few{# hasła i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google <ph name="ACCOUNT_EMAIL" />.}many{# haseł i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google <ph name="ACCOUNT_EMAIL" />.}other{# hasła i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="3187472288455401631">Pomiar skuteczności reklam</translation>
+<translation id="3189635831478931757">Grupa kart (<ph name="GROUP_TITLE" />)</translation>
 <translation id="3207960819495026254">Dodano do zakładek</translation>
 <translation id="3208584281581115441">Sprawdź teraz</translation>
 <translation id="3211426585530211793">Usunięto: <ph name="ITEM_TITLE" /></translation>
@@ -748,6 +751,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4523326818319942067">ostatniej godziny</translation>
 <translation id="452750746583162491">Przejrzyj synchronizowane dane</translation>
 <translation id="4532845899244822526">Wybierz folder</translation>
+<translation id="4535755320005483982">Udostępniona grupa kart (<ph name="GROUP_TITLE" />)</translation>
 <translation id="4543131175509360848">Arkusz braku kluczy dostępu</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta}few{<ph name="TAB_COUNT_MANY" /> karty, <ph name="TAB_COUNT_INCOGNITO" /> incognito}many{<ph name="TAB_COUNT_MANY" /> kart, <ph name="TAB_COUNT_INCOGNITO" /> incognito}other{<ph name="TAB_COUNT_MANY" /> karty, <ph name="TAB_COUNT_INCOGNITO" /> incognito}}</translation>
 <translation id="4558311620361989323">Skróty stron internetowych</translation>
@@ -1249,6 +1253,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6756507620369789050">Prześlij opinię</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="676305334223455055">Zaloguj się, aby otrzymywać treści dostosowane do swoich zainteresowań</translation>
+<translation id="6764137532716892442">Udostępniona grupa kart (<ph name="GROUP_TITLE" />) z nową aktywnością</translation>
 <translation id="6767294960381293877">Lista urządzeń, którym udostępnisz kartę, jest otwarta na połowę wysokości.</translation>
 <translation id="6785476624617658922">Dodatkowe warunki korzystania z Chrome i Chrome OS</translation>
 <translation id="6795633245022906657">Szybko otwórz nową kartę. Aby edytować ten skrót, otwórz Ustawienia.</translation>
@@ -1315,6 +1320,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Wyświetl <ph name="TABS_COUNT_ONE" /> kartę z nową aktywnością w udostępnionych grupach kart}few{Wyświetl <ph name="TABS_COUNT_MANY" /> karty z nową aktywnością w udostępnionych grupach kart}many{Wyświetl <ph name="TABS_COUNT_MANY" /> kart z nową aktywnością w udostępnionych grupach kart}other{Wyświetl <ph name="TABS_COUNT_MANY" /> karty z nową aktywnością w udostępnionych grupach kart}}</translation>
 <translation id="6971862865055170158">Nie zatwierdzaj</translation>
+<translation id="6976223255612495095"><ph name="TAB_TITLE" />, nowa lub zaktualizowana karta</translation>
 <translation id="6978717888677691380">Zablokowane witryny</translation>
 <translation id="6979737339423435258">Od początku</translation>
 <translation id="6983306615164277634">Możesz też kliknąć i przytrzymać pasek adresu, aby zmienić jego pozycję.</translation>
@@ -1708,6 +1714,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8676276370198826499">Zarejestruj się w witrynie <ph name="SITE_ETLD_PLUS_ONE" />, używając: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Weryfikacje logowania</translation>
 <translation id="8683039184091909753">obraz</translation>
+<translation id="8688183792442786085"><ph name="TAB_TITLE" />, wybrana karta</translation>
 <translation id="869891660844655955">Data wygaśnięcia</translation>
 <translation id="8699120352855309748">Nie proponuj tłumaczenia tych języków</translation>
 <translation id="8712637175834984815">OK</translation>
@@ -1841,4 +1848,5 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="988091779042748639">Aby usunąć z urządzenia historię przeglądania w trybie incognito, zamknij wszystkie karty incognito.</translation>
 <translation id="992745192656291733">Liczba kart: <ph name="TAB_COUNT" /></translation>
 <translation id="996149300115483134">Menu karty kanału jest zamknięte</translation>
+<translation id="99907655649633293"><ph name="TAB_TITLE" />, karta incognito</translation>
 </translationbundle>

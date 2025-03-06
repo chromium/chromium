@@ -13,6 +13,7 @@
 <translation id="1036348656032585052">خاموش کردن</translation>
 <translation id="1045899828449635435">داده‌های این سایت‌ها نیز پاک شود؟</translation>
 <translation id="1049743911850919806">ناشناس</translation>
+<translation id="1052842760770519282">برخی‌از گذرواژه‌هایتان دردسترس نیست</translation>
 <translation id="1058669287135776095">آفلاین هستید. اتصال اینترنت را بررسی و دوباره امتحان کنید.</translation>
 <translation id="10614374240317010">هرگز ذخیره نمی‌شود</translation>
 <translation id="107147699690128016">اگر پسوند فایل را تغییر دهید، ممکن است فایل در برنامه دیگری باز شود و به‌طور بالقوه برای دستگاه مضر باشد.</translation>
@@ -71,6 +72,7 @@
 <translation id="1269129608791067105">سابقه را اینجا خواهید دید</translation>
 <translation id="1273937721055267968">مسدود کردن <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">برای بزرگ کردن تک‌ضرب بزنید</translation>
+<translation id="1289129165308566697">سابقه‌تان را در دستگاه‌های دیگر ببینید</translation>
 <translation id="129553762522093515">اخیراً بسته‌شده</translation>
 <translation id="1298077576058087471">تا ۶۰٪ در مصرف داده صرفه‌جویی کنید، اخبار امروز را بخوانید</translation>
 <translation id="1303339473099049190">گذرواژه پیدا نشد. املای آن را بررسی و دوباره امتحان کنید.</translation>
@@ -270,6 +272,7 @@
 <translation id="2259659629660284697">درحال صادر کردن گذرواژه‌ها…</translation>
 <translation id="2276696007612801991">‏برای بررسی گذرواژه‌هایتان، به سیستم حساب Google وارد شوید</translation>
 <translation id="2278052315791335171">حذف این گذرواژه باعث حذف شدن حساب شما در <ph name="SITE" /> نخواهد شد</translation>
+<translation id="2281243904606300427">‫<ph name="TAB_TITLE" />، برگه ناشناس انتخاب‌شده</translation>
 <translation id="2286841657746966508">آدرس صورت‌حساب</translation>
 <translation id="228704530595896923">فهرست گزینه‌های هم‌رسانی.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{دیدن <ph name="TABS_COUNT_ONE" /> برگه}one{دیدن <ph name="TABS_COUNT_MANY" /> برگه}other{دیدن <ph name="TABS_COUNT_MANY" /> برگه}}</translation>
@@ -329,6 +332,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> مورد حذف شد</translation>
 <translation id="253498598929009420">این سایت می‌تواند محتوای صفحه‌تان را ببیند</translation>
 <translation id="2536728043171574184">مشاهده یک کپی آفلاین از این صفحه</translation>
+<translation id="2542548955756682219">‫<ph name="TAB_TITLE" />، برگه</translation>
 <translation id="2546283357679194313">کوکی‌ها و داده‌های سایت</translation>
 <translation id="2547843573592965873">‏قفل نمایه اطلاعات شما را در خودرو ایمن نگه می‌دارد، ازجمله گذرواژه‌ها، پرداخت‌ها، و اطلاعات دیگری که در «حساب Google» شما ذخیره می‌شود.</translation>
 <translation id="254973855621628293">گذرواژه‌های ذخیره‌شده در این دستگاه</translation>
@@ -363,6 +367,7 @@
 <translation id="2666092431469916601">بالا</translation>
 <translation id="2669454659051515572">همه افرادی که از این دستگاه استفاده می‌کنند می‌توانند فایل‌های بارگیری‌شده را ببینند</translation>
 <translation id="2677748264148917807">خروج</translation>
+<translation id="2687009626279857299">در این دستگاه ازکار افتاده است</translation>
 <translation id="2702516483241149200">جدید: هم‌رسانی پیوندی که به این نوشتار پیمایش می‌کند</translation>
 <translation id="2705073298859543115">ایجاد خلاصه</translation>
 <translation id="2708051474374549906">‏محافظت بی‌وقفه و پیش‌نگر دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک که براساس داده‌های مرور ارسالی به Google است</translation>
@@ -472,6 +477,7 @@
 <translation id="3169472444629675720">کشف کردن</translation>
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{‏‫۱ گذرواژه و موارد دیگر فقط در این دستگاه ذخیره شده‌اند. برای استفاده از آن‌ها در دستگاه‌های دیگرتان، آن‌ها را در «حساب Google» خود (<ph name="ACCOUNT_EMAIL" />) ذخیره کنید.}one{‏‫# گذرواژه و موارد دیگر فقط در این دستگاه ذخیره شده‌اند. برای استفاده از آن‌ها در دستگاه‌های دیگرتان، آن‌ها را در «حساب Google» خود (<ph name="ACCOUNT_EMAIL" />) ذخیره کنید.}other{‏‫# گذرواژه و موارد دیگر فقط در این دستگاه ذخیره شده‌اند. برای استفاده از آن‌ها در دستگاه‌های دیگرتان، آن‌ها را در «حساب Google» خود (<ph name="ACCOUNT_EMAIL" />) ذخیره کنید.}}</translation>
 <translation id="3187472288455401631">سنجش آگهی</translation>
+<translation id="3189635831478931757">‫<ph name="GROUP_TITLE" /> گروه برگه</translation>
 <translation id="3207960819495026254">نشانک‌گذاری شده</translation>
 <translation id="3208584281581115441">اکنون بررسی شود</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> حذف شد</translation>
@@ -551,7 +557,7 @@
 <translation id="3563767357928833671">محتوای بریده‌دان نشان داده شد</translation>
 <translation id="3566639033325271639">به‌روزرسانی تنظیمات</translation>
 <translation id="3568945271227339929">گذرواژه لورفته‌ای وجود ندارد</translation>
-<translation id="357465026686164600">تلفن به‌عنوان کلید ایمنی</translation>
+<translation id="357465026686164600">تلفن به‌عنوان کلید امنیتی</translation>
 <translation id="3575464060651642446">درحال بررسی گذرواژه‌های این دستگاه…</translation>
 <translation id="3577473026931028326">مشکلی پیش آمد. دوباره امتحان کنید.</translation>
 <translation id="3577558748185201054">مدیریت علایق و اولویت‌ها</translation>
@@ -731,7 +737,7 @@
 <translation id="4452411734226507615">بستن برگه <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">در <ph name="FOLDER_NAME" /> نشانک گذاشته شد</translation>
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{‫۱ نشانک}one{‫# نشانک}other{‫# نشانک}}</translation>
-<translation id="4461614516424362539">وقتی دستگاه دیگری را با رمزینه پاسخ‌سریع پیوند دهید، آن دستگاه می‌تواند از این تلفن به‌عنوان کلید ایمنی استفاده کند. اگر دستگاه را بردارید، باید رمزینه پاسخ‌سریع را اسکن کنید تا دوباره پیوند داده شود.</translation>
+<translation id="4461614516424362539">وقتی دستگاه دیگری را با رمزینه پاسخ‌سریع پیوند دهید، آن دستگاه می‌تواند از این تلفن به‌عنوان کلید امنیتی استفاده کند. اگر دستگاه را بردارید، باید رمزینه پاسخ‌سریع را اسکن کنید تا دوباره پیوند داده شود.</translation>
 <translation id="4478161224666880173">می‌توانید از حساب <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> در این سایت استفاده کنید. برای ادامه دادن، به <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> وارد شوید.</translation>
 <translation id="4479972344484327217">‏درحال نصب <ph name="MODULE" /> برای Chrome…</translation>
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{نشانک در «<ph name="FOLDER_NAME" />» ذخیره شد. این نشانک فقط در این دستگاه ذخیره شده است.}one{نشانک در «<ph name="FOLDER_NAME" />» ذخیره شد. این نشانک فقط در این دستگاه ذخیره شده است.}other{نشانک در «<ph name="FOLDER_NAME" />» ذخیره شد. این نشانک فقط در این دستگاه ذخیره شده است.}}</translation>
@@ -748,6 +754,7 @@
 <translation id="4523326818319942067">یک ساعتِ گذشته</translation>
 <translation id="452750746583162491">مرور داده‌های همگام‌سازی‌شده</translation>
 <translation id="4532845899244822526">انتخاب پوشه</translation>
+<translation id="4535755320005483982">گروه برگه <ph name="GROUP_TITLE" /> هم‌رسانی‌شده</translation>
 <translation id="4543131175509360848">برگ گذرکلیدی وجود ندارد</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> برگه}one{<ph name="TAB_COUNT_MANY" /> برگه، <ph name="TAB_COUNT_INCOGNITO" /> برگه ناشناس}other{<ph name="TAB_COUNT_MANY" /> برگه، <ph name="TAB_COUNT_INCOGNITO" /> برگه ناشناس}}</translation>
 <translation id="4558311620361989323">میان‌برهای صفحه وب</translation>
@@ -849,7 +856,7 @@
 <translation id="4932247056774066048">‏از آنجایی‌که درحال خروج از سیستم حساب مدیریت‌شده توسط <ph name="DOMAIN_NAME" /> هستید، داده‌های Chrome شما از این دستگاه حذف می‌شود. این مورد در حساب Google شما باقی می‌ماند.</translation>
 <translation id="4943703118917034429">واقعیت مجازی</translation>
 <translation id="4943872375798546930">نتیجه‌ای پیدا نشد</translation>
-<translation id="4950924971025849764">‏اگر به سیستم «حساب Google» یکسانی وارد شده باشید، دستگاه‌های دیگر می‌توانند از این تلفن به‌عنوان کلید ایمنی استفاده کنند.</translation>
+<translation id="4950924971025849764">‏اگر به سیستم «حساب Google» یکسانی وارد شده باشید، دستگاه‌های دیگر می‌توانند از این تلفن به‌عنوان کلید امنیتی استفاده کنند.</translation>
 <translation id="4953833914914492602">گروه برگه «<ph name="TAB_GROUP_NAME" />» دیگر دردسترس نیست</translation>
 <translation id="4957722034734105353">اطلاعات بیشتر...</translation>
 <translation id="4961107849584082341">ترجمه این صفحه به زبان‌های دیگر</translation>
@@ -946,6 +953,7 @@
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> گیگابایت در دسترس</translation>
 <translation id="543338862236136125">ویرایش گذرواژه</translation>
 <translation id="5433691172869980887">نام کاربری کپی شد</translation>
+<translation id="5436928407363358055">برای اینکه به‌راحتی کارتان را از جایی که رها کرده‌اید ادامه دهید، سابقه و برگه‌هایتان را همگام‌سازی کنید</translation>
 <translation id="5438292632479953702">بارگیری مجدد</translation>
 <translation id="5439191312780166229">‏با تجزیه‌وتحلیل داده‌های بیشتری از سایت‌ها در مقایسه با محافظت استاندارد، درباره سایت‌های خطرناک به شما هشدار می‌دهد، حتی سایت‌هایی که Google قبلاً از آن‌ها اطلاعی نداشته است. می‌توانید هشدارهای Chrome را رد کنید.</translation>
 <translation id="5441137934526263133">سایت کار نمی‌کند؟ کوکی‌های طرف سوم مسدود شده است</translation>
@@ -1221,7 +1229,7 @@
 <translation id="6637100877383020115">‏برای کمک به بهبود برنامه، Chrome داده‌های استفاده و ازکارافتادگی را به Google ارسال می‌کند. <ph name="BEGIN_UMA_LINK" />مدیریت<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">همیشه مسدود شود</translation>
 <translation id="6641780377503683465">برداشتن <ph name="INTEREST" /></translation>
-<translation id="6645629752388991326">کنترل کنید کدام دستگاه‌ها می‌توانند بااستفاده از این دستگاه به‌عنوان کلید ایمنی به سیستم وارد شوند.</translation>
+<translation id="6645629752388991326">کنترل کنید کدام دستگاه‌ها می‌توانند بااستفاده از این دستگاه به‌عنوان کلید امنیتی به سیستم وارد شوند.</translation>
 <translation id="6647441008198474441">‏نشانی‌های وبی که بازدید می‌کنید به Google ارسال می‌شود تا پیش‌بینی شود ممکن است بعداً از چه سایت‌هایی بازدید کنید</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{‏<ph name="CONTACT_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> گزینه تماس دیگر}one{‏<ph name="CONTACT_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> گزینه تماس دیگر}other{‏<ph name="CONTACT_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> گزینه تماس دیگر}}</translation>
 <translation id="6649642165559792194">پیش‌نمایش تصویر <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
@@ -1249,6 +1257,7 @@
 <translation id="6756507620369789050">هم‌رسانی بازخورد</translation>
 <translation id="6762511428368667596"><ph name="NAME" />، <ph name="EMAIL" />.</translation>
 <translation id="676305334223455055">برای دریافت محتوا براساس علایقتان، به سیستم وارد شوید</translation>
+<translation id="6764137532716892442">گروه برگه <ph name="GROUP_TITLE" /> هم‌رسانی‌شده با فعالیت جدید</translation>
 <translation id="6767294960381293877">فهرست نیمه‌باز دستگاه‌هایی که می‌توان با آن‌ها برگه هم‌رسانی کرد.</translation>
 <translation id="6785476624617658922">‏شرایط خدمات تکمیلی Chrome و ChromeOS</translation>
 <translation id="6795633245022906657">به‌سرعت برگه جدیدی باز کنید. برای ویرایش این میان‌بر، به «تنظیمات» بروید.</translation>
@@ -1315,6 +1324,7 @@
 <translation id="6965382102122355670">تأیید</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{دیدن <ph name="TABS_COUNT_ONE" /> برگه با فعالیت جدید در گروه‌های برگه هم‌رسانی‌شده}one{دیدن <ph name="TABS_COUNT_MANY" /> برگه با فعالیت جدید در گروه‌های برگه هم‌رسانی‌شده}other{دیدن <ph name="TABS_COUNT_MANY" /> برگه با فعالیت جدید در گروه‌های برگه هم‌رسانی‌شده}}</translation>
 <translation id="6971862865055170158">تأیید نکردن</translation>
+<translation id="6976223255612495095">‫<ph name="TAB_TITLE" />، برگه جدید یا به‌روزشده</translation>
 <translation id="6978717888677691380">سایت‌هایی که مسدود کرده‌اید</translation>
 <translation id="6979737339423435258">از ابتدا تا الآن</translation>
 <translation id="6983306615164277634">برای تغییر موقعیت نوار نشانی، همچنین می‌توانید آن را لمس کنید و نگه دارید.</translation>
@@ -1708,6 +1718,7 @@
 <translation id="8676276370198826499">ثبت‌نام در <ph name="SITE_ETLD_PLUS_ONE" /> با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">درستی‌سنجی‌های ورود به سیستم</translation>
 <translation id="8683039184091909753">تصویر</translation>
+<translation id="8688183792442786085">‫<ph name="TAB_TITLE" />، برگه انتخاب‌شده</translation>
 <translation id="869891660844655955">تاریخ انقضا</translation>
 <translation id="8699120352855309748">ترجمه این زبان‌ها پیشنهاد نشود</translation>
 <translation id="8712637175834984815">متوجه شدم</translation>
@@ -1841,4 +1852,5 @@
 <translation id="988091779042748639">برای حذف کردن سابقه مرور «حالت ناشناس» از دستگاه، همه برگه‌های «ناشناس» را ببندید</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> برگه</translation>
 <translation id="996149300115483134">منوی کارت فید بسته شد</translation>
+<translation id="99907655649633293">‫<ph name="TAB_TITLE" />، برگه ناشناس</translation>
 </translationbundle>

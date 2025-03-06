@@ -4068,6 +4068,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{දිගුවක් අනුමත විය}one{දිගු # ක් අනුමත විය}other{දිගු # ක් අනුමත විය}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">ලිනක්ස් සඳහා අවම වශයෙන් <ph name="INSTALL_SIZE" />  ක ඉඩ නිර්දේශ කෙරේ.</translation>
+<translation id="3824203811509979971">අන්තර්ගතය සාරාංශ කරන්න හෝ ප්‍රශ්න අසන්න</translation>
 <translation id="3824621460022590830">උපාංග ලියාපදිංචි කිරීමේ ටෝකනය වලංගු නැත. කරුණාකර ඔබේ උපාංගයේ හිමිකරු හෝ පරිපාලක සම්බන්ධ කර ගන්න. දෝෂ කේතය: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">වෙනත් උපාංගවලින් පටිති බැලීමට පුරන්න</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{මෙම ගොනු වර්ගය සඳහා මගේ තේරීම මතක තබා ගන්න: <ph name="FILE_TYPES" />}one{මෙම ගොනු වර්ග සඳහා මාගේ තේරීම මතක තබා ගන්න: <ph name="FILE_TYPES" />}other{මෙම ගොනු වර්ග සඳහා මාගේ තේරීම මතක තබා ගන්න: <ph name="FILE_TYPES" />}}</translation>
@@ -4255,6 +4256,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="3948985214866944547">බොහෝ අය මෙම වෙබ් අඩවිය සඳහා නිශ්චිත ස්ථානය බෙදා ගැනීම අවහිර කරයි</translation>
 <translation id="394984172568887996">IE වෙතින් ආයාත කෙරිණි</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> ගොනු බා ගැනීම ඉතා ආරක්‍ෂිත කිරීමට</translation>
+<translation id="3950479158728806902">වේගයෙන් පුරනය වීමට ස්වයංක්‍රීයව මුරයතුරක් සාදන්න</translation>
 <translation id="3950820424414687140">පුරන්න</translation>
 <translation id="3950841222883198950">හඬ ටයිප් කිරීම</translation>
 <translation id="3953834000574892725">මගේ ගිණුම්</translation>
@@ -5183,6 +5185,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4624054169152573743">වර්ණ තේමාව</translation>
 <translation id="4625078469366263107">යෙදුම සබල කරන්න</translation>
 <translation id="4625905218692741757">අළු පෙරනිමි වර්ණය</translation>
+<translation id="4627107755957573804">මුරයතුරු භාවිත කිරීම සඳහා පවතින ගිණුම් උත්ශ්‍රේණි කිරීමට වෙබ් අඩවි සහ යෙදුම්වලට ඉඩ දෙන්න</translation>
 <translation id="4627442949885028695">වෙනත් උපාංගයකින් කරගෙන යන්න</translation>
 <translation id="4628762811416793313">Linux බහාලුම සැකසීම සම්පූර්ණ නොවිය. නැවත උත්සාහ කරන්න.</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> පැතිකඩ විවෘත කරන්න</translation>
@@ -5766,6 +5769,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5053233576223592551">පරිශීලක නාමය එක් කරන්න</translation>
 <translation id="505347685865235222">නම් නොකළ සමූහය - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{ඔබ දැන් එය වෙනස් කළ යුතු ය}one{ඔබ දැන් මේවා වෙනස් කළ යුතු ය}other{ඔබ දැන් මේවා වෙනස් කළ යුතු ය}}</translation>
+<translation id="5056587122125565772">රූපයක් සාදන්න</translation>
 <translation id="5056950756634735043">බහාලුමට සම්බන්ධ වෙමින්</translation>
 <translation id="5057110919553308744">ඔබ දිගුව ක්ලික් කළ විට</translation>
 <translation id="5057127674016624293">ස්කෑන් කිරීම බලාපොරොත්තු වූවාට වඩා වැඩි කාලයක් ගනී</translation>
@@ -5876,6 +5880,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="512642543295077915">සෙවීම + බැක්ස්පේස්</translation>
 <translation id="5126611267288187364">වෙනස් කිරීම් බලන්න</translation>
 <translation id="5127620150973591153">ආරක්ෂිත සම්බන්ධතා ID: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">අන්තර්ගතය සාරාංශ කරන්න හෝ ප්‍රශ්න අසන්න.</translation>
 <translation id="5127881134400491887">ජාල සබඳතා පාලනය</translation>
 <translation id="5127934926273826089">මල්</translation>
 <translation id="5127986747308934633">ඔබේ පරිපාලක ඔබේ උපාංගය පාලනය කරයි</translation>
@@ -10143,6 +10148,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> අබල කරන්න</translation>
 <translation id="8195920051450756553">එකම යතුර නැවත සක්‍රිය කිරීමට පෙර ප්‍රමාද කරන්න</translation>
 <translation id="8197673340773315084">වැඩ හෝ පුද්ගලික වැනි, නමක් හෝ ලේබලයක් එක් කරන්න</translation>
+<translation id="8198181050118789419">තේමාව: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">විකාශ ටැබය</translation>
 <translation id="8199300056570174101">ජාල (සේවාව) සහ උපාංග ගුණාංග</translation>
 <translation id="8200772114523450471">කරගෙන යන්න</translation>
@@ -11400,6 +11406,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB මවුසය සබඳකර ඇත</translation>
 <translation id="9075413375877487220">ඉහළ නැංවූ සුරක්ෂිත පිරික්සුම මගින් මෙම දිගුව විහ්වාස නොකෙරේ</translation>
+<translation id="9075985558450420812">රූපයක් නිර්මාණය කිරීමට අභිරුචි ප්‍රේරකයක් හෝ උද්දීපන පෙළක් ඇතුළත් කරන්න.</translation>
 <translation id="9076523132036239772">සමාවන්න, ඔබේ ඊමේල් හා මුරපදය තහවුරු කළ නොහැක. කරුණාකර මුලින් ජාලයක් වෙත සබඳ වන්න.</translation>
 <translation id="9076821103818989526">පැති පැනලය</translation>
 <translation id="9076977315710973122">SMB බෙදා ගැනීම</translation>

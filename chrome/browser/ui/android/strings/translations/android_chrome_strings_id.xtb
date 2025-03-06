@@ -270,6 +270,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2259659629660284697">Ekspor sandi…</translation>
 <translation id="2276696007612801991">Login ke Akun Google Anda untuk memeriksa sandi</translation>
 <translation id="2278052315791335171">Menghapus sandi ini tidak akan menghapus akun Anda di <ph name="SITE" /></translation>
+<translation id="2281243904606300427"><ph name="TAB_TITLE" />, Tab Samaran yang Dipilih</translation>
 <translation id="2286841657746966508">Alamat penagihan</translation>
 <translation id="228704530595896923">Daftar opsi berbagi.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Lihat <ph name="TABS_COUNT_ONE" /> tab}other{Lihat <ph name="TABS_COUNT_MANY" /> tab}}</translation>
@@ -329,6 +330,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> item dihapus</translation>
 <translation id="253498598929009420">Situs ini akan dapat melihat konten layar Anda</translation>
 <translation id="2536728043171574184">Melihat salinan offline halaman ini</translation>
+<translation id="2542548955756682219"><ph name="TAB_TITLE" />, Tab</translation>
 <translation id="2546283357679194313">Cookie dan data situs</translation>
 <translation id="2547843573592965873">Kunci profil Anda menjaga keamanan info Anda di mobil, termasuk sandi, pembayaran, dan lainnya yang disimpan di Akun Google Anda.</translation>
 <translation id="254973855621628293">Sandi disimpan ke perangkat ini</translation>
@@ -472,6 +474,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 sandi dan item lainnya hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi dan item lainnya di Akun Google Anda, <ph name="ACCOUNT_EMAIL" />.}other{# sandi dan item lainnya hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi dan item lainnya di Akun Google Anda, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="3187472288455401631">Pengukuran iklan</translation>
+<translation id="3189635831478931757">Grup tab <ph name="GROUP_TITLE" /></translation>
 <translation id="3207960819495026254">Diberi bookmark</translation>
 <translation id="3208584281581115441">Periksa sekarang</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> dihapus</translation>
@@ -748,6 +751,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4523326818319942067">sejam terakhir</translation>
 <translation id="452750746583162491">Tinjau data Anda yang disinkronkan</translation>
 <translation id="4532845899244822526">Pilih folder</translation>
+<translation id="4535755320005483982">Grup tab bersama <ph name="GROUP_TITLE" /></translation>
 <translation id="4543131175509360848">Sheet tidak ada kunci sandi</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_COUNT_MANY" /> tab, <ph name="TAB_COUNT_INCOGNITO" /> samaran}}</translation>
 <translation id="4558311620361989323">Pintasan halaman web</translation>
@@ -1249,6 +1253,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6756507620369789050">Bagikan masukan</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="676305334223455055">Login untuk mendapatkan konten berdasarkan minat Anda</translation>
+<translation id="6764137532716892442">Grup tab bersama <ph name="GROUP_TITLE" /> dengan aktivitas baru</translation>
 <translation id="6767294960381293877">Daftar perangkat yang dapat digunakan untuk berbagi tab terbuka dalam setengah layar.</translation>
 <translation id="6785476624617658922">Persyaratan Layanan Tambahan Chrome &amp; ChromeOS</translation>
 <translation id="6795633245022906657">Buka tab baru dengan cepat. Untuk mengedit pintasan ini, buka Setelan.</translation>
@@ -1315,6 +1320,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6965382102122355670">Oke</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Lihat <ph name="TABS_COUNT_ONE" /> tab dengan aktivitas baru di grup tab yang dibagikan}other{Lihat <ph name="TABS_COUNT_MANY" /> tab dengan aktivitas baru di grup tab yang dibagikan}}</translation>
 <translation id="6971862865055170158">Jangan setujui</translation>
+<translation id="6976223255612495095"><ph name="TAB_TITLE" />, Tab Baru atau yang Diperbarui</translation>
 <translation id="6978717888677691380">Situs yang Anda blokir</translation>
 <translation id="6979737339423435258">Semua</translation>
 <translation id="6983306615164277634">Anda juga dapat menyentuh lama kolom URL untuk mengubah posisi.</translation>
@@ -1708,6 +1714,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8676276370198826499">Daftar ke <ph name="SITE_ETLD_PLUS_ONE" /> dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Verifikasi login</translation>
 <translation id="8683039184091909753">gambar</translation>
+<translation id="8688183792442786085"><ph name="TAB_TITLE" />, Tab yang Dipilih</translation>
 <translation id="869891660844655955">Masa berlaku</translation>
 <translation id="8699120352855309748">Jangan tawarkan penerjemahan bahasa ini</translation>
 <translation id="8712637175834984815">Mengerti</translation>
@@ -1841,4 +1848,5 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="988091779042748639">Untuk menghapus histori penjelajahan mode Samaran dari perangkat Anda, tutup semua tab Samaran.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> tab</translation>
 <translation id="996149300115483134">Menu kartu feed ditutup</translation>
+<translation id="99907655649633293"><ph name="TAB_TITLE" />, Tab Samaran</translation>
 </translationbundle>

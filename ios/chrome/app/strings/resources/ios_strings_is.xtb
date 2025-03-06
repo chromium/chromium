@@ -291,6 +291,7 @@
 <translation id="2161446265348023004">Skipta yfir í opinn glugga</translation>
 <translation id="2164946989711475905">Skrá inn…</translation>
 <translation id="2175927920773552910">QR-kóði</translation>
+<translation id="218350106843433823">Sjálfvirk útfylling aðgangsorða og aðgangslykla</translation>
 <translation id="2186206192313702726">Google linsa</translation>
 <translation id="219283042927675668">Flipar í hóp</translation>
 <translation id="2194856509914051091">Atriði til að hafa í huga</translation>
@@ -380,6 +381,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2511117522375201202">Þú ert með <ph name="NUMBER_OF_PASSWORDS" /> aðgangsorð í hættu sem gætu stefnt öryggi þínu í hættu.</translation>
 <translation id="2513103768503127042">Hér finnurðu flipahópana þína</translation>
 <translation id="251837347827266434">Þú verður skráð(ur) út, flipum verður lokað, vefskoðunargögnum verður eytt</translation>
+<translation id="2520787026086861736">Farðu í <ph name="BEGIN_LINK" />Sjálfvirk útfylling og aðgangsorð<ph name="END_LINK" /> til að kveikja á eiginleikanum</translation>
 <translation id="2529021024822217800">Opna allt</translation>
 <translation id="2536991091671391962">Þú getur notað vistuð aðgangsorð í hvaða tæki sem er. Þau eru vistuð í Google-aðgangsorðastjórnun fyrir <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Falið, aðgangsorð</translation>
@@ -678,6 +680,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3940195383040445971">Fylgjast með verði á flipum</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Loka {COUNT} flipa}one{Loka {COUNT} flipa}other{Loka {COUNT} flipum}}</translation>
 <translation id="3948600256434252210">Þú getur skoðað í huliðsstillingu með því að strjúka til hægri.</translation>
+<translation id="3950479158728806902">Búa til aðgangslykil sjálfkrafa fyrir fljótlegri innskráningu</translation>
 <translation id="3950820424414687140">Skrá inn</translation>
 <translation id="3955740319737378355">Lokið</translation>
 <translation id="3955822496205734389">Þú ert með léleg aðgangsorð.</translation>
@@ -702,6 +705,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4018440314314549819">Sjálfvirk útfylling á vistuðum aðgangsorðum</translation>
 <translation id="4021447724486050609">Uppfærðu vafrann þinn</translation>
 <translation id="4021931095789478915">Bæta ${url} við leslista</translation>
+<translation id="4026496154402824012">Farðu í <ph name="BEGIN_LINK" />Valkostir aðgangsorða<ph name="END_LINK" /> til að slökkva á eiginleikanum</translation>
 <translation id="4028871427853484857">Vista á reikningi…</translation>
 <translation id="4038354071007134711">Ekkert forrit í þessu tæki getur opnað skrána.</translation>
 <translation id="4042870976416480368">Finna á síðu</translation>
@@ -837,6 +841,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4619564267100705184">Staðfestu hver þú ert</translation>
 <translation id="4619615317237390068">Flipar frá öðrum tækjum</translation>
 <translation id="4624080227980645783">Nýr huliðsgluggi</translation>
+<translation id="4627107755957573804">Leyfðu vefsvæðum og forritum að uppfæra fyrirliggjandi reikninga til að nota aðgangslykla</translation>
 <translation id="4630212057753624203">Sýnishornablaðra</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> endurnýtt aðgangsorð</translation>
 <translation id="4631890462758052414">Nýr huliðsflipi</translation>
@@ -1135,6 +1140,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5859715514067755465">Áfram</translation>
 <translation id="5860033963881614850">Slökkt</translation>
 <translation id="5860491529813859533">Kveikja</translation>
+<translation id="5868644772996939262">Fylltu út aðgangsorð og aðgangslykla sjálfkrafa</translation>
 <translation id="5869522115854928033">Vistuð aðgangsorð</translation>
 <translation id="5878899964490256268"><ph name="EMAIL" />. Stjórnað af fyrirtækinu þínu.</translation>
 <translation id="5888889603768021126">Skráð(ur) inn með</translation>
@@ -1238,7 +1244,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6284652193729350524">Bjóðast til að þýða <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Hætti að fylgja <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Til að kveikja á öruggri vefskoðun skaltu opna <ph name="BEGIN_LINK" />Google-þjónustur<ph name="END_LINK" /> og ýta á „Örugg vefskoðun“.</translation>
-<translation id="6295434468271563378">Eyddu niðurhalinu þínu sjálfkrafa</translation>
 <translation id="6295751040240588413">Ógilt gælunafn korts</translation>
 <translation id="629730747756840877">Reikningur</translation>
 <translation id="6301104306974789820">Fá tilkynningar fyrir verðvöktun</translation>

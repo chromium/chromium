@@ -13,6 +13,7 @@
 <translation id="1036348656032585052">I-off</translation>
 <translation id="1045899828449635435">I-clear ang data sa mga site?</translation>
 <translation id="1049743911850919806">Incognito</translation>
+<translation id="1052842760770519282">Hindi ma-access ang ilan sa iyong mga password</translation>
 <translation id="1058669287135776095">Offline ka. Suriin ang iyong koneksyon sa internet at subukan ulit.</translation>
 <translation id="10614374240317010">Hindi kailanman nag-save</translation>
 <translation id="107147699690128016">Kung babaguhin mo ang file extension, puwedeng bumukas ang file sa ibang application at posible itong maging mapanganib sa iyong device.</translation>
@@ -71,6 +72,7 @@
 <translation id="1269129608791067105">Makikita mo rito ang iyong history</translation>
 <translation id="1273937721055267968">I-block ang <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">I-tap upang palawakin</translation>
+<translation id="1289129165308566697">Tingnan ang iyong history sa iba pang device</translation>
 <translation id="129553762522093515">Kamakailang isinara</translation>
 <translation id="1298077576058087471">Magtipid ng hanggang 60% data, basahin ang balita ngayong araw</translation>
 <translation id="1303339473099049190">Hindi mahanap ang password na iyon. Tingnan ang iyong spelling at subukan ulit.</translation>
@@ -365,6 +367,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2666092431469916601">Tuktok</translation>
 <translation id="2669454659051515572">Makikita ng sinumang gumagamit ng device na ito ang mga na-download na file</translation>
 <translation id="2677748264148917807">Umalis</translation>
+<translation id="2687009626279857299">Huminto sa paggana sa device na ito</translation>
 <translation id="2702516483241149200">Bago: magbahagi ng link na nagso-scroll papunta sa text na ito</translation>
 <translation id="2705073298859543115">Gumawa ng buod</translation>
 <translation id="2708051474374549906">Real-time at proactive na proteksyon laban sa mga mapanganib na site, download, at extension na nakabatay sa iyong data mula sa pag-browse na ipinapadala sa Google</translation>
@@ -950,6 +953,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB ang available</translation>
 <translation id="543338862236136125">I-edit ang password</translation>
 <translation id="5433691172869980887">Nakopya ang username</translation>
+<translation id="5436928407363358055">Para madaling magpatuloy sa kung saan ka huminto, i-sync ang iyong history at mga tab</translation>
 <translation id="5438292632479953702">I-download ulit</translation>
 <translation id="5439191312780166229">Babalaan ka tungkol sa mga mapanganib na site, kahit iyong mga hindi alam ng Google noon, sa pamamagitan ng pagsusuri sa higit pang data mula sa mga site kaysa sa karaniwang proteksyon. Puwede mong piliing laktawan ang mga babala ng Chrome.</translation>
 <translation id="5441137934526263133">Hindi gumagana ang site? Bina-block ang third-party na cookies</translation>

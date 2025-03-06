@@ -1150,6 +1150,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5898848375214731122">Massa</translation>
 <translation id="5899314093904173337">Para partilhar com pessoas nas proximidades, permita que leiam este código QR com a câmara ou uma app de leitura de códigos QR.</translation>
 <translation id="5911030830365207728">Google Tradutor</translation>
+<translation id="5917913282764181683">Elimine automaticamente as transferências</translation>
 <translation id="5922999516621365983">Arrastar o separador para aqui para o fixar.</translation>
 <translation id="5936006948844852401">Gerir armazenamento</translation>
 <translation id="5936065461722368675">Traduzir página inteira</translation>
@@ -1244,7 +1245,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6284652193729350524">Propor tradução de <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Deixou de seguir o canal <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Para ativar a Navegação segura, abra <ph name="BEGIN_LINK" />Serviços Google<ph name="END_LINK" /> e toque em Navegação segura.</translation>
-<translation id="6295434468271563378">Elimine automaticamente as transferências</translation>
 <translation id="6295751040240588413">Alcunha do cartão inválida</translation>
 <translation id="629730747756840877">Conta</translation>
 <translation id="6301104306974789820">Receba notificações de acompanhamento de preço</translation>

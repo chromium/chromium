@@ -3820,6 +3820,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3670229581627177274">Ota Bluetooth käyttöön</translation>
 <translation id="3670480940339182416">Sivustot voivat käyttää V8-optimoijaa</translation>
 <translation id="3671764914317109892">Hae selaushistoriasta arkikielellä. Voit myös esittää kysymyksiä ja saada vastauksia selaushistorian perusteella.</translation>
+<translation id="3671982238795754537">Lue lisää avainkoodeista</translation>
 <translation id="3672681487849735243">Tehdasvirhe on havaittu</translation>
 <translation id="3673097791729989571">Sisäänkirjautuminen tapahtuu täällä: <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">PIN-koodi on päivitetty</translation>
@@ -4733,6 +4734,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4289540628985791613">Yleiskatsaus</translation>
 <translation id="428963538941819373">Nämä sivustot voivat käyttää sinusta tallentamiaan tietoja, kun selaat sivustoa <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Valitse PIN-koodi</translation>
+<translation id="4290526909608432059">Chrome-sovellusten tuki päättyy pian. Jos haluat lisätietoa vaihtoehdoista, ota yhteyttä kehittäjään tai IT-tukitiimiin.</translation>
 <translation id="4290791284969893584">Kun sivu on suljettu, aloittamiasi tehtäviä ei välttämättä suoriteta loppuun</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> jäsen</translation>
 <translation id="4290898381118933198">Siirry sivujen välillä pyyhkäisemällä</translation>
@@ -8528,6 +8530,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – Sarjaportti yhdistetty</translation>
 <translation id="7033616203784997570">Syöte voi olla enintään 62 merkkiä</translation>
 <translation id="7034692021407794547">Järjestelmänvalvojan, jolla on Laskutuksen hallinta ‑lupa, täytyy ensin hyväksyä Google Meet ‑laitteiston käyttöehdot hallintakonsolin kohdasta "Google Meet ‑laitteisto".</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> on juuri luonut avainkoodin tilillesi. Avainkoodit ovat nopeampi ja turvallisempi kirjautua sisään, ja ne tallennetaan Google Salasanoihin tilille <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Linuxin käyttöön suositellaan <ph name="DISK_SIZE" /> vapaata tilaa. Lisää vapaata tilaa poistamalla laitteelta tiedostoja.</translation>
 <translation id="7037157058268992880">PIN-koodi unohtunut</translation>
 <translation id="7037509989619051237">Esikatseltava teksti</translation>
@@ -10158,6 +10161,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8195854162863398249">Poista <ph name="FEATURE_NAME" /> käytöstä</translation>
 <translation id="8195920051450756553">Viive ennen saman näppäimen uudelleenaktivointia</translation>
 <translation id="8197673340773315084">Lisää nimi tai tunniste, kuten Työ tai Henkilökohtainen</translation>
+<translation id="8198181050118789419">Teema: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Välilehteä striimataan</translation>
 <translation id="8199300056570174101">Verkon ja laitteen ominaisuudet</translation>
 <translation id="8200772114523450471">Jatka</translation>
@@ -10568,6 +10572,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8477178913400731244">Poista data</translation>
 <translation id="8477241577829954800">Tarpeeton</translation>
 <translation id="8477384620836102176">&amp;Yleistä</translation>
+<translation id="8477446666255316832">Kirjaudu ensi kerralla nopeammin sisään</translation>
 <translation id="8479176401914456949">Virheellinen koodi. Yritä uudelleen.</translation>
 <translation id="8480869669560681089">Tuntematon laite toimittajalta <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Vahvista USB:n käyttöoikeus</translation>

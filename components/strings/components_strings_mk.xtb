@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">Копче за управување со преземањата во Chrome, активирајте го за да управувате со датотеките што сте ги презеле во Chrome</translation>
 <translation id="1420345875188552368">Вашиот зачуван начин на автоматско плаќање може да се користи за ова плаќање. За да ги исклучите паричниците eWallet во Chrome, одете во <ph name="BEGIN_LINK1" />поставките за плаќање<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> за да се дозволи спарување</translation>
+<translation id="1421484961346698724">Избришана сметка</translation>
 <translation id="14222610277930434">Го отворате ова често</translation>
 <translation id="1422930527989633628">Може да прашува за да открива уреди со Bluetooth во близина</translation>
 <translation id="1426410128494586442">Да</translation>
@@ -3024,6 +3025,7 @@
 <translation id="6351658970066645919">Избришете ги податоците од прелистување</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ниедна}=1{1 лозинка (за <ph name="DOMAIN_LIST" />, синхронизирана)}=2{2 лозинка (за <ph name="DOMAIN_LIST" />, синхронизирани)}one{# лозинка (за <ph name="DOMAIN_LIST" />, синхронизирани)}other{# лозинки (за <ph name="DOMAIN_LIST" />, синхронизирани)}}</translation>
 <translation id="6355392890578844978">Прелистувачов не е управуван од компанија или друга организација. Со активноста на уредов може да се управува надвор од Chromium. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Групите картички „<ph name="GROUP_TITLE_1" />“ и „<ph name="GROUP_TITLE_2" />“ веќе не се достапни</translation>
 <translation id="6358088212770985041">да ги измени начините на плаќање</translation>
 <translation id="6358450015545214790">Што значи ова?</translation>
 <translation id="6360213755783740931">Дознајте повеќе за заштитата од злонамерен софтвер</translation>

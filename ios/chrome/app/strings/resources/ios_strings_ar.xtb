@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">تعني المتابعة موافقتك على <ph name="BEGIN_LINK" />بنود الخدمة<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">المواقع التي لن تحفظ كلمات المرور أبدًا</translation>
 <translation id="1062138828266376352">لم يتم تغيير رقم التعريف الشخصي. يُرجى التأكّد من الاتصال بالإنترنت، ثم إعادة المحاولة</translation>
+<translation id="1072476005125066234">مراجعات مقترَحة بناءً على اهتماماتك</translation>
 <translation id="1074827084851510304">‏أنت على وشك حذف {password_count} من كلمات المرور وقائمة المواقع الإلكترونية والتطبيقات التي اخترت عدم حفظ معلومات تسجيل الدخول إليها، ولن يتم حذف أي حساب أنشأته للمواقع الإلكترونية والتطبيقات.</translation>
 <translation id="1076421457278169141">تم مسح الرمز ضوئيًا</translation>
 <translation id="1081932398873105675">{count,plural, =1{علامة تبويب واحدة ({count})}zero{‫{count} علامة تبويب}two{علامتا تبويب ({count})}few{‫{count} علامات تبويب}many{‫{count} علامة تبويب}other{‫{count} علامة تبويب}}</translation>
@@ -267,6 +268,7 @@
 <translation id="2049727122989709386">‫<ph name="COUNT" /> حساب يستخدم كلمة المرور نفسها</translation>
 <translation id="2059166748188874810">بلدية</translation>
 <translation id="2060114494785549741">الحذف بعد شهر واحد</translation>
+<translation id="2060638295449304809">‏يتم حفظ هذا العنوان على هذا الجهاز فقط. ولاستخدامه على أجهزتك الأخرى، يمكنك حفظه في حسابك على Google (<ph name="USER_EMAIL" />)</translation>
 <translation id="20638360198452347">مُحدِّد نوع الوحدة</translation>
 <translation id="2067852168641682340">الحفظ في هذا الحساب في كل مرة</translation>
 <translation id="2074119687904553223">{count,plural, =1{علامة تبويب واحدة}zero{‫{count} علامة تبويب}two{علامتا تبويب ({count})}few{‫{count} علامات تبويب}many{‫{count} علامة تبويب}other{‫{count} علامة تبويب}}</translation>
@@ -895,6 +897,7 @@
 <translation id="4824480232751123840">الصوت</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} وعلامة تبويب واحدة إضافية}two{{domain} وعلامتا تبويب ({count}) إضافيتان}few{{domain} و{count} علامات تبويب إضافية}many{{domain} و{count} علامة تبويب إضافية}other{{domain} و{count} علامة تبويب إضافية}}</translation>
 <translation id="4826588772550366629">الكاميرا والميكروفون</translation>
+<translation id="4828431027673677473">منتجات مقترَحة بناءً على اهتماماتك</translation>
 <translation id="4833786495304741580">‏إرسال إحصاءات الاستخدام وتقارير الأعطال إلى Google تلقائيًا</translation>
 <translation id="483689884442613745">حفظ…</translation>
 <translation id="4840495572919996524">‏لن تتم مزامنة الإشارات المرجعية والسجلّ وكلمات المرور وغيرها مع حسابك على Google بعد الآن.</translation>
@@ -1242,7 +1245,6 @@
 <translation id="6284652193729350524">اقتراح ترجمة <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">تم إلغاء متابعة <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6293101329759844770">‏لتفعيل "التصفّح الآمن"، افتح <ph name="BEGIN_LINK" />خدمات Google<ph name="END_LINK" /> وانقر على "التصفّح الآمن".</translation>
-<translation id="6295434468271563378">حذف عمليات التنزيل تلقائيًا</translation>
 <translation id="6295751040240588413">لقب البطاقة غير صالح</translation>
 <translation id="629730747756840877">الحساب</translation>
 <translation id="6301104306974789820">الحصول على الإشعارات الخاصة بتتبُّع أسعار المنتجات</translation>
@@ -1734,6 +1736,7 @@
 <translation id="828291969289324795">{count,plural, =1{إضافة علامة التبويب إلى مجموعة جديدة}zero{إضافة علامات التبويب إلى مجموعة جديدة}two{إضافة علامتَي التبويب إلى مجموعة جديدة}few{إضافة علامات التبويب إلى مجموعة جديدة}many{إضافة علامات التبويب إلى مجموعة جديدة}other{إضافة علامات التبويب إلى مجموعة جديدة}}</translation>
 <translation id="8283172974887967105">ضبط…</translation>
 <translation id="8289930144142009940">تم إيقاف إشعارات "<ph name="FEATURE_NAME" />"</translation>
+<translation id="8290077367744012649">تتبُّع الأسعار من علامات التبويب</translation>
 <translation id="8299417921174340354">لاستخدام كلمات المرور، عليك أولاً إعداد رمز مرور على جهازك.</translation>
 <translation id="8299613349954694191">يمكنك فتح علامة تبويب في وضع التصفُّح المتخفي لتصفُّح المواقع الإلكترونية بخصوصية تامّة.</translation>
 <translation id="8307481894409578819">تعذر تحميل هذا الملف</translation>

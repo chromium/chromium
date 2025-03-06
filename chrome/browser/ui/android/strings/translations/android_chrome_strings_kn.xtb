@@ -270,6 +270,7 @@
 <translation id="2259659629660284697">ಪಾಸ್‌ವರ್ಡ್‍ಗಳನ್ನು ಎಕ್ಸ್‌ಪೋರ್ಟ್ ಮಾಡಿ…</translation>
 <translation id="2276696007612801991">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು, ನಿಮ್ಮ Google ಖಾತೆಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="2278052315791335171">ಈ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಅಳಿಸುವುದರಿಂದ <ph name="SITE" /> ನಲ್ಲಿ ನಿಮ್ಮ ಖಾತೆಯನ್ನು ಅಳಿಸಲಾಗುವುದಿಲ್ಲ</translation>
+<translation id="2281243904606300427"><ph name="TAB_TITLE" />, ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2286841657746966508">ಬಿಲ್ಲಿಂಗ್ ವಿಳಾಸ</translation>
 <translation id="228704530595896923">ಹಂಚಿಕೊಳ್ಳುವ ಆಯ್ಕೆಗಳ ಪಟ್ಟಿ.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ನೋಡಿ}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ನೋಡಿ}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ನೋಡಿ}}</translation>
@@ -329,6 +330,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> ಐಟಂಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="253498598929009420">ಸೈಟ್‌ಗೆ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ವಿಷಯಗಳನ್ನು ನೋಡಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ</translation>
 <translation id="2536728043171574184">ಈ ಪುಟದ ಆಫ್‌ಲೈನ್ ನಕಲನ್ನು ವೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="2542548955756682219"><ph name="TAB_TITLE" />, ಟ್ಯಾಬ್</translation>
 <translation id="2546283357679194313">ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾ</translation>
 <translation id="2547843573592965873">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್‌ ಮಾಡಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಪಾವತಿಗಳು ಮತ್ತು ಹೆಚ್ಚಿನವುಗಳನ್ನು ಒಳಗೊಂಡಂತೆ ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಲಾಕ್ ಕಾರಿನಲ್ಲಿ ಸುರಕ್ಷಿತವಾಗಿರಿಸುತ್ತದೆ.</translation>
 <translation id="254973855621628293">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -472,6 +474,7 @@
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 ಪಾಸ್‌ವರ್ಡ್ ಮತ್ತು ಇತರ ಐಟಂಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ. ಅವುಗಳನ್ನು ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಬಳಸಲು, ಅವುಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆ, <ph name="ACCOUNT_EMAIL" /> ನಲ್ಲಿ ಸೇವ್‌ ಮಾಡಿ.}one{# ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಐಟಂಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ. ಅವುಗಳನ್ನು ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಬಳಸಲು, ಅವುಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆ, <ph name="ACCOUNT_EMAIL" /> ನಲ್ಲಿ ಸೇವ್‌ ಮಾಡಿ.}other{# ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಐಟಂಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ. ಅವುಗಳನ್ನು ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಬಳಸಲು, ಅವುಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆ, <ph name="ACCOUNT_EMAIL" /> ನಲ್ಲಿ ಸೇವ್‌ ಮಾಡಿ.}}</translation>
 <translation id="3187472288455401631">ಜಾಹೀರಾತು ಮಾಪನ</translation>
+<translation id="3189635831478931757"><ph name="GROUP_TITLE" /> ಟ್ಯಾಬ್ ಗುಂಪು</translation>
 <translation id="3207960819495026254">ಬುಕ್‌ಮಾರ್ಕ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3208584281581115441">ಈಗಲೇ ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> ಅನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
@@ -747,6 +750,7 @@
 <translation id="4523326818319942067">ಒಂದು ಗಂಟೆಯ ಹಿಂದೆ</translation>
 <translation id="452750746583162491">ಸಿಂಕ್ ಮಾಡಲಾಗಿರುವ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="4532845899244822526">ಫೋಲ್ಡರ್‌ ಆಯ್ಕೆಮಾಡಿ</translation>
+<translation id="4535755320005483982">ಹಂಚಿಕೊಳ್ಳಲಾಗಿರುವ <ph name="GROUP_TITLE" /> ಟ್ಯಾಬ್ ಗುಂಪು</translation>
 <translation id="4543131175509360848">ಯಾವುದೇ ಪಾಸ್‌ಕೀಗಳ ಶೀಟ್ ಇಲ್ಲ</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ಟ್ಯಾಬ್}one{<ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="TAB_COUNT_INCOGNITO" /> ಅಜ್ಞಾತ}other{<ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="TAB_COUNT_INCOGNITO" /> ಅಜ್ಞಾತ}}</translation>
 <translation id="4558311620361989323">ವೆಬ್‌ಪುಟ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
@@ -1248,6 +1252,7 @@
 <translation id="6756507620369789050">ಪ್ರತಿಕ್ರಿಯೆ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="676305334223455055">ನಿಮ್ಮ ಆಸಕ್ತಿಗಳ ಆಧಾರದ ಮೇಲೆ ಕಂಟೆಂಟ್‌ ಅನ್ನು ಪಡೆಯಲು ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
+<translation id="6764137532716892442">ಹೊಸ ಚಟುವಟಿಕೆಯೊಂದಿಗೆ <ph name="GROUP_TITLE" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="6767294960381293877">ಟ್ಯಾಬ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಬೇಕಾದ ಸಾಧನಗಳ ಪಟ್ಟಿಯನ್ನು ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ.</translation>
 <translation id="6785476624617658922">Chrome ಮತ್ತು ChromeOS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳು</translation>
 <translation id="6795633245022906657">ಹೊಸ ಟ್ಯಾಬ್ ಅನ್ನು ತ್ವರಿತವಾಗಿ ತೆರೆಯಿರಿ. ಈ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಎಡಿಟ್ ಮಾಡಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ.</translation>
@@ -1314,6 +1319,7 @@
 <translation id="6965382102122355670">ಸರಿ</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{ಹಂಚಿಕೊಂಡ ಟ್ಯಾಬ್ ಗುಂಪುಗಳಲ್ಲಿನ ಹೊಸ ಚಟುವಟಿಕೆಯೊಂದಿಗೆ <ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ನೋಡಿ}one{ಹಂಚಿಕೊಂಡ ಟ್ಯಾಬ್ ಗುಂಪುಗಳಲ್ಲಿನ ಹೊಸ ಚಟುವಟಿಕೆಯೊಂದಿಗೆ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ನೋಡಿ}other{ಹಂಚಿಕೊಂಡ ಟ್ಯಾಬ್ ಗುಂಪುಗಳಲ್ಲಿನ ಹೊಸ ಚಟುವಟಿಕೆಯೊಂದಿಗೆ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ನೋಡಿ}}</translation>
 <translation id="6971862865055170158">ಅನುಮೋದಿಸಬೇಡಿ</translation>
+<translation id="6976223255612495095"><ph name="TAB_TITLE" />, ಹೊಸ ಅಥವಾ ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿದ ಟ್ಯಾಬ್</translation>
 <translation id="6978717888677691380">ನೀವು ನಿರ್ಬಂಧಿಸಿದ ಸೈಟ್‌ಗಳು</translation>
 <translation id="6979737339423435258">ಎಲ್ಲ ಸಮಯ</translation>
 <translation id="6983306615164277634">ಸ್ಥಾನವನ್ನು ಬದಲಾಯಿಸಲು ನೀವು ಅಡ್ರೆಸ್ ಬಾರ್ ಅನ್ನು ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಒತ್ತಿ ಹಿಡಿದಿಟ್ಟುಕೊಳ್ಳಬಹುದು.</translation>
@@ -1707,6 +1713,7 @@
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ಜೊತೆಗೆ <ph name="SITE_ETLD_PLUS_ONE" /> ಗೆ ಸೈನ್ ಅಪ್ ಮಾಡಿ</translation>
 <translation id="8676789164135894283">ಸೈನ್ ಇನ್ ದೃಢೀಕರಣಗಳು</translation>
 <translation id="8683039184091909753">ಚಿತ್ರ</translation>
+<translation id="8688183792442786085"><ph name="TAB_TITLE" />, ಟ್ಯಾಬ್ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="869891660844655955">ಅವಧಿ ಮುಗಿಯುವ ದಿನಾಂಕ</translation>
 <translation id="8699120352855309748">ಈ ಭಾಷೆಗಳನ್ನು ಅನುವಾದಿಸುವ ಪ್ರಸ್ತಾಪ ಮಾಡಬೇಡಿ</translation>
 <translation id="8712637175834984815">ಅರ್ಥವಾಯಿತು</translation>
@@ -1840,4 +1847,5 @@
 <translation id="988091779042748639">ನಿಮ್ಮ ಸಾಧನದಿಂದ ಅಜ್ಞಾತ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ಅಳಿಸಲು, ಎಲ್ಲಾ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="996149300115483134">ಫೀಡ್ ಕಾರ್ಡ್ ಮೆನು ಅನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
+<translation id="99907655649633293"><ph name="TAB_TITLE" />, ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌</translation>
 </translationbundle>

@@ -383,7 +383,7 @@
 <translation id="6366160072964553914">Chromium ha bloquejat aquesta baixada perquè el fitxer no se sol baixar i pot ser perillós</translation>
 <translation id="6373523479360886564">Confirmeu que voleu desinstal·lar Chromium?</translation>
 <translation id="6375219077595103062">Afegeix una drecera al gestor de contrasenyes</translation>
-<translation id="6390800440335263989">Per continuar, inicia la sessió a Chromium com a <ph name="EMAIL" />. D'aquesta manera, podem garantir que tens les polítiques de la teva organització.</translation>
+<translation id="6390800440335263989">Per continuar, inicia la sessió a Chromium com a <ph name="EMAIL" />. D'aquesta manera, podem garantir que s'apliquen les polítiques de la teva organització.</translation>
 <translation id="6400112897226594999">Logotip de Chromium a l'interior d'una pantalla d'ordinador.</translation>
 <translation id="6403826409255603130">Chromium és un navegador web que executa les pàgines web i les aplicacions a gran velocitat. És ràpid, estable i fàcil d'utilitzar. Navegueu per Internet amb més seguretat amb protecció inserida a Chromium contra el programari maliciós i contra la pesca de credencials.</translation>
 <translation id="6436260184216827876">La cerca d'imatges no està disponible. Torna-ho a provar més tard.</translation>
@@ -512,6 +512,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="813913629614996137">S'està inicialitzant…</translation>
 <translation id="8166782796394721554">Activa la protecció addicional al motor JavaScript i WebAssembly de Chromium</translation>
 <translation id="81770708095080097">Chromium ha bloquejat aquest fitxer perquè és perillós.</translation>
+<translation id="8177472873527554730">No es troba contingut a la pàgina</translation>
 <translation id="8200109504272824693">Introdueix la frase de contrasenya per utilitzar i desar les dades de Chromium al teu compte, <ph name="USER_EMAIL" /></translation>
 <translation id="8221491193165283816">Normalment bloqueges les notificacions. Per permetre que aquest lloc web et mostri notificacions, fes clic aquí.</translation>
 <translation id="8223363452568144035">Per poder utilitzar la càmera, dona accés a Chromium des de la <ph name="BEGIN_LINK" />configuració del sistema<ph name="END_LINK" /></translation>

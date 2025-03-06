@@ -6,6 +6,7 @@
 <translation id="1044891598689252897">Sajtet do të punojnë normalisht</translation>
 <translation id="1070329623210597193">Skedarët që mund të shikojë ose modifikojë ky sajt</translation>
 <translation id="1073417869336441572">Na ndihmo të përmirësojmë Chrome duke na treguar se pse ke lejuar kukit e palëve të treta. <ph name="BEGIN_LINK" />Dërgo komente<ph name="END_LINK" /></translation>
+<translation id="1074758928858737435">Mund të kërkosh për të parë versionin e desktopit të sajteve</translation>
 <translation id="1085696779717592361">Përdor Chrome si parazgjedhje</translation>
 <translation id="1178581264944972037">Pauzë</translation>
 <translation id="1181037720776840403">Hiq</translation>
@@ -32,6 +33,7 @@
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sajt}other{<ph name="SITE_COUNT" /> sajte}}</translation>
 <translation id="1500473259453106018">Fshih kartën "Uljet e çmimeve në skeda"</translation>
 <translation id="1510341833810331442">Sajtet nuk lejohen të ruajnë të dhëna në pajisjen tënde</translation>
+<translation id="1538031354170655462">Sajtet përdorin zakonisht komunikimin e fushës në afërsi (NFC) për të funksionuar me etiketat ose pajisjet në afërsi, si p.sh. skanimin e stemave apo pagesat pa kontakt</translation>
 <translation id="1547123415014299762">Kukit e palëve të treta lejohen</translation>
 <translation id="1593426485665524382">Veprime të reja të disponueshme pranë kreut të ekranit</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -115,6 +117,7 @@
 <translation id="2677748264148917807">Largohu</translation>
 <translation id="2682367912565197520">Fshi nivelin e ruajtur të zmadhimit</translation>
 <translation id="2683434792633810741">Të fshihen dhe të rivendosen?</translation>
+<translation id="2685514716378236873">Nuk lejohen</translation>
 <translation id="2713106313042589954">Çaktivizo kamerën</translation>
 <translation id="2717722538473713889">Adresat e email-it</translation>
 <translation id="2726059656860238749">Hap Chrome me fokusin tek omnibox-i, duke zvogëluar kohën e nisjes në pajisjet e nivelit të ulët.</translation>
@@ -211,12 +214,14 @@
 <translation id="3955193568934677022">Lejo që sajtet të luajnë përmbajtje të mbrojtur (rekomandohet)</translation>
 <translation id="3965467402665811906">Sajtet mund të kërkojnë që të përdorin informacionet që kanë ruajtur në lidhje me ty</translation>
 <translation id="3967822245660637423">Shkarkimi përfundoi</translation>
+<translation id="3981465354637804599">Sajtet shfaqin zakonisht reklama që të mund të ofrojnë përmbajtje ose shërbime pa pagesë. Megjithatë, disa sajte dihet se shfaqin reklama ndërhyrëse ose çorientuese.</translation>
 <translation id="3987993985790029246">Kopjo lidhjen</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992308058851451478"><ph name="SITE" /> mund të përdorë informacionet e tua kur ti shfleton</translation>
 <translation id="3992684624889376114">Rreth kësaj faqeje</translation>
 <translation id="4002066346123236978">Titulli</translation>
 <translation id="4046123991198612571">Kënga tjetër</translation>
+<translation id="4077310749977440510">Sajtet lexojnë zakonisht kujtesën tënde të fragmenteve për veçoritë si ruajtja e formatimit të tekstit që ke kopjuar</translation>
 <translation id="4149890623864272035">E konfirmon që dëshiron t'i fshish të gjitha të dhënat lokale, duke përfshirë kukit, dhe të rivendosësh të gjitha lejet për këtë uebsajt?</translation>
 <translation id="4149994727733219643">Pamje e thjeshtuar për faqet e uebit</translation>
 <translation id="4151930093518524179">Zmadhimi i parazgjedhur</translation>
@@ -224,6 +229,7 @@
 <translation id="4169549551965910670">U lidh me një pajisje USB</translation>
 <translation id="4194328954146351878">Pyet përpara se të lejosh sajtet të shikojnë dhe ndryshojnë informacionin në pajisjet NFC (rekomandohet)</translation>
 <translation id="4200726100658658164">Hap "Cilësimet e vendndodhjes"</translation>
+<translation id="421742575134139848">Sajtet mund të luajnë tinguj për të siguruar audion për muzikën, videot dhe media të tjera</translation>
 <translation id="4226663524361240545">Njoftimet mund të bëjnë që pajisja të dridhet</translation>
 <translation id="4259722352634471385">Lundrimi është bllokuar: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Pasi të largohesh nga një sajt, ai mund të vazhdojë të sinkronizojë detyrat, si p.sh. ngarkimin e fotografive ose dërgimin e një mesazhi bisede</translation>
@@ -247,6 +253,7 @@
 <translation id="4566417217121906555">Çaktivizo mikrofonin</translation>
 <translation id="4570913071927164677">Detajet</translation>
 <translation id="4598549027014564149">Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit e tua për të parë aktivitetin e shfletimit nëpër sajte të ndryshme, as edhe në sajtet e ngjashme. Aktiviteti yt i shfletimit nuk përdoret për gjëra të tilla si p.sh. personalizimi i reklamave. Veçoritë në disa sajte mund të mos funksionojnë.</translation>
+<translation id="461356340001513807">Të lejon që të identifikohesh në uebsajte duke përdorur llogarinë që ke me një shërbim identiteti</translation>
 <translation id="4619615317237390068">Skedat nga pajisjet e tjera</translation>
 <translation id="4644713492825682049">Fshi dhe rivendos</translation>
 <translation id="4645575059429386691">Menaxhohet nga prindi yt</translation>
@@ -430,6 +437,7 @@
 <translation id="7000754031042624318">E çaktivizuar te cilësimet e Android</translation>
 <translation id="702275896380648118">Ky sajt përcakton gjërat që të pëlqejnë dhe më pas sugjeron reklama për sajtet e tjera. Ky sajt merr po ashtu temat e tua të reklamave nga Chrome për të të shfaqur reklama më të përshtatshme</translation>
 <translation id="7053983685419859001">Bllokoje</translation>
+<translation id="7055552182600664515">Për të luajtur përmbajtjet e mbrojtura nga të drejtat e autorit, sajtet mund të kenë nevojë të përdorin një shërbim të mbrojtjes së përmbajtjeve. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 i zgjedhur}other{# të zgjedhur}}</translation>
 <translation id="708014373017851679"><ph name="APP_NAME" /> nuk është përditësuar. Përditëso aplikacionin.</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> të zgjedhura. Opsionet ofrohen pranë kreut të ekranit</translation>

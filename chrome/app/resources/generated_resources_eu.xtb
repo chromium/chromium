@@ -3801,6 +3801,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3670229581627177274">Aktibatu Bluetootha</translation>
 <translation id="3670480940339182416">Webguneek V8 optimizatzailea erabil dezakete</translation>
 <translation id="3671764914317109892">Erabili eguneroko hizkera arakatze-historian bilaketak egiteko. Gainera, galderak egin ditzakezu, eta zure arakatze-historian oinarritutako erantzunak jaso.</translation>
+<translation id="3671982238795754537">Lortu sarbide-gakoei buruzko informazio gehiago</translation>
 <translation id="3672681487849735243">Errore bat hauteman da jatorrizko hardwarean</translation>
 <translation id="3673097791729989571"><ph name="SAML_DOMAIN" /> domeinuak ostatatzen du saio-hasiera</translation>
 <translation id="3673287357837016374">Eguneratu da PINa</translation>
@@ -4059,6 +4060,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Luzapen bat onartu da}other{# luzapen onartu dira}}</translation>
 <translation id="3823019343150397277">IBANa</translation>
 <translation id="3823310065043511710">Linux instalatzeko, gutxienez <ph name="INSTALL_SIZE" /> eduki behar dira libre.</translation>
+<translation id="3824203811509979971">Laburbildu edukia edo egin galderak</translation>
 <translation id="3824621460022590830">Gailuaren erregistro-tokenak ez du balio. Jarri harremanetan gailuaren jabearekin edo administratzailearekin. Errore-kodea: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Beste gailuetako fitxak ikusteko, hasi saioa</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Gogoratu fitxategi mota honetarako aukeratu dudana: <ph name="FILE_TYPES" />}other{Gogoratu fitxategi mota hauetarako aukeratu dudana: <ph name="FILE_TYPES" />}}</translation>
@@ -4245,6 +4247,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="3948985214866944547">Pertsona gehienek kokapen zehatza partekatzeko aukera blokeatu egiten dute webgune honetan</translation>
 <translation id="394984172568887996">Internet Explorer arakatzailetik inportatutakoak</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> fitxategiak deskargatzea seguruagoa izan dadin</translation>
+<translation id="3950479158728806902">Sortu sarbide-gako bat automatikoki saioa bizkorrago hasteko</translation>
 <translation id="3950820424414687140">Hasi saioa</translation>
 <translation id="3950841222883198950">Ahozko idazketa</translation>
 <translation id="3953834000574892725">Nire kontuak</translation>
@@ -4712,6 +4715,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4289540628985791613">Ikuspegi orokorra</translation>
 <translation id="428963538941819373"><ph name="HOST" /> arakatu bitartean zuri buruz gorde duten informazioa erabil dezakete webgune hauek</translation>
 <translation id="4289732974614035569">Aukeratu PIN bat</translation>
+<translation id="4290526909608432059">Laster, Chrome-ren aplikazioekiko bateragarritasuna amaituko da. Dauzkazun aukerak ezagutzeko, jarri aplikazioaren garatzailearekin edo zure IKT saileko laguntza-taldearekin harremanetan.</translation>
 <translation id="4290791284969893584">Orri bat ixten baduzu, baliteke hasitako zereginak ez amaitzea</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> kide</translation>
 <translation id="4290898381118933198">Pasatu hatza orrietan zehar nabigatzeko</translation>
@@ -5171,6 +5175,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4624054169152573743">Kolore-gaia</translation>
 <translation id="4625078469366263107">Gaitu aplikazioa</translation>
 <translation id="4625905218692741757">Kolore gris lehenetsia</translation>
+<translation id="4627107755957573804">Eman dauden kontuak bertsio-berritzeko baimena webguneei eta aplikazioei, kontuok sarbide-gakoak erabil ditzaten</translation>
 <translation id="4627442949885028695">Jarraitu beste gailu batetik</translation>
 <translation id="4628762811416793313">Ez da osatu Linux edukiontziaren konfigurazioa. Saiatu berriro.</translation>
 <translation id="4629521233550547305">Ireki <ph name="PROFILE_NAME" /> erabiltzailearen profila</translation>
@@ -5753,6 +5758,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5053233576223592551">Gehitu erabiltzaile-izena</translation>
 <translation id="505347685865235222">Talde izengabea: <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{Berehala aldatzea gomendatzen dizugu}other{Berehala aldatzea gomendatzen dizugu}}</translation>
+<translation id="5056587122125565772">Sortu irudi bat</translation>
 <translation id="5056950756634735043">Edukiontzira konektatzen</translation>
 <translation id="5057110919553308744">Luzapena sakatzen duzunean</translation>
 <translation id="5057127674016624293">Espero baino gehiago ari da luzatzen analisia</translation>
@@ -5863,6 +5869,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="512642543295077915">Bilaketa + Atzera tekla</translation>
 <translation id="5126611267288187364">Ikusi aldaketak</translation>
 <translation id="5127620150973591153">Konexio seguruaren identifikatzailea: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">Laburbildu edukia edo egin galderak.</translation>
 <translation id="5127881134400491887">Sareko konexioak kudeatu.</translation>
 <translation id="5127934926273826089">Loreak</translation>
 <translation id="5127986747308934633">Administratzailea zure gailua kontrolatzen ari da</translation>
@@ -8493,6 +8500,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Serieko ataka konektatuta</translation>
 <translation id="7033616203784997570">Gehienez 62 karaktere idatz daitezke</translation>
 <translation id="7034692021407794547">Fakturazio-pribilegioak dituzten administratzaileek Google Meet-en hardwarearen Zerbitzu-baldintzak onartu behar dituzte lehendabizi administrazio-kontsolako Google Meet-en hardwarea atalean.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> webguneak zure konturako sarbide-gako bat sortu berri du. Sarbide-gakoek saioa hasteko modu bizkorrago eta seguruago bat eskaintzen dute, eta Google-ren Pasahitz-kudeatzailea zerbitzuan gordetzen dira <ph name="USER" /> konturako. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Linux instalatzeko, gutxienez <ph name="DISK_SIZE" /> eduki behar dira libre. Tokia egiteko, ezabatu gailuan dauden fitxategiak.</translation>
 <translation id="7037157058268992880">Ahaztu egin zait PINa</translation>
 <translation id="7037509989619051237">Aurreikusteko testua</translation>
@@ -10119,6 +10127,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8195854162863398249">Desgaitu <ph name="FEATURE_NAME" /></translation>
 <translation id="8195920051450756553">Tekla bera berriro aktibatzeko igaro beharreko denbora</translation>
 <translation id="8197673340773315084">Gehitu izen edo etiketa bat; adibidez, "Lana" edo "Pertsonala"</translation>
+<translation id="8198181050118789419">Gaia: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Edukia igortzen ari den fitxa</translation>
 <translation id="8199300056570174101">Sarearen mantentze-zerbitzua eta gailuaren propietateak</translation>
 <translation id="8200772114523450471">Berrekin</translation>
@@ -10529,6 +10538,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8477178913400731244">Ezabatu datuak</translation>
 <translation id="8477241577829954800">Ordeztua</translation>
 <translation id="8477384620836102176">&amp;Orokorra</translation>
+<translation id="8477446666255316832">Hasi saioa bizkorrago hurrengoan</translation>
 <translation id="8479176401914456949">Kodeak ez du balio. Saiatu berriro.</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> saltzailearen identifikatu ezin den gailua</translation>
 <translation id="8481187309597259238">Berretsi USB gailuak erabiltzeko baimena</translation>
@@ -11375,6 +11385,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="9074739597929991885">Bluetootha</translation>
 <translation id="9074836595010225693">USB sagua konektatu da</translation>
 <translation id="9075413375877487220">"Arakatze seguru hobetua" eginbideak ez du jotzen fidagarritzat luzapena.</translation>
+<translation id="9075985558450420812">Idatzi eskaera-mezu pertsonalizatu bat edo nabarmendu testua irudi bat sortzeko.</translation>
 <translation id="9076523132036239772">Ezin izan da helbide elektronikoa edo pasahitza egiaztatu. Saiatu sare batera konektatzen lehendabizi.</translation>
 <translation id="9076821103818989526">Alboko panela</translation>
 <translation id="9076977315710973122">SMB bidez partekatzea</translation>

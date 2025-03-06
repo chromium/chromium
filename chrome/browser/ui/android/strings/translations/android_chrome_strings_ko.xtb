@@ -270,6 +270,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2259659629660284697">비밀번호 내보내기...</translation>
 <translation id="2276696007612801991">비밀번호를 확인하려면 Google 계정에 로그인하세요.</translation>
 <translation id="2278052315791335171">비밀번호를 삭제해도 <ph name="SITE" /> 계정은 삭제되지 않습니다.</translation>
+<translation id="2281243904606300427"><ph name="TAB_TITLE" />, 선택된 시크릿 탭</translation>
 <translation id="2286841657746966508">청구서 수신 주소</translation>
 <translation id="228704530595896923">공유 옵션 목록입니다.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />개 탭 보기}other{<ph name="TABS_COUNT_MANY" />개 탭 보기}}</translation>
@@ -329,6 +330,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" />개 항목 삭제함</translation>
 <translation id="253498598929009420">사이트에서 화면의 콘텐츠를 볼 수 있습니다.</translation>
 <translation id="2536728043171574184">이 페이지의 오프라인 사본 보는 중</translation>
+<translation id="2542548955756682219"><ph name="TAB_TITLE" />, 탭</translation>
 <translation id="2546283357679194313">쿠키 및 사이트 데이터</translation>
 <translation id="2547843573592965873">프로필 잠금을 사용하면 Google 계정에 저장된 비밀번호 및 결제 등의 정보를 자동차에서 안전하게 보호할 수 있습니다.</translation>
 <translation id="254973855621628293">비밀번호가 이 기기에 저장됨</translation>
@@ -472,6 +474,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3169472444629675720">디스커버</translation>
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{비밀번호 1개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정(<ph name="ACCOUNT_EMAIL" />)에 저장하세요.}other{비밀번호 #개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정(<ph name="ACCOUNT_EMAIL" />)에 저장하세요.}}</translation>
 <translation id="3187472288455401631">광고 측정</translation>
+<translation id="3189635831478931757"><ph name="GROUP_TITLE" /> 탭 그룹</translation>
 <translation id="3207960819495026254">북마크에 추가됨</translation>
 <translation id="3208584281581115441">지금 확인</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> 삭제됨</translation>
@@ -748,6 +751,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4523326818319942067">지난 1시간</translation>
 <translation id="452750746583162491">동기화된 데이터 검토</translation>
 <translation id="4532845899244822526">폴더 선택</translation>
+<translation id="4535755320005483982">공유된 <ph name="GROUP_TITLE" /> 탭 그룹</translation>
 <translation id="4543131175509360848">패스키 시트 없음</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{탭 <ph name="TAB_COUNT_ONE" />개}other{탭 <ph name="TAB_COUNT_MANY" />개(시크릿 탭 <ph name="TAB_COUNT_INCOGNITO" />개)}}</translation>
 <translation id="4558311620361989323">웹페이지 단축키</translation>
@@ -1249,6 +1253,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6756507620369789050">의견 공유</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" /></translation>
 <translation id="676305334223455055">로그인하여 내 관심분야를 바탕으로 하는 콘텐츠를 받아 보세요.</translation>
+<translation id="6764137532716892442">새로운 활동이 있는 공유된 <ph name="GROUP_TITLE" /> 탭 그룹</translation>
 <translation id="6767294960381293877">탭을 공유할 기기 목록이 절반 높이로 열렸습니다.</translation>
 <translation id="6785476624617658922">Chrome 및 ChromeOS 추가 서비스 약관</translation>
 <translation id="6795633245022906657">새 탭을 빠르게 엽니다. 바로가기를 수정하려면 설정으로 이동하세요.</translation>
@@ -1315,6 +1320,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6965382102122355670">확인</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{공유 탭 그룹에서 새로운 활동이 있는 탭 <ph name="TABS_COUNT_ONE" />개 보기}other{공유 탭 그룹에서 새로운 활동이 있는 탭 <ph name="TABS_COUNT_MANY" />개 보기}}</translation>
 <translation id="6971862865055170158">승인 안함</translation>
+<translation id="6976223255612495095"><ph name="TAB_TITLE" />, 새 탭 또는 업데이트된 탭</translation>
 <translation id="6978717888677691380">차단한 사이트</translation>
 <translation id="6979737339423435258">전체 기간</translation>
 <translation id="6983306615164277634">주소 표시줄을 길게 터치하여 위치를 변경할 수도 있습니다.</translation>
@@ -1708,6 +1714,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />(으)로 <ph name="SITE_ETLD_PLUS_ONE" />에 가입하기</translation>
 <translation id="8676789164135894283">로그인 인증</translation>
 <translation id="8683039184091909753">이미지</translation>
+<translation id="8688183792442786085"><ph name="TAB_TITLE" />, 선택된 탭</translation>
 <translation id="869891660844655955">유효기간</translation>
 <translation id="8699120352855309748">번역할지 묻지 않을 언어</translation>
 <translation id="8712637175834984815">확인</translation>
@@ -1841,4 +1848,5 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="988091779042748639">기기에서 시크릿 모드 방문 기록을 삭제하려면 모든 시크릿 탭을 닫으세요.</translation>
 <translation id="992745192656291733">탭 <ph name="TAB_COUNT" />개</translation>
 <translation id="996149300115483134">피드 카드 메뉴가 닫힘</translation>
+<translation id="99907655649633293"><ph name="TAB_TITLE" />, 시크릿 탭</translation>
 </translationbundle>

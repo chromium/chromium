@@ -107,6 +107,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="1413446866325418126">Enregistrer des données dans votre compte Google</translation>
 <translation id="1414981605391750300">Mise en relation avec Google. Cette opération peut prendre une minute…</translation>
 <translation id="1416550906796893042">Version de l'application</translation>
+<translation id="1416582024052267068">Gardez l'accès à vos mots de passe</translation>
 <translation id="1419753403124156396">Redémarrer Chrome ?</translation>
 <translation id="1428770807407000502">Désactiver la synchronisation ?</translation>
 <translation id="1430915738399379752">Imprimer</translation>
@@ -515,6 +516,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="342220687432920852">{HOURS,plural, =1{Il y a # h}one{Il y a # h}other{Il y a # h}}</translation>
 <translation id="3430670036890315772">Si vous désactivez le verrouillage du profil, vos informations enregistrées seront supprimées</translation>
 <translation id="3435465986463792564">Vous pouvez gérer toutes vos fenêtres depuis ce menu</translation>
+<translation id="3435575784518354875">Pour conserver l'accès à vos mots de passe, exportez-les maintenant, mettez à jour les services Google Play, puis importez les mots de passe à nouveau dans le Gestionnaire de mots de passe de Google. <ph name="BEGIN_LINK" />Voir les instructions détaillées<ph name="END_LINK" /></translation>
 <translation id="3435738964857648380">Sécurité</translation>
 <translation id="3439276997620616816">Vos onglets récents s'afficheront ici</translation>
 <translation id="3443221991560634068">Actualiser la page active</translation>
@@ -524,6 +526,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3474624961160222204">Continuer en tant que <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Vous pouvez choisir votre moteur de recherche</translation>
 <translation id="3479552764303398839">Pas maintenant</translation>
+<translation id="3487903178221457900">Le fichier exporté peut être accessible à d'autres personnes, y compris des applis. Une fois l'exportation terminée, vos mots de passe sont supprimés de Chrome.</translation>
 <translation id="3488199663160411179">nom</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> sur le contenu suggéré</translation>
 <translation id="3495219333887281978">Bottom sheet de connexion ouverte à mi-hauteur.</translation>
@@ -549,6 +552,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3566639033325271639">Mettre à jour les paramètres</translation>
 <translation id="3568945271227339929">Aucun mot de passe compromis</translation>
 <translation id="357465026686164600">Utiliser le téléphone comme clé de sécurité</translation>
+<translation id="3575464060651642446">Vérification des mots de passe sur cet appareil…</translation>
 <translation id="3577473026931028326">Un problème est survenu. Réessayez.</translation>
 <translation id="3577558748185201054">Gérez vos centres d'intérêt et préférences</translation>
 <translation id="3587482841069643663">Complète</translation>
@@ -1751,6 +1755,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8937772741022875483">Supprimer votre activité Chrome de Bien-être numérique ?</translation>
 <translation id="8942627711005830162">Ouvrir dans une autre fenêtre</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Impossible de télécharger cette langue. Réessayez plus tard.</translation>
+<translation id="8957528460562961174">Pour conserver l'accès à vos mots de passe, exportez-les maintenant, puis importez-les dans le gestionnaire de mots de passe de votre choix. Le Gestionnaire de mots de passe de Google a cessé de fonctionner, car les services Google Play ne sont pas disponibles.</translation>
 <translation id="8963117664422609631">Accéder aux paramètres du site</translation>
 <translation id="8965591936373831584">en attente</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> onglet de navigation privée et <ph name="TAB_COUNT_ONE" /> autre onglet seront supprimés}one{<ph name="INCOGNITO_TAB_COUNT" /> onglet de navigation privée et <ph name="TAB_COUNT_MANY" /> autre onglet seront supprimés}other{<ph name="INCOGNITO_TAB_COUNT" /> onglet de navigation privée et <ph name="TAB_COUNT_MANY" /> autres onglets seront supprimés}}</translation>

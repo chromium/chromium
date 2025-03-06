@@ -22,6 +22,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1058009965971887428">Senda ábendingu</translation>
 <translation id="1059120031266247284">Deilt með þér</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> ásamt hnappi til að fjarlægja</translation>
 <translation id="1062407476771304334">Skipta út</translation>
 <translation id="1073899992769346247">Skiptu um eða hladdu rafhlöðuna</translation>
 <translation id="1081015718268701546">Linux-forrit eru ekki studd eins og er. Önnur forrit verða vistuð.</translation>
@@ -1229,6 +1230,7 @@ Eitt tæki er tengt.</translation>
 <translation id="5043679421800073804">Smella eða ýta á síðasta atriði á hillu</translation>
 <translation id="504465286040788597">Fyrri málsgrein</translation>
 <translation id="5045550434625856497">Rangt aðgangsorð</translation>
+<translation id="5056587122125565772">Búa til mynd</translation>
 <translation id="5058794129231928255">Ekki tókst að búa til Google-skjal</translation>
 <translation id="5062496344832867502">vinnsluminni</translation>
 <translation id="5068762093486106012">Þú færð tilkynningu ef þú talar á meðan slökkt er á hljóðinu. Ekkert hljóð er sent úr tækinu.</translation>
@@ -1277,6 +1279,7 @@ Eitt tæki er tengt.</translation>
 <translation id="5222676887888702881">Skrá út</translation>
 <translation id="5228195526683428788">Skilrúm skjáskiptingar</translation>
 <translation id="5229343007215035173">Kveikja/slökkva á persónuverndarskjá</translation>
+<translation id="5229860525743792999">Fjarlægja <ph name="ITEM_LABEL" /> úr tillöguhóp</translation>
 <translation id="5230516054153933099">Gluggi</translation>
 <translation id="5234764350956374838">Hunsa</translation>
 <translation id="523505283826916779">Aðgengisstillingar</translation>
@@ -1759,6 +1762,7 @@ Ný uppsetning</translation>
 <translation id="6757237461819837179">Ekkert efni í spilun</translation>
 <translation id="6760438044935091345">Leikjastjórnborð</translation>
 <translation id="6768043681523654438">geymslurými</translation>
+<translation id="6769195697113506406">Mynd sett inn</translation>
 <translation id="6777216307882431711">Knýr tengd USB-C tæki</translation>
 <translation id="6781002679438061620">Skrifborð 9</translation>
 <translation id="6782182743534150858">Skrifborð 13</translation>
@@ -1985,6 +1989,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="7571361473021531288">Rafhlaða <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> eftir</translation>
 <translation id="7573585051776738856">Virkur gluggi festur hægra megin.</translation>
 <translation id="7579778809502851308">Skjámyndataka</translation>
+<translation id="7588317312481506627">Afritað á klippiborð.</translation>
 <translation id="7593891976182323525">Leit eða Shift</translation>
 <translation id="7598054670902114203">Yfirlit yfir örgjörvanotkun, <ph name="CPU_USEAGE" />%. Hitastig <ph name="TEMPERATURE" /> gráður á celsíus, núverandi hraði: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="7599378375976398913">Setur inn valda niðurstöðu</translation>
@@ -2179,6 +2184,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8155628902202578800">Opna upplýsingaglugga fyrir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Notar <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Efni</translation>
+<translation id="81817143961839203">Ekki tókst að setja inn mynd</translation>
 <translation id="8185090165691050712">Kveikja/slökkva á valmynd til að breyta stærð læsingarstillingar</translation>
 <translation id="8192727139462702395">Þegar þú slekkur á Bluetooth aftengjast þessi ytri tæki frá <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Útsendingarflipi</translation>
@@ -2257,6 +2263,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> hefur <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Ýttu á Alt+leitarlykil eða Shift til að hætta við.</translation>
 <translation id="8480418399907765580">Sýna tækjastiku</translation>
+<translation id="8487660088084188539">Þegar kveikt er á þessum eiginleikum kunna innsleginn texti, efni skjalsins og vefslóð vefsíðunnar að verða send á Google-þjóna. Þessar upplýsingar eru notaðar til að búa til tillögur að skrifum, samantektir, svara spurningum og bæta vöruna í samræmi við <ph name="LINK_TO_SERVICE_TERMS" />. Ekki slá inn persónulegar upplýsingar, viðkvæmar upplýsingar eða trúnaðarupplýsingar.</translation>
 <translation id="8487699605742506766">Heitur reitur</translation>
 <translation id="8491237443345908933">Opna tengil í nýjum flipa</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> styður ekki <ph name="SPECIFIED_RESOLUTION" />. Upplausninni var breytt í <ph name="FALLBACK_RESOLUTION" />. Veldu „Staðfesta“ til að halda breytingum. Fyrri stillingar verða valdar eftir <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2326,6 +2333,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8725066075913043281">Reyna aftur</translation>
 <translation id="8725214031272624704">Sýna lista yfir tiltækar innfærsluaðferðir</translation>
 <translation id="8730621377337864115">Lokið</translation>
+<translation id="8731188831050207755">Ekki tókst að sækja <ph name="FILE_NAME" /></translation>
 <translation id="8731487213223706745">Lýkur kl. <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Það gæti verið að reyna að stela lyklaborðsinnslætti</translation>
 <translation id="8735678380411481005">Litur baklýsingar lyklaborðs</translation>

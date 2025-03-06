@@ -4081,6 +4081,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Ett tillägg har godkänts}other{# tillägg har godkänts}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Minst <ph name="INSTALL_SIZE" /> utrymme rekommenderas för Linux.</translation>
+<translation id="3824203811509979971">Sammanfatta innehållet eller ställ frågor</translation>
 <translation id="3824621460022590830">Token för enhetsregistrering är ogiltig. Kontakta enhetens ägare eller administratör. Felkod: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Logga in om du vill visa flikar från andra enheter</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Kom ihåg mitt val för denna filtyp: <ph name="FILE_TYPES" />}other{Kom ihåg mitt val för dessa filtyper: <ph name="FILE_TYPES" />}}</translation>
@@ -4267,6 +4268,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="3948985214866944547">De flesta användarna blockerar delning av exakt plats för den här webbplatsen</translation>
 <translation id="394984172568887996">Importerat från IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> gör det säkrare att ladda ned filer</translation>
+<translation id="3950479158728806902">Skapa en nyckel automatiskt för att logga in snabbare</translation>
 <translation id="3950820424414687140">Logga in</translation>
 <translation id="3950841222883198950">Röstinmatning</translation>
 <translation id="3953834000574892725">Mina konton</translation>
@@ -5195,6 +5197,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4624054169152573743">Färgtema</translation>
 <translation id="4625078469366263107">Aktivera appen</translation>
 <translation id="4625905218692741757">Grått standardtema</translation>
+<translation id="4627107755957573804">Tillåt att webbplatser och appar uppgraderar befintliga konton till att använda nycklar</translation>
 <translation id="4627442949885028695">Fortsätta på en annan enhet</translation>
 <translation id="4628762811416793313">Det gick inte att slutföra konfigureringen av Linux-behållaren. Försök igen.</translation>
 <translation id="4629521233550547305">Öppna profilen <ph name="PROFILE_NAME" /></translation>
@@ -5778,6 +5781,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5053233576223592551">Lägg till användarnamn</translation>
 <translation id="505347685865235222">Namnlös grupp – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{Du bör ändra det nu}other{Du bör ändra dessa nu}}</translation>
+<translation id="5056587122125565772">Skapa bild</translation>
 <translation id="5056950756634735043">Ansluter till behållaren</translation>
 <translation id="5057110919553308744">När du klickar på tillägget</translation>
 <translation id="5057127674016624293">Genomsökningen tar längre tid än väntat</translation>
@@ -5888,6 +5892,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="512642543295077915">sök + backsteg</translation>
 <translation id="5126611267288187364">Visa ändringar</translation>
 <translation id="5127620150973591153">Id för säker anslutning: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">Sammanfatta innehållet eller ställ frågor.</translation>
 <translation id="5127881134400491887">Hantera nätverksanslutningar</translation>
 <translation id="5127934926273826089">Blommor</translation>
 <translation id="5127986747308934633">Administratören styr enheten</translation>
@@ -11415,6 +11420,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB-mus har anslutits</translation>
 <translation id="9075413375877487220">Det här tillägget är inte betrott i Förbättrad säker webbsökning.</translation>
+<translation id="9075985558450420812">Ange en anpassad prompt eller markera text för att skapa en bild.</translation>
 <translation id="9076523132036239772">Det gick inte att verifiera e-postadressen eller lösenordet. Anslut till ett nätverk först.</translation>
 <translation id="9076821103818989526">Sidopanel</translation>
 <translation id="9076977315710973122">SMB-filresurs</translation>

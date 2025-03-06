@@ -252,6 +252,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1419305130220238697">Letöltések kezelése a Chrome-ban gomb. A gombot megnyomva kezelheti a Chrome-ban letöltött fájlokat.</translation>
 <translation id="1420345875188552368">Az Ön mentett automatikus fizetési módja használható ennél a fizetésnél. Az elektronikus pénztárcák Chrome-ban való kikapcsolásához lépjen a <ph name="BEGIN_LINK1" />fizetési beállításokhoz<ph name="END_LINK1" />.</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> a párosítás engedélyezéséhez</translation>
+<translation id="1421484961346698724">Törölt fiók</translation>
 <translation id="14222610277930434">Ön által gyakran felkeresett</translation>
 <translation id="1422930527989633628">Engedélyt kérhet a közeli Bluetooth-eszközök felfedezésére</translation>
 <translation id="1426410128494586442">Igen</translation>
@@ -1435,6 +1436,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3536227077203206203">Erre az alkalomra engedélyezve van</translation>
 <translation id="3537165859691846083">„Letter Plus” méret</translation>
 <translation id="353816159217417898">Raszter (oldalas)</translation>
+<translation id="3541016556608204104">További információ a Chrome Enterprise Connectors gyűjteményről</translation>
 <translation id="3542628208405253498">Kártyakép</translation>
 <translation id="3542768452570884558">Link megnyitása új ablakban</translation>
 <translation id="3543935938072367282">Fizessen gyorsabban az automatikus kitöltéssel</translation>
@@ -3021,6 +3023,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6351658970066645919">Böngészési adatok törlése</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Nincs}=1{1 jelszó (a következő domainekhez: <ph name="DOMAIN_LIST" />, szinkronizálva)}=2{2 jelszó (a következő domainekhez: <ph name="DOMAIN_LIST" />, szinkronizálva)}other{# jelszó (a következő domainekhez: <ph name="DOMAIN_LIST" />, szinkronizálva)}}</translation>
 <translation id="6355392890578844978">Ezt a böngészőt nem kezeli cég vagy más szervezet. Lehetséges, hogy az eszközön végzett tevékenységeket a Chromiumon kívülről felügyelik. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">A(z) „<ph name="GROUP_TITLE_1" />” és a(z) „<ph name="GROUP_TITLE_2" />” lapcsoportok már nem állnak rendelkezésre</translation>
 <translation id="6358088212770985041">szerkeszteni próbálja a fizetési módokat</translation>
 <translation id="6358450015545214790">Mit jelent ez?</translation>
 <translation id="6360213755783740931">További információ a rosszindulatú programok elleni védelemről</translation>

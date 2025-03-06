@@ -3025,6 +3025,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6351658970066645919">Suprimeix les dades de navegació</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Cap}=1{1 contrasenya per a <ph name="DOMAIN_LIST" /> (sincronitzats)}=2{2 contrasenyes per a <ph name="DOMAIN_LIST" /> (sincronitzats)}other{# contrasenyes per a <ph name="DOMAIN_LIST" /> (sincronitzats)}}</translation>
 <translation id="6355392890578844978">Cap empresa ni cap altra organització no gestiona aquest navegador. És possible que l'activitat d'aquest dispositiu es gestioni fora de Chromium. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Els grups de pestanyes "<ph name="GROUP_TITLE_1" />" i "<ph name="GROUP_TITLE_2" />" ja no estan disponibles</translation>
 <translation id="6358088212770985041">editar les formes de pagament</translation>
 <translation id="6358450015545214790">Què vol dir tot això?</translation>
 <translation id="6360213755783740931">Més informació sobre la protecció contra el programari maliciós</translation>

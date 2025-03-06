@@ -94,6 +94,7 @@
 <translation id="328933489847748230">{count,plural, =1{এখন ১টি Chromium উইন্ডো দেখানো হচ্ছে}one{এখন {count}টি Chromium উইন্ডো দেখানো হচ্ছে}other{এখন {count}টি Chromium উইন্ডো দেখানো হচ্ছে}}</translation>
 <translation id="3344973607274501920">Chromium আপনার পাসওয়ার্ড চেক করতে পারেনি। ডিভাইসের ইন্টারনেট কানেকশন চেক করে দেখুন।</translation>
 <translation id="3366305173356742781">আপনার অ্যাকাউন্টে Chromium ডেটা</translation>
+<translation id="33788334537425157">"Chromium বন্ধ করার সময় ছদ্মবেশী ট্যাব লক করুন" বিকল্প চালু করুন</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Chromium {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়। এর মধ্যে ইতিহাস ও অটোফিল অন্তর্ভুক্ত থাকতে পারে।}one{Chromium {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়। এর মধ্যে ইতিহাস ও অটোফিল অন্তর্ভুক্ত থাকতে পারে।}other{Chromium {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়। এর মধ্যে ইতিহাস ও অটোফিল অন্তর্ভুক্ত থাকতে পারে।}}</translation>
 <translation id="3410395242749598859">আপনার Chromium ডেটার কিছুটা এখনও <ph name="EMAIL" />-এ সেভ করা হয়নি।
 অ্যাকাউন্ট পাল্টানোর আগে কয়েক মিনিট অপেক্ষা করে দেখুন। আপনি এখনই অ্যাকাউন্ট পাল্টালে, এই ডেটা মুছে যাবে।</translation>
@@ -101,8 +102,10 @@
 <translation id="347967311580159871">আপনার Chromium ব্যবহার করার অভিজ্ঞতা উন্নত করতে ডেটা ব্যবহার করে, এমন আরও বেশি সেটিংসের জন্য <ph name="BEGIN_LINK" />Google পরিষেবা<ph name="END_LINK" /> লিঙ্কে যান।</translation>
 <translation id="3512168799938877162">আপনার পাসওয়ার্ড শেয়ার করা হয়নি। আপনার ইন্টারনেট কানেকশন চেক করুন এবং Chromium-এ সাইন-ইন করে আছেন কিনা তা ভালোভাবে দেখে নিন। তারপর, আবার চেষ্টা করুন।</translation>
 <translation id="3529798650269984835">“Chromium বন্ধ করার সময় 'ছদ্মবেশী' ট্যাব লক করুন” বিকল্প চালু করুন।</translation>
+<translation id="3541247799006476453">অটোফিলের জন্য Chromium-এর সাহায্যে পাসওয়ার্ড ও পাসকীতে সহজে অ্যাক্সেস পান</translation>
 <translation id="3567399274263440288">Chromium থেকে সবচেয়ে বেশি সুবিধা পেতে, আপনার Google অ্যাকাউন্ট দিয়ে Chromium-এ সাইন-ইন করুন।</translation>
 <translation id="3581385059720151202">Chromium-এ ভিজ্যুয়াল সার্চ করুন</translation>
+<translation id="3582640969619785896">Chromium আপনার পাসওয়ার্ড সেভ করার সুবিধা প্রদান করবে</translation>
 <translation id="3594315078412605236">Chromium-এ পেমেন্ট পদ্ধতি ম্যানেজ করুন</translation>
 <translation id="3634039384458740619">Chromium সেটিংস খুলুন</translation>
 <translation id="3639997914391704523">আপনি যখন নিজের Google অ্যাকাউন্ট ব্যবহার করে সাইন-ইন করবেন, Chromium তখন আপনার পাসওয়ার্ড চেক করে দেখতে পারে।</translation>
@@ -159,6 +162,7 @@
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" /> দ্বারা ম্যানেজ করা একটি অ্যাকাউন্ট থেকে আপনি সাইন-আউট করছেন বলে, এই ডিভাইস থেকে আপনার Chromium ডেটা মুছে যাবে। আপনার Google অ্যাকাউন্টে এই ডেটা থেকে যাবে।</translation>
 <translation id="5042011327527167688">“Chromium-এ Google Maps-এর মাধ্যমে দেখুন” বিকল্পে ট্যাপ করুন।</translation>
 <translation id="5044871537677053278">Chromium আপনাকে দিকনির্দেশ এবং স্থানীয় তথ্য দিতে ঠিকানা শনাক্ত ও Google Maps ব্যবহার করে।</translation>
+<translation id="5048140766121299007">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" সেটিংস থেকে "Chromium" চালু করুন</translation>
 <translation id="5048795749726991615">আপনার অন্যান্য অ্যাপে আপনার সেভ করা পাসওয়ার্ডগুলি সহজেই পেতে, অটোফিলের জন্য Chromium ব্যবহার করুন</translation>
 <translation id="5053429694249468757">Chromium-এর ডেটা মোছা হচ্ছে…</translation>
 <translation id="5071749685031362629">iOS-এর জন্য Chromium</translation>
@@ -166,6 +170,7 @@
 <translation id="5124429847818367226">মেসেজ, ডকুমেন্ট ও অন্যান্য অ্যাপ ব্রাউজ করতে বা এইসবের লিঙ্কে ট্যাপ করতে এখন আপনি যেকোনও সময় Chromium ব্যবহার করত পারবেন।</translation>
 <translation id="5131565040785979529">আপনার সাইন-ইন করে থাকা অ্যাকাউন্ট এবং Chromium কীভাবে ব্যবহার করা হয় তা আপনার প্রতিষ্ঠান, <ph name="DOMAIN" />, ম্যানেজ করে।</translation>
 <translation id="5134464247000681876">Gmail, Maps, YouTube থেকে লিঙ্ক ও Chromium-এ অন্যান্য অ্যাপ খুলুন</translation>
+<translation id="5203244847421322551">Chromium-এ সেভ ও অটোফিল করুন</translation>
 <translation id="5224391634244552924">কোনও পাসওয়ার্ড সেভ করা নেই। আপনি পাসওয়ার্ড সেভ করলে Chromium সেটি চেক করতে পারবে।</translation>
 <translation id="5259423875997548710">Chromium-এ ভিজ্যুয়াল সার্চ করুন।</translation>
 <translation id="5308226104666789935">কোনও আপডেট আছে কিনা, Chromium-এ তা চেক করে দেখা যাচ্ছে না</translation>
@@ -214,6 +219,7 @@
 <translation id="6197255575340902638">"<ph name="MODULE_NAME" />" মডিউলটি লুকানো হলে Chromium আর আপনার প্যাকেজ অটোমেটিক ট্র্যাক করবে না এবং পুরনো প্যাকেজ ট্র্যাকিংয়ের সমস্ত ডেটা মুছে দেবে।</translation>
 <translation id="6247557882553405851">Google পাসওয়ার্ড ম্যানেজার</translation>
 <translation id="6268381023930128611">Chromium থেকে সাইন-আউট করবেন?</translation>
+<translation id="6301717043141881464">অন্য অ্যাপে সেভ করা পাসওয়ার্ড পেতে অটোফিলের জন্য Chromium বেছে নিন</translation>
 <translation id="6324041800010509197">Chromium-এর ট্যাব গ্রিডে যান</translation>
 <translation id="6325378625795868881">মেসেজ এবং অন্যান্য অ্যাপের লিঙ্কে যেকোনও সময় ট্যাপ করতে Chromium ব্যবহার করুন।</translation>
 <translation id="6424492062988593837">Chrome আরও ভাল হয়েছে! একটি নতুন ভার্সন উপলব্ধ আছে৷</translation>
@@ -225,6 +231,7 @@
 <translation id="6574750762636192517">Chromium-এ পাসওয়ার্ড ম্যানেজ করুন</translation>
 <translation id="6590232959690355435">Chromium-এ আপনার ইতিহাস পৃষ্ঠা খোলে।</translation>
 <translation id="6674470628873622334">Chromium-এ একটি নতুন ছদ্মবেশী ট্যাব খোলে।</translation>
+<translation id="6680609900732453726">Chromium বন্ধ করার পরে ব্রাউজিং ব্যক্তিগত রাখতে ডিভাইস যাচাইকরণ ব্যবহার করুন</translation>
 <translation id="6752854822223394465">আপনার সংস্থা Chromium সেট আপ করছে...</translation>
 <translation id="6794054469102824109">Chromium ডাইনো গেম খোলে।</translation>
 <translation id="6820823224820483452">Chromium সব পাসওয়ার্ড চেক করতে পারেনি। আগামীকাল আবার চেষ্টা করে দেখুন।</translation>
@@ -288,6 +295,7 @@
 <translation id="8254729934443216898">নতুন ফিচার ব্যবহার করে দেখুন এবং Chromium-এর সবচেয়ে বেশি সুবিধা উপভোগ করুন।</translation>
 <translation id="8293572045658095405">আপনি Chromium ছদ্মবেশী মোড ব্যবহার করছেন</translation>
 <translation id="830951810931292870">Chromium-এ 'ছদ্মবেশী' মোডে ইনপুট দেওয়া URL খোলে।</translation>
+<translation id="8390323835464055390">অটোফিলের জন্য Chromium ব্যবহার করে এমন যেকোনও অ্যাপে সেভ করা পাসওয়ার্ড ও পাসকী দিয়ে সাইন-ইন করুন</translation>
 <translation id="8409374867500149834">ক্ষতিকর ওয়েবসাইটের জন্য আপনার কাছে Chromium-এর সবচেয়ে শক্তিশালী নিরাপত্তা আছে</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Chromium {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়। আপনি সাইন-ইন করে থাকাকালীন শুধু এই ডিভাইসে যে ডেটা সেভ করা হয়েছিল, তা মুছে ফেলা হবে। এর মধ্যে ইতিহাস ও পাসওয়ার্ড অন্তর্ভুক্ত থাকতে পারে।}one{Chromium {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়। আপনি সাইন-ইন করে থাকাকালীন শুধু এই ডিভাইসে যে ডেটা সেভ করা হয়েছিল, তা মুছে ফেলা হবে। এর মধ্যে ইতিহাস ও পাসওয়ার্ড অন্তর্ভুক্ত থাকতে পারে।}other{Chromium {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়। আপনি সাইন-ইন করে থাকাকালীন শুধু এই ডিভাইসে যে ডেটা সেভ করা হয়েছিল, তা মুছে ফেলা হবে। এর মধ্যে ইতিহাস ও পাসওয়ার্ড অন্তর্ভুক্ত থাকতে পারে।}}</translation>
 <translation id="858114650497379505">আপনার iPhone-এর অন্যান্য অ্যাপে পাসওয়ার্ড ম্যানেজারে সেভ করা পাসওয়ার্ড ব্যবহার করতে পারবেন।</translation>

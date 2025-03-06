@@ -590,6 +590,7 @@
 <translation id="1407069428457324124">گہری تھیم</translation>
 <translation id="1407135791313364759">سبھی کو کھولیں</translation>
 <translation id="140723521119632973">سیلولر فعالیت</translation>
+<translation id="1407908250220330281">اب اس پروفائل کا نظم کیا جائے گا</translation>
 <translation id="1407970155431887387"><ph name="SEARCH_ENGINE_NAME" /> کے لیے ترمیم کریں ڈائیلاگ کھولنے کے لیے کلک کریں</translation>
 <translation id="1408504635543854729">فائلز ایپ میں آلہ کا مواد دریافت کریں۔ منتظم نے مواد کو محدود کر دیا ہے اور اس میں ترمیم نہیں کی جا سکتی ہے۔</translation>
 <translation id="1408980562518920698">ذاتی معلومات کا نظم کریں</translation>
@@ -800,6 +801,7 @@
 <translation id="1549966883323105187">اپنے محفوظ کردہ پاس ورڈز کو تیزی سے حاصل کریں</translation>
 <translation id="1550656959113606473">‏ڈیفالٹ Chrome</translation>
 <translation id="1552301827267621511"><ph name="SEARCH_PROVIDER_DOMAIN" /> کے استعمال کے لیے "<ph name="EXTENSION_NAME" />" ایکسٹینشن نے تلاش کو تبدیل کر دیا</translation>
+<translation id="1552357433305859738">اس پروفائل کے ساتھ مطابقت پذیر بنانا جاری رکھیں اور ڈیٹا کو ضم کریں</translation>
 <translation id="1552752544932680961">ایکسٹینشن کا نظم کریں</translation>
 <translation id="1553538517812678578">لا محدود</translation>
 <translation id="1553947773881524342">‏اپنے Chromebook پر Microsoft 365 کے بارے میں <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" />۔</translation>
@@ -2242,6 +2244,7 @@
 <translation id="2530166226437958497">ٹربل شوٹنگ</translation>
 <translation id="2531530485656743109">‏<ph name="BEGIN_PARAGRAPH1" />کچھ غلط ہو گیا اور <ph name="DEVICE_OS" /> انسٹال نہیں کیا جا سکا۔<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />مزید مدد کے ليے، ملاحظہ کریں: g.co/flex/InstallErrors۔<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532117279786409580">مزید معلومات حاصل کریں</translation>
 <translation id="2532144599248877204">آپ کی بیٹری کو تقریباً %80 رکھ کر بیٹری لائف بڑھاتا ہے۔ عام طور پر آپ کے پاور سے غیر منسلک ہونے سے پہلے بیٹری مکمل طور پر چارج ہو جائے گی۔</translation>
 <translation id="2532146950330687938">آلہ کو تیار کیا جا رہا ہے...</translation>
 <translation id="2532198298278778531">‏ChromeOS Flex کی ترتیبات میں محفوظ DNS کا نظم کریں</translation>
@@ -3141,6 +3144,7 @@
 <translation id="3183139917765991655">پروفائل درآمد کنندہ</translation>
 <translation id="3183143381919926261">موبائل ڈیٹا نیٹ ورکس</translation>
 <translation id="3183700187146209259">سکینر سافٹ ویئر انسٹال نہیں کر سکتے</translation>
+<translation id="3183750649832309748">آپ کی تنظیم <ph name="ACCOUNT_MANAGER" /> کچھ معلومات دیکھ سکے گی، بشمول</translation>
 <translation id="3183944777708523606">مانیٹر کا انتظام</translation>
 <translation id="3184536091884214176">‏ترتیب دیں یا CUPS پرنٹرز کا نظم کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">‏پیرنٹل کنٹرولز کی ترتیبات کو تبدیل کرنے کے لیے یہ PIN استعمال کریں۔
@@ -3166,6 +3170,7 @@
 <translation id="3202499879214571401"><ph name="DEVICE_NAME" /> پر اسکرین کو کاسٹ کرنا شروع کریں</translation>
 <translation id="3202578601642193415">جدید ترین</translation>
 <translation id="3204648577100496185">اس ایپ سے وابستہ ڈیٹا کو اس آلہ سے ہٹایا جا سکتا ہے۔</translation>
+<translation id="3204717934117444051">صرف اس آلہ پر محفوظ کردہ ڈیٹا موجودہ پروفائل میں باقی رہے گا۔ یہ <ph name="EMAIL" /> سے مطابقت پذیر نہیں ہوگا</translation>
 <translation id="3207344462385471911">‏آپ تجویز کردہ تلاشیں اور خریداری کی رعایتیں دیکھ رہے ہیں جو آپ کی حالیہ سرگرمی کی بنیاد پر آپ کی دلچسپی کا باعث بن سکتی ہیں۔
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3808,6 +3813,7 @@
 <translation id="3670229581627177274">بلوٹوتھ آن کریں</translation>
 <translation id="3670480940339182416">‏سائٹس V8 کو بہتر بنانے والا استعمال کر سکتی ہیں</translation>
 <translation id="3671764914317109892">اپنی براؤزنگ کی سرگزشت تلاش کرنے کے لیے روزمرہ کی زبان کا استعمال کریں۔ آپ اپنی براؤزنگ کی سرگزشت کی بنیاد پر سوالات بھی پوچھ سکتے ہیں اور جوابات حاصل کر سکتے ہیں۔</translation>
+<translation id="3671982238795754537">پاس کیز کے بارے میں مزید جانیں</translation>
 <translation id="3672681487849735243">ایک فیکٹری کی خرابی کا پتہ لگا ہے</translation>
 <translation id="3673097791729989571">سائن ان کی میزبانی <ph name="SAML_DOMAIN" /> کے ذریعے کی گئی</translation>
 <translation id="3673287357837016374">‏آپ کا PIN اپ ڈیٹ کر دیا گیا ہے</translation>
@@ -4334,6 +4340,7 @@
 <translation id="3994878504415702912">&amp;زوم</translation>
 <translation id="3995138139523574647">‏USB-C آلہ (دائیں طرف کا پچھلا پورٹ)</translation>
 <translation id="3995963973192100066">اینیمیشن چلائیں</translation>
+<translation id="3997537546406230684">کام کیلئے ایک نئی پروفائل بنائیں اور میرا موجودہ ڈیٹا علیحدہ رکھیں</translation>
 <translation id="399788104667917863">ٹول بار پر پن کریں</translation>
 <translation id="3998780825367526465">ٹیب پیش منظر تصاویر دکھائیں</translation>
 <translation id="3998976413398910035">پرنٹرز کا نظم کریں</translation>
@@ -4724,6 +4731,7 @@
 <translation id="4289540628985791613">عمومی جائزہ</translation>
 <translation id="428963538941819373">آپ کے <ph name="HOST" /> کو براؤز کرتے وقت یہ سائٹس آپ کے بارے میں محفوظ کردہ معلومات کا استعمال کر سکتی ہیں۔</translation>
 <translation id="4289732974614035569">‏PIN منتخب کریں</translation>
+<translation id="4290526909608432059">‏‫Chrome ایپس کے لیے سپورٹ جلد ہی ختم ہو جائے گا۔ اپنے اختیارات کے بارے میں جاننے کے لیے، ایپ ڈویلپر یا اپنی IT سپورٹ ٹیم سے رابطہ کریں۔</translation>
 <translation id="4290791284969893584">صفحہ بند کرنے کے بعد، آپ کی شروع کردہ ٹاسکس شاید مکمل نہ ہوں</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> رکن</translation>
 <translation id="4290898381118933198">صفحات کے درمیان نیویگیٹ کیلئے سوائپ کریں</translation>
@@ -5778,6 +5786,7 @@
 <translation id="5059526285558225588">منتخب کریں کہ کیا اشتراک کرنا ہے</translation>
 <translation id="5060332552815861872">محفوظ کرنے کے لیے 1 پرنٹر دستیاب ہے۔</translation>
 <translation id="5060419232449737386">کیپشن کی ترتیبات</translation>
+<translation id="5061270227873845372">آپ کے پاس فی الحال <ph name="NUMBERED_ITEM_1" />، <ph name="NUMBERED_ITEM_2" />، <ph name="NUMBERED_ITEM_3" /> اور مزید ہیں آپ کی تنظیم اس ڈیٹا کو دیکھ سکے گی اور اس کا نظم کر سکے گی</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{اس فولڈر میں ایک بُک مارک شامل ہے۔ کیا آپ واقعی اسے حذف کرنا چاہتے ہیں؟}other{اس فولڈر میں # بُک مارکس شامل ہیں۔ کیا آپ واقعی اسے حذف کرنا چاہتے ہیں؟}}</translation>
 <translation id="5061531353537614467">ٹٔنڈرا</translation>
 <translation id="5062930723426326933">سائن ان ناکام ہوگیا، براہ کرم انٹرنیٹ سے منسلک ہوں اور دوبارہ کوشش کریں۔</translation>
@@ -8515,6 +8524,7 @@
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - سیریل پورٹ منسلک ہے</translation>
 <translation id="7033616203784997570">ان پٹ میں زیادہ سے زیادہ 62 حروف ہونے چاہئیں</translation>
 <translation id="7034692021407794547">‏بلنگ کے نظم و نسق کے لئے خصوصی حقوق رکھنے والے منتظم کو پہلے منتظم کنسول کے Google Meet ہارڈ ویئر سیکشن میں Google Meet ہارڈ ویئر سروس کی شرائط کو قبول کرنا ہوگا۔</translation>
+<translation id="7036550011779986598">‏<ph name="RP_ID" /> نے ابھی آپ کے اکاؤنٹ کے لیے ایک پاس کی تخلیق کی۔ پاس کیز سائن ان کرنے کا تیز تر اور زیادہ محفوظ طریقہ پیش کرتی ہیں اور <ph name="USER" /> کے لیے Google پاس ورڈ مینیجر میں محفوظ کی جاتی ہیں۔ <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">‏<ph name="DISK_SIZE" /> کی جگہ Linux کے لیے تجویز کی جاتی ہے۔ خالی جگہ میں اضافہ کرنے کے لیے، اپنے آلہ سے فائلز حذف کریں۔</translation>
 <translation id="7037157058268992880">‏‫PIN بھول گئے</translation>
 <translation id="7037509989619051237">متن کا پیش منظر دیکھیں</translation>
@@ -9386,6 +9396,7 @@
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />، <ph name="PAGE_TITLE" /> میں۔</translation>
 <translation id="7672726198839739113">مسدود ہے۔ ٹائم زون فی الحال <ph name="SUNRISE_TIME" /> - <ph name="SUNSET_TIME" /> پر سیٹ ہے اور اسے صرف دستی طور پر اپ ڈیٹ کیا جا سکتا ہے۔</translation>
 <translation id="7673313156293624327">‏ChromeOS Shill (کنکشن مینیجر) لاگز</translation>
+<translation id="767381852303199643">آپ اپنے موجودہ پروفائل ڈیٹا کے ساتھ کیا کرنا چاہیں گے؟</translation>
 <translation id="7674416868315480713">‏Linux میں فارورڈ کی جا رہی سبھی پورٹس کو غیر فعال کریں</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> ایپس</translation>
 <translation id="7674542105240814168">مقام تک رسائی کو مسترد کر دیا گیا</translation>
@@ -9617,6 +9628,7 @@
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">محفوظ کردہ حسب ضرورت الفاظ یہاں ظاہر ہوں گے</translation>
 <translation id="7836577093182643605">ان موضوعات کی فہرست جنہیں آپ نے مسدود کیا ہے اور ان کا اشتراک سائٹس کے ساتھ نہیں کرنا چاہتے ہیں</translation>
+<translation id="7836745198769390202">آپ کے پاس فی الحال <ph name="NUMBERED_ITEM_1" />، <ph name="NUMBERED_ITEM_2" /> اور مزید ہیں۔ آپ کی تنظیم اس ڈیٹا کو دیکھ سکے گی اور اس کا نظم کر سکے گی</translation>
 <translation id="7836850009646241041">اپنی سیکیورٹی کلید کو دوبارہ چھونے کی کوشش کریں</translation>
 <translation id="7838838951812478896">'<ph name="NETWORK_NAME" />' کو <ph name="DEVICE_NAME" /> سے محفوظ نہیں کیا جا سکا</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> کو <ph name="DEVICE_NAME" /> پر بھیجا گیا}other{<ph name="ATTACHMENTS" /> کو <ph name="DEVICE_NAME" /> پر بھیجا گیا}}</translation>
@@ -10556,6 +10568,7 @@
 <translation id="8477178913400731244">ڈیٹا حذف کریں</translation>
 <translation id="8477241577829954800">جگہ لی ہوئی</translation>
 <translation id="8477384620836102176">&amp;عمومی</translation>
+<translation id="8477446666255316832">اگلی بار زیادہ تیزی سے سائن ان کریں</translation>
 <translation id="8479176401914456949">غلط کوڈ۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> کا نامعلوم آلہ</translation>
 <translation id="8481187309597259238">‏USB کی اجازت کی تصدیق کریں</translation>
@@ -11376,6 +11389,7 @@
 <translation id="9052404922357793350">مسدود کرنا جاری رکھیں</translation>
 <translation id="90528604757378587">پس منظر کی سرگرمی اور کچھ بصری اثرات، جیسے ہموار اسکرولنگ، محدود ہو سکتے ہیں۔</translation>
 <translation id="9053563360605707198">دونوں طرف پرنٹ کریں</translation>
+<translation id="9055810458113674066">آپ کے پاس فی الحال <ph name="NUMBERED_ITEM" /> اور مزید ہیں آپ کی تنظیم اس ڈیٹا کو دیکھ سکے گی اور اس کا نظم کر سکے گی</translation>
 <translation id="9056788090206401048">کسی دوسرے آلے پر آپ کی پاس کی استعمال کرنے کے لیے بلوٹوتھ آن ہونا ضروری ہے۔ آپ ترتیبات میں ہمیشہ اس کا نظم کر سکتے ہیں۔</translation>
 <translation id="9056810968620647706">کوئی مماثلتیں نہیں ملیں۔</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> درج ذیل مواد تک رسائی حاصل کرنا چاہتا ہے:</translation>

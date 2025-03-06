@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">การดำเนินการต่อหมายความว่าคุณยอมรับ<ph name="BEGIN_LINK" />ข้อกำหนดในการให้บริการ<ph name="END_LINK" /></translation>
 <translation id="10614374240317010">ไม่เคยบันทึก</translation>
 <translation id="1062138828266376352">ไม่ได้เปลี่ยน PIN โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง</translation>
+<translation id="1072476005125066234">รีวิวที่อิงตามความสนใจของคุณ</translation>
 <translation id="1074827084851510304">คุณกำลังจะลบรหัสผ่าน {password_count} รายการ รวมถึงรายการเว็บไซต์และแอปที่คุณเลือกที่จะไม่บันทึกข้อมูลการลงชื่อเข้าใช้ ระบบจะไม่ลบบัญชีใดๆ ที่คุณสร้างไว้สำหรับเว็บไซต์และแอป</translation>
 <translation id="1076421457278169141">สแกนโค้ดแล้ว</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} แท็บ}other{{count} แท็บ}}</translation>
@@ -267,6 +268,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" /> บัญชีใช้รหัสผ่านเดียวกัน</translation>
 <translation id="2059166748188874810">เทศบาล</translation>
 <translation id="2060114494785549741">ลบในอีก 1 เดือน</translation>
+<translation id="2060638295449304809">ที่อยู่ข้างต้นจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">ตัวเลือกประเภทหน่วย</translation>
 <translation id="2067852168641682340">บันทึกลงในบัญชีนี้ทุกครั้ง</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 แท็บ}other{{count} แท็บ}}</translation>
@@ -895,6 +897,7 @@
 <translation id="4824480232751123840">ระดับเสียง</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} และอีก 1 แท็บ}other{{domain} และอีก {count} แท็บ}}</translation>
 <translation id="4826588772550366629">กล้องและไมโครโฟน</translation>
+<translation id="4828431027673677473">ผลิตภัณฑ์ที่อิงตามความสนใจของคุณ</translation>
 <translation id="4833786495304741580">ส่งสถิติการใช้งานและรายงานข้อขัดข้องให้กับ Google โดยอัตโนมัติ</translation>
 <translation id="483689884442613745">บันทึก…</translation>
 <translation id="4840495572919996524">บุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และอื่นๆ จะไม่ซิงค์กับบัญชี Google อีกต่อไป</translation>
@@ -1150,6 +1153,7 @@
 <translation id="5898848375214731122">มวล</translation>
 <translation id="5899314093904173337">ให้คนที่อยู่ใกล้ๆ สแกนคิวอาร์โค้ดนี้โดยใช้กล้องหรือตัวสแกนคิวอาร์โค้ดเพื่อแชร์</translation>
 <translation id="5911030830365207728">Google แปลภาษา</translation>
+<translation id="5917913282764181683">ลบการดาวน์โหลดโดยอัตโนมัติ</translation>
 <translation id="5922999516621365983">ลากแท็บมาที่นี่เพื่อปักหมุด</translation>
 <translation id="5936006948844852401">จัดการพื้นที่เก็บข้อมูล</translation>
 <translation id="5936065461722368675">แปลทั้งหน้า</translation>
@@ -1244,7 +1248,6 @@
 <translation id="6284652193729350524">เสนอการแปล <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">เลิกติดตาม <ph name="CHANNEL_NAME" /> แล้ว</translation>
 <translation id="6293101329759844770">หากต้องการเปิด Google Safe Browsing ให้เปิด<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /> จากนั้นแตะ Google Safe Browsing</translation>
-<translation id="6295434468271563378">ลบการดาวน์โหลดโดยอัตโนมัติ</translation>
 <translation id="6295751040240588413">ชื่อเล่นของบัตรไม่ถูกต้อง</translation>
 <translation id="629730747756840877">บัญชี</translation>
 <translation id="6301104306974789820">รับการแจ้งเตือนการติดตามราคา</translation>
@@ -1735,6 +1738,7 @@
 <translation id="828291969289324795">{count,plural, =1{เพิ่มแท็บไปยังกลุ่มใหม่}other{เพิ่มแท็บไปยังกลุ่มใหม่}}</translation>
 <translation id="8283172974887967105">ตั้งค่า…</translation>
 <translation id="8289930144142009940">ปิดการแจ้งเตือน<ph name="FEATURE_NAME" /> แล้ว</translation>
+<translation id="8290077367744012649">ติดตามราคาจากแท็บ</translation>
 <translation id="8299417921174340354">หากต้องการใช้รหัสผ่าน คุณต้องตั้งรหัสผ่านในอุปกรณ์ก่อน</translation>
 <translation id="8299613349954694191">เปิดแท็บที่ไม่ระบุตัวตนเพื่อท่องเว็บในแบบส่วนตัว</translation>
 <translation id="8307481894409578819">อัปโหลดไฟล์นี้ไม่ได้</translation>

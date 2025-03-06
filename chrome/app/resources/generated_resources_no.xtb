@@ -3815,6 +3815,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3670229581627177274">Slå på Bluetooth</translation>
 <translation id="3670480940339182416">Nettsteder kan bruke V8-optimalisering</translation>
 <translation id="3671764914317109892">Bruk dagligdags språk for å søke i nettleserloggen. Du kan også stille spørsmål og få svar basert på nettleserloggen din.</translation>
+<translation id="3671982238795754537">Finn ut mer om passnøkler</translation>
 <translation id="3672681487849735243">En fabrikkfeil har blitt oppdaget</translation>
 <translation id="3673097791729989571"><ph name="SAML_DOMAIN" /> er vert for påloggingen</translation>
 <translation id="3673287357837016374">PIN-koden din er oppdatert</translation>
@@ -4729,6 +4730,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4289540628985791613">Oversikt</translation>
 <translation id="428963538941819373">Disse nettstedene kan bruke informasjon de har lagret om deg, når du surfer på <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Velg en PIN-kode</translation>
+<translation id="4290526909608432059">Støtten for Chrome-apper avsluttes snart. Kontakt apputvikleren eller IT-brukerstøtten for å finne ut hvilke muligheter du har.</translation>
 <translation id="4290791284969893584">Når du lukker sider, kan det hende at oppgaver du har startet, ikke fullføres</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> medlem</translation>
 <translation id="4290898381118933198">Sveip for å navigere mellom sidene</translation>
@@ -8521,6 +8523,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – seriell port er tilkoblet</translation>
 <translation id="7033616203784997570">Teksten kan ikke være lengre enn 62 tegn</translation>
 <translation id="7034692021407794547">En administrator med rettigheter til faktureringsadministrasjon må først godta vilkårene for bruk av Google Meet-enheter i delen Google Meet-enheter i administrasjonskonsollen.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> har nettopp opprettet en passnøkkel for kontoen din. Passnøkler er en raskere og sikrere påloggingsløsning og lagres i Google Passordlagring for <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> ledig plass anbefales for Linux. For å få mer ledig plass, slett filer fra enheten.</translation>
 <translation id="7037157058268992880">Har du glemt PIN-koden?</translation>
 <translation id="7037509989619051237">Tekst til forhåndsvisning</translation>
@@ -10563,6 +10566,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8477178913400731244">Slett data</translation>
 <translation id="8477241577829954800">Erstattet</translation>
 <translation id="8477384620836102176">&amp;Generelt</translation>
+<translation id="8477446666255316832">Logg på raskere neste gang</translation>
 <translation id="8479176401914456949">Ugyldig kode. Prøv på nytt.</translation>
 <translation id="8480869669560681089">Ukjent enhet fra <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Bekreft USB-tillatelse</translation>

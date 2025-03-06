@@ -22,6 +22,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1058009965971887428">Pošiljanje povratnih informacij</translation>
 <translation id="1059120031266247284">Deljeno z vami</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> z gumbom za odstranitev</translation>
 <translation id="1062407476771304334">Zamenjaj</translation>
 <translation id="1073899992769346247">Zamenjajte ali napolnite baterijo.</translation>
 <translation id="1081015718268701546">Aplikacije za Linux trenutno niso podprte. Druge aplikacije bodo shranjene.</translation>
@@ -323,6 +324,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2083190527011054446">Lahko noč, <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Odpiranje izbirnika emodžijev</translation>
 <translation id="2088116547584365419">tekme</translation>
+<translation id="2092517835716911174">Če želite uporabljati funkciji Pomagaj mi brati in Pomagaj mi pisati, morate imeti vsaj 18 let.</translation>
 <translation id="209965399369889474">Ni povezave z omrežjem</translation>
 <translation id="2107581415810719320">Drug gumb <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Kabel USB-C ne podpira protokola Thunderbolt. Delovanje naprave bo morda omejeno.</translation>
@@ -1228,6 +1230,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="5043679421800073804">Klik ali dotik zadnje ikone na polici</translation>
 <translation id="504465286040788597">Prejšnji odstavek</translation>
 <translation id="5045550434625856497">Nepravilno geslo</translation>
+<translation id="5056587122125565772">Ustvari sliko</translation>
 <translation id="5058794129231928255">Google Dokumenta ni bilo mogoče ustvariti</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Prejeli boste obvestilo, če govorite med izklopljenim zvokom. Zvok nikoli ne zapusti naprave.</translation>
@@ -1276,6 +1279,7 @@ Uporabite lahko tudi bližnjično tipko. Najprej označite besedilo in nato prit
 <translation id="5222676887888702881">Odjava</translation>
 <translation id="5228195526683428788">Razdelilnik zaslonov</translation>
 <translation id="5229343007215035173">Vklop/izklop zaslona za zasebnost</translation>
+<translation id="5229860525743792999">Odstranitev tega iz predlagane skupine: <ph name="ITEM_LABEL" /></translation>
 <translation id="5230516054153933099">Okno</translation>
 <translation id="5234764350956374838">Opusti</translation>
 <translation id="523505283826916779">Nastavitve funkcij za ljudi s posebnimi potrebami</translation>
@@ -1758,6 +1762,7 @@ Nova namestitev</translation>
 <translation id="6757237461819837179">Predstavnost se ne predvaja</translation>
 <translation id="6760438044935091345">Nadzorna plošča igre</translation>
 <translation id="6768043681523654438">shramba</translation>
+<translation id="6769195697113506406">Slika je vstavljena</translation>
 <translation id="6777216307882431711">Napajanje povezanih naprav USB-C</translation>
 <translation id="6781002679438061620">Namizje 9</translation>
 <translation id="6782182743534150858">Namizje 13</translation>
@@ -1984,6 +1989,7 @@ Nova namestitev</translation>
 <translation id="7571361473021531288"><ph name="BATTERY_PERCENTAGE" /> % baterije | še <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Aktivno okno je zasidrano na desni.</translation>
 <translation id="7579778809502851308">Zaslonski posnetek</translation>
+<translation id="7588317312481506627">Kopirano v odložišče.</translation>
 <translation id="7593891976182323525">Iskanje ali Shift</translation>
 <translation id="7598054670902114203">Posnetek uporabe CPE-ja, <ph name="CPU_USEAGE" /> %. Temperatura <ph name="TEMPERATURE" /> stopinj Celzija, trenutna hitrost: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz.</translation>
 <translation id="7599378375976398913">Vstavljanje izbranega rezultata</translation>
@@ -2178,6 +2184,7 @@ Nova namestitev</translation>
 <translation id="8155628902202578800">Odpri pogovorno okno z informacijami o uporabniku <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Uporaba jezika <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Vsebina</translation>
+<translation id="81817143961839203">Vstavljanje slike ni uspelo</translation>
 <translation id="8185090165691050712">Vklop/izklop menija za spreminjanje velikosti zaklenjenega načina</translation>
 <translation id="8192727139462702395">Ko izklopite Bluetooth, bo povezava teh zunanjih naprav z napravo <ph name="DEVICE_TYPE" /> prekinjena:</translation>
 <translation id="8198456017687137612">Predvajanje vsebine zavihka</translation>
@@ -2256,6 +2263,7 @@ Nova namestitev</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> je <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Za preklic pritisnite Alt in tipko za iskanje ali Shift.</translation>
 <translation id="8480418399907765580">Pokaži orodno vrstico</translation>
+<translation id="8487660088084188539">Ko vklopite te funkcije, se vneseno besedilo, vsebina dokumenta in URL spletne strani morda pošljejo v Googlove strežnike. Ti podatki se uporabljajo za generiranje predlogov za pisanje, ustvarjanje povzetkov, odgovarjanje na vprašanja in izboljšanje izdelka v skladu z <ph name="LINK_TO_SERVICE_TERMS" />. Ne vključite osebnih, občutljivih ali zaupnih podatkov.</translation>
 <translation id="8487699605742506766">Dostopna točka</translation>
 <translation id="8491237443345908933">Odpiranje povezave na novem zavihku</translation>
 <translation id="8492573885090281069">Zaslon <ph name="DISPLAY_NAME" /> ne podpira te ločljivosti: <ph name="SPECIFIED_RESOLUTION" />. Ločljivost je bila spremenjena na: <ph name="FALLBACK_RESOLUTION" />. Kliknite »Potrdi«, če želite ohraniti spremembe. Prejšnja nastavitev bo obnovljena čez <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2325,6 +2333,7 @@ Nova namestitev</translation>
 <translation id="8725066075913043281">Poskusite znova</translation>
 <translation id="8725214031272624704">Prikaz seznama razpoložljivih načinov vnosa</translation>
 <translation id="8730621377337864115">Končano</translation>
+<translation id="8731188831050207755">Prenos datoteke <ph name="FILE_NAME" /> ni uspel.</translation>
 <translation id="8731487213223706745">Konča se ob <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Morda poskuša beležiti vse, kar natipkate</translation>
 <translation id="8735678380411481005">Barva osvetlitve tipkovnice</translation>

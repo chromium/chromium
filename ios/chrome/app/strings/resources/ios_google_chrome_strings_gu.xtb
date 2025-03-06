@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">તમારો પાસવર્ડ <ph name="EMAIL" /> માટેના Google પાસવર્ડ મેનેજરમાં સાચવવામાં આવશે.</translation>
 <translation id="1146503048444965320">Chromeમાં નવું ટૅબ ખોલો</translation>
 <translation id="1166460004393506534">Chromeમાં બ્રાઉઝિંગ ડેટા ડિલીટ કરો</translation>
+<translation id="1171255741903316750">“જ્યારે તમે Chrome બંધ કરો, ત્યારે છૂપા ટૅબ લૉક કરો” ચાલુ કરો</translation>
 <translation id="1179527450541388808">તમારા iPadની હોમ સ્ક્રીનના ડૉકમાંથી Chrome વધુ ઝડપથી ઍક્સેસ કરો.</translation>
 <translation id="1180362651362502943">તમારા Google એકાઉન્ટમાં Chromeના ડેટાનો ઉપયોગ કરવાનું ચાલુ રાખો.</translation>
 <translation id="1200396280085622191">જ્યારે પણ તમે મેસેજ અને અન્ય ઍપમાં લિંક પર ટૅપ કરો, ત્યારે Chromeનો ઉપયોગ કરો.</translation>
@@ -45,6 +46,7 @@
 <translation id="1917964099031477364">આ ડિવાઇસ પરની Chrome અને અન્ય Google ઍપમાંથી આ એકાઉન્ટ અને સાચવવામાં ન આવ્યો હોય એવો કોઈપણ ડેટા કાઢી નાખવામાં આવશે.</translation>
 <translation id="1919130412786645364">Chromeમાં સાઇન-ઇનની મંજૂરી આપો</translation>
 <translation id="1965935827552890526">તમે અન્ય ખુલ્લી Chrome વિંડોમાં જે કાર્ય કરતા તા તે પૂર્ણ કરો.</translation>
+<translation id="1973910962341002002">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" સેટિંગમાં જઈને, "Chrome"ને ટૉગલ કરીને ચાલુ કરો</translation>
 <translation id="1984705450038014246">તમારા Chromeના ડેટાને સિંક કરો</translation>
 <translation id="1987779152850321833">Chromeનો સૌથી વધુ લાભ મેળવવા માટે નીચે સૂચવેલી આ ક્રિયાઓ પૂર્ણ કરો.</translation>
 <translation id="2055826352861631739">iPad માટે ડિફૉલ્ટ તરીકે Chromeનો ઉપયોગ કરો</translation>
@@ -96,10 +98,13 @@
 <translation id="3282568296779691940">Chrome માં સાઇન ઇન કરો</translation>
 <translation id="3303503998967553377">iOS પર Chrome ઍક્શનનો ઉપયોગ કરો</translation>
 <translation id="3348862487678490430">Chromeમાં વાંચન સૂચિની આઇટમ ઉમેરો</translation>
+<translation id="3357827134511189025">ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે Chromeનો ઉપયોગ કરીને કોઈપણ ઍપમાંથી તમારા સાચવેલા પાસવર્ડ અને પાસકી વડે સાઇન ઇન કરો</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{જ્યારે {THRESHOLD} મિનિટ સુધી Chromeનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે}one{જ્યારે {THRESHOLD} મિનિટ સુધી Chromeનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે}other{જ્યારે {THRESHOLD} મિનિટ સુધી Chromeનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે}}</translation>
 <translation id="3367797402528056312">Chromeનું સેટઅપ કરવાનું પૂર્ણ કરો</translation>
 <translation id="3371064404604898522">Chromeને ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
 <translation id="3399930248910934354">Chrome સેટિંગ ખોલો</translation>
+<translation id="3440830787838130530">Google Password Managerમાં તમારા ફૅમિલી ગ્રૂપ સાથે સરળતાથી અને સુરક્ષિત રીતે કોઈ પાસવર્ડની કૉપિ શેર કરો</translation>
+<translation id="3460369101684070455">તમારી અન્ય ઍપમાં તમારા સાચવેલા પાસવર્ડ સરળતાથી મેળવવા, ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે Chrome પસંદ કરો</translation>
 <translation id="3472587960215700950">Chrome ભાળ મેળવેલા સરનામાઓ વિશે તમને દિશાનિર્દેશો તેમજ સ્થાનિક માહિતી આપવા માટે, Google Mapsનો ઉપયોગ કરે છે.</translation>
 <translation id="3503014945441706099">આ Chrome પ્રોફાઇલ માટે પણ Safe Browsingમાં વધારેલી સુરક્ષા મેળવો</translation>
 <translation id="3522659714780527202">તમે જ્યાંથી Chromeનો ઉપયોગ કરો ત્યાંથી તમારી ટૅબ જોવા માટે, સિંક કરવાનું ચાલુ કરો</translation>
@@ -181,6 +186,7 @@
 <translation id="5998675059699164418">તમારી સંસ્થા માટે જરૂરી છે કે Chromeનો ઉપયોગ કરવા માટે તમે સાઇન ઇન કરો.</translation>
 <translation id="6021312115739110405">Google દ્વારા તમારા માટે બનાવવામાં આવેલું કસ્ટમ ફીડ. ન્યૂઝ, રમતગમત અને હવામાન સહિત.</translation>
 <translation id="6022659036123304283">Chromeને તમારી જરૂરિયાત અનુરૂપ બનાવો</translation>
+<translation id="6132075343662013154">Chrome તમારો પાસવર્ડ સાચવવાની ઑફર કરશે</translation>
 <translation id="6132149203299792222">તમારા પાસવર્ડ, બુકમાર્ક અને બીજું ઘણું સિંક કરવા માટે, તમારા Google એકાઉન્ટ વડે સાઇન ઇન કરો.</translation>
 <translation id="6145223986912084844">Chrome</translation>
 <translation id="6177442314419606057">Chromeમાં શોધો</translation>
@@ -228,6 +234,7 @@
 <translation id="7061455974939528301">Chrome આઇકન દબાવી રાખો અને "હોમ સ્ક્રીનમાં ફેરફાર કરો" પર ક્લિક કરો</translation>
 <translation id="7065813315247345131">Chromeને ડૉકમાં ખસેડો</translation>
 <translation id="7124339256045485976">Chrome અપ ટૂ ડેટ રાખો</translation>
+<translation id="7145599899567697473">Chromeમાં પાસવર્ડ સાચવો અને ઑટોમૅટિક રીતે ભરો</translation>
 <translation id="7161390184744336561">Google Chrome જૂનું થઈ ગયું છે</translation>
 <translation id="7165736900384873061">Google Chrome QR સ્કૅનરને ઉપયોગમાં લેવાનું શરૂ કરો</translation>
 <translation id="7175129790242719365">Chrome વિશે ટિપ: Chromeમાં સાઇન ઇન કરો</translation>
@@ -261,6 +268,7 @@
 <translation id="7693590760643069321">હવે તમે જ્યારે પણ મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર ટૅપ કરો, ત્યારે Chromeનો ઉપયોગ કરી શકશો.</translation>
 <translation id="7698568245838009292">Chromeને કૅમેરાનો ઍક્સેસ જોઈશે</translation>
 <translation id="7707877166818730835">Chromeમાં મારું નવીનતમ ટૅબ ખોલો</translation>
+<translation id="7747746207470479571">ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે Chrome વડે તમારા પાસવર્ડ અને પાસકીનો સરળતાથી ઍક્સેસ મેળવો</translation>
 <translation id="776305366874821582">તમારા iPhoneની હોમ સ્ક્રીનના ડૉકમાંથી Chrome વધુ ઝડપથી ઍક્સેસ કરો.</translation>
 <translation id="7780154209050837198">Chromeનો વધુમાં વધુ લાભ લેવા માટે, તમારા Google એકાઉન્ટ વડે Chromeમાં સાઇન ઇન કરો.</translation>
 <translation id="7787205077729386167">iOSમાં Chrome સેટિંગ ખોલો, પછી "ડિફૉલ્ટ બ્રાઉઝર ઍપ" પર ટૅપ કરો અને Chrome પસંદ કરો.</translation>
@@ -281,6 +289,7 @@
 <translation id="8136856065410661948">Chrome અને Google Lensમાંથી તમારા Apple Calendarમાં ઇવેન્ટ બનાવવા માટે, આનો ઉપયોગ કરવામાં આવશે.</translation>
 <translation id="8154120522323162874">તમારા બ્રાઉઝરનું સેટઅપ કરવાનું ચાલુ રાખીને, Chromeનો સૌથી વધુ લાભ મેળવો.</translation>
 <translation id="8160472928944011082">Chrome અપડેટ થઈ શકતું નથી</translation>
+<translation id="8245080522851805544">જ્યારે તમે Chrome બંધ કરો, ત્યારે ડિવાઇસના પ્રમાણીકરણ વડે તમારા બ્રાઉઝિંગને ખાનગી રાખો</translation>
 <translation id="8248887045858762645">Chrome વિશેની ટિપ</translation>
 <translation id="8265730590513812063">Chrome મેનૂ ખોલો</translation>
 <translation id="8317674518145175158">ચુકવણી પદ્ધતિઓ અને સરનામા એન્ક્રિપ્ટ કરવામાં આવશે નહીં. Chromeમાંથી બ્રાઉઝિંગ ઇતિહાસ સિંક થશે નહીં.

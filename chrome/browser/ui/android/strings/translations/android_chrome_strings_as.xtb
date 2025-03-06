@@ -107,6 +107,7 @@
 <translation id="1413446866325418126">আপোনাৰ Google একাউণ্টত ডেটা ছেভ কৰক</translation>
 <translation id="1414981605391750300">Googleৰ সৈতে যোগাযোগ কৰি থকা হৈছে। এই কার্যৰ বাবে অলপ সময় লাগিব পাৰে…</translation>
 <translation id="1416550906796893042">এপ্লিকেশ্বন সংস্কৰণ</translation>
+<translation id="1416582024052267068">আপোনাৰ পাছৱৰ্ডসমূহৰ এক্সেছ ৰাখক</translation>
 <translation id="1419753403124156396">Chrome ৰিষ্টাৰ্ট কৰিবনে?</translation>
 <translation id="1428770807407000502">ছিংক অফ কৰিবনে?</translation>
 <translation id="1430915738399379752">প্ৰিণ্ট কৰক</translation>
@@ -518,6 +519,7 @@
 <translation id="342220687432920852">{HOURS,plural, =1{# ঘণ্টা পূৰ্বে}one{# ঘণ্টা পূৰ্বে}other{# ঘণ্টা পূৰ্বে}}</translation>
 <translation id="3430670036890315772">আপোনাৰ প্ৰ’ফাইল লকটো অফ কৰাটোৱে আপোনাৰ ছেভ কৰি থোৱা তথ্যখিনি আঁতৰাব</translation>
 <translation id="3435465986463792564">বহুতো ৱিণ্ড’ পাইছেনে? আপুনি ইয়াৰ পৰা সেইবোৰ পৰিচালনা কৰিব পাৰে</translation>
+<translation id="3435575784518354875">আপোনাৰ পাছৱৰ্ডসমূহৰ এক্সেছ ৰাখিবলৈ, সেইসমূহ এতিয়াই ৰপ্তানি কৰক, Google Play সেৱাসমূহ আপডে’ট কৰক আৰু তাৰ পাছত সেইসমূহ পুনৰ Google Password Managerলৈ আমদানি কৰক। <ph name="BEGIN_LINK" />সম্পূৰ্ণ নিৰ্দেশনাৱলী চাওক<ph name="END_LINK" />।</translation>
 <translation id="3435738964857648380">সুৰক্ষা</translation>
 <translation id="3439276997620616816">ইয়াত আপুনি নিজৰ শেহতীয়া টেবসমূহ বিচাৰি পাব</translation>
 <translation id="3443221991560634068">বর্তমানৰ পৃষ্ঠাটো পুনৰ ল’ড কৰক</translation>
@@ -527,6 +529,7 @@
 <translation id="3474624961160222204"><ph name="NAME" /> হিচাপে অব্যাহত ৰাখক</translation>
 <translation id="3478363558367712427">আপুনি নিজৰ সন্ধান ইঞ্জিন বাছনি কৰিব পাৰে</translation>
 <translation id="3479552764303398839">এতিয়া নহয়</translation>
+<translation id="3487903178221457900">ৰপ্তানি কৰা ফাইলটো এপ্‌সমূহকে ধৰি অন্য লোকসকলে এক্সেছ কৰিব পাৰে। আপুনি ৰপ্তানি কৰাৰ পাছত, Chromeৰ পৰা আপোনাৰ পাছৱৰ্ডসমূহ মচা হ’ব।</translation>
 <translation id="3488199663160411179">নাম</translation>
 <translation id="3493531032208478708">পৰামৰ্শ দিয়া সমলৰ বিষয়ে <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">ছাইন ইন কৰাৰ সুবিধা থকা তলৰ শ্বীটখন অৰ্ধ উচ্চতাত খোলা হৈছে।</translation>
@@ -1759,6 +1762,7 @@
 <translation id="8937772741022875483">আপুনি Chromeত কৰা কাৰ্যকলাপ ডিজিটেল ৱেলবিইঙ-ৰ পৰা আঁতৰাবনে?</translation>
 <translation id="8942627711005830162">অন্য উইণ্ড’ত খোলক</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - এই ভাষাটো ডাউনল'ড কৰিব পৰা নগ'ল। পাছত পুনৰ চেষ্টা কৰক।</translation>
+<translation id="8957528460562961174">আপোনাৰ পাছৱৰ্ডসমূহৰ এক্সেছ ৰাখিবলৈ, এতিয়াই সেইসমূহ ৰপ্তানি কৰি আপুনি অগ্ৰাধিকাৰ দিয়া Password Managerলৈ সেয়া আমদানি কৰক। Google Play সেৱাসমূহ উপলব্ধ নোহোৱাৰ বাবে Google Password Managerএ কাম নকৰা হৈছে।</translation>
 <translation id="8963117664422609631">ছাইটৰ ছেটিঙলৈ যাওক</translation>
 <translation id="8965591936373831584">বিবেচনাধীন হৈ আছে</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> টা ইনক’গনিট’ আৰু <ph name="TAB_COUNT_ONE" /> টা টেব বন্ধ কৰা হ’ব}one{<ph name="INCOGNITO_TAB_COUNT" /> টা ইনক’গনিট’ আৰু <ph name="TAB_COUNT_MANY" /> টা টেব বন্ধ কৰা হ’ব}other{<ph name="INCOGNITO_TAB_COUNT" /> টা ইনক’গনিট’ আৰু <ph name="TAB_COUNT_MANY" /> টা টেব বন্ধ কৰা হ’ব}}</translation>

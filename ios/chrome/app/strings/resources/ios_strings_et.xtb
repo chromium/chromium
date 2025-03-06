@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">Jätkates kinnitate, et nõustute <ph name="BEGIN_LINK" />teenusetingimustega<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Ei ole kunagi salvestatud</translation>
 <translation id="1062138828266376352">Teie PIN-koodi ei muudetud. Kontrollige internetiühendust ja proovige uuesti</translation>
+<translation id="1072476005125066234">Teie huvidel põhinevad arvustused</translation>
 <translation id="1074827084851510304">Jätkates kustutate {password_count} parooli ning loendi saitidest ja rakendustest, mille sisselogimisteabe salvestamise olete keelanud. Saitidel ja rakendustel loodud kontosid ei kustutata.</translation>
 <translation id="1076421457278169141">Kood on skannitud</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} vaheleht}other{{count} vahelehte}}</translation>
@@ -267,6 +268,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" /> kontot kasutavad sama parooli</translation>
 <translation id="2059166748188874810">Vald</translation>
 <translation id="2060114494785549741">Kustuta 1 kuu pärast</translation>
+<translation id="2060638295449304809">See aadress on salvestatud ainult sellesse seadmesse. Selle kasutamiseks muudes seadmetes salvestage need oma Google’i kontole <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">Ühikutüübi valija</translation>
 <translation id="2067852168641682340">Salvesta iga kord sellele kontole</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 vaheleht}other{{count} vahelehte}}</translation>
@@ -895,6 +897,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4824480232751123840">Ruumala</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ja veel 1}other{{domain} ja veel {count}}}</translation>
 <translation id="4826588772550366629">kaamerat ja mikrofoni</translation>
+<translation id="4828431027673677473">Teie huvidel põhinevad tooted</translation>
 <translation id="4833786495304741580">Google'ile saadetakse automaatselt kasutusstatistikat ja krahhiaruandeid.</translation>
 <translation id="483689884442613745">Salvesta …</translation>
 <translation id="4840495572919996524">Teie järjehoidjaid, ajalugu, paroole ja muud sisu ei sünkroonita enam teie Google'i kontoga.</translation>
@@ -1244,7 +1247,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6284652193729350524">Paku tõlkimist keelde <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Kanali <ph name="CHANNEL_NAME" /> jälgimine lõpetati</translation>
 <translation id="6293101329759844770">Google'i ohutu sirvimise sisselülitamiseks avage jaotis <ph name="BEGIN_LINK" />Google'i teenused<ph name="END_LINK" /> ja puudutage valikut Google'i ohutu sirvimine.</translation>
-<translation id="6295434468271563378">Allalaaditavate failide automaatne kustutamine</translation>
 <translation id="6295751040240588413">Kaardi sobimatu hüüdnimi</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6301104306974789820">Hankige hinna jälgimise teavitusi</translation>
@@ -1735,6 +1737,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="828291969289324795">{count,plural, =1{Vahelehe lisamine uude gruppi}other{Vahelehtede lisamine uude gruppi}}</translation>
 <translation id="8283172974887967105">Määra …</translation>
 <translation id="8289930144142009940">Kanali <ph name="FEATURE_NAME" /> märguanded on välja lülitatud</translation>
+<translation id="8290077367744012649">Hindade jälgimine vahelehtedelt</translation>
 <translation id="8299417921174340354">Paroolide kasutamiseks peate oma seadmes esmalt pääsukoodi seadistama.</translation>
 <translation id="8299613349954694191">Avage inkognito vaheleht ja sirvige veebi privaatselt.</translation>
 <translation id="8307481894409578819">Seda faili ei saanud üles laadida</translation>

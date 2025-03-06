@@ -22,6 +22,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1058009965971887428">Raporto komentin</translation>
 <translation id="1059120031266247284">Ndarë me ty</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> me butonin e heqjes</translation>
 <translation id="1062407476771304334">Zëvendëso</translation>
 <translation id="1073899992769346247">Zëvendëso ose kariko baterinë</translation>
 <translation id="1081015718268701546">Aplikacionet e Linux nuk mbështeten për momentin. Aplikacionet e tjera do të ruhen.</translation>
@@ -323,6 +324,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2083190527011054446">Natën e mirë <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Hap zgjedhësin e emoji</translation>
 <translation id="2088116547584365419">lojërat</translation>
+<translation id="2092517835716911174">Duhet të jesh të paktën 18 vjeç për të përdorur "Më ndihmo të lexoj" dhe "Më ndihmo të shkruaj".</translation>
 <translation id="209965399369889474">Nuk është lidhur në rrjet</translation>
 <translation id="2107581415810719320">Butoni tjetër <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Kablloja jote USB-C nuk mbështet Thunderbolt. Cilësia e funksionimit të pajisjes mund të jetë e kufizuar.</translation>
@@ -1228,6 +1230,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="5043679421800073804">Kliko ose trokit tek ikona e fundit në raft</translation>
 <translation id="504465286040788597">Paragrafi i mëparshëm</translation>
 <translation id="5045550434625856497">Fjalëkalim i gabuar</translation>
+<translation id="5056587122125565772">Krijo një imazh</translation>
 <translation id="5058794129231928255">Dokumenti i "Dokumenteve të Google" nuk mund të krijohej</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Do të marrësh njoftime nëse flet kur është në heshtje. Audioja nuk largohet asnjëherë nga pajisja jote.</translation>
@@ -1276,6 +1279,7 @@ Gjithashtu, mund të përdorësh shkurtoren e tastierës. Fillimisht thekso teks
 <translation id="5222676887888702881">Dil</translation>
 <translation id="5228195526683428788">Ndarësi i ekranit të ndarë</translation>
 <translation id="5229343007215035173">Aktivizo/çaktivizo ekranin e privatësisë</translation>
+<translation id="5229860525743792999">Hiq <ph name="ITEM_LABEL" /> nga grupi i sugjeruar</translation>
 <translation id="5230516054153933099">Dritare</translation>
 <translation id="5234764350956374838">Hiq</translation>
 <translation id="523505283826916779">Cilësimet e qasjes</translation>
@@ -1758,6 +1762,7 @@ Instalim i ri</translation>
 <translation id="6757237461819837179">Nuk po luhet asnjë media</translation>
 <translation id="6760438044935091345">Paneli i lojës</translation>
 <translation id="6768043681523654438">hapësira ruajtëse</translation>
+<translation id="6769195697113506406">Imazhi u fut</translation>
 <translation id="6777216307882431711">Po furnizon me energji pajisjet e lidhura USB-C</translation>
 <translation id="6781002679438061620">Tavolina e punës 9</translation>
 <translation id="6782182743534150858">Tavolina e punës 13</translation>
@@ -1984,6 +1989,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7571361473021531288">Bateria <ph name="BATTERY_PERCENTAGE" />% | Koha e mbetur: <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Dritarja aktive u pozicionua në të djathtë.</translation>
 <translation id="7579778809502851308">Regjistrimi i ekranit</translation>
+<translation id="7588317312481506627">U kopjua në kujtesën e fragmenteve.</translation>
 <translation id="7593891976182323525">Kërko ose Shift</translation>
 <translation id="7598054670902114203">Përmbledhja e përdorimit të CPU-së, <ph name="CPU_USEAGE" />%. Temperatura <ph name="TEMPERATURE" /> gradë celsius, shpejtësia aktuale: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Rezultati i zgjedhur po futet</translation>
@@ -2178,6 +2184,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8155628902202578800">Hap dialogun e informacioneve për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Po përdor <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Përmbajtja</translation>
+<translation id="81817143961839203">Futja e imazhit dështoi</translation>
 <translation id="8185090165691050712">Aktivizo/çaktivizo menynë për të ndryshuar përmasat e modalitetit të kyçjes</translation>
 <translation id="8192727139462702395">Kur të çaktivizosh Bluetooth-in, këto pajisje të jashtme do të shkëputen nga <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Skeda e transmetimit</translation>
@@ -2256,6 +2263,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ka <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Shtyp Alt+"Kërko" ose "Shift" për të anuluar.</translation>
 <translation id="8480418399907765580">Shfaq shiritin e veglave</translation>
+<translation id="8487660088084188539">Kur aktivizon këto veçori, teksti i futur, përmbajtja e dokumentit dhe URL-ja e faqes së uebit mund të dërgohen te serverët e Google. Këto informacione përdoren për të gjeneruar sugjerime për të shkruarit, për të gjeneruar përmbledhje, për t'iu përgjigjur pyetjeve dhe për të përmirësuar produktin, në përputhje me <ph name="LINK_TO_SERVICE_TERMS" />. Mos përfshi asgjë personale, delikate apo konfidenciale.</translation>
 <translation id="8487699605742506766">Zona e qasjes për internet</translation>
 <translation id="8491237443345908933">Hape lidhjen në një skedë të re</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> nuk e mbështet <ph name="SPECIFIED_RESOLUTION" />. Rezolucioni është ndryshuar në <ph name="FALLBACK_RESOLUTION" />. Kliko te "Konfirmo" për t'i mbajtur ndryshimet. Cilësimet e mëparshme do të restaurohen për <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2325,6 +2333,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8725066075913043281">Provo sërish</translation>
 <translation id="8725214031272624704">Shfaq listën e metodave që ofrohen për hyrjen</translation>
 <translation id="8730621377337864115">U krye</translation>
+<translation id="8731188831050207755">Shkarkimi i <ph name="FILE_NAME" /> ishte i pasuksesshëm.</translation>
 <translation id="8731487213223706745">Përfundon në <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Ajo ndoshta po përpiqet të regjistrojë goditjet e tasteve</translation>
 <translation id="8735678380411481005">Ngjyra e dritës së sfondit të tastierës</translation>

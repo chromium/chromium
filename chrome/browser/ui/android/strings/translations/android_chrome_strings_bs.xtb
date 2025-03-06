@@ -107,7 +107,7 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromeu idit
 <translation id="1413446866325418126">Sačuvajte podatke na Google računu</translation>
 <translation id="1414981605391750300">Kontaktiranje Googlea. Ovo može potrajati neko vrijeme…</translation>
 <translation id="1416550906796893042">Verzija aplikacije</translation>
-<translation id="1416582024052267068">Zadržite pristup zaporkama</translation>
+<translation id="1416582024052267068">Zadržite pristup lozinkama</translation>
 <translation id="1419753403124156396">Ponovo pokrenuti Chrome?</translation>
 <translation id="1428770807407000502">Isključiti sinhronizaciju?</translation>
 <translation id="1430915738399379752">Štampaj</translation>
@@ -519,7 +519,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="342220687432920852">{HOURS,plural, =1{Prije # h}one{Prije # h}few{Prije # h}other{Prije # h}}</translation>
 <translation id="3430670036890315772">Isključenjem zaključavanja profila će se ukloniti sačuvane informacije</translation>
 <translation id="3435465986463792564">Imate mnogo prozora? Možete upravljati njima odavde</translation>
-<translation id="3435575784518354875">Da biste zadržali pristup zaporkama, odmah ih izvezite, ažurirajte usluge za Google Play, a zatim ih ponovo uvezite u Google upravitelj zaporki. <ph name="BEGIN_LINK" />Pogledajte potpune upute<ph name="END_LINK" /></translation>
+<translation id="3435575784518354875">Da zadržite pristup lozinkama, izvezite ih sada, ažurirajte Google Play usluge, a zatim ponovo uvezite lozinke na Google upravitelj lozinki. <ph name="BEGIN_LINK" />Pogledajte sva uputstva<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Sigurnost</translation>
 <translation id="3439276997620616816">Ovdje ćete pronaći nedavne kartice</translation>
 <translation id="3443221991560634068">Ponovo učitajte trenutnu stranicu</translation>
@@ -529,7 +529,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3474624961160222204">Nastavi kao <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Možete odabrati svoj pretraživač</translation>
 <translation id="3479552764303398839">Ne sada</translation>
-<translation id="3487903178221457900">Izvezena datoteka može biti dostupna drugima, uključujući aplikacije. Nakon izvoza vaše se zaporke brišu iz Chromea.</translation>
+<translation id="3487903178221457900">Izvezeni fajl će možda biti dostupan drugima, uključujući aplikacije. Nakon što ih izvezete, lozinke se brišu iz Chromea.</translation>
 <translation id="3488199663160411179">ime</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> o predloženom sadržaju</translation>
 <translation id="3495219333887281978">Donja tabela za prijavu je otvorena na pola visine.</translation>
@@ -555,7 +555,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3566639033325271639">Ažuriraj postavke</translation>
 <translation id="3568945271227339929">Nema ugroženih lozinki</translation>
 <translation id="357465026686164600">Telefon kao sigurnosni ključ</translation>
-<translation id="3575464060651642446">Provjera zaporki na ovom uređaju…</translation>
+<translation id="3575464060651642446">Provjeravanje lozinki na uređaju…</translation>
 <translation id="3577473026931028326">Nešto nije uredu. Pokušajte ponovo.</translation>
 <translation id="3577558748185201054">Upravljajte interesovanjima i postavkama</translation>
 <translation id="3587482841069643663">Sve</translation>
@@ -1762,7 +1762,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="8937772741022875483">Ukloniti aktivnosti Chromea iz Digitalnog blagostanja?</translation>
 <translation id="8942627711005830162">Otvori u drugom prozoru</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Preuzimanje ovog jezika nije uspjelo. Pokušajte ponovo kasnije.</translation>
-<translation id="8957528460562961174">Da biste zadržali pristup svojim zaporkama, odmah ih izvezite, a zatim ih ponovo uvezite u svoj omiljeni upravitelj zaporki. Google upravitelj zaporki prestao je funkcionirati jer usluge za Google Play nisu dostupne.</translation>
+<translation id="8957528460562961174">Da zadržite pristup lozinkama, izvezite ih sada, a zatim ih uvezite na željeni upravitelj lozinki. Google upravitelj lozinki je prestao funkcionirati jer Google Play usluge nisu dostupne.</translation>
 <translation id="8963117664422609631">Idite u postavke web lokacije</translation>
 <translation id="8965591936373831584">na čekanju</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> anonimna kartica i još <ph name="TAB_COUNT_ONE" /> kartica će se zatvoriti}one{<ph name="INCOGNITO_TAB_COUNT" /> anonimna kartica i još <ph name="TAB_COUNT_MANY" /> kartica će se zatvoriti}few{<ph name="INCOGNITO_TAB_COUNT" /> anonimne kartice i još <ph name="TAB_COUNT_MANY" /> kartice će se zatvoriti}other{<ph name="INCOGNITO_TAB_COUNT" /> anonimnih kartica i još <ph name="TAB_COUNT_MANY" /> kartica će se zatvoriti}}</translation>

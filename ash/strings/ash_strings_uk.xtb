@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">Надіслати відгук</translation>
 <translation id="1059120031266247284">Поділилися з вами</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176">Вкладка "<ph name="ITEM_LABEL" />" з кнопкою "Вилучити"</translation>
 <translation id="1062407476771304334">Замінити</translation>
 <translation id="1073899992769346247">Замініть або зарядіть акумулятор</translation>
 <translation id="1081015718268701546">Додатки Linux наразі не підтримуються. Інші додатки буде збережено.</translation>
@@ -323,6 +324,7 @@
 <translation id="2083190527011054446">Доброї ночі, <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Відкрити панель смайлів</translation>
 <translation id="2088116547584365419">ігри</translation>
+<translation id="2092517835716911174">Користуватися функціями "Допомога із читанням" і "Допомога з текстом" можуть лише особи, яким виповнилося 18 років.</translation>
 <translation id="209965399369889474">Немає з’єднання з мережею</translation>
 <translation id="2107581415810719320">Інша кнопка <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Ваш кабель USB-C не підтримує Thunderbolt. Продуктивність пристрою може бути обмежено.</translation>
@@ -1228,6 +1230,7 @@
 <translation id="5043679421800073804">Натиснути останній значок на панелі запуску</translation>
 <translation id="504465286040788597">Попередній абзац</translation>
 <translation id="5045550434625856497">Неправильний пароль</translation>
+<translation id="5056587122125565772">Створення зображень</translation>
 <translation id="5058794129231928255">Не вдалося створити документ Google</translation>
 <translation id="5062496344832867502">оперативна пам’ять</translation>
 <translation id="5068762093486106012">Якщо ви говоритимете в режимі "Без звуку", то отримаєте сповіщення. Звук не передаватиметься з вашого пристрою.</translation>
@@ -1276,6 +1279,7 @@
 <translation id="5222676887888702881">Вийти</translation>
 <translation id="5228195526683428788">Розділювач екрана</translation>
 <translation id="5229343007215035173">Увімкнути або вимкнути екран конфіденційності</translation>
+<translation id="5229860525743792999">Вилучити вкладку "<ph name="ITEM_LABEL" />" із запропонованої групи</translation>
 <translation id="5230516054153933099">Вікно</translation>
 <translation id="5234764350956374838">Закрити</translation>
 <translation id="523505283826916779">Налаштування доступності</translation>
@@ -1758,6 +1762,7 @@
 <translation id="6757237461819837179">Медіаконтент не відтворюється</translation>
 <translation id="6760438044935091345">Ігрова панель</translation>
 <translation id="6768043681523654438">сховище</translation>
+<translation id="6769195697113506406">Зображення вставлено</translation>
 <translation id="6777216307882431711">Живлення підключених пристроїв USB-C</translation>
 <translation id="6781002679438061620">Робочий стіл 9</translation>
 <translation id="6782182743534150858">Робочий стіл 13</translation>
@@ -1984,6 +1989,7 @@
 <translation id="7571361473021531288">Рівень заряду акумулятора: <ph name="BATTERY_PERCENTAGE" />% | До розрядження залишилося <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Активне вікно закріплено праворуч.</translation>
 <translation id="7579778809502851308">Знімок екрана</translation>
+<translation id="7588317312481506627">Скопійовано в буфер обміну.</translation>
 <translation id="7593891976182323525">Клавіша пошуку або Shift</translation>
 <translation id="7598054670902114203">Короткий огляд використання ЦП, <ph name="CPU_USEAGE" />%. Температура: <ph name="TEMPERATURE" /> °C; поточна швидкість: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> ГГц</translation>
 <translation id="7599378375976398913">Вставити вибраний результат</translation>
@@ -2178,6 +2184,7 @@
 <translation id="8155628902202578800">Відкрити вікно з інформацією про обліковий запис <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Використовується: <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Контент</translation>
+<translation id="81817143961839203">Не вдалося вставити зображення</translation>
 <translation id="8185090165691050712">Відкрити або закрити меню режиму, що блокує змінення розміру додатка</translation>
 <translation id="8192727139462702395">Якщо вимкнути Bluetooth, від <ph name="DEVICE_TYPE" /> від’єднаються такі зовнішні пристрої:</translation>
 <translation id="8198456017687137612">Трансляція вкладки</translation>
@@ -2256,6 +2263,7 @@
 <translation id="8473301994082929012">На сайті <ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Щоб скасувати, натисніть Alt+Search або Shift.</translation>
 <translation id="8480418399907765580">Показати панель інструментів</translation>
+<translation id="8487660088084188539">Коли ви вмикаєте ці функції, введений текст, вміст документа і URL-адреса вебсторінки можуть надсилатися на сервери Google. Ці дані використовуються, щоб генерувати пропозиції, підсумки й відповіді на запитання, а також удосконалювати наш продукт відповідно до <ph name="LINK_TO_SERVICE_TERMS" />. Не вказуйте особисту, чутливу чи конфіденційну інформацію.</translation>
 <translation id="8487699605742506766">Точка доступу</translation>
 <translation id="8491237443345908933">Відкрити посилання на новій вкладці</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не підтримує роздільну здатність <ph name="SPECIFIED_RESOLUTION" />. Роздільну здатність змінено на <ph name="FALLBACK_RESOLUTION" />. Щоб зберегти зміни, натисніть "Підтвердити". Попередні налаштування відновляться через <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2325,6 +2333,7 @@
 <translation id="8725066075913043281">Повторити спробу</translation>
 <translation id="8725214031272624704">Показати список доступних методів введення</translation>
 <translation id="8730621377337864115">Готово</translation>
+<translation id="8731188831050207755">Не вдалося завантажити файл "<ph name="FILE_NAME" />".</translation>
 <translation id="8731487213223706745">Завершується о <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Можливо, це спроба викрасти введенні символи.</translation>
 <translation id="8735678380411481005">Колір підсвічування клавіатури</translation>

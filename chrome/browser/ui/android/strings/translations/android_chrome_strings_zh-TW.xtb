@@ -107,6 +107,7 @@
 <translation id="1413446866325418126">將資料儲存到 Google 帳戶</translation>
 <translation id="1414981605391750300">正在連線至 Google。可能需要一分鐘…</translation>
 <translation id="1416550906796893042">應用程式版本</translation>
+<translation id="1416582024052267068">繼續存取密碼</translation>
 <translation id="1419753403124156396">要重新啟動 Chrome 嗎？</translation>
 <translation id="1428770807407000502">要關閉同步處理嗎？</translation>
 <translation id="1430915738399379752">列印</translation>
@@ -269,6 +270,7 @@
 <translation id="2259659629660284697">匯出密碼…</translation>
 <translation id="2276696007612801991">登入 Google 帳戶以檢查你的密碼</translation>
 <translation id="2278052315791335171">刪除這組密碼並不會刪除你的 <ph name="SITE" /> 帳戶</translation>
+<translation id="2281243904606300427"><ph name="TAB_TITLE" />，選取的無痕分頁</translation>
 <translation id="2286841657746966508">帳單地址</translation>
 <translation id="228704530595896923">分享選項清單。</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{查看 <ph name="TABS_COUNT_ONE" /> 個分頁}other{查看 <ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
@@ -328,6 +330,7 @@
 <translation id="2534155362429831547">已刪除 <ph name="NUMBER_OF_ITEMS" /> 個項目</translation>
 <translation id="253498598929009420">網站將能查看你的畫面內容</translation>
 <translation id="2536728043171574184">目前瀏覽的是這個網頁的離線複本</translation>
+<translation id="2542548955756682219"><ph name="TAB_TITLE" />，分頁</translation>
 <translation id="2546283357679194313">Cookie 和網站資料</translation>
 <translation id="2547843573592965873">設定檔鎖定功能可確保車輛上的個人資訊安全無虞，包括密碼、付款及儲存在 Google 帳戶的其他資訊。</translation>
 <translation id="254973855621628293">密碼已儲存到這部裝置</translation>
@@ -471,6 +474,7 @@
 <translation id="3169472444629675720">探索</translation>
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 個密碼和其他項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}other{# 個密碼和其他項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}}</translation>
 <translation id="3187472288455401631">廣告評估功能</translation>
+<translation id="3189635831478931757">「<ph name="GROUP_TITLE" />」分頁群組</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3208584281581115441">立即檢查</translation>
 <translation id="3211426585530211793">已刪除「<ph name="ITEM_TITLE" />」</translation>
@@ -515,6 +519,7 @@
 <translation id="342220687432920852">{HOURS,plural, =1{# 小時前}other{# 小時前}}</translation>
 <translation id="3430670036890315772">如果關閉設定檔鎖定功能，系統將移除已儲存的資訊</translation>
 <translation id="3435465986463792564">開啟了多個視窗嗎？你可以在這裡進行管理</translation>
+<translation id="3435575784518354875">如要繼續存取密碼，請立即匯出密碼、更新 Google Play 服務，再將密碼匯入回 Google 密碼管理工具。<ph name="BEGIN_LINK" />查看完整操作說明<ph name="END_LINK" />。</translation>
 <translation id="3435738964857648380">安全性</translation>
 <translation id="3439276997620616816">這裡會顯示最近關閉的分頁</translation>
 <translation id="3443221991560634068">重新載入目前網頁</translation>
@@ -524,6 +529,7 @@
 <translation id="3474624961160222204">以「<ph name="NAME" />」的身分繼續</translation>
 <translation id="3478363558367712427">你可以選擇搜尋引擎</translation>
 <translation id="3479552764303398839">現在不要</translation>
+<translation id="3487903178221457900">其他人 (包括應用程式) 可能可以存取匯出的檔案。匯出後，系統會從 Chrome 中刪除密碼。</translation>
 <translation id="3488199663160411179">名稱</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />建議的內容</translation>
 <translation id="3495219333887281978">登入底部功能表已開啟，顯示在畫面下半部。</translation>
@@ -549,6 +555,7 @@
 <translation id="3566639033325271639">更新設定</translation>
 <translation id="3568945271227339929">沒有任何密碼外洩</translation>
 <translation id="357465026686164600">手機也是安全金鑰</translation>
+<translation id="3575464060651642446">正在檢查這部裝置上的密碼…</translation>
 <translation id="3577473026931028326">發生錯誤，請再試一次。</translation>
 <translation id="3577558748185201054">管理興趣和偏好設定</translation>
 <translation id="3587482841069643663">全部</translation>
@@ -744,6 +751,7 @@
 <translation id="4523326818319942067">最近一小時</translation>
 <translation id="452750746583162491">查看已同步處理的資料</translation>
 <translation id="4532845899244822526">選擇資料夾</translation>
+<translation id="4535755320005483982">共用的「<ph name="GROUP_TITLE" />」分頁群組</translation>
 <translation id="4543131175509360848">說明沒有密碼金鑰的底部功能表</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個分頁}other{<ph name="TAB_COUNT_MANY" /> 個分頁、<ph name="TAB_COUNT_INCOGNITO" /> 個無痕分頁}}</translation>
 <translation id="4558311620361989323">網頁快速鍵</translation>
@@ -1245,6 +1253,7 @@
 <translation id="6756507620369789050">提供意見</translation>
 <translation id="6762511428368667596"><ph name="NAME" />，<ph name="EMAIL" />。</translation>
 <translation id="676305334223455055">登入即可接收符合個人興趣的內容</translation>
+<translation id="6764137532716892442">共用的「<ph name="GROUP_TITLE" />」分頁群組，群組中有新活動</translation>
 <translation id="6767294960381293877">要共用分頁的裝置清單已開啟，顯示在畫面下半部。</translation>
 <translation id="6785476624617658922">Chrome 和 Chrome OS 的《附加服務條款》</translation>
 <translation id="6795633245022906657">快速開啟新分頁。如要編輯這個捷徑，請前往 [設定]。</translation>
@@ -1311,6 +1320,7 @@
 <translation id="6965382102122355670">確定</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{查看在共用分頁群組中有新活動的 <ph name="TABS_COUNT_ONE" /> 個分頁}other{查看在共用分頁群組中有新活動的 <ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="6971862865055170158">拒絕</translation>
+<translation id="6976223255612495095"><ph name="TAB_TITLE" />，新分頁或已更新的分頁</translation>
 <translation id="6978717888677691380">你封鎖的網站</translation>
 <translation id="6979737339423435258">不限時間</translation>
 <translation id="6983306615164277634">你也可以按住網址列來變更位置。</translation>
@@ -1704,6 +1714,7 @@
 <translation id="8676276370198826499">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 註冊 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">登入驗證</translation>
 <translation id="8683039184091909753">圖片</translation>
+<translation id="8688183792442786085"><ph name="TAB_TITLE" />，選取的分頁</translation>
 <translation id="869891660844655955">到期日</translation>
 <translation id="8699120352855309748">不要詢問是否要翻譯這些語言</translation>
 <translation id="8712637175834984815">我瞭解了</translation>
@@ -1751,6 +1762,7 @@
 <translation id="8937772741022875483">要將你的 Chrome 活動記錄從數位健康中移除嗎？</translation>
 <translation id="8942627711005830162">在其他視窗中開啟</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - 無法下載這個語言套件，請稍後再試。</translation>
+<translation id="8957528460562961174">如要繼續存取密碼，請立即匯出密碼，然後匯入至偏好的密碼管理工具。由於無法使用 Google Play 服務，Google 密碼管理工具已停止運作。</translation>
 <translation id="8963117664422609631">前往網站設定</translation>
 <translation id="8965591936373831584">正在等待下載</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕分頁和另外 <ph name="TAB_COUNT_ONE" /> 個分頁}other{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕分頁和另外 <ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
@@ -1836,4 +1848,5 @@
 <translation id="988091779042748639">如要刪除裝置上的無痕模式瀏覽記錄，請關閉所有無痕分頁。</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> 個分頁</translation>
 <translation id="996149300115483134">已關閉動態消息資訊卡選單</translation>
+<translation id="99907655649633293"><ph name="TAB_TITLE" />，無痕分頁</translation>
 </translationbundle>

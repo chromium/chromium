@@ -3822,6 +3822,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3670229581627177274">Ativar Bluetooth</translation>
 <translation id="3670480940339182416">Permitir que sites usem o otimizador V8</translation>
 <translation id="3671764914317109892">Use a linguagem cotidiana para pesquisar no seu histórico de navegação. Também é possível fazer perguntas e receber respostas com base nesse histórico.</translation>
+<translation id="3671982238795754537">Saiba mais sobre chaves de acesso</translation>
 <translation id="3672681487849735243">Foi detectado um erro de fábrica</translation>
 <translation id="3673097791729989571">Login hospedado por <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">O PIN foi atualizado</translation>
@@ -4738,6 +4739,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4289540628985791613">Visão geral</translation>
 <translation id="428963538941819373">Esses sites podem usar informações que salvaram sobre você enquanto você navega no <ph name="HOST" />.</translation>
 <translation id="4289732974614035569">Escolha um PIN</translation>
+<translation id="4290526909608432059">A compatibilidade com apps do Chrome será encerrada em breve. Para saber mais sobre as opções, entre em contato com o desenvolvedor do app ou com a equipe de suporte de TI.</translation>
 <translation id="4290791284969893584">Após fechar uma página, as tarefas iniciadas talvez não sejam encerradas</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> participante</translation>
 <translation id="4290898381118933198">Deslize para navegar entre as páginas</translation>
@@ -8536,6 +8538,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" />: porta serial conectada</translation>
 <translation id="7033616203784997570">A entrada precisa ter no máximo 62 caracteres</translation>
 <translation id="7034692021407794547">Um administrador com privilégios para gerenciar faturamento precisa aceitar os Termos de Serviço do hardware do Google Meet na seção "Hardware do Google Meet" do Admin Console.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> acabou de criar uma chave de acesso para sua conta. As chaves de acesso oferecem maneira mais rápida e segura de fazer login e são salvas no Gerenciador de senhas do Google da conta <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Recomenda-se ter pelo menos <ph name="DISK_SIZE" /> de espaço livre para o Linux. Para liberar espaço, exclua arquivos do dispositivo.</translation>
 <translation id="7037157058268992880">Esqueci o PIN</translation>
 <translation id="7037509989619051237">Texto para visualização</translation>
@@ -10167,6 +10170,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8195854162863398249">Desativar <ph name="FEATURE_NAME" /></translation>
 <translation id="8195920051450756553">Atraso antes de ativar a mesma tecla novamente</translation>
 <translation id="8197673340773315084">Adicione um nome ou marcador, como "Trabalho"</translation>
+<translation id="8198181050118789419">Tema: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Transmitindo guia</translation>
 <translation id="8199300056570174101">Propriedades da rede (serviço) e do dispositivo</translation>
 <translation id="8200772114523450471">Retomar</translation>
@@ -10577,6 +10581,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8477178913400731244">Excluir dados</translation>
 <translation id="8477241577829954800">Substituído</translation>
 <translation id="8477384620836102176">&amp;Geral</translation>
+<translation id="8477446666255316832">Faça login mais rápido na próxima vez</translation>
 <translation id="8479176401914456949">Código inválido. Tente novamente.</translation>
 <translation id="8480869669560681089">Dispositivo desconhecido de <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Confirmar a permissão de USB</translation>

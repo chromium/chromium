@@ -291,6 +291,7 @@
 <translation id="2161446265348023004">Skift til åbent vindue</translation>
 <translation id="2164946989711475905">Log ind…</translation>
 <translation id="2175927920773552910">QR-kode</translation>
+<translation id="218350106843433823">Udfyld adgangskoder og adgangsnøgler automatisk</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="219283042927675668">Faner i gruppe</translation>
 <translation id="2194856509914051091">Vigtige oplysninger</translation>
@@ -380,6 +381,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2511117522375201202">Du har <ph name="NUMBER_OF_PASSWORDS" /> kompromitterede adgangskoder, hvilket kan udgøre en sikkerhedsrisiko.</translation>
 <translation id="2513103768503127042">Her kan du se dine fanegrupper</translation>
 <translation id="251837347827266434">Du logges ud, fanerne lukkes, og browserdataene slettes</translation>
+<translation id="2520787026086861736">Du kan deaktivere funktionen ved at gå til <ph name="BEGIN_LINK" />Autofyld og adgangskoder<ph name="END_LINK" /></translation>
 <translation id="2529021024822217800">Åbn alle</translation>
 <translation id="2536991091671391962">Du kan bruge gemte adgangskoder på alle enheder. De er gemt i Google Adgangs­kode­admin­istrator for <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Skjult, adgangskode</translation>
@@ -678,6 +680,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3940195383040445971">Følg prisudvikling på faner</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Luk {COUNT} fane}one{Luk {COUNT} fane}other{Luk {COUNT} faner}}</translation>
 <translation id="3948600256434252210">Du kan stryge til højre for at browse i inkognitotilstand.</translation>
+<translation id="3950479158728806902">Opret automatisk en adgangsnøgle for at logge ind hurtigere</translation>
 <translation id="3950820424414687140">Log ind</translation>
 <translation id="3955740319737378355">Udfør</translation>
 <translation id="3955822496205734389">Du har svage adgangskoder.</translation>
@@ -702,6 +705,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4018440314314549819">Autofyld gemte adgangskoder</translation>
 <translation id="4021447724486050609">Opdater din browser</translation>
 <translation id="4021931095789478915">Føj ${url} til læselisten</translation>
+<translation id="4026496154402824012">Du kan deaktivere funktionen ved at gå til <ph name="BEGIN_LINK" />Indstillinger til adgangskode<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Gem på kontoen…</translation>
 <translation id="4038354071007134711">Ingen apps på denne enhed, der kan åbne filen.</translation>
 <translation id="4042870976416480368">Find på siden</translation>
@@ -837,6 +841,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4619564267100705184">Verificer din identitet</translation>
 <translation id="4619615317237390068">Faner fra andre enheder</translation>
 <translation id="4624080227980645783">Nyt inkognitovindue</translation>
+<translation id="4627107755957573804">Tillad, at websites og apps opgraderer eksisterende konti for at bruge adgangsnøgler</translation>
 <translation id="4630212057753624203">Eksempelboble</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> genbrugte adgangskoder</translation>
 <translation id="4631890462758052414">Ny inkognitofane</translation>
@@ -1135,6 +1140,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5859715514067755465">Frem</translation>
 <translation id="5860033963881614850">Fra</translation>
 <translation id="5860491529813859533">Aktivér</translation>
+<translation id="5868644772996939262">Udfyld adgangskoder og adgangsnøgler automatisk</translation>
 <translation id="5869522115854928033">Gemte adgangskoder</translation>
 <translation id="5878899964490256268"><ph name="EMAIL" />. Administreres af din organisation.</translation>
 <translation id="5888889603768021126">Du er logget ind med</translation>
@@ -1238,7 +1244,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6284652193729350524">Tilbyd at oversætte fra <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Følger ikke længere <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Åbn <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />, og tryk på Beskyttet browsing for at aktivere Beskyttet browsing.</translation>
-<translation id="6295434468271563378">Slet dine downloads automatisk</translation>
 <translation id="6295751040240588413">Kortets kaldenavn er ugyldigt</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6301104306974789820">Få notifikationer om prissporing</translation>

@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">Bouton Gérer les téléchargements dans Chrome, activez-le pour gérer les fichiers que vous avez téléchargés dans Chrome</translation>
 <translation id="1420345875188552368">Votre mode de paiement automatique enregistré peut être utilisé pour ce paiement. Pour désactiver les portefeuilles électroniques dans Chrome, accédez à vos <ph name="BEGIN_LINK1" />paramètres des paiements<ph name="END_LINK1" />.</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> pour autoriser l'association</translation>
+<translation id="1421484961346698724">Compte supprimé</translation>
 <translation id="14222610277930434">Vous visitez souvent cette page</translation>
 <translation id="1422930527989633628">Les sites peuvent demander à découvrir les appareils Bluetooth à proximité</translation>
 <translation id="1426410128494586442">Oui</translation>
@@ -3024,6 +3025,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6351658970066645919">Supprimer les données de navigation</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Aucun}=1{1 mot de passe (pour <ph name="DOMAIN_LIST" />, synchronisé)}=2{2 mots de passe (pour <ph name="DOMAIN_LIST" />, synchronisés)}one{# mot de passe (pour <ph name="DOMAIN_LIST" />, synchronisé)}other{# mots de passe (pour <ph name="DOMAIN_LIST" />, synchronisés)}}</translation>
 <translation id="6355392890578844978">Ce navigateur n'est pas géré par une entreprise ni une organisation. L'activité sur cet appareil peut être gérée à l'extérieur de Chromium. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Les groupes d'onglets « <ph name="GROUP_TITLE_1" /> » et « <ph name="GROUP_TITLE_2" /> » ne sont plus accessibles</translation>
 <translation id="6358088212770985041">modifier les modes de paiement</translation>
 <translation id="6358450015545214790">Qu'est-ce que c'est?</translation>
 <translation id="6360213755783740931">En savoir plus sur la protection contre les logiciels malveillants</translation>

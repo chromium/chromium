@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">Geslo bo shranjeno v Google Upravitelju gesel za račun <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Odpiranje novega zavihka v Chromu</translation>
 <translation id="1166460004393506534">Brisanje podatkov brskanja v Chromu</translation>
+<translation id="1171255741903316750">Vklopite »Zaklepanje anonimnih zavihkov po zaprtju Chroma«</translation>
 <translation id="1179527450541388808">Hitreje dostopajte do Chroma iz vrstice Dock na začetnem zaslonu iPada.</translation>
 <translation id="1180362651362502943">Še naprej uporabljajte podatke v Chromu v računu Google.</translation>
 <translation id="1200396280085622191">Chrome lahko uporabljate, kadar koli se dotaknete povezav v sporočilih in drugih aplikacijah.</translation>
@@ -45,6 +46,7 @@ Kaj je treba upoštevati:
 <translation id="1917964099031477364">Ta račun in vsi neshranjeni podatki bodo odstranjeni iz Chroma in drugih Googlovih aplikacij v tej napravi.</translation>
 <translation id="1919130412786645364">Omogočanje prijave v Chrome</translation>
 <translation id="1965935827552890526">Končajte, kar ste počeli v drugem odprtem oknu v Chromu.</translation>
+<translation id="1973910962341002002">V nastavitvah »<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />« vklopite »Chrome«</translation>
 <translation id="1984705450038014246">Sinhronizacija podatkov v Chromu</translation>
 <translation id="1987779152850321833">Če želite kar najbolje izkoristiti Chrome, upoštevajte ta predlagana dejanja.</translation>
 <translation id="2055826352861631739">Privzeto uporabljajte Chrome za iPad</translation>
@@ -96,10 +98,13 @@ Počakajte nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatk
 <translation id="3282568296779691940">Prijava v Chrome</translation>
 <translation id="3303503998967553377">Uporaba dejanj v Chromu za iOS</translation>
 <translation id="3348862487678490430">Dodajanje elementa bralnega seznama v Chromu</translation>
+<translation id="3357827134511189025">Prijavite se s shranjenimi gesli in ključi za dostop v kateri koli aplikaciji s samodejnim izpolnjevanjem prek Chroma</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{To se zgodi, če Chroma ne uporabljate {THRESHOLD} minuto}one{To se zgodi, če Chroma ne uporabljate {THRESHOLD} minuto}two{To se zgodi, če Chroma ne uporabljate {THRESHOLD} minuti}few{To se zgodi, če Chroma ne uporabljate {THRESHOLD} minute}other{To se zgodi, če Chroma ne uporabljate {THRESHOLD} minut}}</translation>
 <translation id="3367797402528056312">Dokončajte nastavitev Chroma</translation>
 <translation id="3371064404604898522">Nastavi Chrome kot privzeti brskalnik</translation>
 <translation id="3399930248910934354">Odpri nastavitve Chroma</translation>
+<translation id="3440830787838130530">Preprosto in varno delite kopijo gesla s skupino družinskih članov v Googlovem upravitelju gesel</translation>
+<translation id="3460369101684070455">Če želite preprosto do shranjenih gesel v drugih aplikacijah, uporabite Chrome za samodejno izpolnjevanje</translation>
 <translation id="3472587960215700950">Chrome z uporabo Google Zemljevidov prikazuje navodila za pot in lokalne podatke o zaznanih naslovih.</translation>
 <translation id="3503014945441706099">Zagotovite si izboljšano varno brskanje tudi za ta profil v Chromu.</translation>
 <translation id="3522659714780527202">Če si želite ogledati zavihke iz naprav, v katerih uporabljate Chrome, vklopite sinhronizacijo</translation>
@@ -181,6 +186,7 @@ Počakajte nekaj minut, preden preklopite račun. Če zdaj preklopite med račun
 <translation id="5998675059699164418">Vaša organizacija zahteva, da se za uporabo Chroma prijavite.</translation>
 <translation id="6021312115739110405">Vir po meri, ki ga je za vas ustvaril Google. Vključuje novice, šport in vreme.</translation>
 <translation id="6022659036123304283">Prilagodite si Chrome</translation>
+<translation id="6132075343662013154">Chrome bo ponudil shranjevanje gesla</translation>
 <translation id="6132149203299792222">Prijavite se z računom Google, če želite sinhronizirati gesla, zaznamke in drugo.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Iskanje v Chromu</translation>
@@ -228,6 +234,7 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma
 <translation id="7061455974939528301">Pridržite ikono Chroma in kliknite »Uredi začetni zaslon«</translation>
 <translation id="7065813315247345131">Premaknite Chrome v vrstico z aplikacijami</translation>
 <translation id="7124339256045485976">Posodobitev Chroma</translation>
+<translation id="7145599899567697473">Shranjevanje in samodejno izpolnjevanje gesel v Chromu</translation>
 <translation id="7161390184744336561">Google Chrome je zastarel</translation>
 <translation id="7165736900384873061">Začetek uporabe bralnika kod QR Google Chroma</translation>
 <translation id="7175129790242719365">Nasvet za Chrome: Prijavite se v Chrome</translation>
@@ -261,6 +268,7 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma
 <translation id="7693590760643069321">Zdaj lahko uporabljate Chrome, kadar koli se dotaknete povezav v sporočilih, dokumentih in drugih aplikacijah.</translation>
 <translation id="7698568245838009292">Chrome želi dostopati do fotoaparata</translation>
 <translation id="7707877166818730835">Odpiranje zadnjega zavihka v Chromu</translation>
+<translation id="7747746207470479571">Preprosto dostopajte do gesel in ključev s samodejnim izpolnjevanjem prek Chroma</translation>
 <translation id="776305366874821582">Hitreje dostopajte do Chroma iz vrstice Dock na začetnem zaslonu iPhona.</translation>
 <translation id="7780154209050837198">Če želite kar najbolje izkoristiti Chrome, se prijavite vanj z računom Google.</translation>
 <translation id="7787205077729386167">V sistemu iOS odprite nastavitve za Chrome, nato se dotaknite »Privzeti brskalnik« in izberite Chrome.</translation>
@@ -281,6 +289,7 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma
 <translation id="8136856065410661948">To bo uporabljeno za ustvarjanje dogodkov v koledarju Apple Calendar s Chromom in Googlom Lens.</translation>
 <translation id="8154120522323162874">Izkoristite vse, kar ponuja Chrome, z nadaljevanjem nastavitve brskalnika.</translation>
 <translation id="8160472928944011082">Chroma ni mogoče posodobiti</translation>
+<translation id="8245080522851805544">Poskrbite za zasebno brskanje s preverjanjem pristnosti naprave, ko zaprete Chrome</translation>
 <translation id="8248887045858762645">Nasvet za Chrome</translation>
 <translation id="8265730590513812063">Odpiranje Chromovega menija</translation>
 <translation id="8317674518145175158">Plačilna sredstva in naslovi ne bodo šifrirani. Zgodovina brskanja v Chromu se ne bo sinhronizirala.
@@ -324,5 +333,6 @@ Podatki so bili šifrirani z geslom dne <ph name="TIME" />. Vnesite ga, če žel
 <translation id="9181628561061032322">Odpiranje nedavnih zavihkov v Chromu.</translation>
 <translation id="948597495737267756">Odpre stran zgodovine v Chromu.</translation>
 <translation id="97300214378190234">Chrome lahko uporabljate, kadar koli se dotaknete povezav v drugih aplikacijah.</translation>
+<translation id="997929539742564806">Hitro se prijavite v aplikacije in na spletnih mestih s samodejnim izpolnjevanjem gesel in ključev za dostop prek Chroma</translation>
 <translation id="998677222109959694">Upravljanje Chromovih nastavitev</translation>
 </translationbundle>

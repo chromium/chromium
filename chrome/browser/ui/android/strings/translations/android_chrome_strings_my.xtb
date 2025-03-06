@@ -270,6 +270,7 @@
 <translation id="2259659629660284697">စကားဝှက်များကို တင်ပို့ခြင်း…</translation>
 <translation id="2276696007612801991">သင့်စကားဝှက်များကိုစစ်ရန် သင့် Google အကောင့်သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="2278052315791335171">ဤစကားဝှက်ကို ဖျက်ခြင်းဖြင့် <ph name="SITE" /> ရှိ သင့်အကောင့်ကို ဖျက်မည်မဟုတ်ပါ</translation>
+<translation id="2281243904606300427"><ph name="TAB_TITLE" />၊ ရွေးချယ်ထားသည့် ရုပ်ဖျက်တဘ်</translation>
 <translation id="2286841657746966508">ငွေတောင်းခံလွှာပို့ရန် လိပ်စာ</translation>
 <translation id="228704530595896923">မျှဝေရန် ရွေးချယ်စရာစာရင်း။</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခုကို ကြည့်ရန်}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခုကို ကြည့်ရန်}}</translation>
@@ -329,6 +330,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> ခုဖျက်ပြီးပြီ</translation>
 <translation id="253498598929009420">ဤဝဘ်ဆိုက်သည် သင့်ဖန်သားပြင်ပေါ်ရှိ အကြောင်းအရာများကို မြင်နိုင်ပါမည်</translation>
 <translation id="2536728043171574184">ဤစာမျက်နှာ၏ အော့ဖ်လိုင်း မိတ္တူကို ကြည့်ရှုနေ</translation>
+<translation id="2542548955756682219"><ph name="TAB_TITLE" />၊ တဘ်</translation>
 <translation id="2546283357679194313">ကူကီးများ နှင့် ဆိုက် ဒေတာ</translation>
 <translation id="2547843573592965873">ပရိုဖိုင်လော့ခ်သည် သင်၏ Google Account တွင် သိမ်းထားသော စကားဝှက်၊ ငွေပေးချေမှု စသည်တို့အပါအဝင် သင့်အချက်အလက်များကို ကားထဲတွင် လုံခြုံစေသည်။</translation>
 <translation id="254973855621628293">ဤစက်တွင် စကားဝှက်များ သိမ်းထားသည်</translation>
@@ -472,6 +474,7 @@
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{စကားဝှက် ၁ ခုနှင့် အခြားအချက်အလက်များကို ဤစက်တွင်သာ သိမ်းသည်။ ၎င်းတို့ကို သင်၏ အခြားစက်များတွင်သုံးရန် သင့် Google Account <ph name="ACCOUNT_EMAIL" /> တွင် သိမ်းနိုင်သည်။}other{စကားဝှက် # ခုနှင့် အခြားအချက်အလက်များကို ဤစက်တွင်သာ သိမ်းသည်။ ၎င်းတို့ကို သင်၏ အခြားစက်များတွင်သုံးရန် သင့် Google Account <ph name="ACCOUNT_EMAIL" /> တွင် သိမ်းနိုင်သည်။}}</translation>
 <translation id="3187472288455401631">ကြော်ငြာတိုင်းတာခြင်း</translation>
+<translation id="3189635831478931757"><ph name="GROUP_TITLE" /> တဘ်အုပ်စု</translation>
 <translation id="3207960819495026254">ဘွတ်မက်လုပ်ပြီး၏</translation>
 <translation id="3208584281581115441">ယခု စစ်ကြည့်ရန်</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> ကို ဖျက်လိုက်ပါပြီ</translation>
@@ -748,6 +751,7 @@
 <translation id="4523326818319942067">နောက်ဆုံးတစ်နာရီ</translation>
 <translation id="452750746583162491">သင်စင့်ခ်လုပ်ထားသည့် ဒေတာများကို ပြန်စစ်ခြင်း</translation>
 <translation id="4532845899244822526">ဖိုင်တွဲရွေးရန်</translation>
+<translation id="4535755320005483982">မျှဝေထားသည့် <ph name="GROUP_TITLE" /> တဘ်အုပ်စု</translation>
 <translation id="4543131175509360848">လျှို့ဝှက်ကီးစာမျက်နှာများ မရှိပါ</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{တဘ် <ph name="TAB_COUNT_ONE" /> ခု}other{တဘ် <ph name="TAB_COUNT_MANY" /> ခု, ရုပ်ဖျက်တဘ်<ph name="TAB_COUNT_INCOGNITO" /> ခု}}</translation>
 <translation id="4558311620361989323">ဝဘ်စာမျက်နှာ ဖြတ်လမ်းလင့်ခ်များ</translation>
@@ -1248,6 +1252,7 @@
 <translation id="6756507620369789050">အကြံပြုချက် မျှဝေရန်</translation>
 <translation id="6762511428368667596"><ph name="NAME" />၊ <ph name="EMAIL" />။</translation>
 <translation id="676305334223455055">သင့်စိတ်ဝင်စားမှုများပေါ် အခြေခံပြီး အကြောင်းအရာများ ရယူရန် လက်မှတ်ထိုးဝင်ပါ</translation>
+<translation id="6764137532716892442">လုပ်ဆောင်ချက်အသစ်ဖြင့် မျှဝေထားသည့် <ph name="GROUP_TITLE" /> တဘ်အုပ်စု</translation>
 <translation id="6767294960381293877">တဘ်မျှဝေရန် စက်ပစ္စည်းစာရင်း၏ အမြင့်ကို တစ်ဝက်ဖွင့်ထားသည်။</translation>
 <translation id="6785476624617658922">Chrome နှင့် ChromeOS ထပ်တိုး ဝန်ဆောင်မှုစည်းမျဉ်းများ</translation>
 <translation id="6795633245022906657">တဘ်အသစ် အမြန်ဖွင့်ပါ။ ဤဖြတ်လမ်းလင့်ခ်ကို ပြင်ဆင်ရန် ‘ဆက်တင်များ’ သို့ သွားပါ။</translation>
@@ -1314,6 +1319,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{မျှဝေထားသော တဘ်အုပ်စုများရှိ လုပ်ဆောင်ချက်အသစ်ပါသော တဘ် <ph name="TABS_COUNT_ONE" /> ခုကို ကြည့်ရန်}other{မျှဝေထားသော တဘ်အုပ်စုများရှိ လုပ်ဆောင်ချက်အသစ်ပါသော တဘ် <ph name="TABS_COUNT_MANY" /> ခုကို ကြည့်ရန်}}</translation>
 <translation id="6971862865055170158">ခွင့်မပြုပါ</translation>
+<translation id="6976223255612495095"><ph name="TAB_TITLE" />၊ အသစ် (သို့) အပ်ဒိတ်လုပ်ထားသော တဘ်</translation>
 <translation id="6978717888677691380">သင်ပိတ်ထားသည့် ဝဘ်ဆိုက်များ</translation>
 <translation id="6979737339423435258">အားလုံး</translation>
 <translation id="6983306615164277634">နေရာပြောင်းရန် လိပ်စာဘားကို ထိပြီးဖိထားနိုင်ပါသေးသည်။</translation>
@@ -1707,6 +1713,7 @@
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် <ph name="SITE_ETLD_PLUS_ONE" /> သို့ စာရင်းသွင်းပါ</translation>
 <translation id="8676789164135894283">လက်မှတ်ထိုးဝင်မှု စိစစ်ချက်များ</translation>
 <translation id="8683039184091909753">ပုံ</translation>
+<translation id="8688183792442786085"><ph name="TAB_TITLE" />၊ ရွေးထားသည့်တဘ်</translation>
 <translation id="869891660844655955">သက်တမ်း ကုန်ဆုံးရက်</translation>
 <translation id="8699120352855309748">ဤဘာသာစကားများကို ပြန်ဆိုရန် မကမ်းလှမ်းပါနှင့်</translation>
 <translation id="8712637175834984815">ရပါပြီ!</translation>
@@ -1840,4 +1847,5 @@
 <translation id="988091779042748639">သင့်စက်မှ ရုပ်ဖျက် ကြည့်ရှုမှုမှတ်တမ်းကို ဖျက်ရန် ရုပ်ဖျက်တဘ်အားလုံး ပိတ်ပါ။</translation>
 <translation id="992745192656291733">တဘ် <ph name="TAB_COUNT" /> ခု</translation>
 <translation id="996149300115483134">ဖိဒ်ကတ်မီနူးကို ပိတ်ထားသည်</translation>
+<translation id="99907655649633293"><ph name="TAB_TITLE" />၊ ရုပ်ဖျက်တဘ်</translation>
 </translationbundle>

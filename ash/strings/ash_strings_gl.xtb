@@ -22,6 +22,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1058009965971887428">Enviar comentarios</translation>
 <translation id="1059120031266247284">Compartido contigo</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> co botón de quitar</translation>
 <translation id="1062407476771304334">Substituír</translation>
 <translation id="1073899992769346247">Substitúe ou carga a batería</translation>
 <translation id="1081015718268701546">Neste momento non están dispoñibles as aplicacións de Linux; gardaranse outras.</translation>
@@ -323,6 +324,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2083190527011054446">Boas noites, <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Abre o selector de emojis</translation>
 <translation id="2088116547584365419">xogos</translation>
+<translation id="2092517835716911174">Debes ter 18 anos como mínimo para poder usar Axúdame a escribir e Axúdame a ler.</translation>
 <translation id="209965399369889474">Non hai conexión á rede</translation>
 <translation id="2107581415810719320">Outro botón <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">O teu cable USB-C non é compatible con Thunderbolt. O rendemento do dispositivo podería verse limitado.</translation>
@@ -1229,6 +1231,7 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="5043679421800073804">Fai clic na última icona do andel ou tócaa</translation>
 <translation id="504465286040788597">Anterior parágrafo</translation>
 <translation id="5045550434625856497">Contrasinal incorrecto</translation>
+<translation id="5056587122125565772">Crear imaxe</translation>
 <translation id="5058794129231928255">Non se puido crear o documento de Google</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Se falas cando o micrófono estea desactivado, recibirás unha notificación. O audio non sairá do dispositivo.</translation>
@@ -1277,6 +1280,7 @@ Tamén podes usar o atallo de teclado. Primeiro, destaca o texto e, a continuaci
 <translation id="5222676887888702881">Pechar sesión</translation>
 <translation id="5228195526683428788">Divisor de pantalla dividida</translation>
 <translation id="5229343007215035173">Activar ou desactivar a pantalla de privacidade</translation>
+<translation id="5229860525743792999">Quitar <ph name="ITEM_LABEL" /> do grupo suxerido</translation>
 <translation id="5230516054153933099">Ventá</translation>
 <translation id="5234764350956374838">Rexeitar</translation>
 <translation id="523505283826916779">Configuración de accesibilidade</translation>
@@ -1759,6 +1763,7 @@ Nova instalación</translation>
 <translation id="6757237461819837179">Non se está reproducindo contido multimedia</translation>
 <translation id="6760438044935091345">Panel de xogo</translation>
 <translation id="6768043681523654438">almacenamento</translation>
+<translation id="6769195697113506406">Imaxe inserida</translation>
 <translation id="6777216307882431711">Alimentando dispositivos USB‑C conectados</translation>
 <translation id="6781002679438061620">Escritorio 9</translation>
 <translation id="6782182743534150858">Escritorio 13</translation>
@@ -1985,6 +1990,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7571361473021531288">Batería: <ph name="BATTERY_PERCENTAGE" /> % | Tempo restante: <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Ventá activa fixada á dereita.</translation>
 <translation id="7579778809502851308">Captura de pantalla</translation>
+<translation id="7588317312481506627">Copiouse a imaxe no portapapeis.</translation>
 <translation id="7593891976182323525">Busca ou Maiús</translation>
 <translation id="7598054670902114203">Resumo do uso da CPU: <ph name="CPU_USEAGE" /> %. Temperatura: <ph name="TEMPERATURE" /> graos Celsius. Velocidade actual: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Inserindo resultado seleccionado</translation>
@@ -2179,6 +2185,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8155628902202578800">Abrir cadro de diálogo de información para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Usando: <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Contido</translation>
+<translation id="81817143961839203">Produciuse un erro ao inserir a imaxe</translation>
 <translation id="8185090165691050712">Activa ou desactiva o menú para cambiar o tamaño do modo de bloqueo</translation>
 <translation id="8192727139462702395">Se desactivas o Bluetooth, estes aparellos externos desconectaranse do teu dispositivo (<ph name="DEVICE_TYPE" />):</translation>
 <translation id="8198456017687137612">Recibindo emisión de pestana</translation>
@@ -2257,6 +2264,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Preme Alt + Buscar ou Maiúsculas para cancelar.</translation>
 <translation id="8480418399907765580">Mostrar a barra de ferramentas</translation>
+<translation id="8487660088084188539">Cando activas estas funcións, o texto introducido, o contido do documento e o URL da páxina web poden enviarse aos servidores de Google. Esta información úsase para xerar suxestións de redacción e resumos, responder preguntas e mellorar o produto, todo de acordo co establecido nos seguintes documentos: <ph name="LINK_TO_SERVICE_TERMS" />. Non inclúas información persoal, delicada nin confidencial.</translation>
 <translation id="8487699605742506766">Zona wifi</translation>
 <translation id="8491237443345908933">Abre a ligazón nunha pestana nova</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> non admite <ph name="SPECIFIED_RESOLUTION" />. A resolución cambiouse a <ph name="FALLBACK_RESOLUTION" />. Para gardar os cambios, fai clic en Confirmar. A configuración anterior restaurarase en <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2326,6 +2334,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8725066075913043281">Tentar de novo</translation>
 <translation id="8725214031272624704">Mostrar a lista de métodos de introdución de texto dispoñibles</translation>
 <translation id="8730621377337864115">Feito</translation>
+<translation id="8731188831050207755">Non se descargou correctamente o ficheiro <ph name="FILE_NAME" />.</translation>
 <translation id="8731487213223706745">Finalización: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">É posible que estea tentando detectar as teclas que premes</translation>
 <translation id="8735678380411481005">Cor de retroiluminación do teclado</translation>

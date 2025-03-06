@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">Tu contraseña se guardará en el Gestor de contraseñas de Google de <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Abrir nueva pestaña en Chrome</translation>
 <translation id="1166460004393506534">Eliminar los datos de navegación en Chrome</translation>
+<translation id="1171255741903316750">Activa Bloquear las pestañas de Incógnito al cerrar Chrome</translation>
 <translation id="1179527450541388808">Accede más rápido a Chrome desde el Dock de la pantalla de inicio de tu iPad.</translation>
 <translation id="1180362651362502943">Sigue usando los datos de Chrome en tu cuenta de Google.</translation>
 <translation id="1200396280085622191">Usa Chrome cada vez que toques enlaces de mensajes y otras aplicaciones.</translation>
@@ -45,6 +46,7 @@ Notas importantes:
 <translation id="1917964099031477364">Esta cuenta y los datos sin guardar se quitarán de Chrome y de las demás aplicaciones de Google instaladas en este dispositivo.</translation>
 <translation id="1919130412786645364">Permitir el inicio de sesión en Chrome</translation>
 <translation id="1965935827552890526">Termina lo que estabas haciendo en otra ventana abierta de Chrome.</translation>
+<translation id="1973910962341002002">En la configuración de <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />, activa Chrome</translation>
 <translation id="1984705450038014246">Sincronizar tus datos de Chrome</translation>
 <translation id="1987779152850321833">Completa las siguientes acciones sugeridas para sacar el máximo partido a Chrome.</translation>
 <translation id="2055826352861631739">Usa Chrome para iPad de forma predeterminada</translation>
@@ -96,10 +98,13 @@ Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora,
 <translation id="3282568296779691940">Iniciar sesión en Chrome</translation>
 <translation id="3303503998967553377">Usa Acciones de Chrome en iOS</translation>
 <translation id="3348862487678490430">Añadir elemento de lista de lectura a Chrome</translation>
+<translation id="3357827134511189025">Inicia sesión con tus contraseñas y llaves de acceso guardadas desde cualquier aplicación con Autocompletar en Chrome</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Ocurre cuando Chrome lleva {THRESHOLD} minuto sin usarse}other{Ocurre cuando Chrome lleva {THRESHOLD} minutos sin usarse}}</translation>
 <translation id="3367797402528056312">Termina de configurar Chrome</translation>
 <translation id="3371064404604898522">Establecer Chrome como navegador predeterminado</translation>
 <translation id="3399930248910934354">Abrir configuración de Chrome</translation>
+<translation id="3440830787838130530">Comparte la copia de una contraseña con tu grupo familiar de forma fácil y segura en el Gestor de contraseñas de Google</translation>
+<translation id="3460369101684070455">Para obtener fácilmente tus contraseñas guardadas en tus otras aplicaciones, elige Autocompletar en Chrome</translation>
 <translation id="3472587960215700950">Chrome usa Google Maps para ofrecerte indicaciones e información local sobre direcciones detectadas.</translation>
 <translation id="3503014945441706099">Usa Navegación segura mejorada en este perfil de Chrome también</translation>
 <translation id="3522659714780527202">Activa la sincronización para ver tus pestañas dondequiera que uses Chrome</translation>
@@ -181,6 +186,7 @@ Espera unos minutos antes de cambiar de cuenta. Si cambias de cuenta ahora, esto
 <translation id="5998675059699164418">Tu organización requiere que inicies sesión para usar Chrome.</translation>
 <translation id="6021312115739110405">Un feed personalizado creado por Google para ti. Incluye noticias, deportes y el tiempo.</translation>
 <translation id="6022659036123304283">Personaliza Chrome</translation>
+<translation id="6132075343662013154">Chrome te ofrecerá guardar tu contraseña</translation>
 <translation id="6132149203299792222">Inicia sesión con tu cuenta de Google para sincronizar tus contraseñas, marcadores y más.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Buscar en Chrome</translation>
@@ -228,6 +234,7 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="7061455974939528301">Mantén pulsado el icono de Chrome y haz clic en Editar pantalla de inicio</translation>
 <translation id="7065813315247345131">Mover Chrome al Dock</translation>
 <translation id="7124339256045485976">Mantén Chrome actualizado</translation>
+<translation id="7145599899567697473">Guarda y autorrellena contraseñas en Chrome</translation>
 <translation id="7161390184744336561">Google Chrome no está actualizado</translation>
 <translation id="7165736900384873061">Empezar a usar el escáner de QR de Google Chrome</translation>
 <translation id="7175129790242719365">Consejo de Chrome: Inicia sesión en Chrome</translation>
@@ -261,6 +268,7 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="7693590760643069321">Ahora puedes usar Chrome cada vez que toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
 <translation id="7698568245838009292">Chrome quiere acceder a la cámara</translation>
 <translation id="7707877166818730835">Abrir mi última pestaña en Chrome</translation>
+<translation id="7747746207470479571">Accede fácilmente a tus contraseñas y llaves de acceso con Autocompletar en Chrome</translation>
 <translation id="776305366874821582">Accede más rápido a Chrome desde el Dock de la pantalla de inicio de tu iPhone.</translation>
 <translation id="7780154209050837198">Para sacarle el máximo partido a Chrome, inicia sesión en Chrome con tu cuenta de Google.</translation>
 <translation id="7787205077729386167">En iOS, ve a Ajustes, selecciona Chrome, toca App del navegador por omisión, y elige Chrome.</translation>
@@ -281,6 +289,7 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="8136856065410661948">Se usará para crear eventos en tu calendario de Apple a partir de contenido de Chrome y Google Lens.</translation>
 <translation id="8154120522323162874">Sigue configurando tu navegador para sacarle el máximo partido a Chrome.</translation>
 <translation id="8160472928944011082">No se puede actualizar Chrome</translation>
+<translation id="8245080522851805544">Mantén tu navegación privada con la autenticación del dispositivo al cerrar Chrome</translation>
 <translation id="8248887045858762645">Consejo de Chrome</translation>
 <translation id="8265730590513812063">Abre el menú de Chrome</translation>
 <translation id="8317674518145175158">Los métodos de pago y las direcciones no se cifrarán. El historial de navegación de Chrome no se sincronizará.
@@ -324,5 +333,6 @@ Tus datos se han cifrado con tu frase de contraseña el <ph name="TIME" />. Intr
 <translation id="9181628561061032322">Abre las pestañas recientes de Chrome.</translation>
 <translation id="948597495737267756">Abre la página Historial de Chrome.</translation>
 <translation id="97300214378190234">Usa Chrome cada vez que toques enlaces de otras aplicaciones.</translation>
+<translation id="997929539742564806">Inicia sesión rápidamente en aplicaciones y sitios con el autocompletado de contraseñas y llaves de acceso de Chrome</translation>
 <translation id="998677222109959694">Gestionar la configuración de Chrome</translation>
 </translationbundle>

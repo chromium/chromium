@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">Pokračovaním vyjadrujete súhlas so <ph name="BEGIN_LINK" />zmluvnými podmienkami<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Nikdy neukladať</translation>
 <translation id="1062138828266376352">Váš kód PIN nebol zmenený. Skontrolujte internetové pripojenie a skúste to znova.</translation>
+<translation id="1072476005125066234">Recenzie na základe vašich záujmov</translation>
 <translation id="1074827084851510304">Chystáte sa odstrániť niekoľko hesiel ({password_count}) a zoznam webov a aplikácií, pre ktoré ste nastavili, aby nikdy neukladali prihlasovacie údaje. Účty, ktoré ste vytvorili pre weby a aplikácie, odstránené nebudú.</translation>
 <translation id="1076421457278169141">Kód bol naskenovaný</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} karta}few{{count} karty}many{{count} tabs}other{{count} kariet}}</translation>
@@ -267,6 +268,7 @@
 <translation id="2049727122989709386">Viaceré účty (<ph name="COUNT" />) používajú rovnaké heslo</translation>
 <translation id="2059166748188874810">Správna jednotka</translation>
 <translation id="2060114494785549741">Odstrániť o 1 mesiac</translation>
+<translation id="2060638295449304809">Táto adresa je uložená iba v tomto zariadení. Ak ju chcete používať v ďalších zariadeniach, uložte si ju v účte Google <ph name="USER_EMAIL" />.</translation>
 <translation id="20638360198452347">Výber typu jednotky</translation>
 <translation id="2067852168641682340">Vždy ukladať do tohto účtu</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 karta}few{{count} karty}many{{count} tabs}other{{count} kariet}}</translation>
@@ -895,6 +897,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4824480232751123840">Objem</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} a 1 ďalšia}few{{domain} a {count} ďalšie}many{{domain} and {count} others}other{{domain} a {count} ďalších}}</translation>
 <translation id="4826588772550366629">na prístup ku kamere a mikrofónu</translation>
+<translation id="4828431027673677473">Výrobky podľa vašich záujmov</translation>
 <translation id="4833786495304741580">Automaticky odosiela Googlu štatistiky o používaní a správy o zlyhaní.</translation>
 <translation id="483689884442613745">Uložiť…</translation>
 <translation id="4840495572919996524">Záložky, história, heslá a ďalší obsah sa už nebudú synchronizovať do vášho účtu Google.</translation>
@@ -1244,7 +1247,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6284652193729350524">Ponúkať preklad jazyka <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Prestali ste sledovať <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Ak chcete zapnúť Bezpečné prehliadanie, otvorte <ph name="BEGIN_LINK" />Služby Googlu<ph name="END_LINK" /> a klepnite na Bezpečné prehliadanie.</translation>
-<translation id="6295434468271563378">Automatické odstraňovanie stiahnutých súborov</translation>
 <translation id="6295751040240588413">Neplatná prezývka karty</translation>
 <translation id="629730747756840877">Účet</translation>
 <translation id="6301104306974789820">Dostávať upozornenia sledovania cien</translation>
@@ -1735,6 +1737,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="828291969289324795">{count,plural, =1{Pridať kartu do novej skupiny}few{Pridať karty do novej skupiny}many{Pridať karty do novej skupiny}other{Pridať karty do novej skupiny}}</translation>
 <translation id="8283172974887967105">Nastaviť…</translation>
 <translation id="8289930144142009940">Upozornenia funkcie <ph name="FEATURE_NAME" /> sú vypnuté</translation>
+<translation id="8290077367744012649">Sledovanie cien z vašich kariet</translation>
 <translation id="8299417921174340354">Ak chcete používať heslá, najprv musíte v zariadení nastaviť vstupný kód.</translation>
 <translation id="8299613349954694191">Otvorte kartu inkognito a prehliadajte internet v súkromí.</translation>
 <translation id="8307481894409578819">Tento súbor sa nepodarilo nahrať</translation>

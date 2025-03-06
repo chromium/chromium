@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">Ваш пароль буде збережено в Менеджері паролів Google для електронної адреси <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Відкрити нову вкладку в Chrome</translation>
 <translation id="1166460004393506534">Видалити дані вебперегляду в Chrome</translation>
+<translation id="1171255741903316750">Увімкніть опцію "Блокувати анонімні вкладки після закриття Chrome"</translation>
 <translation id="1179527450541388808">Відкривайте Chrome швидше з панелі Dock головного екрана iPad.</translation>
 <translation id="1180362651362502943">Продовжуйте використовувати дані Chrome в обліковому записі Google.</translation>
 <translation id="1200396280085622191">Відкривайте посилання з повідомлень і інших додатків за допомогою Chrome.</translation>
@@ -45,6 +46,7 @@
 <translation id="1917964099031477364">Цей обліковий запис і всі незбережені дані буде вилучено з Chrome та інших додатків Google на цьому пристрої.</translation>
 <translation id="1919130412786645364">Дозволити вхід у Chrome</translation>
 <translation id="1965935827552890526">Завершіть те, що ви робили в іншому відкритому вікні Chrome.</translation>
+<translation id="1973910962341002002">У розділі "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" увімкніть перемикач "Chrome"</translation>
 <translation id="1984705450038014246">Синхронізуйте дані Chrome</translation>
 <translation id="1987779152850321833">Щоб користуватися всіма можливостями Chrome, виконайте дії нижче.</translation>
 <translation id="2055826352861631739">Використовуйте Chrome як вебпереглядач за умовчанням на iPad</translation>
@@ -96,10 +98,13 @@
 <translation id="3282568296779691940">Вхід у Chrome</translation>
 <translation id="3303503998967553377">Використовуйте функцію "Дії в Chrome" на пристроях iOS</translation>
 <translation id="3348862487678490430">Додати пункт до списку читання в Chrome</translation>
+<translation id="3357827134511189025">Входьте в облікові записи за допомогою збережених паролів і ключів доступу в будь-якому додатку завдяки функції автозаповнення в Chrome</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Таке трапляється, коли Chrome не використовується протягом {THRESHOLD} хвилини}one{Таке трапляється, коли Chrome не використовується протягом {THRESHOLD} хвилини}few{Таке трапляється, коли Chrome не використовується протягом {THRESHOLD} хвилин}many{Таке трапляється, коли Chrome не використовується протягом {THRESHOLD} хвилин}other{Таке трапляється, коли Chrome не використовується протягом {THRESHOLD} хвилини}}</translation>
 <translation id="3367797402528056312">Завершіть налаштування Chrome</translation>
 <translation id="3371064404604898522">Зробити Chrome веб-переглядачем за умовчанням</translation>
 <translation id="3399930248910934354">Відкрити налаштування Chrome</translation>
+<translation id="3440830787838130530">Легко й безпечно діліться паролями з учасниками сімейної групи в Google Менеджері паролів</translation>
+<translation id="3460369101684070455">Щоб легко використовувати збережені паролі в інших додатках, увімкніть функцію автозаповнення в Chrome</translation>
 <translation id="3472587960215700950">Chrome використовує Карти Google, щоб прокладати маршрути й надавати місцеву інформацію про виявлені адреси.</translation>
 <translation id="3503014945441706099">Увімкніть Безпечний перегляд із розширеним захистом і для цього профілю Chrome</translation>
 <translation id="3522659714780527202">Щоб переглядати свої вкладки Chrome на будь-якому пристрої, увімкніть синхронізацію</translation>
@@ -181,6 +186,7 @@
 <translation id="5998675059699164418">За вимогами вашої організації, ви повинні ввійти в обліковий запис, щоб використовувати Chrome.</translation>
 <translation id="6021312115739110405">Персоналізована стрічка, створена для вас компанією Google. Тут є новини, спортивні події і прогноз погоди.</translation>
 <translation id="6022659036123304283">Ваш персональний Chrome</translation>
+<translation id="6132075343662013154">Chrome запропонує зберегти ваш пароль</translation>
 <translation id="6132149203299792222">Увійдіть в обліковий запис Google, щоб синхронізувати паролі, закладки тощо.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Пошук у Chrome</translation>
@@ -228,6 +234,7 @@
 <translation id="7061455974939528301">Утримуйте значок Chrome і натисніть "Редагувати головний екран"</translation>
 <translation id="7065813315247345131">Перемістіть Chrome на панель Dock</translation>
 <translation id="7124339256045485976">Користуйтеся найновішою версією Chrome</translation>
+<translation id="7145599899567697473">Зберігайте паролі й автоматично заповнюйте їх у Chrome</translation>
 <translation id="7161390184744336561">Версія Google Chrome застаріла</translation>
 <translation id="7165736900384873061">Використовувати сканер QR-кодів у Google Chrome</translation>
 <translation id="7175129790242719365">Порада щодо Chrome: увійдіть у Chrome</translation>
@@ -261,6 +268,7 @@
 <translation id="7693590760643069321">Тепер ви можете відкривати в Chrome посилання з повідомлень, документів та інших додатків.</translation>
 <translation id="7698568245838009292">Chrome потрібен доступ до камери</translation>
 <translation id="7707877166818730835">Відкрити мою останню вкладку в Chrome</translation>
+<translation id="7747746207470479571">Легко користуйтеся своїми паролями й ключами доступу за допомогою автозаповнення в Chrome</translation>
 <translation id="776305366874821582">Відкривайте Chrome швидше з панелі Dock головного екрана iPhone.</translation>
 <translation id="7780154209050837198">Щоб користуватись усіма можливостями Chrome, увійдіть в обліковий запис Google у цьому веб-переглядачі.</translation>
 <translation id="7787205077729386167">На пристрої iOS відкрийте налаштування Chrome, натисніть "Вебпереглядач за умовчанням" і виберіть Chrome.</translation>
@@ -281,6 +289,7 @@
 <translation id="8136856065410661948">Ці дані використовуватимуться, щоб створювати події в Календарі Apple на основі даних у Chrome і Google Об’єктиві.</translation>
 <translation id="8154120522323162874">Щоб користуватися всіма можливостями Chrome, завершіть налаштування вебпереглядача.</translation>
 <translation id="8160472928944011082">Не вдається оновити Chrome</translation>
+<translation id="8245080522851805544">Захищайте конфіденційність вебперегляду за допомогою автентифікації пристрою, коли закриваєте Chrome</translation>
 <translation id="8248887045858762645">Порада щодо Chrome</translation>
 <translation id="8265730590513812063">Відкрийте меню Chrome</translation>
 <translation id="8317674518145175158">Способи оплати й адреси не шифруватимуться. Історія вебперегляду з Chrome не синхронізуватиметься.
@@ -324,5 +333,6 @@
 <translation id="9181628561061032322">Відкриває останні вкладки в Chrome.</translation>
 <translation id="948597495737267756">Відкриває сторінку історії Chrome.</translation>
 <translation id="97300214378190234">Відкривайте посилання в інших додатках за допомогою Chrome.</translation>
+<translation id="997929539742564806">Швидко входьте в облікові записи в додатках і на сайтах, автоматично заповнюючи паролі й ключі доступу з Chrome</translation>
 <translation id="998677222109959694">Керувати налаштуваннями Chrome</translation>
 </translationbundle>

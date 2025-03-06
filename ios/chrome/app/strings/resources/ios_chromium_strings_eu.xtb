@@ -94,6 +94,7 @@ Chromium-en erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikust
 <translation id="328933489847748230">{count,plural, =1{Chromium-eko leiho bat dago ikusgai}other{Chromium-eko {count} leiho daude ikusgai}}</translation>
 <translation id="3344973607274501920">Chromium-ek ezin izan ditu egiaztatu pasahitzak. Egiaztatu Internetera konektatuta zaudela.</translation>
 <translation id="3366305173356742781">Kontuan dauden Chromium-eko datuak</translation>
+<translation id="33788334537425157">Aktibatu "Blokeatu ezkutuko moduko fitxak Chromium ixten duzunean"</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Chromium {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori. Baliteke historia eta betetze automatikoa barnean sartzea.}other{Chromium {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori. Baliteke historia eta betetze automatikoa barnean sartzea.}}</translation>
 <translation id="3410395242749598859">Chromium-eko datu batzuk ez dira gorde <ph name="EMAIL" /> kontuan oraindik.
 Kontua aldatu aurretik, itxaron minutu batzuk. Kontua orain aldatzen baduzu, datuak ezabatu egingo dira.</translation>
@@ -101,8 +102,10 @@ Kontua aldatu aurretik, itxaron minutu batzuk. Kontua orain aldatzen baduzu, dat
 <translation id="347967311580159871">Chromium-en erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikusteko, joan <ph name="BEGIN_LINK" />Google-ren zerbitzuak<ph name="END_LINK" /> atalera.</translation>
 <translation id="3512168799938877162">Ez da partekatu pasahitza. Egiaztatu Internetera konektatuta zaudela eta ziurtatu Chromium-en saioa hasi duzula. Ondoren, saiatu berriro.</translation>
 <translation id="3529798650269984835">Aktibatu "Blokeatu ezkutuko moduko fitxak Chromium ixten duzunean".</translation>
+<translation id="3541247799006476453">Atzitu pasahitzak eta sarbide-gakoak erraz asko, betetze automatikorako Chromium erabilita</translation>
 <translation id="3567399274263440288">Chromium-i etekinik handiena ateratzeko, hasi saioa Chromium-en Google-ko kontuarekin.</translation>
 <translation id="3581385059720151202">Bilatu irudi bidez Chromium-en</translation>
+<translation id="3582640969619785896">Chromium-ek pasahitza gordetzea nahi duzun galdetuko dizu</translation>
 <translation id="3594315078412605236">Kudeatu ordainketa-metodoak Chromium-en</translation>
 <translation id="3634039384458740619">Ireki Chromium-en ezarpenak</translation>
 <translation id="3639997914391704523">Saioa Google-ko kontu batekin hasten baduzu, Chromium-ek pasahitzak egiazta ditzake.</translation>
@@ -159,6 +162,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chromium-eko dat
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" /> domeinuak kudeatutako kontu baten saioa amaituko duzunez, Chromium-en dituzun datuak ezabatu egingo dira gailu honetatik. Hala ere, datu horiek Google-ko kontuan egoten jarraituko dute.</translation>
 <translation id="5042011327527167688">Sakatu "Ikusi Google Maps-ekin Chromium-en".</translation>
 <translation id="5044871537677053278">Chromium-ek helbideak hautematen ditu, eta Google Maps erabiltzen du jarraibideak eta tokiko informazioa eskaintzeko.</translation>
+<translation id="5048140766121299007">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ezarpenetan, aktibatu "Chromium"</translation>
 <translation id="5048795749726991615">Gordetako pasahitzak beste aplikazioetan erraz lortzeko, erabili Chromium betetze automatikorako</translation>
 <translation id="5053429694249468757">Chromium-eko datuak ezabatzen…</translation>
 <translation id="5071749685031362629">iOS-erako Chromium</translation>
@@ -166,6 +170,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chromium-eko dat
 <translation id="5124429847818367226">Orain, Chromium erabili ahalko duzu arakatzen duzunean, edo mezuetako, dokumentuetako eta aplikazioetako estekak sakatzen dituzunean.</translation>
 <translation id="5131565040785979529"><ph name="DOMAIN" /> erakundeak kudeatzen du saioa hasteko erabili duzun kontua eta Chromium erabiltzeko modua.</translation>
 <translation id="5134464247000681876">Ireki Gmail-eko, Maps-eko, YouTube-ko eta beste aplikazio batzuetako estekak Chromium-en</translation>
+<translation id="5203244847421322551">Gorde eta bete automatikoki pasahitzak Chromium-en</translation>
 <translation id="5224391634244552924">Ez dago pasahitzik gordeta. Gordeta dituzun pasahitzak egiaztatu egin ditzake Chromium-ek.</translation>
 <translation id="5259423875997548710">Bilatu irudi bidez Chromium-en.</translation>
 <translation id="5308226104666789935">Chromium-ek ezin ditu bilatu eguneratzeak</translation>
@@ -209,10 +214,12 @@ Kontuan hartu beharrekoak:
 <translation id="6132149203299792222">Hasi saioa Google-ko kontuan eta sinkronizatu pasahitzak, laster-markak eta beste.</translation>
 <translation id="6148377327556085395">Gehitu laster-markak Chromium-en</translation>
 <translation id="6154098560469640583">Erabili Chromium mezu, dokumentu edo beste aplikazioetako estekak sakatzean.</translation>
+<translation id="6157162508956739031">Hasi saioa bizkor aplikazioetan eta webguneetan pasahitzak eta sarbide-gakoak Chromium bidez automatikoki beteta</translation>
 <translation id="6170619162539716595">Eman Google Maps-en bidez hautemandako helbideetarako jarraibideak eta haiei buruzko tokiko informazioa eskaintzeko baimena Chromium-i.</translation>
 <translation id="6197255575340902638">"<ph name="MODULE_NAME" />" ezkutatzen baduzu, Chromium-ek ezin izango du jarraitu etorkizuneko paketeen jarraipena automatikoki egiten, eta iraganeko paketeen jarraipenari buruzko datu guztiak ezabatuko ditu.</translation>
 <translation id="6247557882553405851">Google-ren Pasahitz-kudeatzailea</translation>
 <translation id="6268381023930128611">Chromium-eko saioa amaitu?</translation>
+<translation id="6301717043141881464">Gordetako pasahitzak beste aplikazioetan erraz lortzeko, aukeratu Chromium betetze automatikorako</translation>
 <translation id="6324041800010509197">Bisitatu fitxen sareta Chromium-en</translation>
 <translation id="6325378625795868881">Erabili Chromium mezuetako eta beste aplikazioetako estekak sakatzen dituzunean.</translation>
 <translation id="6424492062988593837">Chromium hobetu egin dugu! Bertsio berria duzu erabilgarri.</translation>
@@ -224,6 +231,7 @@ Kontuan hartu beharrekoak:
 <translation id="6574750762636192517">Kudeatu pasahitzak Chromium-en</translation>
 <translation id="6590232959690355435">Chromium-eko historiaren orria irekitzen du.</translation>
 <translation id="6674470628873622334">Chromium-en ezkutuko moduko fitxa berri bat irekitzen du.</translation>
+<translation id="6680609900732453726">Mantendu arakatzea pribatu gailuaren autentifikazioaren bidez Chromium ixten duzunean</translation>
 <translation id="6752854822223394465">Zure erakundea Chromium konfiguratzen ari da…</translation>
 <translation id="6794054469102824109">Chromium-eko Dino jokoa irekitzen du.</translation>
 <translation id="6820823224820483452">Chromium-ek ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro bihar.</translation>
@@ -287,6 +295,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="8254729934443216898">Arakatu Chromium-i etekinik handiena ateratzen laguntzen dizuten eginbide berriak.</translation>
 <translation id="8293572045658095405">Chromium-en ezkutuko moduan zaude</translation>
 <translation id="830951810931292870">Idatzitako URLak Chromium-en ezkutuko moduan irekitzen ditu.</translation>
+<translation id="8390323835464055390">Erabili gordetako pasahitz eta sarbide-gakoak edozein aplikaziotatik saioa hasteko, betetze automatikorako Chromium erabilita</translation>
 <translation id="8409374867500149834">Chromium-en segurtasun-aukerarik sendoena darabilzu webgune kaltegarrien aurka</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Chromium {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori. Saio hasita daukazula gailu honetan bakarrik gorde diren datuak ezabatu egingo dira. Baliteke pasahitzak eta arakatze-historia ezabatzea, besteak beste.}other{Chromium {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori. Saio hasita daukazula gailu honetan bakarrik gorde diren datuak ezabatu egingo dira. Baliteke pasahitzak eta arakatze-historia ezabatzea, besteak beste.}}</translation>
 <translation id="858114650497379505">iPhone-ko beste aplikazio batzuk erabiltzen ari zinela Pasahitz-kudeatzailea zerbitzuan gorde zenituen pasahitzak erabil ditzakezu.</translation>

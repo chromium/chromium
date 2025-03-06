@@ -141,7 +141,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="1568636008098739136">Poslušajte ovu stranicu. Da biste uredili taj prečac, dodirnite ga i zadržite pritisak.</translation>
 <translation id="1571041387761170095">Nema slabih ili višestruko korištenih zaporki</translation>
 <translation id="1571304935088121812">Kopiraj korisničko ime</translation>
-<translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{Na ovom uređaju imate jednu ugroženu zaporku}one{Na ovom uređaju imate # ugroženu zaporku}few{Na ovom uređaju imate # ugrožene zaporke}other{Na ovom uređaju imate # ugroženih zaporki}}</translation>
+<translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{Na ovom uređaju postoji jedna ugrožena zaporka}one{Na ovom uređaju postoji # ugrožena zaporka}few{Na ovom uređaju postoje # ugrožene zaporke}other{Na ovom uređaju postoji # ugroženih zaporki}}</translation>
 <translation id="1594635596540195766">Predložene stavke na popisu u nastavku: <ph name="SUGGESTIONS_COUNT" />.</translation>
 <translation id="1598163867407640634">Upotrebljavajte web-lokaciju <ph name="SITE_ETLD_PLUS_ONE" /> s davateljem identiteta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Kad je uključeno, upotrijebite i spremite podatke na svoj Google račun. Kad je ta postavka isključena, podaci se spremaju samo na ovaj uređaj.</translation>
@@ -1332,7 +1332,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="7020741890149022655">Dodaj na popis za čitanje <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Otvori u pregledniku</translation>
 <translation id="7029809446516969842">Zaporke</translation>
-<translation id="7053256416619638731">Ojačajte svoje zaporke na ovom uređaju</translation>
+<translation id="7053256416619638731">Upotrijebite snažnije zaporke na ovom uređaju</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7054588988317389591">Primati opise slike?</translation>
 <translation id="7057969023583258980">Otvori cijelu povijest na Chromeu</translation>

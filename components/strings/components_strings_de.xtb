@@ -252,6 +252,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1419305130220238697">Schaltfläche „Downloads in Chrome verwalten“ – aktivieren, um in Chrome heruntergeladene Dateien zu verwalten</translation>
 <translation id="1420345875188552368">Für diese Zahlung kann die Zahlungsmethode verwendet werden, die du für automatische Zahlungen festgelegt hast. Wenn du E‑Wallets in Chrome deaktivieren möchtest, rufe deine <ph name="BEGIN_LINK1" />Zahlungseinstellungen<ph name="END_LINK1" /> auf.</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, um eine Kopplung zu ermöglichen</translation>
+<translation id="1421484961346698724">Gelöschtes Konto</translation>
 <translation id="14222610277930434">Häufig von dir aufgerufen</translation>
 <translation id="1422930527989633628">Darf nachfragen, wenn sie nach Bluetooth-Geräten in der Nähe suchen möchte</translation>
 <translation id="1426410128494586442">Ja</translation>
@@ -3022,6 +3023,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6351658970066645919">Browserdaten löschen</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Keins}=1{1 Passwort (für <ph name="DOMAIN_LIST" />, synchronisiert)}=2{2 Passwörter (für <ph name="DOMAIN_LIST" />, synchronisiert)}other{# Passwörter (für <ph name="DOMAIN_LIST" />, synchronisiert)}}</translation>
 <translation id="6355392890578844978">Dieser Browser wird nicht von einem Unternehmen oder einer anderen Organisation verwaltet. Aktivitäten auf diesem Gerät können außerhalb von Chromium verwaltet werden. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Die Tabgruppen „<ph name="GROUP_TITLE_1" />“ und „<ph name="GROUP_TITLE_2" />“ sind nicht mehr verfügbar</translation>
 <translation id="6358088212770985041">Zahlungsmethoden zu bearbeiten</translation>
 <translation id="6358450015545214790">Was bedeuten diese Hinweise?</translation>
 <translation id="6360213755783740931">Weitere Informationen zum Malwareschutz</translation>

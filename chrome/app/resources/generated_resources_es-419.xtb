@@ -3805,6 +3805,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3670229581627177274">Activar Bluetooth</translation>
 <translation id="3670480940339182416">Permitir que los sitios usen el optimizador V8</translation>
 <translation id="3671764914317109892">Usa el lenguaje cotidiano para buscar en tu historial de navegación. También puedes hacer preguntas y obtener respuestas basadas en tu historial de navegación.</translation>
+<translation id="3671982238795754537">Obtén más información sobre las llaves de acceso</translation>
 <translation id="3672681487849735243">Se detectó un error de fábrica.</translation>
 <translation id="3673097791729989571">El acceso a la cuenta está alojado en <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">Se actualizó tu PIN</translation>
@@ -4065,6 +4066,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Se aprobó una extensión}other{Se aprobaron # extensiones}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Se recomienda tener al menos <ph name="INSTALL_SIZE" /> de espacio para Linux.</translation>
+<translation id="3824203811509979971">Resume el contenido o haz preguntas</translation>
 <translation id="3824621460022590830">El token de inscripción del dispositivo no es válido. Comunícate con el administrador o el propietario de tu dispositivo. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Accede para ver las pestañas de otros dispositivos</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Recordar mi selección para este tipo de archivo: <ph name="FILE_TYPES" />}other{Recordar mi selección para estos tipos de archivo: <ph name="FILE_TYPES" />}}</translation>
@@ -4251,6 +4253,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="3948985214866944547">La mayoría de las personas no permiten compartir su ubicación precisa a este sitio</translation>
 <translation id="394984172568887996">Importado de Internet Explorer</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> para que la descarga de archivos sea más segura</translation>
+<translation id="3950479158728806902">Crear automáticamente una llave de acceso para acceder más rápido</translation>
 <translation id="3950820424414687140">Acceder</translation>
 <translation id="3950841222883198950">Dictado por voz</translation>
 <translation id="3953834000574892725">Mis cuentas</translation>
@@ -4719,6 +4722,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4289540628985791613">Descripción general</translation>
 <translation id="428963538941819373">Estos sitios pueden usar la información que guardaron sobre ti mientras navegas en <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Elige un PIN</translation>
+<translation id="4290526909608432059">Pronto dejarán de ser compatibles las apps de Chrome. Para obtener más información sobre tus opciones, comunícate con el desarrollador de apps o con el equipo de asistencia de TI.</translation>
 <translation id="4290791284969893584">Después de cerrar una página, es posible que no puedas completar las tareas que empezaste.</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> miembro</translation>
 <translation id="4290898381118933198">Deslizar para navegar entre páginas</translation>
@@ -5179,6 +5183,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4624054169152573743">Tema de color</translation>
 <translation id="4625078469366263107">Habilitar app</translation>
 <translation id="4625905218692741757">Color predeterminado en gris</translation>
+<translation id="4627107755957573804">Permite que los sitios y las apps actualicen las cuentas existentes para usar llaves de acceso</translation>
 <translation id="4627442949885028695">Cómo continuar desde otro dispositivo</translation>
 <translation id="4628762811416793313">No se completó la configuración del contenedor de Linux. Vuelve a intentarlo.</translation>
 <translation id="4629521233550547305">Abrir el perfil de <ph name="PROFILE_NAME" /></translation>
@@ -5762,6 +5767,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5053233576223592551">Agregar nombre de usuario</translation>
 <translation id="505347685865235222">Grupo sin nombre: <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{Debes cambiarla ahora}other{Debes cambiarlas ahora}}</translation>
+<translation id="5056587122125565772">Crear imagen</translation>
 <translation id="5056950756634735043">Conectando al contenedor</translation>
 <translation id="5057110919553308744">Cuando haces clic en la extensión</translation>
 <translation id="5057127674016624293">El análisis está tardando más de lo esperado</translation>
@@ -5872,6 +5878,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="512642543295077915">Búsqueda + retroceso</translation>
 <translation id="5126611267288187364">Ver cambios</translation>
 <translation id="5127620150973591153">ID de conexión segura: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">Resume el contenido o haz preguntas.</translation>
 <translation id="5127881134400491887">Administrar conexiones de red</translation>
 <translation id="5127934926273826089">Flores</translation>
 <translation id="5127986747308934633">El administrador está controlando tu dispositivo</translation>
@@ -8511,6 +8518,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Puerto en serie conectado</translation>
 <translation id="7033616203784997570">La entrada debe tener como máximo 62 caracteres.</translation>
 <translation id="7034692021407794547">Un administrador con privilegios de administración de facturación primero debe aceptar las Condiciones del Servicio del hardware de Google Meet en la sección Hardware de Google Meet de la Consola del administrador.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> acaba de crear una llave de acceso para tu cuenta. Las llaves de acceso ofrecen una forma más rápida y segura de acceder, y se guardan en el Administrador de contraseñas de Google para <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Se recomienda tener <ph name="DISK_SIZE" /> de espacio para Linux. Si necesitas liberar espacio, borra archivos del dispositivo.</translation>
 <translation id="7037157058268992880">Olvidé el PIN</translation>
 <translation id="7037509989619051237">Texto de prueba</translation>
@@ -10142,6 +10150,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8195854162863398249">Inhabilitar <ph name="FEATURE_NAME" /></translation>
 <translation id="8195920051450756553">Demora antes de volver a activar la misma tecla</translation>
 <translation id="8197673340773315084">Agrega un nombre o etiqueta, como "Trabajo"</translation>
+<translation id="8198181050118789419">Tema: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Pestaña de transmisión</translation>
 <translation id="8199300056570174101">Propiedades de la red (servicio) y del dispositivo</translation>
 <translation id="8200772114523450471">Reanudar</translation>
@@ -10552,6 +10561,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8477178913400731244">Borrar datos</translation>
 <translation id="8477241577829954800">Reemplazado</translation>
 <translation id="8477384620836102176">&amp;General</translation>
+<translation id="8477446666255316832">Accede más rápido la próxima vez</translation>
 <translation id="8479176401914456949">El código no es válido. Vuelve a intentarlo.</translation>
 <translation id="8480869669560681089">Dispositivo desconocido de <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Confirmar el permiso para USB</translation>
@@ -11398,6 +11408,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Mouse USB conectado</translation>
 <translation id="9075413375877487220">La Navegación segura mejorada no confía en esta extensión.</translation>
+<translation id="9075985558450420812">Ingresa una instrucción personalizada o destaca texto para crear una imagen.</translation>
 <translation id="9076523132036239772">Lo sentimos, no pudimos verificar tu correo electrónico o contraseña. Intenta conectándote a una red.</translation>
 <translation id="9076821103818989526">Panel lateral</translation>
 <translation id="9076977315710973122">Elementos compartidos con SMB</translation>
