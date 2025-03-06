@@ -221,6 +221,47 @@ where
   }
 }
 
+#[cfg(feature = "borsh")]
+#[cfg_attr(docs_rs, doc(cfg(feature = "borsh")))]
+impl<A: Array> borsh::BorshSerialize for TinyVec<A>
+where
+  <A as Array>::Item: borsh::BorshSerialize,
+{
+  fn serialize<W: borsh::io::Write>(
+    &self, writer: &mut W,
+  ) -> borsh::io::Result<()> {
+    <usize as borsh::BorshSerialize>::serialize(&self.len(), writer)?;
+    for elem in self.iter() {
+      <<A as Array>::Item as borsh::BorshSerialize>::serialize(elem, writer)?;
+    }
+    Ok(())
+  }
+}
+
+#[cfg(feature = "borsh")]
+#[cfg_attr(docs_rs, doc(cfg(feature = "borsh")))]
+impl<A: Array> borsh::BorshDeserialize for TinyVec<A>
+where
+  <A as Array>::Item: borsh::BorshDeserialize,
+{
+  fn deserialize_reader<R: borsh::io::Read>(
+    reader: &mut R,
+  ) -> borsh::io::Result<Self> {
+    let len = <usize as borsh::BorshDeserialize>::deserialize_reader(reader)?;
+    let mut new_tinyvec = Self::with_capacity(len);
+
+    for _ in 0..len {
+      new_tinyvec.push(
+        <<A as Array>::Item as borsh::BorshDeserialize>::deserialize_reader(
+          reader,
+        )?,
+      )
+    }
+
+    Ok(new_tinyvec)
+  }
+}
+
 #[cfg(feature = "arbitrary")]
 #[cfg_attr(docs_rs, doc(cfg(feature = "arbitrary")))]
 impl<'a, A> arbitrary::Arbitrary<'a> for TinyVec<A>
@@ -316,6 +357,7 @@ impl<A: Array> TinyVec<A> {
   /// assert_eq!(Ok(()), tv.try_move_to_the_heap());
   /// assert!(tv.is_heap());
   /// ```
+  #[inline]
   #[cfg(feature = "rustc_1_57")]
   pub fn try_move_to_the_heap(&mut self) -> Result<(), TryReserveError> {
     let arr = match self {
@@ -364,6 +406,7 @@ impl<A: Array> TinyVec<A> {
   /// assert!(tv.is_heap());
   /// assert!(tv.capacity() >= 35);
   /// ```
+  #[inline]
   #[cfg(feature = "rustc_1_57")]
   pub fn try_move_to_the_heap_and_reserve(
     &mut self, n: usize,
@@ -419,6 +462,7 @@ impl<A: Array> TinyVec<A> {
   /// assert!(tv.is_heap());
   /// assert!(tv.capacity() >= 5);
   /// ```
+  #[inline]
   #[cfg(feature = "rustc_1_57")]
   pub fn try_reserve(&mut self, n: usize) -> Result<(), TryReserveError> {
     let arr = match self {
@@ -489,6 +533,7 @@ impl<A: Array> TinyVec<A> {
   /// assert!(tv.is_heap());
   /// assert!(tv.capacity() >= 5);
   /// ```
+  #[inline]
   #[cfg(feature = "rustc_1_57")]
   pub fn try_reserve_exact(&mut self, n: usize) -> Result<(), TryReserveError> {
     let arr = match self {
@@ -527,6 +572,65 @@ impl<A: Array> TinyVec<A> {
     } else {
       TinyVec::Heap(Vec::with_capacity(cap))
     }
+  }
+
+  /// Converts a `TinyVec<[T; N]>` into a `Box<[T]>`.
+  ///
+  /// - For `TinyVec::Heap(Vec<T>)`, it takes the `Vec<T>` and converts it into
+  ///   a `Box<[T]>` without heap reallocation.
+  /// - For `TinyVec::Inline(inner_data)`, it first converts the `inner_data` to
+  ///   `Vec<T>`, then into a `Box<[T]>`. Requiring only a single heap
+  ///   allocation.
+  ///
+  /// ## Example
+  ///
+  /// ```
+  /// use core::mem::size_of_val as mem_size_of;
+  /// use tinyvec::TinyVec;
+  ///
+  /// // Initialize TinyVec with 256 elements (exceeding inline capacity)
+  /// let v: TinyVec<[_; 128]> = (0u8..=255).collect();
+  ///
+  /// assert!(v.is_heap());
+  /// assert_eq!(mem_size_of(&v), 136); // mem size of TinyVec<[u8; N]>: N+8
+  /// assert_eq!(v.len(), 256);
+  ///
+  /// let boxed = v.into_boxed_slice();
+  /// assert_eq!(mem_size_of(&boxed), 16); // mem size of Box<[u8]>: 16 bytes (fat pointer)
+  /// assert_eq!(boxed.len(), 256);
+  /// ```
+  #[inline]
+  #[must_use]
+  pub fn into_boxed_slice(self) -> alloc::boxed::Box<[A::Item]> {
+    self.into_vec().into_boxed_slice()
+  }
+
+  /// Converts a `TinyVec<[T; N]>` into a `Vec<T>`.
+  ///
+  /// `v.into_vec()` is equivalent to `Into::<Vec<_>>::into(v)`.
+  ///
+  /// - For `TinyVec::Inline(_)`, `.into_vec()` **does not** offer a performance
+  ///   advantage over `.to_vec()`.
+  /// - For `TinyVec::Heap(vec_data)`, `.into_vec()` will take `vec_data`
+  ///   without heap reallocation.
+  ///
+  /// ## Example
+  ///
+  /// ```
+  /// use tinyvec::TinyVec;
+  ///
+  /// let v = TinyVec::from([0u8; 8]);
+  /// let v2 = v.clone();
+  ///
+  /// let vec = v.into_vec();
+  /// let vec2: Vec<_> = v2.into();
+  ///
+  /// assert_eq!(vec, vec2);
+  /// ```
+  #[inline]
+  #[must_use]
+  pub fn into_vec(self) -> Vec<A::Item> {
+    self.into()
   }
 }
 
@@ -1329,6 +1433,61 @@ impl<A: Array> FromIterator<A::Item> for TinyVec<A> {
     let mut av = Self::default();
     av.extend(iter);
     av
+  }
+}
+
+impl<A: Array> Into<Vec<A::Item>> for TinyVec<A> {
+  /// Converts a `TinyVec` into a `Vec`.
+  ///
+  /// ## Examples
+  ///
+  /// ### Inline to Vec
+  ///
+  /// For `TinyVec::Inline(_)`,
+  ///   `.into()` **does not** offer a performance advantage over `.to_vec()`.
+  ///
+  /// ```
+  /// use core::mem::size_of_val as mem_size_of;
+  /// use tinyvec::TinyVec;
+  ///
+  /// let v = TinyVec::from([0u8; 128]);
+  /// assert_eq!(mem_size_of(&v), 136);
+  ///
+  /// let vec: Vec<_> = v.into();
+  /// assert_eq!(mem_size_of(&vec), 24);
+  /// ```
+  ///
+  /// ### Heap into Vec
+  ///
+  /// For `TinyVec::Heap(vec_data)`,
+  ///   `.into()` will take `vec_data` without heap reallocation.
+  ///
+  /// ```
+  /// use core::{
+  ///   any::type_name_of_val as type_of, mem::size_of_val as mem_size_of,
+  /// };
+  /// use tinyvec::TinyVec;
+  ///
+  /// const fn from_heap<T: Default>(owned: Vec<T>) -> TinyVec<[T; 1]> {
+  ///   TinyVec::Heap(owned)
+  /// }
+  ///
+  /// let v = from_heap(vec![0u8; 128]);
+  /// assert_eq!(v.len(), 128);
+  /// assert_eq!(mem_size_of(&v), 24);
+  /// assert!(type_of(&v).ends_with("TinyVec<[u8; 1]>"));
+  ///
+  /// let vec: Vec<_> = v.into();
+  /// assert_eq!(mem_size_of(&vec), 24);
+  /// assert!(type_of(&vec).ends_with("Vec<u8>"));
+  /// ```
+  #[inline]
+  #[must_use]
+  fn into(self) -> Vec<A::Item> {
+    match self {
+      Self::Heap(inner) => inner,
+      Self::Inline(mut inner) => inner.drain_to_vec(),
+    }
   }
 }
 

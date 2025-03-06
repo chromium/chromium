@@ -41,8 +41,14 @@ pub trait Array {
   fn default() -> Self;
 }
 
+#[cfg(all(feature = "generic-array", not(feature = "rustc_1_55")))]
+core::compile_error!("generic-array requires `rustc_1_55` feature");
+
 #[cfg(feature = "rustc_1_55")]
 mod const_generic_impl;
 
 #[cfg(not(feature = "rustc_1_55"))]
 mod generated_impl;
+
+#[cfg(feature = "generic-array")]
+mod generic_array_impl;

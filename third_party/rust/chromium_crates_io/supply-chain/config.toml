@@ -473,7 +473,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."tinystr:0.8.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."tinyvec:1.8.1"]
+[policy."tinyvec:1.9.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."unicode-bidi:0.3.18"]

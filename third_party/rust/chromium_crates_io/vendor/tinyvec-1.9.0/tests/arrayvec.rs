@@ -447,6 +447,28 @@ fn ArrayVec_ser_de() {
   );
 }
 
+#[cfg(feature = "borsh")]
+#[test]
+fn ArrayVec_borsh_de_empty() {
+  let tv: ArrayVec<[i32; 0]> = Default::default();
+  let buffer = borsh::to_vec(&tv).unwrap();
+  let des: ArrayVec<[i32; 0]> = borsh::from_slice(&buffer).unwrap();
+  assert_eq!(tv, des);
+}
+
+#[cfg(feature = "borsh")]
+#[test]
+fn ArrayVec_borsh_de() {
+  let mut tv: ArrayVec<[i32; 4]> = Default::default();
+  tv.push(1);
+  tv.push(2);
+  tv.push(3);
+  tv.push(4);
+  let buffer = borsh::to_vec(&tv).unwrap();
+  let des: ArrayVec<[i32; 4]> = borsh::from_slice(&buffer).unwrap();
+  assert_eq!(tv, des);
+}
+
 #[test]
 fn ArrayVec_try_from_slice() {
   use std::convert::TryFrom;

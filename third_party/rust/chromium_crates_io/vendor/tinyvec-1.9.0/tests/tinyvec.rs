@@ -443,6 +443,39 @@ fn TinyVec_ser_de_heap() {
   );
 }
 
+#[cfg(feature = "borsh")]
+#[test]
+fn TinyVec_borsh_de_empty() {
+  let tv: ArrayVec<[i32; 0]> = Default::default();
+  let buffer = borsh::to_vec(&tv).unwrap();
+  let des: ArrayVec<[i32; 0]> = borsh::from_slice(&buffer).unwrap();
+  assert_eq!(tv, des);
+}
+
+#[cfg(feature = "borsh")]
+#[test]
+fn TinyVec_borsh_de() {
+  let mut tv: ArrayVec<[i32; 4]> = Default::default();
+  tv.push(1);
+  tv.push(2);
+  tv.push(3);
+  tv.push(4);
+  let buffer = borsh::to_vec(&tv).unwrap();
+  let des: ArrayVec<[i32; 4]> = borsh::from_slice(&buffer).unwrap();
+  assert_eq!(tv, des);
+}
+
+#[cfg(feature = "borsh")]
+#[test]
+fn TinyVec_borsh_de_heap() {
+  let mut tv: TinyVec<[i32; 4]> = tiny_vec![1, 2, 3, 4];
+  tv.move_to_the_heap();
+
+  let buffer = borsh::to_vec(&tv).unwrap();
+  let des: TinyVec<[i32; 4]> = borsh::from_slice(&buffer).unwrap();
+  assert_eq!(tv, des);
+}
+
 #[test]
 fn TinyVec_pretty_debug() {
   let tv: TinyVec<[i32; 6]> = tiny_vec![1, 2, 3];

@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.9
+
+* Adds a `latest_stable_rust` cargo feature, which will automatically pull in
+  other cargo features related to the latest Stable version of rust.
+* Adds `ArrayVec::try_from_array_len`
+* Adds `TinyVec::into_vec` and `TinyVec::into_boxed_slice`
+* Adds support for `generic-array` crate
+* Adds support for the `borsh` crate
+
 ## 1.8.1
 
 * [e00E](https://github.com/e00E) updated the rustc features so that they all

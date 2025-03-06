@@ -219,6 +219,53 @@ where
   }
 }
 
+#[cfg(feature = "borsh")]
+#[cfg_attr(docs_rs, doc(cfg(feature = "borsh")))]
+impl<A: Array> borsh::BorshSerialize for ArrayVec<A>
+where
+  <A as Array>::Item: borsh::BorshSerialize,
+{
+  fn serialize<W: borsh::io::Write>(
+    &self, writer: &mut W,
+  ) -> borsh::io::Result<()> {
+    <usize as borsh::BorshSerialize>::serialize(&self.len(), writer)?;
+    for elem in self.iter() {
+      <<A as Array>::Item as borsh::BorshSerialize>::serialize(elem, writer)?;
+    }
+    Ok(())
+  }
+}
+
+#[cfg(feature = "borsh")]
+#[cfg_attr(docs_rs, doc(cfg(feature = "borsh")))]
+impl<A: Array> borsh::BorshDeserialize for ArrayVec<A>
+where
+  <A as Array>::Item: borsh::BorshDeserialize,
+{
+  fn deserialize_reader<R: borsh::io::Read>(
+    reader: &mut R,
+  ) -> borsh::io::Result<Self> {
+    let len = <usize as borsh::BorshDeserialize>::deserialize_reader(reader)?;
+    let mut new_arrayvec = Self::default();
+
+    for idx in 0..len {
+      let value =
+        <<A as Array>::Item as borsh::BorshDeserialize>::deserialize_reader(
+          reader,
+        )?;
+      if idx >= new_arrayvec.capacity() {
+        return Err(borsh::io::Error::new(
+          borsh::io::ErrorKind::InvalidData,
+          "invalid ArrayVec length",
+        ));
+      }
+      new_arrayvec.push(value)
+    }
+
+    Ok(new_arrayvec)
+  }
+}
+
 #[cfg(feature = "arbitrary")]
 #[cfg_attr(docs_rs, doc(cfg(feature = "arbitrary")))]
 impl<'a, A> arbitrary::Arbitrary<'a> for ArrayVec<A>
@@ -1071,7 +1118,28 @@ impl<A: Array> ArrayVec<A> {
   /// If the given length is greater than the capacity of the array this will
   /// error, and you'll get the array back in the `Err`.
   #[inline]
+  #[cfg(not(feature = "latest_stable_rust"))]
   pub fn try_from_array_len(data: A, len: usize) -> Result<Self, A> {
+    /* Note(Soveu): Should we allow A::CAPACITY > u16::MAX for now? */
+    if len <= A::CAPACITY {
+      Ok(Self { data, len: len as u16 })
+    } else {
+      Err(data)
+    }
+  }
+
+  /// Wraps an array, using the given length as the starting length.
+  ///
+  /// If you want to use the whole length of the array, you can just use the
+  /// `From` impl.
+  ///
+  /// ## Failure
+  ///
+  /// If the given length is greater than the capacity of the array this will
+  /// error, and you'll get the array back in the `Err`.
+  #[inline]
+  #[cfg(feature = "latest_stable_rust")]
+  pub const fn try_from_array_len(data: A, len: usize) -> Result<Self, A> {
     /* Note(Soveu): Should we allow A::CAPACITY > u16::MAX for now? */
     if len <= A::CAPACITY {
       Ok(Self { data, len: len as u16 })
@@ -1883,6 +1951,7 @@ impl<A: Array> ArrayVec<A> {
   /// assert_eq!(v, &[1, 2, 3]);
   /// assert_eq!(v.capacity(), 13);
   /// ```
+  #[inline]
   #[cfg(feature = "rustc_1_57")]
   pub fn try_drain_to_vec_and_reserve(
     &mut self, n: usize,
@@ -1925,6 +1994,7 @@ impl<A: Array> ArrayVec<A> {
   /// // Vec may reserve more than necessary in order to prevent more future allocations.
   /// assert!(v.capacity() >= 3);
   /// ```
+  #[inline]
   #[cfg(feature = "rustc_1_57")]
   pub fn try_drain_to_vec(&mut self) -> Result<Vec<A::Item>, TryReserveError> {
     self.try_drain_to_vec_and_reserve(0)
