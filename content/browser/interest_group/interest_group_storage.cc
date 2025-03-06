@@ -861,10 +861,26 @@ std::set<std::string> GetAllKanonKeys(
       if (base::FeatureList::IsEnabled(
               blink::features::kFledgeAuctionDealSupport) &&
           ad.selectable_buyer_and_seller_reporting_ids) {
-        for (const std::string& selectable_id :
-             *ad.selectable_buyer_and_seller_reporting_ids) {
+        size_t num_selectable_kanon_keys =
+            ad.selectable_buyer_and_seller_reporting_ids->size();
+        if (base::FeatureList::IsEnabled(
+                features::
+                    kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon) &&
+            features::
+                    kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit
+                        .Get() >= 0) {
+          num_selectable_kanon_keys = std::min(
+              num_selectable_kanon_keys,
+              static_cast<size_t>(
+                  features::
+                      kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit
+                          .Get()));
+        }
+        for (size_t selectable_idx = 0;
+             selectable_idx < num_selectable_kanon_keys; ++selectable_idx) {
           hashed_keys.emplace(blink::HashedKAnonKeyForAdNameReporting(
-              interest_group, ad, selectable_id));
+              interest_group, ad,
+              (*ad.selectable_buyer_and_seller_reporting_ids)[selectable_idx]));
         }
       }
       hashed_keys.emplace(

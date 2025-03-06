@@ -27,6 +27,7 @@
 #include "base/time/time.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 #include "content/browser/interest_group/for_debugging_only_report_util.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/public/browser/browser_thread.h"
@@ -883,6 +884,52 @@ TEST_F(InterestGroupStorageTest,
                 testing::UnorderedElementsAreArray(
                     {kanon_bid1, kanon_bid2, kanon_report1, kanon_report1a,
                      kanon_report1b, kanon_report2}));
+  }
+
+  // Limit the number of deals per ad on which k-anon keys are fetched.
+  {
+    base::test::ScopedFeatureList scoped_feature_to_enforce_limit;
+    scoped_feature_to_enforce_limit.InitAndEnableFeatureWithParameters(
+        features::
+            kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon,
+        {{"SelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit", "1"}});
+
+    std::optional<InterestGroupKanonUpdateParameter> k_anon_update_data =
+        storage->UpdateInterestGroup(group_key, update);
+    ASSERT_TRUE(k_anon_update_data.has_value());
+    EXPECT_EQ(k_anon_update_data->update_time, update_time);
+    // `kanon_report1b` is notably absent because of the configured limit.
+    EXPECT_THAT(k_anon_update_data->hashed_keys,
+                testing::UnorderedElementsAreArray(
+                    {kanon_bid1, kanon_bid2, kanon_report1, kanon_report1a,
+                     kanon_report2, kanon_component_1, kanon_component_2}));
+    // Empty because all of these keys were loaded in the previous test.
+    EXPECT_THAT(k_anon_update_data->newly_added_hashed_keys,
+                testing::IsEmpty());
+  }
+
+  // Similar to the above, but with the Limit the number of deals per ad on
+  // which k-anon keys are fetched set to -1, which enforces no limit.
+  {
+    base::test::ScopedFeatureList scoped_feature_to_enforce_limit;
+    scoped_feature_to_enforce_limit.InitAndEnableFeatureWithParameters(
+        features::
+            kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon,
+        {{"SelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit", "-1"}});
+
+    std::optional<InterestGroupKanonUpdateParameter> k_anon_update_data =
+        storage->UpdateInterestGroup(group_key, update);
+    ASSERT_TRUE(k_anon_update_data.has_value());
+    EXPECT_EQ(k_anon_update_data->update_time, update_time);
+    // `kanon_report1b` is notably back in this list.
+    EXPECT_THAT(k_anon_update_data->hashed_keys,
+                testing::UnorderedElementsAreArray(
+                    {kanon_bid1, kanon_bid2, kanon_report1, kanon_report1a,
+                     kanon_report1b, kanon_report2, kanon_component_1,
+                     kanon_component_2}));
+    // Empty because all of these keys were loaded in the previous test.
+    EXPECT_THAT(k_anon_update_data->newly_added_hashed_keys,
+                testing::IsEmpty());
   }
 
   // Do an interest group update that updates the bidding URL, ads, and ad
