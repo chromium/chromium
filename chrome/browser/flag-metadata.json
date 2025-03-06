@@ -5417,7 +5417,7 @@
   {
     "name": "ios-reactivation-notifications",
     "owners": ["scottyoder@google.com", "bling-get-set-up@google.com"],
-    "expiry_milestone": 136
+    "expiry_milestone": 139
   },
   {
     "name": "ios-segmentation-ephemeral-card-ranker",
