@@ -1237,6 +1237,47 @@ TEST(SchedulerStateMachineTest, TestMainFrameThrottling) {
   EXPECT_EQ(begin_main_frame_count, 5);
 }
 
+TEST(SchedulerStateMachineTest, TestProactiveMainFrameThrottling) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kRenderThrottleFrameRate,
+      {{"render-throttled-frame-interval-hz", "30"}});
+  base::TimeDelta throttled_interval =
+      base::Hertz(features::kRenderThrottledFrameIntervalHz.Get());
+
+  SchedulerSettings default_scheduler_settings;
+  StateMachine state(default_scheduler_settings);
+  SET_UP_STATE(state);
+
+  state.FrameIntervalUpdated(base::Hertz(120));
+  state.AdvanceTimeBy(base::Seconds(1280));  // Start at an arbitrary point.
+
+  auto GetFrameCountFor10Intervals = [&state](int interval_hz) {
+    int begin_main_frame_count = 0;
+    for (int i = 0; i < 10; i++) {
+      state.SetNeedsBeginMainFrame();
+      begin_main_frame_count +=
+          RunOneFrameAndReturnWhetherMainFrameIsIssued(state) ? 1 : 0;
+      state.AdvanceTimeBy(base::Hertz(120));
+    }
+    return begin_main_frame_count;
+  };
+
+  // No throttling by default.
+  EXPECT_EQ(GetFrameCountFor10Intervals(120), 10);
+  EXPECT_EQ(state.MainFrameThrottledInterval(), base::TimeDelta());
+
+  // Throttling after starting the throttle.
+  state.SetShouldThrottleFrameRate(true);
+  EXPECT_EQ(GetFrameCountFor10Intervals(120), 2);
+  EXPECT_EQ(state.MainFrameThrottledInterval(), throttled_interval);
+
+  // Not throttling after stopping the throttle.
+  state.SetShouldThrottleFrameRate(false);
+  EXPECT_EQ(GetFrameCountFor10Intervals(120), 10);
+  EXPECT_EQ(state.MainFrameThrottledInterval(), base::TimeDelta());
+}
+
 TEST(SchedulerStateMachineTest, TestMainFrameThrottlingIsNotSensitiveToDelays) {
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kThrottleMainFrameTo60Hz};
@@ -1283,7 +1324,7 @@ TEST(SchedulerStateMachineTest, TestMainFrameThrottlingDifferentRates) {
   EXPECT_EQ(begin_main_frame_count, 5);
 
   state.FrameIntervalUpdated(base::Hertz(60));
-  EXPECT_EQ(base::TimeDelta(), state.main_frame_throttled_interval());
+  EXPECT_EQ(base::TimeDelta(), state.MainFrameThrottledInterval());
   begin_main_frame_count = 0;
   for (int i = 0; i < 10; i++) {
     state.SetNeedsBeginMainFrame();
@@ -1295,18 +1336,18 @@ TEST(SchedulerStateMachineTest, TestMainFrameThrottlingDifferentRates) {
 
   constexpr float kSlackFactor = .9;
   state.FrameIntervalUpdated(base::Hertz(90));
-  EXPECT_EQ(base::TimeDelta(), state.main_frame_throttled_interval());
+  EXPECT_EQ(base::TimeDelta(), state.MainFrameThrottledInterval());
   state.FrameIntervalUpdated(base::Hertz(120));
-  EXPECT_NEAR(state.main_frame_throttled_interval().InMillisecondsF(),
+  EXPECT_NEAR(state.MainFrameThrottledInterval().InMillisecondsF(),
               (base::Hertz(60) * kSlackFactor).InMillisecondsF(), 1e-2);
   state.FrameIntervalUpdated(base::Hertz(144));
-  EXPECT_NEAR(state.main_frame_throttled_interval().InMillisecondsF(),
+  EXPECT_NEAR(state.MainFrameThrottledInterval().InMillisecondsF(),
               (base::Hertz(72) * kSlackFactor).InMillisecondsF(), 1e-2);
   state.FrameIntervalUpdated(base::Hertz(240));
-  EXPECT_NEAR(state.main_frame_throttled_interval().InMillisecondsF(),
+  EXPECT_NEAR(state.MainFrameThrottledInterval().InMillisecondsF(),
               (base::Hertz(120) * kSlackFactor).InMillisecondsF(), 1e-2);
   state.FrameIntervalUpdated(base::Hertz(90));
-  EXPECT_EQ(base::TimeDelta(), state.main_frame_throttled_interval());
+  EXPECT_EQ(base::TimeDelta(), state.MainFrameThrottledInterval());
 }
 
 TEST(SchedulerStateMachineTest, TestMainFrameThrottlingWithUrgentUpdates) {

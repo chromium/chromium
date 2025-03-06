@@ -1311,4 +1311,10 @@ void SingleThreadProxy::DidReceiveCompositorFrameAck() {
   layer_tree_host_->DidReceiveCompositorFrameAckDeprecatedForCompositor();
 }
 
+void SingleThreadProxy::SetShouldThrottleFrameRate(bool flag) {
+  if (scheduler_on_impl_thread_) {
+    scheduler_on_impl_thread_->SetShouldThrottleFrameRate(flag);
+  }
+}
+
 }  // namespace cc

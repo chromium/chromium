@@ -19887,7 +19887,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "RenderBlockingFullFrameRate"
+                        "RenderBlockingFullFrameRate",
+                        "RenderThrottleFrameRate"
                     ]
                 }
             ]

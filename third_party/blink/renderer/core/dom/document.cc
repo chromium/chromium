@@ -9484,7 +9484,7 @@ void Document::UpdateRenderFrameRate() {
     return;
   }
   GetFrame()->GetPage()->GetChromeClient().SetShouldThrottleFrameRate(
-      has_frame_rate_blocking_expect_link_elements_);
+      has_frame_rate_blocking_expect_link_elements_, *GetFrame());
 }
 
 // static

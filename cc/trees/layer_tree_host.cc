@@ -736,6 +736,10 @@ void LayerTreeHost::OnDeferCommitsChanged(
   client_->OnDeferCommitsChanged(defer_status, reason, trigger);
 }
 
+void LayerTreeHost::SetShouldThrottleFrameRate(bool flag) {
+  proxy_->SetShouldThrottleFrameRate(flag);
+}
+
 DISABLE_CFI_PERF
 void LayerTreeHost::SetNeedsAnimate() {
   DCHECK(IsMainThread());

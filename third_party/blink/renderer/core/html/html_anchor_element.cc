@@ -311,9 +311,8 @@ void HTMLAnchorElementBase::ParseAttribute(
     InvalidateCachedVisitedLinkHash();
     LogUpdateAttributeIfIsolatedWorldAndInDocument("a", params);
   } else if (params.name == html_names::kNameAttr) {
-    if (GetDocument().HasPendingExpectLinkElements() &&
-        isConnected() && IsFinishedParsingChildren() &&
-        !params.new_value.empty()) {
+    if (GetDocument().HasPendingExpectLinkElements() && isConnected() &&
+        IsFinishedParsingChildren() && !params.new_value.empty()) {
       DCHECK(GetDocument().GetRenderBlockingResourceManager());
       GetDocument()
           .GetRenderBlockingResourceManager()

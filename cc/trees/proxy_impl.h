@@ -121,6 +121,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
       const {
     return smoothness_priority_expiration_notifier_;
   }
+  void SetShouldThrottleFrameRate(bool flag);
 
  private:
   // LayerTreeHostImplClient implementation

@@ -210,9 +210,9 @@ class CC_EXPORT SchedulerStateMachine {
   // May throttle main frame updates, but not compositor frames.
   void FrameIntervalUpdated(base::TimeDelta frame_interval);
 
-  base::TimeDelta main_frame_throttled_interval() const {
-    return main_frame_throttled_interval_;
-  }
+  // Returns the main frame throttle interval computed based on the
+  // static throttle feature and the renderer settings.
+  base::TimeDelta MainFrameThrottledInterval() const;
 
   // Indicates whether the LayerTreeHostImpl is visible.
   void SetVisible(bool visible);
@@ -387,6 +387,8 @@ class CC_EXPORT SchedulerStateMachine {
     waiting_for_scroll_event_ = waiting_for_scroll_event;
   }
 
+  void SetShouldThrottleFrameRate(bool flag);
+
  protected:
   bool BeginFrameRequiredForAction() const;
   bool BeginFrameNeededForVideo() const;
@@ -455,6 +457,7 @@ class CC_EXPORT SchedulerStateMachine {
   base::TimeTicks last_begin_impl_frame_time_;
   base::TimeTicks last_sent_begin_main_frame_time_;
   base::TimeDelta main_frame_throttled_interval_;
+  base::TimeDelta unthrottled_frame_interval_;
 
   // Inputs from the last impl frame that are required for decisions made in
   // this impl frame. The values from the last frame are cached before being
@@ -548,6 +551,8 @@ class CC_EXPORT SchedulerStateMachine {
   // expecting some. Once `is_scrolling_` is false, we are no longer expecting
   // scroll events to arrive.
   bool waiting_for_scroll_event_ = false;
+
+  bool throttle_frame_rate_ = false;
 };
 
 }  // namespace cc

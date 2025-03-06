@@ -726,6 +726,12 @@ void ProxyMain::StopDeferringCommits(PaintHoldingCommitTrigger trigger) {
   layer_tree_host_->OnDeferCommitsChanged(false, reason, trigger);
 }
 
+void ProxyMain::SetShouldThrottleFrameRate(bool flag) {
+  ImplThreadTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&ProxyImpl::SetShouldThrottleFrameRate,
+                                base::Unretained(proxy_impl_.get()), flag));
+}
+
 bool ProxyMain::IsDeferringCommits() const {
   DCHECK(IsMainThread());
   return paint_holding_reason_.has_value();

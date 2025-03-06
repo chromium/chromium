@@ -4,6 +4,8 @@
 
 #include "cc/scheduler/scheduler_state_machine.h"
 
+#include <algorithm>
+
 #include "base/check_op.h"
 #include "base/format_macros.h"
 #include "base/notreached.h"
@@ -661,9 +663,10 @@ bool SchedulerStateMachine::ShouldSendBeginMainFrame() const {
 
 bool SchedulerStateMachine::ShouldThrottleSendBeginMainFrame() const {
   bool result = false;
-  if (main_frame_throttled_interval_.is_positive() &&
+  auto throttled_interval = MainFrameThrottledInterval();
+  if (throttled_interval.is_positive() &&
       last_begin_impl_frame_time_ - last_sent_begin_main_frame_time_ <
-          main_frame_throttled_interval_) {
+          throttled_interval) {
     result = true;
   }
 
@@ -1524,6 +1527,7 @@ bool SchedulerStateMachine::ShouldBlockDeadlineIndefinitely() const {
 
 void SchedulerStateMachine::FrameIntervalUpdated(
     base::TimeDelta frame_interval) {
+  unthrottled_frame_interval_ = frame_interval;
   // Only query the feature (and thus enter the experiment group) if we see a
   // short interval. This ignores 90Hz displays, on purpose, and adds some
   // leeway.
@@ -1539,9 +1543,9 @@ void SchedulerStateMachine::FrameIntervalUpdated(
     // Use interval / 2 rather than an actual interval as refresh rates are
     // not necessarily 120: it could be something really close, or it could be
     // 144Hz for instance.
-    base::TimeDelta throttled_interval = kSlackFactor * frame_interval * 2;
-    TRACE_EVENT("cc", "ThrottleMainFrame", "interval", throttled_interval);
-    main_frame_throttled_interval_ = throttled_interval;
+    main_frame_throttled_interval_ = kSlackFactor * frame_interval * 2;
+    TRACE_EVENT("cc", "ThrottleMainFrame", "interval",
+                main_frame_throttled_interval_);
   } else {
     main_frame_throttled_interval_ = base::TimeDelta();
   }
@@ -1820,6 +1824,26 @@ bool SchedulerStateMachine::HasInitializedLayerTreeFrameSink() const {
       return true;
   }
   NOTREACHED();
+}
+
+void SchedulerStateMachine::SetShouldThrottleFrameRate(bool flag) {
+  if (base::FeatureList::IsEnabled(features::kRenderThrottleFrameRate)) {
+    throttle_frame_rate_ = flag;
+  }
+}
+
+base::TimeDelta SchedulerStateMachine::MainFrameThrottledInterval() const {
+  if (!throttle_frame_rate_) {
+    return main_frame_throttled_interval_;
+  } else {
+    auto throttled_interval =
+        std::max(base::Hertz(features::kRenderThrottledFrameIntervalHz.Get()),
+                 main_frame_throttled_interval_);
+    if (throttled_interval < unthrottled_frame_interval_) {
+      return base::TimeDelta();
+    }
+    return throttled_interval;
+  }
 }
 
 }  // namespace cc

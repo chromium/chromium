@@ -129,6 +129,7 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
                              cc::PaintHoldingReason reason) override;
   void StopDeferringCommits(LocalFrame& main_frame,
                             cc::PaintHoldingCommitTrigger) override {}
+  void SetShouldThrottleFrameRate(bool flag, LocalFrame& main_frame) override {}
   void StartDragging(LocalFrame*,
                      const WebDragData&,
                      DragOperationsMask,

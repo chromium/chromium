@@ -556,6 +556,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Immediately stop deferring commits.
   void StopDeferringCommits(cc::PaintHoldingCommitTrigger);
 
+  void SetShouldThrottleFrameRate(bool flag);
+
   // Pause all rendering (main and compositor thread) in the compositor.
   [[nodiscard]] std::unique_ptr<cc::ScopedPauseRendering> PauseRendering();
 

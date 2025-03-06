@@ -286,6 +286,8 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
 
   size_t CommitDurationSampleCountForTesting() const;
 
+  void SetShouldThrottleFrameRate(bool flag);
+
  protected:
   // Virtual for testing.
   virtual base::TimeTicks Now() const;

@@ -2165,6 +2165,13 @@ std::unique_ptr<cc::ScopedPauseRendering> WebFrameWidgetImpl::PauseRendering() {
   return widget_base_->LayerTreeHost()->PauseRendering();
 }
 
+void WebFrameWidgetImpl::SetShouldThrottleFrameRate(bool flag) {
+  if (!View()->does_composite()) {
+    return;
+  }
+  return widget_base_->LayerTreeHost()->SetShouldThrottleFrameRate(flag);
+}
+
 std::optional<int> WebFrameWidgetImpl::GetMaxRenderBufferBounds() const {
   if (!View()->does_composite()) {
     return std::nullopt;
