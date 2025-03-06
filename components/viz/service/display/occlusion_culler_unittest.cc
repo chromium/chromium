@@ -88,8 +88,11 @@ class OcclusionCullerTest : public testing::Test {
     bool premultiplied_alpha = false;
     gfx::Size resource_size_in_pixels = rect.size();
 
+    TestResourceFactory::TestResourceContext resource_context;
+    resource_context.is_overlay_candidate = is_overlay_candidate;
+
     const ResourceId resource_id = resource_factory_->CreateResource(
-        resource_size_in_pixels, is_overlay_candidate,
+        resource_size_in_pixels, resource_context,
         SinglePlaneFormat::kRGBA_8888, SurfaceId());
 
     auto* overlay_quad =

@@ -714,4 +714,41 @@ TEST_F(DrawingBufferTest,
   drawing_buffer_->BeginDestruction();
 }
 
+TEST_F(DrawingBufferImageChromiumTest,
+       VerifyLowLatencyRenderingIsSetWhenDesynchronizedIsTrue) {
+  gfx::Size initial_size(kInitialWidth, kInitialHeight);
+  auto gl = std::make_unique<GLES2InterfaceForTests>();
+  auto provider =
+      std::make_unique<WebGraphicsContext3DProviderForTests>(std::move(gl));
+
+  provider->GetMutableGpuFeatureInfo()
+      .status_values[gpu::GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] =
+      gpu::kGpuFeatureStatusEnabled;
+
+  GLES2InterfaceForTests* gl_ =
+      static_cast<GLES2InterfaceForTests*>(provider->ContextGL());
+
+  Platform::GraphicsInfo graphics_info;
+  graphics_info.using_gpu_compositing = true;
+
+  scoped_refptr<DrawingBufferForTests> drawing_buffer =
+      DrawingBufferForTests::Create(
+          std::move(provider),
+          /*shared_image_interface_provider_for_sw=*/nullptr, graphics_info,
+          gl_, initial_size, DrawingBuffer::kPreserve, kDisableMultisampling,
+          /*desynchronized=*/true);
+
+  viz::TransferableResource resource;
+  viz::ReleaseCallback release_callback;
+
+  EXPECT_FALSE(resource.is_low_latency_rendering);
+  EXPECT_TRUE(drawing_buffer->PrepareTransferableResource(&resource,
+                                                          &release_callback));
+  EXPECT_TRUE(resource.is_low_latency_rendering);
+
+  drawing_buffer->BeginDestruction();
+  drawing_buffer_->BeginDestruction();
+  testing::Mock::VerifyAndClearExpectations(gl_);
+}
+
 }  // namespace blink

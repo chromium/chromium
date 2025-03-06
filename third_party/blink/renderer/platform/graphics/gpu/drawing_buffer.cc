@@ -445,6 +445,8 @@ bool DrawingBuffer::PrepareTransferableResource(
         shared_image, viz::TransferableResource::ResourceSource::kDrawingBuffer,
         sync_token);
     out_resource->hdr_metadata = hdr_metadata_;
+    out_resource->is_low_latency_rendering = shared_image->usage().Has(
+        gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
   } else {
     // Populate the TransferableResource with a SharedImage for the software
     // compositor.
@@ -463,6 +465,8 @@ bool DrawingBuffer::PrepareTransferableResource(
         resource.sync_token);
 
     out_resource->hdr_metadata = hdr_metadata_;
+    out_resource->is_low_latency_rendering = resource.shared_image->usage().Has(
+        gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
 
     // This holds a ref on the DrawingBuffer that will keep it alive until the
     // mailbox is released (and while the release callback is running). It also

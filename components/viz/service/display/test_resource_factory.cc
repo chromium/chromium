@@ -19,11 +19,15 @@ namespace {
 static ResourceId CreateResourceInLayerTree(
     ClientResourceProvider* child_resource_provider,
     const gfx::Size& size,
-    bool is_overlay_candidate,
+    const TestResourceFactory::TestResourceContext& resource_context,
     SharedImageFormat format) {
   auto resource = TransferableResource::MakeGpu(
       gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), size, format,
-      is_overlay_candidate);
+      resource_context.is_overlay_candidate);
+
+  if (resource_context.is_low_latency_rendering) {
+    resource.is_low_latency_rendering = true;
+  }
 
   ResourceId resource_id =
       child_resource_provider->ImportResource(resource, base::DoNothing());
@@ -55,12 +59,13 @@ TestResourceFactory::~TestResourceFactory() {
   output_surface_ = nullptr;
 }
 
-ResourceId TestResourceFactory::CreateResource(const gfx::Size& size,
-                                               bool is_overlay_candidate,
-                                               SharedImageFormat format,
-                                               SurfaceId test_surface_id) {
+ResourceId TestResourceFactory::CreateResource(
+    const gfx::Size& size,
+    const TestResourceContext& resource_context,
+    SharedImageFormat format,
+    SurfaceId test_surface_id) {
   ResourceId resource_id = CreateResourceInLayerTree(
-      client_resource_provider_.get(), size, is_overlay_candidate, format);
+      client_resource_provider_.get(), size, resource_context, format);
 
   const int child_id = display_resource_provider_->CreateChild(
       base::DoNothing(), test_surface_id);

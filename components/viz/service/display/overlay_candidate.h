@@ -130,6 +130,10 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // can scan it out.
   bool needs_detiling : 1 = false;
 
+  // If true, this candidate uses low latency rendering and we need
+  // to increase its overlay priority.
+  bool low_latency_rendering : 1 = false;
+
   // Rect in content space that, when combined with |transform|, is the bounds
   // to position the overlay to. When |transform| is a |gx::OverlayTransform|,
   // this is the bounds of the quad rect with its transform applied, so that
