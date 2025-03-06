@@ -8904,8 +8904,6 @@ crbug.com/384904807 [ Mac ] http/tests/inspector-protocol/tracing/image-decoding
 crbug.com/384863732 virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-silent.https.html [ Timeout ]
 crbug.com/384863733 virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html [ Timeout ]
 
-crbug.com/366530634 external/wpt/storage-access-api/requestStorageAccess-cross-origin-iframe-navigation.sub.https.window.html [ Failure ]
-crbug.com/366530634 external/wpt/storage-access-api/requestStorageAccess-cross-site-sibling-iframes.sub.https.window.html [ Failure ]
 crbug.com/366530634 external/wpt/storage-access-api/storage-access-headers.tentative.https.sub.window.html [ Failure Timeout ]
 crbug.com/366530634 external/wpt/storage-access-api/storage-access-permission.sub.https.window.html [ Timeout ]
 
