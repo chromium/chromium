@@ -277,13 +277,13 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
       {"allSitesRwsFilterViewTitle", IDS_ALL_SITES_RWS_FILTER_VIEW_TITLE},
       {"allSitesRwsFilterViewStorageDescription",
        IDS_ALL_SITES_RWS_FILTER_VIEW_STORAGE_DESCRIPTION},
+      {"allSitesShowRwsButton", IDS_ALL_SITES_SHOW_RWS_BUTTON},
+      {"allSitesRwsMembershipLabel", IDS_ALL_SITES_RWS_LABEL},
       // Ad Topics Content Parity - Ad Topics Settings
       {"adTopicsPageToggleSubLabel",
        IDS_SETTINGS_AD_TOPICS_PAGE_TOGGLE_SUB_LABEL},
       {"adTopicsPageActiveTopicsDescription",
-       IDS_SETTINGS_AD_TOPICS_PAGE_ACTIVE_TOPICS_DESCRIPTION},
-
-  };
+       IDS_SETTINGS_AD_TOPICS_PAGE_ACTIVE_TOPICS_DESCRIPTION}};
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddString("adPrivacyLearnMoreURL",
