@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.hub;
 
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_COLOR_BLEND_ANIMATION_DURATION_MS;
+
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 
@@ -17,10 +19,12 @@ public class HubColorBlendAnimatorSetHelper {
     private List<HubViewColorBlend> mColorBlendList;
     private @Nullable @HubColorScheme Integer mPrevColorScheme;
     private @Nullable @HubColorScheme Integer mNewColorScheme;
+    private long mDuration;
 
     /** Default Constructor. */
     public HubColorBlendAnimatorSetHelper() {
         mColorBlendList = new ArrayList<>();
+        mDuration = PANE_COLOR_BLEND_ANIMATION_DURATION_MS;
     }
 
     /**
@@ -55,6 +59,12 @@ public class HubColorBlendAnimatorSetHelper {
         return this;
     }
 
+    /** Set the new color scheme of the Hub which will be used in animations. */
+    public HubColorBlendAnimatorSetHelper setIsImmediate(boolean isImmediate) {
+        mDuration = isImmediate ? 0 : PANE_COLOR_BLEND_ANIMATION_DURATION_MS;
+        return this;
+    }
+
     /** Checks if any animations have been added to the builder. */
     public boolean hasAnimations() {
         return !mColorBlendList.isEmpty();
@@ -73,6 +83,7 @@ public class HubColorBlendAnimatorSetHelper {
         }
 
         AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.setDuration(mDuration);
         animatorSet.playTogether(animatorsList);
         return animatorSet;
     }

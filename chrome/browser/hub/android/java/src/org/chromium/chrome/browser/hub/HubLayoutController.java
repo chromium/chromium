@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.hub;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -21,8 +22,15 @@ public interface HubLayoutController {
      *
      * @param tabId The ID of the tab to select or {@link Tab.INVALID_TAB_ID}.
      */
-    public void selectTabAndHideHubLayout(int tabId);
+    void selectTabAndHideHubLayout(int tabId);
 
     /** Returns a supplier of the {@link LayoutType} shown prior to entering the Hub. */
-    public ObservableSupplier<Integer> getPreviousLayoutTypeSupplier();
+    ObservableSupplier<Integer> getPreviousLayoutTypeSupplier();
+
+    /**
+     * Sets callback to be run immediately on new tab creation. Callback will be passed the
+     * incognito status of the new tab. This ensures that callbacks can be called prior to any
+     * animation being run on new tab creation.
+     */
+    void setNewTabIncognitoStateListener(Callback<Boolean> newTabIncognitoStateListener);
 }

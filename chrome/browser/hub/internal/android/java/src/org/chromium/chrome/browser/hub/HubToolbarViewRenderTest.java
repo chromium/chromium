@@ -142,7 +142,7 @@ public class HubToolbarViewRenderTest {
                     mPropertyModel.set(
                             HubToolbarProperties.COLOR_SCHEME,
                             new HubColorSchemeUpdate(
-                                    HubColorScheme.INCOGNITO, HubColorScheme.INCOGNITO));
+                                    HubColorScheme.INCOGNITO, HubColorScheme.INCOGNITO, false));
                 });
         mRenderTestRule.render(mToolbar, "actionButtonIncognito");
 
@@ -181,7 +181,7 @@ public class HubToolbarViewRenderTest {
                     mPropertyModel.set(
                             HubToolbarProperties.COLOR_SCHEME,
                             new HubColorSchemeUpdate(
-                                    HubColorScheme.INCOGNITO, HubColorScheme.INCOGNITO));
+                                    HubColorScheme.INCOGNITO, HubColorScheme.INCOGNITO, false));
                 });
         mRenderTestRule.render(mToolbar, "paneSwitcherIncognito");
     }
@@ -270,7 +270,7 @@ public class HubToolbarViewRenderTest {
                     mPropertyModel.set(
                             HubToolbarProperties.COLOR_SCHEME,
                             new HubColorSchemeUpdate(
-                                    HubColorScheme.INCOGNITO, HubColorScheme.INCOGNITO));
+                                    HubColorScheme.INCOGNITO, HubColorScheme.INCOGNITO, true));
                 });
         mRenderTestRule.render(mToolbar, "onIncognitoTabSwitcherDrawableNotificationOn");
 

@@ -10,11 +10,15 @@ import java.util.Objects;
 class HubColorSchemeUpdate {
     public final @HubColorScheme int newColorScheme;
     public final @HubColorScheme int previousColorScheme;
+    public final boolean animate;
 
     public HubColorSchemeUpdate(
-            @HubColorScheme int newColorScheme, @HubColorScheme int previousColorScheme) {
+            @HubColorScheme int newColorScheme,
+            @HubColorScheme int previousColorScheme,
+            boolean animate) {
         this.newColorScheme = newColorScheme;
         this.previousColorScheme = previousColorScheme;
+        this.animate = animate;
     }
 
     @Override
@@ -22,22 +26,24 @@ class HubColorSchemeUpdate {
         if (this == o) return true;
         if (o instanceof HubColorSchemeUpdate that) {
             return previousColorScheme == that.previousColorScheme
-                    && newColorScheme == that.newColorScheme;
+                    && newColorScheme == that.newColorScheme
+                    && animate == that.animate;
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(previousColorScheme, newColorScheme);
+        return Objects.hash(previousColorScheme, newColorScheme, animate);
     }
 
     @Override
     public String toString() {
         return String.format(
                 Locale.getDefault(),
-                "HubColorSchemeUpdate{newColorScheme=%d, previousColorScheme=%d}",
+                "HubColorSchemeUpdate{newColorScheme=%d, previousColorScheme=%d, animate=%b}",
                 newColorScheme,
-                previousColorScheme);
+                previousColorScheme,
+                animate);
     }
 }

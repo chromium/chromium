@@ -14,19 +14,15 @@ import androidx.annotation.ColorInt;
 /** Helper class to manage Animator object creation for views during a hub color scheme change. */
 public class SingleHubViewColorBlend implements HubViewColorBlend {
 
-    private final long mDurationMs;
     private final ColorGetter mColorGetter;
     private final ColorSetter mColorSetter;
 
     /**
-     * @param durationMs The duration of the animation in milliseconds.
      * @param colorGetter A method to get a ColorInt from a HubColorScheme.
      * @param colorSetter A method which updates the color of the view(s) to an interpolated color
      *     on an animator update.
      */
-    public SingleHubViewColorBlend(
-            long durationMs, ColorGetter colorGetter, ColorSetter colorSetter) {
-        mDurationMs = durationMs;
+    public SingleHubViewColorBlend(ColorGetter colorGetter, ColorSetter colorSetter) {
         mColorGetter = colorGetter;
         mColorSetter = colorSetter;
     }
@@ -38,8 +34,7 @@ public class SingleHubViewColorBlend implements HubViewColorBlend {
         @ColorInt int startColor = mColorGetter.colorIntFromColorScheme(startScheme);
         @ColorInt int endColor = mColorGetter.colorIntFromColorScheme(endScheme);
         Animator animation =
-                createColorBlendAnimation(
-                        mDurationMs, startColor, endColor, mColorSetter::setColorInt);
+                createColorBlendAnimation(startColor, endColor, mColorSetter::setColorInt);
         animation.setInterpolator(getPaneColorBlendInterpolator());
         return animation;
     }
