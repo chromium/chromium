@@ -298,7 +298,7 @@ int BatchUploadHandler::GetTypeSectionTitleId(syncer::DataType type) {
     case syncer::DataType::CONTACT_INFO:
       return IDS_BATCH_UPLOAD_SECTION_TITLE_ADDRESSES;
     case syncer::DataType::THEMES:
-      return IDS_BATCH_UPLOAD_SECTION_TITLE_THEMES;
+      return IDS_BATCH_UPLOAD_SECTION_TITLE_THEMES_WITH_DESCRIPTION;
     default:
       NOTREACHED();
   }

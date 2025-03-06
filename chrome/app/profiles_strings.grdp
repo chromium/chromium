@@ -1055,9 +1055,6 @@
       other {Addresses ({SELECTED_ITEMS})}
       }
     </message>
-    <message name="IDS_BATCH_UPLOAD_SECTION_TITLE_THEMES" desc="Title of the Themes section in the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items saved only to their device. The title of the dialog is ‘Save items in account’. This section title also acts as the item being selected (the section toggle dictates the state of the selection) since Themes will always have one item.">
-      Current color theme
-    </message>
     <message name="IDS_BATCH_UPLOAD_SECTION_TITLE_THEMES_WITH_DESCRIPTION" desc="Title of the Themes section in the Batch Upload dialog. It contains a fixed title in addition to its only item title description. This dialog appears when the user clicks on an informational message about items saved only to their device. The title of the dialog is ‘Save items in account’. This section title also acts as the item being selected (the section toggle dictates the state of the selection) since Themes will always have one item.">
       Theme: <ph name="THEME_NAME">$1<ex>Green color</ex></ph>
     </message>

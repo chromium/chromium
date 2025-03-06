@@ -31,10 +31,9 @@
 
 #sectionTitle {
   color: var(--cr-primary-text-color);
-  display: flex;
   font-size: 1rem;
   font-weight: 500;
-  justify-content: flex-start;
+  padding-inline-end: 12px;
   width: 100%;
 }
 

@@ -11,7 +11,7 @@ export function getHtml(this: DataSectionElement) {
   return html`
     <div class="data-section">
       <div class="data-section-header">
-        <h2 id="sectionTitle">${this.title_}</h2>
+        <h2 id="sectionTitle" class="text-elide">${this.title_}</h2>
         <cr-expand-button id="expandButton" no-hover
             ?hidden="${this.disabled_ || this.isThemeSection()}"
             ?expanded="${this.expanded_}"
