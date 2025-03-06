@@ -7,10 +7,10 @@
 
 #include <memory>
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace ash {
 namespace memory {
 class SystemMemoryPressureEvaluator;
@@ -36,7 +36,7 @@ class ChromeBrowserMainExtraPartsMemory : public ChromeBrowserMainExtraParts {
   void PostBrowserStart() override;
   void PostMainMessageLoopRun() override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<ash::memory::SystemMemoryPressureEvaluator> cros_evaluator_;
 #endif
 };

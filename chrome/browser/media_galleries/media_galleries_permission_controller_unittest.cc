@@ -15,7 +15,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/media_galleries/media_galleries_dialog_controller_test_util.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
@@ -28,7 +27,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -163,7 +162,7 @@ class MediaGalleriesPermissionControllerTest : public ::testing::Test {
 
   scoped_refptr<extensions::Extension> extension_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   user_manager::ScopedUserManager user_manager_{
       std::make_unique<user_manager::UserManagerImpl>(
@@ -270,7 +269,7 @@ TEST_F(MediaGalleriesPermissionControllerTest, TestNameGeneration) {
       StorageInfo::FIXED_MASS_STORAGE, "/path/to/gallery");
   gallery.type = MediaGalleryPrefInfo::kAutoDetected;
   std::string galleryName("/path/to/gallery");
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   galleryName = "gallery";
 #endif
   EXPECT_EQ(galleryName, GalleryName(gallery));
@@ -284,7 +283,7 @@ TEST_F(MediaGalleriesPermissionControllerTest, TestNameGeneration) {
 
   gallery.path = base::FilePath(FILE_PATH_LITERAL("sub/gallery2"));
   galleryName = "/path/to/gallery/sub/gallery2";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   galleryName = "gallery2";
 #endif
 #if BUILDFLAG(IS_WIN)

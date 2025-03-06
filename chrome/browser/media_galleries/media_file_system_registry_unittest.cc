@@ -28,7 +28,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/media_galleries/media_file_system_context.h"
@@ -53,7 +52,7 @@
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #endif
 
@@ -277,7 +276,7 @@ class ProfileState {
 };
 
 std::u16string GetExpectedFolderName(const base::FilePath& path) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return path.BaseName().LossyDisplayName();
 #else
   return path.LossyDisplayName();
@@ -389,7 +388,7 @@ class MediaFileSystemRegistryTest : public ChromeRenderViewHostTestHarness {
 
   // Needed for extension service & friends to work.
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
 #endif
 
@@ -688,7 +687,7 @@ void MediaFileSystemRegistryTest::AssertAllAutoAddedGalleries() {
     // Make sure that we have at least one gallery and that they are all
     // auto added galleries.
     const MediaGalleriesPrefInfoMap& galleries = prefs->known_galleries();
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
     ASSERT_GT(galleries.size(), 0U);
 #endif
     for (auto it = galleries.begin(); it != galleries.end(); ++it) {
@@ -706,7 +705,7 @@ void MediaFileSystemRegistryTest::InitForGalleriesInfoTest(
   ProfileState* profile_state = GetProfileState(0U);
   *galleries_info = profile_state->GetGalleriesInfo(
       profile_state->all_permission_extension());
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   ASSERT_EQ(3U, galleries_info->size());
 #else
   ASSERT_EQ(0U, galleries_info->size());
