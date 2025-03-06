@@ -91,23 +91,28 @@ public class SafetyHubPasswordsFetchService {
      * made a password checkup call to GMSCore for this account in the last hour, then it assumes
      * the results are still fresh and they can be reused.
      *
-     * <p>`onFinishedCallback` runs either: (1) on success, when all password counts have
+     * <p>{@code onFinishedCallback} runs either: (1) on success, when all password counts have
      * successfully been returned and the appropriate preferences have been updated with the
      * results; or (2) if any error has occurred either when running the checkup or fetching the
      * counts.
+     *
+     * @return {@code true} if the checkup will be performed by GMSCore. Otherwise, returns {@code
+     *     false}, e.g. when the last checkup results are within the holdback period.
      */
-    public void runPasswordCheckup(Callback<Boolean> onFinishedCallback) {
+    public boolean runPasswordCheckup(Callback<Boolean> onFinishedCallback) {
         if (!canPerformFetch()) {
             clearPrefs();
             onFinishedCallback.onResult(/* errorOccurred */ true);
-            return;
+            return false;
         }
 
         if (getTimeSinceLastCheckupInMs() <= CHECKUP_COOL_DOWN_PERIOD_IN_MS) {
             onFinishedCallback.onResult(/* errorOccurred */ false);
-            return;
+            return false;
         }
 
+        // TODO(crbug.com/388788969): Only trigger the checkup if it can be ran, i.e. there is at
+        // least one account in the device.
         mPasswordManagerHelper.runPasswordCheckupInBackground(
                 PasswordCheckReferrer.SAFETY_CHECK,
                 mAccount,
@@ -127,6 +132,8 @@ public class SafetyHubPasswordsFetchService {
                     }
                     onFinishedCallback.onResult(/* errorOccurred */ true);
                 });
+
+        return true;
     }
 
     /** Returns true if a password fetch can be performed, namely if GMSCore can be called. */
@@ -138,6 +145,9 @@ public class SafetyHubPasswordsFetchService {
         mPrefService.clearPref(getBreachedPreference());
         mPrefService.clearPref(getWeakPreference());
         mPrefService.clearPref(getReusedPreference());
+        if (mAccount == null) {
+            mPrefService.clearPref(getLastTimeInMsCheckCompletedPreference());
+        }
     }
 
     private long getTimeSinceLastCheckupInMs() {
