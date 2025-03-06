@@ -10,19 +10,38 @@
 #import "components/search_engines/search_engines_test_environment.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_match_wrapper_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
+@interface FakeAutocompleteMatchWrapperDelegate
+    : NSObject <AutocompleteMatchWrapperDelegate>
+
+@property(nonatomic, assign) BOOL isStarred;
+
+@end
+
+@implementation FakeAutocompleteMatchWrapperDelegate
+
+- (BOOL)isStarredMatch:(const AutocompleteMatch&)match {
+  return self.isStarred;
+}
+
+@end
+
 class AutocompleteMatchWrapperTest : public PlatformTest {
  public:
   AutocompleteMatchWrapperTest() {
+    _fake_autocomplete_wrapper_delegate =
+        [[FakeAutocompleteMatchWrapperDelegate alloc] init];
     wrapper_ = [[AutocompleteMatchWrapper alloc] init];
     wrapper_.isIncognito = NO;
     wrapper_.templateURLService =
         search_engines_test_environment_.template_url_service();
+    wrapper_.delegate = _fake_autocomplete_wrapper_delegate;
 
     TestProfileIOS::Builder builder;
 
@@ -41,11 +60,15 @@ class AutocompleteMatchWrapperTest : public PlatformTest {
   AutocompleteMatchWrapper* wrapper_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
+  FakeAutocompleteMatchWrapperDelegate* _fake_autocomplete_wrapper_delegate;
 };
 
 // Test wrapping a search match.
-TEST_F(AutocompleteMatchWrapperTest, testWrappMatch) {
+TEST_F(AutocompleteMatchWrapperTest,
+       testWrapMatchesFromResultWithStarredMatch) {
   AutocompleteMatch match = CreateSearchMatch(u"search");
+
+  _fake_autocomplete_wrapper_delegate.isStarred = YES;
 
   AutocompleteResult result;
 
@@ -53,42 +76,65 @@ TEST_F(AutocompleteMatchWrapperTest, testWrappMatch) {
 
   wrapper_.hasThumbnail = YES;
 
-  AutocompleteMatchFormatter* wrappedMatch = [wrapper_ wrapMatch:match
-                                                      fromResult:result
-                                                       isStarred:YES];
+  NSMutableArray<AutocompleteMatchFormatter*>* wrappedMatches =
+      [wrapper_ wrapMatchesFromResult:result];
 
-  EXPECT_TRUE(wrappedMatch.starred);
-  EXPECT_FALSE(wrappedMatch.incognito);
-  EXPECT_TRUE(wrappedMatch.defaultSearchEngineIsGoogle);
-  EXPECT_TRUE(wrappedMatch.isMultimodal);
-  EXPECT_EQ(wrappedMatch.actionsInSuggest.count, 0u);
+  EXPECT_EQ(wrappedMatches.count, 1u);
+
+  EXPECT_TRUE(wrappedMatches[0].starred);
+  EXPECT_FALSE(wrappedMatches[0].incognito);
+  EXPECT_TRUE(wrappedMatches[0].defaultSearchEngineIsGoogle);
+  EXPECT_TRUE(wrappedMatches[0].isMultimodal);
+  EXPECT_EQ(wrappedMatches[0].actionsInSuggest.count, 0u);
+
+  // Reset isStarred to NO.
+  _fake_autocomplete_wrapper_delegate.isStarred = NO;
 }
 
-// Test wrapping an actions in suggest match.
-TEST_F(AutocompleteMatchWrapperTest, testWrappMatchWithActions) {
-  AutocompleteMatch match = CreateActionInSuggestMatch(
-      u"Action", {omnibox::ActionInfo_ActionType_REVIEWS,
-                  omnibox::ActionInfo_ActionType_DIRECTIONS});
-
+// Test wrapping matches form a given autocomplete result.
+TEST_F(AutocompleteMatchWrapperTest, testWrapMatchesFromResult) {
   AutocompleteResult result;
 
-  result.AppendMatches({match});
+  AutocompleteMatch match1 = CreateActionInSuggestMatch(
+      u"Action", {omnibox::ActionInfo_ActionType_REVIEWS,
+                  omnibox::ActionInfo_ActionType_DIRECTIONS});
+  AutocompleteMatch match2 = CreateSearchMatch(u"search");
 
+  result.AppendMatches({match1, match2});
   wrapper_.hasThumbnail = NO;
 
-  AutocompleteMatchFormatter* wrappedMatch = [wrapper_ wrapMatch:match
-                                                      fromResult:result
-                                                       isStarred:YES];
+  NSMutableArray<AutocompleteMatchFormatter*>* wrappedMatches =
+      [wrapper_ wrapMatchesFromResult:result];
 
-  EXPECT_TRUE(wrappedMatch.starred);
-  EXPECT_FALSE(wrappedMatch.incognito);
-  EXPECT_FALSE(wrappedMatch.isMultimodal);
-  EXPECT_TRUE(wrappedMatch.defaultSearchEngineIsGoogle);
-  EXPECT_EQ(wrappedMatch.actionsInSuggest.count, 2u);
+  EXPECT_EQ(wrappedMatches.count, 2u);
+
+  EXPECT_FALSE(wrappedMatches[0].starred);
+  EXPECT_FALSE(wrappedMatches[1].starred);
+
+  EXPECT_FALSE(wrappedMatches[0].incognito);
+  EXPECT_FALSE(wrappedMatches[1].incognito);
+
+  EXPECT_TRUE(wrappedMatches[0].defaultSearchEngineIsGoogle);
+  EXPECT_TRUE(wrappedMatches[1].defaultSearchEngineIsGoogle);
+
+  EXPECT_FALSE(wrappedMatches[0].isMultimodal);
+  EXPECT_FALSE(wrappedMatches[0].isMultimodal);
+
+  EXPECT_EQ(wrappedMatches[0].actionsInSuggest.count, 2u);
+  EXPECT_EQ(wrappedMatches[1].actionsInSuggest.count, 0u);
 }
 
 // Test wrapping a search match after changing the default search engine.
 TEST_F(AutocompleteMatchWrapperTest, testChangeSearchEngine) {
+  AutocompleteResult result;
+
+  AutocompleteMatch match1 = CreateActionInSuggestMatch(
+      u"Action", {omnibox::ActionInfo_ActionType_REVIEWS,
+                  omnibox::ActionInfo_ActionType_DIRECTIONS});
+  AutocompleteMatch match2 = CreateSearchMatch(u"search");
+
+  result.AppendMatches({match1, match2});
+
   TemplateURLService* template_url_service =
       search_engines_test_environment_.template_url_service();
 
@@ -98,20 +144,14 @@ TEST_F(AutocompleteMatchWrapperTest, testChangeSearchEngine) {
             template_url_service->GetDefaultSearchProvider()->GetEngineType(
                 template_url_service->search_terms_data()));
 
-  AutocompleteMatch match = CreateSearchMatch(u"search");
+  NSMutableArray<AutocompleteMatchFormatter*>* wrappedMatches =
+      [wrapper_ wrapMatchesFromResult:result];
 
-  AutocompleteResult result;
-
-  result.AppendMatches({match});
-
-  wrapper_.hasThumbnail = YES;
-
-  AutocompleteMatchFormatter* wrappedMatch = [wrapper_ wrapMatch:match
-                                                      fromResult:result
-                                                       isStarred:YES];
+  EXPECT_EQ(wrappedMatches.count, 2u);
 
   // the `wrappedMatch` defaultSearchEngineIsGoogle should be true.
-  EXPECT_TRUE(wrappedMatch.defaultSearchEngineIsGoogle);
+  EXPECT_TRUE(wrappedMatches[0].defaultSearchEngineIsGoogle);
+  EXPECT_TRUE(wrappedMatches[1].defaultSearchEngineIsGoogle);
 
   // Keep a reference to the Google default search provider.
   const TemplateURL* google_provider =
@@ -127,10 +167,11 @@ TEST_F(AutocompleteMatchWrapperTest, testChangeSearchEngine) {
   template_url_service->SetUserSelectedDefaultSearchProvider(
       non_google_provider);
 
-  wrappedMatch = [wrapper_ wrapMatch:match fromResult:result isStarred:YES];
+  wrappedMatches = [wrapper_ wrapMatchesFromResult:result];
 
   // the `wrappedMatch` defaultSearchEngineIsGoogle should now be false.
-  EXPECT_FALSE(wrappedMatch.defaultSearchEngineIsGoogle);
+  EXPECT_FALSE(wrappedMatches[0].defaultSearchEngineIsGoogle);
+  EXPECT_FALSE(wrappedMatches[1].defaultSearchEngineIsGoogle);
 
   // Change the default search provider back to Google.
   template_url_service->SetUserSelectedDefaultSearchProvider(

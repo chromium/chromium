@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/omnibox/model/autocomplete_match_wrapper_delegate.h"
 #import "ui/base/window_open_disposition.h"
 
 struct AutocompleteMatch;
@@ -15,7 +16,7 @@ class AutocompleteResult;
 @protocol OmniboxPopupControllerDelegate;
 
 /// Controller for the omnibox popup.
-@interface OmniboxPopupController : NSObject
+@interface OmniboxPopupController : NSObject <AutocompleteMatchWrapperDelegate>
 
 /// Delegate of the omnibox popup controller.
 @property(nonatomic, weak) id<OmniboxPopupControllerDelegate> delegate;
