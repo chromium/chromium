@@ -406,6 +406,7 @@
 <translation id="2787237339470862294">या वेळी या भाषेला सपोर्ट नाही</translation>
 <translation id="2787435249130282949">कीबोर्ड उजळ</translation>
 <translation id="2805756323405976993">ॲप्लिकेशन</translation>
+<translation id="2822702442014805146">सारांश आणि नाव निर्मिती मॉडेल डाउनलोड करणे प्रगतीपथावर आहे</translation>
 <translation id="28232023175184696">इंटरनेटशी कनेक्ट करू शकत नाही. पुन्हा प्रयत्न करण्यासाठी क्लिक करा.</translation>
 <translation id="2855718259207180827">लोकर</translation>
 <translation id="2859243502336719778">महत्त्वाचे अपडेट</translation>
@@ -827,6 +828,7 @@
 <translation id="4891842000192098784">ताण</translation>
 <translation id="4897058166682006107">डिव्हाइसच्या डाव्या बडच्या बॅटरीची पातळी <ph name="BATTERY_PERCENTAGE" />% आहे.</translation>
 <translation id="4905998861748258752">स्क्रीन सेव्हर पर्याय निवडण्यासाठी वैशिष्‍ट्य सुरू करा</translation>
+<translation id="4910853326379896417">सारांश आणि नाव निर्मिती मॉडेल डाउनलोड केले आहे</translation>
 <translation id="4910858703033903787">APN चे प्रकार</translation>
 <translation id="4917385247580444890">मजबूत</translation>
 <translation id="4917889632206600977">थांबले - कागद संपला आहे</translation>
@@ -864,6 +866,7 @@
 <translation id="5056587122125565772">इमेज तयार करा</translation>
 <translation id="5078711626843651677">स्पीकरला लेबल करणे पूर्ण होईपर्यंत व्हॉइस मॉडेल डिव्हाइसवर तात्पुरती स्टोअर केली जातात. तुम्ही हे सेटिंग्ज मध्ये कधीही बंद करू शकता.</translation>
 <translation id="5078983345702708852">आधुनिक</translation>
+<translation id="5085224064082122501">सारांश आणि नाव निर्मितीसाठी डाउनलोड करू शकत नाही. पुन्हा प्रयत्न करा किंवा तुमचे Chromebook रीस्टार्ट करा.</translation>
 <translation id="5087864757604726239">मागे</translation>
 <translation id="5088172560898466307">सर्व्हर होस्टनाव</translation>
 <translation id="5089810972385038852">राज्य</translation>
@@ -1431,6 +1434,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB टचस्क्रीन</translation>
 <translation id="757747079855995705">दगड</translation>
+<translation id="7584853321964440104">डाउनलोड करू शकत नाही. पुन्हा प्रयत्न करा किंवा तुमचे Chromebook रीस्टार्ट करा.</translation>
 <translation id="7590883480672980941">इनपुट सेटिंग्ज</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> शिल्लक</translation>
 <translation id="7600430297804876776">हे <ph name="DEVICE_TYPE" /> कधी वापरले जाऊ शकते ते <ph name="MANAGER" /> च्या अ‍ॅडमिनिस्ट्रेटरने सेट केले आहे.</translation>

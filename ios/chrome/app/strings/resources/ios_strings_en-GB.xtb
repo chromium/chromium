@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">By continuing, you agree to the <ph name="BEGIN_LINK" />Terms of Service<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Never saved</translation>
 <translation id="1062138828266376352">Your PIN wasn't changed. Please check your Internet connection and try again</translation>
+<translation id="1072476005125066234">Reviews based on your interests</translation>
 <translation id="1074827084851510304">You are about to delete {password_count} passwords and the list of sites and apps for which you chose to never save sign-in info. Any account that you created for sites and apps won't be deleted.</translation>
 <translation id="1076421457278169141">Code scanned</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} tab}other{{count} tabs}}</translation>
@@ -264,6 +265,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" /> accounts using same password</translation>
 <translation id="2059166748188874810">Municipality</translation>
 <translation id="2060114494785549741">Delete in 1 month</translation>
+<translation id="2060638295449304809">This address is saved only to this device. To use it on your other devices, save it in your Google Account, <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">Unit type selector</translation>
 <translation id="2067852168641682340">Save to this account every time</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 tab}other{{count} tabs}}</translation>
@@ -888,6 +890,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} and 1 other}other{{domain} and {count} others}}</translation>
 <translation id="4826588772550366629">camera and microphone</translation>
+<translation id="4828431027673677473">Products based on your interests</translation>
 <translation id="4833786495304741580">Automatically sends usage statistics and crash reports to Google.</translation>
 <translation id="483689884442613745">Save…</translation>
 <translation id="4840495572919996524">Your bookmarks, history, passwords and more will no longer be synced to your Google Account.</translation>
@@ -1724,6 +1727,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="828291969289324795">{count,plural, =1{Add tab to new group}other{Add tabs to new group}}</translation>
 <translation id="8283172974887967105">Set…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" /> notifications turned off</translation>
+<translation id="8290077367744012649">Track prices from your tabs</translation>
 <translation id="8299417921174340354">To use passwords, you must first set a passcode on your device.</translation>
 <translation id="8307481894409578819">This file could not be uploaded</translation>
 <translation id="8319076807703933069">New search</translation>

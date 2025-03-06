@@ -406,6 +406,7 @@
 <translation id="2787237339470862294">Bu dil hazırda dəstəklənmir</translation>
 <translation id="2787435249130282949">daha parlaq klaviatura</translation>
 <translation id="2805756323405976993">Tətbiq</translation>
+<translation id="2822702442014805146">Xülasə və ad yaratma modelinin endirilməsi davam edir</translation>
 <translation id="28232023175184696">İnternetə qoşulmaq olmur. Yenidən cəhd etmək üçün klikləyin.</translation>
 <translation id="2855718259207180827">yun</translation>
 <translation id="2859243502336719778">Önəmli güncəlləmə</translation>
@@ -827,6 +828,7 @@
 <translation id="4891842000192098784">Gərginlik</translation>
 <translation id="4897058166682006107">Sol qulaqlığın batareya səviyyəsi: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="4905998861748258752">Ekran qoruyucu seçimlərini seçmək üçün funksiyanı aktiv edin</translation>
+<translation id="4910853326379896417">Xülasə və ad yaratma modelinin endirilməsi tamamlandı</translation>
 <translation id="4910858703033903787">APN növləri</translation>
 <translation id="4917385247580444890">Güclü</translation>
 <translation id="4917889632206600977">Dayanıb - Kağız yoxdur</translation>
@@ -864,6 +866,7 @@
 <translation id="5056587122125565772">Şəkil yaradın</translation>
 <translation id="5078711626843651677">Səs modelləri spiker etiketləmə tamamlanana qədər müvəqqəti olaraq cihazda saxlanılır. Bunu Ayarlarda söndürə bilərsiniz.</translation>
 <translation id="5078983345702708852">futuristik</translation>
+<translation id="5085224064082122501">Xülasə və ad yaratmaq üçün modeli endirmək mümkün deyil. Yenidən cəhd edin və ya Chromebook-u yenidən başladın.</translation>
 <translation id="5087864757604726239">geri</translation>
 <translation id="5088172560898466307">Serverin host adı</translation>
 <translation id="5089810972385038852">Dövlət</translation>
@@ -1431,6 +1434,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB taçskrin</translation>
 <translation id="757747079855995705">daş</translation>
+<translation id="7584853321964440104">Endirmək mümkün deyil. Yenidən cəhd edin və ya Chromebook-u yenidən başladın.</translation>
 <translation id="7590883480672980941">Daxiletmə ayarları</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> qalıb</translation>
 <translation id="7600430297804876776"><ph name="MANAGER" /> administratoru bu <ph name="DEVICE_TYPE" /> cihazının istifadə oluna biləcəyi vaxtı təyin edib.</translation>

@@ -267,6 +267,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="2259659629660284697">Сырсөздөрдү экспорттоо…</translation>
 <translation id="2276696007612801991">Сырсөздөрүңүздү текшерүү үчүн Google аккаунтуңузга кириңиз</translation>
 <translation id="2278052315791335171">Бул сырсөздү жок кылуу менен <ph name="SITE" /> аккаунтуңуз өчпөйт</translation>
+<translation id="2281243904606300427"><ph name="TAB_TITLE" />, тандалган жашыруун өтмөк</translation>
 <translation id="2286841657746966508">Төлөмдүн дареги</translation>
 <translation id="228704530595896923">Бөлүшүү параметрлеринин тизмеси.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөктү көрүү}other{<ph name="TABS_COUNT_MANY" /> өтмөктү көрүү}}</translation>
@@ -325,6 +326,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> нерсе өчүрүлдү</translation>
 <translation id="253498598929009420">Сайт экраныңыздагы нерселерди көрө алат</translation>
 <translation id="2536728043171574184">Бул барактын оффлайндагы көчүрмөсү көрсөтүлүүдө</translation>
+<translation id="2542548955756682219"><ph name="TAB_TITLE" />, өтмөк</translation>
 <translation id="2546283357679194313">Кукилер жана сайттын дайындары</translation>
 <translation id="2547843573592965873">Профилди кулпулоо функциясы унааңызда маалыматыңыздын, ошондой эле Google аккаунтуңузга сакталган сырсөздөр, төлөмдөр жана башка нерселердин коопсуздугун камсыздайт.</translation>
 <translation id="254973855621628293">Бул түзмөктө сакталган сырсөздөр</translation>
@@ -468,6 +470,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3169472444629675720">Аныктоо</translation>
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 сырсөз жана башка нерселер ушул түзмөккө гана сакталды. Аларды башка түзмөктөрдө колдонуу үчүн Google аккаунтуңузга (<ph name="ACCOUNT_EMAIL" />) сактаңыз.}other{# сырсөз жана башка нерселер ушул түзмөккө гана сакталды. Аларды башка түзмөктөрдө колдонуу үчүн Google аккаунтуңузга (<ph name="ACCOUNT_EMAIL" />) сактаңыз.}}</translation>
 <translation id="3187472288455401631">Жарнамалардын майнаптуулугун талдоо</translation>
+<translation id="3189635831478931757"><ph name="GROUP_TITLE" /> өтмөктөр тобу</translation>
 <translation id="3207960819495026254">Кыстармаланды</translation>
 <translation id="3208584281581115441">Азыр текшерүү</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> өчүрүлдү</translation>
@@ -740,6 +743,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4523326818319942067">акыркы бир саатта</translation>
 <translation id="452750746583162491">Шайкештирилген маалыматты карап чыгуу</translation>
 <translation id="4532845899244822526">Куржун тандаңыз</translation>
+<translation id="4535755320005483982">Жалпы <ph name="GROUP_TITLE" /> өтмөктөр тобу</translation>
 <translation id="4543131175509360848">Киргизүүчү ачкычтардын бир да бети жок</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> өтмөк}other{<ph name="TAB_COUNT_MANY" /> өтмөк, <ph name="TAB_COUNT_INCOGNITO" /> жашыруун}}</translation>
 <translation id="4558311620361989323">Веб баракчасынын кыска жолдору</translation>
@@ -1236,6 +1240,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6756507620369789050">Пикир билдирүү</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="676305334223455055">Кызыккан нерселериңизге негизделген материалдарды көрүү үчүн аккаунтуңузга кириңиз</translation>
+<translation id="6764137532716892442">Жаңы аракеттер менен жалпы <ph name="GROUP_TITLE" /> өтмөктөр тобу</translation>
 <translation id="6767294960381293877">Жалпы түзмөктөрдүн тизмеси көрсөтүлгөн өтмөк экрандын жарымында ачылды.</translation>
 <translation id="6785476624617658922">Chrome менен ChromeOS'тун Кошумча Тейлөө шарттары</translation>
 <translation id="6795633245022906657">Жаңы өтмөктү ыкчам ачыңыз. Бул ыкчам баскычты түзөтүү үчүн параметрлерге өтүңүз.</translation>
@@ -1302,6 +1307,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Бөлүшүлгөн өтмөк топторундагы жаңы аракет менен <ph name="TABS_COUNT_ONE" /> өтмөктү көрүү}other{Бөлүшүлгөн өтмөк топторундагы жаңы аракет менен <ph name="TABS_COUNT_MANY" /> өтмөктү көрүү}}</translation>
 <translation id="6971862865055170158">Ырасталбасын</translation>
+<translation id="6976223255612495095"><ph name="TAB_TITLE" />, жаңы же жаңыртылган өтмөк</translation>
 <translation id="6978717888677691380">Сиз бөгөттөгөн сайттар</translation>
 <translation id="6979737339423435258">Бардыгы</translation>
 <translation id="6983306615164277634">Ордун өзгөртүү үчүн дарек тилкесин коё бербей басып турсаңыз болот.</translation>
@@ -1689,6 +1695,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8676276370198826499"><ph name="SITE_ETLD_PLUS_ONE" /> сайтында <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аккаунту менен катталыңыз</translation>
 <translation id="8676789164135894283">Кирүүнү ырастоо</translation>
 <translation id="8683039184091909753">сүрөт</translation>
+<translation id="8688183792442786085"><ph name="TAB_TITLE" />, тандалган өтмөк</translation>
 <translation id="869891660844655955">Мөөнөтү аяктай турган күн</translation>
 <translation id="8699120352855309748">Төмөнкү тилдерди которуу сунушталбасын</translation>
 <translation id="8712637175834984815">Түшүндүм</translation>
@@ -1822,4 +1829,5 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="988091779042748639">Түзмөгүңүздөн жашыруун көрүлгөн вебсайттарды өчүрүү үчүн бардык жашыруун өтмөктөрдү жабыңыз.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> өтмөк</translation>
 <translation id="996149300115483134">Түрмөктөгү меню жабык</translation>
+<translation id="99907655649633293"><ph name="TAB_TITLE" />, жашыруун өтмөк</translation>
 </translationbundle>

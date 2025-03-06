@@ -3802,6 +3802,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3670229581627177274">Bluetooth aktivieren</translation>
 <translation id="3670480940339182416">Websites können das V8-Optimierungstool verwenden</translation>
 <translation id="3671764914317109892">Du kannst Alltagssprache verwenden, um in deinem Browserverlauf zu suchen. Du kannst auch Fragen stellen und Antworten auf Grundlage deines Browserverlaufs erhalten.</translation>
+<translation id="3671982238795754537">Weitere Informationen zu Passkeys</translation>
 <translation id="3672681487849735243">Ein werkseitiger Fehler wurde festgestellt.</translation>
 <translation id="3673097791729989571">Anmeldung gehostet von <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">Deine PIN wurde aktualisiert</translation>
@@ -4718,6 +4719,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4289540628985791613">Übersicht</translation>
 <translation id="428963538941819373">Diese Websites dürfen Informationen, die sie zu deiner Person gespeichert haben, nutzen, wenn du auf <ph name="HOST" /> surfst</translation>
 <translation id="4289732974614035569">PIN auswählen</translation>
+<translation id="4290526909608432059">Die Unterstützung für Chrome-Apps wird bald eingestellt. Wende dich an den App-Entwickler oder dein IT‑Supportteam, um mehr über deine Optionen zu erfahren.</translation>
 <translation id="4290791284969893584">Nach dem Schließen einer Seite werden Aufgaben, die du gestartet hast, möglicherweise nicht abgeschlossen</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> Mitglied</translation>
 <translation id="4290898381118933198">Zum Wechseln zwischen Seiten wischen</translation>
@@ -8508,6 +8510,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" />: serielle Schnittstelle verbunden</translation>
 <translation id="7033616203784997570">Du darfst höchstens 62 Zeichen eingeben</translation>
 <translation id="7034692021407794547">Ein Administrator mit der Berechtigung „Abrechnungsverwaltung“ muss zuerst im Bereich „Google Meet-Hardware“ in der Admin-Konsole die Nutzungsbedingungen der Google Meet-Hardware akzeptieren.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> hat soeben einen Passkey für dein Konto erstellt. Passkeys ermöglichen dir eine schnellere und sicherere Anmeldung und werden im Google Passwortmanager für <ph name="USER" /> gespeichert. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Für Linux sind mindestens <ph name="DISK_SIZE" /> freier Speicherplatz erforderlich. Lösche Dateien von deinem Gerät, um Speicherplatz freizugeben.</translation>
 <translation id="7037157058268992880">PIN vergessen</translation>
 <translation id="7037509989619051237">Text zum Anhören</translation>
@@ -10550,6 +10553,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8477178913400731244">Daten löschen</translation>
 <translation id="8477241577829954800">Außer Kraft gesetzt</translation>
 <translation id="8477384620836102176">&amp;Allgemein</translation>
+<translation id="8477446666255316832">Beim nächsten Mal schneller anmelden</translation>
 <translation id="8479176401914456949">Ungültiger Code. Versuche es noch einmal.</translation>
 <translation id="8480869669560681089">Unbekanntes Gerät von <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">USB-Berechtigung bestätigen</translation>

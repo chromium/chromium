@@ -3809,6 +3809,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3670229581627177274">Activar Bluetooth</translation>
 <translation id="3670480940339182416">Os sitios poden usar o optimizador de V8</translation>
 <translation id="3671764914317109892">Usa frases cotiás para facer buscas no historial de navegación. Tamén podes facer preguntas e obter respostas en función do teu historial de navegación.</translation>
+<translation id="3671982238795754537">Máis información sobre as claves de acceso</translation>
 <translation id="3672681487849735243">Detectouse un erro de fábrica</translation>
 <translation id="3673097791729989571">Inicio de sesión aloxado por <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">Actualizouse o teu PIN</translation>
@@ -4725,6 +4726,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4289540628985791613">Visión xeral</translation>
 <translation id="428963538941819373">Estes sitios poden usar a información que garden sobre ti mentres navegas por <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Escolle un PIN</translation>
+<translation id="4290526909608432059">A compatibilidade coas aplicacións de Chrome finalizará pronto. Para obter máis información sobre as opcións dispoñibles, ponte en contacto con quen programou a aplicación ou co teu equipo do servizo de asistencia de TI.</translation>
 <translation id="4290791284969893584">Ao pechar unha páxina, as tarefas iniciadas poderían non finalizar</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> membro</translation>
 <translation id="4290898381118933198">Pasar o dedo para navegar entre páxinas</translation>
@@ -8516,6 +8518,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Porto en serie conectado</translation>
 <translation id="7033616203784997570">O número máximo de caracteres é 62</translation>
 <translation id="7034692021407794547">Antes de nada, cómpre que un administrador con privilexios para xestionar a facturación acepte as condicións de servizo do hardware de Google Meet na sección da consola de administración Hardware de Google Meet.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> acaba de crear unha clave de acceso para a túa conta. As claves de acceso ofrecen un inicio de sesión máis rápido e seguro e gárdanse no xestor de contrasinais de Google de <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">É recomendable dispoñer de <ph name="DISK_SIZE" /> de espazo para Linux. Se queres aumentar o espazo libre, elimina ficheiros do dispositivo.</translation>
 <translation id="7037157058268992880">Esquecín o PIN</translation>
 <translation id="7037509989619051237">Texto de vista previa</translation>
@@ -10557,6 +10560,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8477178913400731244">Eliminar datos</translation>
 <translation id="8477241577829954800">Substituído</translation>
 <translation id="8477384620836102176">&amp;Xeral</translation>
+<translation id="8477446666255316832">Inicia sesión máis rápido a próxima vez</translation>
 <translation id="8479176401914456949">O código non é válido. Téntao de novo.</translation>
 <translation id="8480869669560681089">Dispositivo descoñecido de <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Confirma o permiso do USB</translation>
