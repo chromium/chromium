@@ -319,7 +319,6 @@
 <translation id="2268044343513325586">絞り込み</translation>
 <translation id="2271452184061378400">タブグループはここに保存されます</translation>
 <translation id="2273327106802955778">その他のメニュー</translation>
-<translation id="2274800392139890332">この荷物の追跡を停止</translation>
 <translation id="2287614783861766820">{count,plural, =1{この住所はこのデバイスから削除されます。}other{これらの住所はこのデバイスから削除されます。}}</translation>
 <translation id="2297989278479054870">ログアウトすると、Google アカウントのブックマークやパスワードなどがこのデバイスから削除されます。</translation>
 <translation id="2299218006564889602">Google パスワード マネージャーに保存する前にデバイス上でパスワードを暗号化します。</translation>
@@ -645,7 +644,6 @@
 <translation id="3812308602011798782">クチコミ</translation>
 <translation id="3813175908845379029">ブラウジングの改善と効率化に役立つ提案</translation>
 <translation id="3815668647912194650">後でタブを追加できるようにこのグループを保持するか、今後使用しない場合は退出します。</translation>
-<translation id="3818045793209708987">この荷物の追跡を停止しました</translation>
 <translation id="3819183753496523827">オフラインです。インターネット接続を確認してもう一度お試しください。</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 件のお支払い方法}other{# 件のお支払い方法}}</translation>
 <translation id="3831560640878483188">警告を閉じますか？</translation>
@@ -1520,7 +1518,6 @@
 <translation id="7471557245617580330">新しいタブを作成</translation>
 <translation id="7473891865547856676">スキップ</translation>
 <translation id="7476548258282096076">このカードには、よく使用するサイトが表示されます。</translation>
-<translation id="747956641630879526">このカードを非表示にすると、荷物追跡がオフになり、すべてのデータが削除されます</translation>
 <translation id="7484645889979462775">このサイトでは保存しない</translation>
 <translation id="7486006552035434095">デバイスを同期する</translation>
 <translation id="7488874549363591659">配達済み</translation>

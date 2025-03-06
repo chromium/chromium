@@ -319,7 +319,6 @@
 <translation id="2268044343513325586">Refinar</translation>
 <translation id="2271452184061378400">Os seus grupos de separadores são guardados aqui</translation>
 <translation id="2273327106802955778">Menu Mais</translation>
-<translation id="2274800392139890332">Desativar acompanhamento desta embalagem</translation>
 <translation id="2287614783861766820">{count,plural, =1{Esta morada vai ser eliminada deste dispositivo.}other{Estas moradas vão ser eliminadas deste dispositivo.}}</translation>
 <translation id="2297989278479054870">Depois de terminar sessão, os marcadores, as palavras-passe e muito mais na sua Conta Google são removidos deste dispositivo.</translation>
 <translation id="2299218006564889602">As palavras-passe são encriptadas no seu dispositivo antes de serem guardadas no Gestor de palavras-passe da Google.</translation>
@@ -645,7 +644,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3812308602011798782">Críticas</translation>
 <translation id="3813175908845379029">Sugestões úteis que tornam a navegação melhor e mais fácil</translation>
 <translation id="3815668647912194650">Mantenha este grupo para adicionar separadores mais tarde ou saia do grupo se já não quiser aceder a este.</translation>
-<translation id="3818045793209708987">Parou de acompanhar esta encomenda</translation>
 <translation id="3819183753496523827">Está offline. Verifique a ligação à Internet e tente novamente.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 método de pagamento}other{# métodos de pagamento}}</translation>
 <translation id="3831560640878483188">Ignorar o aviso?</translation>
@@ -1520,7 +1518,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7471557245617580330">Criar novo separador</translation>
 <translation id="7473891865547856676">Não</translation>
 <translation id="7476548258282096076">Este cartão mostra os sites mais visitados.</translation>
-<translation id="747956641630879526">Se ocultar este cartão, desativa o acompanhamento de encomendas e remove todos os seus dados</translation>
 <translation id="7484645889979462775">Nunca para este site</translation>
 <translation id="7486006552035434095">Mantenha os seus dispositivos sincronizados</translation>
 <translation id="7488874549363591659">Entregue</translation>

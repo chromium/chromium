@@ -94,6 +94,7 @@
 <translation id="328933489847748230">{count,plural, =1{目前顯示 1 個 Chromium 視窗}other{目前顯示 {count} 個 Chromium 視窗}}</translation>
 <translation id="3344973607274501920">Chromium 無法檢查你的密碼，請查看網際網路連線狀態。</translation>
 <translation id="3366305173356742781">帳戶中的 Chromium 資料</translation>
+<translation id="33788334537425157">開啟「關閉 Chromium 時鎖定無痕分頁」</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{如果 Chromium 閒置 {THRESHOLD} 分鐘，就會執行這些動作。影響範圍可能包含歷史記錄和自動填入功能。}other{如果 Chromium 閒置 {THRESHOLD} 分鐘，就會執行這些動作。影響範圍可能包含歷史記錄和自動填入功能。}}</translation>
 <translation id="3410395242749598859">部分 Chromium 資料尚未儲存到 <ph name="EMAIL" />。
 請過幾分鐘後再切換帳戶。如果現在切換，系統將刪除這類資料。</translation>
@@ -101,8 +102,10 @@
 <translation id="347967311580159871">如需其他會運用資料提升 Chromium 使用體驗的設定，請前往 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />。</translation>
 <translation id="3512168799938877162">未成功分享密碼。請檢查網際網路連線，並確定你已登入 Chromium，然後再試一次。</translation>
 <translation id="3529798650269984835">開啟「關閉 Chromium 時鎖定無痕分頁」。</translation>
+<translation id="3541247799006476453">使用 Chromium 做為自動填寫來源，輕鬆存取密碼和通行密鑰</translation>
 <translation id="3567399274263440288">如要充分運用 Chromium 的所有功能，請透過 Google 帳戶登入 Chromium。</translation>
 <translation id="3581385059720151202">在 Chromium 中搜尋影像內容</translation>
+<translation id="3582640969619785896">Chromium 會詢問你是否要儲存密碼</translation>
 <translation id="3594315078412605236">在 Chromium 中管理付款方式</translation>
 <translation id="3634039384458740619">開啟 Chromium 設定</translation>
 <translation id="3639997914391704523">如果你使用 Google 帳戶登入，Chromium 可以檢查你的密碼。</translation>
@@ -159,6 +162,7 @@
 <translation id="4999538639245140991">由於你即將登出由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 所管理的帳戶，系統將刪除你在這個裝置上的 Chromium 資料，但這些資料仍會保留在你的 Google 帳戶中。</translation>
 <translation id="5042011327527167688">輕觸「在 Chromium 中使用 Google 地圖查看」。</translation>
 <translation id="5044871537677053278">Chromium 會偵測地址，並使用 Google 地圖提供路線和當地資訊。</translation>
+<translation id="5048140766121299007">前往「<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />」設定，將「Chromium」切換為開啟</translation>
 <translation id="5048795749726991615">只要使用 Chromium 的自動填入功能，即可在其他應用程式中輕鬆使用已儲存的密碼</translation>
 <translation id="5053429694249468757">正在刪除 Chromium 資料…</translation>
 <translation id="5071749685031362629">iOS 版 Chromium</translation>
@@ -166,6 +170,7 @@
 <translation id="5124429847818367226">你現在隨時可以使用 Chromium 上網或開啟訊息、文件和其他應用程式中的連結。</translation>
 <translation id="5131565040785979529">貴機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶和使用 Chromium 的方式。</translation>
 <translation id="5134464247000681876">使用 Chromium 開啟 Gmail、地圖、YouTube 和其他應用程式中的連結</translation>
+<translation id="5203244847421322551">在 Chromium 中儲存及自動填寫密碼</translation>
 <translation id="5224391634244552924">未儲存任何密碼。你必須先儲存密碼，才能使用 Chromium 的密碼檢查功能。</translation>
 <translation id="5259423875997548710">在 Chromium 中搜尋影像內容。</translation>
 <translation id="5308226104666789935">Chromium 無法檢查更新</translation>
@@ -211,9 +216,9 @@
 <translation id="6154098560469640583">隨時可以使用 Chromium 開啟訊息、文件和其他應用程式中的連結。</translation>
 <translation id="6157162508956739031">自動填入 Chromium 中的密碼和密碼金鑰，快速登入應用程式和網站</translation>
 <translation id="6170619162539716595">允許 Chromium 偵測到地址時，使用 Google 地圖提供路線和當地資訊。</translation>
-<translation id="6197255575340902638">如果隱藏「<ph name="MODULE_NAME" />」，Chromium 將不會再自動追蹤之後的包裹，而且會刪除先前的所有包裹追蹤資料。</translation>
 <translation id="6247557882553405851">Google 密碼管理工具</translation>
 <translation id="6268381023930128611">要登出 Chromium 嗎？</translation>
+<translation id="6301717043141881464">如要在其他應用程式中輕鬆取得已儲存的密碼，請選擇 Chromium 做為自動填寫來源</translation>
 <translation id="6324041800010509197">開啟 Chromium 的分頁方格</translation>
 <translation id="6325378625795868881">隨時可以使用 Chromium 開啟訊息和其他應用程式中的連結。</translation>
 <translation id="6424492062988593837">Chromium 現在變得更進步了！歡迎你升級使用新版本。</translation>
@@ -225,6 +230,7 @@
 <translation id="6574750762636192517">在 Chromium 中管理密碼</translation>
 <translation id="6590232959690355435">開啟 Chromium 歷史記錄頁面。</translation>
 <translation id="6674470628873622334">開啟新的 Chromium 無痕分頁。</translation>
+<translation id="6680609900732453726">關閉 Chromium 時進行裝置驗證，確保瀏覽活動不外洩</translation>
 <translation id="6752854822223394465">貴機構正在設定 Chromium...</translation>
 <translation id="6794054469102824109">開啟 Chromium 恐龍遊戲。</translation>
 <translation id="6820823224820483452">Chromium 無法檢查所有密碼，請明天再試。</translation>
@@ -288,6 +294,7 @@
 <translation id="8254729934443216898">瞭解新功能，充分發揮 Chromium 的效用。</translation>
 <translation id="8293572045658095405">目前使用 Chromium 無痕模式</translation>
 <translation id="830951810931292870">在 Chromium 中以無痕模式開啟輸入的網址。</translation>
+<translation id="8390323835464055390">使用 Chromium 做為自動填寫來源，可從任何應用程式使用已儲存的密碼和通行密鑰登入</translation>
 <translation id="8409374867500149834">Chromium 提供了最強大的安全防護機制，可避免你誤入有害網站</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{如果 Chromium 閒置 {THRESHOLD} 分鐘，就會執行這些動作。系統將刪除你登入時只儲存到這部裝置的資料，其中可能包含歷史記錄和密碼。}other{如果 Chromium 閒置 {THRESHOLD} 分鐘，就會執行這些動作。系統將刪除你登入時只儲存到這部裝置的資料，其中可能包含歷史記錄和密碼。}}</translation>
 <translation id="858114650497379505">你可以在 iPhone 上的其他應用程式，使用儲存至密碼管理員的密碼。</translation>

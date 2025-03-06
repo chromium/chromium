@@ -6,6 +6,7 @@
 <translation id="1143896152279775643"><ph name="EMAIL" /> kontuko pasahitza Google-ren Pasahitz-kudeatzailea zerbitzuan gordeko da.</translation>
 <translation id="1146503048444965320">Ireki fitxa berri bat Chrome-n</translation>
 <translation id="1166460004393506534">Ezabatu Chrome-ko arakatze-datuak</translation>
+<translation id="1171255741903316750">Aktibatu "Blokeatu ezkutuko moduko fitxak Chrome ixten duzunean"</translation>
 <translation id="1179527450541388808">Sartu Chrome-n bizkorrago iPad-eko orri nagusiko zintaren bidez.</translation>
 <translation id="1180362651362502943">Jarraitu Google-ko kontuan dauzkazun Chrome-ko datuak erabiltzen.</translation>
 <translation id="1200396280085622191">Erabili Chrome mezuetako eta beste aplikazioetako estekak sakatzen dituzunean.</translation>
@@ -45,6 +46,7 @@ Kontuan hartu beharrekoak:
 <translation id="1917964099031477364">Kontu hau eta gorde gabeko datuak kendu egingo dira Chromium-etik eta gailuko Google-ren beste aplikazio batzuetatik.</translation>
 <translation id="1919130412786645364">Baimendu Chrome-n saioa hastea</translation>
 <translation id="1965935827552890526">Amaitu egiten ari zarena irekita daukazun Chrome-ko beste leihoan.</translation>
+<translation id="1973910962341002002">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ezarpenetan, aktibatu "Chrome"</translation>
 <translation id="1984705450038014246">Sinkronizatu Chrome-ko datuak</translation>
 <translation id="1987779152850321833">Gauzatu behean iradokitako ekintzak Chrome-ri etekinik handiena ateratzeko.</translation>
 <translation id="2055826352861631739">Erabili iPad-etarako Chrome modu lehenetsian</translation>
@@ -96,10 +98,13 @@ Saioa amaitu aurretik, itxaron minutu batzuk. Orain amaitzen baduzu saioa, datua
 <translation id="3282568296779691940">Hasi saioa Chrome-n</translation>
 <translation id="3303503998967553377">Erabili Chrome-ren Ekintzak iOS-en</translation>
 <translation id="3348862487678490430">Gehitu irakurketa-zerrendako elementu bat Chrome-n</translation>
+<translation id="3357827134511189025">Erabili gordetako pasahitz eta sarbide-gakoak edozein aplikaziotatik saioa hasteko, betetze automatikorako Chrome erabilita</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Chrome {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori}other{Chrome {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori}}</translation>
 <translation id="3367797402528056312">Amaitu Chrome konfiguratzen</translation>
 <translation id="3371064404604898522">Ezarri Chrome arakatzaile lehenetsi gisa</translation>
 <translation id="3399930248910934354">Ireki Chrome-ren ezarpenak</translation>
+<translation id="3440830787838130530">Partekatu pasahitz baten kopia zure familia-taldearekin modu erraz eta seguruan Google-ren Pasahitz-kudeatzailea zerbitzuaren bitartez</translation>
+<translation id="3460369101684070455">Gordetako pasahitzak beste aplikazioetan erraz lortzeko, aukeratu Chrome betetze automatikorako</translation>
 <translation id="3472587960215700950">Chrome-k Google Maps erabiltzen du hautemandako helbideetarako jarraibideak eta haiei buruzko tokiko informazioa eskaintzeko.</translation>
 <translation id="3503014945441706099">Lortu Arakatze seguru hobetua Chrome-ko profil honetan ere</translation>
 <translation id="3522659714780527202">Chrome erabiltzen duzun gailu guztietan zure fitxak eskura izateko, aktibatu sinkronizazioa</translation>
@@ -155,7 +160,6 @@ Saioa amaitu aurretik, itxaron minutu batzuk. Orain amaitzen baduzu saioa, datua
 <translation id="5395376160638294582">Izan beti Google-ko kontuko Chrome-ren datuak erabiltzeko aukera</translation>
 <translation id="5404252374083197467">Arakatzaile lehenetsi gisa ezarri nahi duzu Chrome?</translation>
 <translation id="5439191312780166229">Webgune arriskutsuen berri ematen dizu, Google-k ezagutzen ez zituenak barne, webguneetan babes estandarrak baino datu gehiago aztertuz. Chrome-ren abisuak saltatzea aukera dezakezu.</translation>
-<translation id="5442013002200339429">"<ph name="MODULE_NAME" />" ezkutatzen baduzu, Chrome-k ezin izango du jarraitu etorkizuneko paketeen jarraipena automatikoki egiten, eta iraganeko paketeen jarraipenari buruzko datu guztiak ezabatuko ditu.</translation>
 <translation id="5460571915754665838">4. Hautatu Chrome.</translation>
 <translation id="5492504007368565877">Google-ren Pasahitz-kudeatzailea aplikazioak ezin ditu egiaztatu pasahitzak.</translation>
 <translation id="5525095647255982834">Fitxa beste gailu batera bidaltzeko, hasi saioa Chrome-n bertan.</translation>
@@ -181,6 +185,7 @@ Kontua aldatu aurretik, itxaron minutu batzuk. Kontua orain aldatzen baduzu, dat
 <translation id="5998675059699164418">Saioa hasteko eskatzen dizu zure erakundeak, Chrome erabiltzearren.</translation>
 <translation id="6021312115739110405">Google-k zuretzat sortutako jario pertsonalizatua. Albisteak, kirolak eta eguraldia dauzka.</translation>
 <translation id="6022659036123304283">Zeureganatu Chrome</translation>
+<translation id="6132075343662013154">Chrome-k pasahitza gorde nahi duzun galdetuko dizu</translation>
 <translation id="6132149203299792222">Hasi saioa Google-ko kontuan eta sinkronizatu pasahitzak, laster-markak eta beste.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Bilatu Chrome-n</translation>
@@ -228,6 +233,7 @@ Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikuste
 <translation id="7061455974939528301">Eduki sakatuta Chrome-ren ikonoa eta sakatu "Editatu orri nagusia"</translation>
 <translation id="7065813315247345131">Eraman Chrome zintara</translation>
 <translation id="7124339256045485976">Mantendu Chrome eguneratuta</translation>
+<translation id="7145599899567697473">Gorde pasahitzak eta bete itzazu automatikoki Chrome-rekin</translation>
 <translation id="7161390184744336561">Google Chrome zaharkituta dago</translation>
 <translation id="7165736900384873061">Hasi Google Chrome QR eskanerra erabiltzen</translation>
 <translation id="7175129790242719365">Chrome-ri buruzko aholkua: hasi saioa Chrome-n</translation>
@@ -261,6 +267,7 @@ Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikuste
 <translation id="7693590760643069321">Orain, Chrome erabili ahalko duzu mezuetan, dokumentuetan eta aplikazioetan estekak sakatzen dituzunean.</translation>
 <translation id="7698568245838009292">Chrome-k kamera atzitu nahi du</translation>
 <translation id="7707877166818730835">Ireki nire azken fitxa Chrome-n</translation>
+<translation id="7747746207470479571">Atzitu pasahitzak eta sarbide-gakoak erraz asko, betetze automatikorako Chrome erabilita</translation>
 <translation id="776305366874821582">Sartu Chrome-n bizkorrago iPhone-ko orri nagusiko zintaren bidez.</translation>
 <translation id="7780154209050837198">Chrome-ri etekinik handiena ateratzeko, hasi saioa Chrome-n Google-ko kontuarekin.</translation>
 <translation id="7787205077729386167">Ireki Chrome-ren ezarpenak iOS-en, sakatu "Arakatzaile lehenetsia" eta hautatu Chrome.</translation>
@@ -281,6 +288,7 @@ Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikuste
 <translation id="8136856065410661948">Chrome-ren eta Google Lens-en bidez Apple Calendar-en gertaerak sortzeko erabiliko da hau.</translation>
 <translation id="8154120522323162874">Atera ahalik eta etekin handiena Chrome-ri arakatzailea konfiguratzen jarraituta.</translation>
 <translation id="8160472928944011082">Ezin da eguneratu Chrome</translation>
+<translation id="8245080522851805544">Mantendu arakatzea pribatu gailuaren autentifikazioaren bidez Chrome ixten duzunean</translation>
 <translation id="8248887045858762645">Chrome-ri buruzko aholkua</translation>
 <translation id="8265730590513812063">Ireki Chrome-ko menua</translation>
 <translation id="8317674518145175158">Ordainketa-metodoak eta helbideak ez dira enkriptatuko. Chrome-ko arakatze-historia ez da sinkronizatuko.
@@ -324,5 +332,6 @@ Datuak pasaesaldiarekin enkriptatu ziren data honetan: <ph name="TIME" />. Chrom
 <translation id="9181628561061032322">Chrome-ren azkenaldiko fitxak irekitzen ditu.</translation>
 <translation id="948597495737267756">Chrome-ko historiaren orria irekitzen du.</translation>
 <translation id="97300214378190234">Erabili Chrome beste aplikazioetako estekak sakatzen dituzunean.</translation>
+<translation id="997929539742564806">Hasi saioa bizkor aplikazioetan eta webguneetan pasahitzak eta sarbide-gakoak Chrome bidez automatikoki beteta</translation>
 <translation id="998677222109959694">Kudeatu Chrome-ren ezarpenak</translation>
 </translationbundle>

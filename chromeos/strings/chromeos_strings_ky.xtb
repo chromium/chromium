@@ -406,6 +406,7 @@
 <translation id="2787237339470862294">Бул тил учурда колдоого алынбайт</translation>
 <translation id="2787435249130282949">баскычтоптун жарыктыгын көбөйтүү</translation>
 <translation id="2805756323405976993">Колдонмолор</translation>
+<translation id="2822702442014805146">Корутунду жана аталышты түзүү үлгүсү жүктөлүп алынууда</translation>
 <translation id="28232023175184696">Интернетке туташпай жатат. Кайра аракет кылуу үчүн таптап коюңуз.</translation>
 <translation id="2855718259207180827">жүн</translation>
 <translation id="2859243502336719778">Олуттуу жаңыртуу</translation>
@@ -503,6 +504,7 @@
 <translation id="3373141842870501561">Жер тушкагазы</translation>
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> тамгасы менен <ph name="LETTERS_COLOR" /> фону</translation>
 <translation id="3383623117265110236">Эксклюзивдүү</translation>
+<translation id="3395147534045164351">Жерди байланыштырууну өчүрүү/күйгүзүү</translation>
 <translation id="3404249063913988450">Көшөгөнү иштетүү</translation>
 <translation id="3413935475507503304">Жаңыртуу үчүн "Кийинки" баскычын басыңыз.</translation>
 <translation id="3428551088151258685">ачык абада</translation>
@@ -652,6 +654,7 @@
 <translation id="4113067922640381334">Эми жаңы <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тушкагаздарды<ph name="END_LINK_WALLPAPER_SUBPAGE" /> пайдалана аласыз</translation>
 <translation id="4117637339509843559">Караңгы режим</translation>
 <translation id="4126551873361000548">10 секунд артка түрдүрүү</translation>
+<translation id="4128271910628504223">Мисалы, "тумандуу токойдун сүрөтүн тарт" деген сурамды киргизиңиз</translation>
 <translation id="4130035430755296270">Дагы башка калыптарды көрүү үчүн үстүнө алып келиңиз</translation>
 <translation id="4130750466177569591">Макул</translation>
 <translation id="4131410914670010031">Ак-кара</translation>
@@ -825,6 +828,7 @@
 <translation id="4891842000192098784">Стресс</translation>
 <translation id="4897058166682006107">Түзмөктүн сол кулакчынынын батареясынын деңгээли: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="4905998861748258752">Көшөгөнүн параметрлерин тандоо үчүн функцияны күйгүзүңүз</translation>
+<translation id="4910853326379896417">Корутунду жана аталыш түзүү үлгүсүн жүктөп алуу аяктады</translation>
 <translation id="4910858703033903787">APN түрлөрү</translation>
 <translation id="4917385247580444890">Күчтүү</translation>
 <translation id="4917889632206600977">Токтоду – Кагаз түгөнүп калды</translation>
@@ -859,8 +863,10 @@
 <translation id="5050042263972837708">Топтун аталышы:</translation>
 <translation id="5051044138948155788">Бир эле бет бар. Ушуну менен скандап баштоо экранына өтөсүз.</translation>
 <translation id="5053233795640754917">Тындыруу</translation>
+<translation id="5056587122125565772">Сүрөт түзүү</translation>
 <translation id="5078711626843651677">Маектештер белгиленип бүткөнгө чейин үндөрдүн үлгүлөрү убактылуу түзмөктө сакталат. Муну каалаган убакта Параметрлерден өчүрө аласыз.</translation>
 <translation id="5078983345702708852">футуристтик</translation>
+<translation id="5085224064082122501">Корутунду жана аталыш түзүү үлгүсү жүктөлүп алынбай жатат. Кайталап көрүңүз же Chromebook түзмөгүңүздү өчүрүп күйгүзүңүз.</translation>
 <translation id="5087864757604726239">артка</translation>
 <translation id="5088172560898466307">Сервер түйүнүнүн аталышы</translation>
 <translation id="5089810972385038852">Штат</translation>
@@ -1428,6 +1434,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB сенсордук экраны</translation>
 <translation id="757747079855995705">таш</translation>
+<translation id="7584853321964440104">Жүктөлүп алынбай жатат. Кайталап көрүңүз же Chromebook түзмөгүңүздү өчүрүп күйгүзүңүз.</translation>
 <translation id="7590883480672980941">Киргизүү параметрлери</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> калды</translation>
 <translation id="7600430297804876776"><ph name="MANAGER" /> администратору ушул <ph name="DEVICE_TYPE" /> түзмөгүн колдонууга боло турган убакытты көрсөттү.</translation>

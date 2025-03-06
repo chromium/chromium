@@ -22,6 +22,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1058009965971887428">Report feedback</translation>
 <translation id="1059120031266247284">Shared with you</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> with remove button</translation>
 <translation id="1062407476771304334">Replace</translation>
 <translation id="1073899992769346247">Replace or recharge the battery</translation>
 <translation id="1081015718268701546">Linux apps aren’t currently supported. Other apps will be saved.</translation>
@@ -1229,6 +1230,7 @@ One device connected.</translation>
 <translation id="5043679421800073804">Click or tap last icon on shelf</translation>
 <translation id="504465286040788597">Previous paragraph</translation>
 <translation id="5045550434625856497">Incorrect password</translation>
+<translation id="5056587122125565772">Create image</translation>
 <translation id="5058794129231928255">Couldn't create Google Doc</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">You'll get notified if you talk while muted. Audio never leaves your device.</translation>
@@ -1277,6 +1279,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
 <translation id="5222676887888702881">Sign out</translation>
 <translation id="5228195526683428788">Split screen divider</translation>
 <translation id="5229343007215035173">Turn on/off Privacy Screen</translation>
+<translation id="5229860525743792999">Remove <ph name="ITEM_LABEL" /> from suggested group</translation>
 <translation id="5230516054153933099">Window</translation>
 <translation id="5234764350956374838">Dismiss</translation>
 <translation id="523505283826916779">Accessibility settings</translation>
@@ -1759,6 +1762,7 @@ New install</translation>
 <translation id="6757237461819837179">No media playing</translation>
 <translation id="6760438044935091345">Game Dashboard</translation>
 <translation id="6768043681523654438">storage</translation>
+<translation id="6769195697113506406">Image inserted</translation>
 <translation id="6777216307882431711">Powering connected USB-C devices</translation>
 <translation id="6781002679438061620">Desk 9</translation>
 <translation id="6782182743534150858">Desk 13</translation>
@@ -1985,6 +1989,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7571361473021531288">Battery <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> left</translation>
 <translation id="7573585051776738856">Active window docked on right.</translation>
 <translation id="7579778809502851308">Screen capture</translation>
+<translation id="7588317312481506627">Copied to clipboard.</translation>
 <translation id="7593891976182323525">Search or Shift</translation>
 <translation id="7598054670902114203">CPU usage snapshot, <ph name="CPU_USEAGE" />%. Temperature <ph name="TEMPERATURE" /> degrees celsius, current speed: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="7599378375976398913">Inserting selected result</translation>
@@ -2179,6 +2184,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8155628902202578800">Open info dialogue for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Using <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Content</translation>
+<translation id="81817143961839203">Image insertion failed</translation>
 <translation id="8185090165691050712">Turn on/off menu to resize lock mode</translation>
 <translation id="8192727139462702395">When you turn off Bluetooth, these external devices will disconnect from your <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Casting tab</translation>
@@ -2257,6 +2263,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> has <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Press Alt+Search or Shift to cancel.</translation>
 <translation id="8480418399907765580">Show toolbar</translation>
+<translation id="8487660088084188539">When you turn on these features, the input text, document content and web page URL may be sent to Google servers. This information is used to generate writing suggestions, generate summaries, answer questions and improve the product, subject to <ph name="LINK_TO_SERVICE_TERMS" />. Don't include anything personal, sensitive or confidential.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Open link in new tab</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> doesn't support <ph name="SPECIFIED_RESOLUTION" />. The resolution was changed to <ph name="FALLBACK_RESOLUTION" />. Click confirm to keep changes. The previous settings will be restored in <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2326,6 +2333,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8725066075913043281">Try again</translation>
 <translation id="8725214031272624704">Show list of available input methods</translation>
 <translation id="8730621377337864115">Done</translation>
+<translation id="8731188831050207755"><ph name="FILE_NAME" /> download unsuccessful.</translation>
 <translation id="8731487213223706745">Ends at <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">It may be attempting to steal your keystrokes</translation>
 <translation id="8735678380411481005">Keyboard backlight colour</translation>

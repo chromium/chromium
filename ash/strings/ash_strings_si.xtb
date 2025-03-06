@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">ප්‍රතිපෝෂණය වාර්තා කරන්න</translation>
 <translation id="1059120031266247284">ඔබ සමග බෙදා ගත්තේ ය</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176">ඉවත් කිරීමේ බොත්තම සහිත <ph name="ITEM_LABEL" /></translation>
 <translation id="1062407476771304334">ප්‍රතිස්ථාපනය කරන්න</translation>
 <translation id="1073899992769346247">බැටරිය ප්‍රතිස්ථාපනය හෝ ආරෝපණය කරන්න</translation>
 <translation id="1081015718268701546">Linux යෙදුම් දැනට සහාය නොදක්වයි. වෙනත් යෙදුම් සුරකිනු ඇත.</translation>
@@ -323,6 +324,7 @@
 <translation id="2083190527011054446">සුබ රාත්‍රියක් <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">ඉමොජි තෝරකය විවෘත කරන්න</translation>
 <translation id="2088116547584365419">ක්‍රීඩා</translation>
+<translation id="2092517835716911174">"කියවීමේ උපකාරය" සහ "මට ලියන්න උදවු කරන්න" භාවිත කිරීමට ඔබට අවම වශයෙන් අවුරුදු 18ක් වත් විය යුතු ය.</translation>
 <translation id="209965399369889474">ජාලයට සම්බන්ධ වී නැත</translation>
 <translation id="2107581415810719320">අනෙක් බොත්තම <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">ඔබගේ USB-C කේබලය Thunderbolt සඳහා සහාය නොදක්වයි. උපාංග කාර්ය සාධනය සීමා විය හැකිය.</translation>
@@ -1228,6 +1230,7 @@
 <translation id="5043679421800073804">රාක්කයේ අවසන් නිරූපකය ක්ලික් කරන්න හෝ තට්ටු කරන්න</translation>
 <translation id="504465286040788597">පෙර ඡේදය</translation>
 <translation id="5045550434625856497">රහස්වචනය වැරදියි</translation>
+<translation id="5056587122125565772">රූපයක් සාදන්න</translation>
 <translation id="5058794129231928255">Google Doc නිර්මාණය කිරීමට නොහැකි විය</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">ඔබ නිහඬව සිටින අතරේ කතා කරන්නේ නම් ඔබට දැනුම් දෙනු ලැබේ. ශ්‍රව්‍ය කිසි විටෙකත් ඔබේ උපාංගයෙන් පිට නොවේ.</translation>
@@ -1276,6 +1279,7 @@
 <translation id="5222676887888702881">පිටවීම</translation>
 <translation id="5228195526683428788">බෙදුම් තිර බෙදනය</translation>
 <translation id="5229343007215035173">රහස්‍යතා තිරය ක්‍රියාත්මක/ක්‍රියාවිරහිත කරන්න</translation>
+<translation id="5229860525743792999">යෝජිත කණ්ඩායමෙන් <ph name="ITEM_LABEL" /> ඉවත් කරන්න</translation>
 <translation id="5230516054153933099">කවුළුව</translation>
 <translation id="5234764350956374838">ඉවත් කරන්න</translation>
 <translation id="523505283826916779">ප්‍රවේශ්‍යතා පසුතල</translation>
@@ -1758,6 +1762,7 @@
 <translation id="6757237461819837179">මාධ්‍ය වාදනය නොවේ</translation>
 <translation id="6760438044935091345">ක්‍රීඩා උපකරණ පුවරුව</translation>
 <translation id="6768043681523654438">ආචයනය</translation>
+<translation id="6769195697113506406">රූපය ඇතුළත් කරන ලදි</translation>
 <translation id="6777216307882431711">සම්බන්ධිත USB-C උපාංග බල ගැන්වේ</translation>
 <translation id="6781002679438061620">9 වෙනි මේසය</translation>
 <translation id="6782182743534150858">13 වෙනි මේසය</translation>
@@ -1984,6 +1989,7 @@
 <translation id="7571361473021531288">බැටරිය <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> ඉතුරුයි</translation>
 <translation id="7573585051776738856">සක්‍රිය කවුළුව දකුණේ ඈඳා ඇත.</translation>
 <translation id="7579778809502851308">තිර ග්‍රහණය</translation>
+<translation id="7588317312481506627">පසුරු පුවරුවට පිටපත් කරන ලදි.</translation>
 <translation id="7593891976182323525">Search හෝ Shift</translation>
 <translation id="7598054670902114203">CPU භාවිත සැණ රුව, <ph name="CPU_USEAGE" />%. උෂ්ණත්වය සෙල්සියස් අංශක <ph name="TEMPERATURE" /> යි, වත්මන් වේගය: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="7599378375976398913">තෝරා ගත් ප්‍රතිඵලය ඇතුළත් කිරීම</translation>
@@ -2178,6 +2184,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> සඳහා තතු සංවාදය විවෘත කරන්න</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> භාවිත කිරීම</translation>
 <translation id="8168435359814927499">අන්තර්ගතය</translation>
+<translation id="81817143961839203">රූපය ඇතුළු කිරීම අසාර්ථක විය</translation>
 <translation id="8185090165691050712">අගුලු ප්‍රකාරය ප්‍රතිප්‍රමාණ කිරීමට මෙනුව සක්‍රීය/අක්‍රිය කරන්න</translation>
 <translation id="8192727139462702395">ඔබ බ්ලූටූත් ක්‍රියාවිරහිත කළ විට, මෙම බාහිර උපාංග ඔබේ <ph name="DEVICE_TYPE" /> වෙතින් විසන්ධි වනු ඇත:</translation>
 <translation id="8198456017687137612">විකාශ ටැබය</translation>
@@ -2256,6 +2263,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> හට <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> ඇත.</translation>
 <translation id="8477270416194247200">අවලංගු කිරීමට Alt+සෙවීම හෝ Shift ඔබන්න.</translation>
 <translation id="8480418399907765580">මෙවලම් තීරුව පෙන්වන්න</translation>
+<translation id="8487660088084188539">ඔබ මෙම විශේෂාංග ක්‍රියාත්මක කළ විට, ආදාන පෙළ, ලේඛන අන්තර්ගතය සහ වෙබ් පිටු URL Google සේවාදායක වෙත යැවිය හැක. මෙම තොරතුරු <ph name="LINK_TO_SERVICE_TERMS" /> වෙත යටත්ව ලිවීමේ යෝජනා ජනනය කිරීමට, සාරාංශ ජනනය කිරීමට, ප්‍රශ්නවලට පිළිතුරු දීමට සහ නිෂ්පාදනය වැඩිදියුණු කිරීමට භාවිත කරයි. පුද්ගලික, සංවේදී, හෝ රහසිගත කිසිවක් ඇතුළත් නොකරන්න.</translation>
 <translation id="8487699605742506766">හොට්ස්පොට්</translation>
 <translation id="8491237443345908933">සබැඳිය නව පටිත්තක විවෘත කරන්න</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> හට සහය නොදක්වයි. විභේදනය <ph name="FALLBACK_RESOLUTION" /> ට වෙනස් විය. වෙනස්කම් තබා ගැනීමට තහවුරු කිරීම ක්ලික් කරන්න. පෙර සැකසුම් <ph name="TIMEOUT_SECONDS" /> තුළ ප්‍රතිසාධන කෙරේ.</translation>
@@ -2325,6 +2333,7 @@
 <translation id="8725066075913043281">නැවත උත්සහ කරන්න</translation>
 <translation id="8725214031272624704">පවතින ආදාන ක්‍රම ලැයිස්තුව පෙන්වන්න</translation>
 <translation id="8730621377337864115">අවසන්</translation>
+<translation id="8731188831050207755"><ph name="FILE_NAME" /> බාගත කිරීම අසාර්ථකයි.</translation>
 <translation id="8731487213223706745"><ph name="END_TIME" />ට නිමා වේ <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">එය ඔබගේ යතුරු පහර සොරකම් කිරීමට උත්සාහ ගන්නවා විය හැක</translation>
 <translation id="8735678380411481005">යතුරුපුවරු පසුබිම් වර්ණය</translation>

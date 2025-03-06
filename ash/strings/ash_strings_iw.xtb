@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">שליחת דוח משוב</translation>
 <translation id="1059120031266247284">קובץ ששותף איתך</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176">‫<ph name="ITEM_LABEL" /> עם כפתור הסרה</translation>
 <translation id="1062407476771304334">החלפה</translation>
 <translation id="1073899992769346247">צריך להחליף את הסוללה או לטעון אותה</translation>
 <translation id="1081015718268701546">‏בשלב הזה, אין תמיכה באפליקציות Linux. אפליקציות אחרות יישמרו.</translation>
@@ -323,6 +324,7 @@
 <translation id="2083190527011054446">לילה טוב <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">פתיחה של בוחר אמוג'י</translation>
 <translation id="2088116547584365419">משחקים</translation>
+<translation id="2092517835716911174">צריך להיות בגיל 18 לפחות כדי להשתמש בתכונות "עזרה בקריאה" ו"עזרה בכתיבה".</translation>
 <translation id="209965399369889474">לא מחובר לרשת</translation>
 <translation id="2107581415810719320">כפתור אחר <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">‏כבל ה-USB-C שחיברת לא תומך ב-Thunderbolt. יכול להיות שביצועי המכשיר יוגבלו.</translation>
@@ -1228,6 +1230,7 @@
 <translation id="5043679421800073804">לחיצה או לחיצה על הסמל האחרון במדף</translation>
 <translation id="504465286040788597">הפיסקה הקודמת</translation>
 <translation id="5045550434625856497">סיסמה שגויה</translation>
+<translation id="5056587122125565772">יצירת תמונה</translation>
 <translation id="5058794129231928255">‏לא הצלחנו ליצור את המסמך ב-Google Docs</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">תתקבל הודעה במקרים של דיבור כשההשתקה פועלת. האודיו אף פעם לא נשלח מהמכשיר.</translation>
@@ -1276,6 +1279,7 @@
 <translation id="5222676887888702881">יציאה</translation>
 <translation id="5228195526683428788">מחלק מסך מפוצל</translation>
 <translation id="5229343007215035173">‏הפעלה או השבתה של Privacy Screen</translation>
+<translation id="5229860525743792999">הסרת <ph name="ITEM_LABEL" /> מהקבוצה המוצעת</translation>
 <translation id="5230516054153933099">חלון</translation>
 <translation id="5234764350956374838">סגירה</translation>
 <translation id="523505283826916779">הגדרות נגישות</translation>
@@ -1758,6 +1762,7 @@
 <translation id="6757237461819837179">מדיה לא מופעלת</translation>
 <translation id="6760438044935091345">מרכז בקרת המשחקים</translation>
 <translation id="6768043681523654438">אחסון</translation>
+<translation id="6769195697113506406">התמונה נוספה</translation>
 <translation id="6777216307882431711">‏אספקת חשמל למכשירים המחוברים ב-USB-C</translation>
 <translation id="6781002679438061620">שולחן עבודה וירטואלי מספר 9</translation>
 <translation id="6782182743534150858">שולחן עבודה וירטואלי מספר 13</translation>
@@ -1986,6 +1991,7 @@
 <translation id="7571361473021531288">סוללה: %<ph name="BATTERY_PERCENTAGE" /> | הזמן שנותר לשימוש: <ph name="TIME" /></translation>
 <translation id="7573585051776738856">החלון הפעיל מוצמד לצד שמאל.</translation>
 <translation id="7579778809502851308">צילום מסך</translation>
+<translation id="7588317312481506627">בוצעה העתקה ללוח.</translation>
 <translation id="7593891976182323525">‏חיפוש או Shift</translation>
 <translation id="7598054670902114203">‏תמונת מצב של השימוש במעבד (CPU), %<ph name="CPU_USEAGE" />. טמפרטורה <ph name="TEMPERATURE" /> מעלות צלזיוס, מהירות זרם: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="7599378375976398913">הוספת התוצאה שנבחרה</translation>
@@ -2180,6 +2186,7 @@
 <translation id="8155628902202578800">פתיחת תיבת דו-שיח עם מידע על <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">המיקום הנוכחי הוא<ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">תוכן</translation>
+<translation id="81817143961839203">הוספת התמונה נכשלה</translation>
 <translation id="8185090165691050712">הפעלה/השבתה של התפריט לשינוי הגודל במצב הנעילה</translation>
 <translation id="8192727139462702395">‏אם משביתים את Bluetooth, המכשירים החיצוניים הבאים יתנתקו מ-<ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">העברת הכרטיסייה</translation>
@@ -2258,6 +2265,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> את <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">‏יש להקיש על Alt+Search או על Shift כדי לבטל.</translation>
 <translation id="8480418399907765580">הצג את סרגל הכלים</translation>
+<translation id="8487660088084188539">‏כשמפעילים את התכונות האלה, יכול להיות שהטקסט שהוזן, התוכן של המסמך וכתובת ה-URL של דף האינטרנט יישלחו לשרתים של Google. המידע הזה משמש ליצירת הצעות לכתיבה, ליצירת סיכומים, למתן תשובות על שאלות ולשיפור המוצר, בכפוף למדיניות <ph name="LINK_TO_SERVICE_TERMS" />. אין לכלול מידע אישי, רגיש או סודי.</translation>
 <translation id="8487699605742506766">נקודה לשיתוף אינטרנט</translation>
 <translation id="8491237443345908933">פתיחת הקישור בכרטיסייה חדשה</translation>
 <translation id="8492573885090281069">התצוגה של <ph name="DISPLAY_NAME" /> לא תומכת ברזולוציה <ph name="SPECIFIED_RESOLUTION" />. הרזולוציה שונתה ל-<ph name="FALLBACK_RESOLUTION" />. לשמירת השינויים, יש ללחוץ על 'אישור'. ההגדרות הקודמות ישוחזרו בעוד <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2327,6 +2335,7 @@
 <translation id="8725066075913043281">ניסיון חוזר</translation>
 <translation id="8725214031272624704">הצגת רשימה של שיטות הקלט הזמינות</translation>
 <translation id="8730621377337864115">בוצע</translation>
+<translation id="8731188831050207755">ההורדה של <ph name="FILE_NAME" /> נכשלה.</translation>
 <translation id="8731487213223706745">מסתיים בשעה <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">ייתכן שהיא מנסה לתעד את ההקשות שלך.</translation>
 <translation id="8735678380411481005">הצבע של התאורה האחורית של המקלדת</translation>

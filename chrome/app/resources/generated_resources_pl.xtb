@@ -3789,6 +3789,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3670229581627177274">Włącz Bluetooth</translation>
 <translation id="3670480940339182416">Witryny mogą używać optymalizatora V8</translation>
 <translation id="3671764914317109892">Używaj zwykłego języka, aby wyszukiwać w historii przeglądania. Możesz też zadawać pytania i uzyskiwać odpowiedzi na podstawie historii przeglądania.</translation>
+<translation id="3671982238795754537">Więcej informacji o kluczach dostępu</translation>
 <translation id="3672681487849735243">Wykryto błąd fabryczny</translation>
 <translation id="3673097791729989571">Logowanie pochodzi z domeny <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">Twój kod PIN został zaktualizowany</translation>
@@ -4705,6 +4706,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4289540628985791613">Przegląd</translation>
 <translation id="428963538941819373">Te strony mogą używać zapisanych o Tobie informacji zebranych podczas przeglądania strony <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Wybierz kod PIN</translation>
+<translation id="4290526909608432059">Wkrótce przestaniemy obsługiwać Aplikacje Chrome. Aby dowiedzieć się, jakie masz możliwości, skontaktuj się z deweloperem aplikacji lub zespołem pomocy IT.</translation>
 <translation id="4290791284969893584">Po zamknięciu strony rozpoczęte zadania mogą nie zostać ukończone</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> członek</translation>
 <translation id="4290898381118933198">Przesuwaj palcem, aby przechodzić między stronami</translation>
@@ -8499,6 +8501,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – podłączono port szeregowy</translation>
 <translation id="7033616203784997570">Wpisany tekst może mieć maksymalnie 62 znaki</translation>
 <translation id="7034692021407794547">Administrator z uprawnieniami do zarządzania płatnościami musi najpierw zaakceptować Warunki korzystania ze sprzętu do Google Meet w sekcji Sprzęt do Google Meet w konsoli administracyjnej.</translation>
+<translation id="7036550011779986598">Strona <ph name="RP_ID" /> właśnie utworzyła klucz dostępu do Twojego konta. Klucze dostępu to szybszy i bezpieczniejszy sposób logowania się. Są one zapisywane w Menedżerze haseł Google na koncie <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Do korzystania z Linuksa zalecane jest <ph name="DISK_SIZE" /> wolnego miejsca. Aby zwolnić miejsce, usuń pliki z urządzenia.</translation>
 <translation id="7037157058268992880">Nie pamiętam kodu PIN</translation>
 <translation id="7037509989619051237">Tekst do sprawdzenia mowy</translation>
@@ -10540,6 +10543,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8477178913400731244">Usuń dane</translation>
 <translation id="8477241577829954800">Zastąpiony</translation>
 <translation id="8477384620836102176">&amp;Ogólne</translation>
+<translation id="8477446666255316832">Następnym razem możesz się zalogować szybciej</translation>
 <translation id="8479176401914456949">Nieprawidłowy kod. Spróbuj ponownie.</translation>
 <translation id="8480869669560681089">Nieznane urządzenie firmy <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Potwierdź uprawnienia USB</translation>

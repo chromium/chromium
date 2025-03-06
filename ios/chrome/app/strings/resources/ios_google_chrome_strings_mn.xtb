@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">Таны нууц үгийг <ph name="EMAIL" />-д зориулж Google-н Нууц үгний менежерт хадгална.</translation>
 <translation id="1146503048444965320">Chrome-д шинэ таб нээх</translation>
 <translation id="1166460004393506534">Chrome дахь интернэтээр үзсэн өгөгдлийг устгах</translation>
+<translation id="1171255741903316750">"Таныг Chrome-г хаахад Нууцлалтай табыг түгжих" тохиргоог асаана уу</translation>
 <translation id="1179527450541388808">Өөрийн iPad-н үндсэн нүүрний суурилуулагчаас Chrome-д илүү хурдан хандана уу.</translation>
 <translation id="1180362651362502943">Google Бүртгэлдээ Chrome-н өгөгдлийг үргэлжлүүлэн ашиглана уу.</translation>
 <translation id="1200396280085622191">Мессеж болон бусад аппад холбооснуудыг товших бүрдээ Chrome-г ашиглана уу.</translation>
@@ -45,6 +46,7 @@
 <translation id="1917964099031477364">Энэ бүртгэл болон хадгалаагүй аливаа өгөгдлийг Chrome болон энэ төхөөрөмж дээрх Google-н бусад аппаас хасна.</translation>
 <translation id="1919130412786645364">Chromium-д нэвтрэхийг зөвшөөрөх</translation>
 <translation id="1965935827552890526">Chrome-н нээлттэй нөгөө цонхон дээрээ хийж байсан зүйлээ дуусгах.</translation>
+<translation id="1973910962341002002">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" тохиргооноос "Chrome"-г асаагаарай</translation>
 <translation id="1984705450038014246">Chrome-н өгөгдлөө синк хийх</translation>
 <translation id="1987779152850321833">Chrome-г бүрэн ашиглахын тулд доорх санал болгосон үйлдлүүдийг гүйцэтгэнэ үү.</translation>
 <translation id="2055826352861631739">iPad-д Chrome-г өгөгдмөлөөр ашиглана уу</translation>
@@ -96,10 +98,13 @@
 <translation id="3282568296779691940">Chrome руу нэвтрэх</translation>
 <translation id="3303503998967553377">iOS дээр Chrome-н үйлдлүүдийг ашиглах</translation>
 <translation id="3348862487678490430">Унших жагсаалтын зүйлийг Chrome-д нэмэх</translation>
+<translation id="3357827134511189025">Автоматаар бөглөхөд Chrome-г ашиглан хадгалсан нууц үг, нэвтрэх түлхүүрээрээ дурын аппад нэвтрээрэй</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Chrome-г {THRESHOLD} минутын турш ашиглаагүй үед ийм зүйл тохиолдоно}other{Chrome-г {THRESHOLD} минутын турш ашиглаагүй үед ийм зүйл тохиолдоно}}</translation>
 <translation id="3367797402528056312">Chrome-г тохируулж дуусгаарай</translation>
 <translation id="3371064404604898522">Chrome-г өгөгдмөл хөтөч болгон тохируулах</translation>
 <translation id="3399930248910934354">Chrome-н тохиргоог нээнэ үү</translation>
+<translation id="3440830787838130530">Google Нууц үгний менежерт гэр бүлийн бүлгийнхэнтэйгээ нууц үгний хуулбарыг хялбархан, аюулгүй хуваалцаарай</translation>
+<translation id="3460369101684070455">Бусад аппдаа хадгалсан нууц үгээ хялбархан авахын тулд Автоматаар бөглөхөд Chrome-г ашиглахыг сонгоoрой</translation>
 <translation id="3472587960215700950">Chrome танд илрүүлсэн хаягуудын чиглэл болон орон нутгийн мэдээллийг өгөхийн тулд Google Газрын зургийг ашиглана.</translation>
 <translation id="3503014945441706099">Chrome-н энэ профайлд мөн Сайжруулсан аюулгүй хөтчийг аваарай</translation>
 <translation id="3522659714780527202">Та Chrome-г хаанаас ч ашигласан бай табуудаа харахын тулд синк хийхийг асаана уу</translation>
@@ -155,7 +160,6 @@
 <translation id="5395376160638294582">Та Google Бүртгэлдээ Chrome-н өгөгдлийг үргэлж ашиглах боломжтой болохоо баталгаажуулна уу</translation>
 <translation id="5404252374083197467">Chrome-г өгөгдмөлөөр тохируулах уу?</translation>
 <translation id="5439191312780166229">Стандарт хамгаалалтаас илүүтэйгээр сайтуудын бусад өгөгдлийг задлан шинжилснээр танд аюултай сайтуудын талаар сануулах бөгөөд эдгээрт Google-н өмнө нь мэдээгүй сайт ч багтана. Та Chrome-н сануулгыг алгасахаар сонгох боломжтой.</translation>
-<translation id="5442013002200339429">Хэрэв та "<ph name="MODULE_NAME" />"-г нуувал Chrome цаашид таны ирээдүйн илгээмжүүдийг автоматаар хянахгүй бөгөөд таны өмнөх илгээмж хянах бүх өгөгдлийг устгана.</translation>
 <translation id="5460571915754665838">4. Chrome-г сонгоно уу</translation>
 <translation id="5492504007368565877">Google Password Manager таны нууц үгнүүдийг шалгах боломжгүй.</translation>
 <translation id="5525095647255982834">Энэ табыг өөр төхөөрөмж рүү илгээхийн тулд тэндээс Chrome-д нэвтэрнэ үү.</translation>
@@ -181,6 +185,7 @@
 <translation id="5998675059699164418">Танай байгууллага танаас Chrome-г ашиглахын тулд нэвтрэхийг шаардаж байна.</translation>
 <translation id="6021312115739110405">Танд зориулж Google-н бүтээсэн захиалгат хангамж. Мэдээ, спорт, цаг агаар багтана.</translation>
 <translation id="6022659036123304283">Chrome-г хүссэнээрээ тохируулаарай</translation>
+<translation id="6132075343662013154">Chrome танд нууц үгээ хадгалахыг санал болгоно</translation>
 <translation id="6132149203299792222">Нууц үг, хавчуурга болон бусад зүйлээ синк хийхийн тулд Google Бүртгэлээрээ нэвтэрнэ үү.</translation>
 <translation id="6145223986912084844">Chrome</translation>
 <translation id="6177442314419606057">Chrome-с хайх</translation>
@@ -228,6 +233,7 @@
 <translation id="7061455974939528301">Chrome-н дүрс тэмдгийг удаан дараад, "Үндсэн нүүрийг засах"-ыг товшино уу</translation>
 <translation id="7065813315247345131">Chrome-г суурилуулагч руу зөөх</translation>
 <translation id="7124339256045485976">Chrome-г хамгийн шинэ байлгаарай</translation>
+<translation id="7145599899567697473">Chrome-д нууц үг хадгалж, автоматаар бөглөх</translation>
 <translation id="7161390184744336561">Google Chrome хуучирсан байна</translation>
 <translation id="7165736900384873061">Google Chrome QR скан хийгчийг ашиглах</translation>
 <translation id="7175129790242719365">Chrome-н зөвлөгөө: Chrome-д нэвтэрнэ үү</translation>
@@ -261,6 +267,7 @@
 <translation id="7693590760643069321">Та одоо Chrome-г хэзээд ч мессеж, документ болон бусад аппын холбоосыг товшин ашиглах боломжтой.</translation>
 <translation id="7698568245838009292">Chrome камерт хандах хүсэлтэй байна</translation>
 <translation id="7707877166818730835">Миний сүүлийн табыг Chrome-д нээх</translation>
+<translation id="7747746207470479571">Автоматаар бөглөхөд Chrome-г ашиглах онцлогийн тусламжтай нууц үг, нэвтрэх түлхүүртээ хялбархан хандаарай</translation>
 <translation id="776305366874821582">Өөрийн iPhone-н үндсэн нүүрний суурилуулагчаас Chrome-д илүү хурдан хандана уу.</translation>
 <translation id="7780154209050837198">Chrome-г бүрэн ашиглахын тулд Chrome-д Google Бүртгэлээрээ нэвтэрнэ үү.</translation>
 <translation id="7787205077729386167">iOS-т Chrome-н тохиргоог нээгээд, дараа нь "Өгөгдмөл хөтчийн апп"-ыг товшоод, Chrome-г сонгоно уу.</translation>
@@ -281,6 +288,7 @@
 <translation id="8136856065410661948">Үүнийг таны Apple Calendar-т Chrome болон Google Lens-с үйл явдал үүсгэхэд ашиглана.</translation>
 <translation id="8154120522323162874">Хөтчөө үргэлжлүүлэн тохируулснаар Chrome-г бүрэн ашиглаарай.</translation>
 <translation id="8160472928944011082">Chrome-г шинэчлэх боломжгүй байна</translation>
+<translation id="8245080522851805544">Та Chrome-г хаахдаа төхөөрөмжийн баталгаажуулалтыг ашиглан үзсэн зүйлээ хувийн байлгаарай</translation>
 <translation id="8248887045858762645">Chrome-н зөвлөгөө</translation>
 <translation id="8265730590513812063">Chrome-н цэсийг нээнэ үү</translation>
 <translation id="8317674518145175158">Төлбөрийн хэрэгсэл болон хаягуудыг шифрлэхгүй. Chrome-н хөтчийн түүхийг синк хийхгүй.

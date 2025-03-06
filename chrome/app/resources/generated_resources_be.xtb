@@ -3808,6 +3808,7 @@
 <translation id="3670229581627177274">Уключыць Bluetooth</translation>
 <translation id="3670480940339182416">Сайты могуць выкарыстоўваць аптымізатар V8</translation>
 <translation id="3671764914317109892">Вы можаце выкарыстоўваць звычайныя фразы для пошуку ў гісторыі прагляду сайтаў. Вы таксама можаце задаваць пытанні і атрымліваць адказы, якія ўлічваюць вашу гісторыю прагляду сайтаў.</translation>
+<translation id="3671982238795754537">Даведацца больш пра ключы доступу</translation>
 <translation id="3672681487849735243">Выяўлена заводская памылка</translation>
 <translation id="3673097791729989571">Уваход праз <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">PIN-код абноўлены</translation>
@@ -4066,6 +4067,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Пашырэнне ўхвалена}one{# пашырэнне ўхвалена}few{# пашырэнні ўхвалена}many{# пашырэнняў ухвалена}other{# пашырэння ўхвалены}}</translation>
 <translation id="3823019343150397277">Нумар IBAN</translation>
 <translation id="3823310065043511710">Для выкарыстання Linux рэкамендуецца мець як мінімум <ph name="INSTALL_SIZE" />.</translation>
+<translation id="3824203811509979971">Падсумаваць змесціва або задаць пытанні</translation>
 <translation id="3824621460022590830">Токен рэгістрацыі прылады несапраўдны. Звярніцеся да адміністратара або ўладальніка прылады. Код памылкі: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Увайдзіце, каб паглядзець укладкі з іншых прылад</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Запомніць мой выбар для файлаў гэтага тыпу: <ph name="FILE_TYPES" />}one{Запомніць мой выбар для файлаў гэтых тыпаў: <ph name="FILE_TYPES" />}few{Запомніць мой выбар для файлаў гэтых тыпаў: <ph name="FILE_TYPES" />}many{Запомніць мой выбар для файлаў гэтых тыпаў: <ph name="FILE_TYPES" />}other{Запомніць мой выбар для файлаў гэтых тыпаў: <ph name="FILE_TYPES" />}}</translation>
@@ -4252,6 +4254,7 @@
 <translation id="3948985214866944547">Большасць карыстальнікаў блакіруюць абагульванне дакладнага месцазнаходжання для гэтага вэб-сайта</translation>
 <translation id="394984172568887996">Імпартаваныя з IE</translation>
 <translation id="3949999964543783947">Для бяспечнага спампоўвання файлаў <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
+<translation id="3950479158728806902">Аўтаматычна ствараць ключ доступу, каб паскорыць уваход</translation>
 <translation id="3950820424414687140">Увайсці</translation>
 <translation id="3950841222883198950">Галасавы ўвод</translation>
 <translation id="3953834000574892725">Мае ўліковыя запісы</translation>
@@ -4720,6 +4723,7 @@
 <translation id="4289540628985791613">Агляд</translation>
 <translation id="428963538941819373">Гэтыя сайты могуць выкарыстоўваць інфармацыю, якую яны пра вас захавалі, калі вы праглядалі <ph name="HOST" />.</translation>
 <translation id="4289732974614035569">Увядзіце PIN-код</translation>
+<translation id="4290526909608432059">Падтрымка праграм Chrome неўзабаве будзе спынена. Звярніцеся да распрацоўшчыка праграм або да вашай службы IT-падтрымкі, каб даведацца пра даступныя варыянты дзеянняў.</translation>
 <translation id="4290791284969893584">Калі вы будзеце закрываць старонкі, задачы, пачатыя вамі, могуць заставацца незавершанымі</translation>
 <translation id="4290826901752066702">Удзельнікаў: <ph name="NUM" /></translation>
 <translation id="4290898381118933198">Выкарыстоўваць прагортванне для пераходу паміж старонкамі</translation>
@@ -5180,6 +5184,7 @@
 <translation id="4624054169152573743">Колеравая тэма</translation>
 <translation id="4625078469366263107">Уключыць праграму</translation>
 <translation id="4625905218692741757">Стандартны шэры колер</translation>
+<translation id="4627107755957573804">Вэб-сайты і праграмы будуць абнаўляць існуючыя ўліковыя запісы і выкарыстоўваць ключы доступу</translation>
 <translation id="4627442949885028695">Працягніце з іншай прылады</translation>
 <translation id="4628762811416793313">Наладжванне кантэйнера Linux не завершана. Паўтарыце спробу.</translation>
 <translation id="4629521233550547305">Адкрыць профіль "<ph name="PROFILE_NAME" />"</translation>
@@ -5763,6 +5768,7 @@
 <translation id="5053233576223592551">Дадаць імя карыстальніка</translation>
 <translation id="505347685865235222">Група без назвы – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{Неадкладна змяніце гэты пароль}one{Неадкладна змяніце гэтыя паролі}few{Неадкладна змяніце гэтыя паролі}many{Неадкладна змяніце гэтыя паролі}other{Неадкладна змяніце гэтыя паролі}}</translation>
+<translation id="5056587122125565772">Стварыць відарыс</translation>
 <translation id="5056950756634735043">Ідзе падключэнне да кантэйнера</translation>
 <translation id="5057110919553308744">Пры націсканні на пашырэнне</translation>
 <translation id="5057127674016624293">Сканіраванне займае больш часу, чым чакалася</translation>
@@ -5873,6 +5879,7 @@
 <translation id="512642543295077915">пошук + Backspace</translation>
 <translation id="5126611267288187364">Прагляд змяненняў</translation>
 <translation id="5127620150973591153">Код абароненага падключэння: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">Вы можаце падсумаваць змесціва або задаць пытанні.</translation>
 <translation id="5127881134400491887">Кіраваць падключэннямі да сеткі</translation>
 <translation id="5127934926273826089">Кветкі</translation>
 <translation id="5127986747308934633">Вашай прыладай кіруе адміністратар</translation>
@@ -8516,6 +8523,7 @@
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – паслядоўны порт падключаны</translation>
 <translation id="7033616203784997570">Максімальна дапушчальная колькасць сімвалаў – 62</translation>
 <translation id="7034692021407794547">Спачатку адміністратар з правам на кіраванне плацяжамі павінен прыняць Умовы выкарыстання апаратнага забеспячэння Google Meet у раздзеле "Апаратнае забеспячэнне Google Meet" кансолі адміністратара.</translation>
+<translation id="7036550011779986598">Сайт <ph name="RP_ID" /> стварыў ключ доступу для вашага ўліковага запісу. Ключы доступу дазваляюць больш хутка і бяспечна выконваць уваход. Яны захоўваюцца ў Менеджары пароляў Google ўліковага запісу <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Для выкарыстання Linux рэкамендуецца мець <ph name="DISK_SIZE" />. Каб вызваліць месца, выдаліце файлы з прылады.</translation>
 <translation id="7037157058268992880">Не помню PIN-код</translation>
 <translation id="7037509989619051237">Тэкст для праверкі</translation>
@@ -10146,6 +10154,7 @@
 <translation id="8195854162863398249">Адключыць функцыю "<ph name="FEATURE_NAME" />"</translation>
 <translation id="8195920051450756553">Затрымка перад актывацыяй той жа клавішы</translation>
 <translation id="8197673340773315084">Дадайце назву або метку (напрыклад, "Праца" або "Асабістае")</translation>
+<translation id="8198181050118789419">Тэма: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Ідзе трансляцыя ўкладкі</translation>
 <translation id="8199300056570174101">Уласцівасці прылады і сеткі (сэрвісу)</translation>
 <translation id="8200772114523450471">Узнавіць</translation>
@@ -10556,6 +10565,7 @@
 <translation id="8477178913400731244">Выдаліць даныя</translation>
 <translation id="8477241577829954800">Заменены</translation>
 <translation id="8477384620836102176">&amp;Агульныя звесткі</translation>
+<translation id="8477446666255316832">У наступны раз вы зможаце ўвайсці хутчэй</translation>
 <translation id="8479176401914456949">Няправільны код. Паўтарыце спробу.</translation>
 <translation id="8480869669560681089">Невядомая прылада ад <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Пацвердзіць дазвол доступу да USB</translation>
@@ -11402,6 +11412,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB-мыш падключана</translation>
 <translation id="9075413375877487220">Гэта пашырэнне не адпавядае стандартам Палепшанага Бяспечнага прагляду.</translation>
+<translation id="9075985558450420812">Увядзіце свой запыт або вылучыце тэкст, каб стварыць відарыс.</translation>
 <translation id="9076523132036239772">На жаль, адрас вашай электроннай пошты або ваш пароль спраўдзіць не ўдалося. Спачатку падключыцеся да сеткі.</translation>
 <translation id="9076821103818989526">Бакавая панэль</translation>
 <translation id="9076977315710973122">Абагульванне файлаў праз SMB</translation>

@@ -3816,6 +3816,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3670229581627177274">Включване на Bluetooth</translation>
 <translation id="3670480940339182416">Сайтовете могат да използват оптимизатора V8</translation>
 <translation id="3671764914317109892">Използвайте общ език, за да търсите в историята си на сърфиране. Можете също да задавате въпроси и да получавате отговори въз основа на нея.</translation>
+<translation id="3671982238795754537">Научете повече за ключовете за достъп</translation>
 <translation id="3672681487849735243">Открита е фабрична грешка</translation>
 <translation id="3673097791729989571">Услугата за вход се хоства от <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">ПИН кодът ви е актуализиран</translation>
@@ -4733,6 +4734,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4289540628985791613">Общ преглед</translation>
 <translation id="428963538941819373">При сърфиране на адрес <ph name="HOST" /> тези сайтове могат да използват информацията, която са запазили за вас</translation>
 <translation id="4289732974614035569">Изберете ПИН</translation>
+<translation id="4290526909608432059">Поддръжката за приложенията за Chrome скоро ще приключи. За да научите за възможностите, които имате, свържете се с програмиста на приложението или с екипа си за поддръжка по ИТ.</translation>
 <translation id="4290791284969893584">След като затворите дадена страница, стартираните от вас задачи може да не бъдат завършени</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> член</translation>
 <translation id="4290898381118933198">Прекарване на пръст за навигиране между страниците</translation>
@@ -8529,6 +8531,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – Свързан е сериен порт</translation>
 <translation id="7033616203784997570">Въведеното трябва да съдържа най-много 62 знака</translation>
 <translation id="7034692021407794547">Администратор, който има права за управление на таксуването, първо трябва да приеме Общите условия за хардуерните устройства за Google Meet в съответната секция в конзолата за администратори.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> току-що създаде ключ за достъп за профила ви. Ключовете за достъп предлагат по-бърз и по-сигурен начин за вход и се запазват в Google Мениджър на пароли за <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">За Linux е препоръчително да разполагате с поне <ph name="DISK_SIZE" /> свободно място. За да увеличите свободното място, изтрийте файлове от устройството.</translation>
 <translation id="7037157058268992880">Забравен ПИН код</translation>
 <translation id="7037509989619051237">Текст за прослушване</translation>
@@ -10160,6 +10163,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8195854162863398249">Деактивиране на „<ph name="FEATURE_NAME" />“</translation>
 <translation id="8195920051450756553">Забавяне преди повторно активиране на същия клавиш</translation>
 <translation id="8197673340773315084">Добавете име или етикет, като например „Служебен“ или „Личен“</translation>
+<translation id="8198181050118789419">Тема: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Разделът се предава</translation>
 <translation id="8199300056570174101">Свойства на мрежата (услугата) и устройството</translation>
 <translation id="8200772114523450471">Възобновяване</translation>
@@ -10570,6 +10574,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8477178913400731244">Изтриване на данните</translation>
 <translation id="8477241577829954800">Заменен</translation>
 <translation id="8477384620836102176">&amp;Общи</translation>
+<translation id="8477446666255316832">Влезте по-бързо в профила си следващия път</translation>
 <translation id="8479176401914456949">Невалиден код. Моля, опитайте отново.</translation>
 <translation id="8480869669560681089">Неизвестно устройство от <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Потвърждаване на разрешението за USB</translation>

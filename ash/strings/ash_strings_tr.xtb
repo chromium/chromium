@@ -22,6 +22,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1058009965971887428">Geri bildirim gönder</translation>
 <translation id="1059120031266247284">Sizinle paylaşılanlar</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176">Kaldır düğmesi içeren <ph name="ITEM_LABEL" /></translation>
 <translation id="1062407476771304334">Değiştir</translation>
 <translation id="1073899992769346247">Pili değiştirin veya şarj edin</translation>
 <translation id="1081015718268701546">Linux uygulamaları şu anda desteklenmiyor. Diğer uygulamalar kaydedilecek.</translation>
@@ -323,6 +324,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2083190527011054446">İyi geceler <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Emoji Seçiciyi Aç</translation>
 <translation id="2088116547584365419">oyunlar</translation>
+<translation id="2092517835716911174">"Okumama Yardım Et" ve "Yazmama Yardım Et" özelliklerini kullanmak için en az 18 yaşında olmanız gerekir.</translation>
 <translation id="209965399369889474">Ağa bağlı değilsiniz</translation>
 <translation id="2107581415810719320">Diğer Düğme <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C kablonuz Thunderbolt'u desteklemiyor. Cihaz performansı sınırlı olabilir.</translation>
@@ -1228,6 +1230,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="5043679421800073804">Raftaki son simgeye dokunun veya tıklayın</translation>
 <translation id="504465286040788597">Önceki paragraf</translation>
 <translation id="5045550434625856497">Hatalı parola</translation>
+<translation id="5056587122125565772">Görüntü oluştur</translation>
 <translation id="5058794129231928255">Google Dokümanı oluşturulamadı</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Mikrofonunuz kapalıyken konuşursanız bildirim alırsınız. Cihazınızdan hiç ses aktarılmaz.</translation>
@@ -1276,6 +1279,7 @@ Klavye kısayolunu da kullanabilirsiniz. Önce metni vurgulayın, ardından <ph 
 <translation id="5222676887888702881">Çıkış</translation>
 <translation id="5228195526683428788">Bölünmüş ekran ayırıcı</translation>
 <translation id="5229343007215035173">Gizlilik ekranını açın/kapatın</translation>
+<translation id="5229860525743792999"><ph name="ITEM_LABEL" /> öğesini, önerilen gruptan kaldırın</translation>
 <translation id="5230516054153933099">Pencere</translation>
 <translation id="5234764350956374838">Kapat</translation>
 <translation id="523505283826916779">Erişilebilirlik ayarları</translation>
@@ -1758,6 +1762,7 @@ Yeni yüklenmiş</translation>
 <translation id="6757237461819837179">Medya oynatılmıyor</translation>
 <translation id="6760438044935091345">Oyun Paneli</translation>
 <translation id="6768043681523654438">depolama</translation>
+<translation id="6769195697113506406">Görüntü eklendi</translation>
 <translation id="6777216307882431711">Bağlı USB-C cihazlarına güç sağlıyor</translation>
 <translation id="6781002679438061620">Masa 9</translation>
 <translation id="6782182743534150858">Masa 13</translation>
@@ -1984,6 +1989,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7571361473021531288">%<ph name="BATTERY_PERCENTAGE" /> pil | <ph name="TIME" /> kaldı</translation>
 <translation id="7573585051776738856">Etkin pencere sağa sabitlendi.</translation>
 <translation id="7579778809502851308">Ekran görüntüsü</translation>
+<translation id="7588317312481506627">Panoya kopyalandı.</translation>
 <translation id="7593891976182323525">Arama veya Üst Karakter</translation>
 <translation id="7598054670902114203">CPU kullanımı anlık görüntüsü, %<ph name="CPU_USEAGE" />. Sıcaklık <ph name="TEMPERATURE" /> santigrat derece, mevcut hız: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Seçili sonuç ekleniyor</translation>
@@ -2178,6 +2184,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> için bilgi iletişim kutusunu aç</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> kullanılıyor</translation>
 <translation id="8168435359814927499">İçerik</translation>
+<translation id="81817143961839203">Resim eklenemedi</translation>
 <translation id="8185090165691050712">Kilit modunu yeniden boyutlandırmak için menüyü açın/kapatın</translation>
 <translation id="8192727139462702395">Bluetooth'u kapattığınızda aşağıdaki harici cihazların, <ph name="DEVICE_TYPE" /> cihazınızla bağlantısı kesilir:</translation>
 <translation id="8198456017687137612">Sekme yayınlanıyor</translation>
@@ -2256,6 +2263,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />, <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> özelliğine sahip.</translation>
 <translation id="8477270416194247200">İptal etmek için Alt+Ara veya Üst Karakter tuşuna basın.</translation>
 <translation id="8480418399907765580">Araç çubuğunu göster</translation>
+<translation id="8487660088084188539">Bu özellikleri etkinleştirdiğinizde girilen metin, belge içeriği ve web sayfası URL'si Google sunucularına gönderilebilir. Bu bilgiler, <ph name="LINK_TO_SERVICE_TERMS" /> uyarınca yazma önerileri oluşturmak, özet üretmek, soruları yanıtlamak ve ürünü geliştirmek için kullanılır. Kişisel, hassas veya gizli bilgiler eklemeyin.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Bağlantıyı yeni sekmede aç</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> çözünürlüğü desteklemiyor. Çözünürlük <ph name="FALLBACK_RESOLUTION" /> olarak değiştirildi. Değişiklikleri korumak için Onayla'yı tıklayın. Önceki ayarlar <ph name="TIMEOUT_SECONDS" /> saniye içinde geri yüklenecek.</translation>
@@ -2325,6 +2333,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8725066075913043281">Yeniden dene</translation>
 <translation id="8725214031272624704">Kullanılabilir giriş yöntemlerinin listesini görün</translation>
 <translation id="8730621377337864115">Bitti</translation>
+<translation id="8731188831050207755"><ph name="FILE_NAME" /> indirme işlemi başarısız oldu.</translation>
 <translation id="8731487213223706745">Bitiş zamanı: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Bu klavye, tuş vuruşlarınızı çalmaya çalışıyor olabilir</translation>
 <translation id="8735678380411481005">Klavye arka ışığı rengi</translation>

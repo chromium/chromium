@@ -3807,6 +3807,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3670229581627177274">Attiva il Bluetooth</translation>
 <translation id="3670480940339182416">I siti possono utilizzare lo strumento di ottimizzazione V8</translation>
 <translation id="3671764914317109892">Usa il linguaggio di tutti i giorni per cercare nella cronologia di navigazione. Puoi anche fare domande e ricevere risposte in base alla tua cronologia di navigazione.</translation>
+<translation id="3671982238795754537">Scopri di più sulle passkey</translation>
 <translation id="3672681487849735243">È stato rilevato un errore di fabbrica</translation>
 <translation id="3673097791729989571">Accesso ospitato da <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">Il tuo PIN è stato aggiornato</translation>
@@ -4723,6 +4724,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4289540628985791613">Panoramica</translation>
 <translation id="428963538941819373">Questi siti possono usare le informazioni su di te che hanno salvato durante la tua navigazione su <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Scegli un PIN</translation>
+<translation id="4290526909608432059">A breve il supporto per le app di Chrome non sarà più disponibile. Per scoprire le opzioni a tua disposizione, contatta lo sviluppatore dell'app o il team di assistenza IT.</translation>
 <translation id="4290791284969893584">Dopo aver chiuso una pagina, le attività che hai avviato potrebbero non concludersi</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> membro</translation>
 <translation id="4290898381118933198">Scorri per navigare da una pagina all'altra</translation>
@@ -8514,6 +8516,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Porta seriale collegata</translation>
 <translation id="7033616203784997570">Il valore deve essere di massimo 62 caratteri</translation>
 <translation id="7034692021407794547">Un amministratore con privilegi per Gestione della fatturazione deve prima accettare i Termini di servizio dell'hardware Google Meet nella relativa sezione della Console di amministrazione.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> ha appena creato una passkey per il tuo account. Le passkey offrono una modalità di accesso più rapida e sicura e vengono salvate in Gestore delle password di Google per <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Sono consigliati <ph name="DISK_SIZE" /> di spazio libero per Linux. Per aumentare lo spazio disponibile, elimina i file dal dispositivo.</translation>
 <translation id="7037157058268992880">PIN dimenticato</translation>
 <translation id="7037509989619051237">Anteprima del testo</translation>
@@ -10556,6 +10559,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8477178913400731244">Elimina dati</translation>
 <translation id="8477241577829954800">Sostituito</translation>
 <translation id="8477384620836102176">&amp;Generali</translation>
+<translation id="8477446666255316832">Accedi più velocemente la prossima volta</translation>
 <translation id="8479176401914456949">Codice non valido. Riprova.</translation>
 <translation id="8480869669560681089">Dispositivo sconosciuto di <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Conferma l'autorizzazione USB</translation>

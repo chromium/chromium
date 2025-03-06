@@ -3820,6 +3820,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3670229581627177274">Aktifkan Bluetooth</translation>
 <translation id="3670480940339182416">Situs dapat menggunakan pengoptimal V8</translation>
 <translation id="3671764914317109892">Gunakan bahasa sehari-hari untuk menelusuri histori penjelajahan. Anda juga dapat mengajukan pertanyaan dan mendapatkan jawaban berdasarkan histori penjelajahan Anda.</translation>
+<translation id="3671982238795754537">Pelajari lebih lanjut kunci sandi</translation>
 <translation id="3672681487849735243">Kesalahan pabrik terdeteksi</translation>
 <translation id="3673097791729989571">Login dihosting oleh <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">PIN Anda telah diperbarui</translation>
@@ -4736,6 +4737,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4289540628985791613">Ringkasan</translation>
 <translation id="428963538941819373">Situs ini dapat menggunakan info tentang Anda yang disimpannya ketika Anda menjelajahi <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Pilih PIN</translation>
+<translation id="4290526909608432059">Dukungan untuk aplikasi Chrome akan segera berakhir. Untuk mempelajari opsi yang tersedia, hubungi developer aplikasi atau tim dukungan IT Anda.</translation>
 <translation id="4290791284969893584">Setelah menutup halaman, tugas yang Anda mulai mungkin tidak selesai</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> anggota</translation>
 <translation id="4290898381118933198">Geser untuk berpindah antarhalaman</translation>
@@ -8531,6 +8533,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Port serial terhubung</translation>
 <translation id="7033616203784997570">Input maksimal 62 karakter</translation>
 <translation id="7034692021407794547">Administrator yang memiliki hak istimewa Pengelolaan Penagihan harus menerima Persyaratan Layanan Google Meet Hardware terlebih dahulu di bagian Google Meet Hardware pada konsol Admin.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> baru saja membuat kunci sandi untuk akun Anda. Kunci sandi menawarkan cara login yang lebih cepat dan aman, serta disimpan di Pengelola Sandi Google untuk <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Sebaiknya sediakan ruang sebesar <ph name="DISK_SIZE" /> untuk Linux. Untuk menambah ruang kosong, hapus file dari perangkat Anda.</translation>
 <translation id="7037157058268992880">Lupa PIN</translation>
 <translation id="7037509989619051237">Teks untuk dipratinjau</translation>
@@ -10572,6 +10575,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8477178913400731244">Hapus data</translation>
 <translation id="8477241577829954800">Diganti</translation>
 <translation id="8477384620836102176">&amp;Umum</translation>
+<translation id="8477446666255316832">Login lebih cepat lain kali</translation>
 <translation id="8479176401914456949">Kode tidak valid. Coba lagi.</translation>
 <translation id="8480869669560681089">Perangkat tidak dikenal dari <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Konfirmasi Izin USB</translation>

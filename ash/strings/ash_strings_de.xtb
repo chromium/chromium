@@ -22,6 +22,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1058009965971887428">Feedback geben</translation>
 <translation id="1059120031266247284">Mit dir geteilt</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> mit Schaltfläche „Entfernen“</translation>
 <translation id="1062407476771304334">Ersetzen</translation>
 <translation id="1073899992769346247">Akku austauschen oder aufladen</translation>
 <translation id="1081015718268701546">Linux-Apps werden derzeit nicht unterstützt. Andere Apps werden gespeichert.</translation>
@@ -323,6 +324,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2083190527011054446">Gute Nacht <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Emoji-Auswahl öffnen</translation>
 <translation id="2088116547584365419">Spiele</translation>
+<translation id="2092517835716911174">Du musst mindestens 18 Jahre alt sein, um die Funktionen „Erstelle einen Überblick für mich“ und „Formuliere für mich“ nutzen zu können.</translation>
 <translation id="209965399369889474">Keine Netzwerkverbindung</translation>
 <translation id="2107581415810719320">Andere Taste <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Dein USB-C-Kabel bietet keine Unterstützung für Thunderbolt. Dies kann die Geräteleistung beeinträchtigen.</translation>
@@ -1228,6 +1230,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="5043679421800073804">Auf das letzte Symbol in der Ablage klicken oder tippen</translation>
 <translation id="504465286040788597">Vorheriger Absatz</translation>
 <translation id="5045550434625856497">Falsches Passwort</translation>
+<translation id="5056587122125565772">Bild erstellen</translation>
 <translation id="5058794129231928255">Google-Dokument konnte nicht erstellt werden</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">Du wirst benachrichtigt, wenn du zu sprechen anfängst, während das Mikrofon stummgeschaltet ist. Das Audio verbleibt dabei auf deinem Gerät.</translation>
@@ -1276,6 +1279,7 @@ Du kannst auch die entsprechende Tastenkombination verwenden. Markiere dazu zuer
 <translation id="5222676887888702881">Abmelden</translation>
 <translation id="5228195526683428788">Bildschirmteiler</translation>
 <translation id="5229343007215035173">Privatsphärefunktion aktivieren/deaktivieren</translation>
+<translation id="5229860525743792999"><ph name="ITEM_LABEL" /> aus vorgeschlagener Gruppe entfernen</translation>
 <translation id="5230516054153933099">Fenster</translation>
 <translation id="5234764350956374838">Schließen</translation>
 <translation id="523505283826916779">Einstellungen für Bedienungshilfen</translation>
@@ -1758,6 +1762,7 @@ Neuinstallation</translation>
 <translation id="6757237461819837179">Keine Medien werden abgespielt</translation>
 <translation id="6760438044935091345">Dashboard für Spiele</translation>
 <translation id="6768043681523654438">Speicher</translation>
+<translation id="6769195697113506406">Bild eingefügt</translation>
 <translation id="6777216307882431711">Stromversorgung für verbundene USB-C-Geräte</translation>
 <translation id="6781002679438061620">Desktop 9</translation>
 <translation id="6782182743534150858">Desktop 13</translation>
@@ -1984,6 +1989,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7571361473021531288">Akku <ph name="BATTERY_PERCENTAGE" /> % | Noch <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Aktives Fenster rechts fixiert.</translation>
 <translation id="7579778809502851308">Screenshot</translation>
+<translation id="7588317312481506627">In Zwischenablage kopiert.</translation>
 <translation id="7593891976182323525">Suchen oder Umschalttaste</translation>
 <translation id="7598054670902114203">Übersicht zur CPU-Nutzung, <ph name="CPU_USEAGE" /> %. Temperatur <ph name="TEMPERATURE" /> Grad Celsius, aktuelle Geschwindigkeit: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Ausgewähltes Ergebnis wird eingefügt</translation>
@@ -2178,6 +2184,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8155628902202578800">Infodialog für <ph name="USER_EMAIL_ADDRESS" /> öffnen</translation>
 <translation id="8167567890448493835">"<ph name="LOCALE_NAME" />" wird verwendet</translation>
 <translation id="8168435359814927499">Inhalte</translation>
+<translation id="81817143961839203">Fehler beim Einfügen des Bildes</translation>
 <translation id="8185090165691050712">Menü für die Größenänderungssperre öffnen/schließen</translation>
 <translation id="8192727139462702395">Wenn du Bluetooth deaktivierst, wird die Verbindung dieser externen Geräte mit deiner/m <ph name="DEVICE_TYPE" /> getrennt:</translation>
 <translation id="8198456017687137612">Tab wird gestreamt</translation>
@@ -2256,6 +2263,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> hat <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Drücke Alt + Such-Taste oder die Umschalttaste, um die Aktivierung aufzuheben.</translation>
 <translation id="8480418399907765580">Toolbar anzeigen</translation>
+<translation id="8487660088084188539">Wenn du diese Funktionen aktivierst, werden der eingegebene Text, der Dokumentinhalt und die URL der Webseite möglicherweise an Google-Server gesendet. Diese Informationen werden gemäß den <ph name="LINK_TO_SERVICE_TERMS" /> verwendet, um Vorschläge für Formulierungen zu generieren, Zusammenfassungen zu erstellen, Fragen zu beantworten und das Produkt zu verbessern. Gib keine persönlichen, sensiblen oder vertraulichen Informationen an.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Link auf neuem Tab öffnen</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> unterstützt <ph name="SPECIFIED_RESOLUTION" /> nicht. Die Auflösung wurde zu <ph name="FALLBACK_RESOLUTION" /> geändert. Bitte bestätigen, um die Änderungen beizubehalten. Die vorherigen Einstellungen werden in <ph name="TIMEOUT_SECONDS" /> wiederhergestellt.</translation>
@@ -2325,6 +2333,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8725066075913043281">Erneut versuchen</translation>
 <translation id="8725214031272624704">Liste der verfügbaren Eingabemethoden anzeigen</translation>
 <translation id="8730621377337864115">Fertig</translation>
+<translation id="8731188831050207755">Fehler beim Download von <ph name="FILE_NAME" />.</translation>
 <translation id="8731487213223706745">Endet um <ph name="END_TIME" /> Uhr <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Möglicherweise versucht jemand, darüber deine Tastatureingaben zu erfassen</translation>
 <translation id="8735678380411481005">Farbe der Tastaturbeleuchtung</translation>

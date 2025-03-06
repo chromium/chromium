@@ -4081,6 +4081,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Една екстензија е одобрена}one{# екстензија е одобрена}other{# екстензии се одобрени}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">За Linux, се препорачува најмалку <ph name="INSTALL_SIZE" /> слободен простор.</translation>
+<translation id="3824203811509979971">Резимирајте содржини или поставувајте прашања</translation>
 <translation id="3824621460022590830">Токенот за регистрација на уредот е неважечки. Контактирајте со сопственикот или администраторот на уредот. Код за грешка: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Најавете се за да видите картички од други уреди</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Запомни го мојот избор за овој вид датотека: <ph name="FILE_TYPES" />}one{Запомни го мојот избор за овие видови датотеки: <ph name="FILE_TYPES" />}other{Запомни го мојот избор за овие видови датотеки: <ph name="FILE_TYPES" />}}</translation>
@@ -4267,6 +4268,7 @@
 <translation id="3948985214866944547">Повеќето луѓе го блокираат споделувањето на прецизната локација за сајтов</translation>
 <translation id="394984172568887996">Увезени од IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> за да го направите преземањето датотеки побезбедно</translation>
+<translation id="3950479158728806902">Создајте криптографски клуч автоматски за да се најавите побрзо</translation>
 <translation id="3950820424414687140">Најавете се</translation>
 <translation id="3950841222883198950">Гласовно пишување</translation>
 <translation id="3953834000574892725">Мои сметки</translation>
@@ -5195,6 +5197,7 @@
 <translation id="4624054169152573743">Боја на тема</translation>
 <translation id="4625078469366263107">Овозможи апликација</translation>
 <translation id="4625905218692741757">Стандардна сива боја</translation>
+<translation id="4627107755957573804">Дозволете им на сајтовите и апликациите да ги надградуваат постојните сметки за да користат криптографски клучеви</translation>
 <translation id="4627442949885028695">Продолжете од друг уред</translation>
 <translation id="4628762811416793313">Поставувањето на контејнерот на Linux не заврши. Обидете се повторно.</translation>
 <translation id="4629521233550547305">Отвори го профилот <ph name="PROFILE_NAME" /></translation>
@@ -5778,6 +5781,7 @@
 <translation id="5053233576223592551">Додај корисничко име</translation>
 <translation id="505347685865235222">Неименувана група - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{Треба да ја промените лозинкава сега}one{Треба да ги промените лозинкиве сега}other{Треба да ги промените лозинкиве сега}}</translation>
+<translation id="5056587122125565772">Создавање слика</translation>
 <translation id="5056950756634735043">Се поврзува со контејнерот</translation>
 <translation id="5057110919553308744">Кога ќе кликнете на екстензијата</translation>
 <translation id="5057127674016624293">Скенирањето трае подолго од очекуваното</translation>
@@ -5888,6 +5892,7 @@
 <translation id="512642543295077915">search + backspace</translation>
 <translation id="5126611267288187364">Погледнете ги промените</translation>
 <translation id="5127620150973591153">ID на безбедна врска: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">Резимирајте содржини или поставувајте прашања.</translation>
 <translation id="5127881134400491887">Управувај со мрежни поврзувања</translation>
 <translation id="5127934926273826089">Цвеќе</translation>
 <translation id="5127986747308934633">Администраторот го контролира вашиот уред</translation>
@@ -10158,6 +10163,7 @@
 <translation id="8195854162863398249">Оневозможете <ph name="FEATURE_NAME" /></translation>
 <translation id="8195920051450756553">Одложи пред да го активираш истото копче повторно</translation>
 <translation id="8197673340773315084">Додајте име или етикета, на пр., „Работен“ или „Личен“</translation>
+<translation id="8198181050118789419">Тема: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Картичка за емитување</translation>
 <translation id="8199300056570174101">Својства на уредот и мрежата (услугата)</translation>
 <translation id="8200772114523450471">Продолжи</translation>
@@ -11418,6 +11424,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Поврзан е USB глушец</translation>
 <translation id="9075413375877487220">Подобреното „Безбедно прелистување“ не ја смета екстензијава како сигурна.</translation>
+<translation id="9075985558450420812">Внесете приспособено барање или нагласете текст за да се создаде слика.</translation>
 <translation id="9076523132036239772">Извинете, вашите е-пошта или лозинка не може да се потврдат. Обидете се прво да се поврзете со мрежа.</translation>
 <translation id="9076821103818989526">Странична табла</translation>
 <translation id="9076977315710973122">SMB-споделување</translation>

@@ -277,7 +277,7 @@
 <translation id="4720851490453439956">Servei intern de l'actualitzador de Google</translation>
 <translation id="4724676981607797757">La instal·lació ha fallat a causa d'un error de protocol no admès.</translation>
 <translation id="4728575227883772061">S'ha produït un error no especificat durant la instal·lació. Si Google Chrome s'està executant en aquests moments, tanca'l i torna-ho a provar.</translation>
-<translation id="4737281654364167024">Per continuar, inicia la sessió a Chrome com a <ph name="EMAIL" />. D'aquesta manera, podem garantir que tens les polítiques de la teva organització.</translation>
+<translation id="4737281654364167024">Per continuar, inicia la sessió a Chrome com a <ph name="EMAIL" />. D'aquesta manera, podem garantir que s'apliquen les polítiques de la teva organització.</translation>
 <translation id="4741235124132242877">S'ha fixat. Torna a utilitzar Google Lens des de la barra d'eines.</translation>
 <translation id="4747730611090640388">Chrome pot estimar els teus interessos.  Després, un lloc web que visitis pot demanar els teus interessos a Chrome per personalitzar els anuncis que veus.</translation>
 <translation id="475321580758063259">Actualitza Chrome per continuar utilitzant les dades de Chrome al teu Compte de Google, <ph name="ACCOUNT_EMAIL" />.</translation>
@@ -537,6 +537,7 @@
 <translation id="8129812357326543296">Quant a &amp;Google Chrome</translation>
 <translation id="813913629614996137">S'està inicialitzant…</translation>
 <translation id="8162006532256575008">Fes servir Chrome sense cap compte</translation>
+<translation id="8177472873527554730">No es troba contingut a la pàgina</translation>
 <translation id="8221491193165283816">Normalment bloqueges les notificacions. Per permetre que aquest lloc web et mostri notificacions, fes clic aquí.</translation>
 <translation id="8255190535488645436">Google Chrome està utilitzant la càmera i el micròfon.</translation>
 <translation id="8257796129973882597">Pots obrir les adreces d'interès, el mode de lectura i més des del menú de Chrome</translation>

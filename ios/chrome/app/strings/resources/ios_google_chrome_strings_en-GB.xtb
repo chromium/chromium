@@ -160,7 +160,6 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
 <translation id="5395376160638294582">Make sure that you can always use the Chrome data in your Google Account</translation>
 <translation id="5404252374083197467">Set Chrome as default?</translation>
 <translation id="5439191312780166229">Warns you about dangerous sites, even ones that Google didn't know about before, by analysing more data from sites than standard protection. You can choose to skip Chrome warnings.</translation>
-<translation id="5442013002200339429">If you hide '<ph name="MODULE_NAME" />, Chrome will no longer auto-track your future packages and will delete all your past package tracking data.</translation>
 <translation id="5460571915754665838">4. Select Chrome</translation>
 <translation id="5492504007368565877">Google Password Manager can’t check your passwords.</translation>
 <translation id="5525095647255982834">To send this tab to another device, sign in to Chrome there.</translation>
@@ -333,5 +332,6 @@ Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to 
 <translation id="9181628561061032322">Opens the Chrome Recent Tabs.</translation>
 <translation id="948597495737267756">Opens your Chrome history page.</translation>
 <translation id="97300214378190234">Use Chrome anytime that you tap links in other apps.</translation>
+<translation id="997929539742564806">Sign in quickly to apps and sites by autofilling your passwords and passkeys from Chrome</translation>
 <translation id="998677222109959694">Manage Chrome settings</translation>
 </translationbundle>

@@ -138,6 +138,7 @@
 <translation id="1230244617745022071"><ph name="SOURCE" /> (ავტომატურად დადგენილი)</translation>
 <translation id="1232569758102978740">უსათაურო</translation>
 <translation id="1236081509407217141">გსურთ VR-ის დაშვება?</translation>
+<translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">თქვენი მოწყობილობის სახელი</translation>
 <translation id="124116460088058876">სხვა ენები</translation>
 <translation id="1243027604378859286">ავტორი:</translation>
@@ -628,6 +629,7 @@
 <translation id="2082238445998314030">შედეგი <ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" />-დან</translation>
 <translation id="2083256696566019397">ყველა ვიზიტზე დაშვება</translation>
 <translation id="2085876078937250610">შენახვა…</translation>
+<translation id="2090451897496479509">დამატებითი ინფორმაციისთვის დაუკავშირდით პროვაიდერს</translation>
 <translation id="2091887806945687916">ხმა</translation>
 <translation id="2093982008204312032">Google Chrome ცდილობს, გამორთოს Windows Hello პაროლების შესავსებად.</translation>
 <translation id="2094505752054353250">დომენის შეუსაბამობა</translation>
@@ -1310,6 +1312,7 @@
 <translation id="33073482541490531">თქვენ მიერ ახლახან გამოყენებული პაროლი ნაპოვნია გაჟონილ მონაცემებში. პაროლების მმართველი გირჩევთ, ახლავე შეცვალოთ ეს პაროლი.</translation>
 <translation id="3307649904964670439">ღილაკი Chrome-ის პარამეტრების დაყენება, თქვენი ბრაუზერის იერსახის დასაყენებლად გაააქტიურეთ ის</translation>
 <translation id="3308006649705061278">ორგანიზაციული ერთეული (OU)</translation>
+<translation id="3317077846337994567">განვადებით გადახდა ამჟამად მიუწვდომელია. ცადეთ მოგვიანებით.</translation>
 <translation id="3318016344440038475">სატელევიზიო კომედიები</translation>
 <translation id="3324687287337751929">4 x 6 დუიმი</translation>
 <translation id="3324983252691184275">ალისფერი</translation>
@@ -1438,6 +1441,7 @@
 <translation id="3536227077203206203">დაშვებულია ამჯერად</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">საეკრანო (დანომრილი)</translation>
+<translation id="3541016556608204104">ვრცლად Chrome Enterprise Connectors-ის შესახებ</translation>
 <translation id="3542628208405253498">ბარათის სურათი</translation>
 <translation id="3542768452570884558">ბმულის გახსნა ახალ ფანჯარაში</translation>
 <translation id="3543935938072367282">სწრაფი ანგარიშსწორება ავტომატური შევსებით</translation>
@@ -1802,6 +1806,7 @@
 <translation id="415440494507469262">შედარების ცხრილში ჩანართის დამატება</translation>
 <translation id="4159784952369912983">მეწამული</translation>
 <translation id="4165422751765527461">გახსნის დახმარების ცენტრის სტატიას ახალ ჩანართში</translation>
+<translation id="4165584779486830267">უკვე შეგიძლიათ Affirm-ით და Zip-ით განვადებით გადახდა.</translation>
 <translation id="4165986682804962316">საიტის პარამეტრები</translation>
 <translation id="4169535189173047238">აკრძალვა</translation>
 <translation id="4171400957073367226">დამოწმების ცუდი ხელმოწერა</translation>

@@ -4080,6 +4080,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{நீட்டிப்பு ஒன்று அங்கீகரிக்கப்பட்டுள்ளது}other{# நீட்டிப்புகள் அங்கீகரிக்கப்பட்டுள்ளன}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linuxஸிற்குக் குறைந்தபட்சம் <ph name="INSTALL_SIZE" />  சேமிப்பகத்தைக் காலியாக வைத்திருப்பது சிறந்தது.</translation>
+<translation id="3824203811509979971">உள்ளடக்கத்தைச் சுருக்குங்கள் அல்லது கேள்வி கேளுங்கள்</translation>
 <translation id="3824621460022590830">சாதனத்தைப் பதிவுசெய்வதற்கான டோக்கன் தவறானது. உங்கள் சாதன உரிமையாளரையோ நிர்வாகியையோ தொடர்புகொள்ளவும். பிழைக் குறியீடு: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">பிற சாதனங்களில் உள்ள பக்கங்களைப் பார்க்க உள்நுழையுங்கள்</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{இந்த ஃபைல் வகைக்கு எனது தேர்வை நினைவில்கொள்: <ph name="FILE_TYPES" />}other{இந்த ஃபைல் வகைகளுக்கு எனது தேர்வை நினைவில்கொள்: <ph name="FILE_TYPES" />}}</translation>
@@ -4266,6 +4267,7 @@
 <translation id="3948985214866944547">பெரும்பாலானோர் இந்தத் தளத்துடன் துல்லியமான இருப்பிடத்தைப் பகிர அனுமதிக்கவில்லை</translation>
 <translation id="394984172568887996">IE இலிருந்து இறக்குமதி செய்யப்பட்டது</translation>
 <translation id="3949999964543783947">ஃபைல்களைப் பாதுகாப்பாகப் பதிவிறக்க, <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
+<translation id="3950479158728806902">விரைவாக உள்நுழைய கடவுச்சாவியைத் தானாக உருவாக்கு</translation>
 <translation id="3950820424414687140">உள்நுழைக</translation>
 <translation id="3950841222883198950">வாய்ஸ் டைப்பிங்</translation>
 <translation id="3953834000574892725">என் கணக்குகள்</translation>
@@ -5194,6 +5196,7 @@
 <translation id="4624054169152573743">கலர் தீம்</translation>
 <translation id="4625078469366263107">ஆப்ஸை இயக்கு</translation>
 <translation id="4625905218692741757">இயல்பு வண்ணம்: சாம்பல்</translation>
+<translation id="4627107755957573804">கடவுச்சாவிகளைப் பயன்படுத்தும் வகையில் ஏற்கெனவே உள்ள கணக்குகளை மேம்படுத்த தளங்களையும் ஆப்ஸையும் அனுமதிக்கும்</translation>
 <translation id="4627442949885028695">மற்றொரு சாதனத்திலிருந்து பார்த்தவை</translation>
 <translation id="4628762811416793313">Linux கண்டெய்னர் அமைவு முடியவில்லை. மீண்டும் முயலவும்.</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> சுயவிவரத்தைத் திற</translation>
@@ -5777,6 +5780,7 @@
 <translation id="5053233576223592551">பயனர்பெயரைச் சேர்</translation>
 <translation id="505347685865235222">பெயரிடப்படாத குழு - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{இப்போதே இதை மாற்ற வேண்டும்}other{இப்போதே இவற்றை மாற்ற வேண்டும்}}</translation>
+<translation id="5056587122125565772">படத்தை உருவாக்கு</translation>
 <translation id="5056950756634735043">கண்டெய்னருடன் இணைக்கிறது</translation>
 <translation id="5057110919553308744">நீங்கள் நீட்டிப்பைக் கிளிக் செய்யும்போது</translation>
 <translation id="5057127674016624293">ஸ்கேன் செய்ய எதிர்பார்த்ததைவிட அதிக நேரம் எடுக்கிறது</translation>
@@ -5887,6 +5891,7 @@
 <translation id="512642543295077915">Search + backspace</translation>
 <translation id="5126611267288187364">மாற்றங்களைக் காட்டு</translation>
 <translation id="5127620150973591153">பாதுகாப்பான இணைப்பு ஐடி: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">உள்ளடக்கத்தைச் சுருக்கலாம் அல்லது கேள்வி கேட்கலாம்.</translation>
 <translation id="5127881134400491887">நெட்வொர்க் இணைப்புகளை நிர்வகி</translation>
 <translation id="5127934926273826089">பூக்கள்</translation>
 <translation id="5127986747308934633">உங்கள் சாதனத்தை நிர்வாகி கட்டுப்படுத்துகிறார்</translation>
@@ -10158,6 +10163,7 @@
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> அம்சத்தை முடக்கு</translation>
 <translation id="8195920051450756553">ஒரே பட்டனை மீண்டும் செயல்படுத்துவதற்கு முன்பான தாமதம்</translation>
 <translation id="8197673340773315084">பெயரையோ 'பணி' அல்லது 'தனிப்பட்டது' போன்ற லேபிளையோ சேர்த்திடுக</translation>
+<translation id="8198181050118789419">தீம்: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">தாவலை அலைபரப்புகிறது</translation>
 <translation id="8199300056570174101">நெட்வொர்க் (சேவை) மற்றும் சாதனப் பண்புகள்</translation>
 <translation id="8200772114523450471">மீண்டும் தொடங்கு</translation>
@@ -11414,6 +11420,7 @@
 <translation id="9074739597929991885">புளூடூத்</translation>
 <translation id="9074836595010225693">USB மவுஸ் இணைக்கப்பட்டது</translation>
 <translation id="9075413375877487220">இந்த நீட்டிப்பை மேம்பட்ட பாதுகாப்பு உலாவல் நம்பவில்லை.</translation>
+<translation id="9075985558450420812">பிரத்தியேகமான ப்ராம்ப்ட்டை டைப் செய்யலாம் அல்லது படத்தை உருவாக்க வார்த்தைகளை ஹைலைட் செய்யலாம்.</translation>
 <translation id="9076523132036239772">மன்னிக்கவும், உங்கள் மின்னஞ்சல் அல்லது கடவுச்சொல்லைச் சரிபார்க்க முடியவில்லை. முதலில் நெட்வொர்க்குடன் இணைய முயலவும்.</translation>
 <translation id="9076821103818989526">பக்கவாட்டுப் பேனல்</translation>
 <translation id="9076977315710973122">SMB பகிர்வு</translation>

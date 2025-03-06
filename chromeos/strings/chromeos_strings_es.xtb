@@ -406,6 +406,7 @@
 <translation id="2787237339470862294">Este idioma no está disponible en este momento</translation>
 <translation id="2787435249130282949">teclado con más brillo</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
+<translation id="2822702442014805146">Descarga del modelo de creación de resúmenes y nombres en curso</translation>
 <translation id="28232023175184696">No es posible conectarse a Internet. Haz clic aquí para volver a intentarlo.</translation>
 <translation id="2855718259207180827">lana</translation>
 <translation id="2859243502336719778">Actualización importante</translation>
@@ -503,6 +504,7 @@
 <translation id="3373141842870501561">Fondo de pantalla Movimiento de la Tierra</translation>
 <translation id="33736539805963175">Fondo <ph name="LETTERS_COLOR" /> con la letra <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Exclusivos</translation>
+<translation id="3395147534045164351">Activar/desactivar la ubicación de acoplamiento</translation>
 <translation id="3404249063913988450">Habilitar salvapantallas</translation>
 <translation id="3413935475507503304">Para continuar con la actualización, haz clic en Siguiente.</translation>
 <translation id="3428551088151258685">exterior</translation>
@@ -652,6 +654,7 @@
 <translation id="4113067922640381334">Ahora tienes acceso a nuevos <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fondos de pantalla<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Modo Oscuro</translation>
 <translation id="4126551873361000548">Retroceder 10 segundos</translation>
+<translation id="4128271910628504223">Introduce una petición, como "dibuja un bosque brumoso"</translation>
 <translation id="4130035430755296270">Mantén el cursor colocado sobre un elemento para ver más opciones de diseño</translation>
 <translation id="4130750466177569591">Acepto</translation>
 <translation id="4131410914670010031">Blanco y negro</translation>
@@ -825,6 +828,7 @@
 <translation id="4891842000192098784">Esfuerzo</translation>
 <translation id="4897058166682006107">Nivel de batería del auricular izquierdo del dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="4905998861748258752">Activa la función para seleccionar las opciones del salvapantallas</translation>
+<translation id="4910853326379896417">Descarga del modelo de creación de resúmenes y nombres completada</translation>
 <translation id="4910858703033903787">Tipos de APN</translation>
 <translation id="4917385247580444890">Buena</translation>
 <translation id="4917889632206600977">Detenido: sin papel</translation>
@@ -859,8 +863,10 @@
 <translation id="5050042263972837708">Nombre del grupo</translation>
 <translation id="5051044138948155788">Esta es la única página. Accederás a la pantalla de inicio del escaneo.</translation>
 <translation id="5053233795640754917">Pausar</translation>
+<translation id="5056587122125565772">Crear imagen</translation>
 <translation id="5078711626843651677">Los modelos de voz se almacenan temporalmente en el dispositivo hasta que se termine de etiquetar a los interlocutores. Puedes desactivar esta opción en cualquier momento en Configuración.</translation>
 <translation id="5078983345702708852">futurista</translation>
+<translation id="5085224064082122501">No se puede descargar el modelo de creación de resúmenes y nombres. Vuelve a intentarlo o reinicia tu Chromebook.</translation>
 <translation id="5087864757604726239">atrás</translation>
 <translation id="5088172560898466307">Nombre de host del servidor</translation>
 <translation id="5089810972385038852">Estado/provincia</translation>
@@ -1428,6 +1434,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Pantalla táctil USB</translation>
 <translation id="757747079855995705">piedra</translation>
+<translation id="7584853321964440104">No se puede descargar. Vuelve a intentarlo o reinicia tu Chromebook.</translation>
 <translation id="7590883480672980941">Configuración de introducción de texto</translation>
 <translation id="7595982850646262331">Tiempo restante: <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">El administrador de <ph name="MANAGER" /> ha definido cuándo se puede usar este <ph name="DEVICE_TYPE" />.</translation>

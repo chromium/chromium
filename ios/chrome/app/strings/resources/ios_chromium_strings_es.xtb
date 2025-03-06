@@ -94,6 +94,7 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="328933489847748230">{count,plural, =1{Mostrando 1 ventana de Chromium}other{Mostrando {count} ventanas de Chromium}}</translation>
 <translation id="3344973607274501920">Chromium no ha podido comprobar tus contraseñas. Revisa tu conexión a Internet.</translation>
 <translation id="3366305173356742781">Datos de Chromium en tu cuenta</translation>
+<translation id="33788334537425157">Activa Bloquear las pestañas de Incógnito al cerrar Chromium</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Ocurre cuando Chromium lleva {THRESHOLD} minuto sin usarse. Esto podría incluir el historial y la función Autocompletar.}other{Ocurre cuando Chromium lleva {THRESHOLD} minutos sin usarse. Esto podría incluir el historial y la función Autocompletar.}}</translation>
 <translation id="3410395242749598859">Algunos de tus datos de Chromium aún no se han guardado en <ph name="EMAIL" />.
 Espera unos minutos antes de cambiar de cuenta. Si cambias de cuenta ahora, estos datos se eliminarán.</translation>
@@ -101,8 +102,10 @@ Espera unos minutos antes de cambiar de cuenta. Si cambias de cuenta ahora, esto
 <translation id="347967311580159871">Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chromium, ve a los <ph name="BEGIN_LINK" />servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">No se ha compartido tu contraseña. Comprueba tu conexión a Internet y asegúrate de haber iniciado sesión en Chromium. Después, inténtalo de nuevo.</translation>
 <translation id="3529798650269984835">Activa Bloquear pestañas de Incógnito al cerrar Chromium.</translation>
+<translation id="3541247799006476453">Accede fácilmente a tus contraseñas y llaves de acceso con Autocompletar en Chromium</translation>
 <translation id="3567399274263440288">Para sacarle el máximo partido a Chromium, inicia sesión en Chromium con tu cuenta de Google.</translation>
 <translation id="3581385059720151202">Buscar elementos visuales en Chromium</translation>
+<translation id="3582640969619785896">Chromium te ofrecerá guardar tu contraseña</translation>
 <translation id="3594315078412605236">Gestionar métodos de pago en Chromium</translation>
 <translation id="3634039384458740619">Abrir configuración de Chromium</translation>
 <translation id="3639997914391704523">Chromium puede comprobar tus contraseñas cuando inicias sesión con tu cuenta de Google.</translation>
@@ -159,6 +162,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chromium 
 <translation id="4999538639245140991">Al cerrar sesión en una cuenta gestionada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, se eliminan tus datos de Chromium en este dispositivo, pero permanecen en tu cuenta de Google.</translation>
 <translation id="5042011327527167688">Toca Ver con Google Maps en Chromium.</translation>
 <translation id="5044871537677053278">Chromium detecta direcciones y usa Google Maps para ofrecerte indicaciones e información local.</translation>
+<translation id="5048140766121299007">En la configuración de <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />, activa Chromium</translation>
 <translation id="5048795749726991615">Para obtener fácilmente tus contraseñas guardadas en tus otras aplicaciones, usa Autocompletar en Chromium</translation>
 <translation id="5053429694249468757">Eliminando datos de Chromium…</translation>
 <translation id="5071749685031362629">Chromium para iOS</translation>
@@ -166,6 +170,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chromium 
 <translation id="5124429847818367226">Ahora puedes usar Chromium cada vez que navegues o toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
 <translation id="5131565040785979529">Tu organización, <ph name="DOMAIN" />, gestiona la cuenta en la que has iniciado sesión y el modo en que se usa Chromium.</translation>
 <translation id="5134464247000681876">Abre enlaces de Gmail, Maps, YouTube y otras aplicaciones en Chromium</translation>
+<translation id="5203244847421322551">Guarda y autocompleta contraseñas en Chromium</translation>
 <translation id="5224391634244552924">No hay ninguna contraseña guardada. Chromium puede comprobar tus contraseñas si las guardas.</translation>
 <translation id="5259423875997548710">Busca elementos visuales en Chromium.</translation>
 <translation id="5308226104666789935">Chromium no puede comprobar si hay actualizaciones</translation>
@@ -209,10 +214,11 @@ Notas importantes:
 <translation id="6132149203299792222">Inicia sesión con tu cuenta de Google para sincronizar tus contraseñas, marcadores y más.</translation>
 <translation id="6148377327556085395">Añadir marcadores a Chromium</translation>
 <translation id="6154098560469640583">Usa Chromium siempre que toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
+<translation id="6157162508956739031">Inicia sesión rápidamente en aplicaciones y sitios con el autocompletado de contraseñas y llaves de acceso de Chromium</translation>
 <translation id="6170619162539716595">Permite que Chromium use Google Maps para ofrecerte indicaciones e información local sobre las direcciones detectadas.</translation>
-<translation id="6197255575340902638">Si ocultas <ph name="MODULE_NAME" />, Chromium dejará de hacer un seguimiento automático de tus próximos paquetes y eliminará todos los datos de seguimiento de envíos anteriores.</translation>
 <translation id="6247557882553405851">Gestor de contraseñas de Google</translation>
 <translation id="6268381023930128611">¿Cerrar sesión en Chromium?</translation>
+<translation id="6301717043141881464">Para obtener fácilmente tus contraseñas guardadas en tus otras aplicaciones, elige Autocompletar en Chromium</translation>
 <translation id="6324041800010509197">Acceder a la cuadrícula de pestañas en Chromium</translation>
 <translation id="6325378625795868881">Usa Chromium siempre que toques enlaces de mensajes y otras aplicaciones.</translation>
 <translation id="6424492062988593837">Chromium sigue mejorando. Hay una nueva versión disponible.</translation>
@@ -224,6 +230,7 @@ Notas importantes:
 <translation id="6574750762636192517">Gestionar contraseñas en Chromium</translation>
 <translation id="6590232959690355435">Abre la página del historial de Chromium.</translation>
 <translation id="6674470628873622334">Abre una nueva pestaña de Incógnito de Chromium.</translation>
+<translation id="6680609900732453726">Mantén tu navegación privada con la autenticación del dispositivo al cerrar Chromium</translation>
 <translation id="6752854822223394465">Tu organización está configurando Chromium...</translation>
 <translation id="6794054469102824109">Abre el juego El dinosaurio de Chromium.</translation>
 <translation id="6820823224820483452">Chromium no ha podido comprobar todas las contraseñas. Vuelve a intentarlo mañana.</translation>
@@ -287,6 +294,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="8254729934443216898">Descubre nuevas funciones que te ayudarán a sacar el máximo partido de Chromium.</translation>
 <translation id="8293572045658095405">Estás en el modo Incógnito de Chromium</translation>
 <translation id="830951810931292870">Abre las URLs introducidas en Chromium en Incógnito.</translation>
+<translation id="8390323835464055390">Inicia sesión con tus contraseñas y llaves de acceso guardadas desde cualquier aplicación con Autocompletar en Chromium</translation>
 <translation id="8409374867500149834">Tienes la seguridad más potente de Chromium frente a sitios web dañinos</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Ocurre cuando Chromium lleva {THRESHOLD} minuto sin usarse. Se eliminarán los datos guardados solo en este dispositivo mientras tenías la sesión iniciada. Esto podría incluir el historial y las contraseñas.}other{Ocurre cuando Chromium lleva {THRESHOLD} minutos sin usarse. Se eliminarán los datos guardados solo en este dispositivo mientras tenías la sesión iniciada. Esto podría incluir el historial y las contraseñas.}}</translation>
 <translation id="858114650497379505">Puedes usar las contraseñas que has guardado en el gestor de contraseñas en otras aplicaciones de tu iPhone.</translation>

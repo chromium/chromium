@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">Votre mot de passe sera enregistré dans le Gestionnaire de mots de passe Google pour <ph name="EMAIL" /></translation>
 <translation id="1146503048444965320">Ouvrir un nouvel onglet dans Chrome</translation>
 <translation id="1166460004393506534">Supprimer les données de navigation dans Chrome</translation>
+<translation id="1171255741903316750">Activez "Verrouiller les onglets de navigation privée lorsque vous fermez Chrome"</translation>
 <translation id="1179527450541388808">Accédez plus rapidement à Chrome depuis le dock de l'écran d'accueil de votre iPad.</translation>
 <translation id="1180362651362502943">Continuez d'utiliser les données Chrome de votre compte Google.</translation>
 <translation id="1200396280085622191">Utilisez Chrome chaque fois que vous appuyez sur des liens dans des messages et d'autres applis.</translation>
@@ -45,6 +46,7 @@ Points à prendre en compte :
 <translation id="1917964099031477364">Ce compte et les données non enregistrées seront supprimés de Chrome et des autres applications Google sur cet appareil.</translation>
 <translation id="1919130412786645364">Autoriser la connexion à Chrome</translation>
 <translation id="1965935827552890526">Terminez ce que vous étiez en train de faire dans l'autre fenêtre Chrome ouverte.</translation>
+<translation id="1973910962341002002">Dans les paramètres "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />", activez "Chrome"</translation>
 <translation id="1984705450038014246">Synchroniser vos données Chrome</translation>
 <translation id="1987779152850321833">Effectuez les actions suggérées ci-dessous pour exploiter tout le potentiel de Chrome.</translation>
 <translation id="2055826352861631739">Utiliser Chrome pour iPad par défaut</translation>
@@ -96,10 +98,13 @@ Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez
 <translation id="3282568296779691940">Connectez-vous à Chrome</translation>
 <translation id="3303503998967553377">Utiliser Actions Chrome sur iOS</translation>
 <translation id="3348862487678490430">Ajouter un élément de liste de lecture à Chrome</translation>
+<translation id="3357827134511189025">Connectez-vous avec vos mots de passe et clés d'accès enregistrés depuis n'importe quelle appli avec Chrome pour la saisie automatique</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Cela se produit quand Chrome est inutilisé pendant {THRESHOLD} minute}one{Cela se produit quand Chrome est inutilisé pendant {THRESHOLD} minute}other{Cela se produit quand Chrome est inutilisé pendant {THRESHOLD} minutes}}</translation>
 <translation id="3367797402528056312">Terminer la configuration de Chrome</translation>
 <translation id="3371064404604898522">Définir Chrome comme navigateur par défaut</translation>
 <translation id="3399930248910934354">Accéder aux paramètres de Chrome</translation>
+<translation id="3440830787838130530">Partagez facilement et de manière sécurisée une copie d'un mot de passe avec votre groupe familial dans le Gestionnaire de mots de passe de Google</translation>
+<translation id="3460369101684070455">Pour retrouver facilement vos mots de passe enregistrés dans vos autres applis, choisissez Chrome pour la saisie automatique</translation>
 <translation id="3472587960215700950">Chrome utilise Google Maps pour vous fournir des itinéraires et des informations locales sur les adresses détectées.</translation>
 <translation id="3503014945441706099">Profitez aussi sous ce profil Chrome de la navigation sécurisée avec protection renforcée</translation>
 <translation id="3522659714780527202">Pour retrouver vos onglets Chrome quel que soit l'appareil utilisé, activez la synchronisation</translation>
@@ -155,7 +160,6 @@ Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez
 <translation id="5395376160638294582">Assurez-vous de toujours pouvoir utiliser les données Chrome de votre compte Google</translation>
 <translation id="5404252374083197467">Utiliser Chrome par défaut ?</translation>
 <translation id="5439191312780166229">Vous avertit en cas de sites dangereux, y compris pour ceux dont Google n'avait pas connaissance, en analysant plus de données provenant des sites que la protection standard. Vous pouvez ignorer les avertissements de Chrome.</translation>
-<translation id="5442013002200339429">Si vous masquez "<ph name="MODULE_NAME" />", Chrome ne pourra plus suivre automatiquement vos futurs colis et supprimera toutes vos anciennes données de suivi de colis.</translation>
 <translation id="5460571915754665838">4. Sélectionnez Chrome</translation>
 <translation id="5492504007368565877">Le Gestionnaire de mots de passe de Google ne peut pas vérifier vos mots de passe.</translation>
 <translation id="5525095647255982834">Pour envoyer cet onglet à un autre appareil, connectez-vous à Chrome sur celui-ci.</translation>
@@ -181,6 +185,7 @@ Patientez quelques minutes avant de changer de compte. Si vous changez de compte
 <translation id="5998675059699164418">Votre organisation exige que vous vous connectiez pour utiliser Chrome.</translation>
 <translation id="6021312115739110405">Flux personnalisé pour vous par Google, y compris les actualités, le sport et la météo.</translation>
 <translation id="6022659036123304283">Personnalisez Chrome</translation>
+<translation id="6132075343662013154">Chrome vous proposera d'enregistrer votre mot de passe</translation>
 <translation id="6132149203299792222">Connectez-vous avec votre compte Google pour synchroniser vos mots de passe, vos favoris, etc.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Effectuer une recherche dans Chrome</translation>
@@ -228,6 +233,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="7061455974939528301">Appuyez de manière prolongée sur l'icône Chrome, puis cliquez sur "Modifier l'écran d'accueil"</translation>
 <translation id="7065813315247345131">Déplacer Chrome vers le Dock</translation>
 <translation id="7124339256045485976">Pour garder Chrome à jour</translation>
+<translation id="7145599899567697473">Enregistrez et remplissez automatiquement les mots de passe dans Chrome</translation>
 <translation id="7161390184744336561">La version de Google Chrome est obsolète</translation>
 <translation id="7165736900384873061">Commencer à utiliser le lecteur de QR code Google Chrome</translation>
 <translation id="7175129790242719365">Astuce Chromium : connectez-vous à Chrome</translation>
@@ -261,6 +267,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="7693590760643069321">Chaque fois que vous appuierez sur des liens dans des messages, des documents et d'autres applis, le contenu s'affichera dans Chrome.</translation>
 <translation id="7698568245838009292">Chrome souhaite accéder à l'appareil photo</translation>
 <translation id="7707877166818730835">Ouvrir votre dernier onglet dans Chrome</translation>
+<translation id="7747746207470479571">Accédez facilement à vos mots de passe et clés d'accès avec Chrome pour la saisie automatique</translation>
 <translation id="776305366874821582">Accédez plus rapidement à Chrome depuis le dock de l'écran d'accueil de votre iPhone.</translation>
 <translation id="7780154209050837198">Pour profiter pleinement de Chrome, connectez-vous avec votre compte Google.</translation>
 <translation id="7787205077729386167">Ouvrez les réglages Chrome dans iOS, appuyez sur "Appli du navigateur par défaut", puis sélectionnez Chrome.</translation>
@@ -281,6 +288,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="8136856065410661948">Cela permettra de créer des événements dans votre calendrier Apple à partir de Chrome et de Google Lens.</translation>
 <translation id="8154120522323162874">Profitez pleinement de Chrome en continuant à configurer votre navigateur.</translation>
 <translation id="8160472928944011082">Impossible mettre à jour Chrome</translation>
+<translation id="8245080522851805544">Protégez la confidentialité de votre navigation avec l'authentification de l'appareil lorsque vous fermez Chrome</translation>
 <translation id="8248887045858762645">Astuce Chrome</translation>
 <translation id="8265730590513812063">Ouvrir le menu Chrome</translation>
 <translation id="8317674518145175158">Les adresses et les modes de paiement ne seront pas chiffrés. L'historique de navigation de Chrome ne sera pas synchronisé.
@@ -324,5 +332,6 @@ Vos données ont été chiffrées avec votre phrase secrète le <ph name="TIME" 
 <translation id="9181628561061032322">Ouvre les onglets récents de Chrome.</translation>
 <translation id="948597495737267756">Ouvre votre historique Chrome.</translation>
 <translation id="97300214378190234">Utilisez Chrome chaque fois que vous appuyez sur des liens dans d'autres applis.</translation>
+<translation id="997929539742564806">Connectez-vous rapidement aux applis et aux sites en saisissant automatiquement vos mots de passe et vos clés d'accès depuis Chrome</translation>
 <translation id="998677222109959694">Gérer les paramètres de Chrome</translation>
 </translationbundle>
