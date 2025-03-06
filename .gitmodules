@@ -915,3 +915,7 @@
 	path = third_party/glib/src
 	url = https://chromium.googlesource.com/external/gitlab.gnome.org/GNOME/glib
 	gclient-condition = checkout_linux
+[submodule "third_party/libgudev/src"]
+	path = third_party/libgudev/src
+	url = https://chromium.googlesource.com/external/gitlab.gnome.org/GNOME/libgudev
+	gclient-condition = checkout_linux

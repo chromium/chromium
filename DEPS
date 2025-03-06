@@ -2313,6 +2313,11 @@ deps = {
       'condition': 'checkout_linux',
   },
 
+  'src/third_party/libgudev/src': {
+      'url': Var('chromium_git') + '/external/gitlab.gnome.org/GNOME/libgudev.git' + '@' + 'df7c9c9940160307aaeb31347f4776a46f8736a9',
+      'condition': 'checkout_linux',
+  },
+
   'src/third_party/libinput/src': {
       'url': Var('chromium_git') + '/external/gitlab.freedesktop.org/libinput/libinput.git' + '@' + '3aa004b96488bf0b2446c11b97a7f8a75ff37c23',
       'condition': 'checkout_linux',
