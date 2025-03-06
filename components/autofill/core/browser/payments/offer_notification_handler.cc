@@ -57,8 +57,10 @@ void OfferNotificationHandler::UpdateOfferNotificationVisibility(
     bool offer_id_has_shown_before = shown_notification_ids_.contains(offer_id);
     client.GetPaymentsAutofillClient()->UpdateOfferNotification(
         *offer,
-        {.notification_has_been_shown = offer_id_has_shown_before,
-         .show_notification_automatically = !offer_id_has_shown_before});
+        {
+            .notification_has_been_shown = offer_id_has_shown_before,
+            .show_notification_automatically = !offer_id_has_shown_before,
+        });
     shown_notification_ids_.insert(offer_id);
   } else {
     client.GetPaymentsAutofillClient()->DismissOfferNotification();

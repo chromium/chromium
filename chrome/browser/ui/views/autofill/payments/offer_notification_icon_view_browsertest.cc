@@ -75,10 +75,6 @@ class OfferNotificationIconViewBrowserTest
     if (name.find("show_offer_notification_icon_only") != std::string::npos) {
       autofill_client->GetPaymentsAutofillClient()->UpdateOfferNotification(
           offer, {});
-    } else if (name.find("show_offer_notification_icon_expanded") !=
-               std::string::npos) {
-      autofill_client->GetPaymentsAutofillClient()->UpdateOfferNotification(
-          offer, {.expand_notification_icon = true});
     }
   }
 
@@ -99,14 +95,6 @@ class OfferNotificationIconViewBrowserTest
     if (test_name.find("InvokeUi_show_offer_notification_icon_only") !=
         std::string::npos) {
       EXPECT_FALSE(offer_notification_icon_view->ShouldShowLabel());
-    } else if (test_name.find(
-                   "InvokeUi_show_offer_notification_icon_expanded") !=
-               std::string::npos) {
-      WaitForIconToFinishAnimating(offer_notification_icon_view);
-      EXPECT_TRUE(offer_notification_icon_view->ShouldShowLabel());
-      EXPECT_EQ(offer_notification_icon_view->GetIconLabelForTesting(),
-                l10n_util::GetStringUTF16(
-                    IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
     }
 
     return true;
@@ -160,11 +148,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 IN_PROC_BROWSER_TEST_P(OfferNotificationIconViewBrowserTest,
                        InvokeUi_show_offer_notification_icon_only) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_P(OfferNotificationIconViewBrowserTest,
-                       InvokeUi_show_offer_notification_icon_expanded) {
   ShowAndVerifyUi();
 }
 

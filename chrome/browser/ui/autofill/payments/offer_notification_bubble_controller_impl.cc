@@ -152,7 +152,7 @@ void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
     const AutofillOfferData& offer,
     const CreditCard* card,
     const OfferNotificationOptions& options) {
-  icon_should_expand_ = options.expand_notification_icon;
+  icon_should_expand_ = false;
 
   // If this is not the bubble's first show, and offer to be shown has not
   // changed, and it has not been shown for more than
