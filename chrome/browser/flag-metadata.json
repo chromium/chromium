@@ -3913,12 +3913,17 @@
   },
   {
     "name": "enable-standard-device-bound-session-credentials",
-    "owners": [ "drubery@chromium.org",  "kristianm@chromium.org"],
+    "owners": [ "drubery@chromium.org",  "thefrog@chromium.org"],
     "expiry_milestone": 138
   },
   {
     "name": "enable-standard-device-bound-session-persistence",
-    "owners": [ "anunoy@chromium.org", "drubery@chromium.org",  "kristianm@chromium.org"],
+    "owners": [ "anunoy@chromium.org", "drubery@chromium.org",  "thefrog@chromium.org"],
+    "expiry_milestone": 138
+  },
+  {
+      "name": "enable-standard-device-bound-sesssion-refresh-quota",
+    "owners": [ "drubery@chromium.org",  "thefrog@chromium.org"],
     "expiry_milestone": 138
   },
   {

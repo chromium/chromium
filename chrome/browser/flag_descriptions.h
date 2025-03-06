@@ -4746,6 +4746,8 @@ extern const char kEnableStandardBoundSessionCredentialsName[];
 extern const char kEnableStandardBoundSessionCredentialsDescription[];
 extern const char kEnableStandardBoundSessionPersistenceName[];
 extern const char kEnableStandardBoundSessionPersistenceDescription[];
+extern const char kEnableStandardBoundSessionRefreshQuotaName[];
+extern const char kEnableStandardBoundSessionRefreshQuotaDescription[];
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 extern const char kEnableCertManagementV2UIName[];
