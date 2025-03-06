@@ -26,8 +26,6 @@ class ResourceRequest;
 
 namespace network {
 
-struct ResourceRequest;
-
 // Permissions Policy is a mechanism for controlling the availability of web
 // platform features in a frame, including all embedded frames. It can be used
 // to remove features, automatically refuse API permission requests, or modify
@@ -233,10 +231,13 @@ class COMPONENT_EXPORT(NETWORK_CPP) PermissionsPolicy {
 
   // Returns whether or not the given feature is enabled by this policy for a
   // subresource request, given the ongoing request/redirect origin.
+  // TODO(crbug.com/400996803): Move this to the request object.
   bool IsFeatureEnabledForSubresourceRequest(
       network::mojom::PermissionsPolicyFeature feature,
       const url::Origin& origin,
-      const network::ResourceRequest& request) const;
+      bool browsing_topics,
+      bool shared_storage_writable_eligible,
+      bool ad_auction_headers) const;
 
   const Allowlist GetAllowlistForDevTools(
       network::mojom::PermissionsPolicyFeature feature) const;

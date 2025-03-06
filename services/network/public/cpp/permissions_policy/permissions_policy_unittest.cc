@@ -2109,43 +2109,67 @@ TEST_F(PermissionsPolicyTest,
 
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
-        request_without_any_opt_in));
+        request_without_any_opt_in.browsing_topics,
+        request_without_any_opt_in.shared_storage_writable_eligible,
+        request_without_any_opt_in.ad_auction_headers));
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
-        request_with_topics_opt_in));
+        request_with_topics_opt_in.browsing_topics,
+        request_with_topics_opt_in.shared_storage_writable_eligible,
+        request_with_topics_opt_in.ad_auction_headers));
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
-        request_with_both_opt_in));
+        request_with_both_opt_in.browsing_topics,
+        request_with_both_opt_in.shared_storage_writable_eligible,
+        request_with_both_opt_in.ad_auction_headers));
 
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_a_,
-        request_without_any_opt_in));
+        request_without_any_opt_in.browsing_topics,
+        request_without_any_opt_in.shared_storage_writable_eligible,
+        request_without_any_opt_in.ad_auction_headers));
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_a_,
-        request_with_shared_storage_opt_in));
+        request_with_shared_storage_opt_in.browsing_topics,
+        request_with_shared_storage_opt_in.shared_storage_writable_eligible,
+        request_with_shared_storage_opt_in.ad_auction_headers));
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_a_,
-        request_with_both_opt_in));
+        request_with_both_opt_in.browsing_topics,
+        request_with_both_opt_in.shared_storage_writable_eligible,
+        request_with_both_opt_in.ad_auction_headers));
 
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b_,
-        request_without_any_opt_in));
+        request_without_any_opt_in.browsing_topics,
+        request_without_any_opt_in.shared_storage_writable_eligible,
+        request_without_any_opt_in.ad_auction_headers));
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b_,
-        request_with_topics_opt_in));
+        request_with_topics_opt_in.browsing_topics,
+        request_with_topics_opt_in.shared_storage_writable_eligible,
+        request_with_topics_opt_in.ad_auction_headers));
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b_,
-        request_with_both_opt_in));
+        request_with_both_opt_in.browsing_topics,
+        request_with_both_opt_in.shared_storage_writable_eligible,
+        request_with_both_opt_in.ad_auction_headers));
 
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_b_,
-        request_without_any_opt_in));
+        request_without_any_opt_in.browsing_topics,
+        request_without_any_opt_in.shared_storage_writable_eligible,
+        request_without_any_opt_in.ad_auction_headers));
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_b_,
-        request_with_shared_storage_opt_in));
+        request_with_shared_storage_opt_in.browsing_topics,
+        request_with_shared_storage_opt_in.shared_storage_writable_eligible,
+        request_with_shared_storage_opt_in.ad_auction_headers));
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_b_,
-        request_with_both_opt_in));
+        request_with_both_opt_in.browsing_topics,
+        request_with_both_opt_in.shared_storage_writable_eligible,
+        request_with_both_opt_in.ad_auction_headers));
   }
 
   {
@@ -2176,43 +2200,67 @@ TEST_F(PermissionsPolicyTest,
 
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
-        request_without_any_opt_in));
+        request_without_any_opt_in.browsing_topics,
+        request_without_any_opt_in.shared_storage_writable_eligible,
+        request_without_any_opt_in.ad_auction_headers));
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
-        request_with_topics_opt_in));
+        request_with_topics_opt_in.browsing_topics,
+        request_with_topics_opt_in.shared_storage_writable_eligible,
+        request_with_topics_opt_in.ad_auction_headers));
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
-        request_with_both_opt_in));
+        request_with_both_opt_in.browsing_topics,
+        request_with_both_opt_in.shared_storage_writable_eligible,
+        request_with_both_opt_in.ad_auction_headers));
 
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_a_,
-        request_without_any_opt_in));
+        request_without_any_opt_in.browsing_topics,
+        request_without_any_opt_in.shared_storage_writable_eligible,
+        request_without_any_opt_in.ad_auction_headers));
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_a_,
-        request_with_shared_storage_opt_in));
+        request_with_shared_storage_opt_in.browsing_topics,
+        request_with_shared_storage_opt_in.shared_storage_writable_eligible,
+        request_with_shared_storage_opt_in.ad_auction_headers));
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_a_,
-        request_with_both_opt_in));
+        request_with_both_opt_in.browsing_topics,
+        request_with_both_opt_in.shared_storage_writable_eligible,
+        request_with_both_opt_in.ad_auction_headers));
 
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b_,
-        request_without_any_opt_in));
+        request_without_any_opt_in.browsing_topics,
+        request_without_any_opt_in.shared_storage_writable_eligible,
+        request_without_any_opt_in.ad_auction_headers));
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b_,
-        request_with_topics_opt_in));
+        request_with_topics_opt_in.browsing_topics,
+        request_with_topics_opt_in.shared_storage_writable_eligible,
+        request_with_topics_opt_in.ad_auction_headers));
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b_,
-        request_with_both_opt_in));
+        request_with_both_opt_in.browsing_topics,
+        request_with_both_opt_in.shared_storage_writable_eligible,
+        request_with_both_opt_in.ad_auction_headers));
 
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_b_,
-        request_without_any_opt_in));
+        request_without_any_opt_in.browsing_topics,
+        request_without_any_opt_in.shared_storage_writable_eligible,
+        request_without_any_opt_in.ad_auction_headers));
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_b_,
-        request_with_shared_storage_opt_in));
+        request_with_shared_storage_opt_in.browsing_topics,
+        request_with_shared_storage_opt_in.shared_storage_writable_eligible,
+        request_with_shared_storage_opt_in.ad_auction_headers));
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_b_,
-        request_with_both_opt_in));
+        request_with_both_opt_in.browsing_topics,
+        request_with_both_opt_in.shared_storage_writable_eligible,
+        request_with_both_opt_in.ad_auction_headers));
   }
 
   {
@@ -2243,43 +2291,67 @@ TEST_F(PermissionsPolicyTest,
 
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
-        request_without_any_opt_in));
+        request_without_any_opt_in.browsing_topics,
+        request_without_any_opt_in.shared_storage_writable_eligible,
+        request_without_any_opt_in.ad_auction_headers));
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
-        request_with_topics_opt_in));
+        request_with_topics_opt_in.browsing_topics,
+        request_with_topics_opt_in.shared_storage_writable_eligible,
+        request_with_topics_opt_in.ad_auction_headers));
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
-        request_with_both_opt_in));
+        request_with_both_opt_in.browsing_topics,
+        request_with_both_opt_in.shared_storage_writable_eligible,
+        request_with_both_opt_in.ad_auction_headers));
 
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_a_,
-        request_without_any_opt_in));
+        request_without_any_opt_in.browsing_topics,
+        request_without_any_opt_in.shared_storage_writable_eligible,
+        request_without_any_opt_in.ad_auction_headers));
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_a_,
-        request_with_shared_storage_opt_in));
+        request_with_shared_storage_opt_in.browsing_topics,
+        request_with_shared_storage_opt_in.shared_storage_writable_eligible,
+        request_with_shared_storage_opt_in.ad_auction_headers));
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_a_,
-        request_with_both_opt_in));
+        request_with_both_opt_in.browsing_topics,
+        request_with_both_opt_in.shared_storage_writable_eligible,
+        request_with_both_opt_in.ad_auction_headers));
 
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b_,
-        request_without_any_opt_in));
+        request_without_any_opt_in.browsing_topics,
+        request_without_any_opt_in.shared_storage_writable_eligible,
+        request_without_any_opt_in.ad_auction_headers));
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b_,
-        request_with_topics_opt_in));
+        request_with_topics_opt_in.browsing_topics,
+        request_with_topics_opt_in.shared_storage_writable_eligible,
+        request_with_topics_opt_in.ad_auction_headers));
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b_,
-        request_with_both_opt_in));
+        request_with_both_opt_in.browsing_topics,
+        request_with_both_opt_in.shared_storage_writable_eligible,
+        request_with_both_opt_in.ad_auction_headers));
 
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_b_,
-        request_without_any_opt_in));
+        request_without_any_opt_in.browsing_topics,
+        request_without_any_opt_in.shared_storage_writable_eligible,
+        request_without_any_opt_in.ad_auction_headers));
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_b_,
-        request_with_shared_storage_opt_in));
+        request_with_shared_storage_opt_in.browsing_topics,
+        request_with_shared_storage_opt_in.shared_storage_writable_eligible,
+        request_with_shared_storage_opt_in.ad_auction_headers));
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_b_,
-        request_with_both_opt_in));
+        request_with_both_opt_in.browsing_topics,
+        request_with_both_opt_in.shared_storage_writable_eligible,
+        request_with_both_opt_in.ad_auction_headers));
   }
 
   {
@@ -2310,43 +2382,67 @@ TEST_F(PermissionsPolicyTest,
 
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
-        request_without_any_opt_in));
+        request_without_any_opt_in.browsing_topics,
+        request_without_any_opt_in.shared_storage_writable_eligible,
+        request_without_any_opt_in.ad_auction_headers));
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
-        request_with_topics_opt_in));
+        request_with_topics_opt_in.browsing_topics,
+        request_with_topics_opt_in.shared_storage_writable_eligible,
+        request_with_topics_opt_in.ad_auction_headers));
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
-        request_with_both_opt_in));
+        request_with_both_opt_in.browsing_topics,
+        request_with_both_opt_in.shared_storage_writable_eligible,
+        request_with_both_opt_in.ad_auction_headers));
 
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_a_,
-        request_without_any_opt_in));
+        request_without_any_opt_in.browsing_topics,
+        request_without_any_opt_in.shared_storage_writable_eligible,
+        request_without_any_opt_in.ad_auction_headers));
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_a_,
-        request_with_shared_storage_opt_in));
+        request_with_shared_storage_opt_in.browsing_topics,
+        request_with_shared_storage_opt_in.shared_storage_writable_eligible,
+        request_with_shared_storage_opt_in.ad_auction_headers));
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_a_,
-        request_with_both_opt_in));
+        request_with_both_opt_in.browsing_topics,
+        request_with_both_opt_in.shared_storage_writable_eligible,
+        request_with_both_opt_in.ad_auction_headers));
 
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b_,
-        request_without_any_opt_in));
+        request_without_any_opt_in.browsing_topics,
+        request_without_any_opt_in.shared_storage_writable_eligible,
+        request_without_any_opt_in.ad_auction_headers));
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b_,
-        request_with_topics_opt_in));
+        request_with_topics_opt_in.browsing_topics,
+        request_with_topics_opt_in.shared_storage_writable_eligible,
+        request_with_topics_opt_in.ad_auction_headers));
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b_,
-        request_with_both_opt_in));
+        request_with_both_opt_in.browsing_topics,
+        request_with_both_opt_in.shared_storage_writable_eligible,
+        request_with_both_opt_in.ad_auction_headers));
 
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_b_,
-        request_without_any_opt_in));
+        request_without_any_opt_in.browsing_topics,
+        request_without_any_opt_in.shared_storage_writable_eligible,
+        request_without_any_opt_in.ad_auction_headers));
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_b_,
-        request_with_shared_storage_opt_in));
+        request_with_shared_storage_opt_in.browsing_topics,
+        request_with_shared_storage_opt_in.shared_storage_writable_eligible,
+        request_with_shared_storage_opt_in.ad_auction_headers));
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_b_,
-        request_with_both_opt_in));
+        request_with_both_opt_in.browsing_topics,
+        request_with_both_opt_in.shared_storage_writable_eligible,
+        request_with_both_opt_in.ad_auction_headers));
   }
 
   {
@@ -2389,63 +2485,99 @@ TEST_F(PermissionsPolicyTest,
 
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
-        request_without_any_opt_in));
+        request_without_any_opt_in.browsing_topics,
+        request_without_any_opt_in.shared_storage_writable_eligible,
+        request_without_any_opt_in.ad_auction_headers));
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
-        request_with_topics_opt_in));
+        request_with_topics_opt_in.browsing_topics,
+        request_with_topics_opt_in.shared_storage_writable_eligible,
+        request_with_topics_opt_in.ad_auction_headers));
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
-        request_with_both_opt_in));
+        request_with_both_opt_in.browsing_topics,
+        request_with_both_opt_in.shared_storage_writable_eligible,
+        request_with_both_opt_in.ad_auction_headers));
 
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_a_,
-        request_without_any_opt_in));
+        request_without_any_opt_in.browsing_topics,
+        request_without_any_opt_in.shared_storage_writable_eligible,
+        request_without_any_opt_in.ad_auction_headers));
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_a_,
-        request_with_shared_storage_opt_in));
+        request_with_shared_storage_opt_in.browsing_topics,
+        request_with_shared_storage_opt_in.shared_storage_writable_eligible,
+        request_with_shared_storage_opt_in.ad_auction_headers));
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_a_,
-        request_with_both_opt_in));
+        request_with_both_opt_in.browsing_topics,
+        request_with_both_opt_in.shared_storage_writable_eligible,
+        request_with_both_opt_in.ad_auction_headers));
 
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b_,
-        request_without_any_opt_in));
+        request_without_any_opt_in.browsing_topics,
+        request_without_any_opt_in.shared_storage_writable_eligible,
+        request_without_any_opt_in.ad_auction_headers));
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b_,
-        request_with_topics_opt_in));
+        request_with_topics_opt_in.browsing_topics,
+        request_with_topics_opt_in.shared_storage_writable_eligible,
+        request_with_topics_opt_in.ad_auction_headers));
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b_,
-        request_with_both_opt_in));
+        request_with_both_opt_in.browsing_topics,
+        request_with_both_opt_in.shared_storage_writable_eligible,
+        request_with_both_opt_in.ad_auction_headers));
 
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_b_,
-        request_without_any_opt_in));
+        request_without_any_opt_in.browsing_topics,
+        request_without_any_opt_in.shared_storage_writable_eligible,
+        request_without_any_opt_in.ad_auction_headers));
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_b_,
-        request_with_shared_storage_opt_in));
+        request_with_shared_storage_opt_in.browsing_topics,
+        request_with_shared_storage_opt_in.shared_storage_writable_eligible,
+        request_with_shared_storage_opt_in.ad_auction_headers));
     EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_b_,
-        request_with_both_opt_in));
+        request_with_both_opt_in.browsing_topics,
+        request_with_both_opt_in.shared_storage_writable_eligible,
+        request_with_both_opt_in.ad_auction_headers));
 
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_c_,
-        request_without_any_opt_in));
+        request_without_any_opt_in.browsing_topics,
+        request_without_any_opt_in.shared_storage_writable_eligible,
+        request_without_any_opt_in.ad_auction_headers));
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_c_,
-        request_with_topics_opt_in));
+        request_with_topics_opt_in.browsing_topics,
+        request_with_topics_opt_in.shared_storage_writable_eligible,
+        request_with_topics_opt_in.ad_auction_headers));
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_c_,
-        request_with_both_opt_in));
+        request_with_both_opt_in.browsing_topics,
+        request_with_both_opt_in.shared_storage_writable_eligible,
+        request_with_both_opt_in.ad_auction_headers));
 
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_c_,
-        request_without_any_opt_in));
+        request_without_any_opt_in.browsing_topics,
+        request_without_any_opt_in.shared_storage_writable_eligible,
+        request_without_any_opt_in.ad_auction_headers));
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_c_,
-        request_with_shared_storage_opt_in));
+        request_with_shared_storage_opt_in.browsing_topics,
+        request_with_shared_storage_opt_in.shared_storage_writable_eligible,
+        request_with_shared_storage_opt_in.ad_auction_headers));
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_c_,
-        request_with_both_opt_in));
+        request_with_both_opt_in.browsing_topics,
+        request_with_both_opt_in.shared_storage_writable_eligible,
+        request_with_both_opt_in.ad_auction_headers));
   }
 }
 
