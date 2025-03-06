@@ -620,4 +620,36 @@ public class BrowserControlsManagerUnitTest {
         assertEquals(0, browserControlsManager.getTopControlsHeight());
         assertEquals(TOOLBAR_HEIGHT, browserControlsManager.getBottomControlsHeight());
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.BCIV_BOTTOM_CONTROLS)
+    public void testSkipOffsetChangedIfAnimatingWithBciv() {
+        remakeWithoutSpy();
+        notifyAddTab(mTab);
+        notifyCurrentTab(mTab);
+
+        mBrowserControlsManager.setAnimateBrowserControlsHeightChanges(true);
+
+        int topControlsOffset = 0;
+        int bottomControlsOffset = TOOLBAR_HEIGHT;
+        mBrowserControlsManager.setControlsPosition(
+                ControlsPosition.BOTTOM,
+                0,
+                0,
+                topControlsOffset,
+                TOOLBAR_HEIGHT,
+                10,
+                bottomControlsOffset);
+
+        verify(mBrowserControlsStateProviderObserver, never())
+                .onControlsOffsetChanged(
+                        anyInt(),
+                        anyInt(),
+                        anyBoolean(),
+                        anyInt(),
+                        anyInt(),
+                        anyBoolean(),
+                        anyBoolean(),
+                        anyBoolean());
+    }
 }
