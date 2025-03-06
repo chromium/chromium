@@ -414,7 +414,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/lifetime/android:java",
       "//chrome/browser/locale:java",
       "//chrome/browser/magic_stack/android:java",
-      "//chrome/browser/model_execution/android:java",
       "//chrome/browser/notifications/chime/android:java",
       "//chrome/browser/ntp_customization:java",
       "//chrome/browser/omaha/android:java",
