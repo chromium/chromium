@@ -6,7 +6,6 @@ use crate::deflate::core::{
 use core::cmp;
 
 pub(crate) fn compress_stored(d: &mut CompressorOxide, callback: &mut CallbackOxide) -> bool {
-    let mut src_pos = d.params.src_pos;
     let in_buf = match callback.buf() {
         None => return true,
         Some(in_buf) => in_buf,
@@ -17,7 +16,7 @@ pub(crate) fn compress_stored(d: &mut CompressorOxide, callback: &mut CallbackOx
     // but just do this here to avoid causing issues for now.
     d.params.saved_match_len = 0;
     let mut bytes_written = d.lz.total_bytes;
-
+    let mut src_pos = d.params.src_pos;
     let mut lookahead_size = d.dict.lookahead_size;
     let mut lookahead_pos = d.dict.lookahead_pos;
 

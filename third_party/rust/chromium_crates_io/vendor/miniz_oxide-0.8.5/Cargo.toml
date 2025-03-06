@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "miniz_oxide"
-version = "0.8.4"
+version = "0.8.5"
 authors = [
     "Frommi <daniil.liferenko@gmail.com>",
     "oyvindln <oyvindln@users.noreply.github.com>",
@@ -43,6 +43,18 @@ license = "MIT OR Zlib OR Apache-2.0"
 repository = "https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide"
 resolver = "1"
 
+[features]
+default = ["with-alloc"]
+rustc-dep-of-std = [
+    "core",
+    "alloc",
+    "compiler_builtins",
+    "adler2/rustc-dep-of-std",
+]
+simd = ["simd-adler32"]
+std = []
+with-alloc = []
+
 [lib]
 name = "miniz_oxide"
 path = "src/lib.rs"
@@ -70,20 +82,7 @@ version = "0.3.3"
 optional = true
 default-features = false
 
-[dev-dependencies.criterion]
-version = "0.5"
-
-[features]
-default = ["with-alloc"]
-rustc-dep-of-std = [
-    "core",
-    "alloc",
-    "compiler_builtins",
-    "adler2/rustc-dep-of-std",
-]
-simd = ["simd-adler32"]
-std = []
-with-alloc = []
+[dev-dependencies]
 
 [lints.rust.unexpected_cfgs]
 level = "warn"

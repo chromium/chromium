@@ -2120,6 +2120,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.8.3 -> 0.8.4"
 notes = "No big changes. Replaces some array with Box and other minor changes."
 
+[[audits.miniz_oxide]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.8.4 -> 0.8.5"
+notes = "No additions of or changes to unsafe code. Delta consists of a bug fix + cleanups/changes to make it easier for the compiler to elide checks."
+
 [[audits.nom]]
 who = "danakj@chromium.org"
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-1"]
