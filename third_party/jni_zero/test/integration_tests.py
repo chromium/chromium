@@ -482,7 +482,8 @@ class Tests(BaseTest):
   def testPackagePrefixGenerator(self):
     self._TestEndToEndGeneration(['SampleForTests.java'],
                                  srcjar=True,
-                                 package_prefix='this.is.a.package.prefix')
+                                 package_prefix='this.is.a.package.prefix',
+                                 generate_placeholders=True)
 
   def testPackagePrefixWithFilter(self):
     self._TestEndToEndGeneration(['SampleForTests.java'],
