@@ -903,3 +903,7 @@
 	path = third_party/libdisplay-info/src
 	url = https://chromium.googlesource.com/external/gitlab.freedesktop.org/emersion/libdisplay-info
 	gclient-condition = checkout_linux
+[submodule "third_party/libinput/src"]
+	path = third_party/libinput/src
+	url = https://chromium.googlesource.com/external/gitlab.freedesktop.org/libinput/libinput
+	gclient-condition = checkout_linux

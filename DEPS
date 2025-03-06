@@ -2303,6 +2303,11 @@ deps = {
       'condition': 'checkout_linux',
   },
 
+  'src/third_party/libinput/src': {
+      'url': Var('chromium_git') + '/external/gitlab.freedesktop.org/libinput/libinput.git' + '@' + '3aa004b96488bf0b2446c11b97a7f8a75ff37c23',
+      'condition': 'checkout_linux',
+  },
+
   'src/third_party/expat/src':
     Var('chromium_git') + '/external/github.com/libexpat/libexpat.git' + '@' + Var('libexpat_revision'),
 
