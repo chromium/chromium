@@ -11,27 +11,32 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
+#include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
-#include "content/public/browser/render_frame_host.h"
-
-namespace webauthn {
-
-using content::AuthenticatorRequestClientDelegate;
-using password_manager::PasswordForm;
+#include "content/public/browser/document_user_data.h"
+#include "content/public/browser/global_routing_id.h"
 
 // This class is responsible for fetching `PasswordCredentials` for the given
 // `render_frame_host` and responding with the found credentials for a `url`.
-class PasswordCredentialController {
+class PasswordCredentialController
+    : public password_manager::FormFetcher::Consumer,
+      public AuthenticatorRequestDialogModel::Observer {
  public:
-  using PasswordPair = std::pair<std::u16string, std::u16string>;
-  using PasswordCredentials = std::vector<std::unique_ptr<PasswordForm>>;
+  using PasswordCredentials =
+      std::vector<std::unique_ptr<password_manager::PasswordForm>>;
   using PasswordCredentialsReceivedCallback =
       base::OnceCallback<void(PasswordCredentials)>;
 
-  virtual ~PasswordCredentialController() = default;
+  PasswordCredentialController(
+      content::GlobalRenderFrameHostId render_frame_host_id,
+      AuthenticatorRequestDialogModel* model);
+  ~PasswordCredentialController() override;
 
   virtual void FetchPasswords(const GURL& url,
                               PasswordCredentialsReceivedCallback callback);
@@ -41,9 +46,31 @@ class PasswordCredentialController {
   virtual bool IsAuthRequired();
 
   virtual void SetPasswordSelectedCallback(
-      AuthenticatorRequestClientDelegate::PasswordSelectedCallback callback);
-};
+      content::AuthenticatorRequestClientDelegate::PasswordSelectedCallback
+          callback);
 
-}  // namespace webauthn
+  // AuthenticatorRequestDialogModel::Observer
+  void OnPasswordCredentialSelected(PasswordCredentialPair password) override;
+
+ private:
+  // FormFetcher::Consumer:
+  void OnFetchCompleted() override;
+
+  std::unique_ptr<password_manager::FormFetcher> GetFormFetcher(
+      const GURL& url);
+
+  content::RenderFrameHost* GetRenderFrameHost() const;
+
+  const content::GlobalRenderFrameHostId render_frame_host_id_;
+  raw_ptr<AuthenticatorRequestDialogModel> model_;
+
+  std::unique_ptr<password_manager::FormFetcher> form_fetcher_;
+  PasswordCredentialsReceivedCallback callback_;
+  content::AuthenticatorRequestClientDelegate::PasswordSelectedCallback
+      password_selected_callback_;
+  base::ScopedObservation<AuthenticatorRequestDialogModel,
+                          AuthenticatorRequestDialogModel::Observer>
+      model_observer_{this};
+};
 
 #endif  // CHROME_BROWSER_WEBAUTHN_PASSWORD_CREDENTIAL_CONTROLLER_H_

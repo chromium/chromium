@@ -106,10 +106,9 @@ class AuthenticatorRequestDialogController
   // screen or the guided flow for the most likely transport.
   //
   // Valid action when at step: kNotStarted.
-  void StartFlow(
-      device::FidoRequestHandlerBase::TransportAvailabilityInfo
-          transport_availability,
-      webauthn::PasswordCredentialController::PasswordCredentials passwords);
+  void StartFlow(device::FidoRequestHandlerBase::TransportAvailabilityInfo
+                     transport_availability,
+                 PasswordCredentialController::PasswordCredentials passwords);
 
   // Starts a modal WebAuthn flow (i.e. what you normally get if you call
   // WebAuthn with no mediation parameter) from a conditional request.
@@ -522,7 +521,7 @@ class AuthenticatorRequestDialogController
   device::FidoRequestHandlerBase::TransportAvailabilityInfo
       transport_availability_;
 
-  webauthn::PasswordCredentialController::PasswordCredentials passwords_;
+  PasswordCredentialController::PasswordCredentials passwords_;
 
   content::AuthenticatorRequestClientDelegate::AccountPreselectedCallback
       account_preselected_callback_;

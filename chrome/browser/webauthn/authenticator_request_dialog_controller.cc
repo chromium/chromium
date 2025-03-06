@@ -111,8 +111,7 @@ using UIPresentation =
     content::AuthenticatorRequestClientDelegate::UIPresentation;
 using device::AuthenticatorType;
 using device::FidoRequestType;
-using PasswordCredentials =
-    webauthn::PasswordCredentialController::PasswordCredentials;
+using PasswordCredentials = PasswordCredentialController::PasswordCredentials;
 
 constexpr int GetMessageIdForTransportDescription(
     AuthenticatorTransport transport) {

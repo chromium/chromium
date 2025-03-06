@@ -217,7 +217,7 @@ class ChromeAuthenticatorRequestDelegate
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   void SetPasswordControllerForTesting(
-      std::unique_ptr<webauthn::PasswordCredentialController> controller);
+      std::unique_ptr<PasswordCredentialController> controller);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegatePrivateTest,
@@ -243,8 +243,7 @@ class ChromeAuthenticatorRequestDelegate
   // `immediate_not_found_callback_` to notify the renderer.
   bool MaybeHandleImmediateMediation(
       const device::FidoRequestHandlerBase::TransportAvailabilityInfo& data,
-      const webauthn::PasswordCredentialController::PasswordCredentials&
-          passwords);
+      const PasswordCredentialController::PasswordCredentials& passwords);
 
   // Barriers showing the UI while waiting for
   // - password credentials,
@@ -254,7 +253,7 @@ class ChromeAuthenticatorRequestDelegate
 
   void MaybeShowUI(
       device::FidoRequestHandlerBase::TransportAvailabilityInfo tai,
-      webauthn::PasswordCredentialController::PasswordCredentials passwords);
+      PasswordCredentialController::PasswordCredentials passwords);
 
   std::optional<device::FidoTransportProtocol> GetLastTransportUsed() const;
 
@@ -317,7 +316,7 @@ class ChromeAuthenticatorRequestDelegate
 #endif
 
   void OnPasswordCredentialsReceived(
-      webauthn::PasswordCredentialController::PasswordCredentials credentials);
+      PasswordCredentialController::PasswordCredentials credentials);
 
   const content::GlobalRenderFrameHostId render_frame_host_id_;
   const scoped_refptr<AuthenticatorRequestDialogModel> dialog_model_;
@@ -350,7 +349,7 @@ class ChromeAuthenticatorRequestDelegate
 
   std::unique_ptr<GPMEnclaveController> enclave_controller_;
 
-  std::unique_ptr<webauthn::PasswordCredentialController> password_controller_;
+  std::unique_ptr<PasswordCredentialController> password_controller_;
 
   // Stores the TransportAvailabilityInfo while we're waiting for the enclave
   // state to load from the disk.
@@ -359,7 +358,7 @@ class ChromeAuthenticatorRequestDelegate
 
   // Stores the password credentials while waiting for enclave state, transport
   // availability info to be ready.
-  std::unique_ptr<webauthn::PasswordCredentialController::PasswordCredentials>
+  std::unique_ptr<PasswordCredentialController::PasswordCredentials>
       pending_password_credentials_;
 
   // This holds a `TrustedVaultConnection` which will be set on
