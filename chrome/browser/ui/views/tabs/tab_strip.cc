@@ -1305,6 +1305,11 @@ void TabStrip::OnGroupClosed(const tab_groups::TabGroupId& group) {
   tab_container_->OnGroupClosed(group);
 }
 
+void TabStrip::AddTabToSplit(int split_index) {
+  tab_at(split_index)->set_split(true);
+  SchedulePaint();
+}
+
 bool TabStrip::ShouldDrawStrokes() const {
 #if BUILDFLAG(IS_CHROMEOS)
   return false;

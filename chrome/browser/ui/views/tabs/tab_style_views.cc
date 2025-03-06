@@ -175,6 +175,8 @@ class TabStyleViewsImpl : public TabStyleViews {
                              SkColor stroke_color) const;
   void PaintSeparators(gfx::Canvas* canvas) const;
 
+  const Tab* GetAdjacentSplitTab(const Tab* tab) const;
+
   const raw_ptr<const Tab> tab_;
 
   std::unique_ptr<GlowHoverController> hover_controller_;
@@ -318,6 +320,15 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
       aligned_bounds.y() + GetLayoutConstant(TAB_STRIP_PADDING) * scale;
   float tab_left = left + extension;
   float tab_right = right - extension;
+
+  const Tab* const split_tab = GetAdjacentSplitTab(tab());
+  if (split_tab) {
+    if (split_tab == tab()->controller()->GetAdjacentTab(tab(), 1)) {
+      tab_right = tab_right + extension;
+    } else if (split_tab == tab()->controller()->GetAdjacentTab(tab(), -1)) {
+      tab_left = tab_left - extension;
+    }
+  }
 
   // Overlap the toolbar below us so that gaps don't occur when rendering at
   // non-integral display scale factors.
@@ -689,8 +700,17 @@ TabStyle::SeparatorOpacities TabStyleViewsImpl::GetSeparatorOpacities(
 
 float TabStyleViewsImpl::GetSeparatorOpacity(bool for_layout,
                                              bool leading) const {
-  const auto has_visible_background = [](const Tab* const tab) {
-    return tab->IsActive() || tab->IsSelected() || tab->IsMouseHovered();
+  const auto has_visible_background = [this](const Tab* const tab) {
+    if (tab->IsActive() || tab->IsSelected() || tab->IsMouseHovered()) {
+      return true;
+    }
+
+    if (tab->split()) {
+      const Tab* const split_tab = GetAdjacentSplitTab(tab);
+      return split_tab->IsActive() || split_tab->IsSelected();
+    }
+
+    return false;
   };
 
   // These tab states all have visible backgrounds. Separators must not
@@ -705,6 +725,12 @@ float TabStyleViewsImpl::GetSeparatorOpacity(bool for_layout,
 
   const Tab* const left_tab = leading ? adjacent_tab : tab();
   const Tab* const right_tab = leading ? tab() : adjacent_tab;
+
+  // Separator should never be shown between split tabs.
+  if (right_tab && right_tab->split() && left_tab && left_tab->split()) {
+    return 0.0f;
+  }
+
   const bool adjacent_to_header =
       right_tab && right_tab->group().has_value() &&
       (!left_tab || left_tab->group() != right_tab->group());
@@ -865,12 +891,15 @@ SkColor TabStyleViewsImpl::GetCurrentTabBackgroundColor(
 }
 
 TabStyle::TabSelectionState TabStyleViewsImpl::GetSelectionState() const {
-  if (tab_->IsActive()) {
+  // Split tabs should share the selection state.
+  const Tab* const split_tab = GetAdjacentSplitTab(tab());
+  if (tab_->IsActive() || (split_tab && split_tab->IsActive())) {
     return TabStyle::TabSelectionState::kActive;
   }
-  if (tab_->IsSelected()) {
+  if (tab_->IsSelected() || (split_tab && split_tab->IsSelected())) {
     return TabStyle::TabSelectionState::kSelected;
   }
+
   return TabStyle::TabSelectionState::kInactive;
 }
 
@@ -1011,6 +1040,25 @@ void TabStyleViewsImpl::PaintSeparators(gfx::Canvas* canvas) const {
   flags.setColor(separator_color(separator_opacities.right));
   canvas->DrawRoundRect(separator_bounds.trailing,
                         tab_style()->GetSeparatorCornerRadius() * scale, flags);
+}
+
+const Tab* TabStyleViewsImpl::GetAdjacentSplitTab(const Tab* tab) const {
+  if (!tab->split()) {
+    return nullptr;
+  }
+
+  // TODO(agale): In the future this might need to support more than two tab
+  // splits.
+  const Tab* const left_tab = tab->controller()->GetAdjacentTab(tab, -1);
+  if (left_tab && left_tab->split()) {
+    return left_tab;
+  }
+  const Tab* const right_tab = tab->controller()->GetAdjacentTab(tab, 1);
+  if (right_tab && right_tab->split()) {
+    return right_tab;
+  }
+
+  return nullptr;
 }
 
 float TabStyleViewsImpl::GetTopCornerRadiusForWidth(int width) const {
