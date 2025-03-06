@@ -1510,7 +1510,7 @@ TEST_F(EnclaveManagerMockTimeTest, AutomaticRenewal) {
 }
 
 // UV keys are only supported on Windows macOS, and ChromeOS at this time.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 
 std::string ToString(base::span<const uint8_t> v) {
   return std::string(v.begin(), v.end());
@@ -1526,14 +1526,14 @@ class EnclaveUVTest : public EnclaveManagerTest {
   }
 
   void TearDown() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     OverrideWebAuthnChromeosUserVerifyingKeyProviderForTesting(nullptr);
 #endif
   }
 
   void DisableUVKeySupport() {
     fake_provider_.emplace<crypto::ScopedNullUserVerifyingKeyProvider>();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // The scoped fake provider doesn't cover ChromeOS.
     OverrideWebAuthnChromeosUserVerifyingKeyProviderForTesting([]() {
       return std::unique_ptr<crypto::UserVerifyingKeyProvider>(nullptr);
@@ -1543,7 +1543,7 @@ class EnclaveUVTest : public EnclaveManagerTest {
 
   void UseFailingUVKeySupport() {
     fake_provider_.emplace<crypto::ScopedFailingUserVerifyingKeyProvider>();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // The scoped fake provider doesn't cover ChromeOS.
     NOTIMPLEMENTED();
 #endif
@@ -1985,6 +1985,6 @@ TEST_F(EnclaveUVTest, UnregisterOnMissingUserVerifyingKey) {
 
 #endif  // BUILDFLAG(IS_WIN)
 
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 
 #endif  // !defined(MEMORY_SANITIZER)

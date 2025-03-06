@@ -72,7 +72,7 @@
 #include "base/win/shortcut.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/containers/to_vector.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
@@ -81,7 +81,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler_impl.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using extensions::mojom::ManifestLocation;
 
@@ -216,7 +216,7 @@ std::unique_ptr<content::WebContents> PinnedTabsResetTest::CreateWebContents() {
       content::WebContents::CreateParams(profile()));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // DnsConfigResetTest --------------------------------------------------------
 
 class DnsConfigResetTest : public BrowserWithTestWindowTest,
@@ -249,7 +249,7 @@ class DnsConfigResetTest : public BrowserWithTestWindowTest,
     BrowserWithTestWindowTest::TearDown();
   }
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // ConfigParserTest -----------------------------------------------------------
 
@@ -458,7 +458,7 @@ void ReplaceString(std::string* str,
   str->replace(placeholder_pos, placeholder.size(), substitution);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Returns the configured static name servers from `shill_properties`, or an
 // empty vector if no static name servers are configured.
 std::vector<std::string> GetStaticNameServersFromShillProperties(
@@ -477,7 +477,7 @@ std::vector<std::string> GetStaticNameServersFromShillProperties(
     return nameserver.GetString();
   });
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 /********************* Tests *********************/
 
@@ -1147,7 +1147,7 @@ TEST_F(ProfileResetterTest, ResetNTPCustomizationsTest) {
       ntp_custom_background_service->GetCustomBackground().has_value());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(DnsConfigResetTest, ResetDnsConfigurations) {
   ash::ShillServiceClient::TestInterface* shill_service_client =
       ash::ShillServiceClient::Get()->GetTestInterface();
@@ -1185,6 +1185,6 @@ TEST_F(DnsConfigResetTest, ResetDnsConfigurations) {
   EXPECT_THAT(GetStaticNameServersFromShillProperties(*shill_properties),
               testing::IsEmpty());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
