@@ -24822,11 +24822,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Time180",
+                    "name": "Time180Sparkplug",
                     "params": {
                         "V8FlushCodeOldTime": "180"
                     },
                     "enable_features": [
+                        "V8FlushBaselineCode",
                         "V8FlushCodeBasedOnTime"
                     ],
                     "disable_features": [
@@ -24921,34 +24922,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "V8ExternalMemoryAccountedInGlobalLimit"
-                    ]
-                }
-            ]
-        }
-    ],
-    "V8FlushBaselineCode": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "V8FlushBaselineCode"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "V8FlushBaselineCode"
                     ]
                 }
             ]
