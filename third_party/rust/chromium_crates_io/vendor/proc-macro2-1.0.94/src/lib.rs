@@ -9,8 +9,6 @@
 //! A wrapper around the procedural macro API of the compiler's [`proc_macro`]
 //! crate. This library serves two purposes:
 //!
-//! [`proc_macro`]: https://doc.rust-lang.org/proc_macro/
-//!
 //! - **Bring proc-macro-like functionality to other contexts like build.rs and
 //!   main.rs.** Types from `proc_macro` are entirely specific to procedural
 //!   macros and cannot ever exist in code outside of a procedural macro.
@@ -86,7 +84,7 @@
 //! a different thread.
 
 // Proc-macro2 types in rustdoc of other crates get linked to here.
-#![doc(html_root_url = "https://docs.rs/proc-macro2/1.0.93")]
+#![doc(html_root_url = "https://docs.rs/proc-macro2/1.0.94")]
 #![cfg_attr(any(proc_macro_span, super_unstable), feature(proc_macro_span))]
 #![cfg_attr(super_unstable, feature(proc_macro_def_site))]
 #![cfg_attr(docsrs, feature(doc_cfg))]
@@ -96,6 +94,7 @@
     clippy::cast_possible_truncation,
     clippy::checked_conversions,
     clippy::doc_markdown,
+    clippy::elidable_lifetime_names,
     clippy::incompatible_msrv,
     clippy::items_after_statements,
     clippy::iter_without_into_iter,
@@ -532,8 +531,6 @@ impl Span {
     /// Warning: the underlying [`proc_macro::Span::join`] method is
     /// nightly-only. When called from within a procedural macro not using a
     /// nightly compiler, this method will always return `None`.
-    ///
-    /// [`proc_macro::Span::join`]: https://doc.rust-lang.org/proc_macro/struct.Span.html#method.join
     pub fn join(&self, other: Span) -> Option<Span> {
         self.inner.join(other.inner).map(Span::_new)
     }
@@ -1296,8 +1293,6 @@ impl Literal {
     /// Warning: the underlying [`proc_macro::Literal::subspan`] method is
     /// nightly-only. When called from within a procedural macro not using a
     /// nightly compiler, this method will always return `None`.
-    ///
-    /// [`proc_macro::Literal::subspan`]: https://doc.rust-lang.org/proc_macro/struct.Literal.html#method.subspan
     pub fn subspan<R: RangeBounds<usize>>(&self, range: R) -> Option<Span> {
         self.inner.subspan(range).map(Span::_new)
     }

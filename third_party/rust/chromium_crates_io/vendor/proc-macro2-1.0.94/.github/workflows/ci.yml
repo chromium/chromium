@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rust: [1.63.0, stable, beta]
+        rust: [1.67.0, stable, beta]
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
@@ -147,6 +147,8 @@ jobs:
         with:
           target: wasm32-unknown-unknown
           components: rust-src
+      - name: Ignore WebAssembly linker warning
+        run: echo RUSTFLAGS=${RUSTFLAGS}\ -Alinker_messages >> $GITHUB_ENV
       - run: cargo test --target wasm32-unknown-unknown --no-run
 
   fuzz:

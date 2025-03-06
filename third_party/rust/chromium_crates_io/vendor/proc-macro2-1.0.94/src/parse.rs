@@ -857,7 +857,7 @@ fn digits(mut input: Cursor) -> Result<Cursor, Reject> {
                 continue;
             }
             _ => break,
-        };
+        }
         len += 1;
         empty = false;
     }
