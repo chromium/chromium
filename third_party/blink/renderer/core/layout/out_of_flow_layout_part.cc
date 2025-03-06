@@ -2464,7 +2464,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
         LogicalScrollRange{inline_scroll_min, inline_scroll_max,
                            block_scroll_min, block_scroll_max}
             .ToPhysical(candidate_writing_direction);
-    out_non_overflowing_range->anchor_object = GetPositionAnchorObject(
+    out_non_overflowing_range->anchor_element = GetPositionAnchorElement(
         node_info.node, candidate_style, anchor_evaluator.AnchorQuery());
   }
 
