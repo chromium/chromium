@@ -1697,6 +1697,10 @@ config("libcxx_module") {
       "-fmodule-map-file=" + modulemap,
       "-fno-implicit-module-maps",
 
+      # This removes absolute paths from .pcm files.
+      "-Xclang",
+      "-fmodule-file-home-is-cwd",
+
       "-Xclang",
       "-fmodules-local-submodule-visibility",  # required for builtins
 
