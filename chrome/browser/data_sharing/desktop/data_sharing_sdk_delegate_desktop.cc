@@ -10,9 +10,15 @@
 
 namespace data_sharing {
 
+namespace {
+constexpr base::TimeDelta kResetWebContentsAfterLastCallDuration =
+    base::Minutes(1);
+}
+
 DataSharingSDKDelegateDesktop::DataSharingSDKDelegateDesktop(
     content::BrowserContext* context)
-    : context_(context) {}
+    : context_(context),
+      reset_web_contents_timer_(std::make_unique<base::OneShotTimer>()) {}
 
 DataSharingSDKDelegateDesktop::~DataSharingSDKDelegateDesktop() = default;
 
@@ -153,6 +159,10 @@ void DataSharingSDKDelegateDesktop::MaybeLoadWebContents(
     data_sharing_ui->SetDelegate(this);
     callback_subscriptions_.emplace_back(callbacks_.Add(std::move(callback)));
   }
+
+  // For every API call, schedule a timer to clean up the WebContents after some
+  // time if there are no more calls coming after.
+  ScheduleResetWebContentsTimer();
 }
 
 void DataSharingSDKDelegateDesktop::ApiInitComplete() {
@@ -173,7 +183,7 @@ void DataSharingSDKDelegateDesktop::ShowErrorDialog(int status_code) {
 void DataSharingSDKDelegateDesktop::Shutdown() {
   // Since WebContents depends on BrowserContext, it needs to be destroyed
   // before the BrowserContext is destroyed.
-  web_contents_.reset();
+  ResetWebContents();
 }
 
 void DataSharingSDKDelegateDesktop::OnReadGroups(
@@ -204,6 +214,17 @@ void DataSharingSDKDelegateDesktop::OnDeleteGroup(
     int status_code) {
   std::move(callback).Run(
       absl::Status(static_cast<absl::StatusCode>(status_code), "Delete Group"));
+}
+
+void DataSharingSDKDelegateDesktop::ScheduleResetWebContentsTimer() {
+  reset_web_contents_timer_->Start(
+      FROM_HERE, kResetWebContentsAfterLastCallDuration, this,
+      &DataSharingSDKDelegateDesktop::ResetWebContents);
+}
+
+void DataSharingSDKDelegateDesktop::ResetWebContents() {
+  callback_subscriptions_.clear();
+  web_contents_.reset();
 }
 
 }  // namespace data_sharing

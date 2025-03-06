@@ -94,6 +94,12 @@ class DataSharingSDKDelegateDesktop : public DataSharingSDKDelegate,
   void OnDeleteGroup(base::OnceCallback<void(const absl::Status&)> callback,
                      int status_code);
 
+  // Schedule reseting the WebContents after a specific time.
+  void ScheduleResetWebContentsTimer();
+
+  // Reset the WebContents.
+  void ResetWebContents();
+
   // A list of callback to be invoked.
   base::OnceCallbackList<void(content::WebContents*)> callbacks_;
 
@@ -104,6 +110,9 @@ class DataSharingSDKDelegateDesktop : public DataSharingSDKDelegate,
   std::unique_ptr<content::WebContents> web_contents_;
 
   const raw_ptr<content::BrowserContext> context_;
+
+  // Timer to reset the WebContents after some time without activity.
+  std::unique_ptr<base::OneShotTimer> reset_web_contents_timer_;
 };
 
 }  // namespace data_sharing
