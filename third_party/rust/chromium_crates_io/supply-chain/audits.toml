@@ -2885,6 +2885,12 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.24 -> 1.0.25"
 notes = "No changes in `.rs` files except `doc` attribute changes in `lib.rs`."
 
+[[audits.semver]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.25 -> 1.0.26"
+notes = "Only minor documentation updates."
+
 [[audits.serde]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
