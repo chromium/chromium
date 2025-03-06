@@ -3693,7 +3693,7 @@
     },
     {
       name: "RTCEncodedFrameTimestamps",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "RTCEncodedVideoFrameAdditionalMetadata",
