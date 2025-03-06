@@ -36,13 +36,13 @@ bool IsUserEligibleForAccountStorage(const PrefService* pref_service,
     return false;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/40067058): Delete this when ConsentLevel::kSync is deleted.
   // See ConsentLevel::kSync documentation for details.
-  if (sync_service->IsSyncFeatureEnabled() &&
-      !base::FeatureList::IsEnabled(
-          syncer::kEnablePasswordsAccountStorageForSyncingUsers)) {
+  if (sync_service->IsSyncFeatureEnabled()) {
     return false;
   }
+#endif
 
   switch (sync_service->GetTransportState()) {
     case syncer::SyncService::TransportState::DISABLED:
