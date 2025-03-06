@@ -4,6 +4,7 @@
 
 #include "net/http/http_no_vary_search_data.h"
 
+#include <optional>
 #include <string_view>
 
 #include "base/containers/contains.h"
@@ -12,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/types/expected.h"
 #include "net/base/features.h"
+#include "net/base/pickle.h"
 #include "net/base/url_search_params.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
@@ -236,5 +238,55 @@ HttpNoVarySearchData::ParseNoVarySearchDictionary(
 
   return base::ok(no_vary_search);
 }
+
+// LINT.IfChange(Serialization)
+void PickleTraits<HttpNoVarySearchData>::Serialize(
+    base::Pickle& pickle,
+    const HttpNoVarySearchData& value) {
+  WriteToPickle(pickle, HttpNoVarySearchData::kMagicNumber,
+                value.no_vary_params_, value.vary_params_,
+                value.vary_on_key_order_, value.vary_by_default_);
+}
+
+std::optional<HttpNoVarySearchData>
+PickleTraits<HttpNoVarySearchData>::Deserialize(base::PickleIterator& iter) {
+  HttpNoVarySearchData result;
+  uint32_t magic_number = 0u;
+  if (!ReadPickleInto(iter, magic_number, result.no_vary_params_,
+                      result.vary_params_, result.vary_on_key_order_,
+                      result.vary_by_default_)) {
+    return std::nullopt;
+  }
+
+  if (magic_number != HttpNoVarySearchData::kMagicNumber) {
+    return std::nullopt;
+  }
+
+  if (result.vary_by_default_) {
+    if (result.vary_on_key_order_ && result.vary_params_.empty() &&
+        result.no_vary_params_.empty()) {
+      // This is the default configuration in the absence of a No-Vary-Search
+      // header, and should never be stored in a HttpNoVarySearchData object.
+      return std::nullopt;
+    }
+    if (!result.vary_params_.empty()) {
+      return std::nullopt;
+    }
+  } else {
+    if (!result.no_vary_params_.empty()) {
+      return std::nullopt;
+    }
+  }
+
+  return result;
+}
+
+size_t PickleTraits<HttpNoVarySearchData>::PickleSize(
+    const HttpNoVarySearchData& value) {
+  return EstimatePickleSize(HttpNoVarySearchData::kMagicNumber,
+                            value.no_vary_params_, value.vary_params_,
+                            value.vary_on_key_order_, value.vary_by_default_);
+}
+// LINT.ThenChange(//net/http/http_no_vary_search_data.h:MagicNumber)
 
 }  // namespace net
