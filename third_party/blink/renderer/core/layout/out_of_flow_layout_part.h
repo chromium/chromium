@@ -355,6 +355,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       AnchorEvaluatorImpl&,
       std::optional<wtf_size_t> option_index,
       bool try_fit_available_space,
+      PhysicalOffset default_anchor_scroll_shift,
       NonOverflowingScrollRange* out_scroll_range);
 
   const LayoutResult* Layout(
