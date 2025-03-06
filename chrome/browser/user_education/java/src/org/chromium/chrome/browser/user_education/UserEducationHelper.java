@@ -4,15 +4,18 @@
 
 package org.chromium.chrome.browser.user_education;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.os.Handler;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.SupplierUtils;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -40,20 +43,20 @@ import java.util.List;
  * .setCircleHighlight(true) .setOnShowCallback( ()-> doCustomShowLogic()) .setOnDismissCallback(()
  * -> doCustomDismissLogic()) .build());
  */
+@NullMarked
 public class UserEducationHelper {
     private final Activity mActivity;
     private final Handler mHandler;
 
     private Profile mProfile;
-    private List<IphCommand> mPendingIphCommands;
-    private TextBubble mTextBubble;
+    private @Nullable List<IphCommand> mPendingIphCommands;
+    private @Nullable TextBubble mTextBubble;
 
     /**
      * Constructs a {@link UserEducationHelper} that is immediately available to process inbound
      * {@link IphCommand}s.
      */
-    public UserEducationHelper(
-            @NonNull Activity activity, @NonNull Profile profile, Handler handler) {
+    public UserEducationHelper(Activity activity, Profile profile, Handler handler) {
         assert activity != null : "Trying to show an IPH for a null activity.";
         assert profile != null : "Trying to show an IPH with a null profile";
 
@@ -71,9 +74,7 @@ public class UserEducationHelper {
      * a reference to the {@link Profile#getOriginalProfile()}.
      */
     public UserEducationHelper(
-            @NonNull Activity activity,
-            @NonNull Supplier<Profile> profileSupplier,
-            Handler handler) {
+            Activity activity, Supplier<Profile> profileSupplier, Handler handler) {
         assert activity != null : "Trying to show an IPH for a null activity.";
         assert profileSupplier != null : "Trying to show an IPH with a null profile supplier";
 
@@ -83,6 +84,7 @@ public class UserEducationHelper {
         SupplierUtils.waitForAll(() -> setProfile(profileSupplier.get()), profileSupplier);
     }
 
+    @Initializer
     private void setProfile(Profile profile) {
         assert profile != null;
         mProfile = profile.getOriginalProfile();
@@ -154,8 +156,8 @@ public class UserEducationHelper {
         iphCommand.fetchFromResources();
 
         if (iphCommand.showTextBubble) {
-            String contentString = iphCommand.contentString;
-            String accessibilityString = iphCommand.accessibilityText;
+            String contentString = assumeNonNull(iphCommand.contentString);
+            String accessibilityString = assumeNonNull(iphCommand.accessibilityText);
             assert !contentString.isEmpty();
             assert !accessibilityString.isEmpty();
 
@@ -166,7 +168,9 @@ public class UserEducationHelper {
                             contentString,
                             accessibilityString,
                             !iphCommand.removeArrow,
-                            viewRectProvider != null ? viewRectProvider : rectProvider,
+                            viewRectProvider != null
+                                    ? viewRectProvider
+                                    : assumeNonNull(rectProvider),
                             ChromeAccessibilityUtil.get().isAccessibilityEnabled());
             mTextBubble.setPreferredVerticalOrientation(iphCommand.preferredVerticalOrientation);
             mTextBubble.setDismissOnTouchInteraction(iphCommand.dismissOnTouch);
@@ -198,7 +202,7 @@ public class UserEducationHelper {
         }
 
         if (viewRectProvider != null) {
-            viewRectProvider.setInsetPx(iphCommand.insetRect);
+            viewRectProvider.setInsetPx(assumeNonNull(iphCommand.insetRect));
         }
 
         iphCommand.onShowCallback.run();
@@ -211,7 +215,7 @@ public class UserEducationHelper {
         }
     }
 
-    public TextBubble getTextBubbleForTesting() {
+    public @Nullable TextBubble getTextBubbleForTesting() {
         return mTextBubble;
     }
 }
