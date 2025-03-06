@@ -1300,7 +1300,7 @@ void LensOverlayController::CopyText(const std::string& text) {
 
 void LensOverlayController::CopyImage(lens::mojom::CenterRotatedBoxPtr region) {
   SkBitmap cropped = lens::CropBitmapToRegion(
-      initialization_data_->current_screenshot_, std::move(region));
+      initialization_data_->initial_screenshot_, std::move(region));
   ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
   clipboard_writer.WriteImage(cropped);
 }
@@ -1324,7 +1324,7 @@ void LensOverlayController::RecordLensOverlaySemanticEvent(
 void LensOverlayController::SaveAsImage(
     lens::mojom::CenterRotatedBoxPtr region) {
   SkBitmap cropped = lens::CropBitmapToRegion(
-      initialization_data_->current_screenshot_, std::move(region));
+      initialization_data_->initial_screenshot_, std::move(region));
   const GURL data_url = GURL(webui::GetBitmapDataUrl(cropped));
   content::DownloadManager* download_manager =
       tab_->GetBrowserWindowInterface()->GetProfile()->GetDownloadManager();
@@ -1502,8 +1502,9 @@ LensOverlayController::OverlayInitializationData::OverlayInitializationData(
     lens::PaletteId color_palette,
     GURL page_url,
     std::optional<std::string> page_title)
-    : current_screenshot_(screenshot),
-      current_rgb_screenshot_(std::move(rgb_screenshot)),
+    : initial_screenshot_(screenshot),
+      initial_rgb_screenshot_(std::move(rgb_screenshot)),
+      updated_screenshot_(screenshot),
       color_palette_(color_palette),
       page_url_(page_url),
       page_title_(page_title) {}
@@ -1982,6 +1983,51 @@ void LensOverlayController::UpdatePageContextualization(
     return;
   }
 
+  // Do not capture a new screenshot if the feature param is not enabled or if
+  // the user is not viewing the live page, meaning the viewport cannot have
+  // changed.
+  if (!lens::features::UpdateViewportEachQueryEnabled() ||
+      state_ != State::kLivePageAndResults) {
+    UpdatePageContextualizationPart2(page_contents, primary_content_type,
+                                     page_count, SkBitmap());
+    return;
+  }
+
+  // Begin the process of grabbing a screenshot.
+  content::RenderWidgetHostView* view = tab_->GetContents()
+                                            ->GetPrimaryMainFrame()
+                                            ->GetRenderViewHost()
+                                            ->GetWidget()
+                                            ->GetView();
+  if (!IsScreenshotPossible(view)) {
+    UpdatePageContextualizationPart2(page_contents, primary_content_type,
+                                     page_count, SkBitmap());
+    return;
+  }
+  view->CopyFromSurface(
+      /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(),
+      base::BindPostTask(
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          base::BindOnce(
+              &LensOverlayController::UpdatePageContextualizationPart2,
+              weak_factory_.GetWeakPtr(), page_contents, primary_content_type,
+              page_count)));
+}
+
+void LensOverlayController::UpdatePageContextualizationPart2(
+    std::vector<lens::PageContent> page_contents,
+    lens::MimeType primary_content_type,
+    std::optional<uint32_t> page_count,
+    const SkBitmap& bitmap) {
+  bool sending_bitmap = false;
+  if (!bitmap.drawsNothing() &&
+      (initialization_data_->updated_screenshot_.drawsNothing() ||
+       !lens::AreBitmapsEqual(initialization_data_->updated_screenshot_,
+                              bitmap))) {
+    initialization_data_->updated_screenshot_ = bitmap;
+    sending_bitmap = true;
+  }
+
   // TODO(crbug.com/399215935): Ideally, this check should ensure that any of
   // the content date has not changed. For now, we only check if the
   // primary_content_type bytes have changed.
@@ -2004,22 +2050,31 @@ void LensOverlayController::UpdatePageContextualization(
 
   if (initialization_data_->primary_content_type_ == primary_content_type &&
       old_page_content && new_page_content) {
-    // If the bytes have not changed more than our threshold, exit early.
     const float old_size = old_page_content->bytes_.size();
     const float new_size = new_page_content->bytes_.size();
     const float percent_changed = abs((new_size - old_size) / old_size);
     if (percent_changed < kByteChangeTolerancePercent) {
-      // Notify the query controller that the user may be issuing a search
-      // request, and therefore the query should be restarted if TTL expired. If
-      // the bytes did change, this will happen automatically as a result of the
-      // SendPageContentUpdateRequest call below.
-      lens_overlay_query_controller_->MaybeRestartQueryFlow();
+      if (!sending_bitmap) {
+        // If the bytes have not changed more than our threshold and the
+        // screenshot has not changed, exit early. Notify the query controller
+        // that the user may be issuing a search request, and therefore the
+        // query should be restarted if TTL expired. If the bytes did change,
+        // this will happen automatically as a result of the
+        // SendUpdatedPageContent call below.
+        lens_overlay_query_controller_->MaybeRestartQueryFlow();
+        return;
+      }
+      // If the screenshot has changed but the bytes have not, send only the
+      // screenshot.
+      lens_overlay_query_controller_->SendUpdatedPageContent(
+          std::nullopt, std::nullopt, std::nullopt,
+          sending_bitmap ? bitmap : SkBitmap());
       return;
     }
   }
 
-  // Since the page content has changed so let the query controller know to
-  // avoid dangling pointers.
+  // Since the page content has changed, let the query controller know to avoid
+  // dangling pointers.
   lens_overlay_query_controller_->ResetPageContentData();
 
   initialization_data_->page_contents_ = page_contents;
@@ -2044,9 +2099,10 @@ void LensOverlayController::UpdatePageContextualization(
 
   is_upload_progress_bar_shown_ = true;
   is_first_upload_handler_event_ = true;
-  lens_overlay_query_controller_->SendPageContentUpdateRequest(
+  lens_overlay_query_controller_->SendUpdatedPageContent(
       initialization_data_->page_contents_,
-      initialization_data_->primary_content_type_, GetPageURL());
+      initialization_data_->primary_content_type_, GetPageURL(),
+      sending_bitmap ? bitmap : SkBitmap());
 
   RecordDocumentMetrics(page_count);
 }
@@ -2301,9 +2357,9 @@ void LensOverlayController::InitializeOverlay(
   // be sent with the initial image request, so we need to send it here.
   if (lens::features::IsLensOverlayContextualSearchboxEnabled() &&
       lens::features::IsLensOverlayEarlyStartQueryFlowOptimizationEnabled()) {
-    lens_overlay_query_controller_->SendPageContentUpdateRequest(
+    lens_overlay_query_controller_->SendUpdatedPageContent(
         initialization_data_->page_contents_,
-        initialization_data_->primary_content_type_, GetPageURL());
+        initialization_data_->primary_content_type_, GetPageURL(), SkBitmap());
   }
 
   // Show the preselection overlay now that the overlay is initialized and ready
@@ -2338,7 +2394,7 @@ void LensOverlayController::InitializeOverlay(
     // call, which should only occur once in the lifetime of
     // LensOverlayQueryController and thus of LensOverlayController.
     lens_overlay_query_controller_->StartQueryFlow(
-        initialization_data_->current_screenshot_,
+        initialization_data_->initial_screenshot_,
         initialization_data_->page_url_, initialization_data_->page_title_,
         std::move(initialization_data_->significant_region_boxes_),
         initialization_data_->page_contents_,
@@ -2386,7 +2442,7 @@ void LensOverlayController::InitializeOverlayUI(
   // Send the initial document type to the overlay web UI.
   NotifyPageContentUpdated();
 
-  page_->ScreenshotDataReceived(init_data.current_rgb_screenshot_);
+  page_->ScreenshotDataReceived(init_data.initial_rgb_screenshot_);
   if (!init_data.objects_.empty()) {
     SendObjects(CopyObjects(init_data.objects_));
   }
