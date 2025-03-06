@@ -11,10 +11,10 @@ enum AnimationTriggerType { "once", "repeat", "alternate", "state" };
     RuntimeEnabled=AnimationTrigger
 ] interface AnimationTrigger {
   [CallWith=ExecutionContext, Measure, RaisesException] constructor(optional AnimationTriggerOptions options = {});
-  attribute AnimationTimeline? timeline;
-  attribute AnimationTriggerType type;
-  [CallWith=ExecutionContext, RaisesException=Setter] attribute (TimelineRangeOffset or DOMString) rangeStart;
-  [CallWith=ExecutionContext, RaisesException=Setter] attribute (TimelineRangeOffset or DOMString) rangeEnd;
-  [CallWith=ExecutionContext, RaisesException=Setter] attribute (TimelineRangeOffset or DOMString) exitRangeStart;
-  [CallWith=ExecutionContext, RaisesException=Setter] attribute (TimelineRangeOffset or DOMString) exitRangeEnd;
+  readonly attribute AnimationTimeline? timeline;
+  readonly attribute AnimationTriggerType type;
+  [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) rangeStart;
+  [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) rangeEnd;
+  [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) exitRangeStart;
+  [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) exitRangeEnd;
 };

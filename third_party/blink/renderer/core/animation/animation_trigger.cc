@@ -93,45 +93,17 @@ const RangeBoundary* AnimationTrigger::rangeStart(
     ExecutionContext* execution_context) {
   return range_start_;
 }
-void AnimationTrigger::setRangeStart(ExecutionContext* execution_context,
-                                     const RangeBoundary* boundary,
-                                     ExceptionState& exception_state) {
-  if (ValidateBoundary(execution_context, boundary, exception_state, 0)) {
-    range_start_ = boundary;
-  }
-}
 const RangeBoundary* AnimationTrigger::rangeEnd(
     ExecutionContext* execution_context) {
   return range_end_;
-}
-void AnimationTrigger::setRangeEnd(ExecutionContext* execution_context,
-                                   const RangeBoundary* boundary,
-                                   ExceptionState& exception_state) {
-  if (ValidateBoundary(execution_context, boundary, exception_state, 1)) {
-    range_end_ = boundary;
-  }
 }
 const RangeBoundary* AnimationTrigger::exitRangeStart(
     ExecutionContext* execution_context) {
   return exit_range_start_;
 }
-void AnimationTrigger::setExitRangeStart(ExecutionContext* execution_context,
-                                         const RangeBoundary* boundary,
-                                         ExceptionState& exception_state) {
-  if (ValidateBoundary(execution_context, boundary, exception_state, 0)) {
-    exit_range_start_ = boundary;
-  }
-}
 const RangeBoundary* AnimationTrigger::exitRangeEnd(
     ExecutionContext* execution_context) {
   return exit_range_end_;
-}
-void AnimationTrigger::setExitRangeEnd(ExecutionContext* execution_context,
-                                       const RangeBoundary* boundary,
-                                       ExceptionState& exception_state) {
-  if (ValidateBoundary(execution_context, boundary, exception_state, 1)) {
-    exit_range_end_ = boundary;
-  }
 }
 
 }  // namespace blink
