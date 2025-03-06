@@ -678,6 +678,8 @@ void RestrictedCookieManager::SetCanonicalCookie(
     bool apply_devtools_overrides,
     SetCanonicalCookieCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  bool collect_metrics =
+      metrics_subsampler_.ShouldSample(net::kHistogramSampleProbability);
   // Don't allow a status that has an exclusion reason as they should have
   // already been taken care of on the renderer side.
   if (!status.IsInclude()) {
@@ -780,8 +782,11 @@ void RestrictedCookieManager::SetCanonicalCookie(
       bool cookie_partition_key_ok =
           cookie_partition_key->from_script() ||
           cookie_partition_key.value() == cookie_partition_key_.value();
-      UMA_HISTOGRAM_BOOLEAN("Net.RestrictedCookieManager.CookiePartitionKeyOK",
-                            cookie_partition_key_ok);
+      if (collect_metrics) {
+        UMA_HISTOGRAM_BOOLEAN(
+            "Net.RestrictedCookieManager.CookiePartitionKeyOK",
+            cookie_partition_key_ok);
+      }
       if (!cookie_partition_key_ok) {
         receiver_.ReportBadMessage(
             "RestrictedCookieManager: unexpected cookie partition key");
@@ -794,7 +799,7 @@ void RestrictedCookieManager::SetCanonicalCookie(
     }
   }
 
-  if (IsPartitionedCookiesEnabled()) {
+  if (IsPartitionedCookiesEnabled() && collect_metrics) {
     UMA_HISTOGRAM_BOOLEAN("Net.RestrictedCookieManager.SetPartitionedCookie",
                           cookie_partition_key.has_value());
   }
@@ -904,6 +909,8 @@ void RestrictedCookieManager::SetCookieFromString(
   TRACE_EVENT("net", "RestrictedCookieManager::SetCookieFromString");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::ElapsedTimer timer;
+  const bool collect_metrics =
+      metrics_subsampler_.ShouldSample(net::kHistogramSampleProbability);
 
   // The cookie is about to be set. Proactively increment the version so it's
   // instantly reflected. This ensures that changes a reflected before the
@@ -939,14 +946,16 @@ void RestrictedCookieManager::SetCookieFromString(
     }
     return;
   }
-  HistogramScriptCookieExpiration(*parsed_cookie);
+  if (collect_metrics) {
+    HistogramScriptCookieExpiration(*parsed_cookie);
+  }
 
   // Further checks (origin_, settings), as well as logging done by
   // SetCanonicalCookie()
   SetCanonicalCookie(*parsed_cookie, url, site_for_cookies, top_frame_origin,
                      storage_access_api_status, status,
                      apply_devtools_overrides, base::DoNothing());
-  if (metrics_subsampler_.ShouldSample(0.001)) {
+  if (collect_metrics) {
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Cookie.SetCookieFromString.Duration", timer.Elapsed(),
         base::Microseconds(1), base::Milliseconds(128), 100);
@@ -1017,7 +1026,7 @@ void RestrictedCookieManager::GetCookiesString(
                  return net::CanonicalCookie::BuildCookieLine(cookies);
                }).Then(std::move(bound_callback)));
 
-  if (metrics_subsampler_.ShouldSample(0.001)) {
+  if (metrics_subsampler_.ShouldSample(net::kHistogramSampleProbability)) {
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Cookie.GetCookiesString.Duration", timer.Elapsed(),
         base::Microseconds(1), base::Milliseconds(128), 100);
@@ -1080,10 +1089,12 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
       << "top_frame_origin from renderer='" << top_frame_origin
       << "' from browser='" << BoundTopFrameOrigin() << "';";
 
-  UMA_HISTOGRAM_BOOLEAN("Net.RestrictedCookieManager.SiteForCookiesOK",
-                        site_for_cookies_ok);
-  UMA_HISTOGRAM_BOOLEAN("Net.RestrictedCookieManager.TopFrameOriginOK",
-                        top_frame_origin_ok);
+  if (metrics_subsampler_.ShouldSample(net::kHistogramSampleProbability)) {
+    UMA_HISTOGRAM_BOOLEAN("Net.RestrictedCookieManager.SiteForCookiesOK",
+                          site_for_cookies_ok);
+    UMA_HISTOGRAM_BOOLEAN("Net.RestrictedCookieManager.TopFrameOriginOK",
+                          top_frame_origin_ok);
+  }
 
   // Don't allow setting cookies on other domains. See crbug.com/996786.
   if (cookie_being_set && !cookie_being_set->IsDomainMatch(url.host())) {

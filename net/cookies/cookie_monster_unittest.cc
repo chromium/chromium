@@ -4695,6 +4695,7 @@ TEST_F(CookieMonsterTest, DeleteAll) {
 }
 
 TEST_F(CookieMonsterTest, HistogramCheck) {
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
   auto cm = std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
 
   // Should match call in InitializeHistograms, but doesn't really matter
@@ -7163,6 +7164,7 @@ TEST_F(CookieMonsterTest, IsCookieSentToSamePortThatSetIt) {
 }
 
 TEST_F(CookieMonsterTest, CookieDomainSetHistogram) {
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
   base::HistogramTester histograms;
   const char kHistogramName[] = "Cookie.DomainSet";
 
@@ -7247,6 +7249,7 @@ TEST_F(CookieMonsterTest, CookiePortReadHistogram) {
 }
 
 TEST_F(CookieMonsterTest, CookiePortSetHistogram) {
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
   base::HistogramTester histograms;
   const char kHistogramName[] = "Cookie.Port.Set.RemoteHost";
   const char kHistogramNameLocal[] = "Cookie.Port.Set.Localhost";
@@ -7403,6 +7406,7 @@ TEST_F(CookieMonsterTest, CookiePortReadDiffersFromSetHistogram) {
 }
 
 TEST_F(CookieMonsterTest, CookieSourceSchemeNameHistogram) {
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
   base::HistogramTester histograms;
   const char kHistogramName[] = "Cookie.CookieSourceSchemeName";
 
