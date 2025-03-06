@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/media_query.h"
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
+#include "third_party/blink/renderer/core/media_type_names.h"
 
 namespace blink {
 
@@ -88,9 +89,10 @@ class CORE_EXPORT IfTestStyle : public IfCondition {
 
 class CORE_EXPORT IfTestMedia : public IfCondition {
  public:
-  explicit IfTestMedia(const MediaQuery* query) {
+  explicit IfTestMedia(const MediaQueryExpNode* exp_node) {
     HeapVector<Member<const MediaQuery>> queries;
-    queries.push_back(query);
+    queries.push_back(MakeGarbageCollected<MediaQuery>(
+        MediaQuery::RestrictorType::kNone, media_type_names::kAll, exp_node));
     media_test_ = MakeGarbageCollected<MediaQuerySet>(std::move(queries));
   }
   void Trace(Visitor*) const override;

@@ -32,6 +32,10 @@ class AutocompleteMatchWrapperTest : public PlatformTest {
     profile_ = std::move(builder).Build();
   }
 
+  ~AutocompleteMatchWrapperTest() override {
+    [wrapper_ disconnect];
+  }
+
   base::test::TaskEnvironment task_environment_;
 
   AutocompleteMatchWrapper* wrapper_;

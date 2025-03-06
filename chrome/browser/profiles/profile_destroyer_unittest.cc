@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -90,7 +91,7 @@ class ProfileDestroyerTest : public testing::Test,
   // Destroying profile is still not universally supported. We need to disable
   // some tests, because it isn't possible to start destroying the profile.
   bool IsScopedProfileKeepAliveSupported() {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
     return false;
 #else
     return base::FeatureList::IsEnabled(

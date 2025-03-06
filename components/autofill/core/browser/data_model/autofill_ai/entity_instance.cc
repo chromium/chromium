@@ -232,16 +232,6 @@ FieldTypeSet AttributeInstance::GetDatabaseStoredTypes() const {
       info_);
 }
 
-FieldType AttributeInstance::GetTopLevelType() const {
-  return absl::visit(
-      base::Overloaded{
-          [&](const CountryInfo&) { return ADDRESS_HOME_COUNTRY; },
-          [&](const DateInfo& date) { return type_.field_type(); },
-          [&](const NameInfo&) { return NAME_FULL; },
-          [&](const std::u16string&) { return type_.field_type(); }},
-      info_);
-}
-
 FieldType AttributeInstance::GetNormalizedType(FieldType info_type) const {
   if (GetSupportedTypes().contains(info_type)) {
     return info_type;
@@ -252,7 +242,13 @@ FieldType AttributeInstance::GetNormalizedType(FieldType info_type) const {
     // should not usually happen but for now can, only in case a field couldn't
     // be classified by Autofill's logic but was classified by the ML model. In
     // that case, we assume the type is the top-level type of the attribute.
-    return GetTopLevelType();
+    return absl::visit(
+        base::Overloaded{
+            [&](const CountryInfo&) { return ADDRESS_HOME_COUNTRY; },
+            [&](const DateInfo& date) { return type().field_type(); },
+            [&](const NameInfo&) { return NAME_FULL; },
+            [&](const std::u16string&) { return type().field_type(); }},
+        info_);
   }
   // In case the field classification is totally unrelated to the
   // attribute type classification, we return UKNOWN_TYPE to inform callers of
@@ -300,7 +296,7 @@ bool EntityInstance::ImportOrder(const EntityInstance& lhs,
 
 std::ostream& operator<<(std::ostream& os, const AttributeInstance& a) {
   os << a.type() << ": " << '"'
-     << a.GetInfo(a.GetTopLevelType(), /*app_locale=*/"en-US",
+     << a.GetInfo(a.type().field_type(), /*app_locale=*/"en-US",
                   /*format_string=*/std::nullopt)
      << '"';
   return os;
@@ -361,7 +357,7 @@ EntityInstance::EntityMergeability EntityInstance::GetEntityMergeability(
 
   auto normalized_value = [](const AttributeInstance& attribute) {
     return AutofillProfileComparator::NormalizeForComparison(
-        attribute.GetRawInfo(/*pass_key=*/{}, attribute.GetTopLevelType()));
+        attribute.GetRawInfo(/*pass_key=*/{}, attribute.type().field_type()));
   };
 
   auto get_attribute_mergeability = [&](AttributeType attribute_type) {

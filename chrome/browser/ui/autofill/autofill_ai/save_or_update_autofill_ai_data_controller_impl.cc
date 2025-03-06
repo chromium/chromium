@@ -133,11 +133,9 @@ SaveOrUpdateAutofillAiDataControllerImpl::GetUpdatedAttributesDetails() const {
        new_entity_->attributes()) {
     EntityAttributeUpdateType update_type =
         get_attribute_update_type(attribute_instance);
-    details.emplace_back(
-        attribute_instance.type().GetNameForI18n(),
-        attribute_instance.GetInfo(attribute_instance.GetTopLevelType(),
-                                   app_locale_, /*format_string=*/std::nullopt),
-        update_type);
+    details.emplace_back(attribute_instance.type().GetNameForI18n(),
+                         attribute_instance.GetCompleteInfo(app_locale_),
+                         update_type);
 
     // Also add the old value when an attribute is updated to display
     // before/after to the user.
@@ -154,9 +152,7 @@ SaveOrUpdateAutofillAiDataControllerImpl::GetUpdatedAttributesDetails() const {
           // would show the user the same full name twice, which seems like
           // nothing has changed. Consider adding a detail for every supported
           // type that actually does change.
-          old_entity_attribute->GetInfo(old_entity_attribute->GetTopLevelType(),
-                                        app_locale_,
-                                        /*format_string=*/std::nullopt),
+          old_entity_attribute->GetCompleteInfo(app_locale_),
           kOldEntityAttributeUpdated);
     }
   }

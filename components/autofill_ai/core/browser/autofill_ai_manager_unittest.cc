@@ -105,9 +105,7 @@ auto HasAttributeWithValue(AttributeType attribute_type,
     }
     base::optional_ref<const AttributeInstance> attribute =
         entity.attribute(attribute_type);
-    return attribute &&
-           attribute->GetInfo(attribute->GetTopLevelType(), app_locale,
-                              /*format_string=*/std::nullopt) == value;
+    return attribute && attribute->GetCompleteInfo(app_locale) == value;
   });
 }
 
@@ -804,9 +802,8 @@ class AutofillAiEligibilityTests : public BaseAutofillAiManagerTest {
 TEST_F(AutofillAiEligibilityTests,
        IsFormAndFieldNotEligibleIfBothFlagsAreDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{}, /*disable_features*/ {
-          kAutofillAi, autofill::features::kAutofillAiWithDataSchema});
+  scoped_feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillAiWithDataSchema);
   std::unique_ptr<FormStructure> form = CreateEligibleForm();
 
   EXPECT_FALSE(
@@ -849,10 +846,8 @@ TEST_F(AutofillAiEligibilityTests,
 }
 
 TEST_F(AutofillAiEligibilityTests, AutofillAiEligibility_FormAndFieldEligible) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{autofill::features::kAutofillAiWithDataSchema},
-      /*disable_features*/ {kAutofillAi});
+  base::test::ScopedFeatureList scoped_feature_list{
+      autofill::features::kAutofillAiWithDataSchema};
 
   std::unique_ptr<FormStructure> form = CreateEligibleForm();
   EXPECT_TRUE(
@@ -861,9 +856,8 @@ TEST_F(AutofillAiEligibilityTests, AutofillAiEligibility_FormAndFieldEligible) {
 
 TEST_F(AutofillAiEligibilityTests,
        FormAndFieldIsNotEligibleForNonEligibleUser) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      autofill::features::kAutofillAiWithDataSchema);
+  base::test::ScopedFeatureList scoped_feature_list{
+      autofill::features::kAutofillAiWithDataSchema};
 
   std::unique_ptr<FormStructure> form = CreateEligibleForm();
   ON_CALL(client(), IsUserEligible).WillByDefault(Return(false));

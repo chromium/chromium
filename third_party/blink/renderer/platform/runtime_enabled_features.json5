@@ -3371,6 +3371,10 @@
       status: "stable",
     },
     {
+      // Flag for enabling the pointer lock API on Android
+      name: "PointerLockOnAndroid",
+    },
+    {
       name: "PositionOutsideTabSpanCheckSiblingNode",
       status: "stable",
     },

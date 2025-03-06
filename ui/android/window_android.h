@@ -139,6 +139,12 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
 
   void SetWideColorEnabled(bool enabled);
 
+  bool RequestPointerLock(ViewAndroid& view_android);
+
+  bool HasPointerLock(ViewAndroid& view_android);
+
+  void ReleasePointerLock(ViewAndroid& view_android);
+
   class TestHooks {
    public:
     virtual ~TestHooks() = default;
@@ -186,6 +192,8 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
   raw_ptr<TestHooks> test_hooks_ = nullptr;
 
   int selection_handles_active_count_ = 0;
+
+  raw_ptr<ViewAndroid> pointer_locking_view_ = nullptr;
 };
 
 }  // namespace ui

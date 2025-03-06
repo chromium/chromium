@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor_impl.h"
+#include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor_impl.h"
 
 #include <memory>
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
@@ -22,7 +22,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill_ai {
+namespace autofill {
 namespace {
 
 using Predictions = AutofillAiModelExecutor::Predictions;
@@ -50,7 +50,7 @@ class AutofillAiModelExecutorImplTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  autofill::test::AutofillUnitTestEnvironment autofill_test_env_;
+  test::AutofillUnitTestEnvironment autofill_test_env_;
   TestingPrefServiceSimple local_state_;
   testing::NiceMock<optimization_guide::MockOptimizationGuideModelExecutor>
       model_executor_;
@@ -72,7 +72,7 @@ TEST_F(AutofillAiModelExecutorImplTest, ValidResponse) {
           /*log_entry=*/nullptr));
 
   base::test::TestFuture<std::optional<Predictions>> test_future;
-  engine()->GetPredictions(autofill::FormData(),
+  engine()->GetPredictions(FormData(),
                            optimization_guide::proto::AXTreeUpdate(),
                            test_future.GetCallback());
   EXPECT_TRUE(test_future.Get<0>().has_value());
@@ -94,7 +94,7 @@ TEST_F(AutofillAiModelExecutorImplTest, ModelError) {
           /*log_entry=*/nullptr));
 
   base::test::TestFuture<std::optional<Predictions>> test_future;
-  engine()->GetPredictions(autofill::FormData(),
+  engine()->GetPredictions(FormData(),
                            optimization_guide::proto::AXTreeUpdate(),
                            test_future.GetCallback());
   EXPECT_FALSE(test_future.Get<0>().has_value());
@@ -112,11 +112,11 @@ TEST_F(AutofillAiModelExecutorImplTest, WrongTypeReturned) {
           /*log_entry=*/nullptr));
 
   base::test::TestFuture<std::optional<Predictions>> test_future;
-  engine()->GetPredictions(autofill::FormData(),
+  engine()->GetPredictions(FormData(),
                            optimization_guide::proto::AXTreeUpdate(),
                            test_future.GetCallback());
   EXPECT_FALSE(test_future.Get<0>().has_value());
 }
 
 }  // namespace
-}  // namespace autofill_ai
+}  // namespace autofill

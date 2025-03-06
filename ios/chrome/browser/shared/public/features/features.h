@@ -1015,8 +1015,7 @@ bool FRESignInSecondaryActionLabelUpdate();
 // Enables passkey syncing follow-up features.
 BASE_DECLARE_FEATURE(kIOSPasskeysM2);
 
-// Helper function returning the status of `kIOSPasskeysM2` and the M1
-// prerequisite.
+// Helper function returning the status of `kIOSPasskeysM2`.
 bool IOSPasskeysM2Enabled();
 
 extern const char kFullscreenTransitionSlower[];

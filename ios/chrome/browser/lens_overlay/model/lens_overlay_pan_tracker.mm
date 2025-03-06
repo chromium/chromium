@@ -5,7 +5,10 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_pan_tracker.h"
 
 @implementation LensOverlayPanTracker {
+  // The view on which to start recognizing panning.
   __weak UIView* _view;
+
+  // The gesture recognizer used for tracking.
   UIPanGestureRecognizer* _panRecognizer;
 }
 
@@ -44,7 +47,7 @@
   BOOL isStarting = recognizer.state == UIGestureRecognizerStateBegan;
   if (isStarting) {
     _isPanning = YES;
-    [_delegate onPanGestureStarted:self];
+    [_delegate lensOverlayPanTrackerDidBeginPanGesture:self];
     return;
   }
 
@@ -53,8 +56,7 @@
 
   if (isEnding || isCancelled) {
     _isPanning = NO;
-    [_delegate onPanGestureEnded:self];
-    return;
+    [_delegate lensOverlayPanTrackerDidEndPanGesture:self];
   }
 }
 

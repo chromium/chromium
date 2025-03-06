@@ -10,6 +10,7 @@
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "services/network/public/mojom/integrity_algorithm.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/feature_context.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
@@ -971,6 +972,47 @@ TEST_P(SubresourceIntegritySignatureTest, Inline_NonMatchingSignature) {
       should_fail_verification,
       SubresourceIntegrity::VerifyInlineIntegrity(
           kIntegrity, "ed25519-aaa " + kSignature, kSource, &feature_context_));
+}
+
+TEST_P(SubresourceIntegritySignatureTest, UseCounter) {
+  // Just public key:
+  {
+    String kIntegrity = "ed25519-JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";
+    IntegrityMetadataSet metadata;
+    IntegrityReport report;
+    SubresourceIntegrity::ParseIntegrityAttribute(kIntegrity, metadata,
+                                                  &feature_context_, &report);
+    EXPECT_FALSE(
+        report.UseCountersForTesting().Contains(WebFeature::kSRIHashAssertion));
+    EXPECT_EQ(SignaturesEnabled(), report.UseCountersForTesting().Contains(
+                                       WebFeature::kSRIPublicKeyAssertion));
+  }
+  // Just hash:
+  {
+    String kIntegrity = "sha256-GAF48QOoxRvu0gZAmQivUdJPyBacqznBAXwnkfpmQX4=";
+    IntegrityMetadataSet metadata;
+    IntegrityReport report;
+    SubresourceIntegrity::ParseIntegrityAttribute(kIntegrity, metadata,
+                                                  &feature_context_, &report);
+    EXPECT_TRUE(
+        report.UseCountersForTesting().Contains(WebFeature::kSRIHashAssertion));
+    EXPECT_FALSE(report.UseCountersForTesting().Contains(
+        WebFeature::kSRIPublicKeyAssertion));
+  }
+  // Both:
+  {
+    String kIntegrity =
+        "sha256-GAF48QOoxRvu0gZAmQivUdJPyBacqznBAXwnkfpmQX4= "
+        "ed25519-JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";
+    IntegrityMetadataSet metadata;
+    IntegrityReport report;
+    SubresourceIntegrity::ParseIntegrityAttribute(kIntegrity, metadata,
+                                                  &feature_context_, &report);
+    EXPECT_TRUE(
+        report.UseCountersForTesting().Contains(WebFeature::kSRIHashAssertion));
+    EXPECT_EQ(SignaturesEnabled(), report.UseCountersForTesting().Contains(
+                                       WebFeature::kSRIPublicKeyAssertion));
+  }
 }
 
 }  // namespace blink

@@ -8,10 +8,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
-#if BUILDFLAG(IS_IOS)
-#include "components/sync/base/ios_cpe_passkey_buildflag.h"
-#endif  // BUILDFLAG(IS_IOS)
-
 namespace syncer {
 
 // Customizes the delay of a deferred sync startup.
@@ -65,19 +61,6 @@ BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForDasherUsers);
 //   saves always happen to the profile store.
 // - The account store is synced. When the flag is disabled, the profile one is.
 BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorageForSyncingUsers);
-
-#if BUILDFLAG(IS_IOS)
-// On iOS, Webauthn Credential Sync is controlled by a build-time flag, because
-// these capabilities are linked to the Credential Provider Extension and must
-// be declared in its Info.plist (manifest).
-constexpr bool IsWebauthnCredentialSyncEnabled() {
-#if BUILDFLAG(IOS_PASSKEYS_ENABLED)
-  return true;
-#else
-  return false;
-#endif  // !BUILDFLAG(IOS_PASSKEYS_ENABLED)
-}
-#endif  // BUILDFLAG(IS_IOS)
 
 // Wrapper flag to control the nudge delay of the #tab-groups-save feature.
 BASE_DECLARE_FEATURE(kTabGroupsSaveNudgeDelay);

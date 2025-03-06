@@ -283,6 +283,7 @@ void IOSChromeMainParts::PreCreateThreads() {
   // consistency with other main delegates where the browser process is denoted
   // this way.
   memory_system::Initializer()
+      .SetGwpAsanParameters(true, "")
       .SetProfilingClientParameters(
           channel, sampling_profiler::ProfilerProcessType::kBrowser)
       .SetDispatcherParameters(memory_system::DispatcherParameters::

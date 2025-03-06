@@ -2,22 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor_impl.h"
+#include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor_impl.h"
 
-#include <cmath>
 #include <optional>
 #include <vector>
 
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/types/expected.h"
 #include "components/autofill/core/browser/form_processing/optimization_guide_proto_util.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/autofill_ai/core/browser/autofill_ai_features.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
@@ -25,7 +22,7 @@
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/features/forms_classifications.pb.h"
 
-namespace autofill_ai {
+namespace autofill {
 
 using optimization_guide::proto::AutofillAiTypeRequest;
 using optimization_guide::proto::AutofillAiTypeResponse;
@@ -34,7 +31,6 @@ AutofillAiModelExecutorImpl::AutofillAiModelExecutorImpl(
     optimization_guide::OptimizationGuideModelExecutor* model_executor,
     optimization_guide::ModelQualityLogsUploaderService* logs_uploader)
     : model_executor_(CHECK_DEREF(model_executor)) {
-  // TODO(crbug.com/389631477): Remove logging until we have a need for it.
   if (logs_uploader) {
     logs_uploader_ = logs_uploader->GetWeakPtr();
   }
@@ -43,14 +39,14 @@ AutofillAiModelExecutorImpl::AutofillAiModelExecutorImpl(
 AutofillAiModelExecutorImpl::~AutofillAiModelExecutorImpl() = default;
 
 void AutofillAiModelExecutorImpl::GetPredictions(
-    autofill::FormData form_data,
+    FormData form_data,
     optimization_guide::proto::AXTreeUpdate ax_tree_update,
     PredictionCallback callback) {
   // Construct request.
   AutofillAiTypeRequest request;
   optimization_guide::proto::PageContext* page_context =
       request.mutable_page_context();
-  if (kSendTitleURL.Get()) {
+  if (features::kAutofillAiServerModelSendPageTitleAndUrl.Get()) {
     page_context->set_url(form_data.url().spec());
     page_context->set_title(ax_tree_update.tree_data().title());
   } else {
@@ -69,11 +65,12 @@ void AutofillAiModelExecutorImpl::GetPredictions(
   optimization_guide::ExecuteModelWithLogging(
       &model_executor_.get(),
       optimization_guide::ModelBasedCapabilityKey::kFormsClassifications,
-      request, kExecutionTimeout.Get(), std::move(wrapper_callback));
+      request, features::kAutofillAiServerModelExecutionTimeout.Get(),
+      std::move(wrapper_callback));
 }
 
 void AutofillAiModelExecutorImpl::OnModelExecuted(
-    autofill::FormData form_data,
+    FormData form_data,
     PredictionCallback callback,
     optimization_guide::OptimizationGuideModelExecutionResult execution_result,
     std::unique_ptr<optimization_guide::proto::FormsClassificationsLoggingData>
@@ -97,4 +94,4 @@ void AutofillAiModelExecutorImpl::OnModelExecuted(
   std::move(callback).Run(std::move(response).value());
 }
 
-}  // namespace autofill_ai
+}  // namespace autofill

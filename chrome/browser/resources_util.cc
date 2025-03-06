@@ -16,12 +16,11 @@
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/grit/theme_resources_map.h"
 #include "components/grit/components_scaled_resources_map.h"
 #include "ui/resources/grit/ui_resources_map.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/chromeos/resources/grit/ui_chromeos_resources_map.h"
 #endif
 
@@ -37,7 +36,7 @@ class ThemeMap {
   ThemeMap() {
     size_t storage_size =
         kComponentsScaledResourcesSize + kThemeResourcesSize + kUiResourcesSize;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     storage_size += kUiChromeosResourcesSize;
 #endif
 
@@ -55,7 +54,7 @@ class ThemeMap {
     for (size_t i = 0; i < kUiResourcesSize; ++i) {
       storage.emplace_back(kUiResources[i].path, kUiResources[i].id);
     }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     for (size_t i = 0; i < kUiChromeosResourcesSize; ++i) {
       storage.emplace_back(kUiChromeosResources[i].path,
                            kUiChromeosResources[i].id);

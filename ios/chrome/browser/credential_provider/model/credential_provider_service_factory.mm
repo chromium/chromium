@@ -7,7 +7,6 @@
 #import "base/no_destructor.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/common/password_manager_features.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_service.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -60,9 +59,7 @@ CredentialProviderServiceFactory::BuildServiceInstanceFor(
           IOSChromeAccountPasswordStoreFactory::GetForProfile(
               profile, ServiceAccessType::IMPLICIT_ACCESS);
   webauthn::PasskeyModel* passkeyModel =
-      syncer::IsWebauthnCredentialSyncEnabled()
-          ? IOSPasskeyModelFactory::GetForProfile(profile)
-          : nullptr;
+      IOSPasskeyModelFactory::GetForProfile(profile);
   ArchivableCredentialStore* credential_store =
       [[ArchivableCredentialStore alloc]
           initWithFileURL:CredentialProviderSharedArchivableStoreURL()];

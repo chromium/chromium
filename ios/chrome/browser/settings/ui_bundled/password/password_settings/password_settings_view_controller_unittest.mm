@@ -6,7 +6,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/test/scoped_feature_list.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_consumer.h"
@@ -247,10 +246,6 @@ TEST_F(PasswordSettingsViewControllerTest, DisplaysPasswordInOtherAppsEnabled) {
 
 TEST_F(PasswordSettingsViewControllerTest,
        DisplaysAutomaticPasskeyUpgradesSwitchWithFeatureEnabled) {
-  if (!syncer::IsWebauthnCredentialSyncEnabled()) {
-    GTEST_SKIP() << "This build configuration does not support passkeys.";
-  }
-
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       kCredentialProviderAutomaticPasskeyUpgrade);

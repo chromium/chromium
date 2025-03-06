@@ -1574,24 +1574,6 @@
             ]
         }
     ],
-    "AutofillAiTeamfood": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillAi"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillAiTeamfoodV2": [
         {
             "platforms": [
@@ -10913,6 +10895,27 @@
             ]
         }
     ],
+    "GwpAsanIOS2025": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "TripleBrowserReservation",
+                    "params": {
+                        "BrowserMaxAllocations": "2048",
+                        "BrowserMaxMetadata": "2048",
+                        "BrowserTotalPages": "6144"
+                    },
+                    "enable_features": [
+                        "GwpAsanMalloc",
+                        "GwpAsanPartitionAlloc"
+                    ]
+                }
+            ]
+        }
+    ],
     "HTTP2": [
         {
             "platforms": [
@@ -19887,7 +19890,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "RenderBlockingFullFrameRate"
+                        "RenderBlockingFullFrameRate",
+                        "RenderThrottleFrameRate"
                     ]
                 }
             ]
@@ -20415,6 +20419,31 @@
                     },
                     "enable_features": [
                         "SafetyHub"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SafetyHubDisruptiveNotificationRevocation": [
+        {
+            "platforms": [
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows",
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "ShadowRun_20250227",
+                    "params": {
+                        "max_engagement_score": "0",
+                        "min_notification_count": "3",
+                        "shadow_run": "true"
+                    },
+                    "enable_features": [
+                        "SafetyHubDisruptiveNotificationRevocation"
                     ]
                 }
             ]
@@ -24814,11 +24843,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Time180",
+                    "name": "Time180Sparkplug",
                     "params": {
                         "V8FlushCodeOldTime": "180"
                     },
                     "enable_features": [
+                        "V8FlushBaselineCode",
                         "V8FlushCodeBasedOnTime"
                     ],
                     "disable_features": [
@@ -24913,34 +24943,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "V8ExternalMemoryAccountedInGlobalLimit"
-                    ]
-                }
-            ]
-        }
-    ],
-    "V8FlushBaselineCode": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "V8FlushBaselineCode"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "V8FlushBaselineCode"
                     ]
                 }
             ]

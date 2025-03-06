@@ -154,15 +154,8 @@ TEST_F(ConsistencyPromoSigninCoordinatorTest, StartAndCancel) {
       };
   StartCoordinator();
   // Simulate cancel from the user.
-  // Expect the view to be dismissed.
-  __block ProceduralBlock dissmiss_completion = nil;
-  OCMExpect([base_view_controller_mock_
-      dismissViewControllerAnimated:YES
-                         completion:[OCMArg checkWithBlock:^(
-                                                ProceduralBlock completion) {
-                           dissmiss_completion = completion;
-                           return YES;
-                         }]]);
+  OCMExpect([base_view_controller_mock_ dismissViewControllerAnimated:YES
+                                                           completion:nil]);
   // Expect the navigation controller delegates to be reset.
   OCMExpect([consistency_sheet_navigation_controller_mock_ setDelegate:nil]);
   OCMExpect([consistency_sheet_navigation_controller_mock_
@@ -180,9 +173,6 @@ TEST_F(ConsistencyPromoSigninCoordinatorTest, StartAndCancel) {
   [GetConsistencyDefaultAccountCoordinatorDelegate()
       consistencyDefaultAccountCoordinatorSkip:
           consistency_default_account_coordinator_mock_];
-  // Call the view controller dismiss completion block.
-  EXPECT_NE(nil, dissmiss_completion);
-  dissmiss_completion();
   // Expect the sign-in completion block called.
   EXPECT_TRUE(signin_completion_called);
   EXPECT_EQ(SigninCoordinatorResultCanceledByUser, coordinator_result);

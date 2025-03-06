@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
 import("//build/config/features.gni")
 import("//components/sync/base/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
@@ -12,23 +11,12 @@ declare_args() {
   sync_user_agent_product = "Chrome"
 }
 
-if (is_ios) {
-  buildflag_header("ios_cpe_passkey_buildflag") {
-    header = "ios_cpe_passkey_buildflag.h"
-    flags = [ "IOS_PASSKEYS_ENABLED=$ios_cpe_enable_passkey_capabilities" ]
-  }
-}
-
 source_set("features") {
   sources = [
     "features.cc",
     "features.h",
   ]
   deps = [ "//base" ]
-
-  if (is_ios) {
-    deps += [ ":ios_cpe_passkey_buildflag" ]
-  }
 }
 
 static_library("base") {

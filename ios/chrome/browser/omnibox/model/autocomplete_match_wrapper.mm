@@ -22,6 +22,10 @@
   BOOL _defaultSearchEngineIsGoogle;
 }
 
+- (void)disconnect {
+  _searchEngineObserver.reset();
+}
+
 - (AutocompleteMatchFormatter*)wrapMatch:(const AutocompleteMatch&)match
                               fromResult:(const AutocompleteResult&)result
                                isStarred:(BOOL)isStarred {

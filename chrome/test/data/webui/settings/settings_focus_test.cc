@@ -73,7 +73,14 @@ class SettingsGlicPageFocusTest : public SettingsFocusTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-IN_PROC_BROWSER_TEST_F(SettingsGlicPageFocusTest, GlicPageFocus) {
+
+// TODO(crbug.com/400246327) Times out on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_GlicPageFocus DISABLED_GlicPageFocus
+#else
+#define MAYBE_GlicPageFocus GlicPageFocus
+#endif
+IN_PROC_BROWSER_TEST_F(SettingsGlicPageFocusTest, MAYBE_GlicPageFocus) {
   RunTest("settings/glic_page_focus_test.js", "mocha.run()");
 }
 #endif

@@ -372,6 +372,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
                              PaintHoldingReason reason,
                              std::optional<PaintHoldingCommitTrigger> trigger);
 
+  void SetShouldThrottleFrameRate(bool flag);
+
   // Returns whether there are any outstanding ScopedDeferMainFrameUpdate,
   // though commits may be deferred also when the local_surface_id_from_parent()
   // is not valid.

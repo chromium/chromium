@@ -9,7 +9,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/scoped_test_nss_db.h"
 #include "net/cert/nss_cert_database.h"
@@ -24,13 +24,10 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/certificate_provider/certificate_provider.h"
+#include "chromeos/ash/components/kcer/extra_instances.h"
 #include "chromeos/ash/components/network/policy_certificate_provider.h"
 #include "chromeos/components/onc/certificate_scope.h"
 #include "chromeos/constants/chromeos_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/kcer/extra_instances.h"
 #endif
 
 namespace {
@@ -334,9 +331,7 @@ class CertificateManagerModelChromeOSTest : public CertificateManagerModelTest {
     params->extension_certificate_provider =
         std::make_unique<FakeExtensionCertificateProvider>(
             &extension_client_certs_, &extensions_hang_);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     params->kcer = kcer::ExtraInstances::GetEmptyKcer();
-#endif
     return params;
   }
 
@@ -680,7 +675,6 @@ TEST_F(CertificateManagerModelChromeOSTest,
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Test that CertificateManagerModel handles PKCS#12 import correctly.
 // The test doesn't simulate a valid certificate, actual handling of PKCS#12
 // data is covered by the tests for NSSCertDatabase and/or Kcer, but it tests
@@ -734,6 +728,5 @@ TEST_F(CertificateManagerModelChromeOSTest, ImportFromPKCS12) {
     EXPECT_EQ(import_waiter.Get(), net::ERR_PKCS12_IMPORT_INVALID_FILE);
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #endif  // BUILDFLAG(IS_CHROMEOS)

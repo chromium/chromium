@@ -120,6 +120,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   AutofillComposeDelegate* GetComposeDelegate() final;
   AutofillPlusAddressDelegate* GetPlusAddressDelegate() final;
   AutofillAiDelegate* GetAutofillAiDelegate() final;
+  AutofillAiModelCache* GetAutofillAiModelCache() final;
+  AutofillAiModelExecutor* GetAutofillAiModelExecutor() final;
   void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
                                 bool is_manual_fallback,
                                 PlusAddressCallback callback) final;

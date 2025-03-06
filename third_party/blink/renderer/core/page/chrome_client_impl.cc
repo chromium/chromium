@@ -1155,6 +1155,14 @@ void ChromeClientImpl::StopDeferringCommits(
       ->StopDeferringCommits(trigger);
 }
 
+void ChromeClientImpl::SetShouldThrottleFrameRate(bool flag,
+                                                  LocalFrame& main_frame) {
+  DCHECK(main_frame.IsLocalRoot());
+  WebLocalFrameImpl::FromFrame(main_frame)
+      ->FrameWidgetImpl()
+      ->SetShouldThrottleFrameRate(flag);
+}
+
 void ChromeClientImpl::SetHasScrollEventHandlers(LocalFrame* frame,
                                                  bool has_event_handlers) {
   // |frame| might be null if called via

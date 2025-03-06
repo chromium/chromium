@@ -27,7 +27,7 @@ CSSIfParser::CSSIfParser(const CSSParserContext& context)
 
 // <if-test> =
 //   supports( [ <supports-condition> | <ident> : <declaration-value> ] ) |
-//   media( <media-query> ) |
+//   media( <media-feature> | <media-condition> ) |
 //   style( <style-query> )
 const IfCondition* CSSIfParser::ConsumeIfTest(CSSParserTokenStream& stream) {
   if (RuntimeEnabledFeatures::CSSInlineIfForSupportsQueriesEnabled() &&
@@ -57,7 +57,17 @@ const IfCondition* CSSIfParser::ConsumeIfTest(CSSParserTokenStream& stream) {
       stream.Peek().FunctionId() == CSSValueID::kMedia) {
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
     stream.ConsumeWhitespace();
-    if (const MediaQuery* query = media_query_parser_.ConsumeQuery(stream)) {
+    // `MediaQueryParser::ConsumeFeature` does not restore the stream,
+    // hence, unlike the spec, we first try to consume <media-condition>
+    // and then <media-feature>.
+    if (const MediaQueryExpNode* query =
+            media_query_parser_.ConsumeCondition(stream)) {
+      guard.Release();
+      stream.ConsumeWhitespace();
+      return MakeGarbageCollected<IfTestMedia>(query);
+    }
+    if (const MediaQueryExpNode* query = media_query_parser_.ConsumeFeature(
+            stream, MediaQueryParser::MediaQueryFeatureSet())) {
       guard.Release();
       stream.ConsumeWhitespace();
       return MakeGarbageCollected<IfTestMedia>(query);

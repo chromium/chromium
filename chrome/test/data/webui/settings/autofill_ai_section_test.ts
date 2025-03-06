@@ -8,22 +8,44 @@ import 'chrome://settings/settings.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import type {SettingsAutofillAiAddOrEditDialogElement, SettingsSimpleConfirmationDialogElement, SettingsAutofillAiSectionElement} from 'chrome://settings/lazy_load.js';
+import type {CrButtonElement, SettingsAutofillAiAddOrEditDialogElement, SettingsSimpleConfirmationDialogElement, SettingsAutofillAiSectionElement} from 'chrome://settings/lazy_load.js';
 import {EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 // clang-format on
 
-// TODO(crbug.com/393318914): Parameterize this suite and also test that the add
-// button is disabled accordingly.
-suite('AutofillAiSectionUiEligbilityTest', function() {
+suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
   let section: SettingsAutofillAiSectionElement;
+  let entityDataManager: TestEntityDataManagerProxy;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     section = document.createElement('settings-autofill-ai-section');
-    // The toggle is turned off.
+
+    entityDataManager = new TestEntityDataManagerProxy();
+    EntityDataManagerProxyImpl.setInstance(entityDataManager);
+
+    // The tests need to simulate that the user has some entity instances saved,
+    // because an ineligible user without any entity instances saved cannot see
+    // the Autofill with Ai page.
+    const testEntityInstancesWithLabels:
+        chrome.autofillPrivate.EntityInstanceWithLabels[] = [
+      {
+        guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',
+        entityLabel: 'Toyota',
+        entitySubLabel: 'Car',
+      },
+      {
+        guid: '1fd09cdc-35b8-4367-8f1a-18c8c0733af0',
+        entityLabel: 'John Doe',
+        entitySubLabel: 'Passport',
+      },
+    ];
+    entityDataManager.setloadEntityInstancesResponse(
+        testEntityInstancesWithLabels);
+
+    // Define the opt in pref.
     section.prefs = {
       autofill: {
         prediction_improvements: {
@@ -37,38 +59,69 @@ suite('AutofillAiSectionUiEligbilityTest', function() {
     };
   });
 
-  test('testEntriesWithEligibleUserAndTurnedOffToggle', async function() {
+  interface EligibilityParamsInterface {
+    // Whether the user is opted into Autofill with Ai.
+    optedIn: boolean;
+    // Whether the user is eligible for Autofill with Ai.
+    ineligibleUser: boolean;
+    // The title of the test.
+    title: string;
+  }
+
+  const eligibilityParams: EligibilityParamsInterface[] = [
+    {optedIn: true, ineligibleUser: true, title: 'testOptedInIneligibleUser'},
+    {optedIn: true, ineligibleUser: false, title: 'testOptedInEligibleUser'},
+    {optedIn: false, ineligibleUser: true, title: 'testOptedOutIneligibleUser'},
+    {optedIn: false, ineligibleUser: false, title: 'testOptedOutEligibleUser'},
+  ];
+
+  eligibilityParams.forEach(
+      (params) => test(params.title, async function() {
+        section.ineligibleUser = params.ineligibleUser;
+        section.prefs.autofill.prediction_improvements.enabled.value =
+            params.optedIn;
+
+        document.body.appendChild(section);
+        await flushTasks();
+
+        const toggle =
+            section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#prefToggle');
+        assertTrue(!!toggle);
+        assertEquals(toggle.disabled, params.ineligibleUser);
+        assertEquals(toggle.checked, !params.ineligibleUser && params.optedIn);
+
+        const addButton =
+            section.shadowRoot!.querySelector<CrButtonElement>('#addEntity');
+        assertTrue(!!addButton);
+        assertEquals(
+            addButton.disabled, params.ineligibleUser || !params.optedIn);
+
+        assertTrue(
+            isVisible(section.shadowRoot!.querySelector('#entries')),
+            'The entries should always be visible');
+      }));
+
+  test('testSwitchingToggleUpdatesPref', async function() {
+    // The user is eligible so that the toggle is enabled.
     section.ineligibleUser = false;
-
     document.body.appendChild(section);
     await flushTasks();
+    assertFalse(section.prefs.autofill.prediction_improvements.enabled.value);
 
     const toggle =
         section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#prefToggle')!;
-    assertFalse(
-        toggle.disabled,
-        'The toggle should be enabled if the user is eligible');
-    assertTrue(
-        isVisible(section.shadowRoot!.querySelector('#entries')),
-        'The entries should always be visible');
-  });
+            '#prefToggle');
+    assertTrue(!!toggle);
 
-  test('testEntriesWithNotEligibleUserAndTurnedOffToggle', async function() {
-    section.ineligibleUser = true;
-
-    document.body.appendChild(section);
+    toggle.click();
     await flushTasks();
+    assertTrue(section.prefs.autofill.prediction_improvements.enabled.value);
 
-    const toggle =
-        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#prefToggle')!;
-    assertTrue(
-        toggle.disabled,
-        'The toggle should be disabled if the user is ineligible');
-    assertTrue(
-        isVisible(section.shadowRoot!.querySelector('#entries')),
-        'The entries should always be visible');
+
+    toggle.click();
+    await flushTasks();
+    assertFalse(section.prefs.autofill.prediction_improvements.enabled.value);
   });
 });
 

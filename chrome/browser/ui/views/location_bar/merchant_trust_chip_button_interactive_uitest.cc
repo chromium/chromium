@@ -46,7 +46,9 @@ optimization_guide::OptimizationMetadata GetMerchantTrustMetadata() {
 
 }  // namespace
 
-class MerchantTrustChipButtonInteractiveUITest : public InteractiveBrowserTest {
+class MerchantTrustChipButtonInteractiveUITest
+    : public InteractiveBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   MerchantTrustChipButtonInteractiveUITest() {
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
@@ -56,12 +58,11 @@ class MerchantTrustChipButtonInteractiveUITest : public InteractiveBrowserTest {
 
     CHECK(https_server()->Start());
 
-    // TODO(b/324418190): Parametrize the test to support both versions with the
-    // chip and without.
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {page_info::kMerchantTrust,
          {{page_info::kMerchantTrustForceShowUIForTestingName, "true"},
-          {page_info::kMerchantTrustEnableOmniboxChipName, "true"}}},
+          {page_info::kMerchantTrustEnableOmniboxChipName,
+           GetParam() ? "true" : "false"}}},
         {features::kHappinessTrackingSurveysForDesktopDemo, {}},
         {features::kHappinessTrackingSurveysConfiguration,
          {{"custom-url", GetSurveyURL().spec()}}},
@@ -141,6 +142,25 @@ class MerchantTrustChipButtonInteractiveUITest : public InteractiveBrowserTest {
     });
   }
 
+  MultiStep OpenMerchantTrustSubpage() {
+    if (GetParam()) {
+      Steps(
+          // Open the subpage directly.
+          WaitForShow(kMerchantTrustChipElementId),
+          PressButton(kMerchantTrustChipElementId),
+          WaitForShow(PageInfoMerchantTrustContentView::kElementIdForTesting));
+    }
+
+    return Steps(
+        PressButton(kLocationIconElementId),
+        // Open the page info.
+        WaitForShow(PageInfoMainView::kMerchantTrustElementId),
+        // Click on the row.
+        PressButton(PageInfoMainView::kMerchantTrustElementId),
+        // Wait for the subpage to be open.
+        WaitForShow(PageInfoMerchantTrustContentView::kElementIdForTesting));
+  }
+
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
   GURL GetURL() {
@@ -161,8 +181,12 @@ class MerchantTrustChipButtonInteractiveUITest : public InteractiveBrowserTest {
   base::HistogramTester histogram_tester_;
 };
 
-IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(MerchantTrustChipButtonInteractiveUITest,
                        MerchantTrustChipClick) {
+  if (!GetParam()) {
+    return;
+  }
+
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
@@ -171,8 +195,11 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
       WaitForShow(PageInfoMerchantTrustContentView::kElementIdForTesting));
 }
 
-IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(MerchantTrustChipButtonInteractiveUITest,
                        MerchantTrustChipOmniboxEdit) {
+  if (!GetParam()) {
+    return;
+  }
   RunTestSequence(InstrumentTab(kWebContentsElementId),
                   NavigateWebContents(kWebContentsElementId, GetURL()),
                   // The merchant chip is shown.
@@ -190,8 +217,11 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
                   WaitForShow(kMerchantTrustChipElementId));
 }
 
-IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(MerchantTrustChipButtonInteractiveUITest,
                        LocationBarIconClick) {
+  if (!GetParam()) {
+    return;
+  }
   RunTestSequence(InstrumentTab(kWebContentsElementId),
                   NavigateWebContents(kWebContentsElementId, GetURL()),
                   WaitForShow(kMerchantTrustChipElementId),
@@ -200,8 +230,11 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
                   EnsurePresent(kMerchantTrustChipElementId));
 }
 
-IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(MerchantTrustChipButtonInteractiveUITest,
                        PermissionRequestOverridesChip) {
+  if (!GetParam()) {
+    return;
+  }
   RunTestSequence(InstrumentTab(kWebContentsElementId),
                   NavigateWebContents(kWebContentsElementId, GetURL()),
                   // The merchant chip is shown.
@@ -225,8 +258,11 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
                   WaitForShow(kMerchantTrustChipElementId));
 }
 
-IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(MerchantTrustChipButtonInteractiveUITest,
                        PermissionInUseOverridesChip) {
+  if (!GetParam()) {
+    return;
+  }
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_ALLOW);
 
   RunTestSequence(InstrumentTab(kWebContentsElementId),
@@ -243,8 +279,11 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
                   WaitForHide(kMerchantTrustChipElementId));
 }
 
-IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(MerchantTrustChipButtonInteractiveUITest,
                        AnimateOnlyOncePerTab) {
+  if (!GetParam()) {
+    return;
+  }
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
@@ -266,15 +305,12 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
       WaitForShow(kMerchantTrustChipElementId), IsChipFullyCollapsed(true));
 }
 
-IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(MerchantTrustChipButtonInteractiveUITest,
                        MerchantTrustSubpageViewReviews) {
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
-      // Open the subpage directly.
-      WaitForShow(kMerchantTrustChipElementId),
-      PressButton(kMerchantTrustChipElementId),
-      WaitForShow(PageInfoMerchantTrustContentView::kElementIdForTesting),
+      OpenMerchantTrustSubpage(),
       CheckView(
           PageInfoMerchantTrustContentView::kViewReviewsId,
           [](RichHoverButton* button) { return button->GetTitleText(); },
@@ -285,18 +321,12 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
       WaitForShow(kSidePanelElementId));
 }
 
-IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(MerchantTrustChipButtonInteractiveUITest,
                        MerchantTrustSubpageHats) {
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
-      PressButton(kLocationIconElementId),
-      // Open the page info.
-      WaitForShow(PageInfoMainView::kMerchantTrustElementId),
-      // Click on the row.
-      PressButton(PageInfoMainView::kMerchantTrustElementId),
-      // Wait for the subpage to be open.
-      WaitForShow(PageInfoMerchantTrustContentView::kElementIdForTesting),
+      OpenMerchantTrustSubpage(),
       WaitForShow(PageInfoMerchantTrustContentView::kHatsButtonId),
       CheckView(
           PageInfoMerchantTrustContentView::kHatsButtonId,
@@ -316,3 +346,7 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
                            HatsServiceDesktop::ShouldShowSurveyReasons::kYes,
                            1));
 }
+
+INSTANTIATE_TEST_SUITE_P(/*no_prefix*/,
+                         MerchantTrustChipButtonInteractiveUITest,
+                         testing::Values(false, true));

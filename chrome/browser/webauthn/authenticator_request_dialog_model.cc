@@ -92,7 +92,8 @@ AUTHENTICATOR_EVENTS
 // static
 std::u16string AuthenticatorRequestDialogModel::GetMechanismDescription(
     const device::DiscoverableCredentialMetadata& cred,
-    const std::optional<std::string>& phone_name) {
+    const std::optional<std::string>& phone_name,
+    UIPresentation ui_presentation) {
   if (cred.source == device::AuthenticatorType::kPhone) {
     return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_SOURCE_PHONE,
                                       base::UTF8ToUTF16(*phone_name));
@@ -101,21 +102,30 @@ std::u16string AuthenticatorRequestDialogModel::GetMechanismDescription(
     return base::UTF8ToUTF16(*cred.provider_name);
   }
   int message;
+  bool immediate_mode = UIPresentation::kModalImmediate == ui_presentation;
   switch (cred.source) {
     case device::AuthenticatorType::kWinNative:
-      message = IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO;
+      message = immediate_mode ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO
+                               : IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO;
       break;
     case device::AuthenticatorType::kTouchID:
-      message = IDS_WEBAUTHN_SOURCE_CHROME_PROFILE;
+      message = immediate_mode
+                    ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE
+                    : IDS_WEBAUTHN_SOURCE_CHROME_PROFILE;
       break;
     case device::AuthenticatorType::kICloudKeychain:
-      message = IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN;
+      message = immediate_mode
+                    ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_ICLOUD_KEYCHAIN
+                    : IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN;
       break;
     case device::AuthenticatorType::kEnclave:
-      message = IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER;
+      message = immediate_mode
+                    ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER
+                    : IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER;
       break;
     case device::AuthenticatorType::kOther:
       // "Other" is USB security keys and the virtual authenticator.
+      CHECK(!immediate_mode);
       message = IDS_WEBAUTHN_SOURCE_USB_SECURITY_KEY;
       break;
     default:

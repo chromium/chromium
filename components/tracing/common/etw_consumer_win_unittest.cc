@@ -59,6 +59,7 @@ class FakeTraceWriter : public perfetto::TraceWriterBase,
   void FinishTracePacket() override { NOTREACHED(); }
   void Flush(std::function<void()> callback = {}) override {}
   uint64_t written() const override { return 0u; }
+  uint64_t drop_count() const override { return 0u; }
 
   // protozero::MessageFinalizationListener:
   void OnMessageFinalized(protozero::Message* message) override {

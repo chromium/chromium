@@ -209,9 +209,15 @@ class FakeStreamSocket : public MockClientSocket {
   bool WasEverUsed() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
 
+  // Simulate a situation where a connected socket immediately disconnects after
+  // checking IsConnected(). This could happen in the real world.
+  void DisconnectAfterIsConnectedCall();
+
  private:
   bool is_idle_ = true;
   bool was_ever_used_ = false;
+  bool disconnect_after_is_connected_call_ = false;
+  mutable std::optional<bool> is_connected_override_;
   std::optional<SSLInfo> ssl_info_;
 };
 

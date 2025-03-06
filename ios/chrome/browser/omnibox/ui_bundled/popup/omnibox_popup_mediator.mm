@@ -136,6 +136,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 }
 
 - (void)disconnect {
+  [self.autocompleteMatchWrapper disconnect];
   if (_remoteSuggestionsServiceObserverBridge) {
     self.remoteSuggestionsService->RemoveObserver(
         _remoteSuggestionsServiceObserverBridge.get());

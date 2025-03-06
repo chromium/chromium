@@ -104,6 +104,8 @@
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
+#include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
+#include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor.h"
 #include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
@@ -2093,6 +2095,29 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
   form_filler_->MaybeTriggerRefillForExpirationDate(
       form, field, *form_structure, old_value,
       AutofillTriggerSource::kJavaScriptChangedAutofilledValue);
+}
+
+void BrowserAutofillManager::OnLoadedServerPredictionsImpl(
+    base::span<const raw_ptr<FormStructure, VectorExperimental>> forms) {
+  for (raw_ptr<FormStructure, VectorExperimental> form : forms) {
+    if (!form || !form->may_run_autofill_ai_model()) {
+      continue;
+    }
+
+    AutofillAiModelCache* model_cache = client().GetAutofillAiModelCache();
+    if (!model_cache || model_cache->Contains(form->form_signature())) {
+      return;
+    }
+
+    AutofillAiModelExecutor* model_executor =
+        client().GetAutofillAiModelExecutor();
+    if (!model_executor) {
+      return;
+    }
+
+    // TODO(crbug.com/395555410): Try to run the model.
+  }
+  // Implement.
 }
 
 void BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue(

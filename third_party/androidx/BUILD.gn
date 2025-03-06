@@ -284,15 +284,14 @@ if (!limit_android_deps) {
     info_path = "cipd/libs/androidx_biometric_biometric/androidx_biometric_biometric.info"
     enable_bytecode_checks = false
     deps = [
-      ":androidx_activity_activity_java",
       ":androidx_annotation_annotation_java",
       ":androidx_appcompat_appcompat_java",
       ":androidx_core_core_java",
       ":androidx_fragment_fragment_java",
+      ":androidx_lifecycle_lifecycle_common_java",
       ":androidx_lifecycle_lifecycle_common_java8_java",
       ":androidx_lifecycle_lifecycle_livedata_core_java",
       ":androidx_lifecycle_lifecycle_viewmodel_java",
-      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]

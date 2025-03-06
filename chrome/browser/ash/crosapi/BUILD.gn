@@ -73,8 +73,6 @@ static_library("crosapi") {
     "idle_service_ash.h",
     "input_methods_ash.cc",
     "input_methods_ash.h",
-    "kerberos_in_browser_ash.cc",
-    "kerberos_in_browser_ash.h",
     "keystore_service_ash.cc",
     "keystore_service_ash.h",
     "keystore_service_factory_ash.cc",
@@ -111,8 +109,6 @@ static_library("crosapi") {
     "primary_profile_creation_waiter.h",
     "remoting_ash.cc",
     "remoting_ash.h",
-    "screen_ai_downloader_ash.cc",
-    "screen_ai_downloader_ash.h",
     "structured_metrics_service_ash.cc",
     "structured_metrics_service_ash.h",
     "vpn_service_ash.cc",
@@ -212,7 +208,6 @@ static_library("crosapi") {
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/screen_ai:screen_ai_install_state",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/ash/birch",
@@ -228,7 +223,6 @@ static_library("crosapi") {
     "//chrome/browser/ui/ash/shell_delegate",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/views/select_file_dialog_extension",
-    "//chrome/browser/ui/webui/ash/kerberos",
     "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings",
     "//chrome/browser/ui/webui/signin/ash",
     "//chrome/browser/web_applications",
@@ -470,7 +464,6 @@ source_set("unit_tests") {
     "parent_access_ash_unittest.cc",
     "payment_app_instance_ash_unittest.cc",
     "primary_profile_creation_waiter_unittest.cc",
-    "screen_ai_downloader_ash_unittest.cc",
   ]
 
   if (use_cups) {

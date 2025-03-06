@@ -38,6 +38,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_attribute.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_update_strike_database.h"
@@ -57,7 +58,6 @@
 #include "components/autofill_ai/core/browser/autofill_ai_features.h"
 #include "components/autofill_ai/core/browser/autofill_ai_logger.h"
 #include "components/autofill_ai/core/browser/autofill_ai_utils.h"
-#include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_suggestions.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -135,10 +135,7 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
       }
       std::erase_if(attributes, [&](const auto& pair) {
         const AttributeInstance& attribute = pair.second;
-        return attribute
-            .GetInfo(attribute.GetTopLevelType(), app_locale,
-                     /*format_string=*/std::nullopt)
-            .empty();
+        return attribute.GetCompleteInfo(app_locale).empty();
       });
     }
   }
@@ -236,12 +233,11 @@ std::vector<std::string> GetAttributeStrikeKeys(const EntityInstance& entity,
         base::ToVector(types, [&](AttributeType attribute_type) {
           base::optional_ref<const AttributeInstance> attribute =
               entity.attribute(attribute_type);
-          return std::pair(std::string(attribute_type.name_as_string()),
-                           attribute
-                               ? base::UTF16ToUTF8(attribute->GetInfo(
-                                     attribute->GetTopLevelType(), app_locale,
-                                     /*format_string=*/std::nullopt))
-                               : std::string());
+          return std::pair(
+              std::string(attribute_type.name_as_string()),
+              attribute
+                  ? base::UTF16ToUTF8(attribute->GetCompleteInfo(app_locale))
+                  : std::string());
         });
 
     // We sort the keys to ensure they remain stable even if the ordering in
@@ -303,13 +299,6 @@ bool AutofillAiManager::IsUserEligible() const {
 
 bool AutofillAiManager::IsUserEligibleForFillingAndImporting() const {
   return client_->IsAutofillAiEnabledPref() && IsUserEligible();
-}
-
-void AutofillAiManager::OnReceivedAXTree(
-    const autofill::FormData& form,
-    optimization_guide::proto::AXTreeUpdate ax_tree_update) {
-  client_->GetModelExecutor()->GetPredictions(form, std::move(ax_tree_update),
-                                              base::DoNothing());
 }
 
 void AutofillAiManager::OnSuggestionsShown(

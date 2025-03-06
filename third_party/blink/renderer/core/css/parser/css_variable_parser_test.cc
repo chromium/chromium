@@ -151,6 +151,8 @@ const char* valid_if_values[] = {
     "if(supports(not (transform-origin: 10em 10em 10em)): true_val; else: false_val;)",
     "if(supports((display: table-cell) and (display: list-item)): true_val; else: false_val;)",
     "if(media(screen) and (supports(display: table-cell) or style(--x)): true_val; else: false_val;)",
+    "if(media(min-width : 500px): true_val; else: false_val;)",
+    "if(media((min-color: 1) and (height <= 999999px)): true_value)",
     // clang-format on
 };
 
@@ -167,7 +169,6 @@ const char* invalid_if_values[] = {
     "if(invalid and supports(invalid): true_val')",
     "if(style(--prop: abc) abc; else: cba)",
     "if(style(--prop: abc): abc; else cba)",
-    "if(media(min-width : 500px): true_val; else: false_val;)",
     "if(style(--prop1: abc): abc; style(--prop2: def) cba)",
     "if(style(--prop: abc): if(style(--prop1: def): x); else: if(style(--prop2: ghi) y))",
     // clang-format on

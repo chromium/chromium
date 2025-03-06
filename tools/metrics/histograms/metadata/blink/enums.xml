@@ -5954,6 +5954,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5350" label="WebAppManifestVersion"/>
   <int value="5351" label="WebAppManifestRelated_Applications"/>
   <int value="5352" label="InstalledManifestApplied"/>
+  <int value="5353" label="SRIHashAssertion"/>
+  <int value="5354" label="SRIPublicKeyAssertion"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

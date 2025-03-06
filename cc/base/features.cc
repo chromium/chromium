@@ -229,4 +229,15 @@ BASE_FEATURE(kViewTransitionFloorTransform,
              "ViewTransitionFloorTransform",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// The feature is the enabled for the cc infrastructure to set the frame rate
+// throttles from the main thread.
+// The experiment will be controlled by the feature flag
+// RenderBlockingFullFrameRate. Enabling the feature will not introduce any
+// behavioral change by itself.
+BASE_FEATURE(kRenderThrottleFrameRate,
+             "RenderThrottleFrameRate",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+const base::FeatureParam<int> kRenderThrottledFrameIntervalHz{
+    &kRenderThrottleFrameRate, "render-throttled-frame-interval-hz", 30};
+
 }  // namespace features

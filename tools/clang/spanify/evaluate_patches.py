@@ -195,7 +195,7 @@ except:
         f.write("use_siso = true\n")
 
 # Produce a full rewrite, and store individual patches below ~/scratch/patch_*
-run("./tools/clang/spanify/rewrite-multiple-platforms.sh", exit_on_error=False)
+run("./tools/clang/spanify/rewrite-multiple-platforms.sh")
 
 run("git reset --hard origin/main")  # Restore source code.
 run("gclient sync -fD", exit_on_error=False)  # Restore compiler.

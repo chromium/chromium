@@ -1062,4 +1062,8 @@ void Scheduler::ClearHistory() {
   ProcessScheduledActions();
 }
 
+void Scheduler::SetShouldThrottleFrameRate(bool flag) {
+  state_machine_.SetShouldThrottleFrameRate(flag);
+}
+
 }  // namespace cc

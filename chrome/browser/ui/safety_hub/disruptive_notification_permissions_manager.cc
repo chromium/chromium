@@ -152,12 +152,11 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
       }
       continue;
     }
-
-    auto* notification_count = base::FindOrNull(
-        notification_count_map,
+    auto it = notification_count_map.find(
         std::make_pair(item.primary_pattern, item.secondary_pattern));
-    if (notification_count &&
-        !IsNotificationDisruptive(url, *notification_count)) {
+    int notification_count =
+        it != notification_count_map.end() ? it->second : 0;
+    if (!IsNotificationDisruptive(url, notification_count)) {
       base::UmaHistogramEnumeration(kRevocationResultHistogram,
                                     RevocationResult::kNotDisruptive);
       continue;
@@ -174,11 +173,11 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
         clock_->Now());
     default_constraint.set_lifetime(safety_hub_util::GetCleanUpThreshold());
     StoreRevokedDisruptiveNotificationPermission(url, default_constraint,
-                                                 *notification_count);
+                                                 notification_count);
     UMA_HISTOGRAM_COUNTS_100(
         "Settings.SafetyHub.DisruptiveNotificationRevocations.Proposed."
         "NotificationCount",
-        *notification_count);
+        notification_count);
     base::UmaHistogramEnumeration(kRevocationResultHistogram,
                                   RevocationResult::kRevoke);
     revoked_sites_count++;

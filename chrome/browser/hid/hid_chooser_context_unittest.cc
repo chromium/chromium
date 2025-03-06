@@ -19,7 +19,6 @@
 #include "base/test/values_test_util.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/hid/mock_hid_device_observer.h"
@@ -42,7 +41,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/account_id/account_id.h"
@@ -84,7 +83,7 @@ class HidChooserContextTestBase {
 
   void DoSetUp(bool is_affiliated, bool login_user) {
     auto* profile_name = kTestUserEmail;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (login_user) {
       const GaiaId kTestUserGaiaId("1111111111");
       auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
@@ -99,7 +98,7 @@ class HidChooserContextTestBase {
     } else {
       profile_name = ash::kSigninBrowserContextBaseName;
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -342,7 +341,7 @@ class HidChooserContextTestBase {
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   raw_ptr<TestingProfile> profile_ = nullptr;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 #endif
 
@@ -1313,14 +1312,14 @@ TEST_P(HidChooserContextAffiliatedTest,
 
 // Boolean parameter means if user is affiliated on the device. Affiliated
 // users belong to the domain that owns the device and is only meaningful
-// on Chrome OS.
+// on ChromeOS.
 //
 // The WebHidAllowDevicesForUrls, WebHidAllowDevicesWithHidUsagesForUrls, and
 // WebHidAllowAllDevicesForUrls policies only take effect for affiliated users.
 INSTANTIATE_TEST_SUITE_P(
     HidChooserContextAffiliatedTestInstance,
     HidChooserContextAffiliatedTest,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     testing::Values(true, false),
 #else
     testing::Values(true),
@@ -1358,9 +1357,9 @@ TEST_F(HidChooserContextLoginScreenTest, ApplyPolicyOnLoginScreen) {
         }
       ])");
 
-  // The policy has an effect only for IS_CHROMEOS_ASH build, otherwise it is
+  // The policy has an effect only for IS_CHROMEOS build, otherwise it is
   // ignored.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(context()->HasDevicePermission(kOrigin, *device));
   EXPECT_EQ(1u, context()->GetGrantedObjects(kOrigin).size());
   EXPECT_EQ(1u, context()->GetAllGrantedObjects().size());

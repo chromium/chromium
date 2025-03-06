@@ -29,6 +29,9 @@ class TemplateURLService;
 /// Whether the omnibox has a thumbnail.
 @property(nonatomic, assign) BOOL hasThumbnail;
 
+/// Disconnects the wrapper.
+- (void)disconnect;
+
 /// Wraps `match` with AutocompleteMatchFormatter.
 - (AutocompleteMatchFormatter*)wrapMatch:(const AutocompleteMatch&)match
                               fromResult:(const AutocompleteResult&)result

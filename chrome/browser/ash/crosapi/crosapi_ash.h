@@ -67,7 +67,6 @@ class FullscreenControllerAsh;
 class IdentityManagerAsh;
 class IdleServiceAsh;
 class InputMethodsAsh;
-class KerberosInBrowserAsh;
 class KeystoreServiceAsh;
 class KioskSessionServiceAsh;
 class LocalPrinterAsh;
@@ -87,7 +86,6 @@ class NonclosableAppToastServiceAsh;
 class PrintingMetricsAsh;
 #endif  // BUILDFLAG(USE_CUPS)
 class RemotingAsh;
-class ScreenAIDownloaderAsh;
 class StructuredMetricsServiceAsh;
 class VpnServiceAsh;
 
@@ -174,8 +172,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindInSessionAuth(
       mojo::PendingReceiver<chromeos::auth::mojom::InSessionAuth> receiver)
       override;
-  void BindKerberosInBrowser(
-      mojo::PendingReceiver<mojom::KerberosInBrowser> receiver) override;
   void BindKeystoreService(
       mojo::PendingReceiver<mojom::KeystoreService> receiver) override;
   void BindKioskSessionService(
@@ -230,8 +226,6 @@ class CrosapiAsh : public mojom::Crosapi {
           chromeos::remote_apps::mojom::RemoteAppsLacrosBridge> receiver)
       override;
   void BindRemoting(mojo::PendingReceiver<mojom::Remoting> receiver) override;
-  void BindScreenAIDownloader(
-      mojo::PendingReceiver<mojom::ScreenAIDownloader> receiver) override;
   void BindSensorHalClient(
       mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote)
       override;
@@ -361,10 +355,6 @@ class CrosapiAsh : public mojom::Crosapi {
 
   ash::ProbeServiceAsh* probe_service_ash() { return probe_service_ash_.get(); }
 
-  ScreenAIDownloaderAsh* screen_ai_downloader_ash() {
-    return screen_ai_downloader_ash_.get();
-  }
-
   StructuredMetricsServiceAsh* structured_metrics_service_ash() {
     return structured_metrics_service_ash_.get();
   }
@@ -408,7 +398,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<IdentityManagerAsh> identity_manager_ash_;
   std::unique_ptr<IdleServiceAsh> idle_service_ash_;
   std::unique_ptr<InputMethodsAsh> input_methods_ash_;
-  std::unique_ptr<KerberosInBrowserAsh> kerberos_in_browser_ash_;
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;
   std::unique_ptr<KioskSessionServiceAsh> kiosk_session_service_ash_;
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
@@ -437,7 +426,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<RemotingAsh> remoting_ash_;
   std::unique_ptr<ash::printing::PrintPreviewWebcontentsAdapterAsh>
       print_preview_webcontents_adapter_ash_;
-  std::unique_ptr<ScreenAIDownloaderAsh> screen_ai_downloader_ash_;
   std::unique_ptr<StructuredMetricsServiceAsh> structured_metrics_service_ash_;
   std::unique_ptr<ash::VideoConferenceManagerAsh> video_conference_manager_ash_;
   std::unique_ptr<VpnServiceAsh> vpn_service_ash_;

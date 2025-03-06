@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/test/values_test_util.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"
@@ -165,6 +166,30 @@ std::string RunFunctionAndReturnError(scoped_refptr<ExtensionFunction> function,
   CHECK(function->response_type());
   EXPECT_EQ(ExtensionFunction::FAILED, *function->response_type());
   return function->GetError();
+}
+
+base::expected<base::Value::List, std::string> RunFunctionAndReturnExpected(
+    scoped_refptr<ExtensionFunction> function,
+    ArgsType args,
+    content::BrowserContext* context,
+    FunctionMode mode) {
+  RunFunction(function, std::move(args), context, mode);
+
+  CHECK(function->response_type());
+
+  switch (*function->response_type()) {
+    case ExtensionFunction::BAD_MESSAGE:
+      // This case ASSERTs in `SendResponseHelper::OnResponse`.
+      NOTREACHED();
+
+    case ExtensionFunction::FAILED:
+      return base::unexpected(function->GetError());
+
+    case ExtensionFunction::SUCCEEDED:
+      const base::Value::List* results = function->GetResultListForTest();
+      CHECK(results);
+      return results->Clone();
+  }
 }
 
 bool RunFunction(scoped_refptr<ExtensionFunction> function,

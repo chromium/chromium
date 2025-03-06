@@ -12,87 +12,96 @@
     margin-block-end: 0;
     margin-block-start: 0;
   }
-
-  /* If the user is not eligible for Autofill with Ai, the top section should
-   * look like it is disabled. */
-  :host([ineligible-user]) #topSection {
-    opacity: 50%;
-  }
 </style>
 <div id="topSection">
    <!-- 'label=" "'' is intentional here to avoid dropping the sub-label. -->
-   <!-- Disabled: If the user is not eligible for Autofill with Ai, the user
-        should not be able to switch this toggle. This toggle is used for opting
-        in and out of Autofill with Ai. -->
-   <settings-toggle-button
-       id="prefToggle" disabled$="[[ineligibleUser]]"
-       no-extension-indicator label=" "
-       sub-label-with-link="$i18n{autofillAiToggleSubLabel}"
-       on-sub-label-link-clicked="onToggleSubLabelLinkClick_"
-       pref="{{prefs.autofill.prediction_improvements.enabled}}">
-   </settings-toggle-button>
-   <div class="settings-columned-section">
-     <div class="column">
-       <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
-       <ul class="icon-bulleted-list">
-         <li>
-           <cr-icon icon="settings20:sync-saved-locally"></cr-icon>
-           <div class="cr-secondary-text">
-             $i18n{autofillAiWhenOnSavedInfo}
-           </div>
-         </li>
-         <li>
-           <cr-icon icon="settings20:text-analysis"></cr-icon>
-           <div class="cr-secondary-text">
-             $i18n{autofillAiUseToFill}
-           </div>
-         </li>
-       </ul>
-     </div>
-     <div class="column">
-       <h3 class="description-header">
-         $i18n{columnHeadingConsider}
-       </h3>
-       <ul class="icon-bulleted-list">
-         <li>
-           <cr-icon icon="settings20:psychiatry"></cr-icon>
-           <div class="cr-secondary-text">
-             $i18n{autofillAiNewFeature}
-           </div>
-         </li>
-         <li>
-           <cr-icon icon="settings20:googleg"></cr-icon>
-           <div class="cr-secondary-text">
-             $i18n{autofillAiToConsiderDataUsage}
-           </div>
-         </li>
-         <li>
-           <cr-icon icon="settings20:file-save"></cr-icon>
-           <div class="cr-secondary-text">
-             $i18n{autofillAiToConsiderDataStorage}
-           </div>
-         </li>
-         <li>
-           <cr-icon icon="settings20:account-box"></cr-icon>
-           <div class="cr-secondary-text">
-             $i18n{autofillAiToConsiderDataImprovement}
-           </div>
-         </li>
-       </ul>
-     </div>
-   </div>
- </div>
+   <!-- If the user is not eligible for Autofill with Ai, the toggle is disabled
+        and turned off regardless of the pref value.
+        If the user is eligible for Autofill with Ai, the toggle is enabled.
+        The toggle changes the value of a pref which is used for opting in and
+        out of Autofill with Ai. -->
+  <template is="dom-if" if="[[!ineligibleUser]]" restamp>
+    <settings-toggle-button
+        id="prefToggle"
+        no-extension-indicator label=" "
+        sub-label-with-link="$i18n{autofillAiToggleSubLabel}"
+        on-sub-label-link-clicked="onToggleSubLabelLinkClick_"
+        pref="{{prefs.autofill.prediction_improvements.enabled}}">
+    </settings-toggle-button>
+  </template>
+  <template is="dom-if" if="[[ineligibleUser]]" restamp>
+    <settings-toggle-button
+        id="prefToggle" disabled
+        no-extension-indicator label=" "
+        sub-label-with-link="$i18n{autofillAiToggleSubLabel}"
+        on-sub-label-link-clicked="onToggleSubLabelLinkClick_">
+    </settings-toggle-button>
+  </template>
+
+  <div class="settings-columned-section">
+    <div class="column">
+      <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:sync-saved-locally"></cr-icon>
+          <div class="cr-secondary-text">
+            $i18n{autofillAiWhenOnSavedInfo}
+          </div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:text-analysis"></cr-icon>
+          <div class="cr-secondary-text">
+            $i18n{autofillAiUseToFill}
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="column">
+      <h3 class="description-header">
+        $i18n{columnHeadingConsider}
+      </h3>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:psychiatry"></cr-icon>
+          <div class="cr-secondary-text">
+            $i18n{autofillAiNewFeature}
+          </div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:googleg"></cr-icon>
+          <div class="cr-secondary-text">
+            $i18n{autofillAiToConsiderDataUsage}
+          </div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:file-save"></cr-icon>
+          <div class="cr-secondary-text">
+            $i18n{autofillAiToConsiderDataStorage}
+          </div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:account-box"></cr-icon>
+          <div class="cr-secondary-text">
+            $i18n{autofillAiToConsiderDataImprovement}
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
 
 <div id="entriesHeader" class="cr-row">
   <h2 class="flex">
     <span id="entriesHeaderTitle">
       $i18n{autofillAiUserAnnotationsHeader}</span>
   </h2>
-  <!-- Disabled: If the user is not eligible for Autofill with Ai, the user
-       should not be able to add entities. -->
-  <!-- TODO(crbug.com/393318914): Disable also if the toggle is turned off. -->
+  <!-- Disabled: If the user is not eligible for Autofill with Ai or if the
+       user opted out by switching the toggle, the user should not be able to
+       add entities. -->
   <cr-button id="addEntity" class="header-aligned-button"
-      disabled$="[[ineligibleUser]]" on-click="onAddButtonClick_">
+      disabled$="[[computeDisableAddButton_(ineligibleUser,
+          prefs.autofill.prediction_improvements.enabled.value)]]"
+      on-click="onAddButtonClick_">
     $i18n{add}
     <cr-icon icon="cr:arrow-drop-down" class="arrow-icon-down"></cr-icon>
   </cr-button>

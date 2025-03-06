@@ -84,6 +84,8 @@ class AutofillSnackbarControllerImpl;
 class AutofillSuggestionDelegate;
 class AutofillPlusAddressDelegate;
 class AutofillAiDelegate;
+class AutofillAiModelCache;
+class AutofillAiModelExecutor;
 class AutofillProfile;
 class FieldClassificationModelHandler;
 class FormDataImporter;
@@ -287,6 +289,14 @@ class AutofillClient {
   // Returns `nullptr` if, at the time of the AutofillClient's construction, the
   // Autofill AI feature is unsupported.
   virtual AutofillAiDelegate* GetAutofillAiDelegate();
+
+  // Returns the per-profile `AutofillAiModelCache`. Returns `nullptr` if the
+  // `kAutofillAiServerModel` is not enabled.
+  virtual AutofillAiModelCache* GetAutofillAiModelCache();
+
+  // Returns the per-profile `AutofillAiModelExecutor`. Returns `nullptr` if the
+  // `kAutofillAiServerModel` is not enabled or the profile is OTR.
+  virtual AutofillAiModelExecutor* GetAutofillAiModelExecutor();
 
   // Returns the `AutofillPlusAddressDelegate` associated with the profile of
   // the window of this tab.

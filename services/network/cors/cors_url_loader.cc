@@ -346,7 +346,8 @@ CorsURLLoader::CorsURLLoader(
       factory_cookie_setting_overrides_(factory_cookie_setting_overrides),
       devtools_cookie_setting_overrides_(devtools_cookie_setting_overrides) {
   TRACE_EVENT("loading", "CorsURLLoader::CorsURLLoader",
-              net::NetLogWithSourceToFlow(net_log_));
+              net::NetLogWithSourceToFlow(net_log_), "url",
+              request_.url.spec());
   CHECK(url_loader_network_service_observer_ != nullptr);
   if (ignore_isolated_world_origin)
     request_.isolated_world_origin = std::nullopt;

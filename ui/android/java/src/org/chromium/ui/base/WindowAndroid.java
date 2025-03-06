@@ -24,6 +24,7 @@ import android.util.TypedValue;
 import android.view.Display;
 import android.view.Surface;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.window.TrustedPresentationThresholds;
@@ -132,6 +133,11 @@ public class WindowAndroid
     private float mRefreshRate;
     private boolean mHasFocus = true;
     private @Nullable OverlayTransformApiHelper mOverlayTransformApiHelper;
+
+    // TODO(crbug.com/395839333): make sure that these references are cleared when the pointer
+    // capturing view goes out of focus
+    private @Nullable View mPointerLockingView;
+    private @Nullable View mPointerLockChangeView;
 
     // The information required to draw a replica of the progress bar drawn in
     // java UI in composited UI.
@@ -827,6 +833,8 @@ public class WindowAndroid
                 decorView.removeOnAttachStateChangeListener(this);
             }
         }
+
+        removePointerLockViews();
     }
 
     /**
@@ -1230,6 +1238,64 @@ public class WindowAndroid
                         .sendUnfoldLatencyBeginTimestamp(mNativeWindowAndroid, beginTimestampMs);
             }
         }
+    }
+
+    @CalledByNative
+    private boolean requestPointerLock(View view) {
+        assert mPointerLockChangeView == null;
+        assert mPointerLockingView == null;
+
+        if (!mHasFocus || !view.hasFocus()) {
+            return false;
+        }
+
+        Context context = assumeNonNull(getContext().get());
+        mPointerLockChangeView =
+                new View(context) {
+                    @Override
+                    public void onPointerCaptureChange(boolean hasCapture) {
+                        super.onPointerCaptureChange(hasCapture);
+                        onPointerLockChangeEvent(hasCapture);
+                    }
+                };
+
+        var decorView = getDecorView();
+        if (decorView instanceof ViewGroup decorViewGroup) {
+            decorViewGroup.addView(mPointerLockChangeView);
+        }
+
+        // TODO(crbug.com/395839333): Listen on view focus changes for the capturing view & release
+        // the pointer if it goes out of focus
+        // Pointer lock API equivalent on Android is called pointer capture
+        view.requestPointerCapture();
+        mPointerLockingView = view;
+        return true;
+    }
+
+    @CalledByNative
+    private void releasePointerLock(View view) {
+        assert mPointerLockingView != null;
+        assert view == mPointerLockingView;
+
+        mPointerLockingView.releasePointerCapture();
+        removePointerLockViews();
+    }
+
+    private void onPointerLockChangeEvent(boolean hasLock) {
+        // TODO(crbug.com/395839333): Forward lock change event to the pointer locking view
+        if (!hasLock) {
+            removePointerLockViews();
+        }
+    }
+
+    private void removePointerLockViews() {
+        var decorView = getDecorView();
+        if (mPointerLockChangeView != null && decorView instanceof ViewGroup decorViewGroup) {
+            decorViewGroup.removeView(mPointerLockChangeView);
+        }
+
+        mPointerLockChangeView = null;
+        mPointerLockingView = null;
     }
 
     @NativeMethods

@@ -25,8 +25,10 @@ void testPointerPassing() {
   processIntBuffer(&intArray[0]);
 
   std::vector<int> intVector;
-  // Operand for & is not a simple variable.
-  // No rewrite expected. (crrev.com/c/6286045)
+  // We know how to get size from Vector so just leave it alone to
+  // construct a span.
+  // Expected rewrite:
+  // processIntBuffer(intVector);
   processIntBuffer(&intVector[0]);
 }
 

@@ -17,8 +17,9 @@
 #include "url/gurl.h"
 
 namespace content {
-class WebContents;
 enum class Visibility;
+class PageNavigator;
+class WebContents;
 }
 
 namespace password_manager {
@@ -26,10 +27,7 @@ class PasswordFormManager;
 }  // namespace password_manager
 
 class ChangeFormSubmissionVerifier;
-
-namespace {
-class ParsedPasswordFormWaiter;
-}
+class ChangePasswordFormWaiter;
 
 // This class controls password change process including acceptance of privacy
 // notice, opening of a new tab, navigation to the change password url, password
@@ -37,12 +35,6 @@ class ParsedPasswordFormWaiter;
 class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
                                    public content::WebContentsObserver {
  public:
-  using OpenPasswordChangeTabCallback =
-      base::RepeatingCallback<content::WebContents*(const GURL&,
-                                                    content::WebContents*)>;
-
-  static constexpr base::TimeDelta kChangePasswordFormWaitingTimeout =
-      base::Seconds(10);
   static constexpr char kFinalPasswordChangeStatusHistogram[] =
       "PasswordManager.FinalPasswordChangeStatus";
   static constexpr char kWasPasswordChangeNewTabFocused[] =
@@ -51,8 +43,7 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   PasswordChangeDelegateImpl(GURL change_password_url,
                              std::u16string username,
                              std::u16string password,
-                             content::WebContents* originator,
-                             OpenPasswordChangeTabCallback callback);
+                             content::WebContents* originator);
   ~PasswordChangeDelegateImpl() override;
 
   PasswordChangeDelegateImpl(const PasswordChangeDelegateImpl&) = delete;
@@ -63,6 +54,12 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   void OfferPasswordChangeUi();
 
   base::WeakPtr<PasswordChangeDelegate> AsWeakPtr() override;
+
+#if defined(UNIT_TEST)
+  void SetNavigator(content::PageNavigator* navigator) {
+    test_navigator_ = navigator;
+  }
+#endif
 
  private:
   // PasswordChangeDelegate Impl
@@ -100,6 +97,8 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
 
   bool IsPrivacyNoticeAcknowledged() const;
 
+  content::PageNavigator* GetNavigator();
+
   const GURL change_password_url_;
   const std::u16string username_;
   const std::u16string original_password_;
@@ -107,13 +106,12 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   std::u16string generated_password_;
 
   base::WeakPtr<content::WebContents> originator_;
-  OpenPasswordChangeTabCallback open_password_change_tab_callback_;
   base::WeakPtr<content::WebContents> executor_;
 
   State current_state_ = static_cast<State>(-1);
 
   // Class which awaits for change password form to appear.
-  std::unique_ptr<ParsedPasswordFormWaiter> form_waiter_;
+  std::unique_ptr<ChangePasswordFormWaiter> form_waiter_;
 
   // Helper class which submits a form and verifies submission.
   std::unique_ptr<ChangeFormSubmissionVerifier> submission_verifier_;
@@ -122,6 +120,9 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
 
   base::Time flow_start_time_;
   bool was_password_change_tab_focused_ = false;
+
+  // Allows mocking opening of a URL in tests.
+  raw_ptr<content::PageNavigator> test_navigator_;
 
   base::WeakPtrFactory<PasswordChangeDelegateImpl> weak_ptr_factory_{this};
 };

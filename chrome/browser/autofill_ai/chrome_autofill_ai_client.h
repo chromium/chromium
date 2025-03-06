@@ -10,9 +10,9 @@
 
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor.h"
 #include "components/autofill_ai/core/browser/autofill_ai_client.h"
 #include "components/autofill_ai/core/browser/autofill_ai_manager.h"
-#include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
 #include "components/prefs/pref_service.h"
 
 class Profile;
@@ -40,7 +40,6 @@ class ChromeAutofillAiClient : public autofill_ai::AutofillAiClient {
   autofill::ContentAutofillClient& GetAutofillClient() override;
   void GetAXTree(AXTreeCallback callback) override;
   autofill_ai::AutofillAiManager& GetManager() override;
-  autofill_ai::AutofillAiModelExecutor* GetModelExecutor() override;
   autofill::EntityDataManager* GetEntityDataManager() override;
   bool IsAutofillAiEnabledPref() const override;
   bool IsUserEligible() override;
@@ -52,24 +51,12 @@ class ChromeAutofillAiClient : public autofill_ai::AutofillAiClient {
       SaveOrUpdatePromptResultCallback save_prompt_acceptance_callback)
       override;
 
-  void SetModelExecutorForTesting(
-      std::unique_ptr<autofill_ai::AutofillAiModelExecutor> model_executor) {
-    filling_engine_ = std::move(model_executor);
-  }
-
  private:
   explicit ChromeAutofillAiClient(content::WebContents* web_contents,
                                   Profile* profile);
 
   const raw_ref<content::WebContents> web_contents_;
   const raw_ref<const PrefService> prefs_;
-
-  // Returns whether the optimization guide suggests that Autofill AI should
-  // should currently be allowed to report feedback.
-  bool CanShowFeedbackPage();
-
-  // TODO(crbug.com/371534239): Rename to `model_executor_`.
-  std::unique_ptr<autofill_ai::AutofillAiModelExecutor> filling_engine_;
 
   autofill_ai::AutofillAiManager prediction_improvements_manager_;
 };

@@ -433,6 +433,9 @@ static_library("browser") {
     "ml_model/autofill_ai/autofill_ai_model_cache.h",
     "ml_model/autofill_ai/autofill_ai_model_cache_impl.cc",
     "ml_model/autofill_ai/autofill_ai_model_cache_impl.h",
+    "ml_model/autofill_ai/autofill_ai_model_executor.h",
+    "ml_model/autofill_ai/autofill_ai_model_executor_impl.cc",
+    "ml_model/autofill_ai/autofill_ai_model_executor_impl.h",
     "payments/account_info_getter.h",
     "payments/amount_extraction_heuristic_regexes.cc",
     "payments/amount_extraction_heuristic_regexes.h",
@@ -1473,6 +1476,11 @@ source_set("unit_tests") {
       "ml_model/field_classification_model_executor_unittest.cc",
       "ml_model/field_classification_model_handler_unittest.cc",
     ]
+  }
+
+  if (build_with_model_execution) {
+    sources +=
+        [ "ml_model/autofill_ai/autofill_ai_model_executor_impl_unittest.cc" ]
   }
 
   defines = [ "CHROME_VERSION_MAJOR=" + chrome_version_major ]

@@ -173,15 +173,6 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
     return PasswordChangeServiceFactory::GetForProfile(browser()->profile());
   }
 
-  // This allows to attach a custom ManagePasswordsUIController to intercept UI
-  // interactions.
-  void InterceptNewTabsOpening() {
-    // TODO(crbug.com/382652112): find a way to observe bubbles without
-    // intercepting new tab creation.
-    password_change_service()->SetCustomTabOpening(
-        base::BindRepeating(&OpenNewTabInBackground, browser()->AsWeakPtr()));
-  }
-
   void MockPasswordChangeOutcome(
       std::optional<PasswordChangeOutcome> outcome,
       std::optional<PasswordChangeErrorCase> error_case = std::nullopt) {

@@ -2155,7 +2155,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
               base::Unretained(this), cred.cred_id));
       mechanism.description =
           AuthenticatorRequestDialogModel::GetMechanismDescription(
-              cred, model_->priority_phone_name);
+              cred, model_->priority_phone_name, ui_presentation());
     }
     if (!passwords_.empty()) {
       PopulatePasswords();
@@ -2606,8 +2606,8 @@ void AuthenticatorRequestDialogController::PopulatePasswords() {
             base::Unretained(model_),
             std::make_pair(password->username_value,
                            password->password_value)));
-    mechanism.description =
-        l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_PASSWORD_LABEL);
+    mechanism.description = l10n_util::GetStringUTF16(
+        IDS_PASSWORD_MANAGER_PASSWORD_FROM_GOOGLE_PASSWORD_MANAGER);
     model_->mechanisms.emplace_back(std::move(mechanism));
   }
 }

@@ -35,7 +35,7 @@
 #include "chrome/test/base/scoped_channel_override.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
@@ -66,14 +66,14 @@ class ChromeInternalLogSourceTest : public BrowserWithTestWindowTest {
   ~ChromeInternalLogSourceTest() override = default;
 
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     auth_events_recorder_ = ash::AuthEventsRecorder::CreateForTesting();
 #endif
     BrowserWithTestWindowTest::SetUp();
   }
 
  protected:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<ash::AuthEventsRecorder> auth_events_recorder_;
 #endif
 };
@@ -157,7 +157,7 @@ TEST_F(ChromeInternalLogSourceTest, CpuTypePresentAndValid) {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ChromeInternalLogSourceTest, FreeAndTotalDiskSpacePresent) {
   ash::SpacedClient::InitializeFake();
   ash::FakeSpacedClient::Get()->set_free_disk_space(1000);
@@ -201,7 +201,7 @@ TEST_F(ChromeInternalLogSourceTest, RecordedAuthEventsPresent) {
             "auth_surface_change_Login,update_lock_screen_view,auth_submit,"
             "login_offline,login_screen_exit_success,");
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
 TEST_F(ChromeInternalLogSourceTest, UpdaterDataPresent) {

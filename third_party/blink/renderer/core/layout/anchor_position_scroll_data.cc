@@ -59,7 +59,9 @@ bool AnchorPositionScrollData::IsActive() const {
 PhysicalOffset AnchorPositionScrollData::TotalOffset(
     const LayoutObject* anchor_object) const {
   if (!anchor_object ||
-      anchor_object == default_anchor_adjustment_data_.anchor_object) {
+      (default_anchor_adjustment_data_.anchor_element &&
+       anchor_object ==
+           default_anchor_adjustment_data_.anchor_element->GetLayoutObject())) {
     return default_anchor_adjustment_data_.TotalOffset();
   }
 
@@ -81,7 +83,9 @@ AnchorPositionScrollData::ComputeAdjustmentContainersData(
     return container;
   };
 
-  result.anchor_object = &anchor;
+  const auto* anchor_element = DynamicTo<Element>(anchor.GetNode());
+  CHECK(anchor_element);
+  result.anchor_element = anchor_element;
   const auto* bounding_container = container_ignore_layout_view_for_fixed_pos(
       *anchored_element_->GetLayoutObject());
 
@@ -183,8 +187,8 @@ AnchorPositionScrollData::TakeAndCompareSnapshot(bool update) {
   AdjustmentData new_adjustment_data = ComputeDefaultAnchorAdjustmentData();
 
   SnapshotDiff diff = SnapshotDiff::kNone;
-  if (default_anchor_adjustment_data_.anchor_object !=
-          new_adjustment_data.anchor_object ||
+  if (default_anchor_adjustment_data_.anchor_element !=
+          new_adjustment_data.anchor_element ||
       AdjustmentContainerIds() !=
           new_adjustment_data.adjustment_container_ids ||
       !IsFallbackPositionValid(new_adjustment_data)) {
@@ -221,11 +225,12 @@ bool AnchorPositionScrollData::IsFallbackPositionValid(
 
   for (const NonOverflowingScrollRange& range :
        *non_overflowing_scroll_ranges) {
-    if (range.anchor_object != new_adjustment_data.anchor_object) {
+    if (range.anchor_element != new_adjustment_data.anchor_element) {
       // The range was calculated with a different anchor object. Check if the
       // anchored element (which previously overflowed with the try option that
       // specified that anchor) will become non-overflowing with that option.
-      if (range.Contains(TotalOffset(range.anchor_object))) {
+      if (range.Contains(
+              TotalOffset(range.anchor_element->GetLayoutObject()))) {
         return false;
       }
     } else {

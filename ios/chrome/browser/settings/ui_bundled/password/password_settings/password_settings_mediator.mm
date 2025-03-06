@@ -18,7 +18,6 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/base/data_type.h"
-#import "components/sync/base/features.h"
 #import "components/sync/base/passphrase_enums.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service_utils.h"
@@ -61,7 +60,10 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
                                         PasswordExporterDelegate,
                                         PrefObserverDelegate,
                                         SavedPasswordsPresenterObserver,
-                                        SyncObserverModelBridge> {
+                                        SyncObserverModelBridge>
+@end
+
+@implementation PasswordSettingsMediator {
   // A helper object for passing data about saved passwords from a finished
   // password store request to the PasswordManagerViewController.
   std::unique_ptr<SavedPasswordsPresenterObserverBridge>
@@ -98,27 +100,24 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
 
   // Bridge to listen to pref changes.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
+
+  // Helper object which maintains state about the "Export Passwords..." flow,
+  // and handles the actual serialization of the passwords.
+  PasswordExporter* _passwordExporter;
+
+  // Handles showing alerts for user interactions with the bulk move passwords
+  // to account section in settings.
+  id<BulkMoveLocalPasswordsToAccountHandler> _bulkMovePasswordsToAccountHandler;
+
+  // Delegate capable of showing alerts needed in the password export flow.
+  __weak id<PasswordExportHandler> _exportHandler;
+
+  // Whether or not there are any passwords saved.
+  BOOL _hasSavedPasswords;
+
+  // Whether or not the password exporter is ready to be activated.
+  BOOL _exporterIsReady;
 }
-
-// Helper object which maintains state about the "Export Passwords..." flow, and
-// handles the actual serialization of the passwords.
-@property(nonatomic, strong) PasswordExporter* passwordExporter;
-
-@property(nonatomic, strong) id<BulkMoveLocalPasswordsToAccountHandler>
-    bulkMovePasswordsToAccountHandler;
-
-// Delegate capable of showing alerts needed in the password export flow.
-@property(nonatomic, weak) id<PasswordExportHandler> exportHandler;
-
-// Whether or not there are any passwords saved.
-@property(nonatomic, readwrite) BOOL hasSavedPasswords;
-
-// Whether or not the password exporter is ready to be activated.
-@property(nonatomic, readwrite) BOOL exporterIsReady;
-
-@end
-
-@implementation PasswordSettingsMediator
 
 - (instancetype)
        initWithReauthenticationModule:(id<ReauthenticationProtocol>)reauthModule
@@ -176,7 +175,7 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   // Now that the consumer is set, ensure that the consumer starts out with the
   // correct initial value for `canExportPasswords` or else the export button
   // will not behave correctly on load.
-  self.exporterIsReady = self.passwordExporter.exportState == ExportState::IDLE;
+  _exporterIsReady = _passwordExporter.exportState == ExportState::IDLE;
   [self savedPasswordsDidChange];
 
   [self.consumer setSavingPasswordsEnabled:_prefService->GetBoolean(
@@ -200,9 +199,7 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
 
   [self updateShowBulkMovePasswordsToAccount];
 
-  if (syncer::IsWebauthnCredentialSyncEnabled()) {
-    [self checkUserCanChangeGPMPin];
-  }
+  [self checkUserCanChangeGPMPin];
 }
 
 - (void)userDidStartBulkMoveLocalPasswordsToAccountFlow {
@@ -232,15 +229,15 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
 - (void)userDidStartExportFlow {
   std::vector<CredentialUIEntry> passwords =
       _savedPasswordsPresenter->GetSavedPasswords();
-  [self.passwordExporter startExportFlow:passwords];
+  [_passwordExporter startExportFlow:passwords];
 }
 
 - (void)userDidCompleteExportFlow {
-  [self.passwordExporter resetExportState];
+  [_passwordExporter resetExportState];
 }
 
 - (void)exportFlowCanceled {
-  [self.passwordExporter cancelExport];
+  [_passwordExporter cancelExport];
 }
 
 - (void)disconnect {
@@ -283,26 +280,26 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
                         completionHandler:
                             (void (^)(NSString*, BOOL, NSArray*, NSError*))
                                 completionHandler {
-  [self.exportHandler showActivityViewWithActivityItems:activityItems
-                                      completionHandler:completionHandler];
+  [_exportHandler showActivityViewWithActivityItems:activityItems
+                                  completionHandler:completionHandler];
 }
 
 - (void)showExportErrorAlertWithLocalizedReason:(NSString*)errorReason {
-  [self.exportHandler showExportErrorAlertWithLocalizedReason:errorReason];
+  [_exportHandler showExportErrorAlertWithLocalizedReason:errorReason];
 }
 
 - (void)showPreparingPasswordsAlert {
-  [self.exportHandler showPreparingPasswordsAlert];
+  [_exportHandler showPreparingPasswordsAlert];
 }
 
 - (void)showSetPasscodeForPasswordExportDialog {
-  [self.exportHandler showSetPasscodeForPasswordExportDialog];
+  [_exportHandler showSetPasscodeForPasswordExportDialog];
 }
 
 - (void)updateExportPasswordsButton {
   // This is invoked by the exporter when its state changes, so we have to
   // re-read that state before pushing to the consumer.
-  self.exporterIsReady = self.passwordExporter.exportState == ExportState::IDLE;
+  _exporterIsReady = _passwordExporter.exportState == ExportState::IDLE;
   [self pushExportStateToConsumer];
 }
 
@@ -348,7 +345,7 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   NSString* alertDescription = base::SysUTF16ToNSString(result);
 
   // Create and show the confirmation dialog.
-  [self.bulkMovePasswordsToAccountHandler
+  [_bulkMovePasswordsToAccountHandler
       showConfirmationDialogWithAlertTitle:alertTitle
                           alertDescription:alertDescription];
 }
@@ -360,8 +357,7 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
 #pragma mark - SavedPasswordsPresenterObserver
 
 - (void)savedPasswordsDidChange {
-  self.hasSavedPasswords =
-      !_savedPasswordsPresenter->GetSavedPasswords().empty();
+  _hasSavedPasswords = !_savedPasswordsPresenter->GetSavedPasswords().empty();
   [self pushDeleteStateToConsumer];
   [self pushExportStateToConsumer];
   [self updateShowBulkMovePasswordsToAccount];
@@ -418,12 +414,10 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   [self.consumer setUserEmail:base::SysUTF8ToNSString(
                                   _syncService->GetAccountInfo().email)];
   [self updateShowBulkMovePasswordsToAccount];
-  if (syncer::IsWebauthnCredentialSyncEnabled()) {
-    [self.consumer
-        setCanChangeGPMPin:password_manager::sync_util::GetAccountForSaving(
-                               _prefService, _syncService)
-                               .has_value()];
-  }
+  [self.consumer
+      setCanChangeGPMPin:password_manager::sync_util::GetAccountForSaving(
+                             _prefService, _syncService)
+                             .has_value()];
 }
 
 #pragma mark - Private
@@ -454,8 +448,7 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
 
 // Pushes the current state of the exporter to the consumer.
 - (void)pushExportStateToConsumer {
-  [self.consumer
-      setCanExportPasswords:self.hasSavedPasswords && self.exporterIsReady];
+  [self.consumer setCanExportPasswords:_hasSavedPasswords && _exporterIsReady];
 }
 
 // Computes the amount of local passwords and passes that on to the consumer.
@@ -506,7 +499,7 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
 // Shows the snackbar indicating to the user that their local passwords have
 // been saved to their account.
 - (void)showMovedToAccountSnackbarWithPasswordCount:(int)count {
-  [self.bulkMovePasswordsToAccountHandler
+  [_bulkMovePasswordsToAccountHandler
       showMovedToAccountSnackbarWithPasswordCount:count
                                         userEmail:_syncService->GetAccountInfo()
                                                       .email];

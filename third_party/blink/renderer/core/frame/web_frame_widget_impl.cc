@@ -2165,6 +2165,14 @@ std::unique_ptr<cc::ScopedPauseRendering> WebFrameWidgetImpl::PauseRendering() {
   return widget_base_->LayerTreeHost()->PauseRendering();
 }
 
+void WebFrameWidgetImpl::SetShouldThrottleFrameRate(bool flag) {
+  if (!View()->does_composite()) {
+    return;
+  }
+  throttling_frame_rate_ = flag;
+  return widget_base_->LayerTreeHost()->SetShouldThrottleFrameRate(flag);
+}
+
 std::optional<int> WebFrameWidgetImpl::GetMaxRenderBufferBounds() const {
   if (!View()->does_composite()) {
     return std::nullopt;
@@ -3097,6 +3105,12 @@ WebInputEventResult WebFrameWidgetImpl::HandleInputEvent(
   // handle it appropriately.
   if (ShouldIgnoreInputEvents()) {
     return WebInputEventResult::kNotHandled;
+  }
+
+  // Only unthrottle once to avoid repeatedly posting tasks to the cc impl
+  // thread.
+  if (throttling_frame_rate_) {
+    SetShouldThrottleFrameRate(false);
   }
 
   base::AutoReset<const WebInputEvent*> current_event_change(

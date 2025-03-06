@@ -101,6 +101,14 @@ class AttributeInstance final {
   // and is assumed to be just the attribute-type-equivalent field type for
   // unstructured ones.
 
+  // Returns a string that contains all information stored in this attribute
+  // instance, formatted according to the given `app_locale`.
+  //
+  // For more control over over which, see GetInfo().
+  std::u16string GetCompleteInfo(const std::string& app_locale) const {
+    return GetInfo(type().field_type(), app_locale, std::nullopt);
+  }
+
   // Returns the value stored in this attribute instance for a specific `type`,
   // formatted according to a given `app_locale` and `format_string`.
   //
@@ -158,10 +166,6 @@ class AttributeInstance final {
   // Returns the types which are stored in the database for this attribute
   // to be able to correctly reconstruct it at database loading time.
   FieldTypeSet GetDatabaseStoredTypes() const;
-
-  // Returns the FieldType that represents the whole value stored in this
-  // attribute.
-  FieldType GetTopLevelType() const;
 
   // This is a no-op for unstructured attributes, and for structured attributes
   // the function propagates changes in a component to its subcomponents. This
