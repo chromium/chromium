@@ -26,4 +26,17 @@ void JniDelegateImpl::CacheFeatureParamsImmediately(
   Java_CachedFlagUtils_cacheFeatureParamsImmediately(env, feature_params);
 }
 
+void JniDelegateImpl::EraseNativeFlagCachedValues(
+    const std::vector<std::string>& features_to_erase) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_CachedFlagUtils_eraseNativeFlagCachedValues(env, features_to_erase);
+}
+
+void JniDelegateImpl::EraseFeatureParamCachedValues(
+    const std::vector<std::string>& feature_params_to_erase) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_CachedFlagUtils_eraseFeatureParamCachedValues(env,
+                                                     feature_params_to_erase);
+}
+
 }  // namespace cached_flags

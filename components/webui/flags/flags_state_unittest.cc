@@ -125,6 +125,16 @@ class MockJniDelegate : public cached_flags::JniDelegate {
       CacheFeatureParamsImmediately,
       ((const std::map<std::string, std::map<std::string, std::string>>&)),
       (override));
+
+  MOCK_METHOD((void),
+              EraseNativeFlagCachedValues,
+              ((const std::vector<std::string>&)),
+              (override));
+
+  MOCK_METHOD((void),
+              EraseFeatureParamCachedValues,
+              ((const std::vector<std::string>&)),
+              (override));
 };
 #endif
 
@@ -902,6 +912,8 @@ TEST_F(FlagsStateTest, GetFlagFeatureEntries) {
 // to "Default" and then continue its execution to set the feature to the
 // selected value, which means that each call to SetFeatureEntryEnabled() will
 // trigger two sets of JNI calls.
+
+// Test that a FEATURE_VALUE can be correctly set to "Enabled" and "Disabled"
 TEST_F(FlagsStateTest, VerifyJniCalls_1) {
   const FeatureEntry& feature1 = kEntries[6];
   ASSERT_EQ(kFlags7, feature1.internal_name);
@@ -922,6 +934,8 @@ TEST_F(FlagsStateTest, VerifyJniCalls_1) {
                                        feature1.NameForOption(2), true);
 }
 
+// Test that a FEATURE_WITH_PARAMS_VALUE can be correctly set to
+// "Enabled" and "Disabled" part 1
 TEST_F(FlagsStateTest, VerifyJniCalls_2) {
   const FeatureEntry& feature_with_param1 = kEntries[9];
   ASSERT_EQ(kFlags10, feature_with_param1.internal_name);
@@ -951,6 +965,8 @@ TEST_F(FlagsStateTest, VerifyJniCalls_2) {
       &flags_storage_, feature_with_param1.NameForOption(2), true);
 }
 
+// Test that a FEATURE_WITH_PARAMS_VALUE can be correctly set to
+// "Enabled" and "Disabled" part 2
 TEST_F(FlagsStateTest, VerifyJniCalls_3) {
   const FeatureEntry& feature_with_param2 = kEntries[11];
   ASSERT_EQ(kFlags12, feature_with_param2.internal_name);
@@ -987,6 +1003,64 @@ TEST_F(FlagsStateTest, VerifyJniCalls_3) {
   EXPECT_CALL(*mock_jni_delegate_, CacheFeatureParamsImmediately(params3));
   flags_state_->SetFeatureEntryEnabled(
       &flags_storage_, feature_with_param2.NameForOption(4), true);
+}
+
+// Test that a FEATURE_VALUE can be correctly set to "Default"
+TEST_F(FlagsStateTest, VerifyJniCalls_4) {
+  const FeatureEntry& feature1 = kEntries[6];
+  ASSERT_EQ(kFlags7, feature1.internal_name);
+
+  // Set feature1 to "Disabled"
+  flags_state_->SetFeatureEntryEnabled(&flags_storage_,
+                                       feature1.NameForOption(2), true);
+
+  // Set feature1 to "Default"
+  std::vector<std::string> flags_to_erase = {"FeatureName1"};
+  EXPECT_CALL(*mock_jni_delegate_, EraseNativeFlagCachedValues(flags_to_erase));
+  flags_state_->SetFeatureEntryEnabled(&flags_storage_,
+                                       feature1.NameForOption(0), true);
+}
+
+// Test that a FEATURE_WITH_PARAMS_VALUE can be correctly set to "Default"
+TEST_F(FlagsStateTest, VerifyJniCalls_5) {
+  const FeatureEntry& feature_with_param1 = kEntries[9];
+  ASSERT_EQ(kFlags10, feature_with_param1.internal_name);
+
+  // Set feature_with_param1 to "Enabled dummy description 2"
+  flags_state_->SetFeatureEntryEnabled(
+      &flags_storage_, feature_with_param1.NameForOption(2), true);
+
+  // Set feature_with_param1 to "Default"
+  std::vector<std::string> flags_to_erase = {"FeatureName2"};
+  EXPECT_CALL(*mock_jni_delegate_, EraseNativeFlagCachedValues(flags_to_erase));
+  EXPECT_CALL(*mock_jni_delegate_,
+              EraseFeatureParamCachedValues(flags_to_erase));
+  flags_state_->SetFeatureEntryEnabled(
+      &flags_storage_, feature_with_param1.NameForOption(0), true);
+}
+
+// Test that ResetAllFlags() correctly resets all features to "Default"
+TEST_F(FlagsStateTest, VerifyJniCalls_6) {
+  const FeatureEntry& feature_with_param1 = kEntries[9];
+  ASSERT_EQ(kFlags10, feature_with_param1.internal_name);
+
+  // Set feature_with_param1 to "Enabled"
+  flags_state_->SetFeatureEntryEnabled(
+      &flags_storage_, feature_with_param1.NameForOption(1), true);
+
+  const FeatureEntry& feature_with_param2 = kEntries[11];
+  ASSERT_EQ(kFlags12, feature_with_param2.internal_name);
+
+  // Set feature_with_param2 to "Enabled dummy description 3"
+  flags_state_->SetFeatureEntryEnabled(
+      &flags_storage_, feature_with_param2.NameForOption(4), true);
+
+  // Reset all features to "Default"
+  std::vector<std::string> flags_to_erase = {"FeatureName2", "FeatureName3"};
+  EXPECT_CALL(*mock_jni_delegate_, EraseNativeFlagCachedValues(flags_to_erase));
+  EXPECT_CALL(*mock_jni_delegate_,
+              EraseFeatureParamCachedValues(flags_to_erase));
+  flags_state_->ResetAllFlags(&flags_storage_);
 }
 #endif
 
