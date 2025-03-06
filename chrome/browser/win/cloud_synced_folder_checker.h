@@ -5,11 +5,19 @@
 #ifndef CHROME_BROWSER_WIN_CLOUD_SYNCED_FOLDER_CHECKER_H_
 #define CHROME_BROWSER_WIN_CLOUD_SYNCED_FOLDER_CHECKER_H_
 
+#include "base/feature_list.h"
+
 namespace base {
 class FilePath;
 }
 
 namespace cloud_synced_folder_checker {
+
+namespace features {
+BASE_FEATURE(kCloudSyncedFolderChecker,
+             "CloudSyncedFolderChecker",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace features
 
 struct CloudSyncStatus {
   // True if the file/folder is synced with a cloud storage provider (e.g.,
