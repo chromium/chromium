@@ -8,7 +8,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "rlz/test/rlz_test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,7 +21,7 @@ TEST(MachineDealCodeTestMachineId, MachineId) {
                id.c_str());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST(MachineDealCodeTestMachineId, MachineIdIsUnique) {
   std::string id1;
   std::string id2;
