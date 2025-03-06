@@ -2605,8 +2605,8 @@
       copied_from_base_feature_if: "overridden",
     },
     {
-      name: "LayoutFlexNewRowAlgorithmV3",
-      status: "test",
+      name: "LayoutFlexNewRowAlgorithm",
+      status: "stable",
     },
     {
       name: "LayoutIgnoreMarginsForSticky",
