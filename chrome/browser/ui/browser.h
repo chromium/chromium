@@ -1289,6 +1289,10 @@ class Browser : public TabStripModelObserver,
       const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespace* session_storage_namespace);
 
+  void UpdateTabGroupSessionDataForTab(
+      tabs::TabInterface* tab,
+      std::optional<tab_groups::TabGroupId> group);
+
   // Data members /////////////////////////////////////////////////////////////
 
   PrefChangeRegistrar profile_pref_registrar_;

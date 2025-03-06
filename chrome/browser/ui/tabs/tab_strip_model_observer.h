@@ -21,6 +21,10 @@
 #include "ui/base/models/list_selection_model.h"
 
 class TabStripModel;
+namespace tabs {
+class TabModel;
+class TabGroupTabCollection;
+}  // namespace tabs
 
 namespace content {
 class WebContents;
@@ -287,23 +291,29 @@ struct TabGroupChange {
   };
 
   struct CreateChange : public Delta {
-    explicit CreateChange(TabGroupCreationReason reason);
+    CreateChange(TabGroupCreationReason reason,
+                 tabs::TabGroupTabCollection* detached_group);
     ~CreateChange() override;
 
     TabGroupCreationReason reason() const { return reason_; }
+    std::vector<tabs::TabModel*> GetDetachedTabs() const;
 
    private:
     TabGroupCreationReason reason_;
+    raw_ptr<tabs::TabGroupTabCollection> detached_group_;
   };
 
   struct CloseChange : public Delta {
-    explicit CloseChange(TabGroupClosureReason reason);
+    CloseChange(TabGroupClosureReason reason,
+                tabs::TabGroupTabCollection* detached_group);
     ~CloseChange() override;
 
     TabGroupClosureReason reason() const { return reason_; }
+    std::vector<tabs::TabModel*> GetDetachedTabs() const;
 
    private:
     TabGroupClosureReason reason_;
+    raw_ptr<tabs::TabGroupTabCollection> detached_group_;
   };
 
   TabGroupChange(TabStripModel* model,

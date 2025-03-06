@@ -514,7 +514,7 @@ std::unique_ptr<DetachedTabGroup> TabStripModel::DetachTabGroupImpl(
               group_id));
 
   // Send group detach notification.
-  OnTabGroupDetached(group_id);
+  OnTabGroupDetached(group_collection.get());
   group_model_->RemoveTabGroup(group_id, base::PassKey<TabStripModel>());
 
   // Send remove notifications for tabs. There is no need to send group
@@ -595,7 +595,7 @@ void TabStripModel::InsertDetachedTabGroupImpl(
   OnChange(change, selection);
 
   // Send group attach notification.
-  OnTabGroupAttached(group_id);
+  OnTabGroupAttached(group_collection);
 }
 
 std::unique_ptr<DetachedTab> TabStripModel::DetachTabImpl(
@@ -1551,7 +1551,7 @@ void TabStripModel::CreateTabGroup(const tab_groups::TabGroupId& group) {
   TabGroupChange change(
       this, group,
       TabGroupChange::CreateChange(
-          TabGroupChange::TabGroupCreationReason::kNewGroupCreated));
+          TabGroupChange::TabGroupCreationReason::kNewGroupCreated, nullptr));
   for (auto& observer : observers_) {
     observer.OnTabGroupChanged(change);
   }
@@ -1600,35 +1600,39 @@ void TabStripModel::CloseTabGroup(const tab_groups::TabGroupId& group) {
   TabGroupChange change(
       this, group,
       TabGroupChange::CloseChange(
-          TabGroupChange::TabGroupClosureReason::kGroupClosed));
+          TabGroupChange::TabGroupClosureReason::kGroupClosed, nullptr));
   for (auto& observer : observers_) {
     observer.OnTabGroupChanged(change);
   }
 }
 
-void TabStripModel::OnTabGroupDetached(const tab_groups::TabGroupId& group_id) {
+void TabStripModel::OnTabGroupDetached(
+    tabs::TabGroupTabCollection* group_collection) {
   if (!group_model_) {
     return;
   }
 
   TabGroupChange change(
-      this, group_id,
+      this, group_collection->GetTabGroupId(),
       TabGroupChange::CloseChange(
-          TabGroupChange::TabGroupClosureReason::kDetachedToAnotherTabstrip));
+          TabGroupChange::TabGroupClosureReason::kDetachedToAnotherTabstrip,
+          group_collection));
   for (auto& observer : observers_) {
     observer.OnTabGroupChanged(change);
   }
 }
 
-void TabStripModel::OnTabGroupAttached(const tab_groups::TabGroupId& group_id) {
+void TabStripModel::OnTabGroupAttached(
+    tabs::TabGroupTabCollection* group_collection) {
   if (!group_model_) {
     return;
   }
 
   TabGroupChange change(
-      this, group_id,
-      TabGroupChange::CreateChange(TabGroupChange::TabGroupCreationReason::
-                                       kInsertedFromAnotherTabstrip));
+      this, group_collection->GetTabGroupId(),
+      TabGroupChange::CreateChange(
+          TabGroupChange::TabGroupCreationReason::kInsertedFromAnotherTabstrip,
+          group_collection));
   for (auto& observer : observers_) {
     observer.OnTabGroupChanged(change);
   }
