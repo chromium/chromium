@@ -242,6 +242,7 @@ export const enum LoggingIntent {
   ACCEPT_JOIN_AND_OPEN = 13,
   ABANDON_JOIN = 14,
   KEEP_GROUP = 15,
+  DELETE_GROUP = 16,
 }
 export const enum Progress {
   UNKNOWN = 0,
