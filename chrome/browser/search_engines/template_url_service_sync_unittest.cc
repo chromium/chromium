@@ -3759,6 +3759,140 @@ TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
 }
 
 TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       StopSyncingRemovesAccountValueOfPreexistingDefaultSearchProvider) {
+  // Add local template url.
+  TemplateURL* turl = model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"localkey", /*url=*/"http://localurl.com",
+      /*guid=*/"guid",
+      /*last_modified=*/base::Time::FromTimeT(10)));
+  // Set `turl` as the default search provider.
+  model()->SetUserSelectedDefaultSearchProvider(turl);
+
+  syncer::SyncDataList initial_data;
+  // Add an account template url with the same GUID.
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      CreateTestTemplateURL(
+          /*keyword=*/u"accountkey", /*url=*/"http://accounturl.com",
+          /*guid=*/turl->sync_guid(),
+          /*last_modified=*/base::Time::FromTimeT(100))
+          ->data()));
+  ASSERT_FALSE(model()->MergeDataAndStartSyncing(
+      syncer::SEARCH_ENGINES, initial_data, PassProcessor()));
+
+  // Account keyword has more recent timestamp and thus wins.
+  ASSERT_FALSE(model()->GetTemplateURLForKeyword(u"localkey"));
+  ASSERT_EQ(turl, model()->GetTemplateURLForKeyword(u"accountkey"));
+  ASSERT_EQ(turl, model()->GetDefaultSearchProvider());
+
+  ASSERT_THAT(turl->GetLocalData(),
+              Optional(Property(&TemplateURLData::keyword, u"localkey")));
+  ASSERT_THAT(turl->GetAccountData(),
+              Optional(Property(&TemplateURLData::keyword, u"accountkey")));
+
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  EXPECT_EQ(turl, model()->GetDefaultSearchProvider());
+  // The local value takes over.
+  EXPECT_EQ(turl, model()->GetTemplateURLForKeyword(u"localkey"));
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(u"accountkey"));
+  EXPECT_THAT(turl->GetLocalData(),
+              Optional(Property(&TemplateURLData::keyword, u"localkey")));
+  // The account value is removed.
+  EXPECT_FALSE(turl->GetAccountData());
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       StopSyncingRemovesAccountValueOfNewlySetDefaultSearchProvider) {
+  // Add local template url.
+  TemplateURL* turl = model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"localkey", /*url=*/"http://localurl.com",
+      /*guid=*/"guid",
+      /*last_modified=*/base::Time::FromTimeT(10)));
+
+  // Add another local template url, which is the default search provider.
+  TemplateURL* dse = model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"localkey2", /*url=*/"http://localurl2.com",
+      /*guid=*/"guid2",
+      /*last_modified=*/base::Time::FromTimeT(10)));
+  model()->SetUserSelectedDefaultSearchProvider(dse);
+
+  syncer::SyncDataList initial_data;
+  // Add an account template url with the same GUID as the local non-default
+  // one.
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      CreateTestTemplateURL(
+          /*keyword=*/u"accountkey", /*url=*/"http://accounturl.com",
+          /*guid=*/turl->sync_guid(),
+          /*last_modified=*/base::Time::FromTimeT(100))
+          ->data()));
+  ASSERT_FALSE(model()->MergeDataAndStartSyncing(
+      syncer::SEARCH_ENGINES, initial_data, PassProcessor()));
+
+  // Account keyword has more recent timestamp and thus wins over the
+  // non-default local keyword.
+  ASSERT_FALSE(model()->GetTemplateURLForKeyword(u"localkey"));
+  ASSERT_EQ(turl, model()->GetTemplateURLForKeyword(u"accountkey"));
+  ASSERT_NE(turl, model()->GetDefaultSearchProvider());
+
+  // Set `turl` as the default search provider.
+  model()->SetUserSelectedDefaultSearchProvider(turl);
+
+  ASSERT_EQ(turl, model()->GetDefaultSearchProvider());
+  ASSERT_THAT(turl->GetLocalData(),
+              Optional(Property(&TemplateURLData::keyword, u"localkey")));
+  ASSERT_THAT(turl->GetAccountData(),
+              Optional(Property(&TemplateURLData::keyword, u"accountkey")));
+
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  // The default search provider has not changed.
+  EXPECT_EQ(turl, model()->GetDefaultSearchProvider());
+  // The local value takes over.
+  EXPECT_EQ(turl, model()->GetTemplateURLForKeyword(u"localkey"));
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(u"accountkey"));
+  EXPECT_THAT(turl->GetLocalData(),
+              Optional(Property(&TemplateURLData::keyword, u"localkey")));
+  // The account value is removed.
+  EXPECT_FALSE(turl->GetAccountData());
+}
+
+// Regression test for crbug.com/401189582.
+// Tests that an account-only default search provider is copied to local upon
+// sync stop.
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       StopSyncingCopiesAccountValueToLocalForAccountDefaultSearchProvider) {
+  syncer::SyncDataList initial_data;
+  // Add an account template url.
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      CreateTestTemplateURL(
+          /*keyword=*/u"accountkey", /*url=*/"http://accounturl.com",
+          /*guid=*/"accountguid",
+          /*last_modified=*/base::Time::FromTimeT(100))
+          ->data()));
+  ASSERT_FALSE(model()->MergeDataAndStartSyncing(
+      syncer::SEARCH_ENGINES, initial_data, PassProcessor()));
+
+  TemplateURL* turl = model()->GetTemplateURLForGUID("accountguid");
+  ASSERT_NE(turl, model()->GetDefaultSearchProvider());
+
+  // Set `turl` as the default search provider.
+  model()->SetUserSelectedDefaultSearchProvider(turl);
+
+  ASSERT_EQ(turl, model()->GetDefaultSearchProvider());
+  ASSERT_FALSE(turl->GetLocalData());
+  ASSERT_THAT(turl->GetAccountData(),
+              Optional(Property(&TemplateURLData::keyword, u"accountkey")));
+
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  EXPECT_EQ(turl, model()->GetDefaultSearchProvider());
+  // Since only the account value existed, it was copied to local to avoid any
+  // unsafe behavior.
+  EXPECT_EQ(turl, model()->GetTemplateURLForKeyword(u"accountkey"));
+  EXPECT_THAT(turl->GetLocalData(),
+              Optional(Property(&TemplateURLData::keyword, u"accountkey")));
+  // The account data is moved to local.
+  EXPECT_FALSE(turl->GetAccountData());
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
        ProcessSyncUpdatesHandlesAdd) {
   MergeAndExpectNotify(syncer::SyncDataList{}, 0);
 

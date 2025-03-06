@@ -1944,8 +1944,15 @@ void TemplateURLService::StopSyncing(syncer::DataType type) {
     if (turl->GetLocalData()) {
       Update(turl, TemplateURL(*turl->GetLocalData()));
       ++i;
-    } else {
+    } else if (turl != GetDefaultSearchProvider()) {
       Remove(turl);
+    } else {
+      // Copy the account data to local. It is not safe to remove the default
+      // search provider. And given that this case should only be reached upon a
+      // user explicitly setting the default search engine to this, it should
+      // be okay to leave the data (similar to the dual-write case).
+      Update(turl, TemplateURL(turl->data()));
+      ++i;
     }
   }
 }
