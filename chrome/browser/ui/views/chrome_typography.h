@@ -22,11 +22,8 @@ enum ChromeTextContext {
   CHROME_TEXT_CONTEXT_START = views::style::VIEWS_TEXT_CONTEXT_END,
 #endif
 
-  // Headline text. Usually 20pt. Never multi-line.
-  CONTEXT_HEADLINE = CHROME_TEXT_CONTEXT_START,
-
   // Smaller version of CONTEXT_DIALOG_BODY_TEXT. Usually 12pt.
-  CONTEXT_DIALOG_BODY_TEXT_SMALL,
+  CONTEXT_DIALOG_BODY_TEXT_SMALL = CHROME_TEXT_CONTEXT_START,
 
   // Text of the page title in the tab hover card.
   CONTEXT_TAB_HOVER_CARD_TITLE,
