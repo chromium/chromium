@@ -1051,6 +1051,9 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.WEB_PAYMENTS,
                 "Enable the JavaScript PaymentRequest API for launching payment apps through"
                         + " Android intents."),
+        Flag.baseFeature(
+                GpuFeatures.WEB_GPU_USE_VULKAN_MEMORY_MODEL,
+                "Use the Vulkan Memory Model from WebGPU when available"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
