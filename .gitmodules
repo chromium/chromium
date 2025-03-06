@@ -907,3 +907,11 @@
 	path = third_party/libinput/src
 	url = https://chromium.googlesource.com/external/gitlab.freedesktop.org/libinput/libinput
 	gclient-condition = checkout_linux
+[submodule "third_party/gvdb/src"]
+	path = third_party/gvdb/src
+	url = https://chromium.googlesource.com/external/gitlab.gnome.org/GNOME/gvdb
+	gclient-condition = checkout_linux
+[submodule "third_party/glib/src"]
+	path = third_party/glib/src
+	url = https://chromium.googlesource.com/external/gitlab.gnome.org/GNOME/glib
+	gclient-condition = checkout_linux

@@ -2019,6 +2019,16 @@ deps = {
   'src/third_party/gemmlowp/src':
     Var('chromium_git') + '/external/github.com/google/gemmlowp.git' + '@' + '13d57703abca3005d97b19df1f2db731607a7dc2',
 
+  'src/third_party/glib/src': {
+      'url': Var('chromium_git') + '/external/gitlab.gnome.org/GNOME/glib.git' + '@' + '95eafc073843cb6e8c848f3850c074a83e01427c',
+      'condition': 'checkout_linux',
+  },
+
+  'src/third_party/gvdb/src': {
+      'url': Var('chromium_git') + '/external/gitlab.gnome.org/GNOME/gvdb.git' + '@' + 'b54bc5da25127ef416858a3ad92e57159ff565b3',
+      'condition': 'checkout_linux',
+  },
+
   'src/third_party/freetype/src':
     Var('chromium_git') + '/chromium/src/third_party/freetype2.git' + '@' + Var('freetype_revision'),
 
