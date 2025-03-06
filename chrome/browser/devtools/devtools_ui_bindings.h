@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/devtools/aida_client.h"
-#include "chrome/browser/devtools/device/devtools_android_bridge.h"
 #include "chrome/browser/devtools/devtools_embedder_message_dispatcher.h"
 #include "chrome/browser/devtools/devtools_file_helper.h"
 #include "chrome/browser/devtools/devtools_file_storage.h"
@@ -32,7 +31,6 @@
 #include "content/public/browser/devtools_frontend_host.h"
 #include "ui/gfx/geometry/size.h"
 
-class DevToolsAndroidBridge;
 class PortForwardingStatusSerializer;
 class Profile;
 
@@ -210,9 +208,6 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void RecordChange(const ChangeEvent& event) override;
   void RecordKeyDown(const KeyDownEvent& event) override;
   void RecordSettingAccess(const SettingAccessEvent& event) override;
-  void SendJsonRequest(DispatchCallback callback,
-                       const std::string& browser_id,
-                       const std::string& url) override;
   void RegisterPreference(const std::string& name,
                           const RegisterOptions& options) override;
   void GetPreferences(DispatchCallback callback) override;
@@ -258,9 +253,6 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void PrimaryPageChanged();
   void FrontendLoaded();
 
-  void JsonReceived(DispatchCallback callback,
-                    int result,
-                    const std::string& message);
   void DevicesDiscoveryConfigUpdated();
   void SendPortForwardingStatus(base::Value status);
 
@@ -327,7 +319,6 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   std::unique_ptr<FrontendWebContentsObserver> frontend_contents_observer_;
 
   raw_ptr<Profile> profile_;
-  raw_ptr<DevToolsAndroidBridge> android_bridge_;
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<Delegate> delegate_;
   scoped_refptr<content::DevToolsAgentHost> agent_host_;

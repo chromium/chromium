@@ -726,7 +726,6 @@ bool IsAnyAidaPoweredFeatureEnabled() {
 
 DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
     : profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
-      android_bridge_(DevToolsAndroidBridge::Factory::GetForProfile(profile_)),
       web_contents_(web_contents),
       delegate_(new DefaultBindingsDelegate(web_contents_)),
       file_storage_(web_contents),
@@ -2088,30 +2087,6 @@ void DevToolsUIBindings::RecordSettingAccess(const SettingAccessEvent& event) {
           .SetStringValue(event.string_value)
           .SetTimeSinceSessionStart(GetTimeSinceSessionStart().InMilliseconds())
           .SetSessionId(session_id_for_logging_.GetLowForSerialization()));
-}
-
-void DevToolsUIBindings::SendJsonRequest(DispatchCallback callback,
-                                         const std::string& browser_id,
-                                         const std::string& url) {
-  if (!android_bridge_) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
-  android_bridge_->SendJsonRequest(
-      browser_id, url,
-      base::BindOnce(&DevToolsUIBindings::JsonReceived,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void DevToolsUIBindings::JsonReceived(DispatchCallback callback,
-                                      int result,
-                                      const std::string& message) {
-  if (result != net::OK) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
-  base::Value message_value(message);
-  std::move(callback).Run(&message_value);
 }
 
 void DevToolsUIBindings::DeviceCountChanged(int count) {

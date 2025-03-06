@@ -127,9 +127,6 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void RecordChange(const ChangeEvent& event) = 0;
     virtual void RecordKeyDown(const KeyDownEvent& event) = 0;
     virtual void RecordSettingAccess(const SettingAccessEvent& event) = 0;
-    virtual void SendJsonRequest(DispatchCallback callback,
-                                 const std::string& browser_id,
-                                 const std::string& url) = 0;
     virtual void Reattach(DispatchCallback callback) = 0;
     virtual void ReadyForTest() = 0;
     virtual void ConnectionReady() = 0;
