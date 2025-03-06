@@ -1,12 +1,6 @@
 # crbug.com/1032118
 -org.chromium.chrome.browser.notifications.StandardNotificationBuilderTest.testSetAll
 
-# crbug.com/1036459
--org.chromium.chrome.browser.ntp.NewTabPageTest.testFocusFakebox
-
-# crbug.com/1040088
--org.chromium.chrome.browser.payments.PaymentRequestRetryTest.testRetryWithShippingAddressErrorsAndPayerErrors
-
 # crbug.com/1061158
 -org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.testLaunchWebLiteURLNoPreviews
 

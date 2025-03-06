@@ -15,6 +15,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.core.AllOf.allOf;
 
+import android.os.Build;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -31,6 +32,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -119,6 +121,10 @@ public class LanguageSettingsTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.P,
+            sdk_is_less_than = Build.VERSION_CODES.S,
+            message = "Flaky in Q and R, crbug.com/40190787")
     public void testToggleOfferToTranslate() {
         RecyclerView acceptLanguageList = mActivity.findViewById(R.id.language_list);
         int originalAcceptLanguageCount = acceptLanguageList.getChildCount();

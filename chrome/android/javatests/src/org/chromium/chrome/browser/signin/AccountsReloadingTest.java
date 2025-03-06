@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.signin;
 
+import android.os.Build;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -18,6 +20,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -92,6 +95,7 @@ public class AccountsReloadingTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.R, message = "crbug.com/40816967")
     public void testRefreshTokenUpdateWhenDefaultAccountSignsinWithoutSync() {
         final CoreAccountInfo account1 = mSigninTestRule.addAccount(TEST_EMAIL1);
         final CoreAccountInfo account2 = mSigninTestRule.addAccount(TEST_EMAIL2);
