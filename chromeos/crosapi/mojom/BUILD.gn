@@ -17,7 +17,6 @@ mojom("mojom") {
     "content_protection.mojom",
     "cros_display_config.mojom",
     "crosapi.mojom",
-    "debug_interface.mojom",
     "desk.mojom",
     "desk_profiles.mojom",
     "device_attributes.mojom",

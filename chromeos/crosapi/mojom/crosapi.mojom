@@ -18,7 +18,6 @@ import "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom";
 import "chromeos/crosapi/mojom/clipboard_history.mojom";
 import "chromeos/crosapi/mojom/content_protection.mojom";
 import "chromeos/crosapi/mojom/cros_display_config.mojom";
-import "chromeos/crosapi/mojom/debug_interface.mojom";
 import "chromeos/crosapi/mojom/desk.mojom";
 import "chromeos/crosapi/mojom/desk_profiles.mojom";
 import "chromeos/crosapi/mojom/device_attributes.mojom";
@@ -167,11 +166,7 @@ interface Crosapi {
   [MinVersion=89] BindCrosDisplayConfigController@93(
       pending_receiver<CrosDisplayConfigController> receiver);
 
-  // Binds the DebugInterfaceRegisterer for registering DebugInterface.
-  // Added in M122.
-  [MinVersion=131] BindDebugInterfaceRegisterer@133(
-      pending_receiver<DebugInterfaceRegisterer> receiver);
-
+  // BindDebugInterfaceRegisterer@133 was removed.
   // BindDesk@103 was removed.
 
   // Binds the desk profiles interface.

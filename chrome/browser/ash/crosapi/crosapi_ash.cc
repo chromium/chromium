@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/crosapi/chrome_app_kiosk_service_ash.h"
 #include "chrome/browser/ash/crosapi/clipboard_history_ash.h"
 #include "chrome/browser/ash/crosapi/content_protection_ash.h"
-#include "chrome/browser/ash/crosapi/debug_interface_registerer_ash.h"
 #include "chrome/browser/ash/crosapi/desk_profiles_ash.h"
 #include "chrome/browser/ash/crosapi/device_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/device_local_account_extension_service_ash.h"
@@ -152,8 +151,6 @@ CrosapiAsh::CrosapiAsh()
           std::make_unique<ChromeAppKioskServiceAsh>()),
       clipboard_history_ash_(std::make_unique<ClipboardHistoryAsh>()),
       content_protection_ash_(std::make_unique<ContentProtectionAsh>()),
-      debug_interface_registerer_ash_(
-          std::make_unique<DebugInterfaceRegistererAsh>()),
       desk_profiles_ash_(std::make_unique<DeskProfilesAsh>()),
       device_attributes_ash_(std::make_unique<DeviceAttributesAsh>()),
       device_local_account_extension_service_ash_(
@@ -297,11 +294,6 @@ void CrosapiAsh::BindContentProtection(
 void CrosapiAsh::BindCrosDisplayConfigController(
     mojo::PendingReceiver<mojom::CrosDisplayConfigController> receiver) {
   ash::BindCrosDisplayConfigController(std::move(receiver));
-}
-
-void CrosapiAsh::BindDebugInterfaceRegisterer(
-    mojo::PendingReceiver<mojom::DebugInterfaceRegisterer> receiver) {
-  debug_interface_registerer_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindDeskProfileObserver(
