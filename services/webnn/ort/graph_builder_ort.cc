@@ -190,17 +190,6 @@ struct TensorTypeMap<int64_t> {
       ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64;
 };
 
-#define ADD_CAST_NODE(node_name, input_name, output_name, to_data_type)      \
-  do {                                                                       \
-    std::array<const char*, 1> input_names = {input_name.data()};            \
-    std::array<const char*, 1> output_names = {output_name.data()};          \
-    int64_t attr_to = static_cast<int64_t>(to_data_type);                    \
-    std::array<OrtOpAttr*, 1> attributes = {                                 \
-        model_editor_.CreateAttribute(/*name=*/"to", attr_to).release()};    \
-    model_editor_.AddNode(kOpTypeCast, node_name, input_names, output_names, \
-                          attributes);                                       \
-  } while (0)
-
 }  // namespace
 
 std::string GetOperandName(std::string_view label, uint64_t id) {
@@ -302,12 +291,25 @@ GraphBuilderOrt::CreateScalarInitializer(const DataType& value) {
       /*shape=*/{}, base::span_from_ref(value));
 }
 
+void GraphBuilderOrt::AddCastNode(std::string_view node_name,
+                                  std::string_view input_name,
+                                  std::string_view output_name,
+                                  ONNXTensorElementDataType to_data_type) {
+  std::array<const char*, 1> input_names = {input_name.data()};
+  std::array<const char*, 1> output_names = {output_name.data()};
+  int64_t attr_to = static_cast<int64_t>(to_data_type);
+  std::array<OrtOpAttr*, 1> attributes = {
+      model_editor_.CreateAttribute(/*name=*/"to", attr_to).release()};
+  model_editor_.AddNode(kOpTypeCast, node_name, input_names, output_names,
+                        attributes);
+}
+
 std::string GraphBuilderOrt::PrependCast(
     std::string_view input_name,
     ONNXTensorElementDataType to_data_type) {
   const std::string node_name = GenerateNextOperationName("inserted_cast");
   const std::string output_name = GenerateNextOperandName();
-  ADD_CAST_NODE(node_name, input_name, output_name, to_data_type);
+  AddCastNode(node_name, input_name, output_name, to_data_type);
   return output_name;
 }
 
@@ -315,7 +317,7 @@ void GraphBuilderOrt::AppendCast(std::string_view input_name,
                                  std::string_view output_name,
                                  ONNXTensorElementDataType to_data_type) {
   const std::string node_name = GenerateNextOperationName("inserted_cast");
-  ADD_CAST_NODE(node_name, input_name, output_name, to_data_type);
+  AddCastNode(node_name, input_name, output_name, to_data_type);
 }
 
 std::string GraphBuilderOrt::PrependTranspose(
@@ -897,9 +899,8 @@ void GraphBuilderOrt::AddCastOperation(const mojom::ElementWiseUnary& cast) {
   const std::string output_name = GetOperandNameById(cast.output_operand_id);
   const OperandDataType output_data_type =
       GetOperand(cast.output_operand_id).descriptor.data_type();
-  int64_t to_data_type = static_cast<int64_t>(
-      OperandTypeToONNXTensorElementDataType(output_data_type));
-  ADD_CAST_NODE(node_name, input_name, output_name, to_data_type);
+  AddCastNode(node_name, input_name, output_name,
+              OperandTypeToONNXTensorElementDataType(output_data_type));
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>

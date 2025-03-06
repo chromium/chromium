@@ -124,6 +124,11 @@ class GraphBuilderOrt {
   [[nodiscard]] base::expected<std::string, mojom::ErrorPtr>
   CreateScalarInitializer(const DataType& value);
 
+  void AddCastNode(std::string_view node_name,
+                   std::string_view input_name,
+                   std::string_view output_name,
+                   ONNXTensorElementDataType to_data_type);
+
   // Insert a cast operation before an operation to convert its input to the
   // target `to_data_type`, return the output name of the cast operation. The
   // `input_name` specifies the input to be casted.

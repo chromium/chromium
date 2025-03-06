@@ -36,13 +36,6 @@ mojo_base::BigBuffer VectorToBigBuffer(const std::vector<T>& data) {
       base::as_byte_span(base::allow_nonunique_obj, data));
 }
 
-template <typename T>
-std::vector<T> BigBufferToVector(mojo_base::BigBuffer big_buffer) {
-  std::vector<T> data(big_buffer.size() / sizeof(T));
-  memcpy(data.data(), big_buffer.data(), big_buffer.size());
-  return data;
-}
-
 struct CreateTensorSuccess {
   mojo::AssociatedRemote<mojom::WebNNTensor> webnn_tensor_remote;
   blink::WebNNTensorToken webnn_tensor_handle;
@@ -142,8 +135,9 @@ TEST_F(WebNNContextOrtImplTest, CreateWriteReadTensorTest) {
   mojom::ReadTensorResultPtr result = future.Take();
   ASSERT_FALSE(result->is_error());
 
-  std::vector<float> output_data =
-      BigBufferToVector<float>(std::move(result->get_buffer()));
+  base::span<const float> output_data(
+      reinterpret_cast<const float*>(result->get_buffer().data()),
+      result->get_buffer().size() / sizeof(float));
   VerifyFloatDataIsEqual(output_data, input_data);
 
   webnn_context_remote_.reset();
@@ -207,8 +201,9 @@ TEST_F(WebNNContextOrtImplTest, DispatchGraphWithReluTest) {
   mojom::ReadTensorResultPtr result = future.Take();
   ASSERT_FALSE(result->is_error());
 
-  std::vector<float> output_data =
-      BigBufferToVector<float>(std::move(result->get_buffer()));
+  base::span<const float> output_data(
+      reinterpret_cast<const float*>(result->get_buffer().data()),
+      result->get_buffer().size() / sizeof(float));
   VerifyFloatDataIsEqual(output_data, expected_output_data);
 
   webnn_graph_remote.reset();
@@ -287,8 +282,9 @@ TEST_F(WebNNContextOrtImplTest, DispatchGraphWithAddTwoInputsTest) {
   mojom::ReadTensorResultPtr result = future.Take();
   ASSERT_FALSE(result->is_error());
 
-  std::vector<float> output_data =
-      BigBufferToVector<float>(std::move(result->get_buffer()));
+  base::span<const float> output_data(
+      reinterpret_cast<const float*>(result->get_buffer().data()),
+      result->get_buffer().size() / sizeof(float));
   VerifyFloatDataIsEqual(output_data, expected_output_data);
 
   webnn_graph_remote.reset();
@@ -363,8 +359,9 @@ TEST_F(WebNNContextOrtImplTest, DispatchGraphWithAddInputAndConstantTest) {
   mojom::ReadTensorResultPtr result = future.Take();
   ASSERT_FALSE(result->is_error());
 
-  std::vector<float> output_data =
-      BigBufferToVector<float>(std::move(result->get_buffer()));
+  base::span<const float> output_data(
+      reinterpret_cast<const float*>(result->get_buffer().data()),
+      result->get_buffer().size() / sizeof(float));
   VerifyFloatDataIsEqual(output_data, expected_output_data);
 
   webnn_graph_remote.reset();
@@ -433,8 +430,9 @@ TEST_F(WebNNContextOrtImplTest, DispatchGraphWithAddTwoConstantsTest) {
   mojom::ReadTensorResultPtr result = future.Take();
   ASSERT_FALSE(result->is_error());
 
-  std::vector<float> output_data =
-      BigBufferToVector<float>(std::move(result->get_buffer()));
+  base::span<const float> output_data(
+      reinterpret_cast<const float*>(result->get_buffer().data()),
+      result->get_buffer().size() / sizeof(float));
   VerifyFloatDataIsEqual(output_data, expected_output_data);
 
   webnn_graph_remote.reset();
