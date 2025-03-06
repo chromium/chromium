@@ -18,3 +18,18 @@
 # crbug.com/378557957
 -org.chromium.chrome.browser.permissions.PermissionUpdateMessageTest.testMessageForMediaStreamMicrophone
 -org.chromium.chrome.browser.permissions.PermissionUpdateMessageTest.testMessageForMediaStreamCamera
+
+# crbug.com/401272905
+-org.chromium.chrome.browser.keyboard_accessory.PasswordGenerationIntegrationTest.testManualGenerationCancel
+
+# crbug.com/401287512
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchInstrumentationTest.testNonResolveGesture
+
+# crbug.com/393388366
+-org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinatorBrowserTest.testKeyboardInDesktopWindow_RootViewPadded
+
+# crbug.com/401289440
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchTriggerTest.*
+
+# crbug.com/401292006
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testCopyImage
