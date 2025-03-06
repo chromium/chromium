@@ -27,6 +27,7 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
+import org.chromium.base.Promise;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.Batch;
@@ -36,6 +37,10 @@ import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHel
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.test.util.TestAccounts;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -207,6 +212,7 @@ public class SafetyHubPasswordsFetchServiceTest {
         @Rule public SafetyHubTestRule mSafetyHubTestRule = new SafetyHubTestRule();
 
         @Mock private Callback<Boolean> mTaskFinishedCallback;
+        @Mock private AccountManagerFacade mMockFacade;
 
         private PrefService mPrefService;
         private FakePasswordCheckupClientHelper mPasswordCheckupClientHelper;
@@ -227,12 +233,24 @@ public class SafetyHubPasswordsFetchServiceTest {
             mPasswordManagerHelper =
                     PasswordManagerHelper.getForProfile(mSafetyHubTestRule.getProfile());
             mockLastCheckTime(0);
+            mockAccountsOnDevice(/* hasAccounts= */ true);
+
+            AccountManagerFacadeProvider.setInstanceForTests(mMockFacade);
         }
 
         private void mockLastCheckTime(long timeInMs) {
             doReturn(timeInMs)
                     .when(mPrefService)
                     .getLong(Pref.LAST_TIME_IN_MS_LOCAL_PASSWORD_CHECK_COMPLETED);
+        }
+
+        private void mockAccountsOnDevice(boolean hasAccounts) {
+            List<AccountInfo> accountInfos = new ArrayList<>();
+            if (hasAccounts) {
+                accountInfos.add(TestAccounts.ACCOUNT1);
+            }
+            doReturn(Promise.fulfilled(accountInfos)).when(mMockFacade).getAccounts();
+            doReturn(true).when(mMockFacade).didAccountFetchSucceed();
         }
 
         @Test
@@ -266,8 +284,8 @@ public class SafetyHubPasswordsFetchServiceTest {
         public void noPreferencesUpdated_whenCheckupFails_lastCheckLongAgo() {
             mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
 
-            long twoHoursInMs = 2 * TimeUtils.MILLISECONDS_PER_DAY;
-            mockLastCheckTime(TimeUtils.currentTimeMillis() - twoHoursInMs);
+            long twoDaysInMs = 2 * TimeUtils.MILLISECONDS_PER_DAY;
+            mockLastCheckTime(TimeUtils.currentTimeMillis() - twoDaysInMs);
             mPasswordCheckupClientHelper.setError(new Exception());
 
             new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, null)
@@ -315,15 +333,10 @@ public class SafetyHubPasswordsFetchServiceTest {
         }
 
         @Test
-        public void countPreferencesUpdated_whenWithinCoolDownPeriod() {
-            mockLastCheckTime(TimeUtils.currentTimeMillis());
+        public void noPreferencesUpdated_whenWithinCoolDownPeriod() {
             mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
-            int breachedCredentialsCount = 5;
-            int weakCredentialsCount = 4;
-            int reusedCredentialsCount = 3;
-            mPasswordCheckupClientHelper.setBreachedCredentialsCount(breachedCredentialsCount);
-            mPasswordCheckupClientHelper.setWeakCredentialsCount(weakCredentialsCount);
-            mPasswordCheckupClientHelper.setReusedCredentialsCount(reusedCredentialsCount);
+
+            mockLastCheckTime(TimeUtils.currentTimeMillis());
 
             assertFalse(
                     new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, null)
@@ -338,6 +351,63 @@ public class SafetyHubPasswordsFetchServiceTest {
             verify(mPrefService, never())
                     .setLong(eq(Pref.LAST_TIME_IN_MS_LOCAL_PASSWORD_CHECK_COMPLETED), anyLong());
             verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred= */ false));
+        }
+
+        @Test
+        public void noPreferencesUpdated_whenNoAccountsOnDevice_lastCheckRecently() {
+            mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
+
+            mockAccountsOnDevice(/* hasAccounts= */ false);
+            long twoHoursInMs = 120 * TimeUtils.MILLISECONDS_PER_MINUTE;
+            mockLastCheckTime(TimeUtils.currentTimeMillis() - twoHoursInMs);
+
+            assertFalse(
+                    new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, null)
+                            .runPasswordCheckup(mTaskFinishedCallback));
+
+            verify(mPrefService, never()).clearPref(eq(Pref.LOCAL_BREACHED_CREDENTIALS_COUNT));
+            verify(mPrefService, never()).clearPref(eq(Pref.LOCAL_WEAK_CREDENTIALS_COUNT));
+            verify(mPrefService, never()).clearPref(eq(Pref.LOCAL_REUSED_CREDENTIALS_COUNT));
+
+            verify(mPrefService, never())
+                    .setInteger(eq(Pref.LOCAL_BREACHED_CREDENTIALS_COUNT), anyInt());
+            verify(mPrefService, never())
+                    .setInteger(eq(Pref.LOCAL_WEAK_CREDENTIALS_COUNT), anyInt());
+            verify(mPrefService, never())
+                    .setInteger(eq(Pref.LOCAL_REUSED_CREDENTIALS_COUNT), anyInt());
+            verify(mPrefService, never())
+                    .setLong(eq(Pref.LAST_TIME_IN_MS_LOCAL_PASSWORD_CHECK_COMPLETED), anyLong());
+
+            verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred= */ true));
+        }
+
+        @Test
+        public void noPreferencesUpdated_whenNoAccountsOnDevice_lastCheckLongAgo() {
+            mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
+
+            mockAccountsOnDevice(/* hasAccounts= */ false);
+            long twoDaysInMs = 2 * TimeUtils.MILLISECONDS_PER_DAY;
+            mockLastCheckTime(TimeUtils.currentTimeMillis() - twoDaysInMs);
+
+            assertFalse(
+                    new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, null)
+                            .runPasswordCheckup(mTaskFinishedCallback));
+
+            verify(mPrefService, times(1)).clearPref(Pref.LOCAL_BREACHED_CREDENTIALS_COUNT);
+            verify(mPrefService, times(1)).clearPref(Pref.LOCAL_WEAK_CREDENTIALS_COUNT);
+            verify(mPrefService, times(1)).clearPref(Pref.LOCAL_REUSED_CREDENTIALS_COUNT);
+
+            verify(mPrefService, never())
+                    .setInteger(eq(Pref.LOCAL_BREACHED_CREDENTIALS_COUNT), anyInt());
+            verify(mPrefService, never())
+                    .setInteger(eq(Pref.LOCAL_WEAK_CREDENTIALS_COUNT), anyInt());
+            verify(mPrefService, never())
+                    .setInteger(eq(Pref.LOCAL_REUSED_CREDENTIALS_COUNT), anyInt());
+
+            verify(mPrefService, never())
+                    .setLong(eq(Pref.LAST_TIME_IN_MS_LOCAL_PASSWORD_CHECK_COMPLETED), anyLong());
+
+            verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred= */ true));
         }
     }
 }
