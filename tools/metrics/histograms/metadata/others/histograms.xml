@@ -2808,9 +2808,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="BootTime.Chrome" units="ms" expires_after="never">
 <!-- expires-never: This is a primary metric for the ChromeOS total boot time. -->
 
-  <owner>alemate@chromium.org</owner>
-  <owner>briannorris@chromium.org</owner>
-  <owner>rsorokin@chromium.org</owner>
+  <owner>xiyuan@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Time from chrome binary exec to login UI ready on Chrome OS. This is
@@ -2935,9 +2934,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="BootTime.Total2" units="ms" expires_after="never">
 <!-- expires-never: This is a primary metric for the ChromeOS total boot time. -->
 
-  <owner>alemate@chromium.org</owner>
-  <owner>briannorris@chromium.org</owner>
-  <owner>rsorokin@chromium.org</owner>
+  <owner>xiyuan@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Time from power on to login UI ready on Chrome OS. This is recorded from the
@@ -8347,7 +8345,6 @@ useful for Chirp alerts (go/crca-alerts). -->
 <!-- expires-never: Core metric for monitoring Chrome OS lock screen regressions.  -->
 
   <owner>antrim@chromium.org</owner>
-  <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     What type of authentication was attempted when the user failed to unlock the
@@ -8360,7 +8357,6 @@ useful for Chirp alerts (go/crca-alerts). -->
 <!-- expires-never: Core metric for monitoring Chrome OS lock screen regressions.  -->
 
   <owner>antrim@chromium.org</owner>
-  <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>The time spent for authentication in case of a failure.</summary>
 </histogram>
@@ -8370,7 +8366,6 @@ useful for Chirp alerts (go/crca-alerts). -->
 <!-- expires-never: Core metric for monitoring Chrome OS lock screen regressions.  -->
 
   <owner>antrim@chromium.org</owner>
-  <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     What type of authentication was attempted when the user successfully
@@ -8383,7 +8378,6 @@ useful for Chirp alerts (go/crca-alerts). -->
 <!-- expires-never: Core metric for monitoring Chrome OS lock screen regressions.  -->
 
   <owner>antrim@chromium.org</owner>
-  <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>The time spent for authentication in case of a success.</summary>
 </histogram>
@@ -8392,7 +8386,6 @@ useful for Chirp alerts (go/crca-alerts). -->
 <!-- expires-never: Core metric for monitoring Chrome OS lock screen regressions.  -->
 
   <owner>antrim@chromium.org</owner>
-  <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>The time spent before the screen locker is ready.</summary>
 </histogram>
@@ -9810,10 +9803,9 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Uptime.ChromeExecToLoginPromptVisibleAfterLogout" units="ms"
-    expires_after="2025-03-09">
-  <owner>alemate@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
+    expires_after="2026-03-09">
   <owner>xiyuan@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
   <summary>
     Measures the time elapsed on Chrome OS between when Chrome is started, and
     when the login prompt is again visible after a logout. This statistic is
@@ -9838,9 +9830,8 @@ should be kept until we use this API.  -->
 
 <histogram name="Uptime.LoginPromptSetupTimeAfterLogout" units="ms"
     expires_after="2022-09-13">
-  <owner>alemate@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
   <owner>xiyuan@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
   <summary>
     Measures the time elapsed on Chrome OS for setting up for a login after a
     logout. More specifically, it is the time between when the Cryptohome is
@@ -9853,9 +9844,8 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Uptime.Logout" units="ms" expires_after="2025-07-13">
-  <owner>alemate@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
   <owner>xiyuan@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
   <summary>
     Measures the time elapsed on Chrome OS when performing a logout. More
     specifically, it is the time between when a logout is initiated and when the
@@ -9869,9 +9859,8 @@ should be kept until we use this API.  -->
 
 <histogram name="Uptime.LogoutToLoginPromptVisible" units="ms"
     expires_after="2022-11-13">
-  <owner>alemate@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
   <owner>xiyuan@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
   <summary>
     Measures the time elapsed on Chrome OS between initiating a logout and the
     next time the login prompt is visible again. This statistic is not collected
@@ -9885,9 +9874,8 @@ should be kept until we use this API.  -->
 
 <histogram name="Uptime.LogoutToUIStopAfterLogout" units="ms"
     expires_after="2022-09-13">
-  <owner>alemate@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
   <owner>xiyuan@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
   <summary>
     Measures the time elapsed on Chrome OS between when a logout is initiated
     and the UI has stopped (and Chrome has exited) during the logout process.
@@ -9901,9 +9889,8 @@ should be kept until we use this API.  -->
 
 <histogram name="Uptime.OtherProcessesTerminatedToChromeExecAfterLogout"
     units="ms" expires_after="2022-09-13">
-  <owner>alemate@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
   <owner>xiyuan@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
   <summary>
     Measures the time elapsed on Chrome OS between when all user-associated
     processes have been terminated during the logout process and when Chrome is
@@ -9916,9 +9903,8 @@ should be kept until we use this API.  -->
 
 <histogram name="Uptime.UIStopToProcessesTerminatedAfterLogout" units="ms"
     expires_after="2022-09-13">
-  <owner>alemate@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
   <owner>xiyuan@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
   <summary>
     Measures the time elapsed on Chrome OS between when the UI has stopped
     (Chrome has exited), and when all other associated processes have been
@@ -9961,7 +9947,6 @@ should be kept until we use this API.  -->
 <!-- expires-never: Core metric for monitoring user image selections. -->
 
   <owner>achuith@chromium.org</owner>
-  <owner>alemate@chromium.org</owner>
   <owner>jasontt@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <owner>cros-oac@google.com</owner>
@@ -10017,9 +10002,7 @@ regressions. -->
     expires_after="never">
 <!-- expires-never: Core metric for monitoring User type change regressions. -->
 
-  <owner>alemate@chromium.org</owner>
-  <owner>michaelpg@chromium.org</owner>
-  <owner>rsorokin@chromium.org</owner>
+  <owner>xiyuan@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     This is logged when new user type reported by Gaia is different from the old
