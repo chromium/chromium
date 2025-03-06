@@ -475,8 +475,9 @@ class GlicWindowControllerMultipleDisplaysUiTest
   display::Display secondary_display_;
 };
 
+// TODO(crbug.com/399703468): Flaky on Mac. Test is targeted for Mac only.
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerMultipleDisplaysUiTest,
-                       MoveDetachedGlicWindowToSecondDisplay) {
+                       DISABLED_MoveDetachedGlicWindowToSecondDisplay) {
   if (!SetUpVirtualDisplays()) {
     return;
   }
@@ -490,8 +491,10 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerMultipleDisplaysUiTest,
                   CloseGlicWindow(), CheckControllerHasWidget(false));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerMultipleDisplaysUiTest,
-                       DetachAttachedGlicWindowAndMoveToSecondDisplay) {
+// TODO(crbug.com/399703468): Flaky on Mac. Test is targeted for Mac only.
+IN_PROC_BROWSER_TEST_F(
+    GlicWindowControllerMultipleDisplaysUiTest,
+    DISABLED_DetachAttachedGlicWindowAndMoveToSecondDisplay) {
   if (!SetUpVirtualDisplays()) {
     return;
   }
