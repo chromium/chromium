@@ -1281,6 +1281,8 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   double zoom_level_ = 0;
   double css_zoom_factor_ = 1;
+
+  bool throttling_frame_rate_ = false;
 };
 
 }  // namespace blink

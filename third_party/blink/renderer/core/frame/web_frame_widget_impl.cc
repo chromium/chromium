@@ -2169,6 +2169,7 @@ void WebFrameWidgetImpl::SetShouldThrottleFrameRate(bool flag) {
   if (!View()->does_composite()) {
     return;
   }
+  throttling_frame_rate_ = flag;
   return widget_base_->LayerTreeHost()->SetShouldThrottleFrameRate(flag);
 }
 
@@ -3104,6 +3105,12 @@ WebInputEventResult WebFrameWidgetImpl::HandleInputEvent(
   // handle it appropriately.
   if (ShouldIgnoreInputEvents()) {
     return WebInputEventResult::kNotHandled;
+  }
+
+  // Only unthrottle once to avoid repeatedly posting tasks to the cc impl
+  // thread.
+  if (throttling_frame_rate_) {
+    SetShouldThrottleFrameRate(false);
   }
 
   base::AutoReset<const WebInputEvent*> current_event_change(
