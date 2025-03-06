@@ -100,6 +100,7 @@ public class DigitalIdentityProvider {
                         },
                         e -> {
                             if (mDigitalIdentityProvider != 0) {
+                                assumeNonNull(e);
                                 DigitalIdentityProviderJni.get()
                                         .onReceive(
                                                 mDigitalIdentityProvider,
@@ -138,6 +139,7 @@ public class DigitalIdentityProvider {
                         },
                         e -> {
                             if (mDigitalIdentityProvider != 0) {
+                                assumeNonNull(e);
                                 DigitalIdentityProviderJni.get()
                                         .onReceive(
                                                 mDigitalIdentityProvider,

@@ -64,7 +64,7 @@ public class CompositorModelChangeProcessor<V extends SceneLayer> {
     private CompositorModelChangeProcessor(
             PropertyModel model,
             V view,
-            ViewBinder<PropertyModel, V, PropertyKey> viewBinder,
+            ViewBinder<PropertyModel, V, @Nullable PropertyKey> viewBinder,
             FrameRequestSupplier frameSupplier,
             boolean performInitialBind,
             @Nullable Set<PropertyKey> exclusions) {
@@ -99,7 +99,7 @@ public class CompositorModelChangeProcessor<V extends SceneLayer> {
     public static <V extends SceneLayer> CompositorModelChangeProcessor<V> create(
             PropertyModel model,
             V view,
-            ViewBinder<PropertyModel, V, PropertyKey> viewBinder,
+            ViewBinder<PropertyModel, V, @Nullable PropertyKey> viewBinder,
             FrameRequestSupplier frameSupplier,
             boolean performInitialBind,
             @Nullable Set<PropertyKey> exclusions) {
@@ -120,7 +120,7 @@ public class CompositorModelChangeProcessor<V extends SceneLayer> {
     public static <V extends SceneLayer> CompositorModelChangeProcessor<V> create(
             PropertyModel model,
             V view,
-            ViewBinder<PropertyModel, V, PropertyKey> viewBinder,
+            ViewBinder<PropertyModel, V, @Nullable PropertyKey> viewBinder,
             FrameRequestSupplier frameSupplier,
             boolean performInitialBind) {
         return create(model, view, viewBinder, frameSupplier, performInitialBind, null);
@@ -138,7 +138,7 @@ public class CompositorModelChangeProcessor<V extends SceneLayer> {
     public static <V extends SceneLayer> CompositorModelChangeProcessor<V> create(
             PropertyModel model,
             V view,
-            ViewBinder<PropertyModel, V, PropertyKey> viewBinder,
+            ViewBinder<PropertyModel, V, @Nullable PropertyKey> viewBinder,
             FrameRequestSupplier frameSupplier) {
         return create(model, view, viewBinder, frameSupplier, true);
     }

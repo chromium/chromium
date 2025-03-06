@@ -179,13 +179,10 @@ import java.util.function.Function;
      * Helper method to run an runnable inside a scoped event in background, and executes callback
      * on the ui thread.
      */
-    // https://github.com/uber/NullAway/issues/1126#issuecomment-2619949211
-    @SuppressWarnings({"NoDynamicStringsInTraceEventCheck", "NullAway"})
-    private <T extends @Nullable Object> void runAsyncAndReply(
+    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
+    private <T> void runAsyncAndReply(
             String eventName, Callable<T> callable, Callback<T> callback) {
         new AsyncTask<@Nullable T>() {
-            boolean mSuccess = true;
-
             @Override
             protected @Nullable T doInBackground() {
                 try (TraceEvent te = TraceEvent.scoped(eventName)) {
@@ -194,7 +191,6 @@ import java.util.function.Function;
                     return callable.call();
                 } catch (Exception e) {
                     Log.e(TAG, "Unable to call method.", e);
-                    mSuccess = false;
                     return null;
                 }
             }
@@ -204,13 +200,14 @@ import java.util.function.Function;
                 // TODO(crbug.com/388114708): currently the callback is not called on failure to
                 // match the behavior of NotificationManangerproxyImpl. But this should be changed
                 // to always call the callback as it might cause undesirable consequences.
-                if (mSuccess) {
+                @NotificationEvent int event;
+                if (result != null) {
                     callback.onResult(result);
+                    event = NotificationEvent.HAS_CALLBACK_SUCCESS;
+                } else {
+                    event = NotificationEvent.HAS_CALLBACK_FAILED;
                 }
-                NotificationProxyUtils.recordNotificationEventHistogram(
-                        mSuccess
-                                ? NotificationEvent.HAS_CALLBACK_SUCCESS
-                                : NotificationEvent.HAS_CALLBACK_FAILED);
+                NotificationProxyUtils.recordNotificationEventHistogram(event);
             }
         }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }

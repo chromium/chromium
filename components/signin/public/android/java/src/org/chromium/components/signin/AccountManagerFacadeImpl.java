@@ -326,13 +326,14 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     }
 
     /**
-     * Creates an intent that will ask the user to add a new account to the device. See
-     * {@link AccountManager#addAccount} for details.
+     * Creates an intent that will ask the user to add a new account to the device. See {@link
+     * AccountManager#addAccount} for details.
+     *
      * @param callback The callback to get the created intent. Will be invoked on the main thread.
-     *         If there is an issue while creating the intent, callback will receive null.
+     *     If there is an issue while creating the intent, callback will receive null.
      */
     @Override
-    public void createAddAccountIntent(Callback<Intent> callback) {
+    public void createAddAccountIntent(Callback<@Nullable Intent> callback) {
         RecordUserAction.record("Signin_AddAccountToDevice");
         mDelegate.createAddAccountIntent(callback);
     }
@@ -349,7 +350,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
     @Override
     public void confirmCredentials(
-            Account account, @Nullable Activity activity, Callback<Bundle> callback) {
+            Account account, @Nullable Activity activity, Callback<@Nullable Bundle> callback) {
         mDelegate.confirmCredentials(account, activity, callback);
     }
 
@@ -371,69 +372,13 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             mFetchGaiaIdsTask = null;
         }
 
-        List<String> emails = getFilteredAccountEmails();
-        mFetchGaiaIdsTask =
-                new AsyncTask<@Nullable List<GaiaId>>() {
-                    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1139
-                    @Override
-                    public List<GaiaId> doInBackground() {
-                        final long seedingStartTime = SystemClock.elapsedRealtime();
-                        List<GaiaId> gaiaIds = new ArrayList<>();
-                        for (String email : emails) {
-                            if (isCancelled()) {
-                                return null;
-                            }
-                            final GaiaId gaiaId = mDelegate.getAccountGaiaId(email);
-                            if (gaiaId == null) {
-                                // TODO(crbug.com/40275966): Add metrics to check how often we get a
-                                // null gaiaId.
-                                return null;
-                            }
-                            gaiaIds.add(gaiaId);
-                        }
-                        RecordHistogram.recordTimesHistogram(
-                                "Signin.AndroidGetAccountIdsTime",
-                                SystemClock.elapsedRealtime() - seedingStartTime);
-                        return gaiaIds;
-                    }
-
-                    @Override
-                    public void onPostExecute(@Nullable List<GaiaId> gaiaIds) {
-                        mFetchGaiaIdsTask = null;
-                        if (gaiaIds == null) {
-                            fetchGaiaIdsAndUpdateCoreAccountInfos();
-                            return;
-                        }
-                        List<CoreAccountInfo> coreAccountInfos = new ArrayList<>();
-                        List<AccountInfo> accounts = new ArrayList<>();
-                        for (int index = 0; index < emails.size(); index++) {
-                            coreAccountInfos.add(
-                                    CoreAccountInfo.createFromEmailAndGaiaId(
-                                            emails.get(index), gaiaIds.get(index)));
-                            accounts.add(
-                                    new AccountInfo.Builder(emails.get(index), gaiaIds.get(index))
-                                            .build());
-                        }
-                        assert mCoreAccountInfosPromise.isFulfilled()
-                                == mAccountsPromise.isFulfilled();
-                        if (mCoreAccountInfosPromise.isFulfilled()) {
-                            mCoreAccountInfosPromise = Promise.fulfilled(coreAccountInfos);
-                            mAccountsPromise = Promise.fulfilled(accounts);
-                        } else {
-                            mCoreAccountInfosPromise.fulfill(coreAccountInfos);
-                            mAccountsPromise.fulfill(accounts);
-                        }
-                        for (AccountsChangeObserver observer : mObservers) {
-                            observer.onCoreAccountInfosChanged();
-                        }
-                    }
-                }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+        mFetchGaiaIdsTask = new GetAccountAsyncTask(getFilteredAccountEmails());
+        mFetchGaiaIdsTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
     private void onAccountsUpdated() {
         ThreadUtils.assertOnUiThread();
         new AsyncTask<@Nullable List<Account>>() {
-            @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1139
             @Override
             protected @Nullable List<Account> doInBackground() {
                 try {
@@ -546,5 +491,63 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     public void disallowTokenRequestsForTesting() {
         ThreadUtils.assertOnUiThread();
         mDisallowTokenRequestsForTesting = true;
+    }
+
+    private class GetAccountAsyncTask extends AsyncTask<@Nullable List<GaiaId>> {
+        private final List<String> mEmails;
+
+        GetAccountAsyncTask(List<String> emails) {
+            mEmails = emails;
+        }
+
+        @Override
+        public @Nullable List<GaiaId> doInBackground() {
+            final long seedingStartTime = SystemClock.elapsedRealtime();
+            List<GaiaId> gaiaIds = new ArrayList<>();
+            for (String email : mEmails) {
+                if (isCancelled()) {
+                    return null;
+                }
+                final GaiaId gaiaId = mDelegate.getAccountGaiaId(email);
+                if (gaiaId == null) {
+                    // TODO(crbug.com/40275966): Add metrics to check how often we get a
+                    // null gaiaId.
+                    return null;
+                }
+                gaiaIds.add(gaiaId);
+            }
+            RecordHistogram.recordTimesHistogram(
+                    "Signin.AndroidGetAccountIdsTime",
+                    SystemClock.elapsedRealtime() - seedingStartTime);
+            return gaiaIds;
+        }
+
+        @Override
+        public void onPostExecute(@Nullable List<GaiaId> gaiaIds) {
+            mFetchGaiaIdsTask = null;
+            if (gaiaIds == null) {
+                fetchGaiaIdsAndUpdateCoreAccountInfos();
+                return;
+            }
+            List<CoreAccountInfo> coreAccountInfos = new ArrayList<>();
+            List<AccountInfo> accounts = new ArrayList<>();
+            for (int index = 0; index < mEmails.size(); index++) {
+                String email = mEmails.get(index);
+                GaiaId gaiaId = gaiaIds.get(index);
+                coreAccountInfos.add(CoreAccountInfo.createFromEmailAndGaiaId(email, gaiaId));
+                accounts.add(new AccountInfo.Builder(email, gaiaId).build());
+            }
+            assert mCoreAccountInfosPromise.isFulfilled() == mAccountsPromise.isFulfilled();
+            if (mCoreAccountInfosPromise.isFulfilled()) {
+                mCoreAccountInfosPromise = Promise.fulfilled(coreAccountInfos);
+                mAccountsPromise = Promise.fulfilled(accounts);
+            } else {
+                mCoreAccountInfosPromise.fulfill(coreAccountInfos);
+                mAccountsPromise.fulfill(accounts);
+            }
+            for (AccountsChangeObserver observer : mObservers) {
+                observer.onCoreAccountInfosChanged();
+            }
+        }
     }
 }

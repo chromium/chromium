@@ -341,7 +341,7 @@ public class PlayerFrameBitmapState {
     }
 
     /** Used as the callback for bitmap requests from the Paint Preview compositor. */
-    private class BitmapRequestHandler implements Callback<@Nullable Bitmap> {
+    private class BitmapRequestHandler implements Callback<Bitmap> {
         int mRequestRow;
         int mRequestCol;
         int mRequestId;
@@ -364,13 +364,8 @@ public class PlayerFrameBitmapState {
 
         /** Called when bitmap is successfully composited. */
         @Override
-        public void onResult(@Nullable Bitmap result) {
+        public void onResult(Bitmap result) {
             TraceEvent.begin("BitmapRequestHandler.onResult");
-            if (result == null) {
-                onError();
-                TraceEvent.end("BitmapRequestHandler.onResult");
-                return;
-            }
             if (mBitmapMatrix == null
                     || mPendingBitmapRequests == null
                     || mRequiredBitmaps == null

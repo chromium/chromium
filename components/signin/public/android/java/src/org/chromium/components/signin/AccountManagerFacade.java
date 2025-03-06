@@ -162,14 +162,14 @@ public interface AccountManagerFacade {
     Promise<AccountCapabilities> getAccountCapabilities(CoreAccountInfo coreAccountInfo);
 
     /**
-     * Creates an intent that will ask the user to add a new account to the device. See
-     * {@link AccountManager#addAccount} for details.
-     * @param callback The callback to get the created intent. Will be invoked on the main
-     *         thread. If there is an issue while creating the intent, callback will receive
-     *         null.
+     * Creates an intent that will ask the user to add a new account to the device. See {@link
+     * AccountManager#addAccount} for details.
+     *
+     * @param callback The callback to get the created intent. Will be invoked on the main thread.
+     *     If there is an issue while creating the intent, callback will receive null.
      */
     @AnyThread
-    void createAddAccountIntent(Callback<Intent> callback);
+    void createAddAccountIntent(Callback<@Nullable Intent> callback);
 
     /**
      * Asks the user to enter a new password for an account, updating the saved credentials for the
@@ -190,7 +190,7 @@ public interface AccountManagerFacade {
      */
     @AnyThread
     void confirmCredentials(
-            Account account, @Nullable Activity activity, Callback<Bundle> callback);
+            Account account, @Nullable Activity activity, Callback<@Nullable Bundle> callback);
 
     /** Whether fetching the list of accounts from the device eventually succeeded. */
     // TODO(crbug.com/330304719): Handle this with exceptions rather than a boolean.

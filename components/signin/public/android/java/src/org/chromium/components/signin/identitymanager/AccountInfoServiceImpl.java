@@ -24,9 +24,9 @@ final class AccountInfoServiceImpl implements IdentityManager.Observer, AccountI
     /** Gets the {@link AccountInfo} of the given account email. */
     @Override
     public Promise<@Nullable AccountInfo> getAccountInfoByEmail(String email) {
-        final Promise<@Nullable AccountInfo> accountInfoPromise = new Promise<>();
-        accountInfoPromise.fulfill(mIdentityManager.findExtendedAccountInfoByEmailAddress(email));
-        return accountInfoPromise;
+        // https://github.com/uber/NullAway/issues/1075#issuecomment-2698009946
+        return Promise.<@Nullable AccountInfo>fulfilled(
+                mIdentityManager.findExtendedAccountInfoByEmailAddress(email));
     }
 
     /** Adds an observer which will be invoked when an {@link AccountInfo} is updated. */

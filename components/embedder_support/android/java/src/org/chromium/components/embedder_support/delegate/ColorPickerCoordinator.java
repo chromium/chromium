@@ -20,6 +20,7 @@ import android.graphics.Color;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.util.DialogTypeRecorder;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.ModelListAdapter;
@@ -206,7 +207,7 @@ public class ColorPickerCoordinator {
         mModel.set(CHOSEN_COLOR, newColor);
     }
 
-    private void handleViewSwitched(Void unused) {
+    private void handleViewSwitched(@Nullable Void unused) {
         mModel.set(IS_ADVANCED_VIEW, !mModel.get(IS_ADVANCED_VIEW));
     }
 

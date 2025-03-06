@@ -268,9 +268,9 @@ class MediaDrmSessionManager {
     void load(byte[] emeId, final Callback<@Nullable SessionId> callback) {
         mStorage.loadInfo(
                 emeId,
-                new Callback<PersistentInfo>() {
+                new Callback<@Nullable PersistentInfo>() {
                     @Override
-                    public void onResult(PersistentInfo persistentInfo) {
+                    public void onResult(@Nullable PersistentInfo persistentInfo) {
                         if (persistentInfo == null) {
                             callback.onResult(null);
                             return;

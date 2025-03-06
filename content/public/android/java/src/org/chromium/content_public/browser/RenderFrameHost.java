@@ -43,8 +43,7 @@ public interface RenderFrameHost {
      *
      * @return The last committed URL of the frame or null when being destroyed.
      */
-    @Nullable
-    GURL getLastCommittedURL();
+    @Nullable GURL getLastCommittedURL();
 
     /**
      * Get the last committed Origin of the frame. This is not always the same as scheme/host/port
@@ -53,8 +52,7 @@ public interface RenderFrameHost {
      *
      * @return The last committed Origin of the frame or null when being destroyed.
      */
-    @Nullable
-    Origin getLastCommittedOrigin();
+    @Nullable Origin getLastCommittedOrigin();
 
     /**
      * Returns the eldest parent of this RenderFrameHost.
@@ -71,15 +69,14 @@ public interface RenderFrameHost {
      *     https://crsrc.org/c/content/public/browser/render_frame_host.h?q=symbol:%5Cbcontent::RenderFrameHost::GetMainFrame%5Cb%20case:yes
      * @return The eldest parent frame or null when this frame is being destroyed.
      */
-    @Nullable
-    RenderFrameHost getMainFrame();
+    @Nullable RenderFrameHost getMainFrame();
 
     /**
      * Fetch the canonical URL associated with the fame.
      *
      * @param callback The callback to be notified once the canonical URL has been fetched.
      */
-    void getCanonicalUrlForSharing(Callback<GURL> callback);
+    void getCanonicalUrlForSharing(Callback<@Nullable GURL> callback);
 
     /**
      * Fetch all RenderFramesHosts from the current frame.
