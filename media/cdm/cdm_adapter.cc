@@ -270,10 +270,9 @@ CdmAdapter::~CdmAdapter() {
 
   // Only Cdms using an interface version greater than 10 have access to the
   // ReportMetrics function, so to prevent from reporting a lot of metrics that
-  // are left unset, check if the interface version is greater than 10. We
-  // should also only report to the UKM in cases where at least one of the CDM
-  // values are set, otherwise too many impractical values will be reported.
-  if (GetInterfaceVersion() > 10 && cdm_metrics_data_.IsCdmValueSet()) {
+  // are left unset, check in the cases where if at least one of the CDM
+  // values are set. Otherwise, too many impractical values will be reported.
+  if (cdm_metrics_data_.IsCdmValueSet()) {
     helper_->RecordUkm(cdm_metrics_data_);
   }
 
