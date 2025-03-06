@@ -13,7 +13,6 @@ import {ColorChangeUpdater} from '//resources/cr_components/color_change_listene
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {listenOnce} from '//resources/js/util.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -379,13 +378,9 @@ export class AppElement extends AppElementBase {
           this.constructorTime, connectedCallbackTime);
     }
 
-    // Wait until the side panel is fully rendered before showing the side
-    // panel. This follows Side Panel best practices and prevents loading
-    // artifacts from showing if the side panel is shown before content is
-    // ready.
-    listenOnce(this.$.appFlexParent, 'dom-change', () => {
-      setTimeout(() => chrome.readingMode.shouldShowUi(), 0);
-    });
+    // Push ShowUI() callback to the event queue to allow deferred rendering
+    // to take place.
+    setTimeout(() => chrome.readingMode.shouldShowUi(), 0);
 
     this.showLoading();
     VoiceNotificationManager.getInstance().addListener(this.$.languageToast);
