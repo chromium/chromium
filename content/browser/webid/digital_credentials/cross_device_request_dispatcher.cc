@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/cable/fido_tunnel_device.h"
@@ -183,19 +184,16 @@ void RequestDispatcher::OnComplete(
   // devices are being migrated to support the CTAP standards. First, try to
   // read the proper format, otherwise, fallback to the legacy format.
   if (data->is_dict()) {
-    FIDO_LOG(EVENT) << "Standard format is received from the mobile device.";
     const base::Value::Dict& data_dict = data->GetDict();
     const base::Value* wallet_data = data_dict.Find("data");
     if (wallet_data) {
-      // TODO(crbug.com/336329411): Extract the protocol from the 'data_dict'
-      // dictionary within the response, instead of always using std::nullopt.
+      FIDO_LOG(EVENT) << "Standard format is received from the mobile device.";
       std::move(callback_).Run(
           Response(DigitalIdentityProvider::DigitalCredential(
-              /*protocol=*/std::nullopt,
+              base::OptionalFromPtr(data_dict.FindString("protocol")),
               base::WriteJson(*wallet_data).value_or(""))));
       return;
     }
-    FIDO_LOG(EVENT) << "Response doesn't contain a 'data' field.";
   }
   FIDO_LOG(EVENT) << "No proper standard format is received from the mobile "
                      "device. Fallback to legacy format.";
