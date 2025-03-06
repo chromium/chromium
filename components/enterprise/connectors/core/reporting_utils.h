@@ -7,6 +7,7 @@
 
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/url_matcher/url_matcher.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
@@ -23,6 +24,15 @@ std::string MaskUsername(const std::u16string& username);
 
 // Verify if the given `matcher` matches the `url`.
 bool IsUrlMatched(url_matcher::URLMatcher* matcher, const GURL& url);
+
+// Map `threat_type` to `EventResult`.
+EventResult GetEventResultFromThreatType(std::string threat_type);
+
+// Extract triggered rules from `response` and add them to the url filtering
+// events.
+void AddTriggeredRuleInfoToUrlFilteringInterstitialEvent(
+    const safe_browsing::RTLookupResponse& response,
+    base::Value::Dict& event);
 
 // Create a URLMatcher representing the filters in
 // `settings.enabled_opt_in_events` for `event_type`. This field of the
