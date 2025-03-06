@@ -10106,6 +10106,7 @@
     "FingerprintingProtectionFilter": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "linux",
                 "mac",
