@@ -242,8 +242,10 @@ std::optional<InterstitialType> ComputeInterstitialType(
     bool are_origins_low_risk = false) {
   auto provider = std::make_unique<TestDigitalIdentityProviderWithCustomRisk>(
       are_origins_low_risk);
+  std::vector<ProtocolAndParsedRequest> requests;
+  requests.emplace_back(protocol, std::move(request_data));
   return DigitalIdentityRequestImpl::ComputeInterstitialType(
-      url::Origin(), provider.get(), protocol, std::move(request_data));
+      url::Origin(), provider.get(), std::move(requests));
 }
 
 }  // anonymous namespace
@@ -589,6 +591,39 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
 }
 
 TEST_F(DigitalIdentityRequestImplInterstitialTest,
+       Openid4VpAndPreviewProtocol_ComputeIntersitialType_AgeOver) {
+  base::Value openid4vp_request = GenerateOnlyAgeOpenid4VpRequestWithDCQL();
+  base::Value preview_request = GenerateOnlyAgePreviewRequest();
+
+  std::vector<ProtocolAndParsedRequest> requests;
+  requests.emplace_back(kOpenid4vpProtocol, std::move(openid4vp_request));
+  requests.emplace_back(kPreviewProtocol, std::move(preview_request));
+
+  auto provider = std::make_unique<TestDigitalIdentityProviderWithCustomRisk>(
+      /*are_origins_low_risk=*/false);
+  EXPECT_EQ(DigitalIdentityRequestImpl::ComputeInterstitialType(
+                url::Origin(), provider.get(), std::move(requests)),
+            std::nullopt);
+}
+
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
+       Openid4VpAndPreviewProtocol_ComputeIntersitialType_AgeOverAndGivenName) {
+  base::Value openid4vp_request = GenerateOnlyAgeOpenid4VpRequestWithDCQL();
+  base::Value preview_request = GenerateOnlyAgePreviewRequest();
+  ASSERT_TRUE(SetFieldNameValue(preview_request, "given_name"));
+
+  std::vector<ProtocolAndParsedRequest> requests;
+  requests.emplace_back(kOpenid4vpProtocol, std::move(openid4vp_request));
+  requests.emplace_back(kPreviewProtocol, std::move(preview_request));
+
+  auto provider = std::make_unique<TestDigitalIdentityProviderWithCustomRisk>(
+      /*are_origins_low_risk=*/false);
+  EXPECT_EQ(DigitalIdentityRequestImpl::ComputeInterstitialType(
+                url::Origin(), provider.get(), std::move(requests)),
+            InterstitialType::kLowRisk);
+}
+
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
        Openid4VpProtocolDCQL_ComputeIntersitialType_MalformedRequest) {
   // Malformed request that's missing the claim_name entry.
   base::Value malformed_request = ParseJsonAndCheck(R"({
@@ -896,15 +931,15 @@ TEST_F(DigitalIdentityRequestImplTest, ShouldGetAndReturnProtocolInRequest) {
       }));
 
   base::MockCallback<GetCallback> mock_callback;
-  digital_identity_request_impl()->Get(std::move(requests),
-                                       blink::mojom::GetRequestFormat::kModern,
-                                       mock_callback.Get());
-
   // The protocol in the request should be used when invoking the callback,
   // since no protocol was available in the response.
   EXPECT_CALL(mock_callback, Run(RequestDigitalIdentityStatus::kSuccess,
                                  Optional(kProtocol), Optional(kResponseData)))
       .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+
+  digital_identity_request_impl()->Get(std::move(requests),
+                                       blink::mojom::GetRequestFormat::kModern,
+                                       mock_callback.Get());
 
   run_loop.Run();
 }
@@ -937,15 +972,58 @@ TEST_F(DigitalIdentityRequestImplTest, ShouldGetAndReturnProtocolInResponse) {
       }));
 
   base::MockCallback<GetCallback> mock_callback;
-  digital_identity_request_impl()->Get(std::move(requests),
-                                       blink::mojom::GetRequestFormat::kModern,
-                                       mock_callback.Get());
-
   // The protocol in the response should be used when invoking the callback.
   EXPECT_CALL(mock_callback,
               Run(RequestDigitalIdentityStatus::kSuccess,
                   Optional(kProtocolInResponse), Optional(kResponseData)))
       .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+
+  digital_identity_request_impl()->Get(std::move(requests),
+                                       blink::mojom::GetRequestFormat::kModern,
+                                       mock_callback.Get());
+
+  run_loop.Run();
+}
+
+TEST_F(DigitalIdentityRequestImplTest,
+       ShouldErrorWhenMultipleRequestsAndNoProtocolInResponse) {
+  const std::string kResponseData = R"({"token": "token data"})";
+
+  std::vector<DigitalCredentialRequestPtr> requests;
+
+  DigitalCredentialRequestPtr request1 = DigitalCredentialRequest::New();
+  request1->protocol = "protocol1";
+  request1->data = R"({"data": "request1 data"})";
+
+  DigitalCredentialRequestPtr request2 = DigitalCredentialRequest::New();
+  request1->protocol = "protocol2";
+  request1->data = R"({"data": "request2 data"})";
+
+  requests.push_back(std::move(request1));
+  requests.push_back(std::move(request2));
+
+  base::RunLoop run_loop;
+
+  // Simulate a provider that returns a response without a protocol.
+  EXPECT_CALL(*mock_digital_identity_provider(), Get)
+      .WillOnce(WithArg<3>([this](DigitalIdentityCallback callback) {
+        // Running the `callback` will destroy the provider, reset the pointer
+        // to avoid dangling pointers after invoking the callback.
+        reset_provider_pointer();
+
+        std::move(callback).Run(DigitalCredential(
+            /*protocol=*/std::nullopt, R"({"token": "token data"})"));
+      }));
+
+  base::MockCallback<GetCallback> mock_callback;
+  // The callback should be invoked with an error since the digital wallet
+  // response indicates that it doesn't support multiple requests.
+  EXPECT_CALL(mock_callback, Run(RequestDigitalIdentityStatus::kError, _, _))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+
+  digital_identity_request_impl()->Get(std::move(requests),
+                                       blink::mojom::GetRequestFormat::kModern,
+                                       mock_callback.Get());
 
   run_loop.Run();
 }

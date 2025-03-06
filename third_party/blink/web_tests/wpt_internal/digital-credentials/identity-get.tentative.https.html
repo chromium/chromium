@@ -45,12 +45,4 @@ promise_test(async t=> {
   abortController.abort();
   await promise_rejects_dom(t, "AbortError", requestPromise);
 }, "navigator.identity.get() promise is rejected when the page aborts the request.");
-
-// Internal test because the spec does not have a 1 provider limit.
-promise_test(async t => {
-  let request = buildValidNavigatorIdentityRequest();
-  let providerCopy = structuredClone(request.digital.providers[0]);
-  request.digital.providers.push(providerCopy);
-  await promise_rejects_dom(t, "NetworkError", requestIdentityWithActivation(test_driver, request));
-}, "navigator.identity.get() API fails if there is more than one provider.");
 </script>
