@@ -563,12 +563,9 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   // Prefer using the given name if it is provided, otherwise fallback to name,
   // unless that is disabled.
   std::u16string button_title = l10n_util::GetStringUTF16(IDS_SIGNIN_CONTINUE);
-  if (!account->given_name.empty() ||
-      !base::FeatureList::IsEnabled(features::kFedCmContinueWithoutName)) {
-    const std::string display_name =
-        account->given_name.empty() ? account->name : account->given_name;
-    button_title = l10n_util::GetStringFUTF16(IDS_ACCOUNT_SELECTION_CONTINUE,
-                                              base::UTF8ToUTF16(display_name));
+  if (!account->given_name.empty()) {
+    button_title = l10n_util::GetStringFUTF16(
+        IDS_ACCOUNT_SELECTION_CONTINUE, base::UTF8ToUTF16(account->given_name));
   }
   const content::IdentityProviderData& idp_data = *account->identity_provider;
   const content::IdentityProviderMetadata& idp_metadata = idp_data.idp_metadata;
