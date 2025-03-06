@@ -61,26 +61,15 @@ public class HubPaneHostMediator {
 
     private void onPaneChange(@Nullable Pane pane) {
         @HubColorScheme int newColorScheme = HubColors.getColorSchemeSafe(pane);
-        setNewColorScheme(newColorScheme, /* animate= */ true);
-        View view = pane == null ? null : pane.getRootView();
-        mPropertyModel.set(PANE_ROOT_VIEW, view);
-    }
-
-    private void setNewColorScheme(@HubColorScheme int newColorScheme, boolean animate) {
         @HubColorScheme
         int prevColorScheme =
                 mPropertyModel.get(COLOR_SCHEME) == null
                         ? newColorScheme
                         : mPropertyModel.get(COLOR_SCHEME).newColorScheme;
 
-        mPropertyModel.set(
-                COLOR_SCHEME, new HubColorSchemeUpdate(newColorScheme, prevColorScheme, animate));
-    }
-
-    /** Sets the color scheme from the tab incognito status. */
-    /* package */ void setNewColorSchemeFromTabIncognitoStatus(boolean isIncognito) {
-        @HubColorScheme int colorScheme = HubColors.getColorSchemeFromIncognitoStatus(isIncognito);
-        setNewColorScheme(colorScheme, /* animate= */ false);
+        mPropertyModel.set(COLOR_SCHEME, new HubColorSchemeUpdate(newColorScheme, prevColorScheme));
+        View view = pane == null ? null : pane.getRootView();
+        mPropertyModel.set(PANE_ROOT_VIEW, view);
     }
 
     private void onHairlineVisibilityChange(@Nullable Boolean visible) {

@@ -49,21 +49,18 @@ class MediaDrmStorageBridge {
   // Called by the java object when device provision is finished. Implementation
   // will record the time as provisioning time.
   void OnProvisioned(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& j_storage,
                      // Callback<Boolean>
                      const base::android::JavaParamRef<jobject>& j_callback);
 
   // Called by the java object to load session data into memory. |j_callback|
   // will return a null object if load fails.
   void OnLoadInfo(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& j_storage,
                   const base::android::JavaParamRef<jbyteArray>& j_session_id,
                   // Callback<PersistentInfo>
                   const base::android::JavaParamRef<jobject>& j_callback);
 
   // Called by the java object to persistent session data.
   void OnSaveInfo(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& j_storage,
                   // PersistentInfo
                   const base::android::JavaParamRef<jobject>& j_persist_info,
                   // Callback<Boolean>
@@ -71,7 +68,6 @@ class MediaDrmStorageBridge {
 
   // Called by the java object to remove persistent session data.
   void OnClearInfo(JNIEnv* env,
-                   const base::android::JavaParamRef<jobject>& j_storage,
                    const base::android::JavaParamRef<jbyteArray>& j_session_id,
                    // Callback<Boolean>
                    const base::android::JavaParamRef<jobject>& j_callback);

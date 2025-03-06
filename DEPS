@@ -290,7 +290,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'ccd8cc23aa942fb4ead5369ca2d88ffbfcedeffe',
+  'skia_revision': '263308ea438650f9ffef08e0b5cd9f26f266792c',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -358,7 +358,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling catapult
   # and whatever else without interference from each other.
-  'catapult_revision': '7d8d8e1073aafbb08b7ea3c2ea09698763316246',
+  'catapult_revision': '4d2793429fbccd6cbddc46b4b3ca9474e72c528a',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling chromium_variations
   # and whatever else without interference from each other.
@@ -382,7 +382,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '63cb081b322248649f2534dc420c196840288ed8',
+  'devtools_frontend_revision': 'e3e0616bf4e5ef292c143e693c9091336b2518d0',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -406,7 +406,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': '976c2195bed46e417620484bc1b53e10bc9283e0',
+  'dawn_revision': '34355d0e9f380ee383c3472d7685517677cec4f5',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -514,7 +514,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling llvm-libc
   # and whatever else without interference from each other.
-  'llvm_libc_revision':    'e12bb2ed8b7df34d40872cc8690dd3ebd046bf12',
+  'llvm_libc_revision':    '688c775e963e24b628e7f6a3a84bf9c2629c4935',
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
@@ -738,7 +738,7 @@ deps = {
       'packages': [
           {
               'package': 'chrome_internal/third_party/google3/data_sharing_sdk',
-              'version': 'q5vPXxSD187tYGz40l-d_vfMSzUz8r9NZinlOrRLBp8C',
+              'version': 'CuWkO1qC0JbxuNMxdPn28YwWTSNeMUOe9WJyTV582HcC',
           },
       ],
       'condition': 'checkout_src_internal and non_git_source',
@@ -815,10 +815,10 @@ deps = {
     'condition': 'non_git_source',
     'objects': [
       {
-        'object_name': 'e7cdf2d4b8c9cdf2b55da8e139881e9b4740b937',
-        'sha256sum': '8d4dcd9553cde11b2965c92c04f6e2a7bab93682bfe1091d654f5c60c87b3f60',
-        'size_bytes': 9234835,
-        'generation': 1739578133862156,
+        'object_name': '4a9335f276363b47d0b6f8cff493360dba94f5af',
+        'sha256sum': '21ed63d6b34ff3adfb5d3b834044a985995e9563500815970fe3072daf2de9c4',
+        'size_bytes': 9255611,
+        'generation': 1741284192693578,
         'output_file': 'node_modules.tar.gz',
       },
     ],
@@ -1141,7 +1141,7 @@ deps = {
   },
 
   'src/chrome/release_scripts': {
-      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + 'cebb7c7bdac618d947627f6b7979d6b084260481',
+      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '96a57d4ac7a83b1b3aa6edf92e2ea98f37c36195',
       'condition': 'checkout_chrome_release_scripts',
   },
 
@@ -1470,7 +1470,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'cd3921bdd2ed0161652b877ddbd924354ed5a1d3',
+    '9f9b19fd599749fd5e87f87dc17de116793b383a',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1678,7 +1678,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/bundletool',
-               'version': 'tal0sHGlqsDFNFQ5lV1zRomrRs0Ppq6ngUOYbACAAUwC',
+               'version': 'zV93G9_1s5h6x7c2qdcibr0uuQ_5Q2QgcxhkUs9-tOsC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -1744,7 +1744,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/nullaway',
-               'version': '65WJkoinJEXvtu9xwdDNDb3QCbqBAl8FKDpgnXr3iiEC',
+               'version': 'Br9gBQM1eYGrSHKahSZ-WTQPlz-YegUJ9mvraq3UajUC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -1935,7 +1935,7 @@ deps = {
   # Tools used when building Chrome for Chrome OS. This affects both the Simple
   # Chrome workflow, as well as the chromeos-chrome ebuild.
   'src/third_party/chromite': {
-      'url': Var('chromium_git') + '/chromiumos/chromite.git' + '@' + 'e2b890bbaea41cbe3cbf9ae36555dfb654e1659d',
+      'url': Var('chromium_git') + '/chromiumos/chromite.git' + '@' + '31cbb6f0169be5f7eabfdd3efb4cdd66cfa70aa1',
       'condition': 'checkout_chromeos',
   },
 
@@ -2483,7 +2483,7 @@ deps = {
     Var('pdfium_git') + '/pdfium.git' + '@' +  Var('pdfium_revision'),
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'd7ff87d13388123b18b03be8d7f00a01a12ca29b',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'ad0e86e17317ced2963ffb8958453968d8275a08',
 
   'src/base/tracing/test/data': {
     'bucket': 'perfetto',
@@ -2851,7 +2851,7 @@ deps = {
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + '4a3dffe0415ceba34e07258508123f38a8a6d847',
+    Var('webrtc_git') + '/src.git' + '@' + 'e733ebc99d5f0818ea39c710c2462d3423f1a8c7',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -4607,7 +4607,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '8f4b7cb97eef6e135aeaa3e238a5831e656b9c3b',
+        '62268df22a7042567908e8d133bc5c64093ca150',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

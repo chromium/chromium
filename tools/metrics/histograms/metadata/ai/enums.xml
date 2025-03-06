@@ -118,8 +118,8 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="ErrorDisabled">Response was disabled.</int>
   <int value="12" label="ErrorCancelled">The request was cancelled.</int>
   <int value="13" label="ErrorSessionDestroyed">The session was destroyed.</int>
-  <int value="14" label="ErrorPromptRequestTooLarge">
-    The prompt is too large to be stored in the context.
+  <int value="14" label="kErrorInputTooLarge">
+    The input is too large and exceeds quota limit.
   </int>
   <int value="15" label="ErrorResponseLowQuality">
     The response was retracted due to low quality.

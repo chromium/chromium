@@ -138,6 +138,25 @@ TEST_F(EventLoggerCookieHandlerTest, InitializesExistingLoggingCookie) {
   InitCookieHandlerAndWait();
 }
 
+TEST_F(EventLoggerCookieHandlerTest, ResetsMalformedPersistedLoggingCookie) {
+  EXPECT_CALL(mock_cookie_manager_, SetCanonicalCookie)
+      .WillOnce([](const net::CanonicalCookie& cookie, const GURL& source_url,
+                   const net::CookieOptions&,
+                   MockCookieManager::SetCanonicalCookieCallback callback) {
+        ASSERT_TRUE(cookie.IsCanonical());
+        EXPECT_EQ(cookie.Name(), kLoggingCookieName);
+        EXPECT_EQ(cookie.Value(), kLoggingCookieDefaultValue);
+        EXPECT_EQ(source_url,
+                  GetGlobalConstants()->EnterpriseCompanionEventLoggingURL());
+        std::move(callback).Run(net::CookieAccessResult());
+      });
+
+  // Cookie values containing ASCII control characters will fail validation.
+  ASSERT_TRUE(base::WriteFile(cookie_file_.path(), "\6"));
+
+  InitCookieHandlerAndWait();
+}
+
 TEST_F(EventLoggerCookieHandlerTest, PersistsLoggingCookie) {
   EXPECT_CALL(mock_cookie_manager_, SetCanonicalCookie)
       .WillOnce([](const net::CanonicalCookie&, const GURL&,

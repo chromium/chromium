@@ -85,6 +85,7 @@ class SmartCardPermissionContext
   friend class SmartCardPermissionContextTest;
   friend class settings::SmartCardReaderPermissionsSiteSettingsHandlerTest;
   friend class PageInfoBubbleViewInteractiveUiTest;
+  friend class ChromeOsSmartCardDelegateBrowserTest;
 
   class OneTimeObserver;
   class PowerSuspendObserver;

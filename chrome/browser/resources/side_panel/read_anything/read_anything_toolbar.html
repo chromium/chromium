@@ -142,10 +142,10 @@
     </span>
     <cr-icon-button class="toolbar-button" id="rate"
         tabindex$="[[getRateTabIndex_(isReadAloudPlayable)]]"
-        aria-label$="[[getVoiceSpeedLabel_()]]"
+        aria-label$="[[getVoiceSpeedLabel_(speechRate_)]]"
         title="$i18n{voiceSpeedLabel}"
         aria-haspopup="menu"
-        iron-icon="voice-rate:1"
+        iron-icon="voice-rate:[[speechRate_]]"
         on-click="onShowRateMenuClick_">
     </cr-icon-button>
     <cr-icon-button class="toolbar-button" id="voice-selection" tabindex="-1"
@@ -257,7 +257,7 @@
             initial-count="8">
           <button class="dropdown-item" on-click="onRateClick_">
             <cr-icon class$="button-image check-mark
-                check-mark-hidden-[[isRateItemSelected_(index)]]"
+                check-mark-hidden-[[!isRateItemSelected_(index, speechRate_)]]"
                 icon="read-anything-20:check-mark"
                 aria-label="$i18n{selected}">
             </cr-icon>
@@ -315,7 +315,7 @@
           <button class="dropdown-item" on-click="onFontClick_"
               style$="font-family:[[item]]">
             <cr-icon class$="button-image check-mark
-                check-mark-hidden-[[isFontItemSelected_(index)]]"
+                check-mark-hidden-[[!isFontItemSelected_(index,fontName_)]]"
                 icon="read-anything-20:check-mark"
                 aria-label="$i18n{selected}">
             </cr-icon>

@@ -108,12 +108,11 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // Returns true when the label should be visible.
   virtual bool ShouldShowLabel() const;
 
-  virtual void SetBackgroundVisibility(
-      BackgroundVisibility background_visibility);
+  void SetBackgroundVisibility(BackgroundVisibility background_visibility);
 
   // Sets whether tonal colors are used for the background of the view when
   // expanded to show the label.
-  virtual void SetUseTonalColorsWhenExpanded(bool use_tonal_colors);
+  void SetUseTonalColorsWhenExpanded(bool use_tonal_colors);
 
   void SetLabel(std::u16string_view label);
   void SetLabel(std::u16string_view label, std::u16string_view accessible_name);
@@ -140,14 +139,6 @@ class IconLabelBubbleView : public views::InkDropObserver,
   void set_grow_animation_starting_width_for_testing(int width) {
     grow_animation_starting_width_ = width;
   }
-
-  // Reduces the slide duration to 1ms such that animation still follows
-  // through in the code but is short enough that it is essentially skipped.
-  void ReduceAnimationTimeForTesting();
-
-  // Enables tests to reset slide animation to a state where the label is not
-  // showing.
-  void ResetSlideAnimationForTesting() { ResetSlideAnimation(false); }
 
  protected:
   static constexpr int kOpenTimeMS = 150;

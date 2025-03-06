@@ -107,7 +107,6 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     private @Nullable SolidColorSceneLayer mEmptySceneLayer;
 
     private @Nullable HubLayoutAnimationRunner mCurrentAnimationRunner;
-    private @Nullable Callback<Boolean> mNewTabIncognitoStateListener;
 
     /**
      * Create the {@link Layout} to show the Hub on.
@@ -482,9 +481,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         forceAnimationToFinish();
 
         mCurrentSceneLayer = mEmptySceneLayer;
-        if (mNewTabIncognitoStateListener != null) {
-            mNewTabIncognitoStateListener.onResult(newIsIncognito);
-        }
+        updateEmptyLayerColor(mPaneManager.getFocusedPaneSupplier().get());
 
         @ColorInt
         int backgroundColor = NewTabAnimationUtils.getBackgroundColor(getContext(), newIsIncognito);
@@ -568,6 +565,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
                     }
                 });
         maybeAddPaneAnimationListener(mCurrentAnimationRunner);
+
         selectTabAndHideHubLayout(tabId);
     }
 
@@ -717,11 +715,6 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     private LayoutTab getLayoutTab() {
         assert hasLayoutTab();
         return mLayoutTabs[0];
-    }
-
-    @Override
-    public void setNewTabIncognitoStateListener(Callback<Boolean> newTabIncognitoStateListener) {
-        mNewTabIncognitoStateListener = newTabIncognitoStateListener;
     }
 
     private void createLayoutTabForTabId(int tabId) {

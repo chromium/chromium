@@ -157,7 +157,8 @@ viewer-ink-host {
 
 .spinner {
   mask-image: url(chrome://resources/images/throbber_small.svg);
-  margin-inline-end: 10px;
+  margin-inline-end: 8px;
+  --cr-spinner-size: 16px;
 }
 
 /* Dark mode styles copied from

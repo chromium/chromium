@@ -115,7 +115,14 @@ IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest, OpenOsToggleSetting) {
                                                     kOsToggleHelpBubbleQuery)));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest, OpenKeyboardShortcutSetting) {
+// TODO(crbug.com/401248290): Flaky on "Linux MSan Tests" bot.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_OpenKeyboardShortcutSetting DISABLED_OpenKeyboardShortcutSetting
+#else
+#define MAYBE_OpenKeyboardShortcutSetting OpenKeyboardShortcutSetting
+#endif
+IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest,
+                       MAYBE_OpenKeyboardShortcutSetting) {
   RunTestSequence(
       VerifyOpensGlicSettings(glic::OpenGlicKeyboardShortcutSetting),
       WaitForStateChange(kSettingsTab, ElementIsVisibleStateChange(

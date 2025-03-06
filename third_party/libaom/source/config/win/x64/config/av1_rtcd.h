@@ -385,7 +385,7 @@ RTCD_EXTERN void (*av1_lowbd_fwd_txfm)(const int16_t *src_diff, tran_low_t *coef
 
 void av1_nn_fast_softmax_16_c(const float *input_nodes, float *output);
 void av1_nn_fast_softmax_16_sse3(const float *input_nodes, float *output);
-RTCD_EXTERN void (*av1_nn_fast_softmax_16)(const float *input_nodes, float *output);
+#define av1_nn_fast_softmax_16 av1_nn_fast_softmax_16_sse3
 
 void av1_nn_predict_c(const float *input_nodes, const NN_CONFIG *const nn_config, int reduce_prec, float *const output);
 void av1_nn_predict_sse3(const float *input_nodes, const NN_CONFIG *const nn_config, int reduce_prec, float *const output);
@@ -666,10 +666,7 @@ static void setup_rtcd_internal(void)
     av1_lowbd_fwd_txfm = av1_lowbd_fwd_txfm_c;
     if (flags & HAS_SSE4_1) av1_lowbd_fwd_txfm = av1_lowbd_fwd_txfm_sse4_1;
     if (flags & HAS_AVX2) av1_lowbd_fwd_txfm = av1_lowbd_fwd_txfm_avx2;
-    av1_nn_fast_softmax_16 = av1_nn_fast_softmax_16_c;
-    if (flags & HAS_SSE3) av1_nn_fast_softmax_16 = av1_nn_fast_softmax_16_sse3;
-    av1_nn_predict = av1_nn_predict_c;
-    if (flags & HAS_SSE3) av1_nn_predict = av1_nn_predict_sse3;
+    av1_nn_predict = av1_nn_predict_sse3;
     if (flags & HAS_AVX2) av1_nn_predict = av1_nn_predict_avx2;
     av1_quantize_fp = av1_quantize_fp_sse2;
     if (flags & HAS_AVX2) av1_quantize_fp = av1_quantize_fp_avx2;

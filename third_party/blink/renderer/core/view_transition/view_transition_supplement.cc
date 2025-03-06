@@ -118,7 +118,8 @@ DOMViewTransition* ViewTransitionSupplement::StartTransition(
         ->GetScriptDelegate();
   }
 
-  if (ViewTransition* active_transition = GetTransition(element)) {
+  ViewTransition* active_transition = GetTransition(element);
+  if (active_transition) {
     active_transition->SkipTransition();
   }
 
@@ -130,8 +131,8 @@ DOMViewTransition* ViewTransitionSupplement::StartTransition(
     return nullptr;
   }
 
-  ViewTransition* transition =
-      ViewTransition::CreateFromScript(&element, callback, types, this);
+  ViewTransition* transition = ViewTransition::CreateFromScript(
+      &element, callback, types, this, active_transition);
   DCHECK(transition);
 
   if (for_document) {

@@ -388,30 +388,7 @@ TEST_F(DefaultSearchManagerTest,
 }
 
 TEST_F(DefaultSearchManagerTest,
-       DefaultSearchSetByPlayAPI_MergeByKeyword_FeatureDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(switches::kTemplateUrlReconciliation);
-
-  auto manager = create_manager();
-  auto* builtin_engine = manager->GetDefaultSearchEngine(nullptr);
-
-  auto supplied_engine = GenerateDummyTemplateURLData(
-      base::UTF16ToUTF8(builtin_engine->keyword()));
-  supplied_engine->created_from_play_api = true;
-  // Needed by ExpectSimilar.
-  supplied_engine->favicon_url = builtin_engine->favicon_url;
-
-  // Verify no merge done.
-  manager->SetUserSelectedDefaultSearchEngine(*supplied_engine);
-  auto* result = manager->GetDefaultSearchEngine(nullptr);
-  ExpectSimilar(supplied_engine.get(), result);
-}
-
-TEST_F(DefaultSearchManagerTest,
        DefaultSearchSetByPlayAPI_MergeByKeyword_FeatureEnabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(switches::kTemplateUrlReconciliation);
-
   auto manager = create_manager();
   auto* builtin_engine = manager->GetDefaultSearchEngine(nullptr);
 
@@ -431,30 +408,7 @@ TEST_F(DefaultSearchManagerTest,
 }
 
 TEST_F(DefaultSearchManagerTest,
-       DefaultSearchSetByPlayAPI_MergeByDomainName_FeatureDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(switches::kTemplateUrlReconciliation);
-
-  auto manager = create_manager();
-  auto* builtin_engine = manager->GetDefaultSearchEngine(nullptr);
-
-  auto supplied_engine = GenerateDummyTemplateURLData("yahoo.com");
-  supplied_engine->SetURL("https://emea.yahoo.com/search");
-  supplied_engine->created_from_play_api = true;
-  // Needed by ExpectSimilar.
-  supplied_engine->favicon_url = builtin_engine->favicon_url;
-
-  // Verify no merge done.
-  manager->SetUserSelectedDefaultSearchEngine(*supplied_engine);
-  auto* result = manager->GetDefaultSearchEngine(nullptr);
-  ExpectSimilar(supplied_engine.get(), result);
-}
-
-TEST_F(DefaultSearchManagerTest,
        DefaultSearchSetByPlayAPI_MergeByDomainName_FeatureEnabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(switches::kTemplateUrlReconciliation);
-
   SetOverrides(pref_service(), false);
   auto manager = create_manager();
 

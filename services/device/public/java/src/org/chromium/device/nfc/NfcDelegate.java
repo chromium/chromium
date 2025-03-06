@@ -8,6 +8,7 @@ import android.app.Activity;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Interface that allows the NFC implementation to access the Activity associated with a given
@@ -19,9 +20,10 @@ public interface NfcDelegate {
      * Calls |callback| with the Activity associated with |hostId|, and subsequently calls
      * |callback| again whenever the Activity associated with |hostId| changes.
      */
-    void trackActivityForHost(int hostId, Callback<Activity> callback);
+    void trackActivityForHost(int hostId, Callback<@Nullable Activity> callback);
 
-    /** Called when the NFC implementation no longer needs to track the Activity associated with
+    /**
+     * Called when the NFC implementation no longer needs to track the Activity associated with
      * |hostId|.
      */
     void stopTrackingActivityForHost(int hostId);

@@ -139,6 +139,15 @@ inline constexpr char kKeyLoginUserName[] = "loginUserName";
 inline constexpr char kKeyPasswordBreachIdentities[] = "identities";
 inline constexpr char kKeyPasswordBreachIdentitiesUrl[] = "url";
 inline constexpr char kKeyPasswordBreachIdentitiesUsername[] = "username";
+inline constexpr char kKeyClickedThrough[] = "clickedThrough";
+inline constexpr char kKeyThreatType[] = "threatType";
+inline constexpr char kKeyEventResult[] = "eventResult";
+inline constexpr char kKeyTriggeredRuleName[] = "ruleName";
+inline constexpr char kKeyTriggeredRuleId[] = "ruleId";
+inline constexpr char kKeyTriggeredRuleInfo[] = "triggeredRuleInfo";
+inline constexpr char kKeyUrlCategory[] = "urlCategory";
+inline constexpr char kKeyAction[] = "action";
+inline constexpr char kKeyHasWatermarking[] = "hasWatermarking";
 
 }  // namespace enterprise_connectors
 

@@ -324,8 +324,9 @@ bool WebAccessibleResourcesHandler::Parse(Extension* extension,
   auto info = extension->manifest_version() < 3
                   ? ParseResourceStringList(*extension, error)
                   : ParseEntryList(*extension, error);
-  if (!info)
+  if (!info) {
     return false;
+  }
   extension->SetManifestData(
       WebAccessibleResourcesManifestKeys::kWebAccessibleResources,
       std::move(info));

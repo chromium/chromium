@@ -365,7 +365,7 @@ def _get_fuzzilli_target_details(args):
     jsfiles = [
         file for file in os.listdir(path_to_js_dir) if file.endswith('.js')
     ]
-    files_per_chunk = 10
+    files_per_chunk = 80
     num_of_chunks = math.ceil(len(jsfiles) / files_per_chunk)
     for i in range(num_of_chunks):
       chunk = jsfiles[files_per_chunk * i:files_per_chunk * (i + 1)]

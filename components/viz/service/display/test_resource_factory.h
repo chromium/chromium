@@ -31,8 +31,13 @@ class TestResourceFactory {
 
   ~TestResourceFactory();
 
+  struct TestResourceContext {
+    bool is_overlay_candidate = false;
+    bool is_low_latency_rendering = false;
+  };
+
   ResourceId CreateResource(const gfx::Size& size,
-                            bool is_overlay_candidate,
+                            const TestResourceContext& resource_context,
                             SharedImageFormat format,
                             SurfaceId test_surface_id);
 

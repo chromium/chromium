@@ -298,8 +298,7 @@ public class HubToolbarViewUnitTest {
     public void testUpdateSearchBoxColorScheme() {
         mPropertyModel.set(
                 COLOR_SCHEME,
-                new HubColorSchemeUpdate(
-                        HubColorScheme.INCOGNITO, HubColorScheme.INCOGNITO, false));
+                new HubColorSchemeUpdate(HubColorScheme.INCOGNITO, HubColorScheme.INCOGNITO));
         assertEquals(
                 ContextCompat.getColor(mActivity, R.color.baseline_neutral_60),
                 mSearchBoxText.getCurrentHintTextColor());
@@ -312,7 +311,7 @@ public class HubToolbarViewUnitTest {
 
         mPropertyModel.set(
                 COLOR_SCHEME,
-                new HubColorSchemeUpdate(HubColorScheme.DEFAULT, HubColorScheme.DEFAULT, false));
+                new HubColorSchemeUpdate(HubColorScheme.DEFAULT, HubColorScheme.DEFAULT));
         assertEquals(
                 SemanticColorUtils.getDefaultTextColor(mActivity),
                 mSearchBoxText.getCurrentHintTextColor());

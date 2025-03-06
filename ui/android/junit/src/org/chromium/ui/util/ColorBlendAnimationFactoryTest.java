@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.chromium.ui.util.ColorBlendAnimationFactory.createColorBlendAnimation;
 import static org.chromium.ui.util.ColorBlendAnimationFactory.createMultiColorBlendAnimation;
 
-import android.animation.Animator;
 import android.graphics.Color;
 import android.os.Looper;
 
@@ -49,9 +48,7 @@ public class ColorBlendAnimationFactoryTest {
         for (@ColorInt int start : COLORS_ALPHA_OVER_ZERO) {
             for (@ColorInt int end : COLORS_ALPHA_OVER_ZERO) {
                 AtomicInteger latestColor = new AtomicInteger();
-                Animator animator = createColorBlendAnimation(start, end, latestColor::set);
-                animator.setDuration(10);
-                animator.start();
+                createColorBlendAnimation(10, start, end, latestColor::set).start();
 
                 Shadows.shadowOf(Looper.getMainLooper()).idle();
                 assertEquals(end, latestColor.get());
@@ -64,11 +61,12 @@ public class ColorBlendAnimationFactoryTest {
         for (@ColorInt int start : COLORS_ALPHA_OVER_ZERO) {
             for (@ColorInt int end : COLORS_ALPHA_OVER_ZERO) {
                 AtomicReference<int[]> latestColors = new AtomicReference<>();
-                Animator animator =
-                        createMultiColorBlendAnimation(
-                                new int[] {start, end}, new int[] {end, start}, latestColors::set);
-                animator.setDuration(10);
-                animator.start();
+                createMultiColorBlendAnimation(
+                                10,
+                                new int[] {start, end},
+                                new int[] {end, start},
+                                latestColors::set)
+                        .start();
 
                 Shadows.shadowOf(Looper.getMainLooper()).idle();
 
@@ -86,9 +84,7 @@ public class ColorBlendAnimationFactoryTest {
         for (@ColorInt int start : COLORS_ALPHA_ZERO) {
             for (@ColorInt int end : COLORS_ALPHA_ZERO) {
                 AtomicInteger latestColor = new AtomicInteger();
-                Animator animator = createColorBlendAnimation(start, end, latestColor::set);
-                animator.setDuration(10);
-                animator.start();
+                createColorBlendAnimation(10, start, end, latestColor::set).start();
 
                 Shadows.shadowOf(Looper.getMainLooper()).idle();
                 assertEquals(Color.TRANSPARENT, latestColor.get());
@@ -101,11 +97,12 @@ public class ColorBlendAnimationFactoryTest {
         for (@ColorInt int start : COLORS_ALPHA_ZERO) {
             for (@ColorInt int end : COLORS_ALPHA_ZERO) {
                 AtomicReference<int[]> latestColors = new AtomicReference<>();
-                Animator animator =
-                        createMultiColorBlendAnimation(
-                                new int[] {start, end}, new int[] {end, start}, latestColors::set);
-                animator.setDuration(10);
-                animator.start();
+                createMultiColorBlendAnimation(
+                                10,
+                                new int[] {start, end},
+                                new int[] {end, start},
+                                latestColors::set)
+                        .start();
 
                 Shadows.shadowOf(Looper.getMainLooper()).idle();
 

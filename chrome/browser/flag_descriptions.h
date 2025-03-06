@@ -871,9 +871,6 @@ extern const char kMirrorBackForwardGesturesInRTLDescription[];
 extern const char kClayBlockingDialogName[];
 extern const char kClayBlockingDialogDescription[];
 
-extern const char kTemplateUrlReconciliationName[];
-extern const char kTemplateUrlReconciliationDialogDescription[];
-
 extern const char kEnableFencedFramesName[];
 extern const char kEnableFencedFramesDescription[];
 
@@ -991,10 +988,6 @@ extern const char kEnablePreferencesAccountStorageDescription[];
 extern const char kEnableResamplingScrollEventsExperimentalPredictionName[];
 extern const char
     kEnableResamplingScrollEventsExperimentalPredictionDescription[];
-
-extern const char kEnableSystemEntropyOnPerformanceNavigationTimingName[];
-extern const char
-    kEnableSystemEntropyOnPerformanceNavigationTimingDescription[];
 
 extern const char kEnableWebAuthenticationChromeOSAuthenticatorName[];
 extern const char kEnableWebAuthenticationChromeOSAuthenticatorDescription[];

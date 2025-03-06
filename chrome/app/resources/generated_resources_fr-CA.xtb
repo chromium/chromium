@@ -3810,6 +3810,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3670229581627177274">Activer le Bluetooth</translation>
 <translation id="3670480940339182416">Les sites peuvent utiliser l'optimiseur V8</translation>
 <translation id="3671764914317109892">Utilisez un langage courant pour rechercher du contenu dans votre historique de navigation. Vous pouvez aussi poser des questions et obtenir des réponses en fonction de votre historique de navigation.</translation>
+<translation id="3671982238795754537">En savoir plus sur les clés d'accès</translation>
 <translation id="3672681487849735243">Une erreur a été détectée dans les paramètres par défaut.</translation>
 <translation id="3673097791729989571">Connexion hébergée par <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">Votre NIP a été mis à jour</translation>
@@ -4726,6 +4727,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4289540628985791613">Aperçu</translation>
 <translation id="428963538941819373">Ces sites peuvent utiliser les informations qu'ils ont enregistrées à votre sujet lorsque vous naviguez sur <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Choisir un NIP</translation>
+<translation id="4290526909608432059">La prise en charge des applis Chrome va bientôt prendre fin. Pour en savoir plus sur vos options, communiquez avec le développeur d'applis ou votre équipe d'assistance informatique.</translation>
 <translation id="4290791284969893584">Si vous fermez une page, les tâches lancées risquent de ne pas être terminées</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> membre</translation>
 <translation id="4290898381118933198">Balayer pour passer d'une page à l'autre</translation>
@@ -8520,6 +8522,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> : connecté à un port série</translation>
 <translation id="7033616203784997570">L'entrée doit comporter au maximum 62 caractères</translation>
 <translation id="7034692021407794547">Un administrateur possédant les privilèges Gestion de la facturation doit d'abord accepter les conditions d'utilisation des accessoires Google Meet, dans la section Accessoires Google Meet de la console d'administrateur.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> vient de créer une clé d'accès pour votre compte. Les clés d'accès offrent un moyen plus rapide et plus sécuritaire de se connecter et sont enregistrées dans le gestionnaire de mots de passe Google de <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> d'espace est recommandé pour utiliser Linux. Pour libérer de l'espace, supprimez des fichiers sur votre appareil.</translation>
 <translation id="7037157058268992880">NIP oublié</translation>
 <translation id="7037509989619051237">Aperçu du texte</translation>
@@ -10561,6 +10564,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8477178913400731244">Supprimer les données</translation>
 <translation id="8477241577829954800">Remplacé</translation>
 <translation id="8477384620836102176">&amp;Général</translation>
+<translation id="8477446666255316832">Connectez-vous plus rapidement la prochaine fois</translation>
 <translation id="8479176401914456949">Code incorrect. Veuillez réessayer.</translation>
 <translation id="8480869669560681089">Appareil inconnu de <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Confirmer l'autorisation USB</translation>

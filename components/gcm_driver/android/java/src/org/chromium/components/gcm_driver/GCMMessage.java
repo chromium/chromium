@@ -183,7 +183,8 @@ public class GCMMessage {
             mRawData = null;
         }
 
-        mDataKeysAndValuesArray = reader.readStringArray(source, KEY_DATA);
+        // Assume read array has no null values.
+        mDataKeysAndValuesArray = (String @Nullable []) reader.readStringArray(source, KEY_DATA);
     }
 
     public @Nullable String getSenderId() {

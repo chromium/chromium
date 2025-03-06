@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.hub;
 
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_COLOR_BLEND_ANIMATION_DURATION_MS;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_FADE_ANIMATION_DURATION_MS;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.getPaneColorBlendInterpolator;
 import static org.chromium.ui.util.ColorBlendAnimationFactory.createMultiColorBlendAnimation;
@@ -161,7 +162,6 @@ public class HubToolbarView extends LinearLayout {
                 mAnimatorSetBuilder
                         .setNewColorScheme(newColorScheme)
                         .setPreviousColorScheme(prevColorScheme)
-                        .setIsImmediate(!colorSchemeUpdate.animate)
                         .build();
         mColorBlendAnimatorHandler.startAnimation(animatorSet);
 
@@ -174,11 +174,13 @@ public class HubToolbarView extends LinearLayout {
 
         mAnimatorSetBuilder.registerBlend(
                 new SingleHubViewColorBlend(
+                        PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
                         colorScheme -> HubColors.getBackgroundColor(context, colorScheme),
                         this::setBackgroundColor));
 
         mAnimatorSetBuilder.registerBlend(
                 new SingleHubViewColorBlend(
+                        PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
                         colorScheme -> HubColors.getSelectedIconColor(context, colorScheme),
                         mPaneSwitcher::setSelectedTabIndicatorColor));
 
@@ -194,6 +196,7 @@ public class HubToolbarView extends LinearLayout {
                             HubColors.getSelectedIconColor(context, prevColorScheme);
                     Animator animation =
                             createMultiColorBlendAnimation(
+                                    PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
                                     new int[] {prevIconColor, prevSelectedIconColor},
                                     new int[] {newIconColor, newSelectedIconColor},
                                     colorList -> {
@@ -210,6 +213,7 @@ public class HubToolbarView extends LinearLayout {
 
         mAnimatorSetBuilder.registerBlend(
                 new SingleHubViewColorBlend(
+                        PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
                         colorScheme -> HubColors.getIconColor(context, colorScheme),
                         interpolatedColor -> {
                             updateActionButtonColorInternal(context, interpolatedColor);
@@ -222,6 +226,7 @@ public class HubToolbarView extends LinearLayout {
         // setter.
         mAnimatorSetBuilder.registerBlend(
                 new SingleHubViewColorBlend(
+                        PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
                         colorScheme -> HubColors.getBackgroundColor(context, colorScheme),
                         color -> mToolbarOverviewColorSetter.onResult(color)));
 
@@ -235,6 +240,7 @@ public class HubToolbarView extends LinearLayout {
 
         mAnimatorSetBuilder.registerBlend(
                 new SingleHubViewColorBlend(
+                        PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
                         colorScheme -> HubColors.getSearchBoxHintTextColor(context, colorScheme),
                         mSearchBoxTextView::setHintTextColor));
 
@@ -242,11 +248,13 @@ public class HubToolbarView extends LinearLayout {
                 (GradientDrawable) mSearchBoxLayout.getBackground().mutate();
         mAnimatorSetBuilder.registerBlend(
                 new SingleHubViewColorBlend(
+                        PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
                         colorScheme -> HubColors.getSearchBoxBgColor(context, colorScheme),
                         backgroundDrawable::setColor));
 
         mAnimatorSetBuilder.registerBlend(
                 new SingleHubViewColorBlend(
+                        PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
                         colorScheme -> HubColors.getIconColor(context, colorScheme),
                         this::updateSearchLoupeColor));
     }

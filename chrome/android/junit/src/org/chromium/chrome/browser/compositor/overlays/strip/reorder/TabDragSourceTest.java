@@ -59,8 +59,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
@@ -71,7 +69,6 @@ import org.chromium.chrome.browser.compositor.overlays.strip.TestTabModel;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.TabDragSource.TabDragShadowBuilder;
 import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -94,6 +91,7 @@ import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropTabResult;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.dragdrop.DropDataAndroid;
+import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.widget.ToastManager;
 
 import java.lang.ref.WeakReference;
@@ -237,9 +235,9 @@ public class TabDragSourceTest {
                 ChromePreferenceKeys.TAB_TEARING_MAX_INSTANCES_FAILURE_COUNT);
     }
 
-    @EnableFeatures({ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
     @Test
     public void test_startTabDragAction_withTabDragDropFF_returnsTrueForValidTab() {
+        XrUtils.setXrDeviceForTesting(true);
         // Act and verify.
         boolean res =
                 mSourceInstance.startTabDragAction(
@@ -262,11 +260,12 @@ public class TabDragSourceTest {
                 mTabBeingDragged,
                 ((ChromeTabDropDataAndroid) DragDropGlobalState.getForTesting().getData()).tab);
         assertNull("Shadow view should be null.", mSourceInstance.getShadowViewForTesting());
+        XrUtils.resetXrDeviceForTesting();
     }
 
-    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     @Test
     public void test_startTabDragAction_withTabLinkDragDropFF_returnsTrueForValidTab() {
+        XrUtils.resetXrDeviceForTesting();
         // Act and verify.
         boolean res =
                 mSourceInstance.startTabDragAction(
@@ -320,9 +319,9 @@ public class TabDragSourceTest {
                         TAB_WIDTH));
     }
 
-    @EnableFeatures({ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
     @Test
     public void test_startTabDragAction_withHasOneTabWithHomepage_ReturnsFalse() {
+        XrUtils.setXrDeviceForTesting(true);
         when(mMultiWindowUtils.hasAtMostOneTabWithHomepageEnabled(any())).thenReturn(true);
         assertFalse(
                 "Should not startTabDragAction since last tab with homepage enabled.",
@@ -351,10 +350,10 @@ public class TabDragSourceTest {
                         TAB_POSITION_X,
                         TAB_WIDTH));
         assertFalse("Global state should not be set", DragDropGlobalState.hasValue());
+        XrUtils.resetXrDeviceForTesting();
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
     public void test_startTabDragAction_returnFalseForNonSplitScreen() {
         // Set params.
         when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
@@ -371,7 +370,6 @@ public class TabDragSourceTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void test_startTabDragAction_FullScreenWithMultipleTabs() {
         // Set params.
         when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
@@ -382,7 +380,6 @@ public class TabDragSourceTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void test_startTabDragAction_FullScreenWithOneTab() {
         // Set params.
         when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
@@ -400,7 +397,6 @@ public class TabDragSourceTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void test_startTabDragAction_FullScreenWithMaxChromeInstances() {
         // Set params.
         when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
@@ -413,7 +409,6 @@ public class TabDragSourceTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void test_startTabDragAction_FullScreenWithMaxInstanceAllowlistedOEM() {
         // Set params.
         when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
@@ -426,7 +421,6 @@ public class TabDragSourceTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void test_startTabDragAction_SplitScreenWithMaxChromeInstances() {
         // Set params.
         when(mTabModelSelector.getTotalTabCount()).thenReturn(2);
@@ -438,8 +432,8 @@ public class TabDragSourceTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void test_onProvideShadowMetrics_WithDesiredStartPosition_ReturnsSuccess() {
+        XrUtils.setXrDeviceForTesting(true);
         // Prepare
         final float dragStartXPosition = 90f;
         final float dragStartYPosition = 45f;
@@ -466,10 +460,10 @@ public class TabDragSourceTest {
                 "Drag shadow y position is incorrect.",
                 Math.round(dragStartYPosition),
                 dragAnchor.y);
+        XrUtils.resetXrDeviceForTesting();
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void test_onProvideShadowMetrics_withTabLinkDragDropFF() {
         // Call startDrag to set class variables.
         mSourceInstance.startTabDragAction(
@@ -612,8 +606,9 @@ public class TabDragSourceTest {
                 .handleDragEnter(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
         // Strip clears state for drop on drag exit.
         verify(mSourceStripLayoutHelper, times(1)).handleDragExit(anyBoolean(), anyBoolean());
+        // Verify moveTabToNewWindow is called since drop is outside strip.
+        verify(mSourceMultiInstanceManager, times(1)).moveTabToNewWindow(mTabBeingDragged);
         // Verify tab is not moved since drop is outside strip.
-        verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
         verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
         // Verify tab cleared.
         verify(mSourceStripLayoutHelper, times(1)).stopReorderMode();
@@ -623,9 +618,9 @@ public class TabDragSourceTest {
     }
 
     /** Test for {@link #ONDRAG_TEST_CASES} - Scenario C.2 */
-    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     @Test
     public void test_onDrag_dropOutsideToolbarContainer_dragAsWindow() {
+        XrUtils.setXrDeviceForTesting(true);
         // Verify tab is successfully dropped as a window.
         verifyDropOutsideToolbarContainerAsWindow();
 
@@ -635,11 +630,12 @@ public class TabDragSourceTest {
                         + " tab group",
                 0,
                 mUserActionTest.getActionCount("MobileToolbarReorderTab.TabRemovedFromGroup"));
+        XrUtils.resetXrDeviceForTesting();
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void test_dragAsWindow_recordTabRemovedFromGroup() {
+        XrUtils.setXrDeviceForTesting(true);
         // The tab being dragged is in a tab group.
         when(mTabGroupModelFilter.isTabInTabGroup(mTabBeingDragged)).thenReturn(true);
 
@@ -651,6 +647,7 @@ public class TabDragSourceTest {
                 "TabRemovedFromGroup should be recorded",
                 1,
                 mUserActionTest.getActionCount("MobileToolbarReorderTab.TabRemovedFromGroup"));
+        XrUtils.resetXrDeviceForTesting();
     }
 
     private void verifyDropOutsideToolbarContainerAsWindow() {
@@ -672,13 +669,11 @@ public class TabDragSourceTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void test_onDrag_unhandledDropOutside_maxChromeInstances() {
         doTestUnhandledDropOutsideWithMaxInstances(/* isInDesktopWindow= */ false);
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void test_onDrag_unhandledDropOutside_maxChromeInstances_desktopWindow() {
         doTestUnhandledDropOutsideWithMaxInstances(/* isInDesktopWindow= */ true);
     }
@@ -720,7 +715,6 @@ public class TabDragSourceTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void test_onDrag_multipleUnhandledDropsOutside_maxChromeInstances() {
         MultiWindowUtils.setInstanceCountForTesting(5);
         MultiWindowUtils.setMaxInstancesForTesting(5);
@@ -858,9 +852,9 @@ public class TabDragSourceTest {
     }
 
     /** Test for {@link #ONDRAG_TEST_CASES} - Scenario D.3 */
-    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     @Test
     public void test_onDrag_dropInStrip_withDragAsWindowFF_destination() {
+        XrUtils.setXrDeviceForTesting(true);
         new DragEventInvoker()
                 .dragExit(mSourceInstance)
                 .verifyShadowVisibility(true)
@@ -868,6 +862,7 @@ public class TabDragSourceTest {
                 .verifyShadowVisibility(false)
                 .drop(mDestInstance)
                 .end(false);
+        XrUtils.resetXrDeviceForTesting();
     }
 
     /** Test for {@link #ONDRAG_TEST_CASES} - Scenario E */

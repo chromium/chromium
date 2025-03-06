@@ -524,6 +524,53 @@ suite(`TrackingProtectionSubpage`, function() {
   });
 });
 
+suite(`AllSitesSubpage`, function() {
+  let page: SettingsPrivacyPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    resetRouterForTesting();
+
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    page = document.createElement('settings-privacy-page');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    return flushTasks();
+  });
+
+  test('allSitesViewShowsAllSitesTitle', async function() {
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_ALL);
+    await flushTasks();
+
+    const allSitesSubpage =
+        page.shadowRoot!.querySelector<PolymerElement>('#allSites');
+    assertTrue(!!allSitesSubpage);
+    assertEquals(
+        page.i18n('siteSettingsAllSites'),
+        allSitesSubpage.getAttribute('page-title'));
+  });
+
+  test('rwsFilterViewShowsRwsTitle', async function() {
+    const searchParams =
+        new URLSearchParams('searchSubpage=related:foobar.com');
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_ALL, searchParams);
+    await flushTasks();
+
+    const allSitesSubpage =
+        page.shadowRoot!.querySelector<PolymerElement>('#allSites');
+    assertTrue(!!allSitesSubpage);
+    assertEquals(
+        loadTimeData.getStringF('allSitesRwsFilterViewTitle', 'foobar.com'),
+        allSitesSubpage.getAttribute('page-title'));
+  });
+});
+
 suite(`PrivacySandbox4EnabledButRestricted`, function() {
   let page: SettingsPrivacyPageElement;
   let settingsPrefs: SettingsPrefsElement;

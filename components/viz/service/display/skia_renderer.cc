@@ -710,7 +710,7 @@ struct SkiaRenderer::DrawRPDQParams {
     SkMatrix transform;
 
     // Clipping in bypassed render pass coordinate space. This can come from
-    // RenderPassDrawQuad::visible_rect and bypass quads clip_rect.
+    // RenderPassDrawQuad::visible_rect and the bypassing quad's clip_rect.
     gfx::RectF clip_rect;
   };
 
@@ -739,7 +739,8 @@ struct SkiaRenderer::DrawRPDQParams {
   DrawRPDQParams() : filter_bounds(SkRect::MakeEmpty()) {}
 
   explicit DrawRPDQParams(const gfx::RectF& visible_rect)
-      : filter_bounds(gfx::RectFToSkRect(visible_rect)) {}
+      : rpdq_visible_rect(gfx::RectFToSkRect(visible_rect)),
+        filter_bounds(rpdq_visible_rect) {}
 
   // Root of the calculated image filter DAG to be applied to the render pass.
   sk_sp<SkImageFilter> image_filter = nullptr;
@@ -756,8 +757,14 @@ struct SkiaRenderer::DrawRPDQParams {
   // Backdrop border box for the render pass, to clip backdrop-filtered content
   // (but not the rest of the RPDQ itself).
   std::optional<SkRRect> backdrop_filter_bounds;
+  // Original render pass's visible rect, which will be intersected with
+  // |backdrop_filter_bounds| to determine the extent of backdrop content.
+  // It is preserved here as the original DrawQuad's |visible_rect| may be
+  // adjusted as part of bypassing render passes.
+  SkRect rpdq_visible_rect;
+
   // The content space bounds that includes any filtered extents. If empty,
-  // the draw can be skipped.It may represent fractional pixel coverage.
+  // the draw can be skipped. It may represent fractional pixel coverage.
   SkRect filter_bounds;
 
   // Multiplier used for downscaling backdrop filter.
@@ -783,13 +790,6 @@ struct SkiaRenderer::DrawRPDQParams {
         bypass_geometry->transform.mapRect(gfx::RectFToSkRect(content_rect));
     return !bypass_geometry->clip_rect.Contains(
         gfx::SkRectToRectF(content_bounds));
-  }
-
-  // Returns either |params->visible_rect| or |bypass_geometry->clip_rect|,
-  // which corresponds to the visible_rect of the originating RPDQ.
-  SkRect GetContentBounds(const DrawQuadParams* params) const {
-    return gfx::RectFToSkRect(bypass_geometry ? bypass_geometry->clip_rect
-                                              : params->visible_rect);
   }
 
   // Sets a clip on the canvas to restrict the size of the Skia layer that holds
@@ -872,10 +872,13 @@ void SkiaRenderer::DrawRPDQParams::ClearOutsideBackdropBounds(
     canvas->clear(SK_ColorTRANSPARENT);
     canvas->restore();
   } else {
-    SkRect content = GetContentBounds(params);
-    if (!content.contains(filter_bounds) &&
+    // NOTE: Use |rpdq_visible_rect| and not params->visible_rect because it's
+    // the render pass's extent that constraints backdrop filter content, but
+    // if we bypassed the RPDQ, |params->visible_rect| can be smaller and
+    // reflect the bounds of inner content pre-expansion by a backdrop filter.
+    if (!rpdq_visible_rect.contains(filter_bounds) &&
         (!backdrop_filter_bounds ||
-         !content.contains(backdrop_filter_bounds->rect()))) {
+         !rpdq_visible_rect.contains(backdrop_filter_bounds->rect()))) {
       // If the |draw_region| is defined, it's already a subset of |rect|, so
       // we don't have to clear both. Similarly, if |filter_bounds| is contained
       // within the quad, the clip set in BackdropFilterClip() discards anything
@@ -883,7 +886,7 @@ void SkiaRenderer::DrawRPDQParams::ClearOutsideBackdropBounds(
       // contained within the quad, the first clear was sufficient. Otherwise,
       // there is some excess backdrop content that must still be erased.
       canvas->save();
-      canvas->clipRect(content, SkClipOp::kDifference, aa);
+      canvas->clipRect(rpdq_visible_rect, SkClipOp::kDifference, aa);
       canvas->clear(SK_ColorTRANSPARENT);
       canvas->restore();
     }
@@ -1702,7 +1705,13 @@ void SkiaRenderer::PrepareCanvasForRPDQ(const DrawRPDQParams& rpdq_params,
     layer_paint.setImageFilter(rpdq_params.image_filter);
   }
 
-  SkRect bounds = rpdq_params.GetContentBounds(params);
+  // Here |bounds| represents the extent of content to be drawn into the saved
+  // layer, so it's either |params->visible_rect| or the bypass geometry's
+  // |clip_rect|
+  SkRect bounds =
+      gfx::RectFToSkRect(rpdq_params.bypass_geometry.has_value()
+                             ? rpdq_params.bypass_geometry->clip_rect
+                             : params->visible_rect);
   current_canvas_->saveLayer(SkCanvasPriv::ScaledBackdropLayer(
       &bounds, &layer_paint, rpdq_params.backdrop_filter.get(),
       rpdq_params.backdrop_filter_quality, 0));

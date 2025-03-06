@@ -20,6 +20,12 @@ class JniDelegateImpl : public JniDelegate {
   void CacheFeatureParamsImmediately(
       const std::map<std::string, std::map<std::string, std::string>>&
           feature_params) override;
+
+  void EraseNativeFlagCachedValues(
+      const std::vector<std::string>& features_to_erase) override;
+
+  void EraseFeatureParamCachedValues(
+      const std::vector<std::string>& feature_params_to_erase) override;
 };
 
 }  // namespace cached_flags

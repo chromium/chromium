@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.hub;
 
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_COLOR_BLEND_ANIMATION_DURATION_MS;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_FADE_ANIMATION_DURATION_MS;
 
 import android.animation.Animator;
@@ -101,7 +102,6 @@ public class HubPaneHostView extends FrameLayout {
                 mAnimatorSetBuilder
                         .setNewColorScheme(newColorScheme)
                         .setPreviousColorScheme(prevColorScheme)
-                        .setIsImmediate(!colorSchemeUpdate.animate)
                         .build();
         mColorBlendAnimatorHandler.startAnimation(animatorSet);
     }
@@ -111,6 +111,7 @@ public class HubPaneHostView extends FrameLayout {
 
         mAnimatorSetBuilder.registerBlend(
                 new SingleHubViewColorBlend(
+                        PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
                         colorScheme -> HubColors.getBackgroundColor(context, colorScheme),
                         mPaneFrame::setBackgroundColor));
     }

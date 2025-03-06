@@ -102,6 +102,9 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
 
   // Indicates if this resource may be used for a hardware overlay plane.
   bool IsOverlayCandidate(ResourceId id) const;
+  // Indicates if this resource uses low latency rendering.
+  bool IsLowLatencyRendering(ResourceId id) const;
+
   SurfaceId GetSurfaceId(ResourceId id) const;
   int GetChildId(ResourceId id) const;
 

@@ -1488,6 +1488,10 @@ bool PrerenderHost::ShouldAbortNavigationBecausePrefetchUnavailable() const {
       case PrefetchStatus::kPrefetchNotStarted:
       case PrefetchStatus::kPrefetchIneligibleUserHasCookies:
       case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker:
+      case PrefetchStatus::
+          kPrefetchIneligibleUserHasServiceWorkerNoFetchHandler:
+      case PrefetchStatus::kPrefetchIneligibleRedirectFromServiceWorker:
+      case PrefetchStatus::kPrefetchIneligibleRedirectToServiceWorker:
       case PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps:
       case PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition:
       case PrefetchStatus::kPrefetchNotFinishedInTime:
@@ -1520,6 +1524,9 @@ bool PrerenderHost::ShouldAbortNavigationBecausePrefetchUnavailable() const {
     switch (prefetch_eligibility) {
       // Prefetch is not available if SW exists, but prerender is.
       case PreloadingEligibility::kUserHasServiceWorker:
+      case PreloadingEligibility::kUserHasServiceWorkerNoFetchHandler:
+      case PreloadingEligibility::kRedirectFromServiceWorker:
+      case PreloadingEligibility::kRedirectToServiceWorker:
         // Prefetch is not available for HTTP, but prerender is available
         // for HTTPS/HTTP.
       case PreloadingEligibility::kSchemeIsNotHttps:

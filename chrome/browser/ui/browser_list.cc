@@ -138,7 +138,7 @@ void BrowserList::RemoveBrowser(Browser* browser) {
 
 // static
 void BrowserList::AddBrowserToActiveList(Browser* browser) {
-  if (browser->window()->IsActive()) {
+  if (browser->IsActive()) {
     SetLastActive(browser);
     return;
   }

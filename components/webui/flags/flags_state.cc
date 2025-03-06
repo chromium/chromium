@@ -417,14 +417,16 @@ void FlagsState::SetFeatureEntryEnabled(FlagsStorage* flags_storage,
     if (internal_name != entry_name + "@0") {
       std::set<std::string> enabled_entries;
       GetSanitizedEnabledFlags(flags_storage, &enabled_entries);
+      std::set<std::string> prev_enabled_entries(enabled_entries);
       needs_restart_ |= enabled_entries.insert(internal_name).second;
-      SetFlags(flags_storage, enabled_entries);
+      SetFlags(flags_storage, enabled_entries, prev_enabled_entries);
     }
     return;
   }
 
   std::set<std::string> enabled_entries;
   GetSanitizedEnabledFlags(flags_storage, &enabled_entries);
+  std::set<std::string> prev_enabled_entries(enabled_entries);
 
   const FeatureEntry* e = FindFeatureEntryByName(internal_name);
   DCHECK(e);
@@ -474,7 +476,7 @@ void FlagsState::SetFeatureEntryEnabled(FlagsStorage* flags_storage,
     }
   }
 
-  SetFlags(flags_storage, enabled_entries);
+  SetFlags(flags_storage, enabled_entries, prev_enabled_entries);
 }
 
 void FlagsState::SetOriginListFlag(const std::string& internal_name,
@@ -564,8 +566,11 @@ void FlagsState::RemoveFlagsSwitches(
 void FlagsState::ResetAllFlags(FlagsStorage* flags_storage) {
   needs_restart_ = true;
 
+  std::set<std::string> prev_enabled_entries;
+  GetSanitizedEnabledFlags(flags_storage, &prev_enabled_entries);
+
   std::set<std::string> no_entries;
-  SetFlags(flags_storage, no_entries);
+  SetFlags(flags_storage, no_entries, prev_enabled_entries);
 }
 
 void FlagsState::Reset() {
@@ -938,7 +943,7 @@ void FlagsState::GetSanitizedEnabledFlags(FlagsStorage* flags_storage,
   std::set<std::string> new_enabled_entries =
       SanitizeList(flags_storage, enabled_entries, -1);
   if (new_enabled_entries.size() != enabled_entries.size()) {
-    SetFlags(flags_storage, new_enabled_entries);
+    SetFlags(flags_storage, new_enabled_entries, enabled_entries);
   }
   result->swap(new_enabled_entries);
 }
@@ -1104,9 +1109,11 @@ bool FlagsState::IsSupportedFeature(const FlagsStorage* storage,
   return false;
 }
 
-void FlagsState::SetFlags(FlagsStorage* flags_storage,
-                          const std::set<std::string>& flags) const {
-  flags_storage->SetFlags(flags);
+void FlagsState::SetFlags(
+    FlagsStorage* flags_storage,
+    const std::set<std::string>& enabled_flags,
+    const std::set<std::string>& prev_enabled_flags) const {
+  flags_storage->SetFlags(enabled_flags);
 
 #if BUILDFLAG(IS_ANDROID)
   // feature name -> feature value
@@ -1117,7 +1124,7 @@ void FlagsState::SetFlags(FlagsStorage* flags_storage,
   std::map<std::string, std::map<std::string, std::string>> feature_params;
 
   // Handle flags that have been set to "Enabled" or "Disabled".
-  for (const std::string& flag : flags) {
+  for (const std::string& flag : enabled_flags) {
     size_t at_index = flag.find(testing::kMultiSeparator);
     std::string feature_internal_name = flag.substr(0, at_index);
     const flags_ui::FeatureEntry* entry =
@@ -1164,6 +1171,36 @@ void FlagsState::SetFlags(FlagsStorage* flags_storage,
 
   jni_delegate_->CacheNativeFlagsImmediately(features);
   jni_delegate_->CacheFeatureParamsImmediately(feature_params);
+
+  // a list of feature names for which we need to erase the
+  // Java cached values of the associated features
+  std::vector<std::string> features_to_erase;
+  // a list of feature names for which we need to erase the
+  // Java cached values of the associated feature params
+  std::vector<std::string> feature_params_to_erase;
+
+  // Handle flags that have been switched to "Default".
+  for (const std::string& flag : prev_enabled_flags) {
+    if (enabled_flags.find(flag) == enabled_flags.end()) {
+      size_t at_index = flag.find(testing::kMultiSeparator);
+      std::string feature_internal_name = flag.substr(0, at_index);
+      const flags_ui::FeatureEntry* entry =
+          FindFeatureEntryByName(feature_internal_name);
+      CHECK(entry);
+
+      if (entry->type == FeatureEntry::FEATURE_VALUE ||
+          entry->type == FeatureEntry::FEATURE_WITH_PARAMS_VALUE) {
+        std::string feature_name = entry->feature.feature->name;
+        features_to_erase.push_back(feature_name);
+        if (entry->type == FeatureEntry::FEATURE_WITH_PARAMS_VALUE) {
+          feature_params_to_erase.push_back(feature_name);
+        }
+      }
+    }
+  }
+
+  jni_delegate_->EraseNativeFlagCachedValues(features_to_erase);
+  jni_delegate_->EraseFeatureParamCachedValues(feature_params_to_erase);
 #endif
 }
 

@@ -31,22 +31,21 @@ def main(argv):
       os.path.join(_CWD, args.out_folder).replace('\\', '/'))
   out_manifest = os.path.normpath(
       os.path.join(_CWD, args.out_manifest).replace('\\', '/'))
+  out_file_suffix = '.code_cache'
+
+  subprocess.run([
+      util_path, f'--in_folder={in_folder}',
+      '--in_files=' + ','.join(args.in_files), f'--out_folder={out_folder}',
+      f'--out_file_suffix={out_file_suffix}'
+  ],
+                 check=True)
 
   manifest_data = {
       'base_dir': args.out_folder,
       'files': [],
   }
-
   for in_file in args.in_files:
-    code_cache_filename = in_file + '.code_cache'
-    code_cache_filepath = os.path.join(out_folder, code_cache_filename)
-    in_filepath = os.path.join(in_folder, in_file)
-    subprocess.run([
-        util_path, f'--module-path={in_filepath}',
-        f'--code-cache-path={code_cache_filepath}'
-    ],
-                   check=True)
-    manifest_data['files'].append(code_cache_filename)
+    manifest_data['files'].append(in_file + out_file_suffix)
 
   with open(out_manifest, 'w', newline='', encoding='utf-8') as manifest_file:
     json.dump(manifest_data, manifest_file)

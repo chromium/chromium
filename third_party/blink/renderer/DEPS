@@ -85,6 +85,7 @@ include_rules = [
     "+base/types/optional_util.h",
     "+base/types/pass_key.h",
     "+base/types/strong_alias.h",
+    "+base/types/to_address.h",
     "+base/types/zip.h",
     "+build",
     "+cc/input/hit_test_opaqueness.h",

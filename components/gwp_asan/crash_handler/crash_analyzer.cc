@@ -267,7 +267,7 @@ bool CrashAnalyzer::AnalyzeLightweightDetectorCrash(
       // https://elixir.bootlin.com/linux/v6.2.2/source/arch/x86/kernel/traps.c#L719
       exception->Exception() == SIGSEGV &&
       exception->ExceptionInfo() == SI_KERNEL
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
       // https://opensource.apple.com/source/xnu/xnu-1699.24.8/osfmk/i386/trap.c
       exception->Exception() == EXC_BAD_ACCESS &&
       exception->ExceptionInfo() == EXC_I386_GPFLT

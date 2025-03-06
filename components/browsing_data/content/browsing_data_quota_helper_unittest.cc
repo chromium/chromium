@@ -27,15 +27,11 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/mock_quota_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
-
-using blink::mojom::StorageType;
 
 namespace {
 
 struct ClientDefaultBucketData {
   const char* origin;
-  StorageType type;
   int64_t usage;
 };
 
@@ -97,17 +93,15 @@ class BrowsingDataQuotaHelperTest : public testing::Test {
     // bucket usage retrieval happens after MockQuotaClient is ready.
     quota_manager_->SetBootstrapDisabledForTesting(true);
     quota_manager_->proxy()->RegisterClient(
-        std::move(quota_client), storage::QuotaClientType::kFileSystem,
-        {blink::mojom::StorageType::kTemporary,
-         blink::mojom::StorageType::kSyncable});
+        std::move(quota_client), storage::QuotaClientType::kFileSystem);
 
     std::map<storage::BucketLocator, int64_t> buckets_data;
     for (const ClientDefaultBucketData& data : storage_key_data) {
       base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
-      quota_manager_->GetOrCreateBucketDeprecated(
+      quota_manager_->UpdateOrCreateBucket(
           storage::BucketInitParams::ForDefaultBucket(
               blink::StorageKey::CreateFromStringForTesting(data.origin)),
-          data.type, future.GetCallback());
+          future.GetCallback());
       ASSERT_OK_AND_ASSIGN(auto bucket, future.Take());
       buckets_data.insert(std::pair<storage::BucketLocator, int64_t>(
           bucket.ToBucketLocator(), data.usage));
@@ -145,10 +139,9 @@ TEST_F(BrowsingDataQuotaHelperTest, Empty) {
 
 TEST_F(BrowsingDataQuotaHelperTest, FetchData) {
   static const ClientDefaultBucketData kStorageKeys[] = {
-      {"http://example.com/", StorageType::kTemporary, 1},
-      {"https://example.com/", StorageType::kTemporary, 10},
-      {"https://example.com/", StorageType::kSyncable, 1},
-      {"http://example2.com/", StorageType::kTemporary, 1000},
+      {"http://example.com/", 1},
+      {"https://example.com/", 10},
+      {"http://example2.com/", 1000},
   };
 
   RegisterClient(kStorageKeys);
@@ -159,28 +152,25 @@ TEST_F(BrowsingDataQuotaHelperTest, FetchData) {
   std::set<QuotaInfo> expected, actual;
   actual.insert(quota_info().begin(), quota_info().end());
   expected.insert(QuotaInfo(
-      blink::StorageKey::CreateFromStringForTesting("http://example.com"), 1,
-      0));
+      blink::StorageKey::CreateFromStringForTesting("http://example.com"), 1));
   expected.insert(QuotaInfo(
       blink::StorageKey::CreateFromStringForTesting("http://example2.com"),
-      1000, 0));
+      1000));
   expected.insert(QuotaInfo(
-      blink::StorageKey::CreateFromStringForTesting("https://example.com"), 10,
-      1));
+      blink::StorageKey::CreateFromStringForTesting("https://example.com"),
+      10));
   EXPECT_TRUE(expected == actual);
 }
 
 TEST_F(BrowsingDataQuotaHelperTest, IgnoreExtensionsAndDevTools) {
   static const ClientDefaultBucketData kStorageKeys[] = {
-    {"http://example.com/", StorageType::kTemporary, 1},
-    {"https://example.com/", StorageType::kTemporary, 10},
-    {"https://example.com/", StorageType::kSyncable, 1},
-    {"http://example2.com/", StorageType::kTemporary, 1000},
+      {"http://example.com/", 1},
+      {"https://example.com/", 10},
+      {"http://example2.com/", 1000},
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    {"chrome-extension://abcdefghijklmnopqrstuvwxyz/", StorageType::kTemporary,
-     10000},
+      {"chrome-extension://abcdefghijklmnopqrstuvwxyz/", 10000},
 #endif
-    {"devtools://abcdefghijklmnopqrstuvwxyz/", StorageType::kTemporary, 10000},
+      {"devtools://abcdefghijklmnopqrstuvwxyz/", 10000},
   };
 
   RegisterClient(kStorageKeys);
@@ -191,13 +181,12 @@ TEST_F(BrowsingDataQuotaHelperTest, IgnoreExtensionsAndDevTools) {
   std::set<QuotaInfo> expected, actual;
   actual.insert(quota_info().begin(), quota_info().end());
   expected.insert(QuotaInfo(
-      blink::StorageKey::CreateFromStringForTesting("http://example.com"), 1,
-      0));
+      blink::StorageKey::CreateFromStringForTesting("http://example.com"), 1));
   expected.insert(QuotaInfo(
       blink::StorageKey::CreateFromStringForTesting("http://example2.com"),
-      1000, 0));
+      1000));
   expected.insert(QuotaInfo(
-      blink::StorageKey::CreateFromStringForTesting("https://example.com"), 10,
-      1));
+      blink::StorageKey::CreateFromStringForTesting("https://example.com"),
+      10));
   EXPECT_TRUE(expected == actual);
 }

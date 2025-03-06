@@ -23,17 +23,13 @@
     }
 </style>
 <script>
-  const floatPrecision = 0.1;
   const scrollDistance = 10;
 
   async function scroll(scaleFactor, msg) {
       const scrollBox = document.getElementById("scrollbox");
       let expectedScrollDistance;
 
-      if (internals.runtimeFlags.fractionalScrollOffsetsEnabled)
-          expectedScrollDistance = scrollDistance/scaleFactor;
-      else
-          expectedScrollDistance = Math.round(scrollDistance/scaleFactor);
+      expectedScrollDistance = Math.round(scrollDistance/scaleFactor);
 
       scrollBox.scrollTop = 0;
 
@@ -45,10 +41,9 @@
                          'down',
                          SPEED_INSTANT);
 
-      assert_approx_equals(scrollBox.scrollTop,
-                           expectedScrollDistance,
-                           floatPrecision,
-                           msg + " - scroll down.");
+      assert_equals(scrollBox.scrollTop,
+                    expectedScrollDistance,
+                    msg + " - scroll down.");
 
       scrollBox.scrollTop = 20;
 
@@ -60,15 +55,11 @@
                          'up',
                          SPEED_INSTANT);
 
-      if (internals.runtimeFlags.fractionalScrollOffsetsEnabled)
-          expectedScrollDistance = 20 - scrollDistance/scaleFactor;
-      else
-          expectedScrollDistance = Math.round(20 - scrollDistance/scaleFactor);
+      expectedScrollDistance = Math.round(20 - scrollDistance/scaleFactor);
 
-      assert_approx_equals(scrollBox.scrollTop,
-                           expectedScrollDistance,
-                           floatPrecision,
-                           msg +  " - scroll up.");
+      assert_equals(scrollBox.scrollTop,
+                    expectedScrollDistance,
+                    msg +  " - scroll up.");
   }
 
   window.onload = () => {

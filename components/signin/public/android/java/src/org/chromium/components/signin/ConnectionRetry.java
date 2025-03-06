@@ -66,7 +66,6 @@ public class ConnectionRetry<T> implements NetworkChangeNotifier.ConnectionTypeO
         // Clear any transient error.
         mIsTransientError.set(false);
         new AsyncTask<@Nullable T>() {
-            @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1139
             @Override
             public @Nullable T doInBackground() {
                 try {
@@ -79,7 +78,7 @@ public class ConnectionRetry<T> implements NetworkChangeNotifier.ConnectionTypeO
             }
 
             @Override
-            public void onPostExecute(T result) {
+            public void onPostExecute(@Nullable T result) {
                 if (result != null) {
                     mAuthTask.onSuccess(result);
                 } else if (!mIsTransientError.get()

@@ -17,7 +17,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
 
 namespace blink {
 class StorageKey;
@@ -34,7 +33,6 @@ class BrowsingDataQuotaHelperImpl : public BrowsingDataQuotaHelper {
  public:
   void StartFetching(FetchResultCallback callback) override;
   void DeleteStorageKeyData(const blink::StorageKey& storage_key,
-                            blink::mojom::StorageType type,
                             base::OnceClosure completed) override;
 
   explicit BrowsingDataQuotaHelperImpl(storage::QuotaManager* quota_manager);
@@ -54,15 +52,12 @@ class BrowsingDataQuotaHelperImpl : public BrowsingDataQuotaHelper {
   void FetchQuotaInfoOnIOThread(FetchResultCallback callback);
 
   // Callback function for QuotaManager::GetStorageKeysForType.
-  void GotStorageKeys(QuotaInfoMap* quota_info,
-                      base::OnceClosure completion,
-                      blink::mojom::StorageType type,
+  void GotStorageKeys(FetchResultCallback callback,
                       const std::set<blink::StorageKey>& storage_keys);
 
   // Callback function for QuotaManager::GetStorageKeyUsage.
   void GotStorageKeyUsage(QuotaInfoMap* quota_info,
                           const blink::StorageKey& storage_key,
-                          blink::mojom::StorageType type,
                           int64_t usage,
                           blink::mojom::UsageBreakdownPtr usage_breakdown);
 
@@ -71,7 +66,6 @@ class BrowsingDataQuotaHelperImpl : public BrowsingDataQuotaHelper {
                                QuotaInfoMap* quota_info);
 
   void DeleteStorageKeyDataOnIOThread(const blink::StorageKey& storage_key,
-                                      blink::mojom::StorageType type,
                                       base::OnceClosure completed);
 
   void OnStorageKeyDeletionCompleted(base::OnceClosure completed,

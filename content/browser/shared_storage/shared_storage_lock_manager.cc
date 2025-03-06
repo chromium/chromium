@@ -17,7 +17,7 @@ namespace content {
 
 namespace {
 
-using AccessScope = SharedStorageLockManager::AccessScope;
+using AccessScope = blink::SharedStorageAccessScope;
 using AccessType =
     SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessType;
 using OperationResult = storage::SharedStorageManager::OperationResult;

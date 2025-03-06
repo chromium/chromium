@@ -104,27 +104,9 @@ TEST_F(ReconcilingTemplateURLDataHolderTest,
   ASSERT_EQ(u"duckduckgo.com", engine->keyword());
 }
 
-TEST_F(
-    ReconcilingTemplateURLDataHolderTest,
-    FindMatchingBuiltInDefinitionsById_ValidID_FromPrepopulatedEngines_GlobalReonciliationDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      switches::kTemplateUrlReconciliation,
-      {{switches::kReconcileWithAllKnownEngines.name, "false"}});
-
-  auto engine =
-      holder_.FindMatchingBuiltInDefinitionsById(/* search.brave.com */ 109);
-
-  ASSERT_FALSE(engine);
-}
-
 TEST_F(ReconcilingTemplateURLDataHolderTest,
        FindMatchingBuiltInDefinitionsById_ValidID_FromPrepopulatedEngines) {
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      switches::kTemplateUrlReconciliation,
-      {{switches::kReconcileWithAllKnownEngines.name, "true"}});
-
   auto engine =
       holder_.FindMatchingBuiltInDefinitionsById(/* search.brave.com */ 109);
 
@@ -151,26 +133,7 @@ TEST_F(
 
 TEST_F(
     ReconcilingTemplateURLDataHolderTest,
-    FindMatchingBuiltInDefinitionsByKeyword_ValidKeyword_FromPrepopulatedEngines_GlobalReonciliationDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      switches::kTemplateUrlReconciliation,
-      {{switches::kReconcileWithAllKnownEngines.name, "false"}});
-
-  auto engine =
-      holder_.FindMatchingBuiltInDefinitionsByKeyword(u"search.brave.com");
-
-  ASSERT_FALSE(engine);
-}
-
-TEST_F(
-    ReconcilingTemplateURLDataHolderTest,
     FindMatchingBuiltInDefinitionsByKeyword_ValidKeyword_FromPrepopulatedEngines) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      switches::kTemplateUrlReconciliation,
-      {{switches::kReconcileWithAllKnownEngines.name, "true"}});
-
   auto engine =
       holder_.FindMatchingBuiltInDefinitionsByKeyword(u"search.brave.com");
 

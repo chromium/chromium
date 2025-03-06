@@ -256,12 +256,6 @@ interface AnimationTrigger
     getter timeline
     getter type
     method constructor
-    setter exitRangeEnd
-    setter exitRangeStart
-    setter rangeEnd
-    setter rangeStart
-    setter timeline
-    setter type
 interface AsyncDisposableStack
     attribute @@toStringTag
     getter disposed
@@ -7009,7 +7003,6 @@ interface PerformanceNavigationTiming : PerformanceResourceTiming
     getter loadEventStart
     getter notRestoredReasons
     getter redirectCount
-    getter systemEntropy
     getter type
     getter unloadEventEnd
     getter unloadEventStart

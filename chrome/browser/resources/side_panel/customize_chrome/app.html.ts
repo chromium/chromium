@@ -77,6 +77,15 @@ export function getHtml(this: AppElement) {
         </div>
       </div>
     ` : ''}
+    ${this.footerEnabled_ ? html`
+      <hr class="sp-cards-separator">
+      <div id="footer" class="section sp-card">
+        <sp-heading hide-back-button>
+          <h2 slot="heading">$i18n{footerHeader}</h2>
+        </sp-heading>
+        <customize-chrome-footer></customize-chrome-footer>
+      </div>
+    `: ''}
   </div>
   ${(this.isSourceTabFirstPartyNtp_) ? html`
   <customize-chrome-categories @back-click="${this.onBackClick_}"

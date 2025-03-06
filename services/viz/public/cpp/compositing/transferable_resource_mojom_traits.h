@@ -72,6 +72,11 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
     return resource.is_overlay_candidate;
   }
 
+  static bool is_low_latency_rendering(
+      const viz::TransferableResource& resource) {
+    return resource.is_low_latency_rendering;
+  }
+
   static bool is_backed_by_surface_view(
       const viz::TransferableResource& resource) {
 #if BUILDFLAG(IS_ANDROID)

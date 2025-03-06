@@ -42,6 +42,11 @@ class AISummarizer : public AIContextBoundObject,
   static std::string CombineContexts(const std::string& shared_context,
                                      const std::string& context);
 
+  void DidGetExecutionInputSize(
+      mojo::RemoteSetElementId responder_id,
+      optimization_guide::proto::SummarizeRequest request,
+      uint32_t number_of_tokens);
+
   void ModelExecutionCallback(
       mojo::RemoteSetElementId responder_id,
       optimization_guide::OptimizationGuideModelStreamingExecutionResult
@@ -49,7 +54,7 @@ class AISummarizer : public AIContextBoundObject,
 
   // The underlying session provided by optimization guide component.
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-      summarize_session_;
+      session_;
   mojo::Remote<blink::mojom::AISummarizer> remote_;
   // The `RemoteSet` storing all the responders, each of them corresponds to one
   // `Summarize()` call.

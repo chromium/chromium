@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
@@ -166,13 +167,15 @@ TabGroupChange::VisualsChange::VisualsChange() = default;
 TabGroupChange::VisualsChange::~VisualsChange() = default;
 
 TabGroupChange::CreateChange::CreateChange(
-    TabGroupChange::TabGroupCreationReason reason)
-    : reason_(reason) {}
+    TabGroupChange::TabGroupCreationReason reason,
+    tabs::TabGroupTabCollection* detached_group)
+    : reason_(reason), detached_group_(detached_group) {}
 TabGroupChange::CreateChange::~CreateChange() = default;
 
 TabGroupChange::CloseChange::CloseChange(
-    TabGroupChange::TabGroupClosureReason reason)
-    : reason_(reason) {}
+    TabGroupChange::TabGroupClosureReason reason,
+    tabs::TabGroupTabCollection* detached_group)
+    : reason_(reason), detached_group_(detached_group) {}
 TabGroupChange::CloseChange::~CloseChange() = default;
 
 const TabGroupChange::VisualsChange* TabGroupChange::GetVisualsChange() const {
@@ -183,6 +186,18 @@ const TabGroupChange::VisualsChange* TabGroupChange::GetVisualsChange() const {
 const TabGroupChange::CreateChange* TabGroupChange::GetCreateChange() const {
   DCHECK_EQ(type, Type::kCreated);
   return static_cast<const CreateChange*>(delta.get());
+}
+
+std::vector<tabs::TabModel*> TabGroupChange::CreateChange::GetDetachedTabs()
+    const {
+  CHECK(detached_group_);
+  return detached_group_->GetTabs();
+}
+
+std::vector<tabs::TabModel*> TabGroupChange::CloseChange::GetDetachedTabs()
+    const {
+  CHECK(detached_group_);
+  return detached_group_->GetTabs();
 }
 
 const TabGroupChange::CloseChange* TabGroupChange::GetCloseChange() const {

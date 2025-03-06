@@ -54,6 +54,7 @@ class TabGroupTabCollection : public TabCollection {
   // invalid it returns nullptr.
   tabs::TabModel* GetTabAtIndex(size_t index) const;
 
+  std::vector<tabs::TabModel*> GetTabs() const;
   // TabCollection:
   bool ContainsTab(const TabInterface* tab) const override;
   // This is non-recursive for grouped tab collection as it does not contain

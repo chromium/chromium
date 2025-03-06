@@ -31,11 +31,8 @@ const std::string& LocaleInfo::GetDefaultLocale(const Extension* extension) {
   return info ? info->default_locale : base::EmptyString();
 }
 
-DefaultLocaleHandler::DefaultLocaleHandler() {
-}
-
-DefaultLocaleHandler::~DefaultLocaleHandler() {
-}
+DefaultLocaleHandler::DefaultLocaleHandler() = default;
+DefaultLocaleHandler::~DefaultLocaleHandler() = default;
 
 bool DefaultLocaleHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<LocaleInfo> info(new LocaleInfo);
@@ -64,8 +61,9 @@ bool DefaultLocaleHandler::Validate(
       extensions::LocaleInfo::GetDefaultLocale(extension);
 
   // If both default locale and _locales folder are empty, skip verification.
-  if (default_locale.empty() && !path_exists)
+  if (default_locale.empty() && !path_exists) {
     return true;
+  }
 
   if (default_locale.empty() && path_exists) {
     *error = l10n_util::GetStringUTF8(
@@ -110,8 +108,9 @@ bool DefaultLocaleHandler::Validate(
       return false;
     }
 
-    if (locale_path == default_locale_path)
+    if (locale_path == default_locale_path) {
       has_default_locale_message_file = true;
+    }
   }
 
   // Only message file for default locale has to exist.

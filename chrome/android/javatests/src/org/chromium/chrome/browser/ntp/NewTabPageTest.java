@@ -250,6 +250,8 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.P, message = "http://crbug.com/40664848")
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.R, message = "http://crbug.com/40664848")
     public void testFocusFakebox() {
         int initialFakeboxTop = getFakeboxTop(mNtp);
 
@@ -344,7 +346,7 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @DisabledTest(message = "crbug.com/1036500")
+    @DisabledTest(message = "crbug.com/40664852")
     public void testRemoveMostVisitedItem() throws ExecutionException {
         Assert.assertNotNull(mMvTilesLayout);
         SiteSuggestion testSite = mSiteSuggestions.get(0);

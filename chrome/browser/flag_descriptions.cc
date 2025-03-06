@@ -1565,11 +1565,6 @@ const char kClayBlockingDialogDescription[] =
     "Enables the blocking dialog that directs users to complete their choice "
     "of default apps (for Browser & Search) in Android.";
 
-const char kTemplateUrlReconciliationName[] = "Merge TemplateUrl definitions";
-const char kTemplateUrlReconciliationDialogDescription[] =
-    "Allows Chrome to reconcile TemplateUrl definitions coming from external "
-    "sources with its internal database.";
-
 const char kEnableNetworkLoggingToFileName[] = "Enable network logging to file";
 const char kEnableNetworkLoggingToFileDescription[] =
     "Enables network logging to a file named netlog.json in the user data "
@@ -1731,13 +1726,6 @@ const char kEnableResamplingScrollEventsExperimentalPredictionName[] =
 const char kEnableResamplingScrollEventsExperimentalPredictionDescription[] =
     "Predicts the scroll amount after the vsync time to more closely match "
     "when the frame is visible.";
-
-const char kEnableSystemEntropyOnPerformanceNavigationTimingName[] =
-    "Enable the systemEntropy property on PerformanceNavigationTiming";
-const char kEnableSystemEntropyOnPerformanceNavigationTimingDescription[] =
-    "Allows developers to discern if the top level navigation occurred "
-    "while the user agent was under load. See "
-    "https://chromestatus.com/feature/5186950448283648 for more information.";
 
 const char kEnableZeroCopyTabCaptureName[] = "Zero-copy tab capture";
 const char kEnableZeroCopyTabCaptureDescription[] =

@@ -502,6 +502,12 @@ void IconLabelBubbleView::AnimationEnded(const gfx::Animation* animation) {
   }
 
   if (!is_animation_paused_) {
+    // The label is shown at the start of animating in.
+    // This ensures the label is hidden at the end of animating out.
+    if (!slide_animation_.IsShowing()) {
+      label()->SetVisible(false);
+    }
+
     // In some cases we want the text to disappear even after animating.
     // Subclasses override `ShouldShowLabelAfterAnimation` for custom behavior.
     // Default behavior is when we do not show separator, the label should
@@ -671,7 +677,6 @@ void IconLabelBubbleView::AnimateIn(std::optional<int> string_id) {
 
 void IconLabelBubbleView::AnimateOut() {
   if (label()->GetVisible()) {
-    label()->SetVisible(false);
     alert_virtual_view_->SetIsInvisible(true);
     alert_virtual_view_->NotifyEvent(ax::mojom::Event::kHide, true);
     HideAnimation();
@@ -681,10 +686,6 @@ void IconLabelBubbleView::AnimateOut() {
 void IconLabelBubbleView::ResetSlideAnimation(bool show_label) {
   label()->SetVisible(show_label);
   slide_animation_.Reset(show_label);
-}
-
-void IconLabelBubbleView::ReduceAnimationTimeForTesting() {
-  slide_animation_.SetSlideDuration(base::Milliseconds(1));
 }
 
 void IconLabelBubbleView::PauseAnimation() {

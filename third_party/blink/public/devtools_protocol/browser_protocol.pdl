@@ -12840,6 +12840,9 @@ experimental domain Preload
       PrefetchNotEligibleSchemeIsNotHttps
       PrefetchNotEligibleUserHasCookies
       PrefetchNotEligibleUserHasServiceWorker
+      PrefetchNotEligibleUserHasServiceWorkerNoFetchHandler
+      PrefetchNotEligibleRedirectFromServiceWorker
+      PrefetchNotEligibleRedirectToServiceWorker
       PrefetchNotEligibleBatterySaverEnabled
       PrefetchNotEligiblePreloadingDisabled
       PrefetchNotFinishedInTime

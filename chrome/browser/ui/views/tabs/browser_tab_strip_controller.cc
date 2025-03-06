@@ -935,6 +935,14 @@ bool BrowserTabStripController::IsFrameButtonsRightAligned() const {
 #endif  // BUILDFLAG(IS_MAC)
 }
 
+void BrowserTabStripController::OnSplitViewAdded(std::vector<int> indices) {
+  for (int i : indices) {
+    // TODO(agale): Splits should ultimately have ids so the tab strip can keep
+    // track of multiple splits.
+    tabstrip_->AddTabToSplit(i);
+  }
+}
+
 BrowserNonClientFrameView* BrowserTabStripController::GetFrameView() {
   return browser_view_->frame()->GetFrameView();
 }

@@ -54,6 +54,19 @@ tabs::TabModel* TabGroupTabCollection::GetTabAtIndex(size_t index) const {
   return impl_->GetTabAtIndex(index);
 }
 
+std::vector<tabs::TabModel*> TabGroupTabCollection::GetTabs() const {
+  const auto& children = impl_->GetChildren();
+  std::vector<tabs::TabModel*> tab_models;
+
+  for (const auto& child : children) {
+    CHECK(std::holds_alternative<std::unique_ptr<TabModel>>(child));
+    const auto& tab_model_ptr = std::get<std::unique_ptr<TabModel>>(child);
+    tab_models.push_back(tab_model_ptr.get());
+  }
+
+  return tab_models;
+}
+
 bool TabGroupTabCollection::ContainsTab(const TabInterface* tab) const {
   CHECK(tab);
   return impl_->ContainsTab(tab);

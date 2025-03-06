@@ -6,6 +6,7 @@
 #define COMPONENTS_CACHED_FLAGS_ANDROID_JNI_DELEGATE_H_
 
 #include <map>
+#include <vector>
 
 namespace cached_flags {
 
@@ -21,6 +22,12 @@ class JniDelegate {
   virtual void CacheFeatureParamsImmediately(
       const std::map<std::string, std::map<std::string, std::string>>&
           feature_params) = 0;
+
+  virtual void EraseNativeFlagCachedValues(
+      const std::vector<std::string>& features_to_erase) = 0;
+
+  virtual void EraseFeatureParamCachedValues(
+      const std::vector<std::string>& feature_params_to_erase) = 0;
 };
 
 }  // namespace cached_flags

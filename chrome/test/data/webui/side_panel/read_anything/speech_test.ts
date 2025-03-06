@@ -4,13 +4,14 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {PauseActionSource, playFromSelectionTimeout, ToolbarEvent, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {MetricsBrowserProxyImpl, PauseActionSource, playFromSelectionTimeout, ToolbarEvent, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, createSpeechSynthesisVoice, emitEvent, setDefaultSpeechSynthesis, setSimpleAxTreeWithText} from './common.js';
+import {createSpeechSynthesisVoice, emitEvent, setDefaultSpeechSynthesis, setSimpleAxTreeWithText} from './common.js';
 import type {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 suite('Speech', () => {
   let app: AppElement;
@@ -69,15 +70,22 @@ suite('Speech', () => {
         utterance => utterance.text.trim());
   }
 
-  setup(async () => {
+  setup(() => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Do not call the real `onConnected()`. As defined in
     // ReadAnythingAppController, onConnected creates mojo pipes to connect to
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
+    chrome.readingMode.shouldShowUi = () => true;
+    chrome.readingMode.showLoading = () => {};
+    chrome.readingMode.restoreSettingsFromPrefs = () => {};
+    chrome.readingMode.languageChanged = () => {};
+    chrome.readingMode.onTtsEngineInstalled = () => {};
+    MetricsBrowserProxyImpl.setInstance(new TestMetricsBrowserProxy());
 
-    app = await createApp();
+    app = document.createElement('read-anything-app');
+    document.body.appendChild(app);
     chrome.readingMode.setContentForTesting(axTree, leafIds);
     speechSynthesis = setDefaultSpeechSynthesis(app);
   });
@@ -85,7 +93,6 @@ suite('Speech', () => {
   suite('on play', () => {
     setup(() => {
       app.playSpeech();
-      return microtasksFinished();
     });
 
     test('speaks all text by sentences', () => {
@@ -97,10 +104,7 @@ suite('Speech', () => {
           paragraph2.every(sentence => utteranceTexts.includes(sentence)));
     });
 
-    test('uses set language', async () => {
-      // no need to update fonts for this test
-      app.$.toolbar.updateFonts = () => {};
-
+    test('uses set language', () => {
       let expectedLang = 'en';
       assertTrue(
           speechSynthesis.spokenUtterances.every(
@@ -111,7 +115,6 @@ suite('Speech', () => {
       expectedLang = 'fr';
       chrome.readingMode.setLanguageForTesting(expectedLang);
       app.playSpeech();
-      await microtasksFinished();
 
       assertTrue(
           speechSynthesis.spokenUtterances.every(
@@ -122,7 +125,6 @@ suite('Speech', () => {
       expectedLang = 'zh';
       chrome.readingMode.setLanguageForTesting(expectedLang);
       app.playSpeech();
-      await microtasksFinished();
 
       assertTrue(
           speechSynthesis.spokenUtterances.every(
@@ -162,6 +164,7 @@ suite('Speech', () => {
 
     setup(() => {
       mockTimer = new MockTimer();
+      return microtasksFinished();
     });
 
     test('first play starts from selected node', () => {
@@ -470,7 +473,6 @@ suite('Speech', () => {
       // the bug where speech stops without an error callback.
       speechSynthesis.useLocalVoices();
       speechSynthesis.setDefaultVoices();
-      chrome.readingMode.onVoiceChange = () => {};
       emitEvent(
           app, ToolbarEvent.VOICE,
           {detail: {selectedVoice: speechSynthesis.getVoices()[5]}});
@@ -510,12 +512,10 @@ suite('Speech', () => {
       app.speechPlayingState.isSpeechTreeInitialized = true;
       app.speechPlayingState.hasSpeechBeenTriggered = true;
       app.speechPlayingState.isSpeechActive = true;
-      return microtasksFinished();
     });
 
 
     test('voice change cancels and restarts speech', () => {
-      chrome.readingMode.onVoiceChange = () => {};
       emitEvent(
           app, ToolbarEvent.VOICE,
           {detail: {selectedVoice: speechSynthesis.getVoices()[1]}});
@@ -539,7 +539,8 @@ suite('Speech', () => {
       assertFalse(speechSynthesis.paused);
     });
 
-    test('is playable', () => {
+    test('is playable', async () => {
+      await microtasksFinished();
       assertTrue(app.$.toolbar.isReadAloudPlayable);
     });
 
@@ -554,6 +555,7 @@ suite('Speech', () => {
       speechSynthesis.triggerUtteranceStartedOnNextSpeak();
       app.playSpeech();
       await microtasksFinished();
+
       assertTrue(app.$.toolbar.isReadAloudPlayable);
     });
 
@@ -561,8 +563,6 @@ suite('Speech', () => {
       const pageLanguage = 'es';
       setup(() => {
         speechSynthesis.triggerErrorEventOnNextSpeak('language-unavailable');
-        chrome.readingMode.onVoiceChange = () => {};
-        app.$.toolbar.updateFonts = () => {};
         assertFalse(
             pageLanguage === chrome.readingMode.defaultLanguageForSpeech);
         assertFalse(
@@ -570,7 +570,6 @@ suite('Speech', () => {
             chrome.readingMode.defaultLanguageForSpeech);
         chrome.readingMode.setLanguageForTesting(pageLanguage);
         app.playSpeech();
-        return microtasksFinished();
       });
 
       test('selects default voice', () => {
@@ -586,7 +585,6 @@ suite('Speech', () => {
     suite('voice change to unavailable voice', () => {
       setup(() => {
         speechSynthesis.triggerErrorEventOnNextSpeak('voice-unavailable');
-        chrome.readingMode.onVoiceChange = () => {};
       });
 
       test('cancels and selects default voice', () => {

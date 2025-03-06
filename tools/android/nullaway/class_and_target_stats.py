@@ -171,6 +171,7 @@ def main():
     targets_num_unmarked = collections.defaultdict(int)
     targets_unmarked_classes = collections.defaultdict(set)
     java_targets = set()
+    substrings = ['test', 'junit']
     for n in filtered_class_nodes:
         for t in n.build_targets:
             if '__' in t:
@@ -180,7 +181,7 @@ def main():
                 continue
             if t in skipped_targets:
                 continue
-            if not args.include_testonly and 'test' in t:
+            if not args.include_testonly and any(s in t for s in substrings):
                 continue
             java_targets.add(t)
             targets_num_unmarked[t] += 1

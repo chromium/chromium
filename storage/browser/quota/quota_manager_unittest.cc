@@ -204,8 +204,8 @@ class QuotaManagerImplTest : public testing::Test {
     mojo::PendingRemote<storage::mojom::QuotaClient> quota_client;
     mojo::MakeSelfOwnedReceiver(std::move(mock_quota_client),
                                 quota_client.InitWithNewPipeAndPassReceiver());
-    quota_manager_impl_->proxy()->RegisterClient(std::move(quota_client),
-                                                 client_type, storage_types);
+    quota_manager_impl_->RegisterClient(std::move(quota_client), client_type,
+                                        storage_types);
     return mock_quota_client_ptr;
   }
 

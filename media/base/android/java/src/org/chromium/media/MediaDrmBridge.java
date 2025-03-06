@@ -1108,9 +1108,9 @@ public class MediaDrmBridge {
 
         mSessionManager.load(
                 emeId,
-                new Callback<SessionId>() {
+                new Callback<@Nullable SessionId>() {
                     @Override
-                    public void onResult(SessionId sessionId) {
+                    public void onResult(@Nullable SessionId sessionId) {
                         if (sessionId == null) {
                             onPersistentLicenseNoExist(promiseId);
                             return;

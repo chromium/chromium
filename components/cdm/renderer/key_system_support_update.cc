@@ -334,12 +334,8 @@ void AddWidevine(const media::KeySystemCapability& capability,
   if (capability.hw_cdm_capability_or_status.has_value()) {
     const auto& hw_secure_capability =
         capability.hw_cdm_capability_or_status.value();
-    // For the default Widevine key system, we support a codec only when it
-    // supports clear lead, unless `force_support_clear_lead` is set to true.
-    const bool force_support_clear_lead =
-        media::kHardwareSecureDecryptionForceSupportClearLead.Get();
-    hw_secure_codecs =
-        GetSupportedCodecs(hw_secure_capability, !force_support_clear_lead);
+    hw_secure_codecs = GetSupportedCodecs(hw_secure_capability);
+
 #if BUILDFLAG(IS_WIN)
     // For the experimental Widevine key system, we do not have to filter the
     // hardware secure codecs by whether they support clear lead or not.

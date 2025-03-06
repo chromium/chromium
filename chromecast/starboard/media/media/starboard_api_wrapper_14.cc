@@ -152,12 +152,12 @@ class StarboardApiWrapper14 : public StarboardApiWrapperBase {
     return out_audio_info;
   }
 
-  void CallWriteSamples(SbPlayer player,
-                        SbMediaType sample_type,
-                        const SbPlayerSampleInfo* sample_infos,
-                        int number_of_sample_infos) override {
-    SbPlayerWriteSample2(player, sample_type, sample_infos,
-                         number_of_sample_infos);
+  void CallWriteSamples(
+      SbPlayer player,
+      SbMediaType sample_type,
+      base::span<const SbPlayerSampleInfo> sample_infos) override {
+    SbPlayerWriteSample2(player, sample_type, sample_infos.data(),
+                         sample_infos.size());
   }
 };
 

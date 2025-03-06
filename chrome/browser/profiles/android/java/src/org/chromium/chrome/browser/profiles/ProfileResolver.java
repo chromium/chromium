@@ -36,26 +36,27 @@ public class ProfileResolver implements PartitionResolver {
 
     @Override
     public void resolveBrowserContext(
-            @Nullable String token, Callback<BrowserContextHandle> callback) {
+            @Nullable String token, Callback<@Nullable BrowserContextHandle> callback) {
         ProfileResolverJni.get()
-                .resolveProfile(token, (Profile profile) -> callback.onResult(profile));
+                .resolveProfile(token, (@Nullable Profile profile) -> callback.onResult(profile));
     }
 
     @Override
     public void resolveSimpleFactoryKey(
-            @Nullable String token, Callback<SimpleFactoryKeyHandle> callback) {
+            @Nullable String token, Callback<@Nullable SimpleFactoryKeyHandle> callback) {
         ProfileResolverJni.get()
-                .resolveProfileKey(token, (ProfileKey key) -> callback.onResult(key));
+                .resolveProfileKey(token, (@Nullable ProfileKey key) -> callback.onResult(key));
     }
 
     /**
      * Profile specific resolve method. Often more convenient to call from //chrome/ code. Callers
      * should be careful to be able to handle both inline/renterant and asynchronous invocations of
      * the passed callback.
+     *
      * @param token A value previously provided by a tokenize call.
      * @param callback A callback to pass the resolved profile on success, otherwise null.
      */
-    public void resolveProfile(@Nullable String token, Callback<Profile> callback) {
+    public void resolveProfile(@Nullable String token, Callback<@Nullable Profile> callback) {
         ProfileResolverJni.get().resolveProfile(token, callback);
     }
 
@@ -63,10 +64,11 @@ public class ProfileResolver implements PartitionResolver {
      * Profile specific resolve method. Often more convenient to call from //chrome/ code. Callers
      * should be careful to be able to handle both inline/renterant and asynchronous invocations of
      * the passed callback.
+     *
      * @param token A value previously provided by a tokenize call.
      * @param callback A callback to pass the resolved profile key on success, otherwise null.
      */
-    public void resolveProfileKey(@Nullable String token, Callback<ProfileKey> callback) {
+    public void resolveProfileKey(@Nullable String token, Callback<@Nullable ProfileKey> callback) {
         ProfileResolverJni.get().resolveProfileKey(token, callback);
     }
 
@@ -78,8 +80,8 @@ public class ProfileResolver implements PartitionResolver {
         String tokenizeProfileKey(@Nullable ProfileKey profileKey);
 
         void resolveProfile(
-                @Nullable String token, Callback<@JniType("Profile*") Profile> callback);
+                @Nullable String token, Callback<@JniType("Profile*") @Nullable Profile> callback);
 
-        void resolveProfileKey(@Nullable String token, Callback<ProfileKey> callback);
+        void resolveProfileKey(@Nullable String token, Callback<@Nullable ProfileKey> callback);
     }
 }

@@ -2605,8 +2605,8 @@
       copied_from_base_feature_if: "overridden",
     },
     {
-      name: "LayoutFlexNewRowAlgorithmV3",
-      status: "test",
+      name: "LayoutFlexNewRowAlgorithm",
+      status: "stable",
     },
     {
       name: "LayoutIgnoreMarginsForSticky",
@@ -3310,7 +3310,6 @@
     },
     {
       name: "PerformanceNavigateSystemEntropy",
-      status: "experimental",
     },
     {
       name: "PerformanceNavigationTimingConfidence",
@@ -3704,6 +3703,16 @@
       status: "stable",
     },
     {
+      // If enabled, makes the root scrollbars' foreground elements follow the
+      // browser
+      name: "RootScrollbarFollowsBrowserTheme",
+      status: {"Linux": "test", "Win": "test"},
+    },
+    {
+      name: "RoundScrollOffsets",
+      status: "stable",
+    },
+    {
       name: "RtcAudioJitterBufferMaxPackets",
       origin_trial_feature_name: "RtcAudioJitterBufferMaxPackets",
       status: "experimental",
@@ -3848,6 +3857,10 @@
     },
     {
       name: "ScrollbarColor",
+      status: "stable",
+    },
+    {
+      name: "ScrollbarGutterFixedPosBugfix",
       status: "stable",
     },
     {

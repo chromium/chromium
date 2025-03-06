@@ -131,6 +131,7 @@ float ClampScale(float scale);
 bool MaybeHandlePlatformEventForDrag(const ui::PlatformEvent& event,
                                      bool start_drag_ack_received,
                                      base::OnceClosure cancel_drag_cb);
+bool EventShouldCancelDrag(const ui::PlatformEvent& event);
 
 // Logs connection state to UMA.
 void RecordConnectionMetrics(wl_display* display);

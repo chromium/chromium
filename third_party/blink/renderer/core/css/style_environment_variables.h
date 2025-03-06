@@ -175,7 +175,8 @@ class CORE_EXPORT StyleEnvironmentVariables
 
   HeapVector<Member<StyleEnvironmentVariables>> children_;
   HeapHashMap<AtomicString, Member<CSSVariableData>> data_;
-  HeapHashMap<AtomicString, TwoDimensionVariableValues> two_dimension_data_;
+  HeapHashMap<AtomicString, Member<TwoDimensionVariableValues>>
+      two_dimension_data_;
   Member<StyleEnvironmentVariables> parent_;
 };
 

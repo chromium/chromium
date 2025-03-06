@@ -1781,7 +1781,6 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
 
   MockTrustedSignalsCacheImpl()
       : TrustedSignalsCacheImpl(
-            /*url_loader_factory=*/nullptr,
             base::BindRepeating(
                 &MockTrustedSignalsCacheImpl::GetCoordinatorKeyCallback,
                 base::Unretained(this))) {}

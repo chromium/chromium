@@ -353,9 +353,7 @@ bool MaybeHandlePlatformEventForDrag(const ui::PlatformEvent& event,
   //    in addition to the actual dnd drop events, in which case the event is
   //    suppressed, otherwise it leads to broken UI state, as observed for
   //    example in https://crbug.com/329703410.
-  if (!event->IsSynthesized() &&
-      (event->type() == ui::EventType::kMouseReleased ||
-       event->type() == ui::EventType::kTouchReleased)) {
+  if (EventShouldCancelDrag(event)) {
     if (!start_drag_ack_received) {
       std::move(cancel_drag_cb).Run();
     } else {
@@ -363,6 +361,12 @@ bool MaybeHandlePlatformEventForDrag(const ui::PlatformEvent& event,
     }
   }
   return false;
+}
+
+bool EventShouldCancelDrag(const ui::PlatformEvent& event) {
+  return !event->IsSynthesized() &&
+         (event->type() == ui::EventType::kMouseReleased ||
+          event->type() == ui::EventType::kTouchReleased);
 }
 
 void RecordConnectionMetrics(wl_display* display) {

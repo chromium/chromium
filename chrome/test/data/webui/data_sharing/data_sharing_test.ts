@@ -83,11 +83,8 @@ suite('Start flows', () => {
     assertEquals(1, testDataSharingSdk.getCallCount('runManageFlow'));
     assertEquals(
         'fake_id', testDataSharingSdk.getArgs('runManageFlow')[0].groupId);
-    // TODO(crbug.com/399961647): Enable the following assertions when
-    // setTimeout in` data_sharing_app.ts is removed.
-
-    // assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
-    // assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
+    assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
+    assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
   });
 
   test('Join flow', async () => {

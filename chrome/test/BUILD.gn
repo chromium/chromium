@@ -10174,10 +10174,10 @@ test("unit_tests") {
   }
 
   if (is_win || is_mac || is_linux) {
-    sources += [ "../browser/ui/startup/default_browser_prompt/default_browser_prompt_unittest.cc" ]
-  }
-  if (is_win || is_mac) {
-    sources += [ "../browser/ui/startup/default_browser_prompt/default_browser_prompt_manager_unittest.cc" ]
+    sources += [
+      "../browser/ui/startup/default_browser_prompt/default_browser_prompt_manager_unittest.cc",
+      "../browser/ui/startup/default_browser_prompt/default_browser_prompt_unittest.cc",
+    ]
   }
 }
 
@@ -11052,12 +11052,11 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (is_win || is_mac || is_linux) {
-      sources += [ "../browser/ui/startup/default_browser_prompt/default_browser_prompt_interactive_uitest.cc" ]
+      sources += [
+        "../browser/ui/startup/default_browser_prompt/default_browser_prompt_interactive_uitest.cc",
+        "../browser/ui/views/infobars/default_browser_infobar_interactive_uitest.cc",
+      ]
       deps += [ "//chrome/browser:shell_integration" ]
-    }
-
-    if (is_win || is_mac) {
-      sources += [ "../browser/ui/views/infobars/default_browser_infobar_interactive_uitest.cc" ]
     }
 
     if (!is_chromeos) {

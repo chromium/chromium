@@ -32,29 +32,13 @@ class AnimationTrigger : public ScriptWrappable {
                                   ExceptionState& exception_state);
 
   Type type() { return type_; }
-  void setType(Type type) { type_ = type; }
 
   AnimationTimeline* timeline() { return timeline_.Get(); }
-  AnimationTimeline* setTimeline(AnimationTimeline* timeline) {
-    return timeline_ = timeline;
-  }
 
   const RangeBoundary* rangeStart(ExecutionContext* execution_context);
-  void setRangeStart(ExecutionContext* execution_context,
-                     const RangeBoundary* boundary,
-                     ExceptionState& exception_state);
   const RangeBoundary* rangeEnd(ExecutionContext* execution_context);
-  void setRangeEnd(ExecutionContext* execution_contextconst,
-                   const RangeBoundary* boundary,
-                   ExceptionState& exception_state);
   const RangeBoundary* exitRangeStart(ExecutionContext* execution_context);
-  void setExitRangeStart(ExecutionContext* execution_context,
-                         const RangeBoundary* boundary,
-                         ExceptionState& exception_state);
   const RangeBoundary* exitRangeEnd(ExecutionContext* execution_context);
-  void setExitRangeEnd(ExecutionContext* execution_context,
-                       const RangeBoundary* boundary,
-                       ExceptionState& exception_state);
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(timeline_);

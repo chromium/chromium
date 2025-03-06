@@ -130,13 +130,7 @@ public class NfcImpl implements Nfc {
                 ContextUtils.getApplicationContext()
                         .checkPermission(Manifest.permission.NFC, Process.myPid(), Process.myUid());
         mHasPermission = permission == PackageManager.PERMISSION_GRANTED;
-        Callback<Activity> onActivityUpdatedCallback =
-                new Callback<Activity>() {
-                    @Override
-                    public void onResult(Activity activity) {
-                        setActivity(activity);
-                    }
-                };
+        Callback<@Nullable Activity> onActivityUpdatedCallback = this::setActivity;
 
         mDelegate.trackActivityForHost(mHostId, onActivityUpdatedCallback);
 
@@ -164,10 +158,10 @@ public class NfcImpl implements Nfc {
     }
 
     /**
-     * Sets Activity that is used to enable / disable NFC reader mode. When Activity is set,
-     * reader mode is disabled for old Activity and enabled for the new Activity.
+     * Sets Activity that is used to enable / disable NFC reader mode. When Activity is set, reader
+     * mode is disabled for old Activity and enabled for the new Activity.
      */
-    protected void setActivity(Activity activity) {
+    protected void setActivity(@Nullable Activity activity) {
         disableReaderMode();
         mActivity = activity;
         enableReaderModeIfNeeded();

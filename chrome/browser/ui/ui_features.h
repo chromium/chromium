@@ -222,10 +222,6 @@ BASE_DECLARE_FEATURE(kPageActionsMigration);
 // vs. a repeating timer.
 BASE_DECLARE_FEATURE(kCompositorLoadingAnimations);
 
-// If enabled, when no given_name is provided, the FedCM Continue button will
-// say "Continue" instead of "Continue as Firstname Lastname".
-BASE_DECLARE_FEATURE(kFedCmContinueWithoutName);
-
 // If enabled, the by date history will show in the side panel.
 BASE_DECLARE_FEATURE(kByDateHistoryInSidePanel);
 

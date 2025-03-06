@@ -164,10 +164,11 @@ SpeechRecognitionManagerImpl* SpeechRecognitionManagerImpl::GetInstance() {
   return g_speech_recognition_manager_impl;
 }
 
-bool SpeechRecognitionManagerImpl::IsOnDeviceSpeechRecognitionAvailable(
+bool SpeechRecognitionManagerImpl::IsOnDeviceSpeechRecognitionInstalled(
     const SpeechRecognitionSessionConfig& config) {
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
-  return speech::IsOnDeviceSpeechRecognitionAvailable(config.language);
+  return speech::IsOnDeviceSpeechRecognitionAvailable(config.language) ==
+         media::mojom::AvailabilityStatus::kAvailable;
 #else
   return false;
 #endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
@@ -212,7 +213,7 @@ int SpeechRecognitionManagerImpl::CreateSession(
   DCHECK(!SessionExists(session_id));
 
   base::UmaHistogramBoolean(kWebSpeechAudioOnDeviceAvailableHistogram,
-                            IsOnDeviceSpeechRecognitionAvailable(config));
+                            IsOnDeviceSpeechRecognitionInstalled(config));
   base::UmaHistogramBoolean(kWebSpeechAudioUseOnDeviceHistogram,
                             UseOnDeviceSpeechRecognition(config));
   base::UmaHistogramBoolean(kWebSpeechAudioUseAudioForwarderHistogram,
@@ -225,7 +226,7 @@ int SpeechRecognitionManagerImpl::CreateSession(
   if (UseOnDeviceSpeechRecognition(config)) {
     // Set the error if on-device speech recognition must be used but is not
     // available.
-    if (!IsOnDeviceSpeechRecognitionAvailable(config)) {
+    if (!IsOnDeviceSpeechRecognitionInstalled(config)) {
       error = media::mojom::SpeechRecognitionErrorCode::kLanguageNotSupported;
     }
   } else {
@@ -701,7 +702,8 @@ bool SpeechRecognitionManagerImpl::UseOnDeviceSpeechRecognition(
     const SpeechRecognitionSessionConfig& config) {
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
   return config.on_device &&
-         (speech::IsOnDeviceSpeechRecognitionAvailable(config.language) ||
+         (speech::IsOnDeviceSpeechRecognitionAvailable(config.language) ==
+              media::mojom::AvailabilityStatus::kAvailable ||
           !config.allow_cloud_fallback);
 #else
   return false;

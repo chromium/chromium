@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/favicon/core/favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
+#include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/zoom/zoom_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/event_router.h"
@@ -38,12 +39,14 @@ namespace extensions {
 // extension process renderers.
 // TabsEventRouter will only route events from windows/tabs within a profile to
 // extension processes in the same profile.
-class TabsEventRouter : public TabStripModelObserver,
-                        public BrowserTabStripTrackerDelegate,
-                        public BrowserListObserver,
-                        public favicon::FaviconDriverObserver,
-                        public zoom::ZoomObserver,
-                        public resource_coordinator::TabLifecycleObserver {
+class TabsEventRouter
+    : public TabStripModelObserver,
+      public BrowserTabStripTrackerDelegate,
+      public BrowserListObserver,
+      public favicon::FaviconDriverObserver,
+      public zoom::ZoomObserver,
+      public resource_coordinator::TabLifecycleObserver,
+      public performance_manager::PageLiveStateObserverDefaultImpl {
  public:
   explicit TabsEventRouter(Profile* profile);
 
@@ -95,8 +98,10 @@ class TabsEventRouter : public TabStripModelObserver,
       ::mojom::LifecycleUnitState previous_state,
       ::mojom::LifecycleUnitState new_state,
       std::optional<LifecycleUnitDiscardReason> discard_reason) override;
-  void OnTabAutoDiscardableStateChange(content::WebContents* contents,
-                                       bool is_auto_discardable) override;
+
+  // performance_manager::PageLiveStateObserverDefaultImpl:
+  void OnIsAutoDiscardableChanged(
+      const performance_manager::PageNode* page_node) override;
 
  private:
   // Methods called from OnTabStripModelChanged.

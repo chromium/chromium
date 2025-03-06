@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webaudio/iir_filter_handler.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
@@ -61,7 +57,7 @@ void IIRFilterHandler::GetFrequencyResponse(int n_frequencies,
   // Convert from frequency in Hz to normalized frequency (0 -> 1),
   // with 1 equal to the Nyquist frequency.
   for (int k = 0; k < n_frequencies; ++k) {
-    frequency[k] = frequency_hz[k] / nyquist_frequency_;
+    UNSAFE_TODO(frequency[k] = frequency_hz[k] / nyquist_frequency_);
   }
 
   response_kernel_->GetFrequencyResponse(n_frequencies, frequency.data(),

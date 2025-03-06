@@ -6416,6 +6416,15 @@ void RenderFrameHostImpl::SwapOuterDelegateFrame(
       should_swap_devtools_frame_token
           ? std::make_optional(devtools_frame_token)
           : std::nullopt);
+
+  // Drop all accessibility state for this frame to release resources and ensure
+  // that any in-flight tree updates received before the unload ACK are ignored.
+  last_ax_mode_ = ui::AXMode();
+  render_accessibility_.reset();
+  browser_accessibility_manager_.reset();
+  ax_unique_ids_.clear();
+  accessibility_reset_token_.reset();
+  ax_tree_data_ = ui::AXTreeData();
 }
 
 void RenderFrameHostImpl::DetachFromProxy() {

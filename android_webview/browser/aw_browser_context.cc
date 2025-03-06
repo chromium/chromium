@@ -579,8 +579,8 @@ void AwBrowserContext::ConfigureNetworkContextParams(
   // should behave like the Android system would.
   context_params->initial_ssl_config->sha1_local_anchors_enabled = true;
 
-  // WebView does not currently support Certificate Transparency
-  // (http://crbug.com/921750).
+  // WebView supports Certificate Transparency from Android B via Android's CT
+  // policy. (http://crbug.com/921750).
   context_params->enforce_chrome_ct_policy = false;
 
   context_params->enable_brotli = true;

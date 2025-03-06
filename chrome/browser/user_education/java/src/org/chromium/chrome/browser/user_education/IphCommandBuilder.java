@@ -8,38 +8,40 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /** Builder for (@see IphCommand.java). Use this instead of constructing an IphCommand directly. */
+@NullMarked
 public class IphCommandBuilder {
 
-    private String mContentString;
-    private String mAccessibilityText;
+    private @Nullable String mContentString;
+    private @Nullable String mAccessibilityText;
     private Resources mResources;
     private final String mFeatureName;
     private boolean mDismissOnTouch = true;
     private long mDismissOnTouchTimeout = TextBubble.NO_TIMEOUT;
     @StringRes private int mStringId;
-    private Object[] mStringArgs;
+    private Object @Nullable [] mStringArgs;
     @StringRes private int mAccessibilityStringId;
-    private Object[] mAccessibilityStringArgs;
-    private View mAnchorView;
-    private Runnable mOnShowCallback;
-    private Runnable mOnBlockedCallback;
-    private Runnable mOnDismissCallback;
-    private Rect mInsetRect;
+    private Object @Nullable [] mAccessibilityStringArgs;
+    private @Nullable View mAnchorView;
+    private @Nullable Runnable mOnShowCallback;
+    private @Nullable Runnable mOnBlockedCallback;
+    private @Nullable Runnable mOnDismissCallback;
+    private @Nullable Rect mInsetRect;
     private long mAutoDismissTimeout = TextBubble.NO_TIMEOUT;
-    private ViewRectProvider mViewRectProvider;
-    @Nullable private HighlightParams mHighlightParams;
-    private Rect mAnchorRect;
+    private @Nullable ViewRectProvider mViewRectProvider;
+    private @Nullable HighlightParams mHighlightParams;
+    private @Nullable Rect mAnchorRect;
     private boolean mRemoveArrow;
     private boolean mShowTextBubble = true;
 

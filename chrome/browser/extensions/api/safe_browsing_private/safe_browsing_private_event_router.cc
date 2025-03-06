@@ -106,23 +106,6 @@ std::string DangerTypeToThreatType(download::DownloadDangerType danger_type) {
 }
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-enterprise_connectors::EventResult GetEventResultFromThreatType(
-    std::string threat_type) {
-  if (threat_type == "ENTERPRISE_WARNED_SEEN") {
-    return enterprise_connectors::EventResult::WARNED;
-  }
-  if (threat_type == "ENTERPRISE_WARNED_BYPASS") {
-    return enterprise_connectors::EventResult::BYPASSED;
-  }
-  if (threat_type == "ENTERPRISE_BLOCKED_SEEN") {
-    return enterprise_connectors::EventResult::BLOCKED;
-  }
-  if (threat_type.empty()) {
-    return enterprise_connectors::EventResult::ALLOWED;
-  }
-  NOTREACHED();
-}
-
 void AddAnalysisConnectorVerdictToEvent(
     const enterprise_connectors::ContentAnalysisResponse::Result& result,
     base::Value::Dict& event) {
@@ -139,53 +122,6 @@ void AddAnalysisConnectorVerdictToEvent(
     triggered_rule.Set(
         extensions::SafeBrowsingPrivateEventRouter::kKeyUrlCategory,
         trigger.url_category());
-
-    triggered_rule_info.Append(std::move(triggered_rule));
-  }
-  event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo,
-            std::move(triggered_rule_info));
-}
-
-std::string ActionFromVerdictType(
-    safe_browsing::RTLookupResponse::ThreatInfo::VerdictType verdict_type) {
-  switch (verdict_type) {
-    case safe_browsing::RTLookupResponse::ThreatInfo::DANGEROUS:
-      return "BLOCK";
-    case safe_browsing::RTLookupResponse::ThreatInfo::WARN:
-      return "WARN";
-    case safe_browsing::RTLookupResponse::ThreatInfo::SAFE:
-      return "REPORT_ONLY";
-    case safe_browsing::RTLookupResponse::ThreatInfo::SUSPICIOUS:
-    case safe_browsing::RTLookupResponse::ThreatInfo::VERDICT_TYPE_UNSPECIFIED:
-      return "ACTION_UNKNOWN";
-  }
-}
-
-void AddTriggeredRuleInfoToUrlFilteringInterstitialEvent(
-    const safe_browsing::RTLookupResponse& response,
-    base::Value::Dict& event) {
-  base::Value::List triggered_rule_info;
-
-  for (const safe_browsing::RTLookupResponse::ThreatInfo& threat_info :
-       response.threat_info()) {
-    base::Value::Dict triggered_rule;
-    triggered_rule.Set(
-        extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName,
-        threat_info.matched_url_navigation_rule().rule_name());
-    triggered_rule.Set(
-        extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
-        threat_info.matched_url_navigation_rule().rule_id());
-    triggered_rule.Set(
-        extensions::SafeBrowsingPrivateEventRouter::kKeyUrlCategory,
-        threat_info.matched_url_navigation_rule().matched_url_category());
-    triggered_rule.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyAction,
-                       ActionFromVerdictType(threat_info.verdict_type()));
-
-    if (threat_info.matched_url_navigation_rule().has_watermark_message()) {
-      triggered_rule.Set(
-          extensions::SafeBrowsingPrivateEventRouter::kKeyHasWatermarking,
-          true);
-    }
 
     triggered_rule_info.Append(std::move(triggered_rule));
   }
@@ -910,37 +846,6 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
 
   reporting_client_->ReportRealtimeEvent(
       enterprise_connectors::kKeyDangerousDownloadEvent,
-      std::move(settings.value()), std::move(event));
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-}
-
-void SafeBrowsingPrivateEventRouter::OnUrlFilteringInterstitial(
-    const GURL& url,
-    const std::string& threat_type,
-    const safe_browsing::RTLookupResponse& response) {
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-  std::optional<enterprise_connectors::ReportingSettings> settings =
-      reporting_client_->GetReportingSettings();
-  if (!settings.has_value() ||
-      settings->enabled_event_names.count(
-          enterprise_connectors::kKeyUrlFilteringInterstitialEvent) == 0) {
-    return;
-  }
-  base::Value::Dict event;
-  event.Set(kKeyUrl, url.spec());
-  enterprise_connectors::EventResult event_result =
-      GetEventResultFromThreatType(threat_type);
-  event.Set(kKeyClickedThrough,
-            event_result == enterprise_connectors::EventResult::BYPASSED);
-  if (!threat_type.empty()) {
-    event.Set(kKeyThreatType, threat_type);
-  }
-  AddTriggeredRuleInfoToUrlFilteringInterstitialEvent(response, event);
-  event.Set(kKeyEventResult,
-            enterprise_connectors::EventResultToString(event_result));
-
-  reporting_client_->ReportRealtimeEvent(
-      enterprise_connectors::kKeyUrlFilteringInterstitialEvent,
       std::move(settings.value()), std::move(event));
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }

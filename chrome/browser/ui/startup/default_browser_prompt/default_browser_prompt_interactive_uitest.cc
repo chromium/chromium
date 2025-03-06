@@ -29,26 +29,6 @@ namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabContents);
 }  // namespace
 
-#if BUILDFLAG(IS_LINUX)
-class DefaultBrowserInfobarInteractiveTest : public InteractiveBrowserTest {
- public:
-  void SetUp() override {
-    shell_integration::DefaultBrowserWorker::DisableSetAsDefaultForTesting();
-    InteractiveBrowserTest::SetUp();
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarInteractiveTest,
-                       ShowsDefaultBrowserPromptRefreshDisabled) {
-  ShowPromptForTesting();
-  RunTestSequence(
-      WaitForShow(ConfirmInfoBar::kInfoBarElementId),
-      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
-      WaitForHide(ConfirmInfoBar::kInfoBarElementId));
-}
-
-#else
-
 class DefaultBrowserPromptInteractiveTest
     : public WebUiInteractiveTestMixin<InteractiveBrowserTest> {
  public:
@@ -140,5 +120,3 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserPromptHeadlessBrowserTest, DoesNotCrash) {
   DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
   RunTestSequence(WaitForHide(ConfirmInfoBar::kInfoBarElementId));
 }
-
-#endif  // BUILDFLAG(IS_LINUX)

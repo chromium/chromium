@@ -556,6 +556,7 @@ AuctionRunner::AuctionRunner(
       callback_(std::move(callback)),
       promise_fields_in_auction_config_(owned_auction_config_->NumPromises()),
       auction_(kanon_mode_,
+               url_loader_factory_,
                main_frame_origin,
                client_security_state_->ip_address_space,
                owned_auction_config_.get(),
@@ -670,7 +671,7 @@ void AuctionRunner::OnBidsGeneratedAndScored(base::TimeTicks start_time,
 
   std::unique_ptr<InterestGroupAuctionReporter> reporter =
       auction_.CreateReporter(
-          browser_context_, private_aggregation_manager_, url_loader_factory_,
+          browser_context_, private_aggregation_manager_,
           ad_auction_page_data_callback_, std::move(owned_auction_config_),
           main_frame_origin_, frame_origin_, client_security_state_.Clone(),
           std::move(interest_groups_that_bid));

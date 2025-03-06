@@ -135,6 +135,16 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   // launch queue messages have been sent to the renderer.
   void FlushLaunchQueueForTesting() const;
 
+  // Returns if the current web contents can be used for the 'focus-existing'
+  // behavior of navigation capturing, where the tab is focused and a
+  // 'LaunchParams' is given to a javascript 'launch consumer' on the page. This
+  // returns if the current page can feasibly run javascript to actually set
+  // this launch consumer, as without that, any captured links would simply do
+  // nothing.
+  // Specifically, this turns `true` if the current page's mime-type is html or
+  // xhtml.
+  bool CanBeUsedForFocusExisting() const;
+
  private:
   friend class WebAppAudioFocusBrowserTest;
   friend class content::WebContentsUserData<WebAppTabHelper>;

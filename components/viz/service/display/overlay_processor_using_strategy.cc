@@ -758,6 +758,14 @@ void OverlayProcessorUsingStrategy::SortProposedOverlayCandidates(
                  !b.candidate.has_rounded_display_masks;
         }
 
+        // if candidates use low latency rendering, we will ignore their
+        // relative power gain and place them before normal candidates.
+        if (a.candidate.low_latency_rendering ||
+            b.candidate.low_latency_rendering) {
+          return a.candidate.low_latency_rendering &&
+                 !b.candidate.low_latency_rendering;
+        }
+
         // Opaque Power Metric:
         // |relative_power_gain| is computed in the tracker for each overlay
         // candidate and being proportional to power saved is directly

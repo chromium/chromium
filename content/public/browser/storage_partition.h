@@ -228,13 +228,9 @@ class CONTENT_EXPORT StoragePartition {
 
     REMOVE_DATA_MASK_ALL = 0xFFFFFFFF,
 
-    // Corresponds to storage::kStorageTypeTemporary.
+    // Corresponds to storage::kStorageTypeTemporary, which is equivalent to
+    // all quota managed storage after all other types have been deprecated.
     QUOTA_MANAGED_STORAGE_MASK_TEMPORARY = 1 << 0,
-    // Corresponds to storage::kStorageTypePersistent.
-    // Deprecated since crbug.com/1233525.
-    // QUOTA_MANAGED_STORAGE_MASK_PERSISTENT = 1 << 1,
-    // Corresponds to storage::kStorageTypeSyncable.
-    QUOTA_MANAGED_STORAGE_MASK_SYNCABLE = 1 << 2,
     QUOTA_MANAGED_STORAGE_MASK_ALL = 0xFFFFFFFF,
   };
 

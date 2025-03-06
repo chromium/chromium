@@ -126,7 +126,6 @@ if (is_android) {
     "//chrome/browser/lens:java",
     "//chrome/browser/locale:java",
     "//chrome/browser/magic_stack/android:java",
-    "//chrome/browser/model_execution/android:delegate_java",
     "//chrome/browser/notifications:java",
     "//chrome/browser/ntp_customization:java",
     "//chrome/browser/omaha/android:java",
@@ -602,7 +601,6 @@ if (is_android) {
     sources = [
       "src/org/chromium/chrome/browser/contextmenu/ContextMenuCoordinatorTest.java",
       "src/org/chromium/chrome/browser/contextmenu/ContextMenuHeaderMediatorTest.java",
-      "src/org/chromium/chrome/browser/contextmenu/ContextMenuUtilsUnitTest.java",
     ]
 
     deps = chrome_junit_tests_deps

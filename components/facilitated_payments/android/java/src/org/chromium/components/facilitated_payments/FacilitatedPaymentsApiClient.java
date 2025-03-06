@@ -4,6 +4,8 @@
 
 package org.chromium.components.facilitated_payments;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.content_public.browser.RenderFrameHost;
 
@@ -17,8 +19,9 @@ import org.chromium.content_public.browser.RenderFrameHost;
  *      FacilitatedPaymentsApiClient.create(renderFrameHost,delegate); apiClient.isAvailable();
  * </pre>
  */
+@NullMarked
 public class FacilitatedPaymentsApiClient {
-    private static Factory sFactory;
+    private static @Nullable Factory sFactory;
 
     /** The delegate to notify of payment result. */
     protected final Delegate mDelegate;
@@ -83,7 +86,7 @@ public class FacilitatedPaymentsApiClient {
          * @param clientToken An opaque client token for initiating a payment. Can be null or empty
          * to indicate a failure.
          */
-        default void onGetClientToken(byte[] clientToken) {}
+        default void onGetClientToken(byte @Nullable [] clientToken) {}
 
         /**
          * Notifies the delegate about the result of the facilitated payment.

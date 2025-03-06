@@ -96,9 +96,6 @@ class ToastView : public views::BubbleDialogDelegateView,
   views::Label* label_for_testing() { return label_; }
   views::MdTextButton* action_button_for_testing() { return action_button_; }
   views::ImageButton* close_button_for_testing() { return close_button_; }
-  bool is_animating_for_testing() const {
-    return height_animation_.is_animating();
-  }
 
   // Gets the icon/image size from the layout provider.
   static int GetIconSize();

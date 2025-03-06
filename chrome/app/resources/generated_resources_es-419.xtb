@@ -3804,6 +3804,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3670229581627177274">Activar Bluetooth</translation>
 <translation id="3670480940339182416">Permitir que los sitios usen el optimizador V8</translation>
 <translation id="3671764914317109892">Usa el lenguaje cotidiano para buscar en tu historial de navegación. También puedes hacer preguntas y obtener respuestas basadas en tu historial de navegación.</translation>
+<translation id="3671982238795754537">Obtén más información sobre las llaves de acceso</translation>
 <translation id="3672681487849735243">Se detectó un error de fábrica.</translation>
 <translation id="3673097791729989571">El acceso a la cuenta está alojado en <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">Se actualizó tu PIN</translation>
@@ -4720,6 +4721,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4289540628985791613">Descripción general</translation>
 <translation id="428963538941819373">Estos sitios pueden usar la información que guardaron sobre ti mientras navegas en <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Elige un PIN</translation>
+<translation id="4290526909608432059">Pronto dejarán de ser compatibles las apps de Chrome. Para obtener más información sobre tus opciones, comunícate con el desarrollador de apps o con el equipo de asistencia de TI.</translation>
 <translation id="4290791284969893584">Después de cerrar una página, es posible que no puedas completar las tareas que empezaste.</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> miembro</translation>
 <translation id="4290898381118933198">Deslizar para navegar entre páginas</translation>
@@ -8515,6 +8517,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Puerto en serie conectado</translation>
 <translation id="7033616203784997570">La entrada debe tener como máximo 62 caracteres.</translation>
 <translation id="7034692021407794547">Un administrador con privilegios de administración de facturación primero debe aceptar las Condiciones del Servicio del hardware de Google Meet en la sección Hardware de Google Meet de la Consola del administrador.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> acaba de crear una llave de acceso para tu cuenta. Las llaves de acceso ofrecen una forma más rápida y segura de acceder, y se guardan en el Administrador de contraseñas de Google para <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Se recomienda tener <ph name="DISK_SIZE" /> de espacio para Linux. Si necesitas liberar espacio, borra archivos del dispositivo.</translation>
 <translation id="7037157058268992880">Olvidé el PIN</translation>
 <translation id="7037509989619051237">Texto de prueba</translation>
@@ -10557,6 +10560,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8477178913400731244">Borrar datos</translation>
 <translation id="8477241577829954800">Reemplazado</translation>
 <translation id="8477384620836102176">&amp;General</translation>
+<translation id="8477446666255316832">Accede más rápido la próxima vez</translation>
 <translation id="8479176401914456949">El código no es válido. Vuelve a intentarlo.</translation>
 <translation id="8480869669560681089">Dispositivo desconocido de <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Confirmar el permiso para USB</translation>

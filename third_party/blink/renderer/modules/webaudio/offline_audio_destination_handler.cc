@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_destination_handler.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/trace_event/typed_macros.h"
 #include "media/base/audio_glitch_info.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -199,8 +195,8 @@ void OfflineAudioDestinationHandler::DoOfflineRendering() {
     for (unsigned channel_index = 0; channel_index < number_of_channels;
          ++channel_index) {
       const float* source = render_bus_->Channel(channel_index)->Data();
-      memcpy(destinations[channel_index] + frames_processed_, source,
-             sizeof(float) * frames_available_to_copy);
+      UNSAFE_TODO(memcpy(destinations[channel_index] + frames_processed_,
+                         source, sizeof(float) * frames_available_to_copy));
     }
 
     frames_processed_ += frames_available_to_copy;

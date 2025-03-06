@@ -103,6 +103,11 @@ void DOMViewTransition::DidSkipTransition(
   // The finished promise will propagate the result of the updateCallbackDone
   // promise when this callback runs.
   if (dom_callback_result_ == DOMCallbackResult::kNotInvoked) {
+    // Signal that the VT should block any replacement until the callback has
+    // been triggered.  We don't wait for completion of the callback, and the
+    // burden is on the web developer in the case of an async callback to
+    // properly synchronize the transitions.
+    view_transition_->NotifySkippedTransitionDOMCallbackScheduled();
     execution_context_->GetTaskRunner(TaskType::kMiscPlatformAPI)
         ->PostTask(FROM_HERE,
                    WTF::BindOnce(&DOMViewTransition::InvokeDOMChangeCallback,
@@ -208,6 +213,7 @@ void DOMViewTransition::InvokeDOMChangeCallback() {
       << "UpdateDOM callback invoked multiple times.";
 
   if (!execution_context_) {
+    view_transition_->NotifyInvokeDOMChangeCallback();
     return;
   }
 
@@ -246,6 +252,10 @@ void DOMViewTransition::InvokeDOMChangeCallback() {
   result.Then(script_state,
               MakeGarbageCollected<DOMChangeFinishedCallback>(*this),
               MakeGarbageCollected<DOMChangeRejectedCallback>(*this));
+
+  if (view_transition_) {
+    view_transition_->NotifyInvokeDOMChangeCallback();
+  }
 }
 
 void DOMViewTransition::Trace(Visitor* visitor) const {

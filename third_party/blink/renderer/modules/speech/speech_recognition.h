@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_availability_status.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_mode.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
@@ -100,9 +101,8 @@ class MODULES_EXPORT SpeechRecognition final
   void stopFunction();
   void abort();
   void updateContext(SpeechRecognitionContext*, ExceptionState&);
-  static ScriptPromise<IDLBoolean> availableOnDevice(ScriptState*,
-                                                     const String& lang,
-                                                     ExceptionState&);
+  static ScriptPromise<V8AvailabilityStatus>
+  availableOnDevice(ScriptState*, const String& lang, ExceptionState&);
   static ScriptPromise<IDLBoolean> installOnDevice(ScriptState*,
                                                    const String& lang,
                                                    ExceptionState&);

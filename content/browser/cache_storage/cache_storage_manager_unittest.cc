@@ -189,10 +189,8 @@ class MockCacheStorageQuotaManagerProxy
                                     base::SingleThreadTaskRunner* task_runner)
       : MockQuotaManagerProxy(quota_manager, task_runner) {}
 
-  void RegisterClient(
-      mojo::PendingRemote<storage::mojom::QuotaClient> client,
-      storage::QuotaClientType client_type,
-      const base::flat_set<blink::mojom::StorageType>& storage_types) override {
+  void RegisterClient(mojo::PendingRemote<storage::mojom::QuotaClient> client,
+                      storage::QuotaClientType client_type) override {
     registered_clients_.emplace_back(std::move(client));
   }
 

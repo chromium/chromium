@@ -345,7 +345,7 @@ class GPU_EXPORT GpuChannelHost
   // Reset in the delayed task.
   std::optional<uint32_t> delayed_flush_deferred_message_id_
       GUARDED_BY(deferred_message_lock_);
-  static constexpr base::TimeDelta kDelayForEnsuringFlush = base::Seconds(2);
+  static constexpr base::TimeDelta kDelayForEnsuringFlush = base::Seconds(1);
 
   const bool sync_point_graph_validation_enabled_;
 };

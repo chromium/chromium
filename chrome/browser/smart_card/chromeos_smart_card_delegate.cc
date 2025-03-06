@@ -4,13 +4,57 @@
 
 #include "chrome/browser/smart_card/chromeos_smart_card_delegate.h"
 
+#include "base/check.h"
 #include "base/check_deref.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/smart_card/get_smart_card_context_factory.h"
 #include "chrome/browser/smart_card/smart_card_permission_context.h"
 #include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/features.h"
+
+namespace {
+
+// kSmartCardAllowedReconnectTime is amount of time after which a new connection
+// to a smart card reader stops being deemed a reconnection (and isn't possible
+// from the background).
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kSmartCardAllowedReconnectTime,
+                   &blink::features::kSmartCard,
+                   "allowed_reconnect_time",
+                   base::Seconds(15));
+
+// The check whether the window has focus is enough here, as this is for IWAs
+// only, which appear in standalone windows dedicated to only them.
+bool WindowHasFocus(content::RenderFrameHost& render_frame_host) {
+  return tabs::TabInterface::GetFromContents(
+             content::WebContents::FromRenderFrameHost(&render_frame_host)
+                 ->GetOutermostWebContents())
+      ->GetBrowserWindowInterface()
+      ->IsActive();
+}
+
+bool RecentlyHadConnection(content::RenderFrameHost& render_frame_host) {
+  auto& pscs =
+      CHECK_DEREF(content_settings::PageSpecificContentSettings::GetForFrame(
+          &render_frame_host));
+  return pscs.GetLastUsedTime(ContentSettingsType::SMART_CARD_GUARD) >=
+             base::Time::Now() - kSmartCardAllowedReconnectTime.Get() ||
+         pscs.IsInUse(ContentSettingsType::SMART_CARD_GUARD);
+}
+
+bool HasFocusOrRecentlyHadConnection(
+    content::RenderFrameHost& render_frame_host) {
+  return WindowHasFocus(render_frame_host) ||
+         RecentlyHadConnection(render_frame_host);
+}
+
+}  // namespace
 
 ChromeOsSmartCardDelegate::ChromeOsSmartCardDelegate() = default;
 ChromeOsSmartCardDelegate::~ChromeOsSmartCardDelegate() = default;
@@ -45,7 +89,8 @@ bool ChromeOsSmartCardDelegate::HasReaderPermission(
   auto& permission_context =
       SmartCardPermissionContextFactory::GetForProfile(profile);
 
-  return permission_context.HasReaderPermission(render_frame_host, reader_name);
+  return HasFocusOrRecentlyHadConnection(render_frame_host) &&
+         permission_context.HasReaderPermission(render_frame_host, reader_name);
 }
 
 void ChromeOsSmartCardDelegate::RequestReaderPermission(

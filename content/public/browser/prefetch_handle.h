@@ -15,6 +15,11 @@ class PrefetchHandle {
  public:
   PrefetchHandle() = default;
   virtual ~PrefetchHandle() = default;
+
+  PrefetchHandle(const PrefetchHandle& other) = delete;
+  PrefetchHandle& operator=(const PrefetchHandle& other) = delete;
+  PrefetchHandle(PrefetchHandle&& other) = default;
+  PrefetchHandle& operator=(PrefetchHandle&& other) = default;
 };
 
 }  // namespace content

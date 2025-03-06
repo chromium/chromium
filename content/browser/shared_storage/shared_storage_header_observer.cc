@@ -34,6 +34,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/shared_storage_utils.h"
 #include "services/network/public/mojom/shared_storage.mojom.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 
 namespace content {
 
@@ -42,7 +43,7 @@ namespace {
 using MethodWithOptionsPtr =
     network::mojom::SharedStorageModifierMethodWithOptionsPtr;
 using ContextType = StoragePartitionImpl::ContextType;
-using AccessScope = SharedStorageLockManager::AccessScope;
+using AccessScope = blink::SharedStorageAccessScope;
 
 bool IsSharedStorageAllowedByPermissionsPolicy(
     SharedStorageHeaderObserver::PermissionsPolicyDoubleCheckStatus

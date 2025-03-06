@@ -72,6 +72,23 @@ void AITestUtils::AITestBase::SetupNullOptimizationGuideKeyedService() {
                          -> std::unique_ptr<KeyedService> { return nullptr; }));
 }
 
+void AITestUtils::AITestBase::SetupMockSession() {
+  ON_CALL(*mock_optimization_guide_keyed_service_,
+          StartSession(testing::_, testing::_))
+      .WillByDefault([&] {
+        return std::make_unique<
+            testing::NiceMock<optimization_guide::MockSession>>(&session_);
+      });
+  ON_CALL(session_, GetExecutionInputSizeInTokens(testing::_, testing::_))
+      .WillByDefault(
+          [&](optimization_guide::MultimodalMessageReadView request_metadata,
+              optimization_guide::OptimizationGuideModelSizeInTokenCallback
+                  callback) {
+            std::move(callback).Run(
+                blink::mojom::kWritingAssistanceMaxInputTokenSize);
+          });
+}
+
 blink::mojom::AIManager* AITestUtils::AITestBase::GetAIManagerInterface() {
   return ai_manager_.get();
 }

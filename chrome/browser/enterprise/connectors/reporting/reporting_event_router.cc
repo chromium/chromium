@@ -118,6 +118,34 @@ void ReportingEventRouter::OnPasswordBreach(
       kKeyPasswordBreachEvent, std::move(settings.value()), std::move(event));
 }
 
+void ReportingEventRouter::OnUrlFilteringInterstitial(
+    const GURL& url,
+    const std::string& threat_type,
+    const safe_browsing::RTLookupResponse& response) {
+  std::optional<enterprise_connectors::ReportingSettings> settings =
+      reporting_client_->GetReportingSettings();
+  if (!settings.has_value() || settings->enabled_event_names.count(
+                                   kKeyUrlFilteringInterstitialEvent) == 0) {
+    return;
+  }
+
+  base::Value::Dict event;
+  event.Set(kKeyUrl, url.spec());
+  EventResult event_result = GetEventResultFromThreatType(threat_type);
+  event.Set(kKeyClickedThrough,
+            event_result == enterprise_connectors::EventResult::BYPASSED);
+  if (!threat_type.empty()) {
+    event.Set(kKeyThreatType, threat_type);
+  }
+  AddTriggeredRuleInfoToUrlFilteringInterstitialEvent(response, event);
+  event.Set(kKeyEventResult,
+            enterprise_connectors::EventResultToString(event_result));
+
+  reporting_client_->ReportRealtimeEvent(kKeyUrlFilteringInterstitialEvent,
+                                         std::move(settings.value()),
+                                         std::move(event));
+}
+
 // ---------------------------------------
 // ReportingEventRouterFactory implementation
 // ---------------------------------------

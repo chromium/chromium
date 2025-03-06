@@ -32,7 +32,7 @@ namespace {
 constexpr char kKeyId[] = "id";
 constexpr char kKeyName[] = "name";
 constexpr char kKeyDescription[] = "description";
-constexpr char kKeyAction[] = "extension_action_type";
+constexpr char kKeyExtensionAction[] = "extension_action_type";
 constexpr char kKeyVersion[] = "extension_version";
 constexpr char kKeySource[] = "extension_source";
 
@@ -110,7 +110,7 @@ void ExtensionInstallEventRouter::ReportExtensionInstallEvent(
   event.Set(kKeyId, extension->id());
   event.Set(kKeyName, extension->name());
   event.Set(kKeyDescription, extension->description());
-  event.Set(kKeyAction, extension_action);
+  event.Set(kKeyExtensionAction, extension_action);
   event.Set(kKeyVersion, extension->GetVersionForDisplay());
   event.Set(kKeySource, extension->from_webstore() ? kChromeWebstoreSource
                                                    : kExternalSource);

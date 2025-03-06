@@ -6,10 +6,14 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -18,6 +22,7 @@
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_capability_type.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_manager {
@@ -127,6 +132,14 @@ class TestPageLiveStateObserver : public PageLiveStateObserver {
       scoped_observation_{this};
 };
 
+class MockPageLiveStateObserver : public PageLiveStateObserverDefaultImpl {
+ public:
+  MOCK_METHOD(void,
+              OnIsConnectedToUSBDeviceChanged,
+              (const PageNode* page_node),
+              (override));
+};
+
 }  // namespace
 
 class PageLiveStateDecoratorTest : public PerformanceManagerTestHarness {
@@ -149,8 +162,7 @@ class PageLiveStateDecoratorTest : public PerformanceManagerTestHarness {
   }
 
   void TearDown() override {
-    observer_.reset();
-    DeleteContents();
+    DeleteObservedWebContents();
     PerformanceManagerTestHarness::TearDown();
   }
 
@@ -168,6 +180,22 @@ class PageLiveStateDecoratorTest : public PerformanceManagerTestHarness {
     ASSERT_TRUE(observer_);
     EXPECT_EQ(expected_call, observer_->latest_function_called());
     EXPECT_EQ(page_node.get(), observer_->page_node_passed());
+  }
+
+  void DeleteObservedWebContents() {
+    // Stop observing the WebContents that was created in SetUp before deleting
+    // it.
+    observer_.reset();
+
+    DeleteContents();
+
+    // The inherited TearDown() method uses RunUntilIdle to wait for any tasks
+    // posted during WebContents destruction to run. RunUntilIdle is flaky so
+    // use RunUntilQuit instead: wait for a task posted after anything queued by
+    // DeleteContents() to run before continuing.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, task_environment()->QuitClosure());
+    task_environment()->RunUntilQuit();
   }
 
  private:
@@ -424,6 +452,89 @@ TEST_F(PageLiveStateDecoratorTest, UpdateFaviconInBackground) {
   EXPECT_TRUE(data->UpdatedTitleOrFaviconInBackground());
   EXPECT_TRUE(PageLiveStateDecorator::UpdatedTitleOrFaviconInBackground(
       web_contents()));
+}
+
+TEST_F(PageLiveStateDecoratorTest, AllPageObservers) {
+  ::testing::StrictMock<MockPageLiveStateObserver> observer1;
+  ::testing::StrictMock<MockPageLiveStateObserver> observer2;
+  EXPECT_FALSE(PageLiveStateDecorator::HasAllPageObserver(&observer1));
+  EXPECT_FALSE(PageLiveStateDecorator::HasAllPageObserver(&observer2));
+
+  base::WeakPtr<PageNode> page1 =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
+  ASSERT_TRUE(page1);
+  PageLiveStateDecorator::AddAllPageObserver(&observer1);
+  EXPECT_TRUE(PageLiveStateDecorator::HasAllPageObserver(&observer1));
+
+  // `observer1` should be notified about change to `page1`.
+  EXPECT_CALL(observer1, OnIsConnectedToUSBDeviceChanged(page1.get()));
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page1.get())
+      ->SetIsConnectedToUSBDeviceForTesting(true);
+  ::testing::Mock::VerifyAndClear(&observer1);
+
+  auto contents2 = CreateTestWebContents();
+  auto page2 =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(contents2.get());
+  ASSERT_TRUE(page2);
+
+  // `observer1` should be notified about changes to both pages.
+  EXPECT_CALL(observer1, OnIsConnectedToUSBDeviceChanged(page1.get()));
+  EXPECT_CALL(observer1, OnIsConnectedToUSBDeviceChanged(page2.get()));
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page1.get())
+      ->SetIsConnectedToUSBDeviceForTesting(false);
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page2.get())
+      ->SetIsConnectedToUSBDeviceForTesting(true);
+  ::testing::Mock::VerifyAndClear(&observer1);
+
+  PageLiveStateDecorator::AddAllPageObserver(&observer2);
+  EXPECT_TRUE(PageLiveStateDecorator::HasAllPageObserver(&observer2));
+
+  // Both observers should be notified about changes to both pages.
+  EXPECT_CALL(observer1, OnIsConnectedToUSBDeviceChanged(page1.get()));
+  EXPECT_CALL(observer1, OnIsConnectedToUSBDeviceChanged(page2.get()));
+  EXPECT_CALL(observer2, OnIsConnectedToUSBDeviceChanged(page1.get()));
+  EXPECT_CALL(observer2, OnIsConnectedToUSBDeviceChanged(page2.get()));
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page1.get())
+      ->SetIsConnectedToUSBDeviceForTesting(true);
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page2.get())
+      ->SetIsConnectedToUSBDeviceForTesting(false);
+  ::testing::Mock::VerifyAndClear(&observer1);
+  ::testing::Mock::VerifyAndClear(&observer2);
+
+  DeleteObservedWebContents();
+  EXPECT_FALSE(page1);
+
+  // Both observers should be notified about changes to `page2`.
+  EXPECT_CALL(observer1, OnIsConnectedToUSBDeviceChanged(page2.get()));
+  EXPECT_CALL(observer2, OnIsConnectedToUSBDeviceChanged(page2.get()));
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page2.get())
+      ->SetIsConnectedToUSBDeviceForTesting(true);
+  ::testing::Mock::VerifyAndClear(&observer1);
+  ::testing::Mock::VerifyAndClear(&observer2);
+
+  PageLiveStateDecorator::RemoveAllPageObserver(&observer1);
+  EXPECT_FALSE(PageLiveStateDecorator::HasAllPageObserver(&observer1));
+
+  // Removing an observer that's not in the list is a no-op.
+  PageLiveStateDecorator::RemoveAllPageObserver(&observer1);
+  EXPECT_FALSE(PageLiveStateDecorator::HasAllPageObserver(&observer1));
+
+  // `observer2` should be notified about change to `page2`.
+  EXPECT_CALL(observer2, OnIsConnectedToUSBDeviceChanged(page2.get()));
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page2.get())
+      ->SetIsConnectedToUSBDeviceForTesting(false);
+  ::testing::Mock::VerifyAndClear(&observer1);
+
+  // Removing the last node should not crash, even though there's still an
+  // observer.
+  contents2.reset();
+  EXPECT_FALSE(page2);
+
+  // RemoveAllPageObserver and HasAllPageObserver should not crash if called
+  // after PerformanceManager teardown.
+  TearDownNow();
+  EXPECT_FALSE(PageLiveStateDecorator::HasAllPageObserver(&observer2));
+  PageLiveStateDecorator::RemoveAllPageObserver(&observer2);
 }
 
 }  // namespace performance_manager

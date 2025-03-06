@@ -164,7 +164,7 @@ DOMException* ConvertModelStreamingResponseErrorToDOMException(
       return DOMException::Create(
           kExceptionMessageSessionDestroyed,
           DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError));
-    case ModelStreamingResponseStatus::kErrorPromptRequestTooLarge:
+    case ModelStreamingResponseStatus::kErrorInputTooLarge:
       return DOMException::Create(
           kExceptionRequestTooLarge,
           DOMException::GetErrorName(DOMExceptionCode::kQuotaExceededError));

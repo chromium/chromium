@@ -31,6 +31,7 @@
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/site_instance.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 
@@ -239,6 +240,36 @@ WebAppTabHelper::WebAppTabHelper(tabs::TabInterface* tab,
                contents->GetLastCommittedURL(),
                web_app::WebAppFilter::InstalledInChrome()),
            /*window_app_id=*/std::nullopt);
+}
+
+bool WebAppTabHelper::CanBeUsedForFocusExisting() const {
+  constexpr std::array<std::string_view, 3>
+      kMimeTypesWithExpectedLaunchConsumer = {
+          "text/html",
+          "text/xhtml+xml",
+          "application/xhtml+xml",
+      };
+
+  const std::string& mime_type = web_contents()->GetContentsMimeType();
+  for (std::string_view allowed_mime_type :
+       kMimeTypesWithExpectedLaunchConsumer) {
+    if (mime_type == allowed_mime_type) {
+      return true;
+    }
+  }
+
+  const network::mojom::URLResponseHead* response_head =
+      web_contents()->GetPrimaryMainFrame()->GetLastResponseHead();
+  if (response_head) {
+    for (std::string_view allowed_mime_type :
+         kMimeTypesWithExpectedLaunchConsumer) {
+      if (response_head->mime_type == allowed_mime_type) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 void WebAppTabHelper::OnWebAppInstalled(

@@ -15,7 +15,6 @@
 
 #include "base/base64.h"
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
@@ -29,7 +28,6 @@
 #include "base/threading/scoped_thread_priority.h"
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
-#include "crypto/features.h"
 #include "crypto/random.h"
 #include "crypto/sha2.h"
 #include "crypto/unexportable_key.h"
@@ -367,19 +365,17 @@ bool LoadWrappedKey(base::span<const uint8_t> wrapped,
   }
 
   SECURITY_STATUS import_status = -1;
-  if (base::FeatureList::IsEnabled(features::kLabelWindowsUnexportableKeys)) {
-    // Current versions of Chrome label keys with a random identifier. Attempt
-    // to obtain a handle from the identifier.
+  if (provider_type == ProviderType::kSoftware) {
+    // Software keys are labelled with a random identifier. Attempt to obtain a
+    // handle from the identifier.
     std::u16string key_label = KeyIdToWindowsLabel(wrapped);
     import_status =
         NCryptOpenKey(provider.get(), ScopedNCryptKey::Receiver(key).get(),
                       base::as_wcstr(key_label),
                       /*dwLegacyKeySpec=*/0, /*dwFlags=*/0);
-  }
-  if (FAILED(import_status)) {
-    // Previous versions of Chrome used an undocumented Windows feature to
-    // export a wrapped key. Attempt to obtain a handle from the wrapped key to
-    // continue to support old keys.
+  } else {
+    // TPM keys use an undocumented Windows feature to export a wrapped key.
+    // Attempt to obtain a handle from the wrapped key.
     import_status = NCryptImportKey(
         provider.get(), /*hImportKey=*/NULL, BCRYPT_OPAQUE_KEY_BLOB,
         /*pParameterList=*/nullptr, ScopedNCryptKey::Receiver(key).get(),
@@ -526,8 +522,7 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
       SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
 
       SECURITY_STATUS creation_status;
-      if (base::FeatureList::IsEnabled(
-              features::kLabelWindowsUnexportableKeys)) {
+      if (provider_type_ == ProviderType::kSoftware) {
         // Windows support for wrapped keys is undocumented, and doesn't seem to
         // work for the software backend. The API wants Chrome to provide a
         // label for the key, so we assign one randomly.
@@ -539,6 +534,7 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
             /*dwLegacyKeySpec=*/0, /*dwFlags=*/0);
       } else {
         // An empty key name stops the key being persisted to disk.
+        // TODO(crbug.com/398125799): assign labels to these keys instead.
         creation_status = NCryptCreatePersistedKey(
             provider.get(), ScopedNCryptKey::Receiver(key).get(),
             BCryptAlgorithmFor(*algo).value(),
@@ -556,8 +552,7 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
       }
     }
 
-    if (!base::FeatureList::IsEnabled(
-            features::kLabelWindowsUnexportableKeys)) {
+    if (provider_type_ == ProviderType::kTPM) {
       base::expected<std::vector<uint8_t>, SECURITY_STATUS> wrapped_key =
           ExportKey(key.get(), BCRYPT_OPAQUE_KEY_BLOB);
       if (!wrapped_key.has_value()) {
@@ -915,10 +910,6 @@ std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderWin() {
 
 std::unique_ptr<UnexportableKeyProvider>
 GetMicrosoftSoftwareUnexportableKeyProviderWin() {
-  if (!base::FeatureList::IsEnabled(features::kLabelWindowsUnexportableKeys)) {
-    // The software provider requires kLabelWindowsUnexportableKeys to work.
-    return nullptr;
-  }
   return std::make_unique<UnexportableKeyProviderWin>(ProviderType::kSoftware);
 }
 

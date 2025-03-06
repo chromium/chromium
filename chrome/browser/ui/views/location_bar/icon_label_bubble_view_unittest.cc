@@ -95,6 +95,37 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
 
   bool IsBubbleShowing() const override { return is_bubble_showing_; }
 
+  void SetUpAnimation() { SetUpForAnimation(); }
+
+  void AwaitAnimateOut() {
+    base::RunLoop animation_loop;
+    SetAnimationEndedCallback(animation_loop.QuitClosure());
+    AnimateOut();
+    animation_loop.Run();
+  }
+
+  void SetAnimationEndedCallback(base::RepeatingClosure cb) {
+    animation_ended_closure_ = std::move(cb);
+  }
+
+  void SetAnimationStepCallback(base::RepeatingClosure cb) {
+    animation_step_closure_ = std::move(cb);
+  }
+
+  void AnimationEnded(const gfx::Animation* animation) override {
+    IconLabelBubbleView::AnimationEnded(animation);
+    if (animation_ended_closure_) {
+      animation_ended_closure_.Run();
+    }
+  }
+
+  void AnimationProgressed(const gfx::Animation* animation) override {
+    IconLabelBubbleView::AnimationProgressed(animation);
+    if (animation_step_closure_) {
+      animation_step_closure_.Run();
+    }
+  }
+
  protected:
   int GetWidthBetween(int min, int max) const override {
     const double kOpenFraction =
@@ -126,6 +157,8 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
           ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   int value_ = 0;
   bool is_bubble_showing_ = false;
+  base::RepeatingClosure animation_ended_closure_;
+  base::RepeatingClosure animation_step_closure_;
 };
 
 }  // namespace
@@ -393,14 +426,37 @@ TEST_F(IconLabelBubbleViewTest, GestureInkDropState) {
 }
 #endif
 
-TEST_F(IconLabelBubbleViewTest, LabelVisibilityAfterAnimation) {
+TEST_F(IconLabelBubbleViewTest, LabelVisibilityAfterAnimateIn) {
+  view()->SetUpAnimation();
+
   view()->AnimateIn(std::nullopt);
   EXPECT_TRUE(view()->IsLabelVisible());
-  view()->AnimateOut();
+
+  view()->AwaitAnimateOut();
   EXPECT_FALSE(view()->IsLabelVisible());
+
   // Label should reappear if animated in after being animated out.
   view()->AnimateIn(std::nullopt);
   EXPECT_TRUE(view()->IsLabelVisible());
+}
+
+// The label should be visible while the view is animating out, and should be
+// hidden at the end of the animation.
+TEST_F(IconLabelBubbleViewTest, LabelVisibilityOnAnimateOut) {
+  view()->SetUpAnimation();
+
+  view()->ResetSlideAnimation(true);
+  EXPECT_TRUE(view()->IsLabelVisible());
+
+  view()->SetAnimationStepCallback(base::BindRepeating(
+      [](TestIconLabelBubbleView* view) {
+        EXPECT_TRUE(view->IsLabelVisible());
+      },
+      view()));
+
+  view()->AwaitAnimateOut();
+
+  EXPECT_FALSE(view()->IsLabelVisible());
 }
 
 TEST_F(IconLabelBubbleViewTest, LabelVisibilityAfterAnimationReset) {
@@ -415,10 +471,14 @@ TEST_F(IconLabelBubbleViewTest, LabelVisibilityAfterAnimationReset) {
 
 TEST_F(IconLabelBubbleViewTest,
        LabelVisibilityAfterAnimationWithDefinedString) {
+  view()->SetUpAnimation();
+
   view()->AnimateIn(IDS_AUTOFILL_CARD_SAVED);
   EXPECT_TRUE(view()->IsLabelVisible());
-  view()->AnimateOut();
+
+  view()->AwaitAnimateOut();
   EXPECT_FALSE(view()->IsLabelVisible());
+
   // Label should reappear if animated in after being animated out.
   view()->AnimateIn(IDS_AUTOFILL_CARD_SAVED);
   EXPECT_TRUE(view()->IsLabelVisible());

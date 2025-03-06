@@ -11,10 +11,13 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/smart_card/smart_card_permission_context.h"
+#include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_types.mojom-shared.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
@@ -22,7 +25,11 @@
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
-#include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/common/features.h"
+
+namespace {
+constexpr char kDummyReader[] = "Dummy Reader";
+}  // namespace
 
 class ChromeOsSmartCardDelegateBrowserTest
     : public web_app::IsolatedWebAppBrowserTestHarness {
@@ -61,6 +68,12 @@ class ChromeOsSmartCardDelegateBrowserTest
         ->GetSmartCardDelegate();
   }
 
+  void GrantReaderPermission() {
+    SmartCardPermissionContextFactory::GetForProfile(*profile())
+        .GrantPersistentReaderPermission(app_frame_->GetLastCommittedOrigin(),
+                                         kDummyReader);
+  }
+
  protected:
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app_;
   raw_ptr<content::RenderFrameHost> app_frame_ = nullptr;
@@ -90,4 +103,77 @@ IN_PROC_BROWSER_TEST_F(ChromeOsSmartCardDelegateBrowserTest,
 
   GetSmartCardDelegate()->NotifyLastConnectionLost(*app_frame_);
   ASSERT_FALSE(IsInUse(*app_frame_));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeOsSmartCardDelegateBrowserTest,
+                       ReconnectionInTheBackgroundImpossible) {
+  GrantReaderPermission();
+  auto& pscs = CHECK_DEREF(
+      content_settings::PageSpecificContentSettings::GetForFrame(app_frame_));
+  // Set the last used time past the reconnection deadline.
+  //
+  // Depending on real time in browser tests might not be generally a good idea,
+  // but this one will be stable as long as test execution doesn't travel back
+  // in time. If it does, we might have bigger problems than
+  // instability here.
+  pscs.set_last_used_time_for_testing(ContentSettingsType::SMART_CARD_GUARD,
+                                      base::Time::Now() -
+
+                                          base::Seconds(16));
+
+  // Hiding takes focus from the window.
+  content::WebContents::FromRenderFrameHost(app_frame_)
+      ->GetTopLevelNativeWindow()
+      ->Hide();
+
+  // Window does not have focus and the last connection was more than
+  // `kSmartCardAllowedReconnectTime` ago. Hence, connection is not possible.
+  EXPECT_FALSE(
+      GetSmartCardDelegate()->HasReaderPermission(*app_frame_, kDummyReader));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeOsSmartCardDelegateBrowserTest,
+                       ReconnectionInTheBackgroundPossible) {
+  GrantReaderPermission();
+  auto& pscs = CHECK_DEREF(
+      content_settings::PageSpecificContentSettings::GetForFrame(app_frame_));
+  // Set the last used time within the reconnection deadline (in the future).
+  //
+  // Depending on real time in browser tests might not be generally a good idea,
+  // but this one will be stable as long as test execution from here takes less
+  // than a minute. If it takes longer, we might have bigger problems than
+  // instability here.
+  pscs.set_last_used_time_for_testing(ContentSettingsType::SMART_CARD_GUARD,
+                                      base::Time::Now() + base::Minutes(1));
+
+  // Hiding takes focus from the window.
+  content::WebContents::FromRenderFrameHost(app_frame_)
+      ->GetTopLevelNativeWindow()
+      ->Hide();
+
+  // Window does not have focus but the last connection was less than
+  // `kSmartCardAllowedReconnectTime` ago (probably still in the future). Hence,
+  // connection is deemed a reconnection and is possible.
+  EXPECT_TRUE(
+      GetSmartCardDelegate()->HasReaderPermission(*app_frame_, kDummyReader));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeOsSmartCardDelegateBrowserTest,
+                       ReconnectionInTheForegroundPossible) {
+  GrantReaderPermission();
+  auto& pscs = CHECK_DEREF(
+      content_settings::PageSpecificContentSettings::GetForFrame(app_frame_));
+  // Set the last used time past the reconnection deadline.
+  //
+  // Depending on real time in browser tests might not be generally a good idea,
+  // but this one will be stable as long as test execution doesn't travel back
+  // in time. If it does, we might have bigger problems than
+  // instability here.
+  pscs.set_last_used_time_for_testing(ContentSettingsType::SMART_CARD_GUARD,
+                                      base::Time::Now() - base::Seconds(16));
+
+  // Long time from last connection should not have impact on connection
+  // possibility as long as the window has focus.
+  EXPECT_TRUE(
+      GetSmartCardDelegate()->HasReaderPermission(*app_frame_, kDummyReader));
 }

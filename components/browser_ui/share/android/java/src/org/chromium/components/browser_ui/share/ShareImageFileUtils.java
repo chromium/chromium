@@ -17,7 +17,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
-import android.text.TextUtils;
 
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
@@ -575,7 +574,7 @@ public class ShareImageFileUtils {
         }
     }
 
-    private static class ExternallyVisibleUriCallback implements Callback<@Nullable String> {
+    private static class ExternallyVisibleUriCallback implements Callback<String> {
         private Callback<@Nullable Uri> mComposedCallback;
 
         ExternallyVisibleUriCallback(Callback<@Nullable Uri> cb) {
@@ -583,14 +582,13 @@ public class ShareImageFileUtils {
         }
 
         @Override
-        public void onResult(final @Nullable String path) {
-            if (TextUtils.isEmpty(path)) {
+        public void onResult(final String path) {
+            if (path.isEmpty()) {
                 mComposedCallback.onResult(null);
                 return;
             }
 
             new AsyncTask<@Nullable Uri>() {
-                @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1139
                 @Override
                 protected @Nullable Uri doInBackground() {
                     try {

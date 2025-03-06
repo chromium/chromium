@@ -61,7 +61,7 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
   // issued when it is not created yet or destroyed (by BrowserMainLoop).
   static SpeechRecognitionManagerImpl* GetInstance();
 
-  static bool IsOnDeviceSpeechRecognitionAvailable(
+  static bool IsOnDeviceSpeechRecognitionInstalled(
       const SpeechRecognitionSessionConfig& config);
 
   // SpeechRecognitionManager implementation.

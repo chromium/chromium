@@ -85,12 +85,6 @@ public class TabUiFeatureUtilitiesUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    public void testIsTabDragAsWindowEnabled() {
-        assertTrue(TabUiFeatureUtilities.isTabDragAsWindowEnabled());
-    }
-
-    @Test
     public void testTabDragToCreateInstance_withAllowlistedOEM() {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "samsung");
         assertTrue(TabUiFeatureUtilities.isTabDragToCreateInstanceSupported());

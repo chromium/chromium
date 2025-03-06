@@ -353,7 +353,7 @@ void MediaPipelineBackendStarboard::CallOnPlayerError(
     void* player,
     void* context,
     StarboardPlayerError error,
-    const char* message) {
+    std::string message) {
   static_cast<MediaPipelineBackendStarboard*>(context)->OnPlayerError(
       player, error, message);
 }

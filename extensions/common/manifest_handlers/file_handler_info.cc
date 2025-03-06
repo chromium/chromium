@@ -201,8 +201,9 @@ bool FileHandlersParser::Parse(Extension* extension, std::u16string* error) {
   }
 
   int filter_count = 0;
-  for (const auto& iter : info->file_handlers)
+  for (const auto& iter : info->file_handlers) {
     filter_count += iter.types.size() + iter.extensions.size();
+  }
 
   if (filter_count > kMaxTypeAndExtensionHandlers) {
     *error = errors::kInvalidFileHandlersTooManyTypesAndExtensions;

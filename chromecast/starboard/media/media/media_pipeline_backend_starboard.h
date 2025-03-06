@@ -138,7 +138,7 @@ class MediaPipelineBackendStarboard : public MediaPipelineBackend {
   static void CallOnPlayerError(void* player,
                                 void* context,
                                 StarboardPlayerError error,
-                                const char* message);
+                                std::string message);
 
   StarboardPlayerCallbackHandler player_callback_handler_ = {
       /*context=*/this,      &CallOnSampleDecoded,

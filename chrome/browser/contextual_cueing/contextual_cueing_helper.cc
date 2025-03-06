@@ -246,7 +246,7 @@ void ContextualCueingHelper::MaybeCreateForWebContents(
 #if BUILDFLAG(ENABLE_GLIC)
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (!glic::GlicEnabling::IsProfileEligible(profile)) {
+  if (!glic::GlicEnabling::IsEnabledForProfile(profile)) {
     return;
   }
 

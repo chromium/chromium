@@ -47,6 +47,7 @@ suite('DialogFocusManager', function() {
     list.style.width = '100%';
     list.style.position = 'absolute';
     replaceBody(list);
+    await eventToPromise('viewport-filled', list.$.list);
     await microtasksFinished();
     items = list.shadowRoot.querySelectorAll('bookmarks-item');
 
@@ -63,6 +64,7 @@ suite('DialogFocusManager', function() {
     assertEquals(focusedItem, getDeepActiveElement());
 
     commandManager.openCommandMenuAtPosition(0, 0, MenuSource.ITEM);
+    await microtasksFinished();
     const dropdown = commandManager.$.dropdown.getIfExists()!;
 
     assertTrue(dropdown.open);
@@ -82,6 +84,7 @@ suite('DialogFocusManager', function() {
     assertEquals(focusedItem, getDeepActiveElement());
 
     commandManager.openCommandMenuAtPosition(0, 0, MenuSource.ITEM);
+    await microtasksFinished();
     const dropdown = commandManager.$.dropdown.getIfExists();
     assertTrue(!!dropdown);
 
@@ -107,6 +110,7 @@ suite('DialogFocusManager', function() {
     assertEquals(focusedItem, getDeepActiveElement());
 
     commandManager.openCommandMenuAtPosition(0, 0, MenuSource.ITEM);
+    await microtasksFinished();
     assertNotEquals(focusedItem, getDeepActiveElement());
     const dropdown = commandManager.$.dropdown.getIfExists()!;
     dropdown.close();

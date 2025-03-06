@@ -141,6 +141,11 @@ bool DisplayResourceProvider::IsOverlayCandidate(ResourceId id) const {
   return resource && resource->transferable.is_overlay_candidate;
 }
 
+bool DisplayResourceProvider::IsLowLatencyRendering(ResourceId id) const {
+  const ChildResource* resource = TryGetResource(id);
+  return resource && resource->transferable.is_low_latency_rendering;
+}
+
 SurfaceId DisplayResourceProvider::GetSurfaceId(ResourceId id) const {
   const ChildResource* resource = GetResource(id);
   return children_.contains(resource->child_id)

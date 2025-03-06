@@ -11,6 +11,7 @@ import android.provider.Settings;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -20,6 +21,7 @@ import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A controller class for messages that promo user to set Chrome as the default browser. */
+@NullMarked
 public class DefaultBrowserPromoMessageController {
     private final Context mContext;
     private final Tracker mTracker;

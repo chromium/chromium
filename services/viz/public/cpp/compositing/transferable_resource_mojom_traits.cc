@@ -77,6 +77,7 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
   out->set_sync_token(sync_token);
   out->set_texture_target(data.texture_target());
   out->is_overlay_candidate = data.is_overlay_candidate();
+  out->is_low_latency_rendering = data.is_low_latency_rendering();
   out->needs_detiling = data.needs_detiling();
 
 #if BUILDFLAG(IS_ANDROID)

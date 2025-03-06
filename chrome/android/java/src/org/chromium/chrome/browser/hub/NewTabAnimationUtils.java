@@ -59,7 +59,7 @@ public class NewTabAnimationUtils {
             x = finalRect.right;
             initialRect.left = x - initialWidth;
             initialRect.right = x;
-            finalRect.left = finalRect.right - finalWidth;
+            finalRect.left = x - finalWidth;
         } else {
             x = finalRect.left;
             initialRect.left = x;

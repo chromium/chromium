@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
@@ -13,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "components/performance_manager/decorators/decorators_utils.h"
 #include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/node_attached_data.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -302,6 +304,56 @@ PageLiveStateDecorator::PageLiveStateDecorator() = default;
 PageLiveStateDecorator::~PageLiveStateDecorator() = default;
 
 // static
+void PageLiveStateDecorator::AddAllPageObserver(
+    PageLiveStateObserver* observer) {
+  // Must not be called before PerformanceManager is available, or observations
+  // will be lost.
+  CHECK(PerformanceManager::IsAvailable());
+  auto* graph = PerformanceManager::GetGraph();
+  PageLiveStateDecorator::GetFromGraph(graph)->all_page_observers_.AddObserver(
+      observer);
+  for (const PageNode* page_node : graph->GetAllPageNodes()) {
+    PageLiveStateDataImpl::GetOrCreate(PageNodeImpl::FromNode(page_node))
+        ->AddObserver(observer);
+  }
+}
+
+// static
+void PageLiveStateDecorator::RemoveAllPageObserver(
+    PageLiveStateObserver* observer) {
+  if (!PerformanceManager::IsAvailable()) {
+    // Observer list was already cleared when PageLiveStateDecorator was
+    // destroyed.
+    return;
+  }
+  auto* graph = PerformanceManager::GetGraph();
+  for (const PageNode* page_node : graph->GetAllPageNodes()) {
+    auto* data = PageLiveStateDataImpl::Get(PageNodeImpl::FromNode(page_node));
+    // `data` might be null if AddAllPageObserver was never called (which is
+    // possible because, by the semantics of ObserverList, it's legal to remove
+    // an observer that was never added), or if RemoveAllPageObserver is being
+    // called from an OnPageNodeAdded implementation that happens to be called
+    // before PageLiveStateDecorator::OnPageNodeAdded.
+    if (data) {
+      data->RemoveObserver(observer);
+    }
+  }
+  PageLiveStateDecorator::GetFromGraph(graph)
+      ->all_page_observers_.RemoveObserver(observer);
+}
+
+// static
+bool PageLiveStateDecorator::HasAllPageObserver(
+    PageLiveStateObserver* observer) {
+  if (!PerformanceManager::IsAvailable()) {
+    // Observer list was cleared when PageLiveStateDecorator was destroyed.
+    return false;
+  }
+  return PageLiveStateDecorator::GetFromGraph(PerformanceManager::GetGraph())
+      ->all_page_observers_.HasObserver(observer);
+}
+
+// static
 void PageLiveStateDecorator::OnCapabilityTypesChanged(
     content::WebContents* contents,
     content::WebContentsCapabilityType capability_type,
@@ -554,6 +606,31 @@ base::Value::Dict PageLiveStateDecorator::DescribePageNodeData(
           data->UpdatedTitleOrFaviconInBackground());
 
   return ret;
+}
+
+void PageLiveStateDecorator::OnPageNodeAdded(const PageNode* page_node) {
+  if (all_page_observers_.empty()) {
+    return;
+  }
+  auto* data =
+      PageLiveStateDataImpl::GetOrCreate(PageNodeImpl::FromNode(page_node));
+  for (PageLiveStateObserver& observer : all_page_observers_) {
+    data->AddObserver(&observer);
+  }
+}
+
+void PageLiveStateDecorator::OnBeforePageNodeRemoved(
+    const PageNode* page_node) {
+  if (all_page_observers_.empty()) {
+    return;
+  }
+  auto* data = PageLiveStateDataImpl::Get(PageNodeImpl::FromNode(page_node));
+  // Since an observer exists, AddAllPageObservers was called. So `data` was
+  // created either there or in OnPageNodeAdded.
+  CHECK(data);
+  for (PageLiveStateObserver& observer : all_page_observers_) {
+    data->RemoveObserver(&observer);
+  }
 }
 
 void PageLiveStateDecorator::OnTitleUpdated(const PageNode* page_node) {

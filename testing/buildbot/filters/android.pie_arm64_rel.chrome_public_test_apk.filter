@@ -21,9 +21,6 @@
 -org.chromium.chrome.browser.ntp.NewTabPageTest.testRemoveMostVisitedItem
 -org.chromium.chrome.browser.ntp.RecentTabsPageTest.testRecentlyClosedTabs
 
-# crbug.com/1040088
--org.chromium.chrome.browser.payments.PaymentRequestRetryTest.testRetryWithShippingAddressErrorsAndPayerErrors
-
 # crbug.com/707528
 -org.chromium.chrome.browser.push_messaging.PushMessagingTest.testPushAndShowNotification
 

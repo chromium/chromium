@@ -90,11 +90,11 @@ export class MockSpeechRecognizer {
     this.dispatchResult();
   }
 
-  onDeviceWebSpeechAvailable(params) {
-    return Promise.resolve(false);
+  onDeviceWebSpeechAvailable(lang) {
+    return Promise.resolve("available");
   }
 
-  installOnDeviceSpeechRecognition(params) {
+  installOnDeviceSpeechRecognition(lang) {
     return Promise.resolve(false);
   }
 }

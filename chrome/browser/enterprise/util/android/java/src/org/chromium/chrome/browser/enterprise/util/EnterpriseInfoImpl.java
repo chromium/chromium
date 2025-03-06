@@ -183,14 +183,10 @@ public class EnterpriseInfoImpl extends EnterpriseInfo {
 
     @Override
     public void logDeviceEnterpriseInfo() {
-        Callback<OwnedState> callback =
-                (result) -> {
-                    recordManagementHistograms(result);
-                };
-        getDeviceEnterpriseInfo(callback);
+        getDeviceEnterpriseInfo(result -> recordManagementHistograms(result));
     }
 
-    private static void recordManagementHistograms(OwnedState state) {
+    private static void recordManagementHistograms(@Nullable OwnedState state) {
         if (state == null) return;
 
         RecordHistogram.recordBooleanHistogram("EnterpriseCheck.IsManaged2", state.mProfileOwned);

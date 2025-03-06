@@ -803,8 +803,9 @@ struct AutocompleteMatch {
 
   // Optional image information. Used for some types of suggestions, such as
   // entity suggestions, that want to display an associated image, which will be
-  // rendered larger than a regular suggestion icon. The dominant color can be
-  // used to paint the image placeholder while fetching the image.
+  // rendered larger than a regular suggestion icon.
+  // The dominant color can be used to paint an image placeholder while fetching
+  // the image. The value is a hex string (for example, "#424242").
   std::string image_dominant_color;
   GURL image_url;
 

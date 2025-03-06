@@ -1004,6 +1004,7 @@ class SettingsPrivacyPageTest : public SettingsBrowserTest {
 #endif
             features::kDbdRevampDesktop,
             features::kEnableCertManagementUIV2,
+            privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi,
         },
         {});
     scoped_feature_list2_.InitAndEnableFeatureWithParameters(
@@ -1071,6 +1072,9 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, TrackingProtectionSubpage) {
           "runMochaSuite('TrackingProtectionSubpage')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, AllSitesSubpage) {
+  RunTest("settings/privacy_page_test.js", "runMochaSuite('AllSitesSubpage')");
+}
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, PrivacyGuideRow) {
   RunTest("settings/privacy_page_test.js", "runMochaSuite('PrivacyGuideRow')");

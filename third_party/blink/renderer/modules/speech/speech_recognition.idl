@@ -38,6 +38,20 @@ enum SpeechRecognitionMode {
     "cloud-only",
 };
 
+enum AvailabilityStatus {
+    // On-device speech recognition is not supported.
+    "unavailable",
+
+    // On-device speech recognition is supported but not installed or downloading.
+    "downloadable",
+
+    // On-device speech recognition is supported and downloading.
+    "downloading",
+
+    // On-device speech recognition is supported and installed.
+    "available",
+};
+
 [
     ActiveScriptWrappable,
     LegacyWindowAlias=webkitSpeechRecognition,
@@ -68,7 +82,7 @@ enum SpeechRecognitionMode {
         CallWith=ScriptState,
         RaisesException,
         RuntimeEnabled=OnDeviceWebSpeechAvailable
-    ] static Promise<boolean> availableOnDevice(DOMString lang);
+    ] static Promise<AvailabilityStatus> availableOnDevice(DOMString lang);
     [
         CallWith=ScriptState,
         RaisesException,

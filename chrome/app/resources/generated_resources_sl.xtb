@@ -3823,6 +3823,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3670229581627177274">Vklop vmesnika Bluetooth</translation>
 <translation id="3670480940339182416">Spletna mesta lahko uporabljajo orodje za optimiziranje V8</translation>
 <translation id="3671764914317109892">Uporabite pogovorni jezik za iskanje po zgodovini brskanja. Zastavljate lahko tudi vprašanja in prejemate odgovore na podlagi zgodovine brskanja.</translation>
+<translation id="3671982238795754537">Preberite več o ključih za dostop</translation>
 <translation id="3672681487849735243">Zaznana je tovarniška napaka</translation>
 <translation id="3673097791729989571">Prijavo gosti <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">Koda PIN je posodobljena</translation>
@@ -4739,6 +4740,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4289540628985791613">Pregled</translation>
 <translation id="428963538941819373">Ta spletna mesta lahko uporabljajo podatke, ki so jih shranila o vas med brskanjem po <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Izbira kode PIN</translation>
+<translation id="4290526909608432059">Podpora za aplikacije za Chrome bo kmalu ukinjena. Če želite izvedeti, katere možnosti imate, se obrnite na razvijalca aplikacije ali skupino za podporo za IT.</translation>
 <translation id="4290791284969893584">Ko zaprete stran, se začeta opravila morda ne bodo dokončala.</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> član</translation>
 <translation id="4290898381118933198">Povlecite, če se želite pomikati med stranmi</translation>
@@ -8542,6 +8544,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – povezana so serijska vrata</translation>
 <translation id="7033616203784997570">Vnos ima lahko največ 62 znakov.</translation>
 <translation id="7034692021407794547">Skrbnik s pravicami za upravljanje obračunavanja mora najprej sprejeti pogoje storitve za strojno opremo za Google Meet v razdelku Strojna oprema za Google Meet v skrbniški konzoli.</translation>
+<translation id="7036550011779986598">Spletno mesto <ph name="RP_ID" /> je pravkar ustvarilo ključ za dostop za vaš račun. Ključi za dostop omogočajo hitrejšo in varnejšo prijavo ter so shranjeni v Googlovem upravitelju gesel za osebo <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Za Linux priporočamo <ph name="DISK_SIZE" /> prostora. Če želite povečati nezasedeni prostor, izbrišite datoteke iz naprave.</translation>
 <translation id="7037157058268992880">Pozabil/-a sem kodo PIN</translation>
 <translation id="7037509989619051237">Besedilo za predogled</translation>
@@ -10584,6 +10587,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8477178913400731244">Izbriši podatke</translation>
 <translation id="8477241577829954800">Zamenjano</translation>
 <translation id="8477384620836102176">&amp;Splošno</translation>
+<translation id="8477446666255316832">Naslednjič se prijavite hitreje</translation>
 <translation id="8479176401914456949">Neveljavna koda. Poskusite znova.</translation>
 <translation id="8480869669560681089">Neznana naprava ponudnika <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Potrditev dovoljenja za USB</translation>

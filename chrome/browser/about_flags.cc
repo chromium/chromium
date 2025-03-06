@@ -5481,11 +5481,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kClayBlockingVariations,
                                     "ClayBlocking")},
 
-    {"template-url-reconciliation",
-     flag_descriptions::kTemplateUrlReconciliationName,
-     flag_descriptions::kTemplateUrlReconciliationDialogDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(switches::kTemplateUrlReconciliation)},
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
@@ -7275,9 +7270,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kStartSurfaceReturnTime,
                                     kStartSurfaceReturnTimeVariations,
                                     "StartSurfaceReturnTime")},
-    {"tab-drag-drop", flag_descriptions::kTabDragDropName,
-     flag_descriptions::kTabDragDropDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabDragDropAndroid)},
 
     {"most-visited-tiles-customization",
      flag_descriptions::kMostVisitedTilesCustomizationName,
@@ -8696,13 +8688,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableManagedConfigurationWebApiName,
      flag_descriptions::kEnableManagedConfigurationWebApiDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(blink::features::kManagedConfiguration)},
-
-    {"enable-system-entropy",
-     flag_descriptions::kEnableSystemEntropyOnPerformanceNavigationTimingName,
-     flag_descriptions::
-         kEnableSystemEntropyOnPerformanceNavigationTimingDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kPerformanceNavigateSystemEntropy)},
 
     {"clear-cross-site-cross-browsing-context-group-window-name",
      flag_descriptions::kClearCrossSiteCrossBrowsingContextGroupWindowNameName,

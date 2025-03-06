@@ -8,8 +8,8 @@
 #include <optional>
 
 #include "base/check.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "components/user_education/common/session/user_education_idle_observer.h"
 #include "components/user_education/common/session/user_education_idle_policy.h"
 #include "components/user_education/common/session/user_education_session_manager.h"
@@ -78,6 +78,6 @@ void PollingIdleObserver::OnIdleStateChange(
 }
 
 bool PollingIdleObserver::IsChromeActive() const {
-  const auto* const browser = BrowserList::GetInstance()->GetLastActive();
-  return browser && browser->window()->IsActive();
+  auto* const browser = BrowserList::GetInstance()->GetLastActive();
+  return browser && browser->IsActive();
 }

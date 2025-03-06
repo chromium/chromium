@@ -328,7 +328,7 @@ public class ProfileDataCache implements AccountInfoService.Observer {
 
     /** Implements {@link AccountInfoService.Observer}. */
     @Override
-    public void onAccountInfoUpdated(AccountInfo accountInfo) {
+    public void onAccountInfoUpdated(@Nullable AccountInfo accountInfo) {
         // We don't update the cache if the account information and ProfileDataCache config mean
         // that we would just be returning the default profile data.
         if (accountInfo != null
@@ -374,7 +374,7 @@ public class ProfileDataCache implements AccountInfoService.Observer {
     private void populateCacheForAccount(
             AccountInfoService accountInfoService, String accountEmail) {
         // TODO(crbug.com/341948846): Remove AccountInfoService and simplify this.
-        Promise<AccountInfo> accountInfoPromise =
+        Promise<@Nullable AccountInfo> accountInfoPromise =
                 accountInfoService.getAccountInfoByEmail(accountEmail);
         if (accountInfoPromise.isFulfilled()) {
             onAccountInfoUpdated(accountInfoPromise.getResult());

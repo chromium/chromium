@@ -65,6 +65,21 @@ ProtoEventResult GetEventResult(EventResult event_result) {
   }
 }
 
+std::string ActionFromVerdictType(
+    safe_browsing::RTLookupResponse::ThreatInfo::VerdictType verdict_type) {
+  switch (verdict_type) {
+    case safe_browsing::RTLookupResponse::ThreatInfo::DANGEROUS:
+      return "BLOCK";
+    case safe_browsing::RTLookupResponse::ThreatInfo::WARN:
+      return "WARN";
+    case safe_browsing::RTLookupResponse::ThreatInfo::SAFE:
+      return "REPORT_ONLY";
+    case safe_browsing::RTLookupResponse::ThreatInfo::SUSPICIOUS:
+    case safe_browsing::RTLookupResponse::ThreatInfo::VERDICT_TYPE_UNSPECIFIED:
+      return "ACTION_UNKNOWN";
+  }
+}
+
 }  // namespace
 
 std::string MaskUsername(const std::u16string& username) {
@@ -98,6 +113,48 @@ bool IsUrlMatched(url_matcher::URLMatcher* matcher, const GURL& url) {
   return matcher && !matcher->MatchURL(url).empty();
 }
 
+EventResult GetEventResultFromThreatType(std::string threat_type) {
+  if (threat_type == "ENTERPRISE_WARNED_SEEN") {
+    return EventResult::WARNED;
+  }
+  if (threat_type == "ENTERPRISE_WARNED_BYPASS") {
+    return EventResult::BYPASSED;
+  }
+  if (threat_type == "ENTERPRISE_BLOCKED_SEEN") {
+    return EventResult::BLOCKED;
+  }
+  if (threat_type.empty()) {
+    return EventResult::ALLOWED;
+  }
+  NOTREACHED();
+}
+
+void AddTriggeredRuleInfoToUrlFilteringInterstitialEvent(
+    const safe_browsing::RTLookupResponse& response,
+    base::Value::Dict& event) {
+  base::Value::List triggered_rule_info;
+
+  for (const safe_browsing::RTLookupResponse::ThreatInfo& threat_info :
+       response.threat_info()) {
+    base::Value::Dict triggered_rule;
+    triggered_rule.Set(kKeyTriggeredRuleName,
+                       threat_info.matched_url_navigation_rule().rule_name());
+    triggered_rule.Set(kKeyTriggeredRuleId,
+                       threat_info.matched_url_navigation_rule().rule_id());
+    triggered_rule.Set(
+        kKeyUrlCategory,
+        threat_info.matched_url_navigation_rule().matched_url_category());
+    triggered_rule.Set(kKeyAction,
+                       ActionFromVerdictType(threat_info.verdict_type()));
+
+    if (threat_info.matched_url_navigation_rule().has_watermark_message()) {
+      triggered_rule.Set(kKeyHasWatermarking, true);
+    }
+
+    triggered_rule_info.Append(std::move(triggered_rule));
+  }
+  event.Set(kKeyTriggeredRuleInfo, std::move(triggered_rule_info));
+}
 std::optional<proto::PasswordBreachEvent> GetPasswordBreachEvent(
     const std::string& trigger,
     const std::vector<std::pair<GURL, std::u16string>>& identities,

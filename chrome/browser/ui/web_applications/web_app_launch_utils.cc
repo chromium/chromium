@@ -434,7 +434,9 @@ bool MaybeHandleIntentPickerFocusExistingOrNavigateExisting(
   }
   std::optional<AppBrowserController::BrowserAndTabIndex> existing_app_host =
       AppBrowserController::FindTopLevelBrowsingContextForWebApp(
-          *profile, app_id, Browser::TYPE_APP);
+          *profile, app_id, Browser::TYPE_APP,
+          /*for_focus_existing=*/client_mode ==
+              LaunchHandler::ClientMode::kFocusExisting);
   if (!existing_app_host.has_value()) {
     return false;
   }

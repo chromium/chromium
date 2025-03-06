@@ -1659,7 +1659,6 @@ android_library(
     "src/org/chromium/chrome/browser/contextmenu/ContextMenuHeaderViewTest.java",
     "src/org/chromium/chrome/browser/contextmenu/ContextMenuItemViewTest.java",
     "src/org/chromium/chrome/browser/contextmenu/ContextMenuRenderTest.java",
-    "src/org/chromium/chrome/browser/contextmenu/ContextMenuUtilsTest.java",
   ]
 
   deps = chrome_unit_test_java_deps

@@ -553,14 +553,7 @@ export class DataSharingApp extends CustomElement implements Logger {
               logger: this,
             })
             .then((res) => {
-              // There's a bug in the SDK this is returning earlier than
-              // onEvent. The setTimeout is needed to make sure onEvent is
-              // called before the UI closes.
-              // TODO(crbug.com/399961647): Remove setTimeout once the SDK is
-              // fixed.
-              setTimeout(() => {
-                this.browserProxy_.closeUi(res.status);
-              }, 100);
+              this.browserProxy_.closeUi(res.status);
             });
         break;
       default:

@@ -122,7 +122,8 @@ void SpeechRecognitionController::Start(
 
 void SpeechRecognitionController::OnDeviceWebSpeechAvailable(
     const String& language,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(media::mojom::blink::AvailabilityStatus)>
+        callback) {
   GetOnDeviceSpeechRecognition()->OnDeviceWebSpeechAvailable(
       language, std::move(callback));
 }

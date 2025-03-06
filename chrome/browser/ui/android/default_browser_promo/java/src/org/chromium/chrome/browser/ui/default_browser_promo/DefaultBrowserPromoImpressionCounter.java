@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.default_browser_promo;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.TimeUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -18,6 +19,7 @@ import java.util.concurrent.TimeUnit;
  * A utility class providing the default browser promo impression counts, including total promo
  * count, session count, and intervals.
  */
+@NullMarked
 public class DefaultBrowserPromoImpressionCounter {
     private static final int MAX_PROMO_COUNT = 1;
     private static final int MIN_TRIGGER_SESSION_COUNT = 3;

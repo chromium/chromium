@@ -10,6 +10,9 @@
 #include <optional>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "chromecast/public/media/cast_decoder_buffer.h"
 #include "chromecast/starboard/chromecast/starboard_cast_api/cast_starboard_api_types.h"
@@ -162,32 +165,36 @@ BufferStatus StarboardAudioDecoder::PushBuffer(CastDecoderBuffer* buffer) {
   }
 
   DCHECK(audio_sample_info_);
-  size_t size_of_buffer = buffer->data_size();
-  std::unique_ptr<uint8_t[]> data_copy;
+
+  // SAFETY: This is not safe, but is necessary since the CastDecoderBuffer API
+  // only exposes its data as a pointer + size.
+  //
+  // TODO(crbug.com/323610278): once CMA is deprecated, we will not need this
+  // class.
+  auto buffer_span = UNSAFE_BUFFERS(
+      base::span<const uint8_t>(buffer->data(), buffer->data_size()));
+  base::HeapArray<uint8_t> data_copy;
 
   if (audio_sample_info_->codec == kStarboardAudioCodecPcm) {
-    // This call will also set the value for `size_of_buffer`.
     data_copy = ResamplePCMAudioDataForStarboard(
         format_to_decode_to_, config_.sample_format, config_.codec,
-        audio_sample_info_->number_of_channels, *buffer, size_of_buffer);
+        audio_sample_info_->number_of_channels, buffer_span);
   } else {
     // Need to do this when not resampling to ensure that the input data is not
     // freed until Starboard is done using it.
-    data_copy = std::make_unique<uint8_t[]>(size_of_buffer);
-    memcpy(data_copy.get(), buffer->data(), size_of_buffer);
+    data_copy = base::HeapArray<uint8_t>::CopiedFrom(buffer_span);
   }
 
   StarboardSampleInfo sample = {};
   sample.type = kStarboardMediaTypeAudio;
   sample.timestamp = buffer->timestamp();
-  sample.side_data = nullptr;
-  sample.side_data_count = 0;
+  sample.side_data = base::span<const StarboardSampleSideData>();
   sample.audio_sample_info = *audio_sample_info_;
 
-  decoded_bytes_ += size_of_buffer;
+  decoded_bytes_ += data_copy.size();
 
   return PushBufferInternal(std::move(sample), DrmInfoWrapper::Create(*buffer),
-                            std::move(data_copy), size_of_buffer);
+                            std::move(data_copy));
 }
 
 void StarboardAudioDecoder::GetStatistics(Statistics* statistics) {

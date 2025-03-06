@@ -164,8 +164,9 @@ bool ContentScriptsInfo::ExtensionHasScriptAtURL(const Extension* extension,
                                                  const GURL& url) {
   for (const std::unique_ptr<UserScript>& script :
        GetContentScripts(extension)) {
-    if (script->MatchesURL(url))
+    if (script->MatchesURL(url)) {
       return true;
+    }
   }
   return false;
 }
@@ -176,8 +177,9 @@ URLPatternSet ContentScriptsInfo::GetScriptableHosts(
   URLPatternSet scriptable_hosts;
   for (const std::unique_ptr<UserScript>& script :
        GetContentScripts(extension)) {
-    for (const URLPattern& pattern : script->url_patterns())
+    for (const URLPattern& pattern : script->url_patterns()) {
       scriptable_hosts.AddPattern(pattern);
+    }
   }
   return scriptable_hosts;
 }
@@ -210,8 +212,9 @@ bool ContentScriptsHandler::Parse(Extension* extension, std::u16string* error) {
         CreateUserScript(std::move(manifest_keys.content_scripts[i]), i,
                          can_execute_script_everywhere,
                          all_urls_includes_chrome_urls, extension, error);
-    if (!user_script)
+    if (!user_script) {
       return false;  // Failed to parse script context definition.
+    }
 
     user_script->set_host_id(
         mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()));

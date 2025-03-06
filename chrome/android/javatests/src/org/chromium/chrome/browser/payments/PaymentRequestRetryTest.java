@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -213,6 +214,7 @@ public class PaymentRequestRetryTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
+    @DisabledTest(message = "Flaky, crbug.com/40113868")
     public void testRetryWithShippingAddressErrorsAndPayerErrors() throws TimeoutException {
         mPaymentRequestTestRule.triggerUiAndWait(
                 "buyWithUrlMethod", mPaymentRequestTestRule.getReadyForInput());

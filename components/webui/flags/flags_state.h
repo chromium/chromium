@@ -281,7 +281,8 @@ class FlagsState {
   // Call FlagsStorage.SetFlags() to store the flags in FlagsStorage.
   // Make the appropriate JNI calls to store the flags in SharedPreferences.
   void SetFlags(FlagsStorage* flags_storage,
-                const std::set<std::string>& flags) const;
+                const std::set<std::string>& enabled_flags,
+                const std::set<std::string>& prev_enabled_flags) const;
 
   const base::raw_span<const FeatureEntry> feature_entries_;
 

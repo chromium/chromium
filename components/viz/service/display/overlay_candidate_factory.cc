@@ -351,6 +351,8 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
     candidate.needs_detiling =
         resource_provider_->GetNeedsDetiling(resource_id);
     candidate.hdr_metadata = resource_provider_->GetHDRMetadata(resource_id);
+    candidate.low_latency_rendering =
+        resource_provider_->IsLowLatencyRendering(resource_id);
 
     if (!context_.is_delegated_context &&
         !base::Contains(kOverlayFormats, candidate.format)) {

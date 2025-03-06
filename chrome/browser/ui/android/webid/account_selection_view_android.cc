@@ -49,15 +49,8 @@ ScopedJavaLocalRef<jobject> ConvertToJavaAccount(
     decoded_picture =
         gfx::ConvertToJavaBitmap(*account->decoded_picture.ToSkBitmap());
   }
-  std::string display_name = account->given_name;
-  // We do this check here instead of in the Java code because checking flags
-  // is easier in C++.
-  if (display_name.empty() &&
-      !base::FeatureList::IsEnabled(features::kFedCmContinueWithoutName)) {
-    display_name = account->name;
-  }
   return Java_Account_Constructor(
-      env, account->id, account->email, account->name, display_name,
+      env, account->id, account->email, account->name, account->given_name,
       is_multi_idp ? std::make_optional<std::string>(
                          account->identity_provider->idp_for_display)
                    : std::nullopt,

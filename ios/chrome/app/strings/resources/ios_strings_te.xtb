@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">కొనసాగించడం ద్వారా మీరు <ph name="BEGIN_LINK" />సర్వీస్ నియమాలకు<ph name="END_LINK" /> అంగీకరిస్తున్నారు.</translation>
 <translation id="10614374240317010">ఎప్పటికి సేవ్ చేయబడవు</translation>
 <translation id="1062138828266376352">మీ PINను మార్చలేదు. మీ ఇంటర్నెట్ కనెక్షన్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి</translation>
+<translation id="1072476005125066234">మీ ఆసక్తులను బట్టి రివ్యూలు</translation>
 <translation id="1074827084851510304">మీరు {password_count} పాస్‌వర్డ్‌లను, ఇంకా సైన్ ఇన్ చేసేటప్పుడు సేవ్ చేయకూడదని మీరు ఎంచుకున్న సైట్‌లు, యాప్‌ల లిస్ట్‌ను తొలగించబోతున్నారు. మీరు సైట్‌లు లేదా యాప్‌ల కోసం క్రియేట్ చేసిన ఏ ఖాతా కూడా తొలగించబడదు.</translation>
 <translation id="1076421457278169141">కోడ్ స్కాన్ చేయబడింది</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} ట్యాబ్}other{{count} ట్యాబ్‌లు}}</translation>
@@ -264,6 +265,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" /> ఖాతాలు ఒకే పాస్‌వర్డ్‌ను ఉపయోగిస్తున్నాయి</translation>
 <translation id="2059166748188874810">మున్సిపాలిటీ</translation>
 <translation id="2060114494785549741">1 నెలలో తొలగించండి</translation>
+<translation id="2060638295449304809">ఈ అడ్రస్ ఈ పరికరంలో మాత్రమే సేవ్ అయింది. దీన్ని మీ ఇతర పరికరాలలో ఉపయోగించడానికి, మీ Google ఖాతాలో దీన్ని సేవ్ చేయండి, <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">యూనిట్ రకం ఎంపిక సాధనం</translation>
 <translation id="2067852168641682340">ప్రతిసారీ ఈ ఖాతాలో సేవ్ చేయండి</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 ట్యాబ్}other{{count} ట్యాబ్‌లు}}</translation>
@@ -888,6 +890,7 @@
 <translation id="4824480232751123840">వాల్యూమ్</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain}, ఇంకా మరో 1}other{{domain}, ఇంకా మరో {count}}}</translation>
 <translation id="4826588772550366629">కెమెరా, మైక్రోఫోన్</translation>
+<translation id="4828431027673677473">మీ ఆసక్తుల ఆధారంగా ప్రోడక్ట్‌లు</translation>
 <translation id="4833786495304741580">Googleకు ఆటోమేటిక్‌గా వినియోగ గణాంకాలు, క్రాష్ రిపోర్ట్‌లను పంపుతుంది.</translation>
 <translation id="483689884442613745">సేవ్ చేయండి…</translation>
 <translation id="4840495572919996524">మీ బుక్‌మార్క్‌లు, హిస్టరీ, పాస్‌వర్డ్‌లు మరియు మరిన్ని ఇప్పటి నుండి మీ Google ఖాతాకి సింక్ చేయబడవు.</translation>
@@ -1724,6 +1727,7 @@
 <translation id="828291969289324795">{count,plural, =1{ట్యాబ్‌ను కొత్త గ్రూప్‌నకు జోడించండి}other{ట్యాబ్‌లను కొత్త గ్రూప్‌నకు జోడించండి}}</translation>
 <translation id="8283172974887967105">సెట్ చేయి…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" />‌కు సంబంధించిన నోటిఫికేషన్‌లు ఆఫ్ చేయబడ్డాయి</translation>
+<translation id="8290077367744012649">మీ ట్యాబ్‌ల నుండి ధరలను ట్రాక్ చేయండి</translation>
 <translation id="8299417921174340354">పాస్‌వర్డ్‌లను ఉపయోగించడానికి, మీరు ముందుగా తప్పనిసరిగా మీ పరికరంలో పాస్‌కోడ్‌ను సెట్ చేయాలి.</translation>
 <translation id="8307481894409578819">ఈ ఫైల్ అప్‌లోడ్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="8319076807703933069">కొత్త శోధన</translation>

@@ -104,17 +104,17 @@ public class HubPaneHostMediatorUnitTest {
         new HubPaneHostMediator(mModel, mPaneSupplier);
         mPaneSupplier.set(mPane);
         assertEquals(
-                new HubColorSchemeUpdate(HubColorScheme.DEFAULT, HubColorScheme.DEFAULT, true),
+                new HubColorSchemeUpdate(HubColorScheme.DEFAULT, HubColorScheme.DEFAULT),
                 mModel.get(COLOR_SCHEME));
 
         mPaneSupplier.set(mIncognitoPane);
         assertEquals(
-                new HubColorSchemeUpdate(HubColorScheme.INCOGNITO, HubColorScheme.DEFAULT, true),
+                new HubColorSchemeUpdate(HubColorScheme.INCOGNITO, HubColorScheme.DEFAULT),
                 mModel.get(COLOR_SCHEME));
 
         mPaneSupplier.set(null);
         assertEquals(
-                new HubColorSchemeUpdate(HubColorScheme.DEFAULT, HubColorScheme.INCOGNITO, true),
+                new HubColorSchemeUpdate(HubColorScheme.DEFAULT, HubColorScheme.INCOGNITO),
                 mModel.get(COLOR_SCHEME));
     }
 }

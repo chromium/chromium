@@ -1272,6 +1272,7 @@ Browser* Browser::GetBrowserForMigrationOnly() {
 void Browser::DidBecomeActive() {
   if (!is_active_) {
     is_active_ = true;
+    BrowserList::SetLastActive(this);
     did_become_active_callback_list_.Notify(this);
   }
 }
@@ -1279,6 +1280,7 @@ void Browser::DidBecomeActive() {
 void Browser::DidBecomeInactive() {
   if (is_active_) {
     is_active_ = false;
+    BrowserList::NotifyBrowserNoLongerActive(this);
     did_become_inactive_callback_list_.Notify(this);
   }
 }
@@ -1626,9 +1628,24 @@ void Browser::OnTabGroupChanged(const TabGroupChange& change) {
   // would be the best way to achieve that.
   DCHECK(!IsRelevantToAppSessionService(type_));
   DCHECK(tab_strip_model_->group_model());
+
   if (change.type == TabGroupChange::kVisualsChanged) {
     UpdateTabGroupSessionMetadata(this, change.group);
-  } else if (change.type == TabGroupChange::kClosed) {
+  } else if (change.type == TabGroupChange::kCreated &&
+             change.GetCreateChange()->reason() ==
+                 TabGroupChange::TabGroupCreationReason::
+                     kInsertedFromAnotherTabstrip) {
+    // When a detached group is inserted, we need to update the group of all the
+    // corresponding detached tab in session service.
+    for (tabs::TabInterface* tab :
+         change.GetCreateChange()->GetDetachedTabs()) {
+      UpdateTabGroupSessionDataForTab(tab, change.group);
+    }
+  } else if (change.type == TabGroupChange::kClosed &&
+             change.GetCloseChange()->reason() ==
+                 TabGroupChange::TabGroupClosureReason::kGroupClosed) {
+    // When a group is detached, we do not need to add the information for all
+    // the detached tabs in tab restore service.
     sessions::TabRestoreService* tab_restore_service =
         TabRestoreServiceFactory::GetForProfile(profile());
     if (tab_restore_service) {
@@ -1659,6 +1676,12 @@ void Browser::TabGroupedStateChanged(
     std::optional<tab_groups::TabGroupId> new_group,
     tabs::TabInterface* tab,
     int index) {
+  UpdateTabGroupSessionDataForTab(tab, new_group);
+}
+
+void Browser::UpdateTabGroupSessionDataForTab(
+    tabs::TabInterface* tab,
+    std::optional<tab_groups::TabGroupId> group) {
   // See comment in Browser::OnTabGroupChanged
   DCHECK(!IsRelevantToAppSessionService(type_));
   SessionService* const session_service =
@@ -1670,7 +1693,7 @@ void Browser::TabGroupedStateChanged(
   sessions::SessionTabHelper* const session_tab_helper =
       sessions::SessionTabHelper::FromWebContents(tab->GetContents());
   session_service->SetTabGroup(session_id(), session_tab_helper->session_id(),
-                               std::move(new_group));
+                               std::move(group));
 }
 
 void Browser::TabStripEmpty() {

@@ -114,16 +114,6 @@ class AutoEnrollmentCheckScreen : public BaseScreen,
   // The user requested a connection attempt to be performed.
   void OnConnectRequested();
 
-  // Returns true if the `error` blocks the state determination process and must
-  // be addressed.
-  bool IsBlockingError(const policy::AutoEnrollmentError& error) const;
-
-  // Returns true if an error response from the server should cause a network
-  // error screen to be displayed and block the wizard from continuing. If false
-  // is returned, an error response from the server is treated as "no enrollment
-  // necessary".
-  bool ShouldBlockOnServerError() const;
-
   // Clears the cached state so that the check can be retried.
   void ClearState();
 

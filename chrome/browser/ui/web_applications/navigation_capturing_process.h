@@ -216,6 +216,8 @@ class NavigationCapturingProcess
            disposition_ == WindowOpenDisposition::NEW_BACKGROUND_TAB;
   }
 
+  base::Value::Dict& PopulateAndGetDebugData();
+
   PipelineState state_ = PipelineState::kCreated;
 
   std::unique_ptr<NavigationCapturingSettings> navigation_capturing_settings_;

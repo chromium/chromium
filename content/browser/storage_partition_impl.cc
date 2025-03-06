@@ -2670,9 +2670,8 @@ void StoragePartitionImpl::QuotaManagedDataDeletionHelper::ClearDataOnIOThread(
       &QuotaManagedDataDeletionHelper::DecrementTaskCountOnIO,
       base::Unretained(this));
 
-  // Ask the QuotaManager for all buckets with temporary quota modified
-  // within the user-specified timeframe, and deal with the resulting set in
-  // ClearBucketsOnIOThread().
+  // Ask the QuotaManager for all buckets modified within the user-specified
+  // timeframe, and deal with the resulting set in ClearBucketsOnIOThread().
   if (quota_storage_remove_mask_ & QUOTA_MANAGED_STORAGE_MASK_TEMPORARY) {
     IncrementTaskCountOnIO();
     quota_manager->GetBucketsModifiedBetween(
@@ -2682,18 +2681,6 @@ void StoragePartitionImpl::QuotaManagedDataDeletionHelper::ClearDataOnIOThread(
                        special_storage_policy, storage_key_matcher,
                        perform_storage_cleanup, decrement_callback,
                        blink::mojom::StorageType::kTemporary));
-  }
-
-  // Do the same for syncable quota.
-  if (quota_storage_remove_mask_ & QUOTA_MANAGED_STORAGE_MASK_SYNCABLE) {
-    IncrementTaskCountOnIO();
-    quota_manager->GetBucketsModifiedBetween(
-        blink::mojom::StorageType::kSyncable, begin, end,
-        base::BindOnce(&QuotaManagedDataDeletionHelper::ClearBucketsOnIOThread,
-                       base::Unretained(this), base::RetainedRef(quota_manager),
-                       special_storage_policy, std::move(storage_key_matcher),
-                       perform_storage_cleanup, decrement_callback,
-                       blink::mojom::StorageType::kSyncable));
   }
 
   DecrementTaskCountOnIO();

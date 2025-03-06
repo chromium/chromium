@@ -6,6 +6,8 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "chromecast/public/graphics_types.h"
 #include "chromecast/public/media/cast_decoder_buffer.h"
@@ -190,22 +192,25 @@ BufferStatus StarboardVideoDecoder::PushBuffer(CastDecoderBuffer* buffer) {
 
   DCHECK(video_sample_info_);
 
-  const size_t copy_size = buffer->data_size();
-  std::unique_ptr<uint8_t[]> data_copy(new uint8_t[copy_size]);
-  uint8_t* const copy_addr = data_copy.get();
-  memcpy(copy_addr, buffer->data(), copy_size);
+  // SAFETY: This is not safe, but is necessary since the CastDecoderBuffer API
+  // only exposes its data as a pointer + size.
+  //
+  // TODO(crbug.com/323610278): once CMA is deprecated, we will not need this
+  // class.
+  base::HeapArray<uint8_t> data_copy =
+      base::HeapArray<uint8_t>::CopiedFrom(UNSAFE_BUFFERS(
+          base::span<const uint8_t>(buffer->data(), buffer->data_size())));
 
   StarboardSampleInfo sample = {};
   sample.type = kStarboardMediaTypeVideo;
   sample.timestamp = buffer->timestamp();
-  sample.side_data = nullptr;
-  sample.side_data_count = 0;
+  sample.side_data = base::span<const StarboardSampleSideData>();
   sample.video_sample_info = *video_sample_info_;
 
-  decoded_bytes_ += copy_size;
+  decoded_bytes_ += data_copy.size();
 
   return PushBufferInternal(std::move(sample), DrmInfoWrapper::Create(*buffer),
-                            std::move(data_copy), copy_size);
+                            std::move(data_copy));
 }
 
 void StarboardVideoDecoder::GetStatistics(Statistics* statistics) {

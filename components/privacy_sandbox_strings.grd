@@ -858,6 +858,15 @@
       <message name="IDS_ALL_SITES_RWS_FILTER_VIEW_STORAGE_DESCRIPTION" desc="" translateable="false">
         Storage used by sites in the list: <ph name="TOTAL_USAGE">$1<ex>8 GB</ex></ph>
       </message>
+
+      <!-- RWS - Site Settings -->
+      <!-- TODO(b:396463421): Mark strings translateable when content is finalized -->
+      <message name="IDS_SITE_SETTINGS_RWS_DESCRIPTION_ANDROID" desc="" translateable="false">
+        Related sites can share third-party cookies with each other to help sites work as expected, such as keeping you signed in or remembering your site settings. Sites are responsible for explaining why they need access to this data. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
+      <message name="IDS_SITE_SETTINGS_RWS_DELETE_BUTTON_LABEL" desc="" translateable="false">
+        Delete all data
+      </message>
     </messages>
   </release>
 </grit>

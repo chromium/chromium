@@ -743,7 +743,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   void SetShouldCheckForPaintInvalidation();
 
   bool UsedColorSchemeScrollbarsChanged(const ComputedStyle* old_style) const;
-  bool IsGlobalRootNonOverlayScroller() const;
+  bool IsGlobalRootNonOverlayScroller() const override;
 
   // Helper function to map element ids to Node* pointers. Used by both event
   // dispatching and container queries.

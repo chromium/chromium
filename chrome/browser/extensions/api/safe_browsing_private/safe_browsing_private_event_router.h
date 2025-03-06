@@ -233,13 +233,6 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       const std::string& scan_id,
       const int64_t content_size);
 
-  // Notifies listeners that the user saw an enterprise policy related
-  // interstitial.
-  void OnUrlFilteringInterstitial(
-      const GURL& url,
-      const std::string& threat_type,
-      const safe_browsing::RTLookupResponse& response);
-
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
   // Helper function to report sensitive data event that were caused by
   // triggering a Data Controls rule. This is similar to

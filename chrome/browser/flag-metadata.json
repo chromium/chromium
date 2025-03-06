@@ -3935,11 +3935,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-system-entropy",
-    "owners": [ "mjackson@microsoft.com", "dmurph@chromium.org" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "enable-system-notifications",
     "owners": [ "peter@chromium.org", "finnur@chromium.org" ],
     "expiry_milestone": 120
@@ -5422,7 +5417,7 @@
   {
     "name": "ios-reactivation-notifications",
     "owners": ["scottyoder@google.com", "bling-get-set-up@google.com"],
-    "expiry_milestone": 136
+    "expiry_milestone": 139
   },
   {
     "name": "ios-segmentation-ephemeral-card-ranker",
@@ -8426,11 +8421,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "tab-drag-drop",
-    "owners": [ "ranjithkagathi@google.com", "gurmeetk@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "tab-grid-new-transitions",
     "owners": [ "ewannpv@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 134
@@ -8592,11 +8582,6 @@
     "name": "tear-off-web-app-tab-opens-web-app-window",
     "owners": [ "davidbienvenu@chromium.org", "dmurph@chromium.org" ],
     "expiry_milestone": 135
-  },
-  {
-    "name": "template-url-reconciliation",
-    "owners": [ "ender@google.com", "chrome-mobile-search@google.com" ],
-    "expiry_milestone": 140
   },
   {
     "name": "terminal-dev",

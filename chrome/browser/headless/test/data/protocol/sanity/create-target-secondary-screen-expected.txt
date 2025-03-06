@@ -1,2 +1,2 @@
 Tests Target.createTarget() on a secondary screen.
-Screen: #1
+Screen: #2
