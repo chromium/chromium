@@ -4,10 +4,12 @@
 
 #include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
 
+#include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shape_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_buffer.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
@@ -330,6 +332,50 @@ float PlainTextNode::AccumulateInlineSize(gfx::RectF* glyph_bounds) const {
   }
 
   return inline_size;
+}
+
+CharacterRange PlainTextNode::ComputeCharacterRange(
+    unsigned absolute_from,
+    unsigned absolute_to) const {
+  const bool is_rtl = IsRtl(base_direction_);
+  const float total_width = AccumulateInlineSize(nullptr);
+
+  // The absolute_from and absolute_to arguments represent the start/end offset
+  // for the entire run, from/to are continuously updated to be relative to
+  // the current word (ShapeResult instance).
+  int from = absolute_from;
+  int to = absolute_to;
+
+  ShapeResultBuffer::CharacterRangeContext context{
+      text_content_, is_rtl, from, to, is_rtl ? total_width : 0};
+  for (const auto& item : item_list_) {
+    const ShapeResult* result = item.GetShapeResult();
+    if (!result) {
+      continue;
+    }
+    ShapeResultBuffer::ComputeRangeIn(*result, item.InkBounds(), context);
+  }
+
+  // The position in question might be just after the text.
+  if (!context.from_x && absolute_from == context.total_num_characters) {
+    context.from_x = is_rtl ? 0 : total_width;
+  }
+  if (!context.to_x && absolute_to == context.total_num_characters) {
+    context.to_x = is_rtl ? 0 : total_width;
+  }
+  if (!context.from_x) {
+    context.from_x = 0;
+  }
+  if (!context.to_x) {
+    context.to_x = is_rtl ? 0 : total_width;
+  }
+
+  if (*context.from_x < *context.to_x) {
+    return CharacterRange(*context.from_x, *context.to_x, -context.min_y,
+                          context.max_y);
+  }
+  return CharacterRange(*context.to_x, *context.from_x, -context.min_y,
+                        context.max_y);
 }
 
 }  // namespace blink
