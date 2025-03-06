@@ -757,8 +757,8 @@ IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest,
                    .has_value());
 }
 
-// Multiple running profiles is not supported on Android or ChromeOS Ash.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+// Multiple running profiles is not supported on Android or ChromeOS.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest,
                        SitesInOpenTabsForDifferentProfilesAreNotExempt) {
   WebContents* web_contents = GetActiveWebContents();
@@ -806,6 +806,6 @@ IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest,
   EXPECT_FALSE(GetBtmState(GetDipsService(web_contents), GURL("http://c.test"))
                    .has_value());
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace content
