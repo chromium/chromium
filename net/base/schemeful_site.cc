@@ -17,6 +17,54 @@
 
 namespace net {
 
+namespace {
+
+// When `a_is_site` is true, `a` is actually a SchemefulSite internal
+// `site_as_origin_`.
+bool IsSameSiteInternal(const url::Origin& a,
+                        const url::Origin& b,
+                        bool a_is_site) {
+  if (a.opaque() || b.opaque()) {
+    return a == b;
+  }
+
+  if (a.scheme() != b.scheme()) {
+    return false;
+  }
+
+  // The remaining code largely matches what `SameDomainOrHost()` would do, with
+  // one exception: we consider equal-but-empty hosts to be same-site.
+
+  // Host equality covers two cases:
+  // 1. Non-network schemes where origins are passed through unchanged.
+  // 2. Network schemes where equal hosts will have equal sites (and site
+  //    computation is idempotent in cases where `a` is already a site).
+  if (a.host() == b.host()) {
+    return true;
+  }
+
+  std::string_view b_site = GetDomainAndRegistryAsStringPiece(
+      b, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+  // If either `a_site` or `b_site` is empty, their associated SchemefulSites
+  // will have origins passed through without modification, and the positive
+  // result would be covered in the host check above.
+  if (b_site.empty()) {
+    return false;
+  }
+
+  // Avoid re-calculating the site for `a` if it has already been done.
+  std::string_view a_site =
+      a_is_site
+          ? a.host()
+          : GetDomainAndRegistryAsStringPiece(
+                a,
+                net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  return a_site == b_site;
+}
+
+}  // namespace
+
 struct SchemefulSite::ObtainASiteResult {
   // This is only set if the supplied origin differs from calculated one.
   std::optional<url::Origin> origin;
@@ -100,6 +148,20 @@ SchemefulSite::SchemefulSite(SchemefulSite&& other) noexcept = default;
 SchemefulSite& SchemefulSite::operator=(const SchemefulSite& other) = default;
 SchemefulSite& SchemefulSite::operator=(SchemefulSite&& other) noexcept =
     default;
+
+// static
+bool SchemefulSite::IsSameSite(const url::Origin& a, const url::Origin& b) {
+  bool same_site = IsSameSiteInternal(a, b, /*a_is_site=*/false);
+  DCHECK_EQ(same_site, SchemefulSite(a) == SchemefulSite(b));
+  return same_site;
+}
+
+bool SchemefulSite::IsSameSiteWith(const url::Origin& other) const {
+  bool same_site =
+      IsSameSiteInternal(internal_value(), other, /*a_is_site=*/true);
+  DCHECK_EQ(same_site, *this == SchemefulSite(other));
+  return same_site;
+}
 
 // static
 bool SchemefulSite::FromWire(const url::Origin& site_as_origin,

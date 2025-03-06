@@ -31,11 +31,77 @@ TEST(SchemefulSiteTest, DifferentOriginSameRegisterableDomain) {
   }
 }
 
+TEST(SchemefulSiteTest, IsSameSite) {
+  url::Origin opaque;
+  struct {
+    url::Origin a;
+    url::Origin b;
+    bool same_site;
+  } kTestCases[] = {
+      // Different scheme
+      {url::Origin::Create(GURL("http://foo.com/")),
+       url::Origin::Create(GURL("https://foo.com/")), false},
+
+      // Different eTLD+1
+      {url::Origin::Create(GURL("http://bar.com/")),
+       url::Origin::Create(GURL("http://foo.com/")), false},
+
+      // Different opaque
+      {url::Origin(), url::Origin(), false},
+
+      // Opaque / non-opaque
+      {url::Origin(), url::Origin::Create(GURL("http://foo.com/")), false},
+
+      // Different file origins
+      {url::Origin::Create(GURL("file://foo")),
+       url::Origin::Create(GURL("file://bar")), false},
+
+      // Different opaque, one derived from the other.
+      {opaque, opaque.DeriveNewOpaqueOrigin(), false},
+
+      // Same opaque
+      {opaque, opaque, true},
+
+      // Equal hosts
+      {url::Origin::Create(GURL("http://bar.foo.com/")),
+       url::Origin::Create(GURL("http://bar.foo.com/")), true},
+
+      // Equal and empty hosts
+      {url::Origin::Create(GURL("file://")),
+       url::Origin::Create(GURL("file://")), true},
+
+      // Equal file origins
+      {url::Origin::Create(GURL("file://foo")),
+       url::Origin::Create(GURL("file://foo")), true},
+
+      // Equal eTLD+1
+      {url::Origin::Create(GURL("http://bar.foo.com/")),
+       url::Origin::Create(GURL("http://baz.foo.com/")), true},
+
+      // Equal except port
+      {url::Origin::Create(GURL("http://bar.foo.com:80/")),
+       url::Origin::Create(GURL("http://baz.foo.com:81/")), true},
+  };
+
+  for (const auto& test : kTestCases) {
+    SCOPED_TRACE(::testing::Message() << test.a << " " << test.b);
+    EXPECT_EQ(test.same_site, SchemefulSite::IsSameSite(test.a, test.b));
+    EXPECT_EQ(test.same_site, SchemefulSite::IsSameSite(test.b, test.a));
+    EXPECT_EQ(test.same_site, SchemefulSite(test.a).IsSameSiteWith(test.b));
+    EXPECT_EQ(test.same_site, SchemefulSite(test.b).IsSameSiteWith(test.a));
+    EXPECT_TRUE(SchemefulSite::IsSameSite(test.a, test.a));
+    EXPECT_TRUE(SchemefulSite::IsSameSite(test.b, test.b));
+    EXPECT_TRUE(SchemefulSite(test.a).IsSameSiteWith(test.a));
+    EXPECT_TRUE(SchemefulSite(test.b).IsSameSiteWith(test.b));
+  }
+}
+
 TEST(SchemefulSiteTest, Operators) {
   // Create a list of origins that should all have different schemeful sites.
   // These are in ascending order.
   auto kTestOrigins = std::to_array<url::Origin>({
       url::Origin::Create(GURL("data:text/html,<body>Hello World</body>")),
+      url::Origin::Create(GURL("file://")),
       url::Origin::Create(GURL("file://foo")),
       url::Origin::Create(GURL("http://a.bar.test")),
       url::Origin::Create(GURL("http://c.test")),
@@ -54,6 +120,9 @@ TEST(SchemefulSiteTest, Operators) {
     SCOPED_TRACE(site1.GetDebugString());
 
     EXPECT_EQ(site1, site1);
+    EXPECT_TRUE(
+        SchemefulSite::IsSameSite(kTestOrigins[first], kTestOrigins[first]));
+    EXPECT_TRUE(site1.IsSameSiteWith(kTestOrigins[first]));
     EXPECT_FALSE(site1 < site1);
 
     // Check the operators work on copies.
@@ -70,6 +139,9 @@ TEST(SchemefulSiteTest, Operators) {
       EXPECT_FALSE(site2 < site1);
       EXPECT_FALSE(site1 == site2);
       EXPECT_FALSE(site2 == site1);
+      EXPECT_FALSE(
+          SchemefulSite::IsSameSite(kTestOrigins[first], kTestOrigins[second]));
+      EXPECT_FALSE(site1.IsSameSiteWith(kTestOrigins[second]));
     }
   }
 }

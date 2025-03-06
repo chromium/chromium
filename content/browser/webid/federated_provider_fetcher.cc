@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/webid_utils.h"
+#include "net/base/schemeful_site.h"
 
 namespace content {
 
@@ -359,7 +360,7 @@ bool FederatedProviderFetcher::ShouldSkipWellKnownEnforcementForIdp(
   }
 
   // Skip if RP and IDP are same-site.
-  return webid::IsSameSite(
+  return net::SchemefulSite::IsSameSite(
       render_frame_host_->GetLastCommittedOrigin(),
       url::Origin::Create(fetch_result.identity_provider_config_url));
 }
