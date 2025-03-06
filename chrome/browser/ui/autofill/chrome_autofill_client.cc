@@ -24,6 +24,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/autofill/address_normalizer_factory.h"
 #include "chrome/browser/autofill/autocomplete_history_manager_factory.h"
+#include "chrome/browser/autofill/autofill_ai_model_cache_factory.h"
+#include "chrome/browser/autofill/autofill_ai_model_executor_factory.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/autofill_optimization_guide_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -476,6 +478,18 @@ AutofillAiDelegate* ChromeAutofillClient::GetAutofillAiDelegate() {
   }
 #endif
   return nullptr;
+}
+
+AutofillAiModelCache* ChromeAutofillClient::GetAutofillAiModelCache() {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  return AutofillAiModelCacheFactory::GetForProfile(profile);
+}
+
+AutofillAiModelExecutor* ChromeAutofillClient::GetAutofillAiModelExecutor() {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  return AutofillAiModelExecutorFactory::GetForProfile(profile);
 }
 
 void ChromeAutofillClient::OfferPlusAddressCreation(

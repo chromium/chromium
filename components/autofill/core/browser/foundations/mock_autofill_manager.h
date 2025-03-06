@@ -48,6 +48,10 @@ class MockAutofillManager : public AutofillManager {
                const std::u16string& old_value),
               (override));
   MOCK_METHOD(void,
+              OnLoadedServerPredictionsImpl,
+              ((base::span<const raw_ptr<FormStructure, VectorExperimental>>)),
+              (override));
+  MOCK_METHOD(void,
               OnFormSubmittedImpl,
               (const FormData& form, mojom::SubmissionSource source),
               (override));

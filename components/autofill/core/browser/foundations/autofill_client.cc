@@ -82,6 +82,14 @@ AutofillAiDelegate* AutofillClient::GetAutofillAiDelegate() {
   return nullptr;
 }
 
+AutofillAiModelCache* AutofillClient::GetAutofillAiModelCache() {
+  return nullptr;
+}
+
+AutofillAiModelExecutor* AutofillClient::GetAutofillAiModelExecutor() {
+  return nullptr;
+}
+
 void AutofillClient::OfferPlusAddressCreation(
     const url::Origin& main_frame_origin,
     bool is_manual_fallback,

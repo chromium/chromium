@@ -258,6 +258,9 @@ class BrowserAutofillManager : public AutofillManager {
       const FormData& form,
       const FieldGlobalId& field_id,
       const std::u16string& old_value) override;
+  void OnLoadedServerPredictionsImpl(
+      base::span<const raw_ptr<FormStructure, VectorExperimental>> forms)
+      override;
   void Reset() override;
 
   // Retrieves the four digit combinations from the DOM of the current web page
