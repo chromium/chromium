@@ -258,7 +258,7 @@ bool ClearSiteDataHandler::ParseHeader(
 
   if (!base::IsStringASCII(header)) {
     delegate->AddMessage(current_url, "Must only contain ASCII characters.",
-                         blink::mojom::ConsoleMessageLevel::kError);
+                         blink::mojom::ConsoleMessageLevel::kWarning);
     LogEvent(CLEAR_SITE_DATA_NO_RECOGNIZABLE_TYPES);
     return false;
   }
@@ -311,7 +311,7 @@ bool ClearSiteDataHandler::ParseHeader(
       delegate->AddMessage(
           current_url,
           base::StringPrintf("Unrecognized type: %s.", input_type.c_str()),
-          blink::mojom::ConsoleMessageLevel::kError);
+          blink::mojom::ConsoleMessageLevel::kWarning);
       continue;
     }
 
@@ -329,7 +329,7 @@ bool ClearSiteDataHandler::ParseHeader(
 
   if (clear_site_data_types->empty() && storage_buckets_to_remove->empty()) {
     delegate->AddMessage(current_url, "No recognized types specified.",
-                         blink::mojom::ConsoleMessageLevel::kError);
+                         blink::mojom::ConsoleMessageLevel::kWarning);
     LogEvent(CLEAR_SITE_DATA_NO_RECOGNIZABLE_TYPES);
     return false;
   }
