@@ -16,7 +16,7 @@ proto_library("proto") {
   proto_in_dir = "../../../.."
   proto_out_dir = "chromecast/media/audio/mixer_service"
   sources = [ "mixer_service_transport.proto" ]
-  link_deps = [ "//chromecast/media/audio/net:proto" ]
+  deps = [ "//chromecast/media/audio/net:proto" ]
 }
 
 cast_source_set("common") {
