@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/storage/cached_storage_area.h"
 
 #include <inttypes.h>
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -759,7 +755,8 @@ String CachedStorageArea::Uint8VectorToString(const Vector<uint8_t>& input,
             break;
           }
           StringBuffer<UChar> buffer(payload_size / sizeof(UChar));
-          std::memcpy(buffer.Characters(), input.data() + 1, payload_size);
+          UNSAFE_TODO(
+              std::memcpy(buffer.Characters(), input.data() + 1, payload_size));
           result = String::Adopt(buffer);
           break;
         }
@@ -790,7 +787,8 @@ Vector<uint8_t> CachedStorageArea::StringToUint8Vector(
     case FormatOption::kSessionStorageForceUTF16: {
       Vector<uint8_t> result(input.length() * sizeof(UChar));
       input.CopyTo(
-          base::span(reinterpret_cast<UChar*>(result.data()), input.length()),
+          UNSAFE_TODO(base::span(reinterpret_cast<UChar*>(result.data()),
+                                 input.length())),
           0);
       return result;
     }
@@ -833,7 +831,8 @@ Vector<uint8_t> CachedStorageArea::StringToUint8Vector(
         Vector<uint8_t> result(input.length() + 1);
         result[0] = static_cast<uint8_t>(StorageFormat::Latin1);
         if (input.Is8Bit()) {
-          std::memcpy(result.data() + 1, input.Characters8(), input.length());
+          UNSAFE_TODO(std::memcpy(result.data() + 1, input.Characters8(),
+                                  input.length()));
         } else {
           for (unsigned i = 0; i < input.length(); ++i) {
             result[i + 1] = input[i];
@@ -844,8 +843,8 @@ Vector<uint8_t> CachedStorageArea::StringToUint8Vector(
       DCHECK(!input.Is8Bit());
       Vector<uint8_t> result(input.length() * sizeof(UChar) + 1);
       result[0] = static_cast<uint8_t>(StorageFormat::UTF16);
-      std::memcpy(result.data() + 1, input.Characters16(),
-                  input.length() * sizeof(UChar));
+      UNSAFE_TODO(std::memcpy(result.data() + 1, input.Characters16(),
+                              input.length() * sizeof(UChar)));
       return result;
     }
   }

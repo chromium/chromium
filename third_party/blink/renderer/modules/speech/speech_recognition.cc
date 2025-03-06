@@ -23,15 +23,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/speech/speech_recognition.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
@@ -246,8 +242,9 @@ void SpeechRecognition::ResultRetrieved(
   HeapVector<Member<SpeechRecognitionResult>> new_final_results;
   new_final_results.ReserveInitialCapacity(aggregated_results.size() -
                                            provisional_count);
-  new_final_results.AppendRange(aggregated_results.begin(),
-                                aggregated_results.end() - provisional_count);
+  new_final_results.AppendRange(
+      aggregated_results.begin(),
+      UNSAFE_TODO(aggregated_results.end() - provisional_count));
   final_results_ = std::move(new_final_results);
 
   // We dispatch an event with (1) + (2) + (3).
