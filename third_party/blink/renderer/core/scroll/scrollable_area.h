@@ -612,6 +612,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   virtual void SetSnappedQueryTargetIds(
       std::optional<cc::TargetSnapAreaElementIds>) {}
+  virtual bool IsGlobalRootNonOverlayScroller() const { return false; }
 
   virtual ScrollMarkerGroupPseudoElement* GetScrollMarkerGroup() const {
     return nullptr;

@@ -1089,6 +1089,15 @@
       type: "bool",
     },
 
+    // Holds the browser's theme color to be used to render root non-overlay
+    // Fluent scrollbars. Stored from an SkColor as ARGB.
+    {
+      name: "rootScrollbarThemeColor",
+      initial: "std::nullopt",
+      invalidate: ["Paint"],
+      type: "std::optional<SkColor>",
+    },
+
     // The preferred color scheme set by the user's browser settings. The
     // variable follows the browser's color mode setting unless a browser theme
     // (custom or not) is defined, in which case the color scheme is set to the

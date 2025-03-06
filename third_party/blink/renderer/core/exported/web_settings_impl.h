@@ -236,6 +236,7 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetModalContextMenu(bool) override;
   void SetRequireTransientActivationAndAuthorizationForSubAppsAPIs(
       bool) override;
+  void SetRootScrollbarThemeColor(std::optional<SkColor>) override;
 
   bool RenderVSyncNotificationEnabled() const {
     return render_v_sync_notification_enabled_;

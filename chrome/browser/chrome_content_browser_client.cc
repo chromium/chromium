@@ -423,6 +423,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/switches.h"
 #include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
@@ -3999,6 +4000,38 @@ bool UpdatePreferredColorScheme(WebPreferences* web_prefs,
   return old_preferred_color_scheme != web_prefs->preferred_color_scheme;
 }
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+// Sets the `root_scrollbar_theme_color` web pref if the user has enabled a
+// custom colored frame for the UI.
+void UpdateRootScrollbarThemeColor(Profile* profile,
+                                   const WebContents* web_contents,
+                                   WebPreferences* web_prefs) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kRootScrollbarFollowsBrowserTheme)) {
+    return;
+  }
+  if (ThemeService* theme_service =
+          ThemeServiceFactory::GetForProfile(profile)) {
+    if (!theme_service->UsingDefaultTheme() ||
+        theme_service->GetUserColor().has_value() ||
+        theme_service->UsingDeviceTheme()) {
+      color_utils::HSL hsl;
+      color_utils::SkColorToHSL(
+          web_contents->GetColorProvider().GetColor(kColorToolbar), &hsl);
+      // Clamp the lightness of theme colors that are too light or dark and
+      // have no contrast against the background. We don't use color_utils
+      // contrast functions because they lose saturation.
+      static constexpr double kTopLightnessThreshold = 0.8;
+      static constexpr double kBottomLightnessThreshold = 0.3;
+      hsl.l =
+          std::clamp(hsl.l, kBottomLightnessThreshold, kTopLightnessThreshold);
+      web_prefs->root_scrollbar_theme_color =
+          color_utils::HSLToSkColor(hsl, SK_AlphaOPAQUE);
+    }
+  }
+}
+#endif  //  BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+
 // Returns whether the user can be prompted to select a client certificate after
 // no certificate got auto-selected.
 bool CanPromptWithNonmatchingCertificates(const Profile* profile) {
@@ -4591,6 +4624,9 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
 
   UpdatePreferredColorScheme(web_prefs, main_frame_site.GetSiteURL(),
                              web_contents, GetWebTheme());
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  UpdateRootScrollbarThemeColor(profile, web_contents, web_prefs);
+#endif  //  BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
   web_prefs->translate_service_available = TranslateService::IsAvailable(prefs);
 

@@ -3704,6 +3704,12 @@
       status: "stable",
     },
     {
+      // If enabled, makes the root scrollbars' foreground elements follow the
+      // browser
+      name: "RootScrollbarFollowsBrowserTheme",
+      status: {"Linux": "test", "Win": "test"},
+    },
+    {
       name: "RtcAudioJitterBufferMaxPackets",
       origin_trial_feature_name: "RtcAudioJitterBufferMaxPackets",
       status: "experimental",
