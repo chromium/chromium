@@ -2132,19 +2132,22 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
   }
   CascadeResolver::AutoLock lock(cycle_node, resolver);
   std::optional<CSSAttrType> attr_type = CSSAttrType::Consume(stream);
+  bool missing_attr_type = false;
   if (!attr_type.has_value()) {
+    missing_attr_type = true;
     attr_type = CSSAttrType::GetDefaultValue();
   }
   DCHECK(stream.AtEnd() || stream.Peek().GetType() == kCommaToken);
 
   Element& element = state_.GetUltimateOriginatingElementOrSelf();
-
   // TODO(crbug.com/387281256): Support namespaces.
   const String& attribute_value = element.getAttributeNS(
       /*namespace_uri=*/g_null_atom, element.LowercaseIfNecessary(local_name));
 
+  // Handle substitution in attribute value
+  // https://drafts.csswg.org/css-values-5/#parse-with-a-syntax
   String substituted_attribute_value = attribute_value;
-  if (!attribute_value.IsNull() && !attr_type->IsString()) {
+  if (!attribute_value.IsNull() && attr_type->IsSyntax()) {
     TokenSequence substituted_attribute_token_sequence;
     CSSParserTokenStream attribute_value_stream(attribute_value);
     if (!ResolveTokensInto(attribute_value_stream, tree_scope, resolver,
@@ -2157,11 +2160,14 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
         substituted_attribute_token_sequence.OriginalText();
   }
 
+  // Parse value according to the attribute type.
+  // https://drafts.csswg.org/css-values-5/#typedef-attr-type
   const CSSValue* substitution_value =
-      (!attribute_value || !substituted_attribute_value)
+      (substituted_attribute_value.IsNull())
           ? nullptr
           : attr_type->Parse(substituted_attribute_value, context);
 
+  // Resolve fallback
   if (ConsumeComma(stream)) {
     stream.ConsumeWhitespace();
 
@@ -2181,13 +2187,13 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
     }
   }
 
-  if (attr_type->IsString() && !substitution_value) {
+  if (missing_attr_type && !substitution_value) {
     // If the <attr-type> argument is omitted, the fallback defaults to the
     // empty string if omitted.
     // https://drafts.csswg.org/css-values-5/#attr-notation
-    out.Append(CSSParserToken(kStringToken, g_empty_atom),
-               /* is_attr_tainted */ true, g_empty_atom);
-    return true;
+    return out.Append(String("''"),
+                      /* is_attr_tainted */ true,
+                      CSSVariableData::kMaxVariableBytes);
   }
 
   if (substitution_value) {
