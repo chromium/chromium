@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Objects;
 
 /**
@@ -25,8 +25,7 @@ public class TabGroupMetadata {
     private static final String KEY_SELECTED_TAB_ID = "selectedTabId";
     private static final String KEY_SOURCE_WINDOW_ID = "sourceWindowId";
     private static final String KEY_TAB_GROUP_ID = "tabGroupId";
-    private static final String KEY_TAB_IDS = "tabIds";
-    private static final String KEY_TAB_URLS = "tabUrls";
+    private static final String KEY_TAB_IDS_TO_URLS = "tabIdsToUrls";
     private static final String KEY_TAB_GROUP_COLOR = "tabGroupColor";
     private static final String KEY_TAB_GROUP_TITLE = "tabGroupTitle";
     private static final String KEY_TAB_GROUP_COLLAPSED = "tabGroupCollapsed";
@@ -36,8 +35,7 @@ public class TabGroupMetadata {
     public final int selectedTabId;
     public final int sourceWindowId;
     public final Token tabGroupId;
-    public final ArrayList<Integer> tabIds;
-    public final ArrayList<String> tabUrls;
+    public final LinkedHashMap<Integer, String> tabIdsToUrls;
     public final @ColorInt int tabGroupColor;
     @Nullable public final String tabGroupTitle;
     public final boolean tabGroupCollapsed;
@@ -50,8 +48,7 @@ public class TabGroupMetadata {
      * @param selectedTabId The selected tab ID of the group.
      * @param sourceWindowId The ID of the window that holds the tab group before re-parenting.
      * @param tabGroupId The stable ID for the tab group.
-     * @param tabIds The list of tab IDs belonging to the group.
-     * @param tabUrls The list of tab URLs belonging to the group.
+     * @param tabIdsToUrls The LinkedHashMap containing key-value pairs of tab IDs and URLs.
      * @param tabGroupColor The color of the tab group.
      * @param tabGroupTitle The title of the tab group.
      * @param tabGroupCollapsed Whether the tab group is currently collapsed.
@@ -62,8 +59,7 @@ public class TabGroupMetadata {
             int selectedTabId,
             int sourceWindowId,
             Token tabGroupId,
-            ArrayList<Integer> tabIds,
-            ArrayList<String> tabUrls,
+            LinkedHashMap<Integer, String> tabIdsToUrls,
             @ColorInt int tabGroupColor,
             @Nullable String tabGroupTitle,
             boolean tabGroupCollapsed,
@@ -72,8 +68,7 @@ public class TabGroupMetadata {
         this.selectedTabId = selectedTabId;
         this.sourceWindowId = sourceWindowId;
         this.tabGroupId = tabGroupId;
-        this.tabIds = tabIds;
-        this.tabUrls = tabUrls;
+        this.tabIdsToUrls = tabIdsToUrls;
         this.tabGroupColor = tabGroupColor;
         this.tabGroupTitle = tabGroupTitle;
         this.tabGroupCollapsed = tabGroupCollapsed;
@@ -91,8 +86,7 @@ public class TabGroupMetadata {
         bundle.putInt(KEY_SELECTED_TAB_ID, selectedTabId);
         bundle.putInt(KEY_SOURCE_WINDOW_ID, sourceWindowId);
         bundle.putBundle(KEY_TAB_GROUP_ID, tabGroupId.toBundle());
-        bundle.putIntegerArrayList(KEY_TAB_IDS, tabIds);
-        bundle.putStringArrayList(KEY_TAB_URLS, tabUrls);
+        bundle.putSerializable(KEY_TAB_IDS_TO_URLS, tabIdsToUrls);
         bundle.putInt(KEY_TAB_GROUP_COLOR, tabGroupColor);
         bundle.putString(KEY_TAB_GROUP_TITLE, tabGroupTitle);
         bundle.putBoolean(KEY_TAB_GROUP_COLLAPSED, tabGroupCollapsed);
@@ -111,10 +105,11 @@ public class TabGroupMetadata {
         @Nullable
         Token tabGroupIdFromBundle =
                 Token.maybeCreateFromBundle(bundle.getBundle(KEY_TAB_GROUP_ID));
+        LinkedHashMap<Integer, String> tabIdsToUrls =
+                (LinkedHashMap<Integer, String>) bundle.getSerializable(KEY_TAB_IDS_TO_URLS);
         if (tabGroupIdFromBundle == null
-                || bundle.getIntegerArrayList(KEY_TAB_IDS) == null
-                || bundle.getStringArrayList(KEY_TAB_URLS) == null
-                || bundle.getString(KEY_TAB_GROUP_TITLE) == null
+                || tabIdsToUrls == null
+                || tabIdsToUrls.isEmpty()
                 || !bundle.containsKey(KEY_ROOT_ID)
                 || !bundle.containsKey(KEY_SELECTED_TAB_ID)
                 || !bundle.containsKey(KEY_SOURCE_WINDOW_ID)
@@ -128,8 +123,7 @@ public class TabGroupMetadata {
                         bundle.getInt(KEY_SELECTED_TAB_ID),
                         bundle.getInt(KEY_SOURCE_WINDOW_ID),
                         tabGroupIdFromBundle,
-                        bundle.getIntegerArrayList(KEY_TAB_IDS),
-                        bundle.getStringArrayList(KEY_TAB_URLS),
+                        tabIdsToUrls,
                         bundle.getInt(KEY_TAB_GROUP_COLOR),
                         bundle.getString(KEY_TAB_GROUP_TITLE),
                         bundle.getBoolean(KEY_TAB_GROUP_COLLAPSED),
@@ -149,8 +143,7 @@ public class TabGroupMetadata {
                 && tabGroupCollapsed == that.tabGroupCollapsed
                 && isIncognito == that.isIncognito
                 && Objects.equals(tabGroupId, that.tabGroupId)
-                && Objects.equals(tabIds, that.tabIds)
-                && Objects.equals(tabUrls, that.tabUrls)
+                && Objects.equals(tabIdsToUrls, that.tabIdsToUrls)
                 && Objects.equals(tabGroupTitle, that.tabGroupTitle);
     }
 
@@ -161,8 +154,7 @@ public class TabGroupMetadata {
                 this.selectedTabId,
                 this.sourceWindowId,
                 this.tabGroupId,
-                this.tabIds,
-                this.tabUrls,
+                this.tabIdsToUrls,
                 this.tabGroupColor,
                 this.tabGroupTitle,
                 this.tabGroupCollapsed,
@@ -179,10 +171,8 @@ public class TabGroupMetadata {
                 + sourceWindowId
                 + ", tabGroupId="
                 + tabGroupId
-                + ", tabIds="
-                + tabIds
-                + ", tabUrls="
-                + tabUrls
+                + ", tabIdsToUrls="
+                + tabIdsToUrls
                 + ", tabGroupColor="
                 + tabGroupColor
                 + ", tabGroupTitle='"
