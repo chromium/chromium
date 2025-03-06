@@ -1597,6 +1597,120 @@ TEST_P(RendererPixelTest, BypassableRenderPassQuad_DoubleBypass_ScaledClip) {
       cc::ExactPixelComparator()));
 }
 
+TEST_P(RendererPixelTest, BypassableRenderPassQuad_BackdropFilter_Extents) {
+  // This tests that a bypassable render pass with a backdrop filter applies
+  // the backdrop filter to the RPDQ's entire visible_rect, even if the
+  // child of the render pass has smaller content that is being drawn directly
+  // because of the bypass.
+  gfx::Rect root_pass_rect(device_viewport_size_);
+  gfx::Rect backdrop_pass_rect(device_viewport_size_.width() - 20,
+                               device_viewport_size_.height() - 20);
+  gfx::Rect child_content_rect(90, 90);
+
+  AggregatedRenderPassId root_pass_id{1};
+  AggregatedRenderPassId backdrop_pass_id{2};
+
+  gfx::Transform transform_root_to_backdrop_pass;
+  transform_root_to_backdrop_pass.Translate(10, 10);
+
+  AggregatedRenderPassList pass_list;
+  {
+    // The child render pass has a single TextureDrawQuad so it will be bypassed
+    // by SkiaRenderer. The TextureDrawQuad is smaller than the visible rect
+    // of the child render pass, which has a backdrop filter that should cover
+    // the root pass up to a 10px inset.
+    auto backdrop_pass = std::make_unique<AggregatedRenderPass>();
+    backdrop_pass->SetNew(backdrop_pass_id, backdrop_pass_rect,
+                          backdrop_pass_rect,
+                          transform_root_to_backdrop_pass.GetCheckedInverse());
+    backdrop_pass->backdrop_filters.Append(
+        cc::FilterOperation::CreateBlurFilter(8.f, SkTileMode::kMirror));
+
+    gfx::Transform transform_child_to_backdrop_pass;
+    transform_child_to_backdrop_pass.Translate(
+        backdrop_pass_rect.CenterPoint().x() -
+            0.5f * child_content_rect.width(),
+        backdrop_pass_rect.CenterPoint().y() -
+            0.5f * child_content_rect.height());
+
+    auto* sqs = CreateTestSharedQuadState(
+        transform_child_to_backdrop_pass, child_content_rect,
+        backdrop_pass.get(), gfx::MaskFilterInfo());
+    sqs->clip_rect = cc::MathUtil::MapEnclosingClippedRect(
+        transform_child_to_backdrop_pass, child_content_rect);
+
+    // NOTE: From https://g-issues.chromium.org/issues/355981041, the backdrop
+    // filter of a bypassed render pass was being restricted to the visible rect
+    // of the child. Use kTransparent for the outer color and background color
+    // to allow backdrop filtered content to be visible under part of this
+    // texture quad to highlight that the filter is being processed, but was
+    // incorrectly clipped during bypassing.
+    CreateTestTwoColoredTextureDrawQuad(
+        !is_software_renderer(), child_content_rect,
+        /*texel_color_one=*/SkColors::kTransparent,
+        /*texel_color_two=*/SkColors::kMagenta,
+        /*background_color=*/SkColors::kTransparent,
+        /*premultiplied_alpha=*/true,
+        /*flipped_texture_quad=*/false,
+        /*half_and_half=*/false, sqs, resource_provider_.get(),
+        child_resource_provider_.get(), child_context_provider_,
+        backdrop_pass.get());
+    pass_list.push_back(std::move(backdrop_pass));
+  }
+
+  {
+    // The root render pass has a blue and yellow checkerboard background and
+    // draws the (bypassed) render pass inset in the root by 10px.
+    auto root_pass = CreateTestRootRenderPass(root_pass_id, root_pass_rect);
+    {
+      auto* sqs = CreateTestSharedQuadState(transform_root_to_backdrop_pass,
+                                            backdrop_pass_rect, root_pass.get(),
+                                            gfx::MaskFilterInfo());
+      auto* pass_quad =
+          root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
+      pass_quad->SetNew(sqs, backdrop_pass_rect, backdrop_pass_rect,
+                        backdrop_pass_id, kInvalidResourceId, gfx::RectF(),
+                        gfx::Size(), gfx::Vector2dF(1.0f, 1.0f), gfx::PointF(),
+                        gfx::RectF(backdrop_pass_rect), false, 1.0f);
+    }
+    {
+      auto* sqs =
+          CreateTestSharedQuadState(gfx::Transform(), root_pass_rect,
+                                    root_pass.get(), gfx::MaskFilterInfo());
+      static constexpr int checker_size = 16;
+
+      for (int y = root_pass_rect.y(); y < root_pass_rect.bottom();
+           y += checker_size) {
+        for (int x = root_pass_rect.x(); x < root_pass_rect.right();
+             x += checker_size) {
+          gfx::Rect box{x, y, checker_size, checker_size};
+          bool firstColor =
+              ((x / checker_size) + ((y / checker_size) % 2)) % 2 == 0;
+          auto* quad = root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+          quad->SetNew(sqs, box, box,
+                       firstColor ? SkColors::kBlue : SkColors::kYellow, false);
+        }
+      }
+    }
+    pass_list.push_back(std::move(root_pass));
+  }
+
+  // Use a fairly fuzz comparison to allow for deviations in how the renderer
+  // types implement the actual blur. In particular, the SW renderer does not
+  // support the mirror tile mode so its blurs deviate more from GPU renderers.
+  const bool blur_fully_supported = !is_software_renderer();
+  auto comparator =
+      cc::FuzzyPixelComparator()
+          .SetErrorPixelsPercentageLimit(blur_fully_supported ? 0.2f : 53.f)
+          .SetAvgAbsErrorLimit(blur_fully_supported ? 1 : 2)
+          .SetAbsErrorLimit(blur_fully_supported ? 1 : 8);
+
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list,
+      base::FilePath(FILE_PATH_LITERAL("bypass_texture_backdrop_extent.png")),
+      comparator));
+}
+
 TEST_P(RendererPixelTest, TextureDrawQuadVisibleRectInsetBottomRight) {
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
   // Test is flaking with failed large allocations under TSAN when using

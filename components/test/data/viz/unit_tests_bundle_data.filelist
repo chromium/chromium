@@ -62,6 +62,7 @@
 //components/test/data/viz/blur_filter_with_clip_sw.png
 //components/test/data/viz/bypass_render_pass.png
 //components/test/data/viz/bypass_texture.png
+//components/test/data/viz/bypass_texture_backdrop_extent.png
 //components/test/data/viz/bypass_texture_rotated.png
 //components/test/data/viz/bypass_texture_rotated_graphite.png
 //components/test/data/viz/dark_grey.png
