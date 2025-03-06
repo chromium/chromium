@@ -127,7 +127,12 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
         // provider.
         [ASSettingsHelper
             requestToTurnOnCredentialProviderExtensionWithCompletionHandler:^(
-                BOOL){
+                BOOL appWasEnabledForAutoFill) {
+              // Record the user's decision.
+              RecordTurnOnCredentialProviderExtensionPromptOutcome(
+                  TurnOnCredentialProviderExtensionPromptSource::
+                      kCredentialProviderExtensionPromo,
+                  appWasEnabledForAutoFill);
             }];
         [self recordAction:IOSCredentialProviderPromoAction::kTurnOnAutofill];
         return;

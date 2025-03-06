@@ -73,6 +73,7 @@ source_set("password_settings_ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/credential_provider/model:features",
     "//ios/chrome/browser/settings/ui_bundled/password:features",
+    "//ios/chrome/browser/shared/coordinator/utils",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",

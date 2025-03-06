@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_constants.h"
+#import "ios/chrome/browser/shared/coordinator/utils/credential_provider_settings_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
@@ -1094,6 +1095,11 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
                         currentTaskRunner:
                             (scoped_refptr<base::SequencedTaskRunner>)
                                 currentTaskRunner {
+  // Record the user's decision.
+  RecordTurnOnCredentialProviderExtensionPromptOutcome(
+      TurnOnCredentialProviderExtensionPromptSource::kPasswordSettings,
+      appWasEnabledForAutoFill);
+
   if (appWasEnabledForAutoFill) {
     // Inform the delegate of the status change. This will have the effect of
     // removing the `turnOnPasswordsInOtherAppsItem` from the view.
