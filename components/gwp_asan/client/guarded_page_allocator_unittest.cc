@@ -97,6 +97,8 @@ INSTANTIATE_TEST_SUITE_P(VaryPartitionAlloc,
                          GuardedPageAllocatorTest,
                          testing::Values(false, true));
 
+#if defined(GTEST_HAS_DEATH_TEST)
+
 TEST_P(GuardedPageAllocatorTest, SingleAllocDealloc) {
   char* buf = reinterpret_cast<char*>(gpa_.Allocate(base::GetPageSize()));
   EXPECT_NE(buf, nullptr);
@@ -115,6 +117,8 @@ TEST_P(GuardedPageAllocatorTest, CrashOnBadDeallocPointer) {
   gpa_.Deallocate(buf);
 }
 
+#endif  // defined(GTEST_HAS_DEATH_TEST)
+
 TEST_P(GuardedPageAllocatorTest, PointerIsMine) {
   void* buf = gpa_.Allocate(1);
   auto malloc_ptr = std::make_unique<char>();
@@ -125,6 +129,8 @@ TEST_P(GuardedPageAllocatorTest, PointerIsMine) {
   EXPECT_FALSE(gpa_.PointerIsMine(&stack_var));
   EXPECT_FALSE(gpa_.PointerIsMine(malloc_ptr.get()));
 }
+
+#if defined(GTEST_HAS_DEATH_TEST)
 
 TEST_P(GuardedPageAllocatorTest, GetRequestedSize) {
   void* buf = gpa_.Allocate(100);
@@ -154,6 +160,8 @@ TEST_P(GuardedPageAllocatorTest, RightAlignedAllocation) {
   EXPECT_DEATH(buf[GuardedPageAllocator::kGpaAllocAlignment] = 'A', "");
   gpa_.Deallocate(buf);
 }
+
+#endif  // defined(GTEST_HAS_DEATH_TEST)
 
 TEST_P(GuardedPageAllocatorTest, AllocationAlignment) {
   const uintptr_t page_size = base::GetPageSize();

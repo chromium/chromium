@@ -10895,6 +10895,27 @@
             ]
         }
     ],
+    "GwpAsanIOS2025": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "TripleBrowserReservation",
+                    "params": {
+                        "BrowserMaxAllocations": "2048",
+                        "BrowserMaxMetadata": "2048",
+                        "BrowserTotalPages": "6144"
+                    },
+                    "enable_features": [
+                        "GwpAsanMalloc",
+                        "GwpAsanPartitionAlloc"
+                    ]
+                }
+            ]
+        }
+    ],
     "HTTP2": [
         {
             "platforms": [
