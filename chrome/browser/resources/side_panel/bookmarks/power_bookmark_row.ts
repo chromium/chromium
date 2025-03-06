@@ -402,8 +402,10 @@ export class PowerBookmarkRowElement extends CrLitElement {
     event.preventDefault();
     event.stopPropagation();
     const inputElement =
-        this.shadowRoot.querySelector<CrInputElement>('#input')!;
-    this.dispatchEvent(this.createInputChangeEvent_(inputElement.value));
+        this.shadowRoot.querySelector<CrInputElement>('#input');
+    if (inputElement) {
+      this.dispatchEvent(this.createInputChangeEvent_(inputElement.value));
+    }
   }
 
   protected onInputBlur_(event: Event) {
