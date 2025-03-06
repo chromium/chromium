@@ -58,6 +58,9 @@ export function unrollEvents(
       case ChromiumBidi.BiDiModule.BrowsingContext:
         addEvents(Object.values(ChromiumBidi.BrowsingContext.EventNames));
         break;
+      case ChromiumBidi.BiDiModule.Input:
+        addEvents(Object.values(ChromiumBidi.Input.EventNames));
+        break;
       case ChromiumBidi.BiDiModule.Log:
         addEvents(Object.values(ChromiumBidi.Log.EventNames));
         break;

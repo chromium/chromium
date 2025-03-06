@@ -36,6 +36,7 @@ export type CommandResponse = {
 } & Extensible;
 export type EventData =
   | BrowsingContextEvent
+  | InputEvent
   | LogEvent
   | NetworkEvent
   | ScriptEvent;
@@ -2129,6 +2130,7 @@ export type InputCommand =
   | Input.PerformActions
   | Input.ReleaseActions
   | Input.SetFiles;
+export type InputEvent = Input.FileDialogOpened;
 export namespace Input {
   export type ElementOrigin = {
     type: 'element';

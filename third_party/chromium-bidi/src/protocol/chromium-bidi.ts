@@ -26,6 +26,7 @@ export type EventNames =
   | `${BiDiModule}`
   | `${Bluetooth.EventNames}`
   | `${BrowsingContext.EventNames}`
+  | `${Input.EventNames}`
   | `${Log.EventNames}`
   | `${Network.EventNames}`
   | `${Script.EventNames}`;
@@ -82,6 +83,14 @@ export namespace BrowsingContext {
   }
 }
 
+export namespace Input {
+  export enum EventNames {
+    // keep-sorted start
+    FileDialogOpened = 'input.fileDialogOpened',
+    // keep-sorted end
+  }
+}
+
 export namespace Network {
   export enum EventNames {
     // keep-sorted start
@@ -131,6 +140,7 @@ export const EVENT_NAMES = new Set([
   ...Object.values(BiDiModule),
   ...Object.values(Bluetooth.EventNames),
   ...Object.values(BrowsingContext.EventNames),
+  ...Object.values(Input.EventNames),
   ...Object.values(Log.EventNames),
   ...Object.values(Network.EventNames),
   ...Object.values(Script.EventNames),

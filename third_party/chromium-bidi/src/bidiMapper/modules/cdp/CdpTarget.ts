@@ -19,7 +19,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import type {CdpClient} from '../../../cdp/CdpClient.js';
 import {Bluetooth} from '../../../protocol/chromium-bidi.js';
-import type {ChromiumBidi, Session} from '../../../protocol/protocol.js';
+import {type ChromiumBidi, Session} from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/Deferred.js';
 import {EventEmitter} from '../../../utils/EventEmitter.js';
 import type {LoggerFn} from '../../../utils/log.js';
@@ -169,7 +169,19 @@ export class CdpTarget extends EventEmitter<TargetEventMap> {
   async #unblock() {
     try {
       await Promise.all([
-        this.#cdpClient.sendCommand('Page.enable'),
+        this.#cdpClient.sendCommand('Page.enable', {
+          enableFileChooserOpenedEvent: true,
+        }),
+        ...(this.#ignoreFileDialog()
+          ? []
+          : [
+              this.#cdpClient.sendCommand(
+                'Page.setInterceptFileChooserDialog',
+                {
+                  enabled: true,
+                },
+              ),
+            ]),
         // There can be some existing frames in the target, if reconnecting to an
         // existing browser instance, e.g. via Puppeteer. Need to restore the browsing
         // contexts for the frames to correctly handle further events, like
@@ -544,6 +556,15 @@ export class CdpTarget extends EventEmitter<TargetEventMap> {
     return this.#eventManager.subscriptionManager.isSubscribedTo(
       moduleOrEvent,
       this.topLevelId,
+    );
+  }
+
+  #ignoreFileDialog(): boolean {
+    return (
+      (this.#unhandledPromptBehavior?.file ??
+        this.#unhandledPromptBehavior?.default ??
+        Session.UserPromptHandlerType.Ignore) ===
+      Session.UserPromptHandlerType.Ignore
     );
   }
 }

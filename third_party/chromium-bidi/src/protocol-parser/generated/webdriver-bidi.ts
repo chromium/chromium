@@ -54,6 +54,7 @@ export const CommandResponseSchema = z.lazy(() =>
 export const EventDataSchema = z.lazy(() =>
   z.union([
     BrowsingContextEventSchema,
+    InputEventSchema,
     LogEventSchema,
     NetworkEventSchema,
     ScriptEventSchema,
@@ -2728,6 +2729,7 @@ export const InputCommandSchema = z.lazy(() =>
     Input.SetFilesSchema,
   ]),
 );
+export const InputEventSchema = z.lazy(() => Input.FileDialogOpenedSchema);
 export namespace Input {
   export const ElementOriginSchema = z.lazy(() =>
     z.object({
