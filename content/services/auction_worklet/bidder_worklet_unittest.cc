@@ -35,6 +35,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
+#include "content/services/auction_worklet/public/cpp/private_model_training_reporting.h"
 #include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
 #include "content/services/auction_worklet/public/cpp/test_bid_builder.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
@@ -46,6 +47,7 @@
 #include "content/services/auction_worklet/worklet_devtools_debug_test_util.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "content/services/auction_worklet/worklet_v8_debug_test_util.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
@@ -118,6 +120,25 @@ const uint8_t kKeyId = 0xFF;
 std::string ToyWasm() {
   return std::string(reinterpret_cast<const char*>(kToyWasm),
                      std::size(kToyWasm));
+}
+
+// Helper to handle comparing the two PrivateModelTrainingRequestData objects.
+void ComparePrivateModelTrainingRequestData(
+    mojom::PrivateModelTrainingRequestDataPtr& a,
+    mojom::PrivateModelTrainingRequestDataPtr& b) {
+  EXPECT_EQ(a.is_null(), b.is_null());
+  if (!a.is_null() && !b.is_null()) {
+    EXPECT_EQ(a->aggregation_coordinator_origin,
+              b->aggregation_coordinator_origin);
+    EXPECT_EQ(a->destination, b->destination);
+    EXPECT_EQ(a->payload_length, b->payload_length);
+
+    // Conversion is necessary to compare the values, since we cannot directly
+    // compare two mojo_base::BigBuffer types.
+    base::span<uint8_t> a_data_span = a->payload;
+    base::span<uint8_t> b_data_span = b->payload;
+    EXPECT_EQ(a_data_span, b_data_span);
+  }
 }
 
 // Creates generateBid() scripts with the specified result value, in raw
@@ -579,12 +600,15 @@ class BidderWorkletTest : public testing::Test {
       const base::flat_map<std::string, std::string>& expected_ad_macro_map =
           base::flat_map<std::string, std::string>(),
       PrivateAggregationRequests expected_pa_requests = {},
+      mojom::PrivateModelTrainingRequestDataPtr expected_pmt_request_data =
+          nullptr,
       const std::vector<std::string>& expected_errors =
           std::vector<std::string>()) {
     RunReportWinWithJavascriptExpectingResult(
         CreateReportWinScript(function_body), expected_report_url,
         expected_ad_beacon_map, std::move(expected_ad_macro_map),
-        std::move(expected_pa_requests), expected_errors);
+        std::move(expected_pa_requests), std::move(expected_pmt_request_data),
+        expected_errors);
   }
 
   // Configures `url_loader_factory_` to return a reportWin() script with the
@@ -597,6 +621,8 @@ class BidderWorkletTest : public testing::Test {
       const base::flat_map<std::string, std::string>& expected_ad_macro_map =
           {},
       PrivateAggregationRequests expected_pa_requests = {},
+      mojom::PrivateModelTrainingRequestDataPtr expected_pmt_request_data =
+          nullptr,
       const std::vector<std::string>& expected_errors =
           std::vector<std::string>()) {
     SCOPED_TRACE(javascript);
@@ -605,6 +631,7 @@ class BidderWorkletTest : public testing::Test {
     RunReportWinExpectingResult(
         expected_report_url, expected_ad_beacon_map,
         std::move(expected_ad_macro_map), std::move(expected_pa_requests),
+        std::move(expected_pmt_request_data),
         /*expected_reporting_latency_timeout=*/false, expected_errors);
   }
 
@@ -619,6 +646,7 @@ class BidderWorkletTest : public testing::Test {
       const base::flat_map<std::string, GURL>& expected_ad_beacon_map,
       const base::flat_map<std::string, std::string>& expected_ad_macro_map,
       PrivateAggregationRequests expected_pa_requests,
+      mojom::PrivateModelTrainingRequestDataPtr expected_pmt_request_data,
       bool expected_reporting_latency_timeout,
       const std::vector<std::string>& expected_errors,
       base::OnceClosure done_closure) {
@@ -648,6 +676,8 @@ class BidderWorkletTest : public testing::Test {
                const base::flat_map<std::string, std::string>&
                    expected_ad_macro_map,
                PrivateAggregationRequests expected_pa_requests,
+               mojom::PrivateModelTrainingRequestDataPtr
+                   expected_pmt_request_data,
                bool expected_reporting_latency_timeout,
                std::optional<base::TimeDelta> reporting_timeout,
                const std::vector<std::string>& expected_errors,
@@ -656,12 +686,15 @@ class BidderWorkletTest : public testing::Test {
                const base::flat_map<std::string, GURL>& ad_beacon_map,
                const base::flat_map<std::string, std::string>& ad_macro_map,
                PrivateAggregationRequests pa_requests,
+               mojom::PrivateModelTrainingRequestDataPtr pmt_request_data,
                auction_worklet::mojom::BidderTimingMetricsPtr timing_metrics,
                const std::vector<std::string>& errors) {
               EXPECT_EQ(expected_report_url, report_url);
               EXPECT_EQ(expected_errors, errors);
               EXPECT_EQ(expected_ad_beacon_map, ad_beacon_map);
               EXPECT_EQ(expected_ad_macro_map, ad_macro_map);
+              ComparePrivateModelTrainingRequestData(expected_pmt_request_data,
+                                                     pmt_request_data);
               EXPECT_EQ(expected_pa_requests, pa_requests);
               if (expected_reporting_latency_timeout) {
                 // We only know that about the time of the timeout should have
@@ -678,6 +711,7 @@ class BidderWorkletTest : public testing::Test {
             },
             expected_report_url, expected_ad_beacon_map,
             std::move(expected_ad_macro_map), std::move(expected_pa_requests),
+            std::move(expected_pmt_request_data),
             expected_reporting_latency_timeout,
             browser_signal_reporting_timeout_, expected_errors,
             std::move(done_closure)));
@@ -692,6 +726,8 @@ class BidderWorkletTest : public testing::Test {
       const base::flat_map<std::string, std::string>& expected_ad_macro_map =
           base::flat_map<std::string, std::string>(),
       PrivateAggregationRequests expected_pa_requests = {},
+      mojom::PrivateModelTrainingRequestDataPtr expected_pmt_request_data =
+          nullptr,
       bool expected_reporting_latency_timeout = false,
       const std::vector<std::string>& expected_errors =
           std::vector<std::string>()) {
@@ -702,6 +738,7 @@ class BidderWorkletTest : public testing::Test {
     RunReportWinExpectingResultAsync(
         bidder_worklet.get(), expected_report_url, expected_ad_beacon_map,
         std::move(expected_ad_macro_map), std::move(expected_pa_requests),
+        std::move(expected_pmt_request_data),
         expected_reporting_latency_timeout, expected_errors,
         run_loop.QuitClosure());
     run_loop.Run();
@@ -2222,9 +2259,9 @@ TEST_F(PrivateModelTrainingEnabledTest, ReportAggregateWinError) {
     function reportWin() {
         queueReportAggregateWin({
           modelingSignalsConfig: {
-            destination: "https://example.test",
-            aggregationCoordinatorOrigin: "https://example.test",
-            payloadLength: -1,
+            destination: "https://destination.test",
+            aggregationCoordinatorOrigin: "https://aggregation.test",
+            payloadLength: 256,
           }
         });
       sendReportTo("https://report-win.test/");
@@ -2235,9 +2272,16 @@ TEST_F(PrivateModelTrainingEnabledTest, ReportAggregateWinError) {
     }
   )";
 
+  mojom::PrivateModelTrainingRequestDataPtr expected_pmt_request_data =
+      mojom::PrivateModelTrainingRequestData::New(
+          /*payload=*/mojo_base::BigBuffer(0),
+          /*payload_length*/ 256,
+          /*aggregation_coordinator_origin=*/GURL("https://aggregation.test"),
+          /*destination=*/GURL("https://destination.test"));
   RunReportWinWithJavascriptExpectingResult(
       kScript, GURL("https://report-win.test/"), /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{}, /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/std::move(expected_pmt_request_data),
       /*expected_errors=*/
       {"https://url.test/:14 Uncaught reportAggregateWin error."});
 }
@@ -2247,8 +2291,8 @@ TEST_F(PrivateModelTrainingEnabledTest, ReportAggregateWinTimeout) {
     function reportWin() {
         queueReportAggregateWin({
           modelingSignalsConfig: {
-            destination: "https://example.test",
-            aggregationCoordinatorOrigin: "https://example.test",
+            destination: "https://destination.test",
+            aggregationCoordinatorOrigin: "https://aggregation.test",
             payloadLength: 256,
           }
         });
@@ -2260,9 +2304,16 @@ TEST_F(PrivateModelTrainingEnabledTest, ReportAggregateWinTimeout) {
     }
   )";
 
+  mojom::PrivateModelTrainingRequestDataPtr expected_pmt_request_data =
+      mojom::PrivateModelTrainingRequestData::New(
+          /*payload=*/mojo_base::BigBuffer(0),
+          /*payload_length*/ 256,
+          /*aggregation_coordinator_origin=*/GURL("https://aggregation.test"),
+          /*destination=*/GURL("https://destination.test"));
   RunReportWinWithJavascriptExpectingResult(
       kScript, GURL("https://report-win.test/"), /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{}, /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/std::move(expected_pmt_request_data),
       /*expected_errors=*/
       {"https://url.test/ execution of `reportAggregateWin` timed out."});
 }
@@ -2272,8 +2323,8 @@ TEST_F(PrivateModelTrainingEnabledTest, NoReportAggregateWinFunction) {
     function reportWin() {
         queueReportAggregateWin({
           modelingSignalsConfig: {
-            destination: "https://example.test",
-            aggregationCoordinatorOrigin: "https://example.test",
+            destination: "https://destination.test",
+            aggregationCoordinatorOrigin: "https://aggregation.test",
             payloadLength: 256,
           }
         });
@@ -2281,9 +2332,17 @@ TEST_F(PrivateModelTrainingEnabledTest, NoReportAggregateWinFunction) {
     }
   )";
 
+  mojom::PrivateModelTrainingRequestDataPtr expected_pmt_request_data =
+      mojom::PrivateModelTrainingRequestData::New(
+          /*payload=*/mojo_base::BigBuffer(0),
+          /*payload_length*/ 256,
+          /*aggregation_coordinator_origin=*/GURL("https://aggregation.test"),
+          /*destination=*/GURL("https://destination.test"));
+
   RunReportWinWithJavascriptExpectingResult(
       kScript, GURL("https://report-win.test/"), /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{}, /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/std::move(expected_pmt_request_data),
       /*expected_errors=*/
       {"https://url.test/ `reportAggregateWin` is not a function."});
 }
@@ -2333,28 +2392,47 @@ TEST_F(PrivateModelTrainingEnabledTest,
 
     function reportAggregateWin() {}
   )";
+
+  mojom::PrivateModelTrainingRequestDataPtr expected_pmt_request_data =
+      mojom::PrivateModelTrainingRequestData::New(
+          /*payload=*/mojo_base::BigBuffer(0),
+          /*payload_length*/ kMaxPayloadLength,
+          /*aggregation_coordinator_origin=*/GURL("https://aggregation.test"),
+          /*destination=*/GURL("https://destination.test"));
+
   RunReportWinWithJavascriptExpectingResult(
-      base::StringPrintf(kScript, "https://example.test",
-                         "https://example.test", 256),
-      GURL("https://foo.test/"));
+      base::StringPrintf(kScript, "https://destination.test",
+                         "https://aggregation.test", kMaxPayloadLength),
+      GURL("https://foo.test/"),
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/expected_pmt_request_data->Clone());
 
   // A negative payload length will get through.
   // Negative numbers are converted to large unsigned values due to Web
   // IDL's modulo arithmetic.
+  expected_pmt_request_data->payload_length = 1;
   RunReportWinWithJavascriptExpectingResult(
-      base::StringPrintf(kScript, "https://example.test",
-                         "https://example.test", -1),
-      GURL("https://foo.test/"));
+      base::StringPrintf(kScript, "https://destination.test",
+                         "https://aggregation.test", -4294967295),
+      GURL("https://foo.test/"),
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/expected_pmt_request_data->Clone());
 
   // Payload length as a string
   // Non-numeric strings provided will be converted to 0 due to Web IDL's
   // conversion rules.
-  RunReportWinWithJavascriptExpectingResult(R"(
+  expected_pmt_request_data->payload_length = 0;
+  RunReportWinWithJavascriptExpectingResult(
+      R"(
     function reportWin() {
       queueReportAggregateWin({
         modelingSignalsConfig: {
-          destination: "https://example.test",
-          aggregationCoordinatorOrigin: "https://example.test",
+          destination: "https://destination.test",
+          aggregationCoordinatorOrigin: "https://aggregation.test",
           payloadLength: "invalid",
         }
       });
@@ -2363,7 +2441,11 @@ TEST_F(PrivateModelTrainingEnabledTest,
 
     function reportAggregateWin() {}
   )",
-                                            GURL("https://foo.test/"));
+      GURL("https://foo.test/"),
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/expected_pmt_request_data->Clone());
 }
 
 TEST_F(PrivateModelTrainingEnabledTest,
@@ -2383,6 +2465,7 @@ TEST_F(PrivateModelTrainingEnabledTest,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       {"https://url.test/:12 Uncaught TypeError: modelingSignalsConfig's "
        "destination must be passed a valid HTTPS url."});
 
@@ -2401,9 +2484,32 @@ TEST_F(PrivateModelTrainingEnabledTest,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       {"https://url.test/:12 Uncaught TypeError: modelingSignalsConfig's "
        "aggregationCoordinatorOrigin must be passed a "
        "valid HTTPS url."});
+
+  // Invalid payload length should result in an error and not allowing
+  // `reportAggregateWin()` to be called. This is not a type error so
+  // `sendReportTo()` should continue as normal.
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(
+      queueReportAggregateWin({
+        modelingSignalsConfig: {
+          destination: "https://example.test",
+          aggregationCoordinatorOrigin: "https://example.test",
+          payloadLength: 99999999,
+        }
+      });
+      sendReportTo("https://foo.test"))",
+      /*expected_report_url=*/GURL("https://foo.test/"),
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
+      {"queueReportAggregateWin(): modelingSignalsConfig's `payloadLength` may "
+       "not exceed 10000.",
+       "https://url.test/ `reportAggregateWin` is not a function."});
 
   // Error when called twice
   RunReportWinWithJavascriptExpectingResult(
@@ -2432,6 +2538,7 @@ TEST_F(PrivateModelTrainingEnabledTest,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       {"https://url.test/:11 Uncaught TypeError: queueReportAggregateWin() may "
        "be called at most once."});
 }
@@ -2469,14 +2576,24 @@ TEST_F(PrivateModelTrainingEnabledTest,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       {"https://url.test/:3 Uncaught TypeError: modelingSignalsConfig's "
        "destination exceeds the maximum URL length."});
 
   // Valid when destination URL is almost too long
+  mojom::PrivateModelTrainingRequestDataPtr expected_pmt_request_data1 =
+      mojom::PrivateModelTrainingRequestData::New(
+          /*payload=*/mojo_base::BigBuffer(0), /*payload_length*/ 256,
+          /*aggregation_coordinator_origin=*/GURL("https://example.test"),
+          /*destination=*/GURL(almost_too_long_report_url));
   RunReportWinWithJavascriptExpectingResult(
       base::StringPrintf(kScript, almost_too_long_report_url,
                          "https://example.test"),
-      /*expected_report_url=*/GURL("https://foo.test/"));
+      /*expected_report_url=*/GURL("https://foo.test/"),
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/std::move(expected_pmt_request_data1));
 
   // Error when aggregationCoordinatorOrigin URL is too long
   RunReportWinWithJavascriptExpectingResult(
@@ -2485,14 +2602,25 @@ TEST_F(PrivateModelTrainingEnabledTest,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       {"https://url.test/:3 Uncaught TypeError: modelingSignalsConfig's "
        "aggregationCoordinatorOrigin exceeds the maximum URL length."});
 
   // Valid with aggregationCoordinatorOrigin having an almost too long URL
+  mojom::PrivateModelTrainingRequestDataPtr expected_pmt_request_data2 =
+      mojom::PrivateModelTrainingRequestData::New(
+          /*payload=*/mojo_base::BigBuffer(0), /*payload_length*/ 256,
+          /*aggregation_coordinator_origin=*/GURL(almost_too_long_report_url),
+          /*destination=*/GURL("https://example.test"));
+
   RunReportWinWithJavascriptExpectingResult(
       base::StringPrintf(kScript, "https://example.test",
                          almost_too_long_report_url),
-      /*expected_report_url=*/GURL("https://foo.test/"));
+      /*expected_report_url=*/GURL("https://foo.test/"),
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/std::move(expected_pmt_request_data2));
 }
 
 // Test that `sendEncryptedTo()` can be called within `reportAggregateWin()`
@@ -2502,8 +2630,8 @@ TEST_F(PrivateModelTrainingEnabledTest, SendEncryptedTo) {
     function reportWin() {
       queueReportAggregateWin({
         modelingSignalsConfig: {
-          destination: "https://example.test",
-          aggregationCoordinatorOrigin: "https://example.test",
+          destination: "https://destination.test",
+          aggregationCoordinatorOrigin: "https://aggregation.test",
           payloadLength: 256,
         }
       });
@@ -2511,12 +2639,64 @@ TEST_F(PrivateModelTrainingEnabledTest, SendEncryptedTo) {
     }
 
     function reportAggregateWin() {
-      sendEncryptedTo(new ArrayBuffer(16));
+      const buffer = new ArrayBuffer(16);
+      new Uint8Array(buffer).fill(1);
+      sendEncryptedTo(buffer);
+    }
+  )";
+  mojom::PrivateModelTrainingRequestDataPtr expected_pmt_request_data =
+      mojom::PrivateModelTrainingRequestData::New(
+          /*payload=*/mojo_base::BigBuffer(std::vector<uint8_t>(16, 1)),
+          /*payload_length*/ 256,
+          /*aggregation_coordinator_origin=*/GURL("https://aggregation.test"),
+          /*destination=*/GURL("https://destination.test"));
+
+  // Valid base case
+  RunReportWinWithJavascriptExpectingResult(
+      kScript,
+      /*expected_report_url=*/GURL("https://foo.test/"),
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/std::move(expected_pmt_request_data));
+}
+
+// Not calling sendEncryptedTo within reportAggregateWin() will still send a
+// report with an empty payload
+TEST_F(PrivateModelTrainingEnabledTest, SendEncryptedToNotCalled) {
+  const char kScript[] = R"(
+    function reportWin() {
+    queueReportAggregateWin({
+      modelingSignalsConfig: {
+      destination: "https://destination.test",
+      aggregationCoordinatorOrigin: "https://aggregation.test",
+      payloadLength: 256,
+      }
+    });
+    sendReportTo("https://foo.test");
+    }
+
+    function reportAggregateWin() {
+      // sendEncryptedTo() is never called.
     }
   )";
 
-  // Valid base case
-  RunReportWinWithJavascriptExpectingResult(kScript, GURL("https://foo.test/"));
+  mojom::PrivateModelTrainingRequestDataPtr expected_pmt_request_data =
+      mojom::PrivateModelTrainingRequestData::New(
+          /*payload=*/mojo_base::BigBuffer(0),
+          /*payload_length*/ 256,
+          /*aggregation_coordinator_origin=*/GURL("https://aggregation.test"),
+          /*destination=*/GURL("https://destination.test"));
+
+  RunReportWinWithJavascriptExpectingResult(
+      kScript,
+      /*expected_report_url=*/GURL("https://foo.test/"),
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/std::move(expected_pmt_request_data),
+      /*expected_errors=*/
+      {});
 }
 
 // Test scenarios where `sendEncryptedTo()` is blocked from being used and
@@ -2542,7 +2722,9 @@ TEST_F(PrivateModelTrainingEnabledTest, SendEncryptedToBlocked) {
     }
 
     function reportAggregateWin() {
-      sendEncryptedTo(new ArrayBuffer(16));
+      const buffer = new ArrayBuffer(16);
+      new Uint8Array(buffer).fill(1);
+      sendEncryptedTo(buffer);
     }
   )";
 
@@ -2554,7 +2736,8 @@ TEST_F(PrivateModelTrainingEnabledTest, SendEncryptedToBlocked) {
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
-      {/*expected_errors=*/"https://url.test/:17 Uncaught ReferenceError: "
+      /*expected_pmt_request_data=*/nullptr,
+      {/*expected_errors=*/"https://url.test/:19 Uncaught ReferenceError: "
                            "sendEncryptedTo is not "
                            "defined."});
 
@@ -2566,8 +2749,9 @@ TEST_F(PrivateModelTrainingEnabledTest, SendEncryptedToBlocked) {
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       /*expected_errors=*/
-      {"https://url.test/:17 Uncaught ReferenceError: sendEncryptedTo is not "
+      {"https://url.test/:19 Uncaught ReferenceError: sendEncryptedTo is not "
        "defined."});
 
   // Accessing recency does not allow `sendEncryptedTo()` to be used.
@@ -2578,8 +2762,9 @@ TEST_F(PrivateModelTrainingEnabledTest, SendEncryptedToBlocked) {
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       /*expected_errors=*/
-      {"https://url.test/:17 Uncaught ReferenceError: sendEncryptedTo is not "
+      {"https://url.test/:19 Uncaught ReferenceError: sendEncryptedTo is not "
        "defined."});
 }
 
@@ -2594,8 +2779,8 @@ TEST_F(PrivateModelTrainingEnabledTest,
       let x = %s;
       queueReportAggregateWin({
         modelingSignalsConfig: {
-        destination: "https://example.test",
-        aggregationCoordinatorOrigin: "https://example.test",
+        destination: "https://destination.test",
+        aggregationCoordinatorOrigin: "https://aggregation.test",
         payloadLength: 256,
         }
       });
@@ -2603,14 +2788,26 @@ TEST_F(PrivateModelTrainingEnabledTest,
     }
 
     function reportAggregateWin() {
-      sendEncryptedTo(new ArrayBuffer(16));
+      const buffer = new ArrayBuffer(16);
+      new Uint8Array(buffer).fill(1);
+      sendEncryptedTo(buffer);
     }
   )";
+  mojom::PrivateModelTrainingRequestDataPtr expected_pmt_request_data =
+      mojom::PrivateModelTrainingRequestData::New(
+          /*payload=*/mojo_base::BigBuffer(std::vector<uint8_t>(16, 1)),
+          /*payload_length*/ 256,
+          /*aggregation_coordinator_origin=*/GURL("https://aggregation.test"),
+          /*destination=*/GURL("https://destination.test"));
 
   browser_signal_modeling_signals_ = std::nullopt;
   RunReportWinWithJavascriptExpectingResult(
       base::StringPrintf(kScript, "browserSignals.modelingSignals"),
-      GURL("https://foo.test/"));
+      /*expected_report_url=*/GURL("https://foo.test/"),
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/std::move(expected_pmt_request_data));
 }
 
 // These test scenarios verify that `sendEncryptedTo()` remains functional,
@@ -2626,8 +2823,8 @@ TEST_F(PrivateModelTrainingEnabledTest,
     function reportWin() {
       queueReportAggregateWin({
         modelingSignalsConfig: {
-          destination: "https://example.test",
-          aggregationCoordinatorOrigin: "https://example.test",
+          destination: "https://destination.test",
+          aggregationCoordinatorOrigin: "https://aggregation.test",
           payloadLength: 256,
         }
       });
@@ -2641,30 +2838,50 @@ TEST_F(PrivateModelTrainingEnabledTest,
                                 unusedDirectFromSellerSignals
                                 ) {
       let x = %s;
-      sendEncryptedTo(new ArrayBuffer(16));
+      const buffer = new ArrayBuffer(16);
+      new Uint8Array(buffer).fill(1);
+      sendEncryptedTo(buffer);
     }
   )";
+  mojom::PrivateModelTrainingRequestDataPtr expected_pmt_request_data =
+      mojom::PrivateModelTrainingRequestData::New(
+          /*payload=*/mojo_base::BigBuffer(std::vector<uint8_t>(16, 1)),
+          /*payload_length*/ 256,
+          /*aggregation_coordinator_origin=*/GURL("https://aggregation.test"),
+          /*destination=*/GURL("https://destination.test"));
 
   // Accessing joinCount within `reportAggregateWin()` allows
   // `sendEncryptedTo()` to still be called.
   browser_signal_join_count_ = 7;
   RunReportWinWithJavascriptExpectingResult(
       base::StringPrintf(kScript, "browserSignals.joinCount"),
-      GURL("https://foo.test/"));
+      /*expected_report_url=*/GURL("https://foo.test/"),
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/expected_pmt_request_data->Clone());
 
   // Accessing modelingSignals within `reportAggregateWin()` allows
   // `sendEncryptedTo()` to still be called.
   browser_signal_modeling_signals_ = 7;
   RunReportWinWithJavascriptExpectingResult(
       base::StringPrintf(kScript, "browserSignals.modelingSignals"),
-      GURL("https://foo.test/"));
+      /*expected_report_url=*/GURL("https://foo.test/"),
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/expected_pmt_request_data->Clone());
 
   // Accessing recency within `reportAggregateWin()` allows `sendEncryptedTo()`
   // to still be called.
   browser_signal_recency_report_win_ = 7;
   RunReportWinWithJavascriptExpectingResult(
       base::StringPrintf(kScript, "browserSignals.recency"),
-      GURL("https://foo.test/"));
+      /*expected_report_url=*/GURL("https://foo.test/"),
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/expected_pmt_request_data->Clone());
 }
 
 // `sendEncryptedTo()` should throw an error when it's passed anything that is
@@ -2675,8 +2892,8 @@ TEST_F(PrivateModelTrainingEnabledTest,
     function reportWin() {
       queueReportAggregateWin({
         modelingSignalsConfig: {
-        destination: "https://example.test",
-        aggregationCoordinatorOrigin: "https://example.test",
+        destination: "https://destination.test",
+        aggregationCoordinatorOrigin: "https://aggregation.test",
         payloadLength: 256,
         }
       });
@@ -2688,6 +2905,13 @@ TEST_F(PrivateModelTrainingEnabledTest,
     }
   )";
 
+  mojom::PrivateModelTrainingRequestDataPtr expected_pmt_request_data =
+      mojom::PrivateModelTrainingRequestData::New(
+          /*payload=*/mojo_base::BigBuffer(0),
+          /*payload_length*/ 256,
+          /*aggregation_coordinator_origin=*/GURL("https://aggregation.test"),
+          /*destination=*/GURL("https://destination.test"));
+
   // Passing `sendEncryptedTo()` an int results in error.
   RunReportWinWithJavascriptExpectingResult(
       base::StringPrintf(kScript, R"(sendEncryptedTo(10);)"),
@@ -2695,6 +2919,7 @@ TEST_F(PrivateModelTrainingEnabledTest,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/expected_pmt_request_data->Clone(),
       /*expected_errors=*/
       {"https://url.test/:14 Uncaught TypeError: sendEncryptedTo() may only "
        "take a ArrayBuffer."});
@@ -2706,6 +2931,7 @@ TEST_F(PrivateModelTrainingEnabledTest,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/expected_pmt_request_data->Clone(),
       /*expected_errors=*/
       {"https://url.test/:14 Uncaught TypeError: sendEncryptedTo() may only "
        "take a ArrayBuffer."});
@@ -2717,9 +2943,51 @@ TEST_F(PrivateModelTrainingEnabledTest,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/expected_pmt_request_data->Clone(),
       /*expected_errors=*/
       {"https://url.test/:14 Uncaught TypeError: sendEncryptedTo() may only "
        "take a ArrayBuffer."});
+}
+
+// When `sendEncryptedTo()`is passed a payload with a size greater than that of
+// the specified `payload_length`, we expect an empty payload to be set instead.
+TEST_F(PrivateModelTrainingEnabledTest, PayloadSizeGreaterThanPayloadLength) {
+  const char kScript[] = R"(
+    function reportWin() {
+      queueReportAggregateWin({
+        modelingSignalsConfig: {
+          destination: "https://destination.test",
+          aggregationCoordinatorOrigin: "https://aggregation.test",
+          payloadLength: 256,
+        }
+      });
+      sendReportTo("https://foo.test");
+    }
+
+    function reportAggregateWin() {
+      const buffer = new ArrayBuffer(257);
+      new Uint8Array(buffer).fill(1);
+      sendEncryptedTo(buffer);
+    }
+  )";
+  mojom::PrivateModelTrainingRequestDataPtr expected_pmt_request_data =
+      mojom::PrivateModelTrainingRequestData::New(
+          /*payload=*/mojo_base::BigBuffer(0),
+          /*payload_length*/ 256,
+          /*aggregation_coordinator_origin=*/GURL("https://aggregation.test"),
+          /*destination=*/GURL("https://destination.test"));
+
+  // Valid base case
+  RunReportWinWithJavascriptExpectingResult(
+      kScript,
+      /*expected_report_url=*/GURL("https://foo.test/"),
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/std::move(expected_pmt_request_data),
+      /*expected_errors=*/
+      {"sendEncryptedTo(): payload size may not exceed the specified "
+       "modelingSignalsConfig.payloadLength."});
 }
 
 // Verify that we cannot call `sendEncryptedTo()` in `reportWin()`.
@@ -2733,12 +3001,16 @@ TEST_F(PrivateModelTrainingEnabledTest, NoSendEncryptedToInReportWin) {
         payloadLength: 256,
         }
       });
-      sendEncryptedTo(new ArrayBuffer(16));
+      const buffer = new ArrayBuffer(16);
+      new Uint8Array(buffer).fill(1);
+      sendEncryptedTo(buffer);
       sendReportTo("https://foo.test");
     }
 
     function reportAggregateWin() {
-      sendEncryptedTo(new ArrayBuffer(16));
+      const buffer = new ArrayBuffer(16);
+      new Uint8Array(buffer).fill(1);
+      sendEncryptedTo(buffer);
     }
   )";
 
@@ -2748,8 +3020,9 @@ TEST_F(PrivateModelTrainingEnabledTest, NoSendEncryptedToInReportWin) {
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       /*expected_errors=*/
-      {"https://url.test/:10 Uncaught ReferenceError: sendEncryptedTo is not "
+      {"https://url.test/:12 Uncaught ReferenceError: sendEncryptedTo is not "
        "defined."});
 }
 
@@ -2793,6 +3066,7 @@ TEST_F(PrivateModelTrainingDisabledTest,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       {"https://url.test/:12 Uncaught ReferenceError: queueReportAggregateWin "
        "is not defined."});
 }
@@ -6074,6 +6348,7 @@ TEST_F(BidderWorkletTest, WasmReportWin) {
               const base::flat_map<std::string, GURL>& ad_beacon_map,
               const base::flat_map<std::string, std::string>& ad_macro_map,
               PrivateAggregationRequests pa_requests,
+              mojom::PrivateModelTrainingRequestDataPtr pmt_request_data,
               auction_worklet::mojom::BidderTimingMetricsPtr timing_metrics,
               const std::vector<std::string>& errors) { run_loop.Quit(); }));
   base::RunLoop().RunUntilIdle();
@@ -6106,6 +6381,7 @@ TEST_F(BidderWorkletTest, WasmReportWin2) {
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       /*expected_reporting_latency_timeout=*/false,
       /*expected_errors=*/{},
       base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
@@ -7497,6 +7773,7 @@ TEST_F(BidderWorkletTest, ReportWin) {
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       {"https://url.test/:11 Uncaught TypeError: sendReportTo must be passed a "
        "valid HTTPS url."});
   RunReportWinWithFunctionBodyExpectingResult(
@@ -7505,6 +7782,7 @@ TEST_F(BidderWorkletTest, ReportWin) {
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       {"https://url.test/:11 Uncaught TypeError: sendReportTo must be passed a "
        "valid HTTPS url."});
 
@@ -7513,6 +7791,7 @@ TEST_F(BidderWorkletTest, ReportWin) {
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       {"https://url.test/:11 Uncaught TypeError: sendReportTo must be passed a "
        "valid HTTPS url."});
 
@@ -7521,6 +7800,7 @@ TEST_F(BidderWorkletTest, ReportWin) {
       /*expected_report_url=*/std::nullopt, /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       {"https://url.test/:11 Uncaught TypeError: sendReportTo may be called at "
        "most once."});
 }
@@ -7537,6 +7817,7 @@ TEST_F(BidderWorkletTest, ReportWinTimeout) {
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       /*expected_reporting_latency_timeout=*/true,
       /*expected_errors=*/
       {"https://url.test/ execution of `reportWin` timed out."});
@@ -7552,6 +7833,7 @@ TEST_F(BidderWorkletTest, ReportWinTopLevelTimeout) {
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       /*expected_reporting_latency_timeout=*/true,
       /*expected_errors=*/
       {"https://url.test/ top-level execution timed out."});
@@ -7604,6 +7886,7 @@ TEST_F(BidderWorkletTest, SendReportToLongUrl) {
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       /*expected_reporting_latency_timeout=*/false,
       /*expected_errors=*/{}, run_loop.QuitClosure());
   run_loop.Run();
@@ -7655,6 +7938,7 @@ TEST_F(BidderWorkletTest, ContributeToHistogramOnEventPermissionEnforced) {
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       /*expected_reporting_latency_timeout=*/false,
       /*expected_errors=*/
       {"https://url.test/:12 Uncaught TypeError: The \"private-aggregation\" "
@@ -7718,6 +8002,7 @@ TEST_F(BidderWorkletTest, ContributeToHistogramOnEventPermissionNotEnforced) {
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/std::move(incorrectly_expected_pa_requests),
+      /*expected_pmt_request_data=*/nullptr,
       /*expected_reporting_latency_timeout=*/false,
       /*expected_errors=*/{}, run_loop.QuitClosure());
   run_loop.Run();
@@ -7771,6 +8056,7 @@ TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
              const base::flat_map<std::string, GURL>& ad_beacon_map,
              const base::flat_map<std::string, std::string>& ad_macro_map,
              PrivateAggregationRequests pa_requests,
+             mojom::PrivateModelTrainingRequestDataPtr pmt_request_data,
              auction_worklet::mojom::BidderTimingMetricsPtr timing_metrics,
              const std::vector<std::string>& errors) {
             ADD_FAILURE()
@@ -7831,6 +8117,7 @@ TEST_F(BidderWorkletTest, ReportWinParallel) {
                   const base::flat_map<std::string, GURL>& ad_beacon_map,
                   const base::flat_map<std::string, std::string>& ad_macro_map,
                   PrivateAggregationRequests pa_requests,
+                  mojom::PrivateModelTrainingRequestDataPtr pmt_request_data,
                   auction_worklet::mojom::BidderTimingMetricsPtr timing_metrics,
                   const std::vector<std::string>& errors) {
                 EXPECT_EQ(GURL(base::StringPrintf("https://foo.test/%zu", i)),
@@ -7888,6 +8175,7 @@ TEST_F(BidderWorkletTest, ReportWinParallelLoadFails) {
                const base::flat_map<std::string, GURL>& ad_beacon_map,
                const base::flat_map<std::string, std::string>& ad_macro_map,
                PrivateAggregationRequests pa_requests,
+               mojom::PrivateModelTrainingRequestDataPtr pmt_request_data,
                auction_worklet::mojom::BidderTimingMetricsPtr timing_metrics,
                const std::vector<std::string>& errors) {
               ADD_FAILURE() << "Callback should not be invoked.";
@@ -7910,6 +8198,7 @@ TEST_F(BidderWorkletTest, ReportWinDateNotAvailable) {
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       {"https://url.test/:11 Uncaught ReferenceError: Date is not defined."});
 }
 
@@ -8051,6 +8340,7 @@ TEST_F(BidderWorkletTest, ReportWinLoadCompletionOrder) {
     auto run_loop = std::make_unique<base::RunLoop>();
     RunReportWinExpectingResultAsync(
         bidder_worklet.get(), GURL("https://foo.test/"), {}, {}, {},
+        /*expected_pmt_request_data=*/nullptr,
         /*expected_reporting_latency_timeout=*/false, {},
         run_loop->QuitClosure());
     for (size_t i = 0; i < std::size(kResponses); ++i) {
@@ -8205,6 +8495,7 @@ TEST_F(BidderWorkletTest, ReportWinBrowserSignalRenderUrlDeprecationWarning) {
                                    /*expected_ad_beacon_map=*/{},
                                    /*expected_ad_macro_map=*/{},
                                    /*expected_pa_requests=*/{},
+                                   /*expected_pmt_request_data=*/nullptr,
                                    /*expected_reporting_latency_timeout=*/false,
                                    /*expected_errors=*/{},
                                    run_loop.QuitClosure());
@@ -8246,6 +8537,7 @@ TEST_F(BidderWorkletTest, ReportWinBrowserSignalRenderUrlNoDeprecationWarning) {
                                    /*expected_ad_beacon_map=*/{},
                                    /*expected_ad_macro_map=*/{},
                                    /*expected_pa_requests=*/{},
+                                   /*expected_pmt_request_data=*/nullptr,
                                    /*expected_reporting_latency_timeout=*/false,
                                    /*expected_errors=*/{},
                                    run_loop.QuitClosure());
@@ -8486,6 +8778,7 @@ TEST_P(BidderWorkletMultiThreadingTest, ScriptIsolation) {
                 const base::flat_map<std::string, GURL>& ad_beacon_map,
                 const base::flat_map<std::string, std::string>& ad_macro_map,
                 PrivateAggregationRequests pa_requests,
+                mojom::PrivateModelTrainingRequestDataPtr pmt_request_data,
                 auction_worklet::mojom::BidderTimingMetricsPtr timing_metrics,
                 const std::vector<std::string>& errors) {
               EXPECT_EQ(GURL("https://23.test/"), report_url);
@@ -9623,6 +9916,7 @@ TEST_F(BidderWorkletTest, InstrumentationBreakpoints) {
   base::RunLoop run_loop;
   RunReportWinExpectingResultAsync(
       worklet.get(), GURL("https://foo.test/"), {}, {}, {},
+      /*expected_pmt_request_data=*/nullptr,
       /*expected_reporting_latency_timeout=*/false, {}, run_loop.QuitClosure());
 
   TestDevToolsAgentClient::Event breakpoint_hit2 =
@@ -10166,6 +10460,7 @@ TEST_F(BidderWorkletTest, CancelationDtor) {
              const base::flat_map<std::string, GURL>& ad_beacon_map,
              const base::flat_map<std::string, std::string>& ad_macro_map,
              PrivateAggregationRequests pa_requests,
+             mojom::PrivateModelTrainingRequestDataPtr pmt_request_data,
              auction_worklet::mojom::BidderTimingMetricsPtr timing_metrics,
              const std::vector<std::string>& errors) {
             ADD_FAILURE() << "Callback should not be invoked.";
@@ -10453,6 +10748,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       {"https://url.test/:15 Uncaught TypeError: registerAdBeacon may be "
        "called at most once."});
 
@@ -10483,6 +10779,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       {"https://url.test/:11 Uncaught TypeError: registerAdBeacon(): at least "
        "1 argument(s) are required."});
 
@@ -10493,6 +10790,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       {"https://url.test/:11 Uncaught TypeError: registerAdBeacon(): Cannot "
        "convert argument 'map' to a record since it's not an Object."});
 
@@ -10507,7 +10805,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
       {{"click", GURL("https://click.example.test/")},
        {"1", GURL("https://view.example.test/")}},
       /*expected_ad_macro_map=*/{},
-      /*expected_pa_requests=*/{}, {});
+      /*expected_pa_requests=*/{}, /*expected_pmt_request_data=*/nullptr, {});
 
   // ... but keys must be convertible to strings
   RunReportWinWithFunctionBodyExpectingResult(
@@ -10520,6 +10818,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       {"https://url.test/:15 Uncaught TypeError: Cannot convert a Symbol value "
        "to a string."});
 
@@ -10533,6 +10832,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       {"https://url.test/:11 Uncaught TypeError: registerAdBeacon(): invalid "
        "reporting url for key 'view': 'gopher://view.example.test/'."});
 
@@ -10546,6 +10846,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       {"https://url.test/:11 Uncaught TypeError: registerAdBeacon(): invalid "
        "reporting url for key 'view': 'http://view.example.test/'."});
 
@@ -10559,6 +10860,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       {"https://url.test/:11 Uncaught TypeError: registerAdBeacon(): Invalid "
        "reserved type 'reserved.bogus' cannot be used."});
 
@@ -10571,6 +10873,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       {"https://url.test/:11 Uncaught TypeError: registerAdBeacon(): invalid "
        "reporting url."});
 }
@@ -10609,6 +10912,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeaconLongUrl) {
         /*expected_ad_beacon_map=*/{},
         /*expected_ad_macro_map=*/{},
         /*expected_pa_requests=*/{},
+        /*expected_pmt_request_data=*/nullptr,
         /*expected_reporting_latency_timeout=*/false,
         /*expected_errors=*/{}, run_loop.QuitClosure());
     run_loop.Run();
@@ -10652,6 +10956,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeaconLongUrl) {
         /*expected_ad_beacon_map=*/{{"b", GURL(almost_too_long_beacon_url)}},
         /*expected_ad_macro_map=*/{},
         /*expected_pa_requests=*/{},
+        /*expected_pmt_request_data=*/nullptr,
         /*expected_reporting_latency_timeout=*/false,
         /*expected_errors=*/{}, run_loop.QuitClosure());
     run_loop.Run();
@@ -10715,6 +11020,7 @@ TEST_F(BidderWorkletSharedStorageAPIDisabledTest, SharedStorageNotExposed) {
       /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       /*expected_errors=*/
       {"https://url.test/:12 Uncaught ReferenceError: sharedStorage is not "
        "defined."});
@@ -11407,6 +11713,7 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
         /*expected_report_url=*/std::nullopt,
         /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
         /*expected_pa_requests=*/{},
+        /*expected_pmt_request_data=*/nullptr,
         /*expected_errors=*/
         {"https://url.test/:12 Uncaught TypeError: The \"shared-storage\" "
          "Permissions Policy denied the method on sharedStorage."});
@@ -11436,6 +11743,7 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
         /*expected_ad_beacon_map=*/{},
         /*expected_ad_macro_map=*/{},
         /*expected_pa_requests=*/{},
+        /*expected_pmt_request_data=*/nullptr,
         /*expected_reporting_latency_timeout=*/true,
         /*expected_errors=*/
         {"https://url.test/ execution of `reportWin` timed out."});
@@ -12005,6 +12313,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
         /*expected_report_url=*/std::nullopt,
         /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
         std::move(expected_pa_requests),
+        /*expected_pmt_request_data=*/nullptr,
         /*expected_errors=*/{});
   }
 
@@ -12022,6 +12331,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
         /*expected_report_url=*/std::nullopt,
         /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
         /*expected_pa_requests=*/{},
+        /*expected_pmt_request_data=*/nullptr,
         /*expected_errors=*/
         {"https://url.test/:12 Uncaught TypeError: The \"private-aggregation\" "
          "Permissions Policy denied the method on privateAggregation."});
@@ -12045,6 +12355,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
         /*expected_report_url=*/std::nullopt,
         /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
         std::move(expected_pa_requests),
+        /*expected_pmt_request_data=*/nullptr,
         /*expected_errors=*/{});
   }
 
@@ -12069,6 +12380,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
         /*expected_report_url=*/std::nullopt,
         /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
         std::move(expected_pa_requests),
+        /*expected_pmt_request_data=*/nullptr,
         /*expected_errors=*/{});
   }
 
@@ -12086,6 +12398,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
         /*expected_report_url=*/std::nullopt,
         /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
         std::move(expected_pa_requests),
+        /*expected_pmt_request_data=*/nullptr,
         /*expected_errors=*/
         {"https://url.test/:13 Uncaught ReferenceError: error is not "
          "defined."});
@@ -12117,6 +12430,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
         /*expected_report_url=*/std::nullopt,
         /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
         std::move(expected_pa_requests),
+        /*expected_pmt_request_data=*/nullptr,
         /*expected_errors=*/{});
   }
 
@@ -12146,6 +12460,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
         /*expected_report_url=*/std::nullopt,
         /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
         std::move(expected_pa_requests),
+        /*expected_pmt_request_data=*/nullptr,
         /*expected_errors=*/{});
   }
 
@@ -12164,6 +12479,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
         /*expected_report_url=*/std::nullopt,
         /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
         std::move(expected_pa_requests),
+        /*expected_pmt_request_data=*/nullptr,
         /*expected_errors=*/{});
   }
 
@@ -12200,6 +12516,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
         /*expected_report_url=*/std::nullopt,
         /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
         std::move(expected_pa_requests),
+        /*expected_pmt_request_data=*/nullptr,
         /*expected_errors=*/{});
   }
 }
@@ -12241,6 +12558,7 @@ TEST_F(BidderWorkletPrivateAggregationDisabledTest, ReportWin) {
       /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       /*expected_errors=*/
       {"https://url.test/:12 Uncaught ReferenceError: privateAggregation is "
        "not defined."});
@@ -13231,6 +13549,8 @@ TEST_F(BidderWorkletLatenciesTest, ReportWinFetchMetrics) {
              const base::flat_map<std::string, GURL>& ad_beacon_map,
              const base::flat_map<std::string, std::string>& ad_macro_map,
              PrivateAggregationRequests pa_requests,
+             mojom::PrivateModelTrainingRequestDataPtr
+                 private_model_training_payload,
              auction_worklet::mojom::BidderTimingMetricsPtr timing_metrics,
              const std::vector<std::string>& errors) {
             ASSERT_TRUE(timing_metrics->js_fetch_latency.has_value());
@@ -13268,6 +13588,7 @@ TEST_F(BidderWorkletTest, ReportWinLatency) {
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       /*expected_reporting_latency_timeout=*/true,
       /*expected_errors=*/
       {"https://url.test/ execution of `reportWin` timed out."});
@@ -13283,6 +13604,7 @@ TEST_F(BidderWorkletTest, ReportWinZeroTimeout) {
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       /*expected_reporting_latency_timeout=*/true,
       /*expected_errors=*/
       {"reportWin() aborted due to zero timeout."});
@@ -13312,6 +13634,7 @@ TEST_F(BidderWorkletTest, ReportWinTimeoutFromAuctionConfig) {
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_pmt_request_data=*/nullptr,
       /*expected_reporting_latency_timeout=*/true,
       /*expected_errors=*/
       {"https://url.test/ execution of `reportWin` timed out."});
@@ -14077,7 +14400,8 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdMacroInvalidArgs) {
         /*expected_report_url=*/std::nullopt,
         /*expected_ad_beacon_map=*/{},
         /*expected_ad_macro_map=*/{},
-        /*expected_pa_requests=*/{}, {test_case.expected_error});
+        /*expected_pa_requests=*/{},
+        /*expected_pmt_request_data=*/nullptr, {test_case.expected_error});
   }
 }
 
