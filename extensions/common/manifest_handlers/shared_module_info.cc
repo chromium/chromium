@@ -53,11 +53,8 @@ const SharedModuleInfo& GetSharedModuleInfo(const Extension* extension) {
 
 }  // namespace
 
-SharedModuleInfo::SharedModuleInfo() {
-}
-
-SharedModuleInfo::~SharedModuleInfo() {
-}
+SharedModuleInfo::SharedModuleInfo() = default;
+SharedModuleInfo::~SharedModuleInfo() = default;
 
 // static
 void SharedModuleInfo::ParseImportedPath(const std::string& path,

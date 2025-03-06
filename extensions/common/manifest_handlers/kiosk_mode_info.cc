@@ -67,8 +67,7 @@ KioskModeInfo::KioskModeInfo(
       required_platform_version(required_platform_version),
       always_update(always_update) {}
 
-KioskModeInfo::~KioskModeInfo() {
-}
+KioskModeInfo::~KioskModeInfo() = default;
 
 // static
 KioskModeInfo* KioskModeInfo::Get(const Extension* extension) {
@@ -100,11 +99,8 @@ bool KioskModeInfo::IsValidPlatformVersion(const std::string& version_string) {
   return version.IsValid() && version.components().size() <= 3u;
 }
 
-KioskModeHandler::KioskModeHandler() {
-}
-
-KioskModeHandler::~KioskModeHandler() {
-}
+KioskModeHandler::KioskModeHandler() = default;
+KioskModeHandler::~KioskModeHandler() = default;
 
 bool KioskModeHandler::Parse(Extension* extension, std::u16string* error) {
   const Manifest* manifest = extension->manifest();

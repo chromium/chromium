@@ -149,8 +149,7 @@ const std::string* GetMinimumMV3CSPForExtension(const Extension& extension) {
 CSPInfo::CSPInfo(std::string extension_pages_csp)
     : extension_pages_csp(std::move(extension_pages_csp)) {}
 
-CSPInfo::~CSPInfo() {
-}
+CSPInfo::~CSPInfo() = default;
 
 // static
 const std::string& CSPInfo::GetExtensionPagesCSP(const Extension* extension) {

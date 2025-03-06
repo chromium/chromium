@@ -77,8 +77,7 @@ OptionsPageInfo::OptionsPageInfo(const GURL& options_page,
       open_in_tab_(open_in_tab) {
 }
 
-OptionsPageInfo::~OptionsPageInfo() {
-}
+OptionsPageInfo::~OptionsPageInfo() = default;
 
 // static
 const GURL& OptionsPageInfo::GetOptionsPage(const Extension* extension) {
@@ -158,9 +157,8 @@ std::unique_ptr<OptionsPageInfo> OptionsPageInfo::Create(
                                            open_in_tab);
 }
 
-OptionsPageHandler::OptionsPageHandler() {}
-
-OptionsPageHandler::~OptionsPageHandler() {}
+OptionsPageHandler::OptionsPageHandler() = default;
+OptionsPageHandler::~OptionsPageHandler() = default;
 
 bool OptionsPageHandler::Parse(Extension* extension, std::u16string* error) {
   std::vector<InstallWarning> install_warnings;

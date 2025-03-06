@@ -54,8 +54,7 @@ BackgroundInfo::BackgroundInfo()
       allow_js_access_(true) {
 }
 
-BackgroundInfo::~BackgroundInfo() {
-}
+BackgroundInfo::~BackgroundInfo() = default;
 
 // static
 GURL BackgroundInfo::GetBackgroundURL(const Extension* extension) {
@@ -310,11 +309,8 @@ bool BackgroundInfo::LoadAllowJSAccess(const Extension* extension,
   return true;
 }
 
-BackgroundManifestHandler::BackgroundManifestHandler() {
-}
-
-BackgroundManifestHandler::~BackgroundManifestHandler() {
-}
+BackgroundManifestHandler::BackgroundManifestHandler() = default;
+BackgroundManifestHandler::~BackgroundManifestHandler() = default;
 
 bool BackgroundManifestHandler::Parse(Extension* extension,
                                       std::u16string* error) {

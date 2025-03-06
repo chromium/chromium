@@ -150,8 +150,7 @@ std::unique_ptr<ExternallyConnectableInfo> ExternallyConnectableInfo::FromValue(
       std::move(matches), ids, all_ids, accepts_tls_channel_id));
 }
 
-ExternallyConnectableInfo::~ExternallyConnectableInfo() {
-}
+ExternallyConnectableInfo::~ExternallyConnectableInfo() = default;
 
 ExternallyConnectableInfo::ExternallyConnectableInfo(
     URLPatternSet matches,

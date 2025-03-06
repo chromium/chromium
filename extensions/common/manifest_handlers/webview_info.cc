@@ -58,8 +58,7 @@ class PartitionItem {
 WebviewInfo::WebviewInfo(const ExtensionId& extension_id)
     : extension_id_(extension_id) {}
 
-WebviewInfo::~WebviewInfo() {
-}
+WebviewInfo::~WebviewInfo() = default;
 
 // static
 bool WebviewInfo::IsResourceWebviewAccessible(

@@ -31,11 +31,8 @@ const std::string& LocaleInfo::GetDefaultLocale(const Extension* extension) {
   return info ? info->default_locale : base::EmptyString();
 }
 
-DefaultLocaleHandler::DefaultLocaleHandler() {
-}
-
-DefaultLocaleHandler::~DefaultLocaleHandler() {
-}
+DefaultLocaleHandler::DefaultLocaleHandler() = default;
+DefaultLocaleHandler::~DefaultLocaleHandler() = default;
 
 bool DefaultLocaleHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<LocaleInfo> info(new LocaleInfo);

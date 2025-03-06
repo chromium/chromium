@@ -122,11 +122,8 @@ MimeTypesHandler* MimeTypesHandler::GetHandler(
   return nullptr;
 }
 
-MimeTypesHandlerParser::MimeTypesHandlerParser() {
-}
-
-MimeTypesHandlerParser::~MimeTypesHandlerParser() {
-}
+MimeTypesHandlerParser::MimeTypesHandlerParser() = default;
+MimeTypesHandlerParser::~MimeTypesHandlerParser() = default;
 
 bool MimeTypesHandlerParser::Parse(extensions::Extension* extension,
                                    std::u16string* error) {
