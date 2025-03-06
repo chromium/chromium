@@ -120,7 +120,7 @@ export class SettingsAutofillAiSectionElement extends
       },
 
       entityInstances_: {
-        Array,
+        type: Array,
         value: () => [],
       },
     };
@@ -134,7 +134,8 @@ export class SettingsAutofillAiSectionElement extends
   private showRemoveEntityDialog_: boolean;
   private entityInstances_: EntityInstanceWithLabels[];
 
-  // The correspondent model for any entity related action menus or dialogs.
+  // The correspondent `EntityInstanceWithLabels` model for any entity related
+  // action menus or dialogs.
   private activeEntityWithLabels_: EntityInstanceWithLabels|null;
   private entityDataManager_: EntityDataManagerProxy =
       EntityDataManagerProxyImpl.getInstance();
@@ -169,6 +170,11 @@ export class SettingsAutofillAiSectionElement extends
   private onToggleSubLabelLinkClick_(): void {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('autofillAiLearnMoreURL'));
+  }
+
+  private computeDisableAddButton_(
+      ineligibleUser: boolean, optInPrefValue: boolean): boolean {
+    return ineligibleUser || !optInPrefValue;
   }
 
   /**
