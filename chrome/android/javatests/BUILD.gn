@@ -710,6 +710,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.device_dialog") {
     "src/org/chromium/chrome/browser/device_dialog/BluetoothChooserDialogTest.java",
     "src/org/chromium/chrome/browser/device_dialog/BluetoothScanningPermissionDialogTest.java",
     "src/org/chromium/chrome/browser/device_dialog/ItemChooserDialogTest.java",
+    "src/org/chromium/chrome/browser/device_dialog/SerialChooserDialogTest.java",
     "src/org/chromium/chrome/browser/device_dialog/UsbChooserDialogTest.java",
   ]
 

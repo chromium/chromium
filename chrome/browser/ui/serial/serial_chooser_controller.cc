@@ -146,6 +146,16 @@ void SerialChooserController::GetDevices() {
       return;
     }
 
+#if BUILDFLAG(IS_ANDROID)
+    if (!adapter_->IsPresent()) {
+      // Received a wireless only request on a device without a Bluetooth
+      // adapter. It is redundant to ask users to grant permissions.
+      CHECK_EQ(NumOptions(), 0u);
+      view()->OnOptionsInitialized();
+      return;
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
+
     if (adapter_->GetOsPermissionStatus() !=
         device::BluetoothAdapter::PermissionStatus::kAllowed) {
       view()->OnAdapterAuthorizationChanged(false);
@@ -254,6 +264,10 @@ bool SerialChooserController::IsPaired(size_t index) const {
   return chooser_context_->HasPortPermission(origin_, *ports_[index]);
 }
 
+void SerialChooserController::RefreshOptions() {
+  GetDevices();
+}
+
 void SerialChooserController::Select(const std::vector<size_t>& indices) {
   DCHECK_EQ(1u, indices.size());
   size_t index = indices[0];
@@ -274,38 +288,11 @@ void SerialChooserController::Close() {}
 
 // TODO(crbug.com/355570625): Shared impl with ChromeBluetoothChooserController.
 void SerialChooserController::OpenAdapterOffHelpUrl() const {
-  CHECK(chooser_context_);
-#if !BUILDFLAG(IS_ANDROID)
-  Profile* profile = chooser_context_->profile();
-#endif  // !BUILDFLAG(IS_ANDROID)
+  OpenBluetoothHelpUrl();
+}
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // Chrome OS can directly link to the OS setting to turn on the adapter.
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      profile, chromeos::settings::mojom::kBluetoothDevicesSubpagePath);
-#else
-  // For other operating systems, show a help center page in a tab.
-  content::OpenURLParams open_url_params(
-      GURL(chrome::kBluetoothAdapterOffHelpURL), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-      /*is_renderer_initiated=*/false);
-#if BUILDFLAG(IS_ANDROID)
-  auto* rfh = initiator_document_.AsRenderFrameHostIfValid();
-  auto* web_contents = rfh && rfh->IsActive()
-                           ? content::WebContents::FromRenderFrameHost(rfh)
-                           : nullptr;
-  if (web_contents) {
-    web_contents->OpenURL(open_url_params,
-                          /*navigation_handle_callback=*/{});
-  }
-#else
-  chrome::ScopedTabbedBrowserDisplayer browser_displayer(profile);
-  CHECK(browser_displayer.browser());
-  browser_displayer.browser()->OpenURL(open_url_params,
-                                       /*navigation_handle_callback=*/{});
-#endif  // BUILDFLAG(IS_ANDROID)
-#endif  // BUILDFLAG(IS_CHROMEOS)
+void SerialChooserController::OpenBluetoothPermissionHelpUrl() const {
+  OpenBluetoothHelpUrl();
 }
 
 void SerialChooserController::OpenHelpCenterUrl() const {
@@ -525,4 +512,40 @@ bool SerialChooserController::IsWirelessSerialPortOnly() {
     }
   }
   return true;
+}
+
+// TODO(crbug.com/355570625): Shared impl with ChromeBluetoothChooserController.
+void SerialChooserController::OpenBluetoothHelpUrl() const {
+  CHECK(chooser_context_);
+#if !BUILDFLAG(IS_ANDROID)
+  Profile* profile = chooser_context_->profile();
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Chrome OS can directly link to the OS setting to turn on the adapter.
+  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+      profile, chromeos::settings::mojom::kBluetoothDevicesSubpagePath);
+#else
+  // For other operating systems, show a help center page in a tab.
+  content::OpenURLParams open_url_params(
+      GURL(chrome::kBluetoothAdapterOffHelpURL), content::Referrer(),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+      /*is_renderer_initiated=*/false);
+#if BUILDFLAG(IS_ANDROID)
+  auto* rfh = initiator_document_.AsRenderFrameHostIfValid();
+  auto* web_contents = rfh && rfh->IsActive()
+                           ? content::WebContents::FromRenderFrameHost(rfh)
+                           : nullptr;
+  if (web_contents) {
+    web_contents->OpenURL(open_url_params,
+                          /*navigation_handle_callback=*/{});
+  }
+#else
+  chrome::ScopedTabbedBrowserDisplayer browser_displayer(profile);
+  CHECK(browser_displayer.browser());
+  browser_displayer.browser()->OpenURL(open_url_params,
+                                       /*navigation_handle_callback=*/{});
+#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }

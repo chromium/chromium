@@ -5336,6 +5336,20 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         <ph name="BEGIN_LINK">&lt;link&gt;</ph>Get help<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
 
+      <!-- WebSerial port chooser strings -->
+      <message name="IDS_SERIAL_CHOOSER_DIALOG_PROMPT" desc="The label that is used to introduce serial port chooser details to the user in a popup.">
+        <ph name="SITE">%1$s<ex>https://www.google.com</ex></ph> wants to connect to a serial port
+      </message>
+      <message name="IDS_SERIAL_CHOOSER_DIALOG_NO_DEVICES_FOUND_PROMPT" desc="The label shown to the user to inform them that no serial ports were found matching the requirements that the application provided.">
+        No compatible devices found
+      </message>
+      <message name="IDS_SERIAL_CHOOSER_DIALOG_CONNECT_BUTTON_TEXT" desc="Label on the button that closes the serial port chooser popup and allows the requesting site access to the selected port.">
+        Connect
+      </message>
+      <message name="IDS_SERIAL_CHOOSER_DIALOG_FOOTNOTE_TEXT" desc="This text is shown at the bottom of the serial chooser dialog with a link to part of its text.">
+        <ph name="BEGIN_LINK">&lt;link&gt;</ph>Get help<ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
+
       <!-- Special locale UI strings -->
       <message name="IDS_SEARCH_WITH_SOGOU" desc="Text telling the user that the search engine will be switched to Sogou.">
         Search with Sogou

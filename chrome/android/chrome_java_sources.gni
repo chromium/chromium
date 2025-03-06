@@ -511,6 +511,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/desktop_site/DesktopSiteSettingsIphController.java",
   "java/src/org/chromium/chrome/browser/device_dialog/ChromeBluetoothChooserAndroidDelegate.java",
   "java/src/org/chromium/chrome/browser/device_dialog/ChromeBluetoothScanningPromptAndroidDelegate.java",
+  "java/src/org/chromium/chrome/browser/device_dialog/SerialChooserDialog.java",
   "java/src/org/chromium/chrome/browser/device_dialog/UsbChooserDialog.java",
   "java/src/org/chromium/chrome/browser/device_lock/DeviceLockActivity.java",
   "java/src/org/chromium/chrome/browser/device_lock/DeviceLockActivityLauncherImpl.java",
