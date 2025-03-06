@@ -22653,6 +22653,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="MobileCredentialProviderExtensionPromoTurnOnAutoFill">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when the user taps the &quot;Turn on AutoFill…&quot; button from
+    the Credential Provider Extenstion promo. This button triggers an iOS prompt
+    that allows the user to set the app as a credential provider. iOS only.
+  </description>
+</action>
+
 <action name="MobileCreditCardScanner.Close">
   <obsolete>Removed from code in November 2020</obsolete>
   <owner>gambard@chromium.org</owner>
@@ -24876,6 +24885,15 @@ should be able to be added at any place in this file.
   <description>
     Reported when user uses the Password Manager search bar to search their
     passwords. iOS only.
+  </description>
+</action>
+
+<action name="MobilePasswordSettingsTurnOnAutoFill">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when the user taps the &quot;Turn on AutoFill…&quot; button from
+    the Password Settings UI. This button triggers an iOS prompt that allows the
+    user to set the app as a credential provider. iOS only.
   </description>
 </action>
 

@@ -14,6 +14,7 @@
 #import "base/feature_list.h"
 #import "base/i18n/message_formatter.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -398,6 +399,9 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
     }
     case ItemTypeTurnOnPasswordsInOtherAppsButton: {
       if (@available(iOS 18.0, *)) {
+        base::RecordAction(
+            base::UserMetricsAction("MobilePasswordSettingsTurnOnAutoFill"));
+
         // Disable the button as the API that's about to be called
         // (`-requestToTurnOnCredentialProviderExtensionWithCompletionHandler`)
         // won't accept other requests for the following 10 seconds.
