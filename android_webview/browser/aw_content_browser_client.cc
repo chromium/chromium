@@ -126,6 +126,7 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_bundle_android.h"
@@ -832,7 +833,8 @@ bool AwContentBrowserClient::ShouldOverrideUrlLoading(
   if (is_prerendering) {
     // We pass the `Sec-Purpose` header to tell the embedder that the navigation
     // is for prerendering, within the existing API surface.
-    request_headers.SetHeader("Sec-Purpose", "prefetch;prerender");
+    request_headers.SetHeader(blink::kSecPurposeHeaderName,
+                              blink::kSecPurposePrefetchPrerenderHeaderValue);
   }
 
   return client_bridge->ShouldOverrideUrlLoading(

@@ -8,6 +8,7 @@
 #include "base/unguessable_token.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 
 namespace network {
 
@@ -68,8 +69,9 @@ TEST(PrefetchMatchesTest, HeadersPurposeDiffers) {
   ResourceRequest real;
   prefetch.headers.AddHeadersFromString(
       "User-Agent: Mozilla/1.0\r\n"
-      "Purpose: prefetch\r\n"
       "Referer: https://www.example.com/\r\n");
+  prefetch.headers.SetHeader(blink::kPurposeHeaderName,
+                             blink::kSecPurposePrefetchHeaderValue);
   real.headers.AddHeadersFromString(
       "User-Agent: Mozilla/1.0\r\n"
       "Referer: https://www.example.com/\r\n");
@@ -81,8 +83,9 @@ TEST(PrefetchMatchesTest, HeadersOrderDoesntMatter) {
   ResourceRequest real;
   prefetch.headers.AddHeadersFromString(
       "User-Agent: Mozilla/1.0\r\n"
-      "Purpose: prefetch\r\n"
       "Referer: https://www.example.com/\r\n");
+  prefetch.headers.SetHeader(blink::kPurposeHeaderName,
+                             blink::kSecPurposePrefetchHeaderValue);
   real.headers.AddHeadersFromString(
       "Referer: https://www.example.com/\r\n"
       "User-Agent: Mozilla/1.0\r\n");
@@ -94,8 +97,9 @@ TEST(PrefetchMatchesTest, HeadersOriginDiffers) {
   ResourceRequest real;
   prefetch.headers.AddHeadersFromString(
       "User-Agent: Mozilla/1.0\r\n"
-      "Purpose: prefetch\r\n"
       "Origin: https://www.example.com/\r\n");
+  prefetch.headers.SetHeader(blink::kPurposeHeaderName,
+                             blink::kSecPurposePrefetchHeaderValue);
   real.headers.AddHeadersFromString(
       "User-Agent: Mozilla/1.0\r\n"
       "Referer: https://www.example.com/\r\n"
@@ -110,8 +114,9 @@ TEST(PrefetchMatchesTest, CorsExemptHeadersPurposeDiffers) {
   // "headers".
   prefetch.cors_exempt_headers.AddHeadersFromString(
       "User-Agent: Mozilla/1.0\r\n"
-      "Purpose: prefetch\r\n"
       "Referer: https://www.example.com/\r\n");
+  prefetch.cors_exempt_headers.SetHeader(blink::kPurposeHeaderName,
+                                         blink::kSecPurposePrefetchHeaderValue);
   real.cors_exempt_headers.AddHeadersFromString(
       "User-Agent: Mozilla/1.0\r\n"
       "Referer: https://www.example.com/\r\n");

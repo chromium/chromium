@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -173,14 +174,14 @@ void UpgradeResourceRequestForLoader(
 
   if (resource_type == ResourceType::kLinkPrefetch) {
     // Add the "Purpose: prefetch" header to requests for prefetch.
-    resource_request.SetPurposeHeader("prefetch");
+    resource_request.SetPurposeHeader(kSecPurposePrefetchHeaderValue);
   } else if (context.IsPrerendering()) {
     // Add the "Sec-Purpose: prefetch;prerender" header to requests issued from
     // prerendered pages. Add "Purpose: prefetch" as well for compatibility
     // concerns (See https://github.com/WICG/nav-speculation/issues/133).
     resource_request.SetHttpHeaderField(http_names::kSecPurpose,
                                         AtomicString("prefetch;prerender"));
-    resource_request.SetPurposeHeader("prefetch");
+    resource_request.SetPurposeHeader(kSecPurposePrefetchHeaderValue);
   }
 
   context.AddAdditionalRequestHeaders(resource_request);

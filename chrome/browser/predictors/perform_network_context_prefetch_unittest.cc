@@ -33,6 +33,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "url/gurl.h"
 
 namespace predictors {
@@ -173,7 +174,9 @@ TEST_F(PerformNetworkContextPrefetchRecorderTest, Script) {
   // changes there shouldn't require changing this test.
   EXPECT_THAT(request.headers, HasHeader("Accept", "*/*"));
   EXPECT_THAT(request.headers, HasHeader("Accept-Language", "en"));
-  EXPECT_THAT(request.headers, HasHeader("Purpose", "prefetch"));
+  EXPECT_THAT(request.headers,
+              HasHeader(blink::kPurposeHeaderName,
+                        blink::kSecPurposePrefetchHeaderValue));
   EXPECT_THAT(request.headers, HasHeader("Referer", PageURL().spec()));
   EXPECT_THAT(request.headers, HasHeader("sec-ch-ua", HasSubstr("v=")));
   EXPECT_THAT(request.headers,
@@ -183,7 +186,9 @@ TEST_F(PerformNetworkContextPrefetchRecorderTest, Script) {
   EXPECT_THAT(request.headers, HasHeader("Sec-Fetch-Dest", "script"));
   EXPECT_THAT(request.headers, HasHeader("Sec-Fetch-Mode", "no-cors"));
   EXPECT_THAT(request.headers, HasHeader("Sec-Fetch-Site", "same-origin"));
-  EXPECT_THAT(request.headers, HasHeader("Sec-Purpose", "prefetch"));
+  EXPECT_THAT(request.headers,
+              HasHeader(blink::kSecPurposeHeaderName,
+                        blink::kSecPurposePrefetchHeaderValue));
   EXPECT_THAT(request.headers,
               HasHeader("User-Agent", StartsWith("Mozilla/5.0 ")));
 

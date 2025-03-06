@@ -16,13 +16,11 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 
 namespace prerender {
 
 namespace {
-
-const char kPurposeHeaderName[] = "Purpose";
-const char kPurposeHeaderValue[] = "prefetch";
 
 void CallCancelNoStatePrefetchForUnsupportedScheme(
     mojo::PendingRemote<prerender::mojom::NoStatePrefetchCanceler> canceler) {
@@ -60,8 +58,8 @@ void NoStatePrefetchURLLoaderThrottle::WillStartRequest(
     network::ResourceRequest* request,
     bool* defer) {
   request->load_flags |= net::LOAD_PREFETCH;
-  request->cors_exempt_headers.SetHeader(kPurposeHeaderName,
-                                         kPurposeHeaderValue);
+  request->cors_exempt_headers.SetHeader(blink::kPurposeHeaderName,
+                                         blink::kSecPurposePrefetchHeaderValue);
 
   request_destination_ = request->destination;
   // Abort any prerenders that spawn requests that use unsupported HTTP
