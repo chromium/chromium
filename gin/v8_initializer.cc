@@ -550,6 +550,7 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
   // instrumentation initialization, see https://crbug.com/v8/11043. --js-flags
   // and other mandatory flags in `SetFlags` must be ordered after feature flag
   // overrides.
+  SetV8Flags("--js-explicit-resource-management");
   if (!disallow_v8_feature_flag_overrides) {
     SetFeatureFlags();
   }
