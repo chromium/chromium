@@ -69,8 +69,9 @@ void SharedModuleInfo::ParseImportedPath(const std::string& path,
       crx_file::id_util::IdIsValid(tokens[1])) {
     *import_id = tokens[1];
     *import_relative_path = tokens[2];
-    for (size_t i = 3; i < tokens.size(); ++i)
+    for (size_t i = 3; i < tokens.size(); ++i) {
       *import_relative_path += "/" + tokens[i];
+    }
   }
 }
 

@@ -177,8 +177,9 @@ URLPatternSet ContentScriptsInfo::GetScriptableHosts(
   URLPatternSet scriptable_hosts;
   for (const std::unique_ptr<UserScript>& script :
        GetContentScripts(extension)) {
-    for (const URLPattern& pattern : script->url_patterns())
+    for (const URLPattern& pattern : script->url_patterns()) {
       scriptable_hosts.AddPattern(pattern);
+    }
   }
   return scriptable_hosts;
 }
