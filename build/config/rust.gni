@@ -12,7 +12,8 @@ if (is_android) {
 }
 
 if (is_ios) {
-  import("//build/config/apple/mobile_config.gni")  # For `target_environment`
+  # For `target_environment` and `target_platform`.
+  import("//build/config/apple/mobile_config.gni")
 }
 
 declare_args() {
@@ -246,26 +247,55 @@ if (is_linux || is_chromeos) {
   }
 } else if (is_ios) {
   if (current_cpu == "arm64") {
-    if (target_environment == "simulator") {
-      rust_abi_target = "aarch64-apple-ios-sim"
-      cargo_target_abi = "sim"
-    } else if (target_environment == "catalyst") {
-      rust_abi_target = "aarch64-apple-ios-macabi"
-      cargo_target_abi = "macabi"
+    if (target_platform == "iphoneos") {
+      if (target_environment == "simulator") {
+        rust_abi_target = "aarch64-apple-ios-sim"
+        cargo_target_abi = "sim"
+      } else if (target_environment == "device") {
+        rust_abi_target = "aarch64-apple-ios"
+        cargo_target_abi = ""
+      } else if (target_environment == "catalyst") {
+        rust_abi_target = "aarch64-apple-ios-macabi"
+        cargo_target_abi = "macabi"
+      } else {
+        assert(false, "unsupported target_environment=$target_environment")
+      }
+    } else if (target_platform == "tvos") {
+      if (target_environment == "simulator") {
+        rust_abi_target = "aarch64-apple-tvos-sim"
+        cargo_target_abi = "sim"
+      } else if (target_environment == "device") {
+        rust_abi_target = "aarch64-apple-tvos"
+        cargo_target_abi = ""
+      } else {
+        assert(false, "unsupported target_environment=$target_environment")
+      }
     } else {
-      rust_abi_target = "aarch64-apple-ios"
-      cargo_target_abi = ""
+      assert(false, "unsupported target_platform=$target_platform")
     }
   } else if (current_cpu == "arm") {
     rust_abi_target = "armv7s-apple-ios"
     cargo_target_abi = ""
   } else if (current_cpu == "x64") {
-    if (target_environment == "catalyst") {
-      rust_abi_target = "x86_64-apple-ios-macabi"
-      cargo_target_abi = "macabi"
+    if (target_platform == "iphoneos") {
+      if (target_environment == "simulator") {
+        rust_abi_target = "x86_64-apple-ios"
+        cargo_target_abi = "sim"
+      } else if (target_environment == "catalyst") {
+        rust_abi_target = "x86_64-apple-ios-macabi"
+        cargo_target_abi = "macabi"
+      } else {
+        assert(false, "unsupported target_environment=$target_environment")
+      }
+    } else if (target_platform == "tvos") {
+      if (target_environment == "simulator") {
+        rust_abi_target = "x86_64-apple-tvos"
+        cargo_target_abi = "sim"
+      } else {
+        assert(false, "unsupported target_environment=$target_environment")
+      }
     } else {
-      rust_abi_target = "x86_64-apple-ios"
-      cargo_target_abi = "sim"
+      assert(false, "unsupported target_platform=$target_platform")
     }
   } else if (current_cpu == "x86") {
     rust_abi_target = "i386-apple-ios"
