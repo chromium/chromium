@@ -12,6 +12,7 @@ import './appearance.js';
 import './cards.js';
 import './categories.js';
 import './customize_toolbar/toolbar.js';
+import './footer.js';
 import './shortcuts.js';
 import './themes.js';
 import './wallpaper_search/wallpaper_search.js';
@@ -79,6 +80,7 @@ export class AppElement extends AppElementBase {
       modulesEnabled_: {type: Boolean},
       selectedCollection_: {type: Object},
       extensionsCardEnabled_: {type: Boolean},
+      footerEnabled_: {type: Boolean},
       wallpaperSearchEnabled_: {type: Boolean},
       isSourceTabFirstPartyNtp_: {type: Boolean},
     };
@@ -97,6 +99,9 @@ export class AppElement extends AppElementBase {
   protected selectedCollection_: BackgroundCollection|null = null;
   protected extensionsCardEnabled_: boolean =
       loadTimeData.getBoolean('extensionsCardEnabled');
+  // TODO(crbug.com/400952431) Footer section is hidden until the first time the
+  // user has a 3P NTP or non-default and non-3P themed 1P NTP
+  protected footerEnabled_: boolean = loadTimeData.getBoolean('footerEnabled');
   protected wallpaperSearchEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchEnabled');
   protected isSourceTabFirstPartyNtp_: boolean = true;
