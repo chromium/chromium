@@ -441,6 +441,7 @@ Those fuzzers require more resources to run correctly.\
             "high_end_fuzzer_targets",
             "linux",
             "x64",
+            "mojo_fuzzer",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -493,6 +494,7 @@ Those fuzzers require more resources to run correctly.\
             "high_end_fuzzer_targets",
             "linux",
             "x64",
+            "mojo_fuzzer",
         ],
     ),
     # TODO(399002817): add this to the gardener_rotations.

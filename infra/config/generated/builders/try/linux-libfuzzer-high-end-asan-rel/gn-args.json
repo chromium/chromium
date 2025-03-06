@@ -2,6 +2,7 @@
   "gn_args": {
     "archive_seed_corpus": false,
     "dcheck_always_on": false,
+    "enable_mojom_fuzzer": true,
     "ffmpeg_branding": "ChromeOS",
     "generate_fuzzer_owners": false,
     "high_end_fuzzer_targets": true,
