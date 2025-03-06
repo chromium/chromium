@@ -360,7 +360,9 @@ class NotificationPlatformBridgeWinImpl
   // is not an icon with the expected name, location, and AUMI in
   // the start menu, the browser's AUMI will be returned, because Windows won't
   // display a notification unless there is an icon with the same AUMI as the
-  // notification in the start menu.
+  // notification in the start menu. The shortcut must also have the correct
+  // toast_activator clsid, or else clicking on the notification won't invoke
+  // the platform_helper to bring up Chrome.
   static std::wstring GetAppIdForNotification(
       const message_center::Notification* notification,
       const std::string& profile_id,
@@ -409,9 +411,12 @@ class NotificationPlatformBridgeWinImpl
     base::win::ShortcutProperties shortcut_properties;
     if (!base::win::ResolveShortcutProperties(
             start_menu_shortcut_path,
-            base::win::ShortcutProperties::PROPERTIES_APP_ID,
+            base::win::ShortcutProperties::PROPERTIES_APP_ID |
+                base::win::ShortcutProperties::PROPERTIES_TOAST_ACTIVATOR_CLSID,
             &shortcut_properties) ||
-        shortcut_properties.app_id != app_user_model_id) {
+        shortcut_properties.app_id != app_user_model_id ||
+        shortcut_properties.toast_activator_clsid !=
+            install_static::GetToastActivatorClsid()) {
       return GetBrowserAppId();
     }
     return app_user_model_id;
