@@ -15,7 +15,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_commands.h"
@@ -209,7 +208,7 @@ class DownloadDeepScanningBrowserTestBase
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
     client_->SetDMToken("dm_token");
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
         browser()->profile())
         ->SetBrowserCloudPolicyClientForTesting(client_.get());
@@ -262,7 +261,7 @@ class DownloadDeepScanningBrowserTestBase
     if (!is_consumer_) {
       AuthorizeForDeepScanning();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
 #else
       if (connectors_machine_scope()) {
@@ -454,7 +453,7 @@ class DownloadDeepScanningBrowserTestBase
   bool is_fcm_stopped() const { return is_fcm_stopped_; }
 
   std::string GetProfileIdentifier() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     return browser()->profile()->GetPath().AsUTF8Unsafe();
 #else
     if (connectors_machine_scope_) {

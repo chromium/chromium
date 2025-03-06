@@ -84,7 +84,7 @@ class SafeBrowsingServiceTest : public testing::Test {
 
     profile_ = std::make_unique<TestingProfile>();
     profile2_ = std::make_unique<TestingProfile>();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Local state is needed to construct ProxyConfigService, which is a
     // dependency of PingManager on ChromeOS.
     TestingBrowserProcess::GetGlobal()->SetLocalState(profile_->GetPrefs());
@@ -96,7 +96,7 @@ class SafeBrowsingServiceTest : public testing::Test {
     browser_process_->safe_browsing_service()->ShutDown();
     browser_process_->SetSafeBrowsingService(nullptr);
     safe_browsing::SafeBrowsingServiceInterface::RegisterFactory(nullptr);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 #endif
     base::RunLoop().RunUntilIdle();
@@ -755,7 +755,7 @@ TEST_F(SendNotificationsAcceptedTest, SendReportForAllowlistedURL) {
           &test_url_loader_factory));
 // TODO(b/325636200): We should remove this once we figure out why the test is
 // crashing for ChromeOS and how to properly test it.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(sb_service_->MaybeSendNotificationsAcceptedReport(
       nullptr, profile(), notification_url1, notification_url2,
       notification_url3, display_duration));

@@ -7,8 +7,11 @@
 #include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -35,8 +38,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
-#include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
 
 namespace safe_browsing {
 
@@ -273,7 +274,7 @@ std::string ChromeEnterpriseRealTimeUrlLookupService::GetBrowserDMTokenString()
 
 std::string ChromeEnterpriseRealTimeUrlLookupService::GetProfileDMTokenString()
     const {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   if (!connectors_service_->GetBrowserDmToken().has_value() ||
       enterprise_util::IsProfileAffiliated(profile_)) {
     return connectors_service_->GetProfileDmToken().value_or("");

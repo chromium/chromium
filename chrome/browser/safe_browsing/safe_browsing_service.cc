@@ -97,10 +97,6 @@
 #include "chrome/browser/safe_browsing/incident_reporting/binary_integrity_analyzer.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
-#endif
-
 using content::BrowserThread;
 
 namespace safe_browsing {

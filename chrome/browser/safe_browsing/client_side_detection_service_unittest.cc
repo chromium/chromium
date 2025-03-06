@@ -27,7 +27,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/safe_browsing/chrome_client_side_detection_service_delegate.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -54,10 +54,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
-#endif
 
 using content::BrowserThread;
 using ::optimization_guide::AnyWrapProto;

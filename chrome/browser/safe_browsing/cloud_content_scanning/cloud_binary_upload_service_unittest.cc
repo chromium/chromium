@@ -19,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
@@ -959,14 +960,14 @@ TEST_P(CloudBinaryUploadServiceTest, IsAuthorizedMultipleDMTokens) {
                         net::HTTP_UNAUTHORIZED);
 
   for (auto connector : {
-         enterprise_connectors::AnalysisConnector::
-             ANALYSIS_CONNECTOR_UNSPECIFIED,
-             enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY,
-             enterprise_connectors::AnalysisConnector::FILE_ATTACHED,
-             enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
-             enterprise_connectors::AnalysisConnector::PRINT,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-             enterprise_connectors::AnalysisConnector::FILE_TRANSFER,
+           enterprise_connectors::AnalysisConnector::
+               ANALYSIS_CONNECTOR_UNSPECIFIED,
+           enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY,
+           enterprise_connectors::AnalysisConnector::FILE_ATTACHED,
+           enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
+           enterprise_connectors::AnalysisConnector::PRINT,
+#if BUILDFLAG(IS_CHROMEOS)
+           enterprise_connectors::AnalysisConnector::FILE_TRANSFER,
 #endif
        }) {
     service_->IsAuthorized(
@@ -1163,7 +1164,7 @@ ASSERT_EQ(GURL("https://safebrowsing.google.com/safebrowsing/uploads/"
                    "scan?device_token=fake_token5"),
               request.GetUrlWithParams());
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   {
     MockRequest request(
         base::DoNothing(),

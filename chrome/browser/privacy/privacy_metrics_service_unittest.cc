@@ -74,12 +74,12 @@ class PrivacyMetricsServiceTest : public testing::Test {
     if (consent_level == signin::ConsentLevel::kSignin &&
         identity_test_env()->identity_manager()->HasPrimaryAccount(
             signin::ConsentLevel::kSync)) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
       identity_test_env()->RevokeSyncConsent();
       return;
 #else
-      NOTREACHED() << "It is not possible to unconsent from Sync on Ash";
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+      NOTREACHED() << "It is not possible to unconsent from Sync on ChromeOS";
+#endif  // !BUILDFLAG(IS_CHROMEOS)
     }
 
     CoreAccountInfo account_info =
@@ -128,13 +128,13 @@ TEST_F(PrivacyMetricsServiceTest, BasicShutdownMetrics) {
   privacy_metrics_service()->Shutdown();
   histogram_tester.ExpectTotalCount(kClearOnExitSyncEventHistogram, 0);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // Disabling Sync is not possible on Ash.
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Disabling Sync is not possible on ChromeOS.
   SetClearOnExitEnabled(true);
   DisableSync();
   privacy_metrics_service()->Shutdown();
   histogram_tester.ExpectTotalCount(kClearOnExitSyncEventHistogram, 0);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // If COE is enabled, and sync is paused, an event should be recorded.
   SetClearOnExitEnabled(true);
@@ -169,10 +169,10 @@ TEST_F(PrivacyMetricsServiceTest, FixSyncPausedThroughReLogin) {
   histogram_tester.ExpectTotalCount(kClearOnExitSyncEventHistogram, 3);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Confirm that when the user fixes the sync paused state by logging out of
 // the affected account, the appropriate events are recorded.
-// Logging out of the Sync account is not possible on Ash.
+// Logging out of the Sync account is not possible on ChromeOS.
 TEST_F(PrivacyMetricsServiceTest, FixSyncPausedThroughLogout) {
   CreateService(/*clear_on_exit_enabled=*/true, signin::ConsentLevel::kSync);
   base::HistogramTester histogram_tester;
@@ -195,7 +195,7 @@ TEST_F(PrivacyMetricsServiceTest, FixSyncPausedThroughLogout) {
       1);
   histogram_tester.ExpectTotalCount(kClearOnExitSyncEventHistogram, 3);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(PrivacyMetricsServiceTest, NoSyncIssues) {
   // Check that if a user has Clear on Exit enabled, but does not experience

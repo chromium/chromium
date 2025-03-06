@@ -97,7 +97,7 @@ class PhishyInteractionTrackerTest : public ChromeRenderViewHostTestHarness {
     phishy_interaction_tracker_->SetUIManagerForTesting(ui_manager_.get());
     phishy_interaction_tracker_->HandlePageChanged();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Local state is needed to construct ProxyConfigService, which is a
     // dependency of PingManager on ChromeOS.
     TestingBrowserProcess::GetGlobal()->SetLocalState(profile()->GetPrefs());
@@ -113,7 +113,7 @@ class PhishyInteractionTrackerTest : public ChromeRenderViewHostTestHarness {
         FROM_HERE, phishy_interaction_tracker_.release());
     ui_manager_.reset();
     phishy_interaction_tracker_.reset();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 #endif
     base::RunLoop().RunUntilIdle();
