@@ -22,7 +22,6 @@
 #import "ui/base/window_open_disposition.h"
 
 @protocol ApplicationCommands;
-@class AutocompleteMatchWrapper;
 @class BrowserActionFactory;
 @class CarouselItem;
 @protocol CarouselItemConsumer;
@@ -109,9 +108,6 @@ class Tracker;
     protocolProvider;
 @property(nonatomic, strong) BrowserActionFactory* mostVisitedActionFactory;
 @property(nonatomic, weak) id<CarouselItemConsumer> carouselItemConsumer;
-
-/// Autcomplete match wrapper.
-@property(nonatomic, strong) AutocompleteMatchWrapper* autocompleteMatchWrapper;
 
 /// Designated initializer. Takes ownership of `imageFetcher`.
 - (instancetype)
