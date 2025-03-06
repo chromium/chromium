@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/gclient_args.gni")
 import("//chrome/common/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
@@ -273,5 +274,8 @@ source_set("interactive_ui_tests") {
     "//content/test:test_support",
     "//ui/display:test_support",
   ]
+  if (checkout_glic_e2e_tests) {
+    deps += [ "test/internal:glic_e2e_interactive_ui_tests" ]
+  }
   data_deps = [ "//chrome/test/data/webui/glic:generate_test_files" ]
 }
