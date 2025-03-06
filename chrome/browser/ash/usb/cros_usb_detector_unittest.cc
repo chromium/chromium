@@ -269,14 +269,13 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
                int bus_number,
                int device_number,
                bool mounted) {
-    mock_disk_mount_manager_->CreateDiskEntryForMountDevice(
-        disks::Disk::Builder()
-            .SetBusNumber(bus_number)
-            .SetDeviceNumber(device_number)
-            .SetDevicePath("/dev/" + name)
-            .SetMountPath("/mount/" + name)
-            .SetIsMounted(mounted)
-            .Build());
+    mock_disk_mount_manager_->AddDiskForTest(disks::Disk::Builder()
+                                                 .SetBusNumber(bus_number)
+                                                 .SetDeviceNumber(device_number)
+                                                 .SetDevicePath("/dev/" + name)
+                                                 .SetMountPath("/mount/" + name)
+                                                 .SetIsMounted(mounted)
+                                                 .Build());
     if (mounted) {
       NotifyMountEvent(name, disks::DiskMountManager::MOUNTING);
     }

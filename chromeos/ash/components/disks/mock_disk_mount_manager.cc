@@ -69,9 +69,9 @@ void MockDiskMountManager::SetupDefaultReplies() {
   EXPECT_CALL(*this, UnmountDeviceRecursively(_, _)).Times(AnyNumber());
 }
 
-void MockDiskMountManager::CreateDiskEntryForMountDevice(
-    std::unique_ptr<Disk> disk) {
-  disks_.insert(std::move(disk));
+bool MockDiskMountManager::AddDiskForTest(std::unique_ptr<Disk> disk) {
+  DCHECK(disk);
+  return disks_.insert(std::move(disk)).second;
 }
 
 void MockDiskMountManager::CreateDiskEntryForMountDevice(
@@ -104,7 +104,7 @@ void MockDiskMountManager::CreateDiskEntryForMountDevice(
           .SetOnRemovableDevice(on_removable_device)
           .SetFileSystemType(file_system_type)
           .Build();
-  CreateDiskEntryForMountDevice(std::move(disk_ptr));
+  AddDiskForTest(std::move(disk_ptr));
 }
 
 void MockDiskMountManager::RemoveDiskEntryForMountDevice(
