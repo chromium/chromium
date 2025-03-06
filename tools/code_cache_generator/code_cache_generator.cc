@@ -5,6 +5,8 @@
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -84,16 +86,26 @@ int main(int argc, char** argv) {
   blink::CreateMainThreadAndInitialize(&platform, &binders);
   auto* isolate = blink::CreateMainThreadIsolate();
 
-  base::FilePath in_module_file_path =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath("module-path");
-  CHECK(!in_module_file_path.empty());
-  base::FilePath out_code_cache_path =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
-          "code-cache-path");
-  CHECK(!out_code_cache_path.empty());
+  const base::FilePath in_folder =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath("in_folder");
+  CHECK(!in_folder.empty());
+  const std::vector<std::string> in_files = base::SplitString(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("in_files"),
+      ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  CHECK(!in_files.empty());
+  const base::FilePath out_folder =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath("out_folder");
+  CHECK(!out_folder.empty());
+  const std::string out_file_suffix =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          "out_file_suffix");
 
-  const int error_code = !GenerateModuleCodeCache(isolate, in_module_file_path,
-                                                  out_code_cache_path);
-
-  _exit(error_code);
+  for (const std::string_view in_file : in_files) {
+    if (!GenerateModuleCodeCache(
+            isolate, in_folder.AppendASCII(in_file),
+            out_folder.AppendASCII(base::StrCat({in_file, out_file_suffix})))) {
+      _exit(1);
+    }
+  }
+  _exit(0);
 }
