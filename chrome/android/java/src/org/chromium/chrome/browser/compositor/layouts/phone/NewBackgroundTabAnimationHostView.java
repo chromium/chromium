@@ -15,15 +15,15 @@ import androidx.annotation.ColorInt;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
-/** Layout for the new tab background animation. */
-public class NewTabBackgroundAnimationLayout extends FrameLayout {
+/** Host view for the new background tab animation. */
+public class NewBackgroundTabAnimationHostView extends FrameLayout {
     private ImageView mLinkIcon;
 
-    public NewTabBackgroundAnimationLayout(Context context, AttributeSet attrs) {
+    public NewBackgroundTabAnimationHostView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public NewTabBackgroundAnimationLayout(Context context) {
+    public NewBackgroundTabAnimationHostView(Context context) {
         super(context);
     }
 
