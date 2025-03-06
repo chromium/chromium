@@ -114,6 +114,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -172,6 +173,7 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 /** End-to-end tests for TabGridDialog component. */
 @RunWith(ParameterizedRunner.class)
@@ -968,7 +970,7 @@ public class TabGridDialogTest {
     @MediumTest
     @RequiresRestart("Share sheet is sometimes persistent when calling pressBack to retract")
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40263769")
-    public void testDialogSelectionEditor_ShareActionView() {
+    public void testDialogSelectionEditor_ShareActionView() throws TimeoutException {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 2);
 
@@ -987,12 +989,19 @@ public class TabGridDialogTest {
         openDialogFromTabSwitcherAndVerify(cta, 2, null);
         openSelectionEditorAndVerify(cta, 2);
 
+        CallbackHelper callbackHelper = new CallbackHelper();
+        TabListEditorShareAction.setIntentCallbackForTesting(
+                intent -> {
+                    callbackHelper.notifyCalled();
+                });
         // Share tabs
         mSelectionEditorRobot
                 .actionRobot
                 .clickItemAtAdapterPosition(1)
                 .clickToolbarMenuButton()
                 .clickToolbarMenuItem("Share tab");
+
+        callbackHelper.waitForOnly();
 
         CriteriaHelper.pollUiThread(
                 () ->
