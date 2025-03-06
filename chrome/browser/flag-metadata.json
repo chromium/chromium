@@ -3144,7 +3144,9 @@
   {
     "name": "enable-force-dark",
     "owners": [ "beverloo@chromium.org", "pdr@chromium.org" ],
-    "expiry_milestone": 136
+    // This flag enables an automatic dark mode for sites that do not support
+    // it. This flag can be used to test the WebView API for this feature.
+    "expiry_milestone": -1
   },
   {
     "name": "enable-future-v8-vm-features",
