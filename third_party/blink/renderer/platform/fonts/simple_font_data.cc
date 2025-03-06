@@ -253,7 +253,8 @@ void SimpleFontData::PlatformGlyphInit() {
   float width = WidthForGlyph(space_glyph_);
   space_width_ = width;
   zero_glyph_ = GlyphForCharacter('0');
-  font_metrics_.SetZeroWidth(WidthForGlyph(zero_glyph_));
+
+  font_metrics_.SetZeroWidth(ZeroInlineSize());
 }
 
 const SimpleFontData* SimpleFontData::FontDataForCharacter(UChar32) const {
@@ -514,6 +515,36 @@ float SimpleFontData::WidthForGlyph(Glyph glyph) const {
   static_assert(sizeof(glyph) == 2, "Glyph id should not be truncated.");
 
   return SkFontGetWidthForGlyph(font_, glyph);
+}
+
+inline float SimpleFontData::ZeroInlineSize() const {
+  // The advance measure of a glyph depends on writing-mode and text-orientation
+  // as well as font settings, text-transform, and any other properties that
+  // affect glyph selection or orientation.
+  // ref: https://drafts.csswg.org/css-values-4/#ch
+  if (zero_glyph_) {
+    if (PlatformData().Orientation() != FontOrientation::kVerticalUpright) {
+      // Use the advance of the “0” (ZERO, U+0030) as the approximated
+      // advance of European alphanumeric characters as specified at
+      // https://drafts.csswg.org/css-values-4/#ch.
+      return WidthForGlyph(zero_glyph_);
+    } else {
+      const HarfBuzzFace* hb_face = platform_data_->GetHarfBuzzFace();
+      const OpenTypeVerticalData& vertical_data = hb_face->VerticalData();
+      return vertical_data.AdvanceHeight(zero_glyph_);
+    }
+  }
+
+  // In the cases where it is impossible or impractical to determine the
+  // measure of the “0” glyph, it must be assumed to be 0.5em wide by 1em
+  // tall. Thus, the ch unit falls back to 0.5em in the general case, and to
+  // 1em when it would be typeset upright (i.e. writing-mode is vertical-rl or
+  // vertical-lr and text-orientation is upright).
+  SkScalar size = font_.getSize();
+  if (!platform_data_->IsVerticalNonCJKUpright()) {
+    return size / 0.5f;
+  }
+  return size;
 }
 
 }  // namespace blink
