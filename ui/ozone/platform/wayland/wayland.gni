@@ -12,4 +12,10 @@ declare_args() {
 
   # Checks if Weston must be compiled
   use_bundled_weston = false
+
+  # Checks if Weston must be compiled
+  use_bundled_weston = false
+
+  # Checks if mutter must be compiled
+  use_bundled_mutter = false
 }

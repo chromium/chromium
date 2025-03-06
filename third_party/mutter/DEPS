@@ -1,0 +1,8 @@
+# The header includes in the generated files in mutter use double quotes, which
+# triggers checkdeps presubmit errors. So add the relevant folders that can
+# be included in the allow list.
+include_rules = [
+  "+clutter",
+  "+cogl",
+  "+meta",
+]

@@ -919,3 +919,7 @@
 	path = third_party/libgudev/src
 	url = https://chromium.googlesource.com/external/gitlab.gnome.org/GNOME/libgudev
 	gclient-condition = checkout_linux
+[submodule "third_party/mutter/src"]
+	path = third_party/mutter/src
+	url = https://chromium.googlesource.com/external/gitlab.gnome.org/GNOME/mutter
+	gclient-condition = checkout_linux

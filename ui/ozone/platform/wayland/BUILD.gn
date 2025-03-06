@@ -347,8 +347,10 @@ source_set("wayland") {
     ]
   }
 
+  data_deps = []
+
   if (use_bundled_weston) {
-    data_deps = [ "//third_party/weston" ]
+    data_deps += [ "//third_party/weston" ]
   }
 
   if (enable_vulkan) {
@@ -664,6 +666,10 @@ source_set("ui_test_support") {
     "//ui/ozone/platform/wayland",
     "//ui/platform_window/common",
   ]
+
+  if (use_bundled_mutter) {
+    data_deps = [ "//third_party/mutter" ]
+  }
 }
 
 component("wayland_proxy") {

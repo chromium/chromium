@@ -23,6 +23,10 @@ wayland_protocol("cursor_shapes_protocol") {
   sources = [ "unstable/cursor-shapes/cursor-shapes-unstable-v1.xml" ]
 }
 
+wayland_protocol("drm_lease_protocol") {
+  sources = [ "src/staging/drm-lease/drm-lease-v1.xml" ]
+}
+
 wayland_protocol("extended_drag") {
   sources = [ "unstable/extended-drag/extended-drag-unstable-v1.xml" ]
 }
@@ -188,6 +192,10 @@ wayland_protocol("xdg_activation") {
 
 wayland_protocol("xdg_decoration_protocol") {
   sources = [ "src/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml" ]
+}
+
+wayland_protocol("xdg_dialog_protocol") {
+  sources = [ "src/staging/xdg-dialog/xdg-dialog-v1.xml" ]
 }
 
 wayland_protocol("xdg_foreign") {
