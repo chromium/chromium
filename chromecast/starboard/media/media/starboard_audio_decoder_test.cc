@@ -214,9 +214,8 @@ AudioConfig GetBasicConfig() {
 TEST_F(StarboardAudioDecoderTest, PushesBufferToStarboard) {
   const AudioConfig config = GetBasicConfig();
   const std::vector<uint8_t> buffer_data = {1, 2, 3, 4, 5};
-  scoped_refptr<CastDecoderBufferImpl> buffer(
-      new CastDecoderBufferImpl(buffer_data.size()));
-  memcpy(buffer->writable_data(), buffer_data.data(), buffer_data.size());
+  auto buffer = base::MakeRefCounted<DecoderBufferAdapter>(
+      ::media::DecoderBuffer::CopyFrom(buffer_data));
 
   EXPECT_CALL(
       *starboard_,
@@ -558,14 +557,12 @@ TEST_F(StarboardAudioDecoderTest,
 TEST_F(StarboardAudioDecoderTest,
        HandlesMultiplePushBuffersBeforeInitialization) {
   const std::vector<uint8_t> buffer_data_1 = {1, 2, 3, 4, 5};
-  scoped_refptr<CastDecoderBufferImpl> buffer_1(
-      new CastDecoderBufferImpl(buffer_data_1.size()));
-  memcpy(buffer_1->writable_data(), buffer_data_1.data(), buffer_data_1.size());
+  auto buffer_1 = base::MakeRefCounted<DecoderBufferAdapter>(
+      ::media::DecoderBuffer::CopyFrom(buffer_data_1));
 
   const std::vector<uint8_t> buffer_data_2 = {6, 7, 8, 9, 10};
-  scoped_refptr<CastDecoderBufferImpl> buffer_2(
-      new CastDecoderBufferImpl(buffer_data_2.size()));
-  memcpy(buffer_2->writable_data(), buffer_data_2.data(), buffer_data_2.size());
+  auto buffer_2 = base::MakeRefCounted<DecoderBufferAdapter>(
+      ::media::DecoderBuffer::CopyFrom(buffer_data_2));
 
   const AudioConfig config = GetBasicConfig();
 
@@ -636,9 +633,8 @@ TEST_F(StarboardAudioDecoderTest, ReportsStatistics) {
   decoder.SetDelegate(&delegate);
 
   const std::vector<uint8_t> buffer_data = {1, 2, 3, 4, 5};
-  scoped_refptr<CastDecoderBufferImpl> buffer(
-      new CastDecoderBufferImpl(buffer_data.size()));
-  memcpy(buffer->writable_data(), buffer_data.data(), buffer_data.size());
+  auto buffer = base::MakeRefCounted<DecoderBufferAdapter>(
+      ::media::DecoderBuffer::CopyFrom(buffer_data));
 
   EXPECT_EQ(decoder.PushBuffer(buffer.get()),
             MediaPipelineBackend::BufferStatus::kBufferPending);
@@ -656,9 +652,8 @@ TEST_F(StarboardAudioDecoderTest, ConvertsPcmToS16ForPushBeforeInitialization) {
   // This will be treated as unsigned 8 bit samples, and we expect it to be
   // converted to two S16 samples.
   const std::vector<uint8_t> buffer_data = {0x00, 0xFF};
-  scoped_refptr<CastDecoderBufferImpl> buffer(
-      new CastDecoderBufferImpl(buffer_data.size()));
-  memcpy(buffer->writable_data(), buffer_data.data(), buffer_data.size());
+  auto buffer = base::MakeRefCounted<DecoderBufferAdapter>(
+      ::media::DecoderBuffer::CopyFrom(buffer_data));
 
   AudioConfig original_config;
   original_config.codec = AudioCodec::kCodecPCM;
@@ -682,11 +677,8 @@ TEST_F(StarboardAudioDecoderTest, ConvertsPcmToS16ForPushBeforeInitialization) {
   // buffer_data above.
   const std::vector<uint8_t> expected_resampled_buffer_data = {0x00, 0x80, 0xFF,
                                                                0x7F};
-  scoped_refptr<CastDecoderBufferImpl> expected_resampled_buffer(
-      new CastDecoderBufferImpl(expected_resampled_buffer_data.size()));
-  memcpy(expected_resampled_buffer->writable_data(),
-         expected_resampled_buffer_data.data(),
-         expected_resampled_buffer_data.size());
+  auto expected_resampled_buffer = base::MakeRefCounted<DecoderBufferAdapter>(
+      ::media::DecoderBuffer::CopyFrom(expected_resampled_buffer_data));
 
   EXPECT_CALL(*starboard_,
               WriteSample(&fake_player_, kStarboardMediaTypeAudio,
