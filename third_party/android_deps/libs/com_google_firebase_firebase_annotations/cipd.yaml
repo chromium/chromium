@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@16.0.0.cr1
+# cipd create --pkg-def cipd.yaml -tag version:2@16.2.0.cr1
 package: chromium/third_party/android_deps/libs/com_google_firebase_firebase_annotations
 description: "firebase-annotations"
 data:
-- file: firebase-annotations-16.0.0.jar
+- file: firebase-annotations-16.2.0.jar

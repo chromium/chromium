@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@2.0.1.cr1
+# cipd create --pkg-def cipd.yaml -tag version:2@2.1.0.cr1
 package: chromium/third_party/android_deps/libs/com_google_android_play_feature_delivery
 description: "feature-delivery"
 data:
-- file: feature-delivery-2.0.1.aar
+- file: feature-delivery-2.1.0.aar
