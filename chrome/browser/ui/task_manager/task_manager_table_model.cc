@@ -866,9 +866,14 @@ void TaskManagerTableModel::OnTaskToBeRemoved(TaskId id) {
 }
 
 void TaskManagerTableModel::OnTasksRefreshed(const TaskIdList& task_ids) {
-  tasks_ = task_ids;
-  FilterTaskList(tasks_);
-  OnRefresh();
+  OnRefresh(task_ids);
+}
+
+void TaskManagerTableModel::OnTasksRefreshedWithBackgroundCalculations(
+    const TaskIdList& task_ids) {
+  if (base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
+    OnRefresh(task_ids);
+  }
 }
 
 void TaskManagerTableModel::ActivateTask(size_t row_index) {
@@ -1101,7 +1106,7 @@ std::optional<size_t> TaskManagerTableModel::GetRowForActiveTask() {
 
 void TaskManagerTableModel::StartUpdating() {
   TaskManagerInterface::GetTaskManager()->AddObserver(this);
-  OnTasksRefreshed(observed_task_manager()->GetTaskIdsList());
+  OnRefresh(observed_task_manager()->GetTaskIdsList());
 
   // In order for the scrollbar of the TableView to work properly on startup of
   // the task manager, we must invoke TableModelObserver::OnModelChanged() which
@@ -1116,7 +1121,9 @@ void TaskManagerTableModel::StopUpdating() {
   observed_task_manager()->RemoveObserver(this);
 }
 
-void TaskManagerTableModel::OnRefresh() {
+void TaskManagerTableModel::OnRefresh(const TaskIdList& task_ids) {
+  tasks_ = task_ids;
+  FilterTaskList(tasks_);
   if (table_model_observer_) {
     table_model_observer_->OnItemsChanged(0, RowCount());
   }
