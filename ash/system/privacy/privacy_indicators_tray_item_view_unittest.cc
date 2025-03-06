@@ -829,7 +829,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordShowTypeMetrics) {
 }
 
 // TODO(crbug.com/373996845): Re-enable test.
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ADDRESS_SANITIZER)
+#if defined(ADDRESS_SANITIZER)
 #define MAYBE_RecordShowPerSessionMetrics DISABLED_RecordShowPerSessionMetrics
 #else
 #define MAYBE_RecordShowPerSessionMetrics RecordShowPerSessionMetrics
