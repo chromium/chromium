@@ -3318,6 +3318,12 @@ void AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
       }
     }
 
+    Vector<base::OnceClosure> callbacks;
+    ready_callbacks_.swap(callbacks);
+    for (auto& callback : callbacks) {
+      std::move(callback).Run();
+    }
+
     DUMP_WILL_BE_CHECK(!IsDirty());
     // TODO(accessibility): in the future, we may break up serialization into
     // pieces to reduce jank, in which case this assertion will not hold.
@@ -3617,6 +3623,12 @@ void AXObjectCacheImpl::ScheduleAXUpdate() const {
       !GetDocument().GetPage()->Animator().IsServicingAnimations()) {
     page->Animator().ScheduleVisualUpdate(GetDocument().GetFrame());
   }
+}
+
+void AXObjectCacheImpl::ScheduleAXUpdateWithCallback(
+    base::OnceClosure callback) {
+  ready_callbacks_.push_back(std::move(callback));
+  ScheduleAXUpdate();
 }
 
 void AXObjectCacheImpl::FireTreeUpdatedEventForAXID(
