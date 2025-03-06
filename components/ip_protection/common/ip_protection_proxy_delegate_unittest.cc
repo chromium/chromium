@@ -22,6 +22,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/common/host_indexed_content_settings.h"
 #include "components/ip_protection/common/ip_protection_core.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
@@ -140,11 +142,23 @@ class MockIpProtectionCore : public IpProtectionCore {
 
   bool HasTrackingProtectionException(
       const GURL& first_party_url) const override {
+    for (const content_settings::HostIndexedContentSettings& index :
+         tp_content_settings_) {
+      if (const content_settings::RuleEntry* result =
+              index.Find(GURL(), first_party_url);
+          result != nullptr) {
+        return content_settings::ValueToContentSetting(result->second.value) ==
+               CONTENT_SETTING_ALLOW;
+      }
+    }
     return false;
   }
 
   void SetTrackingProtectionContentSetting(
-      const ContentSettingsForOneType& settings) override {}
+      const ContentSettingsForOneType& settings) override {
+    tp_content_settings_ =
+        content_settings::HostIndexedContentSettings::Create(settings);
+  }
 
   bool ShouldRequestIncludeProbabilisticRevealToken(
       const GURL& request_url) override {
@@ -179,6 +193,8 @@ class MockIpProtectionCore : public IpProtectionCore {
   base::OnceClosure on_force_refresh_proxy_list_;
   base::OnceClosure on_proxies_failed_;
   raw_ptr<MaskedDomainListManager> masked_domain_list_manager_;
+  std::vector<content_settings::HostIndexedContentSettings>
+      tp_content_settings_;
 };
 
 MaskedDomainListManager CreateMdlManager(
@@ -769,6 +785,137 @@ TEST_F(IpProtectionProxyDelegateTest,
   histogram_tester_.ExpectTotalCount(kAreAuthTokensAvailableHistogram, 0);
   histogram_tester_.ExpectTotalCount(kIsProxyListAvailableHistogram, 0);
   histogram_tester_.ExpectTotalCount(kAvailabilityHistogram, 0);
+}
+
+// When the top frame url has a User Bypass exception, do not attempt to proxy.
+TEST_F(IpProtectionProxyDelegateTest, OnResolveProxy_HasSiteException) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{net::features::kEnableIpProtectionProxy,
+        {{"IpPrivacyEnableUserBypass", "true"}}},
+       {network::features::kMaskedDomainList, {}}},
+      {});
+  std::map<std::string, std::set<std::string>> first_party_map;
+  std::string top_frame_url = "https://top.com";
+  first_party_map["example.com"] = {};
+  auto masked_domain_list_manager = CreateMdlManager(first_party_map);
+  auto ipp_core =
+      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
+
+  content_settings::RuleMetaData metadata;
+  metadata.SetExpirationAndLifetime(base::Time(), base::TimeDelta());
+
+  ipp_core->SetTrackingProtectionContentSetting({ContentSettingPatternSource(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromString(top_frame_url),
+      base::Value(CONTENT_SETTING_ALLOW), content_settings::ProviderType::kNone,
+      /*incognito=*/true, metadata)});
+
+  auto delegate = CreateDelegate(ipp_core.get());
+
+  net::ProxyInfo result;
+  result.UseDirect();
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
+                           net::NetworkAnonymizationKey::CreateCrossSite(
+                               net::SchemefulSite(GURL(top_frame_url))),
+                           "GET", net::ProxyRetryInfoMap(), &result);
+  EXPECT_TRUE(result.is_direct());
+  EXPECT_FALSE(result.is_for_ip_protection());
+
+  histogram_tester_.ExpectUniqueSample(
+      kProxyResolutionHistogram, ProxyResolutionResult::kHasSiteException, 1);
+  histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
+                                       ProtectionEligibility::kUnknown, 1);
+}
+
+// When the top frame url has a User Bypass exception and the user has navigated
+// to a subdomain of the top frame url, do not attempt to proxy.
+TEST_F(IpProtectionProxyDelegateTest,
+       OnResolveProxy_HasSiteExceptionForSubdomain) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{net::features::kEnableIpProtectionProxy,
+        {{"IpPrivacyEnableUserBypass", "true"}}},
+       {network::features::kMaskedDomainList, {}}},
+      {});
+  std::map<std::string, std::set<std::string>> first_party_map;
+  std::string top_frame_url = "https://top.com";
+  std::string subdomain_url = "https://sub.top.com";
+
+  first_party_map["example.com"] = {};
+  auto masked_domain_list_manager = CreateMdlManager(first_party_map);
+  auto ipp_core =
+      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
+
+  content_settings::RuleMetaData metadata;
+  metadata.SetExpirationAndLifetime(base::Time(), base::TimeDelta());
+
+  ipp_core->SetTrackingProtectionContentSetting({ContentSettingPatternSource(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromString(top_frame_url),
+      base::Value(CONTENT_SETTING_ALLOW), content_settings::ProviderType::kNone,
+      /*incognito=*/true, metadata)});
+
+  auto delegate = CreateDelegate(ipp_core.get());
+
+  net::ProxyInfo result;
+  result.UseDirect();
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
+                           net::NetworkAnonymizationKey::CreateCrossSite(
+                               net::SchemefulSite(GURL(subdomain_url))),
+                           "GET", net::ProxyRetryInfoMap(), &result);
+  EXPECT_TRUE(result.is_direct());
+  EXPECT_FALSE(result.is_for_ip_protection());
+
+  histogram_tester_.ExpectUniqueSample(
+      kProxyResolutionHistogram, ProxyResolutionResult::kHasSiteException, 1);
+  histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
+                                       ProtectionEligibility::kUnknown, 1);
+}
+
+// When the top frame url has a User Bypass exception but the experiment to
+// enable the proxying logic is not enabled, still proxy successfully.
+TEST_F(
+    IpProtectionProxyDelegateTest,
+    OnResolveProxy_HasSiteExceptionWithExperimentDisabledWillProxySucessfully) {
+  std::map<std::string, std::set<std::string>> first_party_map;
+  std::string top_frame_url = "https://top.com";
+
+  first_party_map["example.com"] = {};
+  auto masked_domain_list_manager = CreateMdlManager(first_party_map);
+  auto ipp_core =
+      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
+
+  content_settings::RuleMetaData metadata;
+  metadata.SetExpirationAndLifetime(base::Time(), base::TimeDelta());
+
+  ipp_core->SetTrackingProtectionContentSetting({ContentSettingPatternSource(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromString(top_frame_url),
+      base::Value(CONTENT_SETTING_ALLOW), content_settings::ProviderType::kNone,
+      /*incognito=*/true, metadata)});
+
+  auto delegate = CreateDelegate(ipp_core.get());
+
+  net::ProxyInfo result;
+  result.UseDirect();
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
+                           net::NetworkAnonymizationKey::CreateCrossSite(
+                               net::SchemefulSite(GURL(top_frame_url))),
+                           "GET", net::ProxyRetryInfoMap(), &result);
+  EXPECT_FALSE(result.is_direct());
+  EXPECT_TRUE(result.is_for_ip_protection());
+
+  histogram_tester_.ExpectUniqueSample(kProxyResolutionHistogram,
+                                       ProxyResolutionResult::kAttemptProxy, 1);
+  histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
+                                       ProtectionEligibility::kEligible, 1);
 }
 
 // When the URL is HTTP and multi-proxy chains are used, the result is flagged

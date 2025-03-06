@@ -55,6 +55,13 @@ ProxyResolutionResult IpProtectionProxyDelegate::ClassifyRequest(
             << ") - " << message;
   };
 
+  // Check if the protection has been disabled via User Bypass.
+  if (net::features::kIpPrivacyEnableUserBypass.Get() &&
+      ip_protection_core_->HasTrackingProtectionException(
+          network_anonymization_key.GetTopFrameSite()->GetURL())) {
+    return ProxyResolutionResult::kHasSiteException;
+  }
+
   // Check eligibility of this request.
   if (!ip_protection_core_->IsMdlPopulated()) {
     vlog("proxy allow list not populated");

@@ -148,6 +148,9 @@ void IpProtectionTelemetryUma::ProxyResolution(ProxyResolutionResult result) {
           /*are_auth_tokens_available=*/false,
           /*is_proxy_list_available=*/true);
       break;
+    case ProxyResolutionResult::kHasSiteException:
+      eligibility = ProtectionEligibility::kUnknown;
+      break;
     case ProxyResolutionResult::kAttemptProxy:
       eligibility = ProtectionEligibility::kEligible;
       record_availability(
