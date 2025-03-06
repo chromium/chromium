@@ -5971,11 +5971,6 @@ const char kCaptureModeEducationBypassLimitsDescription[] =
     "Education nudges and tutorials, so they can be viewed repeatedly for "
     "testing purposes.";
 
-const char kDeskButtonName[] = "Desk button in shelf";
-const char kDeskButtonDescription[] =
-    "Show a desk button that provides quick access to the desk menu in the "
-    "shelf in clamshell mode when there is more than one desk.";
-
 const char kCrosContentAdjustedRefreshRateName[] =
     "Content Adjusted Refresh Rate";
 const char kCrosContentAdjustedRefreshRateDescription[] =

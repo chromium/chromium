@@ -1902,20 +1902,28 @@ function testContentLoadEventWithDisplayNone() {
 // This test verifies that the WebRequest API onBeforeRequest event fires on
 // webview.
 function testWebRequestAPI() {
-  var webview = new WebView();
-  webview.request.onBeforeRequest.addListener(function(e) {
+  let webview = new WebView();
+  let gotOnBeforeRequest = false;
+  webview.request.onBeforeRequest.addListener(() => {
+    gotOnBeforeRequest = true;
+  }, { urls: ['<all_urls>']});
+  webview.addEventListener('loadstop', () => {
+    embedder.test.assertTrue(gotOnBeforeRequest);
     embedder.test.succeed();
-  }, { urls: ['<all_urls>']}) ;
+  });
+  webview.addEventListener('loadabort', () => {
+    embedder.test.fail();
+  });
   webview.src = embedder.windowOpenGuestURL;
   document.body.appendChild(webview);
 }
 
 // Like above, but ensures that a webview doesn't get events for other webviews.
 function testWebRequestAPIOnlyForInstance() {
-  var tempWebview = new WebView();
-  tempWebview.request.onBeforeRequest.addListener(function(e) {
+  let otherWebview = new WebView();
+  otherWebview.request.onBeforeRequest.addListener(() => {
     embedder.test.fail();
-  }, { urls: ['<all_urls>']}) ;
+  }, { urls: ['<all_urls>']});
   testWebRequestAPI();
 }
 

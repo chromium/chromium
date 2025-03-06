@@ -241,6 +241,12 @@ class CORE_EXPORT WebLocalFrameImpl final
       const gfx::Point& extent,
       WebFrame::TextGranularity = kCharacterGranularity) override;
   void MoveCaretSelection(const gfx::Point&) override;
+
+#if BUILDFLAG(IS_IOS)
+  void StartAutoscrollForSelectionToPoint(const gfx::PointF&);
+  void StopAutoscroll();
+#endif  // BUILDFLAG(IS_IOS)
+
   bool SetEditableSelectionOffsets(int start, int end) override;
   bool AddImeTextSpansToExistingText(
       const std::vector<ui::ImeTextSpan>& ime_text_spans,

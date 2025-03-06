@@ -92,6 +92,7 @@ GWSAbandonedPageLoadMetricsObserverBrowserTest::all_milestones() {
       NavigationMilestone::kNonRedirectResponseLoaderCallback,
       NavigationMilestone::kCommitSent,
       NavigationMilestone::kCommitReceived,
+      NavigationMilestone::kCommitReplySent,
       NavigationMilestone::kDidCommit,
       // TODO(crbug.com/352578800): Add other loading milestones.
       NavigationMilestone::kParseStart,

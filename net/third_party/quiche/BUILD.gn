@@ -211,6 +211,7 @@ if (build_epoll_based_tools) {
 
     deps = [
       ":epoll_tool_support",
+      ":masque_support",
       ":quiche_tool_support",
       "//net",
       "//third_party/boringssl",
@@ -221,6 +222,23 @@ if (build_epoll_based_tools) {
   executable("masque_server") {
     testonly = true
     sources = [ "src/quiche/quic/masque/masque_server_bin.cc" ]
+
+    configs += [ ":quiche_internal_config" ]
+    public_configs = [ ":quiche_config" ]
+
+    deps = [
+      ":epoll_tool_support",
+      ":masque_support",
+      ":quiche_tool_support",
+      "//net",
+      "//third_party/boringssl",
+      "//third_party/protobuf:protobuf_lite",
+    ]
+  }
+
+  static_library("masque_support") {
+    testonly = true
+    sources = masque_support_srcs + masque_support_hdrs
 
     configs += [ ":quiche_internal_config" ]
     public_configs = [ ":quiche_config" ]
@@ -443,6 +461,7 @@ source_set("quiche_tests") {
     "src/quiche/common/capsule_test.cc",
     "src/quiche/common/http/http_header_block_test.cc",
     "src/quiche/common/http/http_header_storage_test.cc",
+    "src/quiche/common/internet_checksum_test.cc",
     "src/quiche/common/masque/connect_ip_datagram_payload_test.cc",
     "src/quiche/common/masque/connect_udp_datagram_payload_test.cc",
     "src/quiche/common/platform/api/quiche_file_utils_test.cc",
@@ -603,7 +622,6 @@ source_set("quiche_tests") {
     "src/quiche/quic/core/http/quic_spdy_stream_test.cc",
     "src/quiche/quic/core/http/spdy_utils_test.cc",
     "src/quiche/quic/core/http/web_transport_http3_test.cc",
-    "src/quiche/quic/core/internet_checksum_test.cc",
     "src/quiche/quic/core/legacy_quic_stream_id_manager_test.cc",
     "src/quiche/quic/core/packet_number_indexed_queue_test.cc",
     "src/quiche/quic/core/qpack/qpack_decoded_headers_accumulator_test.cc",

@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 
+#include "base/trace_event/base_tracing.h"  // IWYU pragma: export
 #include "net/base/net_export.h"
 #include "net/log/net_log.h"
 
@@ -54,6 +55,10 @@ NET_EXPORT base::Value::Dict GetNetInfo(URLRequestContext* context);
 NET_EXPORT void CreateNetLogEntriesForActiveObjects(
     const std::set<URLRequestContext*>& contexts,
     NetLog::ThreadSafeObserver* observer);
+
+// Creates a trace Flow from a NetLogWithSource.
+NET_EXPORT perfetto::Flow NetLogWithSourceToFlow(
+    const NetLogWithSource& net_log);
 
 }  // namespace net
 

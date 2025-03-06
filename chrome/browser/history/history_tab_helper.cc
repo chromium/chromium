@@ -146,10 +146,10 @@ history::VisitContextAnnotations::BrowserType GetBrowserType(
       return history::VisitContextAnnotations::BrowserType::kPopup;
     case Browser::TYPE_DEVTOOLS:
       return history::VisitContextAnnotations::BrowserType::kUnknown;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case Browser::TYPE_CUSTOM_TAB:
       return history::VisitContextAnnotations::BrowserType::kCustomTab;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }

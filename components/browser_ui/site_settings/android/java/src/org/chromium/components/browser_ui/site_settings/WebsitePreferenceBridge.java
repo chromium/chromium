@@ -11,6 +11,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.content_settings.ContentSettingSource;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.ProviderType;
@@ -260,8 +261,8 @@ public class WebsitePreferenceBridge {
     public static boolean isContentSettingManaged(
             BrowserContextHandle browserContextHandle,
             @ContentSettingsType.EnumType int contentSettingsType) {
-        return org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
-                .isContentSettingManaged(browserContextHandle, contentSettingsType);
+        return getDefaultContentSettingProviderSource(browserContextHandle, contentSettingsType)
+                == ContentSettingSource.POLICY;
     }
 
     /**
@@ -271,8 +272,32 @@ public class WebsitePreferenceBridge {
     public static boolean isContentSettingManagedByCustodian(
             BrowserContextHandle browserContextHandle,
             @ContentSettingsType.EnumType int contentSettingsType) {
+        return getDefaultContentSettingProviderSource(browserContextHandle, contentSettingsType)
+                == ContentSettingSource.SUPERVISED;
+    }
+
+    /**
+     * @return Whether a particular content setting type is the JAVASCRIPT_OPTIMIZER content setting
+     *     and the content setting originates from an operating system permission.
+     * @param contentSettingsType The content setting type to check.
+     */
+    public static boolean isJavascriptOptimizerOsProvidedSetting(
+            BrowserContextHandle browserContextHandle,
+            @ContentSettingsType.EnumType int contentSettingsType) {
+        return contentSettingsType == ContentSettingsType.JAVASCRIPT_OPTIMIZER
+                && getDefaultContentSettingProviderSource(browserContextHandle, contentSettingsType)
+                        == ContentSettingSource.OS_JAVASCRIPT_OPTIMIZER;
+    }
+
+    /**
+     * Return the ContentSettingSource for the default content-setting for the passed-in
+     * content-setting type.
+     */
+    private static @ContentSettingSource int getDefaultContentSettingProviderSource(
+            BrowserContextHandle browserContextHandle,
+            @ContentSettingsType.EnumType int contentSettingsType) {
         return org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
-                .isContentSettingManagedByCustodian(browserContextHandle, contentSettingsType);
+                .getDefaultContentSettingProviderSource(browserContextHandle, contentSettingsType);
     }
 
     /**
@@ -567,9 +592,6 @@ public class WebsitePreferenceBridge {
         boolean isContentSettingEnabled(
                 BrowserContextHandle browserContextHandle, int contentSettingType);
 
-        boolean isContentSettingManaged(
-                BrowserContextHandle browserContextHandle, int contentSettingType);
-
         boolean isCookieDeletionDisabled(BrowserContextHandle browserContextHandle, String origin);
 
         void setContentSettingEnabled(
@@ -620,7 +642,8 @@ public class WebsitePreferenceBridge {
         boolean isContentSettingUserModifiable(
                 BrowserContextHandle browserContextHandle, int contentSettingType);
 
-        boolean isContentSettingManagedByCustodian(
+        @ContentSettingSource
+        int getDefaultContentSettingProviderSource(
                 BrowserContextHandle browserContextHandle, int contentSettingType);
 
         boolean getLocationAllowedByPolicy(BrowserContextHandle browserContextHandle);

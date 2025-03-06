@@ -55,6 +55,7 @@
 #include "services/network/public/cpp/devtools_observer_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -991,7 +992,7 @@ void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
   // prefetch, including browsing topics and client hints.
   net::HttpRequestHeaders updated_headers;
   std::vector<std::string> headers_to_remove = {variations::kClientDataHeader};
-  updated_headers.SetHeader("Sec-Purpose",
+  updated_headers.SetHeader(blink::kSecPurposeHeaderName,
                             GetSecPurposeHeaderValue(redirect_info.new_url));
 
   // Remove any existing client hints headers (except, below, if we still want
@@ -1882,8 +1883,10 @@ void PrefetchContainer::MakeResourceRequest(
 
   request->headers.MergeFrom(additional_headers_);
   request->headers.MergeFrom(additional_headers);
-  request->headers.SetHeader(kCorsExemptPurposeHeaderName, "prefetch");
-  request->headers.SetHeader("Sec-Purpose", GetSecPurposeHeaderValue(url));
+  request->headers.SetHeader(blink::kPurposeHeaderName,
+                             blink::kSecPurposePrefetchHeaderValue);
+  request->headers.SetHeader(blink::kSecPurposeHeaderName,
+                             GetSecPurposeHeaderValue(url));
   request->headers.SetHeader("Upgrade-Insecure-Requests", "1");
 
   // There are sometimes other headers that are set during navigation.  These
@@ -2033,9 +2036,9 @@ const char* PrefetchContainer::GetSecPurposeHeaderValue(
   switch (preload_pipeline_info_->planned_max_preloading_type()) {
     case PreloadingType::kPrefetch:
       if (IsProxyRequiredForURL(request_url)) {
-        return "prefetch;anonymous-client-ip";
+        return blink::kSecPurposePrefetchAnonymousClientIpHeaderValue;
       } else {
-        return "prefetch";
+        return blink::kSecPurposePrefetchHeaderValue;
       }
     case PreloadingType::kPrerender:
       if (IsProxyRequiredForURL(request_url)) {
@@ -2048,7 +2051,7 @@ const char* PrefetchContainer::GetSecPurposeHeaderValue(
         // https://github.com/WICG/nav-speculation/blob/main/triggers.md#requirements
         NOTREACHED();
       } else {
-        return "prefetch;prerender";
+        return blink::kSecPurposePrefetchPrerenderHeaderValue;
       }
     case PreloadingType::kUnspecified:
     case PreloadingType::kPreconnect:

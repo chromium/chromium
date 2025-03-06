@@ -3522,9 +3522,6 @@ extern const char kCrosSoulDescription[];
 extern const char kCrosSoulGravediggerName[];
 extern const char kCrosSoulGravediggerDescription[];
 
-extern const char kDeskButtonName[];
-extern const char kDeskButtonDescription[];
-
 extern const char kDesksTemplatesName[];
 extern const char kDesksTemplatesDescription[];
 

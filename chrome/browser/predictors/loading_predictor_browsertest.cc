@@ -89,6 +89,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -2215,8 +2216,10 @@ class LoadingPredictorPrefetchBrowserTest
  private:
   void MonitorRequest(const net::test_server::HttpRequest& request) {
     // Monitor only prefetches.
-    if (request.headers.find("Purpose") == request.headers.end() ||
-        (request.headers.at("Purpose") != "prefetch")) {
+    if (request.headers.find(blink::kPurposeHeaderName) ==
+            request.headers.end() ||
+        (request.headers.at(blink::kPurposeHeaderName) !=
+         blink::kSecPurposePrefetchHeaderValue)) {
       return;
     }
 

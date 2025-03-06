@@ -51,7 +51,8 @@ TEST(AutofillEntityInstanceTest, Attributes_StructuredName) {
   AttributeInstance passport_name(
       (AttributeType(AttributeTypeName::kPassportName)));
   passport_name.SetInfo(NAME_FULL, u"Some Name",
-                        /*app_locale=*/"", VerificationStatus::kObserved);
+                        /*app_locale=*/"", /*format_string=*/u"",
+                        VerificationStatus::kObserved);
   passport_name.FinalizeInfo();
 
   // The value propagated correctly.
@@ -65,7 +66,8 @@ TEST(AutofillEntityInstanceTest, Attributes_Date) {
   AttributeInstance passport_name(
       (AttributeType(AttributeTypeName::kPassportIssueDate)));
   passport_name.SetInfo(PASSPORT_ISSUE_DATE_TAG, u"2001-02-03",
-                        /*app_locale=*/"", VerificationStatus::kNoStatus);
+                        /*app_locale=*/"", /*format_string=*/u"YYYY-MM-DD",
+                        VerificationStatus::kNoStatus);
 
   EXPECT_EQ(GetInfo(passport_name, PASSPORT_ISSUE_DATE_TAG), u"2001-02-03");
   EXPECT_EQ(GetInfo(passport_name, PASSPORT_ISSUE_DATE_TAG,

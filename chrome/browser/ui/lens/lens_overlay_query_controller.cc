@@ -1870,10 +1870,15 @@ void LensOverlayQueryController::PerformFetchRequest(
 lens::LensOverlayClientContext
 LensOverlayQueryController::CreateClientContext() {
   lens::LensOverlayClientContext context;
-  context.set_surface(lens::SURFACE_CHROMIUM);
-  context.set_platform(lens::WEB);
-  context.mutable_rendering_context()->set_rendering_environment(
-      lens::RENDERING_ENV_LENS_OVERLAY);
+  if (lens::features::IsUpdatedClientContextEnabled()) {
+    context.set_surface(lens::SURFACE_LENS_OVERLAY);
+    context.set_platform(lens::LENS_OVERLAY);
+  } else {
+    context.set_surface(lens::SURFACE_CHROMIUM);
+    context.set_platform(lens::WEB);
+    context.mutable_rendering_context()->set_rendering_environment(
+        lens::RENDERING_ENV_LENS_OVERLAY);
+  }
   context.mutable_client_filters()->add_filter()->set_filter_type(
       lens::AUTO_FILTER);
   context.mutable_locale_context()->set_language(

@@ -17,5 +17,30 @@ static_library("info_private") {
 
   public_deps = [ "//extensions/browser" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//build/config/chromebox_for_meetings:buildflags",
+    "//build/config/cuttlefish:buildflags",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/arc:arc_util",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/system",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
+    "//chromeos/constants",
+    "//components/metrics",
+    "//components/prefs",
+    "//components/user_manager",
+    "//extensions/common",
+    "//ui/display",
+  ]
 }

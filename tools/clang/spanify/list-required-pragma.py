@@ -144,14 +144,8 @@ gn_args["fuchsia"] = [
     'optimize_for_fuzzing=true',
     'use_libfuzzer=true',
 ]
-gn_args["chromeos-lacros"] = [
+gn_args["chromeos"] = [
     'target_os="chromeos"',
-    'chromeos_is_browser_only=false',
-    'use_remoteexec=true',
-]
-gn_args["chromeos-ash"] = [
-    'target_os="chromeos"',
-    'chromeos_is_browser_only=true',
     'use_remoteexec=true',
     'dcheck_always_on=true',
     'is_asan=true',

@@ -13,7 +13,6 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/diagnostics/diagnostics_test.h"
 #include "chrome/browser/diagnostics/recon_diagnostics.h"
 #include "chrome/browser/diagnostics/sqlite_diagnostics.h"
@@ -29,11 +28,11 @@ const int DiagnosticsModel::kDiagnosticsTestCount = 18;
 #elif BUILDFLAG(IS_MAC)
 const int DiagnosticsModel::kDiagnosticsTestCount = 15;
 #elif BUILDFLAG(IS_POSIX)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const int DiagnosticsModel::kDiagnosticsTestCount = 19;
 #else
 const int DiagnosticsModel::kDiagnosticsTestCount = 17;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace {
@@ -202,7 +201,7 @@ class DiagnosticsModelPosix : public DiagnosticsModelImpl {
     tests_.push_back(MakeSqliteHistoryDbTest());
     tests_.push_back(MakeSqliteTopSitesDbTest());
     tests_.push_back(MakeSqliteWebDatabaseTrackerDbTest());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     tests_.push_back(MakeSqliteNssCertDbTest());
     tests_.push_back(MakeSqliteNssKeyDbTest());
 #endif

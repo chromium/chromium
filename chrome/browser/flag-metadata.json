@@ -7925,7 +7925,7 @@
   {
     "name": "service-worker-auto-preload",
     "owners": ["sisidovski@chromium.org", "chrome-worker@google.com"],
-    "expiry_milestone": 136
+    "expiry_milestone": 141
   },
   {
     "name": "set-market-url-for-testing",
@@ -8558,12 +8558,12 @@
   {
     "name": "tab-strip-layout-optimization",
     "owners": [ "wenyufu@chromium.org", "aishwaryarj@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 143
   },
   {
     "name": "tab-strip-transition-in-desktop-window",
     "owners": [ "aishwaryarj@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 143
   },
   {
     "name": "tab-switcher-color-blend-animate",
@@ -8737,12 +8737,12 @@
   {
     "name": "traffic-counters",
     "owners": ["khorimoto@chromium.org", "cros-device-enablement@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 138
   },
   {
     "name": "traffic-counters-for-wifi-testing",
     "owners": ["khegde@google.com", "cros-device-enablement@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 138
   },
   {
     "name": "translate-force-trigger-on-english",

@@ -32,7 +32,62 @@ const tests = [
                              // one by given dimensions
     }
   },
-  // TODO (crbug.com/329702838): Test building a constant with float16 data type
+  {
+    name: '[constant] Test building a constant with float16 data type',
+    descriptor: {dataType: 'float16', shape: [2, 3]},
+    buffer: {type: Float16Array, byteLength: 6 * 2},
+    output: {dataType: 'float16', shape: [2, 3]}
+  },
+  {
+    name:
+        '[constant] Throw if byte length of float16 buffer doesn\'t match the given dimensions',
+    descriptor: {dataType: 'float16', shape: [2, 3]},
+    buffer: {
+      type: Float16Array,
+      byteLength: 6 * 2 - 2  // The buffer's byte length is less than the
+                             // one by given dimensions
+    }
+  },
+  {
+    name:
+        '[constant] Throw if using Float32Array buffer for float16 operand data type',
+    descriptor: {dataType: 'float16', shape: [2, 3]},
+    buffer: {
+      type: Float32Array,
+      byteLength: 6 * 4,
+    },
+    viewTestOnly: true
+  },
+  {
+    name:
+        '[constant] Throw if using Int16Array buffer for float16 operand data type',
+    descriptor: {dataType: 'float16', shape: [2, 3]},
+    buffer: {
+      type: Int16Array,
+      byteLength: 6 * 2,
+    },
+    viewTestOnly: true
+  },
+
+  // TODO(crbug.com/399459942): remove below two Uint16Array buffer tests for
+  // float16 data type when implementation removes it.
+  {
+    name:
+        '[constant] Test building a constant with float16 data type using Uint16Array buffer',
+    descriptor: {dataType: 'float16', shape: [2, 3]},
+    buffer: {type: Uint16Array, byteLength: 6 * 2},
+    output: {dataType: 'float16', shape: [2, 3]}
+  },
+  {
+    name:
+        '[constant] Throw if byte length of float16 buffer (using Uint16Array buffer) doesn\'t match the given dimensions',
+    descriptor: {dataType: 'float16', shape: [2, 3]},
+    buffer: {
+      type: Uint16Array,
+      byteLength: 6 * 2 - 2  // The buffer's byte length is less than the
+                             // one by given dimensions
+    }
+  },
   {
     name: '[constant] Test building a constant with int32 data type',
     descriptor: {dataType: 'int32', shape: [2, 3]},
@@ -116,10 +171,16 @@ const tests = [
   },
   {
     name:
-        '[constant] Throw if buffer view\'s type doesn\'t match the operand data type',
+        '[constant] Throw if using Int32Array buffer for float32 operand data type',
     descriptor: {dataType: 'float32', shape: [2, 3]},
     buffer: {type: Int32Array, byteLength: 6 * 4},
     viewTestOnly: true
+  },
+  {
+    name:
+        '[constant] Throw if the operand data type isn\'t of type MLOperandDataType',
+    descriptor: {dataType: 'int16', shape: [2, 3]},
+    buffer: {type: Int16Array, byteLength: 6 * 2}
   }
 ];
 

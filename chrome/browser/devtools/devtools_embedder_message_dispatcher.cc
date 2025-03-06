@@ -459,8 +459,6 @@ DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(
   d->RegisterHandler("recordKeyDown", &Delegate::RecordKeyDown, delegate);
   d->RegisterHandler("recordSettingAccess", &Delegate::RecordSettingAccess,
                      delegate);
-  d->RegisterHandlerWithCallback("sendJsonRequest",
-                                 &Delegate::SendJsonRequest, delegate);
   d->RegisterHandler("registerPreference", &Delegate::RegisterPreference,
                      delegate);
   d->RegisterHandlerWithCallback("getPreferences",

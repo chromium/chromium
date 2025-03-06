@@ -13,7 +13,6 @@
 #include "chrome/browser/predictors/prefetch_manager.h"
 #include "chrome/browser/predictors/prefetch_traffic_annotation.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
-#include "chrome/browser/prefetch/prefetch_headers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/language/core/browser/language_prefs.h"
@@ -35,6 +34,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/gurl.h"
@@ -115,9 +115,10 @@ void PrefetchResource(
   request.referrer_policy = kExpectedReferrerPolicy;
 
   auto& headers = request.headers;
-  headers.SetHeader("Purpose", "prefetch");
-  headers.SetHeader(prefetch::headers::kSecPurposeHeaderName,
-                    prefetch::headers::kSecPurposePrefetchHeaderValue);
+  headers.SetHeader(blink::kPurposeHeaderName,
+                    blink::kSecPurposePrefetchHeaderValue);
+  headers.SetHeader(blink::kSecPurposeHeaderName,
+                    blink::kSecPurposePrefetchHeaderValue);
 
   // Client hints headers.
   //

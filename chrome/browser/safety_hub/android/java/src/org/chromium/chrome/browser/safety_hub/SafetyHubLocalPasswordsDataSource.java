@@ -63,6 +63,9 @@ public class SafetyHubLocalPasswordsDataSource
     private int mReusedPasswordCount;
     private int mWeakPasswordCount;
 
+    private boolean mSavedPasswordsAvailable;
+    private boolean mLocalPasswordCountsAvailable;
+
     SafetyHubLocalPasswordsDataSource(
             @NonNull SafetyHubModuleDelegate moduleDelegate,
             @NonNull PrefService prefService,
@@ -77,19 +80,27 @@ public class SafetyHubLocalPasswordsDataSource
     public void setUp() {
         mSafetyHubFetchService.addObserver(this);
         if (mPasswordStoreBridge != null) {
-            mPasswordStoreBridge.addObserver(this, true);
+            mPasswordStoreBridge.addObserver(this, /* callImmediatelyIfReady= */ true);
         }
     }
 
+    /**
+     * Attempts to trigger a password check in the background.
+     *
+     * @return {@code true} if the checkup will be performed. Otherwise, returns {@code false}, e.g.
+     *     when the last checkup results are within the holdback period.
+     */
     public boolean maybeTriggerPasswordCheckup() {
-        // TODO(crbug.com/388788969): Only trigger the checkup if it can be ran.
         // After triggering the checkup, this data source will be notified of
         // changes to the count values via @{link localPasswordCountsChanged}.
-        mSafetyHubFetchService.runLocalPasswordCheckup();
-        return true;
+        return mSafetyHubFetchService.runLocalPasswordCheckup();
     }
 
     public void updateState() {
+        if (!canUpdateState()) {
+            return;
+        }
+
         updateCompromisedPasswordCount();
         updateReusedPasswordCount();
         updateWeakPasswordCount();
@@ -105,6 +116,8 @@ public class SafetyHubLocalPasswordsDataSource
 
     // Returns the password module type according to the application state.
     private @ModuleType int getModuleType() {
+        assert canUpdateState();
+
         if (getTotalPasswordCount() == 0) {
             return ModuleType.NO_SAVED_PASSWORDS;
         }
@@ -131,6 +144,11 @@ public class SafetyHubLocalPasswordsDataSource
 
     public int getCompromisedPasswordCount() {
         return mCompromisedPasswordCount;
+    }
+
+    // TODO(crbug.com/401045867): Add a timeout for the loading state.
+    private boolean canUpdateState() {
+        return mSavedPasswordsAvailable && mLocalPasswordCountsAvailable;
     }
 
     private void updateCompromisedPasswordCount() {
@@ -185,11 +203,13 @@ public class SafetyHubLocalPasswordsDataSource
 
     @Override
     public void localPasswordCountsChanged() {
+        mLocalPasswordCountsAvailable = true;
         updateState();
     }
 
     @Override
     public void onSavedPasswordsChanged(int count) {
+        mSavedPasswordsAvailable = true;
         updateState();
     }
 

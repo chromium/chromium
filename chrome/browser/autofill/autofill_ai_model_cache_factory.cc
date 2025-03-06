@@ -5,11 +5,14 @@
 #include "chrome/browser/autofill/autofill_ai_model_cache_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache_impl.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/keyed_service/core/service_access_type.h"
 #include "content/public/browser/storage_partition.h"
 
 namespace autofill {
@@ -36,7 +39,9 @@ AutofillAiModelCacheFactory::AutofillAiModelCacheFactory()
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOwnInstance)
-              .Build()) {}
+              .Build()) {
+  DependsOn(HistoryServiceFactory::GetInstance());
+}
 
 AutofillAiModelCacheFactory::~AutofillAiModelCacheFactory() = default;
 
@@ -48,6 +53,8 @@ AutofillAiModelCacheFactory::BuildServiceInstanceForBrowserContext(
   }
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<AutofillAiModelCacheImpl>(
+      HistoryServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::EXPLICIT_ACCESS),
       profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider(),
       profile->GetPath(),
       autofill::features::kAutofillAiServerModelCacheSize.Get(),

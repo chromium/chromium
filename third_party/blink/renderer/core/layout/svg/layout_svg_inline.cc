@@ -92,8 +92,7 @@ void LayoutSVGInline::ObjectBoundingBoxForCursor(InlineCursor& cursor,
 
 gfx::RectF LayoutSVGInline::ObjectBoundingBox() const {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::SvgTspanBboxCacheEnabled() ||
-      needs_update_bounding_box_) {
+  if (needs_update_bounding_box_) {
     needs_update_bounding_box_ = false;
     bounding_box_ = gfx::RectF();
     if (IsInLayoutNGInlineFormattingContext()) {

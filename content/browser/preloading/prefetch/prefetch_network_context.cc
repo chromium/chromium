@@ -29,6 +29,7 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 
 namespace content {
 
@@ -111,7 +112,7 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory(
   // the profile verifier.
   context_params->cert_verifier_params = GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
-  context_params->cors_exempt_header_list = {kCorsExemptPurposeHeaderName};
+  context_params->cors_exempt_header_list = {blink::kPurposeHeaderName};
   context_params->cookie_manager_params =
       network::mojom::CookieManagerParams::New();
 

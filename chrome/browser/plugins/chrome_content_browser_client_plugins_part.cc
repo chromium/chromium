@@ -13,7 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/plugins/plugin_info_host_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
@@ -43,7 +43,7 @@
 #include "ppapi/shared_impl/ppapi_switches.h"
 #endif  // BUILDFLAG(ENABLE_PPAPI)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #endif
@@ -180,7 +180,7 @@ bool ChromeContentBrowserClientPluginsPart::AllowPepperSocketAPI(
                                          GetAllowedSocketOrigins())) {
       return true;
     }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Terminal SWA is not an extension, but runs SSH NaCL with sockets.
     if (url == chrome::kChromeUIUntrustedTerminalURL) {
       return profile->GetPrefs()

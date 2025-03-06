@@ -47,7 +47,6 @@ namespace blink {
 
 class Canvas2dGPUTransferOption;
 class ExceptionState;
-class FontSelector;
 class GPUTexture;
 class ImageData;
 class ImageDataSettings;
@@ -204,7 +203,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public Canvas2DRecorderContext {
   explicit BaseRenderingContext2D(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
-  virtual FontSelector* GetFontSelector() const;
+  virtual UniqueFontSelector* GetFontSelector() const;
 
   void WillUseCurrentFont() const;
   virtual bool WillSetFont() const;

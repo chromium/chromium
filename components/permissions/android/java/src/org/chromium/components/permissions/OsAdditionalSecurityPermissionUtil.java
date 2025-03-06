@@ -28,12 +28,16 @@ public class OsAdditionalSecurityPermissionUtil {
             return true;
         }
 
+        OsAdditionalSecurityPermissionProvider provider = getProviderInstance();
+        return provider == null || provider.hasJavascriptOptimizerPermission();
+    }
+
+    public static @Nullable OsAdditionalSecurityPermissionProvider getProviderInstance() {
         if (sProviderInstance == null) {
             sProviderInstance =
                     ServiceLoaderUtil.maybeCreate(OsAdditionalSecurityPermissionProvider.class);
         }
-
-        return sProviderInstance == null || sProviderInstance.hasJavascriptOptimizerPermission();
+        return sProviderInstance;
     }
 
     public static void resetForTesting() {

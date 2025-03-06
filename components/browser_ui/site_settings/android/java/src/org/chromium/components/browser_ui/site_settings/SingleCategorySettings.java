@@ -301,6 +301,11 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         public boolean isPreferenceControlledByCustodian(Preference preference) {
             return mCategory.isManagedByCustodian();
         }
+
+        @Override
+        public boolean isPreferenceClickDisabled(Preference preference) {
+            return mCategory.isToggleDisabled() || super.isPreferenceClickDisabled(preference);
+        }
     }
 
     private void getInfoForOrigins() {
@@ -814,6 +819,12 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                         ? R.string.website_settings_blocked_group_heading_request_desktop_site
                         : R.string.website_settings_allowed_group_heading_request_desktop_site;
             case SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER:
+                BrowserContextHandle browserContextHandle =
+                        getSiteSettingsDelegate().getBrowserContextHandle();
+                if (WebsitePreferenceBridge.isJavascriptOptimizerOsProvidedSetting(
+                        browserContextHandle, mCategory.getContentSettingsType())) {
+                    return 0;
+                }
                 return isCategoryEnabled()
                         ? R.string.website_settings_add_site_description_javascript_optimizer_block
                         : R.string.website_settings_add_site_description_javascript_optimizer_allow;
@@ -916,8 +927,14 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             case SiteSettingsCategory.Type.SITE_DATA:
             case SiteSettingsCategory.Type.FEDERATED_IDENTITY_API:
             case SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE:
-            case SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER:
                 allowSpecifyingExceptions = true;
+                break;
+            case SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER:
+                BrowserContextHandle browserContextHandle =
+                        getSiteSettingsDelegate().getBrowserContextHandle();
+                allowSpecifyingExceptions =
+                        !WebsitePreferenceBridge.isJavascriptOptimizerOsProvidedSetting(
+                                browserContextHandle, ContentSettingsType.JAVASCRIPT_OPTIMIZER);
                 break;
             case SiteSettingsCategory.Type.BACKGROUND_SYNC:
             case SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS:
@@ -1419,14 +1436,15 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     }
 
     private void maybeShowOsWarning(PreferenceScreen screen) {
-        if (isBlocked()) {
+        if (isBlocked() && !mCategory.shouldShowWarningWhenBlocked()) {
             return;
         }
 
         // Show the link to system settings since permission is disabled.
         ChromeBasePreference osWarning = new ChromeBasePreference(getStyledContext(), null);
         ChromeBasePreference osWarningExtra = new ChromeBasePreference(getStyledContext(), null);
-        mCategory.configurePermissionIsOffPreferences(
+
+        mCategory.configureWarningPreferences(
                 osWarning,
                 osWarningExtra,
                 getContext(),

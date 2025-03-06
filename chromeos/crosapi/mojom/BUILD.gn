@@ -17,7 +17,6 @@ mojom("mojom") {
     "content_protection.mojom",
     "cros_display_config.mojom",
     "crosapi.mojom",
-    "debug_interface.mojom",
     "desk.mojom",
     "desk_profiles.mojom",
     "device_attributes.mojom",
@@ -28,7 +27,6 @@ mojom("mojom") {
     "drive_integration_service.mojom",
     "echo_private.mojom",
     "embedded_accessibility_helper.mojom",
-    "extension_info_private.mojom",
     "file_change_service_bridge.mojom",
     "file_system_access_cloud_identifier.mojom",
     "file_system_provider.mojom",
@@ -58,8 +56,6 @@ mojom("mojom") {
     "networking_private.mojom",
     "nonclosable_app_toast_service.mojom",
     "nullable_primitives.mojom",
-    "one_drive_integration_service.mojom",
-    "one_drive_notification_service.mojom",
     "parent_access.mojom",
     "policy_namespace.mojom",
     "policy_service.mojom",
@@ -79,7 +75,6 @@ mojom("mojom") {
     "video_conference.mojom",
     "vpn_service.mojom",
     "web_app_types.mojom",
-    "web_kiosk_service.mojom",
   ]
   disable_variants = true
   enable_js_fuzzing = false

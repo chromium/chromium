@@ -18,7 +18,6 @@ import "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom";
 import "chromeos/crosapi/mojom/clipboard_history.mojom";
 import "chromeos/crosapi/mojom/content_protection.mojom";
 import "chromeos/crosapi/mojom/cros_display_config.mojom";
-import "chromeos/crosapi/mojom/debug_interface.mojom";
 import "chromeos/crosapi/mojom/desk.mojom";
 import "chromeos/crosapi/mojom/desk_profiles.mojom";
 import "chromeos/crosapi/mojom/device_attributes.mojom";
@@ -28,7 +27,6 @@ import "chromeos/crosapi/mojom/diagnostics_service.mojom";
 import "chromeos/crosapi/mojom/document_scan.mojom";
 import "chromeos/crosapi/mojom/drive_integration_service.mojom";
 import "chromeos/crosapi/mojom/echo_private.mojom";
-import "chromeos/crosapi/mojom/extension_info_private.mojom";
 import "chromeos/crosapi/mojom/file_change_service_bridge.mojom";
 import "chromeos/crosapi/mojom/file_system_access_cloud_identifier.mojom";
 import "chromeos/crosapi/mojom/file_system_provider.mojom";
@@ -52,8 +50,6 @@ import "chromeos/crosapi/mojom/native_theme.mojom";
 import "chromeos/crosapi/mojom/network_change.mojom";
 import "chromeos/crosapi/mojom/networking_attributes.mojom";
 import "chromeos/crosapi/mojom/networking_private.mojom";
-import "chromeos/crosapi/mojom/one_drive_notification_service.mojom";
-import "chromeos/crosapi/mojom/one_drive_integration_service.mojom";
 import "chromeos/crosapi/mojom/parent_access.mojom";
 import "chromeos/crosapi/mojom/nonclosable_app_toast_service.mojom";
 import "chromeos/crosapi/mojom/print_preview_cros.mojom";
@@ -72,7 +68,6 @@ import "chromeos/services/machine_learning/public/mojom/machine_learning_service
 import "chromeos/crosapi/mojom/video_capture.mojom";
 import "chromeos/crosapi/mojom/video_conference.mojom";
 import "chromeos/crosapi/mojom/kiosk_session_service.mojom";
-import "chromeos/crosapi/mojom/web_kiosk_service.mojom";
 import "chromeos/crosapi/mojom/media_ui.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
@@ -167,11 +162,7 @@ interface Crosapi {
   [MinVersion=89] BindCrosDisplayConfigController@93(
       pending_receiver<CrosDisplayConfigController> receiver);
 
-  // Binds the DebugInterfaceRegisterer for registering DebugInterface.
-  // Added in M122.
-  [MinVersion=131] BindDebugInterfaceRegisterer@133(
-      pending_receiver<DebugInterfaceRegisterer> receiver);
-
+  // BindDebugInterfaceRegisterer@133 was removed.
   // BindDesk@103 was removed.
 
   // Binds the desk profiles interface.
@@ -231,12 +222,7 @@ interface Crosapi {
       pending_receiver<EmbeddedAccessibilityHelperClientFactory> receiver);
 
   // BindEmojiPicker@89 was removed.
-
-  // ExtensionInfoPrivate is a service that allows trusted extensions in Lacros
-  // to get and set system properties. Implemented in Ash.
-  [MinVersion=72] BindExtensionInfoPrivate@75(
-      pending_receiver<ExtensionInfoPrivate> receiver);
-
+  // BindExtensionInfoPrivate@75 was removed.
   // REMOVED_105@105 was removed.
 
   // NetworkingPrivate is a service that allows users to modify
@@ -369,17 +355,8 @@ interface Crosapi {
   [MinVersion=39]
   BindNetworkingAttributes@44(pending_receiver<NetworkingAttributes> receiver);
 
-  // Binds the OneDrive notification service which is used by the
-  // odfsConfigPrivate extension API to show notifications.
-  [MinVersion=130]
-  BindOneDriveNotificationService@132(
-      pending_receiver<OneDriveNotificationService> receiver);
-
-  // Binds the OneDrive integration service which is used by Lacros to observe
-  // OneDrive mount path changes. Added in M124.
-  [MinVersion=133]
-  BindOneDriveIntegrationService@135(
-    pending_receiver<OneDriveIntegrationService> receiver);
+  // BindOneDriveNotificationService@132 was removed.
+  // BindOneDriveIntegrationService@135 was removed.
 
   // Binds the Parent Access UI to allow Lacros to request parent access
   // from Ash when needed.
@@ -539,10 +516,7 @@ interface Crosapi {
   [MinVersion=73] BindChromeAppKioskService@76(
       pending_receiver<ChromeAppKioskService> receiver);
 
-  // Binds the web kiosk service. This service is used to install and launch the
-  // web app inside lacros.
-  [MinVersion=111] BindWebKioskService@114(
-      pending_receiver<WebKioskService> receiver);
+  // BindWebKioskService@114 was removed.
 
   // Binds the extension service for device local accounts. This service manages
   // the cached install of extensions into Lacros.

@@ -244,7 +244,7 @@ void Resource::CheckResourceIntegrity() {
         if (auto calculated_integrity_hash =
                 SubresourceIntegrity::GetSubresourceIntegrityHash(Data(),
                                                                   algorithm)) {
-          integrity_hashes.insert(algorithm, calculated_integrity_hash.value());
+          integrity_hashes.insert(algorithm, calculated_integrity_hash);
         }
       }
     }

@@ -44,6 +44,7 @@
 #include "net/http/http_request_headers.h"
 #include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "url/origin.h"
 
 namespace content {
@@ -118,10 +119,10 @@ bool PrerenderHost::AreHttpRequestHeadersCompatible(
   // `potential_activation_headers` doesn't contain it. Remove "Purpose" and
   // "Sec-Purpose" matching from consideration so that activation works with the
   // header.
-  prerender_headers.RemoveHeader("Purpose");
-  potential_activation_headers.RemoveHeader("Purpose");
-  prerender_headers.RemoveHeader("Sec-Purpose");
-  potential_activation_headers.RemoveHeader("Sec-Purpose");
+  prerender_headers.RemoveHeader(blink::kPurposeHeaderName);
+  potential_activation_headers.RemoveHeader(blink::kPurposeHeaderName);
+  prerender_headers.RemoveHeader(blink::kSecPurposeHeaderName);
+  potential_activation_headers.RemoveHeader(blink::kSecPurposeHeaderName);
 
   prerender_headers.RemoveHeader("RTT");
   potential_activation_headers.RemoveHeader("RTT");

@@ -21,7 +21,6 @@
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/webauthn/enclave_manager_interface.h"
 #include "chrome/browser/webauthn/local_authentication_token.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
@@ -44,7 +43,7 @@ namespace crypto {
 class RefCountedUserVerifyingSigningKey;
 }  // namespace crypto
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace ash {
 class WebAuthNDialogController;
 class ActiveSessionAuthController;
@@ -124,7 +123,7 @@ class EnclaveManager : public EnclaveManagerInterface {
     // The RenderFrameHost from which the request originates.
     content::GlobalRenderFrameHostId render_frame_host_id;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     std::variant<raw_ptr<ash::WebAuthNDialogController>,
                  raw_ptr<ash::ActiveSessionAuthController>>
         dialog_controller;

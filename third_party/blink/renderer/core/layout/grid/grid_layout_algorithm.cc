@@ -3570,8 +3570,8 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     breakpoint_row_set_index = kNotFound;
     has_subsequent_children = false;
 
-    auto child_break_token_it = child_break_tokens.begin();
-    auto placement_data_it = grid_items_placement_data->begin();
+    auto child_break_token_it = base::span(child_break_tokens).begin();
+    auto placement_data_it = base::span(*grid_items_placement_data).begin();
 
     const auto layout_subtree =
         cached_layout_subtree ? *cached_layout_subtree
@@ -3580,8 +3580,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
 
     for (const auto& grid_item : sizing_data.GetGridItems()) {
       // Grab the offsets and break-token (if present) for this child.
-      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-      auto& item_placement_data = *(UNSAFE_TODO(placement_data_it++));
+      auto& item_placement_data = *(placement_data_it++);
       const BlockBreakToken* break_token = nullptr;
       if (child_break_token_it != child_break_tokens.end()) {
         if ((*child_break_token_it)->InputNode() == grid_item.node)
@@ -3856,11 +3855,10 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     *intrinsic_block_size += row_offset_delta;
     AdjustItemOffsets(breakpoint_row_set_index, row_offset_delta);
 
-    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
     auto it =
-        UNSAFE_TODO(row_offset_adjustments->begin() + breakpoint_row_set_index);
+        base::span(*row_offset_adjustments).begin() + breakpoint_row_set_index;
     while (it != row_offset_adjustments->end())
-      *(UNSAFE_TODO(it++)) += row_offset_delta;
+      *(it++) += row_offset_delta;
 
     return true;
   };

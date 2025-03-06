@@ -9,7 +9,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -133,8 +132,8 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchFromIncognitoWithNormalUrl) {
   ASSERT_EQ(1u, chrome::GetTabbedBrowserCount(profile));
 }
 
-// Multi-profile is not supported on Ash.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Multi-profile is not supported on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchWithProfileDir) {
   const base::FilePath kProfileDir(FILE_PATH_LITERAL("Other"));
   Profile* other_profile = CreateProfile(kProfileDir);
@@ -189,4 +188,4 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchWithProfileEmail) {
   EXPECT_EQ(new_browser->profile(), profile2);
   EXPECT_EQ(original_browser_count + 2, chrome::GetTotalBrowserCount());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)

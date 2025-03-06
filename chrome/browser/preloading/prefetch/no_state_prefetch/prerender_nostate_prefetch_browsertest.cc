@@ -89,10 +89,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 
 namespace {
 
-const char kExpectedPurposeHeaderOnPrefetch[] = "Purpose";
 using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
 using prerender::test_utils::DestructionWaiter;
 using prerender::test_utils::TestPrerender;
@@ -1093,12 +1093,12 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PurposeHeaderIsSet) {
     std::optional<network::ResourceRequest> request =
         monitor.GetRequestInfo(url);
     EXPECT_TRUE(request->load_flags & net::LOAD_PREFETCH);
-    EXPECT_FALSE(request->headers.HasHeader(kExpectedPurposeHeaderOnPrefetch));
-    EXPECT_TRUE(request->cors_exempt_headers.HasHeader(
-        kExpectedPurposeHeaderOnPrefetch));
-    EXPECT_EQ("prefetch", request->cors_exempt_headers
-                              .GetHeader(kExpectedPurposeHeaderOnPrefetch)
-                              .value_or(std::string()));
+    EXPECT_FALSE(request->headers.HasHeader(blink::kPurposeHeaderName));
+    EXPECT_TRUE(
+        request->cors_exempt_headers.HasHeader(blink::kPurposeHeaderName));
+    EXPECT_EQ("prefetch",
+              request->cors_exempt_headers.GetHeader(blink::kPurposeHeaderName)
+                  .value_or(std::string()));
   }
 }
 
@@ -1121,9 +1121,9 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
     std::optional<network::ResourceRequest> request =
         monitor.GetRequestInfo(url);
     EXPECT_FALSE(request->load_flags & net::LOAD_PREFETCH);
-    EXPECT_FALSE(request->headers.HasHeader(kExpectedPurposeHeaderOnPrefetch));
-    EXPECT_FALSE(request->cors_exempt_headers.HasHeader(
-        kExpectedPurposeHeaderOnPrefetch));
+    EXPECT_FALSE(request->headers.HasHeader(blink::kPurposeHeaderName));
+    EXPECT_FALSE(
+        request->cors_exempt_headers.HasHeader(blink::kPurposeHeaderName));
   }
 }
 

@@ -14,6 +14,7 @@
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
@@ -48,7 +49,7 @@ bool IsBrowserTypeSupported(const Browser& browser) {
     case Browser::TYPE_PICTURE_IN_PICTURE:
     case Browser::TYPE_APP:
     case Browser::TYPE_DEVTOOLS:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case Browser::TYPE_CUSTOM_TAB:
 #endif
       return false;
@@ -382,11 +383,11 @@ SearchEngineChoiceDialogService::ComputeDialogConditions(
   // currently displayed or is about to be displayed.
   bool signin_dialog_displayed_or_pending =
       browser.signin_view_controller()->ShowsModalDialog();
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   signin_dialog_displayed_or_pending =
       signin_dialog_displayed_or_pending ||
       IsProfileCustomizationBubbleSyncControllerRunning(&browser);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   if (signin_dialog_displayed_or_pending) {
     return search_engines::SearchEngineChoiceScreenConditions::
         kSuppressedByOtherDialog;

@@ -76,7 +76,8 @@ class CORE_EXPORT RenderBlockingResourceManager final
   void FontPreloadingTimerFired(TimerBase*);
 
   void AddPendingParsingElementLink(const AtomicString& id,
-                                    const HTMLLinkElement* element);
+                                    const HTMLLinkElement* element,
+                                    RenderBlockingLevel blocking_level);
   void RemovePendingParsingElement(const AtomicString& id, Element* element);
   void RemovePendingParsingElementLink(const AtomicString& id,
                                        const HTMLLinkElement* element);

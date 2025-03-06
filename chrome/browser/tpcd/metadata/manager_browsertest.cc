@@ -57,7 +57,7 @@ const char* kThirdPartyHost1Sub = "sub.b.test";
 const char* kThirdPartyHost2 = "c.test";
 const char* kThirdPartyHost3 = "d.test";
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Creates a Original Guest Profile (not OTR Profile) for testing.
 Profile& CreateOriginalGuestProfile() {
   Profile& original_guest_profile = profiles::testing::CreateProfileSync(
@@ -839,7 +839,7 @@ IN_PROC_BROWSER_TEST_P(ManagerPrefsBrowserTest, NoSpecificBlockedCookieSpecs) {
 }
 
 // ChromeOS doesn't support multiple profiles.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(ManagerPrefsBrowserTest,
                        NoSpecificBlockedCookieSpecs_AltRegularProfile) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -989,7 +989,7 @@ IN_PROC_BROWSER_TEST_P(ManagerPrefsBrowserTest,
 }
 
 // ChromeOS doesn't support multiple profiles.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(ManagerPrefsBrowserTest,
                        NoSpecificBlockedCookieSpecs_GuestProfile) {
   base::ScopedAllowBlockingForTesting allow_blocking;

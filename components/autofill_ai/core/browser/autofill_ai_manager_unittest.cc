@@ -53,6 +53,7 @@ using AutofillAiPayload = Suggestion::AutofillAiPayload;
 using ::autofill::AttributeInstance;
 using ::autofill::AttributeType;
 using ::autofill::AttributeTypeName;
+using ::autofill::AutofillField;
 using ::autofill::EntityInstance;
 using ::autofill::EntityType;
 using ::autofill::EntityTypeName;
@@ -104,8 +105,9 @@ auto HasAttributeWithValue(AttributeType attribute_type,
     }
     base::optional_ref<const AttributeInstance> attribute =
         entity.attribute(attribute_type);
-    return attribute && attribute->GetInfo(attribute->GetTopLevelType(),
-                                           app_locale) == value;
+    return attribute &&
+           attribute->GetInfo(attribute->GetTopLevelType(), app_locale,
+                              /*format_string=*/std::nullopt) == value;
   });
 }
 
@@ -277,7 +279,7 @@ class AutofillAiManagerImportFormTest : public AutofillAiManagerTest {
     base::optional_ref<const autofill::AttributeInstance> instance =
         entity.attribute(*attribute);
     CHECK(instance);
-    return instance->GetInfo(type, app_locale);
+    return instance->GetInfo(type, app_locale, /*format_string=*/std::nullopt);
   }
 
   std::u16string GetValueFromEntityForAttributeTypeName(
@@ -288,7 +290,8 @@ class AutofillAiManagerImportFormTest : public AutofillAiManagerTest {
     base::optional_ref<const autofill::AttributeInstance> instance =
         entity.attribute(attribute_type);
     CHECK(instance);
-    return instance->GetInfo(attribute_type.field_type(), app_locale);
+    return instance->GetInfo(attribute_type.field_type(), app_locale,
+                             /*format_string=*/std::nullopt);
   }
 };
 
@@ -696,6 +699,8 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
   std::unique_ptr<FormStructure> form = CreateFormStructure(
       {autofill::PASSPORT_NAME_TAG, autofill::PASSPORT_NUMBER,
        autofill::PASSPORT_ISSUE_DATE_TAG,
+       autofill::PASSPORT_EXPIRATION_DATE_TAG,
+       autofill::PASSPORT_EXPIRATION_DATE_TAG,
        autofill::PASSPORT_EXPIRATION_DATE_TAG});
 
   // The current entity however does not.
@@ -712,10 +717,20 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
   form->field(1)->set_value(GetValueFromEntityForFieldType(
       existing_entity_without_issue_and_expiry_dates, autofill::PASSPORT_NUMBER,
       /*app_locale=*/""));
-  // Issue date
-  form->field(2)->set_value(u"2016-02-01");
-  // Expirty date
-  form->field(3)->set_value(u"2020-02-01");
+  // Issue date.
+  form->field(2)->set_value(u"01/02/16");
+  form->field(2)->set_format_string_unless_overruled(
+      u"DD/MM/YY", AutofillField::FormatStringSource::kServer);
+  // Expiry date.
+  form->field(3)->set_value(u"01");
+  form->field(3)->set_format_string_unless_overruled(
+      u"DD", AutofillField::FormatStringSource::kServer);
+  form->field(4)->set_value(u"02");
+  form->field(4)->set_format_string_unless_overruled(
+      u"MM", AutofillField::FormatStringSource::kServer);
+  form->field(5)->set_value(u"2020");
+  form->field(5)->set_format_string_unless_overruled(
+      u"YYYY", AutofillField::FormatStringSource::kServer);
 
   std::optional<EntityInstance> entity;
   std::optional<EntityInstance> old_entity;
@@ -759,7 +774,7 @@ class AutofillAiEligibilityTests : public BaseAutofillAiManagerTest {
                     .heuristic_type = autofill::NAME_FIRST}}};
   }
 
-  void SetPredictionTypesForField(autofill::AutofillField& field,
+  void SetPredictionTypesForField(AutofillField& field,
                                   autofill::FieldTypeSet types) {
     std::vector<autofill::AutofillQueryResponse::FormSuggestion::
                     FieldSuggestion::FieldPrediction>
@@ -779,7 +794,7 @@ class AutofillAiEligibilityTests : public BaseAutofillAiManagerTest {
     autofill::FormData form_data;
     form_data.set_main_frame_origin(url::Origin::Create(url));
     auto form = std::make_unique<FormStructure>(form_data);
-    autofill::AutofillField& field = test_api(*form).PushField();
+    AutofillField& field = test_api(*form).PushField();
     SetPredictionTypesForField(
         field, {autofill::NAME_FIRST, autofill::PASSPORT_NAME_TAG});
     return form;

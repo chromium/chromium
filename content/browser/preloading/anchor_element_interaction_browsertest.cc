@@ -26,6 +26,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 
 namespace content {
 namespace {
@@ -136,7 +137,8 @@ IN_PROC_BROWSER_TEST_F(AnchorElementInteractionBrowserTest, MouseDownPrefetch) {
   widget->ForwardMouseEvent(mouse_events[0]);
   net::test_server::HttpRequest prefetch_request = AwaitNextRequest();
   EXPECT_EQ(prefetch_request.relative_url, "/title2.html");
-  EXPECT_EQ(prefetch_request.headers["sec-purpose"], "prefetch");
+  EXPECT_EQ(prefetch_request.headers[blink::kSecPurposeHeaderName],
+            blink::kSecPurposePrefetchHeaderValue);
 
   TestNavigationObserver navigation_observer(shell()->web_contents());
   widget->ForwardMouseEvent(mouse_events[1]);
@@ -163,7 +165,8 @@ IN_PROC_BROWSER_TEST_F(AnchorElementInteractionBrowserTest,
                      blink::WebInputEvent::Type::kMouseMove, {50, 50});
   net::test_server::HttpRequest prefetch_request = AwaitNextRequest();
   EXPECT_EQ(prefetch_request.relative_url, "/title2.html");
-  EXPECT_EQ(prefetch_request.headers["sec-purpose"], "prefetch");
+  EXPECT_EQ(prefetch_request.headers[blink::kSecPurposeHeaderName],
+            blink::kSecPurposePrefetchHeaderValue);
 
   TestNavigationObserver navigation_observer(shell()->web_contents());
   SimulateMouseClickAt(shell()->web_contents(), 0,
@@ -195,7 +198,8 @@ IN_PROC_BROWSER_TEST_F(AnchorElementInteractionBrowserTest, TouchDownPrefetch) {
   router->RouteTouchEvent(view, &touch_event, ui::LatencyInfo());
   net::test_server::HttpRequest prefetch_request = AwaitNextRequest();
   EXPECT_EQ(prefetch_request.relative_url, "/title2.html");
-  EXPECT_EQ(prefetch_request.headers["sec-purpose"], "prefetch");
+  EXPECT_EQ(prefetch_request.headers[blink::kSecPurposeHeaderName],
+            blink::kSecPurposePrefetchHeaderValue);
 
   // The synthetic click originates from the gesture recognizer's tap gesture,
   // not the touch end.

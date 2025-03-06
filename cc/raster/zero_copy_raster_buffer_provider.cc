@@ -36,14 +36,9 @@ constexpr static auto kBufferUsage = gfx::BufferUsage::GPU_READ_CPU_READ_WRITE;
 class ZeroCopyRasterBufferImpl : public RasterBuffer {
  public:
   ZeroCopyRasterBufferImpl(
-      base::WaitableEvent* shutdown_event,
       const ResourcePool::InUsePoolResource& in_use_resource,
       scoped_refptr<gpu::SharedImageInterface> sii)
-      : sii_(sii),
-        shutdown_event_(shutdown_event),
-        resource_size_(in_use_resource.size()),
-        format_(in_use_resource.format()),
-        resource_color_space_(in_use_resource.color_space()) {
+      : sii_(sii) {
     if (!in_use_resource.backing()) {
       auto backing = std::make_unique<ResourcePool::Backing>(
           in_use_resource.size(), in_use_resource.format(),
@@ -108,7 +103,7 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
       gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                        gpu::SHARED_IMAGE_USAGE_SCANOUT;
       backing_->set_shared_image(sii_->CreateSharedImage(
-          {format_, resource_size_, resource_color_space_, usage,
+          {backing_->format(), backing_->size(), backing_->color_space(), usage,
            "ZeroCopyRasterTile"},
           gpu::kNullSurfaceHandle, kBufferUsage));
       if (!backing_->shared_image()) {
@@ -128,9 +123,10 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
 
     // TODO(danakj): Implement partial raster with raster_dirty_rect.
     RasterBufferProvider::PlaybackToMemory(
-        mapping->GetMemoryForPlane(0).data(), format_, resource_size_,
-        mapping->Stride(0), raster_source, raster_full_rect, raster_full_rect,
-        transform, resource_color_space_, playback_settings);
+        mapping->GetMemoryForPlane(0).data(), backing_->format(),
+        backing_->size(), mapping->Stride(0), raster_source, raster_full_rect,
+        raster_full_rect, transform, backing_->color_space(),
+        playback_settings);
   }
 
   bool SupportsBackgroundThreadPriority() const override { return true; }
@@ -139,12 +135,6 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
   // These fields are safe to access on both the compositor and worker thread.
   raw_ptr<ResourcePool::Backing> backing_;
   const scoped_refptr<gpu::SharedImageInterface> sii_;
-
-  // These fields are for use on the worker thread.
-  raw_ptr<base::WaitableEvent> shutdown_event_;
-  const gfx::Size resource_size_;
-  const viz::SharedImageFormat format_;
-  const gfx::ColorSpace resource_color_space_;
 };
 
 }  // namespace
@@ -166,9 +156,8 @@ ZeroCopyRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
   return std::make_unique<ZeroCopyRasterBufferImpl>(
-      shutdown_event_, resource,
-      base::WrapRefCounted(
-          compositor_context_provider_->SharedImageInterface()));
+      resource, base::WrapRefCounted(
+                    compositor_context_provider_->SharedImageInterface()));
 }
 
 void ZeroCopyRasterBufferProvider::Flush() {}
@@ -198,11 +187,6 @@ uint64_t ZeroCopyRasterBufferProvider::SetReadyToDrawCallback(
     uint64_t pending_callback_id) {
   // Zero-copy resources are immediately ready to draw.
   return 0;
-}
-
-void ZeroCopyRasterBufferProvider::SetShutdownEvent(
-    base::WaitableEvent* shutdown_event) {
-  shutdown_event_ = shutdown_event;
 }
 
 void ZeroCopyRasterBufferProvider::Shutdown() {}

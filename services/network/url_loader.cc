@@ -67,6 +67,7 @@
 #include "net/http/http_util.h"
 #include "net/http/structured_headers.h"
 #include "net/log/net_log_source_type.h"
+#include "net/log/net_log_util.h"
 #include "net/log/net_log_with_source.h"
 #include "net/ssl/client_cert_store.h"
 #include "net/ssl/ssl_connection_status_flags.h"
@@ -781,9 +782,8 @@ URLLoader::URLLoader(
       request.url, request.priority, this, traffic_annotation,
       /*is_for_websockets=*/false, request.net_log_create_info);
 
-  TRACE_EVENT(
-      "loading", "URLLoader::URLLoader",
-      perfetto::Flow::ProcessScoped(url_request_->net_log().source().id));
+  TRACE_EVENT("loading", "URLLoader::URLLoader",
+              net::NetLogWithSourceToFlow(url_request_->net_log()));
 
   // |cors_exempt_headers| must be merged here to avoid breaking CORS checks.
   // They are non-empty when the values are given by the UA code, therefore
@@ -1323,9 +1323,8 @@ void URLLoader::OnDoneBeginningTrustTokenOperation(
 }
 
 void URLLoader::ScheduleStart() {
-  TRACE_EVENT(
-      "loading", "URLLoader::ScheduleStart",
-      perfetto::Flow::ProcessScoped(url_request_->net_log().source().id));
+  TRACE_EVENT("loading", "URLLoader::ScheduleStart",
+              net::NetLogWithSourceToFlow(url_request_->net_log()));
   bool defer = false;
   if (resource_scheduler_client_) {
     resource_scheduler_request_handle_ =
@@ -1418,9 +1417,8 @@ void URLLoader::SetupPipeHandlesAndWatchers(
 }
 
 URLLoader::~URLLoader() {
-  TRACE_EVENT(
-      "loading", "URLLoader::~URLLoader",
-      perfetto::Flow::ProcessScoped(url_request_->net_log().source().id));
+  TRACE_EVENT("loading", "URLLoader::~URLLoader",
+              net::NetLogWithSourceToFlow(url_request_->net_log()));
   if (keepalive_ && keepalive_statistics_recorder_) {
     keepalive_statistics_recorder_->OnLoadFinished(
         *factory_params_->top_frame_id, keepalive_request_size_);
@@ -2750,10 +2748,9 @@ void URLLoader::DeleteSelf() {
 }
 
 void URLLoader::SendResponseToClient() {
-  TRACE_EVENT(
-      "loading", "network::URLLoader::SendResponseToClient",
-      perfetto::Flow::ProcessScoped(url_request_->net_log().source().id), "url",
-      url_request_->url());
+  TRACE_EVENT("loading", "network::URLLoader::SendResponseToClient",
+              net::NetLogWithSourceToFlow(url_request_->net_log()), "url",
+              url_request_->url());
   DCHECK_EQ(emitted_devtools_raw_request_, emitted_devtools_raw_response_);
   response_->emitted_extra_info = emitted_devtools_raw_request_;
 

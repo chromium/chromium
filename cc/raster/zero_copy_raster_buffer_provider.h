@@ -16,7 +16,6 @@
 #include "cc/trees/raster_capabilities.h"
 
 namespace base {
-class WaitableEvent;
 namespace trace_event {
 class ConvertableToTraceFormat;
 }
@@ -52,7 +51,6 @@ class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
       const std::vector<const ResourcePool::InUsePoolResource*>& resources,
       base::OnceClosure callback,
       uint64_t pending_callback_id) override;
-  void SetShutdownEvent(base::WaitableEvent* shutdown_event) override;
   void Shutdown() override;
 
  protected:
@@ -62,7 +60,6 @@ class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat> StateAsValue()
       const;
 
-  raw_ptr<base::WaitableEvent> shutdown_event_ = nullptr;
   raw_ptr<viz::RasterContextProvider> compositor_context_provider_;
   const viz::SharedImageFormat tile_format_;
 };

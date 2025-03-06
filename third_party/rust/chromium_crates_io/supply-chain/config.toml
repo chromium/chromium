@@ -314,7 +314,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."minimal-lexical:0.2.1"]
 criteria = []
 
-[policy."miniz_oxide:0.8.4"]
+[policy."miniz_oxide:0.8.5"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."nom:7.1.3"]
@@ -419,7 +419,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."serde_derive:1.0.217"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."serde_json:1.0.138"]
+[policy."serde_json:1.0.140"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."serde_json_lenient:0.2.4"]
@@ -461,7 +461,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."strum_macros:0.25.3"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."syn:2.0.98"]
+[policy."syn:2.0.99"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."synstructure:0.13.1"]
@@ -771,7 +771,7 @@ This feature is banned in gnrt_config.toml.
 """
 
 [[exemptions.syn]]
-version = "2.0.98"
+version = "2.0.99"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -805,6 +805,7 @@ Exemption updated to 2.0.91 when updating the crate in December 2024.
 Exemption updated to 2.0.95 when updating the crate in January 2025.
 Exemption updated to 2.0.96 when updating the crate in January 2025.
 Exemption updated to 2.0.98 when updating the crate in February 2025.
+Exemption updated to 2.0.99 when updating the crate in February 2025.
 """
 
 [[exemptions.tinystr]]

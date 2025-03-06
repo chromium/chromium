@@ -12,7 +12,6 @@
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_model.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/personalization_entry_point.h"
 #include "ash/public/cpp/app_menu_constants.h"
@@ -218,8 +217,7 @@ void ShelfContextMenuModel::AddShelfAndWallpaperItems() {
 
   // Only add the desk button items if the context menu was spawned on the
   // shelf, tablet mode is not enabled, and full screen is not enabled.
-  if (features::IsDeskButtonEnabled() && !in_tablet_mode && menu_in_shelf_ &&
-      !is_fullscreen) {
+  if (!in_tablet_mode && menu_in_shelf_ && !is_fullscreen) {
     // If the button is visible for any reason, show the option to hide it
     // manually. If it isn't visible show the option to show it.
     if (GetDeskButtonVisibility(prefs)) {

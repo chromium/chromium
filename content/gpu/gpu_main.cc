@@ -28,6 +28,7 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/platform_thread.h"
+#include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "base/timer/hi_res_timer_manager.h"
 #include "base/trace_event/trace_event.h"
@@ -44,6 +45,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/result_codes.h"
+#include "content/public/common/zygote/zygote_buildflags.h"
 #include "content/public/gpu/content_gpu_client.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_driver_bug_list.h"
@@ -59,6 +61,7 @@
 #include "media/gpu/buildflags.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "services/tracing/public/cpp/trace_startup_config.h"
 #include "third_party/angle/src/gpu_info_util/SystemInfo.h"
@@ -206,11 +209,8 @@ void LoadMetalShaderCacheIfNecessary() {
 
 // Main function for starting the Gpu process.
 int GpuMain(MainFunctionParams parameters) {
-  if (tracing::TraceStartupConfig::GetInstance().IsEnabled()) {
-    gl::StartupTrace::Startup();
-  }
+  TRACE_EVENT("gpu,startup", "GpuMain");
 
-  TRACE_EVENT0("gpu", "GpuMain");
   base::CurrentProcess::GetInstance().SetProcessType(
       base::CurrentProcessType::PROCESS_GPU);
 
@@ -324,7 +324,6 @@ int GpuMain(MainFunctionParams parameters) {
             base::MessagePumpType::DEFAULT);
 #endif
   }
-  gl::StartupTrace::GetInstance()->BindToCurrentThread();
 
   base::PlatformThread::SetName("CrGpuMain");
   mojo::InterfaceEndpointClient::SetThreadNameSuffixForMetrics("GpuMain");
@@ -450,7 +449,6 @@ int GpuMain(MainFunctionParams parameters) {
   }
 
   DCHECK(tracing::IsTracingInitialized());
-  gl::StartupTrace::StarupDone();
 
   {
     TRACE_EVENT0("gpu", "Run Message Loop");
@@ -472,6 +470,14 @@ bool StartSandboxLinux(gpu::GpuWatchdogThread* watchdog_thread,
     // SandboxLinux needs to be able to ensure that the thread
     // has really been stopped.
     sandbox::policy::SandboxLinux::GetInstance()->StopThread(watchdog_thread);
+  }
+
+  base::Thread* trace_thread =
+      tracing::IsTracingInitialized()
+          ? tracing::PerfettoTracedProcess::GetTraceThread()
+          : nullptr;
+  if (trace_thread) {
+    sandbox::policy::SandboxLinux::GetInstance()->StopThread(trace_thread);
   }
 
   // SandboxLinux::InitializeSandbox() must always be called
@@ -521,6 +527,10 @@ bool StartSandboxLinux(gpu::GpuWatchdogThread* watchdog_thread,
 
   if (watchdog_thread) {
     watchdog_thread->Start();
+  }
+
+  if (trace_thread) {
+    tracing::PerfettoTracedProcess::RestartThreadInSandbox();
   }
 
   return res;

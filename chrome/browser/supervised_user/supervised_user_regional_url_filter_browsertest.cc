@@ -145,7 +145,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     SupervisedUserRegionalURLFilterTest,
     ::testing::Values(
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
         // Only for platforms that support signed-out browser.
         SupervisionMixin::SignInMode::kSignedOut,
 #endif

@@ -36,6 +36,10 @@
 #include "ui/gfx/system_fonts_win.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/public/cpp/ash_typography.h"
+#endif
+
 namespace {
 
 // The default system font name.
@@ -313,10 +317,6 @@ TEST_F(LayoutProviderTest, FontSizeRelativeToBase) {
             typography_provider.GetFont(views::style::CONTEXT_BUTTON, kStyle)
                 .GetFontSize());
 
-  // E.g. Headline should give a 20pt font.
-  EXPECT_EQ(
-      twelve + 8,
-      typography_provider.GetFont(CONTEXT_HEADLINE, kStyle).GetFontSize());
   // Titles should be 15pt. Etc.
   EXPECT_EQ(twelve + 3, typography_provider
                             .GetFont(views::style::CONTEXT_DIALOG_TITLE, kStyle)
@@ -345,10 +345,12 @@ TEST_F(LayoutProviderTest, TypographyLineHeight) {
   };
 
   static constexpr auto kExpectedIncreases =
-      std::to_array<Increases>({{CONTEXT_HEADLINE, 4, 8},
-                                {views::style::CONTEXT_DIALOG_TITLE, 1, 4},
+      std::to_array<Increases>({{views::style::CONTEXT_DIALOG_TITLE, 1, 4},
                                 {views::style::CONTEXT_DIALOG_BODY_TEXT, 2, 4},
                                 {CONTEXT_DIALOG_BODY_TEXT_SMALL, 4, 5},
+#if BUILDFLAG(IS_CHROMEOS)
+                                {ash::CONTEXT_HEADLINE, 4, 8},
+#endif  // BUILDFLAG(IS_CHROMEOS)
                                 {views::style::CONTEXT_BUTTON_MD, -2, 1}});
 
   const auto& typography_provider = views::TypographyProvider::Get();
@@ -387,9 +389,11 @@ TEST_F(LayoutProviderTest, ExplicitTypographyLineHeight) {
 
   constexpr int kBodyLineHeight = 20;
   static constexpr auto kHarmonyHeights = std::to_array<HarmonyHeight>(
-      {{CONTEXT_HEADLINE, 32},
-       {views::style::CONTEXT_DIALOG_TITLE, 22},
+      {{views::style::CONTEXT_DIALOG_TITLE, 22},
        {views::style::CONTEXT_DIALOG_BODY_TEXT, kBodyLineHeight},
+#if BUILDFLAG(IS_CHROMEOS)
+       {ash::CONTEXT_HEADLINE, 32},
+#endif  // BUILDFLAG(IS_CHROMEOS)
        {CONTEXT_DIALOG_BODY_TEXT_SMALL, kBodyLineHeight}});
 
   for (size_t i = 0; i < std::size(kHarmonyHeights); ++i) {

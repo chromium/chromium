@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] Grants have per-frame scope
+  assert_true: requestStorageAccess doesn't require a gesture since the permission has already been granted. expected true got false
+[FAIL] Cross-site sibling iframes should not be able to take advantage of the existing permission grant requested by others.
+  assert_true: crossSiteFrame should be able to get storage access without a gesture. expected true got false
+Harness: the test ran to completion.

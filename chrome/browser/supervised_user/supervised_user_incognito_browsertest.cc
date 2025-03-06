@@ -54,7 +54,7 @@ class SupervisedUserIncognitoBrowserTest
 
 // ChromeOS Ash does not support the browser being signed out on a supervised
 // device.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SupervisedUserIncognitoBrowserTest,
                        UnsupervisedSignInDoesNotCloseIncognito) {
   BrowserList* browser_list = BrowserList::GetInstance();
@@ -93,6 +93,6 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIncognitoBrowserTest,
   // Check the incognito window remains open.
   incognito_closed_waiter.Wait();
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

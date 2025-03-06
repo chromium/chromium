@@ -89,8 +89,7 @@ class MockDiskMountManager : public DiskMountManager {
   // Sets up default results for mock methods.
   void SetupDefaultReplies();
 
-  // Creates a fake disk entry for the mounted device.
-  void CreateDiskEntryForMountDevice(std::unique_ptr<Disk> disk);
+  bool AddDiskForTest(std::unique_ptr<Disk> disk) override;
 
   // Creates a fake disk entry for the mounted device.
   void CreateDiskEntryForMountDevice(

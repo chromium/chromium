@@ -149,6 +149,9 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // Ensure that a full document lifecycle will occur, which in turn ensures
   // that a call to CommitAXUpdates() will occur soon.
   void ScheduleAXUpdate() const override;
+  // Same as `ScheduleAXUpdate()` but will call `callback` once
+  // `CompleteAXUpdate` is done.
+  void ScheduleAXUpdateWithCallback(base::OnceClosure callback);
 
   void Dispose() override;
 
@@ -1286,6 +1289,10 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // Used to determine if a previously computed attribute is from the same
   // serialization update.
   uint64_t generational_cache_id_ = 0;
+
+  // All the callbacks passed to `ScheduleAXUpdate` that `CompleteAXUpdate` has
+  // to call once it's done.
+  Vector<base::OnceClosure> ready_callbacks_;
 };
 
 // This is the only subclass of AXObjectCache.

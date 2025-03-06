@@ -119,9 +119,11 @@ SaveOrUpdateAutofillAiDataControllerImpl::GetUpdatedAttributesDetails() const {
     return std::ranges::all_of(
                new_entity_attribute_instance.GetSupportedTypes(),
                [&](autofill::FieldType type) {
-                 return old_entity_attribute->GetInfo(type, app_locale_) ==
-                        new_entity_attribute_instance.GetInfo(type,
-                                                              app_locale_);
+                 return old_entity_attribute->GetInfo(
+                            type, app_locale_,
+                            /*format_string=*/std::nullopt) ==
+                        new_entity_attribute_instance.GetInfo(
+                            type, app_locale_, /*format_string=*/std::nullopt);
                })
                ? kNewEntityAttributeUnchanged
                : kNewEntityAttributeUpdated;
@@ -131,10 +133,11 @@ SaveOrUpdateAutofillAiDataControllerImpl::GetUpdatedAttributesDetails() const {
        new_entity_->attributes()) {
     EntityAttributeUpdateType update_type =
         get_attribute_update_type(attribute_instance);
-    details.emplace_back(attribute_instance.type().GetNameForI18n(),
-                         attribute_instance.GetInfo(
-                             attribute_instance.GetTopLevelType(), app_locale_),
-                         update_type);
+    details.emplace_back(
+        attribute_instance.type().GetNameForI18n(),
+        attribute_instance.GetInfo(attribute_instance.GetTopLevelType(),
+                                   app_locale_, /*format_string=*/std::nullopt),
+        update_type);
 
     // Also add the old value when an attribute is updated to display
     // before/after to the user.
@@ -152,7 +155,8 @@ SaveOrUpdateAutofillAiDataControllerImpl::GetUpdatedAttributesDetails() const {
           // nothing has changed. Consider adding a detail for every supported
           // type that actually does change.
           old_entity_attribute->GetInfo(old_entity_attribute->GetTopLevelType(),
-                                        app_locale_),
+                                        app_locale_,
+                                        /*format_string=*/std::nullopt),
           kOldEntityAttributeUpdated);
     }
   }

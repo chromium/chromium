@@ -50,7 +50,6 @@ class ChapsServiceAsh;
 class ChromeAppKioskServiceAsh;
 class ClipboardHistoryAsh;
 class ContentProtectionAsh;
-class DebugInterfaceRegistererAsh;
 class DeskProfilesAsh;
 class DeviceAttributesAsh;
 class DeviceLocalAccountExtensionServiceAsh;
@@ -59,7 +58,6 @@ class DocumentScanAsh;
 class DriveIntegrationServiceAsh;
 class EchoPrivateAsh;
 class EmbeddedAccessibilityHelperClientAsh;
-class ExtensionInfoPrivateAsh;
 class FileChangeServiceBridgeAsh;
 class FileSystemAccessCloudIdentifierProviderAsh;
 class FileSystemProviderServiceAsh;
@@ -81,8 +79,6 @@ class MultiCaptureServiceAsh;
 class NativeThemeServiceAsh;
 class NetworkingAttributesAsh;
 class NetworkingPrivateAsh;
-class OneDriveNotificationServiceAsh;
-class OneDriveIntegrationServiceAsh;
 class ParentAccessAsh;
 class PaymentAppInstanceAsh;
 class PolicyServiceAsh;
@@ -94,7 +90,6 @@ class RemotingAsh;
 class ScreenAIDownloaderAsh;
 class StructuredMetricsServiceAsh;
 class VpnServiceAsh;
-class WebKioskServiceAsh;
 
 // Implementation of Crosapi in Ash. It provides a set of APIs that
 // crosapi clients, such as lacros-chrome, can call into.
@@ -133,8 +128,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindCrosDisplayConfigController(
       mojo::PendingReceiver<mojom::CrosDisplayConfigController> receiver)
       override;
-  void BindDebugInterfaceRegisterer(
-      mojo::PendingReceiver<mojom::DebugInterfaceRegisterer> receiver) override;
   void BindDeskProfileObserver(
       mojo::PendingReceiver<mojom::DeskProfileObserver> receiver) override;
   void BindDeviceAttributes(
@@ -156,8 +149,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<
           ::crosapi::mojom::EmbeddedAccessibilityHelperClientFactory> receiver)
       override;
-  void BindExtensionInfoPrivate(
-      mojo::PendingReceiver<mojom::ExtensionInfoPrivate> receiver) override;
   void BindFileChangeServiceBridge(
       mojo::PendingReceiver<mojom::FileChangeServiceBridge> receiver) override;
   void BindFileSystemAccessCloudIdentifierProvider(
@@ -220,12 +211,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::NetworkingAttributes> receiver) override;
   void BindNetworkingPrivate(
       mojo::PendingReceiver<mojom::NetworkingPrivate> receiver) override;
-  void BindOneDriveNotificationService(
-      mojo::PendingReceiver<mojom::OneDriveNotificationService> receiver)
-      override;
-  void BindOneDriveIntegrationService(
-      mojo::PendingReceiver<mojom::OneDriveIntegrationService> receiver)
-      override;
   void BindParentAccess(
       mojo::PendingReceiver<mojom::ParentAccess> receiver) override;
   void BindPaymentAppInstance(
@@ -268,8 +253,6 @@ class CrosapiAsh : public mojom::Crosapi {
       override;
   void BindVpnService(
       mojo::PendingReceiver<mojom::VpnService> receiver) override;
-  void BindWebKioskService(
-      mojo::PendingReceiver<mojom::WebKioskService> receiver) override;
   void BindGuestOsSkForwarderFactory(
       mojo::PendingReceiver<mojom::GuestOsSkForwarderFactory> receiver)
       override;
@@ -284,10 +267,6 @@ class CrosapiAsh : public mojom::Crosapi {
 
   ChromeAppKioskServiceAsh* chrome_app_kiosk_service() {
     return chrome_app_kiosk_service_ash_.get();
-  }
-
-  DebugInterfaceRegistererAsh* debug_interface_registerer_ash() {
-    return debug_interface_registerer_ash_.get();
   }
 
   DeskProfilesAsh* desk_profiles_ash() { return desk_profiles_ash_.get(); }
@@ -308,10 +287,6 @@ class CrosapiAsh : public mojom::Crosapi {
   EmbeddedAccessibilityHelperClientAsh*
   embedded_accessibility_helper_client_ash() {
     return embedded_accessibility_helper_client_ash_.get();
-  }
-
-  ExtensionInfoPrivateAsh* extension_info_private_ash() {
-    return extension_info_private_ash_.get();
   }
 
   FileSystemAccessCloudIdentifierProviderAsh*
@@ -394,10 +369,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return structured_metrics_service_ash_.get();
   }
 
-  WebKioskServiceAsh* web_kiosk_service_ash() {
-    return web_kiosk_service_ash_.get();
-  }
-
   ash::VideoConferenceManagerAsh* video_conference_manager_ash() {
     return video_conference_manager_ash_.get();
   }
@@ -415,7 +386,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ChromeAppKioskServiceAsh> chrome_app_kiosk_service_ash_;
   std::unique_ptr<ClipboardHistoryAsh> clipboard_history_ash_;
   std::unique_ptr<ContentProtectionAsh> content_protection_ash_;
-  std::unique_ptr<DebugInterfaceRegistererAsh> debug_interface_registerer_ash_;
   std::unique_ptr<DeskProfilesAsh> desk_profiles_ash_;
   std::unique_ptr<DeviceAttributesAsh> device_attributes_ash_;
   std::unique_ptr<DeviceLocalAccountExtensionServiceAsh>
@@ -427,7 +397,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<EchoPrivateAsh> echo_private_ash_;
   std::unique_ptr<EmbeddedAccessibilityHelperClientAsh>
       embedded_accessibility_helper_client_ash_;
-  std::unique_ptr<ExtensionInfoPrivateAsh> extension_info_private_ash_;
   std::unique_ptr<FileChangeServiceBridgeAsh> file_change_service_bridge_ash_;
   std::unique_ptr<FileSystemAccessCloudIdentifierProviderAsh>
       file_system_access_cloud_identifier_provider_ash_;
@@ -451,10 +420,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<NativeThemeServiceAsh> native_theme_service_ash_;
   std::unique_ptr<NetworkingAttributesAsh> networking_attributes_ash_;
   std::unique_ptr<NetworkingPrivateAsh> networking_private_ash_;
-  std::unique_ptr<OneDriveNotificationServiceAsh>
-      one_drive_notification_service_ash_;
-  std::unique_ptr<OneDriveIntegrationServiceAsh>
-      one_drive_integration_service_ash_;
   std::unique_ptr<ParentAccessAsh> parent_access_ash_;
   std::unique_ptr<PaymentAppInstanceAsh> payment_app_instance_ash_;
   std::unique_ptr<PolicyServiceAsh> policy_service_ash_;
@@ -476,7 +441,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<StructuredMetricsServiceAsh> structured_metrics_service_ash_;
   std::unique_ptr<ash::VideoConferenceManagerAsh> video_conference_manager_ash_;
   std::unique_ptr<VpnServiceAsh> vpn_service_ash_;
-  std::unique_ptr<WebKioskServiceAsh> web_kiosk_service_ash_;
 
   mojo::ReceiverSet<mojom::Crosapi, CrosapiId> receiver_set_;
   std::map<mojo::ReceiverId, base::OnceClosure> disconnect_handler_map_;

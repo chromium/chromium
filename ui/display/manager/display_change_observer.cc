@@ -58,10 +58,30 @@ struct DeviceScaleFactorDPIThreshold {
 
 // Update the list of zoom levels whenever a new device scale factor is added
 // here. See zoom level list in /ui/display/manager/util/display_manager_util.cc
-const DeviceScaleFactorDPIThreshold kThresholdTableForInternal[] = {
-    {310.f, kDsf_2_666}, {270.0f, 2.4f},  {230.0f, 2.0f}, {220.0f, kDsf_1_777},
-    {180.0f, 1.6f},      {150.0f, 1.25f}, {0.0f, 1.0f},
-};
+const std::array<DeviceScaleFactorDPIThreshold, 7>
+    kThresholdTableForLcdInternal{{
+        {310.f, kDsf_2_666},
+        {270.0f, 2.4f},
+        {230.0f, 2.0f},
+        {220.0f, kDsf_1_777},
+        {180.0f, 1.6f},
+        {150.0f, 1.25f},
+        {0.0f, 1.0f},
+    }};
+
+// Same as |kThresholdTableForLcdInternal|, but used for Oled displays with
+// |display::features::kOledScaleFactorEnabled| set.
+const std::array<DeviceScaleFactorDPIThreshold, 8>
+    kThresholdTableForOledInternal{{
+        {310.f, kDsf_2_666},
+        {270.0f, 2.4f},
+        {230.0f, 2.0f},
+        {220.0f, kDsf_1_777},
+        {180.0f, 1.6f},
+        {160.0f, kDsf_1_333},
+        {140.0f, 1.25f},
+        {0.0f, 1.0f},
+    }};
 
 // Return the diagonal length of the rect.
 float GetDiagonalLength(const gfx::Size& rect) {
@@ -338,10 +358,6 @@ float DisplayChangeObserver::FindDeviceScaleFactor(
   // Keep the Chell's scale factor 2.252 until we make decision.
   constexpr gfx::Size k2DisplaySizeHackChell = kQHD_PLUS;  // (3200, 1800);
   constexpr gfx::Size k18DisplaySizeHackCoachZ = kLux;     // (2160, 1440);
-  // Change the OLED display scale factor for Xol device.
-  constexpr gfx::Size k12DisplaySizeHackXol = kFHD;
-  // Change the OLED display scale factor for Navi device.
-  constexpr gfx::Size k12DisplaySizeHackNavi = kWUXGA;
 
   if (size_in_pixels == k225DisplaySizeHackNocturne) {
     return kDsf_2_252;
@@ -353,19 +369,22 @@ float DisplayChangeObserver::FindDeviceScaleFactor(
     return kDsf_1_8;
   }
 
-  if (display::features::IsOledScaleFactorEnabled()) {
-    if (size_in_pixels == k12DisplaySizeHackXol) {
-      return 1.2f;
-    } else if (size_in_pixels == k12DisplaySizeHackNavi) {
-      return kDsf_1_333;
+  if (features::IsOledScaleFactorEnabled()) {
+    for (const DeviceScaleFactorDPIThreshold& threshold :
+         kThresholdTableForOledInternal) {
+      if (dpi >= threshold.dpi) {
+        return threshold.device_scale_factor;
+      }
+    }
+  } else {
+    for (const DeviceScaleFactorDPIThreshold& threshold :
+         kThresholdTableForLcdInternal) {
+      if (dpi >= threshold.dpi) {
+        return threshold.device_scale_factor;
+      }
     }
   }
 
-  for (size_t i = 0; i < std::size(kThresholdTableForInternal); ++i) {
-    if (dpi >= kThresholdTableForInternal[i].dpi) {
-      return kThresholdTableForInternal[i].device_scale_factor;
-    }
-  }
   return 1.0f;
 }
 

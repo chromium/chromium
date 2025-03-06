@@ -3629,6 +3629,13 @@
       status: "test",
     },
     {
+      // See https://github.com/whatwg/html/issues/11070
+      // ChromeStatus: https://chromestatus.com/feature/5207202081800192
+      name: "RenderBlockingFullFrameRate",
+      copied_from_base_feature_if: "overridden",
+      status: "test",
+    },
+    {
       // See https://github.com/whatwg/html/issues/10034
       name: "RenderBlockingInlineModuleScript",
       status: "stable",
@@ -3656,10 +3663,6 @@
     {
       name: "ReportFirstFrameTimeAsRenderTime",
       status: "test",
-    },
-    {
-      name: "ResetInputTypeToNoneBeforeCharacterInput",
-      status: "stable",
     },
     {
       name: "ResolveVarStylesOnCopy",
@@ -4295,11 +4298,6 @@
     },
     {
       name: "SvgNoPixelSnappingScaleAdjustment",
-      status: "stable",
-    },
-    {
-      // crbug.com/40890818
-      name: "SvgTspanBboxCache",
       status: "stable",
     },
     {

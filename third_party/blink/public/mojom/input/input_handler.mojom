@@ -410,6 +410,14 @@ interface FrameWidgetInputHandler {
 
   // Requests the renderer to move the caret selection toward the point.
   MoveCaret(gfx.mojom.Point point);
+
+  // Requests the renderer to scroll the container of selection base to point.
+  [EnableIf=is_ios]
+  StartAutoscrollForSelectionToPoint(gfx.mojom.PointF point);
+
+  // Requests the renderer to stop autoscroll.
+  [EnableIf=is_ios]
+  StopAutoscroll();
 };
 
 // An enumeration describing the active and focus states. If a widget is

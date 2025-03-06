@@ -208,7 +208,7 @@ class CORE_EXPORT OffscreenCanvas final
   const LayoutLocale* GetLocale() const override;
   void SetLocale(scoped_refptr<const LayoutLocale> locale);
 
-  FontSelector* GetFontSelector() override;
+  UniqueFontSelector* GetFontSelector() override;
 
   void Trace(Visitor*) const override;
 

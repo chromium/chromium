@@ -586,8 +586,8 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendText(
   auto [original_length, offset_map] =
       layout_text->GetVariableLengthTransformResult();
   String transformed = layout_text->TransformedText();
-  const Vector<unsigned> length_map = TransformedString::CreateLengthMap(
-      original_length, transformed.length(), offset_map);
+  const Vector<unsigned> length_map =
+      offset_map.CreateLengthMap(original_length, transformed.length());
   CHECK(transformed.length() == length_map.size() || length_map.size() == 0);
   AppendText(TransformedString(transformed, length_map), *layout_text);
 }
@@ -704,7 +704,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendTransformedString(
   unsigned identity_start = kNotFound;
   unsigned size = transformed.View().length();
   for (unsigned i = 0; i < size; ++i) {
-    TransformedString::Length len = transformed.LengthMap()[i];
+    TextOffsetMap::Length len = transformed.LengthMap()[i];
     if (len > 1u) {
       if (identity_start != kNotFound) {
         mapping_builder_.AppendIdentityMapping(i - identity_start);

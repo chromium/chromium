@@ -5,6 +5,7 @@
 #include "ui/display/manager/display_change_observer.h"
 
 #include <cmath>
+#include <iterator>
 #include <memory>
 #include <optional>
 #include <set>
@@ -328,6 +329,51 @@ bool IsDpiOutOfRange(float dpi) {
   return false;
 }
 
+// Check if a display with a specific size and resolution have an expected
+// scale factor and screenshot size.
+void CheckDisplayConfig(const DisplayData entry) {
+  SCOPED_TRACE(base::StringPrintf(
+      "%dx%d, diag=%1.3f inch, expected=%1.10f", entry.resolution.width(),
+      entry.resolution.height(), entry.diagonal_size, entry.expected_dsf));
+
+  float dpi = ComputeDpi(entry.diagonal_size, entry.resolution);
+  // Check ScaleFactor.
+  float scale_factor = ComputeDeviceScaleFactor(dpi, entry.resolution);
+  EXPECT_EQ(entry.expected_dsf, scale_factor);
+  bool bad_range = !IsDpiOutOfRange(dpi);
+  EXPECT_EQ(bad_range, entry.bad_range);
+
+  // Check DP size.
+  gfx::ScaleToCeiledSize(entry.resolution, 1.f / scale_factor);
+
+  const gfx::Size dp_size =
+      gfx::ScaleToCeiledSize(entry.resolution, 1.f / scale_factor);
+
+  // Check Screenshot size.
+  EXPECT_EQ(entry.expected_dp_size, dp_size);
+  gfx::Transform transform;
+  transform.Scale(scale_factor, scale_factor);
+  const gfx::Size screenshot_size =
+      cc::MathUtil::MapEnclosingClippedRect(transform, gfx::Rect(dp_size))
+          .size();
+  switch (entry.screenshot_size_error) {
+    case kEpsilon: {
+      EXPECT_NE(entry.resolution, screenshot_size);
+      constexpr float kEpsilon = 0.001f;
+      EXPECT_EQ(entry.resolution,
+                cc::MathUtil::MapEnclosingClippedRectIgnoringError(
+                    transform, gfx::Rect(dp_size), kEpsilon)
+                    .size());
+      break;
+    }
+    case kExact:
+      EXPECT_EQ(entry.resolution, screenshot_size);
+      break;
+    case kSkip:
+      break;
+  }
+}
+
 TEST_P(DisplayChangeObserverTest, FindDeviceScaleFactor) {
   // Validation check
   EXPECT_EQ(1.25f,
@@ -345,55 +391,16 @@ TEST_P(DisplayChangeObserverTest, FindDeviceScaleFactor) {
   EXPECT_EQ(kDsf_2_666,
             DisplayChangeObserver::FindDeviceScaleFactor(310, gfx::Size()));
 
+  // Loop through the known LCD displays and check if the expected scale factor
+  // is applied.
   std::set<std::tuple<float, int, int>> dup_check;
-
-  for (auto& entry : lcd_display_configs) {
+  for (const DisplayData& entry : lcd_display_configs) {
     std::tuple<float, int, int> key{entry.diagonal_size,
                                     entry.resolution.width(),
                                     entry.resolution.height()};
     DCHECK(!dup_check.count(key));
     dup_check.emplace(key);
-
-    SCOPED_TRACE(base::StringPrintf(
-        "%dx%d, diag=%1.3f inch, expected=%1.10f", entry.resolution.width(),
-        entry.resolution.height(), entry.diagonal_size, entry.expected_dsf));
-
-    float dpi = ComputeDpi(entry.diagonal_size, entry.resolution);
-    // Check ScaleFactor.
-    float scale_factor = ComputeDeviceScaleFactor(dpi, entry.resolution);
-    EXPECT_EQ(entry.expected_dsf, scale_factor);
-    bool bad_range = !IsDpiOutOfRange(dpi);
-    EXPECT_EQ(bad_range, entry.bad_range);
-
-    // Check DP size.
-    gfx::ScaleToCeiledSize(entry.resolution, 1.f / scale_factor);
-
-    const gfx::Size dp_size =
-        gfx::ScaleToCeiledSize(entry.resolution, 1.f / scale_factor);
-
-    // Check Screenshot size.
-    EXPECT_EQ(entry.expected_dp_size, dp_size);
-    gfx::Transform transform;
-    transform.Scale(scale_factor, scale_factor);
-    const gfx::Size screenshot_size =
-        cc::MathUtil::MapEnclosingClippedRect(transform, gfx::Rect(dp_size))
-            .size();
-    switch (entry.screenshot_size_error) {
-      case kEpsilon: {
-        EXPECT_NE(entry.resolution, screenshot_size);
-        constexpr float kEpsilon = 0.001f;
-        EXPECT_EQ(entry.resolution,
-                  cc::MathUtil::MapEnclosingClippedRectIgnoringError(
-                      transform, gfx::Rect(dp_size), kEpsilon)
-                      .size());
-        break;
-      }
-      case kExact:
-        EXPECT_EQ(entry.resolution, screenshot_size);
-        break;
-      case kSkip:
-        break;
-    }
+    CheckDisplayConfig(entry);
   }
 
   float max_scale_factor = kDsf_2_666;
@@ -404,6 +411,32 @@ TEST_P(DisplayChangeObserverTest, FindDeviceScaleFactor) {
             DisplayChangeObserver::FindDeviceScaleFactor(0.0f, gfx::Size()));
   EXPECT_EQ(max_scale_factor, DisplayChangeObserver::FindDeviceScaleFactor(
                                   10000.0f, gfx::Size()));
+}
+
+TEST_P(DisplayChangeObserverTest, FindOledDeviceScaleFactor) {
+  // This test is the same as the `FindDeviceScaleFactor` test but with
+  // kOledScaleFactorEnabled set to true.
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(
+      display::features::kOledScaleFactorEnabled);
+
+  // validation
+  EXPECT_EQ(1.25f,
+            DisplayChangeObserver::FindDeviceScaleFactor(140, gfx::Size()));
+  EXPECT_EQ(kDsf_1_333,
+            DisplayChangeObserver::FindDeviceScaleFactor(160, gfx::Size()));
+
+  // Loop through the known Oled displays and check if the expected scale factor
+  // is applied.
+  std::set<std::tuple<float, int, int>> dup_check;
+  for (const DisplayData& entry : oled_display_configs) {
+    std::tuple<float, int, int> key{entry.diagonal_size,
+                                    entry.resolution.width(),
+                                    entry.resolution.height()};
+    DCHECK(!dup_check.count(key));
+    dup_check.emplace(key);
+    CheckDisplayConfig(entry);
+  }
 }
 
 TEST_P(DisplayChangeObserverTest,

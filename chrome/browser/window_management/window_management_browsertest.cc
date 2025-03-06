@@ -4,7 +4,6 @@
 
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -25,10 +24,10 @@
 #include "content/browser/renderer_host/test_render_widget_host_view_mac_factory.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/shell.h"
 #include "ui/display/test/display_manager_test_api.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif                                                 // BUILDFLAG(IS_CHROMEOS)
 
 // Fake screen that allows tests to dynamically override the "current" display
 // for a window or view even if the underlying OS does not signal a screen
@@ -72,19 +71,19 @@ class FakeScreen : public display::ScreenBase {
 class MAYBE_WindowManagementTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     screen_.display_list().AddDisplay({1, gfx::Rect(100, 1, 801, 802)},
                                       display::DisplayList::Type::PRIMARY);
     display::Screen::SetScreenInstance(&screen_);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
     InProcessBrowserTest::SetUp();
   }
 
   void TearDown() override {
     InProcessBrowserTest::TearDown();
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     display::Screen::SetScreenInstance(nullptr);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   }
 
   void SetUpOnMainThread() override {
@@ -102,7 +101,7 @@ class MAYBE_WindowManagementTest : public InProcessBrowserTest {
     net::test_server::RegisterDefaultHandlers(https_test_server_.get());
     content::SetupCrossSiteRedirector(https_test_server_.get());
     ASSERT_TRUE(https_test_server_->Start());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
         .UpdateDisplay("100+1-801x802");
 #endif
@@ -139,7 +138,7 @@ class MAYBE_WindowManagementTest : public InProcessBrowserTest {
 
  protected:
   std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   FakeScreen screen_;
 #endif
 };
@@ -189,13 +188,13 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnScreensChangeEvent) {
   EXPECT_TRUE(ExecJs(tab, add_screens_change_promise));
   EXPECT_TRUE(ExecJs(local_child, add_screens_change_promise));
   EXPECT_TRUE(ExecJs(remote_child, add_screens_change_promise));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("100+100-801x802,901+100-803x804");
 #else
   screen_.display_list().AddDisplay({2, gfx::Rect(901, 100, 803, 804)},
                                     display::DisplayList::Type::PRIMARY);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
 
   auto* await_screens_change = R"(
@@ -218,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnScreensChangeEvent) {
   EXPECT_TRUE(ExecJs(tab, add_screens_change_promise));
   EXPECT_TRUE(ExecJs(local_child, add_screens_change_promise));
   EXPECT_TRUE(ExecJs(remote_child, add_screens_change_promise));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("901+100-803x804");
 #else
@@ -226,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnScreensChangeEvent) {
   EXPECT_EQ(screen_.display_list().displays().size(), 2u);
   screen_.display_list().RemoveDisplay(1);
   EXPECT_EQ(screen_.display_list().displays().size(), 1u);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
 
   {
@@ -244,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnScreensChangeEvent) {
   EXPECT_TRUE(ExecJs(tab, add_screens_change_promise));
   EXPECT_TRUE(ExecJs(local_child, add_screens_change_promise));
   EXPECT_TRUE(ExecJs(remote_child, add_screens_change_promise));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("0+0-803x600,1000+0-804x600");
 #else
@@ -253,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnScreensChangeEvent) {
                                     display::DisplayList::Type::PRIMARY);
   screen_.display_list().AddDisplay({4, gfx::Rect(0, 4, 804, 600)},
                                     display::DisplayList::Type::NOT_PRIMARY);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
 
   {
@@ -270,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnScreensChangeEvent) {
 // also fires in the same scenarios.  (This is not true in all cases, e.g.
 // isInternal changing, but is true for width/height tests here.)
 IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnCurrentScreenChangeEvent) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("100+100-801x802,901+100-803x804");
 #else
@@ -278,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnCurrentScreenChangeEvent) {
                                        display::DisplayList::Type::PRIMARY);
   screen_.display_list().AddDisplay({2, gfx::Rect(901, 100, 803, 802)},
                                     display::DisplayList::Type::NOT_PRIMARY);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
 
   SetupTwoIframes();
@@ -326,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnCurrentScreenChangeEvent) {
   EXPECT_TRUE(ExecJs(local_child, add_current_screen_change_promise));
   EXPECT_TRUE(ExecJs(remote_child, add_current_screen_change_promise));
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   screen_.SetCurrentDisplayOverride(2);
 #if BUILDFLAG(IS_MAC)
   // On Mac, ScreenInfo will not update if the window does change displays
@@ -367,13 +366,13 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnCurrentScreenChangeEvent) {
   EXPECT_TRUE(ExecJs(local_child, add_current_screen_change_promise));
   EXPECT_TRUE(ExecJs(remote_child, add_current_screen_change_promise));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("100+100-801x802,901+100-802x300");
 #else
   screen_.display_list().UpdateDisplay({2, gfx::Rect(901, 100, 802, 300)},
                                        display::DisplayList::Type::NOT_PRIMARY);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   auto* await_change_height = R"(
       (async () => {
@@ -397,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnCurrentScreenChangeEvent) {
 // Test that onchange events for individual screens in the screen list are
 // supported.
 IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, ScreenDetailedOnChange) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("100+100-801x802,901+100-802x803");
 #else
@@ -405,7 +404,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, ScreenDetailedOnChange) {
                                        display::DisplayList::Type::PRIMARY);
   screen_.display_list().AddDisplay({2, gfx::Rect(901, 100, 802, 803)},
                                     display::DisplayList::Type::NOT_PRIMARY);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
 
   SetupTwoIframes();
@@ -454,13 +453,13 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, ScreenDetailedOnChange) {
   EXPECT_TRUE(ExecJs(local_child, add_change0));
   EXPECT_TRUE(ExecJs(remote_child, add_change0));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("100+100-801x301,901+100-802x803");
 #else
   screen_.display_list().UpdateDisplay({1, gfx::Rect(100, 100, 801, 301)},
                                        display::DisplayList::Type::PRIMARY);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   auto* await_change0_height = R"(
       (async () => {
@@ -486,13 +485,13 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, ScreenDetailedOnChange) {
   EXPECT_TRUE(ExecJs(local_child, add_change1));
   EXPECT_TRUE(ExecJs(remote_child, add_change1));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("100+100-801x301,901+100-802x302");
 #else
   screen_.display_list().UpdateDisplay({2, gfx::Rect(901, 100, 802, 302)},
                                        display::DisplayList::Type::NOT_PRIMARY);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   auto* await_change1_height = R"(
       (async () => {
@@ -520,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, ScreenDetailedOnChange) {
   EXPECT_TRUE(ExecJs(local_child, add_both_changes));
   EXPECT_TRUE(ExecJs(remote_child, add_both_changes));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("100+100-401x301,901+100-402x302");
 #else
@@ -528,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, ScreenDetailedOnChange) {
                                        display::DisplayList::Type::PRIMARY);
   screen_.display_list().UpdateDisplay({2, gfx::Rect(901, 100, 402, 302)},
                                        display::DisplayList::Type::NOT_PRIMARY);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   auto* await_both_changes_width = R"(
       (async () => {

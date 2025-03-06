@@ -182,6 +182,7 @@ blink_core_tests_loader = [
   "frame_fetch_context_test.cc",
   "frame_loader_test.cc",
   "frame_resource_fetcher_properties_test.cc",
+  "full_frame_rate_blocking_link_test.cc",
   "idleness_detector_test.cc",
   "interactive_detector_test.cc",
   "link_loader_test.cc",

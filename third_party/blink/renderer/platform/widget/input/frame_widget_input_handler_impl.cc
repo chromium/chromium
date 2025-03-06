@@ -446,6 +446,30 @@ void FrameWidgetInputHandlerImpl::MoveCaret(const gfx::Point& point) {
       main_thread_frame_widget_input_handler_, point));
 }
 
+#if BUILDFLAG(IS_IOS)
+void FrameWidgetInputHandlerImpl::StartAutoscrollForSelectionToPoint(
+    const gfx::PointF& point) {
+  RunOnMainThread(base::BindOnce(
+      [](base::WeakPtr<mojom::blink::FrameWidgetInputHandler> handler,
+         const gfx::PointF& point) {
+        if (handler) {
+          handler->StartAutoscrollForSelectionToPoint(point);
+        }
+      },
+      main_thread_frame_widget_input_handler_, point));
+}
+
+void FrameWidgetInputHandlerImpl::StopAutoscroll() {
+  RunOnMainThread(base::BindOnce(
+      [](base::WeakPtr<mojom::blink::FrameWidgetInputHandler> handler) {
+        if (handler) {
+          handler->StopAutoscroll();
+        }
+      },
+      main_thread_frame_widget_input_handler_));
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 void FrameWidgetInputHandlerImpl::ExecuteCommandOnMainThread(
     base::WeakPtr<WidgetBase> widget,
     base::WeakPtr<mojom::blink::FrameWidgetInputHandler> handler,

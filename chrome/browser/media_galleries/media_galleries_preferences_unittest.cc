@@ -21,7 +21,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
 #include "chrome/browser/media_galleries/media_galleries_test_util.h"
@@ -42,7 +41,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -373,7 +372,7 @@ class MediaGalleriesPreferencesTest : public testing::Test {
 
   EnsureMediaDirectoriesExists mock_gallery_locations_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   user_manager::ScopedUserManager user_manager_{
       std::make_unique<user_manager::UserManagerImpl>(
@@ -1224,7 +1223,7 @@ TEST_F(MediaGalleriesPreferencesTest, SetsDefaultGalleryTypeField) {
   // default_gallery field set.
 
   // No default galleries exist on CrOS so this test isn't relevant there.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   base::FilePath music_path;
   base::FilePath pictures_path;
   base::FilePath videos_path;
@@ -1275,7 +1274,7 @@ TEST_F(MediaGalleriesPreferencesTest, UpdatesDefaultGalleryType) {
   // rewrite the device ID in prefs to include the new path.
 
   // No default galleries exist on CrOS so this test isn't relevant there.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   base::FilePath old_music_path;
   base::FilePath old_pictures_path;
   base::FilePath old_videos_path;
@@ -1382,7 +1381,7 @@ TEST_F(MediaGalleriesPreferencesTest, UpdateAddsDefaultGalleryTypeIfMissing) {
   // MediaGalleriesPreferences is initialized, it assigns the proper one.
 
   // No default galleries exist on CrOS so this test isn't relevant there.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Add a new user added gallery.
   AddFixedGalleryWithExpectation("user_added", "UserAdded",
                                  MediaGalleryPrefInfo::kUserAdded);

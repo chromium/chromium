@@ -66,7 +66,7 @@ TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest, GoogleSite) {
 }
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS) && \
     !BUILDFLAG(IS_ANDROID)
 TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest, GoogleSiteWithBranding) {
   ASSERT_NE(CHANNEL_NAME_HEADER_NAME, "X-Placeholder-1");
@@ -91,7 +91,7 @@ TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest, GoogleSiteWithBranding) {
   ASSERT_TRUE(copyright.has_value());
   EXPECT_NE(copyright->find("Copyright"), std::string::npos);
 }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS) && \
         // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace request_header_integrity

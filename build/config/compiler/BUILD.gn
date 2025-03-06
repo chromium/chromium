@@ -7,7 +7,6 @@ import("//build/config/android/config.gni")
 import("//build/config/c++/c++.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/args.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
@@ -1697,6 +1696,10 @@ config("libcxx_module") {
       "-fmodule-map-file=" + modulemap,
       "-fno-implicit-module-maps",
 
+      # This removes absolute paths from .pcm files.
+      "-Xclang",
+      "-fmodule-file-home-is-cwd",
+
       "-Xclang",
       "-fmodules-local-submodule-visibility",  # required for builtins
 
@@ -2373,7 +2376,7 @@ config("no_incompatible_pointer_warnings") {
     cflags += [ "-Wno-incompatible-pointer-types" ]
   } else if (current_cpu == "mipsel" || current_cpu == "mips64el") {
     cflags += [ "-w" ]
-  } else if (is_chromeos_ash && current_cpu == "arm") {
+  } else if (is_chromeos && current_cpu == "arm") {
     cflags += [ "-w" ]
   }
 }

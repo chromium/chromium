@@ -15,10 +15,11 @@
 
 namespace blink {
 
+class Font;
 class ShapeResult;
 class ShapeResultView;
 class TextRun;
-class Font;
+struct CharacterRange;
 
 // PlainTextItem represents a sub-segment of a PlainTextNode.
 class PLATFORM_EXPORT PlainTextItem {
@@ -74,10 +75,8 @@ using PlainTextItemList = HeapVector<PlainTextItem, 25>;
 class PLATFORM_EXPORT PlainTextNode : public GarbageCollected<PlainTextNode> {
  public:
   // normalize_space - Enables canvas-specific whitespace normalization
-  // bidi_overridden - Adjusts offset values for leading/trailing BiDi controls
   PlainTextNode(const TextRun& run,
                 bool normalize_space,
-                bool bidi_overridden,
                 const Font& font,
                 bool supports_bidi);
   void Trace(Visitor* visitor) const;
@@ -86,6 +85,8 @@ class PLATFORM_EXPORT PlainTextNode : public GarbageCollected<PlainTextNode> {
   PlainTextNode& operator=(const PlainTextNode&) = delete;
 
   float AccumulateInlineSize(gfx::RectF* glyph_bounds) const;
+  CharacterRange ComputeCharacterRange(unsigned absolute_from,
+                                       unsigned absolute_to) const;
 
   // The text contains:
   //  - Normalized whitespace

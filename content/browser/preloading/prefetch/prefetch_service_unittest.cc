@@ -74,6 +74,7 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "url/gurl.h"
 
@@ -1053,19 +1054,22 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
     EXPECT_EQ(request->request.credentials_mode,
               network::mojom::CredentialsMode::kInclude);
 
-    EXPECT_THAT(request->request.headers.GetHeader("Purpose"),
-                testing::Optional(std::string("prefetch")));
+    EXPECT_THAT(
+        request->request.headers.GetHeader(blink::kPurposeHeaderName),
+        testing::Optional(std::string(blink::kSecPurposePrefetchHeaderValue)));
 
     std::string sec_purpose_header_value;
     if (options.sec_purpose_header_value) {
       sec_purpose_header_value = options.sec_purpose_header_value.value();
     } else {
-      sec_purpose_header_value = options.use_prefetch_proxy
-                                     ? "prefetch;anonymous-client-ip"
-                                     : "prefetch";
+      sec_purpose_header_value =
+          options.use_prefetch_proxy
+              ? blink::kSecPurposePrefetchAnonymousClientIpHeaderValue
+              : blink::kSecPurposePrefetchHeaderValue;
     }
-    EXPECT_THAT(request->request.headers.GetHeader("Sec-Purpose"),
-                testing::Optional(sec_purpose_header_value));
+    EXPECT_THAT(
+        request->request.headers.GetHeader(blink::kSecPurposeHeaderName),
+        testing::Optional(sec_purpose_header_value));
 
     EXPECT_THAT(request->request.headers.GetHeader("Accept"),
                 testing::Optional(FrameAcceptHeaderValue(
@@ -6951,9 +6955,13 @@ TEST_P(PrefetchServiceTest,
   // Proceed to the eligibility check.
   eligibility_check_callback_future.Take().Run();
 
-  VerifyCommonRequestState(GURL("https://example.com"),
-                           {.use_prefetch_proxy = false,
-                            .sec_purpose_header_value = "prefetch;prerender"});
+  VerifyCommonRequestState(
+      GURL("https://example.com"),
+      {
+          .use_prefetch_proxy = false,
+          .sec_purpose_header_value =
+              blink::kSecPurposePrefetchPrerenderHeaderValue,
+      });
 
   SendHeadOfResponseAndWait(net::HTTP_OK, kHTMLMimeType,
                             /*use_prefetch_proxy=*/true,

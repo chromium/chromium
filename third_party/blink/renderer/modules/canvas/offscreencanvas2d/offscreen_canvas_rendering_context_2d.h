@@ -160,7 +160,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
  protected:
   OffscreenCanvas* HostAsOffscreenCanvas() const final;
-  FontSelector* GetFontSelector() const final;
+  UniqueFontSelector* GetFontSelector() const final;
 
   PredefinedColorSpace GetDefaultImageDataColorSpace() const final {
     return color_params_.ColorSpace();

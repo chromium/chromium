@@ -23,6 +23,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/http/http_status_code.h"
+#include "net/log/net_log_util.h"
 #include "net/log/net_log_values.h"
 #include "net/shared_dictionary/shared_dictionary.h"
 #include "net/url_request/redirect_util.h"
@@ -345,7 +346,7 @@ CorsURLLoader::CorsURLLoader(
       factory_cookie_setting_overrides_(factory_cookie_setting_overrides),
       devtools_cookie_setting_overrides_(devtools_cookie_setting_overrides) {
   TRACE_EVENT("loading", "CorsURLLoader::CorsURLLoader",
-              perfetto::Flow::ProcessScoped(net_log_.source().id));
+              net::NetLogWithSourceToFlow(net_log_));
   CHECK(url_loader_network_service_observer_ != nullptr);
   if (ignore_isolated_world_origin)
     request_.isolated_world_origin = std::nullopt;
@@ -389,7 +390,7 @@ CorsURLLoader::CorsURLLoader(
 
 CorsURLLoader::~CorsURLLoader() {
   TRACE_EVENT("loading", "CorsURLLoader::~CorsURLLoader",
-              perfetto::Flow::ProcessScoped(net_log_.source().id));
+              net::NetLogWithSourceToFlow(net_log_));
   // Reset pipes first to ignore possible subsequent callback invocations
   // caused by `network_loader_`
   network_client_receiver_.reset();
@@ -397,7 +398,7 @@ CorsURLLoader::~CorsURLLoader() {
 
 void CorsURLLoader::Start() {
   TRACE_EVENT("loading", "CorsURLLoader::Start",
-              perfetto::Flow::ProcessScoped(net_log_.source().id));
+              net::NetLogWithSourceToFlow(net_log_));
   if (fetch_cors_flag_ && IsCorsEnabledRequestMode(request_.mode)) {
     // Username and password should be stripped in a CORS-enabled request.
     if (request_.url.has_username() || request_.url.has_password()) {
@@ -866,7 +867,7 @@ void CorsURLLoader::CancelRequestIfNonceMatchesAndUrlNotExempted(
 
 void CorsURLLoader::StartRequest() {
   TRACE_EVENT("loading", "CorsURLLoader::StartRequest",
-              perfetto::Flow::ProcessScoped(net_log_.source().id));
+              net::NetLogWithSourceToFlow(net_log_));
   // All results should be reported to `forwarding_client_` as part of a
   // `URLResponseHead`, then `pna_preflight_result_` reset to `kNone`.
   CHECK_EQ(pna_preflight_result_,
@@ -1154,7 +1155,7 @@ void CorsURLLoader::OnPreflightRequestComplete(
 
 void CorsURLLoader::StartNetworkRequest() {
   TRACE_EVENT("loading", "CorsURLLoader::StartNetworkRequest",
-              perfetto::Flow::ProcessScoped(net_log_.source().id));
+              net::NetLogWithSourceToFlow(net_log_));
   // Here we overwrite the credentials mode sent to URLLoader because
   // network::URLLoader doesn't understand |kSameOrigin|.
   // TODO(crbug.com/40619226): Fix this.

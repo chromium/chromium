@@ -125,7 +125,6 @@ component("cpp") {
     "connectivity_services.cc",
     "connectivity_services.h",
     "coral_delegate.h",
-    "debug_delegate.h",
     "default_user_image.cc",
     "default_user_image.h",
     "desk_profiles_delegate.cc",

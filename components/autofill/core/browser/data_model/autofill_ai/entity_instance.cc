@@ -137,6 +137,7 @@ VerificationStatus AttributeInstance::GetVerificationStatus(
 void AttributeInstance::SetInfo(FieldType type,
                                 const std::u16string& value,
                                 const std::string& app_locale,
+                                std::u16string_view format_string,
                                 VerificationStatus status) {
   type = GetNormalizedType(type);
   if (type == UNKNOWN_TYPE) {
@@ -156,7 +157,10 @@ void AttributeInstance::SetInfo(FieldType type,
                       country = CountryInfo();
                     }
                   },
-                  [&](DateInfo& date) { SetRawInfo(type, value, status); },
+                  [&](DateInfo& date) {
+                    CHECK(IsDateFieldType(type));
+                    date.SetDate(value, format_string);
+                  },
                   [&](NameInfo& name) {
                     name.SetInfoWithVerificationStatus(type, value, app_locale,
                                                        status);
@@ -296,7 +300,9 @@ bool EntityInstance::ImportOrder(const EntityInstance& lhs,
 
 std::ostream& operator<<(std::ostream& os, const AttributeInstance& a) {
   os << a.type() << ": " << '"'
-     << a.GetInfo(a.GetTopLevelType(), /*app_locale=*/"en-US") << '"';
+     << a.GetInfo(a.GetTopLevelType(), /*app_locale=*/"en-US",
+                  /*format_string=*/std::nullopt)
+     << '"';
   return os;
 }
 

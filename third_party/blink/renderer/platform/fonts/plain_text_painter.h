@@ -53,12 +53,12 @@ class PLATFORM_EXPORT PlainTextPainter
   const PlainTextNode& SegmentAndShape(const TextRun& run, const Font& font);
 
   // Draw the specified text. This doesn't apply BiDi reorder.
-  void Draw(const TextRun& run,
-            const Font& font,
-            cc::PaintCanvas& canvas,
-            const gfx::PointF& location,
-            const cc::PaintFlags& flags,
-            Font::DrawType = Font::DrawType::kGlyphsOnly);
+  void DrawWithoutBidi(const TextRun& run,
+                       const Font& font,
+                       cc::PaintCanvas& canvas,
+                       const gfx::PointF& location,
+                       const cc::PaintFlags& flags,
+                       Font::DrawType = Font::DrawType::kGlyphsOnly);
 
   // Draw the specified text, from `from_index` to `to_index` (exclusive). This
   // applies BiDi reorder.
@@ -86,24 +86,31 @@ class PLATFORM_EXPORT PlainTextPainter
                              unsigned to_index,
                              const Font& font,
                              gfx::RectF* glyph_bounds = nullptr);
+  // This doesn't apply BiDi reorder for compatibility.
+  float ComputeInlineSizeWithoutBidi(const TextRun& run, const Font& font);
 
-  int OffsetForPosition(const TextRun& run,
-                        const Font& font,
-                        float position,
-                        IncludePartialGlyphsOption partial_option,
-                        BreakGlyphsOption break_option) const;
-  gfx::RectF SelectionRectForText(const TextRun& run,
-                                  unsigned from_index,
-                                  unsigned to_index,
-                                  const Font& font,
-                                  const gfx::PointF& left_baseline,
-                                  float height) const;
+  // Returns text offset in `run` for the specified pixel position.
+  // This doesn't apply BiDi reorder for compatibility.
+  int OffsetForPositionWithoutBidi(const TextRun& run,
+                                   const Font& font,
+                                   float position,
+                                   IncludePartialGlyphsOption partial_option,
+                                   BreakGlyphsOption break_option);
+
+  // Returns a bounding rectangle for a sub-range from `from_index` to
+  // `to_index` (exclusive) of `run`.
+  // This doesn't apply BiDi reorder for compatibility.
+  gfx::RectF SelectionRectForTextWithoutBidi(const TextRun& run,
+                                             unsigned from_index,
+                                             unsigned to_index,
+                                             const Font& font,
+                                             const gfx::PointF& left_baseline,
+                                             float height);
 
  private:
   const PlainTextNode& CreateNode(const TextRun& text_run,
                                   const Font& font,
-                                  bool supports_bidi = true,
-                                  bool bidi_overridden = false);
+                                  bool supports_bidi = true);
 
   const Mode mode_;
 };

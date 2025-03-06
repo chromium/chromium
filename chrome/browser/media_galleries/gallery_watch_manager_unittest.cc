@@ -16,7 +16,6 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/media_galleries/gallery_watch_manager_observer.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
@@ -31,7 +30,7 @@
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -111,7 +110,7 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
     // because TestingProfile uses TestingBrowserProcess in its destructor.
     ShutdownProfile();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // The UserManager must be destroyed before the TestingBrowserProcess
     // because UserManager uses TestingBrowserProcess in its destructor.
     user_manager_.Reset();
@@ -214,7 +213,7 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
 
   EnsureMediaDirectoriesExists mock_gallery_locations_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   user_manager::ScopedUserManager user_manager_{
       std::make_unique<user_manager::UserManagerImpl>(
@@ -233,7 +232,7 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
 };
 
 // TODO(crbug.com/41443722): Flaky on ChromeOS and macOS.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_Basic DISABLED_Basic
 #else
 #define MAYBE_Basic Basic
@@ -342,8 +341,8 @@ TEST_F(GalleryWatchManagerTest, MAYBE_RemoveAllWatches) {
 }
 
 // Fails on Mac: crbug.com/1183212
-// Fails on Chrome OS: crbug.com/1207878
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+// Fails on ChromeOS: crbug.com/1207878
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DropWatchOnGalleryRemoved DISABLED_DropWatchOnGalleryRemoved
 #else
 #define MAYBE_DropWatchOnGalleryRemoved DropWatchOnGalleryRemoved

@@ -5,6 +5,8 @@
 #ifndef ASH_PUBLIC_CPP_ASH_TYPOGRAPHY_H_
 #define ASH_PUBLIC_CPP_ASH_TYPOGRAPHY_H_
 
+#include <optional>
+
 #include "ash/public/cpp/ash_public_export.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/font.h"
@@ -63,6 +65,9 @@ enum AshTextContext {
   // one or more search result views.
   CONTEXT_SEARCH_RESULT_CATEGORY_LABEL,
 
+  // Headline text. Usually 20pt. Never multi-line.
+  CONTEXT_HEADLINE,
+
   ASH_TEXT_CONTEXT_END
 };
 
@@ -82,12 +87,16 @@ enum AshTextStyle {
   ASH_TEXT_STYLE_END
 };
 
-// Sets the |details| for ash-specific text contexts. Values are only set for
+// Sets the `details` for ash-specific text contexts. Values are only set for
 // contexts specific to ash.
 void ASH_PUBLIC_EXPORT
 ApplyAshFontStyles(int context,
                    int style,
                    ui::ResourceBundle::FontDetails& details);
+
+// Returns line height if the given `context` is ash typography Returns nullopt
+// if not.
+std::optional<int> ASH_PUBLIC_EXPORT GetLineHeight(int context);
 
 }  // namespace ash
 

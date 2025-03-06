@@ -9,18 +9,11 @@ build_webui("build") {
 
   static_files = [ "bookmarks.html" ]
 
-  # Files holding a Lit element definition and have an equivalent .html file.
-  web_component_files = [
-    "app.ts",
-    "edit_dialog.ts",
-    "folder_node.ts",
-    "item.ts",
-    "toolbar.ts",
-  ]
-
   non_web_component_files = [
     "actions.ts",
     "api_listener.ts",
+    "app.html.ts",
+    "app.ts",
     "bookmark_manager_api_proxy.ts",
     "bookmarks.ts",
     "bookmarks_api_proxy.ts",
@@ -31,12 +24,20 @@ build_webui("build") {
     "debouncer.ts",
     "dialog_focus_manager.ts",
     "dnd_manager.ts",
+    "edit_dialog.html.ts",
+    "edit_dialog.ts",
+    "folder_node.html.ts",
+    "folder_node.ts",
+    "item.html.ts",
+    "item.ts",
     "list.html.ts",
     "list.ts",
     "reducers.ts",
     "router.ts",
     "store.ts",
     "store_client_mixin_lit.ts",
+    "toolbar.html.ts",
+    "toolbar.ts",
     "types.ts",
     "util.ts",
   ]
@@ -51,8 +52,6 @@ build_webui("build") {
     "shared_style_lit.css",
     "shared_vars.css",
   ]
-
-  html_to_wrapper_template = "detect"
 
   ts_composite = true
 

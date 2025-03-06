@@ -84,7 +84,6 @@ class ComputedStyle;
 class Element;
 class ExceptionState;
 class ExecutionContext;
-class FontSelector;
 class ImageData;
 class ImageDataSettings;
 class MemoryManagedPaintRecorder;
@@ -250,7 +249,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
  protected:
   HTMLCanvasElement* HostAsHTMLCanvasElement() const final;
-  FontSelector* GetFontSelector() const final;
+  UniqueFontSelector* GetFontSelector() const final;
 
   PredefinedColorSpace GetDefaultImageDataColorSpace() const final {
     return color_params_.ColorSpace();

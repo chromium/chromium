@@ -594,7 +594,10 @@ source_set("tests") {
   }
 
   if (use_blink) {
-    deps += [ "//services/proxy_resolver:lib" ]
+    deps += [
+      "//services/proxy_resolver:lib",
+      "//third_party/blink/public/common:preloading_headers",
+    ]
   }
 }
 

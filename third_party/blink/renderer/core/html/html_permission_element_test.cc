@@ -493,10 +493,9 @@ class DeferredChecker {
     }
   }
 
-  void CheckConsoleMessageAfterDelay(
-      base::TimeDelta time,
-      unsigned int expected_count,
-      std::optional<String> expected_text = std::nullopt) {
+  void CheckConsoleMessageAfterDelay(base::TimeDelta time,
+                                     unsigned int expected_count,
+                                     String expected_text = String()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         WTF::BindOnce(&DeferredChecker::CheckConsoleMessage,
@@ -508,7 +507,7 @@ class DeferredChecker {
   }
 
   void CheckConsoleMessage(unsigned int expected_count,
-                           std::optional<String> expected_text = std::nullopt) {
+                           String expected_text = String()) {
     CHECK(main_frame_);
     auto& console_messages =
         static_cast<frame_test_helpers::TestWebFrameClient*>(
@@ -516,8 +515,8 @@ class DeferredChecker {
             ->ConsoleMessages();
     EXPECT_EQ(console_messages.size(), expected_count);
 
-    if (expected_text.has_value()) {
-      EXPECT_TRUE(console_messages.back().Contains(expected_text.value()));
+    if (!expected_text.IsNull()) {
+      EXPECT_TRUE(console_messages.back().Contains(expected_text));
     }
     if (run_loop_) {
       run_loop_->Quit();

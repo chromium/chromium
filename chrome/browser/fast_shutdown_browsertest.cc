@@ -6,7 +6,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -41,8 +40,8 @@ class FastShutdown : public InProcessBrowserTest {
 // This tests for a previous error where uninstalling an onbeforeunload handler
 // would enable fast shutdown even if an onunload handler still existed.
 // Flaky on all platforms, http://crbug.com/89173
-#if !BUILDFLAG( \
-    IS_CHROMEOS_ASH)  // ChromeOS opens tabs instead of windows for popups.
+// ChromeOS opens tabs instead of windows for popups.
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(FastShutdown, DISABLED_SlowTermination) {
   // Need to run these tests on http:// since we only allow cookies on that (and
   // https obviously).

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -297,8 +299,9 @@ public class SafetyHubPasswordsFetchServiceTest {
             mPasswordCheckupClientHelper.setWeakCredentialsCount(weakCredentialsCount);
             mPasswordCheckupClientHelper.setReusedCredentialsCount(reusedCredentialsCount);
 
-            new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, null)
-                    .runPasswordCheckup(mTaskFinishedCallback);
+            assertTrue(
+                    new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, null)
+                            .runPasswordCheckup(mTaskFinishedCallback));
 
             verify(mPrefService, times(1))
                     .setInteger(Pref.LOCAL_BREACHED_CREDENTIALS_COUNT, breachedCredentialsCount);
@@ -322,8 +325,9 @@ public class SafetyHubPasswordsFetchServiceTest {
             mPasswordCheckupClientHelper.setWeakCredentialsCount(weakCredentialsCount);
             mPasswordCheckupClientHelper.setReusedCredentialsCount(reusedCredentialsCount);
 
-            new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, null)
-                    .runPasswordCheckup(mTaskFinishedCallback);
+            assertFalse(
+                    new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, null)
+                            .runPasswordCheckup(mTaskFinishedCallback));
 
             verify(mPrefService, never())
                     .setInteger(eq(Pref.LOCAL_BREACHED_CREDENTIALS_COUNT), anyInt());

@@ -381,13 +381,13 @@ def main():
         'lib/clang/$V/lib/linux/libclang_rt.builtins-x86_64-android.a',
         'lib/clang/$V/lib/linux/libclang_rt.builtins-riscv64-android.a',
 
-        # Builtins for Linux and Lacros.
+        # Builtins for Linux.
         'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.builtins.a',
         'lib/clang/$V/lib/armv7-unknown-linux-gnueabihf/libclang_rt.builtins.a',
         'lib/clang/$V/lib/i386-unknown-linux-gnu/libclang_rt.builtins.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.builtins.a',
 
-        # crtstart/crtend for Linux and Lacros.
+        # crtstart/crtend for Linux.
         'lib/clang/$V/lib/aarch64-unknown-linux-gnu/clang_rt.crtbegin.o',
         'lib/clang/$V/lib/aarch64-unknown-linux-gnu/clang_rt.crtend.o',
         'lib/clang/$V/lib/armv7-unknown-linux-gnueabihf/clang_rt.crtbegin.o',

@@ -38,7 +38,7 @@
 
 #if BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
 #include "chrome/browser/speech/speech_recognition_service_factory.h"
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #endif  // BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
 
@@ -137,7 +137,7 @@ void ChromeSpeechRecognitionManagerDelegate::BindSpeechRecognitionContext(
             auto* profile = ProfileManager::GetLastUsedProfileIfLoaded();
             auto* factory =
                 SpeechRecognitionServiceFactory::GetForProfile(profile);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
             auto* profile = ProfileManager::GetPrimaryUserProfile();
             auto* factory =
                 CrosSpeechRecognitionServiceFactory::GetForProfile(profile);

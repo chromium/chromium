@@ -27,11 +27,11 @@ class CanvasRenderingContext;
 class CanvasResource;
 class CanvasResourceDispatcher;
 class ComputedStyle;
-class FontSelector;
 class KURL;
 class LayoutLocale;
 class PlainTextPainter;
 class StaticBitmapImage;
+class UniqueFontSelector;
 
 class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
                                                public CanvasResourceHost,
@@ -80,7 +80,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   // computed within the method.
   virtual TextDirection GetTextDirection(const ComputedStyle*) = 0;
   virtual const LayoutLocale* GetLocale() const = 0;
-  virtual FontSelector* GetFontSelector() = 0;
+  virtual UniqueFontSelector* GetFontSelector() = 0;
 
   virtual bool ShouldAccelerate2dContext() const = 0;
 
@@ -153,6 +153,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
       const CanvasRenderingContext* const context) const;
 
   Member<PlainTextPainter> plain_text_painter_;
+  Member<UniqueFontSelector> unique_font_selector_;
   // `did_fail_to_create_resource_provider_` prevents repeated attempts in
   // allocating resources after the first attempt failed.
   bool did_fail_to_create_resource_provider_ = false;

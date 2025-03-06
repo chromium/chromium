@@ -560,12 +560,8 @@ class ChromeUpdatesEventsApiTest : public EventsApiTest,
     EventsApiTest::SetUpOnMainThread();
     ProcessManager* process_manager = ProcessManager::Get(profile());
     ProcessManager::Get(profile())->AddObserver(this);
-    const ProcessManager::FrameSet& frames = process_manager->GetAllFrames();
-    for (auto* frame : frames) {
-      const Extension* extension =
-          process_manager->GetExtensionForRenderFrameHost(frame);
-      if (extension)
-        observed_extension_names_.insert(extension->name());
+    for (ExtensionHost* host : process_manager->background_hosts()) {
+      observed_extension_names_.insert(host->extension()->name());
     }
   }
 

@@ -896,6 +896,32 @@ void RenderWidgetHostViewIOS::DeleteSurroundingText(int before, int after) {
   }
 }
 
+blink::mojom::FrameWidgetInputHandler*
+RenderWidgetHostViewIOS::GetFrameWidgetInputHandlerForFocusedWidget() {
+  auto* focused_widget = GetFocusedWidget();
+  if (!focused_widget) {
+    return nullptr;
+  }
+  return focused_widget->GetFrameWidgetInputHandler();
+}
+
+void RenderWidgetHostViewIOS::StartAutoscrollForSelectionToPoint(
+    const gfx::PointF& point) {
+  auto* input_handler = GetFrameWidgetInputHandlerForFocusedWidget();
+  if (!input_handler) {
+    return;
+  }
+  input_handler->StartAutoscrollForSelectionToPoint(point);
+}
+
+void RenderWidgetHostViewIOS::StopAutoscroll() {
+  auto* input_handler = GetFrameWidgetInputHandlerForFocusedWidget();
+  if (!input_handler) {
+    return;
+  }
+  input_handler->StopAutoscroll();
+}
+
 gfx::Size RenderWidgetHostViewIOS::GetCompositorViewportPixelSize() {
   return gfx::ScaleToCeiledSize(
       IsTesting() ? GetRequestedRendererSize() : GetScreenInfo().rect.size(),

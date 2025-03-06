@@ -318,7 +318,11 @@ inline constexpr DisplayData lcd_display_configs[] = {
     {19.5,   kHD_PLUS,   1.f,        kHD_PLUS,    true,      kExact},
     {21.5f,  kFHD,       1.f,        kFHD,        true,      kExact},
     {23.8f,  kFHD,       1.f,        kFHD,        true,      kExact},
-
+};
+inline constexpr DisplayData oled_display_configs[] = {
+    {13.3f, k4K_UHD,     kDsf_2_666, {1440, 810}, false,     kExact},
+    {14.f,   kWUXGA,     kDsf_1_333, {1440, 900}, false,     kExact},
+    {15.6f,  kFHD,       1.25,       {1536, 864}, false,     kExact},
     // clang-format on
 };
 

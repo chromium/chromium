@@ -105,6 +105,8 @@ class TaskManagerTableModel : public TaskManagerObserver,
   void OnTaskAdded(TaskId id) override;
   void OnTaskToBeRemoved(TaskId id) override;
   void OnTasksRefreshed(const TaskIdList& task_ids) override;
+  void OnTasksRefreshedWithBackgroundCalculations(
+      const TaskIdList& task_ids) override;
 
   // Gets the start index and length of the group to which the task at
   // |row_index| belongs.
@@ -157,7 +159,7 @@ class TaskManagerTableModel : public TaskManagerObserver,
   void StartUpdating();
   void StopUpdating();
 
-  void OnRefresh();
+  void OnRefresh(const TaskIdList& task_ids);
 
   // Checks whether the task at |row_index| is the first task in its process
   // group of tasks.

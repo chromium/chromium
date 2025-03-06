@@ -48,7 +48,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -123,7 +122,7 @@ const int EXIT_XDG_SETTINGS_SYNTAX_ERROR = 1;
 // If |scheme| is empty this function sets Chrome as the default browser,
 // otherwise it sets Chrome as the default handler application for |scheme|.
 bool SetDefaultWebClient(const std::string& scheme) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return true;
 #else
   std::unique_ptr<base::Environment> env(base::Environment::Create());
@@ -156,7 +155,7 @@ bool SetDefaultWebClient(const std::string& scheme) {
 // |scheme|.
 shell_integration::DefaultWebClientState GetIsDefaultWebClient(
     const std::string& scheme) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return shell_integration::UNKNOWN_DEFAULT;
 #else
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,

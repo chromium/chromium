@@ -346,7 +346,7 @@ std::vector<Suggestion> CreateFillingSuggestions(
     // Do not create suggestion if the triggering field cannot be filled.
     if (!attribute_for_triggering_field ||
         attribute_for_triggering_field
-            ->GetInfo(trigger_field_autofill_type, app_locale)
+            ->GetInfo(trigger_field_autofill_type, app_locale, std::nullopt)
             .empty()) {
       continue;
     }
@@ -357,7 +357,8 @@ std::vector<Suggestion> CreateFillingSuggestions(
       const std::u16string normalized_attribute =
           autofill::AutofillProfileComparator::NormalizeForComparison(
               attribute_for_triggering_field->GetInfo(
-                  trigger_field_autofill_type, app_locale));
+                  trigger_field_autofill_type, app_locale,
+                  autofill_field->format_string()));
       const std::u16string normalized_field_content =
           autofill::AutofillProfileComparator::NormalizeForComparison(
               autofill_field->value(autofill::ValueSemantics::kCurrent));
@@ -396,9 +397,11 @@ std::vector<Suggestion> CreateFillingSuggestions(
       }
 
       const std::u16string full_attribute_value =
-          attribute->GetInfo(attribute->GetTopLevelType(), app_locale);
+          attribute->GetInfo(attribute->GetTopLevelType(), app_locale,
+                             /*format_string=*/std::nullopt);
       const std::u16string attribute_value =
-          attribute->GetInfo(field->Type().GetStorableType(), app_locale);
+          attribute->GetInfo(field->Type().GetStorableType(), app_locale,
+                             autofill_field->format_string());
 
       if (full_attribute_value.empty() || attribute_value.empty()) {
         continue;
@@ -410,10 +413,10 @@ std::vector<Suggestion> CreateFillingSuggestions(
     }
 
     SuggestionWithMetadata& s = suggestions_with_metadata.emplace_back();
-    s.suggestion =
-        Suggestion(attribute_for_triggering_field->GetInfo(
-                       autofill_field->Type().GetStorableType(), app_locale),
-                   SuggestionType::kFillAutofillAi);
+    s.suggestion = Suggestion(attribute_for_triggering_field->GetInfo(
+                                  autofill_field->Type().GetStorableType(),
+                                  app_locale, autofill_field->format_string()),
+                              SuggestionType::kFillAutofillAi);
     s.suggestion.payload = Suggestion::AutofillAiPayload(entity.guid());
     s.suggestion.icon =
         GetSuggestionIcon(trigger_field_attribute_type->entity_type());

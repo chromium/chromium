@@ -17,6 +17,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/trace_event/base_tracing.h"  // IWYU pragma: export
 #include "base/values.h"
 #include "net/base/address_family.h"
 #include "net/base/load_states.h"
@@ -523,6 +524,13 @@ NET_EXPORT void CreateNetLogEntriesForActiveObjects(
                       request->creation_time(), request->GetStateAsValue());
     observer->OnAddEntry(entry);
   }
+}
+
+perfetto::Flow NetLogWithSourceToFlow(const NetLogWithSource& net_log) {
+  const uint64_t flow_id =
+      (reinterpret_cast<uint64_t>(net_log.net_log()) << 32) |
+      net_log.source().id;
+  return perfetto::Flow::ProcessScoped(flow_id);
 }
 
 }  // namespace net

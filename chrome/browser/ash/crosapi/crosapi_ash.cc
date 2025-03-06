@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/crosapi/chrome_app_kiosk_service_ash.h"
 #include "chrome/browser/ash/crosapi/clipboard_history_ash.h"
 #include "chrome/browser/ash/crosapi/content_protection_ash.h"
-#include "chrome/browser/ash/crosapi/debug_interface_registerer_ash.h"
 #include "chrome/browser/ash/crosapi/desk_profiles_ash.h"
 #include "chrome/browser/ash/crosapi/device_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/device_local_account_extension_service_ash.h"
@@ -30,7 +29,6 @@
 #include "chrome/browser/ash/crosapi/drive_integration_service_ash.h"
 #include "chrome/browser/ash/crosapi/echo_private_ash.h"
 #include "chrome/browser/ash/crosapi/embedded_accessibility_helper_client_ash.h"
-#include "chrome/browser/ash/crosapi/extension_info_private_ash.h"
 #include "chrome/browser/ash/crosapi/file_change_service_bridge_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_access_cloud_identifier_provider_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
@@ -53,8 +51,6 @@
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/networking_private_ash.h"
 #include "chrome/browser/ash/crosapi/nonclosable_app_toast_service_ash.h"
-#include "chrome/browser/ash/crosapi/one_drive_integration_service_ash.h"
-#include "chrome/browser/ash/crosapi/one_drive_notification_service_ash.h"
 #include "chrome/browser/ash/crosapi/parent_access_ash.h"
 #include "chrome/browser/ash/crosapi/payment_app_instance_ash.h"
 #include "chrome/browser/ash/crosapi/policy_service_ash.h"
@@ -62,7 +58,6 @@
 #include "chrome/browser/ash/crosapi/screen_ai_downloader_ash.h"
 #include "chrome/browser/ash/crosapi/structured_metrics_service_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
-#include "chrome/browser/ash/crosapi/web_kiosk_service_ash.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/printing/print_preview/print_preview_webcontents_adapter_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -152,8 +147,6 @@ CrosapiAsh::CrosapiAsh()
           std::make_unique<ChromeAppKioskServiceAsh>()),
       clipboard_history_ash_(std::make_unique<ClipboardHistoryAsh>()),
       content_protection_ash_(std::make_unique<ContentProtectionAsh>()),
-      debug_interface_registerer_ash_(
-          std::make_unique<DebugInterfaceRegistererAsh>()),
       desk_profiles_ash_(std::make_unique<DeskProfilesAsh>()),
       device_attributes_ash_(std::make_unique<DeviceAttributesAsh>()),
       device_local_account_extension_service_ash_(
@@ -167,7 +160,6 @@ CrosapiAsh::CrosapiAsh()
       echo_private_ash_(std::make_unique<EchoPrivateAsh>()),
       embedded_accessibility_helper_client_ash_(
           std::make_unique<EmbeddedAccessibilityHelperClientAsh>()),
-      extension_info_private_ash_(std::make_unique<ExtensionInfoPrivateAsh>()),
       file_system_access_cloud_identifier_provider_ash_(
           std::make_unique<FileSystemAccessCloudIdentifierProviderAsh>()),
       file_system_provider_service_ash_(
@@ -191,10 +183,6 @@ CrosapiAsh::CrosapiAsh()
       native_theme_service_ash_(std::make_unique<NativeThemeServiceAsh>()),
       networking_attributes_ash_(std::make_unique<NetworkingAttributesAsh>()),
       networking_private_ash_(std::make_unique<NetworkingPrivateAsh>()),
-      one_drive_notification_service_ash_(
-          std::make_unique<OneDriveNotificationServiceAsh>()),
-      one_drive_integration_service_ash_(
-          std::make_unique<OneDriveIntegrationServiceAsh>()),
       parent_access_ash_(std::make_unique<ParentAccessAsh>()),
       payment_app_instance_ash_(std::make_unique<PaymentAppInstanceAsh>()),
       policy_service_ash_(std::make_unique<PolicyServiceAsh>()),
@@ -218,8 +206,7 @@ CrosapiAsh::CrosapiAsh()
           std::make_unique<StructuredMetricsServiceAsh>()),
       video_conference_manager_ash_(
           std::make_unique<ash::VideoConferenceManagerAsh>()),
-      vpn_service_ash_(std::make_unique<VpnServiceAsh>()),
-      web_kiosk_service_ash_(std::make_unique<WebKioskServiceAsh>()) {
+      vpn_service_ash_(std::make_unique<VpnServiceAsh>()) {
   receiver_set_.set_disconnect_handler(base::BindRepeating(
       &CrosapiAsh::OnDisconnected, weak_factory_.GetWeakPtr()));
 }
@@ -299,11 +286,6 @@ void CrosapiAsh::BindCrosDisplayConfigController(
   ash::BindCrosDisplayConfigController(std::move(receiver));
 }
 
-void CrosapiAsh::BindDebugInterfaceRegisterer(
-    mojo::PendingReceiver<mojom::DebugInterfaceRegisterer> receiver) {
-  debug_interface_registerer_ash_->BindReceiver(std::move(receiver));
-}
-
 void CrosapiAsh::BindDeskProfileObserver(
     mojo::PendingReceiver<mojom::DeskProfileObserver> receiver) {
   desk_profiles_ash_->BindReceiver(std::move(receiver));
@@ -351,11 +333,6 @@ void CrosapiAsh::BindEmbeddedAccessibilityHelperClientFactory(
   embedded_accessibility_helper_client_ash_
       ->BindEmbeddedAccessibilityHelperClientFactoryReceiver(
           std::move(receiver));
-}
-
-void CrosapiAsh::BindExtensionInfoPrivate(
-    mojo::PendingReceiver<mojom::ExtensionInfoPrivate> receiver) {
-  extension_info_private_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindFileChangeServiceBridge(
@@ -513,16 +490,6 @@ void CrosapiAsh::BindNetworkingPrivate(
   networking_private_ash_->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindOneDriveNotificationService(
-    mojo::PendingReceiver<mojom::OneDriveNotificationService> receiver) {
-  one_drive_notification_service_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindOneDriveIntegrationService(
-    mojo::PendingReceiver<mojom::OneDriveIntegrationService> receiver) {
-  one_drive_integration_service_ash_->BindReceiver(std::move(receiver));
-}
-
 void CrosapiAsh::BindParentAccess(
     mojo::PendingReceiver<mojom::ParentAccess> receiver) {
   parent_access_ash_->BindReceiver(std::move(receiver));
@@ -631,11 +598,6 @@ void CrosapiAsh::BindVideoCaptureDeviceFactory(
 void CrosapiAsh::BindVpnService(
     mojo::PendingReceiver<mojom::VpnService> receiver) {
   vpn_service_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindWebKioskService(
-    mojo::PendingReceiver<mojom::WebKioskService> receiver) {
-  web_kiosk_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindGuestOsSkForwarderFactory(

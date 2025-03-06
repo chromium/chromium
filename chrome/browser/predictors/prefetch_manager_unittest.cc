@@ -36,6 +36,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/origin.h"
 
@@ -116,10 +117,12 @@ class PrefetchManagerTest : public testing::TestWithParam<bool> {
   }
 
   void CheckHeaders(network::ResourceRequest& request) {
-    EXPECT_THAT(request.headers.GetHeader("Purpose"),
-                testing::Optional(std::string("prefetch")));
-    EXPECT_THAT(request.headers.GetHeader("Sec-Purpose"),
-                testing::Optional(std::string("prefetch")));
+    EXPECT_THAT(
+        request.headers.GetHeader(blink::kPurposeHeaderName),
+        testing::Optional(std::string(blink::kSecPurposePrefetchHeaderValue)));
+    EXPECT_THAT(
+        request.headers.GetHeader(blink::kSecPurposeHeaderName),
+        testing::Optional(std::string(blink::kSecPurposePrefetchHeaderValue)));
   }
 
   base::test::ScopedFeatureList features_;

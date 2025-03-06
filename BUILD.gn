@@ -9,7 +9,6 @@
 # file to your new one or GN won't know about it.
 
 import("//build/config/cast.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/dcheck_always_on.gni")
@@ -138,7 +137,7 @@ group("gn_all") {
       deps += [ "//third_party/abseil-cpp:absl_tests" ]
     }
 
-    if (is_chromeos_ash && enable_js_type_check) {
+    if (is_chromeos && enable_js_type_check) {
       deps += [ ":webui_closure_compile" ]
     }
 
@@ -459,13 +458,14 @@ group("gn_all") {
       ]
     }
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       deps += [
         "//ash:ash_unittests",
         "//ash/keyboard/ui:keyboard_unittests",
         "//ash/webui:ash_webui_unittests",
         "//chrome/browser/ash/child_accounts/time_limit_consistency_test:usage_time_limit_unittests",
         "//chrome/browser/metrics/perf:profile_provider_unittest",
+        "//chromeos:chromeos_unittests",
         "//chromeos/ash/components/proximity_auth:proximity_auth_unittests",
         "//chromeos/ash/experiences:ash_components_unittests",
         "//chromeos/components:chromeos_components_unittests",
@@ -476,11 +476,7 @@ group("gn_all") {
       ]
     }
 
-    if (is_chromeos) {
-      deps += [ "//chromeos:chromeos_unittests" ]
-    }
-
-    if (is_chromeos_ash || is_mac || is_win) {
+    if (is_chromeos || is_mac || is_win) {
       deps += [
         "//rlz:rlz_id",
         "//rlz:rlz_lib",
@@ -535,7 +531,7 @@ group("gn_all") {
 
     # TODO(GYP): Figure out which of these should (and can) build
     # for Chrome OS and iOS (without blink).
-    if (!is_chromeos_ash && use_blink) {
+    if (!is_chromeos && use_blink) {
       deps += [
         "//cc:cc_perftests",
         "//device:device_unittests",
@@ -804,7 +800,7 @@ group("gn_all") {
         "//third_party/zlib/contrib/tests/fuzzers",
       ]
 
-      if (is_chromeos_ash) {
+      if (is_chromeos) {
         deps += [ "//chrome/services/ipp_parser/public/cpp:fuzzers" ]
       }
     }
@@ -930,7 +926,7 @@ if (enable_remoting && ((is_linux && ozone_platform_x11) ||
   }
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   group("traffic_annotation_auditor_dependencies") {
     deps = [
       "//chrome",
@@ -1026,7 +1022,7 @@ if (is_win) {
   }
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   # This group is used to collect all targets used when verifying a new version
   # of Chrome for Chrome OS.
   group("chromiumos_preflight") {
@@ -1126,8 +1122,7 @@ if (use_blink && !is_cronet_build) {
       "//third_party/blink/public:all_blink",
     ]
 
-    if (!is_chromeos_ash && !is_ios && !is_fuchsia && !is_android &&
-        !is_castos) {
+    if (!is_chromeos && !is_ios && !is_fuchsia && !is_android && !is_castos) {
       deps += [
         ":chrome_wpt_tests",
         ":headless_shell_wpt",
@@ -1181,7 +1176,7 @@ if (use_blink && !is_cronet_build) {
     ]
   }
 
-  if (!is_chromeos_ash && !is_ios && !is_fuchsia && !is_android && !is_castos) {
+  if (!is_chromeos && !is_ios && !is_fuchsia && !is_android && !is_castos) {
     # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/run_web_platform_tests.md
     script_test("chrome_wpt_tests") {
       script = "//third_party/blink/tools/run_wpt_tests.py"
@@ -1754,7 +1749,7 @@ group("chromium_builder_perf") {
       ]
     }
 
-    if (!is_chromeos_ash && !is_fuchsia) {
+    if (!is_chromeos && !is_fuchsia) {
       data_deps += [ "//chrome/test:performance_browser_tests" ]
     }
 
@@ -1801,7 +1796,7 @@ if (!is_ios && !is_android && !is_castos && !is_cronet_build) {
     if (enable_ipc_fuzzer && !is_component_build) {
       deps += [ "//tools/ipc_fuzzer:ipc_fuzzer_all" ]
     }
-    if (!is_chromeos_ash) {
+    if (!is_chromeos) {
       deps += [ "//v8:v8_shell($v8_snapshot_toolchain)" ]
       if (enable_pdf) {
         deps += [ "//third_party/pdfium/testing:pdfium_test" ]
@@ -1840,7 +1835,7 @@ if (is_android && !is_cronet_build) {
   }
 }
 
-if (is_chromeos_ash && enable_js_type_check) {
+if (is_chromeos && enable_js_type_check) {
   group("webui_closure_compile") {
     testonly = true
     data_deps = [

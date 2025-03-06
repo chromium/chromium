@@ -22,7 +22,6 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -292,13 +291,9 @@ class ShelfTooltipManagerDeskButtonTest
   ~ShelfTooltipManagerDeskButtonTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kDeskButton);
     ShelfTooltipManagerTest::SetUp();
     Shelf::ForWindow(Shell::GetPrimaryRootWindow())->SetAlignment(GetParam());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

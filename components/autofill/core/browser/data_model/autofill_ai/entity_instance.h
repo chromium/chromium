@@ -102,14 +102,15 @@ class AttributeInstance final {
   // unstructured ones.
 
   // Returns the value stored in this attribute instance for a specific `type`,
-  // formatted according to a given `app_locale`.
+  // formatted according to a given `app_locale` and `format_string`.
   //
-  // If `format_string` is nullopt, it defaults to a format that contains all
-  // information. For dates, that is u"YYYY-MM-DD".
-  std::u16string GetInfo(FieldType type,
-                         const std::string& app_locale,
-                         base::optional_ref<const std::u16string>
-                             format_string = std::nullopt) const;
+  // Currently, the `format_string` only matters for dates. If it is empty, it
+  // defaults to u"YYYY-MM-DD". See AutofillField::format_string() for the
+  // grammar of format strings.
+  std::u16string GetInfo(
+      FieldType type,
+      const std::string& app_locale,
+      base::optional_ref<const std::u16string> format_string) const;
 
   class GetRawInfoPassKey {
     constexpr GetRawInfoPassKey() = default;
@@ -128,9 +129,17 @@ class AttributeInstance final {
 
   // Populates the attribute with a value for a specific `type`, according to a
   // given `app_locale`.
+  //
+  // Currently, the `format_string` only matters for dates. Dates are updated
+  // incrementally, e.g., SetInfo(..., u"16", ..., u"DD", ...) only changes the
+  // day and does not reset the month or year. If `value` doesn't fully match
+  // the `format_string`, the function is a no-op, e.g.,
+  // SetInfo(..., u"16/12/2022", ..., u"DD", ...) is a no-op.
+  // See AutofillField::format_string() for the grammar of format strings.
   void SetInfo(FieldType type,
                const std::u16string& value,
                const std::string& app_locale,
+               std::u16string_view format_string,
                VerificationStatus status);
 
   // Same as `SetInfoWithVerificationStatus`, but for structured types this

@@ -2131,7 +2131,7 @@ M115
 ### TpmStatus
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
-| enabled | boolean | Whether the |
+| enabled | boolean | Whether a TPM is enabled on the system |
 | owned | boolean | Whether the TPM has been owned |
 | specLevel | boolean | Whether the owner password is still retained (as part of the TPM initialization) |
 

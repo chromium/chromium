@@ -77,20 +77,6 @@ class GL_EXPORT StartupTrace {
 
 }  // namespace gl
 
-// Generate a unique variable name with a given prefix.
-#define GPU_STARTUP_TRACE_INTERNAL_CONCAT2(a, b) a##b
-#define GPU_STARTUP_TRACE_INTERNAL_CONCAT(a, b) \
-  GPU_STARTUP_TRACE_INTERNAL_CONCAT2(a, b)
-#define GPU_STARTUP_TRACE_UID(prefix) \
-  GPU_STARTUP_TRACE_INTERNAL_CONCAT(prefix, __LINE__)
-
-#define GPU_STARTUP_TRACE_EVENT(name)                                       \
-  gl::StartupTrace::ScopedStage GPU_STARTUP_TRACE_UID(scoped_gpu_trace){0}; \
-  if (gl::StartupTrace::IsEnabled()) {                                      \
-    GPU_STARTUP_TRACE_UID(scoped_gpu_trace) =                               \
-        gl::StartupTrace::GetInstance()->AddStage(name);                    \
-  } else {                                                                  \
-    TRACE_EVENT0("gpu,startup", name);                                      \
-  }
+#define GPU_STARTUP_TRACE_EVENT(name) TRACE_EVENT("gpu,startup", name);
 
 #endif  // UI_GL_STARTUP_TRACE_H_

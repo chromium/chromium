@@ -65,7 +65,7 @@ class CORE_EXPORT TimeZoneController final
   // by Oilpan.
   mojo::Receiver<device::mojom::blink::TimeZoneMonitorClient> receiver_{this};
 
-  std::optional<String> host_timezone_id_;
+  String host_timezone_id_;
   String override_timezone_id_;
 };
 

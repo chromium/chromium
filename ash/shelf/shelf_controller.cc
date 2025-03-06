@@ -157,12 +157,10 @@ void ShelfController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
     registry->RegisterStringPref(prefs::kShelfAutoHideTabletModeBehaviorLocal,
                                  std::string());
   }
-  if (base::FeatureList::IsEnabled(features::kDeskButton)) {
-    registry->RegisterStringPref(
-        prefs::kShowDeskButtonInShelf, std::string(),
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-    registry->RegisterBooleanPref(prefs::kDeviceUsesDesks, false);
-  }
+  registry->RegisterStringPref(
+      prefs::kShowDeskButtonInShelf, std::string(),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(prefs::kDeviceUsesDesks, false);
   registry->RegisterStringPref(
       prefs::kShelfAlignment, kShelfAlignmentBottom,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
@@ -186,12 +184,10 @@ void ShelfController::OnActiveUserPrefServiceChanged(
         prefs::kShelfAutoHideTabletModeBehaviorLocal,
         base::BindRepeating(&SetShelfAutoHideFromPrefs));
   }
-  if (base::FeatureList::IsEnabled(features::kDeskButton)) {
-    pref_change_registrar_->Add(prefs::kShowDeskButtonInShelf,
-                                base::BindRepeating(&LayoutShelves));
-    pref_change_registrar_->Add(prefs::kDeviceUsesDesks,
-                                base::BindRepeating(&LayoutShelves));
-  }
+  pref_change_registrar_->Add(prefs::kShowDeskButtonInShelf,
+                              base::BindRepeating(&LayoutShelves));
+  pref_change_registrar_->Add(prefs::kDeviceUsesDesks,
+                              base::BindRepeating(&LayoutShelves));
   pref_change_registrar_->Add(prefs::kShelfPreferences,
                               base::BindRepeating(&SetShelfBehaviorsFromPrefs));
 

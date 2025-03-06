@@ -549,10 +549,6 @@ BASE_FEATURE(kDoNotDisturbShortcut,
              "DoNotDisturbShortcut",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Adds a desk button to the shelf that the user can use to navigate between
-// desks.
-BASE_FEATURE(kDeskButton, "DeskButton", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables Sync for desk templates on ChromeOS.
 BASE_FEATURE(kDeskTemplateSync,
              "DeskTemplateSync",
@@ -3472,10 +3468,6 @@ bool IsCrosSwitcherEnabled() {
 
 bool IsDemoModeSignInEnabled() {
   return base::FeatureList::IsEnabled(kDemoModeSignIn);
-}
-
-bool IsDeskButtonEnabled() {
-  return base::FeatureList::IsEnabled(kDeskButton);
 }
 
 bool IsDeskTemplateSyncEnabled() {

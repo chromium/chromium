@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -936,14 +937,14 @@ void CloudBinaryUploadService::Shutdown() {
 void CloudBinaryUploadService::SetAuthForTesting(const std::string& dm_token,
                                                  Result auth_check_result) {
   for (enterprise_connectors::AnalysisConnector connector : {
-         enterprise_connectors::AnalysisConnector::
-             ANALYSIS_CONNECTOR_UNSPECIFIED,
-             enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
-             enterprise_connectors::AnalysisConnector::FILE_ATTACHED,
-             enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY,
-             enterprise_connectors::AnalysisConnector::PRINT,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-             enterprise_connectors::AnalysisConnector::FILE_TRANSFER,
+           enterprise_connectors::AnalysisConnector::
+               ANALYSIS_CONNECTOR_UNSPECIFIED,
+           enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
+           enterprise_connectors::AnalysisConnector::FILE_ATTACHED,
+           enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY,
+           enterprise_connectors::AnalysisConnector::PRINT,
+#if BUILDFLAG(IS_CHROMEOS)
+           enterprise_connectors::AnalysisConnector::FILE_TRANSFER,
 #endif
        }) {
     TokenAndConnector token_and_connector = {dm_token, connector};

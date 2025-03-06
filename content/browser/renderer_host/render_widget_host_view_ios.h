@@ -213,6 +213,9 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void ContentInsetChanged();
   void DeleteSurroundingText(int before, int after);
 
+  void StartAutoscrollForSelectionToPoint(const gfx::PointF& point);
+  void StopAutoscroll();
+
  private:
   friend class MockPointerLockRenderWidgetHostView;
 
@@ -229,6 +232,9 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void ApplyRootScrollOffsetChanged(const gfx::PointF& root_scroll_offset,
                                     bool force);
   void UpdateFrameBounds();
+
+  blink::mojom::FrameWidgetInputHandler*
+  GetFrameWidgetInputHandlerForFocusedWidget();
 
   // Provides gesture synthesis given a stream of touch events and touch event
   // acks. This is for generating gesture events from injected touch events.

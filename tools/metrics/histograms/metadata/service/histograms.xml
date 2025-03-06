@@ -236,6 +236,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="ServiceWorker.ContainerHostForClient.AllowServiceWorkerCallTime"
+    units="microseconds" expires_after="2025-09-06">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Time spent to check ServiceWorker allowed on the context. Recorded when
+    ServiceWorker is registered, updated, or deleted for non-ServiceWorker
+    client.
+
+    Note: The metrics is reported from all clients. Some of clients may not have
+    high resolution timer that can send metrics with microseconds precision.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.CorsExemptHeaderListSize" units="count"
     expires_after="2025-08-24">
   <owner>sisidovski@chromium.org</owner>

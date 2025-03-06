@@ -1540,12 +1540,20 @@ TEST_F(FormFillerTest, FillPassportEntity) {
     form_structure->fields()[field_index]->set_server_predictions(
         {test::CreateFieldPrediction(types)...});
   };
+  auto set_format_string = [&](size_t field_index,
+                               std::string_view format_string) {
+    form_structure->fields()[field_index]->set_format_string_unless_overruled(
+        base::UTF8ToUTF16(format_string),
+        AutofillField::FormatStringSource::kServer);
+  };
   set_server_type(0, PASSPORT_NUMBER);
   set_server_type(1, NAME_FIRST, PASSPORT_NAME_TAG);
   set_server_type(2, NAME_LAST, PASSPORT_NAME_TAG);
   set_server_type(3, ADDRESS_HOME_COUNTRY, PASSPORT_ISSUING_COUNTRY_TAG);
   set_server_type(4, PASSPORT_ISSUE_DATE_TAG);
+  set_format_string(4, "M/YY");
   set_server_type(5, PASSPORT_EXPIRATION_DATE_TAG);
+  set_format_string(5, "DD/MM/YYYY");
   form_structure->UpdateAutofillCount();
 
   EntityInstance passport = test::GetPassportEntityInstance();
@@ -1556,8 +1564,8 @@ TEST_F(FormFillerTest, FillPassportEntity) {
   EXPECT_EQ(filled_fields[1].value(), u"Pippi");
   EXPECT_EQ(filled_fields[2].value(), u"Långstrump");
   EXPECT_EQ(filled_fields[3].value(), u"Sweden");
-  EXPECT_EQ(filled_fields[4].value(), u"2010-09-01");
-  EXPECT_EQ(filled_fields[5].value(), u"2019-08-30");
+  EXPECT_EQ(filled_fields[4].value(), u"9/10");
+  EXPECT_EQ(filled_fields[5].value(), u"30/08/2019");
 }
 
 // Test that we can still fill a form when a field has been removed from it.

@@ -9733,9 +9733,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
-    {"enable-desk-button", flag_descriptions::kDeskButtonName,
-     flag_descriptions::kDeskButtonDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kDeskButton)},
     {"cros-focus-mode", flag_descriptions::kFocusModeName,
      flag_descriptions::kFocusModeDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFocusMode)},

@@ -12,7 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/net/nss_service.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/scoped_nss_types.h"
@@ -139,8 +139,6 @@ class CertificateManagerModel {
     // Valid as long as the underlying Profile is valid. The implementation
     // doesn't check for validity of the WeakPtr because the
     // CertificateManagerModel has the same validity time frame.
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     base::WeakPtr<kcer::Kcer> kcer;
 #endif
 
@@ -285,7 +283,7 @@ class CertificateManagerModel {
                                   CreationCallback callback);
 
   raw_ptr<net::NSSCertDatabase> cert_db_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   base::WeakPtr<kcer::Kcer> kcer_;
 #endif
 

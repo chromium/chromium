@@ -69,6 +69,9 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     scoped_refptr<gpu::ClientSharedImage> shared_image() {
       return shared_image_;
     }
+    const gfx::Size& size() const { return size_; }
+    const viz::SharedImageFormat& format() const { return format_; }
+    const gfx::ColorSpace& color_space() const { return color_space_; }
 
     // If this field is set to false, the backing's SharedImage is in the
     // process of being created on a worker thread and should not be accessed on

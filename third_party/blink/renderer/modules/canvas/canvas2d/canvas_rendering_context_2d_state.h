@@ -63,8 +63,8 @@ class CanvasFilter;
 class CanvasGradient;
 class CanvasRenderingContext2D;
 class Element;
-class FontSelector;
 enum class FontInvalidationReason;
+class UniqueFontSelector;
 class V8ImageSmoothingQuality;
 
 enum ShadowMode {
@@ -140,7 +140,7 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   }
 
   void SetFont(const FontDescription& passed_font_description,
-               FontSelector* selector);
+               UniqueFontSelector* selector);
   bool IsFontDirtyForFilter() const;
   const Font* GetFont() const;
   const FontDescription& GetFontDescription() const;
@@ -236,27 +236,29 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   }
   V8CanvasTextBaseline GetTextBaseline() const { return text_baseline_; }
 
-  void SetLetterSpacing(const String& letter_spacing);
+  void SetLetterSpacing(const String& letter_spacing,
+                        UniqueFontSelector* selector);
   String GetLetterSpacing() const { return parsed_letter_spacing_; }
 
-  void SetWordSpacing(const String& word_spacing);
+  void SetWordSpacing(const String& word_spacing, UniqueFontSelector* selector);
   String GetWordSpacing() const { return parsed_word_spacing_; }
 
   void SetTextRendering(V8CanvasTextRendering text_rendering,
-                        FontSelector* selector);
+                        UniqueFontSelector* selector);
   V8CanvasTextRendering GetTextRendering() const {
     return text_rendering_mode_;
   }
 
   void SetFontKerning(FontDescription::Kerning font_kerning,
-                      FontSelector* selector);
+                      UniqueFontSelector* selector);
   FontDescription::Kerning GetFontKerning() const { return font_kerning_; }
 
-  void SetFontStretch(V8CanvasFontStretch font_stretch, FontSelector* selector);
+  void SetFontStretch(V8CanvasFontStretch font_stretch,
+                      UniqueFontSelector* selector);
   V8CanvasFontStretch GetFontStretch() const { return font_stretch_; }
 
   void SetFontVariantCaps(FontDescription::FontVariantCaps font_kerning,
-                          FontSelector* selector);
+                          UniqueFontSelector* selector);
   FontDescription::FontVariantCaps GetFontVariantCaps() const {
     return font_variant_caps_;
   }
@@ -361,7 +363,7 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   void UpdateFilterQuality() const;
   void UpdateFilterQuality(cc::PaintFlags::FilterQuality) const;
   void ShadowParameterChanged();
-  void SetFontInternal(const FontDescription&, FontSelector*);
+  void SetFontInternal(const FontDescription&, UniqueFontSelector* selector);
   sk_sp<cc::DrawLooper>& EmptyDrawLooper() const;
   sk_sp<cc::DrawLooper>& ShadowOnlyDrawLooper() const;
   sk_sp<cc::DrawLooper>& ShadowAndForegroundDrawLooper() const;

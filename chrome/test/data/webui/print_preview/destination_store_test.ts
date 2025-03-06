@@ -43,14 +43,12 @@ suite('DestinationStoreTest', function() {
 
   /*
    * Sets the initial settings to the stored value and creates the page.
-   * @param expectPrinterFailure Whether printer fetch is
-   *     expected to fail
-   * @return Promise that resolves when initial settings and,
-   *     if printer failure is not expected, printer capabilities have
-   *     been returned.
+   * @param expectPrinterFailure Whether printer fetch is expected to fail.
+   * @return Promise that resolves when initial settings and, if printer failure
+   *     is not expected, printer capabilities have been returned.
    */
   function setInitialSettings(expectPrinterFailure?: boolean):
-      Promise<{destinationId: string, printerType: PrinterType}> {
+      Promise<{destinationId: string, printerType: PrinterType}|null> {
     // Set local print list.
     nativeLayer.setLocalDestinations(localDestinations);
 
@@ -73,7 +71,7 @@ suite('DestinationStoreTest', function() {
         initialSettings.pdfPrinterDisabled, initialSettings.printerName,
         initialSettings.serializedDefaultDestinationSelectionRulesStr,
         recentDestinations);
-    return expectPrinterFailure ? Promise.resolve() : Promise.race([
+    return expectPrinterFailure ? Promise.resolve(null) : Promise.race([
       nativeLayer.whenCalled('getPrinterCapabilities'),
       whenCapabilitiesReady,
     ]);
@@ -92,6 +90,7 @@ suite('DestinationStoreTest', function() {
         });
 
         return setInitialSettings(false).then(args => {
+          assertTrue(!!args);
           assertEquals('ID1', args.destinationId);
           assertEquals(PrinterType.LOCAL_PRINTER, args.printerType);
           assertEquals('ID1', destinationStore.selectedDestination!.id);
@@ -114,6 +113,7 @@ suite('DestinationStoreTest', function() {
         });
 
         return setInitialSettings(false).then(function(args) {
+          assertTrue(!!args);
           // Should have loaded ID1 as the selected printer, since it was most
           // recent.
           assertEquals('ID1', args.destinationId);
@@ -165,6 +165,7 @@ suite('DestinationStoreTest', function() {
         });
 
         return setInitialSettings(false).then(function(args) {
+          assertTrue(!!args);
           // Should have loaded ID1 as the selected printer, since it was most
           // recent.
           assertEquals('ID1', args.destinationId);
@@ -192,6 +193,7 @@ suite('DestinationStoreTest', function() {
             JSON.stringify({namePattern: '.*Four.*'});
         initialSettings.serializedAppStateStr = '';
         return setInitialSettings(false).then(function(args) {
+          assertTrue(!!args);
           // Should have loaded ID4 as the selected printer, since it matches
           // the rules.
           assertEquals('ID4', args.destinationId);
@@ -251,6 +253,7 @@ suite('DestinationStoreTest', function() {
         initialSettings.printerName = '';
 
         return setInitialSettings(false).then(function(args) {
+          assertTrue(!!args);
           // Should have loaded the first destination as the selected printer.
           assertEquals(destinations[0]!.id, args.destinationId);
           assertEquals(PrinterType.LOCAL_PRINTER, args.printerType);
@@ -329,6 +332,7 @@ suite('DestinationStoreTest', function() {
 
         return setInitialSettings(false)
             .then(function(args) {
+              assertTrue(!!args);
               assertEquals(
                   GooglePromotedDestinationId.SAVE_AS_PDF, args.destinationId);
               assertEquals(PrinterType.PDF_PRINTER, args.printerType);

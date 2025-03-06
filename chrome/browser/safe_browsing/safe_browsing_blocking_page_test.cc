@@ -142,7 +142,7 @@
 #include "ui/events/test/test_event.h"
 #include "ui/views/controls/styled_label.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #endif
 
@@ -2324,14 +2324,14 @@ class TrustSafetySentimentSurveyV2BrowserTest
   ~TrustSafetySentimentSurveyV2BrowserTest() override = default;
 
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     metrics::DesktopSessionDurationTracker::Initialize();
 #endif
     SafeBrowsingBlockingPageBrowserTest::SetUp();
   }
 
   void TearDown() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     metrics::DesktopSessionDurationTracker::CleanupForTesting();
 #endif
   }

@@ -102,15 +102,17 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
       AttributeInstance expiry_date((AttributeType(kPassportExpiryDate)));
       AttributeInstance issue_date((AttributeType(kPassportIssueDate)));
       number.SetInfo(PASSPORT_NUMBER, u"123", /*app_locale=*/"",
-                     VerificationStatus::kNoStatus);
+                     /*format_string=*/u"", VerificationStatus::kNoStatus);
       name.SetInfo(NAME_FULL, u"Pippi Långstrump", /*app_locale=*/"",
-                   VerificationStatus::kNoStatus);
+                   /*format_string=*/u"", VerificationStatus::kNoStatus);
       country.SetInfo(ADDRESS_HOME_COUNTRY, u"Sweden", /*app_locale=*/"",
-                      VerificationStatus::kNoStatus);
+                      /*format_string=*/u"", VerificationStatus::kNoStatus);
       expiry_date.SetInfo(PASSPORT_EXPIRATION_DATE_TAG, u"2098-09-01",
-                          /*app_locale=*/"", VerificationStatus::kNoStatus);
+                          /*app_locale=*/"", /*format_string=*/u"YYYY-MM-DD",
+                          VerificationStatus::kNoStatus);
       issue_date.SetInfo(PASSPORT_ISSUE_DATE_TAG, u"1998-10-11",
-                         /*app_locale=*/"", VerificationStatus::kNoStatus);
+                         /*app_locale=*/"", /*format_string=*/u"YYYY-MM-DD",
+                         VerificationStatus::kNoStatus);
       table.AddOrUpdateEntityInstance(EntityInstance(
           EntityType(EntityTypeName::kPassport),
           {number, name, country, expiry_date, issue_date},

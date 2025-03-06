@@ -4,10 +4,12 @@
 
 #include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
 
+#include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shape_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_buffer.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
@@ -98,11 +100,23 @@ const ShapeResultView* PlainTextItem::EnsureView() const {
 
 PlainTextNode::PlainTextNode(const TextRun& run,
                              bool normalize_space,
-                             bool bidi_overridden,
                              const Font& font,
                              bool supports_bidi)
     : normalize_space_(normalize_space), base_direction_(run.Direction()) {
-  SegmentText(run, bidi_overridden, font, supports_bidi);
+  if (supports_bidi && run.DirectionalOverride()) [[unlikely]] {
+    // If directional override, create a new string with Unicode directional
+    // override characters.
+    const String text_with_override =
+        BidiParagraph::StringWithDirectionalOverride(run.ToStringView(),
+                                                     run.Direction());
+    TextRun run_with_override(text_with_override, run.Direction(),
+                              /* directional_override */ false,
+                              normalize_space);
+    SegmentText(run_with_override, /* bidi_overridden */ true, font,
+                supports_bidi);
+  } else {
+    SegmentText(run, /* bidi_overridden */ false, font, supports_bidi);
+  }
   Shape(font);
 }
 
@@ -136,8 +150,14 @@ void PlainTextNode::SegmentText(const TextRun& run,
     original_text.Ensure16Bit();
     BidiParagraph bidi;
     if (bidi_overridden) {
-      // TODO(crbug.com/389726691): Remove leading/trailing BiDi control
-      // characters from text_content_.
+      // See BidiParagraph::StringWithDirectionalOverride().
+      DCHECK(original_text[0] == kLeftToRightOverrideCharacter ||
+             original_text[0] == kRightToLeftOverrideCharacter)
+          << original_text;
+      DCHECK(original_text[original_text.length() - 1] ==
+             kPopDirectionalFormattingCharacter)
+          << original_text;
+      text_content_ = text_content_.Substring(1, text_content_.length() - 2);
     }
     if (bidi.SetParagraph(original_text, run.Direction())) {
       base_direction_ = bidi.BaseDirection();
@@ -148,9 +168,41 @@ void PlainTextNode::SegmentText(const TextRun& run,
         bidi.GetVisualRuns(original_text, &bidi_runs);
         item_list_.reserve(bidi_runs.size());
         for (const BidiParagraph::Run& bidi_run : bidi_runs) {
-          SegmentWord(bidi_run.start, bidi_run.Length(), bidi_run.Direction(),
-                      font);
-          // TODO(crbug.com/389726691): Adjust offset values if bidi_overridden.
+          if (!bidi_overridden) {
+            SegmentWord(bidi_run.start, bidi_run.Length(), bidi_run.Direction(),
+                        font);
+          } else {
+            // `bidi_run.start` and `bidi_run.end` are offsets in
+            // `original_text`, which is longer than `text_content_` by two
+            // characters.  SegmentWord() handles `text_content_`, and we need
+            // to adjust offsets.
+            const unsigned run_length = bidi_run.Length();
+            // The bidi_run contains both of the leading and trailing BiDi
+            // override controls.
+            if (bidi_run.start == 0 && bidi_run.end == original_text.length()) {
+              if (run_length > 2) {
+                SegmentWord(0, run_length - 2, bidi_run.Direction(), font);
+              }
+            }
+            // The bidi_run starts with the leading BiDi override control.
+            else if (bidi_run.start == 0 && run_length > 0) {
+              if (run_length > 1) {
+                SegmentWord(0, run_length - 1, bidi_run.Direction(), font);
+              }
+            }
+            // The bidi_run ends with the trailing BiDi override control.
+            else if (bidi_run.end == original_text.length() && run_length > 0) {
+              if (run_length > 1) {
+                SegmentWord(bidi_run.start - 1, run_length - 1,
+                            bidi_run.Direction(), font);
+              }
+            }
+            // Otherwise.
+            else {
+              SegmentWord(bidi_run.start - 1, bidi_run.Length(),
+                          bidi_run.Direction(), font);
+            }
+          }
         }
       }
     }
@@ -280,6 +332,50 @@ float PlainTextNode::AccumulateInlineSize(gfx::RectF* glyph_bounds) const {
   }
 
   return inline_size;
+}
+
+CharacterRange PlainTextNode::ComputeCharacterRange(
+    unsigned absolute_from,
+    unsigned absolute_to) const {
+  const bool is_rtl = IsRtl(base_direction_);
+  const float total_width = AccumulateInlineSize(nullptr);
+
+  // The absolute_from and absolute_to arguments represent the start/end offset
+  // for the entire run, from/to are continuously updated to be relative to
+  // the current word (ShapeResult instance).
+  int from = absolute_from;
+  int to = absolute_to;
+
+  ShapeResultBuffer::CharacterRangeContext context{
+      text_content_, is_rtl, from, to, is_rtl ? total_width : 0};
+  for (const auto& item : item_list_) {
+    const ShapeResult* result = item.GetShapeResult();
+    if (!result) {
+      continue;
+    }
+    ShapeResultBuffer::ComputeRangeIn(*result, item.InkBounds(), context);
+  }
+
+  // The position in question might be just after the text.
+  if (!context.from_x && absolute_from == context.total_num_characters) {
+    context.from_x = is_rtl ? 0 : total_width;
+  }
+  if (!context.to_x && absolute_to == context.total_num_characters) {
+    context.to_x = is_rtl ? 0 : total_width;
+  }
+  if (!context.from_x) {
+    context.from_x = 0;
+  }
+  if (!context.to_x) {
+    context.to_x = is_rtl ? 0 : total_width;
+  }
+
+  if (*context.from_x < *context.to_x) {
+    return CharacterRange(*context.from_x, *context.to_x, -context.min_y,
+                          context.max_y);
+  }
+  return CharacterRange(*context.to_x, *context.from_x, -context.min_y,
+                        context.max_y);
 }
 
 }  // namespace blink
