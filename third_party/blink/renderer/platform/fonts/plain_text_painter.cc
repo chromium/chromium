@@ -32,12 +32,12 @@ const PlainTextNode& PlainTextPainter::SegmentAndShape(const TextRun& run,
   return CreateNode(run, font);
 }
 
-void PlainTextPainter::Draw(const TextRun& run,
-                            const Font& font,
-                            cc::PaintCanvas& canvas,
-                            const gfx::PointF& location,
-                            const cc::PaintFlags& flags,
-                            Font::DrawType draw_type) {
+void PlainTextPainter::DrawWithoutBidi(const TextRun& run,
+                                       const Font& font,
+                                       cc::PaintCanvas& canvas,
+                                       const gfx::PointF& location,
+                                       const cc::PaintFlags& flags,
+                                       Font::DrawType draw_type) {
   // TODO(crbug.com/389726691): Implement this without Font::DrawText().
   font.DrawText(&canvas, run, location, flags, draw_type);
 }
@@ -76,24 +76,31 @@ float PlainTextPainter::ComputeSubInlineSize(const TextRun& run,
   return font.SubRunWidth(run, from_index, to_index, glyph_bounds);
 }
 
-int PlainTextPainter::OffsetForPosition(
+float PlainTextPainter::ComputeInlineSizeWithoutBidi(const TextRun& run,
+                                                     const Font& font) {
+  FontCachePurgePreventer purge_preventer;
+  constexpr bool kSupportsBidi = true;
+  return CreateNode(run, font, !kSupportsBidi).AccumulateInlineSize(nullptr);
+}
+
+int PlainTextPainter::OffsetForPositionWithoutBidi(
     const TextRun& run,
     const Font& font,
     float position,
     IncludePartialGlyphsOption partial_option,
-    BreakGlyphsOption break_option) const {
+    BreakGlyphsOption break_option) {
   // TODO(crbug.com/389726691): Implement this without
   // Font::OffsetForPosition().
   return font.OffsetForPosition(run, position, partial_option, break_option);
 }
 
-gfx::RectF PlainTextPainter::SelectionRectForText(
+gfx::RectF PlainTextPainter::SelectionRectForTextWithoutBidi(
     const TextRun& run,
     unsigned from_index,
     unsigned to_index,
     const Font& font,
     const gfx::PointF& left_baseline,
-    float height) const {
+    float height) {
   // TODO(crbug.com/389726691): Implement this without
   // Font::SelectionRectForText().
   return font.SelectionRectForText(run, left_baseline, height, from_index,

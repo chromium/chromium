@@ -86,8 +86,8 @@ void WebFont::DrawText(cc::PaintCanvas* canvas,
   flags.setColor(color);
   flags.setAntiAlias(true);
   if (RuntimeEnabledFeatures::PlainTextPainterEnabled()) {
-    PlainTextPainter::Shared().Draw(text_run, *private_->GetFont(), *canvas,
-                                    left_baseline, flags);
+    PlainTextPainter::Shared().DrawWithoutBidi(text_run, *private_->GetFont(),
+                                               *canvas, left_baseline, flags);
     return;
   }
   private_->GetFont()->DrawText(canvas, text_run, left_baseline, flags);
@@ -95,15 +95,15 @@ void WebFont::DrawText(cc::PaintCanvas* canvas,
 
 int WebFont::CalculateWidth(const WebTextRun& run) const {
   if (RuntimeEnabledFeatures::PlainTextPainterEnabled()) {
-    return PlainTextPainter::Shared().ComputeInlineSize(
-        run, *private_->GetFont(), nullptr);
+    return PlainTextPainter::Shared().ComputeInlineSizeWithoutBidi(
+        run, *private_->GetFont());
   }
   return private_->GetFont()->Width(run, nullptr);
 }
 
 int WebFont::OffsetForPosition(const WebTextRun& run, float position) const {
   if (RuntimeEnabledFeatures::PlainTextPainterEnabled()) {
-    return PlainTextPainter::Shared().OffsetForPosition(
+    return PlainTextPainter::Shared().OffsetForPositionWithoutBidi(
         run, *private_->GetFont(), position, kIncludePartialGlyphs,
         BreakGlyphsOption(false));
   }
@@ -117,8 +117,9 @@ gfx::RectF WebFont::SelectionRectForText(const WebTextRun& run,
                                          int from,
                                          int to) const {
   if (RuntimeEnabledFeatures::PlainTextPainterEnabled()) {
-    return PlainTextPainter::Shared().SelectionRectForText(
-        run, from, to, *private_->GetFont(), left_baseline, height);
+    return PlainTextPainter::Shared().SelectionRectForTextWithoutBidi(
+        run, from, to == -1 ? run.text.length() : to, *private_->GetFont(),
+        left_baseline, height);
   }
   return private_->GetFont()->SelectionRectForText(run, left_baseline, height,
                                                    from, to);
