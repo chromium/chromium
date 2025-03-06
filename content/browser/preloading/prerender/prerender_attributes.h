@@ -8,9 +8,10 @@
 #include <optional>
 #include <string>
 
-#include "content/browser/preloading/preload_pipeline_info.h"
+#include "content/browser/preloading/preload_pipeline_info_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
+#include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/web_contents.h"
@@ -55,7 +56,7 @@ struct CONTENT_EXPORT PrerenderAttributes {
           url_match_predicate,
       base::RepeatingCallback<void(NavigationHandle&)>
           prerender_navigation_handle_callback,
-      scoped_refptr<PreloadPipelineInfo> preload_pipeline_info);
+      scoped_refptr<PreloadPipelineInfoImpl> preload_pipeline_info);
 
   ~PrerenderAttributes();
   PrerenderAttributes(const PrerenderAttributes&);
@@ -141,7 +142,7 @@ struct CONTENT_EXPORT PrerenderAttributes {
       prerender_navigation_handle_callback;
 
   // Information of preload pipeline that this prerender belongs to.
-  scoped_refptr<PreloadPipelineInfo> preload_pipeline_info;
+  scoped_refptr<PreloadPipelineInfoImpl> preload_pipeline_info;
 
   // This is std::nullopt when prerendering is initiated by the browser.
   std::optional<base::UnguessableToken> initiator_devtools_navigation_token;

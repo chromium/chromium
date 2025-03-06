@@ -8,7 +8,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "content/browser/preloading/preload_pipeline_info.h"
+#include "content/browser/preloading/preload_pipeline_info_impl.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_confidence.h"
 #include "content/browser/preloading/preloading_config.h"
@@ -19,6 +19,7 @@
 #include "content/browser/preloading/speculation_rules/speculation_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/preloading_test_util.h"
@@ -202,9 +203,8 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
             /*should_prepare_paint_tree=*/false,
             /*url_match_predicate=*/{},
             /*prerender_navigation_handle_callback=*/{},
-            base::MakeRefCounted<
-                PreloadPipelineInfo>(/*planned_max_preloading_type=*/
-                                     PreloadingType::kPrerender));
+            PreloadPipelineInfoImpl::Create(
+                /*planned_max_preloading_type=*/PreloadingType::kPrerender));
       case PreloadingTriggerType::kEmbedder:
         return PrerenderAttributes(
             url, trigger_type, embedder_histogram_suffix,
@@ -218,9 +218,8 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
             /*should_prepare_paint_tree=*/false,
             /*url_match_predicate=*/{},
             /*prerender_navigation_handle_callback=*/{},
-            base::MakeRefCounted<
-                PreloadPipelineInfo>(/*planned_max_preloading_type=*/
-                                     PreloadingType::kPrerender));
+            PreloadPipelineInfoImpl::Create(
+                /*planned_max_preloading_type=*/PreloadingType::kPrerender));
     }
   }
 

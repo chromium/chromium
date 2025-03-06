@@ -37,7 +37,7 @@ PrerenderAttributes::PrerenderAttributes(
         url_match_predicate,
     base::RepeatingCallback<void(NavigationHandle&)>
         prerender_navigation_handle_callback,
-    scoped_refptr<PreloadPipelineInfo> preload_pipeline_info)
+    scoped_refptr<PreloadPipelineInfoImpl> preload_pipeline_info)
     : prerendering_url(prerendering_url),
       trigger_type(trigger_type),
       embedder_histogram_suffix(embedder_histogram_suffix),

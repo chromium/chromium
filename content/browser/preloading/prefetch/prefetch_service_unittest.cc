@@ -33,7 +33,6 @@
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
-#include "content/browser/preloading/preload_pipeline_info.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_config.h"
@@ -46,6 +45,7 @@
 #include "content/public/browser/frame_accept_header.h"
 #include "content/public/browser/prefetch_request_status_listener.h"
 #include "content/public/browser/prefetch_service_delegate.h"
+#include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
@@ -449,7 +449,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
         prefetch_url, prefetch_type,
         GetPredictorForPreloadingTriggerType(prefetch_type.trigger_type()),
         referrer, no_vary_search_hint,
-        base::MakeRefCounted<PreloadPipelineInfo>(planned_max_preloading_type));
+        PreloadPipelineInfo::Create(planned_max_preloading_type));
   }
 
   void MakePrefetchFromEmbedder(
@@ -7141,7 +7141,7 @@ class PrefetchServiceAddPrefetchContainerTest : public PrefetchServiceTestBase {
         prefetch_url, std::move(prefetch_type), blink::mojom::Referrer(),
         /*no_vary_search_hint=*/std::nullopt,
         /*prefetch_document_manager=*/nullptr,
-        base::MakeRefCounted<PreloadPipelineInfo>(planned_max_preloading_type),
+        PreloadPipelineInfo::Create(planned_max_preloading_type),
         attempt->GetWeakPtr());
   }
 
