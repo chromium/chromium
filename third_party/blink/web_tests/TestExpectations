@@ -9031,3 +9031,5 @@ crbug.com/400811282 [ Win11 ] virtual/media-foundation-for-clear-frameserver/ext
 crbug.com/400811282 [ Win ] external/wpt/css/css-inline/text-box-trim/text-box-trim-initial-letter-start-001.html [ Failure ]
 
 crbug.com/400739988 [ Win ] external/wpt/css/css-ruby/line-spacing.html [ Failure Pass ]
+
+crbug.com/387938119 external/wpt/html/semantics/embedded-content/the-object-element/object-attributes.html [ Failure Pass ]
