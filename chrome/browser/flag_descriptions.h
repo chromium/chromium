@@ -989,10 +989,6 @@ extern const char kEnableResamplingScrollEventsExperimentalPredictionName[];
 extern const char
     kEnableResamplingScrollEventsExperimentalPredictionDescription[];
 
-extern const char kEnableSystemEntropyOnPerformanceNavigationTimingName[];
-extern const char
-    kEnableSystemEntropyOnPerformanceNavigationTimingDescription[];
-
 extern const char kEnableWebAuthenticationChromeOSAuthenticatorName[];
 extern const char kEnableWebAuthenticationChromeOSAuthenticatorDescription[];
 

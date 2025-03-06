@@ -3310,7 +3310,6 @@
     },
     {
       name: "PerformanceNavigateSystemEntropy",
-      status: "experimental",
     },
     {
       name: "PerformanceNavigationTimingConfidence",
