@@ -246,9 +246,7 @@ SVGLayoutResult LayoutSVGText::UpdateSVGLayout(
   BlockNode(this).Layout(builder.ToConstraintSpace());
 
   needs_update_bounding_box_ = true;
-  if (RuntimeEnabledFeatures::SvgTspanBboxCacheEnabled()) {
-    InvalidateDescendantObjectBoundingBoxes();
-  }
+  InvalidateDescendantObjectBoundingBoxes();
 
   const gfx::RectF boundaries = ObjectBoundingBox();
   bool bounds_changed = old_boundaries != boundaries;

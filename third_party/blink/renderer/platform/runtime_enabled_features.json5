@@ -4305,11 +4305,6 @@
       status: "stable",
     },
     {
-      // crbug.com/40890818
-      name: "SvgTspanBboxCache",
-      status: "stable",
-    },
-    {
       name: "SvgViewportOptimization",
       status: "stable",
     },
