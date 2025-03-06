@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <tuple>
 
 #include "base/barrier_callback.h"
 #include "base/check_deref.h"
@@ -260,7 +261,7 @@ void BnplManager::MaybeUpdateSuggestionsWithBnpl(
   BnplSuggestionUpdateResult update_suggestions_result =
       ::autofill::MaybeUpdateSuggestionsWithBnpl(
           /*current_suggestions=*/std::get<0>(*suggestions_shown_response),
-          bnpl_issuers);
+          bnpl_issuers, extracted_amount->value());
 
   if (!update_suggestions_result.is_bnpl_suggestion_added) {
     // No need to update the pop up, if no BNPL suggestion is added.
