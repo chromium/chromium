@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_resource_tracker.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/html/canvas/ukm_parameters.h"
+#include "third_party/blink/renderer/core/html/canvas/unique_font_selector.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -239,6 +240,9 @@ ImageBitmap* OffscreenCanvas::transferToImageBitmap(
                                       "ImageBitmap construction failed");
   }
 
+  if (unique_font_selector_) {
+    unique_font_selector_->DidSwitchFrame();
+  }
   return image;
 }
 
@@ -641,6 +645,10 @@ bool OffscreenCanvas::PushFrame(scoped_refptr<CanvasResource>&& canvas_resource,
       std::move(canvas_resource), commit_start_time, current_frame_damage_rect_,
       IsOpaque());
   current_frame_damage_rect_ = SkIRect::MakeEmpty();
+
+  if (unique_font_selector_) {
+    unique_font_selector_->DidSwitchFrame();
+  }
   return true;
 }
 
@@ -712,14 +720,24 @@ const LayoutLocale* OffscreenCanvas::GetLocale() const {
   return &LayoutLocale::GetDefault();
 }
 
-FontSelector* OffscreenCanvas::GetFontSelector() {
-  if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
-    return window->document()->GetStyleEngine().GetFontSelector();
+UniqueFontSelector* OffscreenCanvas::GetFontSelector() {
+  if (UniqueFontSelector* unique_font_selector = unique_font_selector_) {
+    return unique_font_selector;
   }
-  // TODO(crbug.com/40059901): Temporary mitigation.  Remove the following
-  // CHECK once a more comprehensive solution has been implemented.
-  CHECK(GetExecutionContext()->IsWorkerGlobalScope());
-  return To<WorkerGlobalScope>(GetExecutionContext())->GetFontSelector();
+  FontSelector* base_selector = nullptr;
+  if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
+    base_selector = window->document()->GetStyleEngine().GetFontSelector();
+  } else {
+    // TODO(crbug.com/40059901): Temporary mitigation.  Remove the following
+    // CHECK once a more comprehensive solution has been implemented.
+    CHECK(GetExecutionContext()->IsWorkerGlobalScope());
+    base_selector =
+        To<WorkerGlobalScope>(GetExecutionContext())->GetFontSelector();
+  }
+  auto* unique_font_selector =
+      MakeGarbageCollected<UniqueFontSelector>(*base_selector);
+  unique_font_selector_ = unique_font_selector;
+  return unique_font_selector;
 }
 
 void OffscreenCanvas::UpdateMemoryUsage() {

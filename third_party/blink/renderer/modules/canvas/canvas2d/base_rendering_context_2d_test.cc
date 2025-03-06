@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/recording_test_utils.h"
+#include "third_party/blink/renderer/core/html/canvas/unique_font_selector.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/style/filter_operation.h"
@@ -218,10 +219,10 @@ class TestRenderingContext2D final
     if (style == nullptr) {
       return false;
     }
-    FontDescription font_description = FontStyleResolver::ComputeFont(
-        *style, host_canvas_element_->GetFontSelector());
-    GetState().SetFont(font_description,
-                       host_canvas_element_->GetFontSelector());
+    auto* selector = host_canvas_element_->GetFontSelector();
+    FontDescription font_description =
+        FontStyleResolver::ComputeFont(*style, selector->BaseFontSelector());
+    GetState().SetFont(font_description, selector);
     return true;
   }
 

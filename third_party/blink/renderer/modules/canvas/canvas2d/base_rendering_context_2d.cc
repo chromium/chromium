@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/html/canvas/text_cluster.h"
 #include "third_party/blink/renderer/core/html/canvas/text_metrics.h"
+#include "third_party/blink/renderer/core/html/canvas/unique_font_selector.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_2d_recorder_context.h"
@@ -1197,7 +1198,7 @@ void BaseRenderingContext2D::setLetterSpacing(const String& letter_spacing) {
     setFont(font());
   }
 
-  state.SetLetterSpacing(letter_spacing);
+  state.SetLetterSpacing(letter_spacing, GetFontSelector());
 }
 
 void BaseRenderingContext2D::setWordSpacing(const String& word_spacing) {
@@ -1211,7 +1212,7 @@ void BaseRenderingContext2D::setWordSpacing(const String& word_spacing) {
     setFont(font());
   }
 
-  state.SetWordSpacing(word_spacing);
+  state.SetWordSpacing(word_spacing, GetFontSelector());
 }
 
 void BaseRenderingContext2D::setTextRendering(
@@ -1312,7 +1313,7 @@ void BaseRenderingContext2D::setFontVariantCaps(
   state.SetFontVariantCaps(variant_caps, GetFontSelector());
 }
 
-FontSelector* BaseRenderingContext2D::GetFontSelector() const {
+UniqueFontSelector* BaseRenderingContext2D::GetFontSelector() const {
   return nullptr;
 }
 

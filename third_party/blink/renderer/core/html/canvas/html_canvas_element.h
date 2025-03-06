@@ -172,7 +172,7 @@ class CORE_EXPORT HTMLCanvasElement final
   TextDirection GetTextDirection(const ComputedStyle*) override;
   const LayoutLocale* GetLocale() const override;
 
-  FontSelector* GetFontSelector() override;
+  UniqueFontSelector* GetFontSelector() override;
 
   bool ShouldBeDirectComposited() const;
 

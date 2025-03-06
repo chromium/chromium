@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
+#include "third_party/blink/renderer/core/html/canvas/unique_font_selector.h"
 #include "third_party/blink/renderer/core/style/filter_operation.h"
 #include "third_party/blink/renderer/core/style/shadow_data.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter_test_utils.h"
@@ -327,7 +328,7 @@ TEST(CSSResolutionTest,
   ASSERT_NE(canvas->GetDocument().GetFrame(), nullptr);
   Font* font = MakeGarbageCollected<Font>(FontStyleResolver::ComputeFont(
       *CSSParser::ParseFont("10px sans-serif", scope.GetExecutionContext()),
-      canvas->GetFontSelector()));
+      canvas->GetFontSelector()->BaseFontSelector()));
   EXPECT_THAT(
       CanvasFilterOperationResolver::CreateFilterOperationsFromCSSFilter(
           String("drop-shadow(1em 1em 0 black)"),

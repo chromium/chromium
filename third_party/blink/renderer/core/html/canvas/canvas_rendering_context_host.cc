@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_encode_options.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_async_blob_creator.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
+#include "third_party/blink/renderer/core/html/canvas/unique_font_selector.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
@@ -41,6 +42,7 @@ CanvasRenderingContextHost::CanvasRenderingContextHost(HostType host_type,
 
 void CanvasRenderingContextHost::Trace(Visitor* visitor) const {
   visitor->Trace(plain_text_painter_);
+  visitor->Trace(unique_font_selector_);
 }
 
 void CanvasRenderingContextHost::RecordCanvasSizeToUMA() {

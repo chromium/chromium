@@ -80,6 +80,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_resource_tracker.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
+#include "third_party/blink/renderer/core/html/canvas/unique_font_selector.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
@@ -782,6 +783,10 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
   if (!did_notify_listeners_for_current_frame_)
     NotifyListenersCanvasChanged();
   did_notify_listeners_for_current_frame_ = false;
+
+  if (unique_font_selector_) {
+    unique_font_selector_->DidSwitchFrame();
+  }
 }
 
 void HTMLCanvasElement::DisableAcceleration() {
@@ -1967,8 +1972,14 @@ const LayoutLocale* HTMLCanvasElement::GetLocale() const {
   return &LayoutLocale::GetDefault();
 }
 
-FontSelector* HTMLCanvasElement::GetFontSelector() {
-  return GetDocument().GetStyleEngine().GetFontSelector();
+UniqueFontSelector* HTMLCanvasElement::GetFontSelector() {
+  if (UniqueFontSelector* unique_font_selector = unique_font_selector_) {
+    return unique_font_selector;
+  }
+  auto* unique_font_selector = MakeGarbageCollected<UniqueFontSelector>(
+      *GetDocument().GetStyleEngine().GetFontSelector());
+  unique_font_selector_ = unique_font_selector;
+  return unique_font_selector;
 }
 
 void HTMLCanvasElement::UpdateMemoryUsage() {
