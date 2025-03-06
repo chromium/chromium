@@ -128,10 +128,11 @@ namespace {
 
 // Serves as killswitch for changing GetOrCreateCanvasResourceProvider() away
 // from using GetOrCreateCanvas2DLayerBridge() for 2D contexts.
+// TODO(crbug.com/401192130): Resolve crash and re-enable.
 // TODO(crbug.com/40280152): Eliminate post safe-rollout.
 BASE_FEATURE(kAdjustGetOrCreate2DCanvasProvider,
              "AdjustGetOrCreate2DCanvasProvider",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool AdjustGetOrCreate2DCanvasProvider() {
   // The change to GetOrCreateCanvasResourceProvider() is safe only if the below
