@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 
 namespace visited_url_ranking {
@@ -57,7 +58,9 @@ struct FetchOptions {
       std::map<URLVisitAggregate::URLType, ResultOption> result_sources_arg,
       std::map<Fetcher, FetchSources> fetcher_sources_arg,
       base::Time begin_time_arg,
-      std::vector<URLVisitAggregatesTransformType> transforms_arg = {});
+      std::vector<URLVisitAggregatesTransformType> transforms_arg = {},
+      size_t aggregate_count_limit =
+          features::kURLAggregateCountLimitDefaultValue);
   FetchOptions(const FetchOptions&);
   FetchOptions(FetchOptions&& other);
   FetchOptions& operator=(FetchOptions&& other);
@@ -100,6 +103,9 @@ struct FetchOptions {
   // collection. These may include operations that mutate the collection or
   // specific field of the collection objects.
   std::vector<URLVisitAggregatesTransformType> transforms;
+
+  // The count limit of the URL aggregates.
+  size_t aggregate_count_limit;
 };
 
 }  // namespace visited_url_ranking

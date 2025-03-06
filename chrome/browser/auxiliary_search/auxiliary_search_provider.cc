@@ -98,6 +98,11 @@ class AuxiliarySearchProviderFactory : public ProfileKeyedServiceFactory {
   }
 };
 
+// Returns the maximum count of entries to donate.
+int GetMaxDonationCount() {
+  return chrome::android::kAppIntegrationMaxDonationCountParam.Get();
+}
+
 void CallJavaCallbackWithTabList(
     JNIEnv* env,
     const base::android::ScopedJavaGlobalRef<jobject>& j_callback_obj,
@@ -188,7 +193,7 @@ FetchOptions CreateFetchOptionsForTabDonation(
   }
   return FetchOptions(std::move(result_map), std::move(fetcher_sources),
                       base::Time::Now() - base::Hours(query_duration),
-                      std::move(transforms));
+                      std::move(transforms), GetMaxDonationCount());
 }
 
 FetchOptions CreateFetchOptions() {

@@ -55,8 +55,7 @@ class RecencyFilterTransformerTest : public URLVisitAggregatesTransformerTest {
     base::FieldTrialParams params = {
         {features::kURLAggregateCountLimit,
          base::StringPrintf("%u", kTestCountLimit)}};
-    base::test::ScopedFeatureList feature_list1;
-    feature_list1.InitWithFeaturesAndParameters(
+    feature_list_.InitWithFeaturesAndParameters(
         {{features::kVisitedURLRankingService, params}}, {});
     transformer_ = std::make_unique<RecencyFilterTransformer>();
   }
@@ -121,6 +120,9 @@ class RecencyFilterTransformerTest : public URLVisitAggregatesTransformerTest {
     tab_data.last_active = time;
     return tab_data;
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(RecencyFilterTransformerTest, SortAndFilter) {

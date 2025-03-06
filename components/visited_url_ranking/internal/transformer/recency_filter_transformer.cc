@@ -51,12 +51,6 @@ bool ShouldDiscardVisit(const URLVisitAggregate& visit,
 
 }  // namespace
 
-RecencyFilterTransformer::RecencyFilterTransformer()
-    : aggregate_count_limit_(base::GetFieldTrialParamByFeatureAsInt(
-          features::kVisitedURLRankingService,
-          features::kURLAggregateCountLimit,
-          features::kURLAggregateCountLimitDefaultValue)) {}
-
 RecencyFilterTransformer::~RecencyFilterTransformer() = default;
 
 void RecencyFilterTransformer::Transform(
@@ -72,9 +66,9 @@ void RecencyFilterTransformer::Transform(
             [](const URLVisitAggregate& a, const URLVisitAggregate& b) {
               return a.GetLastVisitTime() > b.GetLastVisitTime();
             });
-  if (aggregates.size() > aggregate_count_limit_) {
+  if (aggregates.size() > options.aggregate_count_limit) {
     std::vector<URLVisitAggregate> copy;
-    for (size_t i = 0; i < aggregate_count_limit_; ++i) {
+    for (size_t i = 0; i < options.aggregate_count_limit; ++i) {
       copy.emplace_back(std::move(aggregates[i]));
     }
     aggregates.swap(copy);

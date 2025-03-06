@@ -62,11 +62,13 @@ FetchOptions::FetchOptions(
     std::map<URLVisitAggregate::URLType, ResultOption> result_sources_arg,
     std::map<Fetcher, FetchSources> fetcher_sources_arg,
     base::Time begin_time_arg,
-    std::vector<URLVisitAggregatesTransformType> transforms_arg)
+    std::vector<URLVisitAggregatesTransformType> transforms_arg,
+    size_t aggregate_count_limit_arg)
     : result_sources(std::move(result_sources_arg)),
       fetcher_sources(std::move(fetcher_sources_arg)),
       begin_time(begin_time_arg),
-      transforms(std::move(transforms_arg)) {
+      transforms(std::move(transforms_arg)),
+      aggregate_count_limit(aggregate_count_limit_arg) {
   DCHECK(!result_sources.empty());
   DCHECK(!fetcher_sources.empty());
   DCHECK(!begin_time.is_null());
@@ -156,13 +158,16 @@ FetchOptions FetchOptions::CreateFetchOptionsForTabResumption(
   int query_duration = base::GetFieldTrialParamByFeatureAsInt(
       features::kVisitedURLRankingService,
       features::kVisitedURLRankingFetchDurationInHoursParam, 168);
+  int aggregate_count_limit = base::GetFieldTrialParamByFeatureAsInt(
+      features::kVisitedURLRankingService, features::kURLAggregateCountLimit,
+      features::kURLAggregateCountLimitDefaultValue);
   std::map<URLVisitAggregate::URLType, ResultOption> result_map;
   for (URLVisitAggregate::URLType type : result_sources) {
     result_map[type] = ResultOption{.age_limit = GetDefaultAgeLimit(type)};
   }
   return FetchOptions(std::move(result_map), std::move(fetcher_sources),
                       base::Time::Now() - base::Hours(query_duration),
-                      std::move(transforms));
+                      std::move(transforms), aggregate_count_limit);
 }
 
 }  // namespace visited_url_ranking
