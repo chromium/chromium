@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_handler.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
@@ -164,7 +160,7 @@ void AudioWorkletHandler::ProcessInternal(uint32_t frames_to_process) {
           param_values->Data(), static_cast<uint32_t>(frames_to_process));
     } else {
       std::fill(param_values->Data(),
-                param_values->Data() + frames_to_process,
+                UNSAFE_TODO(param_values->Data() + frames_to_process),
                 param_handler->FinalValue());
     }
   }

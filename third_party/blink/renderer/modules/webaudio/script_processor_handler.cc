@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webaudio/script_processor_handler.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -181,8 +177,9 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
     for (uint32_t i = 0; i < number_of_input_channels; ++i) {
       internal_input_bus_->SetChannelMemory(
           i,
-          static_cast<float*>(shared_input_buffer->channels()[i].Data()) +
-              buffer_read_write_index_,
+          UNSAFE_TODO(
+              static_cast<float*>(shared_input_buffer->channels()[i].Data()) +
+              buffer_read_write_index_),
           frames_to_process);
     }
 
@@ -192,9 +189,9 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
 
     for (uint32_t i = 0; i < number_of_output_channels; ++i) {
       float* destination = output_bus->Channel(i)->MutableData();
-      const float* source =
+      const float* source = UNSAFE_TODO(
           static_cast<float*>(shared_output_buffer->channels()[i].Data()) +
-          buffer_read_write_index_;
+          buffer_read_write_index_);
       memcpy(destination, source, sizeof(float) * frames_to_process);
     }
   }
