@@ -5,13 +5,51 @@
 #include "chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h"
 
 #include "base/containers/map_util.h"
+#include "base/json/values_util.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/notifications_engagement_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "url/gurl.h"
+
+namespace {
+
+base::Value UpdateContentSettingValue(
+    scoped_refptr<HostContentSettingsMap> hcsm,
+    const GURL& url,
+    const content_settings::SettingInfo& info,
+    base::Value::Dict dict) {
+  CHECK(url.is_valid());
+  auto constraint = content_settings::ContentSettingConstraints(
+      info.metadata.expiration() - info.metadata.lifetime());
+  constraint.set_lifetime(info.metadata.lifetime());
+  hcsm->SetWebsiteSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(url),
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
+      base::Value(std::move(dict)), constraint);
+
+  return hcsm->GetWebsiteSetting(
+      url, url,
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
+}
+
+void RemoveContentSettingValue(scoped_refptr<HostContentSettingsMap> hcsm,
+                               const GURL& url) {
+  CHECK(url.is_valid());
+  hcsm->SetWebsiteSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(url),
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS, {});
+}
+
+}  // namespace
 
 DisruptiveNotificationPermissionsManager::
     DisruptiveNotificationPermissionsManager(
@@ -66,11 +104,23 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
     CHECK(url.is_valid());
 
     // Check if a content setting already exists.
-    base::Value stored_value(hcsm_->GetWebsiteSetting(
+    content_settings::SettingInfo info;
+    base::Value stored_value = hcsm_->GetWebsiteSetting(
         url, url,
-        ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS));
+        ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
+        &info);
     if (!stored_value.is_none()) {
       CHECK(stored_value.is_dict());
+      base::Value::Dict dict = std::move(stored_value).TakeDict();
+      auto recorded_score = dict.FindDouble(safety_hub::kSiteEngagementStr);
+      if (!recorded_score.has_value()) {
+        continue;
+      }
+      if (recorded_score.value() < site_engagement_service_->GetScore(url)) {
+        dict.Set(safety_hub::kRevokedStatusDictKeyStr,
+                 safety_hub::kFalsePositiveStr);
+        UpdateContentSettingValue(hcsm_, url, info, std::move(dict));
+      }
       continue;
     }
 
@@ -85,7 +135,8 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
     content_settings::ContentSettingConstraints default_constraint(
         clock_->Now());
     default_constraint.set_lifetime(safety_hub_util::GetCleanUpThreshold());
-    StoreRevokedDisruptiveNotificationPermission(url, default_constraint);
+    StoreRevokedDisruptiveNotificationPermission(url, default_constraint,
+                                                 *notification_count);
   }
 }
 
@@ -106,7 +157,8 @@ bool DisruptiveNotificationPermissionsManager::IsNotificationDisruptive(
 void DisruptiveNotificationPermissionsManager::
     StoreRevokedDisruptiveNotificationPermission(
         const GURL& url,
-        const content_settings::ContentSettingConstraints& constraints) {
+        const content_settings::ContentSettingConstraints& constraints,
+        int daily_notification_count) {
   // The url should be valid as it is checked that the pattern represents a
   // single origin.
   CHECK(url.is_valid());
@@ -118,9 +170,70 @@ void DisruptiveNotificationPermissionsManager::
   } else {
     // TODO(crbug.com/397363276): Set ignore or revoke value.
   }
+  dict.Set(safety_hub::kSiteEngagementStr,
+           site_engagement_service_->GetScore(url));
+  dict.Set(safety_hub::kDailyNotificationCountStr, daily_notification_count);
+  dict.Set(safety_hub::kTimestampStr, base::TimeToValue(clock_->Now()));
   hcsm_->SetWebsiteSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(url),
       ContentSettingsPattern::Wildcard(),
       ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
       base::Value(std::move(dict)), constraints);
+}
+
+// static
+void DisruptiveNotificationPermissionsManager::LogMetrics(
+    Profile* profile,
+    const GURL& url,
+    ukm::SourceId source_id) {
+  if (!profile) {
+    return;
+  }
+  auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile);
+  if (!hcsm || !url.is_valid()) {
+    return;
+  }
+  content_settings::SettingInfo info;
+  base::Value stored_value = hcsm->GetWebsiteSetting(
+      url, url,
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS, &info);
+  if (stored_value.is_none()) {
+    return;
+  }
+  CHECK(stored_value.is_dict());
+  base::Value::Dict dict = std::move(stored_value).TakeDict();
+  const bool has_reported_metrics =
+      dict.FindBool(safety_hub::kHasReportedMetricsStr).value_or(false);
+  if (!has_reported_metrics) {
+    ukm::builders::SafetyHub_DisruptiveNotificationRevocations_Proposed(
+        source_id)
+        .SetDailyAverageVolume(
+            dict.FindInt(safety_hub::kDailyNotificationCountStr).value_or(0))
+        .SetSiteEngagement(
+            dict.FindDouble(safety_hub::kSiteEngagementStr).value_or(0))
+        .Record(ukm::UkmRecorder::Get());
+    // Update the stored content setting value.
+    dict.Set(safety_hub::kHasReportedMetricsStr, true);
+    stored_value = UpdateContentSettingValue(hcsm, url, info, std::move(dict));
+    dict = std::move(stored_value).TakeDict();
+  }
+
+  const std::string* revoked_status =
+      dict.FindString(safety_hub::kRevokedStatusDictKeyStr);
+  if (revoked_status && *revoked_status == safety_hub::kFalsePositiveStr) {
+    const base::Value* stored_timestamp = dict.Find(safety_hub::kTimestampStr);
+    base::TimeDelta delta_since_revocation =
+        base::Time::Now() -
+        base::ValueToTime(stored_timestamp).value_or(base::Time::Now());
+    ukm::builders::SafetyHub_DisruptiveNotificationRevocations_FalsePositive(
+        source_id)
+        .SetDaysSinceRevocation(delta_since_revocation.InDays())
+        .SetNewSiteEngagement(
+            site_engagement::SiteEngagementService::Get(profile)->GetScore(url))
+        .SetOldSiteEngagement(
+            dict.FindDouble(safety_hub::kSiteEngagementStr).value_or(0))
+        .Record(ukm::UkmRecorder::Get());
+    // Remove the false positive value to avoid repeated triggers.
+    RemoveContentSettingValue(hcsm, url);
+  }
 }

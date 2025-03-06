@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
@@ -20,6 +21,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/notifications/metrics/mock_notification_metrics_logger.h"
 #include "chrome/browser/notifications/metrics/notification_metrics_logger_factory.h"
@@ -29,12 +31,15 @@
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/safe_browsing/mock_notification_content_detection_service.h"
 #include "chrome/browser/safe_browsing/notification_content_detection_service_factory.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/test_model_observer_tracker.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
@@ -361,6 +366,129 @@ TEST_F(PlatformNotificationServiceTest, NextPersistentNotificationId) {
   int64_t first_id = service()->ReadNextPersistentNotificationId();
   int64_t second_id = service()->ReadNextPersistentNotificationId();
   EXPECT_LT(first_id, second_id);
+}
+
+TEST_F(PlatformNotificationServiceTest,
+       ProposedDisruptiveNotificationRevocationMetrics) {
+  GURL url("https://chrome.test/");
+  const int kDailyNotificationCount = 4;
+
+  HostContentSettingsMap* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(profile_.get());
+  base::Value::Dict dict;
+  dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kProposedStr);
+  dict.Set(safety_hub::kSiteEngagementStr, 0.0);
+  dict.Set(safety_hub::kDailyNotificationCountStr, kDailyNotificationCount);
+  auto constraint =
+      content_settings::ContentSettingConstraints(base::Time::Now());
+  constraint.set_lifetime(base::Days(30));
+  hcsm->SetWebsiteSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(url),
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
+      base::Value(std::move(dict)), constraint);
+
+  PlatformNotificationData data;
+  data.title = u"My notification's title";
+  data.body = u"Hello, world!";
+
+  service()->DisplayPersistentNotification(kNotificationId,
+                                           GURL() /* service_worker_scope */,
+                                           url, data, NotificationResources());
+
+  EXPECT_EQ(1u, GetNotificationCountForType(
+                    NotificationHandler::Type::WEB_PERSISTENT));
+  // Check that the correct metric is reported.
+  EXPECT_EQ(1u, recorder_
+                    ->GetEntriesByName(
+                        "SafetyHub.DisruptiveNotificationRevocations.Proposed")
+                    .size());
+}
+
+TEST_F(PlatformNotificationServiceTest,
+       FalsePositiveDisruptiveNotificationRevocationMetrics) {
+  GURL url("https://chrome.test/");
+  const int kDailyNotificationCount = 4;
+
+  HostContentSettingsMap* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(profile_.get());
+  base::Value::Dict dict;
+  dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kFalsePositiveStr);
+  dict.Set(safety_hub::kSiteEngagementStr, 1.0);
+  dict.Set(safety_hub::kDailyNotificationCountStr, kDailyNotificationCount);
+  dict.Set(safety_hub::kHasReportedMetricsStr, true);
+  dict.Set(safety_hub::kTimestampStr,
+           base::TimeToValue(base::Time::Now() - base::Days(3)));
+  hcsm->SetWebsiteSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(url),
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
+      base::Value(std::move(dict)));
+
+  site_engagement::SiteEngagementService::Get(profile_.get())
+      ->ResetBaseScoreForURL(url, 5.0);
+
+  PlatformNotificationData data;
+  data.title = u"My notification's title";
+  data.body = u"Hello, world!";
+
+  service()->DisplayPersistentNotification(kNotificationId,
+                                           GURL() /* service_worker_scope */,
+                                           url, data, NotificationResources());
+
+  EXPECT_EQ(1u, GetNotificationCountForType(
+                    NotificationHandler::Type::WEB_PERSISTENT));
+  // Check that the correct metric is reported.
+  EXPECT_EQ(1u,
+            recorder_
+                ->GetEntriesByName(
+                    "SafetyHub.DisruptiveNotificationRevocations.FalsePositive")
+                .size());
+}
+
+TEST_F(PlatformNotificationServiceTest,
+       ProposedDisruptiveNotificationRevocationMetricsFalsePositive) {
+  GURL url("https://chrome.test/");
+  const int kDailyNotificationCount = 4;
+
+  HostContentSettingsMap* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(profile_.get());
+  base::Value::Dict dict;
+  dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kFalsePositiveStr);
+  dict.Set(safety_hub::kSiteEngagementStr, 0.0);
+  dict.Set(safety_hub::kDailyNotificationCountStr, kDailyNotificationCount);
+  dict.Set(safety_hub::kTimestampStr,
+           base::TimeToValue(base::Time::Now() - base::Days(3)));
+  hcsm->SetWebsiteSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(url),
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
+      base::Value(std::move(dict)));
+
+  site_engagement::SiteEngagementService::Get(profile_.get())
+      ->ResetBaseScoreForURL(url, 5.0);
+
+  PlatformNotificationData data;
+  data.title = u"My notification's title";
+  data.body = u"Hello, world!";
+
+  service()->DisplayPersistentNotification(kNotificationId,
+                                           GURL() /* service_worker_scope */,
+                                           url, data, NotificationResources());
+
+  EXPECT_EQ(1u, GetNotificationCountForType(
+                    NotificationHandler::Type::WEB_PERSISTENT));
+
+  // Check that the correct metrics are reported.
+  EXPECT_EQ(1u, recorder_
+                    ->GetEntriesByName(
+                        "SafetyHub.DisruptiveNotificationRevocations.Proposed")
+                    .size());
+  EXPECT_EQ(1u,
+            recorder_
+                ->GetEntriesByName(
+                    "SafetyHub.DisruptiveNotificationRevocations.FalsePositive")
+                .size());
 }
 
 #if !BUILDFLAG(IS_ANDROID)
