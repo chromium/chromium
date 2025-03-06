@@ -6,6 +6,9 @@
       {
         "args": [],
         "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "resource_sizes_monochrome_minimal_apks",
@@ -29,6 +32,9 @@
       {
         "args": [],
         "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "resource_sizes_system_webview_google_bundle",
@@ -52,6 +58,9 @@
       {
         "args": [],
         "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "resource_sizes_trichrome_google",
@@ -800,6 +809,9 @@
       {
         "args": [],
         "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "resource_sizes_monochrome_minimal_apks",
@@ -823,6 +835,9 @@
       {
         "args": [],
         "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "resource_sizes_system_webview_google_bundle",
@@ -846,6 +861,9 @@
       {
         "args": [],
         "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "resource_sizes_trichrome_google",
@@ -883,6 +901,9 @@
       {
         "args": [],
         "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "chrome_sizes",
@@ -1105,6 +1126,9 @@
       {
         "args": [],
         "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "chrome_sizes",
@@ -1136,6 +1160,9 @@
       {
         "args": [],
         "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "chrome_sizes",
@@ -1880,6 +1907,9 @@
       {
         "args": [],
         "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "chrome_sizes",
