@@ -25,12 +25,10 @@ impl Writeable for WriteableMessage<'_> {
 writeable::impl_display_with_writeable!(WriteableMessage<'_>);
 
 /// A sample type implementing Display
-#[cfg(feature = "bench")]
 struct DisplayMessage<'s> {
     message: &'s str,
 }
 
-#[cfg(feature = "bench")]
 impl fmt::Display for DisplayMessage<'_> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str(self.message)
@@ -38,7 +36,6 @@ impl fmt::Display for DisplayMessage<'_> {
 }
 
 /// A sample type that contains multiple fields
-#[cfg(feature = "bench")]
 struct ComplexWriteable<'a> {
     prefix: &'a str,
     n0: usize,
@@ -47,7 +44,6 @@ struct ComplexWriteable<'a> {
     suffix: &'a str,
 }
 
-#[cfg(feature = "bench")]
 impl Writeable for ComplexWriteable<'_> {
     fn write_to<W: fmt::Write + ?Sized>(&self, sink: &mut W) -> fmt::Result {
         self.prefix.write_to(sink)?;
@@ -67,13 +63,11 @@ impl Writeable for ComplexWriteable<'_> {
     }
 }
 
-#[cfg(feature = "bench")]
 writeable::impl_display_with_writeable!(ComplexWriteable<'_>);
 
 const SHORT_STR: &str = "short";
 const MEDIUM_STR: &str = "this is a medium-length string";
 const LONG_STR: &str = "this string is very very very very very very very very very very very very very very very very very very very very very very very very long";
-#[cfg(feature = "bench")]
 const LONG_OVERLAP_STR: &str =
     "this string is very very very very very very very long but different";
 
@@ -96,7 +90,6 @@ fn overview_bench(c: &mut Criterion) {
         });
     });
 
-    #[cfg(feature = "bench")]
     {
         writeable_benches(c);
         writeable_dyn_benches(c);
@@ -105,7 +98,6 @@ fn overview_bench(c: &mut Criterion) {
     }
 }
 
-#[cfg(feature = "bench")]
 fn writeable_benches(c: &mut Criterion) {
     c.bench_function("writeable/to_string/short", |b| {
         b.iter(|| {
@@ -150,7 +142,6 @@ fn writeable_benches(c: &mut Criterion) {
     });
 }
 
-#[cfg(feature = "bench")]
 fn writeable_dyn_benches(c: &mut Criterion) {
     // Same as `write_to_string`, but casts to a `dyn fmt::Write`
     fn writeable_dyn_to_string(w: &impl Writeable) -> String {
@@ -183,7 +174,6 @@ fn writeable_dyn_benches(c: &mut Criterion) {
     });
 }
 
-#[cfg(feature = "bench")]
 fn display_benches(c: &mut Criterion) {
     c.bench_function("display/to_string/short", |b| {
         b.iter(|| {
@@ -211,7 +201,6 @@ fn display_benches(c: &mut Criterion) {
     });
 }
 
-#[cfg(feature = "bench")]
 fn complex_benches(c: &mut Criterion) {
     const COMPLEX_WRITEABLE_MEDIUM: ComplexWriteable = ComplexWriteable {
         prefix: "There are ",

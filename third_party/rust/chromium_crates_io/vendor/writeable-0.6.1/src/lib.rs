@@ -3,7 +3,7 @@
 // (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
 
 // https://github.com/unicode-org/icu4x/blob/main/documents/process/boilerplate.md#library-annotations
-#![cfg_attr(all(not(test), not(doc)), no_std)]
+#![cfg_attr(not(any(test, doc)), no_std)]
 #![cfg_attr(
     not(test),
     deny(
@@ -13,6 +13,7 @@
         clippy::panic,
         clippy::exhaustive_structs,
         clippy::exhaustive_enums,
+        clippy::trivially_copy_pass_by_ref,
         missing_debug_implementations,
     )
 )]
@@ -227,10 +228,11 @@ impl Part {
     };
 }
 
-/// A sink that supports annotating parts of the string with `Part`s.
+/// A sink that supports annotating parts of the string with [`Part`]s.
 pub trait PartsWrite: fmt::Write {
     type SubPartsWrite: PartsWrite + ?Sized;
 
+    /// Annotates all strings written by the closure with the given [`Part`].
     fn with_part(
         &mut self,
         part: Part,

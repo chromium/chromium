@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.71.1"
+rust-version = "1.81"
 name = "writeable"
-version = "0.6.0"
+version = "0.6.1"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -26,6 +26,7 @@ include = [
     "LICENSE",
     "README.md",
 ]
+autolib = false
 autobins = false
 autoexamples = false
 autotests = false
@@ -35,14 +36,14 @@ readme = "README.md"
 license = "Unicode-3.0"
 repository = "https://github.com/unicode-org/icu4x"
 
-[package.metadata.cargo-all-features]
-denylist = ["bench"]
-
 [package.metadata.docs.rs]
 all-features = true
 
 [package.metadata.workspaces]
 independent = true
+
+[features]
+either = ["dep:either"]
 
 [lib]
 name = "writeable"
@@ -70,10 +71,6 @@ default-features = false
 [dev-dependencies.rand]
 version = "0.8"
 features = ["small_rng"]
-
-[features]
-bench = []
-either = ["dep:either"]
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies.criterion]
 version = "0.5.0"

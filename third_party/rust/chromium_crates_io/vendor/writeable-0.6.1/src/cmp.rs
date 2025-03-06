@@ -18,8 +18,10 @@ impl fmt::Write for WriteComparator<'_> {
         if self.result != Ordering::Equal {
             return Ok(());
         }
-        let cmp_len = core::cmp::min(other.len(), self.code_units.len());
-        let (this, remainder) = self.code_units.split_at(cmp_len);
+        let (this, remainder) = self
+            .code_units
+            .split_at_checked(other.len())
+            .unwrap_or((self.code_units, &[]));
         self.code_units = remainder;
         self.result = this.cmp(other.as_bytes());
         Ok(())

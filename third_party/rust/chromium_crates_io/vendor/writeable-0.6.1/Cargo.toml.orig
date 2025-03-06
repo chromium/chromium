@@ -5,7 +5,7 @@
 [package]
 name = "writeable"
 description = "A more efficient alternative to fmt::Display"
-version = "0.6.0"
+version = "0.6.1"
 
 authors.workspace = true
 edition.workspace = true
@@ -31,12 +31,7 @@ rand = { workspace = true, features = ["small_rng"] }
 criterion = { workspace = true }
 
 [features]
-bench = []
 either = ["dep:either"]
-
-[package.metadata.cargo-all-features]
-# Bench feature gets tested separately and is only relevant for CI
-denylist = ["bench"]
 
 [lib]
 bench = false  # This option is required for Benchmark CI
