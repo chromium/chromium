@@ -7270,9 +7270,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kStartSurfaceReturnTime,
                                     kStartSurfaceReturnTimeVariations,
                                     "StartSurfaceReturnTime")},
-    {"tab-drag-drop", flag_descriptions::kTabDragDropName,
-     flag_descriptions::kTabDragDropDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabDragDropAndroid)},
 
     {"most-visited-tiles-customization",
      flag_descriptions::kMostVisitedTilesCustomizationName,

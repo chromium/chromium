@@ -86,6 +86,7 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.util.XrUtils;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -1101,8 +1102,8 @@ public class MultiInstanceManagerApi31UnitTest {
     @Test
     @SmallTest
     @Config(sdk = 31)
-    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testTabMove_MoveTabToNewWindow_calledWithDesiredParameters() {
+        XrUtils.setXrDeviceForTesting(true);
         mMultiInstanceManager.mTestBuildInstancesList = true;
         MultiWindowTestUtils.enableMultiInstance();
         // Allocate and create two instances.
@@ -1122,13 +1123,14 @@ public class MultiInstanceManagerApi31UnitTest {
         verify(mMultiInstanceManager, times(1))
                 .moveAndReparentTabToNewWindow(
                         any(), eq(INVALID_INSTANCE_ID), eq(true), eq(false), eq(true));
+        XrUtils.resetXrDeviceForTesting();
     }
 
     @Test
     @SmallTest
     @Config(sdk = 31)
-    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testTabMove_MoveTabToNewWindow_BeyondMaxWindows_CallsOnly_OpenNewWindow() {
+        XrUtils.setXrDeviceForTesting(true);
         mMultiInstanceManager.mTestBuildInstancesList = true;
         MultiWindowTestUtils.enableMultiInstance();
         // Create max instances first before asking to move a tab from one to another.
@@ -1152,6 +1154,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 .moveAndReparentTabToNewWindow(
                         any(), eq(INVALID_INSTANCE_ID), eq(true), eq(false), eq(true));
         verify(mMultiInstanceManager, times(1)).openNewWindow(any());
+        XrUtils.resetXrDeviceForTesting();
     }
 
     @Test
@@ -1204,8 +1207,8 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testTabMove_MoveTabAction_WithTabIndex_success() {
+        XrUtils.setXrDeviceForTesting(true);
         mMultiInstanceManager.mTestBuildInstancesList = true;
         // Create two instances first before asking to move a tab from one to current.
         assertEquals(INSTANCE_ID_1, allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask62, true));
@@ -1222,12 +1225,13 @@ public class MultiInstanceManagerApi31UnitTest {
         verify(mMultiInstanceManager, times(0))
                 .moveAndReparentTabToNewWindow(
                         eq(mTab1), eq(INVALID_INSTANCE_ID), eq(false), eq(true), eq(true));
+        XrUtils.resetXrDeviceForTesting();
     }
 
     @Test
     @Config(sdk = 31)
-    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testTabMove_MoveTabAction_WithNonExistantInstance_success() {
+        XrUtils.setXrDeviceForTesting(true);
         mMultiInstanceManager.mTestBuildInstancesList = true;
         // Create two instances first before asking to move a tab from one to current.
         assertEquals(INSTANCE_ID_1, allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask62, true));
@@ -1270,12 +1274,13 @@ public class MultiInstanceManagerApi31UnitTest {
                         eq(mTab1), eq(NON_EXISTANT_INSTANCE_ID), eq(false), eq(true), eq(false));
         verify(mMultiInstanceManager, times(0))
                 .reparentTabToRunningActivity(any(), eq(mTab1), eq(0));
+        XrUtils.resetXrDeviceForTesting();
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     @Config(sdk = 31)
     public void testCloseChromeWindowIfEmpty_closed() {
+        XrUtils.setXrDeviceForTesting(true);
         mMultiInstanceManager.mTestBuildInstancesList = true;
         MultiWindowTestUtils.enableMultiInstance();
         // Create an empty instance before asking it to close. The flag that provides permission to
@@ -1290,6 +1295,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
         verify(mMultiInstanceManager, times(1))
                 .closeInstance(anyInt(), eq(MultiWindowUtils.INVALID_TASK_ID));
+        XrUtils.resetXrDeviceForTesting();
     }
 
     @Test
