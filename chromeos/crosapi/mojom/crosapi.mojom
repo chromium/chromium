@@ -51,8 +51,6 @@ import "chromeos/crosapi/mojom/native_theme.mojom";
 import "chromeos/crosapi/mojom/network_change.mojom";
 import "chromeos/crosapi/mojom/networking_attributes.mojom";
 import "chromeos/crosapi/mojom/networking_private.mojom";
-import "chromeos/crosapi/mojom/one_drive_notification_service.mojom";
-import "chromeos/crosapi/mojom/one_drive_integration_service.mojom";
 import "chromeos/crosapi/mojom/parent_access.mojom";
 import "chromeos/crosapi/mojom/nonclosable_app_toast_service.mojom";
 import "chromeos/crosapi/mojom/print_preview_cros.mojom";
@@ -363,17 +361,8 @@ interface Crosapi {
   [MinVersion=39]
   BindNetworkingAttributes@44(pending_receiver<NetworkingAttributes> receiver);
 
-  // Binds the OneDrive notification service which is used by the
-  // odfsConfigPrivate extension API to show notifications.
-  [MinVersion=130]
-  BindOneDriveNotificationService@132(
-      pending_receiver<OneDriveNotificationService> receiver);
-
-  // Binds the OneDrive integration service which is used by Lacros to observe
-  // OneDrive mount path changes. Added in M124.
-  [MinVersion=133]
-  BindOneDriveIntegrationService@135(
-    pending_receiver<OneDriveIntegrationService> receiver);
+  // BindOneDriveNotificationService@132 was removed.
+  // BindOneDriveIntegrationService@135 was removed.
 
   // Binds the Parent Access UI to allow Lacros to request parent access
   // from Ash when needed.

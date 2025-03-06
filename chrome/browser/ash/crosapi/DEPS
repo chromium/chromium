@@ -95,7 +95,6 @@ include_rules = [
   "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/browser/ui/web_applications/test",
   "+chrome/browser/ui/webui/ash/app_install",
-  "+chrome/browser/ui/webui/ash/cloud_upload",
   "+chrome/browser/ui/webui/ash/kerberos",
   "+chrome/browser/ui/webui/ash/parent_access",
   "+chrome/browser/ui/webui/chrome_web_ui_controller_factory.h",

@@ -80,8 +80,6 @@ class MultiCaptureServiceAsh;
 class NativeThemeServiceAsh;
 class NetworkingAttributesAsh;
 class NetworkingPrivateAsh;
-class OneDriveNotificationServiceAsh;
-class OneDriveIntegrationServiceAsh;
 class ParentAccessAsh;
 class PaymentAppInstanceAsh;
 class PolicyServiceAsh;
@@ -216,12 +214,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::NetworkingAttributes> receiver) override;
   void BindNetworkingPrivate(
       mojo::PendingReceiver<mojom::NetworkingPrivate> receiver) override;
-  void BindOneDriveNotificationService(
-      mojo::PendingReceiver<mojom::OneDriveNotificationService> receiver)
-      override;
-  void BindOneDriveIntegrationService(
-      mojo::PendingReceiver<mojom::OneDriveIntegrationService> receiver)
-      override;
   void BindParentAccess(
       mojo::PendingReceiver<mojom::ParentAccess> receiver) override;
   void BindPaymentAppInstance(
@@ -436,10 +428,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<NativeThemeServiceAsh> native_theme_service_ash_;
   std::unique_ptr<NetworkingAttributesAsh> networking_attributes_ash_;
   std::unique_ptr<NetworkingPrivateAsh> networking_private_ash_;
-  std::unique_ptr<OneDriveNotificationServiceAsh>
-      one_drive_notification_service_ash_;
-  std::unique_ptr<OneDriveIntegrationServiceAsh>
-      one_drive_integration_service_ash_;
   std::unique_ptr<ParentAccessAsh> parent_access_ash_;
   std::unique_ptr<PaymentAppInstanceAsh> payment_app_instance_ash_;
   std::unique_ptr<PolicyServiceAsh> policy_service_ash_;

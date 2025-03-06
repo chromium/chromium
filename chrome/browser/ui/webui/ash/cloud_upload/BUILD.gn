@@ -155,7 +155,6 @@ source_set("browser_tests") {
     "//chromeos/ash/components/file_manager:constants",
     "//chromeos/ash/experiences/system_web_apps/types",
     "//chromeos/constants",
-    "//chromeos/crosapi/mojom",
     "//components/drive",
     "//content/public/browser",
     "//content/test:test_support",
