@@ -169,10 +169,11 @@ ui::NativeTheme* FallbackLinuxUi::GetNativeTheme() const {
   return ui::NativeTheme::GetInstanceForNativeUi();
 }
 
-ui::TextEditCommand FallbackLinuxUi::GetTextEditCommandForEvent(
+bool FallbackLinuxUi::GetTextEditCommandsForEvent(
     const ui::Event& event,
-    int text_flags) {
-  return ui::TextEditCommand::INVALID_COMMAND;
+    int text_flags,
+    std::vector<ui::TextEditCommandAuraLinux>* commands) {
+  return false;
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)
