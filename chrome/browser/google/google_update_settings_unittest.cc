@@ -11,7 +11,6 @@
 #include "base/path_service.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/common/chrome_paths.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -131,7 +130,7 @@ TEST_F(GoogleUpdateTest, IsEnterpriseBrandCodes) {
   EXPECT_FALSE(google_brand::IsEnterprise(""));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Test for http://crbug.com/383003
 TEST_F(GoogleUpdateTest, ConsentFileIsWorldReadable) {
   // Turn on stats reporting.
