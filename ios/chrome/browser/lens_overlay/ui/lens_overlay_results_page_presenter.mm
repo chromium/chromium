@@ -31,8 +31,9 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
 
 }  // namespace
 
-@interface LensOverlayResultsPagePresenter () <LensOverlayPanTrackerDelegate,
-                                               LensOverlayDetentsChangeObserver>
+@interface LensOverlayResultsPagePresenter () <
+    LensOverlayPanTrackerDelegate,
+    LensOverlayDetentsManagerDelegate>
 @end
 
 @implementation LensOverlayResultsPagePresenter {
@@ -160,7 +161,7 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
        initWithBottomSheet:sheet
                     window:self.presentationWindow
       presentationStrategy:strategy];
-  _detentsManager.observer = self;
+  _detentsManager.delegate = self;
   [_detentsManager adjustDetentsForState:SheetDetentStateUnrestrictedMovement];
 
   if (maximizeSheet) {
@@ -389,14 +390,17 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
   }
 }
 
-#pragma mark - LensOverlayDetentsChangeObserver
+#pragma mark - LensOverlayDetentsManagerDelegate
 
-- (void)onBottomSheetDimensionStateChanged:(SheetDimensionState)state {
-  [self.delegate onResultsPageDimensionStateChanged:state];
+- (void)lensOverlayDetentsManagerDidChangeDimensionState:
+    (LensOverlayDetentsManager*)detentsManager {
+  [self.delegate
+      onResultsPageDimensionStateChanged:detentsManager.sheetDimension];
 }
 
-- (BOOL)bottomSheetShouldDismissFromState:(SheetDimensionState)state {
-  switch (state) {
+- (BOOL)lensOverlayDetentsManagerShouldDismissBottomSheet:
+    (LensOverlayDetentsManager*)detentsManager {
+  switch (self.sheetDimension) {
     case SheetDimensionStateConsent:
     case SheetDimensionStateHidden:
       return YES;

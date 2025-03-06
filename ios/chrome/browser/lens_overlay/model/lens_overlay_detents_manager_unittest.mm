@@ -14,21 +14,25 @@
 using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
-// Fake observer that exposes the latest reported value by the detents manager.
-@interface FakeDetentsObserver : NSObject <LensOverlayDetentsChangeObserver>
+// Fake delegate that exposes the latest reported value by the detents manager.
+@interface FakeDetentsManagerDelegate
+    : NSObject <LensOverlayDetentsManagerDelegate>
 
 // The latest reported dimension state.
 @property(nonatomic, readonly) SheetDimensionState latestReportedDimensionState;
 
 @end
 
-@implementation FakeDetentsObserver
-- (BOOL)bottomSheetShouldDismissFromState:(SheetDimensionState)state {
+@implementation FakeDetentsManagerDelegate
+
+- (BOOL)lensOverlayDetentsManagerShouldDismissBottomSheet:
+    (LensOverlayDetentsManager*)detentsManager {
   return YES;
 }
 
-- (void)onBottomSheetDimensionStateChanged:(SheetDimensionState)state {
-  _latestReportedDimensionState = state;
+- (void)lensOverlayDetentsManagerDidChangeDimensionState:
+    (LensOverlayDetentsManager*)detentsManager {
+  _latestReportedDimensionState = detentsManager.sheetDimension;
 }
 
 @end
@@ -51,15 +55,9 @@ class LensOverlayDetentsManagerTest : public PlatformTest {
                      window:scoped_key_window_.Get()];
   }
 
-  ~LensOverlayDetentsManagerTest() override {
-    detents_manager_ = nil;
-    presented_view_controller_ = nil;
-    presenting_view_controller_ = nil;
-  }
-
   LensOverlayDetentsManager* detents_manager_;
-  UIViewController* presented_view_controller_;
-  UIViewController* presenting_view_controller_;
+  __strong UIViewController* presented_view_controller_;
+  __strong UIViewController* presenting_view_controller_;
   ScopedKeyWindow scoped_key_window_;
 
   // Presents and blocks until the view controller is presented.
@@ -128,7 +126,7 @@ TEST_F(LensOverlayDetentsManagerTest,
   [detents_manager_ adjustDetentsForState:SheetDetentStateUnrestrictedMovement];
   WaitForPresentation();
 
-  // Then the default presentation dimension immediatelly after presenting
+  // Then the default presentation dimension immediately after presenting
   // should be medium.
   EXPECT_EQ(detents_manager_.sheetDimension, SheetDimensionStateMedium);
 
@@ -183,11 +181,12 @@ TEST_F(LensOverlayDetentsManagerTest,
 }
 
 // Tests the ability of adjusting the detent after the initial presentation.
-TEST_F(LensOverlayDetentsManagerTest, TestAdjustingDetentsNotifiesObserver) {
-  // Given a detents observer.
-  FakeDetentsObserver* fakeObserver = [[FakeDetentsObserver alloc] init];
-  detents_manager_.observer = fakeObserver;
-  EXPECT_EQ(fakeObserver.latestReportedDimensionState,
+TEST_F(LensOverlayDetentsManagerTest, TestAdjustingDetentsNotifiesDelegate) {
+  // Given a detents delegate.
+  FakeDetentsManagerDelegate* fakeDelegate =
+      [[FakeDetentsManagerDelegate alloc] init];
+  detents_manager_.delegate = fakeDelegate;
+  EXPECT_EQ(fakeDelegate.latestReportedDimensionState,
             SheetDimensionStateHidden);
 
   // When presenting in the unrestricted movement state.
@@ -195,10 +194,10 @@ TEST_F(LensOverlayDetentsManagerTest, TestAdjustingDetentsNotifiesObserver) {
   WaitForPresentation();
 
   // Then the changes in the dimension state should be propagated to the detents
-  // observer.
-  EXPECT_EQ(fakeObserver.latestReportedDimensionState,
+  // delegate.
+  EXPECT_EQ(fakeDelegate.latestReportedDimensionState,
             SheetDimensionStateMedium);
   [detents_manager_ adjustDetentsForState:SheetDetentStatePeakEnabled];
-  EXPECT_EQ(fakeObserver.latestReportedDimensionState,
+  EXPECT_EQ(fakeDelegate.latestReportedDimensionState,
             SheetDimensionStatePeaking);
 }
