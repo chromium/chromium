@@ -22,7 +22,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/avatar_menu.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
@@ -1431,7 +1430,7 @@ TEST_F(ProfileAttributesStorageTest, AvatarIconIndex) {
 #endif
 
 // High res avatar downloading is only supported on desktop.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ProfileAttributesStorageTest, DownloadHighResAvatarTest) {
   storage()->set_disable_avatar_download_for_testing(false);
 
@@ -1888,7 +1887,7 @@ TEST_F(ProfileAttributesStorageTest, GetAllProfilesKeys) {
                 "testing_profile_path%" PRIuS, (size_t)0U)}));
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ProfileAttributesStorageTest, GetGaiaImageForAvatarMenu) {
   storage()->set_disable_avatar_download_for_testing(false);
 
@@ -1939,7 +1938,7 @@ TEST_F(ProfileAttributesStorageTest, GetGaiaImageForAvatarMenu) {
                                               kArbitraryPreferredSize));
   EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_image, image_loaded));
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(ProfileAttributesStorageTest, ChooseNameForNewProfile) {
   DisableObserver();  // This test doesn't test observers.
@@ -1964,7 +1963,7 @@ TEST_F(ProfileAttributesStorageTest, ChooseNameForNewProfile) {
   }
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ProfileAttributesStorageTest,
        MigrateLegacyProfileNamesAndRecomputeIfNeeded) {
   DisableObserver();  // This test doesn't test observers.
@@ -2048,7 +2047,7 @@ TEST_F(ProfileAttributesStorageTest,
   }
   EXPECT_EQ(actual_profile_names, expected_profile_names);
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(ProfileAttributesStorageTest,
        InitialSavedOrderValidWithAddRemoveProfiles) {

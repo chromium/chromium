@@ -9,7 +9,6 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/url_constants.h"
 #include "components/dom_distiller/core/url_constants.h"
@@ -41,9 +40,9 @@ bool ProfileIOData::IsHandledProtocol(const std::string& scheme) {
       content::kChromeUIScheme,
       content::kChromeUIUntrustedScheme,
       url::kDataScheme,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       content::kExternalFileScheme,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_ANDROID)
       url::kContentScheme,
 #endif  // BUILDFLAG(IS_ANDROID)

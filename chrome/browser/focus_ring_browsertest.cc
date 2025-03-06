@@ -5,7 +5,6 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_comparator.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
@@ -93,7 +92,7 @@ class FocusRingBrowserTest : public InProcessBrowserTest {
     platform_suffix = "_win";
 #elif BUILDFLAG(IS_LINUX)
     platform_suffix = "_linux";
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
     platform_suffix = "_chromeos";
 #endif
 
