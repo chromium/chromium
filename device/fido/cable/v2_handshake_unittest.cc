@@ -21,6 +21,7 @@
 #include "crypto/random.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/features.h"
+#include "device/fido/fido_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
@@ -318,21 +319,20 @@ TEST(CableV2Encoding, RequestTypeToString) {
 }
 
 TEST(CableV2Encoding, ShouldOfferLinking) {
-  for (const auto type :
-       {FidoRequestType::kMakeCredential, FidoRequestType::kGetAssertion}) {
-    EXPECT_TRUE(ShouldOfferLinking(type));
-  }
-  {
-    base::test::ScopedFeatureList disable_linking_for_dc;
-    disable_linking_for_dc.InitAndDisableFeature(
-        device::kDigitalCredentialsHybridLinking);
-    EXPECT_FALSE(ShouldOfferLinking(CredentialRequestType::kPresentation));
-  }
-  {
-    base::test::ScopedFeatureList enable_linking_for_dc;
-    enable_linking_for_dc.InitAndEnableFeature(
-        device::kDigitalCredentialsHybridLinking);
-    EXPECT_TRUE(ShouldOfferLinking(CredentialRequestType::kPresentation));
+  const struct TestCase {
+    device::cablev2::RequestType request_type;
+    base::test::FeatureRef feature;
+  } kTestCases[] = {
+      {FidoRequestType::kMakeCredential, device::kWebAuthnHybridLinking},
+      {FidoRequestType::kGetAssertion, device::kWebAuthnHybridLinking},
+      {CredentialRequestType::kPresentation,
+       device::kDigitalCredentialsHybridLinking}};
+  for (const TestCase& test_case : kTestCases) {
+    for (bool enabled : {false, true}) {
+      base::test::ScopedFeatureList scoped_feature_list;
+      scoped_feature_list.InitWithFeatureState(*test_case.feature, enabled);
+      EXPECT_EQ(ShouldOfferLinking(test_case.request_type), enabled);
+    }
   }
 }
 
