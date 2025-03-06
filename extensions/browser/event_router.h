@@ -89,10 +89,10 @@ class EventRouter : public KeyedService,
  public:
   // These constants convey the state of our knowledge of whether we're in
   // a user-caused gesture as part of DispatchEvent.
-  enum UserGestureState {
-    USER_GESTURE_UNKNOWN = 0,
-    USER_GESTURE_ENABLED = 1,
-    USER_GESTURE_NOT_ENABLED = 2,
+  enum class UserGestureState {
+    kUnknown = 0,
+    kEnabled = 1,
+    kNotEnabled = 2,
   };
 
   // The pref key for the list of event names for which an extension has

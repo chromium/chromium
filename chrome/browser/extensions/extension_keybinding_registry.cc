@@ -182,7 +182,7 @@ void ExtensionKeybindingRegistry::CommandExecuted(
   auto event =
       std::make_unique<Event>(events::COMMANDS_ON_COMMAND, kOnCommandEventName,
                               std::move(args), browser_context_);
-  event->user_gesture = EventRouter::USER_GESTURE_ENABLED;
+  event->user_gesture = EventRouter::UserGestureState::kEnabled;
   EventRouter::Get(browser_context_)
       ->DispatchEventToExtension(extension_id, std::move(event));
 }
