@@ -7575,6 +7575,7 @@ test("unit_tests") {
       "../browser/notifications/screen_capture_notification_blocker_unittest.cc",
       "../browser/password_manager/generated_password_leak_detection_pref_unittest.cc",
       "../browser/password_manager/password_change/change_form_submission_verifier_unittest.cc",
+      "../browser/password_manager/password_change/change_password_form_waiter_unittest.cc",
       "../browser/password_manager/password_change_delegate_impl_unittest.cc",
       "../browser/password_manager/password_change_delegate_mock.cc",
       "../browser/password_manager/password_change_delegate_mock.h",

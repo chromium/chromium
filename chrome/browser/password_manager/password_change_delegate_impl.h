@@ -26,10 +26,7 @@ class PasswordFormManager;
 }  // namespace password_manager
 
 class ChangeFormSubmissionVerifier;
-
-namespace {
-class ParsedPasswordFormWaiter;
-}
+class ChangePasswordFormWaiter;
 
 // This class controls password change process including acceptance of privacy
 // notice, opening of a new tab, navigation to the change password url, password
@@ -41,8 +38,6 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
       base::RepeatingCallback<content::WebContents*(const GURL&,
                                                     content::WebContents*)>;
 
-  static constexpr base::TimeDelta kChangePasswordFormWaitingTimeout =
-      base::Seconds(10);
   static constexpr char kFinalPasswordChangeStatusHistogram[] =
       "PasswordManager.FinalPasswordChangeStatus";
   static constexpr char kWasPasswordChangeNewTabFocused[] =
@@ -113,7 +108,7 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   State current_state_ = static_cast<State>(-1);
 
   // Class which awaits for change password form to appear.
-  std::unique_ptr<ParsedPasswordFormWaiter> form_waiter_;
+  std::unique_ptr<ChangePasswordFormWaiter> form_waiter_;
 
   // Helper class which submits a form and verifies submission.
   std::unique_ptr<ChangeFormSubmissionVerifier> submission_verifier_;

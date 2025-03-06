@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -95,7 +96,7 @@ TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFormNotFound) {
   EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForChangePasswordForm,
             delegate->GetCurrentState());
 
-  FastForwardBy(PasswordChangeDelegateImpl::kChangePasswordFormWaitingTimeout);
+  FastForwardBy(ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
 
   EXPECT_EQ(PasswordChangeDelegate::State::kChangePasswordFormNotFound,
             delegate->GetCurrentState());
@@ -117,7 +118,7 @@ TEST_F(PasswordChangeDelegateImplTest, RestartPasswordChange) {
   EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForChangePasswordForm,
             delegate->GetCurrentState());
 
-  FastForwardBy(PasswordChangeDelegateImpl::kChangePasswordFormWaitingTimeout);
+  FastForwardBy(ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
 
   EXPECT_EQ(PasswordChangeDelegate::State::kChangePasswordFormNotFound,
             delegate->GetCurrentState());
