@@ -75,7 +75,11 @@ class AbandonedPageLoadMetricsObserver
     kSecondRedirectedRequestStart = 22,
     kSecondRedirectResponseStart = 23,
 
-    kMaxValue = kSecondRedirectResponseStart,
+    // `kCommitReplySent` is the milestone placed between `kCommitReceived` and
+    // `kDidCommit`.
+    kCommitReplySent = 24,
+
+    kMaxValue = kCommitReplySent,
     // `kFirstEssentialLoadingEvent` and `kLastEssentialLoadingEvent` aliases to
     // the first / last loading milestones which always exists unless abandoned.
     // Note that events such as `kAFT*`, `kHeaderChunk*` and `kBodyChunk*` only
@@ -114,6 +118,11 @@ class AbandonedPageLoadMetricsObserver
     kNewDuplicateNavigation = 14,
     kMaxValue = kNewDuplicateNavigation,
   };
+  // When updating milestones, the corresponding milestones list in test
+  // `GWSAbandonedPageLoadMetricsObserverBrowserTest::all_milestones()` should
+  // be updated as well. As LINT can't annotate multiple targets, we need to
+  // take care of it manually.
+  //
   // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:NavigationAbandonReasonEnum)
 
   static std::string AbandonReasonToString(AbandonReason abandon_reason);
@@ -492,6 +501,7 @@ void AbandonedPageLoadMetricsObserver::LogUKMHistogramsForMilestoneMetrics(
       case NavigationMilestone::kNonRedirectResponseLoaderCallback:
       case NavigationMilestone::kCommitSent:
       case NavigationMilestone::kCommitReceived:
+      case NavigationMilestone::kCommitReplySent:
       case NavigationMilestone::kDidCommit:
       case NavigationMilestone::kSecondRedirectResponseStart:
       case NavigationMilestone::kSecondRedirectedRequestStart:
