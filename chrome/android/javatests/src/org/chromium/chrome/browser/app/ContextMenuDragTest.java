@@ -41,6 +41,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuSwitches;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -54,7 +55,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    ChromeSwitches.FORCE_CONTEXT_MENU_POPUP
+    ContextMenuSwitches.FORCE_CONTEXT_MENU_POPUP
 })
 @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
 @Batch(Batch.PER_CLASS)

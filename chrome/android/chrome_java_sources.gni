@@ -366,7 +366,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuItemWithIconButtonProperties.java",
   "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuItemWithIconButtonViewBinder.java",
   "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuListView.java",
-  "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuUtils.java",
   "java/src/org/chromium/chrome/browser/contextmenu/LensChipDelegate.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchContext.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchFieldTrial.java",

@@ -47,11 +47,12 @@ import org.chromium.chrome.browser.contextmenu.ChromeContextMenuItem.Item;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuGroup;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ListItemType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.ContextMenuDialog;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuSwitches;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.TestActivity;
@@ -359,7 +360,7 @@ public class ContextMenuCoordinatorTest {
     @Config(
             shadows = {ShadowContextMenuDialog.class},
             qualifiers = "mdpi")
-    @CommandLineFlags.Add(ChromeSwitches.FORCE_CONTEXT_MENU_POPUP)
+    @CommandLineFlags.Add(ContextMenuSwitches.FORCE_CONTEXT_MENU_POPUP)
     public void testCreateContextMenuDialog_PopupStyle() {
         ContextMenuDialog dialog = createContextMenuDialogForTest(/* isPopup= */ true);
         ShadowContextMenuDialog shadowDialog = (ShadowContextMenuDialog) Shadow.extract(dialog);
@@ -378,9 +379,7 @@ public class ContextMenuCoordinatorTest {
 
         final int centerX = 100;
         final int centerY = 200;
-        Rect rect =
-                ContextMenuCoordinator.getContextMenuTriggerRectFromWeb(
-                        mWebContentsMock, centerX, centerY);
+        Rect rect = ContextMenuUtils.computeDragShadowRect(mWebContentsMock, centerX, centerY);
 
         Assert.assertEquals("rect.left does not match.", /*100 - 50 / 2 =*/ 75, rect.left);
         Assert.assertEquals("rect.right does not match.", /*100 + 50 / 2 =*/ 125, rect.right);
@@ -394,9 +393,7 @@ public class ContextMenuCoordinatorTest {
 
         final int centerX = 100;
         final int centerY = 200;
-        Rect rect =
-                ContextMenuCoordinator.getContextMenuTriggerRectFromWeb(
-                        mWebContentsMock, centerX, centerY);
+        Rect rect = ContextMenuUtils.computeDragShadowRect(mWebContentsMock, centerX, centerY);
 
         // Rect should be a point when drag not started.
         Assert.assertEquals("rect.left does not match.", centerX, rect.left);
@@ -409,9 +406,7 @@ public class ContextMenuCoordinatorTest {
     public void testGetContextMenuTriggerRectFromWeb_NoViewAndroidDelegate() {
         final int centerX = 100;
         final int centerY = 200;
-        Rect rect =
-                ContextMenuCoordinator.getContextMenuTriggerRectFromWeb(
-                        mWebContentsMock, centerX, centerY);
+        Rect rect = ContextMenuUtils.computeDragShadowRect(mWebContentsMock, centerX, centerY);
 
         // Rect should be a point when no ViewAndroidDelegate attached to web content.
         Assert.assertEquals("rect.left does not match.", centerX, rect.left);
@@ -465,7 +460,7 @@ public class ContextMenuCoordinatorTest {
                 ShadowProfile.class
             },
             qualifiers = "mdpi")
-    @CommandLineFlags.Add(ChromeSwitches.FORCE_CONTEXT_MENU_POPUP)
+    @CommandLineFlags.Add(ContextMenuSwitches.FORCE_CONTEXT_MENU_POPUP)
     public void testDisplayMenu_DragEnabled() {
         final int shadowImgWidth = 50;
         final int shadowImgHeight = 40;

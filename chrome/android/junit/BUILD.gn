@@ -602,7 +602,6 @@ if (is_android) {
     sources = [
       "src/org/chromium/chrome/browser/contextmenu/ContextMenuCoordinatorTest.java",
       "src/org/chromium/chrome/browser/contextmenu/ContextMenuHeaderMediatorTest.java",
-      "src/org/chromium/chrome/browser/contextmenu/ContextMenuUtilsUnitTest.java",
     ]
 
     deps = chrome_junit_tests_deps
