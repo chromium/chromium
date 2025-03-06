@@ -25,6 +25,7 @@
 #include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/resource_coordinator/time.h"
@@ -123,10 +124,12 @@ class ExpectStateTransitionObserver : public LifecycleUnitObserver {
 
 class DiscardWaiter : public TabLifecycleObserver {
  public:
-  DiscardWaiter() { TabLifecycleUnitExternal::AddTabLifecycleObserver(this); }
+  DiscardWaiter() {
+    GetTabLifecycleUnitSource()->AddTabLifecycleObserver(this);
+  }
 
   ~DiscardWaiter() override {
-    TabLifecycleUnitExternal::RemoveTabLifecycleObserver(this);
+    GetTabLifecycleUnitSource()->RemoveTabLifecycleObserver(this);
   }
 
   void Wait() { run_loop_.Run(); }

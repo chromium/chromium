@@ -25,7 +25,8 @@
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
-#include "chrome/browser/resource_coordinator/tab_manager.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
+#include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -196,14 +197,16 @@ TabStatsTracker::TabStatsTracker(PrefService* pref_service)
                          base::BindRepeating(&TabStatsTracker::OnHeartbeatEvent,
                                              base::Unretained(this)));
 
-  g_browser_process->GetTabManager()->AddObserver(this);
+  resource_coordinator::GetTabLifecycleUnitSource()->AddTabLifecycleObserver(
+      this);
 }
 
 TabStatsTracker::~TabStatsTracker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BrowserList::GetInstance()->RemoveObserver(this);
   base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
-  g_browser_process->GetTabManager()->RemoveObserver(this);
+  resource_coordinator::GetTabLifecycleUnitSource()->RemoveTabLifecycleObserver(
+      this);
 }
 
 // static

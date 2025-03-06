@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/api/tabs/tabs_windows_api.h"
 #include "chrome/browser/extensions/api/tabs/windows_event_router.h"
@@ -20,7 +19,8 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
-#include "chrome/browser/resource_coordinator/tab_manager.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
+#include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
@@ -196,7 +196,8 @@ TabsEventRouter::TabsEventRouter(Profile* profile)
   BrowserList::AddObserver(this);
   browser_tab_strip_tracker_.Init();
 
-  tab_manager_scoped_observation_.Observe(g_browser_process->GetTabManager());
+  tab_source_scoped_observation_.Observe(
+      resource_coordinator::GetTabLifecycleUnitSource());
   performance_manager::PageLiveStateDecorator::AddAllPageObserver(this);
 }
 

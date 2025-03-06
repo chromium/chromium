@@ -587,7 +587,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
             performance_manager::user_tuning::UserPerformanceTuningManager::
                 PreDiscardResourceUsage::FromWebContents(web_contents);
         pre_discard_resource_usage->UpdateDiscardInfo(
-            135 * 1024, LifecycleUnitDiscardReason::PROACTIVE);
+            135 * 1024, ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
       })),
       PressButton(kMemorySaverChipElementId),
       WaitForShow(
