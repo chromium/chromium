@@ -135,6 +135,7 @@ ViewTransition::ViewTransition(PassKey,
       creation_type_(CreationType::kScript),
       document_(element->GetDocument()),
       scope_(element),
+      has_document_scope_(element->IsDocumentElement()),
       delegate_(delegate),
       style_tracker_(
           MakeGarbageCollected<ViewTransitionStyleTracker>(*document_,
@@ -165,6 +166,7 @@ ViewTransition::ViewTransition(PassKey,
       creation_type_(CreationType::kScript),
       document_(element->GetDocument()),
       scope_(element),
+      has_document_scope_(element->IsDocumentElement()),
       script_delegate_(MakeGarbageCollected<DOMViewTransition>(
           *element->GetExecutionContext(),
           *this,
@@ -194,6 +196,7 @@ ViewTransition::ViewTransition(PassKey,
       creation_type_(CreationType::kForSnapshot),
       document_(document),
       scope_(document->documentElement()),
+      has_document_scope_(true),
       delegate_(delegate),
       transition_token_(transition_token),
       style_tracker_(
@@ -226,6 +229,7 @@ ViewTransition::ViewTransition(PassKey,
       creation_type_(CreationType::kFromSnapshot),
       document_(document),
       scope_(document->documentElement()),
+      has_document_scope_(true),
       delegate_(delegate),
       transition_token_(transition_state.transition_token),
       style_tracker_(MakeGarbageCollected<ViewTransitionStyleTracker>(
@@ -629,6 +633,7 @@ void ViewTransition::ProcessCurrentState() {
         delegate_->AddPendingRequest(ViewTransitionRequest::CreateRelease(
             transition_token_, MaybeCrossFrameSink()));
         delegate_->OnTransitionFinished(this);
+        LogIfDocumentElementChanged();
 
         style_tracker_ = nullptr;
         process_next_state = AdvanceTo(State::kFinished);
@@ -642,6 +647,16 @@ void ViewTransition::ProcessCurrentState() {
         break;
     }
   }
+}
+
+void ViewTransition::LogIfDocumentElementChanged() const {
+  if (!has_document_scope_ || !IsCreatedViaScriptAPI()) {
+    return;
+  }
+  if (scope_ && scope_->IsDocumentElement()) {
+    return;
+  }
+  UseCounter::Count(*document_, WebFeature::kViewTransitionChangeRootElement);
 }
 
 ViewTransitionTypeSet* ViewTransition::Types() {

@@ -363,11 +363,21 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   // API are never cross frame sink.
   bool MaybeCrossFrameSink() const;
 
+  void LogIfDocumentElementChanged() const;
+
   State state_ = State::kInitial;
   const CreationType creation_type_;
 
   Member<Document> document_;
+
+  // For a scoped transition, this is the element scope.
+  // For a document transition, this is the document element at the time the
+  // ViewTransition was created.
+  // TODO(crbug.com/394052227): Consider skipping the transition if the identity
+  // of the document element changes.
   Member<Element> scope_;
+  bool has_document_scope_ = false;
+
   Delegate* const delegate_ = nullptr;
 
   // Each transition is assigned a unique ID. For cross-document navigations

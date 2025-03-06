@@ -1423,4 +1423,84 @@ TEST_P(ViewTransitionTest, SubframeSnapshotLayer) {
   EXPECT_FALSE(new_layer->is_live_content_layer_for_testing());
 }
 
+TEST_P(ViewTransitionTest, ReplaceDocumentElement) {
+  auto* document = &GetDocument();
+  document->documentElement()->setInnerHTML("<body>initial</body>");
+  UpdateAllLifecyclePhasesForTest();
+
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  auto lambda = [](const v8::FunctionCallbackInfo<v8::Value>& info) {
+    auto* doc = static_cast<Document*>(info.Data().As<v8::External>()->Value());
+    auto* new_root = doc->CreateElementForBinding(AtomicString("html"));
+    new_root->setInnerHTML(R"HTML(
+      <body>
+        <style>
+          ::view-transition-group(*) { animation-duration: 0s; }
+        </style>
+        transitioned
+      </body>
+    )HTML");
+    doc->replaceChild(new_root, doc->documentElement());
+  };
+  auto* callback = V8ViewTransitionCallback::Create(
+      v8::Function::New(script_state->GetContext(), lambda,
+                        v8::External::New(script_state->GetIsolate(), document))
+          .ToLocalChecked());
+
+  auto* transition = ViewTransitionSupplement::startViewTransition(
+      script_state, *document, callback, IGNORE_EXCEPTION_FOR_TESTING);
+
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  test::RunPendingTasks();
+  EXPECT_EQ(GetState(transition), State::kAnimating);
+
+  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(GetState(transition), State::kFinished);
+
+  EXPECT_TRUE(
+      document->IsUseCounted(WebFeature::kViewTransitionChangeRootElement));
+}
+
+TEST_P(ViewTransitionTest, ReplaceBody) {
+  auto* document = &GetDocument();
+  document->documentElement()->setInnerHTML("<body>initial</body>");
+  UpdateAllLifecyclePhasesForTest();
+
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  auto lambda = [](const v8::FunctionCallbackInfo<v8::Value>& info) {
+    auto* doc = static_cast<Document*>(info.Data().As<v8::External>()->Value());
+    doc->documentElement()->setInnerHTML(R"HTML(
+      <body>
+        <style>
+          ::view-transition-group(*) { animation-duration: 0s; }
+        </style>
+        transitioned
+      </body>
+    )HTML");
+  };
+  auto* callback = V8ViewTransitionCallback::Create(
+      v8::Function::New(script_state->GetContext(), lambda,
+                        v8::External::New(script_state->GetIsolate(), document))
+          .ToLocalChecked());
+
+  auto* transition = ViewTransitionSupplement::startViewTransition(
+      script_state, *document, callback, IGNORE_EXCEPTION_FOR_TESTING);
+
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  test::RunPendingTasks();
+  EXPECT_EQ(GetState(transition), State::kAnimating);
+
+  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(GetState(transition), State::kFinished);
+
+  EXPECT_FALSE(
+      document->IsUseCounted(WebFeature::kViewTransitionChangeRootElement));
+}
+
 }  // namespace blink
