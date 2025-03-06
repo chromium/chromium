@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <utility>
-
 namespace blink {
 
 enum AccessibilityOrientation {
@@ -137,7 +135,6 @@ enum class TreeUpdateReason : uint8_t {
   // These updates are always associated with a DOM Node:
   kActiveDescendantChanged,
   kAriaExpandedChanged,
-  kAriaOwnsChanged,
   kAriaPressedChanged,
   kAriaSelectedChanged,
   kCSSAnchorChanged,
