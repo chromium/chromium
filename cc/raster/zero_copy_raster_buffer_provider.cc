@@ -36,10 +36,9 @@ constexpr static auto kBufferUsage = gfx::BufferUsage::GPU_READ_CPU_READ_WRITE;
 class ZeroCopyRasterBufferImpl : public RasterBuffer {
  public:
   ZeroCopyRasterBufferImpl(
-      base::WaitableEvent* shutdown_event,
       const ResourcePool::InUsePoolResource& in_use_resource,
       scoped_refptr<gpu::SharedImageInterface> sii)
-      : sii_(sii), shutdown_event_(shutdown_event) {
+      : sii_(sii) {
     if (!in_use_resource.backing()) {
       auto backing = std::make_unique<ResourcePool::Backing>(
           in_use_resource.size(), in_use_resource.format(),
@@ -136,9 +135,6 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
   // These fields are safe to access on both the compositor and worker thread.
   raw_ptr<ResourcePool::Backing> backing_;
   const scoped_refptr<gpu::SharedImageInterface> sii_;
-
-  // These fields are for use on the worker thread.
-  raw_ptr<base::WaitableEvent> shutdown_event_;
 };
 
 }  // namespace
@@ -160,9 +156,8 @@ ZeroCopyRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
   return std::make_unique<ZeroCopyRasterBufferImpl>(
-      shutdown_event_, resource,
-      base::WrapRefCounted(
-          compositor_context_provider_->SharedImageInterface()));
+      resource, base::WrapRefCounted(
+                    compositor_context_provider_->SharedImageInterface()));
 }
 
 void ZeroCopyRasterBufferProvider::Flush() {}
@@ -192,11 +187,6 @@ uint64_t ZeroCopyRasterBufferProvider::SetReadyToDrawCallback(
     uint64_t pending_callback_id) {
   // Zero-copy resources are immediately ready to draw.
   return 0;
-}
-
-void ZeroCopyRasterBufferProvider::SetShutdownEvent(
-    base::WaitableEvent* shutdown_event) {
-  shutdown_event_ = shutdown_event;
 }
 
 void ZeroCopyRasterBufferProvider::Shutdown() {}
