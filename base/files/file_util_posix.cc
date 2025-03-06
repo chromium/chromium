@@ -432,6 +432,18 @@ bool PreReadFileSlow(const FilePath& file_path, int64_t max_bytes) {
 }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+
+// Checks if the given path is under ~/MyFiles.
+bool IsUnderMyFiles(const FilePath& path) {
+  const std::vector parts = path.GetComponents();
+  return parts.size() > 5 && parts[0] == "/" && parts[1] == "home" &&
+         parts[2] == "chronos" && parts[3].starts_with("u-") &&
+         parts[4] == "MyFiles" && !parts[5].empty();
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace
 
 FilePath MakeAbsoluteFilePath(const FilePath& input) {
@@ -902,6 +914,7 @@ bool CreateNewTempDirectory(const FilePath::StringType& prefix,
 bool CreateDirectoryAndGetError(const FilePath& full_path, File::Error* error) {
   ScopedBlockingCall scoped_blocking_call(
       FROM_HERE, BlockingType::MAY_BLOCK);  // For call to mkdir().
+
   // Avoid checking subdirs if directory already exists.
   if (DirectoryExists(full_path)) {
     return true;
@@ -921,7 +934,15 @@ bool CreateDirectoryAndGetError(const FilePath& full_path, File::Error* error) {
 
   // Iterate through the missing directories and create.
   for (const FilePath& subpath : base::Reversed(missing_subpaths)) {
-    if (mkdir(subpath.value().c_str(), 0700) == 0) {
+    mode_t mode = S_IRWXU;
+
+#if BUILDFLAG(IS_CHROMEOS)
+    if (IsUnderMyFiles(subpath)) {
+      mode |= S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+    if (mkdir(subpath.value().c_str(), mode) == 0) {
       continue;
     }
     // Mkdir failed, but it might have failed with EEXIST, or some other error
