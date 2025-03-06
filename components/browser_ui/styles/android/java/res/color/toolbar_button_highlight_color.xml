@@ -10,6 +10,10 @@ found in the LICENSE file.
       android:alpha="0.08"
       android:color="?attr/colorOnSurface" />
   <item
+      android:state_focused="true"
+      android:alpha="0.08"
+      android:color="?attr/colorOnSurface" />
+  <item
       android:state_pressed="true"
       android:alpha="0.12"
       android:color="?attr/colorOnSurface" />
