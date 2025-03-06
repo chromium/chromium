@@ -24,6 +24,7 @@
 #include "base/test/mock_log.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
@@ -2051,8 +2052,15 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
 // and an app restore occurs, apps will be duplicated. This test ensures that
 // does not occur. This test doesn't build on non app_session_service
 // platforms, hence the buildflag disablement.
+//
+// TODO(crbug.com/401224321): Flaky on "Mac13 Tests" bot.
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
+#define MAYBE_ProfileRestartedAppRestore DISABLED_ProfileRestartedAppRestore
+#else
+#define MAYBE_ProfileRestartedAppRestore ProfileRestartedAppRestore
+#endif
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
-                       ProfileRestartedAppRestore) {
+                       MAYBE_ProfileRestartedAppRestore) {
   Profile* test_profile = browser()->profile();
 
   // StartupBrowserCreator() has already run in SetUp(), so it would already be
