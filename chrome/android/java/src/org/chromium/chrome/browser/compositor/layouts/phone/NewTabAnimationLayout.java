@@ -14,6 +14,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
+import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -90,11 +91,13 @@ public class NewTabAnimationLayout extends Layout {
     private final ViewGroup mAnimationHostView;
     private final CompositorViewHolder mCompositorViewHolder;
     private final BlackHoleEventFilter mBlackHoleEventFilter;
+    private final Handler mHandler;
 
     private @Nullable StaticTabSceneLayer mSceneLayer;
     private AnimatorSet mTabCreatedForegroundAnimation;
     private ObjectAnimator mFadeAnimator;
     private ShrinkExpandImageView mRectView;
+    private Runnable mAnimationRunnable;
     private int mNextTabId = Tab.INVALID_TAB_ID;
 
     /**
@@ -119,6 +122,7 @@ public class NewTabAnimationLayout extends Layout {
         mCompositorViewHolder = compositorViewHolderSupplier.get();
         mBlackHoleEventFilter = new BlackHoleEventFilter(context);
         mAnimationHostView = animationHostView;
+        mHandler = new Handler();
     }
 
     @Override
@@ -196,6 +200,7 @@ public class NewTabAnimationLayout extends Layout {
 
     @Override
     protected void forceAnimationToFinish() {
+        runQueuedRunnableIfExists();
         if (mTabCreatedForegroundAnimation != null) mTabCreatedForegroundAnimation.end();
         // TODO(crbug.com/40282469): Implement this for Background Animation.
     }
@@ -234,7 +239,7 @@ public class NewTabAnimationLayout extends Layout {
         updateAnimationHostViewSensitivity(sourceId);
         Tab oldTab = mTabModelSelector.getTabById(sourceId);
 
-        // TODO(crbug.com/40282469): Implement background animation
+        // TODO(crbug.com/40282469): Implement background animation.
         if (!background) {
             tabCreatedInForeground(
                     id, sourceId, newIsIncognito, getForegroundRectStart(oldTab, newTab));
@@ -274,7 +279,7 @@ public class NewTabAnimationLayout extends Layout {
     @Override
     public boolean isRunningAnimations() {
         // TODO(crbug.com/40282469): Check background animation once it is implemented.
-        return mTabCreatedForegroundAnimation != null && mTabCreatedForegroundAnimation.isRunning();
+        return mTabCreatedForegroundAnimation != null;
     }
 
     private void reset() {
@@ -361,8 +366,19 @@ public class NewTabAnimationLayout extends Layout {
         }
     }
 
-    protected void setNextTabIdForTesting(int nextTabId) {
-        mNextTabId = nextTabId;
+    /**
+     * Runs the queued animation runnable immediately, if it exists.
+     *
+     * <p>This ensures the animation has a valid status before calling {@link AnimatorSet#end()}
+     * when forcing the animation to finish, and prevents the animation from starting due to the
+     * queued runnable.
+     */
+    private void runQueuedRunnableIfExists() {
+        if (mAnimationRunnable != null) {
+            mHandler.removeCallbacks(mAnimationRunnable);
+            mAnimationRunnable.run();
+            assert mAnimationRunnable == null;
+        }
     }
 
     /**
@@ -377,6 +393,7 @@ public class NewTabAnimationLayout extends Layout {
     void forceNewTabAnimationToFinish() {
         // TODO(crbug.com/40282469): Make sure the right mode is selected after forcing the
         // animation to finish.
+        runQueuedRunnableIfExists();
         if (mTabCreatedForegroundAnimation != null) {
             mAnimationHostView.removeView(mRectView);
             mFadeAnimator = null;
@@ -385,11 +402,6 @@ public class NewTabAnimationLayout extends Layout {
             mFadeAnimator.end();
         }
         // TODO(crbug.com/40282469): Implement this for Background Animation.
-    }
-
-    @VisibleForTesting
-    AnimatorSet getForegroundAnimatorSet() {
-        return mTabCreatedForegroundAnimation;
     }
 
     /**
@@ -456,6 +468,8 @@ public class NewTabAnimationLayout extends Layout {
         } else {
             finalRect.left -= 1;
         }
+        // TODO(crbug.com/40933120): Make the initial rect start from the center when opening a tab
+        // from the context menu.
         NewTabAnimationUtils.updateRects(initialRect, finalRect, isRtl, isTopAligned);
 
         ShrinkExpandAnimator shrinkExpandAnimator =
@@ -486,8 +500,8 @@ public class NewTabAnimationLayout extends Layout {
                 new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        mAnimationHostView.removeView(mRectView);
                         mFadeAnimator = null;
+                        mAnimationHostView.removeView(mRectView);
                     }
                 });
 
@@ -499,16 +513,25 @@ public class NewTabAnimationLayout extends Layout {
                 new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
+                        mTabCreatedForegroundAnimation = null;
                         if (mFadeAnimator != null) mFadeAnimator.start();
                         startHiding();
                         mTabModelSelector.selectModel(newIsIncognito);
                         mNextTabId = id;
-                        mTabCreatedForegroundAnimation = null;
                     }
                 });
+        mAnimationRunnable =
+                () -> {
+                    mAnimationRunnable = null;
+                    mTabCreatedForegroundAnimation.start();
+                };
 
         mAnimationHostView.addView(mRectView);
         mRectView.reset(initialRect);
-        mRectView.post(mTabCreatedForegroundAnimation::start);
+        mHandler.post(mAnimationRunnable);
+    }
+
+    protected void setNextTabIdForTesting(int nextTabId) {
+        mNextTabId = nextTabId;
     }
 }

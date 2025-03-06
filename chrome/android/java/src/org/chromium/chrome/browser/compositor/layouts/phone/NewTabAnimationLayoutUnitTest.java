@@ -281,14 +281,12 @@ public class NewTabAnimationLayoutUnitTest {
         assertEquals(2, layoutTabs.length);
         assertEquals(CURRENT_TAB_ID, layoutTabs[0].getId());
         assertEquals(NEW_TAB_ID, layoutTabs[1].getId());
-
         verify(mNewTabAnimationLayout, times(1)).forceNewTabAnimationToFinish();
+        assertTrue(mNewTabAnimationLayout.isRunningAnimations());
         verify(mAnimationHostView, times(1)).addView(any());
 
-        mNewTabAnimationLayout.getForegroundAnimatorSet().start();
-        assertTrue(mNewTabAnimationLayout.isRunningAnimations());
-
         ShadowLooper.runUiThreadTasks();
+
         assertFalse(mNewTabAnimationLayout.isRunningAnimations());
         verify(mAnimationHostView, times(1)).removeView(any());
         verify(mTabModelSelector).selectModel(false);
