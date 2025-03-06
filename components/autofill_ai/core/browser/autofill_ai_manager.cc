@@ -122,9 +122,10 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
         entity_attributes
             .try_emplace(*field_attribute_type, *field_attribute_type)
             .first;
-    attribute_it->second.SetInfo(field->Type().GetStorableType(), value,
-                                 app_locale,
-                                 autofill::VerificationStatus::kObserved);
+    attribute_it->second.SetInfo(
+        field->Type().GetStorableType(), value, app_locale,
+        field->format_string() ? *field->format_string() : u"",
+        autofill::VerificationStatus::kObserved);
   }
 
   for (auto& [section, entities] : section_to_entity_types_attributes) {
@@ -132,6 +133,13 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
       for (auto& [attribute_type, attribute] : attributes) {
         attribute.FinalizeInfo();
       }
+      std::erase_if(attributes, [&](const auto& pair) {
+        const AttributeInstance& attribute = pair.second;
+        return attribute
+            .GetInfo(attribute.GetTopLevelType(), app_locale,
+                     /*format_string=*/std::nullopt)
+            .empty();
+      });
     }
   }
 

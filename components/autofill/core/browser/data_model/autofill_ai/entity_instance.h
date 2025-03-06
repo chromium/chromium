@@ -129,9 +129,17 @@ class AttributeInstance final {
 
   // Populates the attribute with a value for a specific `type`, according to a
   // given `app_locale`.
+  //
+  // Currently, the `format_string` only matters for dates. Dates are updated
+  // incrementally, e.g., SetInfo(..., u"16", ..., u"DD", ...) only changes the
+  // day and does not reset the month or year. If `value` doesn't fully match
+  // the `format_string`, the function is a no-op, e.g.,
+  // SetInfo(..., u"16/12/2022", ..., u"DD", ...) is a no-op.
+  // See AutofillField::format_string() for the grammar of format strings.
   void SetInfo(FieldType type,
                const std::u16string& value,
                const std::string& app_locale,
+               std::u16string_view format_string,
                VerificationStatus status);
 
   // Same as `SetInfoWithVerificationStatus`, but for structured types this
