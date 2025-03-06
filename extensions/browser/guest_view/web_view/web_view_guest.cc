@@ -1495,8 +1495,7 @@ void WebViewGuest::PushWebViewStateToIOThread(
       guest_host->GetSiteInstance()->GetStoragePartitionConfig();
 
   WebViewRendererState::WebViewInfo web_view_info;
-  web_view_info.embedder_process_id =
-      owner_rfh()->GetProcess()->GetDeprecatedID();
+  web_view_info.embedder_process_id = owner_rfh()->GetProcess()->GetID();
   web_view_info.instance_id = view_instance_id();
   web_view_info.partition_id = storage_partition_config.partition_name();
   web_view_info.owner_host = owner_host();
@@ -1507,7 +1506,7 @@ void WebViewGuest::PushWebViewStateToIOThread(
       WebViewContentScriptManager::Get(browser_context());
   DCHECK(manager);
   web_view_info.content_script_ids = manager->GetContentScriptIDSet(
-      web_view_info.embedder_process_id, web_view_info.instance_id);
+      web_view_info.embedder_process_id.value(), web_view_info.instance_id);
 
   WebViewRendererState::GetInstance()->AddGuest(
       guest_host->GetProcess()->GetDeprecatedID(), guest_host->GetRoutingID(),

@@ -19,6 +19,7 @@
 #include <utility>
 
 #include "base/memory/singleton.h"
+#include "content/public/browser/child_process_id.h"
 #include "content/public/browser/global_routing_id.h"
 
 namespace extensions {
@@ -28,7 +29,7 @@ class WebViewGuest;
 class WebViewRendererState {
  public:
   struct WebViewInfo {
-    int embedder_process_id;
+    content::ChildProcessId embedder_process_id;
     int instance_id;
     int rules_registry_id;
     std::string partition_id;

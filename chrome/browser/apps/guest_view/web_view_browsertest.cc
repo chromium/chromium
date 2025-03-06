@@ -5862,6 +5862,44 @@ IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
   run_loop.Run();
 }
 
+// Ensure that WebRequest events are not dispatched to pages that are not the
+// embedder of the source webview.
+// See also testWebRequestAPIOnlyForInstance.
+IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
+                       TestWebRequestOnlyDispatchToEmbedder) {
+  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
+
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Load a WebUI with a webview. For testing convenience, we use the existing
+  // chrome signin page.
+  const GURL signin_url{"chrome://chrome-signin/?reason=5"};
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), signin_url));
+  WaitForWebViewInDom();
+  content::WebContents* tab_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Set an onBeforeRequest handler on the WebUI's webview.
+  EXPECT_TRUE(content::ExecJs(
+      tab_contents,
+      "let wv = document.querySelector( "
+      "    'inline-login-app').shadowRoot.querySelector('webview'); "
+      "window.sawRequest = false; "
+      "wv.request.onBeforeRequest.addListener((details) => { "
+      "  console.log('Unexpected request event', details.url); "
+      "  window.sawRequest = true; "
+      "  return {cancel: true}; "
+      "}, {types: ['main_frame'], urls: ['<all_urls>']}, "
+      "['blocking']);"));
+
+  // Launch an app that creates and loads its own webview. The app will get
+  // WebRequest events for its webview.
+  TestHelper("testWebRequestAPI", "web_view/shim", NO_TEST_SERVER);
+
+  // The WebUI should not see the events for the app's webview.
+  EXPECT_EQ(false, content::EvalJs(tab_contents, "window.sawRequest;"));
+}
+
 // This test class makes "isolated.com" an isolated origin, to be used in
 // testing isolated origins inside of a WebView.
 class IsolatedOriginWebViewTest : public WebViewTest {

@@ -220,6 +220,8 @@ void WebRequestInfoInitParams::InitializeWebViewAndFrameData(
       web_view_instance_id = navigation_ui_data->web_view_instance_id();
       web_view_rules_registry_id =
           navigation_ui_data->web_view_rules_registry_id();
+      web_view_embedder_process_id =
+          navigation_ui_data->web_view_embedder_process_id();
     }
     frame_data = navigation_ui_data->frame_data();
     parent_routing_id = navigation_ui_data->parent_routing_id();
