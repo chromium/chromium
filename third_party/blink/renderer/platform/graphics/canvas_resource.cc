@@ -90,7 +90,8 @@ void CanvasResource::Release() {
   }
 }
 
-void CanvasResource::UploadSoftwareRenderingResults(SkSurface* sk_surface) {
+void CanvasResourceSharedImage::UploadSoftwareRenderingResults(
+    SkSurface* sk_surface) {
   auto scoped_mapping = GetClientSharedImage()->Map();
   if (!scoped_mapping) {
     LOG(ERROR) << "MapSharedImage failed.";
@@ -114,8 +115,10 @@ void CanvasResource::UploadSoftwareRenderingResults(SkSurface* sk_surface) {
   // proper sequencing of future accesses to the SI with respect to this call on
   // the service side.
   scoped_mapping.reset();
-  SetSyncToken(
-      GetClientSharedImage()->BackingWasExternallyUpdated(gpu::SyncToken()));
+
+  DCHECK(!is_cross_thread());
+  owning_thread_data().sync_token =
+      GetClientSharedImage()->BackingWasExternallyUpdated(gpu::SyncToken());
 }
 
 gpu::InterfaceBase* CanvasResource::InterfaceBase() const {
