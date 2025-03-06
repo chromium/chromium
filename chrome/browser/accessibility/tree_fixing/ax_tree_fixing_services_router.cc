@@ -6,8 +6,7 @@
 
 namespace tree_fixing {
 
-AXTreeFixingServicesRouter::AXTreeFixingServicesRouter(
-    content::BrowserContext* context) {}
+AXTreeFixingServicesRouter::AXTreeFixingServicesRouter(Profile* profile) {}
 AXTreeFixingServicesRouter::~AXTreeFixingServicesRouter() = default;
 
 }  // namespace tree_fixing
