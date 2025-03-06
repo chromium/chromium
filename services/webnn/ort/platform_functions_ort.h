@@ -46,4 +46,4 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) PlatformFunctions {
 
 }  // namespace webnn::ort
 
-#endif  // SERVICES_WEBNN_ORT_PLATFORM_FUNCTIONS_H_
+#endif  // SERVICES_WEBNN_ORT_PLATFORM_FUNCTIONS_ORT_H_

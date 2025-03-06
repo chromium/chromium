@@ -15,8 +15,6 @@
 
 namespace webnn::ort {
 
-class ContextImplOrt;
-
 class TensorImplOrt final : public WebNNTensorImpl {
  public:
   static base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr>

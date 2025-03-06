@@ -74,10 +74,10 @@ class GraphBuilderOrt {
       base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
           constant_operands);
 
-  const mojom::Operand& GetOperand(uint64_t operand_id);
+  const mojom::Operand& GetOperand(uint64_t operand_id) const;
 
   // Get the unique name of an existing operand by its id.
-  std::string GetOperandNameById(uint64_t operand_id);
+  std::string GetOperandNameById(uint64_t operand_id) const;
 
   // Generate the unique name of a newly created operand by combining a prefix
   // "inserted" and `next_operand_id_`, and then increase `next_operand_id_`.

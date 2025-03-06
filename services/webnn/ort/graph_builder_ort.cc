@@ -236,11 +236,11 @@ GraphBuilderOrt::GraphBuilderOrt(
 
 GraphBuilderOrt::~GraphBuilderOrt() = default;
 
-const mojom::Operand& GraphBuilderOrt::GetOperand(uint64_t operand_id) {
+const mojom::Operand& GraphBuilderOrt::GetOperand(uint64_t operand_id) const {
   return *graph_info_->id_to_operand_map.at(operand_id);
 }
 
-std::string GraphBuilderOrt::GetOperandNameById(uint64_t operand_id) {
+std::string GraphBuilderOrt::GetOperandNameById(uint64_t operand_id) const {
   const mojom::Operand& operand = GetOperand(operand_id);
   std::string operand_label =
       operand.name.has_value() ? operand.name.value() : "";

@@ -63,7 +63,8 @@ mojom::ErrorPtr CreateError(mojom::Error::Code error_code,
         error_code, base::StrCat({kBackendName, GetErrorLabelPrefix(label),
                                   error_message}));
   }
-  return mojom::Error::New(error_code, kBackendName + error_message);
+  return mojom::Error::New(error_code,
+                           base::StrCat({kBackendName, error_message}));
 }
 
 }  // namespace webnn::ort

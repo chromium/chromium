@@ -451,9 +451,6 @@ void GraphImplOrt::DispatchImpl(
                   name, buffer->GetExclusivelyLockedResource()->tensor());
             }
 
-            // TODO(https://github.com/shiyi9801/chromium/issues/57): Decide
-            // whether to use `OrtApi::RunAsync` or `OrtApi::Run` here.
-
             // Compute tasks can take a significant amount of time, use the
             // thread pool to avoid blocking the main thread.
             base::ThreadPool::PostTaskAndReply(

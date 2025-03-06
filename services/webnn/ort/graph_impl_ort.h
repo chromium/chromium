@@ -10,7 +10,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/heap_array.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
@@ -30,7 +29,6 @@ class WebNNConstantOperand;
 namespace ort {
 
 class ContextImplOrt;
-class BufferContentOrt;
 
 // GraphImplOrt inherits from WebNNGraphImpl to represent a ort graph
 // implementation. It is mainly responsible for building a ort

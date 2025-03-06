@@ -680,6 +680,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       }
 
       if (command_line->HasSwitch(switches::kUseRedistributableONNXRuntime)) {
+        GPU_STARTUP_TRACE_EVENT("Load onnxruntime.dll");
         base::LoadNativeLibrary(module_path.Append(L"onnxruntime.dll"),
                                 nullptr);
       }
