@@ -21,7 +21,7 @@ export {PageCallbackRouter, PageRemote, ProfileData, RecentlyClosedTab, Recently
 export {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 export {TabSearchGroupItemElement} from './tab_search_group_item.js';
 export {TabSearchItemElement} from './tab_search_item.js';
-export {TabSearchPageElement} from './tab_search_page.js';
+export {SEARCH_QUERY_MAX_LENGTH, TabSearchPageElement} from './tab_search_page.js';
 export {TabSearchSyncBrowserProxy, TabSearchSyncBrowserProxyImpl} from './tab_search_sync_browser_proxy.js';
 export {TabAlertState} from './tabs.mojom-webui.js';
 export {TitleItem} from './title_item.js';
