@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/peerconnection/media_stream_remote_video_source.h"
 
 #include <stdint.h>
@@ -56,9 +51,7 @@ class WebRtcEncodedVideoFrame : public EncodedVideoFrame {
     }
   }
 
-  base::span<const uint8_t> Data() const override {
-    return base::span(buffer_->data(), buffer_->size());
-  }
+  base::span<const uint8_t> Data() const override { return *buffer_; }
 
   media::VideoCodec Codec() const override { return codec_; }
 
