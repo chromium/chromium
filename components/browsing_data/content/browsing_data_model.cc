@@ -271,13 +271,8 @@ void StorageRemoverHelper::Visitor::operator()<blink::StorageKey>(
   }
 
   if (types.Has(BrowsingDataModel::StorageType::kQuotaStorage)) {
-    const blink::mojom::StorageType quota_types[] = {
-        blink::mojom::StorageType::kTemporary,
-        blink::mojom::StorageType::kSyncable};
-    for (auto type : quota_types) {
-      helper->quota_helper_->DeleteStorageKeyData(
-          storage_key, type, helper->GetCompleteCallback());
-    }
+    helper->quota_helper_->DeleteStorageKeyData(storage_key,
+                                                helper->GetCompleteCallback());
   }
 
   if (types.Has(BrowsingDataModel::StorageType::kLocalStorage)) {
@@ -519,7 +514,7 @@ void OnQuotaStorageLoaded(
   for (const auto& entry : quota_info) {
     model->AddBrowsingData(entry.storage_key,
                            BrowsingDataModel::StorageType::kQuotaStorage,
-                           entry.syncable_usage + entry.temporary_usage);
+                           entry.usage);
   }
   std::move(loaded_callback).Run();
 }

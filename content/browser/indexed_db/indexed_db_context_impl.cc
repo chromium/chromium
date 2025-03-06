@@ -247,8 +247,7 @@ IndexedDBContextImpl::IndexedDBContextImpl(
       quota_client_remote.InitWithNewPipeAndPassReceiver();
   quota_manager_proxy_->RegisterClient(
       std::move(quota_client_remote),
-      storage::QuotaClientType::kIndexedDatabase,
-      {blink::mojom::StorageType::kTemporary});
+      storage::QuotaClientType::kIndexedDatabase);
   IDBTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&IndexedDBContextImpl::BindPipesOnIDBSequence,
                                 weak_factory_.GetWeakPtr(),

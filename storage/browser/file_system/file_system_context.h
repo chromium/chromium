@@ -360,10 +360,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
   // Must be called after creating the FileSystemContext.
   void Initialize();
 
-  // The set of quota-managed storage types covered by file system backends.
-  // This may be called before the file system backends are initialized.
-  base::flat_set<blink::mojom::StorageType> QuotaManagedStorageTypes();
-
   // Creates a new FileSystemOperation instance by getting an appropriate
   // FileSystemBackend for `url` and calling the backend's corresponding
   // CreateFileSystemOperation method.

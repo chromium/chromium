@@ -249,8 +249,7 @@ void FileSystemContext::Initialize() {
   mojo::PendingReceiver<mojom::QuotaClient> quota_client_receiver =
       quota_client_remote.InitWithNewPipeAndPassReceiver();
   quota_manager_proxy_->RegisterClient(std::move(quota_client_remote),
-                                       QuotaClientType::kFileSystem,
-                                       QuotaManagedStorageTypes());
+                                       QuotaClientType::kFileSystem);
 
   io_task_runner_->PostTask(
       FROM_HERE,
@@ -641,21 +640,6 @@ FileSystemContext::~FileSystemContext() {
   // TODO(crbug.com/41377719) This is a leak. Delete env after the backends have
   // been deleted.
   env_override_.release();
-}
-
-base::flat_set<blink::mojom::StorageType>
-FileSystemContext::QuotaManagedStorageTypes() {
-  std::vector<blink::mojom::StorageType> quota_storage_types;
-  for (FileSystemType file_system_type : GetFileSystemTypes()) {
-    const blink::mojom::StorageType storage_type =
-        FileSystemTypeToQuotaStorageType(file_system_type);
-    if (storage_type == blink::mojom::StorageType::kTemporary ||
-        storage_type == blink::mojom::StorageType::kSyncable) {
-      quota_storage_types.push_back(storage_type);
-    }
-  }
-  return base::flat_set<blink::mojom::StorageType>(
-      std::move(quota_storage_types));
 }
 
 std::unique_ptr<FileSystemOperation>

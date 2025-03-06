@@ -86,8 +86,7 @@ void GetProgressiveWebAppSizeJob::OnQuotaModelInfoLoaded(
   // TODO(crbug.com/40214522): Optimise the computation of the following loop.
   for (const auto& quota_info : quota_storage_info_list) {
     if (origin_ == quota_info.storage_key.origin()) {
-      browsing_data_size_ +=
-          quota_info.temporary_usage + quota_info.syncable_usage;
+      browsing_data_size_ += quota_info.usage;
     }
   }
   debug_value_->Set("data_size_in_bytes", base::ToString(browsing_data_size_));

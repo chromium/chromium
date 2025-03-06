@@ -67,10 +67,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   QuotaManagerProxy(const QuotaManagerProxy&) = delete;
   QuotaManagerProxy& operator=(const QuotaManagerProxy&) = delete;
 
-  virtual void RegisterClient(
-      mojo::PendingRemote<mojom::QuotaClient> client,
-      QuotaClientType client_type,
-      const base::flat_set<blink::mojom::StorageType>& storage_types);
+  virtual void RegisterClient(mojo::PendingRemote<mojom::QuotaClient> client,
+                              QuotaClientType client_type);
 
   virtual void BindInternalsHandler(
       mojo::PendingReceiver<mojom::QuotaInternalsHandler> receiver);

@@ -21,20 +21,18 @@ void MockBrowsingDataQuotaHelper::StartFetching(FetchResultCallback callback) {
 
 void MockBrowsingDataQuotaHelper::DeleteStorageKeyData(
     const blink::StorageKey& storage_key,
-    blink::mojom::StorageType type,
     base::OnceClosure completed) {}
 
 void MockBrowsingDataQuotaHelper::AddHost(const blink::StorageKey& storage_key,
-                                          int64_t temporary_usage,
-                                          int64_t syncable_usage) {
-  response_.push_back(QuotaInfo(storage_key, temporary_usage, syncable_usage));
+                                          int64_t usage) {
+  response_.emplace_back(storage_key, usage);
 }
 
 void MockBrowsingDataQuotaHelper::AddQuotaSamples() {
-  AddHost(blink::StorageKey::CreateFromStringForTesting("http://quotahost1"), 1,
-          1);
+  AddHost(blink::StorageKey::CreateFromStringForTesting("http://quotahost1"),
+          2);
   AddHost(blink::StorageKey::CreateFromStringForTesting("https://quotahost2"),
-          10, 10);
+          20);
 }
 
 void MockBrowsingDataQuotaHelper::Notify() {

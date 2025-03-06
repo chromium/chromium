@@ -340,8 +340,7 @@ ServiceWorkerContextCore::ServiceWorkerContextCore(
   if (quota_manager_proxy) {
     quota_manager_proxy->RegisterClient(
         quota_client_receiver_->BindNewPipeAndPassRemote(),
-        storage::QuotaClientType::kServiceWorker,
-        {blink::mojom::StorageType::kTemporary});
+        storage::QuotaClientType::kServiceWorker);
   }
 
   registry_->GetRegisteredStorageKeys(

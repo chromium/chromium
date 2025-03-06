@@ -26,8 +26,7 @@ CacheStorageControlWrapper::CacheStorageControlWrapper(
           cache_storage_client_remote.InitWithNewPipeAndPassReceiver();
   quota_manager_proxy->RegisterClient(
       std::move(cache_storage_client_remote),
-      storage::QuotaClientType::kServiceWorkerCache,
-      {blink::mojom::StorageType::kTemporary});
+      storage::QuotaClientType::kServiceWorkerCache);
   mojo::PendingRemote<storage::mojom::QuotaClient>
       background_fetch_client_remote;
   mojo::PendingReceiver<storage::mojom::QuotaClient>
@@ -35,8 +34,7 @@ CacheStorageControlWrapper::CacheStorageControlWrapper(
           background_fetch_client_remote.InitWithNewPipeAndPassReceiver();
   quota_manager_proxy->RegisterClient(
       std::move(background_fetch_client_remote),
-      storage::QuotaClientType::kBackgroundFetch,
-      {blink::mojom::StorageType::kTemporary});
+      storage::QuotaClientType::kBackgroundFetch);
 
   cache_storage_context_ = base::SequenceBound<CacheStorageContextImpl>(
       CacheStorageContextImpl::CreateSchedulerTaskRunner(),

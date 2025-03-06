@@ -145,8 +145,7 @@ void DatabaseTracker::RegisterQuotaClient() {
   mojo::PendingReceiver<storage::mojom::QuotaClient> quota_client_receiver =
       quota_client_remote.InitWithNewPipeAndPassReceiver();
   quota_manager_proxy_->RegisterClient(std::move(quota_client_remote),
-                                       storage::QuotaClientType::kDatabase,
-                                       {blink::mojom::StorageType::kTemporary});
+                                       storage::QuotaClientType::kDatabase);
 
   task_runner_->PostTask(
       FROM_HERE,

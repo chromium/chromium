@@ -82,20 +82,19 @@ base::FilePath QuotaManagerProxy::GetClientBucketPath(
 
 void QuotaManagerProxy::RegisterClient(
     mojo::PendingRemote<mojom::QuotaClient> client,
-    QuotaClientType client_type,
-    const base::flat_set<blink::mojom::StorageType>& storage_types) {
+    QuotaClientType client_type) {
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&QuotaManagerProxy::RegisterClient, this,
-                       std::move(client), client_type, storage_types));
+        FROM_HERE, base::BindOnce(&QuotaManagerProxy::RegisterClient, this,
+                                  std::move(client), client_type));
     return;
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
   if (quota_manager_impl_) {
-    quota_manager_impl_->RegisterClient(std::move(client), client_type,
-                                        storage_types);
+    quota_manager_impl_->RegisterClient(
+        std::move(client), client_type,
+        {blink::mojom::StorageType::kTemporary});
   }
 }
 
