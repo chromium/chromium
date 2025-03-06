@@ -24,7 +24,6 @@ class MockAutofillAiClient : public AutofillAiClient {
               (AutofillAiClient::AXTreeCallback callback),
               (override));
   MOCK_METHOD(AutofillAiManager&, GetManager, (), (override));
-  MOCK_METHOD(AutofillAiModelExecutor*, GetModelExecutor, (), (override));
   MOCK_METHOD(autofill::EntityDataManager*,
               GetEntityDataManager,
               (),

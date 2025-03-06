@@ -26,11 +26,11 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/addresses/field_filling_address_util.h"
 #include "components/autofill/core/browser/form_types.h"
+#include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor_impl.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill_ai/core/browser/autofill_ai_client.h"
 #include "components/autofill_ai/core/browser/autofill_ai_features.h"
 #include "components/autofill_ai/core/browser/autofill_ai_manager.h"
-#include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor_impl.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
@@ -102,22 +102,6 @@ void ChromeAutofillAiClient::GetAXTree(AXTreeCallback callback) {
 
 autofill_ai::AutofillAiManager& ChromeAutofillAiClient::GetManager() {
   return prediction_improvements_manager_;
-}
-
-autofill_ai::AutofillAiModelExecutor*
-ChromeAutofillAiClient::GetModelExecutor() {
-  if (!filling_engine_) {
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-    OptimizationGuideKeyedService* optimization_guide_keyed_service =
-        OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-    filling_engine_ =
-        std::make_unique<autofill_ai::AutofillAiModelExecutorImpl>(
-            optimization_guide_keyed_service,
-            optimization_guide_keyed_service
-                ->GetModelQualityLogsUploaderService());
-  }
-  return filling_engine_.get();
 }
 
 autofill::EntityDataManager* ChromeAutofillAiClient::GetEntityDataManager() {

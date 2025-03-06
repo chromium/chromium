@@ -88,9 +88,6 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
       const base::Uuid& entity_uuid,
       AutofillAiClient::SaveOrUpdatePromptResult result);
 
-  void OnReceivedAXTree(const autofill::FormData& form,
-                        optimization_guide::proto::AXTreeUpdate);
-
   // Logger that records various Autofill AI metrics.
   AutofillAiLogger logger_;
 

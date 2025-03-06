@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_AI_CORE_BROWSER_SUGGESTION_AUTOFILL_AI_MODEL_EXECUTOR_IMPL_H_
-#define COMPONENTS_AUTOFILL_AI_CORE_BROWSER_SUGGESTION_AUTOFILL_AI_MODEL_EXECUTOR_IMPL_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_AI_AUTOFILL_AI_MODEL_EXECUTOR_IMPL_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_AI_AUTOFILL_AI_MODEL_EXECUTOR_IMPL_H_
 
 #include <memory>
 
@@ -11,20 +11,18 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
-#include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
+#include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/forms_classifications.pb.h"
-
-namespace autofill {
-class FormData;
-}  // namespace autofill
 
 namespace optimization_guide::proto {
 class AXTreeUpdate;
 }  // namespace optimization_guide::proto
 
-namespace autofill_ai {
+namespace autofill {
+
+class FormData;
 
 class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
  public:
@@ -34,14 +32,14 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
   ~AutofillAiModelExecutorImpl() override;
 
   // AutofillAiModelExecutor:
-  void GetPredictions(autofill::FormData form_data,
+  void GetPredictions(FormData form_data,
                       optimization_guide::proto::AXTreeUpdate ax_tree_update,
                       PredictionCallback callback) override;
 
  private:
   // Invokes `callback` when model execution response has been returned.
   void OnModelExecuted(
-      autofill::FormData form_data,
+      FormData form_data,
       PredictionCallback callback,
       optimization_guide::OptimizationGuideModelExecutionResult
           execution_result,
@@ -51,13 +49,12 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
 
   const raw_ref<optimization_guide::OptimizationGuideModelExecutor>
       model_executor_;
-  // TODO(crbug.com/389631477): Remove until we need it.
   base::WeakPtr<optimization_guide::ModelQualityLogsUploaderService>
       logs_uploader_;
 
   base::WeakPtrFactory<AutofillAiModelExecutorImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace autofill_ai
+}  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_SUGGESTION_AUTOFILL_AI_MODEL_EXECUTOR_IMPL_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_AI_AUTOFILL_AI_MODEL_EXECUTOR_IMPL_H_

@@ -18,6 +18,8 @@ static_library("autofill") {
     "autocomplete_history_manager_factory.h",
     "autofill_ai_model_cache_factory.cc",
     "autofill_ai_model_cache_factory.h",
+    "autofill_ai_model_executor_factory.cc",
+    "autofill_ai_model_executor_factory.h",
     "autofill_entity_data_manager_factory.cc",
     "autofill_entity_data_manager_factory.h",
     "autofill_image_fetcher_factory.cc",

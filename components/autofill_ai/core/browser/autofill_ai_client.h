@@ -73,11 +73,6 @@ class AutofillAiClient {
   // client.
   virtual AutofillAiManager& GetManager() = 0;
 
-  // Returns the Autofill AI model executor associated with the client's web
-  // contents.
-  // TODO(crbug.com/372432481): Make this return a reference.
-  virtual AutofillAiModelExecutor* GetModelExecutor() = 0;
-
   // Returns a pointer to the current profile's `autofill::EntityDataManager`.
   // Can be `nullptr` if `features::kAutofillAiWithDataSchema` is disabled.
   virtual autofill::EntityDataManager* GetEntityDataManager() = 0;
