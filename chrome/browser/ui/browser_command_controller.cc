@@ -128,7 +128,6 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX)
-#include "ui/base/ime/text_edit_commands.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/linux/linux_ui.h"
 #endif
@@ -335,9 +334,8 @@ bool BrowserCommandController::IsReservedCommandOrKey(
   // it is not reserved.
   auto* linux_ui = ui::LinuxUi::instance();
   if (linux_ui && event.os_event &&
-      linux_ui->GetTextEditCommandForEvent(*event.os_event,
-                                           ui::TEXT_INPUT_FLAG_NONE) !=
-          ui::TextEditCommand::INVALID_COMMAND) {
+      linux_ui->GetTextEditCommandsForEvent(
+          *event.os_event, ui::TEXT_INPUT_FLAG_NONE, nullptr)) {
     return false;
   }
 #endif
