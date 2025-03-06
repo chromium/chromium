@@ -598,7 +598,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CloudManagement.PolicyFetchingTime" units="ms"
-    expires_after="2025-07-06">
+    expires_after="2025-12-01">
   <owner>ftirelo@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
@@ -609,7 +609,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.CloudManagementEnrollmentTokenLocation.Mac"
     enum="EnterpriseCloudManagementEnrollmentTokenLocationMac"
-    expires_after="2025-05-01">
+    expires_after="2025-12-01">
   <owner>zmin@chromium.org</owner>
   <owner>igorruvinov@chromium.org</owner>
   <summary>
@@ -618,7 +618,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CloudReportingBasicRequestSize" units="KB"
-    expires_after="2025-05-01">
+    expires_after="2025-12-01">
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -629,7 +629,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CloudReportingRequestCount" units="requests"
-    expires_after="2025-05-01">
+    expires_after="2025-12-01">
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -639,7 +639,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CloudReportingRequestSize" units="KB"
-    expires_after="2025-05-01">
+    expires_after="2025-12-01">
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -649,7 +649,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CloudReportingResponse"
-    enum="EnterpriseCloudReportingResponse" expires_after="2025-08-24">
+    enum="EnterpriseCloudReportingResponse" expires_after="2025-12-01">
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -674,7 +674,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Enterprise.DataProtection.NavigationFinished.URLVerdictSource"
     enum="DataProtectionURLVerdictSource" expires_after="2025-03-18">
   <owner>alshawwa@chromium.org</owner>
-  <owner>rogerta@chromium.org</owner>
   <owner>dpr-eng@google.com</owner>
   <summary>
     Records where the realtime url lookup verdict is read from in the data
@@ -1012,7 +1011,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Enterprise.DeviceTrust.Attestation.Funnel"
     enum="DTAttestationFunnelStep" expires_after="2026-02-10">
   <owner>hmare@google.com</owner>
-  <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
   <summary>
     Various steps recorded when a device goes through the device trust connector
@@ -1023,7 +1021,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Enterprise.DeviceTrust.Attestation.ResponseLatency.{Variant}"
     units="ms" expires_after="2026-02-10">
   <owner>hmare@google.com</owner>
-  <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
   <summary>
     Latency of a {Variant} attestation step in the overarching Device Trust
@@ -1040,7 +1037,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Enterprise.DeviceTrust.Attestation.Result"
     enum="DTAttestationResult" expires_after="2026-02-10">
   <owner>hmare@google.com</owner>
-  <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
   <summary>
     Result of the attestation step in the overarching Device Trust connector's
@@ -1112,7 +1108,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Enterprise.DeviceTrust.Key.TrustLevel" enum="DTKeyTrustLevel"
     expires_after="2026-02-10">
   <owner>hmare@google.com</owner>
-  <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
   <summary>
     Recorded every time a Device Trust signing key is successfully loaded from
@@ -1124,7 +1119,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Enterprise.DeviceTrust.Key.Type" enum="DTKeyType"
     expires_after="2026-02-10">
   <owner>hmare@google.com</owner>
-  <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
   <summary>
     Recorded every time a Device Trust signing key is successfully loaded from
@@ -1135,7 +1129,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Enterprise.DeviceTrust.Key.{Variant}Result"
     enum="DTKeyRotationResult" expires_after="2026-02-10">
   <owner>hmare@google.com</owner>
-  <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
   <summary>
     Recorded every time the browser attempted to {Variant} a Device Trust
@@ -1207,7 +1200,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Enterprise.DeviceTrust.Mac.SecureEnclaveOperation.{KeyType}"
     enum="DTSecureEnclaveOperationStatus" expires_after="2026-02-10">
   <owner>hmare@google.com</owner>
-  <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
   <summary>
     Recorded when a device attempts to issue an API that interacts with the
@@ -1222,7 +1214,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Enterprise.DeviceTrust.ManagementService.Error"
     enum="DTManagementServiceError" expires_after="2026-02-10">
   <owner>hmare@google.com</owner>
-  <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
   <summary>
     Captures any terminal failures that occur in the Device Trust management
@@ -1245,7 +1236,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Enterprise.DeviceTrust.Persistence.{Operation}.Error"
     enum="DTKeyPersistenceError" expires_after="2026-02-10">
   <owner>hmare@google.com</owner>
-  <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
   <summary>
     Captures any terminal failures that occur during the process of creating,
@@ -1278,7 +1268,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Enterprise.DeviceTrust.RotateSigningKey.Tries" units="tries"
     expires_after="2026-02-10">
   <owner>hmare@google.com</owner>
-  <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
   <summary>
     Recorded when a device attempts to rotate its device trust signing key.
@@ -1290,7 +1279,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Enterprise.DeviceTrust.RotateSigningKey.{Nonce}.Status"
     enum="DeviceTrustKeyRotationStatus" expires_after="2026-02-10">
   <owner>hmare@google.com</owner>
-  <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
   <summary>
     Recorded when a device attempts to rotate its device trust signing key.
@@ -1308,7 +1296,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Enterprise.DeviceTrust.RotateSigningKey.{Nonce}.UploadCode"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-02-10">
   <owner>hmare@google.com</owner>
-  <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
   <summary>
     HTTP status code of the key upload request recorded when a device attempts
@@ -1326,7 +1313,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Enterprise.DeviceTrust.SignalsDecorator.Latency.{Variant}"
     units="ms" expires_after="2026-02-10">
   <owner>hmare@google.com</owner>
-  <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
   <summary>
     Latency recorded when the {Variant} decorator(s) finish collecting their
@@ -1876,7 +1862,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.DMServerCloudPolicyRequestStatus{EnterpriseDMServerCloudPolicyRequest}"
-    enum="EnterpriseDeviceManagementStatus" expires_after="2025-08-17">
+    enum="EnterpriseDeviceManagementStatus" expires_after="2025-12-01">
   <owner>vincb@google.com</owner>
   <owner>zmin@google.com</owner>
   <summary>
@@ -2483,7 +2469,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.MachineLevelUserCloudPolicyEnrollment.DMTokenDeletion"
-    enum="BooleanSuccess" expires_after="2025-05-01">
+    enum="BooleanSuccess" expires_after="2025-12-01">
   <owner>igorruvinov@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
@@ -2494,9 +2480,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.MachineLevelUserCloudPolicyEnrollment.RequestSuccessTime"
-    units="ms" expires_after="2025-05-01">
+    units="ms" expires_after="2025-12-01">
   <owner>zmin@chromium.org</owner>
-  <owner>rogerta@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
   <summary>
     Time since the enrollment request was made until a successful enrollment
     response is returned from the server.
@@ -2505,18 +2491,18 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.MachineLevelUserCloudPolicyEnrollment.Result"
     enum="MachineLevelUserCloudPolicyEnrollmentResult"
-    expires_after="2025-05-01">
+    expires_after="2025-12-01">
   <owner>zmin@chromium.org</owner>
-  <owner>rogerta@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
   <summary>The result of machine level user cloud policy enrollment.</summary>
 </histogram>
 
 <histogram
     name="Enterprise.MachineLevelUserCloudPolicyEnrollment.StartupDialog"
     enum="MachineLevelUserCloudPolicyEnrollmentStartupDialog"
-    expires_after="2025-05-01">
+    expires_after="2025-12-01">
   <owner>zmin@chromium.org</owner>
-  <owner>rogerta@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
   <summary>
     Records whether the machine level user cloud policy enrollment dialog is
     shown to the user and the action they took.
@@ -2525,9 +2511,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.MachineLevelUserCloudPolicyEnrollment.StartupDialogTime"
-    units="ms" expires_after="2025-05-01">
+    units="ms" expires_after="2025-12-01">
   <owner>zmin@chromium.org</owner>
-  <owner>rogerta@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
   <summary>
     The length of time the machine level user cloud policy enrollment dialog was
     visible to the user.
@@ -2536,7 +2522,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.MachineLevelUserCloudPolicyEnrollment.UnenrollSuccess"
-    enum="BooleanSuccess" expires_after="2025-05-01">
+    enum="BooleanSuccess" expires_after="2025-12-01">
   <owner>zmin@chromium.org</owner>
   <owner>domfc@chromium.org</owner>
   <summary>
@@ -2744,7 +2730,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Policies.Sources" enum="EnterprisePoliciesSources"
-    expires_after="2025-08-10">
+    expires_after="2025-12-10">
   <owner>zmin@chromium.org</owner>
   <owner>igorruvinov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2758,7 +2744,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Policies.{PolicyLevel}" enum="EnterprisePolicies"
-    expires_after="2025-07-13">
+    expires_after="2025-12-13">
   <owner>zmin@chromium.org</owner>
   <owner>qiutanw@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2824,7 +2810,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyServiceInitTime{Scope}{PolicyCountSuffix}"
-    units="ms" expires_after="2025-07-06">
+    units="ms" expires_after="2025-12-01">
   <owner>ftirelo@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
@@ -2865,7 +2851,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyUI.ButtonUsage.{ButtonType}" units="counts"
-    expires_after="2025-07-13">
+    expires_after="2025-12-13">
   <owner>zmin@chromium.org</owner>
   <owner>src/components/policy/OWNERS</owner>
   <summary>
@@ -2896,7 +2882,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyUpdatePeriod.MachineLevelUser" units="days"
-    expires_after="2025-10-01">
+    expires_after="2025-12-01">
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -3798,7 +3784,6 @@ chromium-metrics-reviews@google.com.
   <owner>igorruvinov@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
-  <owner>rogerta@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
     Time elapsed for checking the Azure AD join status. This is only recorded
@@ -3810,7 +3795,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-07-01">
   <owner>ydago@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
-  <owner>rogerta@chromium.org</owner>
   <summary>
     Whether the machine is part of an AD domain. This check is performed once at
     start-up on Windows.
@@ -3856,7 +3840,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="EnterpriseCheck.IsDomainJoined" enum="BooleanEnabled"
     expires_after="2025-06-08">
   <owner>pastarmovj@chromium.org</owner>
-  <owner>rogerta@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
     Whether the machine is joined to an AD domain. This check is performed once
@@ -3867,7 +3850,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="EnterpriseCheck.IsEnterpriseUser" enum="BooleanEnabled"
     expires_after="2025-08-24">
   <owner>pastarmovj@chromium.org</owner>
-  <owner>rogerta@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
     Whether the machine is considered an enterprise user. An enterprise user is
@@ -3892,7 +3874,6 @@ chromium-metrics-reviews@google.com.
   <owner>igorruvinov@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
-  <owner>rogerta@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
     Whether the machine is joined to an Azure AD domain or the user has added
@@ -3902,10 +3883,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsLocalMachine" enum="Boolean"
-    expires_after="2025-10-01">
+    expires_after="2025-12-01">
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
-  <owner>rogerta@chromium.org</owner>
   <summary>
     Whether the full machine name is the same as the short one, identifying a
     local machine. This check is performed once at start-up on Windows.
@@ -3913,10 +3893,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsLocalUser" enum="Boolean"
-    expires_after="2025-10-01">
+    expires_after="2025-12-01">
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
-  <owner>rogerta@chromium.org</owner>
   <summary>
     Whether the currently logged in user is a local user or not, based on its
     SAM compatible user name and machine name. This check is performed once at
@@ -3925,9 +3904,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsManaged2" enum="BooleanEnabled"
-    expires_after="2025-07-13">
+    expires_after="2025-12-01">
   <owner>zmin@chromium.org</owner>
-  <owner>rogerta@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
     On Windows: Whether the machine is managed via MDM. On macOS: Whether Chrome
@@ -3941,7 +3919,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="EnterpriseCheck.IsManagedOrEnterpriseDevice"
     enum="BooleanEnabled" expires_after="2025-12-01">
   <owner>pastarmovj@chromium.org</owner>
-  <owner>rogerta@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
     Whether the machine is managed or part of an enterprise. This includes
