@@ -299,6 +299,10 @@ using base::UserMetricsAction;
     // already deconstructed on shutdown.
     return YES;
   }
+  if ([self textFieldIsBlank]) {
+    // Do not proceed when input is blank.
+    return YES;
+  }
   [self.returnKeyDelegate omniboxReturnPressed:self];
   return NO;
 }
@@ -575,6 +579,13 @@ using base::UserMetricsAction;
     self.copiedContentType = ClipboardContentType::Text;
   }
   self.isUpdatingCachedClipboardState = NO;
+}
+
+- (BOOL)textFieldIsBlank {
+  NSString* trimmedText = [self.textField.text
+      stringByTrimmingCharactersInSet:[NSCharacterSet
+                                          whitespaceAndNewlineCharacterSet]];
+  return [trimmedText length] == 0;
 }
 
 #pragma mark notification callbacks
