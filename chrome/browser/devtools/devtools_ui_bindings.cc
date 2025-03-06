@@ -38,7 +38,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_file_watcher.h"
 #include "chrome/browser/devtools/devtools_select_file_dialog.h"
-#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/devtools/url_constants.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -90,6 +89,7 @@
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_url_loader_factory.h"
 #include "content/public/common/content_features.h"
@@ -170,6 +170,7 @@ class DefaultBindingsDelegate : public DevToolsUIBindings::Delegate {
  private:
   ~DefaultBindingsDelegate() override = default;
 
+  content::WebContents* GetInspectedWebContents() override { return nullptr; }
   void ActivateWindow() override;
   void CloseWindow() override {}
   void Inspect(scoped_refptr<content::DevToolsAgentHost> host) override {}
@@ -1146,9 +1147,7 @@ void DevToolsUIBindings::LoadNetworkResource(DispatchCallback callback,
         std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
             std::move(pending_remote)));
   } else if (content::HasWebUIScheme(gurl)) {
-    content::WebContents* target_tab =
-        DevToolsWindow::AsDevToolsWindow(web_contents_)
-            ->GetInspectedWebContents();
+    content::WebContents* target_tab = delegate_->GetInspectedWebContents();
 #if defined(NDEBUG)
     // In release builds, allow files from the chrome://, devtools:// and
     // chrome-untrusted:// schemes if a custom devtools front-end was specified.
@@ -1187,9 +1186,7 @@ void DevToolsUIBindings::LoadNetworkResource(DispatchCallback callback,
       return;
     }
   } else {
-    content::WebContents* target_tab =
-        DevToolsWindow::AsDevToolsWindow(web_contents_)
-            ->GetInspectedWebContents();
+    content::WebContents* target_tab = delegate_->GetInspectedWebContents();
     if (target_tab) {
       auto* partition =
           target_tab->GetPrimaryMainFrame()->GetStoragePartition();

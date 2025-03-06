@@ -8,7 +8,6 @@ import("//build/config/chrome_build.gni")
 import("//build/config/features.gni")
 import("//build/config/ios/config.gni")
 import("//build/config/ios/ios_sdk.gni")
-import("//components/sync/base/features.gni")
 
 # LINT.IfChange
 
@@ -61,6 +60,9 @@ declare_args() {
   # Label of the target providing implementation for the PushNotificationServiceExtension.
   # Overridden when using the Google-internal repository to build Chrome on iOS.
   ios_push_notification_service_extension_target = "//ios/chrome/push_notification_service_extension:push_notification_service_extension_implementation"
+
+  # Enable passkey capabilities in the Credential Provider Extension (CPE).
+  ios_cpe_enable_passkey_capabilities = true
 
   # The API key to query Google services in the Credential Provider Extension.
   ios_credential_provider_extension_api_key = ""

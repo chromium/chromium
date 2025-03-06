@@ -6,7 +6,6 @@
 
 #include "base/time/time.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
-#include "ui/base/ime/text_edit_commands.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/size.h"
@@ -133,10 +132,11 @@ ui::NativeTheme* FakeLinuxUi::GetNativeTheme() const {
   return nullptr;
 }
 
-ui::TextEditCommand FakeLinuxUi::GetTextEditCommandForEvent(
+bool FakeLinuxUi::GetTextEditCommandsForEvent(
     const ui::Event& event,
-    int text_falgs) {
-  return ui::TextEditCommand::INVALID_COMMAND;
+    int text_falgs,
+    std::vector<ui::TextEditCommandAuraLinux>* commands) {
+  return false;
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)

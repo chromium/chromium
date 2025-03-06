@@ -67,9 +67,8 @@ using l10n_util::GetNSStringF;
 
 #pragma mark - SigninCoordinator
 
-- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
-                 completion:(ProceduralBlock)completion {
-  BOOL animated;
+- (void)interruptAnimated:(BOOL)animated
+               completion:(ProceduralBlock)completion {
   __weak __typeof(self) weakSelf = self;
   void (^cancelCompletion)(void) = ^() {
     // The reauthentication callback is dropped when the dialog is canceled.
@@ -80,23 +79,6 @@ using l10n_util::GetNSStringF;
       completion();
     }
   };
-  switch (action) {
-    case SigninCoordinatorInterrupt::UIShutdownNoDismiss:
-      CHECK(!IsInterruptibleCoordinatorAlwaysDismissedEnabled(),
-            base::NotFatalUntil::M136);
-      // TrustedVaultClientBackend doesn't support no dismiss. Therefore there
-      // is nothing to do. It will be just deallocated when the service will
-      // be shutdown.
-      [self stopErrorAlertCoordinator];
-      cancelCompletion();
-      return;
-    case SigninCoordinatorInterrupt::DismissWithoutAnimation:
-      animated = NO;
-      break;
-    case SigninCoordinatorInterrupt::DismissWithAnimation:
-      animated = YES;
-      break;
-  }
   // This coordinator should be either showing an error dialog or the trusted
   // vault dialog.
   if (self.errorAlertCoordinator) {

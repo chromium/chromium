@@ -671,6 +671,8 @@ chromium-metrics-reviews@google.com.
       label="Proxy List is available but tokens in the cache have been
              exhausted"/>
   <int value="7" label="The request was resolved to the IP Protection proxies"/>
+  <int value="8"
+      label="A site exception created by User Bypass disables protections"/>
 </enum>
 
 <enum name="IpProtectionTokenBatchRequestError">

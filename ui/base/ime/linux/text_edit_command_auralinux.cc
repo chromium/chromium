@@ -11,8 +11,8 @@ namespace ui {
 
 // This is sent to the renderer. Keep the string representation in sync with
 // third_party/WebKit/public/platform/WebEditingCommandType.h.
-std::string TextEditCommandToString(ui::TextEditCommand command) {
-  switch (command) {
+std::string TextEditCommandAuraLinux::GetCommandString() const {
+  switch (command_) {
     case TextEditCommand::DELETE_BACKWARD:
       return "DeleteBackward";
     case TextEditCommand::DELETE_FORWARD:

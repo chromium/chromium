@@ -3822,6 +3822,7 @@
 <translation id="3670229581627177274">블루투스 켜기</translation>
 <translation id="3670480940339182416">사이트에서 V8 옵티마이저를 사용할 수 있음</translation>
 <translation id="3671764914317109892">일상적인 단어를 사용하여 방문 기록을 검색하세요. 방문 기록을 기반으로 질문하고 답변을 받을 수도 있습니다.</translation>
+<translation id="3671982238795754537">패스키에 대해 자세히 알아보기</translation>
 <translation id="3672681487849735243">하드웨어에서 문제가 발견되었습니다.</translation>
 <translation id="3673097791729989571">로그인 호스팅 제공: <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">PIN이 업데이트됨</translation>
@@ -4736,6 +4737,7 @@
 <translation id="4289540628985791613">개요</translation>
 <translation id="428963538941819373">이러한 사이트에서는 내가 <ph name="HOST" /> 사이트를 탐색할 때 나에 관해 저장된 정보를 사용할 수 있습니다.</translation>
 <translation id="4289732974614035569">PIN 선택</translation>
+<translation id="4290526909608432059">Chrome 앱 지원이 곧 종료됩니다. 옵션에 대해 알아보려면 앱 개발자 또는 IT 지원팀에 문의하세요.</translation>
 <translation id="4290791284969893584">페이지를 닫으면 시작한 작업이 완료되지 않을 수 있습니다</translation>
 <translation id="4290826901752066702">멤버 <ph name="NUM" />명</translation>
 <translation id="4290898381118933198">스와이프하여 다른 페이지로 이동</translation>
@@ -8532,6 +8534,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - 직렬 포트 연결됨</translation>
 <translation id="7033616203784997570">최대 62자(영문 기준)까지 입력할 수 있습니다.</translation>
 <translation id="7034692021407794547">먼저 결제 관리 권한을 보유한 관리자가 관리 콘솔의 Google Meet 하드웨어 섹션에서 Google Meet 하드웨어 서비스 약관에 동의해야 합니다.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" />에서 방금 내 계정의 패스키를 만들었습니다. 패스키는 더 빠르고 안전하게 로그인하는 방법을 제공하며 <ph name="USER" />의 Google 비밀번호 관리자에 저장됩니다. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Linux를 사용하려면 <ph name="DISK_SIZE" />의 여유 공간이 권장됩니다. 여유 공간을 늘리려면 기기에서 파일을 삭제하세요.</translation>
 <translation id="7037157058268992880">PIN 찾기</translation>
 <translation id="7037509989619051237">텍스트 미리보기</translation>
@@ -10574,6 +10577,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8477178913400731244">데이터 삭제</translation>
 <translation id="8477241577829954800">대체됨</translation>
 <translation id="8477384620836102176">일반(&amp;G)</translation>
+<translation id="8477446666255316832">다음번에 더 빠르게 로그인하세요</translation>
 <translation id="8479176401914456949">잘못된 코드입니다. 다시 시도해 보세요.</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" />의 알 수 없는 기기</translation>
 <translation id="8481187309597259238">USB 권한 확인</translation>

@@ -228,10 +228,9 @@ TEST(CaptionControllerTest, DispatchTranscriptionFailed) {
   bool success = caption_controller.DispatchTranscription(transcript);
 
   EXPECT_FALSE(success);
-  EXPECT_EQ(delegate_ptr->GetCreateBubbleControllerCount(), 2u);
-  ASSERT_EQ(delegate_ptr->GetTranscriptions().size(), 2u);
+  EXPECT_EQ(delegate_ptr->GetCreateBubbleControllerCount(), 1u);
+  ASSERT_EQ(delegate_ptr->GetTranscriptions().size(), 1u);
   EXPECT_EQ(delegate_ptr->GetTranscriptions().at(0), transcript);
-  EXPECT_EQ(delegate_ptr->GetTranscriptions().at(1), transcript);
 }
 
 }  // namespace

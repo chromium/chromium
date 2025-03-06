@@ -90,6 +90,9 @@ class BrowserWindowInterface : public content::PageNavigator {
   // Returns the top container view.
   virtual views::View* TopContainer() = 0;
 
+  // Returns the view that houses the Lens overlay.
+  virtual views::View* LensOverlayView() = 0;
+
   using ActiveTabChangeCallback =
       base::RepeatingCallback<void(BrowserWindowInterface*)>;
   virtual base::CallbackListSubscription RegisterActiveTabDidChange(

@@ -387,7 +387,7 @@ class PrefetchURLLoaderInterceptorTestBase : public PrefetchingMetricsTestBase {
         std::move(prefetch_type), blink::mojom::Referrer(),
         /*no_vary_search_hint=*/std::nullopt,
         /*prefetch_document_manager=*/nullptr,
-        base::MakeRefCounted<PreloadPipelineInfo>(
+        PreloadPipelineInfo::Create(
             /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
         attempt->GetWeakPtr());
   }

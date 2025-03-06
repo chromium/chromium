@@ -85,29 +85,29 @@ using signin_metrics::PromoAction;
 
 #pragma mark - SigninCoordinator
 
-- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
-                 completion:(ProceduralBlock)completion {
+- (void)interruptAnimated:(BOOL)animated
+               completion:(ProceduralBlock)completion {
   // When interrupting `self.postSigninManagerCoordinator` or
   // `self.historySyncPopupCoordinator` below, the signinCompletion is called.
   // This callback is in charge to call `[self
   // runCompletionWithSigninResult: completionIdentity:]`.
   if (self.postSigninManagerCoordinator) {
     DCHECK(!self.addAccountSigninManager);
-    [self.postSigninManagerCoordinator interruptWithAction:action
-                                                completion:completion];
+    [self.postSigninManagerCoordinator interruptAnimated:animated
+                                              completion:completion];
     return;
   }
 
   if (self.historySyncPopupCoordinator) {
     DCHECK(!self.addAccountSigninManager);
-    [self.historySyncPopupCoordinator interruptWithAction:action
-                                               completion:completion];
+    [self.historySyncPopupCoordinator interruptAnimated:animated
+                                             completion:completion];
     return;
   }
 
   DCHECK(self.addAccountSigninManager);
-  [self.addAccountSigninManager interruptWithAction:action
-                                         completion:completion];
+  [self.addAccountSigninManager interruptAnimated:animated
+                                       completion:completion];
 }
 
 #pragma mark - ChromeCoordinator

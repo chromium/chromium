@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">A senha será salva no Gerenciador de senhas do Google da conta <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Abrir nova guia no Chrome</translation>
 <translation id="1166460004393506534">Excluir dados de navegação no Chrome</translation>
+<translation id="1171255741903316750">Ative a opção "Bloquear guias anônimas ao fechar o Chrome"</translation>
 <translation id="1179527450541388808">Acesse o Chrome com mais rapidez no Dock da tela de início do iPad.</translation>
 <translation id="1180362651362502943">Continue usando os dados do Chrome na sua Conta do Google.</translation>
 <translation id="1200396280085622191">Use o Chrome sempre que abrir links em mensagens e outros apps.</translation>
@@ -45,6 +46,7 @@ Considerações:
 <translation id="1917964099031477364">A conta e os dados não salvos serão removidos do Chrome e de outros apps do Google neste dispositivo.</translation>
 <translation id="1919130412786645364">Permitir login no Chrome</translation>
 <translation id="1965935827552890526">Termine o que você estava fazendo na outra janela aberta no Chrome.</translation>
+<translation id="1973910962341002002">Nas configurações de <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />, ative o Chrome</translation>
 <translation id="1984705450038014246">Sincronizar seus dados do Chrome</translation>
 <translation id="1987779152850321833">Para aproveitar o Chrome ao máximo, siga as sugestões abaixo.</translation>
 <translation id="2055826352861631739">Usar o Chrome para iPad por padrão</translation>
@@ -96,10 +98,13 @@ Aguarde alguns minutos antes de sair. Se você sair agora, esses dados serão ex
 <translation id="3282568296779691940">Fazer login no Chrome</translation>
 <translation id="3303503998967553377">Usar as ações do Chrome no iOS</translation>
 <translation id="3348862487678490430">Adicionar item da Lista de leitura ao Chrome</translation>
+<translation id="3357827134511189025">Faça login com suas senhas e chaves de acesso salvas em qualquer app usando o Chrome para preenchimento automático</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Isso acontece quando o Chrome não é usado por {THRESHOLD} minuto}one{Isso acontece quando o Chrome não é usado por {THRESHOLD} minuto}other{Isso acontece quando o Chrome não é usado por {THRESHOLD} minutos}}</translation>
 <translation id="3367797402528056312">Terminar a configuração do Chrome</translation>
 <translation id="3371064404604898522">Definir o Chrome como navegador padrão</translation>
 <translation id="3399930248910934354">Abrir configurações do Chrome</translation>
+<translation id="3440830787838130530">Compartilhe a cópia de uma senha com o grupo familiar de forma fácil e segura usando o Gerenciador de senhas do Google</translation>
+<translation id="3460369101684070455">Para acessar com facilidade suas senhas salvas em outros apps, use o preenchimento automático do Chrome</translation>
 <translation id="3472587960215700950">O Chrome usa o Google Maps para fornecer rotas e informações locais sobre endereços detectados.</translation>
 <translation id="3503014945441706099">Use também o recurso Navegação segura com proteção reforçada neste perfil do Chrome</translation>
 <translation id="3522659714780527202">Para acessar suas guias em qualquer lugar onde você usar o Chrome, ative a sincronização</translation>
@@ -155,7 +160,6 @@ Aguarde alguns minutos antes de sair. Se você sair agora, esses dados serão ex
 <translation id="5395376160638294582">Garanta que você sempre possa usar os dados do Chrome na sua Conta do Google</translation>
 <translation id="5404252374083197467">Definir o Chrome como padrão?</translation>
 <translation id="5439191312780166229">Avisa você sobre sites perigosos, mesmo aqueles que o Google não conhecia, analisando mais dados de sites do que a proteção padrão. Você pode ignorar os avisos do Chrome.</translation>
-<translation id="5442013002200339429">Se você ocultar "<ph name="MODULE_NAME" />", o Chrome não vai mais rastrear automaticamente seus pacotes futuros e vai excluir todos os dados de rastreamento anteriores.</translation>
 <translation id="5460571915754665838">4. Selecione o Chrome</translation>
 <translation id="5492504007368565877">O Gerenciador de senhas do Google não pode verificar suas senhas.</translation>
 <translation id="5525095647255982834">Para enviar esta guia a outro dispositivo, faça login no Chrome no outro aparelho.</translation>
@@ -181,6 +185,7 @@ Aguarde alguns minutos antes de trocar de conta. Se você mudar de conta agora, 
 <translation id="5998675059699164418">Sua organização exige que você faça login para usar o Chrome.</translation>
 <translation id="6021312115739110405">Um feed personalizado feito pelo Google. Inclui notícias, esportes e clima.</translation>
 <translation id="6022659036123304283">Deixe o Chrome do seu jeito</translation>
+<translation id="6132075343662013154">O Chrome vai oferecer a opção de salvar sua senha</translation>
 <translation id="6132149203299792222">Faça login com sua Conta do Google para sincronizar suas senhas, favoritos e muito mais.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Pesquisar no Chrome</translation>
@@ -228,6 +233,7 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="7061455974939528301">Toque no ícone do Chrome, pressione e clique em "Editar tela inicial"</translation>
 <translation id="7065813315247345131">Mover o Chrome para o Dock</translation>
 <translation id="7124339256045485976">Mantenha o Chrome atualizado</translation>
+<translation id="7145599899567697473">Salvar e preencher automaticamente senhas no Chrome</translation>
 <translation id="7161390184744336561">O Google Chrome está desatualizado</translation>
 <translation id="7165736900384873061">Começar a usar o leitor de QR do Google Chrome</translation>
 <translation id="7175129790242719365">Dica do Chrome: fazer login no Chrome</translation>
@@ -261,6 +267,7 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="7693590760643069321">Agora você pode usar o Chrome sempre que toca em links em mensagens, documentos e outros apps.</translation>
 <translation id="7698568245838009292">Solicitação do Chrome para acessar a câmera</translation>
 <translation id="7707877166818730835">Abrir minha guia mais recente no Chrome</translation>
+<translation id="7747746207470479571">Acesse suas senhas e chaves de acesso com facilidade usando o preenchimento automático do Chrome</translation>
 <translation id="776305366874821582">Acesse o Chrome com mais rapidez no Dock da tela inicial do iPhone.</translation>
 <translation id="7780154209050837198">Para aproveitar o Chrome ao máximo, faça login na sua Conta do Google.</translation>
 <translation id="7787205077729386167">Abra as configurações do Chrome no iOS, toque em "App de navegador padrão" e selecione o Chrome.</translation>
@@ -281,6 +288,7 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="8136856065410661948">Eventos vão ser criados no Calendário da Apple com o conteúdo do Chrome e do Google Lens.</translation>
 <translation id="8154120522323162874">Continue a configuração do navegador para aproveitar o Chrome ao máximo.</translation>
 <translation id="8160472928944011082">Não é possível atualizar o Chrome</translation>
+<translation id="8245080522851805544">Mantenha sua navegação particular com a autenticação do dispositivo ao fechar o Chrome</translation>
 <translation id="8248887045858762645">Dica do Chrome</translation>
 <translation id="8265730590513812063">Abrir o menu do Google Chrome</translation>
 <translation id="8317674518145175158">Formas de pagamento e endereços não serão criptografados. O histórico de navegação do Chrome não será sincronizado.

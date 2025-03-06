@@ -25,6 +25,7 @@
 <translation id="1657719826150349398">Перамясціць укладку ніжэй</translation>
 <translation id="1697284962337958118">Дадаць у</translation>
 <translation id="1713541401465507417">Закрыць усе ўкладкі і групы</translation>
+<translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> група ўкладак больш не даступная}one{<ph name="TAB_GROUPS_COUNT_MANY" /> група ўкладак больш не даступная}few{<ph name="TAB_GROUPS_COUNT_MANY" /> групы ўкладак больш не даступныя}many{<ph name="TAB_GROUPS_COUNT_MANY" /> груп укладак больш не даступныя}other{<ph name="TAB_GROUPS_COUNT_MANY" /> групы ўкладак больш не даступныя}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Даведацца больш<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Згрупавана <ph name="TABS_COUNT_ONE" /> укладка</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> укладка}one{<ph name="TABS_COUNT_MANY" /> укладка}few{<ph name="TABS_COUNT_MANY" /> укладкі}many{<ph name="TABS_COUNT_MANY" /> укладак}other{<ph name="TABS_COUNT_MANY" /> укладкі}}</translation>
@@ -40,6 +41,7 @@
 <translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Згарнуць групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_ONE" /> укладкай.}one{Згарнуць групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкай.}few{Згарнуць групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкамі.}many{Згарнуць групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкамі.}other{Згарнуць групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкі.}}</translation>
 <translation id="2498435670446402865">Назва групы ўкладак</translation>
+<translation id="2536366509642644298">Групы ўкладак "<ph name="TAB_GROUP_NAME_1" />" і "<ph name="TAB_GROUP_NAME_2" />" больш не даступныя</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Згарнуць <ph name="TABS_COUNT_ONE" /> укладку.}one{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладкі.}few{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладак.}many{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладак.}other{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладкі.}}</translation>
 <translation id="2569352796411618312">Прапанова: некалькі (<ph name="NUMBER_OF_TABS" />) укладак пэўны час не выкарыстоўваліся. Закрыць іх?</translation>
 <translation id="2662028055331606429">Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -61,6 +63,7 @@
 <translation id="3051031624272448591">Вы заўсёды можаце паглядзець іх зноў у гісторыі</translation>
 <translation id="3052964831964880138">Зніжэнне цаны на <ph name="PRODUCT_NAME" /> на <ph name="PRICE_DROP" /></translation>
 <translation id="3078350928901129212">Колер значка гэтай групы ўкладак: <ph name="COLOR_NAME" /></translation>
+<translation id="311432875115153175">Спіс груп укладак закрыты</translation>
 <translation id="3194464645767632461">ацэнка</translation>
 <translation id="3328308545011660196">Прапанова: здаецца, гэтыя ўкладкі (<ph name="NUMBER_OF_TABS" />) звязаныя паміж сабой. Згрупаваць іх?</translation>
 <translation id="3547352561153509682">Група будзе выдалена з усіх прылад, на якіх выкананы ўваход ва ўліковы запіс <ph name="USER_EMAIL" /></translation>
@@ -75,6 +78,7 @@
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> неактыўная ўкладка}one{<ph name="TABS_COUNT_MANY" /> неактыўная ўкладка}few{<ph name="TABS_COUNT_MANY" /> неактыўныя ўкладкі}many{<ph name="TABS_COUNT_MANY" /> неактыўных укладак}other{<ph name="TABS_COUNT_MANY" /> неактыўнай укладкі}}</translation>
 <translation id="3969565576924904454">Адкрыць групу "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Створана <ph name="NUM_DAYS_ONE" /> дзень таму}one{Створана <ph name="NUM_DAYS_MANY" /> дзень таму}few{Створана <ph name="NUM_DAYS_MANY" /> дні таму}many{Створана <ph name="NUM_DAYS_MANY" /> дзён таму}other{Створана <ph name="NUM_DAYS_MANY" /> дня таму}}</translation>
+<translation id="4076226664360336092">Спіс груп укладак, адкрыты на ўсю вышыню экрана</translation>
 <translation id="4133493477912226187">Здаецца, гэтыя ўкладкі (<ph name="NUMBER_OF_TABS" />) звязаныя паміж сабой. Згрупаваць іх?</translation>
 <translation id="4139634748112164403">Укладкі застануцца адкрытымі на гэтай прыладзе, але група будзе выдалена назаўсёды</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Закрыць групу ўкладак "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_ONE" /> укладкай, колер: <ph name="COLOR_NAME" />.}one{Закрыць групу ўкладак "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкай, колер: <ph name="COLOR_NAME" />.}few{Закрыць групу ўкладак "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкамі, колер: <ph name="COLOR_NAME" />.}many{Закрыць групу ўкладак "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкамі, колер: <ph name="COLOR_NAME" />.}other{Закрыць групу ўкладак "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкі, колер: <ph name="COLOR_NAME" />.}}</translation>
@@ -144,6 +148,7 @@
 <translation id="6744956528665271406">Змяніць колер групы</translation>
 <translation id="6856809498882026482">Схаваць рэжым множнага выбару</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Разгарнуць абагуленую групу ўкладак "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_ONE" /> укладкі, колер: <ph name="COLOR_NAME" />.}one{Разгарнуць абагуленую групу ўкладак "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкі, колер: <ph name="COLOR_NAME" />.}few{Разгарнуць абагуленую групу ўкладак "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладак, колер: <ph name="COLOR_NAME" />.}many{Разгарнуць абагуленую групу ўкладак "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладак, колер: <ph name="COLOR_NAME" />.}other{Разгарнуць абагуленую групу ўкладак "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкі, колер: <ph name="COLOR_NAME" />.}}</translation>
+<translation id="709473454666962555">Выберыце групу ўкладак</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Абагуліць укладку}one{Абагуліць укладкі}few{Абагуліць укладкі}many{Абагуліць укладкі}other{Абагуліць укладкі}}</translation>
 <translation id="7129458170538955174">Інфармацыя пра гэту краму разгорнута на палову экрана</translation>
 <translation id="7204204600596740190">Рэжым множнага выбару</translation>
@@ -151,6 +156,7 @@
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> колер выбраны</translation>
 <translation id="7326879924029668159">Паглядзець палітыку вяртання і іншую інфармацыю</translation>
 <translation id="7352298686197644113">Даведайцеся, які тавар на адкрытых вамі ўкладках патаннеў</translation>
+<translation id="7369451074646620503">Група ўкладак "<ph name="TAB_GROUP_NAME" />" больш не даступная</translation>
 <translation id="742664698522525515">Захаваць групу?</translation>
 <translation id="7452985128687107478">Групы ўкладак аўтаматычна захоўваюцца і абнаўляюцца на ўсіх вашых прыладах</translation>
 <translation id="747459581954555080">Аднавіць усе</translation>
@@ -176,6 +182,7 @@
 <translation id="7966321538264951561">Адхіліць прапановы.</translation>
 <translation id="799469866974412355">Новая група з вашай іншай прылады</translation>
 <translation id="8029301326595421733">Інфармацыя пра гэту краму разгорнута на ўвесь экран</translation>
+<translation id="8053770993984522566">Спіс груп укладак, адкрыты на палову экрана</translation>
 <translation id="8076492880354921740">Укладкі</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Разгарнуць групу ўкладак "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_ONE" /> укладкай, колер: <ph name="COLOR_NAME" />.}one{Разгарнуць групу ўкладак "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкай, колер: <ph name="COLOR_NAME" />.}few{Разгарнуць групу ўкладак "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкамі, колер: <ph name="COLOR_NAME" />.}many{Разгарнуць групу ўкладак "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкамі, колер: <ph name="COLOR_NAME" />.}other{Разгарнуць групу ўкладак "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкі, колер: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Перамясціць укладку ўверх</translation>

@@ -4031,6 +4031,8 @@ static_library("ui") {
       "views/extensions/windows_utils_views.cc",
       "views/file_system_access/file_system_access_icon_view.cc",
       "views/file_system_access/file_system_access_icon_view.h",
+      "views/file_system_access/file_system_access_bubble_controller.h",
+      "views/file_system_access/file_system_access_bubble_controller.cc",
       "views/file_system_access/file_system_access_restore_permission_bubble_view.cc",
       "views/file_system_access/file_system_access_restore_permission_bubble_view.h",
       "views/file_system_access/file_system_access_usage_bubble_view.cc",

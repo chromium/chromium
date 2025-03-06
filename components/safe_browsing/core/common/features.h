@@ -205,9 +205,6 @@ BASE_DECLARE_FEATURE(kHashPrefixRealTimeLookups);
 // to the Safe Browsing server.
 extern const base::FeatureParam<std::string> kHashPrefixRealTimeLookupsRelayUrl;
 
-// Enable faster OHTTP key rotation for hash-prefix real-time lookups.
-BASE_DECLARE_FEATURE(kHashPrefixRealTimeLookupsFasterOhttpKeyRotation);
-
 // Send sample hash-prefix real-time lookups for real-time lookups to catch
 // "false positives" where real-time lookup says safe but hash-prefix lookup
 // says unsafe.

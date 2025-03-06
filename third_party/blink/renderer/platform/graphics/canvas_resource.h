@@ -123,6 +123,8 @@ class PLATFORM_EXPORT CanvasResource
 
   viz::SharedImageFormat GetFormat() const { return format_; }
 
+  const gfx::ColorSpace& GetColorSpace() const { return color_space_; }
+
   // The ClientSharedImage containing information on the SharedImage
   // attached to the resource.
   virtual scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() = 0;

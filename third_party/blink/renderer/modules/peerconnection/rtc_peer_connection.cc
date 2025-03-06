@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection.h"
 
 #include <algorithm>
@@ -41,6 +36,7 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
@@ -2431,7 +2427,8 @@ void RTCPeerConnection::DidModifyTransceivers(
   // Remove transceivers and update their states to reflect that they are
   // necessarily stopped.
   for (auto id : removed_transceiver_ids) {
-    for (auto it = transceivers_.begin(); it != transceivers_.end(); ++it) {
+    for (auto it = transceivers_.begin(); it != transceivers_.end();
+         UNSAFE_TODO(++it)) {
       if ((*it)->platform_transceiver()->Id() == id) {
         // All streams are removed on stop, update `remove_list` if necessary.
         auto* track = (*it)->receiver()->track();
@@ -2924,7 +2921,7 @@ void RTCPeerConnection::DispatchScheduledEvents() {
   events.swap(scheduled_events_);
 
   HeapVector<Member<EventWrapper>>::iterator it = events.begin();
-  for (; it != events.end(); ++it) {
+  for (; it != events.end(); UNSAFE_TODO(++it)) {
     if ((*it)->Setup()) {
       DispatchEvent(*(*it)->event_.Release());
     }

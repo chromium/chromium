@@ -5641,6 +5641,9 @@ chromium-metrics-reviews@google.com.
     CookieStore API) or if the partition key matches the
     RestrictedCookieManager's internal partition key (which is the case for
     cookies set/modified by document.cookie).
+
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
   </summary>
 </histogram>
 
@@ -5675,6 +5678,9 @@ chromium-metrics-reviews@google.com.
     True iff the cookie set by RestrictedCookieManager is a partitioned cookie.
     Only logged when partitioned cookies are enabled and the cookie set by RCM
     will be accepted.
+
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
   </summary>
 </histogram>
 
@@ -5685,6 +5691,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logged on any document.cookie or CookieStore API operation. True if the
     browser-side site_for_cookies and the render-provided value match.
+
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
   </summary>
 </histogram>
 
@@ -5695,6 +5704,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logged on any document.cookie or CookieStore API operation. True if the
     browser-side top_frame_origin and the render-provided value match.
+
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
   </summary>
 </histogram>
 

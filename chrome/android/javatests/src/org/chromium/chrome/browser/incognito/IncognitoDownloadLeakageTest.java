@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.incognito;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import android.os.Build;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -19,6 +20,7 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.chromium.base.test.util.DisableIf;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -260,6 +262,7 @@ public class IncognitoDownloadLeakageTest {
     @Test
     @LargeTest
     @UseMethodParameter(IncognitoDataTestUtils.TestParams.IncognitoToIncognito.class)
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.Q, message = "crbug.com/391749002")
     public void testIncognitoDowloadEntriesNotVisibleInAnotherIncognito(
             String incognitoActivityType1, String incognitoActivityType2) throws Exception {
         IncognitoDataTestUtils.ActivityType incognitoActivity1 =

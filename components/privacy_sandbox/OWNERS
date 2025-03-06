@@ -1,16 +1,16 @@
 # Android UI
 andzaytsev@google.com
-tommasin@chromium.org
 
-# 3PCD/Tracking Protection on-boarding
-# PAT API notice and consent
+# PAT settings
+# Notice and consent framework
+# UXR and HaTS frameworks
 # Advertising UX
 boujane@google.com
 
-# Privacy settings and features (Tracking Protection, RWS, PST, etc.)
-# User bypass
-# UX for Anti-covert tracking
-# Related prefs & content settings
+# Privacy settings UX (3PCs, RWS, PST)
+# Anti-covert tracking UX (IPP, FPP)
+# In-context 3PC controls (user bypass, page info)
+# Related features, prefs & content settings
 fmacintosh@google.com
 
 # Backup for emergency approvals

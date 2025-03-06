@@ -899,6 +899,14 @@ void NewTabPageHandler::GetModulesOrder(GetModulesOrderCallback callback) {
                          return !base::Contains(module_ids, id);
                        });
 
+  // Third, append default module order for any modules not ordered by
+  // drag&drop or Finch.
+  std::ranges::copy_if(ntp_modules::kOrderedModuleIds,
+                       std::back_inserter(module_ids),
+                       [&module_ids](const std::string& id) {
+                         return !base::Contains(module_ids, id);
+                       });
+
   std::move(callback).Run(std::move(module_ids));
 }
 

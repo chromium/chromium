@@ -65,11 +65,6 @@ WaylandToplevelWindow::WaylandToplevelWindow(PlatformWindowDelegate* delegate,
 WaylandToplevelWindow::~WaylandToplevelWindow() = default;
 
 bool WaylandToplevelWindow::CreateShellToplevel() {
-  // Certain Wayland compositors (E.g. Mutter) expects wl_surface to have no
-  // buffer attached when xdg-surface role is created.
-  wl_surface_attach(root_surface()->surface(), nullptr, 0, 0);
-  root_surface()->Commit(false);
-
   ShellObjectFactory factory;
   shell_toplevel_ = factory.CreateShellToplevelWrapper(connection(), this);
   if (!shell_toplevel_) {
@@ -142,15 +137,6 @@ void WaylandToplevelWindow::Hide() {
     bubble->Hide();
   }
   WaylandWindow::Hide();
-
-  // When running under Weston, if we don't do this immediately, the window
-  // will be unable to receive mouse events after making it visible again.
-  // See https://gitlab.freedesktop.org/wayland/weston/-/issues/950.
-  if (root_surface() && root_surface()->buffer_id() != 0) {
-    root_surface()->AttachBuffer(nullptr);
-    root_surface()->ApplyPendingState();
-    root_surface()->Commit(false);
-  }
 
   if (gtk_surface1_)
     gtk_surface1_.reset();

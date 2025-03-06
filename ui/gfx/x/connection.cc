@@ -530,7 +530,7 @@ bool Connection::Dispatch() {
     // All events have the sequence number of the last processed request
     // included in them.  So if a reply and an event have the same sequence,
     // the reply must have been received first.
-    if (CompareSequenceIds(next_event_sequence, next_response_sequence) <= 0) {
+    if (CompareSequenceIds(next_event_sequence, next_response_sequence) >= 0) {
       ProcessNextResponse();
     } else {
       ProcessNextEvent();

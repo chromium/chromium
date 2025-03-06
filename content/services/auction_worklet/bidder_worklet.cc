@@ -20,6 +20,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/number_formatting.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -42,11 +43,12 @@
 #include "content/services/auction_worklet/direct_from_seller_signals_requester.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
+#include "content/services/auction_worklet/private_model_training_bindings.h"
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
 #include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "content/services/auction_worklet/public/cpp/private_aggregation_reporting.h"
+#include "content/services/auction_worklet/public/cpp/private_model_training_reporting.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
-#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-shared.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
@@ -69,6 +71,7 @@
 #include "context_recycler.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -1112,7 +1115,7 @@ void BidderWorklet::V8State::ReportWin(
         /*report_url=*/std::nullopt,
         /*ad_beacon_map=*/{},
         /*ad_macro_map=*/{},
-        /*pa_requests=*/{}, base::TimeDelta(),
+        /*pa_requests=*/{}, /*pmt_request_data=*/nullptr, base::TimeDelta(),
         /*script_timed_out=*/true,
         /*errors=*/{"reportWin() aborted due to zero timeout."});
     return;
@@ -1137,13 +1140,14 @@ void BidderWorklet::V8State::ReportWin(
                              base::OptionalToPtr(per_buyer_signals_json),
                              &args) ||
       !v8_helper_->AppendJsonValue(context, seller_signals_json, &args)) {
-    PostReportWinCallbackToUserThread(std::move(callback),
-                                      /*report_url=*/std::nullopt,
-                                      /*ad_beacon_map=*/{},
-                                      /*ad_macro_map=*/{},
-                                      /*pa_requests=*/{}, base::TimeDelta(),
-                                      /*script_timed_out=*/false,
-                                      /*errors=*/std::vector<std::string>());
+    PostReportWinCallbackToUserThread(
+        std::move(callback),
+        /*report_url=*/std::nullopt,
+        /*ad_beacon_map=*/{},
+        /*ad_macro_map=*/{},
+        /*pa_requests=*/{}, /*pmt_request_data=*/nullptr, base::TimeDelta(),
+        /*script_timed_out=*/false,
+        /*errors=*/std::vector<std::string>());
     return;
   }
 
@@ -1195,13 +1199,14 @@ void BidderWorklet::V8State::ReportWin(
       browser_signal_top_level_seller_origin, bidding_signals_data_version,
       kanon_status, reporting_timeout, browser_signals, browser_signals_dict);
   if (!browser_signals_set) {
-    PostReportWinCallbackToUserThread(std::move(callback),
-                                      /*report_url=*/std::nullopt,
-                                      /*ad_beacon_map=*/{},
-                                      /*ad_macro_map=*/{},
-                                      /*pa_requests=*/{}, base::TimeDelta(),
-                                      /*script_timed_out=*/false,
-                                      /*errors=*/std::vector<std::string>());
+    PostReportWinCallbackToUserThread(
+        std::move(callback),
+        /*report_url=*/std::nullopt,
+        /*ad_beacon_map=*/{},
+        /*ad_macro_map=*/{},
+        /*pa_requests=*/{}, /*pmt_request_data=*/nullptr, base::TimeDelta(),
+        /*script_timed_out=*/false,
+        /*errors=*/std::vector<std::string>());
     return;
   }
 
@@ -1226,6 +1231,7 @@ void BidderWorklet::V8State::ReportWin(
                                       /*report_url=*/std::nullopt,
                                       /*ad_beacon_map=*/{},
                                       /*ad_macro_map=*/{}, /*pa_requests=*/{},
+                                      /*pmt_request_data=*/nullptr,
                                       base::TimeDelta(),
                                       /*script_timed_out=*/false,
                                       /*errors=*/std::move(errors_out));
@@ -1252,7 +1258,8 @@ void BidderWorklet::V8State::ReportWin(
     PostReportWinCallbackToUserThread(
         std::move(callback), /*report_url=*/std::nullopt,
         /*ad_beacon_map=*/{}, /*ad_macro_map=*/{},
-        /*pa_requests=*/{}, elapsed_timer.Elapsed(),
+        /*pa_requests=*/{}, /*pmt_request_data=*/nullptr,
+        elapsed_timer.Elapsed(),
         /*script_timed_out=*/result == AuctionV8Helper::Result::kTimeout,
         std::move(errors_out));
     return;
@@ -1294,13 +1301,14 @@ void BidderWorklet::V8State::ReportWin(
         /*ad_beacon_map=*/{}, /*ad_macro_map=*/{},
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
-        elapsed,
+        /*pmt_request_data=*/nullptr, elapsed,
         /*script_timed_out=*/result == AuctionV8Helper::Result::kTimeout,
         std::move(errors_out));
     return;
   }
 
-  // If there was a config that means they called queueReportAggregateWin
+  mojom::PrivateModelTrainingRequestDataPtr maybe_pmt_request_data;
+  // If there was a config that means they called `queueReportAggregateWin()`
   if (context_recycler.report_bindings()
           ->modeling_signals_config()
           .has_value()) {
@@ -1308,7 +1316,17 @@ void BidderWorklet::V8State::ReportWin(
     // `joinCount`, and `recency` were not accessed within `reportWin()`.
     if (!context_recycler.report_win_lazy_filler()
              ->ShouldBlockSendEncrypted()) {
-      context_recycler.AddPrivateModelTrainingBindings();
+      if (context_recycler.report_bindings()
+              ->modeling_signals_config()
+              ->payload_length <= kMaxPayloadLength) {
+        context_recycler.AddPrivateModelTrainingBindings();
+
+      } else {
+        errors_out.push_back(
+            "queueReportAggregateWin(): modelingSignalsConfig's "
+            "`payloadLength` may not exceed " +
+            base::NumberToString(kMaxPayloadLength) + ".");
+      }
     }
 
     v8::LocalVector<v8::Value> report_aggregate_win_args(isolate);
@@ -1339,6 +1357,42 @@ void BidderWorklet::V8State::ReportWin(
           "reportAggregateWin", report_aggregate_win_args, total_timeout.get(),
           maybe_report_aggregate_win_result_ret, errors_out);
     }
+
+    if (context_recycler.private_model_training_bindings()) {
+      // To prevent leaking a bit, we always send a request if
+      // `reportAggregateWin()` is called. Therefore, even if
+      // `sendEncryptedTo()` is not called or `reportAggregateWin()` encounters
+      // an error/timeout, we send the data with an empty payload. We also send
+      // data with an empty payload if the payload's size exceeds the specified
+      // `payload_length`.
+      mojo_base::BigBuffer maybe_payload =
+          context_recycler.private_model_training_bindings()
+              ->TakePayload()
+              .value_or(mojo_base::BigBuffer(0));
+      if (maybe_payload.size() > context_recycler.report_bindings()
+                                     ->modeling_signals_config()
+                                     ->payload_length) {
+        errors_out.push_back(
+            "sendEncryptedTo(): payload size may not exceed the specified "
+            "modelingSignalsConfig.payloadLength.");
+        maybe_payload = mojo_base::BigBuffer(0);
+      }
+
+      maybe_pmt_request_data = mojom::PrivateModelTrainingRequestData::New(
+          /*payload=*/std::move(maybe_payload),
+          /*payload_length=*/
+          context_recycler.report_bindings()
+              ->modeling_signals_config()
+              ->payload_length,
+          /*aggregation_coordinator_origin=*/
+          context_recycler.report_bindings()
+              ->modeling_signals_config()
+              ->aggregation_coordinator_origin,
+          /*destination=*/
+          context_recycler.report_bindings()
+              ->modeling_signals_config()
+              ->destination);
+    }
   }
   // This covers both the case where a report URL was provided, and the case one
   // was not.
@@ -1348,7 +1402,7 @@ void BidderWorklet::V8State::ReportWin(
       context_recycler.register_ad_macro_bindings()->TakeAdMacroMap(),
       context_recycler.private_aggregation_bindings()
           ->TakePrivateAggregationRequests(),
-      elapsed,
+      std::move(maybe_pmt_request_data), elapsed,
       /*script_timed_out=*/false, std::move(errors_out));
 }
 
@@ -2217,6 +2271,7 @@ void BidderWorklet::V8State::PostReportWinCallbackToUserThread(
     base::flat_map<std::string, GURL> ad_beacon_map,
     base::flat_map<std::string, std::string> ad_macro_map,
     PrivateAggregationRequests pa_requests,
+    mojom::PrivateModelTrainingRequestDataPtr maybe_pmt_request_data,
     base::TimeDelta reporting_latency,
     bool script_timed_out,
     std::vector<std::string> errors) {
@@ -2225,8 +2280,8 @@ void BidderWorklet::V8State::PostReportWinCallbackToUserThread(
       FROM_HERE,
       base::BindOnce(std::move(callback), std::move(report_url),
                      std::move(ad_beacon_map), std::move(ad_macro_map),
-                     std::move(pa_requests), reporting_latency,
-                     script_timed_out, std::move(errors)));
+                     std::move(pa_requests), std::move(maybe_pmt_request_data),
+                     reporting_latency, script_timed_out, std::move(errors)));
 }
 
 void BidderWorklet::V8State::PostErrorBidCallbackToUserThread(
@@ -2921,6 +2976,7 @@ void BidderWorklet::DeliverReportWinOnUserThread(
     base::flat_map<std::string, GURL> ad_beacon_map,
     base::flat_map<std::string, std::string> ad_macro_map,
     PrivateAggregationRequests pa_requests,
+    mojom::PrivateModelTrainingRequestDataPtr pmt_request_data,
     base::TimeDelta reporting_latency,
     bool script_timed_out,
     std::vector<std::string> errors) {
@@ -2931,6 +2987,7 @@ void BidderWorklet::DeliverReportWinOnUserThread(
   std::move(task->callback)
       .Run(std::move(report_url), std::move(ad_beacon_map),
            std::move(ad_macro_map), std::move(pa_requests),
+           std::move(pmt_request_data),
            mojom::BidderTimingMetrics::New(
                /*js_fetch_latency=*/js_fetch_latency_,
                /*wasm_fetch_latency=*/wasm_fetch_latency_,

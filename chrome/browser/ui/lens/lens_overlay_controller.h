@@ -865,7 +865,7 @@ class LensOverlayController : public LensSearchboxClient,
   bool IsContextualSearchbox();
 
   // Called when the UI needs to create the view to show in the overlay.
-  std::unique_ptr<views::View> CreateViewForOverlay();
+  raw_ptr<views::View> CreateViewForOverlay();
 
   // Clears the selected region.
   void ClearRegionSelection();
@@ -1432,6 +1432,7 @@ class LensOverlayController : public LensSearchboxClient,
   // Pointer to the view that houses our overlay as a child of the tab
   // contents web view.
   raw_ptr<views::View> overlay_view_;
+
   // Pointer to the web view within the overlay view if it exists.
   raw_ptr<views::WebView> overlay_web_view_;
 

@@ -96,13 +96,16 @@ class OptimizeBaselines(AbstractParallelRebaselineCommand):
             test_set = set(self._host_port.tests())
         else:
             test_set = resolve_test_patterns(self._host_port, args)
-        virtual_tests_to_exclude = {
-            test
+        # Coerce virtual tests to their respective base tests so that the base
+        # test's entire baseline graph is optimized as one task. Otherwise, two
+        # virtual tests `virtual/a/t.html` and `virtual/b/t.html` can be
+        # scheduled as separate tasks on different workers. Those workers could
+        # then race to delete the same nonvirtual (but possibly
+        # platform-specific) `t-expected.txt`.
+        return {
+            self._host_port.lookup_virtual_test_base(test) or test
             for test in test_set
-            if self._host_port.lookup_virtual_test_base(test) in test_set
         }
-        test_set -= virtual_tests_to_exclude
-        return test_set
 
     def handle(self, name: str, source: str, successful: bool):
         self._successful = self._successful and successful

@@ -32,6 +32,7 @@
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
@@ -446,6 +447,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         base::flat_map<std::string, GURL> ad_beacon_map,
         base::flat_map<std::string, std::string> ad_macro_map,
         PrivateAggregationRequests pa_requests,
+        mojom::PrivateModelTrainingRequestDataPtr pmt_request_data,
         base::TimeDelta reporting_latency,
         bool script_timed_out,
         std::vector<std::string> errors)>;
@@ -699,6 +701,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         base::flat_map<std::string, GURL> ad_beacon_map,
         base::flat_map<std::string, std::string> ad_macro_map,
         PrivateAggregationRequests pa_requests,
+        mojom::PrivateModelTrainingRequestDataPtr pmt_request_data,
         base::TimeDelta reporting_latency,
         bool script_timed_out,
         std::vector<std::string> errors);
@@ -876,6 +879,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       base::flat_map<std::string, GURL> ad_beacon_map,
       base::flat_map<std::string, std::string> ad_macro_map,
       PrivateAggregationRequests pa_requests,
+      mojom::PrivateModelTrainingRequestDataPtr pmt_request_data,
       base::TimeDelta reporting_latency,
       bool script_timed_out,
       std::vector<std::string> errors);

@@ -21,6 +21,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -2230,6 +2231,8 @@ class WebUIBundledCodeCacheResourceRequestSenderTest
 
 TEST_F(WebUIBundledCodeCacheResourceRequestSenderTest,
        FetchesCodeCacheFromPlatformWhenAvailable) {
+  base::HistogramTester histogram_tester;
+
   // Define URLs that support the webui bundled code cache.
   const GURL test_url_1("chrome://example/script_1.js");
   const GURL test_url_2("chrome://example/script_2.js");
@@ -2244,10 +2247,15 @@ TEST_F(WebUIBundledCodeCacheResourceRequestSenderTest,
   // cache is available.
   LoadResourceAndCheck(test_url_1, /*expect_code_cache=*/true);
   LoadResourceAndCheck(test_url_2, /*expect_code_cache=*/false);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.ResourceRequest.WebUIBundledCodeCacheFetcher.DidReceiveCachedCode",
+      true, 1);
 }
 
 TEST_F(WebUIBundledCodeCacheResourceRequestSenderTest,
        HandlesMissingPlatformCodeCache) {
+  base::HistogramTester histogram_tester;
+
   // Define a URL that supports the webui bundled code cache.
   const GURL test_url("chrome://example/script.js");
 
@@ -2262,6 +2270,9 @@ TEST_F(WebUIBundledCodeCacheResourceRequestSenderTest,
   // Assert attempting to fetch the code cache is handled correctly and the
   // client's code cache remains unset.
   LoadResourceAndCheck(test_url, /*expect_code_cache=*/false);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.ResourceRequest.WebUIBundledCodeCacheFetcher.DidReceiveCachedCode",
+      false, 1);
 }
 
 }  // namespace

@@ -54,7 +54,6 @@
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/gpm_enclave_controller.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
-#include "chrome/browser/webauthn/password_credential_controller_impl.h"
 #include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/common/chrome_version.h"
@@ -119,7 +118,6 @@
 #include "ui/aura/window.h"
 #endif
 
-using webauthn::PasswordCredentialController;
 using PasswordCredentials = PasswordCredentialController::PasswordCredentials;
 using UIPresentation = ChromeAuthenticatorRequestDelegate::UIPresentation;
 using TransportAvailabilityInfo =
@@ -691,9 +689,8 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
                       dialog_controller_->ui_presentation())) {
     // Only valid for the main frame.
     if (!password_controller_ && GetRenderFrameHost()->IsInPrimaryMainFrame()) {
-      password_controller_ =
-          std::make_unique<webauthn::PasswordCredentialControllerImpl>(
-              render_frame_host_id_, dialog_model_.get());
+      password_controller_ = std::make_unique<PasswordCredentialController>(
+          render_frame_host_id_, dialog_model_.get());
     }
     if (!password_controller_) {
       return;

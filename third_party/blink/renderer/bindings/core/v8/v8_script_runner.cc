@@ -285,15 +285,15 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
       v8::MaybeLocal<v8::Script> script =
           v8::ScriptCompiler::Compile(script_state->GetContext(), &source,
                                       v8::ScriptCompiler::kConsumeCodeCache);
-      cache_handler->DidUseCodeCache();
-      // The ScriptState has an associated context. We expect the current
-      // context to match the context associated with Script context when
-      // compiling the script for main world. Hence it is safe to use the
-      // CodeCacheHost corresponding to the script execution context. For
-      // isolated world (for ex: extension scripts), the current context
-      // may not match the script context. Though currently code caching is
-      // disabled for extensions.
+      cache_handler->DidUseCodeCache(cached_data->rejected);
       if (cached_data->rejected) {
+        // The ScriptState has an associated context. We expect the current
+        // context to match the context associated with Script context when
+        // compiling the script for main world. Hence it is safe to use the
+        // CodeCacheHost corresponding to the script execution context. For
+        // isolated world (for ex: extension scripts), the current context may
+        // not match the script context. Though currently code caching is
+        // disabled for extensions.
         cache_handler->ClearCachedMetadata(
             ExecutionContext::GetCodeCacheHostFromContext(
                 ExecutionContext::From(script_state)),
@@ -436,7 +436,6 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
         // previously.
         CachedMetadataHandler* cache_handler = params.CacheHandler();
         DCHECK(cache_handler);
-        cache_handler->DidUseCodeCache();
         const scoped_refptr<CachedMetadata> cached_metadata =
             V8CodeCache::GetCachedMetadata(cache_handler);
         const bool full_code_cache = V8CodeCache::IsFull(cached_metadata.get());
@@ -448,13 +447,14 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
             source.GetCachedData();
         script = v8::ScriptCompiler::CompileModule(
             isolate, &source, compile_options, no_cache_reason);
-        // The ScriptState also has an associated context. We expect the current
-        // context to match the context associated with Script context when
-        // compiling the module. Hence it is safe to use the CodeCacheHost
-        // corresponding to the current execution context.
-        ExecutionContext* execution_context =
-            ExecutionContext::From(isolate->GetCurrentContext());
+        cache_handler->DidUseCodeCache(cached_data->rejected);
         if (cached_data->rejected) {
+          // The ScriptState also has an associated context. We expect the
+          // current context to match the context associated with Script context
+          // when compiling the module. Hence it is safe to use the
+          // CodeCacheHost corresponding to the current execution context.
+          ExecutionContext* execution_context =
+              ExecutionContext::From(isolate->GetCurrentContext());
           cache_handler->ClearCachedMetadata(
               ExecutionContext::GetCodeCacheHostFromContext(execution_context),
               CachedMetadataHandler::kClearPersistentStorage);

@@ -40,6 +40,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_shortcuts_menu_win.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/shell_util.h"
 #include "chrome/installer/util/taskbar_util.h"
 #include "chrome/installer/util/util_constants.h"
@@ -214,6 +215,16 @@ bool CreateShortcutsInPaths(const base::FilePath& web_app_path,
     shortcut_properties.set_icon(icon_file, 0);
     shortcut_properties.set_app_id(win_app_id);
     shortcut_properties.set_dual_mode(false);
+
+    // We only need to do this for shortcuts in the start menu but we don't know
+    // which path is in the start menu. It shouldn't hurt to always set the
+    // property.
+    const CLSID toast_activator_clsid =
+        install_static::GetToastActivatorClsid();
+    if (toast_activator_clsid != CLSID_NULL) {
+      shortcut_properties.set_toast_activator_clsid(toast_activator_clsid);
+    }
+
     if (!base::PathExists(shortcut_file.DirName()) &&
         !base::CreateDirectory(shortcut_file.DirName())) {
       success = false;
@@ -282,6 +293,51 @@ void UpdateIconFileForShortcut(const base::FilePath& web_app_path,
           base::win::ShortcutOperation::kUpdateExisting)) {
     DVLOG(1) << "Error updating icon for shortcut " << new_app_title;
   }
+}
+
+void UpdateToastActivationForShortcut(const base::FilePath& shortcut) {
+  base::win::ShortcutProperties shortcut_properties;
+  const CLSID toast_activator_clsid = install_static::GetToastActivatorClsid();
+  if (toast_activator_clsid != CLSID_NULL) {
+    shortcut_properties.set_toast_activator_clsid(toast_activator_clsid);
+  }
+  if (!base::win::CreateOrUpdateShortcutLink(
+          shortcut, shortcut_properties,
+          base::win::ShortcutOperation::kUpdateExisting)) {
+    DVLOG(1) << "Error updating toast activator clsid for shortcut "
+             << shortcut;
+  }
+}
+
+Result UpdateAppMenuShortcuts(const base::FilePath& profile_path,
+                              const std::u16string& app_title) {
+  // Empty titles match all shortcuts, which we don't want, so if we somehow
+  // get an empty app title, ignore the update.
+  if (app_title.empty()) {
+    return Result::kOk;
+  }
+
+  std::vector<base::FilePath> app_menu_shortcuts;
+  // Find matching shortcuts in app menu directories.
+  base::FilePath chrome_apps_dir;
+  if (ShellUtil::GetShortcutPath(
+          ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR,
+          ShellUtil::CURRENT_USER, &chrome_apps_dir)) {
+    const std::vector<base::FilePath> shortcut_files =
+        FindAppShortcutsByProfileAndTitle(chrome_apps_dir, profile_path,
+                                          app_title);
+    app_menu_shortcuts.insert(app_menu_shortcuts.end(), shortcut_files.begin(),
+                              shortcut_files.end());
+  }
+  if (app_menu_shortcuts.empty()) {
+    return Result::kOk;
+  }
+
+  // Update the toast activation property for app menu shortcuts.
+  for (const auto& shortcut : app_menu_shortcuts) {
+    UpdateToastActivationForShortcut(shortcut);
+  }
+  return Result::kOk;
 }
 
 Result UpdateShortcuts(const base::FilePath& web_app_path,
@@ -656,8 +712,10 @@ void UpdatePlatformShortcuts(
   bool success_updating_icon =
       CheckAndSaveIcon(icon_file, shortcut_info.favicon, true);
 
-  ShortcutLocations existing_locations =
-      GetAppExistingShortCutLocationImpl(shortcut_info);
+  ShortcutLocations existing_locations;
+  if (user_specified_locations.has_value()) {
+    existing_locations = GetAppExistingShortCutLocationImpl(shortcut_info);
+  }
 
   bool require_creation_in_different_places =
       user_specified_locations.has_value() &&
@@ -688,6 +746,14 @@ void UpdatePlatformShortcuts(
         old_icon_file.ReplaceExtension(kIconChecksumFileExt));
     base::DeleteFile(old_icon_file);
     base::DeleteFile(old_checksum_file);
+  } else {
+    // If the app title hasn't changed, kCurrentAppShortcutsVersion must have
+    // changed. Currently the only upgrade needed for Windows shortcuts is to
+    // add toast activation clsids to the shortcuts in the app menu. If future
+    // version changes happen, we may want to use the apps.shortcuts_arch pref
+    // to decide what shortcuts to update.
+    UpdateAppMenuShortcuts(shortcut_info.profile_path, shortcut_info.title);
+    success_updating_icon = true;
   }
   Result result = (success_updating_icon ? Result::kOk : Result::kError);
   std::move(callback).Run(result);

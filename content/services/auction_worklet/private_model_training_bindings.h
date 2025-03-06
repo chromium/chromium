@@ -39,6 +39,10 @@ class PrivateModelTrainingBindings : public Bindings {
     return payload_;
   }
 
+  std::optional<mojo_base::BigBuffer> TakePayload() {
+    return std::move(payload_);
+  }
+
  private:
   // Sends encrypted modeling signals to the destination specified in
   // modelingSignalsConfig. The input 'args' is expected to be a single

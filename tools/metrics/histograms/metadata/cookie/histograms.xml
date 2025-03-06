@@ -166,6 +166,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     For each cookie added to the store, record the source URL's scheme. Schemes
     we're unfamiliar with will be put into the &quot;Other Scheme&quot; bucket.
+
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
   </summary>
 </histogram>
 
@@ -228,7 +231,8 @@ chromium-metrics-reviews@google.com.
     The metrics exists primarily to act as a denominator for
     Cookie.CrossSiteRedirectDowngradeChangesInclusion2.{AccessType}.
 
-    Read is subsampled to 1/1000.
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
   </summary>
   <token key="AccessType">
     <variant name="Read" summary="read for a request"/>
@@ -268,6 +272,9 @@ chromium-metrics-reviews@google.com.
     Was a cookie set with a Domain attribute.
 
     This metric is recorded once per included cookie on every set attempt.
+
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
   </summary>
 </histogram>
 
@@ -330,6 +337,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Number of days until a cookie expires when set (for values over the
     rfc6265bis limit of 400 days).
+
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
   </summary>
 </histogram>
 
@@ -340,6 +350,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Number of days until a cookie expires when set (for values under or equal to
     the rfc6265bis limit of 400 days).
+
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
   </summary>
 </histogram>
 
@@ -348,7 +361,12 @@ chromium-metrics-reviews@google.com.
   <owner>arichiv@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
-  <summary>Number of minutes until non-Secure cookie expires when set.</summary>
+  <summary>
+    Number of minutes until non-Secure cookie expires when set.
+
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
+  </summary>
 </histogram>
 
 <histogram name="Cookie.ExpirationDurationMinutesSecure" units="minutes"
@@ -356,7 +374,12 @@ chromium-metrics-reviews@google.com.
   <owner>arichiv@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
-  <summary>Number of minutes until Secure cookie expires when set.</summary>
+  <summary>
+    Number of minutes until Secure cookie expires when set.
+
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
+  </summary>
 </histogram>
 
 <histogram name="Cookie.FirstPartySets.ComponentSetsNonfatalErrors"
@@ -520,7 +543,10 @@ chromium-metrics-reviews@google.com.
     Records the time spent executing CookieMonster::GetCookieListWithOptions,
     plus its callback if the callback is invoked synchronously.
 
-    Subsampled to 1/1000. Not reported for clients with low-resolution clocks.
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
+
+    Not reported for clients with low-resolution clocks.
   </summary>
 </histogram>
 
@@ -532,7 +558,10 @@ chromium-metrics-reviews@google.com.
     Records the time spent executing RestrictedCookieManager::GetCookiesString,
     plus its callback if the callback is invoked synchronously.
 
-    Subsampled to 1/1000. Not reported for clients with low-resolution clocks.
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
+
+    Not reported for clients with low-resolution clocks.
   </summary>
 </histogram>
 
@@ -562,7 +591,8 @@ chromium-metrics-reviews@google.com.
     The value of the effective samesite for cookies that will be included in a
     request. Logged once per successful inclusion.
 
-    Subsampled to 1/1000.
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
   </summary>
 </histogram>
 
@@ -820,7 +850,8 @@ chromium-metrics-reviews@google.com.
 
     This metric is recorded once per included cookie on every read attempt.
 
-    Subsampled to 1/1000.
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
   </summary>
   <token key="HostType">
     <variant name="Localhost"/>
@@ -852,7 +883,8 @@ chromium-metrics-reviews@google.com.
 
     This metric is recorded once per included cookie on every read attempt.
 
-    Subsampled to 1/1000.
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
   </summary>
   <token key="HostType">
     <variant name="DomainSet"/>
@@ -877,6 +909,9 @@ chromium-metrics-reviews@google.com.
 
     This metric is recorded once per included cookie on every set attempt. This
     includes expired cookies which are immediately deleted.
+
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
   </summary>
   <token key="HostType">
     <variant name="Localhost"/>
@@ -893,7 +928,8 @@ chromium-metrics-reviews@google.com.
     request and the navigational environment. Logged on every request to access
     a cookie.
 
-    Subsampled to 1/1000.
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
   </summary>
 </histogram>
 
@@ -914,6 +950,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Size of SameSite=None cookies in bytes. Counted whenever a cookie is set via
     CookieMonster::SetCanonicalCookie.
+
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
   </summary>
 </histogram>
 
@@ -924,6 +963,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Size of SameSite=None {IsPartitioned} cookies in bytes. Counted whenever a
     cookie is set via CookieMonster::SetCanonicalCookie.
+
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
   </summary>
   <token key="IsPartitioned">
     <variant name="Partitioned"/>
@@ -961,6 +1003,9 @@ chromium-metrics-reviews@google.com.
     Number of hours in the future a non-session cookie being set via JavaScript
     wants to expire (for values greater than to one week). Recorded when the
     cookie is stored via script.
+
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
   </summary>
 </histogram>
 
@@ -972,6 +1017,9 @@ chromium-metrics-reviews@google.com.
     Number of hours in the future a non-session cookie being set via JavaScript
     wants to expire (for values less than or equal to one week). Recorded when
     the cookie is stored via script.
+
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
   </summary>
 </histogram>
 
@@ -1030,7 +1078,10 @@ chromium-metrics-reviews@google.com.
     Records the time spent executing
     RestrictedCookieManager::SetCookieFromString, plus its callback.
 
-    Subsampled to 1/1000. Not reported for clients with low-resolution clocks.
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
+
+    Not reported for clients with low-resolution clocks.
   </summary>
 </histogram>
 
@@ -1042,6 +1093,9 @@ chromium-metrics-reviews@google.com.
     For each cookie added to the store, record the source that wrote it. This
     helps understand the balance of cookies written by HTTP Headers, JavaScript,
     etc.
+
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
   </summary>
 </histogram>
 
@@ -1162,6 +1216,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     For each cookie added to the store, record it's type(s). A new enumeration
     value, Persistent, was added in M125.
+
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
   </summary>
 </histogram>
 

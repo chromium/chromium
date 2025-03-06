@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">Пикир билдирүү</translation>
 <translation id="1059120031266247284">Сиз менен бөлүшүлгөн</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> жана өчүрүү баскычы</translation>
 <translation id="1062407476771304334">Алмаштыруу</translation>
 <translation id="1073899992769346247">Батареяны алмаштырыңыз же кубаттаңыз</translation>
 <translation id="1081015718268701546">Учурда Linux колдонмолору колдоого алынбайт. Башка колдонмолор сакталат.</translation>
@@ -1229,6 +1230,7 @@
 <translation id="5043679421800073804">Текчедеги акыркы сүрөтчөнү чыкылдатуу же таптап коюу</translation>
 <translation id="504465286040788597">Мурунку абзац</translation>
 <translation id="5045550434625856497">Сырсөз туура эмес</translation>
+<translation id="5056587122125565772">Сүрөт түзүү</translation>
 <translation id="5058794129231928255">Google документи түзүлгөн жок</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Үнү басылган режимде сүйлөсөңүз, билдирме аласыз. Аудио түзмөктө гана сакталат.</translation>
@@ -1277,6 +1279,7 @@
 <translation id="5222676887888702881">Чыгуу</translation>
 <translation id="5228195526683428788">Экранды бөлгүч</translation>
 <translation id="5229343007215035173">Купуялык экранын күйгүзүү/өчүрүү</translation>
+<translation id="5229860525743792999"><ph name="ITEM_LABEL" /> элементин сунушталган топтон өчүрүү</translation>
 <translation id="5230516054153933099">Терезе</translation>
 <translation id="5234764350956374838">Этибарга албоо</translation>
 <translation id="523505283826916779">Атайын мүмкүнчүлүктөрдү жөндөө</translation>
@@ -1759,6 +1762,7 @@
 <translation id="6757237461819837179">Медиа ойнотулган жок</translation>
 <translation id="6760438044935091345">Оюн тактасы</translation>
 <translation id="6768043681523654438">сактагыч</translation>
+<translation id="6769195697113506406">Сүрөт киргизилди</translation>
 <translation id="6777216307882431711">Байланышкан USB-C түзмөктөрү кубатталууда</translation>
 <translation id="6781002679438061620">9-иш такта</translation>
 <translation id="6782182743534150858">13-иш такта</translation>
@@ -1985,6 +1989,7 @@
 <translation id="7571361473021531288">Батареянын кубаты: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> калды</translation>
 <translation id="7573585051776738856">Активдүү терезе оң жакка бекитилди.</translation>
 <translation id="7579778809502851308">Экранды тартып алуу</translation>
+<translation id="7588317312481506627">Алмашуу буферине көчүрүлдү.</translation>
 <translation id="7593891976182323525">Издөө же Shift</translation>
 <translation id="7598054670902114203">CPU колдонуу сүрөтү, <ph name="CPU_USEAGE" />%. Температура: <ph name="TEMPERATURE" /> градус (Цельсий боюнча), учурдагы ылдамдыгы: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> ГГц</translation>
 <translation id="7599378375976398913">Тандалган натыйжаны киргизүү</translation>
@@ -2179,6 +2184,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> үчүн маалымат диалогун ачуу</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> колдонулууда</translation>
 <translation id="8168435359814927499">Мазмун</translation>
+<translation id="81817143961839203">Сүрөт киргизилген жок</translation>
 <translation id="8185090165691050712">Кулпулоо режиминин өлчөмүн өзгөртүү үчүн менюну өчүрүү/күйгүзүү</translation>
 <translation id="8192727139462702395">Bluetooth'ду өчүрсөңүз, бул тышкы түзмөктөр <ph name="DEVICE_TYPE" /> ажыратылат:</translation>
 <translation id="8198456017687137612">Өтмөктү тышкы экранга чыгаруу</translation>
@@ -2257,6 +2263,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> уюмунун <ph name="FEATURE_NAME" /> функциясы <ph name="FEATURE_STATE" /> абалда.</translation>
 <translation id="8477270416194247200">Өчүрүп коюу үчүн Alt+Search же Shift баскычтарын басыңыз.</translation>
 <translation id="8480418399907765580">Куралдар тилкесин көрсөтүү</translation>
+<translation id="8487660088084188539">Бул функциялар күйгүзүлсө, киргизилген текст, документтин контенти жана веб беттин URL дареги Google'дун серверлерине жөнөтүлүшү мүмкүн. Бул маалымат текст жазуу боюнча сунуштарды, кыскача маалыматты түзүү, суроолорго жооп берүү жана кызматты жакшыртуу үчүн <ph name="LINK_TO_SERVICE_TERMS" /> ылайык колдонулат. Жеке же купуя нерселерди кошпоңуз.</translation>
 <translation id="8487699605742506766">Байланыш түйүнү</translation>
 <translation id="8491237443345908933">Шилтемени жаңы өтмөктө ачуу</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> дааналыкты колдоого албайт. Дааналыгы төмөнкүгө өзгөртүлдү: <ph name="FALLBACK_RESOLUTION" />. Өзгөртүүлөрдү сактоо үчүн "Ырастоо" баскычын басыңыз. Мурунку жөндөөлөр <ph name="TIMEOUT_SECONDS" /> кийин калыбына келтирилет.</translation>
@@ -2326,6 +2333,7 @@
 <translation id="8725066075913043281">Кайра аракет кылып көрүү</translation>
 <translation id="8725214031272624704">Жеткиликтүү киргизүү ыкмаларынын тизмесин көрсөтүү</translation>
 <translation id="8730621377337864115">Бүттү</translation>
+<translation id="8731188831050207755"><ph name="FILE_NAME" /> жүктөлүп алынбай калды.</translation>
 <translation id="8731487213223706745"><ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /> бүтөт</translation>
 <translation id="8734991477317290293">Ал сырсөзүңүздү тергенде баскан баскычтарды билип алууга аракет кылышы мүмкүн</translation>
 <translation id="8735678380411481005">Баскычтоптун жарыгынын түсү</translation>

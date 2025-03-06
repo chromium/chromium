@@ -628,6 +628,7 @@ test("components_unittests") {
   if (is_android) {
     deps += [
       "//base:base_unittest_support_java",
+      "//components/android_autofill/browser:credential_manager_unit_tests",
       "//components/android_autofill/browser:unit_tests",
       "//components/browser_ui/accessibility/android:unit_tests",
       "//components/browser_ui/site_settings/android:unit_tests",
@@ -1268,6 +1269,7 @@ if (use_blink) {
 if (is_android) {
   robolectric_binary("components_junit_tests") {
     deps = [
+      "//components/android_autofill/browser:credential_manager_junit_tests",
       "//components/android_autofill/browser/junit:components_autofill_junit_tests",
       "//components/autofill/android:payments_autofill_junit_tests",
       "//components/background_task_scheduler:components_background_task_scheduler_junit_tests",

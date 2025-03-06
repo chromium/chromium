@@ -22,6 +22,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1058009965971887428">Envia suggeriments</translation>
 <translation id="1059120031266247284">Compartit amb tu</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> amb un botó de supressió</translation>
 <translation id="1062407476771304334">Substitueix</translation>
 <translation id="1073899992769346247">Substitueix o recarrega la bateria</translation>
 <translation id="1081015718268701546">Actualment, les aplicacions de Linux no s'admeten. Les altres aplicacions es desaran.</translation>
@@ -323,6 +324,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2083190527011054446">Bona nit, <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Obre el selector d'emojis</translation>
 <translation id="2088116547584365419">jocs</translation>
+<translation id="2092517835716911174">Has de tenir 18 anys com a mínim per utilitzar Ajuda'm a llegir i Ajuda'm a escriure.</translation>
 <translation id="209965399369889474">No hi ha connexió de xarxa</translation>
 <translation id="2107581415810719320">Un altre botó <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">El teu cable USB-C no admet Thunderbolt. És possible que el rendiment del dispositiu es vegi limitat.</translation>
@@ -1228,6 +1230,7 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="5043679421800073804">Toca la darrera icona al prestatge o fes-hi clic</translation>
 <translation id="504465286040788597">Paràgraf anterior</translation>
 <translation id="5045550434625856497">Contrasenya incorrecta</translation>
+<translation id="5056587122125565772">Crea una imatge</translation>
 <translation id="5058794129231928255">No s'ha pogut crear el document de Google</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Si parles mentre el micròfon està silenciat, rebràs una notificació. No s'emetrà àudio des del dispositiu.</translation>
@@ -1276,6 +1279,7 @@ També pots utilitzar les tecles de drecera. Primer, marca el text i, a continua
 <translation id="5222676887888702881">Tanca la sessió</translation>
 <translation id="5228195526683428788">Separador de pantalla dividida</translation>
 <translation id="5229343007215035173">Activa/desactiva la pantalla de privadesa</translation>
+<translation id="5229860525743792999">Suprimeix <ph name="ITEM_LABEL" /> del grup suggerit</translation>
 <translation id="5230516054153933099">Finestra</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="523505283826916779">Configuració d'accessibilitat</translation>
@@ -1758,6 +1762,7 @@ Instal·lació nova</translation>
 <translation id="6757237461819837179">No s'està reproduint res</translation>
 <translation id="6760438044935091345">Tauler de joc</translation>
 <translation id="6768043681523654438">emmagatzematge</translation>
+<translation id="6769195697113506406">S'ha inserit la imatge</translation>
 <translation id="6777216307882431711">S'estan alimentant els dispositius USB-C connectats</translation>
 <translation id="6781002679438061620">Escriptori 9</translation>
 <translation id="6782182743534150858">Escriptori 13</translation>
@@ -1984,6 +1989,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7571361473021531288">Bateria: <ph name="BATTERY_PERCENTAGE" />% | Temps restant: <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Finestra activa acoblada a la dreta.</translation>
 <translation id="7579778809502851308">Captura de pantalla</translation>
+<translation id="7588317312481506627">S'ha copiat al porta-retalls.</translation>
 <translation id="7593891976182323525">Cerca o Maj</translation>
 <translation id="7598054670902114203">Instantània d'ús de la CPU: <ph name="CPU_USEAGE" />%. Temperatura de <ph name="TEMPERATURE" /> graus Celsius. Velocitat actual: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz.</translation>
 <translation id="7599378375976398913">S'està inserint el resultat seleccionat</translation>
@@ -2178,6 +2184,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8155628902202578800">Obre el quadre de diàleg d'informació per a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">S'està utilitzant <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Contingut</translation>
+<translation id="81817143961839203">No s'ha pogut inserir la imatge</translation>
 <translation id="8185090165691050712">Activa/Desactiva el menú per canviar la mida del mode de bloqueig</translation>
 <translation id="8192727139462702395">Quan desactivis el Bluetooth, aquests dispositius externs es desconnectaran del teu dispositiu <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">S'està emetent la pestanya</translation>
@@ -2256,6 +2263,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> té la funció <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Prem Alt+Cerca o Maj per cancel·lar.</translation>
 <translation id="8480418399907765580">Mostra la barra d’eines</translation>
+<translation id="8487660088084188539">Si actives aquestes funcions, és possible que el text d'entrada, el contingut del document i l'URL de la pàgina web s'enviïn als servidors de Google. Aquesta informació s'utilitza per generar suggeriments d'escriptura i resums, respondre a preguntes i millorar el producte de conformitat amb les <ph name="LINK_TO_SERVICE_TERMS" />. No hi incloguis informació personal, sensible ni confidencial.</translation>
 <translation id="8487699605742506766">Punt d'accés Wi‑Fi</translation>
 <translation id="8491237443345908933">Obre l'enllaç en una pestanya nova</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> no admet la resolució <ph name="SPECIFIED_RESOLUTION" />. La resolució ha canviat a <ph name="FALLBACK_RESOLUTION" />. Fes clic a Confirma per conservar els canvis. La configuració anterior es restaurarà d'aquí a <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2325,6 +2333,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8725066075913043281">Torna-ho a provar</translation>
 <translation id="8725214031272624704">Mostra la llista de mètodes d'introducció de text disponibles</translation>
 <translation id="8730621377337864115">Fet</translation>
+<translation id="8731188831050207755">No s'ha pogut baixar <ph name="FILE_NAME" />.</translation>
 <translation id="8731487213223706745">Finalització: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Pot ser que estigui provant de robar-te les pulsacions</translation>
 <translation id="8735678380411481005">Color de la retroil·luminació del teclat</translation>

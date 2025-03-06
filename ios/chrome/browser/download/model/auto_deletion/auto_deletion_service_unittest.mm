@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h"
 
 #import "base/files/scoped_temp_dir.h"
+#import "base/functional/bind.h"
+#import "base/run_loop.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/testing_pref_service.h"
@@ -16,6 +18,7 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
 namespace {
@@ -44,6 +47,14 @@ std::unique_ptr<web::DownloadTask> CreateTask(const base::FilePath& file_path) {
 namespace auto_deletion {
 
 class AutoDeletionServiceTest : public PlatformTest {
+ public:
+  size_t GetNumberOfFilesScheduledForDeletion() const {
+    return GetApplicationContext()
+        ->GetLocalState()
+        ->GetList(prefs::kDownloadAutoDeletionScheduledFiles)
+        .size();
+  }
+
  protected:
   AutoDeletionServiceTest() {
     auto_deletion_service_ = std::make_unique<AutoDeletionService>();
@@ -55,7 +66,6 @@ class AutoDeletionServiceTest : public PlatformTest {
   }
 
   void TearDown() override {
-    auto_deletion_service_.reset();
     PlatformTest::TearDown();
   }
 
@@ -66,6 +76,7 @@ class AutoDeletionServiceTest : public PlatformTest {
   const base::FilePath& directory() const { return directory_; }
 
  private:
+  base::test::TaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<AutoDeletionService> auto_deletion_service_;
   base::ScopedTempDir scoped_temp_directory_;
@@ -81,9 +92,7 @@ TEST_F(AutoDeletionServiceTest, ScheduleOneFileForDeletion) {
   service()->ScheduleFileForDeletion(std::move(task_ptr));
 
   // Check that the pref has one value.
-  const base::Value::List& downloads =
-      local_state()->GetList(prefs::kDownloadAutoDeletionScheduledFiles);
-  EXPECT_EQ(downloads.size(), 1u);
+  EXPECT_EQ(GetNumberOfFilesScheduledForDeletion(), 1u);
 }
 
 // Tests that the auto deletion service successfully schedules multiple file for
@@ -103,9 +112,60 @@ TEST_F(AutoDeletionServiceTest, ScheduleMultipleFilesForDeletion) {
   }
 
   // Check that the pref has multiple values.
-  const base::Value::List& downloads =
-      local_state()->GetList(prefs::kDownloadAutoDeletionScheduledFiles);
-  EXPECT_EQ(downloads.size(), 10u);
+  EXPECT_EQ(GetNumberOfFilesScheduledForDeletion(), 10u);
+}
+
+TEST_F(AutoDeletionServiceTest, DeleteOneFileScheduledForDeletion) {
+  // Create a Scheduler that contains no files that are ready for deletion.
+  base::TimeDelta start_point_in_past = base::Days(20);
+  size_t number_of_files = 10;
+  Scheduler scheduler(local_state());
+  PopulateSchedulerWithAutoDeletionSchedule(scheduler, start_point_in_past,
+                                            number_of_files);
+  ASSERT_EQ(GetNumberOfFilesScheduledForDeletion(), 10u);
+
+  base::RunLoop run_loop;
+  service()->RemoveScheduledFilesReadyForDeletion(run_loop.QuitClosure());
+
+  EXPECT_EQ(GetNumberOfFilesScheduledForDeletion(), 10u);
+  run_loop.Run();
+  EXPECT_EQ(GetNumberOfFilesScheduledForDeletion(), 9u);
+}
+
+TEST_F(AutoDeletionServiceTest, DeleteMultipleFilesScheduledForDeletion) {
+  // Create a Scheduler where half of the files are ready for deletion.
+  base::TimeDelta start_point_in_past = base::Days(24);
+  size_t number_of_files = 10;
+  Scheduler scheduler(local_state());
+  PopulateSchedulerWithAutoDeletionSchedule(scheduler, start_point_in_past,
+                                            number_of_files);
+  ASSERT_EQ(GetNumberOfFilesScheduledForDeletion(), 10u);
+
+  base::RunLoop run_loop;
+  service()->RemoveScheduledFilesReadyForDeletion(run_loop.QuitClosure());
+
+  EXPECT_EQ(GetNumberOfFilesScheduledForDeletion(), 10u);
+  run_loop.Run();
+  EXPECT_EQ(GetNumberOfFilesScheduledForDeletion(), 5u);
+}
+
+TEST_F(AutoDeletionServiceTest, DeleteAllFilesScheduledForDeletion) {
+  // Create a Scheduler that contains no files that are ready for deletion.
+  base::TimeDelta start_point_in_past = base::Days(31);
+  size_t number_of_files = 10;
+  Scheduler scheduler(local_state());
+  PopulateSchedulerWithAutoDeletionSchedule(scheduler, start_point_in_past,
+                                            number_of_files);
+  ASSERT_EQ(GetNumberOfFilesScheduledForDeletion(), 10u);
+
+  base::RunLoop run_loop;
+  service()->RemoveScheduledFilesReadyForDeletion(run_loop.QuitClosure());
+
+  EXPECT_EQ(GetNumberOfFilesScheduledForDeletion(), 10u);
+
+  run_loop.Run();
+
+  EXPECT_EQ(GetNumberOfFilesScheduledForDeletion(), 0u);
 }
 
 }  // namespace auto_deletion

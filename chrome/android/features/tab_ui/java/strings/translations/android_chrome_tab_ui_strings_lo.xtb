@@ -31,6 +31,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ແຖບ}other{<ph name="TABS_COUNT_MANY" /> ແຖບ}}</translation>
 <translation id="1909810060368225529">ແຈ້ງການ: ການປ່ຽນແປງຕໍ່ກັບກຸ່ມແຖບທີ່ແບ່ງປັນແລ້ວນີ້ແມ່ນເຫັນໄດ້ໂດຍທຸກຄົນ. ທຸກຄົນສາມາດປ່ຽນແປງກຸ່ມແຖບທີ່ແບ່ງປັນຂອງທ່ານໄດ້</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{ບຸກມາກແຖບທີ່ເລືອກໄວ້ <ph name="TABS_COUNT_ONE" /> ແຖບ}other{ບຸກມາກແຖບທີ່ເລືອກໄວ້ <ph name="TABS_COUNT_MANY" /> ແຖບ}}</translation>
+<translation id="2055057176188061528">ເລືອກກຸ່ມແຖບ ຫຼື ສ້າງກຸ່ມແຖບໃໝ່</translation>
 <translation id="2118649612461486615">ຂໍ້​ມູນ​ຮ້ານ​ຄ້າ</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{ແຖບ ແລະ ກຸ່ມທີ່ປິດແລ້ວຂອງທ່ານແມ່ນສາມາດເປີດຄືນໃໝ່ໄດ້ຈາກພາກສ່ວນແຖບຫຼ້າສຸດ ແລະ ພາກສ່ວນກຸ່ມແຖບ. ແຖບບໍ່ເປີດເຜີຍຕົວຕົນຂອງທ່ານຈະໃຊ້ບໍ່ໄດ້.}other{ແຖບ ແລະ ກຸ່ມທີ່ປິດແລ້ວຂອງທ່ານແມ່ນສາມາດເປີດຄືນໃໝ່ໄດ້ຈາກພາກສ່ວນແຖບຫຼ້າສຸດ ແລະ ພາກສ່ວນກຸ່ມແຖບ. ແຖບບໍ່ເປີດເຜີຍຕົວຕົນ # ແຖບຂອງທ່ານຈະໃຊ້ບໍ່ໄດ້.}}</translation>
 <translation id="2162620598375156287">ຕອນນີ້ <ph name="CURRENT_PRICE" /> ຢູ່ <ph name="SOURCE_WEBSITE" /></translation>
@@ -67,6 +68,7 @@
 <translation id="3194464645767632461">ການຈັດອັນດັບ</translation>
 <translation id="3328308545011660196">ຄຳແນະນຳ: ເບິ່ງຄືວ່າມີ <ph name="NUMBER_OF_TABS" /> ແຖບທີ່ກ່ຽວຂ້ອງກັນ. ຈັດກຸ່ມພວກມັນບໍ?</translation>
 <translation id="3547352561153509682">ການດຳເນີນການນີ້ຈະລຶບກຸ່ມອອກຈາກທຸກອຸປະກອນທີ່ເຂົ້າສູ່ລະບົບ <ph name="USER_EMAIL" /></translation>
+<translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ແຖບໃໝ່}other{<ph name="MANY_ADDED" /> ແຖບໃໝ່}}</translation>
 <translation id="3613492231657284463">ກ່ອງໂຕ້ຕອບເຊື່ອງແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້</translation>
 <translation id="3619255692378312441">ຈັດການສິດເຂົ້າເຖິງ</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -74,6 +76,7 @@
 <translation id="3810973564298564668">ຈັດການ</translation>
 <translation id="381219490185664296">ຍົກເລີກການຈັດກຸ່ມແຖບບໍ?</translation>
 <translation id="3940195383040445971">ຕິດຕາມລາຄາໃນແຖບ</translation>
+<translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ແຖບໃໝ່, ປິດແລ້ວ <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> ແຖບໃໝ່, ປິດແລ້ວ <ph name="ANY_CLOSED" />}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ຈັດກຸ່ມແຖບ}other{ຈັດກຸ່ມແຖບ}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້}other{<ph name="TABS_COUNT_MANY" /> ແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້}}</translation>
 <translation id="3969565576924904454">ເປີດ <ph name="TITLE_OF_GROUP" /></translation>

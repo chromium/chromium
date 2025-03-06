@@ -138,6 +138,7 @@
 <translation id="1230244617745022071"><ph name="SOURCE" /> (ກວດພົບອັດຕະໂນມັດ)</translation>
 <translation id="1232569758102978740">ບໍ່ມີຫົວຂໍ້</translation>
 <translation id="1236081509407217141">ອະນຸຍາດ VR ບໍ?</translation>
+<translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">ຊື່ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="124116460088058876">ພາສາເພີ່ມເຕີມ</translation>
 <translation id="1243027604378859286">ຜູ້ຂຽນ:</translation>
@@ -628,6 +629,7 @@
 <translation id="2082238445998314030">ຜົນຮັບ <ph name="RESULT_NUMBER" /> ຈາກ <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">ອະນຸຍາດໃຫ້ໃນທຸກໆການເຂົ້າເບິ່ງ</translation>
 <translation id="2085876078937250610">ບັນທຶກ…</translation>
+<translation id="2090451897496479509">ຕິດຕໍ່ຜູ້ໃຫ້ບໍລິການສຳລັບຂໍ້ມູນເພີ່ມເຕີມ</translation>
 <translation id="2091887806945687916">ສຽງ</translation>
 <translation id="2093982008204312032">Google Chrome ກຳລັງພະຍາຍາມປິດ Windows Hello ສຳລັບການຕື່ມລະຫັດຜ່ານ.</translation>
 <translation id="2094505752054353250">ໂດເມນບໍ່ເຂົ້າຄູ່ກັນ</translation>
@@ -1310,6 +1312,7 @@
 <translation id="33073482541490531">ພົບລະຫັດຜ່ານທີ່ທ່ານຫາກໍໃຊ້ນັ້ນໃນການຮົ່ວໄຫຼຂໍ້ມູນ. ຕົວຈັດການລະຫັດຜ່ານແນະນຳໃຫ້ປ່ຽນລະຫັດຜ່ານນີ້ດຽວນີ້.</translation>
 <translation id="3307649904964670439">ປຸ່ມປັບແຕ່ງ Chrome, ເປີດນຳໃຊ້ເພື່ອປັບແຕ່ງຮູບລັກຂອງໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ</translation>
 <translation id="3308006649705061278">ໜ່ວຍງານການຈັດຕັ້ງ (OU)</translation>
+<translation id="3317077846337994567">ຕອນນີ້ບໍ່ສາມາດຈ່າຍເງິນເປັນງວດໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="3318016344440038475">ລາຍການຕະຫຼົກທາງໂທລະທັດ</translation>
 <translation id="3324687287337751929">4 x 6 ນິ້ວ</translation>
 <translation id="3324983252691184275">ສີ​ແດງ​</translation>
@@ -1802,6 +1805,7 @@
 <translation id="415440494507469262">ເພີ່ມແຖບໃສ່ຕາຕະລາງປຽບທຽບ</translation>
 <translation id="4159784952369912983">ສີມ່ວງ</translation>
 <translation id="4165422751765527461">ເປີດບົດຄວາມສູນຊ່ວຍເຫຼືອໃນແຖບໃໝ່</translation>
+<translation id="4165584779486830267">ຕອນນີ້ທ່ານສາມາດຈ່າຍເງິນເປັນງວດໂດຍໃຊ້ Affirm ຫຼື Zip ໄດ້ແລ້ວ.</translation>
 <translation id="4165986682804962316">ການຕັ້ງຄ່າເວັບໄຊທ໌</translation>
 <translation id="4169535189173047238">ບໍ່ອະນຸຍາດ</translation>
 <translation id="4171400957073367226">ລາຍເຊັນການຢື​ນ​ຢັນບໍ່​ດີ</translation>

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
 
 #include <string.h>
@@ -18,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -2101,9 +2097,12 @@ RTCPeerConnectionHandler::signaling_thread() const {
 void RTCPeerConnectionHandler::ReportICEState(
     webrtc::PeerConnectionInterface::IceConnectionState new_state) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (ice_state_seen_[new_state])
-    return;
-  ice_state_seen_[new_state] = true;
+  UNSAFE_TODO({
+    if (ice_state_seen_[new_state]) {
+      return;
+    }
+    ice_state_seen_[new_state] = true;
+  });
   UMA_HISTOGRAM_ENUMERATION("WebRTC.PeerConnection.ConnectionState", new_state,
                             webrtc::PeerConnectionInterface::kIceConnectionMax);
 }

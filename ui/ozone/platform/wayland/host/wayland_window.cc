@@ -396,6 +396,37 @@ void WaylandWindow::Hide() {
     subsurface->Hide();
   }
   frame_manager_->Hide();
+
+  // Per https://wayland.app/protocols/xdg-shell#xdg_surface, the process of
+  // mapping a shell surface comprises the following steps:
+  //
+  // (1) Ensuring no buffer is attached to its associated wl_surface.
+  // (2) Creating the xdg_surface and its specific role surface (eg:
+  //     xdg_toplevel), and set its metadata (eg: app_id, title, etc).
+  // (3) Committing its wl_surface state; and then
+  // (4) Waiting for the initial configure sequence. After that, a non-null
+  //     buffer can be produced and attached to its underlying wl_surface.
+  //
+  // As `root_surface_` is reused for the whole WaylandWindow's lifetime, a
+  // null buffer must be attached here and no buffer should be attached to it
+  // until it is shown again.
+  //
+  // Note: `wl_surface_attach` is used directly here to ensure that the null
+  // buffer attach request is actually issued. This is required for 2 reasons:
+  //
+  // - There are synchronization issues in interactive ui tests (eg: tab drag),
+  // which lead to dnd start before a non-null buffer is attached to the origin
+  // surface, i.e: `root_surface_->buffer_id() == 0` here.
+  // - Weston, used in interactive ui infra, does not properly handle wl_surface
+  // reuse, and raises a protocol error when no buffer is attached before a
+  // previous surface unmapping.
+  //
+  // TODO(crbug.com/400894502): Investigate the issues described above.
+
+  if (root_surface_) {
+    wl_surface_attach(root_surface_->surface(), nullptr, 0, 0);
+    root_surface_->Commit(false);
+  }
 }
 
 void WaylandWindow::ClearInFlightRequestsSerial() {

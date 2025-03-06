@@ -452,28 +452,20 @@ TEST_F(ProfileManagerIOSImplTest, CreateProfile) {
 }
 
 // Check that if there are not profile marked as the personal profile, then
-// the first profile created is marked as the personal profile.
-TEST_F(ProfileManagerIOSImplTest, FirstProfileCreatedMarkedAsPersonalProfile) {
-  ASSERT_TRUE(GetLoadedProfileNames().empty());
-  ASSERT_TRUE(attributes_storage().GetPersonalProfileName().empty());
-
-  // Create a profile. It should be marked as the personal profile.
-  EXPECT_TRUE(profile_manager().CreateProfile(kProfileName1));
-
-  // The profile should've been marked as the personal profile.
-  EXPECT_EQ(attributes_storage().GetPersonalProfileName(), kProfileName1);
+// a profile is automatically created and marked as personal profile.
+TEST_F(ProfileManagerIOSImplTest, PersonalProfileExists) {
+  const std::string& personal_profile =
+      attributes_storage().GetPersonalProfileName();
+  EXPECT_TRUE(profile_manager().HasProfileWithName(personal_profile));
 }
 
 // Check that if there is a profile marked as the personal profile, creating
 // a new profile does not overwrite the personal profile.
 TEST_F(ProfileManagerIOSImplTest, CreatingProfileDontOverwritePersonalProfile) {
-  ASSERT_TRUE(GetLoadedProfileNames().empty());
-  ASSERT_TRUE(attributes_storage().GetPersonalProfileName().empty());
-
-  // Reserve a new profile name and mark it as the personal profile.
-  const std::string profile_name1 = profile_manager().ReserveNewProfileName();
-  attributes_storage().SetPersonalProfileName(profile_name1);
-  EXPECT_EQ(attributes_storage().GetPersonalProfileName(), profile_name1);
+  // Record the personal profile (created by the constructor).
+  const std::string profile_name1 =
+      attributes_storage().GetPersonalProfileName();
+  ASSERT_NE(profile_name1, std::string());
 
   // Create another profile, this should not change the personal profile.
   const std::string profile_name2 = profile_manager().ReserveNewProfileName();
@@ -563,8 +555,6 @@ TEST_F(ProfileManagerIOSImplTest, UnloadAllProfiles_LoadPending) {
 // randomly generated, and register it with ProfileAttributesStorageIOS. The
 // name must also be a valid UUID.
 TEST_F(ProfileManagerIOSImplTest, ReserveNewProfileName) {
-  ASSERT_EQ(attributes_storage().GetNumberOfProfiles(), 0u);
-
   const std::string name = profile_manager().ReserveNewProfileName();
   EXPECT_FALSE(name.empty());
 

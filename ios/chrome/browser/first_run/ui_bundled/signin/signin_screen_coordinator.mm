@@ -145,11 +145,11 @@
 
 #pragma mark - InterruptibleChromeCoordinator
 
-- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
-                 completion:(ProceduralBlock)completion {
+- (void)interruptAnimated:(BOOL)animated
+               completion:(ProceduralBlock)completion {
   if (self.addAccountSigninCoordinator) {
-    [self.addAccountSigninCoordinator interruptWithAction:action
-                                               completion:nil];
+    [self.addAccountSigninCoordinator interruptAnimated:animated
+                                             completion:nil];
   }
   if (completion) {
     completion();

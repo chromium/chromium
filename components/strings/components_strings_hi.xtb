@@ -252,6 +252,7 @@
 <translation id="1419305130220238697">'Chrome में डाउनलोड मैनेज करें' बटन, Chrome में डाउनलोड की गई फ़ाइलों को मैनेज करने के लिए इसे चालू करें</translation>
 <translation id="1420345875188552368">इस पेमेंट के लिए, सेव किए गए ऑटो-पेमेंट के आपके तरीके का इस्तेमाल किया जा सकता है. Chrome में 'इलेक्ट्रॉनिक वॉलेट' की सुविधा बंद करने के लिए, अपनी <ph name="BEGIN_LINK1" />पेमेंट सेटिंग<ph name="END_LINK1" /> पर जाएं</translation>
 <translation id="1420920093772172268">युग्मन की अनुमति देने के लिए <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="1421484961346698724">मिटाया गया खाता</translation>
 <translation id="14222610277930434">यह वेबसाइट अक्सर विज़िट की जाती है</translation>
 <translation id="1422930527989633628">साइट, आस-पास के ब्लूटूथ डिवाइसों को खोजने की अनुमति मांग सकती है</translation>
 <translation id="1426410128494586442">हां</translation>
@@ -3023,6 +3024,7 @@
 <translation id="6351658970066645919">ब्राउज़िंग डेटा मिटाएं</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{कोई पासवर्ड नहीं है}=1{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किया गया) 1 पासवर्ड}=2{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किए गए) 2 पासवर्ड}one{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किए गए) # पासवर्ड}other{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किए गए) # पासवर्ड}}</translation>
 <translation id="6355392890578844978">यह ब्राउज़र, कोई कंपनी या दूसरा संगठन मैनेज नहीं करता. इस डिवाइस की गतिविधि को Chromium के बाहर मैनेज किया जा सकता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">"<ph name="GROUP_TITLE_1" />" और "<ph name="GROUP_TITLE_2" />" टैब ग्रुप अब मौजूद नहीं हैं</translation>
 <translation id="6358088212770985041">पेमेंट के तरीकों में बदलाव करें</translation>
 <translation id="6358450015545214790">इनका क्‍या अर्थ है?</translation>
 <translation id="6360213755783740931">मैलवेयर से सुरक्षा के बारे में ज़्यादा जानें</translation>

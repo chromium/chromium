@@ -19,6 +19,13 @@ NET_EXPORT extern const base::TimeDelta kLaxAllowUnsafeMaxAge;
 // The short version of the above time threshold, to be used for tests.
 NET_EXPORT extern const base::TimeDelta kShortLaxAllowUnsafeMaxAge;
 
+// We collect multiple histograms when getting and setting cookies. The cost
+// of reporting adds up, contributing to latency of operations. But we don't
+// need the absolute numbers, we just need to see trends, so we can down
+// sample. Cookies are written and obtained a lot, so we can use a very low
+// probability.
+static constexpr double kHistogramSampleProbability = 0.001;
+
 enum CookiePriority {
   COOKIE_PRIORITY_LOW     = 0,
   COOKIE_PRIORITY_MEDIUM  = 1,

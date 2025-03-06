@@ -69,8 +69,10 @@ class InputStream {
  private:
   base::android::ScopedJavaGlobalRef<jobject> jobject_;
   base::android::ScopedJavaGlobalRef<jbyteArray> buffer_;
+
+  int total_bytes_read_ = 0;
 };
 
 }  // namespace embedder_support
 
-#endif  //  COMPONENTS_EMBEDDER_SUPPORT_ANDROID_UTIL_INPUT_STREAM_H_
+#endif  // COMPONENTS_EMBEDDER_SUPPORT_ANDROID_UTIL_INPUT_STREAM_H_

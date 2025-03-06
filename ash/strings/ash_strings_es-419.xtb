@@ -22,6 +22,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1058009965971887428">Enviar comentarios</translation>
 <translation id="1059120031266247284">Compartido contigo</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> con botón para quitar</translation>
 <translation id="1062407476771304334">Reemplazar</translation>
 <translation id="1073899992769346247">Recargar la batería o reemplazarla</translation>
 <translation id="1081015718268701546">Por el momento, las apps de Linux no son compatibles. Se guardarán las demás apps.</translation>
@@ -323,6 +324,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2083190527011054446">Buenas noches, <ph name="GIVEN_NAME" />:</translation>
 <translation id="2086334242442703436">Abrir el selector de emojis</translation>
 <translation id="2088116547584365419">juegos</translation>
+<translation id="2092517835716911174">Debes tener al menos 18 años para usar Ayúdame a leer y Ayúdame a escribir.</translation>
 <translation id="209965399369889474">Sin conexión a la red</translation>
 <translation id="2107581415810719320">Otro botón <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Tu cable USB-C no admite Thunderbolt. El rendimiento del dispositivo puede verse limitado.</translation>
@@ -1229,6 +1231,7 @@ Se conectó un dispositivo.</translation>
 <translation id="5043679421800073804">Hacer clic o presionar el último ícono de la barra</translation>
 <translation id="504465286040788597">Párrafo anterior</translation>
 <translation id="5045550434625856497">Contraseña incorrecta</translation>
+<translation id="5056587122125565772">Crear imagen</translation>
 <translation id="5058794129231928255">No se pudo crear el documento de Google</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Recibirás una notificación si hablas con el micrófono silenciado. El audio nunca sale del dispositivo.</translation>
@@ -1277,6 +1280,7 @@ También puedes usar la combinación de teclas. Primero, destaca el texto y, lue
 <translation id="5222676887888702881">Salir</translation>
 <translation id="5228195526683428788">Divisor de pantalla dividida</translation>
 <translation id="5229343007215035173">Activar o desactivar la pantalla de privacidad</translation>
+<translation id="5229860525743792999">Quitar <ph name="ITEM_LABEL" /> del grupo sugerido</translation>
 <translation id="5230516054153933099">Ventana</translation>
 <translation id="5234764350956374838">Descartar</translation>
 <translation id="523505283826916779">Configuración de accesibilidad</translation>
@@ -1759,6 +1763,7 @@ Nueva instalación</translation>
 <translation id="6757237461819837179">No se está reproduciendo nada</translation>
 <translation id="6760438044935091345">Panel de juego</translation>
 <translation id="6768043681523654438">almacenamiento</translation>
+<translation id="6769195697113506406">Se insertó la imagen</translation>
 <translation id="6777216307882431711">Se están cargando los dispositivos USB-C conectados</translation>
 <translation id="6781002679438061620">Escritorio 9</translation>
 <translation id="6782182743534150858">Escritorio 13</translation>
@@ -1985,6 +1990,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7571361473021531288"><ph name="BATTERY_PERCENTAGE" />% de batería | Tiempo restante: <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Se ancló la ventana activa en la derecha.</translation>
 <translation id="7579778809502851308">Captura de pantalla</translation>
+<translation id="7588317312481506627">Se copió en el portapapeles.</translation>
 <translation id="7593891976182323525">Tecla de búsqueda o Mayús</translation>
 <translation id="7598054670902114203">Resumen de uso de la CPU, <ph name="CPU_USEAGE" />%. Temperatura: <ph name="TEMPERATURE" /> grados Celsius. Velocidad actual: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Se está insertando el resultado seleccionado</translation>
@@ -2179,6 +2185,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8155628902202578800">Abrir el diálogo de información de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> en uso</translation>
 <translation id="8168435359814927499">Contenido</translation>
+<translation id="81817143961839203">No se pudo insertar la imagen</translation>
 <translation id="8185090165691050712">Activar o desactivar el menú para cambiar el tamaño del modo bloqueado</translation>
 <translation id="8192727139462702395">Cuando desactives el Bluetooth, estos dispositivos externos se desconectarán de tu <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Pestaña de transmisión</translation>
@@ -2257,6 +2264,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> tiene <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Presiona Alt y la tecla de búsqueda o mayúscula para cancelarlo.</translation>
 <translation id="8480418399907765580">Mostrar barra de herramientas</translation>
+<translation id="8487660088084188539">Cuando activas estas funciones, el texto de entrada, el contenido del documento y la URL de la página web pueden enviarse a los servidores de Google. Esta información se usa para generar sugerencias de escritura, hacer resúmenes, responder preguntas y mejorar el producto, sujeto a las <ph name="LINK_TO_SERVICE_TERMS" />. No incluyas información personal, sensible ni confidencial.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Abrir el vínculo en una pestaña nueva</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> no admite la resolución <ph name="SPECIFIED_RESOLUTION" />. Se cambió la resolución a <ph name="FALLBACK_RESOLUTION" />. Para mantener este cambio, haz clic en Confirmar. En <ph name="TIMEOUT_SECONDS" />, se restablecerá la configuración anterior.</translation>
@@ -2326,6 +2334,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8725066075913043281">Intentar nuevamente</translation>
 <translation id="8725214031272624704">Mostrar la lista de métodos de entrada disponibles</translation>
 <translation id="8730621377337864115">Listo</translation>
+<translation id="8731188831050207755">No se pudo realizar la descarga de <ph name="FILE_NAME" /></translation>
 <translation id="8731487213223706745">Finaliza a las <ph name="END_TIME" /> el día <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Es posible que alguien esté intentando determinar qué teclas presionaste</translation>
 <translation id="8735678380411481005">Color de retroiluminación del teclado</translation>

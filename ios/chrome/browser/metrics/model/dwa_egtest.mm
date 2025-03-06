@@ -15,6 +15,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+
 using chrome_test_util::GoogleServicesSettingsButton;
 using chrome_test_util::SettingsDoneButton;
 
@@ -165,11 +166,9 @@ using chrome_test_util::SettingsDoneButton;
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
                       chrome_test_util::TableViewSwitchCell(
                           @"betterSearchAndBrowsingItem_switch", YES)];
-  [[[EarlGrey
+  [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                    @"betterSearchAndBrowsingItem_switch", YES)]
-         usingSearchAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)
-      onElementWithMatcher:chrome_test_util::GoogleServicesSettingsView()]
       performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
 }
 
@@ -372,16 +371,19 @@ using chrome_test_util::SettingsDoneButton;
 // Tests that disabling MSBB UKM consent disables and purges DWA.
 // Additionally tests that DWA is disabled until all UKM consents are enabled.
 // LINT.IfChange(UkmMsbbConsentChangeCheck)
-- (void)FLAKY_testUkmMsbbConsentChangeCheck {
+- (void)testUkmMsbbConsentChangeCheck {
   // Note: Tests begin with an open regular tab. This tab is opened in setUp.
   [self recordTestDWAEntryMetricAndPageLoadEvent];
   [self assertDwaIsEnabledAndAllowed];
   [self assertDwaRecorderHasMetrics];
 
   [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      GoogleServicesSettingsButton()];
 
   // Open Google services settings.
   [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Toggle "Make searches and browsing better" switch off.
   [self turnOffMsbbSwitch];

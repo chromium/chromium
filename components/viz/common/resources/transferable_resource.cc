@@ -15,6 +15,8 @@ TransferableResource TransferableResource::MakeSoftwareSharedImage(
     const gfx::Size& size,
     SharedImageFormat format,
     ResourceSource source) {
+  // Passed in format must be either single or multiplane and not default set.
+  CHECK(format.is_single_plane() || format.is_multi_plane());
   TransferableResource r;
   r.is_software = true;
   r.memory_buffer_id_ = client_shared_image->mailbox();
@@ -34,6 +36,8 @@ TransferableResource TransferableResource::MakeGpu(
     SharedImageFormat format,
     bool is_overlay_candidate,
     ResourceSource source) {
+  // Passed in format must be either single or multiplane and not default set.
+  CHECK(format.is_single_plane() || format.is_multi_plane());
   TransferableResource r;
   r.is_software = false;
   r.memory_buffer_id_ = mailbox;
@@ -73,6 +77,8 @@ TransferableResource TransferableResource::Make(
 
   resource.size = override.size.value_or(shared_image->size());
   resource.format = override.format.value_or(shared_image->format());
+  // Passed in format must be either single or multiplane and not default set.
+  CHECK(resource.format.is_single_plane() || resource.format.is_multi_plane());
   resource.is_overlay_candidate = override.is_overlay_candidate.value_or(
       shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT));
   resource.color_space =

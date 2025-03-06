@@ -402,6 +402,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="6539122709674868420">Tu organización cierra Chromium cuando lleva <ph name="TIMEOUT_DURATION" /> sin usarse. Se han eliminado los datos de navegación. Entre estos datos, podrían incluirse el historial, la función Autocompletar y las descargas.</translation>
 <translation id="6542839706527980775">Cada perfil almacena su propia información de Chromium, como los marcadores, el historial, las contraseñas y mucho más.</translation>
 <translation id="6563921047760808519">Más información sobre <ph name="BEGIN_LINK" />cómo protege Chromium la privacidad de tus datos<ph name="END_LINK" /></translation>
+<translation id="6564039629497156115">Los cambios que se hagan en este ajuste se aplicarán cuando se reinicie Chromium.</translation>
 <translation id="656935081669708576">Puedes cambiar de perfil para ver las contraseñas de otro perfil de Chromium</translation>
 <translation id="6570579332384693436">Para corregir errores ortográficos, Chromium envía a Google el texto que escribes en los campos de texto</translation>
 <translation id="6598877126913850652">Ir a los ajustes de notificaciones de Chromium</translation>
@@ -514,6 +515,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8166782796394721554">Activa la protección adicional en el motor de Chromium para JavaScript y WebAssembly</translation>
 <translation id="81770708095080097">Este archivo es peligroso, por lo que Chromium lo ha bloqueado.</translation>
+<translation id="8177472873527554730">No se encuentra contenido en la página</translation>
 <translation id="8200109504272824693">Introduce tu frase de contraseña para usar y guardar datos de Chromium en tu cuenta (<ph name="USER_EMAIL" />)</translation>
 <translation id="8221491193165283816">Normalmente bloqueas todas las notificaciones. Si quieres permitir que este sitio web te muestre notificaciones, haz clic aquí.</translation>
 <translation id="8223363452568144035">Para usar la cámara, da acceso a Chromium en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" /></translation>

@@ -216,6 +216,11 @@ BASE_DECLARE_FEATURE(kVoiceSearchAudioCapturePolicy);
 BASE_DECLARE_FEATURE(kWebOtpCrossDeviceSimpleString);
 
 // For FeatureParam, Alphabetical:
+constexpr base::FeatureParam<int> kAppIntegrationMaxDonationCountParam(
+    &kAndroidAppIntegrationMultiDataSource,
+    "max_donation_count",
+    100);
+
 constexpr base::FeatureParam<int> kAuxiliarySearchMaxBookmarksCountParam(
     &kAuxiliarySearchDonation,
     "auxiliary_search_max_donation_bookmark",

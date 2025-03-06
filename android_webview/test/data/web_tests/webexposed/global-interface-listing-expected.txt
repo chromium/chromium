@@ -8898,7 +8898,7 @@ interface Sanitizer
     method removeAttribute
     method removeElement
     method removeUnsafe
-    method replaceWithChildrenElement
+    method replaceElementWithChildren
     method setComments
     method setDataAttributes
 interface Scheduler

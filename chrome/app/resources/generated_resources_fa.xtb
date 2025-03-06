@@ -3817,6 +3817,7 @@
 <translation id="3670229581627177274">روشن کردن بلوتوث</translation>
 <translation id="3670480940339182416">‏سایت‌ها می‌توانند از بهینه‌ساز V8 استفاده کنند</translation>
 <translation id="3671764914317109892">سابقه مرورتان را بااستفاده از زبان روزمره جستجو کنید همچنین می‌توانید سؤال بپرسید و براساس سابقه مرورتان پاسخ دریافت کنید.</translation>
+<translation id="3671982238795754537">درباره گذرکلیدها بیشتر بدانید</translation>
 <translation id="3672681487849735243">یک خطای کارخانه شناسایی شده است</translation>
 <translation id="3673097791729989571"><ph name="SAML_DOMAIN" /> ورود به سیستم را میزبانی می‌کند</translation>
 <translation id="3673287357837016374">پین شما به‌روز شد</translation>
@@ -4733,6 +4734,7 @@
 <translation id="4289540628985791613">نمای کلی</translation>
 <translation id="428963538941819373">این سایت‌ها می‌توانند از اطلاعاتی که هنگام مرور <ph name="HOST" /> درباره شما ذخیره کرده‌اند استفاده کنند</translation>
 <translation id="4289732974614035569">پین انتخاب کنید</translation>
+<translation id="4290526909608432059">‏پشتیبانی از برنامه‌های Chrome به‌زودی به‌پایان می‌رسد. برای اطلاع از گزینه‌هایی که در اختیار دارید، با توسعه‌دهنده نرم‌افزار یا تیم پشتیبانی فناوری اطلاعات خود تماس بگیرید.</translation>
 <translation id="4290791284969893584">پس‌از بستن صفحه، ممکن است کارهایی که شروع کرده‌اید تمام نشوند</translation>
 <translation id="4290826901752066702">‫<ph name="NUM" /> عضو</translation>
 <translation id="4290898381118933198">تند کشیدن برای پیمایش میان صفحه‌ها</translation>
@@ -8530,6 +8532,7 @@
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - متصل به درگاه سریال</translation>
 <translation id="7033616203784997570">ورودی باید حداکثر ۶۲ نویسه داشته باشد</translation>
 <translation id="7034692021407794547">‏سرپرستی که امتیازهای «مدیریت صورت‌حساب» را دارد باید ابتدا «شرایط خدمات Google Meet Hardware» را در بخش Google Meet Hardware از «کنسول سرپرست» بپذیرد.</translation>
+<translation id="7036550011779986598">‏<ph name="RP_ID" /> همین حالا گذرکلیدی برای حسابتان ایجاد کرد. گذرکلیدها راهی سریع‌تر و ایمن‌تر برای ورود به سیستم ارائه می‌دهند و در «مدیر گذرواژه Google» برای <ph name="USER" /> ذخیره می‌شوند. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">‏توصیه می‌شود <ph name="DISK_SIZE" /> فضا برای Linux داشته باشید برای افزایش فضای آزاد، فایل‌ها را از دستگاه حذف کنید.</translation>
 <translation id="7037157058268992880">پین را فراموش کرده‌ام</translation>
 <translation id="7037509989619051237">نوشتار برای پیش‌نمایش</translation>
@@ -10571,6 +10574,7 @@
 <translation id="8477178913400731244">حذف داده‌ها</translation>
 <translation id="8477241577829954800">از دور خارج شده</translation>
 <translation id="8477384620836102176">&amp;عمومی</translation>
+<translation id="8477446666255316832">دفعه بعد سریع‌تر به سیستم وارد شوید</translation>
 <translation id="8479176401914456949">کد نامعتبر است. لطفاً دوباره امتحان کنید.</translation>
 <translation id="8480869669560681089">دستگاه نامشخص از <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">‏تأیید مجوز USB</translation>

@@ -94,6 +94,7 @@
 <translation id="328933489847748230">{count,plural, =1{‏כרגע מוצג חלון Chromium אחד}one{‏כרגע מוצגים {count} חלונות Chromium}two{‏כרגע מוצגים {count} חלונות Chromium}other{‏כרגע מוצגים {count} חלונות Chromium}}</translation>
 <translation id="3344973607274501920">‏Chromium לא הצליח לבדוק את הסיסמאות שלך. יש לבדוק את החיבור לאינטרנט.</translation>
 <translation id="3366305173356742781">‏נתוני Chromium בחשבון שלך</translation>
+<translation id="33788334537425157">‏מפעילים את האפשרות "נעילת הכרטיסיות הפרטיות כשסוגרים את Chromium"</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך דקה ({THRESHOLD}). זה יכול לכלול את נתוני ההיסטוריה והמילוי האוטומטי.}one{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך {THRESHOLD} דקות. זה יכול לכלול את נתוני ההיסטוריה והמילוי האוטומטי.}two{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך {THRESHOLD} דקות. זה יכול לכלול את נתוני ההיסטוריה והמילוי האוטומטי.}other{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך {THRESHOLD} דקות. זה יכול לכלול את נתוני ההיסטוריה והמילוי האוטומטי.}}</translation>
 <translation id="3410395242749598859">‏חלק מהנתונים ב-Chromium עדיין לא נשמרו בחשבון <ph name="EMAIL" />.
 כדאי לחכות כמה דקות לפני שמחליפים חשבונות. אם החשבונות יוחלפו עכשיו, הנתונים האלה יימחקו.</translation>
@@ -101,8 +102,10 @@
 <translation id="347967311580159871">‏כדי לראות אילו הגדרות נוספות מתבססות על נתונים לצורך שיפור חוויית השימוש ב-Chromium, אפשר לעבור אל <ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">‏הסיסמה שלך לא שותפה. רצוי לבדוק את החיבור לאינטרנט ולוודא שנכנסת לחשבון ב-Chromium. אחר כך אפשר לנסות שוב.</translation>
 <translation id="3529798650269984835">‏מפעילים את האפשרות 'כרטיסיות פרטיות יינעלו כש-Chromium ייסגר'.</translation>
+<translation id="3541247799006476453">‏אפשר לגשת בקלות לסיסמאות ולמפתחות גישה באמצעות Chromium למילוי אוטומטי</translation>
 <translation id="3567399274263440288">‏אפשר להיכנס ל-Chromium באמצעות חשבון Google כדי להפיק את המרב מ-Chromium.</translation>
 <translation id="3581385059720151202">‏חיפוש רכיבים חזותיים ב-Chromium</translation>
+<translation id="3582640969619785896">‏‫Chromium יציע לשמור את הסיסמה</translation>
 <translation id="3594315078412605236">‏ניהול אמצעי תשלום ב-Chromium</translation>
 <translation id="3634039384458740619">‏פתיחת ההגדרות של Chromium</translation>
 <translation id="3639997914391704523">‏Chromium יכול לבדוק את הסיסמאות כשנכנסים באמצעות חשבון Google.</translation>
@@ -159,6 +162,7 @@
 <translation id="4999538639245140991">‏יציאה מחשבון שמנוהל על ידי <ph name="SIGNOUT_MANAGED_DOMAIN" /> תגרום למחיקת נתוני Chromium שלך מהמכשיר הזה. הנתונים האלה יישארו בחשבון Google שלך.</translation>
 <translation id="5042011327527167688">‏לוחצים על 'הצגה במפות Google ב-Chromium'.</translation>
 <translation id="5044871537677053278">‏Chromium מזהה כתובות ונעזר במפות Google כדי לספק מסלולים ומידע מקומי.</translation>
+<translation id="5048140766121299007">‏בהגדרות של "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />", מפעילים את "Chromium"</translation>
 <translation id="5048795749726991615">‏אפשר להשתמש ב-Chromium למילוי אוטומטי כדי לגשת בקלות לסיסמאות השמורות שלך באפליקציות אחרות</translation>
 <translation id="5053429694249468757">‏נתוני Chromium נמחקים…</translation>
 <translation id="5071749685031362629">‏‫Chromium ל-iOS</translation>
@@ -166,6 +170,7 @@
 <translation id="5124429847818367226">‏אפשר עכשיו להשתמש ב-Chromium בכל פעם שגולשים או לוחצים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="5131565040785979529">‏הארגון שלך, <ph name="DOMAIN" />, מנהל את החשבון שנכנסת אליו ואת אופן השימוש ב-Chromium.</translation>
 <translation id="5134464247000681876">‏פתיחת קישורים מ-Gmail, מפות Google‏, YouTube ואפליקציות אחרות ב-Chromium</translation>
+<translation id="5203244847421322551">‏שמירה ומילוי אוטומטי של סיסמאות ב-Chromium</translation>
 <translation id="5224391634244552924">‏אין סיסמאות שמורות. Chromium יכול לבדוק את הסיסמאות שלך רק אם שמרת אותן.</translation>
 <translation id="5259423875997548710">‏חיפוש רכיבים חזותיים ב-Chromium.</translation>
 <translation id="5308226104666789935">‏Chromium לא יכול לחפש עדכונים</translation>
@@ -209,10 +214,11 @@
 <translation id="6132149203299792222">‏כניסה באמצעות חשבון Google כדי לסנכרן את הסיסמאות, הסימניות ועוד.</translation>
 <translation id="6148377327556085395">‏הוספת סימניות אל Chromium</translation>
 <translation id="6154098560469640583">‏שימוש ב-Chromium בכל פעם שלוחצים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
+<translation id="6157162508956739031">‏אפשר להיכנס לאפליקציות ולאתרים במהירות באמצעות מילוי אוטומטי של הסיסמאות ומפתחות הגישה מ-Chromium</translation>
 <translation id="6170619162539716595">‏מתן הרשאה ל-Chromium להשתמש במפות Google כדי לספק מסלולים ומידע מקומי על כתובות שזוהו.</translation>
-<translation id="6197255575340902638">‏הסתרה של '<ph name="MODULE_NAME" />' תוביל להפסקת המעקב האוטומטי אחר חבילות ב-Chromium בעתיד, ולמחיקה של כל הנתונים הקודמים של המעקב אחר חבילות.</translation>
 <translation id="6247557882553405851">‏מנהל הסיסמאות של Google</translation>
 <translation id="6268381023930128611">‏האם לצאת מ-Chromium?</translation>
+<translation id="6301717043141881464">‏אפשר לבחור ב-Chromium למילוי אוטומטי כדי לגשת בקלות לסיסמאות השמורות שלך באפליקציות אחרות</translation>
 <translation id="6324041800010509197">‏ביקור בתצוגת הכרטיסיות ב-Chromium</translation>
 <translation id="6325378625795868881">‏שימוש ב-Chromium בכל פעם שלוחצים על קישורים בהודעות ובאפליקציות אחרות.</translation>
 <translation id="6424492062988593837">‏‫Chromium ממשיך להשתפר! קיימת גרסה חדשה.</translation>
@@ -224,6 +230,7 @@
 <translation id="6574750762636192517">‏ניהול הסיסמאות ב-Chromium</translation>
 <translation id="6590232959690355435">‏פתיחת הדף 'היסטוריה' ב-Chromium.</translation>
 <translation id="6674470628873622334">‏פתיחת כרטיסייה פרטית חדשה ב-Chromium.</translation>
+<translation id="6680609900732453726">‏אפשר לשמור על פרטיות הגלישה באמצעות אימות המכשיר כשסוגרים את Chromium</translation>
 <translation id="6752854822223394465">‏הארגון שלך מגדיר את Chromium…</translation>
 <translation id="6794054469102824109">‏פתיחת המשחק Chromium Dino.</translation>
 <translation id="6820823224820483452">‏Chromium לא הצליח לבדוק את כל הסיסמאות. אפשר לנסות שוב מחר.</translation>
@@ -287,6 +294,7 @@
 <translation id="8254729934443216898">‏יש לך הזדמנות לגלות תכונות חדשות שיעזרו לך להפיק את המירב מ-Chromium.</translation>
 <translation id="8293572045658095405">‏במצב פרטי ב-Chromium</translation>
 <translation id="830951810931292870">‏פתיחת כתובות ה-URL שהוזנו ב-Chromium במצב פרטי.</translation>
+<translation id="8390323835464055390">‏רוצה להיכנס לחשבון באמצעות הסיסמאות ומפתחות הגישה השמורים שלך מכל אפליקציה באמצעות Chromium למילוי אוטומטי?</translation>
 <translation id="8409374867500149834">‏האבטחה החזקה ביותר של Chromium מגינה עליך מפני אתרים מזיקים</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך דקה ({THRESHOLD}). נתונים שנשמרו רק במכשיר הזה בזמן שהיית מחובר לחשבון יימחקו. הנתונים האלה יכולים לכלול היסטוריה וסיסמאות.}one{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך {THRESHOLD} דקות. נתונים שנשמרו רק במכשיר הזה בזמן שהיית מחובר לחשבון יימחקו. הנתונים האלה יכולים לכלול היסטוריה וסיסמאות.}two{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך {THRESHOLD} דקות. נתונים שנשמרו רק במכשיר הזה בזמן שהיית מחובר לחשבון יימחקו. הנתונים האלה יכולים לכלול היסטוריה וסיסמאות.}other{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך {THRESHOLD} דקות. נתונים שנשמרו רק במכשיר הזה בזמן שהיית מחובר לחשבון יימחקו. הנתונים האלה יכולים לכלול היסטוריה וסיסמאות.}}</translation>
 <translation id="858114650497379505">‏יש לך אפשרות להשתמש בסיסמאות ששמרת במנהל הסיסמאות באפליקציות אחרות ב-iPhone.</translation>

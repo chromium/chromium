@@ -423,6 +423,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6520670145826811516">Para usar tu ubicación, da acceso a Chrome en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">En el Gestor de contraseñas de Google de este dispositivo</translation>
 <translation id="6632473616050862500">ChromeOS Flex se ha creado gracias a <ph name="BEGIN_LINK_CROS_OSS" />software libre<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
+<translation id="6634299872736643004">Los cambios que se hagan en este ajuste se aplicarán cuando se reinicie Chrome.</translation>
 <translation id="6660596345553328257">¿Iniciar sesión en Chrome?</translation>
 <translation id="6664219008737641504">Si has olvidado tu frase de contraseña o quieres cambiar este ajuste, <ph name="SETTINGS_LINK" /> los datos de Chrome de tu cuenta.</translation>
 <translation id="6676384891291319759">Accede a Internet.</translation>
@@ -545,6 +546,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="8129812357326543296">Información de &amp;Google Chrome</translation>
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8162006532256575008">Usar Chrome sin una cuenta</translation>
+<translation id="8177472873527554730">No se encuentra contenido en la página</translation>
 <translation id="8221491193165283816">Normalmente bloqueas todas las notificaciones. Si quieres permitir que este sitio web te muestre notificaciones, haz clic aquí.</translation>
 <translation id="8255190535488645436">Google Chrome está utilizando la cámara y el micrófono.</translation>
 <translation id="8257796129973882597">Puedes abrir los marcadores, el modo Lectura y más desde el menú de Chrome</translation>

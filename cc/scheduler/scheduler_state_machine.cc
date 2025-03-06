@@ -1453,7 +1453,7 @@ bool SchedulerStateMachine::ShouldTriggerBeginImplFrameDeadlineImmediately()
   //
   // Order matters here: if we have !needs_redraw_ (which is typical), if we
   // move that further down, then there is an unconditional "return false".
-  if (ShouldThrottleSendBeginMainFrame()) {
+  if (last_begin_impl_frame_time_ != last_sent_begin_main_frame_time_) {
     return true;
   }
 

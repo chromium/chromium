@@ -59,8 +59,28 @@ Scheduler::Scheduler(PrefService* local_state) : local_state_(local_state) {
 
 Scheduler::~Scheduler() = default;
 
-std::vector<ScheduledFile> Scheduler::IdentifyScheduledFilesForDeletion() {
-  std::vector<ScheduledFile> files;
+std::vector<ScheduledFile> Scheduler::IdentifyExpiredFiles(base::Time instant) {
+  std::vector<ScheduledFile> expired_files;
+  const base::Value::List& files =
+      local_state_->GetList(prefs::kDownloadAutoDeletionScheduledFiles);
+
+  for (const auto& value : files) {
+    std::optional<ScheduledFile> maybe_file = ScheduledFileFromValue(value);
+    if (!maybe_file) {
+      continue;
+    }
+
+    if (!IsFileReadyForDeletion(instant, *maybe_file)) {
+      break;
+    }
+
+    expired_files.push_back(std::move(*maybe_file));
+  }
+
+  return expired_files;
+}
+
+void Scheduler::RemoveExpiredFiles(base::Time instant) {
   ScopedListPrefUpdate update(local_state_,
                               prefs::kDownloadAutoDeletionScheduledFiles);
 
@@ -72,11 +92,10 @@ std::vector<ScheduledFile> Scheduler::IdentifyScheduledFilesForDeletion() {
       continue;
     }
 
-    if (!IsFileReadyForDeletion(*maybe_file)) {
+    if (!IsFileReadyForDeletion(instant, *maybe_file)) {
       break;
     }
 
-    files.push_back(std::move(*maybe_file));
     ++values_to_erase_count;
   }
 
@@ -84,8 +103,6 @@ std::vector<ScheduledFile> Scheduler::IdentifyScheduledFilesForDeletion() {
     base::Value::List& value = update.Get();
     value.erase(value.begin(), value.begin() + values_to_erase_count);
   }
-
-  return files;
 }
 
 void Scheduler::ScheduleFile(ScheduledFile file) {
@@ -97,9 +114,10 @@ void Scheduler::ScheduleFile(ScheduledFile file) {
                      .Set("time", base::TimeToValue(file.download_time())));
 }
 
-bool Scheduler::IsFileReadyForDeletion(const ScheduledFile& file) {
+bool Scheduler::IsFileReadyForDeletion(base::Time instant,
+                                       const ScheduledFile& file) {
   const base::Time download_date = file.download_time();
-  const base::TimeDelta download_age = base::Time::Now() - download_date;
+  const base::TimeDelta download_age = instant - download_date;
   return download_age > kFileDeletionThreshold;
 }
 

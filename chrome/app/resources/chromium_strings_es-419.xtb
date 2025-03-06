@@ -506,6 +506,7 @@
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8166782796394721554">Activar la protección adicional en el motor de WebAssembly y de JavaScript de Chromium</translation>
 <translation id="81770708095080097">Chromium bloqueó este archivo porque es peligroso.</translation>
+<translation id="8177472873527554730">No se puede encontrar el contenido de la página</translation>
 <translation id="8200109504272824693">Ingresa tu frase de contraseña para usar y guardar datos de Chromium en tu cuenta, <ph name="USER_EMAIL" /></translation>
 <translation id="8221491193165283816">Por lo general, bloqueas las notificaciones. Si quieres permitir que este sitio las muestre, haz clic aquí.</translation>
 <translation id="8223363452568144035">Para usar la cámara, otorga acceso a Chromium en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" /></translation>

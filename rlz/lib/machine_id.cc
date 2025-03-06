@@ -11,7 +11,7 @@
 #include "base/hash/sha1.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "rlz/lib/assert.h"
 #include "rlz/lib/crc8.h"
 #include "rlz/lib/string_utils.h"
@@ -22,7 +22,7 @@ bool GetMachineId(std::string* machine_id) {
   if (!machine_id)
     return false;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
   // Generate a random machine Id each time this function is called.  This
   // prevents the RLZ server from correlating two RLZ pings from the same
@@ -63,7 +63,7 @@ bool GetMachineId(std::string* machine_id) {
   calculated_id = *machine_id;
   return true;
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 namespace testing {

@@ -94,6 +94,7 @@ Gaan na <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> vir meer in
 <translation id="328933489847748230">{count,plural, =1{Wys nou in 1 Chromium-vensters}other{Wys nou in {count} Chromium-vensters}}</translation>
 <translation id="3344973607274501920">Chromium kon nie jou wagwoorde nagaan nie. Probeer jou internetverbinding nagaan.</translation>
 <translation id="3366305173356742781">Chromium-data in jou rekening</translation>
+<translation id="33788334537425157">Skakel “Sluit Incognito-oortjies wanneer jy Chromium toemaak” aan</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Dit gebeur wanneer Chromium vir {THRESHOLD} minuut nie gebruik word nie. Dit kan geskiedenis en outovul insluit.}other{Dit gebeur wanneer Chromium vir {THRESHOLD} minute nie gebruik word nie. Dit kan geskiedenis en outovul insluit.}}</translation>
 <translation id="3410395242749598859">Sommige van jou Chromium-data is nog nie in <ph name="EMAIL" /> gestoor nie.
 Probeer om ’n paar minute te wag voordat jy rekeninge wissel. As jy nou rekeninge wissel, sal hierdie data uitgevee word.</translation>
@@ -101,8 +102,10 @@ Probeer om ’n paar minute te wag voordat jy rekeninge wissel. As jy nou rekeni
 <translation id="347967311580159871">Gaan na <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> vir meer instellings wat data gebruik om jou Chromium-ervaring te verbeter.</translation>
 <translation id="3512168799938877162">Jou wagwoord is nie gedeel nie. Gaan jou internetverbinding na en maak seker dat jy by Chromium aangemeld is. Probeer dan weer.</translation>
 <translation id="3529798650269984835">Skakel “Sluit Incognito-oortjies wanneer jy Chromium toemaak” aan.</translation>
+<translation id="3541247799006476453">Kry maklik toegang tot jou wagwoorde en toegangsleutels met Chromium vir Outovul</translation>
 <translation id="3567399274263440288">Meld met jou Google-rekening aan om die meeste voordeel uit Chromium te trek.</translation>
 <translation id="3581385059720151202">Soek visuele elemente in Chromium</translation>
+<translation id="3582640969619785896">Chromium sal aanbied om jou wagwoord te stoor</translation>
 <translation id="3594315078412605236">Bestuur betaalmetodes in Chromium</translation>
 <translation id="3634039384458740619">Maak Chromium-instellings oop</translation>
 <translation id="3639997914391704523">Chromium kan jou wagwoorde nagaan as jy met jou Google-rekening aanmeld.</translation>
@@ -159,6 +162,7 @@ Jou data is met jou wagfrase geënkripteer. Voer dit in om Chromium-data in jou 
 <translation id="4999538639245140991">Omdat jy afmeld uit 'n rekening wat deur <ph name="SIGNOUT_MANAGED_DOMAIN" /> bestuur word, sal jou Chromium-data op hierdie toestel uitgevee word. Jou data sal in jou Google-rekening bly.</translation>
 <translation id="5042011327527167688">Tik op “Bekyk met Google Maps op Chromium”.</translation>
 <translation id="5044871537677053278">Chromium bespeur adresse en gebruik Google Maps om vir jou aanwysings en plaaslike inligting te gee.</translation>
+<translation id="5048140766121299007">Wissel “Chromium” aan in die “<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />”-instellings</translation>
 <translation id="5048795749726991615">Gebruik Chromium vir Outovul om jou gestoorde wagwoorde maklik in jou ander apps te kry</translation>
 <translation id="5053429694249468757">Vee tans Chromium-data uit …</translation>
 <translation id="5071749685031362629">Chromium vir iOS</translation>
@@ -166,6 +170,7 @@ Jou data is met jou wagfrase geënkripteer. Voer dit in om Chromium-data in jou 
 <translation id="5124429847818367226">Jy kan Chromium nou enige tyd gebruik wanneer jy blaai of op skakels in boodskappe, dokumente en ander apps tik.</translation>
 <translation id="5131565040785979529">Jou organisasie, <ph name="DOMAIN" />, bestuur die rekening waarby jy aangemeld is en hoe Chromium gebruik word.</translation>
 <translation id="5134464247000681876">Maak skakels vanaf Gmail, Maps, YouTube en ander apps in Chromium oop</translation>
+<translation id="5203244847421322551">Stoor en outovul wagwoorde in Chromium</translation>
 <translation id="5224391634244552924">Geen gestoorde wagwoorde nie. Chromium kan jou wagwoorde nagaan wanneer jy hulle stoor.</translation>
 <translation id="5259423875997548710">Soek visuele elemente in Chromium.</translation>
 <translation id="5308226104666789935">Chromium kan nie vir opdaterings kyk nie</translation>
@@ -209,10 +214,11 @@ Dinge om in ag te neem:
 <translation id="6132149203299792222">Meld met jou Google-rekening aan om jou wagwoorde, boekmerke en meer te sinkroniseer.</translation>
 <translation id="6148377327556085395">Voeg boekmerke by Chromium</translation>
 <translation id="6154098560469640583">Gebruik Chromium enige tyd wanneer jy op skakels in boodskappe, dokumente en ander apps tik.</translation>
+<translation id="6157162508956739031">Meld vinnig by apps en werwe aan deur jou wagwoorde en toegangsleutels vanaf Chromium outomaties in te vul</translation>
 <translation id="6170619162539716595">Laat Chromium toe om Google Maps te gebruik om vir jou aanwysings en plaaslike inligting oor bespeurde adresse te gee.</translation>
-<translation id="6197255575340902638">As jy “<ph name="MODULE_NAME" />” versteek, sal Chromium nie meer jou toekomstige pakkies outomaties naspoor nie en sal dit al jou vorige pakkienasporingdata uitvee.</translation>
 <translation id="6247557882553405851">Google Wagwoordbestuurder</translation>
 <translation id="6268381023930128611">Meld by Chromium af?</translation>
+<translation id="6301717043141881464">Kies Chromium vir Outovul om jou gestoorde wagwoorde maklik in jou ander apps te kry</translation>
 <translation id="6324041800010509197">Besoek die oortjierooster in Chromium</translation>
 <translation id="6325378625795868881">Gebruik Chromium enige tyd wanneer jy op skakels in boodskappe en ander apps tik.</translation>
 <translation id="6424492062988593837">Chromium het pas beter geword! 'n Nuwe weergawe is beskikbaar.</translation>
@@ -224,6 +230,7 @@ Dinge om in ag te neem:
 <translation id="6574750762636192517">Bestuur wagwoorde in Chromium</translation>
 <translation id="6590232959690355435">Maak jou Chromium-geskiedenisbladsy oop.</translation>
 <translation id="6674470628873622334">Maak ’n nuwe Chromium Incognito-oortjie oop.</translation>
+<translation id="6680609900732453726">Hou jou blaaiery privaat met toestelstawing wanneer jy Chromium toemaak</translation>
 <translation id="6752854822223394465">Jou organisasie stel tans Chromium op …</translation>
 <translation id="6794054469102824109">Maak die Chromium Dino-speletjie oop.</translation>
 <translation id="6820823224820483452">Chromium kon nie alle wagwoorde nagaan nie. Probeer môre weer.</translation>
@@ -287,6 +294,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="8254729934443216898">Verken nuwe kenmerke wat jou help om die meeste uit Chromium te kry.</translation>
 <translation id="8293572045658095405">Jy is in Chromium Incognito</translation>
 <translation id="830951810931292870">Maak die URL’e wat by Chromium ingevoer word in Incognitomodus oop.</translation>
+<translation id="8390323835464055390">Meld aan met jou gestoorde wagwoorde en toegangsleutels vanaf enige app wat Chromium vir Outovul gebruik</translation>
 <translation id="8409374867500149834">Jy het Chromium se sterkste sekuriteit teen skadelike webwerwe</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Dit gebeur wanneer Chromium vir {THRESHOLD} minuut nie gebruik word nie. Data wat net op hierdie toestel gestoor is terwyl jy aangemeld was, sal uitgevee word. Dit kan geskiedenis en wagwoorde insluit.}other{Dit gebeur wanneer Chromium vir {THRESHOLD} minute nie gebruik word nie. Data wat net op hierdie toestel gestoor is terwyl jy aangemeld was, sal uitgevee word. Dit kan geskiedenis en wagwoorde insluit.}}</translation>
 <translation id="858114650497379505">Jy kan die wagwoorde wat jy in Wagwoordbestuurder gestoor het in ander programme op jou iPhone gebruik.</translation>

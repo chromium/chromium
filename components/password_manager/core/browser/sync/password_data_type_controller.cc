@@ -56,11 +56,14 @@ void PasswordDataTypeController::LoadModels(
     const ModelLoadCallback& model_load_callback) {
   DCHECK(CalledOnValidThread());
   syncer::ConfigureContext overridden_context = configure_context;
-  if (features_util::CanCreateAccountStore(pref_service_) &&
-      base::FeatureList::IsEnabled(
-          syncer::kEnablePasswordsAccountStorageForSyncingUsers)) {
+#if BUILDFLAG(IS_ANDROID)
+  if (features_util::CanCreateAccountStore(pref_service_)) {
+    // Make syncing users behave like signed-in users, storage-wise.
+    // TODO(crbug.com/40067058): Drop when kForceMigrateSyncingUserToSignedIn
+    // is launched on Android, since there won't be syncing users anymore.
     overridden_context.sync_mode = syncer::SyncMode::kTransportOnly;
   }
+#endif
   sync_mode_ = overridden_context.sync_mode;
   DataTypeController::LoadModels(overridden_context, model_load_callback);
 }

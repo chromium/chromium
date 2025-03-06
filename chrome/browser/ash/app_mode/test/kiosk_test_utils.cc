@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "apps/test/app_window_waiter.h"
+#include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_app_install_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
@@ -150,6 +152,11 @@ void WaitNetworkScreen() {
 bool PressNetworkAccelerator() {
   return LoginScreenTestApi::PressAccelerator(
       ui::Accelerator(ui::VKEY_N, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN));
+}
+
+bool PressBailoutAccelerator() {
+  return LoginDisplayHost::default_host()->HandleAccelerator(
+      LoginAcceleratorAction::kAppLaunchBailout);
 }
 
 void CloseAppWindow(const KioskApp& app) {

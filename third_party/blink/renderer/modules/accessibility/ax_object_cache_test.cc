@@ -284,13 +284,13 @@ TEST_F(AccessibilityTest, NodesRequiringCacheUpdate) {
 
   // Calling DeferTreeUpdate() on a second node should result in two entries in
   // GetNodesRequiringCacheUpdate().
-  cache.DeferTreeUpdate(TreeUpdateReason::kAriaOwnsChanged, bar);
+  cache.DeferTreeUpdate(TreeUpdateReason::kUpdateAriaOwns, bar);
   ASSERT_TRUE(nodes_requiring_cache_update.Contains(bar_id));
   ASSERT_TRUE(nodes_requiring_cache_update.Contains(foo_id));
   ASSERT_EQ(nodes_requiring_cache_update.size(), 2U);
 
   entry = nodes_requiring_cache_update.find(bar_id);
-  ASSERT_EQ(entry->value, TreeUpdateReason::kAriaOwnsChanged);
+  ASSERT_EQ(entry->value, TreeUpdateReason::kUpdateAriaOwns);
 
   // Calling DeferTreeUpdate() on a node already in
   // GetNodesRequiringCacheUpdate() should replace the existing entry.

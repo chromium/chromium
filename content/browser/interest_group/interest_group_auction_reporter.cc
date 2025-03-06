@@ -44,9 +44,11 @@
 #include "content/public/browser/privacy_sandbox_invoking_api.h"
 #include "content/public/common/content_client.h"
 #include "content/services/auction_worklet/public/cpp/private_aggregation_reporting.h"
+#include "content/services/auction_worklet/public/cpp/private_model_training_reporting.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -163,6 +165,31 @@ bool ValidateReportingPrivateAggregationRequests(
           "Reporting Private Aggregation request using reserved.once");
       return false;
     }
+  }
+
+  return true;
+}
+
+// If any part of the private model training request data is not valid, calls
+// ReportBadMessage and returns false.
+bool ValidatePrivateModelTrainingRequestData(
+    const auction_worklet::mojom::PrivateModelTrainingRequestDataPtr&
+        pmt_request_data) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFledgePrivateModelTraining)) {
+    return false;
+  }
+  if (pmt_request_data->payload_length > auction_worklet::kMaxPayloadLength) {
+    mojo::ReportBadMessage(
+        "queueReportAggregateWin(): modelingSignalsConfig.payloadLength "
+        "exceeds maximum length.");
+    return false;
+  }
+  if (pmt_request_data->payload.size() > pmt_request_data->payload_length) {
+    mojo::ReportBadMessage(
+        "sendEncryptedTo(): payload exceeds "
+        "modelingSignalsConfig.payloadLength.");
+    return false;
   }
 
   return true;
@@ -930,6 +957,7 @@ void InterestGroupAuctionReporter::OnBidderWorkletFatalError(
       /*bidder_ad_beacon_map=*/{},
       /*bidder_ad_macro_map=*/{},
       /*pa_requests=*/{},
+      /*pmt_request_data=*/nullptr,
       /*timing_metrics=*/auction_worklet::mojom::BidderTimingMetrics::New(),
       errors);
 }
@@ -941,6 +969,7 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
     const base::flat_map<std::string, GURL>& bidder_ad_beacon_map,
     const base::flat_map<std::string, std::string>& bidder_ad_macro_map,
     PrivateAggregationRequests pa_requests,
+    auction_worklet::mojom::PrivateModelTrainingRequestDataPtr pmt_request_data,
     auction_worklet::mojom::BidderTimingMetricsPtr timing_metrics,
     const std::vector<std::string>& errors) {
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "bidder_worklet_report_win",
@@ -975,6 +1004,12 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
                                            : base::TimeDelta();
   participant_data.percent_scripts_timeout =
       timing_metrics->script_timed_out ? 100 : 0;
+
+  if (!pmt_request_data.is_null() &&
+      ValidatePrivateModelTrainingRequestData(pmt_request_data)) {
+    // TODO(ybourouphael): Add browser side implementation of Private Model
+    // Training API.
+  }
 
   if (!ValidateReportingPrivateAggregationRequests(pa_requests)) {
     pa_requests.clear();

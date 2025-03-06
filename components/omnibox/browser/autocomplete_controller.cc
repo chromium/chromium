@@ -69,6 +69,7 @@
 #include "components/omnibox/browser/on_device_head_provider.h"
 #include "components/omnibox/browser/open_tab_provider.h"
 #include "components/omnibox/browser/page_classification_functions.h"
+#include "components/omnibox/browser/recently_closed_tabs_provider.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/search_scoring_signals_annotator.h"
 #include "components/omnibox/browser/shortcuts_provider.h"
@@ -1317,6 +1318,10 @@ void AutocompleteController::InitializeSyncProviders(int provider_types) {
     featured_search_provider_ =
         new FeaturedSearchProvider(provider_client_.get());
     providers_.push_back(featured_search_provider_.get());
+  }
+  if (provider_types & AutocompleteProvider::TYPE_RECENTLY_CLOSED_TABS) {
+    providers_.push_back(
+        new RecentlyClosedTabsProvider(provider_client_.get(), this));
   }
 }
 

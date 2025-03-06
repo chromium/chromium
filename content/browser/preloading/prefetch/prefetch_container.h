@@ -19,10 +19,11 @@
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
-#include "content/browser/preloading/preload_pipeline_info.h"
+#include "content/browser/preloading/preload_pipeline_info_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/prefetch_request_status_listener.h"
+#include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
 #include "net/http/http_no_vary_search_data.h"
@@ -982,8 +983,8 @@ class CONTENT_EXPORT PrefetchContainer {
   //
   // Note that we distinguish the primary one and inherited ones because we send
   // CDP events with id of `preload_pipeline_info_`.
-  scoped_refptr<PreloadPipelineInfo> preload_pipeline_info_;
-  std::vector<scoped_refptr<PreloadPipelineInfo>>
+  scoped_refptr<PreloadPipelineInfoImpl> preload_pipeline_info_;
+  std::vector<scoped_refptr<PreloadPipelineInfoImpl>>
       inherited_preload_pipeline_infos_;
 
   // `PreloadingAttempt` is used to track the lifecycle of the preloading event,

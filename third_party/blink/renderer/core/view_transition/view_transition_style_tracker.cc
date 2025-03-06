@@ -606,7 +606,8 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
 
 ViewTransitionStyleTracker::~ViewTransitionStyleTracker() {
   if (!RuntimeEnabledFeatures::SerializeViewTransitionStateInSPAEnabled()) {
-    CHECK_EQ(state_, State::kFinished);
+    CHECK(state_ == State::kIdle || state_ == State::kFinished)
+        << static_cast<int>(state_);
   }
 }
 

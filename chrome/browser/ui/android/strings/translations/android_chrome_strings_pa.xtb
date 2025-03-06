@@ -56,7 +56,6 @@
 <translation id="1206892813135768548">ਲਿੰਕ ਲਿਖਤ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="1209206284964581585">ਫਿਲਹਾਲ ਲੁਕਾਓ</translation>
 <translation id="1227058898775614466">ਨੈਵੀਗੇਸ਼ਨ ਇਤਿਹਾਸ</translation>
-<translation id="1231733316453485619">ਕੀ ਸਿੰਕ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="123724288017357924">ਕੈਸ਼ੇ ਕੀਤੀ ਸਮੱਗਰੀ ਨੂੰ ਅਣਡਿੱਠ ਕਰਕੇ ਮੌਜੂਦਾ ਪੰਨਾ ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="1239792311949352652">ਇਸ ਪੰਨੇ ਨੂੰ ਤੁਰੰਤ ਸਾਂਝਾ ਕਰੋ। ਇਸ ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> ਨੂੰ ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
@@ -105,16 +104,12 @@
 <translation id="1407135791313364759">ਸਾਰੇ ਖੋਲ੍ਹੋ</translation>
 <translation id="1409879593029778104"><ph name="FILE_NAME" /> ਡਾਊਨਲੋਡ ਰੋਕਿਆ ਗਿਆ ਕਿਉਂਕਿ ਫ਼ਾਈਲ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਮੌਜੂਦ ਹੈ।</translation>
 <translation id="1413446866325418126">ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਡਾਟਾ ਰੱਖਿਅਤ ਕਰੋ</translation>
-<translation id="1414981605391750300">Google ਨਾਲ ਸੰਪਰਕ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਇੱਕ ਮਿੰਟ ਲੱਗ ਸਕਦਾ ਹੈ…</translation>
 <translation id="1416550906796893042">ਐਪਲੀਕੇਸ਼ਨ ਵਰਜਨ</translation>
-<translation id="1416582024052267068">ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਤੱਕ ਪਹੁੰਚ ਰੱਖੋ</translation>
 <translation id="1419753403124156396">ਕੀ Chrome ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="1428770807407000502">ਕੀ ਸਿੰਕ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="1430915738399379752">ਪ੍ਰਿੰਟ ਕਰੋ</translation>
 <translation id="1435593198351412143">PDF ਫ਼ਾਈਲਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਖੋਲ੍ਹੋ</translation>
-<translation id="1436784010935106834">ਹਟਾਈਆਂ ਗਈਆਂ</translation>
 <translation id="1437543266176261764">ਇਹ ਸਰਗਰਮੀ <ph name="APP_NAME" /> ਵਿੱਚ ਚੱਲ ਰਹੀ ਹੈ</translation>
-<translation id="1448147069872048656">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਆਪਣੇ ਸਾਰੇ ਪਾਸਵਰਡਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="1448440926884431741">Bookmarks ਵਿੱਚ ਆਪਣੇ ਟਰੈਕ ਕੀਤੇ ਉਤਪਾਦਾਂ ਨੂੰ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
 <translation id="1460751212339734034">ਸਮਾਂ ਬਚਾਓ, ਘੱਟ ਟਾਈਪ ਕਰੋ</translation>
 <translation id="1466383950273130737">Chrome ਦੀ ਭਾਸ਼ਾ ਚੁਣੋ</translation>
@@ -241,7 +236,6 @@
 <translation id="2111511281910874386">ਪੰਨੇ 'ਤੇ ਜਾਓ</translation>
 <translation id="2119609734654412418">ਤੁਹਾਨੂੰ ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਇੱਥੇ ਮਿਲਣਗੇ</translation>
 <translation id="2122601567107267586">ਐਪ ਖੋਲ੍ਹੀ ਨਹੀਂ ਜਾ ਸਕੀ</translation>
-<translation id="2132122640199389833">ਲਿੰਕ ਕੀਤੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ ਨੂੰ ਹਟਾਓ</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> ਬੰਦ ਕੀਤਾ</translation>
 <translation id="2141396931810938595">ਤੁਹਾਡੀ ਵਰਤੋਂ ਦੇ ਆਧਾਰ 'ਤੇ</translation>
 <translation id="2145315049852051678">Chrome ਇਹ ਪੱਕਾ ਕਰਨ ਲਈ ਨਿਯਮਿਤ ਤੌਰ 'ਤੇ ਜਾਂਚ ਕਰਦਾ ਹੈ ਕਿ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਸਭ ਤੋਂ ਸੁਰੱਖਿਅਤ ਹਨ। ਜੇ ਕਿਸੇ ਚੀਜ਼ ਨੂੰ ਸਮੀਖਿਆ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ, ਤਾਂ ਅਸੀਂ ਤੁਹਾਨੂੰ ਦੱਸ ਦੇਵਾਂਗੇ।</translation>
@@ -281,7 +275,6 @@
 <translation id="2321086116217818302">ਪਾਸਵਰਡ ਤਿਆਰ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ…</translation>
 <translation id="2323763861024343754">ਸਾਈਟ ਸਟੋਰੇਜ</translation>
 <translation id="2328474416100889417">ਹਰ ਕੋਈ “<ph name="GROUP_NAME" />” ਟੈਬ ਗਰੁੱਪ ਤੱਕ ਤੁਰੰਤ ਪਹੁੰਚ ਗੁਆ ਦੇਵੇਗਾ ਅਤੇ ਸੱਦੇ ਦੇ ਸਾਰੇ ਲਿੰਕਾਂ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
-<translation id="2328985652426384049">ਸਾਈਨ-ਇਨ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="2332515770639153015">ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਚਾਲੂ ਹੈ</translation>
 <translation id="233375395665273385">ਮਿਟਾਓ ਅਤੇ ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> ਨੂੰ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
@@ -409,7 +402,6 @@
 <translation id="2883644600102358131">ਪਾਸਵਰਡ ਜਲਦ ਹੀ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਕੰਮ ਕਰਨਾ ਬੰਦ ਕਰ ਦੇਣਗੇ। ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨਾ ਜਾਰੀ ਰੱਖਣ ਲਈ, Google Play ਸੇਵਾਵਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ।</translation>
 <translation id="2888126860611144412">Chrome ਬਾਰੇ</translation>
 <translation id="2891154217021530873">ਲੋਡ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਰੁਕੋ</translation>
-<translation id="2893180576842394309">Google Search ਅਤੇ ਹੋਰਾਂ Google ਸੇਵਾਵਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਲਈ ਤੁਹਾਡੇ ਇਤਿਹਾਸ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="2894821468041866720">ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਜਾਂ ਡੀਵਾਈਸ ਨੂੰ ਹੌਲੀ ਨਹੀਂ ਕਰਦੀ।</translation>
 <translation id="2895521649038438824">ਤੁਸੀਂ ਇਸ ਪੰਨੇ ਨੂੰ ਸੁਣ ਸਕਦੇ ਹੋ</translation>
 <translation id="2899252057552912621">Google Play ਸੇਵਾਵਾਂ ਉਪਲਬਧ ਨਾ ਹੋਣ ਕਾਰਨ ਪਾਸਵਰਡ ਜਲਦ ਹੀ ਕੰਮ ਕਰਨਾ ਬੰਦ ਕਰ ਦੇਣਗੇ। ਤੁਸੀਂ ਆਪਣੇ ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਪਾਸਵਰਡਾਂ ਦੇ ਕੰਮ ਕਰਨਾ ਬੰਦ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਉਨ੍ਹਾਂ ਦੀ ਇੱਕ ਕਾਪੀ ਬਣਾ ਸਕਦੇ ਹੋ।</translation>
@@ -489,7 +481,6 @@
 <translation id="3250563604907490871">ਜਦੋਂ ਤੁਸੀਂ ਵਾਈ-ਫਾਈ ਨਾਲ ਕਨੈਕਟ ਕਰੋਗੇ ਤਾਂ ਚਿੱਤਰ ਵਰਣਨ ਮੁੜ-ਚਾਲੂ ਹੋਵੇਗਾ</translation>
 <translation id="3254409185687681395">ਇਸ ਪੰਨੇ ਨੂੰ ਬੁੱਕਮਾਰਕ ਕਰੋ</translation>
 <translation id="3259831549858767975">ਪੰਨੇ 'ਤੇ ਹਰੇਕ ਚੀਜ਼ ਨੂੰ ਵਧੇਰੇ ਛੋਟਾ ਬਣਾਓ</translation>
-<translation id="3262666254864194397">ਪਤਾ ਬਾਰ  <ph name="BEGIN_NEW" />ਨਵਾਂ<ph name="END_NEW" /></translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" /> ਦੇ ਸਾਰੇ ਪੰਨੇ</translation>
 <translation id="3269093882174072735">ਚਿੱਤਰ ਲੋਡ ਕਰੋ</translation>
 <translation id="327204079441056603">ਅਸੀਂ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਦੇ ਤਰੀਕੇ ਨੂੰ ਬਦਲ ਦਿੱਤਾ ਹੈ</translation>
@@ -555,7 +546,6 @@
 <translation id="3563767357928833671">ਕਲਿੱਪਬੋਰਡ ਦੀਆਂ ਸਮੱਗਰੀਆਂ ਦਿਖਾਈਆਂ ਗਈਆਂ</translation>
 <translation id="3566639033325271639">ਸੈਟਿੰਗਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="3568945271227339929">ਕਿਸੇ ਪਾਸਵਰਡ ਨਾਲ ਛੇੜਛਾੜ ਨਹੀਂ ਹੋਈ</translation>
-<translation id="357465026686164600">ਫ਼ੋਨ ਨੂੰ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਵਜੋਂ ਵਰਤਣਾ</translation>
 <translation id="3575464060651642446">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਪਾਸਵਰਡ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ…</translation>
 <translation id="3577473026931028326">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="3577558748185201054">ਆਪਣੀਆਂ ਦਿਲਚਸਪੀਆਂ ਅਤੇ ਤਰਜੀਹਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
@@ -588,7 +578,6 @@
 <translation id="3710560693796335511">ਸਹਿਯੋਗ</translation>
 <translation id="3714981814255182093">ਖੋਜ ਬਾਰ ਖੋਲ੍ਹੋ</translation>
 <translation id="3718765429352682176">ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਹੋਰ ਐਪਾਂ ਦਾ ਇਤਿਹਾਸ ਦੇਖ ਸਕਦੇ ਹੋ, ਜਿਨ੍ਹਾਂ ਦੇ ਲਿੰਕ Chrome ਵਿੱਚ ਖੁੱਲ੍ਹਦੇ ਹਨ।</translation>
-<translation id="3720422586473670527">ਨਹੀਂ ਧੰਨਵਾਦ</translation>
 <translation id="3721119614952978349">ਤੁਸੀਂ ਅਤੇ Google</translation>
 <translation id="3737319253362202215">ਅਨੁਵਾਦ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="3738139272394829648">ਖੋਜਣ ਲਈ ਸਪਰਸ਼ ਕਰੋ</translation>
@@ -735,7 +724,6 @@
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ਟੈਬ ਬੰਦ ਕਰੋ</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> ਵਿੱਚ ਬੁੱਕਮਾਰਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 ਬੁੱਕਮਾਰਕ}one{# ਬੁੱਕਮਾਰਕ}other{# ਬੁੱਕਮਾਰਕ}}</translation>
-<translation id="4461614516424362539">ਜਦੋਂ ਤੁਸੀਂ ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ ਨੂੰ QR ਕੋਡ ਨਾਲ ਲਿੰਕ ਕਰਦੇ ਹੋ, ਤਾਂ ਇਹ ਇਸ ਫ਼ੋਨ ਨੂੰ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਵਜੋਂ ਵਰਤ ਸਕਦਾ ਹੈ। ਜੇ ਤੁਸੀਂ ਇਸ ਨੂੰ ਹਟਾਉਂਦੇ ਹੋ, ਤਾਂ ਇਸ ਨੂੰ ਦੁਬਾਰਾ ਲਿੰਕ ਕਰਨ ਲਈ ਤੁਹਾਨੂੰ QR ਕੋਡ ਨੂੰ ਸਕੈਨ ਕਰਨਾ ਪਵੇਗਾ।</translation>
 <translation id="4478161224666880173">ਤੁਸੀਂ ਇਸ ਸਾਈਟ 'ਤੇ ਆਪਣੇ<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਖਾਤੇ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹੋ। ਜਾਰੀ ਰੱਖਣ ਲਈ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="4479972344484327217">Chrome ਲਈ <ph name="MODULE" /> ਨੂੰ ਸਥਾਪਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…</translation>
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{ਬੁੱਕਮਾਰਕ ਨੂੰ "<ph name="FOLDER_NAME" />" ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ। ਇਸਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ।}one{ਬੁੱਕਮਾਰਕ ਨੂੰ "<ph name="FOLDER_NAME" />" ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ। ਇਸਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ।}other{ਬੁੱਕਮਾਰਕਾਂ ਨੂੰ "<ph name="FOLDER_NAME" />" ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ। ਇਨ੍ਹਾਂ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ।}}</translation>
@@ -820,7 +808,6 @@
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">ਕਾਰਡ ਤੇ ਨਾਮ</translation>
 <translation id="480990236307250886">ਹੋਮ ਪੇਜ ਖੋਲ੍ਹੋ</translation>
-<translation id="481574578487123132">ਲਿੰਕ ਕੀਤੇ ਡੀਵਾਈਸ</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਬੰਦ ਅਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4826163340425232009">ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਹੇਠਲੀ ਸ਼ੀਟ।</translation>
 <translation id="4834250788637067901">Google Pay ਦੀ ਵਰਤੋਂ ਕਰਨ ਵਾਲੀਆਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ, ਪੇਸ਼ਕਸ਼ਾਂ ਅਤੇ ਪਤੇ</translation>
@@ -846,7 +833,6 @@
 <translation id="4910889077668685004">ਭੁਗਤਾਨ ਐਪਾਂ</translation>
 <translation id="4912413785358399818">ਟੈਬ ਲਿਜਾਓ</translation>
 <translation id="4913169188695071480">ਮੁੜ-ਤਾਜ਼ਾ ਕਰਨਾ ਬੰਦ ਕਰੋ</translation>
-<translation id="4913841543356834596">ਆਪਣੇ ਸਾਰੇ ਪਾਸਵਰਡਾਂ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="4918086044614829423">ਸਵੀਕਾਰ ਕਰੋ</translation>
 <translation id="4925120120285606924">ਸਕ੍ਰੀਨਸ਼ਾਟ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਨਿਰਯਾਤ ਕੀਤੇ ਜਾਣਗੇ ਅਤੇ ਲਿਖਤ ਫ਼ਾਈਲ ਵਜੋਂ ਡਾਊਨਲੋਡ ਕੀਤੇ ਜਾਣਗੇ। ਉਹ ਮੰਜ਼ਿਲ ਫੋਲਡਰ ਤੱਕ ਪਹੁੰਚ ਵਾਲੇ ਕਿਸੇ ਵੀ ਵਿਅਕਤੀ ਅਤੇ ਕਿਸੇ ਵੀ ਐਪ ਨੂੰ ਦਿਖਣਯੋਗ ਹੋਣਗੇ।</translation>
@@ -854,7 +840,6 @@
 <translation id="4932247056774066048">ਕਿਉਂਕਿ ਤੁਸੀਂ <ph name="DOMAIN_NAME" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤੇ ਖਾਤੇ ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰ ਰਹੇ ਹੋ, ਤਾਂ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਤੁਹਾਡਾ Chrome ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਪਰ ਇਹ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਬਰਕਰਾਰ ਰਹੇਗਾ।</translation>
 <translation id="4943703118917034429">ਆਭਾਸੀ ਵਾਸਤਵਿਕਤਾ</translation>
 <translation id="4943872375798546930">ਕੋਈ ਨਤੀਜੇ ਨਹੀਂ</translation>
-<translation id="4950924971025849764">ਜਦੋਂ ਤੁਸੀਂ ਉਸੇ Google ਖਾਤੇ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਦੇ ਹੋ, ਤਾਂ ਹੋਰ ਡੀਵਾਈਸਾਂ ਇਸ ਫ਼ੋਨ ਨੂੰ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਵਜੋਂ ਵਰਤ ਸਕਦੇ ਹਨ।</translation>
 <translation id="4953833914914492602">“<ph name="TAB_GROUP_NAME" />” ਟੈਬ ਗਰੁੱਪ ਹੁਣ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="4957722034734105353">ਹੋਰ ਜਾਣੋ...</translation>
 <translation id="4961107849584082341">ਇਸ ਪੰਨੇ ਦਾ ਕਿਸੇ ਵੀ ਭਾਸ਼ਾ ਵਿੱਚ ਅਨੁਵਾਦ ਕਰੋ</translation>
@@ -982,7 +967,6 @@
 <translation id="5568069709869097550">ਸਾਈਨ-ਇਨ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="557018954714092179">ਨਵਾਂ ਫੋਲਡਰ ਬਣਾਓ</translation>
 <translation id="5578795271662203820">ਇਸ ਚਿੱਤਰ ਲਈ <ph name="SEARCH_ENGINE" /> ਖੋਜੋ</translation>
-<translation id="5581519193887989363">ਤੁਸੀਂ <ph name="BEGIN_LINK1" />ਸੈਟਿੰਗਾਂ<ph name="END_LINK1" /> ਵਿੱਚ ਹਮੇਸ਼ਾਂ ਇਹ ਚੁਣ ਸਕਦੇ ਹੋ ਕਿ ਕਿਸਦਾ ਸਿੰਕ ਕਰਨਾ ਹੈ।</translation>
 <translation id="5596627076506792578">ਹੋਰ ਵਿਕਲਪ</translation>
 <translation id="5599455543593328020">ਇਨਕੋਗਨਿਟੋ ਮੋਡ</translation>
 <translation id="5601180634394228718">ਤੁਹਾਡੇ Chrome ਦੇ ਅਨੁਭਵ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਕਰਨ ਵਾਲੀਆਂ ਹੋਰ ਸੈਟਿੰਗਾਂ ਲਈ, <ph name="BEGIN_LINK" />Google ਸੇਵਾਵਾਂ<ph name="END_LINK" /> 'ਤੇ ਜਾਓ।</translation>
@@ -1075,7 +1059,6 @@
 <translation id="5995726099713306770">ਕੀ ਪੰਨਾ ਦੁਬਾਰਾ ਡਾਊਨਲੋਡ ਕਰਨਾ ਹੈ?</translation>
 <translation id="6000066717592683814">Google ਰੱਖੋ</translation>
 <translation id="6000203700195075278">ਮੁੜ-ਅਨੁਸਰਣ ਕਰੋ</translation>
-<translation id="6002122790816966947">ਤੁਹਾਡੇ ਡੀਵਾਈਸ</translation>
 <translation id="6011308810877101166">ਖੋਜ ਸੁਝਾਵਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਓ</translation>
 <translation id="6013305291643746595">ਪੁਰਾਣੇ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰਨਾ</translation>
 <translation id="6022659036123304283">Chrome ਨੂੰ ਆਪਣੇ ਅਨੁਸਾਰ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
@@ -1123,6 +1106,7 @@
 <translation id="6210748933810148297"><ph name="EMAIL" /> ਨਹੀਂ ਹੋ?</translation>
 <translation id="6211386937064921208">ਇਸ ਪੰਨੇ ਦੀ ਪੂਰਵ-ਝਲਕ ਦਿਖਾਈ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="6221633008163990886">ਆਪਣੇ ਪਾਸਵਰਡ ਨਿਰਯਾਤ ਕਰਨ ਲਈ ਅਣਲਾਕ ਕਰੋ</translation>
+<translation id="6225572914528673855">ਪਤਾ ਬਾਰ</translation>
 <translation id="6232535412751077445">‘ਟਰੈਕ ਨਾ ਕਰੋ’ ਨੂੰ ਚਾਲੂ ਕਰਨ ਤੋਂ ਭਾਵ ਹੈ ਕਿ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਸੰਬੰਧੀ ਟਰੈਫ਼ਿਕ ਵਿੱਚ ਕੋਈ ਬੇਨਤੀ ਸ਼ਾਮਲ ਕੀਤੀ ਜਾਵੇਗੀ। ਕੋਈ ਵੀ ਪ੍ਰਭਾਵ ਇਸ 'ਤੇ ਨਿਰਭਰ ਕਰਦਾ ਹੈ ਕਿ ਵੈੱਬਸਾਈਟ ਬੇਨਤੀ ਦਾ ਜਵਾਬ ਦਿੰਦੀ ਹੈ ਜਾਂ ਨਹੀਂ ਅਤੇ ਬੇਨਤੀ ਦਾ ਅਰਥ ਕਿਵੇਂ ਕੱਢਿਆ ਜਾਂਦਾ ਹੈ।
 
 ਉਦਾਹਰਨ ਲਈ, ਕੁਝ ਵੈੱਬਸਾਈਟਾਂ ਤੁਹਾਨੂੰ ਉਹ ਵਿਗਿਆਪਨ ਦਿਖਾ ਕੇ ਇਸ ਬੇਨਤੀ ਦਾ ਜਵਾਬ ਦੇ ਸਕਦੀਆਂ ਹਨ ਜੋ ਤੁਹਾਡੇ ਵੱਲੋਂ ਹੋਰਾਂ ਵੈੱਬਸਾਈਟਾਂ 'ਤੇ ਜਾਣ 'ਤੇ ਆਧਾਰਿਤ ਨਹੀਂ ਹਨ। ਕਈ ਵੈੱਬਸਾਈਟਾਂ ਤਦ ਵੀ ਤੁਹਾਡਾ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਸੰਬੰਧੀ ਡਾਟਾ ਇਕੱਤਰ ਕਰਨਗੀਆਂ ਅਤੇ ਇਸ ਦੀ ਵਰਤੋਂ ਕਰਨਗੀਆਂ - ਉਦਾਹਰਨ ਲਈ ਸੁਰੱਖਿਆ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ, ਸਮੱਗਰੀ, ਵਿਗਿਆਪਨ ਅਤੇ ਸਿਫ਼ਾਰਸ਼ਾਂ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਲਈ ਅਤੇ ਰਿਪੋਰਟਿੰਗ ਅੰਕੜੇ ਸਿਰਜਣ ਲਈ।</translation>
@@ -1194,7 +1178,6 @@
 <translation id="6527303717912515753">ਸ਼ੇਅਰ ਕਰੋ</translation>
 <translation id="652948702951888897">Chrome ਇਤਿਹਾਸ</translation>
 <translation id="6532866250404780454">Chrome ਵਿੱਚ ਉਹ ਸਾਈਟਾਂ ਨਹੀਂ ਦਿਸਣਗੀਆਂ, ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਜਾਂਦੇ ਹੋ। ਸਾਰੇ ਸਾਈਟ ਟਾਈਮਰ ਮਿਟਾ ਦਿੱਤੇ ਜਾਣਗੇ।</translation>
-<translation id="6534565668554028783">Google ਨੇ ਜਵਾਬ ਦੇਣ ਵਿੱਚ ਜ਼ਿਆਦਾ ਸਮਾਂ ਲਿਆ</translation>
 <translation id="6539092367496845964">ਕੋਈ ਗੜਬੜ ਹੋਈ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 ਘੰਟਾ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}one{# ਘੰਟਾ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}other{# ਘੰਟੇ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}}</translation>
 <translation id="6545017243486555795">ਸਾਰਾ ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ</translation>
@@ -1226,7 +1209,6 @@
 <translation id="6637100877383020115">ਐਪ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ, Chrome ਵਰਤੋਂ ਅਤੇ ਕ੍ਰੈਸ਼ ਡਾਟਾ Google ਨੂੰ ਭੇਜਦਾ ਹੈ। <ph name="BEGIN_UMA_LINK" />ਪ੍ਰਬੰਧਨ ਕਰੋ<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">ਹਮੇਸ਼ਾਂ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" /> ਨੂੰ ਹਟਾਓ</translation>
-<translation id="6645629752388991326">ਇਹ ਕੰਟਰੋਲ ਕਰੋ ਕਿ ਇਸ ਡੀਵਾਈਸ ਨੂੰ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਵਜੋਂ ਵਰਤ ਕੇ ਕਿਹੜੇ ਡੀਵਾਈਸ ਸਾਈਨ-ਇਨ ਕਰ ਸਕਦੇ ਹਨ।</translation>
 <translation id="6647441008198474441">ਤੁਹਾਡੇ ਵੱਲੋਂ ਖੋਲ੍ਹੇ ਜਾਣ ਵਾਲੇ URL Google ਨੂੰ ਇਹ ਪੂਰਵ-ਅਨੁਮਾਨ ਲਗਾਉਣ ਲਈ ਭੇਜੇ ਜਾਂਦੇ ਹਨ ਕਿ ਤੁਸੀਂ ਅਗਲੀਆਂ ਕਿਹੜੀਆਂ ਸਾਈਟਾਂ 'ਤੇ ਜਾਉਗੇ</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ਹੋਰ}one{<ph name="CONTACT_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ਹੋਰ}other{<ph name="CONTACT_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ਹੋਰ}}</translation>
 <translation id="6649642165559792194">ਚਿੱਤਰ ਦੀ ਪੂਰਵ-ਝਲਕ ਦੇਖੋ <ph name="BEGIN_NEW" />ਨਵੀਂ<ph name="END_NEW" /></translation>
@@ -1328,7 +1310,6 @@
 <translation id="6987047470128880212">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਇਨਕੋਗਨਿਟੋ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="6991701761229081516">ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਨੂੰ CSV ਫ਼ਾਈਲ ਵਜੋਂ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾਵੇਗਾ। ਉਹ ਅਜਿਹੇ ਕਿਸੇ ਵੀ ਵਿਅਕਤੀ ਨੂੰ ਦਿਖਾਈ ਦੇਣਗੇ, ਜੋ ਐਪਾਂ ਸਮੇਤ ਫ਼ਾਈਲ ਤੱਕ ਪਹੁੰਚ ਕਰ ਸਕਦਾ ਹੈ। ਨਿਰਯਾਤ ਕੀਤੇ ਪਾਸਵਰਡਾਂ ਨੂੰ Chrome ਵਿੱਚੋਂ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="6996145122199359148">ਇਸ ਪੰਨੇ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
-<translation id="7013627768165542797">ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਪਾਸਵਰਡਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="7013762323294215682">ਇਹ ਪਾਸਕੀ ਤੁਹਾਡੇ Password Manager ਵਿੱਚ ਰੱਖਿਅਤ ਹੋ ਜਾਵੇਗੀ। ਇਸ ਪਾਸਕੀ ਤੱਕ ਪਹੁੰਚ ਵਾਲਾ ਕੋਈ ਵੀ ਵਿਅਕਤੀ ਇਸਦੀ ਵਰਤੋਂ ਕਰ ਸਕੇਗਾ।</translation>
 <translation id="7020741890149022655">ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ <ph name="BEGIN_NEW" />ਨਵਾਂ<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
@@ -1345,7 +1326,6 @@
 <translation id="7078916049958741685">ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਆਪਣਾ Chrome ਡਾਟਾ ਵੀ ਮਿਟਾਓ</translation>
 <translation id="7085332316435785646">ਚੁਣੋ ਕਿ Google ਸੇਵਾਵਾਂ ਵਿੱਚ ਜ਼ਿਆਦਾ ਵਿਅਕਤੀਗਤ ਅਨੁਭਵਾਂ ਲਈ Chrome ਇਤਿਹਾਸ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨਾ ਹੈ ਜਾਂ ਨਹੀਂ</translation>
 <translation id="7088681679121566888">Chrome ਅੱਪ-ਟੂ-ਡੇਟ ਹੈ</translation>
-<translation id="7102843846294013537">ਤੁਹਾਡੇ ਕੁਝ ਪਾਸਵਰਡ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਉਪਲਬਧ ਨਹੀਂ ਹਨ</translation>
 <translation id="7106762743910369165">ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਪ੍ਰਬੰਧਨ ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="7111394291981742152">Chrome ਤੁਹਾਨੂੰ ਦਿਖਣ ਵਾਲੇ ਵਿਗਿਆਪਨਾਂ 'ਤੇ ਤੁਹਾਨੂੰ ਜ਼ਿਆਦਾ ਕੰਟਰੋਲ ਦਿੰਦਾ ਹੈ ਅਤੇ ਇਹ ਸੀਮਤ ਕਰਦਾ ਹੈ ਕਿ ਤੁਹਾਨੂੰ ਵਿਅਕਤੀਗਤ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਵੇਲੇ ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਬਾਰੇ ਕੀ ਜਾਣ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 ਸਾਈਟ ਲਈ ਇਜਾਜ਼ਤਾਂ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਗਈ}one{# ਸਾਈਟ ਲਈ ਇਜਾਜ਼ਤਾਂ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਗਈ}other{# ਸਾਈਟਾਂ ਲਈ ਇਜਾਜ਼ਤਾਂ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਗਈ}}</translation>
@@ -1358,7 +1338,6 @@
 <translation id="71503698506017927">ਪਾਸਫਰੇਜ਼ ਇਨਕ੍ਰਿਪਸ਼ਨ ਵਿੱਚ Google Pay ਦੀਆਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਅਤੇ ਪਤੇ ਸ਼ਾਮਲ ਨਹੀਂ ਹਨ।
 
 ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਣ ਲਈ, <ph name="BEGIN_LINK" />ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ Chrome ਡਾਟੇ ਨੂੰ ਮਿਟਾਓ<ph name="END_LINK" />।</translation>
-<translation id="7161230316646448869">ਆਪਣੇ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਸਿੰਕ ਕਰੋ</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ। ਇਸ ਬਟਨ ਨਾਲ ਸੈਟਿੰਗਾਂ ਖੁੱਲ੍ਹਦੀਆਂ ਹਨ।</translation>
 <translation id="7173114856073700355">ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="7173338713290252554">ਵੈੱਬ 'ਤੇ ਕੀਮਤ ਦਾ ਇਤਿਹਾਸ</translation>
@@ -1414,7 +1393,6 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome ਪਹਿਲੀ ਵਾਰ ਚਲਾਉਣ ਦਾ ਅਨੁਭਵ</translation>
 <translation id="7411224099004328643">Google ਖਾਤਾ ਵਰਤੋਂਕਾਰ</translation>
-<translation id="741204030948306876">ਹਾਂ, ਸਹਿਮਤ ਹਾਂ</translation>
 <translation id="7419565702166471774">ਹਮੇਸ਼ਾਂ ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨਾਂ ਨੂੰ ਵਰਤੋ</translation>
 <translation id="7421293530411019405">ਕੀ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਛੱਡਣਾ ਹੈ?</translation>
 <translation id="7431991332293347422">'ਖੋਜ' ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਲਈ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੇ ਵਰਤੇ ਜਾਣ ਦੇ ਤਰੀਕੇ ਨੂੰ ਕੰਟਰੋਲ ਕਰੋ</translation>
@@ -1479,7 +1457,6 @@
 <translation id="7656862631699126784">ਇਨਕੋਗਨਿਟੋ ਲਾਕ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
 <translation id="7663320421139257046">ਜਾਰੀ ਰੱਖਣ ਲਈ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਤੁਹਾਡੇ <ph name="FIELDS_STRING" /> ਨੂੰ ਇਸ ਸਾਈਟ ਨਾਲ ਸਾਂਝਾ ਕਰੇਗਾ। ਇਸ ਸਾਈਟ ਦੀ <ph name="BEGIN_LINK1" />ਪਰਦੇਦਾਰੀ ਨੀਤੀ<ph name="END_LINK1" /> ਦੇਖੋ।</translation>
-<translation id="7665369617277396874">ਖਾਤਾ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="766587987807204883">ਲੇਖ ਇੱਥੇ ਦਿਖਾਈ ਦਿੰਦੇ ਹਨ, ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਸੀਂ ਆਫ਼ਲਾਈਨ ਹੋਣ 'ਤੇ ਵੀ ਪੜ੍ਹ ਸਕਦੇ ਹੋ</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7682724950699840886">ਅੱਗੇ ਦਿੱਤੇ ਨੁਕਤੇ ਅਜ਼ਮਾਓ: ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਲੋੜੀਂਦੀ ਜਗ੍ਹਾ ਹੈ, ਦੁਬਾਰਾ ਨਿਰਯਾਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
@@ -1558,7 +1535,6 @@
 <translation id="8027395186860110042">ਪਾਸਵਰਡ ਜਲਦ ਹੀ ਕੰਮ ਕਰਨਾ ਬੰਦ ਕਰ ਸਕਦੇ ਹਨ</translation>
 <translation id="8027863900915310177">ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ ਕੋਈ ਥਾਂ ਚੁਣੋ</translation>
 <translation id="8030852056903932865">ਮਨਜ਼ੂਰ ਕਰੋ</translation>
-<translation id="8031805944372049238">Google Password Manager ਵਿੱਚ ਪਾਸਵਰਡਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨਾ ਅਤੇ ਵਰਤਣਾ ਸ਼ੁਰੂ ਕਰਨ ਲਈ, Google Play ਸੇਵਾਵਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ।</translation>
 <translation id="8032569120109842252">ਅਨੁਸਰਣ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> ਦਿਨ ਬਾਕੀ</translation>
 <translation id="8037801708772278989">ਹੁਣੇ ਹੀ ਜਾਂਚ ਕੀਤੀ ਗਈ</translation>

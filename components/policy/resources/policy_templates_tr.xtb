@@ -3327,6 +3327,7 @@ Politikanın ayarlanmadan bırakılması, yüksek düzey modunda Her zaman açı
       Bu ayarı devre dışı bırakır veya hiç yapılandırmazsanız, varsayılan olarak yeni satır içi oturum açma akışı kullanılır. Kullanıcılar yine de "web tabanlı oturum açmayı etkinleştir" komut satırı işaretini kullanarak eski web tabanlı oturum açma akışını etkinleştirebilirler.
 
       Satır içi oturum açma özelliği, gelecekte tüm TOA oturum açma akışlarını tam olarak desteklediğinde bu deneysel ayar kaldırılacaktır.</translation>
+<translation id="3435178885391813398">Tarayıcı özelliğine izin verme.</translation>
 <translation id="3435796032110614169">Yazdırma işleri geçmişinin silinmesine izin ver</translation>
 <translation id="3435896845095436175">Etkinleştir</translation>
 <translation id="3436217793443508863">Pil gücüyle çalışırken, ekran kilitlenmeden önce kullanıcı girişi olmadan geçecek süre (milisaniye olarak)</translation>
@@ -6849,6 +6850,7 @@ Bu politika normal ifadeleri desteklemez ancak belirli bir alanın alt alan adla
 
       Politika, Devre Dışı değerine ayarlanırsa QUIC protokolünün kullanımına izin verilmez.</translation>
 <translation id="5916855682471300200">Bulut makinesi politikaları, platform makinesi politikaları karşısında öncelikli olur</translation>
+<translation id="5917092644305650513">Tarayıcı özelliği ayarları</translation>
 <translation id="5917425424971710623">Genişletilmiş tespit ve yanıt (XDR) etkinlikleri ile ilgili bilgileri rapor etme</translation>
 <translation id="5917897389577978190">Gmail (135 sürümünden itibaren desteklenir)</translation>
 <translation id="592036544845479336">Desteği sonlandırılmış/kaldırılmış mutasyon etkinliklerini yeniden etkinleştir</translation>
@@ -7243,6 +7245,7 @@ Bu takviye 8 ile 32 karakter arasında bir dize olmalıdır.
 
       Politika yanlış (false) değerine ayarlanır veya ayarlanmadan bırakılırsa kilitlenme raporu bilgileri raporlanmaz. Doğru (true) değerine ayarlanırsa kilitlenme raporu bilgileri raporlanır.</translation>
 <translation id="624219423122512710">Boşta Kalan Tarayıcı İşlemleri</translation>
+<translation id="6243061183100681514">Tarayıcı özelliğine izin ver ve yapay zeka modellerini daha iyi hale getir.</translation>
 <translation id="6244061205361004687">Kullanıcının manuel olarak VPN bağlantısını kesmesine veya VPN'yi yapılandırmasına izin ver</translation>
 <translation id="6244210204546589761">Başlangıçta açılacak olan URL'ler</translation>
 <translation id="624595269193747921">Eşleşen yazıcı arama işleminin belirli bir yazıcı grubuyla sınırlı olup olmayacağı.</translation>
@@ -8018,6 +8021,7 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa KD
 <translation id="6661178198729301029">Yönetilen profil bulut raporlamasını etkinleştir</translation>
 <translation id="6665670272107384733">Hızlı kilit açmayı kullanmak için kullanıcının şifreyi hangi sıklıkta girmesi gerektiğini ayarla</translation>
 <translation id="6667586534922258705">Şifre görüntüleme düğmesini giriş ve kilit ekranında gösterir.</translation>
+<translation id="6667636336079341367">Yapay zeka modellerini daha iyi hale getirmeden Tarayıcı özelliğine izin ver.</translation>
 <translation id="6669691206059842248">Uzantı başına ek OAuth yönlendirme URL'lerini yapılandır.</translation>
 <translation id="6669700740683748046">Bu özellik, tam URL'nin adres çubuğunda görüntülenmesini sağlar.
       Bu politika True (Doğru) değerine ayarlanırsa tam URL, şemalar ve alt alan adlarıyla birlikte adres çubuğunda gösterilir.
@@ -10573,6 +10577,17 @@ Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTI
       Bu politika devre dışıysa veya ayarlanmadan bırakılırsa bilgi raporlanmaz.
       Politika etkinse ve kullanıcı ilişkiliyse CRD etkinlikleri raporlanır</translation>
 <translation id="85723976805793612">Android uygulama yükleme olay günlükleri Google ile paylaşılır</translation>
+<translation id="8573354257711790704">Bu politika, <ph name="PRODUCT_OS_NAME" /> için Tarayıcı özelliğinin ayarlarını kontrol eder.
+
+0 = Özelliğin kullanılmasına izin verirken Google'ın yapay zeka modellerini iyileştirmek için ilgili verileri kullanmasına izin verir. İlgili veriler arasında özelliğe bağlı olarak istemler, girişler, çıkışlar, kaynak materyaller ve yazılı geri bildirimler yer alabilir. Bu bilgiler, gerçek kişiler tarafından da yapay zeka modellerini iyileştirmek için incelenebilir. Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
+
+1 = Özelliğin kullanılmasına izin verir ancak Google'ın kullanıcıların içeriklerini (istemler, girişler, çıkışlar, kaynak materyaller ve yazılı geri bildirimler dahil) kullanarak modelleri iyileştirmesine izin vermez. <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> tarafından yönetilen kurumsal kullanıcılar ve <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> tarafından yönetilen eğitim hesapları için varsayılan değer 1'dir.
+
+2 = Özelliğe izin vermez.
+
+Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> politikasına göre belirlenir.
+
+Üretken yapay zeka özelliklerinde verilerin nasıl işlendiği hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=generative_ai_settings adresine göz atın.</translation>
 <translation id="857369585509260201">Bu politika kullanımdan kaldırılmıştır. Bunun yerine BrowserSignin'i kullanabilirsiniz.
 
 Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı kullanmadan önce <ph name="PRODUCT_NAME" /> ürününde kendi profiliyle oturum açması gerekir. BrowserGuestModeEnabled varsayılan değeri "false" (yanlış) olarak ayarlanır. Bu politika etkinleştirildikten sonra mevcut imzasız profillerin kilitleneceğini ve erişilemez hale geleceğini unutmayın. Daha fazla bilgi edinmek için yardım merkezi makalesine bakabilirsiniz.

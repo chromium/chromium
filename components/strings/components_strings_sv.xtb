@@ -3024,6 +3024,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6351658970066645919">Radera webbinformation</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Inga}=1{1 lösenord (för <ph name="DOMAIN_LIST" />, synkroniseras)}=2{2 lösenord (för <ph name="DOMAIN_LIST" />, synkroniseras)}other{# lösenord (för <ph name="DOMAIN_LIST" />, synkroniseras)}}</translation>
 <translation id="6355392890578844978">Den här webbläsaren hanteras inte av ett företag eller en organisation. Aktiviteter på den här enheten kan hanteras utanför Chromium. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Flikgrupperna <ph name="GROUP_TITLE_1" /> och <ph name="GROUP_TITLE_2" /> är inte längre tillgängliga</translation>
 <translation id="6358088212770985041">redigera betalningsmetoder</translation>
 <translation id="6358450015545214790">Vad innebär dessa?</translation>
 <translation id="6360213755783740931">Läs mer om skydd mot skadlig kod</translation>

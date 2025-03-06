@@ -76,10 +76,9 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chromeos/components/kiosk/kiosk_test_utils.h"
+#include "chrome/browser/ash/test/kiosk_app_logged_in_browser_test_mixin.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -1338,6 +1337,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppIncognitoBrowserTest,
 class RestartKioskDeviceTest : public PlatformAppBrowserTest,
                                public ash::LocalStateMixin::Delegate {
  public:
+  RestartKioskDeviceTest() { set_chromeos_user_ = false; }
+
   void SetUpLocalState() override {
     // Until EnterKioskSession is called, the setup and the test run in a
     // regular user session. Marking another user as the owner prevents the
@@ -1347,9 +1348,6 @@ class RestartKioskDeviceTest : public PlatformAppBrowserTest,
   }
 
   void SetUpOnMainThread() override {
-    user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
-    chromeos::SetUpFakeKioskSession();
-
     PlatformAppBrowserTest::SetUpOnMainThread();
     // Disable "faked" shutdown of Chrome if the OS was supposed to restart.
     // The fakes this test injects would cause it to crash.
@@ -1359,11 +1357,6 @@ class RestartKioskDeviceTest : public PlatformAppBrowserTest,
     fake_power_manager_client->set_restart_callback(base::DoNothing());
   }
 
-  void TearDownOnMainThread() override {
-    PlatformAppBrowserTest::TearDownOnMainThread();
-    user_manager_.Reset();
-  }
-
  protected:
   static int num_request_restart_calls() {
     return chromeos::FakePowerManagerClient::Get()->num_request_restart_calls();
@@ -1371,8 +1364,8 @@ class RestartKioskDeviceTest : public PlatformAppBrowserTest,
 
  private:
   ash::LocalStateMixin local_state_mixin_{&mixin_host_, this};
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      user_manager_;
+  ash::KioskAppLoggedInBrowserTestMixin login_mixin_{&mixin_host_,
+                                                     "kiosk-app-account"};
 };
 
 // Tests that chrome.runtime.restart would request device restart in

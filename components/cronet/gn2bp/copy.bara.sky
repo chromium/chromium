@@ -22,6 +22,7 @@ origin_files = glob([
     "components/miracle_parameter/**",
     "components/nacl/**",
     "components/prefs/**",
+    "components/unexportable_keys/**",
     "crypto/**",
     "ipc/**",
     "net/**",

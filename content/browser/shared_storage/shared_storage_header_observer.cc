@@ -313,7 +313,9 @@ SharedStorageHeaderObserver::DoPermissionsPolicyDoubleCheck(
       dummy_request.shared_storage_writable_eligible = true;
       return permissions_policy->IsFeatureEnabledForSubresourceRequest(
                  network::mojom::PermissionsPolicyFeature::kSharedStorage,
-                 request_origin, dummy_request)
+                 request_origin, dummy_request.browsing_topics,
+                 dummy_request.shared_storage_writable_eligible,
+                 dummy_request.ad_auction_headers)
                  ? PermissionsPolicyDoubleCheckStatus::kEnabled
                  : PermissionsPolicyDoubleCheckStatus::kDisabled;
     }

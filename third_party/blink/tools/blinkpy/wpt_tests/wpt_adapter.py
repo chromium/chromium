@@ -12,6 +12,7 @@ import optparse
 import signal
 import subprocess
 import sys
+import textwrap
 from collections import defaultdict
 from datetime import datetime
 from typing import List, Optional
@@ -265,7 +266,6 @@ class WPTAdapter:
         # use the same.
         if self.product.name != 'chrome_ios':
             self._set_up_runner_ssl_options(runner_options)
-        self._set_up_runner_debugging_options(runner_options)
         self._set_up_runner_tests(runner_options, tmp_dir)
         self.product.update_runner_options(runner_options)
         return runner_options
@@ -400,13 +400,6 @@ class WPTAdapter:
                                                     '127.0.0.1.key')
         runner_options.host_cert_path = self.fs.join(certs_path,
                                                      '127.0.0.1.pem')
-
-    def _set_up_runner_debugging_options(self, runner_options):
-        if self.options.wrapper:
-            runner_options.debugger = self.options.wrapper[0]
-            # `wpt run` expects a plain `str`, not a `List[str]`:
-            # https://github.com/web-platform-tests/wpt/blob/9593290a/tools/wptrunner/wptrunner/wptcommandline.py#L190
-            runner_options.debugger_args = ' '.join(self.options.wrapper[1:])
 
     def _collect_tests(self):
         finder = WebTestFinder(self.port, self.options)
@@ -567,7 +560,11 @@ class WPTAdapter:
             logger.debug('Using WPT tools from %s', self.tools_root)
 
             runner_options.run_info = tmp_dir
-            self._initialize_tmp_dir(tmp_dir, tests_root)
+            self._initialize_run_info(tmp_dir, tests_root)
+            if self.options.wrapper:
+                runner_options.debug_test = True
+                runner_options.binary = self._generate_wrapper_script(
+                    tmp_dir, runner_options.binary)
 
             stack.enter_context(
                 self.process_and_upload_results(runner_options))
@@ -614,7 +611,7 @@ class WPTAdapter:
                 self.fs.join(self.port.artifacts_directory(), 'results.html'))
         return exit_code or int(results_json['num_regressions'] > 0)
 
-    def _initialize_tmp_dir(self, tmp_dir: str, tests_root: str):
+    def _initialize_run_info(self, tmp_dir: str, tests_root: str):
         assert self.fs.isdir(tmp_dir), tmp_dir
         run_info = {
             # This property should always be a string so that the metadata
@@ -640,6 +637,42 @@ class WPTAdapter:
         run_info_path = self.fs.join(tmp_dir, 'mozinfo.json')
         with self.fs.open_text_file_for_writing(run_info_path) as file_handle:
             json.dump(run_info, file_handle)
+
+    def _generate_wrapper_script(self, tmp_dir: str, binary: str):
+        # Generate a temporary script that is substituted for the "binary"
+        # passed to `chromedriver`. For example,
+        #   --wrapper='rr record' --additional-driver-flag=--switch1
+        #
+        # is passed as
+        #   "binary": "/tmp/.../wrapper.sh",
+        #   "args": ["--switch1"],
+        #
+        # where "wrapper.sh" runs "exec rr record /path/to/chrome $@".
+        #
+        # This hack exists because passing
+        #   "binary": "rr",
+        #   "args": ["record", "/path/to/chrome", "--switch1"],
+        #
+        # won't work. `chromedriver` treats all `args` as switches, which
+        # undergo some processing (e.g., normalize args to start with `--`).
+        if self.host.platform.is_win():
+            args = [*self.options.wrapper, binary, '%*']
+            contents = textwrap.dedent(f"""\
+                @echo off
+                {' '.join(args)}
+                """)
+            wrapper_path = self.fs.join(tmp_dir, 'wrapper.bat')
+        else:
+            args = ['exec', *self.options.wrapper, binary, '"$@"']
+            contents = textwrap.dedent(f"""\
+                #!/bin/sh
+                {' '.join(args)}
+                """)
+            wrapper_path = self.fs.join(tmp_dir, 'wrapper.sh')
+
+        self.fs.write_text_file(wrapper_path, contents)
+        self.fs.make_executable(wrapper_path)
+        return wrapper_path
 
     @contextlib.contextmanager
     def process_and_upload_results(self, runner_options: argparse.Namespace):

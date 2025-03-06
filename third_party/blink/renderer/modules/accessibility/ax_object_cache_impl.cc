@@ -762,7 +762,6 @@ static std::string TreeUpdateReasonAsDebugString(
   switch (reason) {
     DEBUG_STRING_CASE(kActiveDescendantChanged);
     DEBUG_STRING_CASE(kAriaExpandedChanged);
-    DEBUG_STRING_CASE(kAriaOwnsChanged);
     DEBUG_STRING_CASE(kAriaPressedChanged);
     DEBUG_STRING_CASE(kAriaSelectedChanged);
     DEBUG_STRING_CASE(kChildInserted);
@@ -2456,11 +2455,9 @@ void AXObjectCacheImpl::UpdateAriaOwnsWithCleanLayout(Node* node) {
   // Process any relation attributes that can affect ax objects already created.
   // Force computation of aria-owns, so that original parents that already
   // computed their children get the aria-owned children removed.
-  if (IsA<Element>(node) && AXObject::HasARIAOwns(To<Element>(node))) {
-    if (AXObject* obj = Get(node)) {
-      CHECK(relation_cache_);
-      relation_cache_->UpdateAriaOwnsWithCleanLayout(obj);
-    }
+  CHECK(relation_cache_);
+  if (AXObject* obj = Get(node)) {
+    relation_cache_->UpdateAriaOwnsWithCleanLayout(obj);
   }
 }
 
@@ -3747,9 +3744,6 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
     case TreeUpdateReason::kAriaExpandedChanged:
       HandleAriaExpandedChangeWithCleanLayout(node);
       break;
-    case TreeUpdateReason::kAriaOwnsChanged:
-      AriaOwnsChangedWithCleanLayout(node);
-      break;
     case TreeUpdateReason::kAriaPressedChanged:
       HandleAriaPressedChangedWithCleanLayout(node);
       break;
@@ -4370,7 +4364,7 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
       if (relation_cache_) {
         relation_cache_->UpdateReverseOwnsRelations(*element);
       }
-      DeferTreeUpdate(TreeUpdateReason::kAriaOwnsChanged, element);
+      DeferTreeUpdate(TreeUpdateReason::kUpdateAriaOwns, element);
     } else if (attr_name == html_names::kAriaHaspopupAttr) {
       if (AXObject* obj = Get(element)) {
         if (obj->RoleValue() == ax::mojom::blink::Role::kButton ||
@@ -4676,17 +4670,6 @@ void AXObjectCacheImpl::CSSAnchorChangedWithCleanLayout(Node* positioned_node) {
   relation_cache_->UpdateCSSAnchorFor(positioned_node);
 }
 
-void AXObjectCacheImpl::AriaOwnsChangedWithCleanLayout(Node* node) {
-  CHECK(relation_cache_);
-  if (AXObject* obj = Get(node)) {
-    relation_cache_->UpdateAriaOwnsWithCleanLayout(obj);
-    // Make sure that the owner's children are updated even in the case where
-    // aria-owns is empty, or the object is not a valid owner. This protects
-    // from ending up with parent containing invalid children.
-    ChildrenChangedWithCleanLayout(obj);
-  }
-}
-
 void AXObjectCacheImpl::InlineTextBoxesUpdated(LayoutObject* layout_object) {
   if (AXObject* obj = Get(layout_object)) {
     // Only update if the accessibility object already exists and it's
@@ -4877,7 +4860,6 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequired(
     case TreeUpdateReason::kValidationMessageVisibilityChanged:
       return true;
 
-    case TreeUpdateReason::kAriaOwnsChanged:
     case TreeUpdateReason::kChildInserted:
     case TreeUpdateReason::kCSSAnchorChanged:
     case TreeUpdateReason::kDelayEventFromPostNotification:

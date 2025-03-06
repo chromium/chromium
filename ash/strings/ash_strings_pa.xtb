@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">ਵਿਚਾਰ ਦੀ ਰਿਪੋਰਟ ਕਰੋ</translation>
 <translation id="1059120031266247284">ਤੁਹਾਡੇ ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> ਦੇ ਨਾਲ 'ਹਟਾਓ' ਬਟਨ ਦਿਖ ਰਿਹਾ ਹੈ</translation>
 <translation id="1062407476771304334">ਬਦਲੋ</translation>
 <translation id="1073899992769346247">ਬੈਟਰੀ ਬਦਲੋ ਜਾਂ ਉਸਨੂੰ ਰੀਚਾਰਜ ਕਰੋ</translation>
 <translation id="1081015718268701546">Linux ਐਪਾਂ ਫ਼ਿਲਹਾਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ। ਹੋਰ ਐਪਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
@@ -1230,6 +1231,7 @@
 <translation id="5043679421800073804">ਸ਼ੈਲਫ ਦੇ ਆਖਰੀ ਪ੍ਰਤੀਕ 'ਤੇ ਕਲਿੱਕ ਜਾਂ ਟੈਪ ਕਰੋ</translation>
 <translation id="504465286040788597">ਪਿਛਲਾ ਪੈਰਾ</translation>
 <translation id="5045550434625856497">ਗਲਤ ਪਾਸਵਰਡ</translation>
+<translation id="5056587122125565772">ਚਿੱਤਰ ਬਣਾਓ</translation>
 <translation id="5058794129231928255">Google ਡੌਕ ਬਣਾਇਆ ਨਹੀਂ ਜਾ ਸਕਿਆ</translation>
 <translation id="5062496344832867502">ਰੈਮ</translation>
 <translation id="5068762093486106012">ਮਿਊਟ ਹੋਣ ਦੌਰਾਨ ਬੋਲਣ 'ਤੇ ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਕੀਤਾ ਜਾਵੇਗਾ। ਆਡੀਓ ਕਦੇ ਵੀ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਤੋਂ ਬਾਹਰ ਨਹੀਂ ਜਾਵੇਗੀ।</translation>
@@ -1278,6 +1280,7 @@
 <translation id="5222676887888702881">ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>
 <translation id="5228195526683428788">ਸਪਲਿਟ ਸਕ੍ਰੀਨ ਵਿਭਾਜਕ</translation>
 <translation id="5229343007215035173">ਪਰਦੇਦਾਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਚਾਲੂ/ਬੰਦ ਕਰੋ</translation>
+<translation id="5229860525743792999">ਸੁਝਾਏ ਗਏ ਗਰੁੱਪ ਵਿੱਚੋਂ <ph name="ITEM_LABEL" /> ਨੂੰ ਹਟਾਓ</translation>
 <translation id="5230516054153933099">ਵਿੰਡੋ</translation>
 <translation id="5234764350956374838">ਬਰਖ਼ਾਸਤ ਕਰੋ</translation>
 <translation id="523505283826916779">ਪਹੁੰਚਯੋਗਤਾ ਸੈਟਿੰਗਾਂ</translation>
@@ -1760,6 +1763,7 @@
 <translation id="6757237461819837179">ਕੋਈ ਮੀਡੀਆ ਨਹੀਂ ਚੱਲ ਰਿਹਾ ਹੈ</translation>
 <translation id="6760438044935091345">ਗੇਮ ਡੈਸ਼ਬੋਰਡ</translation>
 <translation id="6768043681523654438">ਸਟੋਰੇਜ</translation>
+<translation id="6769195697113506406">ਚਿੱਤਰ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6777216307882431711">ਕਨੈਕਟ ਕੀਤੇ USB-C ਡੀਵਾਈਸਾਂ ਨੂੰ ਪਾਵਰ ਦਿੱਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="6781002679438061620">ਡੈਸਕ 9</translation>
 <translation id="6782182743534150858">ਡੈਸਕ 13</translation>
@@ -1986,6 +1990,7 @@
 <translation id="7571361473021531288">ਬੈਟਰੀ <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> ਬਾਕੀ</translation>
 <translation id="7573585051776738856">ਕਿਰਿਆਸ਼ੀਲ ਵਿੰਡੋ ਨੂੰ ਸੱਜੇ ਪਾਸੇ ਡੌਕ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="7579778809502851308">ਸਕ੍ਰੀਨ ਕੈਪਚਰ ਕਰੋ</translation>
+<translation id="7588317312481506627">ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="7593891976182323525">Search ਜਾਂ Shift</translation>
 <translation id="7598054670902114203">CPU ਵਰਤੋਂ ਸਨੈਪਸ਼ਾਟ, <ph name="CPU_USEAGE" />%. ਤਾਪਮਾਨ <ph name="TEMPERATURE" /> ਡਿਗਰੀ ਸੈਲਸੀਅਸ, ਮੌਜੂਦਾ ਗਤੀ: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="7599378375976398913">ਚੁਣਿਆ ਗਿਆ ਨਤੀਜਾ ਸ਼ਾਮਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
@@ -2180,6 +2185,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> ਲਈ ਜਾਣਕਾਰੀ ਵਿੰਡੋ ਖੋਲ੍ਹੋ</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="8168435359814927499">ਸਮੱਗਰੀ</translation>
+<translation id="81817143961839203">ਚਿੱਤਰ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="8185090165691050712">ਲਾਕ ਮੋਡ ਦਾ ਆਕਾਰ ਬਦਲਣ ਲਈ ਮੀਨੂ ਨੂੰ ਚਾਲੂ/ਬੰਦ ਕਰੋ</translation>
 <translation id="8192727139462702395">ਬਲੂਟੁੱਥ ਬੰਦ ਕਰਨ 'ਤੇ, ਇਹ ਬਾਹਰੀ ਡੀਵਾਈਸ ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਤੋਂ ਡਿਸਕਨੈਕਟ ਹੋ ਜਾਣਗੇ:</translation>
 <translation id="8198456017687137612">ਟੈਬ ਕਾਸਟ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
@@ -2258,6 +2264,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ਕੋਲ <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> ਹੈ।</translation>
 <translation id="8477270416194247200">ਰੱਦ ਕਰਨ ਲਈ Alt+Search ਜਾਂ Shift ਦਬਾਓ।</translation>
 <translation id="8480418399907765580">ਟੂਲਬਾਰ ਦਿਖਾਓ</translation>
+<translation id="8487660088084188539">ਜਦੋਂ ਤੁਸੀਂ ਇਨ੍ਹਾਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਚਾਲੂ ਕਰਦੇ ਹੋ, ਤਾਂ ਇਨਪੁੱਟ ਲਿਖਤ, ਦਸਤਾਵੇਜ਼ ਦੀ ਸਮੱਗਰੀ ਅਤੇ ਵੈੱਬ ਪੰਨੇ ਦਾ URL Google ਦੇ ਸਰਵਰਾਂ ਨੂੰ ਭੇਜਿਆ ਜਾ ਸਕਦਾ ਹੈ। ਇਸ ਜਾਣਕਾਰੀ ਦੀ ਵਰਤੋਂ <ph name="LINK_TO_SERVICE_TERMS" /> ਦੇ ਅਧੀਨ ਲਿਖਤ ਸੁਝਾਅ ਸਿਰਜਣ, ਸਾਰਾਂਸ਼ ਸਿਰਜਣ, ਸਵਾਲਾਂ ਦੇ ਜਵਾਬ ਦੇਣ ਅਤੇ ਉਤਪਾਦ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਵਰਤੀ ਜਾਂਦੀ ਹੈ। ਕੋਈ ਵੀ ਨਿੱਜੀ, ਸੰਵੇਦਨਸ਼ੀਲ ਜਾਂ ਗੁਪਤ ਜਾਣਕਾਰੀ ਸ਼ਾਮਲ ਨਾ ਕਰੋ।</translation>
 <translation id="8487699605742506766">ਹੌਟਸਪੌਟ</translation>
 <translation id="8491237443345908933">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ। ਰੈਜ਼ੋਲਿਊਸ਼ਨ <ph name="FALLBACK_RESOLUTION" /> ਵਿੱਚ ਬਦਲਿਆ ਗਿਆ ਸੀ। ਤਬਦੀਲੀਆਂ ਨੂੰ ਬਣਾਈ ਰੱਖਣ ਲਈ 'ਤਸਦੀਕ ਕਰੋ' 'ਤੇ ਕਲਿੱਕ ਕਰੋ। ਪਿਛਲੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ <ph name="TIMEOUT_SECONDS" /> ਵਿੱਚ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
@@ -2327,6 +2334,7 @@
 <translation id="8725066075913043281">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="8725214031272624704">ਉਪਲਬਧ ਇਨਪੁੱਟ ਵਿਧੀਆਂ ਦੀ ਸੂਚੀ ਦਿਖਾਓ</translation>
 <translation id="8730621377337864115">ਹੋ ਗਿਆ</translation>
+<translation id="8731188831050207755"><ph name="FILE_NAME" /> ਨੂੰ ਡਾਊਨਲੋਡ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ।</translation>
 <translation id="8731487213223706745"><ph name="END_TIME" /> ਵਜੇ ਸਮਾਪਤ ਹੋਵੇਗਾ <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਇਹ ਤੁਹਾਡੇ ਕੀਸਟ੍ਰੋਕ ਚੋਰੀ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਹੋਵੇ</translation>
 <translation id="8735678380411481005">ਕੀ-ਬੋਰਡ ਦੀ ਬੈਕਲਾਈਟ ਦਾ ਰੰਗ</translation>

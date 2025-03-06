@@ -229,8 +229,7 @@ void HTMLFrameOwnerElement::RemovedFrom(ContainerNode& insertion_point) {
   // Not doing (1) is a good thing, since we're trying to preserve the frame,
   // but we still have to do (2) manually to maintain bookkeeping consistency
   // among the ancestor nodes.
-  if (GetDocument().StatePreservingAtomicMoveInProgress() &&
-      insertion_point.isConnected()) {
+  if (GetDocument().StatePreservingAtomicMoveInProgress() && ContentFrame()) {
     // `this` is no longer connected, so we have to decrement our subframe count
     // separately from our old ancestors's subframe count (i.e.,
     // `insertion_point`).

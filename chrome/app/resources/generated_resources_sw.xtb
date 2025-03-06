@@ -3817,6 +3817,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3670229581627177274">Washa Bluetooth</translation>
 <translation id="3670480940339182416">Tovuti zinaweza kutumia kiboreshaji cha V8</translation>
 <translation id="3671764914317109892">Tumia lugha ya kawaida kutafuta historia yako ya kuvinjari. Unaweza pia kuuliza maswali na kupata majibu kulingana na historia yako ya kuvinjari.</translation>
+<translation id="3671982238795754537">Pata maelezo zaidi kuhusu funguo za siri</translation>
 <translation id="3672681487849735243">Hitilafu ya kiwanda imegunduliwa</translation>
 <translation id="3673097791729989571">Huduma ya kuingia katika akaunti inapangishwa na <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">Umesasisha PIN yako</translation>
@@ -4731,6 +4732,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4289540628985791613">Muhtasari</translation>
 <translation id="428963538941819373">Tovuti hizi zinaweza kutumia maelezo ambayo zimehifadhi kukuhusu unapovinjari <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Chagua PIN</translation>
+<translation id="4290526909608432059">Usaidizi kwenye programu za Chrome utaacha kutolewa hivi karibuni. Ili upate maelezo zaidi kuhusu chaguo ulizonazo, wasiliana na msanidi programu au timu yako ya usaidizi ya TEHAMA.</translation>
 <translation id="4290791284969893584">Baada ya kufunga ukurasa, huenda majukumu uliyoyaanza yasimalizike</translation>
 <translation id="4290826901752066702">Mshiriki <ph name="NUM" /></translation>
 <translation id="4290898381118933198">Telezesha kidole ili usogeze kati ya kurasa</translation>
@@ -8526,6 +8528,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Imeunganisha kwenye mlango wa kuchomeka vifaa</translation>
 <translation id="7033616203784997570">Thamani unayoweka ni lazima iwe na herufi zisizozidi 62</translation>
 <translation id="7034692021407794547">Ni lazima msimamizi aliye na mamlaka ya Kudhibiti Malipo akubali Sheria na Masharti ya Google Meet Hardware katika sehemu ya Google Meet Hardware kwenye dashibodi ya Msimamizi.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> amebuni ufunguo wa siri wa akaunti yako. Funguo za siri hukupa njia ya haraka na salama zaidi ya kuingia katika akaunti na huhifadhiwa kwenye Kidhibiti cha Manenosiri cha Google cha <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Tunapendekeza uwe na nafasi ya <ph name="DISK_SIZE" /> kwenye Linux. Ili upate nafasi zaidi ya hifadhi, futa faili kwenye kifaa chako.</translation>
 <translation id="7037157058268992880">Umesahau PIN?</translation>
 <translation id="7037509989619051237">Maandishi kwa ajili ya kukagua</translation>
@@ -10569,6 +10572,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8477178913400731244">Futa data</translation>
 <translation id="8477241577829954800">Mahali pake pamechukuliwa</translation>
 <translation id="8477384620836102176">&amp;Kawaida</translation>
+<translation id="8477446666255316832">Ingia katika akaunti kwa haraka zaidi wakati mwingine</translation>
 <translation id="8479176401914456949">Nambari ya uthibitishaji si sahihi. Tafadhali jaribu tena.</translation>
 <translation id="8480869669560681089">Kifaa ambacho hakijulikani kutoka kwa <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Thibitisha Ruhusa ya USB</translation>

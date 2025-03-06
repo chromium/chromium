@@ -3807,6 +3807,7 @@
 <translation id="3670229581627177274">بلوٹوتھ آن کریں</translation>
 <translation id="3670480940339182416">‏سائٹس V8 کو بہتر بنانے والا استعمال کر سکتی ہیں</translation>
 <translation id="3671764914317109892">اپنی براؤزنگ کی سرگزشت تلاش کرنے کے لیے روزمرہ کی زبان کا استعمال کریں۔ آپ اپنی براؤزنگ کی سرگزشت کی بنیاد پر سوالات بھی پوچھ سکتے ہیں اور جوابات حاصل کر سکتے ہیں۔</translation>
+<translation id="3671982238795754537">پاس کیز کے بارے میں مزید جانیں</translation>
 <translation id="3672681487849735243">ایک فیکٹری کی خرابی کا پتہ لگا ہے</translation>
 <translation id="3673097791729989571">سائن ان کی میزبانی <ph name="SAML_DOMAIN" /> کے ذریعے کی گئی</translation>
 <translation id="3673287357837016374">‏آپ کا PIN اپ ڈیٹ کر دیا گیا ہے</translation>
@@ -4723,6 +4724,7 @@
 <translation id="4289540628985791613">عمومی جائزہ</translation>
 <translation id="428963538941819373">آپ کے <ph name="HOST" /> کو براؤز کرتے وقت یہ سائٹس آپ کے بارے میں محفوظ کردہ معلومات کا استعمال کر سکتی ہیں۔</translation>
 <translation id="4289732974614035569">‏PIN منتخب کریں</translation>
+<translation id="4290526909608432059">‏‫Chrome ایپس کے لیے سپورٹ جلد ہی ختم ہو جائے گا۔ اپنے اختیارات کے بارے میں جاننے کے لیے، ایپ ڈویلپر یا اپنی IT سپورٹ ٹیم سے رابطہ کریں۔</translation>
 <translation id="4290791284969893584">صفحہ بند کرنے کے بعد، آپ کی شروع کردہ ٹاسکس شاید مکمل نہ ہوں</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> رکن</translation>
 <translation id="4290898381118933198">صفحات کے درمیان نیویگیٹ کیلئے سوائپ کریں</translation>
@@ -8514,6 +8516,7 @@
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - سیریل پورٹ منسلک ہے</translation>
 <translation id="7033616203784997570">ان پٹ میں زیادہ سے زیادہ 62 حروف ہونے چاہئیں</translation>
 <translation id="7034692021407794547">‏بلنگ کے نظم و نسق کے لئے خصوصی حقوق رکھنے والے منتظم کو پہلے منتظم کنسول کے Google Meet ہارڈ ویئر سیکشن میں Google Meet ہارڈ ویئر سروس کی شرائط کو قبول کرنا ہوگا۔</translation>
+<translation id="7036550011779986598">‏<ph name="RP_ID" /> نے ابھی آپ کے اکاؤنٹ کے لیے ایک پاس کی تخلیق کی۔ پاس کیز سائن ان کرنے کا تیز تر اور زیادہ محفوظ طریقہ پیش کرتی ہیں اور <ph name="USER" /> کے لیے Google پاس ورڈ مینیجر میں محفوظ کی جاتی ہیں۔ <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">‏<ph name="DISK_SIZE" /> کی جگہ Linux کے لیے تجویز کی جاتی ہے۔ خالی جگہ میں اضافہ کرنے کے لیے، اپنے آلہ سے فائلز حذف کریں۔</translation>
 <translation id="7037157058268992880">‏‫PIN بھول گئے</translation>
 <translation id="7037509989619051237">متن کا پیش منظر دیکھیں</translation>
@@ -10555,6 +10558,7 @@
 <translation id="8477178913400731244">ڈیٹا حذف کریں</translation>
 <translation id="8477241577829954800">جگہ لی ہوئی</translation>
 <translation id="8477384620836102176">&amp;عمومی</translation>
+<translation id="8477446666255316832">اگلی بار زیادہ تیزی سے سائن ان کریں</translation>
 <translation id="8479176401914456949">غلط کوڈ۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> کا نامعلوم آلہ</translation>
 <translation id="8481187309597259238">‏USB کی اجازت کی تصدیق کریں</translation>

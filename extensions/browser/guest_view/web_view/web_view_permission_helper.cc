@@ -336,6 +336,11 @@ void WebViewPermissionHelper::RequestFullscreenPermission(
       requesting_origin, std::move(callback));
 }
 
+std::optional<content::PermissionResult>
+WebViewPermissionHelper::OverridePermissionResult(ContentSettingsType type) {
+  return web_view_permission_helper_delegate_->OverridePermissionResult(type);
+}
+
 int WebViewPermissionHelper::RequestPermission(
     WebViewPermissionType permission_type,
     base::Value::Dict request_info,

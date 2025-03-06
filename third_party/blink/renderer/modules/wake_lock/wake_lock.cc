@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock.h"
 
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
@@ -225,7 +220,7 @@ void WakeLock::DidReceivePermissionResponse(
   }
   // Steps 8.3.2 to 8.3.5 are described in AcquireWakeLock() and related
   // functions.
-  WakeLockManager* manager = managers_[static_cast<size_t>(type)];
+  WakeLockManager* manager = UNSAFE_TODO(managers_[static_cast<size_t>(type)]);
   DCHECK(manager);
   manager->AcquireWakeLock(resolver);
 }

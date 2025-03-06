@@ -1035,7 +1035,7 @@ TEST_F(NewTabPageHandlerTest, GetModulesOrder) {
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
       {{ntp_features::kNtpModulesOrder,
-        {{ntp_features::kNtpModulesOrderParam, "bar,baz"}}},
+        {{ntp_features::kNtpModulesOrderParam, "bar,baz,drive"}}},
        {ntp_features::kNtpModulesDragAndDrop, {}}},
       {});
   base::Value::List module_ids_value;
@@ -1045,7 +1045,10 @@ TEST_F(NewTabPageHandlerTest, GetModulesOrder) {
                                 std::move(module_ids_value));
 
   handler_->GetModulesOrder(callback.Get());
-  EXPECT_THAT(module_ids, ElementsAre("foo", "bar", "baz"));
+  EXPECT_THAT(module_ids, ElementsAre("foo", "bar", "baz", "drive",
+                                      "microsoft_authentication",
+                                      "outlook_calendar", "microsoft_files",
+                                      "google_calendar", "tab_resumption"));
 }
 
 TEST_F(NewTabPageHandlerTest, SurveyLaunchedEligibleModulesCriteria) {

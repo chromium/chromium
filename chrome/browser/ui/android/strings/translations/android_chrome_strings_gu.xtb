@@ -56,7 +56,6 @@
 <translation id="1206892813135768548">લિંક ટેક્સ્ટ કૉપિ કરો</translation>
 <translation id="1209206284964581585">હમણાં માટે છુપાવો</translation>
 <translation id="1227058898775614466">નૅવિગેશન ઇતિહાસ</translation>
-<translation id="1231733316453485619">સિંક કરવાનું ચાલુ કરીએ?</translation>
 <translation id="123724288017357924">કૅશ કરેલ કન્ટેન્ટને અવગણીને વર્તમાન પેજ ફરીથી લોડ કરો</translation>
 <translation id="1239792311949352652">આ પેજ ઝડપથી શેર કરો. આ શૉર્ટકટમાં ફેરફાર કરવા માટે, સેટિંગ પર જાઓ.</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> લોડ કરી રહ્યાં છીએ</translation>
@@ -105,15 +104,12 @@
 <translation id="1407135791313364759">બધું ખોલો</translation>
 <translation id="1409879593029778104"><ph name="FILE_NAME" /> ડાઉનલોડ રોકાયું કારણકે ફાઇલ પહેલેથી અસ્તિત્વ ધરાવે છે.</translation>
 <translation id="1413446866325418126">તમારા Google એકાઉન્ટમાં ડેટા સાચવો</translation>
-<translation id="1414981605391750300">Googleનો સંપર્ક કરી રહ્યાં છીએ. આમાં એક મિનિટ લાગી શકે છે…</translation>
 <translation id="1416550906796893042">ઍપ્લિકેશન વર્ઝન</translation>
 <translation id="1419753403124156396">Chromeને ફરી શરૂ કરીએ?</translation>
 <translation id="1428770807407000502">સિંક બંધ કરીએ?</translation>
 <translation id="1430915738399379752">પ્રિન્ટ</translation>
 <translation id="1435593198351412143">ઑટોમૅટિક રીતે PDFs ખોલો</translation>
-<translation id="1436784010935106834">દૂર કરેલું</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" />માં ચાલી રહી છે</translation>
-<translation id="1448147069872048656">આ ડિવાઇસ પર તમે તમારા બધા પાસવર્ડ ઍક્સેસ કરી શકો છો તેની ખાતરી કરવા માટે, ચકાસો કે એ તમે જ છો</translation>
 <translation id="1448440926884431741">Bookmarksમાં તમારી ટ્રૅક કરેલી પ્રોડક્ટની ગોઠવણ કરો</translation>
 <translation id="1460751212339734034">સમય બચાવો, ઓછું ટાઇપ કરો</translation>
 <translation id="1466383950273130737">Chromeની ભાષા પસંદ કરો</translation>
@@ -240,7 +236,6 @@
 <translation id="2111511281910874386">પેજ પર જાઓ</translation>
 <translation id="2119609734654412418">તમને તમારા બુકમાર્ક અહીં મળશે</translation>
 <translation id="2122601567107267586">ઍપ ખોલી ન શક્યાં</translation>
-<translation id="2132122640199389833">લિંક કરેલા બધા ડિવાઇસ કાઢી નાખો</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> બંધ કર્યું છે</translation>
 <translation id="2141396931810938595">તમારા વપરાશ પર આધારિત</translation>
 <translation id="2145315049852051678">Chrome નિયમિત રીતે ચેક કરીને એ વાતની ખાતરી કરતું રહે છે કે તમારા બ્રાઉઝરના સેટિંગ સૌથી સલામત છે. જો કોઈ બાબતનો રિવ્યૂ કરવો જરૂરી હશે તો અમે તમને તેની જાણ કરીશું.</translation>
@@ -279,7 +274,6 @@
 <translation id="2321086116217818302">પાસવર્ડ તૈયાર કરી રહ્યાં છીએ…</translation>
 <translation id="2323763861024343754">સાઇટ સ્ટોરેજ</translation>
 <translation id="2328474416100889417">દરેક વ્યક્તિ તરત જ “<ph name="GROUP_NAME" />” ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશે અને આમંત્રણની બધી લિંક બંધ થઈ જશે</translation>
-<translation id="2328985652426384049">સાઇન ઇન કરી શકાતું નથી</translation>
 <translation id="2332515770639153015">Safe Browsingમાં વધારેલી સુરક્ષા ચાલુ છે</translation>
 <translation id="233375395665273385">ડિલીટ કરો અને સાઇન આઉટ કરો</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> ઇન્સ્ટૉલ કરી શકાઈ નથી.</translation>
@@ -406,7 +400,6 @@
 <translation id="2883644600102358131">આ ડિવાઇસ પર પાસવર્ડ ટૂંક સમયમાં કામ કરવાનું બંધ કરશે. તમારા પાસવર્ડનો ઉપયોગ કરવાનું ચાલુ રાખવા માટે, Google Play સેવાઓ અપડેટ કરો.</translation>
 <translation id="2888126860611144412">Chrome વિશે</translation>
 <translation id="2891154217021530873">પેજ લોડ કરવાનું રોકો</translation>
-<translation id="2893180576842394309">Google, Search અને અન્ય Google સેવાઓને વ્યક્તિગત કરવા માટે તમારા ઇતિહાસનો ઉપયોગ કરી શકે છે</translation>
 <translation id="2894821468041866720">તમારા બ્રાઉઝર અથવા ડિવાઇસને નોંધપાત્ર રીતે ધીમું કરતું નથી.</translation>
 <translation id="2895521649038438824">તમે આ પેજ સાંભળી શકો છો</translation>
 <translation id="2899252057552912621">પાસવર્ડ ટૂંક સમયમાં કામ કરવાનું બંધ કરશે કારણ કે Google Play સેવાઓ ઉપલબ્ધ નથી. તમારા સાચવેલા પાસવર્ડ કામ કરવાનું બંધ કરે તે પહેલાં તમે તેની કૉપિ બનાવી શકો છો.</translation>
@@ -485,7 +478,6 @@
 <translation id="3250563604907490871">તમે વાઇ-ફાઇથી કનેક્ટ થશો ત્યારે છબીના વર્ણનોની સુવિધા ફરીથી કાર્ય કરશે</translation>
 <translation id="3254409185687681395">આ પેજને બુકમાર્ક કરો</translation>
 <translation id="3259831549858767975">પેજ પરની તમામ કન્ટેન્ટને નાની કરો</translation>
-<translation id="3262666254864194397">ઍડ્રેસ બાર  <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" />ના બધા પેજ</translation>
 <translation id="3269093882174072735">છબી લોડ કરો</translation>
 <translation id="327204079441056603">અમે આ ડિવાઇસમાં પાસવર્ડ સાચવવાની રીત બદલી છે</translation>
@@ -516,6 +508,7 @@
 <translation id="342220687432920852">{HOURS,plural, =1{# કલાક પહેલાં}one{# કલાક પહેલાં}other{# કલાક પહેલાં}}</translation>
 <translation id="3430670036890315772">તમારું પ્રોફાઇલ લૉક બંધ કરવાથી તમારી સાચવેલી માહિતી કાઢી નાખવામાં આવશે</translation>
 <translation id="3435465986463792564">શું ઘણી વિન્ડો ખોલી છે? તમે તેમને અહીંથી મેનેજ કરી શકો છો</translation>
+<translation id="3435575784518354875">તમારા પાસવર્ડનો ઍક્સેસ જાળવી રાખવા માટે, તેની હમણાં નિકાસ કરો, Google Play સેવાઓ અપડેટ કરો અને પછી તેમને પાછા Google Password Managerમાં આયાત કરો. <ph name="BEGIN_LINK" />સંપૂર્ણ સૂચના જુઓ<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">સુરક્ષા</translation>
 <translation id="3439276997620616816">તમને તમારા તાજેતરના ટૅબ અહીં મળશે</translation>
 <translation id="3443221991560634068">હાલનું પેજ ફરીથી લોડ કરો</translation>
@@ -525,6 +518,7 @@
 <translation id="3474624961160222204"><ph name="NAME" /> તરીકે ચાલુ રાખો</translation>
 <translation id="3478363558367712427">તમે તમારું શોધ એન્જિન પસંદ કરી શકો છો</translation>
 <translation id="3479552764303398839">હમણાં નહીં</translation>
+<translation id="3487903178221457900">નિકાસ કરેલી ફાઇલ ઍપ તેમજ અન્ય લોકો માટે ઍક્સેસિબલ હોઈ શકે છે. એકવાર તમે નિકાસ કરી લો, પછી તમારા પાસવર્ડ Chromeમાંથી ડિલીટ કરવામાં આવે છે.</translation>
 <translation id="3488199663160411179">નામ</translation>
 <translation id="3493531032208478708">સૂચવેલ કન્ટેન્ટ વિશે <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">સાઇન ઇન કરવાની બોટમ શીટ અડધી ઊંચાઈ સુધી ખોલી.</translation>
@@ -549,7 +543,7 @@
 <translation id="3563767357928833671">ક્લિપબોર્ડનું કન્ટેન્ટ બતાવેલું છે</translation>
 <translation id="3566639033325271639">સેટિંગ અપડેટ કરો</translation>
 <translation id="3568945271227339929">કોઈ પાસવર્ડ સાથે ચેડાં થયાં નથી</translation>
-<translation id="357465026686164600">સિક્યુરિટી કી તરીકે ફોન</translation>
+<translation id="3575464060651642446">આ ડિવાઇસ પર પાસવર્ડ ચેક કરી રહ્યાં છીએ…</translation>
 <translation id="3577473026931028326">કંઈક ખોટું થયું. ફરી પ્રયાસ કરો.</translation>
 <translation id="3577558748185201054">તમારી રુચિઓ અને પસંદગીઓ મેનેજ કરો</translation>
 <translation id="3587482841069643663">બધા</translation>
@@ -581,7 +575,6 @@
 <translation id="3710560693796335511">સહયોગ</translation>
 <translation id="3714981814255182093">શોધો બાર ખોલો</translation>
 <translation id="3718765429352682176">તમે Chromeમાં લિંક ખોલતી અન્ય ઍપનો ઇતિહાસ જોઈ શકો છો.</translation>
-<translation id="3720422586473670527">ના, આભાર</translation>
 <translation id="3721119614952978349">તમે અને Google</translation>
 <translation id="3737319253362202215">અનુવાદ માટેના સેટિંગ</translation>
 <translation id="3738139272394829648">શોધવા માટે ટચ કરો</translation>
@@ -728,7 +721,6 @@
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ટૅબ બંધ કરો</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> પર બુકમાર્ક કર્યું</translation>
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 બુકમાર્ક}one{# બુકમાર્ક}other{# બુકમાર્ક}}</translation>
-<translation id="4461614516424362539">જ્યારે તમે QR કોડ વડે અન્ય ડિવાઇસ લિંક કરો, ત્યારે તે સિક્યુરિટી કી તરીકે આ ફોનનો ઉપયોગ કરી શકે છે. જો તમે તેને કાઢી નાખો, તો તેને ફરી લિંક કરવા માટે તમારે QR કોડ સ્કૅન કરવો જરૂરી રહેશે.</translation>
 <translation id="4478161224666880173">તમે આ સાઇટ પર તમારા <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> એકાઉન્ટનો ઉપયોગ કરી શકો છો. ચાલુ રાખવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />માં સાઇન ઇન કરો.</translation>
 <translation id="4479972344484327217">Chrome માટે <ph name="MODULE" /> ઇન્સ્ટૉલ કરી રહ્યાં છે…</translation>
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{બુકમાર્ક "<ph name="FOLDER_NAME" />" પર સાચવવામાં આવ્યું છે. તે માત્ર આ ડિવાઇસ પર સાચવવામાં આવે છે.}one{બુકમાર્ક "<ph name="FOLDER_NAME" />" પર સાચવવામાં આવ્યું છે. તે માત્ર આ ડિવાઇસ પર સાચવવામાં આવે છે.}other{બુકમાર્ક "<ph name="FOLDER_NAME" />" પર સાચવવામાં આવ્યા છે. તે માત્ર આ ડિવાઇસ પર સાચવવામાં આવે છે.}}</translation>
@@ -812,7 +804,6 @@
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">કાર્ડ પરનું નામ</translation>
 <translation id="480990236307250886">હોમ પેજ ખોલો</translation>
-<translation id="481574578487123132">લિંક કરેલા ડિવાઇસ</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> ટૅબનું ગ્રૂપ બંધ છે અને સાચવ્યું છે</translation>
 <translation id="4826163340425232009">સાઇન ઇન કરવા માટેની બોટમ શીટ.</translation>
 <translation id="4834250788637067901">Google Payનો ઉપયોગ કરતી ચુકવણી પદ્ધતિઓ, ઑફરો અને સરનામાં</translation>
@@ -838,7 +829,6 @@
 <translation id="4910889077668685004">ચુકવણી ઍપ્લિકેશનો</translation>
 <translation id="4912413785358399818">ટૅબ ખસેડો</translation>
 <translation id="4913169188695071480">તાજું કરવાનું રોકો</translation>
-<translation id="4913841543356834596">તમારા તમામ પાસવર્ડનો ઍક્સેસ મેળવો</translation>
 <translation id="4918086044614829423">સ્વીકારો</translation>
 <translation id="4925120120285606924">સ્ક્રીનશૉટ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">તમારા પાસવર્ડની નિકાસ કરવામાં આવશે અને તેને ટેક્સ્ટ ફાઇલ તરીકે સાચવવામાં આવશે. નિર્ધારિત ફોલ્ડરનો ઍક્સેસ ધરાવતી કોઈપણ વ્યક્તિ અને ઍપ તમારા પાસવર્ડ જોઈ શકશે.</translation>
@@ -846,7 +836,6 @@
 <translation id="4932247056774066048"><ph name="DOMAIN_NAME" /> દ્વારા મેનેજ કરવામાં આવતા એકાઉન્ટમાંથી તમે સાઇન આઉટ કરી રહ્યાં હોવાને કારણે આ ડિવાઇસમાંથી તમારો Chrome ડેટા ડિલીટ કરવામાં આવશે. તે તમારા Google એકાઉન્ટમાં રહેશે.</translation>
 <translation id="4943703118917034429">વર્ચ્યુઅલ રિયાલિટી</translation>
 <translation id="4943872375798546930">પરિણામો નથી</translation>
-<translation id="4950924971025849764">જ્યારે તમે અન્ય ડિવાઇસ પર સમાન Google એકાઉન્ટમાં સાઇન ઇન કરો છો, ત્યારે તે ડિવાઇસ આ ફોનનો ઉપયોગ સિક્યુરિટી કી તરીકે કરી શકે છે.</translation>
 <translation id="4953833914914492602">“<ph name="TAB_GROUP_NAME" />” ટૅબનું ગ્રૂપ હવે ઉપલબ્ધ રહ્યું નથી</translation>
 <translation id="4957722034734105353">વધુ જાણો...</translation>
 <translation id="4961107849584082341">આ પેજનો અનુવાદ કોઈપણ ભાષામાં કરો</translation>
@@ -974,7 +963,6 @@
 <translation id="5568069709869097550">સાઇન ઇન કરી શકાતું નથી</translation>
 <translation id="557018954714092179">નવું ફોલ્ડર બનાવો</translation>
 <translation id="5578795271662203820">આ છબી માટે <ph name="SEARCH_ENGINE" /> માં શોધો</translation>
-<translation id="5581519193887989363">શું સિંક કરવું તે હંમેશાં તમે <ph name="BEGIN_LINK1" />સેટિંગ<ph name="END_LINK1" />માં પસંદ કરી શકો છો.</translation>
 <translation id="5596627076506792578">વધુ વિકલ્પો</translation>
 <translation id="5599455543593328020">છૂપો મોડ</translation>
 <translation id="5601180634394228718">તમારા Chromeના અનુભવને બહેતર બનાવવા માટે ડેટાનો ઉપયોગ કરતા વધુ સેટિંગ માટે, <ph name="BEGIN_LINK" />Googleની સેવાઓ<ph name="END_LINK" /> પર જાઓ.</translation>
@@ -1067,7 +1055,6 @@
 <translation id="5995726099713306770">શું આ પેજ ફરીથી ડાઉનલોડ કરીએ?</translation>
 <translation id="6000066717592683814">Google રાખો</translation>
 <translation id="6000203700195075278">ફરીથી ફૉલો કરો</translation>
-<translation id="6002122790816966947">તમારા ડિવાઇસ</translation>
 <translation id="6011308810877101166">શોધ સંબંધિત સૂચનો બહેતર બનાવો</translation>
 <translation id="6013305291643746595">'સૌથી જૂના પહેલા' અનુસાર સૉર્ટ કરી રહ્યાં છીએ</translation>
 <translation id="6022659036123304283">Chromeને તમારી જરૂરિયાત અનુરૂપ બનાવો</translation>
@@ -1115,6 +1102,7 @@
 <translation id="6210748933810148297"><ph name="EMAIL" /> નથી?</translation>
 <translation id="6211386937064921208">આ પેજનો પ્રીવ્યૂ કરી રહ્યાં છીએ</translation>
 <translation id="6221633008163990886">તમારા બધા પાસવર્ડને નિકાસ કરવા માટે અનલૉક કરો</translation>
+<translation id="6225572914528673855">ઍડ્રેસ બાર</translation>
 <translation id="6232535412751077445">'ટ્રૅક કરશો નહીં’ ને સક્ષમ કરવાનો અર્થ છે કે તમારા બ્રાઉઝિંગ ટ્રાફિકમાં વિનંતી શામેલ કરવામાં આવશે. કોઈ વેબસાઇટ, વિનંતી પર પ્રતિસાદ કરે છે કે નહીં અને વિનંતીનું અર્થઘટન કેવી રીતે કર્યું તેના પર કોઈ પણ અસર આધારિત હોય છે.
 
 ઉદાહરણ તરીકે, કેટલીક વેબસાઇટ, તમે મુલાકાત લીધેલી બીજા વેબસાઇટ પર આધારિત ન હોય તેવી જાહેરાતો તમને બતાવીને આ વિનંતી પર પ્રતિસાદ આપી શકે છે. ઘણી વેબસાઇટ હજી પણ તમારા બ્રાઉઝિંગ ડેટાને ભેગો કરશે અને ઉપયોગ કરશે — ઉદાહરણ તરીકે સુરક્ષાને બહેતર બનાવવા, કન્ટેન્ટ, જાહેરાતો અને ભલામણો આપવા અને રિપોર્ટિંગ આંકડા જનરેટ કરવા માટે.</translation>
@@ -1186,7 +1174,6 @@
 <translation id="6527303717912515753">શેર કરો</translation>
 <translation id="652948702951888897">Chrome ઇતિહાસ</translation>
 <translation id="6532866250404780454">Chromeમાં તમે મુલાકાત લીધેલી સાઇટ બતાવવામાં આવશે નહીં. સાઇટના બધા ટાઇમર ડિલીટ કરવામાં આવશે.</translation>
-<translation id="6534565668554028783">પ્રતિભાવ આપવા માટે Googleએ ઘણો સમય લીધો</translation>
 <translation id="6539092367496845964">કંઈક ખોટું થયું હતું. થોડીવાર પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 કલાક પહેલાં ચેક કર્યું}one{# કલાક પહેલાં ચેક કર્યું}other{# કલાક પહેલાં ચેક કર્યું}}</translation>
 <translation id="6545017243486555795">બધો ડેટા સાફ કરો</translation>
@@ -1218,7 +1205,6 @@
 <translation id="6637100877383020115">ઍપને બહેતર બનાવવામાં સહાય કરવા માટે, Chrome વપરાશ અને ક્રૅશ થવા સંબંધિત ડેટા Googleને મોકલે છે. <ph name="BEGIN_UMA_LINK" />મેનેજ કરો<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">હંમેશાં બ્લૉક કરો</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" />ને કાઢી નાખો</translation>
-<translation id="6645629752388991326">કયા ડિવાઇસ સિક્યુરિટી કી તરીકે આ ડિવાઇસનો ઉપયોગ કરીને સાઇન ઇન કરી શકે તે નિયંત્રિત કરો.</translation>
 <translation id="6647441008198474441">હવે તમે આના પછી કઈ સાઇટની મુલાકાત લેશો તેનું પૂર્વાનુમાન લગાવવા માટે, તમે જેની મુલાકાત લો છો તે URLs Googleને મોકલવામાં આવે છે</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">છબીને પ્રીવ્યૂ કરો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
@@ -1318,7 +1304,6 @@
 <translation id="6987047470128880212">છૂપી ટૅબ આ ડિવાઇસ પર ઉપલબ્ધ નથી</translation>
 <translation id="6991701761229081516">તમારા પાસવર્ડ CSV ફાઇલ તરીકે ડાઉનલોડ કરવામાં આવશે. ઍપ સહિત ફાઇલને ઍક્સેસ કરી શકતી કોઈપણ વ્યક્તિ તેમને જોઈ શકશે. નિકાસ કરેલા પાસવર્ડ Chromeમાંથી ડિલીટ કરવામાં આવશે.</translation>
 <translation id="6996145122199359148">આ પેજ ડાઉનલોડ કરો</translation>
-<translation id="7013627768165542797">તમારા Google એકાઉન્ટમાં પાસવર્ડ ઍક્સેસ કરવા માટે ચકાસો કે એ તમે જ છો</translation>
 <translation id="7013762323294215682">આ પાસકી તમારા Password Managerમાં સાચવવામાં આવશે. આ પાસકીની ઍક્સેસ ધરાવનારી કોઈપણ વ્યક્તિ તેનો ઉપયોગ કરી શકશે.</translation>
 <translation id="7020741890149022655">વાંચન સૂચિમાં ઉમેરો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">બ્રાઉઝરમાં ખોલો</translation>
@@ -1335,7 +1320,6 @@
 <translation id="7078916049958741685">આ ડિવાઇસમાંનો તમારો Chrome ડેટા પણ ડિલીટ કરો</translation>
 <translation id="7085332316435785646">Googleની સેવાઓમાં વધુ મનગમતા બનાવેલા અનુભવો આપવા માટે, Chrome ઇતિહાસ શામેલ કરવો કે નહીં, તે પસંદ કરો</translation>
 <translation id="7088681679121566888">Chrome અપ ટૂ ડેટ છે</translation>
-<translation id="7102843846294013537">તમારા કેટલાક પાસવર્ડ આ ડિવાઇસ પર ઉપલબ્ધ નથી</translation>
 <translation id="7106762743910369165">તમારી સંસ્થા દ્વારા તમારું બ્રાઉઝર મેનેજ કરવામાં આવે છે</translation>
 <translation id="7111394291981742152">તમે જુઓ છો તે જાહેરાતો માટે Chrome તમને વધુ નિયંત્રણો આપે છે અને સાઇટ તમને મનગમતી બનાવેલી જાહેરાતો બતાવે ત્યારે તે તમારા વિશે શું જાણી શકે છે તેને મર્યાદિત કરે છે.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 સાઇટની પરવાનગીઓનો રિવ્યૂ કર્યો}one{# સાઇટની પરવાનગીઓનો રિવ્યૂ કર્યો}other{# સાઇટની પરવાનગીઓનો રિવ્યૂ કર્યો}}</translation>
@@ -1348,7 +1332,6 @@
 <translation id="71503698506017927">પાસફ્રેઝ એન્ક્રિપ્શનમાં Google Payની ચુકવણી પદ્ધતિઓ અને સરનામા શામેલ હોતા નથી.
 
 આ સેટિંગ બદલવા માટે, <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાંનો Chrome ડેટા ડિલીટ કરો<ph name="END_LINK" />.</translation>
-<translation id="7161230316646448869">બધા ડિવાઇસ પર તમારા બુકમાર્ક, ઇતિહાસ અને વધુ સિંક કરો</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> તરીકે સાઇન ઇન થયા. સેટિંગ ખોલે છે.</translation>
 <translation id="7173114856073700355">સેટિંગ ખોલો</translation>
 <translation id="7173338713290252554">સમગ્ર વેબ પર કિંમતનો ઇતિહાસ</translation>
@@ -1404,7 +1387,6 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome પ્રથમ વાર ઉપયોગ કર્યાનો અનુભવ</translation>
 <translation id="7411224099004328643">Google એકાઉન્ટ વપરાશકર્તા</translation>
-<translation id="741204030948306876">હા, હું સંમત છું</translation>
 <translation id="7419565702166471774">હંમેશાં સુરક્ષિત કનેક્શનનો ઉપયોગ કરો</translation>
 <translation id="7421293530411019405">ટૅબનું ગ્રૂપ છોડી દઈએ?</translation>
 <translation id="7431991332293347422">શોધ અને અન્ય બાબતોને તમને મનગમતી બનાવવા માટે તમારા બ્રાઉઝિંગ ઇતિહાસનો ઉપયોગ કરવાની રીત નિયંત્રિત કરો</translation>
@@ -1469,7 +1451,6 @@
 <translation id="7656862631699126784">છૂપી ટૅબને લૉક કરવાનો મોડ ચાલુ કરો</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7663320421139257046">ચાલુ રાખવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> તમારું <ph name="FIELDS_STRING" /> આ સાઇટ સાથે શેર કરશે. આ સાઇટની <ph name="BEGIN_LINK1" />પ્રાઇવસી પૉલિસી<ph name="END_LINK1" /> જુઓ.</translation>
-<translation id="7665369617277396874">એકાઉન્ટ ઉમેરો</translation>
 <translation id="766587987807204883">લેખો અહીં દેખાય છે, જે તમે ઑફલાઇન હો ત્યારે પણ વાંચી શકો છો</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> બંધ છે</translation>
 <translation id="7682724950699840886">નીચેની ટિપ અજમાવી જુઓ: ખાતરી કરો કે તમારા ઉપકરણ પર પૂરતી સ્પેસ છે, ફરીથી નિકાસ કરવાનો પ્રયાસ કરો.</translation>
@@ -1548,7 +1529,6 @@
 <translation id="8027395186860110042">પાસવર્ડ કદાચ ટૂંક સમયમાં કામ કરવાનું બંધ કરશે</translation>
 <translation id="8027863900915310177">ડાઉનલોડ કરવાની જગ્યા પસંદ કરો</translation>
 <translation id="8030852056903932865">મંજૂર કરો</translation>
-<translation id="8031805944372049238">Google Password Manager વડે પાસવર્ડ સાચવવા અને વાપરવાનું શરૂ કરવા માટે, Google Play સેવાઓ અપડેટ કરો.</translation>
 <translation id="8032569120109842252">ફૉલો કરી રહ્યાં છો</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> દિવસ બાકી</translation>
 <translation id="8037801708772278989">હમણાં જ ચેક કર્યું</translation>
@@ -1752,6 +1732,7 @@
 <translation id="8937772741022875483">તમારી Chromeની પ્રવૃત્તિને ડિજિટલ લાઇફસ્ટાઇલમાંથી કાઢી નાખીએ?</translation>
 <translation id="8942627711005830162">અન્ય વિંડોમાં ખોલો</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - આ ભાષા ડાઉનલોડ કરી શકાઈ નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
+<translation id="8957528460562961174">તમારા પાસવર્ડનો ઍક્સેસ જાળવી રાખવા માટે, તેની હમણાં નિકાસ કરો અને પછી તમારા મનપસંદ પાસવર્ડ મેનેજરમાં આયાત કરો. Google Password Manager કામ કરતું નથી કારણ કે Google Play સેવાઓ ઉપલબ્ધ નથી.</translation>
 <translation id="8963117664422609631">સાઇટ સેટિંગ પર જાઓ</translation>
 <translation id="8965591936373831584">બાકી</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> છૂપું અને વધુ <ph name="TAB_COUNT_ONE" /> ટૅબ બંધ કરવામાં આવશે}one{<ph name="INCOGNITO_TAB_COUNT" /> છૂપું અને વધુ <ph name="TAB_COUNT_MANY" /> ટૅબ બંધ કરવામાં આવશે}other{<ph name="INCOGNITO_TAB_COUNT" /> છૂપા અને વધુ <ph name="TAB_COUNT_MANY" /> ટૅબ બંધ કરવામાં આવશે}}</translation>

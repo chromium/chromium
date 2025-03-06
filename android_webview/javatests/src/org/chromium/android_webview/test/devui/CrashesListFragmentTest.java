@@ -488,6 +488,7 @@ public class CrashesListFragmentTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.Q, message = "crbug.com/391716082")
     public void testShowingSingleCrashReport_pending() throws Throwable {
         final long systemTime = System.currentTimeMillis();
         CrashInfo crashInfo =
@@ -1188,6 +1189,7 @@ public class CrashesListFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.Q, message = "crbug.com/391716082")
     public void testConsentErrorMessage_shown_onlyInCrashFragment() throws Throwable {
         Context context = ContextUtils.getApplicationContext();
         // Inject test app package as the current WebView package.

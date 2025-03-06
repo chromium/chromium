@@ -125,42 +125,17 @@ void LogAddAccountToDeviceHistograms(SigninAddAccountToDeviceResult result,
                                }];
 }
 
-- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
-                 completion:(ProceduralBlock)completion {
+- (void)interruptAnimated:(BOOL)animated
+               completion:(ProceduralBlock)completion {
   self.signinInterrupted = YES;
-  switch (action) {
-    case SigninCoordinatorInterrupt::UIShutdownNoDismiss:
-      CHECK(!IsInterruptibleCoordinatorAlwaysDismissedEnabled(),
-            base::NotFatalUntil::M136);
-      // IdentityInteractionManager doesn't support interrupt with no dismiss.
-      // We need to stop with no animation to make sure dealloc are done with
-      // CHECK failures.
-      // When the interrupt is called with `NoDismiss`, the completion block
-      // needs to be synchronous. So we can't wait for the cancel completion
-      // block from `IdentityInteractionManager` to be called, to call the
-      // interrupt completion block.
-      // See crbug.com/1455216.
-      [self.identityInteractionManager cancelAuthActivityAnimated:NO];
-      [self operationCompletedWithIdentity:nil error:nil];
-      if (completion) {
-        completion();
-      }
-      break;
-    case SigninCoordinatorInterrupt::DismissWithoutAnimation:
-    case SigninCoordinatorInterrupt::DismissWithAnimation: {
-      BOOL animated =
-          action == SigninCoordinatorInterrupt::DismissWithAnimation;
-      [self.identityInteractionManager cancelAuthActivityAnimated:animated];
-      // If `identityInteractionManager` completion callback has not been called
-      // yet, the add account needs to be fully done by calling:
-      // `operationCompletedWithIdentity:error:`, before calling `completion`
-      // See crbug.com/1227658.
-      [self operationCompletedWithIdentity:nil error:nil];
-      if (completion) {
-        completion();
-      }
-      break;
-    }
+  [self.identityInteractionManager cancelAuthActivityAnimated:animated];
+  // If `identityInteractionManager` completion callback has not been called
+  // yet, the add account needs to be fully done by calling:
+  // `operationCompletedWithIdentity:error:`, before calling `completion` See
+  // crbug.com/1227658.
+  [self operationCompletedWithIdentity:nil error:nil];
+  if (completion) {
+    completion();
   }
 }
 

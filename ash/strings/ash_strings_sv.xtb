@@ -22,6 +22,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1058009965971887428">Skicka feedback</translation>
 <translation id="1059120031266247284">Delat med dig</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> med knappen Ta bort</translation>
 <translation id="1062407476771304334">Ersätt</translation>
 <translation id="1073899992769346247">Byt eller ladda batteriet</translation>
 <translation id="1081015718268701546">Linux-appar stöds inte för närvarande. Andra appar sparas.</translation>
@@ -323,6 +324,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2083190527011054446">Hej <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Öppna emojiväljaren</translation>
 <translation id="2088116547584365419">spel</translation>
+<translation id="2092517835716911174">Du måste vara minst 18 år för att använda Hjälp mig läsa och Hjälp mig skriva.</translation>
 <translation id="209965399369889474">Ingen nätverksanslutning</translation>
 <translation id="2107581415810719320">Övrigt-knappen <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C-kabeln har inte stöd för Thunderbolt. Enhetens prestanda kan försämras.</translation>
@@ -1228,6 +1230,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="5043679421800073804">Klicka eller tryck på den sista ikonen på hyllan</translation>
 <translation id="504465286040788597">Föregående stycke</translation>
 <translation id="5045550434625856497">Felaktigt lösenord</translation>
+<translation id="5056587122125565772">Skapa bild</translation>
 <translation id="5058794129231928255">Det gick inte att skapa ett Google-dokument</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Du får en avisering om du pratar när ljudet är av. Ljudet lämnar aldrig enheten.</translation>
@@ -1276,6 +1279,7 @@ Du kan även använda kortkommandot. Markera först text och tryck sedan på <ph
 <translation id="5222676887888702881">Logga ut</translation>
 <translation id="5228195526683428788">Avdelare för delad skärm</translation>
 <translation id="5229343007215035173">Aktivera/inaktivera integritetsskärmen</translation>
+<translation id="5229860525743792999">Ta bort <ph name="ITEM_LABEL" /> från föreslagen grupp</translation>
 <translation id="5230516054153933099">Fönster</translation>
 <translation id="5234764350956374838">Stäng</translation>
 <translation id="523505283826916779">Inställningar för tillgänglighet</translation>
@@ -1758,6 +1762,7 @@ Nyligen installerad</translation>
 <translation id="6757237461819837179">Ingen media spelas upp</translation>
 <translation id="6760438044935091345">Spelöversikt</translation>
 <translation id="6768043681523654438">lagringsutrymme</translation>
+<translation id="6769195697113506406">Bilden har infogats</translation>
 <translation id="6777216307882431711">Laddar anslutna USB-C-enheter</translation>
 <translation id="6781002679438061620">Skrivbord 9</translation>
 <translation id="6782182743534150858">Skrivbord 13</translation>
@@ -1984,6 +1989,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7571361473021531288">Batteri <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> kvar</translation>
 <translation id="7573585051776738856">Det aktiva fönstret har dockats till höger.</translation>
 <translation id="7579778809502851308">Skärmbild</translation>
+<translation id="7588317312481506627">Kopierat till urklipp.</translation>
 <translation id="7593891976182323525">Sök eller Skift</translation>
 <translation id="7598054670902114203">Översiktsbild av CPU-användning, <ph name="CPU_USEAGE" /> %. Temperatur: <ph name="TEMPERATURE" /> grader Celsius, nuvarande hastighet: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Infogar valt resultat</translation>
@@ -2178,6 +2184,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8155628902202578800">Öppna informationsdialogrutan för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Använder <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Innehåll</translation>
+<translation id="81817143961839203">Det gick inte att infoga bilden</translation>
 <translation id="8185090165691050712">Aktivera/inaktivera menyn för att ändra storlek på låst läge</translation>
 <translation id="8192727139462702395">När du inaktiverar Bluetooth kopplas dessa externa enheter från din <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Castar flik</translation>
@@ -2256,6 +2263,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> har <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Avbryt genom att trycka på Alt + söktangenten eller Skift.</translation>
 <translation id="8480418399907765580">Visa verktygsfält</translation>
+<translation id="8487660088084188539">När du aktiverar dessa funktioner kan inmatad text, dokumentinnehåll och webbadressen till sidan skickas till Googles servrar. Informationen används för att generera skrivförslag, generera sammanfattningar, svara på frågor och förbättra produkten, i enlighet med <ph name="LINK_TO_SERVICE_TERMS" />. Ange inget som är personligt, känsligt eller konfidentiellt.</translation>
 <translation id="8487699605742506766">Surfzon</translation>
 <translation id="8491237443345908933">Öppna länken i ny flik</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> har inte stöd för <ph name="SPECIFIED_RESOLUTION" />. Upplösningen ändrades till <ph name="FALLBACK_RESOLUTION" />. Klicka på bekräfta om du vill behålla ändringarna. De gamla inställningarna återställs om <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2325,6 +2333,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8725066075913043281">Försök igen</translation>
 <translation id="8725214031272624704">Visa lista över tillgängliga inmatningsmetoder</translation>
 <translation id="8730621377337864115">Klart</translation>
+<translation id="8731188831050207755">Det gick inte att ladda ned <ph name="FILE_NAME" />.</translation>
 <translation id="8731487213223706745">Slutar kl. <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Det kan försöka stjäla dina tangenttryckningar</translation>
 <translation id="8735678380411481005">Färg på bakgrundsbelysning för tangentbord</translation>

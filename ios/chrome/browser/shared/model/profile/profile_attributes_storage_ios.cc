@@ -85,6 +85,10 @@ size_t ProfileAttributesStorageIOS::GetNumberOfProfiles() const {
 
 bool ProfileAttributesStorageIOS::HasProfileWithName(
     std::string_view name) const {
+  if (name.empty()) {
+    return false;
+  }
+
   return prefs_->GetDict(prefs::kProfileInfoCache).FindDict(name) != nullptr;
 }
 

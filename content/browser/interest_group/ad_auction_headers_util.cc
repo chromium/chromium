@@ -127,7 +127,10 @@ bool IsAdAuctionHeadersEligible(
       initiator_rfh.GetPermissionsPolicy();
   if (!permissions_policy->IsFeatureEnabledForSubresourceRequest(
           network::mojom::PermissionsPolicyFeature::kRunAdAuction,
-          url::Origin::Create(resource_request.url), resource_request)) {
+          url::Origin::Create(resource_request.url),
+          resource_request.browsing_topics,
+          resource_request.shared_storage_writable_eligible,
+          resource_request.ad_auction_headers)) {
     base::UmaHistogramEnumeration(
         "Ads.InterestGroup.NetHeaderResponse.StartRequestOutcome",
         AdAuctionHeadersIsEligibleOutcomeForMetrics::

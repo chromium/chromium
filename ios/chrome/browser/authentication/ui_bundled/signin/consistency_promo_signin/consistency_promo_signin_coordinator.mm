@@ -104,16 +104,16 @@
 
 #pragma mark - SigninCoordinator
 
-- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
-                 completion:(ProceduralBlock)completion {
+- (void)interruptAnimated:(BOOL)animated
+               completion:(ProceduralBlock)completion {
   [self stopAlertCoordinator];
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock consistencyCompletion = ^() {
-    [weakSelf finalizeInterruptWithAction:action completion:completion];
+    [weakSelf finalizeInterruptAnimated:animated completion:completion];
   };
   if (self.addAccountCoordinator) {
-    [self.addAccountCoordinator interruptWithAction:action
-                                         completion:consistencyCompletion];
+    [self.addAccountCoordinator interruptAnimated:animated
+                                       completion:consistencyCompletion];
   } else {
     consistencyCompletion();
   }
@@ -239,25 +239,13 @@
 // Finishes the interrupt process. This method needs to be called once all
 // other dialogs on top of ConsistencyPromoSigninCoordinator are properly
 // dismissed.
-- (void)finalizeInterruptWithAction:(SigninCoordinatorInterrupt)action
-                         completion:(ProceduralBlock)interruptCompletion {
+- (void)finalizeInterruptAnimated:(BOOL)animated
+                       completion:(ProceduralBlock)interruptCompletion {
   DCHECK(!self.alertCoordinator);
   DCHECK(!self.addAccountCoordinator);
-  switch (action) {
-    case SigninCoordinatorInterrupt::UIShutdownNoDismiss:
-      CHECK(!IsInterruptibleCoordinatorAlwaysDismissedEnabled(),
-            base::NotFatalUntil::M136);
-      break;
-    case SigninCoordinatorInterrupt::DismissWithoutAnimation:
-    case SigninCoordinatorInterrupt::DismissWithAnimation: {
-      BOOL animated =
-          action == SigninCoordinatorInterrupt::DismissWithAnimation;
-      [self.navigationController.presentingViewController
-          dismissViewControllerAnimated:animated
-                             completion:nil];
-      break;
-    }
-  }
+  [self.navigationController.presentingViewController
+      dismissViewControllerAnimated:animated
+                         completion:nil];
   [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
                    completionIdentity:nil];
   if (interruptCompletion) {

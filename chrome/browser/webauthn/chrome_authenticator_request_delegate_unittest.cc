@@ -82,7 +82,6 @@ using TransportAvailabilityInfo =
     device::FidoRequestHandlerBase::TransportAvailabilityInfo;
 using UIPresentation =
     content::AuthenticatorRequestClientDelegate::UIPresentation;
-using webauthn::PasswordCredentialController;
 
 class Observer : public testing::NiceMock<
                      ChromeAuthenticatorRequestDelegate::TestObserver> {
@@ -110,9 +109,13 @@ class Observer : public testing::NiceMock<
               (override));
 };
 
-class MockPasswordCredentialController
-    : public testing::NiceMock<PasswordCredentialController> {
+class MockPasswordCredentialController : public PasswordCredentialController {
  public:
+  MockPasswordCredentialController(
+      content::GlobalRenderFrameHostId render_frame_host_id,
+      AuthenticatorRequestDialogModel* model)
+      : PasswordCredentialController(render_frame_host_id, model) {}
+
   MOCK_METHOD(
       void,
       FetchPasswords,
@@ -898,7 +901,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, DiscoverPasswords) {
   for (const auto enable_password : {false, true}) {
     ChromeAuthenticatorRequestDelegate delegate(main_rfh());
     auto password_controller =
-        std::make_unique<MockPasswordCredentialController>();
+        std::make_unique<testing::NiceMock<MockPasswordCredentialController>>(
+            main_rfh()->GetGlobalId(), delegate.dialog_model());
     auto raw_password_controller = password_controller.get();
     delegate.SetPasswordControllerForTesting(std::move(password_controller));
     delegate.SetUIPresentation(enable_password ? UIPresentation::kModalImmediate
@@ -927,7 +931,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
        TryToShowUiNoImmediateCredentials) {
   ChromeAuthenticatorRequestDelegate delegate(main_rfh());
   auto password_controller =
-      std::make_unique<MockPasswordCredentialController>();
+      std::make_unique<testing::NiceMock<MockPasswordCredentialController>>(
+          main_rfh()->GetGlobalId(), delegate.dialog_model());
   auto raw_password_controller = password_controller.get();
   delegate.SetPasswordControllerForTesting(std::move(password_controller));
   base::MockCallback<base::OnceClosure> mock_closure;
@@ -968,7 +973,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
        TryToShowUiHasImmediateCredentials) {
   ChromeAuthenticatorRequestDelegate delegate(main_rfh());
   auto password_controller =
-      std::make_unique<MockPasswordCredentialController>();
+      std::make_unique<testing::NiceMock<MockPasswordCredentialController>>(
+          main_rfh()->GetGlobalId(), delegate.dialog_model());
   auto raw_password_controller = password_controller.get();
   delegate.SetPasswordControllerForTesting(std::move(password_controller));
   base::MockCallback<base::OnceClosure> mock_closure;

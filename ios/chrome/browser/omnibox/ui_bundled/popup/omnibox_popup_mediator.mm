@@ -494,43 +494,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   }
 }
 
-/// Extract normal (non-tile) matches from `autocompleteResult`.
-- (NSMutableArray<id<AutocompleteSuggestion>>*)extractMatches:
-    (const AutocompleteResult&)autocompleteResult {
-  NSMutableArray<id<AutocompleteSuggestion>>* wrappedMatches =
-      [[NSMutableArray alloc] init];
-  for (size_t i = 0; i < autocompleteResult.size(); i++) {
-    const AutocompleteMatch& match = autocompleteResult.match_at((NSUInteger)i);
-    if (match.type == AutocompleteMatchType::TILE_NAVSUGGEST) {
-      DCHECK(match.type == AutocompleteMatchType::TILE_NAVSUGGEST);
-      for (const AutocompleteMatch::SuggestTile& tile : match.suggest_tiles) {
-        AutocompleteMatch tileMatch = AutocompleteMatch(match);
-        tileMatch.destination_url = tile.url;
-        tileMatch.fill_into_edit = base::UTF8ToUTF16(tile.url.spec());
-        tileMatch.description = tile.title;
-        tileMatch.description_class = ClassifyTermMatches(
-            {}, tileMatch.description.length(), 0, ACMatchClassification::NONE);
-#if DCHECK_IS_ON()
-        tileMatch.Validate();
-#endif  // DCHECK_IS_ON()
-        AutocompleteMatchFormatter* formatter = [self.autocompleteMatchWrapper
-             wrapMatch:tileMatch
-            fromResult:autocompleteResult
-             isStarred:[self.popupController isStarredMatch:match]];
-        [wrappedMatches addObject:formatter];
-      }
-    } else {
-      [wrappedMatches addObject:[self.autocompleteMatchWrapper
-                                     wrapMatch:match
-                                    fromResult:autocompleteResult
-                                     isStarred:[self.popupController
-                                                   isStarredMatch:match]]];
-    }
-  }
-
-  return wrappedMatches;
-}
-
 /// Take a list of suggestions and break it into groups determined by sectionId
 /// field. Use `headerMap` to extract group names.
 - (NSArray<id<AutocompleteSuggestionGroup>>*)
@@ -611,8 +574,8 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
       [[NSMutableArray alloc] init];
 
   // Group the suggestions by the section Id.
-  NSMutableArray<id<AutocompleteSuggestion>>* allMatches =
-      [self extractMatches:autocompleteResult];
+  NSMutableArray<AutocompleteMatchFormatter*>* allMatches =
+      [self.autocompleteMatchWrapper wrapMatchesFromResult:autocompleteResult];
   NSArray<id<AutocompleteSuggestionGroup>>* allGroups =
       [self groupSuggestions:allMatches
           usingACResultAsHeaderMap:autocompleteResult];

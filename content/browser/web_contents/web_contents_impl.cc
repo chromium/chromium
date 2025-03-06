@@ -92,7 +92,6 @@
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/permissions/permission_util.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
-#include "content/browser/preloading/preload_pipeline_info.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
@@ -154,6 +153,7 @@
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/navigation_details.h"
+#include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/preview_cancel_reason.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/render_widget_host_observer.h"
@@ -11723,7 +11723,7 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
       should_warm_up_compositor, should_prepare_paint_tree,
       std::move(url_match_predicate),
       std::move(prerender_navigation_handle_callback),
-      base::MakeRefCounted<PreloadPipelineInfo>(
+      PreloadPipelineInfoImpl::Create(
           /*planned_max_preloading_type=*/PreloadingType::kPrerender));
 #if BUILDFLAG(IS_ANDROID)
   attributes.additional_headers = std::move(additional_headers);

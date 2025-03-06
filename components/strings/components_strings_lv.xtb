@@ -252,6 +252,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1419305130220238697">Pārlūka Chrome poga “Pārvaldīt lejupielādes”. Aktivizējiet, lai pārvaldītu pārlūkā Chrome lejupielādētos failus.</translation>
 <translation id="1420345875188552368">Šim maksājumam var tikt izmantots jūsu saglabātais automātiskā maksājuma veids. Lai pārlūkā Chrome izslēgtu e-makus, pārejiet uz <ph name="BEGIN_LINK1" />maksājumu iestatījumiem<ph name="END_LINK1" />.</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, lai atļautu savienošanu pārī</translation>
+<translation id="1421484961346698724">Dzēsts konts</translation>
 <translation id="14222610277930434">Jūs bieži apmeklējat</translation>
 <translation id="1422930527989633628">Var pieprasīt atļauju noteikt tuvumā esošas Bluetooth ierīces</translation>
 <translation id="1426410128494586442">Jā</translation>
@@ -3021,6 +3022,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6351658970066645919">Dzēst pārlūkošanas datus</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Nav}=1{1 parole (šādiem domēniem: <ph name="DOMAIN_LIST" />, sinhronizēta)}=2{2 paroles (šādiem domēniem: <ph name="DOMAIN_LIST" />, sinhronizētas)}zero{# paroļu (šādiem domēniem: <ph name="DOMAIN_LIST" />, sinhronizētas)}one{# parole (šādiem domēniem: <ph name="DOMAIN_LIST" />, sinhronizētas)}other{# paroles (šādiem domēniem: <ph name="DOMAIN_LIST" />, sinhronizētas)}}</translation>
 <translation id="6355392890578844978">Šo pārlūku nepārvalda uzņēmums vai cita organizācija. Darbības šajā ierīcē var pārvaldīt ārpus pārlūka Chromium. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
+<translation id="6357546827188504216">Ciļņu grupas “<ph name="GROUP_TITLE_1" />” un “<ph name="GROUP_TITLE_2" />” vairs nav pieejamas.</translation>
 <translation id="6358088212770985041">rediģēt maksājumu veidus</translation>
 <translation id="6358450015545214790">Ko tas nozīmē?</translation>
 <translation id="6360213755783740931">Uzzināt vairāk par aizsardzību pret ļaunprātīgu programmatūru</translation>

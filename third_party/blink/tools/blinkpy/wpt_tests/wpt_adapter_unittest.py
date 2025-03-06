@@ -209,8 +209,6 @@ class WPTAdapterTest(unittest.TestCase):
         ]
         adapter = WPTAdapter.from_args(self.host, args, 'test-linux-trusty')
         with adapter.test_env() as options:
-            self.assertEqual(options.debugger, 'rr')
-            self.assertEqual(options.debugger_args, 'record --disable-avx-512')
             self.assertEqual(options.processes, 1)
 
     def test_scratch_directory_cleanup(self):

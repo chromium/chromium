@@ -90,7 +90,7 @@ enum class SignInHistorySyncStep {
 
 - (void)stop {
   if (_currentStep != SignInHistorySyncStep::kCompleted) {
-    [self interruptWithAction:SynchronousStopAction() completion:nil];
+    [self interruptAnimated:NO completion:nil];
   }
 
   _syncService = nullptr;
@@ -100,14 +100,14 @@ enum class SignInHistorySyncStep {
 
 #pragma mark - SigninCoordinator
 
-- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
-                 completion:(ProceduralBlock)completion {
+- (void)interruptAnimated:(BOOL)animated
+               completion:(ProceduralBlock)completion {
   // TODO(crbug.com/40929259): Turn into CHECK.
   DUMP_WILL_BE_CHECK(_childCoordinator)
       << base::SysNSStringToUTF8([self description]);
   // Interrupt `_childCoordinator` which will trigger the end of this
   // coordinator. Its callback will triggered.
-  [_childCoordinator interruptWithAction:action completion:completion];
+  [_childCoordinator interruptAnimated:animated completion:completion];
 }
 
 #pragma mark - HistorySyncPopupCoordinatorDelegate

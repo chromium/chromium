@@ -3820,6 +3820,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3670229581627177274">Turn on Bluetooth</translation>
 <translation id="3670480940339182416">Sites can use the V8 optimiser</translation>
 <translation id="3671764914317109892">Use everyday language to search your browsing history. You can also ask questions and get answers based on your browsing history.</translation>
+<translation id="3671982238795754537">Learn more about passkeys</translation>
 <translation id="3672681487849735243">A factory error has been detected</translation>
 <translation id="3673097791729989571">Sign-in hosted by <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">Your PIN has been updated</translation>
@@ -4080,6 +4081,7 @@ This can include information about installed software, files, your browser and t
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{An extension has been approved}other{# extensions have been approved}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">At least <ph name="INSTALL_SIZE" /> of space is recommended for Linux.</translation>
+<translation id="3824203811509979971">Summarise content or ask questions</translation>
 <translation id="3824621460022590830">Device enrolment token is invalid. Please contact your device owner or administrator. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Sign in to see tabs from other devices</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Remember my choice for this file type: <ph name="FILE_TYPES" />}other{Remember my choice for these file types: <ph name="FILE_TYPES" />}}</translation>
@@ -4266,6 +4268,7 @@ This can include information about installed software, files, your browser and t
 <translation id="3948985214866944547">Most people block sharing precise location for this site</translation>
 <translation id="394984172568887996">Imported From IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> to make downloading files safer</translation>
+<translation id="3950479158728806902">Automatically create a passkey to sign in faster</translation>
 <translation id="3950820424414687140">Sign in</translation>
 <translation id="3950841222883198950">Voice typing</translation>
 <translation id="3953834000574892725">My accounts</translation>
@@ -4734,6 +4737,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4289540628985791613">Overview</translation>
 <translation id="428963538941819373">These sites can use info they've saved about you as you browse <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Choose a PIN</translation>
+<translation id="4290526909608432059">Support for Chrome Apps will end soon. To learn about your options, contact the app developer or your IT support team.</translation>
 <translation id="4290791284969893584">After closing a page, tasks that you started might not finish</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> member</translation>
 <translation id="4290898381118933198">Swipe to navigate between pages</translation>
@@ -5194,6 +5198,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4624054169152573743">Colour theme</translation>
 <translation id="4625078469366263107">Enable App</translation>
 <translation id="4625905218692741757">Grey default colour</translation>
+<translation id="4627107755957573804">Allow sites and apps to upgrade existing accounts to use passkeys</translation>
 <translation id="4627442949885028695">Continue from another device</translation>
 <translation id="4628762811416793313">The Linux container setup did not complete. Please try again.</translation>
 <translation id="4629521233550547305">Open <ph name="PROFILE_NAME" /> profile</translation>
@@ -5777,6 +5782,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5053233576223592551">Add username</translation>
 <translation id="505347685865235222">Unnamed group – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{You should change it now}other{You should change these now}}</translation>
+<translation id="5056587122125565772">Create image</translation>
 <translation id="5056950756634735043">Connecting to the container</translation>
 <translation id="5057110919553308744">When you click the extension</translation>
 <translation id="5057127674016624293">Scanning is taking longer than expected</translation>
@@ -5887,6 +5893,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="512642543295077915">search + backspace</translation>
 <translation id="5126611267288187364">View changes</translation>
 <translation id="5127620150973591153">Secure connection ID: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">Summarise content or ask questions.</translation>
 <translation id="5127881134400491887">Manage network connections</translation>
 <translation id="5127934926273826089">Flowers</translation>
 <translation id="5127986747308934633">Your administrator is controlling your device</translation>
@@ -8526,6 +8533,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – Serial port connected</translation>
 <translation id="7033616203784997570">Input must be at most 62 characters</translation>
 <translation id="7034692021407794547">An administrator with billing management privileges must first accept the Google Meet hardware Terms of Service in the Google Meet hardware section of the Admin console.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> just created a passkey for your account. Passkeys offer a faster and safer way to sign in and are saved in Google Password Manager for <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> of space is recommended for Linux. To increase free space, delete files from your device.</translation>
 <translation id="7037157058268992880">Forgot PIN</translation>
 <translation id="7037509989619051237">Text to preview</translation>
@@ -10568,6 +10576,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8477178913400731244">Delete data</translation>
 <translation id="8477241577829954800">Superseded</translation>
 <translation id="8477384620836102176">&amp;General</translation>
+<translation id="8477446666255316832">Sign in faster next time</translation>
 <translation id="8479176401914456949">Invalid code. Please try again.</translation>
 <translation id="8480869669560681089">Unknown device from <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Confirm USB permission</translation>
@@ -11414,6 +11423,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB mouse connected</translation>
 <translation id="9075413375877487220">This extension is not trusted by Enhanced Safe Browsing.</translation>
+<translation id="9075985558450420812">Enter a custom prompt or highlight text to create an image.</translation>
 <translation id="9076523132036239772">Sorry, your email or password could not be verified. Try connecting to a network first.</translation>
 <translation id="9076821103818989526">Side panel</translation>
 <translation id="9076977315710973122">SMB share</translation>

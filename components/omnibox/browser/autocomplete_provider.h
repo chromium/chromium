@@ -179,6 +179,7 @@ class AutocompleteProvider
     TYPE_HISTORY_EMBEDDINGS = 1 << 21,
     TYPE_ENTERPRISE_SEARCH_AGGREGATOR = 1 << 22,
     TYPE_UNSCOPED_EXTENSION = 1 << 23,
+    TYPE_RECENTLY_CLOSED_TABS = 1 << 24,
     // When adding a value here, also update:
     // - omnibox_event.proto
     // - `AutocompleteProvider::AsOmniboxEventProviderType`

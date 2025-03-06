@@ -93,6 +93,7 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chromium verwendet w
 <translation id="328933489847748230">{count,plural, =1{Aktuell wird 1 Chromium-Fenster angezeigt}other{Aktuell werden {count} Chromium-Fenster angezeigt}}</translation>
 <translation id="3344973607274501920">Chromium konnte deine Passwörter nicht prüfen. Prüfe deine Internetverbindung.</translation>
 <translation id="3366305173356742781">Chromium-Daten in deinem Konto</translation>
+<translation id="33788334537425157">Aktiviere die Option „Inkognitotabs sperren, wenn Chromium geschlossen wird“</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Das passiert, wenn Chromium {THRESHOLD} Minute lang nicht verwendet wird. Dazu können der Verlauf und die Funktion „Autofill“ gehören.}other{Das passiert, wenn Chromium {THRESHOLD} Minuten lang nicht verwendet wird. Dazu können der Verlauf und die Funktion „Autofill“ gehören.}}</translation>
 <translation id="3410395242749598859">Einige deiner Chromium-Daten wurden noch nicht in <ph name="EMAIL" /> gespeichert.
 Warte einige Minuten, bevor du das Konto wechselst. Wenn du jetzt das Konto wechselst, werden diese Daten gelöscht.</translation>
@@ -100,8 +101,10 @@ Warte einige Minuten, bevor du das Konto wechselst. Wenn du jetzt das Konto wech
 <translation id="347967311580159871">Weitere Einstellungen, bei denen Daten zur Verbesserung von Chromium verwendet werden, findest du in den <ph name="BEGIN_LINK" />Google-Diensten<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Dein Passwort wurde nicht geteilt. Prüfe deine Internetverbindung und vergewissere dich, dass du in Chromium angemeldet bist. Versuch es dann noch einmal.</translation>
 <translation id="3529798650269984835">Aktiviere die Option „Inkognitotabs sperren, wenn Chromium geschlossen wird“.</translation>
+<translation id="3541247799006476453">Mit „Autofill“ in Chromium kannst du ganz einfach auf deine Passwörter und Passkeys zugreifen</translation>
 <translation id="3567399274263440288">Wenn du Chromium optimal nutzen möchtest, melde dich mit deinem Google-Konto in Chromium an.</translation>
 <translation id="3581385059720151202">Bilder in Chromium suchen</translation>
+<translation id="3582640969619785896">Chromium bietet an, dein Passwort zu speichern</translation>
 <translation id="3594315078412605236">Zahlungsmethoden in Chromium verwalten</translation>
 <translation id="3634039384458740619">Chromium-Einstellungen öffnen</translation>
 <translation id="3639997914391704523">Chromium kann deine Passwörter prüfen, wenn du dich mit deinem Google-Konto anmeldest.</translation>
@@ -158,6 +161,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="4999538639245140991">Du meldest dich von einem Konto ab, das von <ph name="SIGNOUT_MANAGED_DOMAIN" /> verwaltet wird. Dadurch werden deine Chromium-Daten von diesem Gerät gelöscht. Sie bleiben jedoch in deinem Google-Konto erhalten.</translation>
 <translation id="5042011327527167688">Tippe auf „In Chromium mit Maps ansehen“.</translation>
 <translation id="5044871537677053278">Chromium erkennt Adressen über Google Maps, um dir Wegbeschreibungen und lokale Informationen bereitzustellen.</translation>
+<translation id="5048140766121299007">Aktiviere in den Einstellungen unter „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ die Option „Chromium“</translation>
 <translation id="5048795749726991615">Verwende „Autofill“ in Chromium, um deine gespeicherten Passwörter ganz einfach in deinen anderen Apps abzurufen</translation>
 <translation id="5053429694249468757">Chromium-Daten werden gelöscht…</translation>
 <translation id="5071749685031362629">Chromium für iOS</translation>
@@ -165,6 +169,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="5124429847818367226">Du kannst jetzt Chromium jederzeit nutzen, wenn du surfst oder auf Links in Nachrichten, Dokumenten und anderen Apps tippst.</translation>
 <translation id="5131565040785979529">Deine Organisation, <ph name="DOMAIN" />, verwaltet das Konto, in dem du angemeldet bist, und die Nutzung von Chromium.</translation>
 <translation id="5134464247000681876">Links aus Gmail, Maps, YouTube und anderen Apps in Chromium öffnen</translation>
+<translation id="5203244847421322551">Passwörter in Chromium speichern und automatisch ausfüllen</translation>
 <translation id="5224391634244552924">Keine gespeicherten Passwörter. Chromium kann deine Passwörter prüfen, wenn du sie speicherst.</translation>
 <translation id="5259423875997548710">Bilder in Chromium suchen.</translation>
 <translation id="5308226104666789935">Chromium kann nicht nach Aktualisierungen suchen</translation>
@@ -208,10 +213,11 @@ Wichtige Hinweise:
 <translation id="6132149203299792222">Melde dich mit deinem Google-Konto an, um z. B. deine Passwörter und Lesezeichen zu synchronisieren.</translation>
 <translation id="6148377327556085395">Lesezeichen zu Chromium hinzufügen</translation>
 <translation id="6154098560469640583">Du kannst Chromium jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
+<translation id="6157162508956739031">Melde dich schnell in Apps und auf Websites an, indem du deine Passwörter und Passkeys aus Chromium automatisch ausfüllen lässt</translation>
 <translation id="6170619162539716595">Erlaube Chromium, über Google Maps Wegbeschreibungen und lokale Informationen zu erkannten Adressen bereitzustellen.</translation>
-<translation id="6197255575340902638">Wenn du „<ph name="MODULE_NAME" />“ ausblendest, verfolgt Chromium zukünftige Pakete nicht mehr automatisch und löscht alle früheren Paketverfolgungsdaten.</translation>
 <translation id="6247557882553405851">Google Passwortmanager</translation>
 <translation id="6268381023930128611">Von Chromium abmelden?</translation>
+<translation id="6301717043141881464">Wähle „Autofill“ in Chromium, um deine gespeicherten Passwörter ganz einfach in deinen anderen Apps abzurufen</translation>
 <translation id="6324041800010509197">Tab-Raster in Chromium aufrufen</translation>
 <translation id="6325378625795868881">Du kannst Chromium jederzeit nutzen, wenn du in Nachrichten und anderen Apps auf Links tippst.</translation>
 <translation id="6424492062988593837">Chromium ist jetzt noch besser! Es ist eine neue Version verfügbar.</translation>
@@ -223,6 +229,7 @@ Wichtige Hinweise:
 <translation id="6574750762636192517">Passwörter in Chromium verwalten</translation>
 <translation id="6590232959690355435">Dadurch wird die Seite mit deinem Chromium-Verlauf geöffnet.</translation>
 <translation id="6674470628873622334">Dadurch wird ein neuer Chromium-Inkognitotab geöffnet.</translation>
+<translation id="6680609900732453726">Mit der Geräteauthentifizierung bleiben deine Browsing-Aktivitäten privat, wenn du Chromium schließt</translation>
 <translation id="6752854822223394465">Deine Organisation richtet Chromium ein…</translation>
 <translation id="6794054469102824109">Öffnet Chromium Dino.</translation>
 <translation id="6820823224820483452">Chromium konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal.</translation>
@@ -286,6 +293,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="8254729934443216898">Entdecke neue Funktionen, mit denen du Chromium noch besser nutzen kannst.</translation>
 <translation id="8293572045658095405">Chromium befindet sich im Inkognitomodus</translation>
 <translation id="830951810931292870">Öffnet die eingegebenen URLs in Chromium im Inkognitomodus.</translation>
+<translation id="8390323835464055390">Verwende „Autofill“ in Chromium, um dich in deinen Apps mit deinen gespeicherten Passwörtern und Passkeys anzumelden</translation>
 <translation id="8409374867500149834">Du nutzt den umfangreichen Schutz von Chromium vor schädlichen Websites</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Das passiert, wenn Chromium {THRESHOLD} Minute lang nicht verwendet wird. Daten, die nur auf diesem Gerät gespeichert wurden, während du angemeldet warst, werden gelöscht. Dazu können beispielsweise der Verlauf und Passwörter gehören.}other{Das passiert, wenn Chromium {THRESHOLD} Minuten lang nicht verwendet wird. Daten, die nur auf diesem Gerät gespeichert wurden, während du angemeldet warst, werden gelöscht. Dazu können beispielsweise der Verlauf und Passwörter gehören.}}</translation>
 <translation id="858114650497379505">Du kannst die im Passwortmanager gespeicherten Passwörter in anderen Apps auf deinem iPhone verwenden.</translation>

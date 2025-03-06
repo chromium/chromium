@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">Пријавување повратни информации</translation>
 <translation id="1059120031266247284">Споделено со вас</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> со копче за отстранување</translation>
 <translation id="1062407476771304334">Замени</translation>
 <translation id="1073899992769346247">Заменете ја или наполнете ја батеријата</translation>
 <translation id="1081015718268701546">Апликациите за Linux не се поддржани во моментов. Другите апликации ќе се зачуваат.</translation>
@@ -323,6 +324,7 @@
 <translation id="2083190527011054446">Добра ноќ <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Отвори го избирачот на емоџија</translation>
 <translation id="2088116547584365419">игри</translation>
+<translation id="2092517835716911174">Мора да имате најмалку 18 години за да ги користите „Помош при читање“ и „Помош при пишување“.</translation>
 <translation id="209965399369889474">Не е поврзан на мрежа</translation>
 <translation id="2107581415810719320">Друго копче <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Вашиот USB-C не поддржува Thunderbolt. Изведбата на уредот може да биде ограничена.</translation>
@@ -1229,6 +1231,7 @@
 <translation id="5043679421800073804">Кликнете или допрете ја последната икона на полицата</translation>
 <translation id="504465286040788597">Претходен пасус</translation>
 <translation id="5045550434625856497">Погрешна лозинка</translation>
+<translation id="5056587122125565772">Создавање слика</translation>
 <translation id="5058794129231928255">Не можеше да се создаде документ на Docs</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Ќе добиете известување ако зборувате додека е исклучен звукот. Аудиото никогаш не излегува од вашиот уред.</translation>
@@ -1277,6 +1280,7 @@
 <translation id="5222676887888702881">Одјави се</translation>
 <translation id="5228195526683428788">Разделник на поделен екран</translation>
 <translation id="5229343007215035173">Вклучување/Исклучување „Заштита на приватноста“</translation>
+<translation id="5229860525743792999">Отстранете <ph name="ITEM_LABEL" /> од предложената група</translation>
 <translation id="5230516054153933099">Прозорец</translation>
 <translation id="5234764350956374838">Отфрли</translation>
 <translation id="523505283826916779">Поставки за пристапност</translation>
@@ -1759,6 +1763,7 @@
 <translation id="6757237461819837179">Нема пуштени аудиовизуелни содржини</translation>
 <translation id="6760438044935091345">Контролна табла за игри</translation>
 <translation id="6768043681523654438">простор</translation>
+<translation id="6769195697113506406">Вметната е слика</translation>
 <translation id="6777216307882431711">Се напојуваат поврзани USB-C уреди</translation>
 <translation id="6781002679438061620">Работна површина 9</translation>
 <translation id="6782182743534150858">Работна површина 13</translation>
@@ -1985,6 +1990,7 @@
 <translation id="7571361473021531288">Батерија: <ph name="BATTERY_PERCENTAGE" /> % | преостанато време: <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Активниот прозорец е приклучен на док на десната страна.</translation>
 <translation id="7579778809502851308">Снимање на екранот</translation>
+<translation id="7588317312481506627">Копирано во привремената меморија.</translation>
 <translation id="7593891976182323525">Search или Shift</translation>
 <translation id="7598054670902114203">Слика на состојбата на користење CPU: <ph name="CPU_USEAGE" /> %. Температура: <ph name="TEMPERATURE" /> целзиусови степени, тековна брзина: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Вметнување избран резултат</translation>
@@ -2179,6 +2185,7 @@
 <translation id="8155628902202578800">Отвори го дијалогот со податоци за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Се користи <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Содржина</translation>
+<translation id="81817143961839203">Вметнувањето слика не успеа</translation>
 <translation id="8185090165691050712">Вклучете/исклучете го менито во режим на заклучување промени на големината</translation>
 <translation id="8192727139462702395">Кога ќе го исклучите Bluetooth, ќе се прекине врската меѓу овие надворешни уреди и вашиот <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Картичка за емитување</translation>
@@ -2257,6 +2264,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> има <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Притиснете Alt+„Пребарување“ или Shift за да откажете.</translation>
 <translation id="8480418399907765580">Прикажете го алатникот</translation>
+<translation id="8487660088084188539">Кога ќе ги вклучите функцииве, внесениот текст, содржините на документот и URL-адресата на веб-страницата може да се испраќаат до серверите на Google. Податоциве се користат за да се генерираат предлози за пишување, да се генерираат резимеа, да се одговара на прашања и да се подобрува производот, што подлежи на <ph name="LINK_TO_SERVICE_TERMS" />. Не внесувајте лични, чувствителни или доверливи податоци.</translation>
 <translation id="8487699605742506766">Точка на пристап</translation>
 <translation id="8491237443345908933">Отвора линк во нова картичка</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не поддржува <ph name="SPECIFIED_RESOLUTION" />. Резолуцијата се смени во <ph name="FALLBACK_RESOLUTION" />. Кликнете „Потврди“ за да ги задржите промените. Претходната поставка ќе се врати за <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2326,6 +2334,7 @@
 <translation id="8725066075913043281">Обидете се повторно</translation>
 <translation id="8725214031272624704">Прикажување список на достапни методи за внесување</translation>
 <translation id="8730621377337864115">Готово</translation>
+<translation id="8731188831050207755">Преземањето на <ph name="FILE_NAME" /> е неуспешно.</translation>
 <translation id="8731487213223706745">Завршува во <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Можеби се обидува да ви ги украде ударите на тастатурата</translation>
 <translation id="8735678380411481005">Боја на заднинско светло на тастатура</translation>

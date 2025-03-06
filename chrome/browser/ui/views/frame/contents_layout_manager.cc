@@ -4,15 +4,18 @@
 
 #include "chrome/browser/ui/views/frame/contents_layout_manager.h"
 
+#include "base/check.h"
 #include "ui/views/view.h"
 
 ContentsLayoutManager::ContentsLayoutManager(views::View* devtools_view,
                                              views::View* contents_view,
+                                             views::View* lens_overlay_view,
                                              views::View* scrim_view,
                                              views::View* border_view,
                                              views::View* watermark_view)
     : devtools_view_(devtools_view),
       contents_view_(contents_view),
+      lens_overlay_view_(lens_overlay_view),
       scrim_view_(scrim_view),
       border_view_(border_view),
       watermark_view_(watermark_view) {}
@@ -64,6 +67,12 @@ views::ProposedLayout ContentsLayoutManager::CalculateProposedLayout(
   layouts.child_layouts.emplace_back(scrim_view_.get(),
                                      scrim_view_->GetVisible(), contents_rect,
                                      optional_size_bound);
+
+  // The Lens overlay view bounds are the same as the contents view.
+  CHECK(lens_overlay_view_);
+  layouts.child_layouts.emplace_back(lens_overlay_view_.get(),
+                                     lens_overlay_view_->GetVisible(),
+                                     contents_rect, optional_size_bound);
 
   if (border_view_) {
     layouts.child_layouts.push_back(

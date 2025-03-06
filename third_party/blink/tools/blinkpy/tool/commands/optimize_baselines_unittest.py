@@ -5,11 +5,13 @@
 import json
 import optparse
 import textwrap
+from unittest import mock
 
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.tool.commands.optimize_baselines import OptimizeBaselines
 from blinkpy.tool.commands.rebaseline_unittest import BaseTestCase
+from blinkpy.web_tests.port.base import VirtualTestSuite
 
 
 class TestOptimizeBaselines(BaseTestCase, LoggingTestCase):
@@ -212,3 +214,52 @@ class TestOptimizeBaselines(BaseTestCase, LoggingTestCase):
             'WARNING: Rerun `optimize-baselines` without `--check` to fix '
             'these issues.\n',
         ])
+
+    def test_optimize_virtual_tests_together(self):
+        """Regression test for https://crbug.com/401025410."""
+        virtual_suites = [
+            VirtualTestSuite(prefix='a',
+                             platforms=['Linux'],
+                             bases=['test.html'],
+                             args=['--fake-switch']),
+            VirtualTestSuite(prefix='b',
+                             platforms=['Linux'],
+                             bases=['test.html'],
+                             args=['--fake-switch']),
+        ]
+        self._write_test_file(self._test_port, 'test.html', '')
+        self._write_test_file(self._test_port, 'test-expected.txt', 'c')
+        self._write_test_file(self._test_port,
+                              'platform/test-linux-trusty/test-expected.txt',
+                              'c')
+        self._write_test_file(self._test_port, 'virtual/a/test-expected.txt',
+                              'a')
+        self._write_test_file(self._test_port, 'virtual/b/test-expected.txt',
+                              'b')
+
+        self._mocks.enter_context(
+            mock.patch.object(self._test_port,
+                              'virtual_test_suites',
+                              return_value=virtual_suites))
+        self.command.handle = mock.Mock(wraps=self.command.handle)
+        exit_code = self.command.execute(
+            optparse.Values({
+                'suffixes': 'txt',
+                'all_tests': False,
+                'platform': None,
+                'check': False,
+                'test_name_file': None,
+            }), ['virtual/a/test.html', 'virtual/b/test.html'], self.tool)
+
+        self.assertEqual(exit_code or 0, 0)
+        # Optimization is scheduled as a single task.
+        self.command.handle.assert_called_once_with('optimize-baselines',
+                                                    'worker/0', True)
+        self.assertTrue(self._exists(self._test_port, 'test-expected.txt'))
+        self.assertFalse(
+            self._exists(self._test_port,
+                         'platform/test-linux-trusty/test-expected.txt'))
+        self.assertTrue(
+            self._exists(self._test_port, 'virtual/a/test-expected.txt'))
+        self.assertTrue(
+            self._exists(self._test_port, 'virtual/b/test-expected.txt'))

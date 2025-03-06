@@ -12,7 +12,6 @@
 
 @class AuthenticationFlow;
 @class InstantSigninMediator;
-enum class SigninCoordinatorInterrupt;
 
 namespace signin_metrics {
 enum class AccessPoint;

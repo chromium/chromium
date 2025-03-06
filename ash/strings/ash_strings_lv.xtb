@@ -22,6 +22,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1058009965971887428">Sniegt atsauksmes</translation>
 <translation id="1059120031266247284">Ar jums kopīgots fails</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> ar noņemšanas pogu</translation>
 <translation id="1062407476771304334">Aizstāt</translation>
 <translation id="1073899992769346247">Nomainiet vai atkārtoti uzlādējiet akumulatoru.</translation>
 <translation id="1081015718268701546">Linux lietotnes pašlaik netiek atbalstītas. Citas lietotnes tiks saglabātas.</translation>
@@ -323,6 +324,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2083190527011054446">Arlabunakti, <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Atvērt emocijzīmju atlasītāju</translation>
 <translation id="2088116547584365419">spēles</translation>
+<translation id="2092517835716911174">Lai izmantotu funkcijas “Palīdzība lasīšanā” un “Palīdzība rakstīšanā”, jums ir jābūt vismaz 18 gadus vecam.</translation>
 <translation id="209965399369889474">Nav savienojuma ar tīklu</translation>
 <translation id="2107581415810719320">Cita poga <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Jūsu USB-C vads neatbalsta Thunderbolt. Ierīces veiktspēja var būt ierobežota.</translation>
@@ -1228,6 +1230,7 @@ Pievienota viena ierīce.</translation>
 <translation id="5043679421800073804">Plauktā noklikšķināt uz pēdējās ikonas vai pieskarties tai</translation>
 <translation id="504465286040788597">Iepriekšējā rindkopa</translation>
 <translation id="5045550434625856497">Nepareiza parole</translation>
+<translation id="5056587122125565772">Izveidot attēlu</translation>
 <translation id="5058794129231928255">Nevarēja izveidot Google dokumentu.</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Ja runāsiet, kad ir izslēgts mikrofons, tiks parādīts paziņojums. Jūsu audio vienmēr atrodas tikai jūsu ierīcē.</translation>
@@ -1276,6 +1279,7 @@ Varat arī izmantot īsinājumtaustiņus. Vispirms atzīmējiet tekstu un pēc t
 <translation id="5222676887888702881">Izrakstīties</translation>
 <translation id="5228195526683428788">Ekrāna sadalītājs</translation>
 <translation id="5229343007215035173">Ieslēgt/izslēgt konfidencialitātes ekrānu</translation>
+<translation id="5229860525743792999">Noņemt iezīmi “<ph name="ITEM_LABEL" />” no ieteiktās grupas</translation>
 <translation id="5230516054153933099">Logs</translation>
 <translation id="5234764350956374838">Nerādīt</translation>
 <translation id="523505283826916779">Pieejamības iestatījumi</translation>
@@ -1758,6 +1762,7 @@ Jauna instalācija</translation>
 <translation id="6757237461819837179">Netiek atskaņots nekāds multivides saturs</translation>
 <translation id="6760438044935091345">Spēļu informācijas panelis</translation>
 <translation id="6768043681523654438">krātuve</translation>
+<translation id="6769195697113506406">Attēls ir ievietots</translation>
 <translation id="6777216307882431711">Ar USB-C savienojumu notiek vairāku ierīču darbināšana</translation>
 <translation id="6781002679438061620">9. darbvieta</translation>
 <translation id="6782182743534150858">13. darbvieta</translation>
@@ -1984,6 +1989,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7571361473021531288">Akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />% | Atlikušais darbības laiks: <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Aktīvais logs ir dokots labajā pusē.</translation>
 <translation id="7579778809502851308">Veidot ekrānuzņēmumu</translation>
+<translation id="7588317312481506627">Kopēts starpliktuvē.</translation>
 <translation id="7593891976182323525">Meklēt vai Shift</translation>
 <translation id="7598054670902114203">Centrālā procesora lietojuma apkopojums, <ph name="CPU_USEAGE" />%. Temperatūra: <ph name="TEMPERATURE" /> grādi pēc Celsija skalas, pašreizējais ātrums: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Notiek atlasītā rezultāta ievietošana</translation>
@@ -2178,6 +2184,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8155628902202578800">Atvērt lietotāja <ph name="USER_EMAIL_ADDRESS" /> informācijas dialoglodziņu</translation>
 <translation id="8167567890448493835">Izmantotā valoda: <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Saturs</translation>
+<translation id="81817143961839203">Neizdevās ievietot attēlu</translation>
 <translation id="8185090165691050712">Ieslēgt/izslēgt bloķēšanas režīma lieluma maiņas izvēlni</translation>
 <translation id="8192727139462702395">Izslēdzot Bluetooth, no jūsu ierīces (<ph name="DEVICE_TYPE" />) tiks atvienotas šādas ārējās ierīces:</translation>
 <translation id="8198456017687137612">Apraides cilne</translation>
@@ -2256,6 +2263,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ir <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Lai atceltu, nospiediet alternēšanas taustiņu + meklēšanas vai pārslēgšanas taustiņu.</translation>
 <translation id="8480418399907765580">Rādīt rīkjoslu</translation>
+<translation id="8487660088084188539">Kad ieslēdzat šīs funkcijas, ievadītais teksts, dokumenta saturs un tīmekļa lapas URL var tikt nosūtīts uz Google serveriem. Šī informācija tiek izmantota, lai ģenerētu rakstīšanas ieteikumus, ģenerētu apkopojumus, atbildētu uz jautājumiem un uzlabotu produktu, ievērojot <ph name="LINK_TO_SERVICE_TERMS" />. Neiekļaujiet nekādu personas, sensitīvu vai konfidenciālu informāciju.</translation>
 <translation id="8487699605742506766">Tīklājs</translation>
 <translation id="8491237443345908933">Atvērt saiti jaunā cilnē</translation>
 <translation id="8492573885090281069">Displejā <ph name="DISPLAY_NAME" /> netiek atbalstīta izšķirtspēja <ph name="SPECIFIED_RESOLUTION" />. Izšķirtspēja tika nomainīta uz: <ph name="FALLBACK_RESOLUTION" />. Lai saglabātu izmaiņas, noklikšķiniet uz Apstiprināt. Iepriekšējie iestatījumi tiks atjaunoti pēc: <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2325,6 +2333,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8725066075913043281">Mēģināt vēlreiz</translation>
 <translation id="8725214031272624704">Rādīt pieejamo ievades metožu sarakstu</translation>
 <translation id="8730621377337864115">Gatavs</translation>
+<translation id="8731188831050207755">Nesekmīga lejupielāde: <ph name="FILE_NAME" /></translation>
 <translation id="8731487213223706745">Beigas: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Tā, iespējams, mēģina piesavināties jūsu taustiņsitienus</translation>
 <translation id="8735678380411481005">Taustiņu izgaismojuma krāsa</translation>

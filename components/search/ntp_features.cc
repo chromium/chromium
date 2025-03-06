@@ -5,6 +5,7 @@
 #include "components/search/ntp_features.h"
 
 #include <string>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"

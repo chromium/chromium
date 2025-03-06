@@ -6,6 +6,7 @@
 <translation id="1044891598689252897">Les sites fonctionneront normalement</translation>
 <translation id="1070329623210597193">Fichiers que ce site peut afficher ou modifier</translation>
 <translation id="1073417869336441572">Aidez-nous à améliorer Chrome en nous indiquant pourquoi vous avez autorisé les cookies tiers. <ph name="BEGIN_LINK" />Envoyer des commentaires<ph name="END_LINK" /></translation>
+<translation id="1074758928858737435">Vous pouvez demander à voir la version classique des sites</translation>
 <translation id="1085696779717592361">Utiliser Chrome par défaut</translation>
 <translation id="1178581264944972037">Suspendre</translation>
 <translation id="1181037720776840403">Supprimer</translation>
@@ -32,6 +33,7 @@
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}one{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
 <translation id="1500473259453106018">Masquer la fiche "Baisses de prix dans les onglets"</translation>
 <translation id="1510341833810331442">Les sites ne sont pas autorisés à enregistrer des données sur votre appareil</translation>
+<translation id="1538031354170655462">Les sites utilisent généralement la technologie NFC (communication en champ proche) pour fonctionner avec des traceurs ou des appareils à proximité, comme pour scanner des badges ou payer sans contact</translation>
 <translation id="1547123415014299762">Les cookies tiers sont autorisés</translation>
 <translation id="1593426485665524382">Nouvelles actions disponibles en haut de l'écran</translation>
 <translation id="1620510694547887537">Caméra</translation>
@@ -115,6 +117,7 @@
 <translation id="2677748264148917807">Quitter</translation>
 <translation id="2682367912565197520">Supprimer le niveau de zoom enregistré</translation>
 <translation id="2683434792633810741">Supprimer et réinitialiser ?</translation>
+<translation id="2685514716378236873">Non autorisé</translation>
 <translation id="2713106313042589954">Désactiver la caméra</translation>
 <translation id="2717722538473713889">Adresses e-mail</translation>
 <translation id="2726059656860238749">Lancer Chrome avec l'omnibox sélectionné pour réduire le temps de démarrage sur les appareils bas de gamme.</translation>
@@ -211,12 +214,14 @@
 <translation id="3955193568934677022">Autoriser les sites à lire les contenus protégés (recommandé)</translation>
 <translation id="3965467402665811906">Les sites peuvent demander à utiliser les informations qu'ils ont enregistrées vous concernant</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
+<translation id="3981465354637804599">Les sites diffusent généralement des annonces en contrepartie de contenus ou services sans frais. Toutefois, certains sites sont connus pour afficher des annonces intrusives ou trompeuses.</translation>
 <translation id="3987993985790029246">Copier lien</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/ ?</translation>
 <translation id="3992308058851451478"><ph name="SITE" /> peut utiliser vos informations lorsque vous le parcourez</translation>
 <translation id="3992684624889376114">À propos de cette page</translation>
 <translation id="4002066346123236978">Titre</translation>
 <translation id="4046123991198612571">Piste suivante</translation>
+<translation id="4077310749977440510">Les sites lisent généralement le contenu du presse-papiers pour proposer certaines fonctionnalités, comme la conservation du formatage du texte copié</translation>
 <translation id="4149890623864272035">Voulez-vous vraiment supprimer toutes les données locales, y compris les cookies, et réinitialiser toutes les autorisations pour ce site Web ?</translation>
 <translation id="4149994727733219643">Vue simplifiée pour les pages Web</translation>
 <translation id="4151930093518524179">Zoom par défaut</translation>
@@ -224,6 +229,7 @@
 <translation id="4169549551965910670">Connecté à un appareil USB</translation>
 <translation id="4194328954146351878">Vous demander avant d'autoriser les sites à consulter et modifier des informations sur des appareils NFC (recommandé)</translation>
 <translation id="4200726100658658164">Accéder aux paramètres de localisation</translation>
+<translation id="421742575134139848">Les sites peuvent lire du son pour diffuser de la musique, la piste audio des vidéos et d'autres contenus multimédias</translation>
 <translation id="4226663524361240545">L'appareil vibrera en cas de notifications.</translation>
 <translation id="4259722352634471385">La navigation sur <ph name="URL" /> est bloquée.</translation>
 <translation id="4274673989874969668">Lorsque vous quittez un site, la synchronisation de celui-ci peut se poursuivre afin de terminer certaines tâches, comme télécharger des photos ou envoyer un message de chat</translation>
@@ -247,6 +253,7 @@
 <translation id="4566417217121906555">Désactiver le micro</translation>
 <translation id="4570913071927164677">Détails</translation>
 <translation id="4598549027014564149">En mode navigation privée, les sites ne peuvent pas utiliser vos cookies pour voir votre activité de navigation sur l'ensemble des sites, même sur les sites associés. Votre activité de navigation n'est pas utilisée pour personnaliser les annonces, par exemple. Il est possible que les fonctionnalités de certains sites ne fonctionnent pas.</translation>
+<translation id="461356340001513807">Permet de vous connecter à des sites Web avec votre compte enregistré auprès d'un service d'identité</translation>
 <translation id="4619615317237390068">Onglets d'autres appareils</translation>
 <translation id="4644713492825682049">Supprimer et réinitialiser</translation>
 <translation id="4645575059429386691">Géré par ton parent</translation>
@@ -430,6 +437,7 @@
 <translation id="7000754031042624318">Désactivée dans les paramètres Android</translation>
 <translation id="702275896380648118">Ce site détermine ce que vous aimez, puis suggère des annonces à d'autres sites. Il obtient aussi vos thèmes publicitaires par l'intermédiaire de Chrome pour vous montrer des annonces plus pertinentes.</translation>
 <translation id="7053983685419859001">Bloquer</translation>
+<translation id="7055552182600664515">Pour lire du contenu protégé par des droits d'auteur, les sites peuvent avoir besoin d'utiliser un service de protection du contenu. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 élément sélectionné}one{# élément sélectionné}other{# éléments sélectionnés}}</translation>
 <translation id="708014373017851679"><ph name="APP_NAME" /> est obsolète. Veuillez mettre à jour l'appli.</translation>
 <translation id="7087918508125750058">Nombre d'éléments sélectionnés : <ph name="ITEM_COUNT" />. Options disponibles dans la partie supérieure de l'écran</translation>

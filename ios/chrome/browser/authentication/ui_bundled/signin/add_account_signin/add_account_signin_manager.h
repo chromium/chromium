@@ -72,11 +72,9 @@ enum class SigninAddAccountToDeviceResult : int {
 // `signinIntent`: intent for the add account sign-in flow.
 - (void)showSigninWithIntent:(AddAccountSigninIntent)signinIntent;
 
-// Interrupts the add account view. `action` controls
-// whether the dimissal is done and whether it is animated.
-// `completion` is invoked synchronously.
-- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
-                 completion:(ProceduralBlock)completion;
+// Interrupts the add account view. `animated` controls whether the dismissal is
+// animated. `completion` is invoked synchronously.
+- (void)interruptAnimated:(BOOL)animated completion:(ProceduralBlock)completion;
 
 @end
 

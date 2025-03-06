@@ -160,7 +160,6 @@ Prófaðu að bíða í nokkrar mínútur áður en þú skráir þig út. Ef þ
 <translation id="5395376160638294582">Gakktu úr skugga um að þú getir alltaf notað Chrome-gögnin á Google-reikningnum þínum</translation>
 <translation id="5404252374083197467">Stilla Chrome sem sjálfgefinn vafra?</translation>
 <translation id="5439191312780166229">Varar þig við hættulegum vefsvæðum, jafnvel þeim sem Google hafði enga vitneskju um, með því að greina fleiri gögn frá vefsvæðum en hefðbundin vörn. Þú getur valið að sleppa Chrome-viðvörunum.</translation>
-<translation id="5442013002200339429">Ef þú felur „<ph name="MODULE_NAME" />“ mun Chrome framvegis hætta sjálfvirkri pakkarakningu og eyða öllum eldri pakkarakningargögnum.</translation>
 <translation id="5460571915754665838">4. Veldu Chrome</translation>
 <translation id="5492504007368565877">Google-aðgangsorðastjórnun getur ekki að athugað aðgangsorðin þín.</translation>
 <translation id="5525095647255982834">Til að senda þennan flipa í annað tæki þarftu að skrá þig þar inn í Chrome.</translation>
@@ -333,5 +332,6 @@ Gögnin þín voru dulkóðuð með aðgangsorði <ph name="TIME" />. Sláðu þ
 <translation id="9181628561061032322">Opnar nýlega flipa Chrome.</translation>
 <translation id="948597495737267756">Opnar Chrome-ferilssíðuna þína.</translation>
 <translation id="97300214378190234">Notaðu Chrome þegar þú ýtir á tengla í öðrum forritum.</translation>
+<translation id="997929539742564806">Notaðu sjálfvirka útfyllingu aðgangsorða og aðgangslykla í Chrome til að skrá þig inn í forrit og á vefsvæði með fljótlegum hætti</translation>
 <translation id="998677222109959694">Stjórna stillingum Chrome</translation>
 </translationbundle>

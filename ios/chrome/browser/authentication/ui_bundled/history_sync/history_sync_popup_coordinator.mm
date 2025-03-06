@@ -111,35 +111,12 @@
 
 #pragma mark - InterruptibleChromeCoordinator
 
-- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
-                 completion:(ProceduralBlock)completion {
-  switch (action) {
-    case SigninCoordinatorInterrupt::DismissWithAnimation:
-    case SigninCoordinatorInterrupt::DismissWithoutAnimation: {
-      BOOL animated =
-          SigninCoordinatorInterrupt::DismissWithAnimation == action;
-      [_navigationController dismissViewControllerAnimated:animated
-                                                completion:nil];
-      [self viewWasDismissedWithResult:SigninCoordinatorResultInterrupted];
-      if (completion) {
-        completion();
-      }
-      break;
-    }
-    case SigninCoordinatorInterrupt::UIShutdownNoDismiss:
-      CHECK(!IsInterruptibleCoordinatorAlwaysDismissedEnabled(),
-            base::NotFatalUntil::M136);
-      // The view should be ignored and leave it being presented.
-      _navigationController.presentationController.delegate = nil;
-      _navigationController = nil;
-      // This coordinator is now done, and its owner can now stop it.
-      [self.delegate
-          historySyncPopupCoordinator:self
-                  didFinishWithResult:SigninCoordinatorResultInterrupted];
-      if (completion) {
-        completion();
-      }
-      break;
+- (void)interruptAnimated:(BOOL)animated
+               completion:(ProceduralBlock)completion {
+  [_navigationController dismissViewControllerAnimated:animated completion:nil];
+  [self viewWasDismissedWithResult:SigninCoordinatorResultInterrupted];
+  if (completion) {
+    completion();
   }
 }
 

@@ -3805,6 +3805,7 @@
 <translation id="3670229581627177274">Միացնել Bluetooth-ը</translation>
 <translation id="3670480940339182416">Կայքերը կարող են օգտագործել V8 լավարկիչը</translation>
 <translation id="3671764914317109892">Օգտագործեք խոսակցական լեզուն՝ այցելությունների պատմության մեջ տվյալներ որոնելու համար։ Դուք նաև կարող եք հարցեր տալ և պատասխաններ ստանալ՝ ձեր այցելությունների պատմության հիման վրա։</translation>
+<translation id="3671982238795754537">Իմանալ ավելին մուտքի բանալիների մասին</translation>
 <translation id="3672681487849735243">Հայտնաբերվել է գործարանային սխալ</translation>
 <translation id="3673097791729989571">Մուտք <ph name="SAML_DOMAIN" /> տիրույթի միջոցով</translation>
 <translation id="3673287357837016374">Ձեր PIN կոդը թարմացվել է</translation>
@@ -4065,6 +4066,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Ընդլայնումը հաստատվեց}one{# ընդլայնում հաստատվեց}other{# ընդլայնում հաստատվեց}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Լինուքսը տեղադրելու համար խորհուրդ է տրվում ունենալ նվազագույնը <ph name="INSTALL_SIZE" /> ազատ տարածք։</translation>
+<translation id="3824203811509979971">Ամփոփեք բովանդակությունը կամ հարցեր տվեք</translation>
 <translation id="3824621460022590830">Սարքերի գրանցման թոքենն անվավեր է։ Կապվեք սարքի սեփականատիրոջ կամ ադմինիստրատորի հետ։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
 <translation id="3824757763656550700">Մուտք գործեք՝ ներդիներն այլ սարքերից դիտելու համար</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Հիշել իմ ընտրությունը ֆայլի այս տեսակի համար՝ <ph name="FILE_TYPES" />}one{Հիշել իմ ընտրությունը ֆայլերի այս տեսակների համար՝ <ph name="FILE_TYPES" />}other{Հիշել իմ ընտրությունը ֆայլերի այս տեսակների համար՝ <ph name="FILE_TYPES" />}}</translation>
@@ -4251,6 +4253,7 @@
 <translation id="3948985214866944547">Մարդկանց մեծ մասն արգելափակում է ճշգրիտ տեղադրության մասին տվյալների փոխանցումն այս կայքի համար</translation>
 <translation id="394984172568887996">IE-ից ներմուծված</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />՝ ֆայլերի ներբեռնումն ավելի անվտանգ դարձնելու համար</translation>
+<translation id="3950479158728806902">Ավտոմատ կերպով ստեղծեք մուտքի բանալի՝ ավելի արագ մուտք գործելու համար</translation>
 <translation id="3950820424414687140">Մուտք գործել</translation>
 <translation id="3950841222883198950">Ձայնային մուտքագրում</translation>
 <translation id="3953834000574892725">Իմ հաշիվները</translation>
@@ -4719,6 +4722,7 @@
 <translation id="4289540628985791613">Համատեսք</translation>
 <translation id="428963538941819373">Այս կայքերը կարող են օգտագործել ձեր մասին իրենց պահած տեղեկությունները, երբ դուք դիտարկելիս լինեք <ph name="HOST" /> կայքը</translation>
 <translation id="4289732974614035569">Ընտրեք PIN կոդ</translation>
+<translation id="4290526909608432059">Chrome-ի հավելվածների աջակցությունը շուտով կավարտվի։ Ձեր տարբերակներին ծանոթանալու համար դիմեք հավելվածի ծրագրավորողին կամ ձեր ՏՏ աջակցման թիմին։</translation>
 <translation id="4290791284969893584">Էջը փակելուց հետո ձեր սկսած առաջադրանքները կարող են մնալ անավարտ</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> անդամ</translation>
 <translation id="4290898381118933198">Մատը սահեցնել՝ մի էջից մյուսին անցնելու համար</translation>
@@ -5179,6 +5183,7 @@
 <translation id="4624054169152573743">Գունային թեմա</translation>
 <translation id="4625078469366263107">Միացնել հավելվածը</translation>
 <translation id="4625905218692741757">Մոխրագույն՝ ըստ կանխադրման</translation>
+<translation id="4627107755957573804">Թույլատրել կայքերին և հավելվածներին նորացնել առկա հաշիվները՝ մուտքի բանալիներ օգտագործելու համար</translation>
 <translation id="4627442949885028695">Շարունակեք այլ սարքից</translation>
 <translation id="4628762811416793313">Չհաջողվեց ավարտել Linux-ի կոնտեյների կարգավորումը: Նորից փորձեք:</translation>
 <translation id="4629521233550547305">Բացել <ph name="PROFILE_NAME" /> պրոֆիլը</translation>
@@ -5762,6 +5767,7 @@
 <translation id="5053233576223592551">Ավելացնել օգտանուն</translation>
 <translation id="505347685865235222">Անանուն խումբ – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{Անհապաղ փոխեք այն}one{Անհապաղ փոխեք այն}other{Անհապաղ փոխեք դրանք}}</translation>
+<translation id="5056587122125565772">Ստեղծել պատկեր</translation>
 <translation id="5056950756634735043">Միացում կոնտեյներին</translation>
 <translation id="5057110919553308744">Երբ դուք սեղմում եք ընդլայնման վրա</translation>
 <translation id="5057127674016624293">Սկանավորումը սովորականից երկար է տևում</translation>
@@ -5872,6 +5878,7 @@
 <translation id="512642543295077915">որոնում + backspace</translation>
 <translation id="5126611267288187364">Դիտել փոփոխությունները</translation>
 <translation id="5127620150973591153">Անվտանգ միացման կոդ՝ <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">Ամփոփեք բովանդակությունը կամ հարցեր տվեք։</translation>
 <translation id="5127881134400491887">Կառավարել ցանցի միացումները</translation>
 <translation id="5127934926273826089">Ծաղիկներ</translation>
 <translation id="5127986747308934633">Ձեր ադմինիստրատորը վերահսկում է ձեր սարքը</translation>
@@ -8508,6 +8515,7 @@
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – Միացած է հերթական միացքին</translation>
 <translation id="7033616203784997570">Թույլատրվում է մուտքագրել առավելագույնը 62 նիշ</translation>
 <translation id="7034692021407794547">Ադմինիստրատորը, որն ունի վճարումների կառավարման թույլտվություն, նախ պետք է ընդունի Google Meet-ի ծրագրակազմի օգտագործման պայմանները ադմինիստրատորի վահանակի «Google Meet-ի ծրագրակազմ» բաժնում։</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" />-ը հենց նոր ստեղծեց մուտքի բանալի ձեր հաշվի համար Մուտքի բանալիներն առաջարկում են մուտք գործելու ավելի արագ և անվտանգ եղանակ և պահվում են Google գաղտնաբառերի կառավարիչում <ph name="USER" />-ի համար։ <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Լինուքսը տեղադրելու համար խորհուրդ է տրվում ունենալ <ph name="DISK_SIZE" /> տարածք։ Տարածք ազատելու համար սարքի հիշողությունից ֆայլեր ջնջեք։</translation>
 <translation id="7037157058268992880">Մոռացել եմ PIN կոդը</translation>
 <translation id="7037509989619051237">Տեքստի նախադիտում</translation>
@@ -10548,6 +10556,7 @@
 <translation id="8477178913400731244">Ջնջել տվյալները</translation>
 <translation id="8477241577829954800">Փոխարինված է</translation>
 <translation id="8477384620836102176">&amp;Ընդհանուր</translation>
+<translation id="8477446666255316832">Հաջորդ անգամ մուտք գործեք ավելի արագ</translation>
 <translation id="8479176401914456949">Կոդն անվավեր է։ Նորից փորձեք։</translation>
 <translation id="8480869669560681089">Անհայտ սարք <ph name="VENDOR_NAME" />-ից</translation>
 <translation id="8481187309597259238">Հաստատեք USB-ի թույլտվությունները</translation>
@@ -11395,6 +11404,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB մկնիկը միացված է</translation>
 <translation id="9075413375877487220">Այս ընդլայնումը վստահելի չէ բարելավված Ապահով դիտարկման համար։</translation>
+<translation id="9075985558450420812">Մուտքագրեք հատուկ հուշում կամ ընդգծեք տեքստը՝ պատկեր ստեղծելու համար։</translation>
 <translation id="9076523132036239772">Ձեր էլփոստը կամ գաղտնաբառը չհաստատվեցին: Նախ կապակցվեք ցանցին:</translation>
 <translation id="9076821103818989526">Կողային վահանակ</translation>
 <translation id="9076977315710973122">SMB պահեստ</translation>

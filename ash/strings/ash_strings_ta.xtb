@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">கருத்தைப் புகாரளிக்கும்</translation>
 <translation id="1059120031266247284">உங்களுடன் பகிரப்பட்டது</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176">அகற்றுவதற்கான பட்டன் இருக்கும் <ph name="ITEM_LABEL" /></translation>
 <translation id="1062407476771304334">மாற்றியமை</translation>
 <translation id="1073899992769346247">பேட்டரியை மாற்றவும் அல்லது ரீசார்ஜ் செய்யவும்</translation>
 <translation id="1081015718268701546">Linux ஆப்ஸ் தற்போது ஆதரிக்கப்படுவதில்லை. பிற ஆப்ஸ் சேமிக்கப்படும்.</translation>
@@ -323,6 +324,7 @@
 <translation id="2083190527011054446">இரவு வணக்கம் <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">ஈமோஜி தேர்வுக் கருவியைத் திறத்தல்</translation>
 <translation id="2088116547584365419">கேம்ஸ்</translation>
+<translation id="2092517835716911174">வாசிப்பு உதவி, எழுதுவதற்கான உதவி ஆகியவற்றைப் பயன்படுத்த நீங்கள் குறைந்தது 18 வயது நிரம்பியவராக இருக்க வேண்டும்.</translation>
 <translation id="209965399369889474">நெட்வொர்க்குடன் இணைக்கப்படவில்லை</translation>
 <translation id="2107581415810719320">பிற பட்டன் <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Thunderboltடை உங்கள் USB-C கேபிள் ஆதரிக்காது. சாதனத்தின் செயல்திறன் பாதிக்கப்படலாம்.</translation>
@@ -1228,6 +1230,7 @@
 <translation id="5043679421800073804">ஷெல்ஃப்பில் கடைசி ஐகானைக் கிளிக் செய் அல்லது தட்டு</translation>
 <translation id="504465286040788597">முந்தைய பத்தி</translation>
 <translation id="5045550434625856497">தவறான கடவுச்சொல்</translation>
+<translation id="5056587122125565772">படத்தை உருவாக்கு</translation>
 <translation id="5058794129231928255">Google ஆவணத்தை உருவாக்க முடியவில்லை</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">ஒலியடக்கப்பட்டிருக்கும்போது நீங்கள் பேசினால் அது குறித்த அறிவிப்பு காட்டப்படும். உங்கள் குரல் யாருக்கும் கேட்காது.</translation>
@@ -1276,6 +1279,7 @@
 <translation id="5222676887888702881">வெளியேறு</translation>
 <translation id="5228195526683428788">திரைப் பிரிப்பு டிவைடர்</translation>
 <translation id="5229343007215035173">தனிப்பட்ட திரையை இயக்கு/முடக்கு</translation>
+<translation id="5229860525743792999">பரிந்துரைக்கப்பட்ட குழுவில் இருந்து <ph name="ITEM_LABEL" /> ஐ அகற்றும்</translation>
 <translation id="5230516054153933099">விண்டோ</translation>
 <translation id="5234764350956374838">நிராகரி</translation>
 <translation id="523505283826916779">அணுகல்தன்மை அமைப்புகள்</translation>
@@ -1758,6 +1762,7 @@
 <translation id="6757237461819837179">மீடியா எதுவும் பிளேயாகவில்லை</translation>
 <translation id="6760438044935091345">கேம் டாஷ்போர்டு</translation>
 <translation id="6768043681523654438">சேமிப்பகம்</translation>
+<translation id="6769195697113506406">படம் சேர்க்கப்பட்டது</translation>
 <translation id="6777216307882431711">இணைக்கப்பட்ட USB-C சாதனங்களுக்கு சார்ஜ் ஏற்றப்படுகிறது</translation>
 <translation id="6781002679438061620">டெஸ்க் 9</translation>
 <translation id="6782182743534150858">டெஸ்க் 13</translation>
@@ -1984,6 +1989,7 @@
 <translation id="7571361473021531288">பேட்டரி: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> மீதமுள்ளது</translation>
 <translation id="7573585051776738856">செயலிலுள்ள சாளரம் வலதுபுறம் டாக் செய்யப்பட்டது.</translation>
 <translation id="7579778809502851308">திரையைப் படமெடு</translation>
+<translation id="7588317312481506627">கிளிப்போர்டுக்கு நகலெடுக்கப்பட்டது.</translation>
 <translation id="7593891976182323525">தேடல் அல்லது Shift</translation>
 <translation id="7598054670902114203">CPU உபயோக ஸ்னாப்ஷாட், <ph name="CPU_USEAGE" />%. வெப்பநிலை <ph name="TEMPERATURE" /> டிகிரி செல்சியஸ், தற்போதைய வேகம்: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="7599378375976398913">தேர்ந்தெடுத்த முடிவைச் சேர்க்கிறது</translation>
@@ -2178,6 +2184,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> என்ற கணக்கிற்கான தகவலைக் காட்டும் உரையாடலைத் திறக்கும்</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" />ஐப் பயன்படுத்துகிறது</translation>
 <translation id="8168435359814927499">உள்ளடக்கம்</translation>
+<translation id="81817143961839203">படம் சேர்க்கப்படவில்லை</translation>
 <translation id="8185090165691050712">அளவு மாற்றத்தை லாக் செய்யும் பயன்முறைக்கான மெனுவை இயக்கு/முடக்கு</translation>
 <translation id="8192727139462702395">புளூடூத்தை முடக்கினால் இந்த வெளிப்புறச் சாதனங்கள் உங்கள் <ph name="DEVICE_TYPE" /> இல் இருந்து துண்டிக்கப்படும்:</translation>
 <translation id="8198456017687137612">தாவலை அலைபரப்புகிறது</translation>
@@ -2256,6 +2263,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />, <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />ஐ கொண்டுள்ளது.</translation>
 <translation id="8477270416194247200">ரத்துசெய்ய, Alt+தேடல் அல்லது Shift விசையை அழுத்தவும்.</translation>
 <translation id="8480418399907765580">கருவிப்பட்டியைக் காண்பி</translation>
+<translation id="8487660088084188539">இந்த அம்சங்களை இயக்கினால் நீங்கள் டைப் செய்பவை, ஆவண உள்ளடக்கம், இணையப் பக்கத்தின் URL ஆகியவை Google சேவையகங்களுக்கு அனுப்பப்படலாம். <ph name="LINK_TO_SERVICE_TERMS" />க்கு உட்பட்டு எழுதுவதற்கான பரிந்துரைகளை வழங்கவும், சுருக்க விவரங்களை உருவாக்கவும், கேள்விகளுக்குப் பதிலளிக்கவும், தயாரிப்பை மேம்படுத்தவும் இந்தத் தகவல்கள் பயன்படுத்தப்படும். தனிப்பட்ட, பாதுகாக்கவேண்டிய அல்லது ரகசியத் தகவல்களைச் சேர்க்க வேண்டாம்.</translation>
 <translation id="8487699605742506766">ஹாட்ஸ்பாட்</translation>
 <translation id="8491237443345908933">புதிய பக்கத்தில் இணைப்பைத் திறக்கும்</translation>
 <translation id="8492573885090281069"><ph name="SPECIFIED_RESOLUTION" /> தெளிவுத்திறனை <ph name="DISPLAY_NAME" /> ஆதரிக்கவில்லை. தெளிவுத்திறன் <ph name="FALLBACK_RESOLUTION" />க்கு மாற்றப்பட்டது. மாற்றங்களை உறுதிசெய்ய 'உறுதிப்படுத்து' என்பதைக் கிளிக் செய்யவும். இன்னும் <ph name="TIMEOUT_SECONDS" /> இல் முந்தைய அமைப்புகளுக்கு மீட்டமைக்கப்படும்.</translation>
@@ -2325,6 +2333,7 @@
 <translation id="8725066075913043281">மீண்டும் முயற்சிக்கவும்</translation>
 <translation id="8725214031272624704">கிடைக்கக்கூடிய உள்ளீட்டு முறைகளின் பட்டியலைக் காட்டு</translation>
 <translation id="8730621377337864115">முடிந்தது</translation>
+<translation id="8731188831050207755"><ph name="FILE_NAME" /> ஐப் பதிவிறக்க முடியவில்லை.</translation>
 <translation id="8731487213223706745">முடியும் நேரம்: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">அது உங்கள் விசை அழுத்தங்களைத் திருட முயற்சித்துக் கொண்டிருக்கக்கூடும்</translation>
 <translation id="8735678380411481005">கீபோர்டு பேக்லைட் வண்ணம்</translation>

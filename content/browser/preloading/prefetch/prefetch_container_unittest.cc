@@ -16,10 +16,10 @@
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
-#include "content/browser/preloading/preload_pipeline_info.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -78,7 +78,7 @@ class PrefetchContainerTestBase : public RenderViewHostTestHarness {
                      blink::mojom::SpeculationEagerness::kEager),
         blink::mojom::Referrer(),
         /*no_vary_search_hint=*/std::nullopt, prefetch_document_manager,
-        base::MakeRefCounted<PreloadPipelineInfo>(
+        PreloadPipelineInfo::Create(
             /*planned_max_preloading_type=*/PreloadingType::kPrefetch));
   }
 
@@ -284,7 +284,7 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer) {
       blink::mojom::Referrer(),
       /*no_vary_search_hint=*/std::nullopt,
       /*prefetch_document_manager=*/nullptr,
-      base::MakeRefCounted<PreloadPipelineInfo>(
+      PreloadPipelineInfo::Create(
           /*planned_max_preloading_type=*/PreloadingType::kPrefetch));
 
   EXPECT_EQ(prefetch_container.GetReferringRenderFrameHostId(),
@@ -894,7 +894,7 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms) {
         blink::mojom::Referrer(),
         /*no_vary_search_hint=*/std::nullopt,
         /*prefetch_document_manager=*/nullptr,
-        base::MakeRefCounted<PreloadPipelineInfo>(
+        PreloadPipelineInfo::Create(
             /*planned_max_preloading_type=*/PreloadingType::kPrefetch));
 
     prefetch_container.OnGetPrefetchToServe(test_case.block_until_head);
@@ -970,7 +970,7 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms2) {
         blink::mojom::Referrer(),
         /*no_vary_search_hint=*/std::nullopt,
         /*prefetch_document_manager=*/nullptr,
-        base::MakeRefCounted<PreloadPipelineInfo>(
+        PreloadPipelineInfo::Create(
             /*planned_max_preloading_type=*/PreloadingType::kPrefetch));
 
     prefetch_container.OnUnregisterCandidate(

@@ -19,7 +19,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/local_authentication_token.h"
-#include "chrome/browser/webauthn/password_credential_controller.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
 #include "device/fido/discoverable_credential_metadata.h"
@@ -41,6 +40,8 @@ struct VectorIcon;
 struct AccountInfo;
 class AuthenticatorRequestDialogViewController;
 class Profile;
+
+using PasswordCredentialPair = std::pair<std::u16string, std::u16string>;
 
 enum class EnclaveEnabledStatus {
   kDisabled,
@@ -184,9 +185,8 @@ using UIPresentation =
   /* Called when the GPM passkeys are reset successfully or not. */           \
   AUTHENTICATOR_REQUEST_EVENT_1(OnGpmPasskeysReset, bool)                     \
   /* Called when a password mechanism is selected */                          \
-  AUTHENTICATOR_REQUEST_EVENT_1(                                              \
-      OnPasswordCredentialSelected,                                           \
-      webauthn::PasswordCredentialController::PasswordPair)
+  AUTHENTICATOR_REQUEST_EVENT_1(OnPasswordCredentialSelected,                 \
+                                PasswordCredentialPair)
 
 // AuthenticatorRequestDialogModel holds the UI state for a WebAuthn request.
 // This class is refcounted so that its ownership can be shared between the

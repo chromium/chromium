@@ -772,7 +772,7 @@ void CookieMonster::GetCookieListWithOptions(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   std::optional<base::ElapsedTimer> timer;
-  if (metrics_subsampler_.ShouldSample(0.001)) {
+  if (metrics_subsampler_.ShouldSample(kHistogramSampleProbability)) {
     timer.emplace();
   }
 
@@ -1078,17 +1078,15 @@ void CookieMonster::StoreLoadedCookies(
     if (cookie_ptr->IsPartitioned()) {
       auto inserted = InternalInsertPartitionedCookie(
           GetKey(cookie_ptr->Domain()), std::move(cookie),
-          false /* sync_to_store */, access_result,
-          false /* dispatch_change */);
+          /*sync_to_store=*/false, access_result, /*dispatch_change=*/false);
       if (ContainsControlCharacter(cookie_ptr->Name()) ||
           ContainsControlCharacter(cookie_ptr->Value())) {
         partitioned_cookies_with_control_chars.push_back(inserted);
       }
     } else {
-      auto inserted =
-          InternalInsertCookie(GetKey(cookie_ptr->Domain()), std::move(cookie),
-                               false /* sync_to_store */, access_result,
-                               false /* dispatch_change */);
+      auto inserted = InternalInsertCookie(
+          GetKey(cookie_ptr->Domain()), std::move(cookie),
+          /*sync_to_store=*/false, access_result, /*dispatch_change=*/false);
 
       if (ContainsControlCharacter(cookie_ptr->Name()) ||
           ContainsControlCharacter(cookie_ptr->Value())) {
@@ -1405,7 +1403,7 @@ void CookieMonster::FilterCookiesWithOptions(
     // without considering shadowing domain cookies. Recording them on every
     // resource sequest results in unnecessarily large amounts of samples
     // and has a non-zero runtime cost, so only collect 1/1000 times.
-    if (metrics_subsampler_.ShouldSample(0.001) &&
+    if (metrics_subsampler_.ShouldSample(kHistogramSampleProbability) &&
         access_result.status.IsInclude()) {
       int destination_port = url.EffectiveIntPort();
 
@@ -1616,7 +1614,9 @@ CookieMonster::CookieMap::iterator CookieMonster::InternalInsertCookie(
 
   auto inserted = cookies_.insert(CookieMap::value_type(key, std::move(cc)));
 
-  LogStoredCookieToUMA(*cc_ptr, access_result);
+  if (metrics_subsampler_.ShouldSample(kHistogramSampleProbability)) {
+    LogStoredCookieToUMA(*cc_ptr, access_result);
+  }
 
   DCHECK(access_result.status.IsInclude());
   if (dispatch_change) {
@@ -1692,7 +1692,9 @@ CookieMonster::InternalInsertPartitionedCookie(
   }
   CHECK_GE(num_partitioned_cookies_, num_nonced_partitioned_cookies_);
 
-  LogStoredCookieToUMA(*cc_ptr, access_result);
+  if (metrics_subsampler_.ShouldSample(kHistogramSampleProbability)) {
+    LogStoredCookieToUMA(*cc_ptr, access_result);
+  }
 
   DCHECK(access_result.status.IsInclude());
   if (dispatch_change) {
@@ -1711,6 +1713,8 @@ void CookieMonster::SetCanonicalCookie(
     SetCookiesCallback callback,
     std::optional<CookieAccessResult> cookie_access_result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  bool collect_metrics =
+      metrics_subsampler_.ShouldSample(kHistogramSampleProbability);
 // TODO(crbug.com/40281870): Fix macos specific issue with CHECK_IS_TEST
 // crashing network service process.
 #if !BUILDFLAG(IS_MAC)
@@ -1784,7 +1788,7 @@ void CookieMonster::SetCanonicalCookie(
     DVLOG(net::cookie_util::kVlogSetCookies)
         << "SetCookie() key: " << key << " cc: " << cc->DebugString();
 
-    if (cc->IsEffectivelySameSiteNone()) {
+    if (cc->IsEffectivelySameSiteNone() && collect_metrics) {
       size_t cookie_size = NameValueSizeBytes(*cc);
       UMA_HISTOGRAM_COUNTS_10000("Cookie.SameSiteNoneSizeBytes", cookie_size);
       if (cc->IsPartitioned()) {
@@ -1802,9 +1806,11 @@ void CookieMonster::SetCanonicalCookie(
     // Realize that we might be setting an expired cookie, and the only point
     // was to delete the cookie which we've already done.
     if (!already_expired) {
-      HistogramExpirationDuration(*cc, creation_date);
+      if (collect_metrics) {
+        HistogramExpirationDuration(*cc, creation_date);
 
-      UMA_HISTOGRAM_BOOLEAN("Cookie.DomainSet", cc->IsDomainCookie());
+        UMA_HISTOGRAM_BOOLEAN("Cookie.DomainSet", cc->IsDomainCookie());
+      }
 
       if (!creation_date_to_inherit.is_null()) {
         cc->SetCreationDate(creation_date_to_inherit);
@@ -1833,18 +1839,20 @@ void CookieMonster::SetCanonicalCookie(
       GarbageCollect(creation_date, key);
     }
 
-    if (IsLocalhost(source_url)) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "Cookie.Port.Set.Localhost",
-          ReducePortRangeForCookieHistogram(source_url.EffectiveIntPort()));
-    } else {
-      UMA_HISTOGRAM_ENUMERATION(
-          "Cookie.Port.Set.RemoteHost",
-          ReducePortRangeForCookieHistogram(source_url.EffectiveIntPort()));
-    }
+    if (collect_metrics) {
+      if (IsLocalhost(source_url)) {
+        UMA_HISTOGRAM_ENUMERATION(
+            "Cookie.Port.Set.Localhost",
+            ReducePortRangeForCookieHistogram(source_url.EffectiveIntPort()));
+      } else {
+        UMA_HISTOGRAM_ENUMERATION(
+            "Cookie.Port.Set.RemoteHost",
+            ReducePortRangeForCookieHistogram(source_url.EffectiveIntPort()));
+      }
 
-    UMA_HISTOGRAM_ENUMERATION("Cookie.CookieSourceSchemeName",
-                              GetSchemeNameEnum(source_url));
+      UMA_HISTOGRAM_ENUMERATION("Cookie.CookieSourceSchemeName",
+                                GetSchemeNameEnum(source_url));
+    }
   } else {
     // If the cookie would be excluded, don't bother warning about the 3p cookie
     // phaseout.

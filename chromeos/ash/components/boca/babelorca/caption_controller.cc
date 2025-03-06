@@ -62,14 +62,6 @@ bool CaptionController::DispatchTranscription(
   if (!caption_bubble_controller()) {
     return false;
   }
-  bool success = caption_bubble_controller()->OnTranscription(
-      caption_bubble_context_.get(), result);
-  if (success) {
-    return true;
-  }
-  // Rebuild caption bubble in case it was closed.
-  DestroyUI();
-  CreateUI();
   return caption_bubble_controller()->OnTranscription(
       caption_bubble_context_.get(), result);
 }

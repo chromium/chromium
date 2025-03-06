@@ -138,6 +138,7 @@
 <translation id="1230244617745022071"><ph name="SOURCE" /> (автоматично установено)</translation>
 <translation id="1232569758102978740">Неозаглавен</translation>
 <translation id="1236081509407217141">Да се разреши ли VR?</translation>
+<translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Името на устройството ви</translation>
 <translation id="124116460088058876">Още езици</translation>
 <translation id="1243027604378859286">Автор:</translation>
@@ -252,6 +253,7 @@
 <translation id="1419305130220238697">Бутон „Управление на изтеглянията с Chrome“. Активирайте, за да управлявате файловете, които сте изтеглили с Chrome</translation>
 <translation id="1420345875188552368">За това плащане може да се използва запазеният от вас начин на автоматично плащане. За да изключите електронните портфейли в Chrome, отворете <ph name="BEGIN_LINK1" />настройките за плащане<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, за да разрешите сдвояването</translation>
+<translation id="1421484961346698724">Изтрит профил</translation>
 <translation id="14222610277930434">Посещавате често</translation>
 <translation id="1422930527989633628">Може да поиска разрешение да открива устройства с Bluetooth в близост</translation>
 <translation id="1426410128494586442">Да</translation>
@@ -1801,6 +1803,7 @@
 <translation id="415440494507469262">Добавяне на раздел към таблицата за сравнение</translation>
 <translation id="4159784952369912983">лилаво</translation>
 <translation id="4165422751765527461">Отваря статия в Помощния център в нов раздел</translation>
+<translation id="4165584779486830267">Вече можете да плащате на вноски чрез Affirm или Zip.</translation>
 <translation id="4165986682804962316">Настройки за сайта</translation>
 <translation id="4169535189173047238">Забраняване</translation>
 <translation id="4171400957073367226">Невалиден подпис за потвърждаване</translation>

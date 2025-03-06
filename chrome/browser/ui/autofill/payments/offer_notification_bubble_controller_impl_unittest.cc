@@ -70,12 +70,9 @@ class OfferNotificationBubbleControllerImplTest
   }
 
  protected:
-  void ShowBubble(const AutofillOfferData& offer,
-                  bool expand_notification_icon = false) {
+  void ShowBubble(const AutofillOfferData& offer) {
     controller()->ShowOfferNotificationIfApplicable(
-        offer, &card_,
-        {.expand_notification_icon = expand_notification_icon,
-         .show_notification_automatically = true});
+        offer, &card_, {.show_notification_automatically = true});
   }
 
   void CloseBubble(PaymentsUiClosedReason closed_reason =
@@ -182,19 +179,6 @@ TEST_F(OfferNotificationBubbleControllerImplTest, GPayPromoCode_BubbleShown) {
   EXPECT_EQ(controller()->GetWindowTitle(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_GPAY_PROMO_CODE_OFFERS_REMINDER_TITLE));
-}
-
-// Tests that the offer notification icon will be expanded.
-TEST_F(OfferNotificationBubbleControllerImplTest,
-       OfferNotificationIconShouldBeExpanded) {
-  AutofillOfferData offer = CreateTestGPayPromoCodeOffer(
-      /*merchant_origins=*/{GURL("https://www.example.com")},
-      /*promo_code=*/"FREEFALL1234");
-  controller()->ShowOfferNotificationIfApplicable(
-      offer, nullptr,
-      {.notification_has_been_shown = true, .expand_notification_icon = true});
-
-  EXPECT_TRUE(controller()->ShouldIconExpand());
 }
 
 }  // namespace autofill

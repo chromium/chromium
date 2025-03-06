@@ -4262,6 +4262,33 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Blink.ResourceRequest.WebUIBundledCachedMetadataHandler.ConsumeCache"
+    enum="BooleanSuccess" expires_after="2025-12-06">
+  <owner>tluk@chromium.org</owner>
+  <owner>webui-everywhere@google.com</owner>
+  <summary>
+    Whether the cached metadata managed by a WebUIBundledCachedMetadataHandler
+    was successfully consumed and not rejected by V8 during script compilation.
+    Emitted immediately following WebUI script compilation started with the
+    kConsumeCodeCache compile option. The value is expected to always be true.
+    This histogram and associated code can be removed once this behavior has
+    been confirmed.
+  </summary>
+</histogram>
+
+<histogram
+    name="Blink.ResourceRequest.WebUIBundledCodeCacheFetcher.DidReceiveCachedCode"
+    enum="BooleanSuccess" expires_after="2025-12-06">
+  <owner>tluk@chromium.org</owner>
+  <owner>webui-everywhere@google.com</owner>
+  <summary>
+    Whether the the fetch request for WebUI bundled cached metadata completed
+    successfully. Emitted immediately after the request to fetch the metadata
+    from the resource bundle has completed.
+  </summary>
+</histogram>
+
+<histogram
     name="Blink.Responsiveness.PerAnimationFrame.CommitToPresentationTime.{PerAnimationFrameInteractionType}"
     units="ms" expires_after="2025-10-30">
   <owner>sullivan@chromium.org</owner>

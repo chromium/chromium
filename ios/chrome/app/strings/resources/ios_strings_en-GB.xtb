@@ -288,6 +288,7 @@
 <translation id="2161446265348023004">Switch to open window</translation>
 <translation id="2164946989711475905">Sign in…</translation>
 <translation id="2175927920773552910">QR code</translation>
+<translation id="218350106843433823">AutoFill Passwords and Passkeys</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="219283042927675668">Tabs in group</translation>
 <translation id="2194856509914051091">Things to consider</translation>
@@ -318,7 +319,6 @@
 <translation id="2268044343513325586">Refine</translation>
 <translation id="2271452184061378400">Your tab groups are saved here</translation>
 <translation id="2273327106802955778">More menu</translation>
-<translation id="2274800392139890332">Untrack this package</translation>
 <translation id="2287614783861766820">{count,plural, =1{This address will be deleted from this device.}other{These addresses will be deleted from this device.}}</translation>
 <translation id="2297989278479054870">After you sign out, the bookmarks, passwords and more in your Google Account will be removed from this device.</translation>
 <translation id="2299218006564889602">Your passwords are encrypted on your device before they’re saved to Google Password Manager.</translation>
@@ -377,6 +377,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2511117522375201202">You have <ph name="NUMBER_OF_PASSWORDS" /> compromised passwords that could put your security at risk.</translation>
 <translation id="2513103768503127042">You’ll find your tab groups here</translation>
 <translation id="251837347827266434">You'll be signed out, tabs will be closed, browsing data will be deleted</translation>
+<translation id="2520787026086861736">To turn off, go to <ph name="BEGIN_LINK" />AutoFill &amp; Passwords<ph name="END_LINK" /></translation>
 <translation id="2529021024822217800">Open All</translation>
 <translation id="2536991091671391962">You can use saved passwords on any device. They're saved to Google Password Manager for <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Hidden, password</translation>
@@ -643,7 +644,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3812308602011798782">Reviews</translation>
 <translation id="3813175908845379029">Helpful suggestions that make browsing better and easier</translation>
 <translation id="3815668647912194650">Keep this group to add tabs later, or leave it if you no longer want access to it.</translation>
-<translation id="3818045793209708987">Stopped tracking this package</translation>
 <translation id="3819183753496523827">You're offline. Check your Internet connection and try again.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 payment method}other{# payment methods}}</translation>
 <translation id="3831560640878483188">Dismiss warning?</translation>
@@ -673,6 +673,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3940195383040445971">Track prices on tabs</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Close {COUNT} tab}other{Close {COUNT} tabs}}</translation>
 <translation id="3948600256434252210">You can swipe right to browse in Incognito.</translation>
+<translation id="3950479158728806902">Automatically create a passkey to sign in faster</translation>
 <translation id="3950820424414687140">Sign in</translation>
 <translation id="3955740319737378355">Done</translation>
 <translation id="3955822496205734389">You have weak passwords.</translation>
@@ -697,6 +698,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4018440314314549819">Autofill saved passwords</translation>
 <translation id="4021447724486050609">Update your browser</translation>
 <translation id="4021931095789478915">Add ${url} to reading list</translation>
+<translation id="4026496154402824012">To turn off, go to <ph name="BEGIN_LINK" />Password Options<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Save in account…</translation>
 <translation id="4038354071007134711">No application on this device can open the file.</translation>
 <translation id="4042870976416480368">Find in Page</translation>
@@ -832,6 +834,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4619564267100705184">Verify that it's you</translation>
 <translation id="4619615317237390068">Tabs from other devices</translation>
 <translation id="4624080227980645783">New Incognito window</translation>
+<translation id="4627107755957573804">Allow sites and apps to upgrade existing accounts to use passkeys</translation>
 <translation id="4630212057753624203">Sample bubble</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> reused passwords</translation>
 <translation id="4631890462758052414">New Incognito tab</translation>
@@ -1129,6 +1132,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5859715514067755465">Forward</translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5860491529813859533">Turn on</translation>
+<translation id="5868644772996939262">AutoFill Passwords and Passkeys</translation>
 <translation id="5869522115854928033">Saved passwords</translation>
 <translation id="5878899964490256268"><ph name="EMAIL" />. Managed by your organisation.</translation>
 <translation id="5888889603768021126">Signed in with</translation>
@@ -1514,7 +1518,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7471557245617580330">Create new tab</translation>
 <translation id="7473891865547856676">No, thanks</translation>
 <translation id="7476548258282096076">This card shows your most visited sites.</translation>
-<translation id="747956641630879526">Hiding this card will turn off package tracking and remove all your data</translation>
 <translation id="7484645889979462775">Never for this site</translation>
 <translation id="7486006552035434095">Keep your devices in sync</translation>
 <translation id="7488874549363591659">Delivered</translation>

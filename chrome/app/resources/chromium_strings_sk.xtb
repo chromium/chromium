@@ -401,6 +401,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="6539122709674868420">Ak sa prehliadač Chromium nebude používať <ph name="TIMEOUT_DURATION" />, vaša organizácia ho zavrie. Dáta prehliadania boli odstránené. Môže to zahŕňať históriu, automatické dopĺňanie a stiahnuté súbory.</translation>
 <translation id="6542839706527980775">V každom profile sú uchované vlastné údaje prehliadača Chromium, ako sú záložky, história, heslá a ďalšie položky</translation>
 <translation id="6563921047760808519"><ph name="BEGIN_LINK" />Ako Chromium uchováva vaše údaje v súkromí<ph name="END_LINK" /></translation>
+<translation id="6564039629497156115">Zmeny tohto nastavenia sa použijú po reštarte prehliadača Chromium.</translation>
 <translation id="656935081669708576">Môžete si zobraziť heslá z iného profilu prehliadača Chromium</translation>
 <translation id="6570579332384693436">Chromium odošle text zadaný v textových poliach Googlu s cieľom opraviť pravopisné chyby</translation>
 <translation id="6598877126913850652">Prejsť do nastavení upozornení prehliadača Chromium</translation>

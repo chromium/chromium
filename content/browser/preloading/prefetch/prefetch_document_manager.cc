@@ -15,6 +15,7 @@
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
+#include "content/browser/preloading/preload_pipeline_info_impl.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_data_impl.h"
@@ -196,7 +197,7 @@ void PrefetchDocumentManager::ProcessCandidates(
         GetPredictorForPreloadingTriggerType(prefetch_type.trigger_type());
     PrefetchUrl(prefetch_url, prefetch_type, enacting_predictor, referrer,
                 no_vary_search_hint,
-                base::MakeRefCounted<PreloadPipelineInfo>(
+                PreloadPipelineInfo::Create(
                     /*planned_max_preloading_type=*/PreloadingType::kPrefetch));
   }
 
@@ -216,7 +217,7 @@ bool PrefetchDocumentManager::MaybePrefetch(
       SpeculationCandidateToPrefetchUrlParams(candidate);
   PrefetchUrl(prefetch_url, prefetch_type, enacting_predictor, referrer,
               no_vary_search_hint,
-              base::MakeRefCounted<PreloadPipelineInfo>(
+              PreloadPipelineInfo::Create(
                   /*planned_max_preloading_type=*/PreloadingType::kPrefetch));
   return true;
 }
@@ -239,7 +240,8 @@ void PrefetchDocumentManager::PrefetchUrl(
     const network::mojom::NoVarySearchPtr& mojo_no_vary_search_hint,
     scoped_refptr<PreloadPipelineInfo> preload_pipeline_info) {
   const std::pair<GURL, PreloadingType> all_prefetches_key =
-      std::make_pair(url, preload_pipeline_info->planned_max_preloading_type());
+      std::make_pair(url, PreloadPipelineInfoImpl::From(*preload_pipeline_info)
+                              .planned_max_preloading_type());
 
   // Skip prefetches that have already been requested.
   auto prefetch_container_iter = all_prefetches_.find(all_prefetches_key);

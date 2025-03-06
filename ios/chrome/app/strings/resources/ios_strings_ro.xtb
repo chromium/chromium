@@ -319,7 +319,6 @@
 <translation id="2268044343513325586">Rafinează</translation>
 <translation id="2271452184061378400">Grupurile de file se salvează aici</translation>
 <translation id="2273327106802955778">Meniul Mai multe</translation>
-<translation id="2274800392139890332">Anulează urmărirea coletului</translation>
 <translation id="2287614783861766820">{count,plural, =1{Adresa se va șterge de pe acest dispozitiv.}few{Adresele se vor șterge de pe dispozitiv.}other{Adresele se vor șterge de pe dispozitiv.}}</translation>
 <translation id="2297989278479054870">După ce te deconectezi, marcajele, parolele și altele din Contul Google vor fi eliminate de pe acest dispozitiv.</translation>
 <translation id="2299218006564889602">Parolele tale sunt criptate pe dispozitiv înainte să se salveze în Managerul de parole Google.</translation>
@@ -645,7 +644,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3812308602011798782">Recenzii</translation>
 <translation id="3813175908845379029">Sugestii utile care fac navigarea mai bună și mai ușoară</translation>
 <translation id="3815668647912194650">Păstrează acest grup pentru a adăuga file mai târziu sau părăsește-l dacă nu mai dorești să ai acces la el.</translation>
-<translation id="3818045793209708987">Urmărirea acestui colet a fost oprită</translation>
 <translation id="3819183753496523827">Ești offline. Verifică starea conexiunii la internet și încearcă din nou.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{O metodă de plată}few{# metode de plată}other{# de metode de plată}}</translation>
 <translation id="3831560640878483188">Respingi avertismentul?</translation>
@@ -1520,7 +1518,6 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="7471557245617580330">Creează o nouă filă</translation>
 <translation id="7473891865547856676">Nu, mulțumesc</translation>
 <translation id="7476548258282096076">Acest card afișează cele mai accesate site-uri.</translation>
-<translation id="747956641630879526">Dacă ascunzi acest card, urmărirea coletelor va fi dezactivată, iar toate datele se vor elimina</translation>
 <translation id="7484645889979462775">Niciodată pentru acest site</translation>
 <translation id="7486006552035434095">Menține dispozitivele sincronizate</translation>
 <translation id="7488874549363591659">Livrat</translation>

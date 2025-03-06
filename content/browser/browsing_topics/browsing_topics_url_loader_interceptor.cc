@@ -157,11 +157,15 @@ void BrowsingTopicsURLLoaderInterceptor::PopulateRequestOrRedirectHeaders(
 
   if (!permissions_policy->IsFeatureEnabledForSubresourceRequest(
           network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin,
-          *resource_request_) ||
+          resource_request_->browsing_topics,
+          resource_request_->shared_storage_writable_eligible,
+          resource_request_->ad_auction_headers) ||
       !permissions_policy->IsFeatureEnabledForSubresourceRequest(
           network::mojom::PermissionsPolicyFeature::
               kBrowsingTopicsBackwardCompatible,
-          origin, *resource_request_)) {
+          origin, resource_request_->browsing_topics,
+          resource_request_->shared_storage_writable_eligible,
+          resource_request_->ad_auction_headers)) {
     RecordFetchRequestResultUma(BrowsingTopicsFetchRequestOrRedirectResult::
                                     kDisallowedByPermissionsPolicy,
                                 is_redirect);

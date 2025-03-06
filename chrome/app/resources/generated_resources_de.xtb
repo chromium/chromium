@@ -4062,6 +4062,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Eine Erweiterung wurde genehmigt}other{# Erweiterungen wurden genehmigt}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Für Linux sind mindestens <ph name="INSTALL_SIZE" /> freier Speicherplatz erforderlich.</translation>
+<translation id="3824203811509979971">Inhalte zusammenfassen lassen oder Fragen stellen</translation>
 <translation id="3824621460022590830">Geräteregistrierungstoken ist ungültig. Bitte an den Eigentümer des Geräts oder an den Administrator wenden. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Anmelden, um Tabs von anderen Geräten zu sehen</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Meine Auswahl für diesen Dateityp merken: <ph name="FILE_TYPES" />}other{Meine Auswahl für diese Dateitypen merken: <ph name="FILE_TYPES" />}}</translation>
@@ -4248,6 +4249,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3948985214866944547">Die meisten Nutzer blockieren die Freigabe des genauen Standorts für diese Website</translation>
 <translation id="394984172568887996">Aus Internet Explorer importiert</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, um das Herunterladen von Dateien sicherer zu machen</translation>
+<translation id="3950479158728806902">Für ein schnellere Anmeldung Passkey automatisch erstellen lassen</translation>
 <translation id="3950820424414687140">Anmelden</translation>
 <translation id="3950841222883198950">Spracheingabe</translation>
 <translation id="3953834000574892725">Meine Konten</translation>
@@ -5176,6 +5178,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4624054169152573743">Farbdesign</translation>
 <translation id="4625078469366263107">App aktivieren</translation>
 <translation id="4625905218692741757">Grau (Standard)</translation>
+<translation id="4627107755957573804">Websites und Apps können vorhandene Konten automatisch auf die Verwendung von Passkeys umstellen</translation>
 <translation id="4627442949885028695">Auf einem anderen Gerät fortsetzen</translation>
 <translation id="4628762811416793313">Die Einrichtung des Linux-Containers wurde nicht abgeschlossen. Bitte versuche es noch einmal.</translation>
 <translation id="4629521233550547305">Profil <ph name="PROFILE_NAME" /> öffnen</translation>
@@ -5758,6 +5761,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5053233576223592551">Nutzername hinzufügen</translation>
 <translation id="505347685865235222">Unbenannte Gruppe – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{Wir empfehlen, es jetzt zu ändern}other{Wir empfehlen, sie jetzt zu ändern}}</translation>
+<translation id="5056587122125565772">Bild erstellen</translation>
 <translation id="5056950756634735043">Verbindung zum Container wird hergestellt</translation>
 <translation id="5057110919553308744">Wenn die Erweiterung angeklickt wird</translation>
 <translation id="5057127674016624293">Das Scannen dauert länger als erwartet</translation>
@@ -5868,6 +5872,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="512642543295077915">Suchtaste + Rücktaste</translation>
 <translation id="5126611267288187364">Änderungen anzeigen</translation>
 <translation id="5127620150973591153">ID der sicheren Verbindung: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">Du kannst Inhalte zusammenfassen lassen oder Fragen stellen.</translation>
 <translation id="5127881134400491887">Netzwerkverbindungen verwalten</translation>
 <translation id="5127934926273826089">Blumen</translation>
 <translation id="5127986747308934633">Dein Administrator steuert dein Gerät</translation>
@@ -10134,6 +10139,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> deaktivieren</translation>
 <translation id="8195920051450756553">Verzögerung vor erneuter Aktivierung derselben Taste</translation>
 <translation id="8197673340773315084">Name oder Label wie „Arbeit“ oder „Privat“ hinzufügen</translation>
+<translation id="8198181050118789419">Design: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Tab wird gestreamt</translation>
 <translation id="8199300056570174101">Netzwerk(dienst) und Geräteeigenschaften</translation>
 <translation id="8200772114523450471">Fortsetzen</translation>
@@ -11390,6 +11396,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB-Maus angeschlossen</translation>
 <translation id="9075413375877487220">Diese Erweiterung wird vom erweiterten Safe Browsing als nicht vertrauenswürdig eingestuft.</translation>
+<translation id="9075985558450420812">Gib einen benutzerdefinierten Prompt ein oder markiere Text, um ein Bild zu erstellen.</translation>
 <translation id="9076523132036239772">Deine E-Mail-Adresse bzw. dein Passwort konnte nicht bestätigt werden. Stelle zunächst eine Netzwerkverbindung her.</translation>
 <translation id="9076821103818989526">Seitenleiste</translation>
 <translation id="9076977315710973122">SMB-Freigabe</translation>

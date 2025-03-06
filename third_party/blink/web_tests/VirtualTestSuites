@@ -410,7 +410,8 @@
               "fast/scrolling/",
               "fast/forms/fieldset/overflow-scroll-interaction.html",
               "fast/scroll-behavior/smooth-scroll-overflow-hidden.html",
-              "fast/scroll-snap/snap-to-area-with-fractional-offset.html"],
+              "fast/scroll-snap/snap-to-area-with-fractional-offset.html",
+              "paint/invalidation/scroll/repaint-during-scroll-with-zoom.html"],
     "args": ["--enable-blink-features=FractionalScrollOffsets"],
     "expires": "Jun 1, 2025"
   },

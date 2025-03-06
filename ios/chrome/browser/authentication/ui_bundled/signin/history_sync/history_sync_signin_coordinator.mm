@@ -51,9 +51,9 @@
 
 #pragma mark - SigninCoordinator
 
-- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
-                 completion:(ProceduralBlock)completion {
-  [_syncPopupCoordinator interruptWithAction:action completion:completion];
+- (void)interruptAnimated:(BOOL)animated
+               completion:(ProceduralBlock)completion {
+  [_syncPopupCoordinator interruptAnimated:animated completion:completion];
 }
 
 #pragma mark - HistorySyncPopupCoordinatorDelegate

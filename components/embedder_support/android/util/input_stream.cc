@@ -12,6 +12,7 @@
 #include "base/android/jni_android.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 // Disable "Warnings treated as errors" for input_stream_jni as it's a Java
 // system class and we have to generate C++ hooks for all methods in the class
 // even if they're unused.
@@ -61,6 +62,9 @@ InputStream::InputStream(const JavaRef<jobject>& stream) : jobject_(stream) {
 }
 
 InputStream::~InputStream() {
+  base::UmaHistogramCounts10000("Android.InputStream.TotalRead.SizeKB",
+                                total_bytes_read_ / 1024);
+
   JNIEnv* env = AttachCurrentThread();
   if (jobject_.obj())
     Java_InputStreamUtil_close(env, jobject_);
@@ -140,6 +144,7 @@ bool InputStream::Read(net::IOBuffer* dest, int length, int* bytes_read) {
   DCHECK_GE(remaining_length, 0);
   DCHECK_LE(remaining_length, length);
   *bytes_read = length - remaining_length;
+  total_bytes_read_ += *bytes_read;
   return true;
 }
 

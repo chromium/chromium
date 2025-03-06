@@ -42,6 +42,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
+#include "content/services/auction_worklet/public/cpp/private_model_training_reporting.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom-forward.h"
 #include "content/test/test_content_browser_client.h"
@@ -53,6 +54,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
@@ -335,6 +337,8 @@ class InterestGroupAuctionReporterTest
       base::flat_map<std::string, std::string> ad_macro_map = {},
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
           pa_requests = {},
+      auction_worklet::mojom::PrivateModelTrainingRequestDataPtr
+          pmt_request_data = nullptr,
       std::vector<std::string> errors = {}) {
     auction_process_manager_.WaitForWinningBidderReload();
     std::unique_ptr<MockBidderWorklet> bidder_worklet =
@@ -342,7 +346,8 @@ class InterestGroupAuctionReporterTest
     bidder_worklet->WaitForReportWin();
     bidder_worklet->InvokeReportWinCallback(
         std::move(report_url), std::move(ad_beacon_map),
-        std::move(ad_macro_map), std::move(pa_requests), std::move(errors));
+        std::move(ad_macro_map), std::move(pa_requests),
+        std::move(pmt_request_data), std::move(errors));
 
     // Note that the bidder pipe is not automatically flushed on destruction, so
     // need to destroy it manually. Flushing the pipe ensures that the reporter
@@ -921,7 +926,9 @@ TEST_F(InterestGroupAuctionReporterTest, ComponentAuctionErrors) {
 
   WaitForReportWinAndRunCallback(kBidderReportUrl, /*ad_beacon_map=*/{},
                                  /*ad_macro_map=*/{},
-                                 /*pa_requests=*/{}, /*errors=*/{kBuyerError});
+                                 /*pa_requests=*/{},
+                                 /*pmt_request_data=*/nullptr,
+                                 /*errors=*/{kBuyerError});
   interest_group_manager_impl_->ExpectReports(
       {{InterestGroupManagerImpl::ReportType::kSendReportTo,
         kBidderReportUrl}});
@@ -1571,6 +1578,76 @@ TEST_F(InterestGroupAuctionReporterTest, RecordKAnonKeysToJoinLateNavigation) {
   task_environment()->RunUntilIdle();
   EXPECT_THAT(interest_group_manager_impl_->TakeJoinedKAnonSets(),
               testing::UnorderedElementsAre());
+}
+
+class InterestGroupAuctionReporterPrivateModelTrainingEnabledTest
+    : public InterestGroupAuctionReporterTest {
+ public:
+  InterestGroupAuctionReporterPrivateModelTrainingEnabledTest() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kFledgePrivateModelTraining);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(InterestGroupAuctionReporterPrivateModelTrainingEnabledTest,
+       PrivateModelTrainingRequestDataInvalidPayloadLength) {
+  SetUpAndStartSingleSellerAuction();
+
+  interest_group_auction_reporter_
+      ->OnNavigateToWinningAdCallback(FrameTreeNodeId())
+      .Run();
+
+  WaitForReportResultAndRunCallback(kSellerScriptUrl, std::nullopt);
+  auto pmt_request_data =
+      auction_worklet::mojom::PrivateModelTrainingRequestData::New(
+          /*payload=*/mojo_base::BigBuffer(10),
+          /*payload_length*/ auction_worklet::kMaxPayloadLength + 1,
+          /*aggregation_coordinator_origin=*/GURL("https://aggregation.test"),
+          /*destination=*/GURL("https://destination.test"));
+
+  WaitForReportWinAndRunCallback(
+      std::nullopt, /*ad_beacon_map=*/{},
+      /*ad_macro_map=*/{},
+      /*pa_requests=*/{},
+      /*pmt_request_data=*/std::move(pmt_request_data));
+  EXPECT_EQ(
+      "queueReportAggregateWin(): modelingSignalsConfig.payloadLength "
+      "exceeds maximum length.",
+      TakeBadMessage());
+
+  WaitForCompletion();
+}
+
+TEST_F(InterestGroupAuctionReporterPrivateModelTrainingEnabledTest,
+       PrivateModelTrainingRequestDataInvalidPayloadSize) {
+  SetUpAndStartSingleSellerAuction();
+
+  interest_group_auction_reporter_
+      ->OnNavigateToWinningAdCallback(FrameTreeNodeId())
+      .Run();
+
+  WaitForReportResultAndRunCallback(kSellerScriptUrl, std::nullopt);
+  auto pmt_request_data =
+      auction_worklet::mojom::PrivateModelTrainingRequestData::New(
+          /*payload=*/mojo_base::BigBuffer(10),
+          /*payload_length*/ 9,
+          /*aggregation_coordinator_origin=*/GURL("https://aggregation.test"),
+          /*destination=*/GURL("https://destination.test"));
+
+  WaitForReportWinAndRunCallback(
+      std::nullopt, /*ad_beacon_map=*/{},
+      /*ad_macro_map=*/{},
+      /*pa_requests=*/{},
+      /*pmt_request_data=*/std::move(pmt_request_data));
+  EXPECT_EQ(
+      "sendEncryptedTo(): payload exceeds "
+      "modelingSignalsConfig.payloadLength.",
+      TakeBadMessage());
+
+  WaitForCompletion();
 }
 
 // Check that private aggregation requests are passed along as expected. This

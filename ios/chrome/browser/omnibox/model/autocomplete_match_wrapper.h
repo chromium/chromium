@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 struct AutocompleteMatch;
+@protocol AutocompleteMatchWrapperDelegate;
 class AutocompleteResult;
 @class AutocompleteMatchFormatter;
 @class OmniboxPedalAnnotator;
@@ -16,6 +17,9 @@ class TemplateURLService;
 // The autocomplete match wrapper. This class is responsible for wrapping
 // AutocompleteMatch and AutocompleteResult.
 @interface AutocompleteMatchWrapper : NSObject
+
+/// The autocomplete match wrapper delegate.
+@property(nonatomic, weak) id<AutocompleteMatchWrapperDelegate> delegate;
 
 /// The annotator to create pedals for ths mediator.
 @property(nonatomic, weak) OmniboxPedalAnnotator* pedalAnnotator;
@@ -32,10 +36,10 @@ class TemplateURLService;
 /// Disconnects the wrapper.
 - (void)disconnect;
 
-/// Wraps `match` with AutocompleteMatchFormatter.
-- (AutocompleteMatchFormatter*)wrapMatch:(const AutocompleteMatch&)match
-                              fromResult:(const AutocompleteResult&)result
-                               isStarred:(BOOL)isStarred;
+/// Wraps the autocomplete results from the given AutocompleteResult object into
+/// an array of AutocompleteSuggestion objects.
+- (NSMutableArray<AutocompleteMatchFormatter*>*)wrapMatchesFromResult:
+    (const AutocompleteResult&)autocompleteResult;
 
 @end
 

@@ -77,6 +77,10 @@ void WaitNetworkScreen();
 // Returns true if the accelerator was processed.
 [[nodiscard]] bool PressNetworkAccelerator();
 
+// Presses the accelerator to cancel (bailout) Kiosk launch. Returns true if the
+// accelerator was processed.
+[[nodiscard]] bool PressBailoutAccelerator();
+
 // Closes the window of the given `app`.
 void CloseAppWindow(const KioskApp& app);
 

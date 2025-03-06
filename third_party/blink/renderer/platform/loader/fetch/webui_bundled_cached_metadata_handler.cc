@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/platform/loader/fetch/webui_bundled_cached_metadata_handler.h"
 
 #include "base/debug/stack_trace.h"
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_process_memory_dump.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_loading_log.h"
 
 namespace blink {
 
@@ -42,9 +44,18 @@ void WebUIBundledCachedMetadataHandler::ClearCachedMetadata(
       break;
     case ClearCacheType::kClearLocally:
     case ClearCacheType::kClearPersistentStorage:
-      // The bundled handler should not be asked to invalidate its metadata
-      // cache.
-      NOTREACHED();
+      // This can be reached if v8 rejects `cached_metadata_` following script
+      // compilation. These ClearCacheTypes request that the persistent storage
+      // invalidate the `cached_metadata_`. However for code caches backed by
+      // the static resource bundle this doesn't apply. Subsequent requests may
+      // continue to attempt to use the resource bundled code cache, however
+      // this will not affect correctness as the code cache will simply be
+      // rejected and loading will proceed as usual.
+      // TODO(crbug.com/378504631): In practice this should not occur as
+      // validity of the bundled code cache is enforced at build-time. Update
+      // this to NOTREACHED() once this has been confirmed experimentally.
+      cached_metadata_.reset();
+      RESOURCE_LOADING_DVLOG(1) << "Failed to clear WebUI bundled metadata";
   }
 }
 
@@ -84,7 +95,10 @@ size_t WebUIBundledCachedMetadataHandler::GetCodeCacheSize() const {
   return (cached_metadata_) ? cached_metadata_->SerializedData().size() : 0;
 }
 
-void WebUIBundledCachedMetadataHandler::DidUseCodeCache() {
+void WebUIBundledCachedMetadataHandler::DidUseCodeCache(bool was_rejected) {
+  base::UmaHistogramBoolean(
+      "Blink.ResourceRequest.WebUIBundledCachedMetadataHandler.ConsumeCache",
+      !was_rejected);
   did_use_code_cache_for_testing_ = true;
 }
 

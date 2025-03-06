@@ -4062,6 +4062,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Кеңейтім мақұлданды.}other{# кеңейтім мақұлданды.}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux үшін кемінде <ph name="INSTALL_SIZE" /> орын қажет.</translation>
+<translation id="3824203811509979971">Контентті қорытындылаңыз немесе сұрақтар қойыңыз</translation>
 <translation id="3824621460022590830">Құрылғыны тіркеу токені жарамсыз. Құрылғының иесіне немесе әкімшісіне хабарласыңыз. Қате коды: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Басқа құрылғылардың қойындыларын көру үшін кіріңіз</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Мына файл түріне қатысты таңдау есте сақталсын: <ph name="FILE_TYPES" />}other{Мына файл түрлеріне қатысты таңдау есте сақталсын: <ph name="FILE_TYPES" />}}</translation>
@@ -4248,6 +4249,7 @@
 <translation id="3948985214866944547">Адамдардың көпшілігі өзінің нақты локация деректерін осы сайтпен бөлісуге блок қояды.</translation>
 <translation id="394984172568887996">IE браузерінен импортталған</translation>
 <translation id="3949999964543783947">Файлдарды жүктеп алуды қауіпсіз ету үшін <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
+<translation id="3950479158728806902">Тезірек кіру үшін кіру кілтін автоматты түрде жасау</translation>
 <translation id="3950820424414687140">Кіру</translation>
 <translation id="3950841222883198950">Дауыспен теру</translation>
 <translation id="3953834000574892725">Аккаунттарым</translation>
@@ -5176,6 +5178,7 @@
 <translation id="4624054169152573743">Түс тақырыбы</translation>
 <translation id="4625078469366263107">Қолданбаны қосу</translation>
 <translation id="4625905218692741757">Сұр әдепкі түс</translation>
+<translation id="4627107755957573804">Сайттар мен қолданбаларға бұрыннан бар аккаунттарды кіру кілттерін қолданатындай жаңартуға мүмкіндік беріледі.</translation>
 <translation id="4627442949885028695">Басқа құрылғыдан жалғастыру</translation>
 <translation id="4628762811416793313">Linux контейнерін реттеу аяқталмады. Әрекетті қайталаңыз.</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> профилін ашу</translation>
@@ -5758,6 +5761,7 @@
 <translation id="5053233576223592551">Пайдаланушы атын қосу</translation>
 <translation id="505347685865235222">Атауы жоқ топ: <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{Оны тез арада өзгертіп тастауыңыз керек.}other{Оларды тез арада өзгертіп тастауыңыз керек.}}</translation>
+<translation id="5056587122125565772">Сурет жасау</translation>
 <translation id="5056950756634735043">Контейнерге қосылуда</translation>
 <translation id="5057110919553308744">Кеңейтім басылғанда</translation>
 <translation id="5057127674016624293">Сканерлеу әдеттегіден ұзаққа созылып жатыр</translation>
@@ -5868,6 +5872,7 @@
 <translation id="512642543295077915">іздеу + Backspace</translation>
 <translation id="5126611267288187364">Өзгерістерді көру</translation>
 <translation id="5127620150973591153">Қауіпсіз байланыс коды: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">Контентті қорытындылаңыз немесе сұрақтар қойыңыз.</translation>
 <translation id="5127881134400491887">Желі қосылымдарын басқару</translation>
 <translation id="5127934926273826089">Гүлдер</translation>
 <translation id="5127986747308934633">Құрылғыны әзірше әкімші басқарады</translation>
@@ -11388,6 +11393,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB тінтуірі қосылды</translation>
 <translation id="9075413375877487220">Күшейтілген Safe Browsing қорғанысы бұл кеңейтімді сенімді деп санамайды.</translation>
+<translation id="9075985558450420812">Сурет жасау үшін арнаулы сұрауды енгізіңіз немесе мәтінді ерекшелеңіз.</translation>
 <translation id="9076523132036239772">Кешіріңіз, электрондық поштаңызды немесе құпия сөзіңізді растау мүмкін емес. Алдымен желіге қосылып көріңіз.</translation>
 <translation id="9076821103818989526">Бүйірлік панель</translation>
 <translation id="9076977315710973122">SMB ортақ қалтасы</translation>

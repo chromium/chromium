@@ -420,6 +420,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6520670145826811516">Ak chcete používať polohu, udeľte Chromu prístup v <ph name="BEGIN_LINK" />nastaveniach systému<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">V správcovi hesiel Google v tomto zariadení</translation>
 <translation id="6632473616050862500">Systém Chrome OS Flex mohol vzniknúť vďaka ďalšiemu <ph name="BEGIN_LINK_CROS_OSS" />softvéru typu open source<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6634299872736643004">Zmeny tohto nastavenia sa uplatnia po reštarte Chromu.</translation>
 <translation id="6660596345553328257">Chcete sa prihlásiť do Chromu?</translation>
 <translation id="6664219008737641504">Ak ste zabudli prístupovú frázu alebo chcete toto nastavenie zmeniť, <ph name="SETTINGS_LINK" /> údaje Chromu vo svojom účte</translation>
 <translation id="6676384891291319759">Prístup do siete Internet</translation>

@@ -307,7 +307,7 @@ void RecordAfterClickRedirectChainSize(size_t redirect_chain_size) {
 }
 
 bool CalculateIsLikelyAheadOfPrerender(
-    const PreloadPipelineInfo& preload_pipeline_info) {
+    const PreloadPipelineInfoImpl& preload_pipeline_info) {
   if (!base::FeatureList::IsEnabled(
           features::kPrerender2FallbackPrefetchSpecRules)) {
     return false;
@@ -443,7 +443,7 @@ PrefetchContainer::PrefetchContainer(
           /*prefetch_document_manager=*/nullptr,
           referring_web_contents.GetBrowserContext()->GetWeakPtr(),
           ukm::kInvalidSourceId,
-          base::MakeRefCounted<PreloadPipelineInfo>(
+          PreloadPipelineInfo::Create(
               /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
           std::move(attempt),
           holdback_status_override,
@@ -481,7 +481,7 @@ PrefetchContainer::PrefetchContainer(
           /*prefetch_document_manager=*/nullptr,
           browser_context->GetWeakPtr(),
           ukm::kInvalidSourceId,
-          base::MakeRefCounted<PreloadPipelineInfo>(
+          PreloadPipelineInfo::Create(
               /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
           std::move(attempt),
           /*holdback_status_override=*/std::nullopt,
@@ -524,7 +524,8 @@ PrefetchContainer::PrefetchContainer(
       browser_context_(std::move(browser_context)),
       ukm_source_id_(ukm_source_id),
       request_id_(base::UnguessableToken::Create().ToString()),
-      preload_pipeline_info_(std::move(preload_pipeline_info)),
+      preload_pipeline_info_(base::WrapRefCounted(
+          static_cast<PreloadPipelineInfoImpl*>(preload_pipeline_info.get()))),
       attempt_(std::move(attempt)),
       holdback_status_override_(holdback_status_override),
       initiator_devtools_navigation_token_(

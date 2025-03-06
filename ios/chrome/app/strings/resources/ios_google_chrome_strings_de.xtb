@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">Dein Passwort wird im Google Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
 <translation id="1146503048444965320">Neuen Tab in Chrome öffnen</translation>
 <translation id="1166460004393506534">Browserdaten in Chrome löschen</translation>
+<translation id="1171255741903316750">Aktiviere die Option „Inkognitotabs sperren, wenn Chrome geschlossen wird“</translation>
 <translation id="1179527450541388808">Über das Startbildschirm-Dock deines iPads kannst du schneller auf Chrome zugreifen.</translation>
 <translation id="1180362651362502943">Chrome-Daten in deinem Google-Konto weiterhin verwenden.</translation>
 <translation id="1200396280085622191">Du kannst Chrome jederzeit nutzen, wenn du in Nachrichten und anderen Apps auf Links tippst.</translation>
@@ -45,6 +46,7 @@ Wichtige Hinweise:
 <translation id="1917964099031477364">Dieses Konto und alle nicht gespeicherten Daten werden aus Chrome und anderen Google Apps auf diesem Gerät entfernt.</translation>
 <translation id="1919130412786645364">Anmeldung in Chrome zulassen</translation>
 <translation id="1965935827552890526">Du kannst zu deinem offenen Chrome-Fenster zurückkehren, um dein vorherige Aktion abzuschließen.</translation>
+<translation id="1973910962341002002">Aktiviere in den Einstellungen unter „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ die Option „Chrome“</translation>
 <translation id="1984705450038014246">Chrome-Daten synchronisieren</translation>
 <translation id="1987779152850321833">Mit den unten vorgeschlagenen Aktionen lässt sich das Beste aus Chrome herausholen.</translation>
 <translation id="2055826352861631739">Standardmäßig Chrome für iPad verwenden</translation>
@@ -96,10 +98,13 @@ Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, wer
 <translation id="3282568296779691940">In Chrome anmelden</translation>
 <translation id="3303503998967553377">Chrome Aktionen unter iOS verwenden</translation>
 <translation id="3348862487678490430">Leselisteneintrag zu Chrome hinzufügen</translation>
+<translation id="3357827134511189025">Verwende „Autofill“ in Chrome, um dich in deinen Apps mit deinen gespeicherten Passwörtern und Passkeys anzumelden</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Das passiert, wenn Chrome {THRESHOLD} Minute lang nicht verwendet wird}other{Das passiert, wenn Chrome {THRESHOLD} Minuten lang nicht verwendet wird}}</translation>
 <translation id="3367797402528056312">Chrome fertig einrichten</translation>
 <translation id="3371064404604898522">Google Chrome als Standardbrowser festlegen</translation>
 <translation id="3399930248910934354">Chrome-Einstellungen öffnen</translation>
+<translation id="3440830787838130530">Im Google Passwortmanager kannst du Kopien deiner Passwörter einfach und sicher mit den Mitgliedern deiner Familiengruppe teilen</translation>
+<translation id="3460369101684070455">Wähle „Autofill“ in Chrome, um deine gespeicherten Passwörter ganz einfach in deinen anderen Apps abzurufen</translation>
 <translation id="3472587960215700950">Chrome nutzt Google Maps, um dir Wegbeschreibungen und lokale Informationen zu erkannten Adressen bereitzustellen.</translation>
 <translation id="3503014945441706099">Hol dir für dieses Chrome-Profil auch erweitertes Safe Browsing</translation>
 <translation id="3522659714780527202">Aktiviere die Synchronisierung, um deine Tabs überall dort aufzurufen, wo du Chrome verwendest</translation>
@@ -155,7 +160,6 @@ Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, wer
 <translation id="5395376160638294582">Achte darauf, dass du die Chrome-Daten in deinem Google-Konto jederzeit verwenden kannst</translation>
 <translation id="5404252374083197467">Chrome als Standardbrowser festlegen?</translation>
 <translation id="5439191312780166229">Warnt dich vor schädlichen Websites, auch solchen, die Google vorher nicht bekannt waren, indem mehr Daten von Websites analysiert werden als beim Standardschutz. Du kannst Warnungen von Chrome überspringen.</translation>
-<translation id="5442013002200339429">Wenn du „<ph name="MODULE_NAME" />“ ausblendest, verfolgt Chrome zukünftige Pakete nicht mehr automatisch und löscht alle früheren Paketverfolgungsdaten.</translation>
 <translation id="5460571915754665838">4. Wähle Chrome aus</translation>
 <translation id="5492504007368565877">Der Google Passwortmanager kann deine Passwörter nicht prüfen.</translation>
 <translation id="5525095647255982834">Wenn du diesen Tab an ein anderes Gerät senden möchtest, melde dich dort in Chrome an.</translation>
@@ -181,6 +185,7 @@ Warte einige Minuten, bevor du das Konto wechselst. Wenn du jetzt das Konto wech
 <translation id="5998675059699164418">Deine Organisation verlangt, dass du dich für die Verwendung von Chrome anmeldest.</translation>
 <translation id="6021312115739110405">Ein personalisierter Feed, der von Google für dich erstellt wurde. Er enthält Nachrichten, Sport und das Wetter.</translation>
 <translation id="6022659036123304283">Chrome personalisieren</translation>
+<translation id="6132075343662013154">Chrome bietet an, dein Passwort zu speichern</translation>
 <translation id="6132149203299792222">Melde dich mit deinem Google-Konto an, um z. B. deine Passwörter und Lesezeichen zu synchronisieren.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Suche in Chrome</translation>
@@ -228,6 +233,7 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet wer
 <translation id="7061455974939528301">Halte das Chrome-Symbol gedrückt und klicke auf „Startbildschirm bearbeiten“</translation>
 <translation id="7065813315247345131">Chrome zum Dock hinzufügen</translation>
 <translation id="7124339256045485976">Chrome auf dem neuesten Stand halten</translation>
+<translation id="7145599899567697473">Passwörter in Chrome speichern und automatisch ausfüllen</translation>
 <translation id="7161390184744336561">Google Chrome ist veraltet</translation>
 <translation id="7165736900384873061">Google Chrome QR-Scanner nutzen</translation>
 <translation id="7175129790242719365">Chrome-Tipp: In Chrome anmelden</translation>
@@ -261,6 +267,7 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet wer
 <translation id="7693590760643069321">Du kannst jetzt Chrome jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
 <translation id="7698568245838009292">Chrome möchte auf deine Kamera zugreifen</translation>
 <translation id="7707877166818730835">Aktuellen Tab in Chrome öffnen</translation>
+<translation id="7747746207470479571">Mit „Autofill“ in Chrome kannst du ganz einfach auf deine Passwörter und Passkeys zugreifen</translation>
 <translation id="776305366874821582">Über das Startbildschirm-Dock deines iPhones kannst du schneller auf Chrome zugreifen.</translation>
 <translation id="7780154209050837198">Wenn du Chrome optimal nutzen möchtest, meldest du dich mit deinem Google-Konto in Chrome an.</translation>
 <translation id="7787205077729386167">Öffne unter iOS die Chrome-Einstellungen, tippe auf „Standard-Browser-App“ und wähle „Chrome“ aus.</translation>
@@ -281,6 +288,7 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet wer
 <translation id="8136856065410661948">Dadurch kannst du in deinem Apple-Kalender Termine anhand von Inhalten aus Chrome und Google Lens erstellen.</translation>
 <translation id="8154120522323162874">Du kannst Chrome optimal nutzen, wenn du deinen Browser weiter einrichtest.</translation>
 <translation id="8160472928944011082">Update nicht möglich</translation>
+<translation id="8245080522851805544">Mit der Geräteauthentifizierung bleiben deine Browsing-Aktivitäten privat, wenn du Chrome schließt</translation>
 <translation id="8248887045858762645">Chrome-Tipp</translation>
 <translation id="8265730590513812063">Chrome-Menü öffnen</translation>
 <translation id="8317674518145175158">Zahlungsmethoden und Adressen werden nicht verschlüsselt. Der Chrome-Browserverlauf wird nicht synchronisiert.
@@ -324,5 +332,6 @@ Deine Daten wurden am <ph name="TIME" /> mit deiner Passphrase verschlüsselt. G
 <translation id="9181628561061032322">Öffnet die zuletzt geöffneten Chrome-Tabs.</translation>
 <translation id="948597495737267756">Dadurch wird die Seite mit deinem Chrome-Verlauf geöffnet.</translation>
 <translation id="97300214378190234">Du kannst Chrome jederzeit nutzen, wenn du in anderen Apps auf Links tippst.</translation>
+<translation id="997929539742564806">Melde dich schnell in Apps und auf Websites an, indem du deine Passwörter und Passkeys aus Chrome automatisch ausfüllen lässt</translation>
 <translation id="998677222109959694">Chrome-Einstellungen verwalten</translation>
 </translationbundle>

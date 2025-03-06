@@ -54,7 +54,9 @@ enum class ProxyResolutionResult {
   kTokensExhausted = 6,
   // The request was resolved to use the IP Protection proxies.
   kAttemptProxy = 7,
-  kMaxValue = kAttemptProxy,
+  // A site exception created by User Bypass disables protections.
+  kHasSiteException = 8,
+  kMaxValue = kHasSiteException,
 };
 
 // An enumeration of the result of an attempt to fetch a proxy list. These

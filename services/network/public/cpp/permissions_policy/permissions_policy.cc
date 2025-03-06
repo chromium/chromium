@@ -14,7 +14,6 @@
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_features.h"
-#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "url/gurl.h"
@@ -206,10 +205,12 @@ bool PermissionsPolicy::IsFeatureEnabledForOrigin(
 bool PermissionsPolicy::IsFeatureEnabledForSubresourceRequest(
     network::mojom::PermissionsPolicyFeature feature,
     const url::Origin& origin,
-    const network::ResourceRequest& request) const {
+    bool browsing_topics,
+    bool shared_storage_writable_eligible,
+    bool ad_auction_headers) const {
   // Derive the opt-in features from the request attributes.
   std::set<network::mojom::PermissionsPolicyFeature> opt_in_features;
-  if (request.browsing_topics) {
+  if (browsing_topics) {
     DCHECK(base::FeatureList::IsEnabled(network::features::kBrowsingTopics));
 
     opt_in_features.insert(
@@ -222,13 +223,13 @@ bool PermissionsPolicy::IsFeatureEnabledForSubresourceRequest(
   // using `IsFeatureEnabledForSubresourceRequestAssumingOptIn()`, since a
   // `network::ResourceRequest` is not available at the call site and
   // `blink::ResourceRequest` should not be used in blink public APIs.
-  if (request.shared_storage_writable_eligible) {
+  if (shared_storage_writable_eligible) {
     DCHECK(base::FeatureList::IsEnabled(network::features::kSharedStorageAPI));
     opt_in_features.insert(
         network::mojom::PermissionsPolicyFeature::kSharedStorage);
   }
 
-  if (request.ad_auction_headers) {
+  if (ad_auction_headers) {
     DCHECK(
         base::FeatureList::IsEnabled(network::features::kInterestGroupStorage));
 

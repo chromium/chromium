@@ -4225,8 +4225,6 @@ static_library("browser") {
       "webauthn/passkey_model_factory.h",
       "webauthn/password_credential_controller.cc",
       "webauthn/password_credential_controller.h",
-      "webauthn/password_credential_controller_impl.cc",
-      "webauthn/password_credential_controller_impl.h",
       "webauthn/unexportable_key_utils.cc",
       "webauthn/unexportable_key_utils.h",
     ]

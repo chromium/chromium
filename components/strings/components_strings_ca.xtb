@@ -628,6 +628,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Permet en cada visita</translation>
 <translation id="2085876078937250610">Desa…</translation>
+<translation id="2090451897496479509">Contacta amb el proveïdor per obtenir més informació</translation>
 <translation id="2091887806945687916">So</translation>
 <translation id="2093982008204312032">Google Chrome està provant de desactivar Windows Hello per emplenar contrasenyes.</translation>
 <translation id="2094505752054353250">Els dominis no coincideixen.</translation>
@@ -1310,6 +1311,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="33073482541490531">La contrasenya que acabes d'utilitzar s'ha trobat en una violació de les dades. El gestor de contrasenyes recomana que la canviïs ara.</translation>
 <translation id="3307649904964670439">Botó Personalitza Chrome: activa'l per personalitzar l'aspecte del navegador</translation>
 <translation id="3308006649705061278">Unitat organitzativa (OU)</translation>
+<translation id="3317077846337994567">La funció Paga a terminis no està disponible en aquest moment. Torna-ho a provar més tard.</translation>
 <translation id="3318016344440038475">Comèdies de televisió</translation>
 <translation id="3324687287337751929">4 x 6 polzades</translation>
 <translation id="3324983252691184275">Carmesí</translation>
@@ -3024,6 +3026,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6351658970066645919">Suprimeix les dades de navegació</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Cap}=1{1 contrasenya per a <ph name="DOMAIN_LIST" /> (sincronitzats)}=2{2 contrasenyes per a <ph name="DOMAIN_LIST" /> (sincronitzats)}other{# contrasenyes per a <ph name="DOMAIN_LIST" /> (sincronitzats)}}</translation>
 <translation id="6355392890578844978">Cap empresa ni cap altra organització no gestiona aquest navegador. És possible que l'activitat d'aquest dispositiu es gestioni fora de Chromium. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Els grups de pestanyes "<ph name="GROUP_TITLE_1" />" i "<ph name="GROUP_TITLE_2" />" ja no estan disponibles</translation>
 <translation id="6358088212770985041">editar les formes de pagament</translation>
 <translation id="6358450015545214790">Què vol dir tot això?</translation>
 <translation id="6360213755783740931">Més informació sobre la protecció contra el programari maliciós</translation>

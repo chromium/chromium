@@ -56,7 +56,6 @@
 <translation id="1206892813135768548">Kopiér linkteksten</translation>
 <translation id="1209206284964581585">Skjul for øyeblikket</translation>
 <translation id="1227058898775614466">Navigeringslogg</translation>
-<translation id="1231733316453485619">Vil du slå på synkronisering?</translation>
 <translation id="123724288017357924">Last inn siden på nytt, men ignorer bufret innhold</translation>
 <translation id="1239792311949352652">Del denne siden raskt. For å redigere denne snarveien, gå til Innstillinger.</translation>
 <translation id="1240288207750131269">Laster inn <ph name="LANG" /></translation>
@@ -105,16 +104,12 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="1407135791313364759">Åpne alle</translation>
 <translation id="1409879593029778104">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt fordi filen finnes allerede.</translation>
 <translation id="1413446866325418126">Lagre data i Google-kontoen din</translation>
-<translation id="1414981605391750300">Kontakter Google. Dette kan ta en liten stund.</translation>
 <translation id="1416550906796893042">Programversjon</translation>
-<translation id="1416582024052267068">Behold tilgangen til passordene dine</translation>
 <translation id="1419753403124156396">Vil du starte Chrome på nytt?</translation>
 <translation id="1428770807407000502">Vil du slå av synkronisering?</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1435593198351412143">Åpne PDF-filer automatisk</translation>
-<translation id="1436784010935106834">Fjernet</translation>
 <translation id="1437543266176261764">Kjører i <ph name="APP_NAME" /></translation>
-<translation id="1448147069872048656">Bekreft at det er deg, for å sikre at du har tilgang til alle passordene dine på denne enheten</translation>
 <translation id="1448440926884431741">Organiser sporede produkter i Bokmerker</translation>
 <translation id="1460751212339734034">Spar tid – skriv mindre</translation>
 <translation id="1466383950273130737">Velg språk for Chrome</translation>
@@ -241,7 +236,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2111511281910874386">Gå til side</translation>
 <translation id="2119609734654412418">Her finner du bokmerkene dine</translation>
 <translation id="2122601567107267586">Kunne ikke åpne appen</translation>
-<translation id="2132122640199389833">Fjern alle tilknyttede enheter</translation>
 <translation id="213279576345780926">Lukket <ph name="TAB_TITLE" /></translation>
 <translation id="2141396931810938595">Basert på bruken din</translation>
 <translation id="2145315049852051678">Chrome sjekker regelmessig at nettleseren din har de tryggeste innstillingene. Vi gir deg beskjed hvis det er noe du må se nærmere på.</translation>
@@ -280,7 +274,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2321086116217818302">Klargjør passordene …</translation>
 <translation id="2323763861024343754">Nettstedslagring</translation>
 <translation id="2328474416100889417">Alle mister tilgangen til fanegruppen «<ph name="GROUP_NAME" />» umiddelbart, og alle invitasjonslinker deaktiveres</translation>
-<translation id="2328985652426384049">Kan ikke logge på</translation>
 <translation id="2332515770639153015">Safe Browsing med økt beskyttelse er påslått</translation>
 <translation id="233375395665273385">Slett og logg av</translation>
 <translation id="2341410551640223969">Kunne ikke installere <ph name="WEBAPK_NAME" />.</translation>
@@ -407,7 +400,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2883644600102358131">Passord slutter snart å fungere på denne enheten. For å fortsette å bruke passordene dine, oppdater Google Play-tjenester.</translation>
 <translation id="2888126860611144412">Om Chrome</translation>
 <translation id="2891154217021530873">Stopp innlastingen av siden</translation>
-<translation id="2893180576842394309">Google kan bruke loggen din for å gi Søk og andre Google-tjenester et personlig preg</translation>
 <translation id="2894821468041866720">Funksjonen gjør ikke nettleseren eller enheten merkbart tregere.</translation>
 <translation id="2895521649038438824">Du kan lytte til denne siden</translation>
 <translation id="2899252057552912621">Passord slutter å fungere snart fordi Google Play-tjenester ikke er tilgjengelige. Du kan lage en kopi av de lagrede passordene dine før de slutter å fungere.</translation>
@@ -486,7 +478,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3250563604907490871">Bildebeskrivelser gjenopptas når du kobler til wifi</translation>
 <translation id="3254409185687681395">Legg til bokmerke for denne siden</translation>
 <translation id="3259831549858767975">Gjør alt på siden mindre</translation>
-<translation id="3262666254864194397">Adressefelt  <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="3265093782546847662">Alle sider på <ph name="DOMAIN" /></translation>
 <translation id="3269093882174072735">Last inn bildet</translation>
 <translation id="327204079441056603">Vi har endret hvordan passord på denne enheten lagres</translation>
@@ -552,7 +543,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3563767357928833671">Innholdet på utklippstavlen vises</translation>
 <translation id="3566639033325271639">Oppdater innstillingene</translation>
 <translation id="3568945271227339929">Ingen passord er utsatt for sikkerhetsbrudd</translation>
-<translation id="357465026686164600">Telefon som sikkerhetsnøkkel</translation>
 <translation id="3575464060651642446">Sjekker passord på denne enheten …</translation>
 <translation id="3577473026931028326">Noe gikk galt. Prøv på nytt.</translation>
 <translation id="3577558748185201054">Administrer interessene og preferansene dine</translation>
@@ -585,7 +575,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3710560693796335511">Samarbeid</translation>
 <translation id="3714981814255182093">Åpne søkeraden</translation>
 <translation id="3718765429352682176">Du kan se loggen fra andre apper som åpner linker i Chrome.</translation>
-<translation id="3720422586473670527">Nei takk</translation>
 <translation id="3721119614952978349">Deg og Google</translation>
 <translation id="3737319253362202215">Innstillinger for oversettelse</translation>
 <translation id="3738139272394829648">Trykk for å søke</translation>
@@ -732,7 +721,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4452411734226507615">Lukk <ph name="TAB_TITLE" />-fanen</translation>
 <translation id="4452548195519783679">Satt som bokmerke i <ph name="FOLDER_NAME" /></translation>
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 bokmerke}other{# bokmerker}}</translation>
-<translation id="4461614516424362539">Når du tilknytter en annen enhet med QR-kode, kan den bruke denne telefonen som sikkerhetsnøkkel. Hvis du fjerner den, må du skanne QR-koden for å tilknytte den igjen.</translation>
 <translation id="4478161224666880173">Du kan bruke <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-kontoen din på dette nettstedet. For å fortsette, logg på <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Installerer <ph name="MODULE" /> for Chrome …</translation>
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Bokmerket er lagret i «<ph name="FOLDER_NAME" />». Det er kun lagret på denne enheten.}other{Bokmerkene er lagret i «<ph name="FOLDER_NAME" />». De er kun lagret på denne enheten.}}</translation>
@@ -816,7 +804,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Navn som er oppført på kortet</translation>
 <translation id="480990236307250886">Åpne startsiden</translation>
-<translation id="481574578487123132">Tilknyttede enheter</translation>
 <translation id="4822710610088666676">Fanegruppen <ph name="TAB_GROUP_TITLE" /> ble lukket og lagret</translation>
 <translation id="4826163340425232009">Påloggingsfeltet nederst.</translation>
 <translation id="4834250788637067901">Betalingsmåter, tilbud og adresser som bruker Google Pay</translation>
@@ -842,7 +829,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4910889077668685004">Betalingsapper</translation>
 <translation id="4912413785358399818">Flytt fane</translation>
 <translation id="4913169188695071480">Slutt å laste inn på nytt</translation>
-<translation id="4913841543356834596">Få tilgang til alle passordene dine</translation>
 <translation id="4918086044614829423">Godta</translation>
 <translation id="4925120120285606924">Skjermbilde <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Passordene dine blir eksportert og lastet ned som en tekstfil. De blir synlige for alle personer og apper som har tilgang til målmappen.</translation>
@@ -850,7 +836,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4932247056774066048">Fordi du logger av en konto som administreres av <ph name="DOMAIN_NAME" />, slettes Chrome-dataene dine fra denne enheten. De blir værende i Google-kontoen din.</translation>
 <translation id="4943703118917034429">Virtuell virkelighet</translation>
 <translation id="4943872375798546930">Ingen resultater</translation>
-<translation id="4950924971025849764">Når du er logget på den samme Google-kontoen, kan andre enheter bruke denne enheten som sikkerhetsnøkkel.</translation>
 <translation id="4953833914914492602">Fanegruppen «<ph name="TAB_GROUP_NAME" />» er ikke tilgjengelig lenger</translation>
 <translation id="4957722034734105353">Les mer</translation>
 <translation id="4961107849584082341">Oversett denne siden til hvilket som helst språk</translation>
@@ -978,7 +963,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5568069709869097550">Kan ikke logge på</translation>
 <translation id="557018954714092179">Opprett en ny mappe</translation>
 <translation id="5578795271662203820">Søk etter dette bildet i <ph name="SEARCH_ENGINE" /></translation>
-<translation id="5581519193887989363">Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK1" />innstillingene<ph name="END_LINK1" />.</translation>
 <translation id="5596627076506792578">Flere alternativer</translation>
 <translation id="5599455543593328020">Inkognitomodus</translation>
 <translation id="5601180634394228718">For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen din, gå til <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
@@ -1071,7 +1055,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5995726099713306770">Vil du laste ned siden på nytt?</translation>
 <translation id="6000066717592683814">Behold Google</translation>
 <translation id="6000203700195075278">Følg på nytt</translation>
-<translation id="6002122790816966947">Enhetene dine</translation>
 <translation id="6011308810877101166">Gjør søkeforslagene bedre</translation>
 <translation id="6013305291643746595">Sorterer etter eldste</translation>
 <translation id="6022659036123304283">Gi Chrome et personlig preg</translation>
@@ -1119,6 +1102,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="6210748933810148297">Ikke <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Forhåndsviser denne siden</translation>
 <translation id="6221633008163990886">Lås opp for å eksportere passordene dine</translation>
+<translation id="6225572914528673855">Adressefelt</translation>
 <translation id="6232535412751077445">Hvis du slår på «Deaktivering av sporing», blir det sendt en forespørsel sammen med nettrafikken din. Hvilke virkninger dette eventuelt får, avhenger av om det aktuelle nettstedet svarer på forespørselen eller ikke, samt hvordan forespørselen tolkes.
 
 Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg annonser som ikke er basert på andre nettsteder du har besøkt. Mange nettsteder samler likevel inn og bruker nettlesingsdataene dine – for eksempel for å forbedre sikkerheten, for å levere innhold, annonser og anbefalinger og for å generere rapporteringsstatistikk.</translation>
@@ -1190,7 +1174,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6527303717912515753">Del</translation>
 <translation id="652948702951888897">Chrome-logg</translation>
 <translation id="6532866250404780454">Nettsteder du besøker i Chrome, vises ikke. Alle tidtakere for nettsteder blir slettet.</translation>
-<translation id="6534565668554028783">Google brukte for lang tid på å svare</translation>
 <translation id="6539092367496845964">Noe gikk galt. Prøv på nytt senere.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Sjekket for en time siden}other{Sjekket for # timer siden}}</translation>
 <translation id="6545017243486555795">Slett alle data</translation>
@@ -1222,7 +1205,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6637100877383020115">For å bidra til å gjøre appen bedre sender Chrome bruks- og krasjrelaterte data til Google. <ph name="BEGIN_UMA_LINK" />Administrer<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Blokkér alltid</translation>
 <translation id="6641780377503683465">Fjern <ph name="INTEREST" /></translation>
-<translation id="6645629752388991326">Kontroller hvilke enheter som kan logge på ved å bruke denne enheten som sikkerhetsnøkkel.</translation>
 <translation id="6647441008198474441">Nettadresser du besøker, sendes til Google for å forutsi hvilke nettsteder du kanskje kommer til å besøke etterpå</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> til}other{<ph name="CONTACT_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> til}}</translation>
 <translation id="6649642165559792194">Forhåndsvis bildet <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
@@ -1322,7 +1304,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6987047470128880212">Inkognito er ikke tilgjengelig på denne enheten</translation>
 <translation id="6991701761229081516">Passordene dine lastes ned som en CSV-fil. De blir synlige for alle som har tilgang til filen, inkludert apper. Eksporterte passord slettes fra Chrome.</translation>
 <translation id="6996145122199359148">Last ned denne siden</translation>
-<translation id="7013627768165542797">Bekreft at det er deg, for å få tilgang til passord i Google-kontoen din</translation>
 <translation id="7013762323294215682">Denne passnøkkelen lagres i passordlagringen. Alle som har tilgang til den, kan bruke denne passnøkkelen.</translation>
 <translation id="7020741890149022655">Legg til på leselisten <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Åpne i nettleseren</translation>
@@ -1339,7 +1320,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7078916049958741685">Slett også Chrome-dataene dine fra denne enheten</translation>
 <translation id="7085332316435785646">Velg om Chrome-loggen skal inkluderes for å gi opplevelser i Google-tjenester mer personlig preg</translation>
 <translation id="7088681679121566888">Chrome er oppdatert</translation>
-<translation id="7102843846294013537">Noen av passordene dine er ikke tilgjengelige på denne enheten</translation>
 <translation id="7106762743910369165">Nettleseren administreres av organisasjonen din</translation>
 <translation id="7111394291981742152">Med Chrome får du mer kontroll over annonsene du ser, og du begrenser hvilke ting nettsteder kan finne ut om deg når de viser deg personlig tilpassede annonser.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Tillatelsene er gjennomgått for 1 nettsted}other{Tillatelsene er gjennomgått for # nettsteder}}</translation>
@@ -1352,7 +1332,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="71503698506017927">Kryptering med passordfrase inkluderer ikke betalingsmåter eller adresser fra Google Pay.
 
 For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
-<translation id="7161230316646448869">Synkroniser bokmerker, logg med mer på alle enheter</translation>
 <translation id="7168323970702333693">Logget på som <ph name="USER_NAME" />. Åpner innstillinger.</translation>
 <translation id="7173114856073700355">Åpne Innstillinger</translation>
 <translation id="7173338713290252554">Prishistorikk på nettet</translation>
@@ -1408,7 +1387,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7400418766976504921">Nettadresse</translation>
 <translation id="7403691278183511381">Førsteinntrykk ved bruk av Chrome</translation>
 <translation id="7411224099004328643">Google-kontobruker</translation>
-<translation id="741204030948306876">Ja, jeg er med</translation>
 <translation id="7419565702166471774">Bruk alltid sikre tilkoblinger</translation>
 <translation id="7421293530411019405">Vil du forlate fanegruppen?</translation>
 <translation id="7431991332293347422">Kontroller hvordan nettleserloggen din brukes til blant annet personlig tilpasning av søk</translation>
@@ -1473,7 +1451,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7656862631699126784">Slå på inkognitolås</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7663320421139257046">Før du kan fortsette, må <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dele <ph name="FIELDS_STRING" /> med dette nettstedet. Se nettstedets <ph name="BEGIN_LINK1" />personvernregler<ph name="END_LINK1" />.</translation>
-<translation id="7665369617277396874">Legg til konto</translation>
 <translation id="766587987807204883">Her vises artikler, som du kan lese selv om du er uten nett</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> ble lukket</translation>
 <translation id="7682724950699840886">Prøv dette: Sørg for at det er nok plass på enheten, og prøv å eksportere på nytt.</translation>
@@ -1552,7 +1529,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8027395186860110042">Det kan hende at passord snart slutter å fungere</translation>
 <translation id="8027863900915310177">Velg hvor du vil laste ned til</translation>
 <translation id="8030852056903932865">Godkjenn</translation>
-<translation id="8031805944372049238">For å begynne å lagre og bruke passord med Google Passordlagring, oppdater Google Play-tjenester.</translation>
 <translation id="8032569120109842252">Følger</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> dager igjen</translation>
 <translation id="8037801708772278989">Sjekket nettopp</translation>

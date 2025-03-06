@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_infobar_delegate.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
@@ -25,6 +24,7 @@
 #include "content/public/browser/web_contents.h"
 
 namespace {
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 bool ShouldShowPrompts() {
   PrefService* local_state = g_browser_process->local_state();
@@ -33,13 +33,14 @@ bool ShouldShowPrompts() {
       local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount);
   const base::Time last_declined_time =
       local_state->GetTime(prefs::kDefaultBrowserLastDeclinedTime);
-  const int max_prompt_count = features::kMaxPromptCount.Get();
+  constexpr int kMaxPromptCount = 5;
+  constexpr int kRepromptDurationDays = 21;
 
   // A negative value for the max prompt count indicates that the prompt
   // should be shown indefinitely. Otherwise, don't show the prompt if
   // declined count equals or exceeds the max prompt count. A max prompt count
   // of zero should mean that the prompt is never shown.
-  if (max_prompt_count >= 0 && declined_count >= max_prompt_count) {
+  if (declined_count >= kMaxPromptCount) {
     return false;
   }
 
@@ -50,7 +51,7 @@ bool ShouldShowPrompts() {
 
   // Show if it has been long enough since the last declined time
   return (base::Time::Now() - last_declined_time) >
-         features::kRepromptDuration.Get();
+         base::Days(kRepromptDurationDays);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 }  // namespace
@@ -61,24 +62,18 @@ DefaultBrowserPromptManager* DefaultBrowserPromptManager::GetInstance() {
 }
 
 void DefaultBrowserPromptManager::MaybeShowPrompt() {
-  CHECK(base::FeatureList::IsEnabled(features::kDefaultBrowserPromptRefresh));
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   NOTREACHED() << "Unsupported platforms for showing default browser prompts.";
 #else
-  if (features::kShowDefaultBrowserAppMenuItem.Get()) {
-    SetAppMenuItemVisibility(true);
-  }
+  SetAppMenuItemVisibility(true);
 
   if (!ShouldShowPrompts()) {
     return;
   }
-
-  if (features::kShowDefaultBrowserInfoBar.Get()) {
     browser_tab_strip_tracker_ =
         std::make_unique<BrowserTabStripTracker>(this, this);
     browser_tab_strip_tracker_->Init();
-  }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 }
 
 void DefaultBrowserPromptManager::CloseAllPrompts(CloseReason close_reason) {

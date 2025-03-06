@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_coordinator.h"
 
+#import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/test_timeouts.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_constants.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_coordinator.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_metrics.h"
@@ -22,6 +24,15 @@
 #import "testing/platform_test.h"
 
 using credential_provider_promo::IOSCredentialProviderPromoAction;
+
+namespace {
+
+// Name of the histogram that logs the outcome of the prompt that allows the
+// user to set the app as a credential provider.
+constexpr char kTurnOnCredentialProviderExtensionPromptOutcomeHistogram[] =
+    "IOS.CredentialProviderExtension.TurnOnPromptOutcome.Promo";
+
+}  // namespace
 
 // Test fixture for testing the CredentialProviderPromoCoordinator class.
 class CredentialProviderPromoCoordinatorTest : public PlatformTest {
@@ -188,7 +199,7 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
 
   // Trigger the promo with PasswordSaved.
   // The primary CTA on the first step of the promo is 'Learn more' before iOS
-  // 18 and 'Turn on autofill' after.
+  // 18 and 'Turn on AutoFill…' after.
   [credential_provider_promo_command_handler_
       showCredentialProviderPromoWithTrigger:
           CredentialProviderPromoTrigger::SuccessfulLoginUsingExistingPassword];
@@ -223,6 +234,43 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
       credential_provider_promo::IOSCredentialProviderPromoAction::
           kGoToSettings,
       final_go_to_settings_action_count);
+}
+
+// Tests that tapping the "Turn on AutoFill…" primary action results in
+// recording the right histogram.
+TEST_F(CredentialProviderPromoCoordinatorTest,
+       CredentialProviderPromoTurnOnAutoFillPromptOutcomeRecorded) {
+  // The "Turn on AutoFill…" action is only available on iOS 18+.
+  if (@available(iOS 18.0, *)) {
+    // Enable the Passkeys M2 feature.
+    base::test::ScopedFeatureList feature_list(kIOSPasskeysM2);
+
+    // Make sure bucket counts are all initially zero.
+    histogram_tester_->ExpectTotalCount(
+        kTurnOnCredentialProviderExtensionPromptOutcomeHistogram, 0);
+
+    // Trigger the promo and tap the primary action button.
+    [credential_provider_promo_command_handler_
+        showCredentialProviderPromoWithTrigger:
+            CredentialProviderPromoTrigger::
+                SuccessfulLoginUsingExistingPassword];
+    ASSERT_TRUE([coordinator_
+        conformsToProtocol:@protocol(ConfirmationAlertActionHandler)]);
+    [(id<ConfirmationAlertActionHandler>)
+            coordinator_ confirmationAlertPrimaryAction];
+
+    // Wait for the histogram to be logged.
+    EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+        TestTimeouts::action_timeout(), ^bool() {
+          return histogram_tester_->GetBucketCount(
+                     kTurnOnCredentialProviderExtensionPromptOutcomeHistogram,
+                     false) == 1;
+        }));
+
+    // Verify that only the expected metric was logged.
+    histogram_tester_->ExpectUniqueSample(
+        kTurnOnCredentialProviderExtensionPromptOutcomeHistogram, false, 1);
+  }
 }
 
 // Tests that tapping the secondary CTA is recorded correctly when the promo is

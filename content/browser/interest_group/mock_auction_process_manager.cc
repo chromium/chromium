@@ -22,6 +22,7 @@
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/public/browser/site_instance.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
@@ -348,11 +349,12 @@ void MockBidderWorklet::InvokeReportWinCallback(
     base::flat_map<std::string, std::string> ad_macro_map,
     std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
         pa_requests,
+    auction_worklet::mojom::PrivateModelTrainingRequestDataPtr pmt_request_data,
     std::vector<std::string> errors) {
   DCHECK(report_win_callback_);
   std::move(report_win_callback_)
       .Run(report_url, std::move(ad_beacon_map), std::move(ad_macro_map),
-           std::move(pa_requests),
+           std::move(pa_requests), std::move(pmt_request_data),
            auction_worklet::mojom::BidderTimingMetrics::New(
                /*js_fetch_latency=*/js_fetch_latency_,
                /*wasm_fetch_latency=*/wasm_fetch_latency_,

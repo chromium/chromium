@@ -8,6 +8,7 @@
 source_set("ui_bundled_interface") {
   sources = [
     "autocomplete_match_wrapper.h",
+    "autocomplete_match_wrapper_delegate.h",
     "omnibox_autocomplete_controller.h",
     "omnibox_controller.h",
     "omnibox_popup_controller.h",
@@ -33,6 +34,7 @@ source_set("model") {
     "//ios/chrome/browser/omnibox/ui_bundled:model_interface",
     "//ios/chrome/browser/omnibox/ui_bundled/popup",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_internal",
+    "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_ui_protocols",
     "//ios/chrome/browser/omnibox/ui_bundled/popup/row/actions",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/application_context",

@@ -628,6 +628,7 @@
 <translation id="2082238445998314030">ผลลัพธ์ <ph name="RESULT_NUMBER" /> จาก <ph name="TOTAL_RESULTS" /> รายการ</translation>
 <translation id="2083256696566019397">อนุญาตในทุกๆ การเข้าชม</translation>
 <translation id="2085876078937250610">บันทึก…</translation>
+<translation id="2090451897496479509">โปรดติดต่อผู้ให้บริการเพื่อขอข้อมูลเพิ่มเติม</translation>
 <translation id="2091887806945687916">เสียง</translation>
 <translation id="2093982008204312032">Google Chrome กำลังพยายามปิด Windows Hello เพื่อป้อนรหัสผ่าน</translation>
 <translation id="2094505752054353250">โดเมนไม่ตรง</translation>
@@ -1310,6 +1311,7 @@
 <translation id="33073482541490531">ระบบพบว่ารหัสผ่านที่คุณเพิ่งใช้มีการรั่วไหลในการละเมิดข้อมูลครั้งหนึ่ง เครื่องมือจัดการรหัสผ่านแนะนำให้เปลี่ยนรหัสผ่านนี้ทันที</translation>
 <translation id="3307649904964670439">ปุ่มปรับแต่ง Chrome เปิดใช้งานเพื่อปรับแต่งรูปลักษณ์ของเบราว์เซอร์</translation>
 <translation id="3308006649705061278">หน่วยองค์กร (OU)</translation>
+<translation id="3317077846337994567">การจ่ายแบบผ่อนชำระยังไม่พร้อมให้บริการในขณะนี้ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="3318016344440038475">รายการตลกทางทีวี</translation>
 <translation id="3324687287337751929">4 x 6 นิ้ว</translation>
 <translation id="3324983252691184275">แดงเข้ม</translation>
@@ -1437,6 +1439,7 @@
 <translation id="3536227077203206203">อนุญาตในครั้งนี้</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">สกรีน (แบ่งหน้า)</translation>
+<translation id="3541016556608204104">ข้อมูลเพิ่มเติมเกี่ยวกับเครื่องมือเชื่อมต่อ Chrome Enterprise</translation>
 <translation id="3542628208405253498">รูปบัตร</translation>
 <translation id="3542768452570884558">เปิดลิงก์ในหน้าต่างใหม่</translation>
 <translation id="3543935938072367282">ชำระเงินได้เร็วขึ้นด้วยฟีเจอร์ป้อนข้อความอัตโนมัติ</translation>

@@ -59,6 +59,7 @@
 #import "components/sync/service/passphrase_type_metrics_provider.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync_device_info/device_count_metrics_provider.h"
+#import "components/ukm/field_trials_provider_helper.h"
 #import "components/ukm/ukm_service.h"
 #import "components/variations/synthetic_trial_registry.h"
 #import "components/variations/variations_associated_data.h"
@@ -128,9 +129,6 @@ std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
 }
 
 }  // namespace
-
-// UKM suffix for field trial recording.
-const char kUKMFieldTrialSuffix[] = "UKM";
 
 IOSChromeMetricsServiceClient::IOSChromeMetricsServiceClient(
     metrics::MetricsStateManager* state_manager,
@@ -377,8 +375,8 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 }
 
 void IOSChromeMetricsServiceClient::RegisterUKMProviders() {
+  // LINT.IfChange(UkmProviders)
   PrefService* local_state = GetApplicationContext()->GetLocalState();
-
   ukm_service_->RegisterMetricsProvider(
       std::make_unique<metrics::CPUMetricsProvider>());
 
@@ -389,11 +387,11 @@ void IOSChromeMetricsServiceClient::RegisterUKMProviders() {
       std::make_unique<metrics::ScreenInfoMetricsProvider>());
 
   ukm_service_->RegisterMetricsProvider(
-      std::make_unique<variations::FieldTrialsProvider>(
-          synthetic_trial_registry_.get(), kUKMFieldTrialSuffix));
+      ukm::CreateFieldTrialsProviderForUkm(synthetic_trial_registry_.get()));
 
   ukm_service_->RegisterMetricsProvider(
       std::make_unique<metrics::EntropyStateProvider>(local_state));
+  // LINT.ThenChange(/chrome/browser/metrics/chrome_metrics_service_client.cc:UkmProviders)
 }
 
 void IOSChromeMetricsServiceClient::CollectFinalHistograms() {

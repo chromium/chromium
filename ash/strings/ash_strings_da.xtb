@@ -22,6 +22,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1058009965971887428">Giv feedback</translation>
 <translation id="1059120031266247284">Delt med dig</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> med knap til at fjerne</translation>
 <translation id="1062407476771304334">Erstat</translation>
 <translation id="1073899992769346247">Udskift eller genoplad batteriet</translation>
 <translation id="1081015718268701546">Linux-apps understøttes ikke i øjeblikket. Andre apps gemmes.</translation>
@@ -1229,6 +1230,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="5043679421800073804">Klik eller tryk på det sidste ikon på hylden</translation>
 <translation id="504465286040788597">Forrige afsnit</translation>
 <translation id="5045550434625856497">Ugyldig adgangskode</translation>
+<translation id="5056587122125565772">Opret billede</translation>
 <translation id="5058794129231928255">Google-dokumentet kunne ikke oprettes</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Du får besked, hvis du taler, mens mikrofonen er slået fra. Lyden forlader aldrig din enhed.</translation>
@@ -1277,6 +1279,7 @@ Du kan også bruge tastaturgenvejen. Fremhæv først tekst, og tryk derefter på
 <translation id="5222676887888702881">Log ud</translation>
 <translation id="5228195526683428788">Adskiller til opdelt skærm</translation>
 <translation id="5229343007215035173">Slå privatlivsfilter til/fra</translation>
+<translation id="5229860525743792999">Fjern <ph name="ITEM_LABEL" /> fra den foreslåede gruppe</translation>
 <translation id="5230516054153933099">Vindue</translation>
 <translation id="5234764350956374838">Luk</translation>
 <translation id="523505283826916779">Indstillinger for hjælpefunktioner</translation>
@@ -1759,6 +1762,7 @@ Installeret for nylig</translation>
 <translation id="6757237461819837179">Der afspilles ingen medier</translation>
 <translation id="6760438044935091345">Spilpanel</translation>
 <translation id="6768043681523654438">lagerplads</translation>
+<translation id="6769195697113506406">Billedet er indsat</translation>
 <translation id="6777216307882431711">Leverer strøm til tilsluttede USB-C-enheder</translation>
 <translation id="6781002679438061620">Skrivebord 9</translation>
 <translation id="6782182743534150858">Skrivebord 13</translation>
@@ -1985,6 +1989,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7571361473021531288">Batteri <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> tilbage</translation>
 <translation id="7573585051776738856">Det aktive vindue er fastgjort til højre.</translation>
 <translation id="7579778809502851308">Screenshot</translation>
+<translation id="7588317312481506627">Kopieret til udklipsholderen.</translation>
 <translation id="7593891976182323525">Søg eller Shift</translation>
 <translation id="7598054670902114203">Øjebliksbillede af CPU-brug, <ph name="CPU_USEAGE" /> %. Temperatur <ph name="TEMPERATURE" /> grader celsius, aktuel hastighed: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Det valgte resultat indsættes</translation>
@@ -2179,6 +2184,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8155628902202578800">Åbn dialogboks med oplysninger om <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Bruger <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Indhold</translation>
+<translation id="81817143961839203">Billedet kunne ikke indsættes</translation>
 <translation id="8185090165691050712">Aktivér/deaktiver menuen til justering af størrelse i låst tilstand</translation>
 <translation id="8192727139462702395">Når du deaktiverer Bluetooth, afbryder disse eksterne enheder forbindelsen til din <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Caster fane</translation>
@@ -2257,6 +2263,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> har <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Tryk på Alt+Søg eller Shift for at annullere.</translation>
 <translation id="8480418399907765580">Vis værktøjslinje</translation>
+<translation id="8487660088084188539">Når du aktiverer disse funktioner, kan inputteksten, dokumentindholdet og websideadressen blive sendt til Googles servere. Disse oplysninger bruges til at generere skriveforslag, generere opsummeringer, besvare spørgsmål og forbedre produktet i overensstemmelse med <ph name="LINK_TO_SERVICE_TERMS" />. Medtag ikke personlige, følsomme eller fortrolige oplysninger.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Åbn link på ny fane</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> understøtter ikke <ph name="SPECIFIED_RESOLUTION" />. Opløsningen blev ændret til <ph name="FALLBACK_RESOLUTION" />. Klik på Bekræft for at gemme ændringerne. De tidligere indstillinger gendannes om <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2326,6 +2333,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8725066075913043281">Forsøg igen</translation>
 <translation id="8725214031272624704">Vis liste over tilgængelige indtastningsmetoder</translation>
 <translation id="8730621377337864115">Udført</translation>
+<translation id="8731188831050207755"><ph name="FILE_NAME" /> kunne ikke downloades.</translation>
 <translation id="8731487213223706745">Slutter <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Det forsøger muligvis at stjæle dine indtastninger</translation>
 <translation id="8735678380411481005">Farve på tastaturets baggrundslys</translation>

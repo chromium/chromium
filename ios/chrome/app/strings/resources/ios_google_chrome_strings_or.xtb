@@ -6,6 +6,7 @@
 <translation id="1143896152279775643"><ph name="EMAIL" />ର Google ପାସୱାର୍ଡ ମ୍ୟାନେଜରରେ ଆପଣଙ୍କ ପାସୱାର୍ଡ ସେଭ ହୋଇଯିବ।</translation>
 <translation id="1146503048444965320">Chromeରେ ନୂଆ ଟାବ ଖୋଲନ୍ତୁ</translation>
 <translation id="1166460004393506534">Chromeରେ ବ୍ରାଉଜିଂ ଡାଟା ଡିଲିଟ କରନ୍ତୁ</translation>
+<translation id="1171255741903316750">"Chromeକୁ ବନ୍ଦ କଲେ ଇନକଗ୍ନିଟୋ ଟାବଗୁଡ଼ିକୁ ଲକ କରନ୍ତୁ"କୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="1179527450541388808">ଆପଣଙ୍କ iPadର ହୋମ ସ୍କ୍ରିନ ଡକରୁ Chromeକୁ ଶୀଘ୍ର ଆକ୍ସେସ କରନ୍ତୁ।</translation>
 <translation id="1180362651362502943">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chrome ଡାଟାକୁ ବ୍ୟବହାର କରିବା ଜାରି ରଖନ୍ତୁ।</translation>
 <translation id="1200396280085622191">ମେସେଜ ଏବଂ ଅନ୍ୟ ଆପ୍ସରେ ଥିବା ଲିଙ୍କରେ ଟାପ କରି ଆପଣ ଯେ କୌଣସି ସମୟରେ Chrome ବ୍ୟବହାର କରନ୍ତୁ।</translation>
@@ -45,6 +46,7 @@
 <translation id="1917964099031477364">ଏହି ଆକାଉଣ୍ଟ ଏବଂ ଯେ କୌଣସି ସେଭ୍ କରାଯାଇନଥିବା ଡାଟା Chromeରୁ ଏବଂ ଏହି ଡିଭାଇସରେ ଥିବା ଅନ୍ୟ Google ଆପଗୁଡ଼ିକରୁ କାଢ଼ି ଦିଆଯିବ।</translation>
 <translation id="1919130412786645364">Chromeରେ ସାଇନ୍-ଇନ୍‌ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="1965935827552890526">ଆପଣ ଆପଣଙ୍କ ଅନ୍ୟ ଖୋଲା ଥିବା Chrome ୱିଣ୍ଡୋରେ ଯାହା କରୁଛନ୍ତି ତାହା ସମାପ୍ତ କରନ୍ତୁ।</translation>
+<translation id="1973910962341002002">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ସେଟିଂସରୁ, "Chrome" ଚାଲୁ ଅଛିରେ ଟୋଗଲ କରନ୍ତୁ</translation>
 <translation id="1984705450038014246">ଆପଣଙ୍କର Chrome ଡାଟା ସିଙ୍କ୍‌ କରନ୍ତୁ</translation>
 <translation id="1987779152850321833">Chromeରୁ ସବୁଠୁ ଅଧିକ ଲାଭ ପାଇବା ପାଇଁ ନିମ୍ନରେ ଏହି ପ୍ରସ୍ତାବିତ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ ସମ୍ପୂର୍ଣ୍ଣ କରନ୍ତୁ।</translation>
 <translation id="2055826352861631739">ଡିଫଲ୍ଟ ଭାବେ iPad ପାଇଁ Chrome ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -96,10 +98,13 @@
 <translation id="3282568296779691940">Chromeରେ ସାଇନ୍‌ ଇନ୍‌ କରନ୍ତୁ</translation>
 <translation id="3303503998967553377">iOSରେ Chrome କାର୍ଯ୍ୟଗୁଡ଼ିକ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="3348862487678490430">Chromeରେ ପଢ଼ିବା ତାଲିକା ଆଇଟମ ଯୋଗ କରନ୍ତୁ</translation>
+<translation id="3357827134511189025">ଅଟୋଫିଲ ପାଇଁ Chrome ବ୍ୟବହାର କରି ଯେ କୌଣସି ଆପରୁ ଆପଣଙ୍କର ସେଭ କରାଯାଇଥିବା ପାସୱାର୍ଡ ଏବଂ ପାସକୀଗୁଡ଼ିକ ମାଧ୍ୟମରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Chromeକୁ {THRESHOLD} ମିନିଟ ପାଇଁ ବ୍ୟବହାର କରାନଗଲେ ଏହା ହୋଇଥାଏ}other{Chromeକୁ {THRESHOLD} ମିନିଟ ପାଇଁ ବ୍ୟବହାର କରାନଗଲେ ଏହା ହୋଇଥାଏ}}</translation>
 <translation id="3367797402528056312">Chrome ସେଟ ଅପ କରିବା ସମ୍ପୂର୍ଣ୍ଣ କରନ୍ତୁ</translation>
 <translation id="3371064404604898522">Chromeକୁ ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବେ ସେଟ କରନ୍ତୁ</translation>
 <translation id="3399930248910934354">Chrome ସେଟିଂସ୍ ଖୋଲନ୍ତୁ</translation>
+<translation id="3440830787838130530">Google Password Managerରେ ଆପଣଙ୍କ ପରିବାର ଗୋଷ୍ଠୀ ସହିତ ସହଜରେ ଏବଂ ସୁରକ୍ଷିତ ଭାବରେ ଏକ ପାସୱାର୍ଡର ଗୋଟିଏ କପି ସେୟାର କରନ୍ତୁ</translation>
+<translation id="3460369101684070455">ଆପଣଙ୍କ ଅନ୍ୟ ଆପ୍ସରେ ଆପଣଙ୍କର ସେଭ କରାଯାଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସହଜରେ ପାଇବାକୁ ଅଟୋଫିଲ ପାଇଁ Chromeକୁ ବାଛନ୍ତୁ</translation>
 <translation id="3472587960215700950">Chrome ଚିହ୍ନଟ କରାଯାଇଥିବା ଠିକଣାଗୁଡ଼ିକ ବିଷୟରେ ଆପଣଙ୍କୁ ଦିଗନିର୍ଦ୍ଦେଶ ଏବଂ ସ୍ଥାନୀୟ ସୂଚନା ଦେବା ନିମନ୍ତେ Google Maps ବ୍ୟବହାର କରେ।</translation>
 <translation id="3503014945441706099">ଏହି Chrome ପ୍ରୋଫାଇଲ ପାଇଁ ମଧ୍ୟ ଉନ୍ନତ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ପାଆନ୍ତୁ</translation>
 <translation id="3522659714780527202">ଆପଣ Chrome ବ୍ୟବହାର କରୁଥିବା ଯେ କୌଣସି ସ୍ଥାନରୁ ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକ ଦେଖିବାକୁ, ସିଙ୍କ୍ ଚାଲୁ କରନ୍ତୁ</translation>
@@ -155,7 +160,6 @@
 <translation id="5395376160638294582">ଆପଣ ସର୍ବଦା ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chrome ଡାଟା ବ୍ୟବହାର କରିପାରିବେ ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="5404252374083197467">Chromeକୁ ଡିଫଲ୍ଟ ଭାବେ ସେଟ କରିବେ?</translation>
 <translation id="5439191312780166229">Google ପୂର୍ବରୁ ଜାଣିନଥିଲେ ମଧ୍ୟ ଏହା ଷ୍ଟାଣ୍ଡାର୍ଡ ସୁରକ୍ଷା ଅପେକ୍ଷା ସାଇଟଗୁଡ଼ିକରୁ ଅଧିକ ଡାଟା ବିଶ୍ଳେଷଣ କରି ବିପଦଜନକ ସାଇଟଗୁଡ଼ିକ ବିଷୟରେ ଚେତାବନୀ ଦେଇଥାଏ। ଆପଣ Chrome ଚେତାବନୀଗୁଡ଼ିକ ବାଦ ଦେବା ପାଇଁ ବାଛିପାରିବେ।</translation>
-<translation id="5442013002200339429">ଯଦି ଆପଣ "<ph name="MODULE_NAME" />"କୁ ଲୁଚାନ୍ତି, ତେବେ Chrome ଆପଣଙ୍କ ଭବିଷ୍ୟତର ପେକେଜଗୁଡ଼ିକୁ ଆଉ ସ୍ୱତଃ-ଟ୍ରାକ କରିବ ନାହିଁ ଏବଂ ଏହା ଆପଣଙ୍କ ସମସ୍ତ ଗତ ପେକେଜ ଟ୍ରାକିଂ ଡାଟାକୁ ଡିଲିଟ କରିବ।</translation>
 <translation id="5460571915754665838">4. Chrome ଚୟନ କରନ୍ତୁ</translation>
 <translation id="5492504007368565877">Google Password Manager ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ।</translation>
 <translation id="5525095647255982834">ଅନ୍ୟ ଏକ ଡିଭାଇସକୁ ଏହି ଟାବ ପଠାଇବା ପାଇଁ ସେଥିରେ ଥିବା Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
@@ -181,6 +185,7 @@
 <translation id="5998675059699164418">Chrome ବ୍ୟବହାର କରିବାକୁ ଆପଣଙ୍କ ସଂସ୍ଥା ଆପଣ ସାଇନ ଇନ କରିବା ଆବଶ୍ୟକ କରେ।</translation>
 <translation id="6021312115739110405">Google ଦ୍ୱାରା ଆପଣଙ୍କ ପାଇଁ ତିଆରି କରାଯାଇଥିବା ଏକ କଷ୍ଟମ ଫିଡ। ନ୍ୟୁଜ, ସ୍ପୋର୍ଟ୍ସ ଏବଂ ପାଣିପାଗ ସମେତ।</translation>
 <translation id="6022659036123304283">Chromeକୁ ନିଜ ପସନ୍ଦରେ ତିଆରି କରନ୍ତୁ</translation>
+<translation id="6132075343662013154">ଆପଣଙ୍କ ପାସୱାର୍ଡକୁ ସେଭ କରିବା ପାଇଁ Chrome ଅଫର କରିବ</translation>
 <translation id="6132149203299792222">ଆପଣଙ୍କ ପାସୱାର୍ଡ, ବୁକମାର୍କ ଏବଂ ଆହୁରି ଅନେକ କିଛି ସିଙ୍କ କରିବାକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
 <translation id="6145223986912084844">Chrome</translation>
 <translation id="6177442314419606057">Chromeରେ ଖୋଜନ୍ତୁ</translation>
@@ -228,6 +233,7 @@
 <translation id="7061455974939528301">Chrome ଆଇକନକୁ ଦବାଇ ଧରି "ହୋମ ସ୍କ୍ରିନକୁ ଏଡିଟ କରନ୍ତୁ"ରେ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="7065813315247345131">Chromeକୁ ଡକକୁ ମୁଭ କରାଯାଇଛି</translation>
 <translation id="7124339256045485976">Chromeକୁ ଅପ୍ ଟୁ ଡେଟ୍ ରଖନ୍ତୁ</translation>
+<translation id="7145599899567697473">Chromeରେ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସେଭ କରି ଅଟୋଫିଲ କରନ୍ତୁ</translation>
 <translation id="7161390184744336561">Google Chromeର ସଂସ୍କରଣ ପୁରୁଣା ଅଟେ</translation>
 <translation id="7165736900384873061">Google Chrome QR ସ୍କାନର୍‌କୁ ବ୍ୟବହାର କରିବା ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="7175129790242719365">Chrome ଟିପ: Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
@@ -261,6 +267,7 @@
 <translation id="7693590760643069321">ବର୍ତ୍ତମାନ ଆପଣ ମେସେଜ୍, ଡକ୍ୟୁମେଣ୍ଟ ଓ ଅନ୍ୟ ଆପଗୁଡ଼ିକରେ ଥିବା ଲିଙ୍କରେ ଯେ କୌଣସି ସମୟରେ ଟାପ୍ କରି Chrome ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="7698568245838009292">Chrome କ୍ୟାମେରାକୁ ଆକ୍ସେସ୍ କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="7707877166818730835">Chromeରେ ମୋ ନବୀନତମ ଟାବ ଖୋଲନ୍ତୁ</translation>
+<translation id="7747746207470479571">ଅଟୋଫିଲ୍ ପାଇଁ Chrome ସହ ଆପଣଙ୍କର ପାସୱାର୍ଡ ଏବଂ ପାସକୀଗୁଡ଼ିକୁ ସହଜ ଆକ୍ସେସ ପାଆନ୍ତୁ</translation>
 <translation id="776305366874821582">ଆପଣଙ୍କ iPhoneର ହୋମ ସ୍କ୍ରିନ ଡକରୁ Chromeକୁ ଶୀଘ୍ର ଆକ୍ସେସ କରନ୍ତୁ।</translation>
 <translation id="7780154209050837198">Chromeରୁ ସବୁଠାରୁ ଅଧିକ ସୁବିଧା ପାଇବା ପାଇଁ, ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
 <translation id="7787205077729386167">iOSରେ Chrome ସେଟିଂସ ଖୋଲନ୍ତୁ, ତା'ପରେ "ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଆପ"ରେ ଟାପ କରି Chromeକୁ ଚୟନ କରନ୍ତୁ।</translation>
@@ -281,6 +288,7 @@
 <translation id="8136856065410661948">Chrome ଏବଂ Google Lensରୁ ଆପଣଙ୍କ Apple Calendarରେ ଇଭେଣ୍ଟଗୁଡ଼ିକୁ ତିଆରି କରିବା ପାଇଁ ଏହାକୁ ବ୍ୟବହାର କରାଯିବ।</translation>
 <translation id="8154120522323162874">ଆପଣଙ୍କ ବ୍ରାଉଜର ସେଟ ଅପ କରିବା ଜାରି ରଖି Chromeରୁ ସବୁଠୁ ଅଧିକ ସୁବିଧା ପାଆନ୍ତୁ।</translation>
 <translation id="8160472928944011082">Chrome କୁ ଅପଡେଟ୍ କରାଯାଇପାରିବ ନାହିଁ</translation>
+<translation id="8245080522851805544">ଆପଣ Chromeକୁ ବନ୍ଦ କରିବା ସମୟରେ ଡିଭାଇସ ପ୍ରମାଣୀକରଣ ମାଧ୍ୟମରେ ଆପଣଙ୍କର ବ୍ରାଉଜିଂକୁ ପ୍ରାଇଭେଟ ରଖନ୍ତୁ</translation>
 <translation id="8248887045858762645">Chrome ଟିପ୍</translation>
 <translation id="8265730590513812063">Chrome ମେନୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="8317674518145175158">ପେମେଣ୍ଟ ପଦ୍ଧତି ଏବଂ ଠିକଣାଗୁଡ଼ିକୁ ଏନକ୍ରିପ୍ଟ କରାଯିବ ନାହିଁ। Chromeରୁ ବ୍ରାଉଜିଂ ଇତିହାସ ସିଙ୍କ କରାଯିବ ନାହିଁ।
@@ -324,5 +332,6 @@
 <translation id="9181628561061032322">Chromeର ବର୍ତ୍ତମାନର ଟାବଗୁଡ଼ିକୁ ଖୋଲେ।</translation>
 <translation id="948597495737267756">ଆପଣଙ୍କ Chrome ଇତିହାସ ପୃଷ୍ଠା ଖୋଲେ।</translation>
 <translation id="97300214378190234">ଅନ୍ୟ ଆପ୍ସରେ ଥିବା ଲିଙ୍କରେ ଟାପ କରି ଆପଣ ଯେ କୌଣସି ସମୟରେ Chrome ବ୍ୟବହାର କରନ୍ତୁ।</translation>
+<translation id="997929539742564806">Chromeରୁ ଆପଣଙ୍କ ପାସୱାର୍ଡ ଏବଂ ପାସକୀଗୁଡ଼ିକୁ ସ୍ୱତଃ ଭାବରେ ପୂରଣ କରି ଆପ୍ସ ଏବଂ ସାଇଟଗୁଡ଼ିକରେ ଶୀଘ୍ର ସାଇନ ଇନ କରନ୍ତୁ।</translation>
 <translation id="998677222109959694">Chrome ସେଟିଂସକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 </translationbundle>

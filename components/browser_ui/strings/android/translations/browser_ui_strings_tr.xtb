@@ -6,6 +6,7 @@
 <translation id="1044891598689252897">Siteler normal şekilde çalışır</translation>
 <translation id="1070329623210597193">Bu sitenin görüntüleyebileceği veya düzenleyebileceği dosyalar</translation>
 <translation id="1073417869336441572">Üçüncü taraf çerezlerine neden izin verdiğinizi bize bildirerek Chrome'u iyileştirmemize yardımcı olun. <ph name="BEGIN_LINK" />Geri bildirim gönderin<ph name="END_LINK" /></translation>
+<translation id="1074758928858737435">Sitelerin masaüstü sürümünü görüntülemeyi talep edebilirsiniz</translation>
 <translation id="1085696779717592361">Chrome'u Varsayılan Olarak Kullanın</translation>
 <translation id="1178581264944972037">Duraklat</translation>
 <translation id="1181037720776840403">Kaldır</translation>
@@ -32,6 +33,7 @@
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> site}}</translation>
 <translation id="1500473259453106018">Sekmelerdeki fiyat düşüşleri kartını gizle</translation>
 <translation id="1510341833810331442">Sitelerin cihazınıza veri kaydetmesine izin verilmiyor</translation>
+<translation id="1538031354170655462">Siteler, yakındaki takip cihazları veya diğer cihazlarla çalışmak (ör. rozetleri taramak veya temassız ödeme yapmak) için genellikle Near Field Communication (NFC) teknolojisini kullanır</translation>
 <translation id="1547123415014299762">Üçüncü taraf çerezlerine izin verilir</translation>
 <translation id="1593426485665524382">Ekranın üst kısmına yakın bir yerde yeni işlemler mevcut</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -115,6 +117,7 @@
 <translation id="2677748264148917807">Çık</translation>
 <translation id="2682367912565197520">Kayıtlı yakınlaştırma seviyesini sil</translation>
 <translation id="2683434792633810741">Veriler silinip sıfırlansın mı?</translation>
+<translation id="2685514716378236873">İzin Verilmiyor</translation>
 <translation id="2713106313042589954">Kamerayı kapat</translation>
 <translation id="2717722538473713889">E-posta adresleri</translation>
 <translation id="2726059656860238749">Chrome'u çok amaçlı adres çubuğu odaklı başlatın. Böylece, düşük özellikli cihazlarda başlatma süresi kısalır.</translation>
@@ -211,12 +214,14 @@
 <translation id="3955193568934677022">Sitelerin korumalı içeriği oynatmasına izin ver (önerilir)</translation>
 <translation id="3965467402665811906">Siteler, hakkınızda kaydettikleri bilgileri kullanmak için izin isteyebilir</translation>
 <translation id="3967822245660637423">İndirme tamamlandı</translation>
+<translation id="3981465354637804599">Siteler genellikle içerik veya hizmetlerini ücretsiz olarak sunabilmek için reklam gösterirler. Ancak araya giren veya yanıltıcı reklamlar gösterdiği bilinen bazı siteler vardır.</translation>
 <translation id="3987993985790029246">Bağlantıyı kopyala</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992308058851451478"><ph name="SITE" /> siz gezinirken bilgilerinizi kullanabilir</translation>
 <translation id="3992684624889376114">Bu sayfa hakkında</translation>
 <translation id="4002066346123236978">Başlık</translation>
 <translation id="4046123991198612571">Sonraki parça</translation>
+<translation id="4077310749977440510">Kopyaladığınız metnin biçimini koruma gibi özelliklerin kullanılması için siteler genellikle panonuzu okur</translation>
 <translation id="4149890623864272035">Çerezler de dahil tüm yerel verileri silmek ve bu web sitesine ilişkin tüm izinleri sıfırlamak istediğinizden emin misiniz?</translation>
 <translation id="4149994727733219643">Web sayfalarının basitleştirilmiş görünümü</translation>
 <translation id="4151930093518524179">Varsayılan yakınlaştırma</translation>
@@ -224,6 +229,7 @@
 <translation id="4169549551965910670">USB cihaza bağlandı</translation>
 <translation id="4194328954146351878">NFC cihazlarda sitelere bilgileri görme ve değiştirme izni vermeden önce sor (önerilir)</translation>
 <translation id="4200726100658658164">Konum Ayarlarını açın</translation>
+<translation id="421742575134139848">Siteler müzik, video ve diğer medyalara işitsel içerik sağlamak için ses çalabilir</translation>
 <translation id="4226663524361240545">Bildirimler cihazı titretebilir</translation>
 <translation id="4259722352634471385">Gezinme engellendi: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Siz bir siteden çıktıktan sonra o site, fotoğrafları yükleme veya sohbet mesajı gönderme gibi görevleri tamamlamak için senkronizasyona devam edebilir</translation>
@@ -247,6 +253,7 @@
 <translation id="4566417217121906555">Mikrofonun sesini kapat</translation>
 <translation id="4570913071927164677">Ayrıntılar</translation>
 <translation id="4598549027014564149">Gizli moddayken siteler, alakalı siteler de dahil olmak üzere farklı sitelerde tarama etkinliğinizi görmek için çerezlerinizi kullanamaz. Tarama etkinliğiniz reklam kişiselleştirme gibi işlemler için kullanılmaz. Bazı sitelerdeki özellikler çalışmayabilir.</translation>
+<translation id="461356340001513807">Bir kimlik hizmetindeki hesabınızı kullanarak web sitelerinde oturum açmanızı sağlar</translation>
 <translation id="4619615317237390068">Diğer cihazlardan sekmeler</translation>
 <translation id="4644713492825682049">Sil ve sıfırla</translation>
 <translation id="4645575059429386691">Ebeveyniniz tarafından yönetiliyor</translation>
@@ -430,6 +437,7 @@
 <translation id="7000754031042624318">Android ayarlarından kapatıldı</translation>
 <translation id="702275896380648118">Bu site, nelerden hoşlandığınızı belirleyip diğer sitelere reklam önerir. Ayrıca, size daha alakalı reklamlar göstermek için Chrome'dan reklam konularınızı da öğrenir.</translation>
 <translation id="7053983685419859001">Engelle</translation>
+<translation id="7055552182600664515">Telif hakkıyla korunan içerikleri oynatmak için sitelerin içerik koruma hizmeti kullanmaları gerekebilir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 öğe seçildi}other{# öğe seçildi}}</translation>
 <translation id="708014373017851679">'<ph name="APP_NAME" />' güncel değil. Lütfen uygulamayı güncelleyin.</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> öğe seçildi. Seçenekler, ekranın üst kısmına yakın bir yerde bulunur</translation>

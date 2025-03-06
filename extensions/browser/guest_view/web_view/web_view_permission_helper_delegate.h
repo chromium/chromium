@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
@@ -96,6 +97,9 @@ class WebViewPermissionHelperDelegate {
   // the embedder. When false, media requests retain the embedded origin.
   virtual bool ForwardEmbeddedMediaPermissionChecksAsEmbedder(
       const url::Origin& embedder_origin);
+
+  virtual std::optional<content::PermissionResult> OverridePermissionResult(
+      ContentSettingsType type);
 
   WebViewPermissionHelper* web_view_permission_helper() const {
     return web_view_permission_helper_;

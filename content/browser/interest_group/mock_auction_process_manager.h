@@ -200,6 +200,8 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
       base::flat_map<std::string, std::string> ad_macro_map = {},
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
           pa_requests = {},
+      auction_worklet::mojom::PrivateModelTrainingRequestDataPtr
+          pmt_request_data = nullptr,
       std::vector<std::string> errors = {});
 
   // Flushes the receiver pipe.
