@@ -74,9 +74,4 @@ public class HubToolbarCoordinator {
     public boolean isSearchBoxVisible() {
         return mHubToolbarView.findViewById(R.id.search_box).getVisibility() == View.VISIBLE;
     }
-
-    /** Sets the color scheme from the incognito status. */
-    /* package */ void setNewColorSchemeFromIncognitoStatus(boolean isIncognito) {
-        mMediator.setNewColorSchemeFromIncognitoStatus(isIncognito);
-    }
 }

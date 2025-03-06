@@ -414,17 +414,17 @@ public class HubToolbarMediatorUnitTest {
                 mOverviewColorSupplier);
         mFocusedPaneSupplier.set(mTabSwitcherPane);
         assertEquals(
-                new HubColorSchemeUpdate(HubColorScheme.DEFAULT, HubColorScheme.DEFAULT, true),
+                new HubColorSchemeUpdate(HubColorScheme.DEFAULT, HubColorScheme.DEFAULT),
                 mModel.get(COLOR_SCHEME));
 
         mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
         assertEquals(
-                new HubColorSchemeUpdate(HubColorScheme.INCOGNITO, HubColorScheme.DEFAULT, true),
+                new HubColorSchemeUpdate(HubColorScheme.INCOGNITO, HubColorScheme.DEFAULT),
                 mModel.get(COLOR_SCHEME));
 
         mFocusedPaneSupplier.set(null);
         assertEquals(
-                new HubColorSchemeUpdate(HubColorScheme.DEFAULT, HubColorScheme.INCOGNITO, true),
+                new HubColorSchemeUpdate(HubColorScheme.DEFAULT, HubColorScheme.INCOGNITO),
                 mModel.get(COLOR_SCHEME));
     }
 

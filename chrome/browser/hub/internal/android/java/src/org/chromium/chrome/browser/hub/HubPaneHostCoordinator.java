@@ -36,9 +36,4 @@ public class HubPaneHostCoordinator {
     public ViewGroup getSnackbarContainer() {
         return mMediator.getSnackbarContainer();
     }
-
-    /** Sets the color scheme from the tab incognito status. */
-    /* package */ void setNewColorSchemeFromTabIncognitoStatus(boolean tab) {
-        mMediator.setNewColorSchemeFromTabIncognitoStatus(tab);
-    }
 }

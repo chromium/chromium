@@ -22,13 +22,18 @@ public class ColorBlendAnimationFactory {
     /**
      * Creates an animation for blending two colors together.
      *
+     * @param duration The duration of the animation in milliseconds.
      * @param startColor The starting color in the animation.
      * @param endColor The color to transition towards in the animation.
      * @param onUpdate A consumer which uses an interpolated color on each animation update.
      */
     public static Animator createColorBlendAnimation(
-            @ColorInt int startColor, @ColorInt int endColor, Consumer<Integer> onUpdate) {
+            long duration,
+            @ColorInt int startColor,
+            @ColorInt int endColor,
+            Consumer<Integer> onUpdate) {
         ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
+        animator.setDuration(duration);
         animator.addUpdateListener(
                 animation -> {
                     float fraction = animation.getAnimatedFraction();
@@ -44,17 +49,22 @@ public class ColorBlendAnimationFactory {
      * at the same index in endColors. The array containing these interpolated colors will be
      * accessible at each animator update via a consumer.
      *
+     * @param duration The duration of the animation in milliseconds.
      * @param startColors The starting colors in the animation.
      * @param endColors The colors to transition towards in the animation.
      * @param onUpdate A consumer which uses an array of interpolated colors on each animation
      *     update.
      */
     public static Animator createMultiColorBlendAnimation(
-            @ColorInt int[] startColors, @ColorInt int[] endColors, Consumer<int[]> onUpdate) {
+            long duration,
+            @ColorInt int[] startColors,
+            @ColorInt int[] endColors,
+            Consumer<int[]> onUpdate) {
         assert startColors.length == endColors.length;
         @ColorInt int[] buffer = new int[startColors.length];
 
         ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
+        animator.setDuration(duration);
         animator.addUpdateListener(
                 animation -> {
                     float fraction = animation.getAnimatedFraction();

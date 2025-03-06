@@ -122,6 +122,7 @@ public class HubToolbarMediator {
     // changes in the returned panes or suppliers.
     private final @NonNull List<Runnable> mRemoveReferenceButtonObservers = new ArrayList<>();
     private final @NonNull Callback<Pane> mOnFocusedPaneChange = this::onFocusedPaneChange;
+
     private @Nullable PaneButtonLookup mPaneButtonLookup;
 
     /** Creates the mediator. */
@@ -275,7 +276,13 @@ public class HubToolbarMediator {
 
     private void onFocusedPaneChange(@Nullable Pane focusedPane) {
         @HubColorScheme int newColorScheme = HubColors.getColorSchemeSafe(focusedPane);
-        setNewColorScheme(newColorScheme, /* animate= */ true);
+        @HubColorScheme
+        int prevColorScheme =
+                mPropertyModel.get(COLOR_SCHEME) == null
+                        ? newColorScheme
+                        : mPropertyModel.get(COLOR_SCHEME).newColorScheme;
+
+        mPropertyModel.set(COLOR_SCHEME, new HubColorSchemeUpdate(newColorScheme, prevColorScheme));
 
         @Nullable Integer focusedPaneId = focusedPane == null ? null : focusedPane.getPaneId();
         if (focusedPaneId == null) {
@@ -308,23 +315,6 @@ public class HubToolbarMediator {
             }
             index++;
         }
-    }
-
-    private void setNewColorScheme(@HubColorScheme int newColorScheme, boolean animate) {
-        @HubColorScheme
-        int prevColorScheme =
-                mPropertyModel.get(COLOR_SCHEME) == null
-                        ? newColorScheme
-                        : mPropertyModel.get(COLOR_SCHEME).newColorScheme;
-
-        mPropertyModel.set(
-                COLOR_SCHEME, new HubColorSchemeUpdate(newColorScheme, prevColorScheme, animate));
-    }
-
-    /** Sets the color scheme from the tab incognito status. */
-    /* package */ void setNewColorSchemeFromIncognitoStatus(boolean isIncognito) {
-        @HubColorScheme int colorScheme = HubColors.getColorSchemeFromIncognitoStatus(isIncognito);
-        setNewColorScheme(colorScheme, false);
     }
 
     private FullButtonData wrapButtonData(
