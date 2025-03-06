@@ -140,7 +140,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*sqrt_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*tan_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*elu_input=*/
-       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
        /*expand_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*gather_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,

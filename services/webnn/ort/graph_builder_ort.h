@@ -132,7 +132,7 @@ class GraphBuilderOrt {
 
   [[nodiscard]] base::expected<std::string, mojom::ErrorPtr> PrependReshape(
       std::string_view input_name,
-      base::span<const int64_t> new_shape);
+      base::span<const uint32_t> new_shape);
 
   std::string PrependTranspose(std::string_view input_name,
                                base::span<const uint32_t> permutation);
@@ -148,6 +148,11 @@ class GraphBuilderOrt {
   void AppendTranspose(std::string_view input_name,
                        std::string_view output_name,
                        base::span<const uint32_t> permutation);
+
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AppendReshape(
+      std::string_view input_name,
+      std::string_view output_name,
+      base::span<const uint32_t> new_shape);
 
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddSliceNode(
       std::string_view node_name,
@@ -196,7 +201,8 @@ class GraphBuilderOrt {
       const mojom::Conv2d& conv2d);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddCumulativeSumOperation(
       const mojom::CumulativeSum& cumulative_sum);
-  void AddEluOperation(const mojom::Elu& elu);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddEluOperation(
+      const mojom::Elu& elu);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddExpandOperation(
       const mojom::Expand& expand);
   template <typename DequantizeOrQuantizeLinear>

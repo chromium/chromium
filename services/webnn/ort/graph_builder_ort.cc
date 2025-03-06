@@ -353,15 +353,16 @@ void GraphBuilderOrt::AppendTranspose(std::string_view input_name,
 
 [[nodiscard]] base::expected<std::string, mojom::ErrorPtr>
 GraphBuilderOrt::PrependReshape(std::string_view input_name,
-                                base::span<const int64_t> new_shape) {
+                                base::span<const uint32_t> new_shape) {
   const std::string node_name = GenerateNextOperationName("inserted_reshape");
   const std::string output_name = GenerateNextOperandName();
 
   // Shape is an operand with data type int64, not an attribute.
-  std::vector<uint32_t> new_shape_dims = {
+  std::vector<uint32_t> shape_dims = {
       base::checked_cast<uint32_t>(new_shape.size())};
+  std::vector<int64_t> shape(new_shape.begin(), new_shape.end());
   ASSIGN_OR_RETURN(const std::string shape_name,
-                   CreateInitializer<int64_t>(new_shape_dims, new_shape));
+                   CreateInitializer<int64_t>(shape_dims, shape));
 
   std::array<const char*, 2> input_names = {input_name.data(),
                                             shape_name.c_str()};
@@ -370,6 +371,28 @@ GraphBuilderOrt::PrependReshape(std::string_view input_name,
   model_editor_.AddNode(kOpTypeReshape, node_name, input_names, output_names);
 
   return output_name;
+}
+
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AppendReshape(std::string_view input_name,
+                               std::string_view output_name,
+                               base::span<const uint32_t> new_shape) {
+  const std::string node_name = GenerateNextOperationName("inserted_reshape");
+
+  // Shape is an operand with data type int64, not an attribute.
+  std::vector<uint32_t> shape_dims = {
+      base::checked_cast<uint32_t>(new_shape.size())};
+  std::vector<int64_t> shape(new_shape.begin(), new_shape.end());
+  ASSIGN_OR_RETURN(const std::string shape_name,
+                   CreateInitializer<int64_t>(shape_dims, shape));
+
+  std::array<const char*, 2> input_names = {input_name.data(),
+                                            shape_name.c_str()};
+  std::array<const char*, 1> output_names = {output_name.data()};
+
+  model_editor_.AddNode(kOpTypeReshape, node_name, input_names, output_names);
+
+  return base::ok();
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
@@ -1097,19 +1120,43 @@ GraphBuilderOrt::AddCumulativeSumOperation(
   return base::ok();
 }
 
-void GraphBuilderOrt::AddEluOperation(const mojom::Elu& elu) {
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddEluOperation(const mojom::Elu& elu) {
   const std::string node_name = GenerateNextOperationName(elu.label);
-  const std::string input_name = GetOperandNameById(elu.input_operand_id);
+  std::string input_name = GetOperandNameById(elu.input_operand_id);
   const std::string output_name = GetOperandNameById(elu.output_operand_id);
 
   std::array<OrtOpAttr*, 1> attributes = {
       model_editor_.CreateAttribute(/*name=*/"alpha", elu.alpha).release()};
 
-  std::array<const char*, 1> input_names = {input_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  const OperandDescriptor& input_descriptor =
+      GetOperand(elu.input_operand_id).descriptor;
+  std::vector<uint32_t> input_shape = input_descriptor.shape();
+  // Elu only supports 1-D input tensor, so we need to prepend a reshape node to
+  // convert the input tensor to 1-D tensor.
+  bool need_reshape = input_descriptor.Rank() != 1;
+  std::string elu_output_name = output_name;
+  if (need_reshape) {
+    base::CheckedNumeric<uint32_t> checked_input_size =
+        std::accumulate(input_shape.begin(), input_shape.end(),
+                        base::CheckedNumeric<uint32_t>(1), std::multiplies());
+    std::array<uint32_t, 1> new_shape = {checked_input_size.ValueOrDie()};
+    ASSIGN_OR_RETURN(input_name, PrependReshape(input_name, new_shape));
+    elu_output_name = GenerateNextOperandName();
+  }
 
+  std::array<const char*, 1> input_names = {input_name.c_str()};
+  std::array<const char*, 1> output_names = {elu_output_name.c_str()};
   model_editor_.AddNode(kOpTypeElu, node_name, input_names, output_names,
                         attributes);
+
+  // Append a reshape node to convert the output tensor back to the original
+  // shape.
+  if (need_reshape) {
+    return AppendReshape(elu_output_name, output_name, input_shape);
+  }
+
+  return base::ok();
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
@@ -2426,7 +2473,7 @@ GraphBuilderOrt::BuildModel() {
         break;
       }
       case mojom::Operation::Tag::kElu: {
-        AddEluOperation(*operation->get_elu());
+        RETURN_IF_ERROR(AddEluOperation(*operation->get_elu()));
         break;
       }
       case mojom::Operation::Tag::kExpand: {
