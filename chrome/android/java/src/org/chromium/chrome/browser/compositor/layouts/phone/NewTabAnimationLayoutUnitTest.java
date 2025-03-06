@@ -97,6 +97,7 @@ public class NewTabAnimationLayoutUnitTest {
     @Mock private LayoutTab mLayoutTab;
 
     private NewTabAnimationLayout mNewTabAnimationLayout;
+    private FrameLayout mContentContainer;
     private FrameLayout mAnimationHostView;
 
     @Before
@@ -148,6 +149,7 @@ public class NewTabAnimationLayoutUnitTest {
     }
 
     public void onActivity(Activity activity) {
+        mContentContainer = new FrameLayout(activity);
         mAnimationHostView = spy(new FrameLayout(activity));
         activity.setContentView(mAnimationHostView);
         mNewTabAnimationLayout =
@@ -156,8 +158,9 @@ public class NewTabAnimationLayoutUnitTest {
                                 activity,
                                 mUpdateHost,
                                 mRenderHost,
-                                mAnimationHostView,
-                                mCompositorViewHolderSupplier));
+                                mContentContainer,
+                                mCompositorViewHolderSupplier,
+                                mAnimationHostView));
         mNewTabAnimationLayout.setTabModelSelector(mTabModelSelector);
         mNewTabAnimationLayout.setTabContentManager(mTabContentManager);
         mNewTabAnimationLayout.onFinishNativeInitialization();
@@ -203,14 +206,14 @@ public class NewTabAnimationLayoutUnitTest {
 
     @Test
     public void testDoneHiding() {
-        mAnimationHostView.setContentSensitivity(View.CONTENT_SENSITIVITY_SENSITIVE);
+        mContentContainer.setContentSensitivity(View.CONTENT_SENSITIVITY_SENSITIVE);
         mNewTabAnimationLayout.setNextTabIdForTesting(NEW_TAB_ID);
 
         mNewTabAnimationLayout.doneHiding();
         verify(mTabModel).setIndex(1, TabSelectionType.FROM_USER);
 
         assertEquals(
-                View.CONTENT_SENSITIVITY_NOT_SENSITIVE, mAnimationHostView.getContentSensitivity());
+                View.CONTENT_SENSITIVITY_NOT_SENSITIVE, mContentContainer.getContentSensitivity());
     }
 
     @Test
@@ -218,8 +221,7 @@ public class NewTabAnimationLayoutUnitTest {
         when(mCurrentTab.getTabHasSensitiveContent()).thenReturn(true);
 
         mNewTabAnimationLayout.onTabCreating(CURRENT_TAB_ID);
-        assertEquals(
-                View.CONTENT_SENSITIVITY_SENSITIVE, mAnimationHostView.getContentSensitivity());
+        assertEquals(View.CONTENT_SENSITIVITY_SENSITIVE, mContentContainer.getContentSensitivity());
     }
 
     @Test
@@ -235,8 +237,7 @@ public class NewTabAnimationLayoutUnitTest {
                 /* background= */ false,
                 /* originX= */ 0f,
                 /* originY= */ 0f);
-        assertEquals(
-                View.CONTENT_SENSITIVITY_SENSITIVE, mAnimationHostView.getContentSensitivity());
+        assertEquals(View.CONTENT_SENSITIVITY_SENSITIVE, mContentContainer.getContentSensitivity());
         assertFalse(mNewTabAnimationLayout.isStartingToHide());
     }
 

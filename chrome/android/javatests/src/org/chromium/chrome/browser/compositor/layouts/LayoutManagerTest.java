@@ -19,6 +19,7 @@ import android.view.ContextThemeWrapper;
 import android.view.MotionEvent;
 import android.view.MotionEvent.PointerCoords;
 import android.view.MotionEvent.PointerProperties;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.test.annotation.UiThreadTest;
@@ -93,6 +94,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @Mock private HubLayoutDependencyHolder mHubLayoutDependencyHolder;
     @Mock private TabWindowManager mTabWindowManager;
     @Mock private ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    @Mock private ViewGroup mContentView;
 
     private TabModelSelector mTabModelSelector;
     private OneshotSupplierImpl<TabSwitcher> mTabSwitcherSupplier;
@@ -217,7 +219,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                         tabContentManagerSupplier,
                         () -> mTopUiThemeColorProvider,
                         mHubLayoutDependencyHolder,
-                        mCompositorViewHolderSupplier);
+                        mCompositorViewHolderSupplier,
+                        mContentView);
 
         tabContentManagerSupplier.set(tabContentManager);
         mManager = mManagerPhone;

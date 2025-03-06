@@ -65,6 +65,7 @@ import java.util.Collections;
 public class NewTabAnimationLayout extends Layout {
     private static final int FOREGROUND_ANIMATION_DURATION = 300;
     private static final int FOREGROUND_FADE_DURATION = 150;
+    private final ViewGroup mContentContainer;
     private final ViewGroup mAnimationHostView;
     private final CompositorViewHolder mCompositorViewHolder;
     private final BlackHoleEventFilter mBlackHoleEventFilter;
@@ -81,19 +82,22 @@ public class NewTabAnimationLayout extends Layout {
      * @param context The current Android's context.
      * @param updateHost The {@link LayoutUpdateHost} view for this layout.
      * @param renderHost The {@link LayoutRenderHost} view for this layout.
-     * @param animationHostView The host view to use for animations and content sensitivity.
+     * @param contentContainer The container for content sensitivity.
      * @param compositorViewHolderSupplier Supplier to the {@link CompositorViewHolder} instance.
+     * @param animationHostView The host view for animations.
      */
     public NewTabAnimationLayout(
             Context context,
             LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost,
-            ViewGroup animationHostView,
-            ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier) {
+            ViewGroup contentContainer,
+            ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
+            ViewGroup animationHostView) {
         super(context, updateHost, renderHost);
-        mAnimationHostView = animationHostView;
+        mContentContainer = contentContainer;
         mCompositorViewHolder = compositorViewHolderSupplier.get();
         mBlackHoleEventFilter = new BlackHoleEventFilter(context);
+        mAnimationHostView = animationHostView;
     }
 
     @Override
@@ -295,20 +299,20 @@ public class NewTabAnimationLayout extends Layout {
             // This code can be reached from both {@link NewTabAnimationLayout#onTabCreating}
             // and {@link NewTabAnimationLayout#onTabCreated}. If the content container is
             // already sensitive, there is no need to mark it as sensitive again.
-            if (mAnimationHostView.getContentSensitivity() == View.CONTENT_SENSITIVITY_SENSITIVE) {
+            if (mContentContainer.getContentSensitivity() == View.CONTENT_SENSITIVITY_SENSITIVE) {
                 return;
             }
             @Nullable Tab tab = mTabModelSelector.getTabById(sourceTabId);
             if (tab == null || !tab.getTabHasSensitiveContent()) {
                 return;
             }
-            mAnimationHostView.setContentSensitivity(View.CONTENT_SENSITIVITY_SENSITIVE);
+            mContentContainer.setContentSensitivity(View.CONTENT_SENSITIVITY_SENSITIVE);
             RecordHistogram.recordEnumeratedHistogram(
                     "SensitiveContent.SensitiveTabSwitchingAnimations",
                     SensitiveContentClient.TabSwitchingAnimation.NEW_TAB_IN_BACKGROUND,
                     SensitiveContentClient.TabSwitchingAnimation.COUNT);
         } else {
-            mAnimationHostView.setContentSensitivity(View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+            mContentContainer.setContentSensitivity(View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
         }
     }
 

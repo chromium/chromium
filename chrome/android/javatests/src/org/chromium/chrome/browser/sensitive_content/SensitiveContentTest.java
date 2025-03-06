@@ -25,6 +25,7 @@ import android.content.Context;
 import android.os.Build;
 import android.view.ContextThemeWrapper;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -139,6 +140,7 @@ public class SensitiveContentTest {
     @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
     @Mock private TabWindowManager mTabWindowManager;
     @Mock private ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    @Mock private ViewGroup mContentView;
 
     private WebPageStation mPage;
     private EmbeddedTestServer mTestServer;
@@ -707,7 +709,8 @@ public class SensitiveContentTest {
                         tabContentManagerSupplier,
                         () -> mTopUiThemeColorProvider,
                         mHubLayoutDependencyHolder,
-                        mCompositorViewHolderSupplier);
+                        mCompositorViewHolderSupplier,
+                        mContentView);
 
         tabContentManagerSupplier.set(tabContentManager);
         CompositorAnimationHandler.setTestingMode(true);

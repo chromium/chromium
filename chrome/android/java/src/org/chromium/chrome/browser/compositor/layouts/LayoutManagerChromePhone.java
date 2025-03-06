@@ -32,6 +32,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
     // TODO(crbug.com/40282469): Rename SimpleAnimationLayout to NewTabAnimationLayout once it is
     // rolled out.
     private final ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    private final ViewGroup mContentView;
     private Layout mSimpleAnimationLayout;
 
     /**
@@ -47,6 +48,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      * @param hubLayoutDependencyHolder The dependency holder for creating {@link HubLayout}.
      * @param compositorViewHolderSupplier Supplier to the {@link CompositorViewHolder} instance.
+     * @param contentView The base content view.
      */
     public LayoutManagerChromePhone(
             LayoutManagerHost host,
@@ -56,7 +58,8 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
             HubLayoutDependencyHolder hubLayoutDependencyHolder,
-            ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier) {
+            ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
+            ViewGroup contentView) {
         super(
                 host,
                 contentContainer,
@@ -66,6 +69,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
                 topUiThemeColorProvider,
                 hubLayoutDependencyHolder);
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
+        mContentView = contentView;
     }
 
     @Override
@@ -94,7 +98,8 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
                             this,
                             renderHost,
                             getContentContainer(),
-                            mCompositorViewHolderSupplier);
+                            mCompositorViewHolderSupplier,
+                            mContentView);
         } else {
             mSimpleAnimationLayout =
                     new SimpleAnimationLayout(context, this, renderHost, getContentContainer());
