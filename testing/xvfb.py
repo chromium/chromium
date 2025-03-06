@@ -2,7 +2,7 @@
 # Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Runs tests with Xvfb or Xorg and Openbox or Weston on Linux and normally on
+"""Runs tests with Xvfb/Xorg and Openbox/Weston/Mutter on Linux and normally on
 other platforms."""
 
 from __future__ import print_function
@@ -179,11 +179,24 @@ def run_executable(cmd,
     use_weston = True
     cmd.remove('--use-weston')
 
+  use_mutter = False
+  if '--use-mutter' in cmd:
+    if use_xvfb or use_xorg or use_weston:
+      print('Unable to use mutter with xvfb or Xorg or weston.\n',
+            file=sys.stderr)
+      return 1
+    use_mutter = True
+    cmd.remove('--use-mutter')
+
   if sys.platform.startswith('linux') and (use_xvfb or use_xorg):
     return _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr,
                          use_xorg, xvfb_whd or DEFAULT_XVFB_WHD, cwd)
   if use_weston:
     return _run_with_weston(cmd, env, stdoutfile, cwd)
+
+  if use_mutter:
+    return _run_with_mutter(cmd, env, stdoutfile, cwd)
+
   return test_env.run_executable(cmd, env, stdoutfile, cwd)
 
 
@@ -597,6 +610,40 @@ def _weston_config_file_path():
   return os.path.join(tempfile.gettempdir(), '.xvfb.py-weston.ini')
 
 
+def _run_with_mutter(cmd, env, stdoutfile, cwd):
+  with dbus_session(env):
+    mutter_proc = None
+
+    try:
+      mutter_executable = './mutter'
+      compositor_found, cmd = _run_with_wayland_common(mutter_executable, cmd,
+                                                       env)
+      if not compositor_found:
+        return test_env.run_executable(cmd, env, stdoutfile, cwd)
+
+      # Use headless wayland backend with a virtual monitor of appropriate size.
+      mutter_cmd = [
+          mutter_executable, '--headless', '--virtual-monitor=1280x800', '--'
+      ]
+
+      # AppArmor is enabled in Ubuntu 24 where mutter tests run on CI bots. So
+      # disable sandbox.
+      cmd = mutter_cmd + cmd + ['--no-sandbox']
+
+      if '--mutter-debug-logging' in cmd:
+        cmd.remove('--mutter-debug-logging')
+        env = copy.deepcopy(env)
+        env['G_MESSAGES_DEBUG'] = 'libmutter'
+        env['MUTTER_DEBUG'] = 'input'
+
+      return test_env.run_executable(cmd, env, stdoutfile, cwd)
+    except _ProcessError as e:
+      print('mutter fail: %s\n' % str(e), file=sys.stderr)
+      return 1
+    finally:
+      kill(mutter_proc, 'mutter')
+
+
 def _get_display_from_weston(weston_proc_pid):
   """Retrieves $WAYLAND_DISPLAY set by Weston.
 
@@ -686,7 +733,8 @@ def main():
   usage = ('[command [--no-xvfb or --use-xvfb or --use-weston] args...]\n'
            '\t --no-xvfb\t\tTurns off all X11 backings (Xvfb and Xorg).\n'
            '\t --use-xvfb\t\tForces legacy Xvfb backing instead of Xorg.\n'
-           '\t --use-weston\t\tEnable Wayland server.')
+           '\t --use-weston\t\tEnable Weston Wayland server.\n'
+           '\t --use-mutter\t\tEnable Mutter Wayland server.')
   # TODO(crbug.com/326283384): Argparse-ify this.
   if len(sys.argv) < 2:
     print(usage + '\n', file=sys.stderr)

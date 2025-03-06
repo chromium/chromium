@@ -304,21 +304,35 @@ use_glib=true
 use_gtk=true
 ```
 
-Running some test suites requires a Wayland server. If you're not
-running one you can use a locally compiled version of Weston. This is
-what the build bots do. Please note that this is required for
-interactive_ui_tests, as those tests use a patched version of Weston's
-test plugin. Add this to your gn args:
+Running some test suites requires a Wayland server. If you're not running one
+you can use a locally compiled version of Weston or Mutter. This is what the
+build bots do. Please note that this is required for interactive_ui_tests, as
+those tests use a patched version of the compositor.
+
+Add this to your gn args:
 
 ``` shell
+# For weston
 use_bundled_weston = true
 ```
 
-Then run the xvfb.py wrapper script and tell it to start Weston:
+``` shell
+# For mutter
+use_bundled_mutter = true
+```
+
+Then run the xvfb.py wrapper script and tell it to start the compositor with the tests:
 
 ``` shell
 cd out/debug  # or your out directory
+```
+``` shell
+# For weston
 ../../testing/xvfb.py --use-weston --no-xvfb ./views_unittests --ozone-platform=wayland
+```
+``` shell
+# For mutter
+../../testing/xvfb.py --use-mutter --no-xvfb ./views_unittests --ozone-platform=wayland
 ```
 
 Feel free to discuss with us on freenode.net, `#ozone-wayland` channel or on
