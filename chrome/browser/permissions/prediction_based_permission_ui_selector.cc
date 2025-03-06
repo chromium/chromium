@@ -226,9 +226,7 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
   }
 
   PredictionRequestFeatures features = BuildPredictionRequestFeatures(request);
-  if (!base::FeatureList::IsEnabled(
-          permissions::features::kPermissionPredictionsV3) ||
-      prediction_source == PredictionSource::USE_ONDEVICE_TFLITE) {
+  if (prediction_source == PredictionSource::USE_ONDEVICE_TFLITE) {
     if (features.requested_permission_counts.total() <
         kRequestedPermissionMinimumHistoricalActions) {
       VLOG(1) << "[CPSS] Historic prompt count ("
@@ -350,10 +348,7 @@ PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
   }
 #endif
 
-  features.experiment_id = base::FeatureList::IsEnabled(
-                               permissions::features::kPermissionPredictionsV3)
-                               ? 1
-                               : 0;
+  features.experiment_id = 0;
 
   if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv1)) {
     // Init `permission_relevance` here to avoid a crash during

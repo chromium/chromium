@@ -298,8 +298,9 @@ class PredictionServiceTest : public testing::Test {
                        std::unique_ptr<GeneratePredictionsRequest> request,
                        std::string access_token) {
     received_requests_.emplace_back(std::move(request));
-    if (request_loop)
+    if (request_loop) {
       request_loop->Quit();
+    }
 
     // Access token should always be the empty string.
     EXPECT_EQ(std::string(), access_token);
@@ -311,8 +312,9 @@ class PredictionServiceTest : public testing::Test {
       bool response_from_cache,
       const std::optional<GeneratePredictionsResponse>& response) {
     received_responses_.emplace_back(response);
-    if (response_loop)
+    if (response_loop) {
       response_loop->Quit();
+    }
 
     // The response is never from the cache.
     EXPECT_FALSE(response_from_cache);
@@ -461,7 +463,6 @@ TEST_F(PredictionServiceTest, CPSSv3BuiltProtoRequestIsCorrect) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {permissions::features::kPermissionPredictionsV2,
-       permissions::features::kPermissionPredictionsV3,
        permissions::features::kPermissionsAIv1},
       {});
   kFeaturesAllCountsZero.url = test_requesting_url.GetWithEmptyPath();

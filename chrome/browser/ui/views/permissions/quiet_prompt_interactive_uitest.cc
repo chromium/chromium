@@ -42,8 +42,6 @@ const char kLocationBarView[] = "LocationBarView";
 class QuietPromptInteractiveUITest : public InteractiveBrowserTest {
  public:
   QuietPromptInteractiveUITest() {
-    scoped_features_.InitAndEnableFeature(
-        permissions::features::kPermissionPredictionsV3);
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
   }
