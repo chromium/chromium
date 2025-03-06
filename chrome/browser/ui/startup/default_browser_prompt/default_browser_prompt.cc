@@ -75,17 +75,6 @@ bool ShouldShowDefaultBrowserPromptForCurrentVersion() {
            disable_version == version_info::GetVersion());
 }
 
-#if BUILDFLAG(IS_LINUX)
-// Returns true if the default browser prompt should be shown if Chrome is not
-// the user's default browser.
-bool ShouldShowDefaultBrowserPrompt(Profile* profile) {
-  // Do not show if the user has previously declined the prompt.
-  int64_t last_dismissed_value =
-      profile->GetPrefs()->GetInt64(prefs::kDefaultBrowserLastDeclined);
-  return last_dismissed_value == 0;
-}
-#endif  // BUILDFLAG(IS_LINUX)
-
 void OnCheckIsDefaultBrowserFinished(
     Profile* profile,
     shell_integration::DefaultWebClientState state) {
@@ -101,13 +90,7 @@ void OnCheckIsDefaultBrowserFinished(
     // Only show the prompt if some other program is the user's default browser.
     // In particular, don't show it if another install mode is default (e.g.,
     // don't prompt for Chrome Beta if stable Chrome is the default).
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
-#elif BUILDFLAG(IS_LINUX)
-    if (ShouldShowDefaultBrowserPrompt(profile)) {
-      ShowPrompt();
-    }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   }
 }
 

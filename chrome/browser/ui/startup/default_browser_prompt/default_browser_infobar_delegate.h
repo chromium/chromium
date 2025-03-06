@@ -47,8 +47,6 @@ class DefaultBrowserInfoBarDelegate : public ConfirmInfoBarDelegate {
     NUM_INFO_BAR_USER_INTERACTION_TYPES
   };
 
-  void AllowExpiry();
-
   // ConfirmInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
@@ -62,14 +60,8 @@ class DefaultBrowserInfoBarDelegate : public ConfirmInfoBarDelegate {
   // The WebContents's corresponding profile.
   raw_ptr<Profile> profile_;
 
-  // Whether the info bar should be dismissed on the next navigation.
-  bool should_expire_ = false;
-
   // Indicates if the user interacted with the infobar.
   bool action_taken_ = false;
-
-  // Used to delay the expiration of the info-bar.
-  base::WeakPtrFactory<DefaultBrowserInfoBarDelegate> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_DEFAULT_BROWSER_INFOBAR_DELEGATE_H_
