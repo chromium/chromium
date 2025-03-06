@@ -73,7 +73,7 @@ void SendTabToSelfToolbarIconView::DismissEntry(std::string& guid) {
 }
 
 bool SendTabToSelfToolbarIconView::IsActive() {
-  return browser_view_->IsActive();
+  return browser_->IsActive();
 }
 
 BEGIN_METADATA(SendTabToSelfToolbarIconView)

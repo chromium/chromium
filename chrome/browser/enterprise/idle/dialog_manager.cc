@@ -14,7 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/enterprise/idle/idle_pref_names.h"
 #include "components/enterprise/idle/metrics.h"
@@ -58,8 +58,9 @@ base::CallbackListSubscription DialogManager::MaybeShowDialog(
     return callbacks_.Add(std::move(on_finished));
   }
 
-  Browser* active_browser = chrome::FindBrowserWithActiveWindow();
-  if (!active_browser || !active_browser->is_type_normal()) {
+  Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
+  if (!active_browser || !active_browser->IsActive() ||
+      !active_browser->is_type_normal()) {
     // User is in another app, or in a window that shouldn't show the dialog
     // (e.g. DevTools). Skip the dialog, and run actions immediately.
     std::move(on_finished).Run(/*expired=*/true);

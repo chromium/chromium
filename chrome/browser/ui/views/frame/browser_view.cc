@@ -1519,7 +1519,6 @@ void BrowserView::Show() {
   // OnWidgetActivationChanged() until we return to the runloop. Therefore any
   // calls to Browser::GetLastActive() will return the wrong result if we do not
   // explicitly set it here.
-  BrowserList::SetLastActive(browser());
   browser()->DidBecomeActive();
 #endif
 
@@ -1594,7 +1593,6 @@ void BrowserView::Activate() {
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
   // Update the list managed by `BrowserList` synchronously the same way
   // `BrowserView::Show()` does.
-  BrowserList::SetLastActive(browser());
   browser_->DidBecomeActive();
 #endif
   frame_->Activate();
@@ -4461,14 +4459,6 @@ void BrowserView::OnWidgetActivationChanged(views::Widget* widget,
           RestoreFocus();
         }
       }
-
-      // TODO: Unify semantics of "active" between the BrowserList and
-      // BrowserWindowInterface clients.
-      BrowserList::SetLastActive(browser_.get());
-    } else {
-      // TODO: Unify semantics of "active" between the BrowserList and
-      // BrowserWindowInterface clients.
-      BrowserList::NotifyBrowserNoLongerActive(browser_.get());
     }
   }
 

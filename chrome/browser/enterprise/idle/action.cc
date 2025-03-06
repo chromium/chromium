@@ -31,7 +31,6 @@
 #else
 #include "chrome/browser/enterprise/idle/dialog_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/idle_bubble.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
@@ -320,10 +319,10 @@ class ShowBubbleAction : public Action {
         action_types_(std::move(action_types)) {}
 
   void Run(Profile* profile, Continuation continuation) override {
-    Browser* browser = chrome::FindBrowserWithActiveWindow();
+    Browser* browser = BrowserList::GetInstance()->GetLastActive();
     profile->GetPrefs()->SetBoolean(prefs::kIdleTimeoutShowBubbleOnStartup,
                                     true);
-    if (browser && browser->profile() == profile &&
+    if (browser && browser->IsActive() && browser->profile() == profile &&
         !base::Contains(action_types_, ActionType::kCloseBrowsers)) {
       // A browser for this profile has focus. Show the bubble there.
       ShowIdleBubble(

@@ -1272,6 +1272,7 @@ Browser* Browser::GetBrowserForMigrationOnly() {
 void Browser::DidBecomeActive() {
   if (!is_active_) {
     is_active_ = true;
+    BrowserList::SetLastActive(this);
     did_become_active_callback_list_.Notify(this);
   }
 }
@@ -1279,6 +1280,7 @@ void Browser::DidBecomeActive() {
 void Browser::DidBecomeInactive() {
   if (is_active_) {
     is_active_ = false;
+    BrowserList::NotifyBrowserNoLongerActive(this);
     did_become_inactive_callback_list_.Notify(this);
   }
 }

@@ -40,7 +40,7 @@ class SendTabToSelfToolbarIconView
  private:
   const raw_ptr<const Browser> browser_;
 
-  raw_ptr<const BrowserView> browser_view_;
+  const raw_ptr<const BrowserView> browser_view_;
 
   raw_ptr<const SendTabToSelfEntry> entry_;
 };
