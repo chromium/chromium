@@ -76,6 +76,7 @@ source_set("utils") {
     ":soda",
     "//base",
     "//media",
+    "//media/mojo/mojom",
     "//ui/base",
   ]
 

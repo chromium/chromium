@@ -36,6 +36,7 @@
 #include "media/mojo/mojom/speech_recognition_audio_forwarder.mojom-blink.h"
 #include "media/mojo/mojom/speech_recognition_error.mojom-blink.h"
 #include "media/mojo/mojom/speech_recognition_result.mojom-blink.h"
+#include "media/mojo/mojom/speech_recognizer.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
@@ -43,6 +44,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_availability_status.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -56,6 +58,26 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+
+namespace {
+blink::V8AvailabilityStatus AvailabilityStatusToV8(
+    media::mojom::blink::AvailabilityStatus status) {
+  switch (status) {
+    case media::mojom::blink::AvailabilityStatus::kUnavailable:
+      return blink::V8AvailabilityStatus(
+          blink::V8AvailabilityStatus::Enum::kUnavailable);
+    case media::mojom::blink::AvailabilityStatus::kDownloadable:
+      return blink::V8AvailabilityStatus(
+          blink::V8AvailabilityStatus::Enum::kDownloadable);
+    case media::mojom::blink::AvailabilityStatus::kDownloading:
+      return blink::V8AvailabilityStatus(
+          blink::V8AvailabilityStatus::Enum::kDownloading);
+    case media::mojom::blink::AvailabilityStatus::kAvailable:
+      return blink::V8AvailabilityStatus(
+          blink::V8AvailabilityStatus::Enum::kAvailable);
+  }
+}
+}  // namespace
 
 namespace blink {
 
@@ -156,9 +178,9 @@ void SpeechRecognition::updateContext(SpeechRecognitionContext* context,
   session_->UpdateRecognitionContext(std::move(recognition_context));
 }
 
-// Returns a promise that resolves to a boolean indicating whether on-device
+// Returns a promise that resolves to a enum indicating whether on-device
 // speech recognition is available for a given BCP-47 language code.
-ScriptPromise<IDLBoolean> SpeechRecognition::availableOnDevice(
+ScriptPromise<V8AvailabilityStatus> SpeechRecognition::availableOnDevice(
     ScriptState* script_state,
     const String& lang,
     ExceptionState& exception_state) {
@@ -171,13 +193,17 @@ ScriptPromise<IDLBoolean> SpeechRecognition::availableOnDevice(
     return EmptyPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<V8AvailabilityStatus>>(
+          script_state, exception_state.GetContext());
   auto result = resolver->Promise();
   controller->OnDeviceWebSpeechAvailable(
-      lang, WTF::BindOnce([](ScriptPromiseResolver<IDLBoolean>* resolver,
-                             bool available) { resolver->Resolve(available); },
-                          WrapPersistent(resolver)));
+      lang, WTF::BindOnce(
+                [](ScriptPromiseResolver<V8AvailabilityStatus>* resolver,
+                   media::mojom::blink::AvailabilityStatus status) {
+                  resolver->Resolve(AvailabilityStatusToV8(status));
+                },
+                WrapPersistent(resolver)));
 
   return result;
 }

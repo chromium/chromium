@@ -1449,6 +1449,8 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_summarizer_length.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_mode.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_mode.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_availability_status.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_availability_status.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_summarizer_length.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_summarizer_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_summarizer_type.h",
