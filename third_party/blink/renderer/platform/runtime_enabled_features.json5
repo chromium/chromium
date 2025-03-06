@@ -3665,10 +3665,6 @@
       status: "test",
     },
     {
-      name: "ResetInputTypeToNoneBeforeCharacterInput",
-      status: "stable",
-    },
-    {
       name: "ResolveVarStylesOnCopy",
       status: "stable",
     },
