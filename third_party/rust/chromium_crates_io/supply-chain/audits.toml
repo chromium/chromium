@@ -748,6 +748,12 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "4.5.28 -> 4.5.29"
 notes = "No code changes."
 
+[[audits.clap]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "4.5.29 -> 4.5.31"
+notes = "Comment-only change to update version."
+
 [[audits.clap_builder]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -846,6 +852,12 @@ who = "Jonathan Hao <phao@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "4.5.27 -> 4.5.29"
 notes = "Only changed `args_present` method a bit and added a `value` method to `flat_map`."
+
+[[audits.clap_builder]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "4.5.29 -> 4.5.31"
+notes = "No unsafe uses added or changed. Delta consists of miscellaneous fixes and cleanups (e.g. improvements for ValueRange) and a new parser for Saturating<T>."
 
 [[audits.clap_lex]]
 who = "danakj@chromium.org"

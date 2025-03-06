@@ -4546,11 +4546,7 @@ impl Arg {
         if val_names_len > 1 {
             self.num_vals.get_or_insert(val_names_len.into());
         } else {
-            let nargs = if self.get_action().takes_values() {
-                ValueRange::SINGLE
-            } else {
-                ValueRange::EMPTY
-            };
+            let nargs = self.get_action().default_num_args();
             self.num_vals.get_or_insert(nargs);
         }
     }

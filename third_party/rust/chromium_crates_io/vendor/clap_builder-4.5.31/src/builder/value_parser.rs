@@ -2387,6 +2387,18 @@ impl ValueParserFactory for i64 {
         RangedI64ValueParser::new()
     }
 }
+impl<T> ValueParserFactory for std::num::Saturating<T>
+where
+    T: ValueParserFactory,
+    <T as ValueParserFactory>::Parser: TypedValueParser<Value = T>,
+    T: Send + Sync + Clone,
+{
+    type Parser =
+        MapValueParser<<T as ValueParserFactory>::Parser, fn(T) -> std::num::Saturating<T>>;
+    fn value_parser() -> Self::Parser {
+        T::value_parser().map(std::num::Saturating)
+    }
+}
 impl<T> ValueParserFactory for std::num::Wrapping<T>
 where
     T: ValueParserFactory,

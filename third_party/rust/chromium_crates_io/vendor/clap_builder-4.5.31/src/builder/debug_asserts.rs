@@ -690,14 +690,14 @@ fn assert_arg(arg: &Arg) {
         arg.get_id(),
     );
 
-    if arg.is_takes_value_set() {
-        assert!(
-            arg.get_action().takes_values(),
-            "Argument `{}`'s selected action {:?} contradicts `takes_value`",
-            arg.get_id(),
-            arg.get_action()
-        );
-    }
+    assert!(
+        arg.get_num_args().unwrap_or(1.into()).max_values()
+            <= arg.get_action().max_num_args().max_values(),
+        "Argument `{}`'s action {:?} is incompatible with `num_args({:?})`",
+        arg.get_id(),
+        arg.get_action(),
+        arg.get_num_args().unwrap_or(1.into())
+    );
     if let Some(action_type_id) = arg.get_action().value_type_id() {
         assert_eq!(
             action_type_id,
