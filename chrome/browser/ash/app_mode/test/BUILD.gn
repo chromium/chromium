@@ -12,6 +12,7 @@ source_set("browser_tests") {
   sources = [
     "ephemeral_kiosk_browsertest.cc",
     "kiosk_accessibility_extension_browsertest.cc",
+    "kiosk_auto_login_bailout_browsertest.cc",
     "kiosk_browsertest.cc",
     "kiosk_chrome_app_browsertest.cc",
     "kiosk_chrome_app_offline_network_prompt_browsertest.cc",
