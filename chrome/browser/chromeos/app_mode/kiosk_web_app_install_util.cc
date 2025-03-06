@@ -19,12 +19,8 @@
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chromeos/crosapi/mojom/web_kiosk_service.mojom-shared.h"
-#include "chromeos/crosapi/mojom/web_kiosk_service.mojom.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "url/gurl.h"
-
-using crosapi::mojom::WebKioskInstallState;
 
 namespace {
 
@@ -52,7 +48,7 @@ web_app::WebAppProvider& WebAppProviderOf(Profile& profile) {
 
 void OnExternalInstallCompleted(
     const GURL& requested_install_url,
-    crosapi::mojom::WebKioskInstaller::InstallWebKioskCallback on_done,
+    chromeos::InstallWebKioskCallback on_done,
     const GURL& installed_url,
     web_app::ExternallyManagedAppManager::InstallResult result) {
   CHECK_EQ(installed_url, requested_install_url);
@@ -99,10 +95,9 @@ KioskWebAppInstallState GetKioskWebAppInstallState(Profile& profile,
   return std::make_tuple(WebKioskInstallState::kInstalled, app_id);
 }
 
-void InstallKioskWebApp(
-    Profile& profile,
-    const GURL& install_url,
-    crosapi::mojom::WebKioskInstaller::InstallWebKioskCallback on_done) {
+void InstallKioskWebApp(Profile& profile,
+                        const GURL& install_url,
+                        InstallWebKioskCallback on_done) {
   WebAppProviderOf(profile).externally_managed_app_manager().Install(
       GetInstallOptions(install_url),
       base::BindOnce(&OnExternalInstallCompleted, install_url,

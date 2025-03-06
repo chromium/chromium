@@ -20,14 +20,9 @@
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/crosapi/mojom/web_kiosk_service.mojom-shared.h"
-#include "chromeos/crosapi/mojom/web_kiosk_service.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/webapps/common/web_app_id.h"
 #include "url/origin.h"
-
-using crosapi::mojom::WebKioskInstaller;
-using crosapi::mojom::WebKioskInstallState;
 
 namespace ash {
 
@@ -92,7 +87,7 @@ void WebKioskAppServiceLauncher::CheckAppInstallState() {
   auto [state, app_id] = chromeos::GetKioskWebAppInstallState(
       CHECK_DEREF(profile()), GetCurrentApp()->install_url());
 
-  if (state != WebKioskInstallState::kInstalled ||
+  if (state != chromeos::WebKioskInstallState::kInstalled ||
       !profile()->GetPrefs()->GetBoolean(::prefs::kKioskWebAppOfflineEnabled)) {
     delegate_->InitializeNetwork();
     return;

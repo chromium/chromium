@@ -71,7 +71,6 @@ import "chromeos/services/machine_learning/public/mojom/machine_learning_service
 import "chromeos/crosapi/mojom/video_capture.mojom";
 import "chromeos/crosapi/mojom/video_conference.mojom";
 import "chromeos/crosapi/mojom/kiosk_session_service.mojom";
-import "chromeos/crosapi/mojom/web_kiosk_service.mojom";
 import "chromeos/crosapi/mojom/media_ui.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
@@ -534,10 +533,7 @@ interface Crosapi {
   [MinVersion=73] BindChromeAppKioskService@76(
       pending_receiver<ChromeAppKioskService> receiver);
 
-  // Binds the web kiosk service. This service is used to install and launch the
-  // web app inside lacros.
-  [MinVersion=111] BindWebKioskService@114(
-      pending_receiver<WebKioskService> receiver);
+  // BindWebKioskService@114 was removed.
 
   // Binds the extension service for device local accounts. This service manages
   // the cached install of extensions into Lacros.

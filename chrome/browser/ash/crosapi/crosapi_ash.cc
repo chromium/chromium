@@ -61,7 +61,6 @@
 #include "chrome/browser/ash/crosapi/screen_ai_downloader_ash.h"
 #include "chrome/browser/ash/crosapi/structured_metrics_service_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
-#include "chrome/browser/ash/crosapi/web_kiosk_service_ash.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/printing/print_preview/print_preview_webcontents_adapter_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -215,8 +214,7 @@ CrosapiAsh::CrosapiAsh()
           std::make_unique<StructuredMetricsServiceAsh>()),
       video_conference_manager_ash_(
           std::make_unique<ash::VideoConferenceManagerAsh>()),
-      vpn_service_ash_(std::make_unique<VpnServiceAsh>()),
-      web_kiosk_service_ash_(std::make_unique<WebKioskServiceAsh>()) {
+      vpn_service_ash_(std::make_unique<VpnServiceAsh>()) {
   receiver_set_.set_disconnect_handler(base::BindRepeating(
       &CrosapiAsh::OnDisconnected, weak_factory_.GetWeakPtr()));
 }
@@ -623,11 +621,6 @@ void CrosapiAsh::BindVideoCaptureDeviceFactory(
 void CrosapiAsh::BindVpnService(
     mojo::PendingReceiver<mojom::VpnService> receiver) {
   vpn_service_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindWebKioskService(
-    mojo::PendingReceiver<mojom::WebKioskService> receiver) {
-  web_kiosk_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindGuestOsSkForwarderFactory(

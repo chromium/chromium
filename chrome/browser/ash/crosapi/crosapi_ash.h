@@ -93,7 +93,6 @@ class RemotingAsh;
 class ScreenAIDownloaderAsh;
 class StructuredMetricsServiceAsh;
 class VpnServiceAsh;
-class WebKioskServiceAsh;
 
 // Implementation of Crosapi in Ash. It provides a set of APIs that
 // crosapi clients, such as lacros-chrome, can call into.
@@ -265,8 +264,6 @@ class CrosapiAsh : public mojom::Crosapi {
       override;
   void BindVpnService(
       mojo::PendingReceiver<mojom::VpnService> receiver) override;
-  void BindWebKioskService(
-      mojo::PendingReceiver<mojom::WebKioskService> receiver) override;
   void BindGuestOsSkForwarderFactory(
       mojo::PendingReceiver<mojom::GuestOsSkForwarderFactory> receiver)
       override;
@@ -387,10 +384,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return structured_metrics_service_ash_.get();
   }
 
-  WebKioskServiceAsh* web_kiosk_service_ash() {
-    return web_kiosk_service_ash_.get();
-  }
-
   ash::VideoConferenceManagerAsh* video_conference_manager_ash() {
     return video_conference_manager_ash_.get();
   }
@@ -468,7 +461,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<StructuredMetricsServiceAsh> structured_metrics_service_ash_;
   std::unique_ptr<ash::VideoConferenceManagerAsh> video_conference_manager_ash_;
   std::unique_ptr<VpnServiceAsh> vpn_service_ash_;
-  std::unique_ptr<WebKioskServiceAsh> web_kiosk_service_ash_;
 
   mojo::ReceiverSet<mojom::Crosapi, CrosapiId> receiver_set_;
   std::map<mojo::ReceiverId, base::OnceClosure> disconnect_handler_map_;

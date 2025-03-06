@@ -78,7 +78,6 @@ mojom("mojom") {
     "video_conference.mojom",
     "vpn_service.mojom",
     "web_app_types.mojom",
-    "web_kiosk_service.mojom",
   ]
   disable_variants = true
   enable_js_fuzzing = false

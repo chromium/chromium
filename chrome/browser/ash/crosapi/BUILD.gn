@@ -123,8 +123,6 @@ static_library("crosapi") {
     "structured_metrics_service_ash.h",
     "vpn_service_ash.cc",
     "vpn_service_ash.h",
-    "web_kiosk_service_ash.cc",
-    "web_kiosk_service_ash.h",
   ]
 
   if (use_cups) {

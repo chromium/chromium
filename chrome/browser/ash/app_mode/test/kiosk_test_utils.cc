@@ -30,7 +30,6 @@
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/crosapi/mojom/web_kiosk_service.mojom-shared.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -99,7 +98,7 @@ bool IsWebAppInstalled(Profile& profile, const KioskApp& app) {
 
 bool IsWebAppInstalled(Profile& profile, const GURL& install_url) {
   auto [state, __] = chromeos::GetKioskWebAppInstallState(profile, install_url);
-  return crosapi::mojom::WebKioskInstallState::kInstalled == state;
+  return chromeos::WebKioskInstallState::kInstalled == state;
 }
 
 bool IsAppInstalled(Profile& profile, const KioskApp& app) {
