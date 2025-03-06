@@ -166,7 +166,8 @@ class CountPromptTokensClient
 std::variant<mojom::blink::AILanguageModelPromptPtr, DOMException*>
 ConvertPromptToMojo(const V8AILanguageModelPrompt* prompt,
                     ScriptState* script_state,
-                    ExceptionState& exception_state) {
+                    ExceptionState& exception_state,
+                    ExecutionContext* execution_context) {
   auto result = mojom::blink::AILanguageModelPrompt::New();
   if (prompt->IsString()) {
     result->role = mojom::blink::AILanguageModelPromptRole::kUser;
@@ -202,16 +203,28 @@ ConvertPromptToMojo(const V8AILanguageModelPrompt* prompt,
           mojom::blink::AILanguageModelPromptContent::NewBitmap(bitmap.value());
     } else if (dict->type() == V8AILanguageModelPromptType::Enum::kAudio) {
       if (dict->content()->IsBlob()) {
-        // TODO(crbug.com/382180351): Make blob reading async.
+        // TODO(crbug.com/382180351): Make blob reading async or alternatively
+        // use FileReaderSync instead (fix linker and exception issues).
         SyncedFileReaderAccumulator* blobReader =
             MakeGarbageCollected<SyncedFileReaderAccumulator>();
-        std::pair<FileErrorCode, FileReaderData> data =
-            blobReader->Load(dict->content()->GetAsBlob()->GetBlobDataHandle(),
-                             base::SingleThreadTaskRunner::GetCurrentDefault());
-        WTF::String audio_contents = std::move(data.second).AsBinaryString();
+
+        auto [error_code, reader_data] = blobReader->Load(
+            dict->content()->GetAsBlob()->GetBlobDataHandle(),
+            execution_context->GetTaskRunner(TaskType::kFileReading));
+        if (error_code != FileErrorCode::kOK) {
+          return MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kDataError, "Failed to read blob.");
+        }
+        ArrayBufferContents audio_contents =
+            std::move(reader_data).AsArrayBufferContents();
+        if (!audio_contents.IsValid()) {
+          return MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kDataError, "Failed to read blob.");
+        }
+        // TODO(crbug.com/401010825): Use the file sample rate.
         scoped_refptr<AudioBus> bus = AudioBus::CreateBusFromInMemoryAudioFile(
-            audio_contents.Bytes(), audio_contents.length(),
-            /*mix_to_mono=*/true, /*sample_rate=*/0.0);
+            audio_contents.Data(), audio_contents.DataLength(),
+            /*mix_to_mono=*/true, /*sample_rate=*/48000);
 
         on_device_model::mojom::blink::AudioDataPtr audio_data =
             on_device_model::mojom::blink::AudioData::New();
@@ -222,7 +235,7 @@ ConvertPromptToMojo(const V8AILanguageModelPrompt* prompt,
         // TODO(crbug.com/382180351): Avoid a copy.
         audio_data->data = WTF::Vector<float>(bus->length());
         std::copy_n(bus->Channel(0)->Data(), bus->Channel(0)->length(),
-                    audio_data->data.end());
+                    audio_data->data.begin());
         result->content = mojom::blink::AILanguageModelPromptContent::NewAudio(
             std::move(audio_data));
       } else if (dict->content()->IsAudioBuffer()) {
@@ -273,12 +286,14 @@ DOMException* BuildPrompts(
     const V8AILanguageModelPromptInput* input,
     ScriptState* script_state,
     ExceptionState& exception_state,
+    ExecutionContext* execution_context,
     WTF::Vector<mojom::blink::AILanguageModelPromptPtr>& prompts) {
   if (input->IsAILanguageModelPromptDictOrStringSequence()) {
     const auto& sequence =
         input->GetAsAILanguageModelPromptDictOrStringSequence();
     for (const auto& entry : sequence) {
-      auto prompt = ConvertPromptToMojo(entry, script_state, exception_state);
+      auto prompt = ConvertPromptToMojo(entry, script_state, exception_state,
+                                        execution_context);
       if (std::holds_alternative<DOMException*>(prompt)) {
         return std::get<DOMException*>(prompt);
       }
@@ -288,7 +303,8 @@ DOMException* BuildPrompts(
   } else {
     CHECK(input->IsV8AILanguageModelPrompt());
     auto* entry = input->GetAsV8AILanguageModelPrompt();
-    auto prompt = ConvertPromptToMojo(entry, script_state, exception_state);
+    auto prompt = ConvertPromptToMojo(entry, script_state, exception_state,
+                                      execution_context);
     if (std::holds_alternative<DOMException*>(prompt)) {
       return std::get<DOMException*>(prompt);
     }
@@ -372,7 +388,8 @@ ScriptPromise<IDLString> AILanguageModel::prompt(
   }
 
   WTF::Vector<mojom::blink::AILanguageModelPromptPtr> prompts;
-  auto* exception = BuildPrompts(input, script_state, exception_state, prompts);
+  auto* exception = BuildPrompts(input, script_state, exception_state,
+                                 GetExecutionContext(), prompts);
   if (exception) {
     resolver->Reject(exception);
     return promise;
@@ -430,7 +447,8 @@ ReadableStream* AILanguageModel::promptStreaming(
   }
 
   WTF::Vector<mojom::blink::AILanguageModelPromptPtr> prompts;
-  auto* exception = BuildPrompts(input, script_state, exception_state, prompts);
+  auto* exception = BuildPrompts(input, script_state, exception_state,
+                                 GetExecutionContext(), prompts);
   if (exception) {
     CHECK(IsDOMExceptionCode(exception->code()));
     exception_state.ThrowDOMException(
