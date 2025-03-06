@@ -14,10 +14,6 @@
 
 namespace autofill_ai {
 
-// Autofill offers improvements on how field types and filling values are
-// predicted.
-BASE_FEATURE(kAutofillAi, "AutofillAi", base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool AutofillAiIsPlatformAndEnterprisePolicyEligible(const PrefService* prefs) {
   constexpr bool is_supported_platform = BUILDFLAG(IS_CHROMEOS) ||
                                          BUILDFLAG(IS_LINUX) ||

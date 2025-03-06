@@ -804,9 +804,8 @@ class AutofillAiEligibilityTests : public BaseAutofillAiManagerTest {
 TEST_F(AutofillAiEligibilityTests,
        IsFormAndFieldNotEligibleIfBothFlagsAreDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{}, /*disable_features*/ {
-          kAutofillAi, autofill::features::kAutofillAiWithDataSchema});
+  scoped_feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillAiWithDataSchema);
   std::unique_ptr<FormStructure> form = CreateEligibleForm();
 
   EXPECT_FALSE(
@@ -849,10 +848,8 @@ TEST_F(AutofillAiEligibilityTests,
 }
 
 TEST_F(AutofillAiEligibilityTests, AutofillAiEligibility_FormAndFieldEligible) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{autofill::features::kAutofillAiWithDataSchema},
-      /*disable_features*/ {kAutofillAi});
+  base::test::ScopedFeatureList scoped_feature_list{
+      autofill::features::kAutofillAiWithDataSchema};
 
   std::unique_ptr<FormStructure> form = CreateEligibleForm();
   EXPECT_TRUE(
@@ -861,9 +858,8 @@ TEST_F(AutofillAiEligibilityTests, AutofillAiEligibility_FormAndFieldEligible) {
 
 TEST_F(AutofillAiEligibilityTests,
        FormAndFieldIsNotEligibleForNonEligibleUser) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      autofill::features::kAutofillAiWithDataSchema);
+  base::test::ScopedFeatureList scoped_feature_list{
+      autofill::features::kAutofillAiWithDataSchema};
 
   std::unique_ptr<FormStructure> form = CreateEligibleForm();
   ON_CALL(client(), IsUserEligible).WillByDefault(Return(false));

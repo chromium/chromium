@@ -68,6 +68,16 @@ const base::FeatureParam<base::TimeDelta> kAutofillAiServerModelCacheAge{
 const base::FeatureParam<int> kAutofillAiServerModelCacheSize{
     &kAutofillAiServerModel, "autofill_ai_model_cache_size", 100};
 
+// The timeout for running the AutofillAI server model.
+const base::FeatureParam<base::TimeDelta>
+    kAutofillAiServerModelExecutionTimeout{
+        &kAutofillAiServerModel, "autofill_ai_model_execution_timeout",
+        base::Seconds(10)};
+
+// Whether the page's title and URL are included in the data sent to the model.
+const base::FeatureParam<bool> kAutofillAiServerModelSendPageTitleAndUrl{
+    &kAutofillAiServerModel, "autofill_ai_model_send_page_title_url", false};
+
 // Enables the second iteration AutofillAI.
 // This feature is independent of `autofill_ai::kAutofillAi`.
 BASE_FEATURE(kAutofillAiWithDataSchema,

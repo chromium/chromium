@@ -1574,24 +1574,6 @@
             ]
         }
     ],
-    "AutofillAiTeamfood": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillAi"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillAiTeamfoodV2": [
         {
             "platforms": [

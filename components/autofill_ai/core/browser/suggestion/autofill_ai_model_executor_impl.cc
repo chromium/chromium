@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "components/autofill/core/browser/form_processing/optimization_guide_proto_util.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/autofill_ai/core/browser/autofill_ai_features.h"
@@ -50,7 +51,7 @@ void AutofillAiModelExecutorImpl::GetPredictions(
   AutofillAiTypeRequest request;
   optimization_guide::proto::PageContext* page_context =
       request.mutable_page_context();
-  if (kSendTitleURL.Get()) {
+  if (autofill::features::kAutofillAiServerModelSendPageTitleAndUrl.Get()) {
     page_context->set_url(form_data.url().spec());
     page_context->set_title(ax_tree_update.tree_data().title());
   } else {
@@ -69,7 +70,8 @@ void AutofillAiModelExecutorImpl::GetPredictions(
   optimization_guide::ExecuteModelWithLogging(
       &model_executor_.get(),
       optimization_guide::ModelBasedCapabilityKey::kFormsClassifications,
-      request, kExecutionTimeout.Get(), std::move(wrapper_callback));
+      request, autofill::features::kAutofillAiServerModelExecutionTimeout.Get(),
+      std::move(wrapper_callback));
 }
 
 void AutofillAiModelExecutorImpl::OnModelExecuted(
