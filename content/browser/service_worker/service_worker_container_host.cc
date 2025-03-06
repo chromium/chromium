@@ -727,6 +727,7 @@ bool ServiceWorkerContainerHostForClient::AllowServiceWorker(
   if (!browser_context) {
     return false;
   }
+  auto start_time = base::TimeTicks::Now();
   AllowServiceWorkerResult allowed =
       GetContentClient()->browser()->AllowServiceWorker(
           scope,
@@ -734,6 +735,9 @@ bool ServiceWorkerContainerHostForClient::AllowServiceWorker(
               service_worker_client().key()),
           service_worker_client().top_frame_origin(), script_url,
           browser_context);
+  base::UmaHistogramMicrosecondsTimes(
+      "ServiceWorker.ContainerHostForClient.AllowServiceWorkerCallTime",
+      base::TimeTicks::Now() - start_time);
   if (service_worker_client().IsContainerForWindowClient()) {
     auto* rfh = RenderFrameHostImpl::FromID(
         service_worker_client().GetRenderFrameHostId());
