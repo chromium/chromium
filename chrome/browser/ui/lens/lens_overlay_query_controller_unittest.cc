@@ -40,6 +40,7 @@
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
+#include "third_party/lens_server_proto/lens_overlay_client_context.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_document.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_request_type.pb.h"
@@ -484,6 +485,85 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
                 .locale_context()
                 .time_zone(),
             kTimeZone);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kFullPageObjectsRequestFetchLatency),
+            1);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kInvocationToInitialFullPageObjectsRequestSent),
+            1);
+  ASSERT_EQ(
+      query_controller.latency_gen_204_counter(
+          LatencyType::kInvocationToInitialFullPageObjectsResponseReceived),
+      1);
+  ASSERT_EQ(query_controller.sent_client_logs().lens_overlay_entry_point(),
+            lens::LensOverlayClientLogs::APP_MENU);
+  ASSERT_TRUE(query_controller.sent_client_logs().has_paella_id());
+}
+
+TEST_F(LensOverlayQueryControllerTest,
+       FetchInitialQuery_UpdatedClientContext_ReturnsResponse) {
+  feature_list_.Reset();
+  feature_list_.InitAndEnableFeature(
+      lens::features::kLensOverlayUpdatedClientContext);
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  TestLensOverlayQueryController query_controller(
+      full_image_response_future.GetRepeatingCallback(), base::NullCallback(),
+      base::NullCallback(), GetSuggestInputsCallback(), base::NullCallback(),
+      base::NullCallback(), fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  // Set up the query controller responses.
+  lens::LensOverlayObjectsResponse fake_objects_response;
+  fake_objects_response.mutable_cluster_info()->set_server_session_id(
+      kTestServerSessionId);
+  query_controller.set_fake_objects_response(fake_objects_response);
+
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  query_controller.StartQueryFlow(
+      bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*underlying_page_contents=*/{},
+      /*primary_content_type=*/lens::MimeType::kUnknown, 0,
+      base::TimeTicks::Now());
+
+  ASSERT_TRUE(full_image_response_future.Wait());
+  query_controller.EndQuery();
+
+  // Check initial fetch objects request is correct.
+  auto sent_object_request = query_controller.sent_full_image_objects_request();
+  ASSERT_EQ(sent_object_request.request_context().request_id().sequence_id(),
+            1);
+  ASSERT_EQ(sent_object_request.image_data().image_metadata().width(), 100);
+  ASSERT_EQ(sent_object_request.image_data().image_metadata().height(), 100);
+  ASSERT_EQ(sent_object_request.request_context()
+                .client_context()
+                .locale_context()
+                .language(),
+            kLocale);
+  ASSERT_EQ(sent_object_request.request_context()
+                .client_context()
+                .locale_context()
+                .region(),
+            kRegion);
+  ASSERT_EQ(sent_object_request.request_context()
+                .client_context()
+                .locale_context()
+                .time_zone(),
+            kTimeZone);
+  ASSERT_EQ(sent_object_request.request_context().client_context().surface(),
+            lens::SURFACE_LENS_OVERLAY);
+  ASSERT_EQ(sent_object_request.request_context().client_context().platform(),
+            lens::LENS_OVERLAY);
+  ASSERT_EQ(sent_object_request.request_context()
+                .client_context()
+                .rendering_context()
+                .rendering_environment(),
+            lens::RENDERING_ENV_UNSPECIFIED);
   ASSERT_EQ(query_controller.latency_gen_204_counter(
                 LatencyType::kFullPageObjectsRequestFetchLatency),
             1);

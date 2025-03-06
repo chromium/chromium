@@ -57,6 +57,10 @@ BASE_DECLARE_FEATURE(kLensOverlaySidePanelOpenInNewTab);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlaySimplifiedSelection);
 
+// Enables the Lens overlay updated client context.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayUpdatedClientContext);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;
@@ -699,6 +703,10 @@ extern bool PageContentUploadRequestIdFixEnabled();
 // Whether to update the viewport on each contextual query.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UpdateViewportEachQueryEnabled();
+
+// Whether to use the updated client context.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsUpdatedClientContextEnabled();
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

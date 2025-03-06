@@ -63,6 +63,10 @@ BASE_FEATURE(kLensOverlaySimplifiedSelection,
              "LensOverlaySimplifiedSelection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlayUpdatedClientContext,
+             "LensOverlayUpdatedClientContext",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
 const base::FeatureParam<std::string> kActivityUrl{
@@ -879,5 +883,9 @@ bool PageContentUploadRequestIdFixEnabled() {
 
 bool UpdateViewportEachQueryEnabled() {
   return kUpdateViewportEachQuery.Get();
+}
+
+bool IsUpdatedClientContextEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlayUpdatedClientContext);
 }
 }  // namespace lens::features
