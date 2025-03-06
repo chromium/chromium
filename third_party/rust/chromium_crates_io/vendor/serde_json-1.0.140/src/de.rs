@@ -55,7 +55,7 @@ where
     ///   - Deserializer::from_slice
     ///   - Deserializer::from_reader
     ///
-    /// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
+    /// [`File`]: std::fs::File
     pub fn new(read: R) -> Self {
         Deserializer {
             read,
@@ -368,7 +368,7 @@ impl<'de, R: Read<'de>> Deserializer<R> {
             None => {
                 return Err(self.peek_error(ErrorCode::EofWhileParsingValue));
             }
-        };
+        }
 
         tri!(self.scan_integer128(&mut buf));
 
@@ -2523,10 +2523,7 @@ where
 /// reading a file completely into memory and then applying [`from_str`]
 /// or [`from_slice`] on it. See [issue #160].
 ///
-/// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
-/// [`std::io::BufReader`]: https://doc.rust-lang.org/std/io/struct.BufReader.html
-/// [`from_str`]: ./fn.from_str.html
-/// [`from_slice`]: ./fn.from_slice.html
+/// [`File`]: std::fs::File
 /// [issue #160]: https://github.com/serde-rs/json/issues/160
 ///
 /// # Example

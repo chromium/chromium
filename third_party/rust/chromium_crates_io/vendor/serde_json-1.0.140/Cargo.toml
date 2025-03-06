@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.56"
 name = "serde_json"
-version = "1.0.138"
+version = "1.0.140"
 authors = [
     "Erick Tryzelaar <erick.tryzelaar@gmail.com>",
     "David Tolnay <dtolnay@gmail.com>",
@@ -46,7 +46,12 @@ features = [
     "raw_value",
     "unbounded_depth",
 ]
-rustdoc-args = ["--generate-link-to-definition"]
+rustdoc-args = [
+    "--generate-link-to-definition",
+    "--extern-html-root-url=core=https://doc.rust-lang.org",
+    "--extern-html-root-url=alloc=https://doc.rust-lang.org",
+    "--extern-html-root-url=std=https://doc.rust-lang.org",
+]
 targets = ["x86_64-unknown-linux-gnu"]
 
 [package.metadata.playground]
@@ -75,7 +80,6 @@ unbounded_depth = []
 [lib]
 name = "serde_json"
 path = "src/lib.rs"
-doc-scrape-examples = false
 
 [[test]]
 name = "compiletest"

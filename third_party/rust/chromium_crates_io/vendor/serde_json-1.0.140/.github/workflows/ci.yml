@@ -106,10 +106,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@miri
-      - run: sudo apt-get install gcc-powerpc-linux-gnu
-        if: matrix.target == 'powerpc64-unknown-linux-gnu'
-      - run: sudo apt-get install gcc-mips-linux-gnu
-        if: matrix.target == 'mips-unknown-linux-gnu'
       - run: cargo miri setup
       - run: cargo miri test --target ${{matrix.target}}
       - run: cargo miri test --target ${{matrix.target}} --features preserve_order,float_roundtrip,arbitrary_precision,raw_value

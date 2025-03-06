@@ -299,13 +299,14 @@
 //! [macro]: crate::json
 //! [`serde-json-core`]: https://github.com/rust-embedded-community/serde-json-core
 
-#![doc(html_root_url = "https://docs.rs/serde_json/1.0.138")]
+#![doc(html_root_url = "https://docs.rs/serde_json/1.0.140")]
 // Ignored clippy lints
 #![allow(
     clippy::collapsible_else_if,
     clippy::comparison_chain,
     clippy::deprecated_cfg_attr,
     clippy::doc_markdown,
+    clippy::elidable_lifetime_names,
     clippy::excessive_precision,
     clippy::explicit_auto_deref,
     clippy::float_cmp,
@@ -317,6 +318,7 @@
     clippy::needless_lifetimes,
     clippy::return_self_not_must_use,
     clippy::transmute_ptr_to_ptr,
+    clippy::unbuffered_bytes,
     clippy::unconditional_recursion, // https://github.com/rust-lang/rust-clippy/issues/12133
     clippy::unnecessary_wraps
 )]

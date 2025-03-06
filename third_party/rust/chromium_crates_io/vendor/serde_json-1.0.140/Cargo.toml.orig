@@ -1,6 +1,6 @@
 [package]
 name = "serde_json"
-version = "1.0.138"
+version = "1.0.140"
 authors = ["Erick Tryzelaar <erick.tryzelaar@gmail.com>", "David Tolnay <dtolnay@gmail.com>"]
 categories = ["encoding", "parser-implementations", "no-std"]
 description = "A JSON serialization file format"
@@ -29,13 +29,15 @@ serde_derive = "1.0.166"
 serde_stacker = "0.1.8"
 trybuild = { version = "1.0.81", features = ["diff"] }
 
-[lib]
-doc-scrape-examples = false
-
 [package.metadata.docs.rs]
 features = ["preserve_order", "raw_value", "unbounded_depth"]
 targets = ["x86_64-unknown-linux-gnu"]
-rustdoc-args = ["--generate-link-to-definition"]
+rustdoc-args = [
+    "--generate-link-to-definition",
+    "--extern-html-root-url=core=https://doc.rust-lang.org",
+    "--extern-html-root-url=alloc=https://doc.rust-lang.org",
+    "--extern-html-root-url=std=https://doc.rust-lang.org",
+]
 
 [package.metadata.playground]
 features = ["float_roundtrip", "raw_value", "unbounded_depth"]

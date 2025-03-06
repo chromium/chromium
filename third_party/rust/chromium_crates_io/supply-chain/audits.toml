@@ -3198,6 +3198,12 @@ who = "Liza Burakova <liza@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.137 -> 1.0.138"
 
+[[audits.serde_json]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.138 -> 1.0.140"
+notes = "Only minor fixes for clippy and documentation updates."
+
 [[audits.serde_json_lenient]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]

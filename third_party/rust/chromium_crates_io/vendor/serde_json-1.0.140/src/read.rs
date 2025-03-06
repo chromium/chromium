@@ -196,7 +196,7 @@ where
     /// as a [`File`], you will want to apply your own buffering because serde_json
     /// will not buffer the input. See [`std::io::BufReader`].
     ///
-    /// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
+    /// [`File`]: std::fs::File
     pub fn new(reader: R) -> Self {
         IoRead {
             iter: LineColIterator::new(reader.bytes()),
