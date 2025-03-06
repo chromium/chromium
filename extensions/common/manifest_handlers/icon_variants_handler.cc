@@ -24,16 +24,14 @@ static base::LazyInstance<ExtensionIconSet>::DestructorAtExit g_empty_icon_set =
     LAZY_INSTANCE_INITIALIZER;
 }  // namespace
 
+namespace keys = manifest_keys;
+
 IconVariantsInfo::IconVariantsInfo() = default;
 IconVariantsInfo::~IconVariantsInfo() = default;
-
 IconVariantsHandler::IconVariantsHandler() = default;
 IconVariantsHandler::~IconVariantsHandler() = default;
 
-namespace keys = manifest_keys;
 using IconVariantsManifestKeys = extensions::api::icon_variants::ManifestKeys;
-
-// extensions::diagnostics::
 using Id = extensions::diagnostics::icon_variants::Id;
 using Severity = extensions::diagnostics::icon_variants::Severity;
 using Feature = extensions::diagnostics::icon_variants::Feature;
@@ -72,7 +70,6 @@ ExtensionIconVariants GetIconVariants(Extension& extension) {
   if (icon_variants.IsEmpty()) {
     icon_variants.AddDiagnostic(Feature::kIconVariants,
                                 Id::kIconVariantsInvalid);
-    return icon_variants;
   }
 
   return icon_variants;
@@ -83,7 +80,7 @@ ExtensionIconVariants GetIconVariants(Extension& extension) {
 bool IconVariantsInfo::HasIconVariants(const Extension* extension) {
   DCHECK(extension);
   const IconVariantsInfo* info = IconVariantsInfo::GetIconVariants(extension);
-  return info && info->icon_variants;
+  return info && info->icon_variants && !info->icon_variants->IsEmpty();
 }
 
 const IconVariantsInfo* IconVariantsInfo::GetIconVariants(
