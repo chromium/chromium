@@ -15,6 +15,8 @@ import androidx.annotation.IntDef;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -31,6 +33,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** A utility class providing information regarding states of default browser. */
+@NullMarked
 public class DefaultBrowserPromoUtils {
     @IntDef({
         DefaultBrowserState.CHROME_DEFAULT,
@@ -62,7 +65,7 @@ public class DefaultBrowserPromoUtils {
     private final DefaultBrowserPromoImpressionCounter mImpressionCounter;
     private final DefaultBrowserStateProvider mStateProvider;
 
-    private static DefaultBrowserPromoUtils sInstance;
+    private static @Nullable DefaultBrowserPromoUtils sInstance;
 
     private final ObserverList<DefaultBrowserPromoTriggerStateListener>
             mDefaultBrowserPromoTriggerStateListeners;

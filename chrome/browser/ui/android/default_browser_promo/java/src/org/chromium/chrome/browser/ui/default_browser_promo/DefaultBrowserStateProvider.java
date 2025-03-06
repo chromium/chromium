@@ -10,6 +10,8 @@ import android.text.TextUtils;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserState;
 
 /**
@@ -17,6 +19,7 @@ import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoU
  * facilitate testing and interacting with external states by {@link PackageManagerUtils} and {@link
  * RoleManager}.
  */
+@NullMarked
 public class DefaultBrowserStateProvider {
     static final String CHROME_STABLE_PACKAGE_NAME = "com.android.chrome";
 
@@ -70,7 +73,7 @@ public class DefaultBrowserStateProvider {
     }
 
     @DefaultBrowserState
-    int getCurrentDefaultBrowserState(ResolveInfo info) {
+    int getCurrentDefaultBrowserState(@Nullable ResolveInfo info) {
         if (info == null || info.match == 0) return DefaultBrowserState.NO_DEFAULT; // no default
         if (TextUtils.equals(
                 ContextUtils.getApplicationContext().getPackageName(),
@@ -96,7 +99,7 @@ public class DefaultBrowserStateProvider {
         return false;
     }
 
-    ResolveInfo getDefaultWebBrowserActivityResolveInfo() {
+    @Nullable ResolveInfo getDefaultWebBrowserActivityResolveInfo() {
         return PackageManagerUtils.resolveDefaultWebBrowserActivity();
     }
 }
