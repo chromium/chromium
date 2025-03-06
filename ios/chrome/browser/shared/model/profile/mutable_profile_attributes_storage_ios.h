@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_MUTABLE_PROFILE_ATTRIBUTES_STORAGE_IOS_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_MUTABLE_PROFILE_ATTRIBUTES_STORAGE_IOS_H_
 
+#include <string>
+
 #include "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 
 // A sub-class of ProfileAttributesStorageIOS that allow creating or deleting
@@ -28,6 +30,20 @@ class MutableProfileAttributesStorageIOS : public ProfileAttributesStorageIOS {
 
   // Mark `profile_name` as fully deleted from disk.
   void ProfileDeletionComplete(std::string_view profile_name);
+
+  // Returns whether a profile with `name` can be deleted.
+  bool CanDeleteProfileWithName(std::string_view name) const;
+
+  // Returns whether a profile with `name` can be created.
+  bool CanCreateProfileWithName(std::string_view name) const;
+
+  // Reserves a new randomly generated name that can be used to create a new
+  // profile and returns the new name. The profile will be registered and its
+  // attributes can be set immediately.
+  std::string ReserveNewProfileName();
+
+  // Ensures that the "personal profile" exists.
+  void EnsurePersonalProfileExists();
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_MUTABLE_PROFILE_ATTRIBUTES_STORAGE_IOS_H_

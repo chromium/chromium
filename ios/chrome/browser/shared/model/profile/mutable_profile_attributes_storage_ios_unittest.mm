@@ -65,6 +65,9 @@ constexpr char kTestProfile2[] = "Profile2";
 constexpr char kTestSceneId1[] = "scene-id1";
 constexpr char kTestSceneId2[] = "scene-id2";
 
+constexpr char kUnknownProfile[] = "UnknownProfile";
+constexpr char kLegacyProfile[] = "LegacyProfile";
+
 // Updates `attr` with information from `account`.
 void UpdateAttributesFromTestAccount(const TestAccount& account,
                                      ProfileAttributesIOS& attr) {
@@ -443,34 +446,6 @@ TEST_F(MutableProfileAttributesStorageIOSTest,
   EXPECT_EQ(counter, storage.GetNumberOfProfiles());
 }
 
-TEST_F(MutableProfileAttributesStorageIOSTest, FixInvalidPersonalProfileName) {
-  {
-    // Setup: Register some profiles.
-    MutableProfileAttributesStorageIOS storage(pref_service());
-    for (const TestAccount& account : kTestAccounts) {
-      storage.AddProfile(account.name);
-    }
-    ASSERT_EQ(storage.GetNumberOfProfiles(), std::size(kTestAccounts));
-    // Set a personal profile name.
-    storage.SetPersonalProfileName(kTestAccounts[0].name);
-  }
-
-  // For some reason, the prefs get corrupted, and the personal profile name
-  // now points to a profile that doesn't actually exist. (Either the personal
-  // profile name pref itself got corrupted somehow, or the profile entry got
-  // removed.)
-  const std::string kOtherProfileName = "other";
-  pref_service()->SetString(prefs::kPersonalProfileName, kOtherProfileName);
-
-  {
-    MutableProfileAttributesStorageIOS storage(pref_service());
-
-    EXPECT_EQ(storage.GetPersonalProfileName(), kOtherProfileName);
-    EXPECT_TRUE(storage.HasProfileWithName(kOtherProfileName));
-    EXPECT_EQ(storage.GetNumberOfProfiles(), std::size(kTestAccounts) + 1);
-  }
-}
-
 TEST_F(MutableProfileAttributesStorageIOSTest,
        AllowEmptyInvalidPersonalProfileName) {
   {
@@ -491,4 +466,175 @@ TEST_F(MutableProfileAttributesStorageIOSTest,
     // The personal profile name should still be empty.
     EXPECT_TRUE(storage.GetPersonalProfileName().empty());
   }
+}
+
+// Check that CanDeleteProfileWithName(...) works correctly.
+TEST_F(MutableProfileAttributesStorageIOSTest, CanDeleteProfileWithName) {
+  MutableProfileAttributesStorageIOS storage(pref_service());
+
+  storage.AddProfile(kTestProfile1);
+  storage.AddProfile(kTestProfile2);
+  storage.SetPersonalProfileName(kTestProfile2);
+  ASSERT_FALSE(storage.HasProfileWithName(kUnknownProfile));
+
+  // Cannot delete profile if the name is empty or the profile is unknown.
+  EXPECT_FALSE(storage.CanDeleteProfileWithName(""));
+  EXPECT_FALSE(storage.CanDeleteProfileWithName(kUnknownProfile));
+
+  // Create a new profile and check that it can be deleted.
+  ASSERT_TRUE(storage.HasProfileWithName(kTestProfile1));
+  EXPECT_TRUE(storage.CanDeleteProfileWithName(kTestProfile1));
+
+  // Check that marking the profile for deletion prevents deleting it again.
+  storage.MarkProfileForDeletion(kTestProfile1);
+  ASSERT_TRUE(storage.IsProfileMarkedForDeletion(kTestProfile1));
+  EXPECT_FALSE(storage.CanDeleteProfileWithName(kTestProfile1));
+
+  // Check that the personal profile cannot be deleted.
+  EXPECT_FALSE(storage.CanDeleteProfileWithName(kTestProfile2));
+}
+
+// Check that CanCreateProfileWithName(...) works correctly.
+TEST_F(MutableProfileAttributesStorageIOSTest, CanCreateProfileWithName) {
+  pref_service()->SetDict(
+      prefs::kLegacyProfileMap,
+      base::Value::Dict().Set(kLegacyProfile, base::Value::Dict()));
+
+  MutableProfileAttributesStorageIOS storage(pref_service());
+
+  storage.AddProfile(kTestProfile1);
+  ASSERT_FALSE(storage.HasProfileWithName(kTestProfile2));
+
+  // Cannot create a profile with an empty name, an existing profile name,
+  // a legacy profile name.
+  EXPECT_FALSE(storage.CanCreateProfileWithName(""));
+  EXPECT_FALSE(storage.CanCreateProfileWithName(kTestProfile1));
+  EXPECT_FALSE(storage.CanCreateProfileWithName(kLegacyProfile));
+
+  // Can create a profile with a new name.
+  EXPECT_TRUE(storage.CanCreateProfileWithName(kTestProfile2));
+
+  // Check that it is not possible to create a profile with the same name
+  // as a profile marked for deletion.
+  storage.MarkProfileForDeletion(kTestProfile1);
+  ASSERT_FALSE(storage.HasProfileWithName(kTestProfile1));
+  EXPECT_FALSE(storage.CanCreateProfileWithName(kTestProfile1));
+}
+
+// Check that ReserveNewProfileName() returns a new profile name and
+// adds the profile to the storage.
+TEST_F(MutableProfileAttributesStorageIOSTest, ReserveNewProfileName) {
+  MutableProfileAttributesStorageIOS storage(pref_service());
+
+  ASSERT_EQ(storage.GetNumberOfProfiles(), 0u);
+
+  const std::string name = storage.ReserveNewProfileName();
+  EXPECT_NE(name, std::string());
+  EXPECT_EQ(storage.GetNumberOfProfiles(), 1u);
+  EXPECT_TRUE(storage.HasProfileWithName(name));
+}
+
+// Check that EnsurePersonalProfileExists(...) does nothing if there is
+// already a profile registered as the personal profile and it exists.
+TEST_F(MutableProfileAttributesStorageIOSTest, EnsurePersonalProfileExists) {
+  MutableProfileAttributesStorageIOS storage(pref_service());
+
+  storage.AddProfile(kTestProfile1);
+  storage.SetPersonalProfileName(kTestProfile1);
+
+  ASSERT_EQ(storage.GetNumberOfProfiles(), 1u);
+  storage.EnsurePersonalProfileExists();
+
+  EXPECT_EQ(storage.GetPersonalProfileName(), kTestProfile1);
+  EXPECT_EQ(storage.GetNumberOfProfiles(), 1u);
+}
+
+// Check that EnsurePersonalProfileExists(...) creates a new profile and
+// mark it as the personal profile if there are no existing profiles.
+TEST_F(MutableProfileAttributesStorageIOSTest,
+       EnsurePersonalProfileExists_NoProfiles) {
+  MutableProfileAttributesStorageIOS storage(pref_service());
+
+  ASSERT_EQ(storage.GetNumberOfProfiles(), 0u);
+  storage.EnsurePersonalProfileExists();
+
+  EXPECT_NE(storage.GetPersonalProfileName(), "");
+  EXPECT_EQ(storage.GetNumberOfProfiles(), 1u);
+}
+
+// Check that EnsurePersonalProfileExists(...) mark the one existing profile
+// as the personal profile if there is just one profile.
+TEST_F(MutableProfileAttributesStorageIOSTest,
+       EnsurePersonalProfileExists_OneProfile) {
+  MutableProfileAttributesStorageIOS storage(pref_service());
+
+  storage.AddProfile(kTestProfile1);
+  ASSERT_EQ(storage.GetPersonalProfileName(), "");
+  ASSERT_EQ(storage.GetNumberOfProfiles(), 1u);
+  storage.EnsurePersonalProfileExists();
+
+  EXPECT_EQ(storage.GetPersonalProfileName(), kTestProfile1);
+  EXPECT_EQ(storage.GetNumberOfProfiles(), 1u);
+}
+
+// Check that EnsurePersonalProfileExists(...) mark the last used profile
+// as the personal profile if there are more than one profile known.
+TEST_F(MutableProfileAttributesStorageIOSTest,
+       EnsurePersonalProfileExists_LastUsedProfile) {
+  MutableProfileAttributesStorageIOS storage(pref_service());
+
+  pref_service()->SetString(prefs::kLastUsedProfile, kTestProfile2);
+
+  storage.AddProfile(kTestProfile1);
+  storage.AddProfile(kTestProfile2);
+  ASSERT_EQ(storage.GetPersonalProfileName(), "");
+  ASSERT_EQ(storage.GetNumberOfProfiles(), 2u);
+  storage.EnsurePersonalProfileExists();
+
+  EXPECT_EQ(pref_service()->GetString(prefs::kLastUsedProfile), kTestProfile2);
+  EXPECT_EQ(storage.GetPersonalProfileName(), kTestProfile2);
+  EXPECT_EQ(storage.GetNumberOfProfiles(), 2u);
+}
+
+// Check that EnsurePersonalProfileExists(...) mark one arbitrary profile as
+// the personal profile if there are more than one profile known (and clears
+// the last used profile if it corresponds to a non-existing profile).
+TEST_F(MutableProfileAttributesStorageIOSTest,
+       EnsurePersonalProfileExists_ManyProfiles) {
+  MutableProfileAttributesStorageIOS storage(pref_service());
+
+  pref_service()->SetString(prefs::kLastUsedProfile, kUnknownProfile);
+
+  storage.AddProfile(kTestProfile1);
+  storage.AddProfile(kTestProfile2);
+  ASSERT_EQ(storage.GetPersonalProfileName(), "");
+  ASSERT_EQ(storage.GetNumberOfProfiles(), 2u);
+  storage.EnsurePersonalProfileExists();
+
+  EXPECT_EQ(pref_service()->GetString(prefs::kLastUsedProfile), "");
+  EXPECT_NE(storage.GetPersonalProfileName(), "");
+  EXPECT_EQ(storage.GetNumberOfProfiles(), 2u);
+}
+
+// Check that EnsurePersonalProfileExists(...) restores the personal profile
+// if it is marked for deletion (should not happen, but in case there is a
+// corruption of the preferences, prevent a crash).
+TEST_F(MutableProfileAttributesStorageIOSTest,
+       EnsurePersonalProfileExists_RestoreDeletedPersonalProfile) {
+  // Set up the prefs in an inconsistent state corresponding to the
+  // personal profile as marked for deletion.
+  pref_service()->SetString(prefs::kPersonalProfileName, kTestProfile1);
+  pref_service()->SetList(
+      prefs::kProfilesToRemove,
+      base::Value::List().Append(std::string(kTestProfile1)));
+
+  MutableProfileAttributesStorageIOS storage(pref_service());
+
+  ASSERT_EQ(storage.GetNumberOfProfiles(), 0u);
+  ASSERT_TRUE(storage.IsProfileMarkedForDeletion(kTestProfile1));
+  storage.EnsurePersonalProfileExists();
+
+  EXPECT_EQ(storage.GetPersonalProfileName(), kTestProfile1);
+  EXPECT_TRUE(storage.HasProfileWithName(kTestProfile1));
+  EXPECT_EQ(storage.GetNumberOfProfiles(), 1u);
 }

@@ -150,6 +150,8 @@ ProfileManagerIOSImpl::ProfileManagerIOSImpl(PrefService* local_state,
       profile_attributes_storage_(local_state) {
   CHECK(local_state_);
   CHECK(!profile_data_dir_.empty());
+
+  profile_attributes_storage_.EnsurePersonalProfileExists();
 }
 
 ProfileManagerIOSImpl::~ProfileManagerIOSImpl() {
@@ -228,52 +230,18 @@ bool ProfileManagerIOSImpl::HasProfileWithName(std::string_view name) const {
 bool ProfileManagerIOSImpl::CanCreateProfileWithName(
     std::string_view name) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Cannot create a profile with the same name as an existing profile.
-  if (HasProfileWithName(name)) {
-    return false;
-  }
-
-  // Cannot create a profile with the same name as a legacy profile.
-  if (local_state_->GetDict(prefs::kLegacyProfileMap).Find(name)) {
-    return false;
-  }
-
-  // Cannot create a profile that have been marked for deletion, and currently
-  // not fully deleted yet.
-  if (IsProfileMarkedForDeletion(name)) {
-    return false;
-  }
-
-  return true;
+  return profile_attributes_storage_.CanCreateProfileWithName(name);
 }
 
 std::string ProfileManagerIOSImpl::ReserveNewProfileName() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::string profile_name;
-  do {
-    const base::Uuid uuid = base::Uuid::GenerateRandomV4();
-    profile_name = uuid.AsLowercaseString();
-  } while (!CanCreateProfileWithName(profile_name));
-
-  DCHECK(!profile_name.empty());
-  DCHECK(!HasProfileWithName(profile_name));
-  profile_attributes_storage_.AddProfile(profile_name);
-
-  return profile_name;
+  return profile_attributes_storage_.ReserveNewProfileName();
 }
 
 bool ProfileManagerIOSImpl::CanDeleteProfileWithName(
     std::string_view name) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!HasProfileWithName(name)) {
-    return false;
-  }
-  // Cannot delete the personal profile.
-  if (name == profile_attributes_storage_.GetPersonalProfileName()) {
-    return false;
-  }
-  return true;
+  return profile_attributes_storage_.CanDeleteProfileWithName(name);
 }
 
 bool ProfileManagerIOSImpl::LoadProfileAsync(
@@ -530,12 +498,6 @@ bool ProfileManagerIOSImpl::CreateProfileWithMode(
     if (!existing) {
       profile_attributes_storage_.AddProfile(name);
       DCHECK(HasProfileWithName(name));
-    }
-
-    // If this is the first profile ever loaded, mark it as the personal
-    // profile.
-    if (profile_attributes_storage_.GetPersonalProfileName().empty()) {
-      profile_attributes_storage_.SetPersonalProfileName(name);
     }
 
     std::tie(iter, inserted) = profiles_map_.insert(std::make_pair(
