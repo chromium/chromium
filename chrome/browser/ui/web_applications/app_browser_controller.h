@@ -93,6 +93,12 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
       const Profile& profile,
       const webapps::AppId& app_id,
       BrowserWindowInterface::Type browser_type,
+      bool for_focus_existing,
+      HomeTabScope home_tab_scope = HomeTabScope::kDontCare);
+  static std::optional<int> FindTabIndexForApp(
+      Browser* browser,
+      const webapps::AppId& app_id,
+      bool for_focus_existing,
       HomeTabScope home_tab_scope = HomeTabScope::kDontCare);
 
   // Renders |url|'s origin as Unicode.

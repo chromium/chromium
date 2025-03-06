@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -124,7 +125,7 @@ class NavigationCapturingBrowserNavigatorBrowserTest
     // Mimic navigation capturing via shift click into a new window.
     Browser* second_app_browser = nullptr;
     {
-      NavigateParams params(browser(), GetLandingPage(),
+      NavigateParams params(app_browser_to_use, GetLandingPage(),
                             ui::PAGE_TRANSITION_LINK);
       params.disposition = WindowOpenDisposition::NEW_WINDOW;
       Navigate(&params);
@@ -132,6 +133,7 @@ class NavigationCapturingBrowserNavigatorBrowserTest
     }
     EXPECT_NE(nullptr, second_app_browser);
     EXPECT_NE(second_app_browser, app_browser_to_use);
+    test::CompletePageLoadForAllWebContents();
     return {app_browser_to_use, second_app_browser};
   }
 
@@ -186,6 +188,8 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   Browser* app_browser_2 = nullptr;
   std::tie(app_browser_1, app_browser_2) =
       GetTwoDistinctBrowsersForSameApp(app_id);
+  EXPECT_TRUE(WebAppBrowserController::IsForWebApp(app_browser_1, app_id));
+  EXPECT_TRUE(WebAppBrowserController::IsForWebApp(app_browser_2, app_id));
 
   // Do a capturable navigation to the landing page, and ensure that it opens in
   // `app_browser_2`.
@@ -232,6 +236,8 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   Browser* app_browser_2 = nullptr;
   std::tie(app_browser_1, app_browser_2) =
       GetTwoDistinctBrowsersForSameApp(app_id);
+  EXPECT_TRUE(WebAppBrowserController::IsForWebApp(app_browser_1, app_id));
+  EXPECT_TRUE(WebAppBrowserController::IsForWebApp(app_browser_2, app_id));
 
   // Do a capturable navigation to the landing page, and ensure that it opens in
   // `app_browser_1`. Since the web_app has a client_mode of `focus-existing`,
@@ -251,6 +257,93 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
 
   // `app_browser_1` should still be at the landing page.
   EXPECT_EQ(GetLandingPage(), app_browser_1->tab_strip_model()
+                                  ->GetActiveWebContents()
+                                  ->GetLastCommittedURL());
+
+  histograms.ExpectUniqueSample(
+      "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
+                       FocusExistingWithBrowserAvoidsOutOfScope) {
+  const webapps::AppId& app_id = InstallTestWebApp(
+      GetLandingPage(), mojom::UserDisplayMode::kStandalone,
+      blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting);
+
+  GURL out_of_scope =
+      embedded_test_server()->GetURL("/web_apps/simple2/index.html");
+
+  // Open the browser and navigate to out-of-scope url.
+  Browser* app_browser = LaunchWebAppBrowser(app_id);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, out_of_scope));
+  content::WaitForLoadStop(
+      app_browser->tab_strip_model()->GetActiveWebContents());
+
+  // Populate the browser for a focus-existing navigation, which should reject
+  // it because the current web contents is not in-scope of the app. And thus
+  // create a new window.
+  base::HistogramTester histograms;
+  ui_test_utils::BrowserChangeObserver added(
+      /*browser=*/nullptr,
+      ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  {
+    NavigateParams params(app_browser, GetLandingPage(),
+                          ui::PAGE_TRANSITION_LINK);
+    params.source_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    Navigate(&params);
+  }
+  Browser* new_app_browser = added.Wait();
+  test::CompletePageLoadForAllWebContents();
+
+  EXPECT_EQ(out_of_scope, app_browser->tab_strip_model()
+                              ->GetActiveWebContents()
+                              ->GetLastCommittedURL());
+  EXPECT_EQ(GetLandingPage(), new_app_browser->tab_strip_model()
+                                  ->GetActiveWebContents()
+                                  ->GetLastCommittedURL());
+
+  histograms.ExpectUniqueSample(
+      "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
+                       NavigateExistingIgnoresNonHtml) {
+  const webapps::AppId& app_id = InstallTestWebApp(
+      GetLandingPage(), mojom::UserDisplayMode::kStandalone,
+      blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting);
+
+  GURL image_url =
+      embedded_test_server()->GetURL("/web_apps/simple/basic-48.png");
+
+  // Open the browser and navigate to an in-scope image (non-html item);
+  Browser* app_browser = LaunchWebAppBrowser(app_id);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, image_url));
+  content::WaitForLoadStop(
+      app_browser->tab_strip_model()->GetActiveWebContents());
+
+  // Do a capturable navigation to the landing page, and ensure that it opens in
+  // a new browser;
+  base::HistogramTester histograms;
+  ui_test_utils::BrowserChangeObserver added(
+      /*browser=*/nullptr,
+      ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  {
+    NavigateParams params(browser(), GetLandingPage(),
+                          ui::PAGE_TRANSITION_LINK);
+    params.source_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    Navigate(&params);
+  }
+  Browser* new_app_browser = added.Wait();
+  test::CompletePageLoadForAllWebContents();
+
+  EXPECT_EQ(image_url, app_browser->tab_strip_model()
+                           ->GetActiveWebContents()
+                           ->GetLastCommittedURL());
+  EXPECT_EQ(GetLandingPage(), new_app_browser->tab_strip_model()
                                   ->GetActiveWebContents()
                                   ->GetLastCommittedURL());
 
