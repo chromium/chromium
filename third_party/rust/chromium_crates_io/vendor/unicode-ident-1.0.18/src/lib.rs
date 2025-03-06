@@ -13,7 +13,7 @@
 //!
 //! This crate is a better optimized implementation of the older `unicode-xid`
 //! crate. This crate uses less static storage, and is able to classify both
-//! ASCII and non-ASCII codepoints with better performance, 2&ndash;10&times;
+//! ASCII and non-ASCII codepoints with better performance, 2&ndash;6&times;
 //! faster than `unicode-xid`.
 //!
 //! <br>
@@ -90,7 +90,7 @@
 //! Additionally, the branching performed during the binary search is probably
 //! mostly unpredictable to the branch predictor.
 //!
-//! Overall, the crate ends up being about 10&times; slower on non-ASCII input
+//! Overall, the crate ends up being about 6&times; slower on non-ASCII input
 //! compared to the fastest crate.
 //!
 //! A potential improvement would be to pack the table entries more compactly.
@@ -242,7 +242,7 @@
 //! this data structure is straight-line code with no need for branching.
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/unicode-ident/1.0.16")]
+#![doc(html_root_url = "https://docs.rs/unicode-ident/1.0.18")]
 #![allow(clippy::doc_markdown, clippy::must_use_candidate)]
 
 #[rustfmt::skip]
@@ -250,6 +250,7 @@ mod tables;
 
 use crate::tables::{ASCII_CONTINUE, ASCII_START, CHUNK, LEAF, TRIE_CONTINUE, TRIE_START};
 
+/// Whether the character has the Unicode property XID\_Start.
 pub fn is_xid_start(ch: char) -> bool {
     if ch.is_ascii() {
         return ASCII_START.0[ch as usize];
@@ -259,6 +260,7 @@ pub fn is_xid_start(ch: char) -> bool {
     unsafe { LEAF.0.get_unchecked(offset) }.wrapping_shr(ch as u32 % 8) & 1 != 0
 }
 
+/// Whether the character has the Unicode property XID\_Continue.
 pub fn is_xid_continue(ch: char) -> bool {
     if ch.is_ascii() {
         return ASCII_CONTINUE.0[ch as usize];

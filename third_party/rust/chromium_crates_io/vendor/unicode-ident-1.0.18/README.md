@@ -13,7 +13,7 @@ Implementation of [Unicode Standard Annex #31][tr31] for determining which
 
 This crate is a better optimized implementation of the older `unicode-xid`
 crate. This crate uses less static storage, and is able to classify both ASCII
-and non-ASCII codepoints with better performance, 2&ndash;10&times; faster than
+and non-ASCII codepoints with better performance, 2&ndash;6&times; faster than
 `unicode-xid`.
 
 <br>
@@ -84,7 +84,7 @@ lines on average. Each cache line fits only 8 table entries. Additionally, the
 branching performed during the binary search is probably mostly unpredictable to
 the branch predictor.
 
-Overall, the crate ends up being about 10&times; slower on non-ASCII input
+Overall, the crate ends up being about 6&times; slower on non-ASCII input
 compared to the fastest crate.
 
 A potential improvement would be to pack the table entries more compactly.

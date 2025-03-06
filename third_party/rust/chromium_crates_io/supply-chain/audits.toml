@@ -3626,6 +3626,12 @@ who = "Liza Burakova <liza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.0.15 -> 1.0.16"
 
+[[audits.unicode-ident]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.16 -> 1.0.18"
+notes = "Only minor comment and documentation updates."
+
 [[audits.unicode-linebreak]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]
