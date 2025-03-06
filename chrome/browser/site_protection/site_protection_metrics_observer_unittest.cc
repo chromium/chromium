@@ -7,6 +7,7 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
@@ -87,7 +88,7 @@ class SiteProtectionMetricsObserverTest
         safe_browsing_factory_->CreateSafeBrowsingService());
     global_browser_process->safe_browsing_service()->Initialize();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Local state is needed to construct ProxyConfigService, which is a
     // dependency of PingManager on ChromeOS.
     global_browser_process->SetLocalState(profile()->GetPrefs());
@@ -110,7 +111,7 @@ class SiteProtectionMetricsObserverTest
   }
 
   void SetIncognito() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     auto* global_browser_process = TestingBrowserProcess::GetGlobal();
     global_browser_process->SetLocalState(nullptr);
 #endif
@@ -125,7 +126,7 @@ class SiteProtectionMetricsObserverTest
 
     SetUpForNewWebContents();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     global_browser_process->SetLocalState(profile()->GetPrefs());
 #endif
   }

@@ -34,10 +34,6 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/ui_resources.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace favicon {
 
 namespace {

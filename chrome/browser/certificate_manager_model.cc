@@ -18,7 +18,6 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -48,15 +47,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/network/policy_certificate_provider.h"
 #include "chromeos/constants/chromeos_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/kcer/kcer_factory_ash.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater_ash.h"
 #include "chromeos/ash/components/kcer/kcer.h"
 #include "chromeos/ash/components/kcer/kcer_histograms.h"
 #include "chromeos/components/onc/certificate_scope.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using content::BrowserThread;
 
@@ -495,10 +491,6 @@ class CertsSourceExtensions : public CertificateManagerModel::CertsSource {
   base::WeakPtrFactory<CertsSourceExtensions> weak_ptr_factory_{this};
 };
 
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
 void RecordImportFromPKCS12KcerResult(
     int nss_import_result,
     base::OnceCallback<void(int nss_import_result)> callback,
@@ -519,7 +511,7 @@ void RecordImportFromPKCS12KcerResult(
   return std::move(callback).Run(nss_import_result);
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -576,8 +568,6 @@ void CertificateManagerModel::Create(
           browser_context);
   params->extension_certificate_provider =
       certificate_provider_service->CreateCertificateProvider();
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   params->kcer = kcer::KcerFactoryAsh::GetKcer(
       Profile::FromBrowserContext(browser_context));
 #endif
@@ -614,8 +604,6 @@ CertificateManagerModel::CertificateManagerModel(
         certs_source_updated_callback, params->policy_certs_provider,
         CertsSourcePolicy::Mode::kPolicyCertsWithWebTrust));
   }
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   kcer_ = params->kcer;
 #endif
 
@@ -705,7 +693,7 @@ void CertificateManagerModel::ImportFromPKCS12(
   int nss_import_result = cert_db_->ImportFromPKCS12(slot_info, data, password,
                                                      is_extractable, nullptr);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (nss_import_result == net::OK) {
     kcer::RecordPkcs12MigrationUmaEvent(
         kcer::Pkcs12MigrationUmaEvent::kPkcs12ImportNssSuccess);
