@@ -21,17 +21,6 @@
 
 namespace {
 
-content::WebContents* OpenNewTab(const GURL& url,
-                                 content::WebContents* original_tab) {
-  CHECK(original_tab);
-  return original_tab->OpenURL(
-      content::OpenURLParams(url, content::Referrer(),
-                             WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                             ui::PAGE_TRANSITION_LINK,
-                             /*is_renderer_initiated=*/false),
-      base::DoNothing());
-}
-
 // Returns whether chrome switch for change password URLs is used.
 bool HasChangePasswordUrlOverride() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -67,8 +56,7 @@ ChromePasswordChangeService::ChromePasswordChangeService(
     std::unique_ptr<password_manager::PasswordFeatureManager> feature_manager)
     : affiliation_service_(affiliation_service),
       optimization_keyed_service_(optimization_keyed_service),
-      feature_manager_(std::move(feature_manager)),
-      new_tab_callback_(base::BindRepeating(&OpenNewTab)) {}
+      feature_manager_(std::move(feature_manager)) {}
 
 ChromePasswordChangeService::~ChromePasswordChangeService() {
   CHECK(password_change_delegates_.empty());
@@ -121,8 +109,7 @@ void ChromePasswordChangeService::OfferPasswordChangeUi(
 
   std::unique_ptr<PasswordChangeDelegate> delegate =
       std::make_unique<PasswordChangeDelegateImpl>(
-          std::move(change_pwd_url), username, password, web_contents,
-          new_tab_callback_);
+          std::move(change_pwd_url), username, password, web_contents);
   delegate->AddObserver(this);
   password_change_delegates_.push_back(std::move(delegate));
 

@@ -69,11 +69,6 @@ class ChromePasswordChangeService
   bool IsPasswordChangeAvailable() override;
   bool IsPasswordChangeSupported(const GURL& url) override;
 
-  // For testing only.
-  void SetCustomTabOpening(OpenNewTabCallback callback) {
-    new_tab_callback_ = std::move(callback);
-  }
-
  private:
   // PasswordChangeDelegate::Observer impl.
   void OnPasswordChangeStopped(PasswordChangeDelegate* delegate) override;
@@ -84,9 +79,6 @@ class ChromePasswordChangeService
   const raw_ptr<affiliations::AffiliationService> affiliation_service_;
   const raw_ptr<OptimizationGuideKeyedService> optimization_keyed_service_;
   std::unique_ptr<password_manager::PasswordFeatureManager> feature_manager_;
-
-  // TODO(crbug.com/382652112): Remove once testing is simplified.
-  OpenNewTabCallback new_tab_callback_;
 
   std::vector<std::unique_ptr<PasswordChangeDelegate>>
       password_change_delegates_;

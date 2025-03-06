@@ -124,19 +124,28 @@ std::unique_ptr<BrowserSavePasswordProgressLogger> GetLoggerIfAvailable(
   return nullptr;
 }
 
+content::WebContents* RedirectToUrl(const GURL& url,
+                                    content::PageNavigator* navigator,
+                                    WindowOpenDisposition disposition) {
+  CHECK(navigator);
+  return navigator->OpenURL(
+      content::OpenURLParams(url, content::Referrer(), disposition,
+                             ui::PAGE_TRANSITION_LINK,
+                             /*is_renderer_initiated=*/false),
+      base::DoNothing());
+}
+
 }  // namespace
 
 PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
     GURL change_password_url,
     std::u16string username,
     std::u16string password,
-    content::WebContents* originator,
-    OpenPasswordChangeTabCallback callback)
+    content::WebContents* originator)
     : change_password_url_(std::move(change_password_url)),
       username_(std::move(username)),
       original_password_(std::move(password)),
-      originator_(originator->GetWeakPtr()),
-      open_password_change_tab_callback_(std::move(callback)) {
+      originator_(originator->GetWeakPtr()) {
   if (auto logger = GetLoggerIfAvailable(originator_)) {
     logger->LogMessage(
         BrowserSavePasswordProgressLogger::STRING_PASSWORD_CHANGE_STARTED);
@@ -168,25 +177,18 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
 }
 
 void PasswordChangeDelegateImpl::StartPasswordChange() {
-  CHECK(originator_);
   flow_start_time_ = base::Time::Now();
   UpdateState(State::kWaitingForChangePasswordForm);
-  if (executor_) {
-    executor_->OpenURL(
-        content::OpenURLParams(change_password_url_, content::Referrer(),
-                               WindowOpenDisposition::CURRENT_TAB,
-                               ui::PAGE_TRANSITION_LINK,
-                               /*is_renderer_initiated=*/false),
-        base::DoNothing());
-  } else {
-    content::WebContents* new_tab = open_password_change_tab_callback_.Run(
-        change_password_url_, originator_.get());
-    if (!new_tab) {
-      UpdateState(State::kPasswordChangeFailed);
-      return;
-    }
-    executor_ = new_tab->GetWeakPtr();
+
+  content::WebContents* new_tab =
+      RedirectToUrl(change_password_url_, GetNavigator(),
+                    executor_ ? WindowOpenDisposition::CURRENT_TAB
+                              : WindowOpenDisposition::NEW_BACKGROUND_TAB);
+  if (!new_tab) {
+    UpdateState(State::kPasswordChangeFailed);
+    return;
   }
+  executor_ = new_tab->GetWeakPtr();
 
   form_waiter_ = std::make_unique<ChangePasswordFormWaiter>(
       executor_.get(),
@@ -370,6 +372,15 @@ bool PasswordChangeDelegateImpl::IsPrivacyNoticeAcknowledged() const {
       Profile::FromBrowserContext(originator_->GetBrowserContext());
   return profile->GetPrefs()->GetBoolean(
       password_manager::prefs::kPasswordChangeFlowNoticeAgreement);
+}
+
+content::PageNavigator* PasswordChangeDelegateImpl::GetNavigator() {
+  if (test_navigator_) {
+    return test_navigator_;
+  }
+
+  CHECK(originator_);
+  return executor_ ? executor_.get() : originator_.get();
 }
 
 base::WeakPtr<PasswordChangeDelegate> PasswordChangeDelegateImpl::AsWeakPtr() {
