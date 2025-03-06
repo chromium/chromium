@@ -315,24 +315,15 @@ bool GetBooleanForContentSetting(
   }
 }
 
-bool IsContentSettingManaged(
+content_settings::SettingSource GetDefaultContentSettingProviderSource(
     const JavaParamRef<jobject>& jbrowser_context_handle,
     ContentSettingsType content_settings_type) {
   HostContentSettingsMap* content_settings =
       GetHostContentSettingsMap(jbrowser_context_handle);
-  content_settings::ProviderType provider;
-  content_settings->GetDefaultContentSetting(content_settings_type, &provider);
-  return provider == content_settings::ProviderType::kPolicyProvider;
-}
-
-bool IsContentSettingManagedByCustodian(
-    const JavaParamRef<jobject>& jbrowser_context_handle,
-    ContentSettingsType content_settings_type) {
-  HostContentSettingsMap* content_settings =
-      GetHostContentSettingsMap(jbrowser_context_handle);
-  content_settings::ProviderType provider;
-  content_settings->GetDefaultContentSetting(content_settings_type, &provider);
-  return provider == content_settings::ProviderType::kSupervisedProvider;
+  content_settings::ProviderType provider_type;
+  content_settings->GetDefaultContentSetting(
+      static_cast<ContentSettingsType>(content_settings_type), &provider_type);
+  return content_settings::GetSettingSourceFromProviderType(provider_type);
 }
 
 bool IsContentSettingUserModifiable(
@@ -844,15 +835,6 @@ static void JNI_WebsitePreferenceBridge_ResetNotificationsSettingsForTest(
       ->ClearSettingsForOneType(ContentSettingsType::NOTIFICATIONS);
 }
 
-static jboolean JNI_WebsitePreferenceBridge_IsContentSettingManaged(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jbrowser_context_handle,
-    int content_settings_type) {
-  return IsContentSettingManaged(
-      jbrowser_context_handle,
-      static_cast<ContentSettingsType>(content_settings_type));
-}
-
 static jboolean JNI_WebsitePreferenceBridge_IsCookieDeletionDisabled(
     JNIEnv* env,
     const JavaParamRef<jobject>& jbrowser_context_handle,
@@ -1092,21 +1074,23 @@ static jboolean JNI_WebsitePreferenceBridge_IsContentSettingUserModifiable(
       static_cast<ContentSettingsType>(content_settings_type));
 }
 
-static jboolean JNI_WebsitePreferenceBridge_IsContentSettingManagedByCustodian(
+static jint JNI_WebsitePreferenceBridge_GetDefaultContentSettingProviderSource(
     JNIEnv* env,
     const JavaParamRef<jobject>& jbrowser_context_handle,
     int content_settings_type) {
-  return IsContentSettingManagedByCustodian(
+  return static_cast<jint>(GetDefaultContentSettingProviderSource(
       jbrowser_context_handle,
-      static_cast<ContentSettingsType>(content_settings_type));
+      static_cast<ContentSettingsType>(content_settings_type)));
 }
 
 static jboolean JNI_WebsitePreferenceBridge_GetLocationAllowedByPolicy(
     JNIEnv* env,
     const JavaParamRef<jobject>& jbrowser_context_handle) {
-  if (!IsContentSettingManaged(jbrowser_context_handle,
-                               ContentSettingsType::GEOLOCATION))
+  if (GetDefaultContentSettingProviderSource(
+          jbrowser_context_handle, ContentSettingsType::GEOLOCATION) !=
+      content_settings::SettingSource::kPolicy) {
     return false;
+  }
   return GetHostContentSettingsMap(jbrowser_context_handle)
              ->GetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
                                         nullptr) == CONTENT_SETTING_ALLOW;

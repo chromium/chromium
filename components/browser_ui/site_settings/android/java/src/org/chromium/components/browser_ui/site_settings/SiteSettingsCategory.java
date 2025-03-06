@@ -153,6 +153,9 @@ public class SiteSettingsCategory {
         if (type == Type.DEVICE_LOCATION) return new LocationCategory(browserContextHandle);
         if (type == Type.NFC) return new NfcCategory(browserContextHandle);
         if (type == Type.NOTIFICATIONS) return new NotificationCategory(browserContextHandle);
+        if (type == Type.JAVASCRIPT_OPTIMIZER) {
+            return new JavascriptOptimizerCategory(browserContextHandle);
+        }
 
         final String permission;
         if (type == Type.CAMERA) {
@@ -440,12 +443,14 @@ public class SiteSettingsCategory {
      *     for many permissions.
      * @param appName The name of the app to use in warning strings.
      */
-    public void configurePermissionIsOffPreferences(
+    public void configureWarningPreferences(
             Preference osWarning,
             Preference osWarningExtra,
             Context context,
             boolean specificCategory,
             String appName) {
+        assert showPermissionBlockedMessage(context);
+
         Intent perAppIntent = getIntentToEnableOsPerAppPermission(context);
         Intent globalIntent = getIntentToEnableOsGlobalPermission(context);
         String perAppMessage =
@@ -487,6 +492,9 @@ public class SiteSettingsCategory {
                     osWarningExtra.setIcon(transparent);
                 }
             }
+        } else if (globalMessage != null) {
+            osWarningExtra.setTitle(globalMessage);
+            osWarningExtra.setIcon(getDisabledInAndroidIcon(context));
         }
     }
 
@@ -540,6 +548,16 @@ public class SiteSettingsCategory {
     protected boolean enabledForChrome(Context context) {
         if (mAndroidPermission.isEmpty()) return true;
         return permissionOnInAndroid(mAndroidPermission, context);
+    }
+
+    /** Returns whether to disable the category toggle. */
+    protected boolean isToggleDisabled() {
+        return false;
+    }
+
+    /** Returns whether to show a warning message when the category is blocked. */
+    protected boolean shouldShowWarningWhenBlocked() {
+        return false;
     }
 
     /**

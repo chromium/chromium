@@ -106,6 +106,10 @@ using ProviderType = mojom::ProviderType;
 // set by policy, extension, the user or by the custodian of a supervised user.
 // Certain (internal) origins are allowlisted. For these origins the source is
 // |SettingSource::kAllowList|.
+//
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.content_settings
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: ContentSettingSource
 enum class SettingSource {
   kNone,
   kPolicy,
