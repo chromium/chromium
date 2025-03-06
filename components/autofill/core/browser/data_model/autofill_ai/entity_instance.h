@@ -101,6 +101,14 @@ class AttributeInstance final {
   // and is assumed to be just the attribute-type-equivalent field type for
   // unstructured ones.
 
+  // Returns a string that contains all information stored in this attribute
+  // instance, formatted according to the given `app_locale`.
+  //
+  // For more control over over which, see GetInfo().
+  std::u16string GetCompleteInfo(const std::string& app_locale) const {
+    return GetInfo(GetTopLevelType(), app_locale, std::nullopt);
+  }
+
   // Returns the value stored in this attribute instance for a specific `type`,
   // formatted according to a given `app_locale` and `format_string`.
   //

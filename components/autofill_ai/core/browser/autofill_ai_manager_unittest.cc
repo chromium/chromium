@@ -105,9 +105,7 @@ auto HasAttributeWithValue(AttributeType attribute_type,
     }
     base::optional_ref<const AttributeInstance> attribute =
         entity.attribute(attribute_type);
-    return attribute &&
-           attribute->GetInfo(attribute->GetTopLevelType(), app_locale,
-                              /*format_string=*/std::nullopt) == value;
+    return attribute && attribute->GetCompleteInfo(app_locale) == value;
   });
 }
 

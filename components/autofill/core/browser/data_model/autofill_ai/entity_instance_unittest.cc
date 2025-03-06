@@ -122,8 +122,8 @@ TEST(
   base::optional_ref<const AttributeInstance> new_attribute =
       new_entity.attribute(
           AttributeType(AttributeTypeName::kPassportExpiryDate));
-  EXPECT_EQ(GetInfo(old_attribute, old_attribute.GetTopLevelType()),
-            GetInfo(*new_attribute, new_attribute->GetTopLevelType()));
+  EXPECT_EQ(old_attribute.GetCompleteInfo(/*app_locale=*/""),
+            new_attribute->GetCompleteInfo(/*app_locale=*/""));
   EXPECT_FALSE(result.is_subset);
 }
 
@@ -145,10 +145,8 @@ TEST(
   const AttributeInstance& old_attribute = result.mergeable_attributes[0];
   base::optional_ref<const AttributeInstance> new_attribute =
       new_entity.attribute(AttributeType(AttributeTypeName::kPassportCountry));
-  EXPECT_EQ(GetInfo(old_attribute, old_attribute.GetTopLevelType(),
-                    {.app_locale = kAppLocaleUS}),
-            GetInfo(*new_attribute, new_attribute->GetTopLevelType(),
-                    {.app_locale = kAppLocaleUS}));
+  EXPECT_EQ(old_attribute.GetCompleteInfo(kAppLocaleUS),
+            new_attribute->GetCompleteInfo(kAppLocaleUS));
   EXPECT_FALSE(result.is_subset);
 }
 

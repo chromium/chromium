@@ -135,10 +135,7 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
       }
       std::erase_if(attributes, [&](const auto& pair) {
         const AttributeInstance& attribute = pair.second;
-        return attribute
-            .GetInfo(attribute.GetTopLevelType(), app_locale,
-                     /*format_string=*/std::nullopt)
-            .empty();
+        return attribute.GetCompleteInfo(app_locale).empty();
       });
     }
   }
@@ -236,12 +233,11 @@ std::vector<std::string> GetAttributeStrikeKeys(const EntityInstance& entity,
         base::ToVector(types, [&](AttributeType attribute_type) {
           base::optional_ref<const AttributeInstance> attribute =
               entity.attribute(attribute_type);
-          return std::pair(std::string(attribute_type.name_as_string()),
-                           attribute
-                               ? base::UTF16ToUTF8(attribute->GetInfo(
-                                     attribute->GetTopLevelType(), app_locale,
-                                     /*format_string=*/std::nullopt))
-                               : std::string());
+          return std::pair(
+              std::string(attribute_type.name_as_string()),
+              attribute
+                  ? base::UTF16ToUTF8(attribute->GetCompleteInfo(app_locale))
+                  : std::string());
         });
 
     // We sort the keys to ensure they remain stable even if the ordering in
