@@ -1881,17 +1881,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram
-    name="SafeBrowsing.HPRT.OhttpKeyService.IsFasterOhttpKeyRotationEnabled"
-    enum="BooleanEnabled" expires_after="2025-08-24">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs whether faster OHTTP key rotation is enabled. Logged each time OHTTP
-    key service is enabled.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.HPRT.OhttpKeyService.Network.Result"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-07-13">
   <owner>xinghuilu@chromium.org</owner>

@@ -218,10 +218,6 @@ constexpr base::FeatureParam<std::string> kHashPrefixRealTimeLookupsRelayUrl{
     /*default_value=*/
     "https://google-ohttp-relay-safebrowsing.fastly-edge.com/"};
 
-BASE_FEATURE(kHashPrefixRealTimeLookupsFasterOhttpKeyRotation,
-             "SafeBrowsingHashPrefixRealTimeLookupsFasterOhttpKeyRotation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kHashPrefixRealTimeLookupsSamplePing,
              "SafeBrowsingHashPrefixRealTimeLookupsSamplePing",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -381,7 +377,6 @@ base::Value::List GetFeatureStatusList() {
       &kExtensionTelemetryForEnterprise,
       &kExternalAppRedirectTelemetry,
       &kHashPrefixRealTimeLookups,
-      &kHashPrefixRealTimeLookupsFasterOhttpKeyRotation,
       &kLocalIpAddressInEvents,
       &kLocalListsUseSBv5,
       &kOnDeviceNotificationContentDetectionModel,
