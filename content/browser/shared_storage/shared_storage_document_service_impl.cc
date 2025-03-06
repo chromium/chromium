@@ -57,7 +57,7 @@ bool CheckSecureContext(RenderFrameHost& frame) {
   return is_secure_frame;
 }
 
-using AccessScope = SharedStorageLockManager::AccessScope;
+using AccessScope = blink::SharedStorageAccessScope;
 using AccessType =
     SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessType;
 
