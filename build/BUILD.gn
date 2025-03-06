@@ -6,7 +6,6 @@ import("//build/buildflag_header.gni")
 import("//build/config/cast.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/args.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/util/process_version.gni")
 import("//build_overrides/build.gni")
@@ -76,7 +75,9 @@ buildflag_header("chromeos_buildflags") {
   flags = [
     "IS_CHROMEOS_DEVICE=$is_chromeos_device",
 
-    "IS_CHROMEOS_ASH=$is_chromeos_ash",
+    # TODO(b:354842935): Remove once all the occurrence of IS_CHROMEOS_ASH is
+    # removed from cc files.
+    "IS_CHROMEOS_ASH=$is_chromeos",
     "IS_CHROMEOS_WITH_HW_DETAILS=$is_chromeos_with_hw_details",
     "IS_REVEN=$is_reven",
   ]

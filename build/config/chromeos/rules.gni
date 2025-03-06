@@ -4,7 +4,6 @@
 
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/args.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/gclient_args.gni")
 import("//build/config/python.gni")
@@ -32,18 +31,7 @@ if (cros_sdk_version != "") {
   #
   _symlink_map = []
   _symlink_targets_map = []
-
-  if (is_chromeos_ash) {
-    _potential_test_boards = [ cros_board ]
-  } else {
-    _potential_test_boards = []
-    if (cros_boards != "") {
-      _potential_test_boards += string_split(cros_boards, ":")
-    }
-    if (cros_boards_with_qemu_images != "") {
-      _potential_test_boards += string_split(cros_boards_with_qemu_images, ":")
-    }
-  }
+  _potential_test_boards = [ cros_board ]
 
   foreach(b, _potential_test_boards) {
     _cache_path_prefix =
@@ -359,13 +347,11 @@ template("generate_runner_script") {
         # Run the test sudo helper.
         executable_args += [ "--run-test-sudo-helper" ]
 
-        if (is_chromeos_ash) {
-          # For ash, it need to first stop the existing ash.
-          executable_args += [ "--stop-ui" ]
+        # It need to first stop the existing chromeos-chrome.
+        executable_args += [ "--stop-ui" ]
 
-          # Use the deployed dbus configs.
-          executable_args += [ "--use-deployed-dbus-configs" ]
-        }
+        # Use the deployed dbus configs.
+        executable_args += [ "--use-deployed-dbus-configs" ]
 
         # Make the tests match the browser's selinux tags so it gets the same
         # security context as the browser would.
