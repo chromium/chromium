@@ -386,7 +386,7 @@ struct VideoFrameMetadata {
 
   VideoTransformation? transformation;
 
-  bool texture_owner;
+  bool in_surface_view;
 
   bool wants_promotion_hint;
 

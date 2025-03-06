@@ -46,7 +46,7 @@ void VideoFrameMetadata::MergeMetadataFrom(
   MERGE_OPTIONAL_FIELD(reference_time, metadata_source);
   MERGE_VALUE_FIELD(read_lock_fences_enabled, metadata_source);
   MERGE_OPTIONAL_FIELD(transformation, metadata_source);
-  MERGE_VALUE_FIELD(texture_owner, metadata_source);
+  MERGE_VALUE_FIELD(in_surface_view, metadata_source);
   MERGE_VALUE_FIELD(wants_promotion_hint, metadata_source);
   MERGE_VALUE_FIELD(dcomp_surface, metadata_source);
   MERGE_VALUE_FIELD(protected_video, metadata_source);

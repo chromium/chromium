@@ -90,7 +90,7 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
   output->allow_overlay = input.allow_overlay();
   output->copy_required = input.copy_required();
   output->end_of_stream = input.end_of_stream();
-  output->texture_owner = input.texture_owner();
+  output->in_surface_view = input.in_surface_view();
   output->wants_promotion_hint = input.wants_promotion_hint();
   output->protected_video = input.protected_video();
   output->hw_protected = input.hw_protected();
