@@ -22,6 +22,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/resource_request_body_android.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
@@ -359,6 +360,23 @@ void WebContentsDelegateAndroid::ExitFullscreenModeForTab(
   if (obj.is_null())
     return;
   Java_WebContentsDelegateAndroid_exitFullscreenModeForTab(env, obj);
+}
+
+void WebContentsDelegateAndroid::RequestPointerLock(
+    WebContents* web_contents,
+    bool user_gesture,
+    bool last_unlocked_by_target) {
+  if (!base::FeatureList::IsEnabled(blink::features::kPointerLockOnAndroid)) {
+    // WebContentsDelegate call would reject the lock request with a
+    // kUnknownError
+    return WebContentsDelegate::RequestPointerLock(web_contents, user_gesture,
+                                                   last_unlocked_by_target);
+  }
+
+  // TODO(crbug.com/397609822): add checks on user_gesture & reuse the
+  // ExclusiveAccessManager
+  web_contents->GotResponseToPointerLockRequest(
+      blink::mojom::PointerLockResult::kSuccess);
 }
 
 bool WebContentsDelegateAndroid::IsFullscreenForTabOrPending(

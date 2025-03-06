@@ -209,6 +209,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
       bool request_unadjusted_movement) override;
   blink::mojom::PointerLockResult ChangePointerLock(
       bool request_unadjusted_movement) override;
+  bool IsPointerLocked() override;
   void UnlockPointer() override;
   void InvalidateLocalSurfaceIdAndAllocationGroup() override;
   void ClearFallbackSurfaceForCommitPending() override;

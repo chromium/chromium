@@ -15,6 +15,7 @@
 #include "base/observer_list.h"
 #include "ui/android/color_utils_android.h"
 #include "ui/android/display_android_manager.h"
+#include "ui/android/view_android.h"
 #include "ui/android/window_android_compositor.h"
 #include "ui/android/window_android_observer.h"
 #include "ui/base/ui_base_features.h"
@@ -104,6 +105,7 @@ WindowAndroid::~WindowAndroid() {
   DCHECK(parent_ == nullptr) << "WindowAndroid must be a root view.";
   DCHECK(!compositor_);
   RemoveAllChildren(true);
+  DCHECK(!pointer_locking_view_);
   Java_WindowAndroid_clearNativePointer(AttachCurrentThread(), GetJavaObject());
 }
 
@@ -325,6 +327,35 @@ display::Display WindowAndroid::GetDisplayWithWindowColorSpace() {
       display.GetColorSpaces().SupportsHDR(),
       display.GetColorSpaces().GetHDRMaxLuminanceRelative());
   return display;
+}
+
+bool WindowAndroid::RequestPointerLock(ViewAndroid& view_android) {
+  DCHECK(view_android.GetWindowAndroid() == this);
+  DCHECK(view_android.GetContainerView());
+  DCHECK(pointer_locking_view_ == nullptr);
+
+  JNIEnv* env = AttachCurrentThread();
+  bool has_lock = Java_WindowAndroid_requestPointerLock(
+      env, GetJavaObject(), view_android.GetContainerView());
+
+  if (has_lock) {
+    pointer_locking_view_ = &view_android;
+  }
+
+  return has_lock;
+}
+
+bool WindowAndroid::HasPointerLock(ViewAndroid& view_android) {
+  return pointer_locking_view_ == &view_android;
+}
+
+void WindowAndroid::ReleasePointerLock(ViewAndroid& view_android) {
+  DCHECK(&view_android == pointer_locking_view_);
+  pointer_locking_view_ = nullptr;
+
+  JNIEnv* env = AttachCurrentThread();
+  return Java_WindowAndroid_releasePointerLock(env, GetJavaObject(),
+                                               view_android.GetContainerView());
 }
 
 void WindowAndroid::SetTestHooks(TestHooks* hooks) {
