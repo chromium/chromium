@@ -63,8 +63,9 @@ bool ExternallyConnectableHandler::Parse(Extension* extension,
   std::unique_ptr<ExternallyConnectableInfo> info =
       ExternallyConnectableInfo::FromValue(*externally_connectable,
                                            &install_warnings, error);
-  if (!info)
+  if (!info) {
     return false;
+  }
 
   extension->AddInstallWarnings(std::move(install_warnings));
   extension->SetManifestData(keys::kExternallyConnectable, std::move(info));
@@ -163,8 +164,9 @@ ExternallyConnectableInfo::ExternallyConnectableInfo(
       accepts_tls_channel_id(accepts_tls_channel_id) {}
 
 bool ExternallyConnectableInfo::IdCanConnect(const ExtensionId& id) {
-  if (all_ids)
+  if (all_ids) {
     return true;
+  }
   DCHECK(std::ranges::is_sorted(ids));
   return std::binary_search(ids.begin(), ids.end(), id);
 }

@@ -45,8 +45,9 @@ static base::LazyInstance<SharedModuleInfo>::DestructorAtExit
 const SharedModuleInfo& GetSharedModuleInfo(const Extension* extension) {
   SharedModuleInfo* info = static_cast<SharedModuleInfo*>(
       extension->GetManifestData(kSharedModule));
-  if (!info)
+  if (!info) {
     return g_empty_shared_module_info.Get();
+  }
   return *info;
 }
 
@@ -96,11 +97,13 @@ bool SharedModuleInfo::IsExportAllowedByAllowlist(const Extension* extension,
   // Sanity check. In case the caller did not check |extension| to make sure it
   // is a shared module, we do not want it to appear that the extension with
   // |other_id| importing |extension| is valid.
-  if (!SharedModuleInfo::IsSharedModule(extension))
+  if (!SharedModuleInfo::IsSharedModule(extension)) {
     return false;
+  }
   const SharedModuleInfo& info = GetSharedModuleInfo(extension);
-  if (info.export_allowlist_.empty())
+  if (info.export_allowlist_.empty()) {
     return true;
+  }
   return base::Contains(info.export_allowlist_, other_id);
 }
 
@@ -109,8 +112,9 @@ bool SharedModuleInfo::ImportsExtensionById(const Extension* extension,
                                             const ExtensionId& other_id) {
   const SharedModuleInfo& info = GetSharedModuleInfo(extension);
   for (size_t i = 0; i < info.imports_.size(); i++) {
-    if (info.imports_[i].extension_id == other_id)
+    if (info.imports_[i].extension_id == other_id) {
       return true;
+    }
   }
   return false;
 }

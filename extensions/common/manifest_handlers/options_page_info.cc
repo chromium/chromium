@@ -131,9 +131,9 @@ std::unique_ptr<OptionsPageInfo> OptionsPageInfo::Create(
         install_warnings->emplace_back(base::UTF16ToASCII(options_parse_error));
       }
       if (options_ui->chrome_style) {
-        if (extension->manifest_version() < 3)
+        if (extension->manifest_version() < 3) {
           chrome_style = *options_ui->chrome_style;
-        else {
+        } else {
           *error = errors::kChromeStyleInvalidForManifestV3;
           return nullptr;
         }
@@ -182,8 +182,9 @@ bool OptionsPageHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<OptionsPageInfo> info =
       OptionsPageInfo::Create(extension, options_ui_dict, options_page_string,
                               &install_warnings, error);
-  if (!info)
+  if (!info) {
     return false;
+  }
 
   extension->AddInstallWarnings(std::move(install_warnings));
   extension->SetManifestData(keys::kOptionsUI, std::move(info));
@@ -195,8 +196,10 @@ bool OptionsPageHandler::Validate(const Extension* extension,
                                   std::vector<InstallWarning>* warnings) const {
   // Validate path to the options page.  Don't check the URL for hosted apps,
   // because they are expected to refer to an external URL.
-  if (!OptionsPageInfo::HasOptionsPage(extension) || extension->is_hosted_app())
+  if (!OptionsPageInfo::HasOptionsPage(extension) ||
+      extension->is_hosted_app()) {
     return true;
+  }
 
   base::FilePath options_path = file_util::ExtensionURLToRelativeFilePath(
       OptionsPageInfo::GetOptionsPage(extension));

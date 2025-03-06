@@ -88,8 +88,9 @@ bool InputComponentsHandler::Parse(Extension* extension,
         languages.insert(language_value->GetString());
       } else if (language_value->is_list()) {
         for (const auto& language : language_value->GetList()) {
-          if (language.is_string())
+          if (language.is_string()) {
             languages.insert(language.GetString());
+          }
         }
       }
     }

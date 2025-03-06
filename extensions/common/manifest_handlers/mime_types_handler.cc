@@ -116,8 +116,9 @@ MimeTypesHandler* MimeTypesHandler::GetHandler(
     const extensions::Extension* extension) {
   MimeTypesHandlerInfo* info = static_cast<MimeTypesHandlerInfo*>(
       extension->GetManifestData(keys::kMimeTypesHandler));
-  if (info)
+  if (info) {
     return &info->handler_;
+  }
   return nullptr;
 }
 
