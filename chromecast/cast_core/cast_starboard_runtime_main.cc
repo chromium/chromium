@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // The entrypoint for the starboard cast runtime. If loggy is enabled (typically
 // used for partner builds), this code forks a separate process to run loggy for
 // logging.
@@ -20,6 +15,8 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -41,12 +38,10 @@ constexpr char kArgvKey[] = "argv";
 // arguments.
 class JSONArgsParser {
  public:
-  JSONArgsParser(int argc, const char** argv) {
-    if (!TryParseJson(argc, argv)) {
+  JSONArgsParser(base::span<const char*> argv) {
+    if (!TryParseJson(argv)) {
       // If args were not provided as JSON, use defaults.
-      for (int i = 0; i < argc; i++) {
-        argv_.push_back(argv[i]);
-      }
+      argv_.assign(argv.begin(), argv.end());
       argv_.push_back(nullptr);
     }
   }
@@ -59,9 +54,9 @@ class JSONArgsParser {
   // If the command is of the format `<command> <json>`, tries to parse
   // parameters from the JSON blob in |argv[1] instead of directly from
   // |argv|. Returns true if successful; otherwise, returns false.
-  bool TryParseJson(int argc, const char** argv) {
+  bool TryParseJson(base::span<const char*> argv) {
     // Required format is `<command> <json>`
-    if (argc != 2) {
+    if (argv.size() != 2) {
       return false;
     }
 
@@ -124,7 +119,9 @@ class JSONArgsParser {
 }  // namespace
 
 int main(int argc, const char** argv) {
-  JSONArgsParser args(argc, argv);
+  // SAFETY: required from caller.
+  JSONArgsParser args(
+      UNSAFE_BUFFERS(base::span<const char*>(argv, static_cast<size_t>(argc))));
 
   chromecast::ForkAndRunLogProcessIfSpecified(args.argc(), args.argv());
 
