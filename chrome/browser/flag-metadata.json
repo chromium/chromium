@@ -7925,7 +7925,7 @@
   {
     "name": "service-worker-auto-preload",
     "owners": ["sisidovski@chromium.org", "chrome-worker@google.com"],
-    "expiry_milestone": 136
+    "expiry_milestone": 141
   },
   {
     "name": "set-market-url-for-testing",
