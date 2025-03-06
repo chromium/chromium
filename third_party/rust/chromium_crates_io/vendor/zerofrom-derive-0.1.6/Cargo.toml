@@ -12,9 +12,10 @@
 [package]
 edition = "2021"
 name = "zerofrom-derive"
-version = "0.1.5"
+version = "0.1.6"
 authors = ["Manish Goregaokar <manishsmail@gmail.com>"]
 build = false
+autolib = false
 autobins = false
 autoexamples = false
 autotests = false
