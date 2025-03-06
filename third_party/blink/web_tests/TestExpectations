@@ -9031,3 +9031,6 @@ crbug.com/400811282 [ Win ] external/wpt/css/css-inline/text-box-trim/text-box-t
 crbug.com/400739988 [ Win ] external/wpt/css/css-ruby/line-spacing.html [ Failure Pass ]
 
 crbug.com/387938119 external/wpt/html/semantics/embedded-content/the-object-element/object-attributes.html [ Failure Pass ]
+
+# Gardener 2025-03-06
+crbug.com/401227377 [ Win ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/history-length-outer-page-navigation-not-reflected-in-fenced.https.html [ Failure Pass ]
