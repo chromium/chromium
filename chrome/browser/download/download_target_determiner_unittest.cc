@@ -476,6 +476,7 @@ DownloadTargetDeterminerTest::CreateActiveDownloadItem(
       .WillByDefault(Return(ui::PAGE_TRANSITION_LINK));
   ON_CALL(*item, GetURL())
       .WillByDefault(ReturnRefOfCopy(download_url));
+  ON_CALL(*item, GetOriginalUrl()).WillByDefault(ReturnRefOfCopy(download_url));
   ON_CALL(*item, GetUrlChain())
       .WillByDefault(ReturnRefOfCopy(url_chain));
   ON_CALL(*item, HasUserGesture())

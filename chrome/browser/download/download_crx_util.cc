@@ -120,8 +120,8 @@ bool IsExtensionDownload(const DownloadItem& download_item) {
 bool IsTrustedExtensionDownload(Profile* profile, const DownloadItem& item) {
   return IsExtensionDownload(item) &&
          (OffStoreInstallAllowedByPrefs(profile, item) ||
-          extension_urls::IsWebstoreUpdateUrl(item.GetURL()) ||
-          extension_urls::IsWebstoreDomain(item.GetURL()));
+          extension_urls::IsWebstoreUpdateUrl(item.GetOriginalUrl()) ||
+          extension_urls::IsWebstoreDomain(item.GetOriginalUrl()));
 }
 
 std::unique_ptr<base::AutoReset<bool>> OverrideOffstoreInstallAllowedForTesting(
