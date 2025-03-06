@@ -175,7 +175,13 @@ TEST_F(ImageWriterPrivateApiTest, WriteFromFile_Allowlist) {
   EXPECT_EQ(app_file_handler_util::kInvalidParameters, result);
 }
 
-TEST_F(ImageWriterPrivateApiTest, WriteFromUrl) {
+// TODO(crbug.com/401198566): Flaky test on ASan + LSan bots.
+#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_WriteFromUrl DISABLED_WriteFromUrl
+#else
+#define MAYBE_WriteFromUrl WriteFromUrl
+#endif
+TEST_F(ImageWriterPrivateApiTest, MAYBE_WriteFromUrl) {
   auto result = RunWriteFromUrl(kDevicePath1, kImageUrl);
   EXPECT_TRUE(result.has_value());
 }
@@ -194,7 +200,13 @@ TEST_F(ImageWriterPrivateApiTest, WriteFromUrl_ReadOnly) {
   EXPECT_EQ(image_writer::error::kDeviceWriteError, result.error());
 }
 
-TEST_F(ImageWriterPrivateApiTest, WriteFromUrl_Allowlist) {
+// TODO(crbug.com/401198566): Flaky test on ASan + LSan bots.
+#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_WriteFromUrl_Allowlist DISABLED_WriteFromUrl_Allowlist
+#else
+#define MAYBE_WriteFromUrl_Allowlist WriteFromUrl_Allowlist
+#endif
+TEST_F(ImageWriterPrivateApiTest, MAYBE_WriteFromUrl_Allowlist) {
   SetDisabled(true);
   SetAllowlist({kVendorId1, kProductId1});
   auto result = RunWriteFromUrl(kDevicePath1, kImageUrl);
