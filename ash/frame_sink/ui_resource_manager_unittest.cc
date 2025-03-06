@@ -20,10 +20,12 @@ namespace {
 
 constexpr UiSourceId kTestUiSourceId_1 = 1u;
 constexpr UiSourceId kTestUiSourceId_2 = 2u;
+constexpr gfx::Size kDefaultSize(20, 20);
 
-std::unique_ptr<UiResource> MakeResource(const gfx::Size& resource_size,
-                                         viz::SharedImageFormat format,
-                                         uint32_t ui_source_id) {
+std::unique_ptr<UiResource> MakeResource(
+    const gfx::Size& resource_size,
+    viz::SharedImageFormat format = viz::SinglePlaneFormat::kBGRA_8888,
+    UiSourceId ui_source_id = kTestUiSourceId_1) {
   auto resource = std::make_unique<UiResource>();
   resource->ui_source_id = ui_source_id;
   resource->format = format;
@@ -61,9 +63,8 @@ TEST_F(UiResourceManagerTest, ReuseResource) {
       MakeResource(gfx::Size(10, 10), viz::SinglePlaneFormat::kBGRA_8888,
                    kTestUiSourceId_1));
 
-  resource_manager_->OfferResource(
-      MakeResource(gfx::Size(20, 20), viz::SinglePlaneFormat::kBGRA_8888,
-                   kTestUiSourceId_1));
+  resource_manager_->OfferResource(MakeResource(
+      kDefaultSize, viz::SinglePlaneFormat::kBGRA_8888, kTestUiSourceId_1));
 
   resource_manager_->OfferResource(
       MakeResource(gfx::Size(10, 20), viz::SinglePlaneFormat::kBGRA_8888,
@@ -117,7 +118,7 @@ using UiResourceManagerDeathTest = UiResourceManagerTest;
 TEST_F(UiResourceManagerDeathTest,
        NeedToClearAllExportedResourceBeforeDeletingManager) {
   viz::ResourceId to_be_exported_resource_id =
-      resource_manager_->OfferResource(std::make_unique<UiResource>());
+      resource_manager_->OfferResource(MakeResource(kDefaultSize));
   resource_manager_->OfferResource(std::make_unique<UiResource>());
 
   resource_manager_->PrepareResourceForExport(to_be_exported_resource_id);
@@ -128,7 +129,7 @@ TEST_F(UiResourceManagerDeathTest,
 
 TEST_F(UiResourceManagerTest, PrepareResourceForExporting_InvalidIds) {
   viz::ResourceId to_be_released_resource =
-      resource_manager_->OfferResource(std::make_unique<UiResource>());
+      resource_manager_->OfferResource(MakeResource(kDefaultSize));
   resource_manager_->OfferResource(std::make_unique<UiResource>());
   {
     // We cannot export a resource that we do not manage.
@@ -152,7 +153,7 @@ TEST_F(UiResourceManagerTest, PrepareResourceForExporting_InvalidIds) {
 
 TEST_F(UiResourceManagerTest, PrepareResourceForExporting) {
   viz::ResourceId to_be_exported_resource_id =
-      resource_manager_->OfferResource(std::make_unique<UiResource>());
+      resource_manager_->OfferResource(MakeResource(kDefaultSize));
   resource_manager_->OfferResource(std::make_unique<UiResource>());
   resource_manager_->OfferResource(std::make_unique<UiResource>());
 
@@ -172,7 +173,7 @@ TEST_F(UiResourceManagerTest, PrepareResourceForExporting) {
 
 TEST_F(UiResourceManagerTest, CannotExportAlreadyExportedResource) {
   viz::ResourceId to_be_exported_resource_id =
-      resource_manager_->OfferResource(std::make_unique<UiResource>());
+      resource_manager_->OfferResource(MakeResource(kDefaultSize));
   resource_manager_->OfferResource(std::make_unique<UiResource>());
   resource_manager_->OfferResource(std::make_unique<UiResource>());
 
@@ -206,7 +207,7 @@ TEST_F(UiResourceManagerTest, ReleaseResource) {
 
 TEST_F(UiResourceManagerTest, CannotReleaseExportedResourcesTillReclaimed) {
   viz::ResourceId to_be_exported_resource =
-      resource_manager_->OfferResource(std::make_unique<UiResource>());
+      resource_manager_->OfferResource(MakeResource(kDefaultSize));
   resource_manager_->OfferResource(std::make_unique<UiResource>());
 
   EXPECT_EQ(resource_manager_->available_resources_count(), 2u);
@@ -239,9 +240,9 @@ TEST_F(UiResourceManagerTest, CannotReleaseExportedResourcesTillReclaimed) {
 
 TEST_F(UiResourceManagerTest, ExportedResourcesAreLost) {
   viz::ResourceId to_be_exported_resource_1 =
-      resource_manager_->OfferResource(std::make_unique<UiResource>());
+      resource_manager_->OfferResource(MakeResource(kDefaultSize));
   viz::ResourceId to_be_exported_resource_2 =
-      resource_manager_->OfferResource(std::make_unique<UiResource>());
+      resource_manager_->OfferResource(MakeResource(kDefaultSize));
   resource_manager_->OfferResource(std::make_unique<UiResource>());
   resource_manager_->OfferResource(std::make_unique<UiResource>());
   resource_manager_->OfferResource(std::make_unique<UiResource>());
@@ -262,9 +263,9 @@ TEST_F(UiResourceManagerTest, ExportedResourcesAreLost) {
 
 TEST_F(UiResourceManagerTest, ReclaimResources) {
   viz::ResourceId to_be_exported_resource_1 =
-      resource_manager_->OfferResource(std::make_unique<UiResource>());
+      resource_manager_->OfferResource(MakeResource(kDefaultSize));
   viz::ResourceId to_be_exported_resource_2 =
-      resource_manager_->OfferResource(std::make_unique<UiResource>());
+      resource_manager_->OfferResource(MakeResource(kDefaultSize));
 
   resource_manager_->PrepareResourceForExport(to_be_exported_resource_1);
   resource_manager_->PrepareResourceForExport(to_be_exported_resource_2);
@@ -306,10 +307,10 @@ TEST_F(UiResourceManagerTest, ReclaimResources) {
   }
 
   viz::ResourceId to_be_exported_resource_3 =
-      resource_manager_->OfferResource(std::make_unique<UiResource>());
+      resource_manager_->OfferResource(MakeResource(kDefaultSize));
 
   viz::ResourceId to_be_exported_resource_4 =
-      resource_manager_->OfferResource(std::make_unique<UiResource>());
+      resource_manager_->OfferResource(MakeResource(kDefaultSize));
 
   // Exporting more resources.
   resource_manager_->PrepareResourceForExport(to_be_exported_resource_3);

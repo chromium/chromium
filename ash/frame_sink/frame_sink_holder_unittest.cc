@@ -104,6 +104,21 @@ class FrameSinkHolderTest : public AshTestBase {
       layer_tree_frame_sink_;  // no owned
 };
 
+constexpr UiSourceId kDefaultUiSourceId = 1u;
+constexpr gfx::Size kDefaultSize(20, 20);
+
+std::unique_ptr<UiResource> MakeResource(
+    const gfx::Size& resource_size,
+    viz::SharedImageFormat format = viz::SinglePlaneFormat::kBGRA_8888,
+    UiSourceId ui_source_id = kDefaultUiSourceId) {
+  auto resource = std::make_unique<UiResource>();
+  resource->ui_source_id = ui_source_id;
+  resource->format = format;
+  resource->resource_size = resource_size;
+  resource->SetExternallyOwnedMailbox(gpu::Mailbox::Generate());
+  return resource;
+}
+
 TEST_F(FrameSinkHolderTest, SubmitFrameSynchronouslyBeforeFirstFrameRequested) {
   FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
 
@@ -327,7 +342,7 @@ TEST_F(FrameSinkHolderTest, DontSubmitNewFramesWhenWaitingToDeleteSinkHolder) {
   base::RunLoop loop;
 
   viz::ResourceId id_1 =
-      GetResourceManager().OfferResource(std::make_unique<UiResource>());
+      GetResourceManager().OfferResource(MakeResource(kDefaultSize));
 
   frame_factory_->SetFrameResources({id_1});
   frame_factory_->SetFrameMetaData(gfx::Size(100, 100), 1.0);
@@ -379,11 +394,11 @@ TEST_F(FrameSinkHolderTest, ExtendLifeTimeOfHolderToRootWindow) {
   FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
 
   viz::ResourceId id_1 =
-      GetResourceManager().OfferResource(std::make_unique<UiResource>());
+      GetResourceManager().OfferResource(MakeResource(kDefaultSize));
   viz::ResourceId id_2 =
-      GetResourceManager().OfferResource(std::make_unique<UiResource>());
+      GetResourceManager().OfferResource(MakeResource(kDefaultSize));
   viz::ResourceId id_3 =
-      GetResourceManager().OfferResource(std::make_unique<UiResource>());
+      GetResourceManager().OfferResource(MakeResource(kDefaultSize));
 
   frame_factory_->SetFrameResources({id_1, id_2, id_3});
   frame_factory_->SetFrameMetaData(gfx::Size(100, 100), 1.0);
@@ -452,9 +467,9 @@ TEST_F(FrameSinkHolderTest, DeleteHolderAfterReclaimingAllResources) {
   base::RunLoop loop;
 
   viz::ResourceId id_1 =
-      GetResourceManager().OfferResource(std::make_unique<UiResource>());
+      GetResourceManager().OfferResource(MakeResource(kDefaultSize));
   viz::ResourceId id_2 =
-      GetResourceManager().OfferResource(std::make_unique<UiResource>());
+      GetResourceManager().OfferResource(MakeResource(kDefaultSize));
 
   frame_factory_->SetFrameResources({id_1, id_2});
   frame_factory_->SetFrameMetaData(gfx::Size(100, 100), 1.0);
@@ -487,7 +502,7 @@ TEST_F(FrameSinkHolderTest, LayerTreeFrameSinkLost) {
   FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
 
   viz::ResourceId id_1 =
-      GetResourceManager().OfferResource(std::make_unique<UiResource>());
+      GetResourceManager().OfferResource(MakeResource(kDefaultSize));
 
   frame_factory_->SetFrameResources({id_1});
   frame_factory_->SetFrameMetaData(gfx::Size(100, 100), 1.0);
@@ -512,7 +527,7 @@ TEST_F(FrameSinkHolderTest,
   base::RunLoop loop;
 
   viz::ResourceId id_1 =
-      GetResourceManager().OfferResource(std::make_unique<UiResource>());
+      GetResourceManager().OfferResource(MakeResource(kDefaultSize));
 
   frame_factory_->SetFrameResources({id_1});
   frame_factory_->SetFrameMetaData(gfx::Size(100, 100), 1.0);
@@ -544,7 +559,7 @@ TEST_F(FrameSinkHolderTest,
   FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
 
   viz::ResourceId id_1 =
-      GetResourceManager().OfferResource(std::make_unique<UiResource>());
+      GetResourceManager().OfferResource(MakeResource(kDefaultSize));
 
   frame_factory_->SetFrameResources({id_1});
   frame_factory_->SetFrameMetaData(gfx::Size(100, 100), 1.0);
@@ -584,7 +599,7 @@ TEST_F(FrameSinkHolderTest,
   FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
 
   viz::ResourceId id_1 =
-      GetResourceManager().OfferResource(std::make_unique<UiResource>());
+      GetResourceManager().OfferResource(MakeResource(kDefaultSize));
 
   frame_factory_->SetFrameResources({id_1});
   frame_factory_->SetFrameMetaData(gfx::Size(100, 100), 1.0);
@@ -618,7 +633,7 @@ TEST_F(FrameSinkHolderTest, DeleteSinkHolderImmediatelyWhenFrameSinkIsLost) {
   FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
 
   viz::ResourceId id_1 =
-      GetResourceManager().OfferResource(std::make_unique<UiResource>());
+      GetResourceManager().OfferResource(MakeResource(kDefaultSize));
 
   frame_factory_->SetFrameResources({id_1});
   frame_factory_->SetFrameMetaData(gfx::Size(100, 100), 1.0);
