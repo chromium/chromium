@@ -15,6 +15,69 @@ android_aidl("autofill_aidl") {
   ]
 }
 
+generate_jni("credential_manager_jni_headers") {
+  visibility = [
+    ":*",
+    "//chrome/browser",
+  ]
+  sources = [ "java/src/org/chromium/components/autofill/ThirdPartyCredentialManagerBridge.java" ]
+}
+
+android_library("credential_manager_java") {
+  deps = [
+    "//base:base_java",
+    "//base:tasks_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_credentials_credentials_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+
+  srcjar_deps = [ ":credential_manager_jni_headers" ]
+  sources = [ "java/src/org/chromium/components/autofill/ThirdPartyCredentialManagerBridge.java" ]
+
+  resources_package = "org.chromium.components.autofill"
+}
+
+static_library("credential_manager") {
+  sources = [
+    "third_party_credential_manager_bridge.cc",
+    "third_party_credential_manager_bridge.h",
+  ]
+
+  deps = [
+    ":credential_manager_jni_headers",
+    "//content/public/browser",
+    "//content/public/common",
+  ]
+}
+
+source_set("credential_manager_unit_tests") {
+  testonly = true
+  sources = [ "third_party_credential_manager_bridge_unittest.cc" ]
+  deps = [
+    ":credential_manager",
+    ":credential_manager_jni_headers",
+    "//base/test:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+  ]
+}
+
+robolectric_library("credential_manager_junit_tests") {
+  sources = [ "java/src/org/chromium/components/autofill/ThirdPartyCredentialManagerBridgeTest.java" ]
+
+  deps = [
+    ":credential_manager_java",
+    ":credential_manager_jni_headers",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//third_party/androidx:androidx_credentials_credentials_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}
+
 android_library("java") {
   srcjar_deps = [
     ":autofill_aidl",
