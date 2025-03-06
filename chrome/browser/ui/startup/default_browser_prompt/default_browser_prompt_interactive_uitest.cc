@@ -4,12 +4,11 @@
 
 #include <cstdint>
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
@@ -30,15 +29,30 @@ namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabContents);
 }  // namespace
 
+#if BUILDFLAG(IS_LINUX)
+class DefaultBrowserInfobarInteractiveTest : public InteractiveBrowserTest {
+ public:
+  void SetUp() override {
+    shell_integration::DefaultBrowserWorker::DisableSetAsDefaultForTesting();
+    InteractiveBrowserTest::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarInteractiveTest,
+                       ShowsDefaultBrowserPromptRefreshDisabled) {
+  ShowPromptForTesting();
+  RunTestSequence(
+      WaitForShow(ConfirmInfoBar::kInfoBarElementId),
+      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
+      WaitForHide(ConfirmInfoBar::kInfoBarElementId));
+}
+
+#else
+
 class DefaultBrowserPromptInteractiveTest
     : public WebUiInteractiveTestMixin<InteractiveBrowserTest> {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kDefaultBrowserPromptRefresh,
-        {{features::kShowDefaultBrowserInfoBar.name, "true"},
-         {features::kShowDefaultBrowserAppMenuItem.name, "true"}});
-
     shell_integration::DefaultBrowserWorker::DisableSetAsDefaultForTesting();
     InteractiveBrowserTest::SetUp();
   }
@@ -68,9 +82,6 @@ class DefaultBrowserPromptInteractiveTest
         WaitForHide(ConfirmInfoBar::kInfoBarElementId),
         DoesAppMenuItemExist(preserve_app_menu_item));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserPromptInteractiveTest,
@@ -129,3 +140,5 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserPromptHeadlessBrowserTest, DoesNotCrash) {
   DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
   RunTestSequence(WaitForHide(ConfirmInfoBar::kInfoBarElementId));
 }
+
+#endif  // BUILDFLAG(IS_LINUX)

@@ -266,12 +266,8 @@ TEST_F(AppMenuModelTest, GlobalError) {
   EXPECT_EQ(1, error1->execute_count());
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_WIN)
 TEST_F(AppMenuModelTest, DefaultBrowserPrompt) {
-  feature_list_.Reset();
-  feature_list_.InitAndEnableFeatureWithParameters(
-      features::kDefaultBrowserPromptRefresh,
-      {{features::kShowDefaultBrowserAppMenuItem.name, "true"}});
   DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
   FakeIconDelegate fake_delegate;
   AppMenuIconController app_menu_icon_controller(browser()->profile(),
@@ -286,7 +282,7 @@ TEST_F(AppMenuModelTest, DefaultBrowserPrompt) {
       model.GetIndexOfCommandId(IDC_SET_BROWSER_AS_DEFAULT).value();
   EXPECT_TRUE(model.IsEnabledAt(default_prompt_index));
 }
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_WIN)
 
 // Tests that extensions sub menu (when enabled) generates the correct elements
 // or does not generate its elements when disabled.

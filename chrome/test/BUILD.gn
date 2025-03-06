@@ -10174,10 +10174,10 @@ test("unit_tests") {
   }
 
   if (is_win || is_mac || is_linux) {
-    sources += [
-      "../browser/ui/startup/default_browser_prompt/default_browser_prompt_manager_unittest.cc",
-      "../browser/ui/startup/default_browser_prompt/default_browser_prompt_unittest.cc",
-    ]
+    sources += [ "../browser/ui/startup/default_browser_prompt/default_browser_prompt_unittest.cc" ]
+  }
+  if (is_win || is_mac) {
+    sources += [ "../browser/ui/startup/default_browser_prompt/default_browser_prompt_manager_unittest.cc" ]
   }
 }
 
@@ -11051,13 +11051,17 @@ if (!is_android && !is_chromeos_device) {
       data_deps += [ "//chrome:packed_resources" ]
     }
 
-    if (!is_chromeos) {
-      sources += [
-        "../browser/password_manager/web_app_profile_switcher_interactive_uitest.cc",
-        "../browser/ui/startup/default_browser_prompt/default_browser_prompt_interactive_uitest.cc",
-        "../browser/ui/views/infobars/default_browser_infobar_interactive_uitest.cc",
-      ]
+    if (is_win || is_mac || is_linux) {
+      sources += [ "../browser/ui/startup/default_browser_prompt/default_browser_prompt_interactive_uitest.cc" ]
       deps += [ "//chrome/browser:shell_integration" ]
+    }
+
+    if (is_win || is_mac) {
+      sources += [ "../browser/ui/views/infobars/default_browser_infobar_interactive_uitest.cc" ]
+    }
+
+    if (!is_chromeos) {
+      sources += [ "../browser/password_manager/web_app_profile_switcher_interactive_uitest.cc" ]
     } else {
       deps += [ "//chrome/browser/smart_card:smart_card" ]
     }

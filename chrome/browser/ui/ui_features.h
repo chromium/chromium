@@ -28,22 +28,6 @@ BASE_DECLARE_FEATURE(kAllowEyeDropperWGCScreenCapture);
 
 BASE_DECLARE_FEATURE(kCloseOmniboxPopupOnInactiveAreaClick);
 
-BASE_DECLARE_FEATURE(kDefaultBrowserPromptRefresh);
-
-// Whether to show the default browser info bar prompt.
-extern const base::FeatureParam<bool> kShowDefaultBrowserInfoBar;
-
-// Whether to show the default browser app menu item anytime the browser isn't
-// default, even if the app menu chip prompt isn't enabled.
-extern const base::FeatureParam<bool> kShowDefaultBrowserAppMenuItem;
-
-// Base duration after which the user may be remprompted.
-extern const base::FeatureParam<base::TimeDelta> kRepromptDuration;
-
-// Maximum number of times a user will be prompted. When set to a negative
-// value, the user will be prompted indefinitely.
-extern const base::FeatureParam<int> kMaxPromptCount;
-
 BASE_DECLARE_FEATURE(kExtensionsMenuInAppMenu);
 bool IsExtensionMenuInRootAppMenu();
 
