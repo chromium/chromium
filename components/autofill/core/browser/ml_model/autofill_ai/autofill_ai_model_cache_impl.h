@@ -16,6 +16,8 @@
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
 #include "components/autofill/core/browser/proto/autofill_ai_model_cache.pb.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_service_observer.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/optimization_guide/proto/features/forms_classifications.pb.h"
 
@@ -34,9 +36,11 @@ inline constexpr base::FilePath::StringViewType
 // `AutofillAiModelCacheImpl` implements `AutofillAiModelCache` using a
 // LevelDB as a persistence layer and a map as an in-memory cache to allow
 // synchronous access.
-class AutofillAiModelCacheImpl : public AutofillAiModelCache {
+class AutofillAiModelCacheImpl : public AutofillAiModelCache,
+                                 history::HistoryServiceObserver {
  public:
-  AutofillAiModelCacheImpl(leveldb_proto::ProtoDatabaseProvider* db_provider,
+  AutofillAiModelCacheImpl(history::HistoryService* history_service,
+                           leveldb_proto::ProtoDatabaseProvider* db_provider,
                            const base::FilePath& profile_path,
                            size_t max_cache_size,
                            base::TimeDelta max_cache_age);
@@ -54,6 +58,10 @@ class AutofillAiModelCacheImpl : public AutofillAiModelCache {
   void Erase(FormSignature form_signature) override;
   std::map<FormSignature, CacheEntryWithMetadata> GetAllEntries()
       const override;
+
+  // history::HistoryServiceObserver:
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
 
  private:
   using Database = leveldb_proto::ProtoDatabase<CacheEntryWithMetadata>;
@@ -86,6 +94,11 @@ class AutofillAiModelCacheImpl : public AutofillAiModelCache {
 
   // Whether the database has been initialized successfully.
   bool db_initialized_ = false;
+
+  // Observes the HistoryService to listen for deletions.
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_observation_{this};
 
   base::WeakPtrFactory<AutofillAiModelCacheImpl> weak_ptr_factory_{this};
 };

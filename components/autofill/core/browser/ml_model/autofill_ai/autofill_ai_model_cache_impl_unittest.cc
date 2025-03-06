@@ -46,7 +46,8 @@ class AutofillAiModelCacheImplTest : public ::testing::Test {
     // Process remaining operations.
     task_environment_.RunUntilIdle();
     cache_ = std::make_unique<AutofillAiModelCacheImpl>(
-        db_provider_.get(), temp_dir_.GetPath(), max_cache_size, max_cache_age);
+        /*history_service=*/nullptr, db_provider_.get(), temp_dir_.GetPath(),
+        max_cache_size, max_cache_age);
     // Wait until database has loaded.
     task_environment_.RunUntilIdle();
   }

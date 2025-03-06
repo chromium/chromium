@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 
@@ -32,11 +33,15 @@ constexpr int64_t SerializeTime(base::Time time) {
 }  // namespace
 
 AutofillAiModelCacheImpl::AutofillAiModelCacheImpl(
+    history::HistoryService* history_service,
     leveldb_proto::ProtoDatabaseProvider* db_provider,
     const base::FilePath& profile_path,
     size_t max_cache_size,
     base::TimeDelta max_cache_age)
     : max_cache_size_(max_cache_size), max_cache_age_(max_cache_age) {
+  if (history_service) {
+    history_observation_.Observe(history_service);
+  }
   auto database_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
@@ -90,6 +95,20 @@ void AutofillAiModelCacheImpl::Erase(FormSignature form_signature) {
 std::map<FormSignature, AutofillAiModelCache::CacheEntryWithMetadata>
 AutofillAiModelCacheImpl::GetAllEntries() const {
   return in_memory_cache_;
+}
+
+void AutofillAiModelCacheImpl::OnHistoryDeletions(
+    history::HistoryService* history_service,
+    const history::DeletionInfo& deletion_info) {
+  if (deletion_info.is_from_expiration() || !deletion_info.IsAllHistory() ||
+      !db_initialized_) {
+    return;
+  }
+  in_memory_cache_.clear();
+  db_->UpdateEntriesWithRemoveFilter(
+      std::make_unique<Database::KeyEntryVector>(),
+      base::BindRepeating([](const std::string&) { return true; }),
+      base::DoNothing());
 }
 
 void AutofillAiModelCacheImpl::TrimEntries() {
