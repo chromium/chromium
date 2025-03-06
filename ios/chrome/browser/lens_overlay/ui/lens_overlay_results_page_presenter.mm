@@ -371,17 +371,21 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
 
 #pragma mark - LensOverlayPanTrackerDelegate
 
-- (void)onPanGestureStarted:(LensOverlayPanTracker*)tracker {
+- (void)lensOverlayPanTrackerDidBeginPanGesture:
+    (LensOverlayPanTracker*)panTracker {
   // NO-OP
 }
 
-- (void)onPanGestureEnded:(LensOverlayPanTracker*)tracker {
-  if (tracker == _windowPanTracker) {
-    // Keep peaking only for the duration of the gesture.
-    if (_detentsManager.sheetDimension == SheetDimensionStatePeaking) {
-      [_detentsManager
-          adjustDetentsForState:SheetDetentStateUnrestrictedMovement];
-    }
+- (void)lensOverlayPanTrackerDidEndPanGesture:
+    (LensOverlayPanTracker*)panTracker {
+  if (panTracker != _windowPanTracker) {
+    return;
+  }
+
+  // Keep peaking only for the duration of the gesture.
+  if (_detentsManager.sheetDimension == SheetDimensionStatePeaking) {
+    [_detentsManager
+        adjustDetentsForState:SheetDetentStateUnrestrictedMovement];
   }
 }
 
