@@ -431,7 +431,8 @@ void HTMLLinkElement::HandleExpectBlockingChanges() {
     return;
   }
 
-  if (blocking_attribute_->HasRenderToken()) {
+  if (blocking_attribute_->HasRenderToken() ||
+      blocking_attribute_->HasFullFrameRateToken()) {
     AddExpectRenderBlockingLinkIfNeeded();
   } else {
     RemoveExpectRenderBlockingLink();
@@ -509,15 +510,16 @@ void HTMLLinkElement::AddExpectRenderBlockingLinkIfNeeded(
   }
 
   bool media_matches = media_known_to_match || MediaQueryMatches();
-  bool is_blocking_render = blocking_attribute_->HasRenderToken();
-  if (!media_matches || !is_blocking_render || !isConnected()) {
+  RenderBlockingLevel blocking_level = blocking_attribute_->GetBlockingLevel();
+  if (!media_matches || blocking_level == RenderBlockingLevel::kNone ||
+      !isConnected()) {
     return;
   }
 
   if (auto* render_blocking_resource_manager =
           GetDocument().GetRenderBlockingResourceManager()) {
     render_blocking_resource_manager->AddPendingParsingElementLink(
-        ParseSameDocumentIdFromHref(href), this);
+        ParseSameDocumentIdFromHref(href), this, blocking_level);
   }
 }
 

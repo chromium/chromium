@@ -144,7 +144,8 @@ void RenderBlockingResourceManager::FontPreloadingTimerFired(TimerBase*) {
 
 void RenderBlockingResourceManager::AddPendingParsingElementLink(
     const AtomicString& id,
-    const HTMLLinkElement* link) {
+    const HTMLLinkElement* link,
+    RenderBlockingLevel blocking_level) {
   CHECK(link);
 
   // We can only add resources until the body element is parsed.
@@ -153,9 +154,13 @@ void RenderBlockingResourceManager::AddPendingParsingElementLink(
     return;
   }
 
-  element_render_blocking_links_->AddLinkWithTargetElement(
-      id, link, RenderBlockingLevel::kBlock);
-  document_->SetHasRenderBlockingExpectLinkElements(true);
+  element_render_blocking_links_->AddLinkWithTargetElement(id, link,
+                                                           blocking_level);
+  if (blocking_level == RenderBlockingLevel::kBlock) {
+    document_->SetHasRenderBlockingExpectLinkElements(true);
+  } else if (blocking_level == RenderBlockingLevel::kLimitFrameRate) {
+    document_->SetHasFullFrameRateBlockingExpectLinkElements(true);
+  }
 }
 
 void RenderBlockingResourceManager::RemovePendingParsingElement(
@@ -179,7 +184,9 @@ void RenderBlockingResourceManager::RemovePendingParsingElementLink(
 
 void RenderBlockingResourceManager::ClearPendingParsingElements() {
   if (!element_render_blocking_links_->HasElement(
-          RenderBlockingLevel::kBlock)) {
+          RenderBlockingLevel::kBlock) &&
+      !element_render_blocking_links_->HasElement(
+          RenderBlockingLevel::kLimitFrameRate)) {
     return;
   }
   element_render_blocking_links_->ForEach(WTF::BindRepeating(
@@ -198,11 +205,12 @@ void RenderBlockingResourceManager::ClearPendingParsingElements() {
 
 void RenderBlockingResourceManager::OnRenderBlockingElementLinkEmpty(
     RenderBlockingLevel level) {
-  if (level != RenderBlockingLevel::kBlock) {
-    return;
+  if (level == RenderBlockingLevel::kBlock) {
+    document_->SetHasRenderBlockingExpectLinkElements(false);
+    RenderBlockingResourceUnblocked();
+  } else if (level == RenderBlockingLevel::kLimitFrameRate) {
+    document_->SetHasFullFrameRateBlockingExpectLinkElements(false);
   }
-  document_->SetHasRenderBlockingExpectLinkElements(false);
-  RenderBlockingResourceUnblocked();
 }
 
 void RenderBlockingResourceManager::SetFontPreloadTimeoutForTest(

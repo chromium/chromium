@@ -2949,7 +2949,7 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
       GetDocument().GetStyleEngine().IdChangedForElement(old_id, new_id, *this);
     }
 
-    if (GetDocument().HasRenderBlockingExpectLinkElements() &&
+    if (GetDocument().HasPendingExpectLinkElements() &&
         IsFinishedParsingChildren()) {
       DCHECK(GetDocument().GetRenderBlockingResourceManager());
       GetDocument()
@@ -6212,7 +6212,7 @@ void Element::FinishParsingChildren() {
   CheckForSiblingStyleChanges(kFinishedParsingChildren, nullptr, lastChild(),
                               nullptr);
 
-  if (GetDocument().HasRenderBlockingExpectLinkElements()) {
+  if (GetDocument().HasPendingExpectLinkElements()) {
     DCHECK(GetDocument().GetRenderBlockingResourceManager());
     GetDocument()
         .GetRenderBlockingResourceManager()

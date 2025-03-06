@@ -9461,6 +9461,32 @@ void Document::ScheduleSelectionchangeEvent() {
   }
 }
 
+void Document::SetHasRenderBlockingExpectLinkElements(bool flag) {
+  has_render_blocking_expect_link_elements_ = flag;
+  has_pending_expect_link_elements_ =
+      has_render_blocking_expect_link_elements_ ||
+      has_frame_rate_blocking_expect_link_elements_;
+}
+
+void Document::SetHasFullFrameRateBlockingExpectLinkElements(bool flag) {
+  if (flag == has_frame_rate_blocking_expect_link_elements_) {
+    return;
+  }
+  has_frame_rate_blocking_expect_link_elements_ = flag;
+  has_pending_expect_link_elements_ =
+      has_render_blocking_expect_link_elements_ ||
+      has_frame_rate_blocking_expect_link_elements_;
+  UpdateRenderFrameRate();
+}
+
+void Document::UpdateRenderFrameRate() {
+  if (!GetFrame() || !GetFrame()->GetPage() || !GetFrame()->IsAttached()) {
+    return;
+  }
+  GetFrame()->GetPage()->GetChromeClient().SetShouldThrottleFrameRate(
+      has_frame_rate_blocking_expect_link_elements_);
+}
+
 // static
 Document* Document::parseHTMLInternal(ExecutionContext* context,
                                       const String& html,

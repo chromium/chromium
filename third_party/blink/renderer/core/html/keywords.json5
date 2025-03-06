@@ -159,6 +159,7 @@
     // Blocking attributes
     // https://html.spec.whatwg.org/C/#blocking-attribute
     "render",
+    "full-frame-rate",
 
     // dropEffect IDL attribute
     // https://html.spec.whatwg.org/C/#dom-datatransfer-dropeffect

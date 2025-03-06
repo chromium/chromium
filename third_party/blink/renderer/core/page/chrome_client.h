@@ -222,6 +222,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
                                      cc::PaintHoldingReason reason) = 0;
   virtual void StopDeferringCommits(LocalFrame& main_frame,
                                     cc::PaintHoldingCommitTrigger) = 0;
+  virtual void SetShouldThrottleFrameRate(bool flag) {}
 
   virtual std::unique_ptr<cc::ScopedPauseRendering> PauseRendering(
       LocalFrame& main_frame) = 0;
