@@ -118,7 +118,6 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
     : browser_(browser) {
   CHECK_NE(PrivacySandboxService::PromptType::kNone, prompt_type);
   // Create the web view in the native bubble.
-  dialog_created_time_ = base::TimeTicks::Now();
   web_view_ =
       AddChildView(std::make_unique<views::WebView>(browser->profile()));
   web_view_->LoadInitialURL(GetDialogURL(prompt_type));
@@ -195,10 +194,6 @@ void PrivacySandboxDialogView::ResizeNativeView(int height) {
 void PrivacySandboxDialogView::ShowNativeView() {
   GetWidget()->Show();
   web_view_->RequestFocus();
-
-  DCHECK(!dialog_created_time_.is_null());
-  base::UmaHistogramTimes("Settings.PrivacySandbox.DialogLoadTime",
-                          base::TimeTicks::Now() - dialog_created_time_);
 }
 
 void PrivacySandboxDialogView::OpenPrivacySandboxSettings() {
