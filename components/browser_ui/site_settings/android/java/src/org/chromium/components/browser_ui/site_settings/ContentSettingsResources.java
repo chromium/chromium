@@ -793,19 +793,4 @@ public class ContentSettingsResources {
         assert false;
         return null;
     }
-
-    /**
-     * Returns the resources IDs for descriptions for ask and blocked states, in that order, on a
-     * binary-state setting.
-     *
-     * @return An array of 4 resource IDs for descriptions for Ask and Blocked states, in that
-     *     order.
-     */
-    public static int[] getBinaryStateSettingDescriptionIDs(int contentType) {
-        int[] descriptionIDs = {
-            getResourceItem(contentType).getEnabledSummary(),
-            getResourceItem(contentType).getDisabledSummary()
-        };
-        return descriptionIDs;
-    }
 }

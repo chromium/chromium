@@ -122,15 +122,13 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     @IntDef({
         GlobalToggleLayout.BINARY_TOGGLE,
         GlobalToggleLayout.TRI_STATE_TOGGLE,
-        GlobalToggleLayout.TRI_STATE_COOKIE_TOGGLE,
-        GlobalToggleLayout.BINARY_RADIO_BUTTON
+        GlobalToggleLayout.TRI_STATE_COOKIE_TOGGLE
     })
     @Retention(RetentionPolicy.SOURCE)
     private @interface GlobalToggleLayout {
         int BINARY_TOGGLE = 0;
         int TRI_STATE_TOGGLE = 1;
         int TRI_STATE_COOKIE_TOGGLE = 2;
-        int BINARY_RADIO_BUTTON = 3;
     }
 
     // The key to use to pass which category this preference should display,
@@ -221,7 +219,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
     public static final String CARD_PREFERENCE_KEY = "card_preference";
     public static final String BINARY_TOGGLE_KEY = "binary_toggle";
-    public static final String BINARY_RADIO_BUTTON_KEY = "binary_radio_button";
     public static final String TRI_STATE_TOGGLE_KEY = "tri_state_toggle";
     public static final String TRI_STATE_COOKIE_TOGGLE = "tri_state_cookie_toggle";
 
@@ -483,9 +480,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             mGlobalToggleLayout = GlobalToggleLayout.TRI_STATE_COOKIE_TOGGLE;
         } else if (WebsitePreferenceBridge.requiresTriStateContentSetting(contentType)) {
             mGlobalToggleLayout = GlobalToggleLayout.TRI_STATE_TOGGLE;
-        } else if (getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled()
-                && mCategory.getType() != SiteSettingsCategory.Type.ANTI_ABUSE) {
-            mGlobalToggleLayout = GlobalToggleLayout.BINARY_RADIO_BUTTON;
         }
 
         ViewGroup view = (ViewGroup) super.onCreateView(inflater, container, savedInstanceState);
@@ -601,11 +595,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     @Override
     public boolean onPreferenceTreeClick(Preference preference) {
         // Do not show the toast if the System Location setting is disabled.
-        String preference_key =
-                getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled()
-                        ? BINARY_RADIO_BUTTON_KEY
-                        : BINARY_TOGGLE_KEY;
-        if (getPreferenceScreen().findPreference(preference_key) != null && mCategory.isManaged()) {
+        if (getPreferenceScreen().findPreference(BINARY_TOGGLE_KEY) != null
+                && mCategory.isManaged()) {
             showManagedToast();
             return false;
         }
@@ -655,8 +646,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         BrowserContextHandle browserContextHandle =
                 getSiteSettingsDelegate().getBrowserContextHandle();
         PrefService prefService = UserPrefs.get(browserContextHandle);
-        if (BINARY_RADIO_BUTTON_KEY.equals(preference.getKey())
-                || BINARY_TOGGLE_KEY.equals(preference.getKey())) {
+        if (BINARY_TOGGLE_KEY.equals(preference.getKey())) {
             assert !mCategory.isManaged();
             boolean toggleValue = (boolean) newValue;
 
@@ -883,7 +873,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 break;
             case GlobalToggleLayout.TRI_STATE_TOGGLE:
             case GlobalToggleLayout.BINARY_TOGGLE:
-            case GlobalToggleLayout.BINARY_RADIO_BUTTON:
                 setting =
                         WebsitePreferenceBridge.isCategoryEnabled(
                                         browserContextHandle, mCategory.getContentSettingsType())
@@ -1168,13 +1157,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                     return !binaryToggle.isChecked();
                 }
                 break;
-            case GlobalToggleLayout.BINARY_RADIO_BUTTON:
-                BinaryStatePermissionPreference binaryRadioButton =
-                        getPreferenceScreen().findPreference(BINARY_RADIO_BUTTON_KEY);
-                if (binaryRadioButton != null) {
-                    return !binaryRadioButton.isChecked();
-                }
-                break;
         }
         return false;
     }
@@ -1238,8 +1220,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         // not needed for the current category and will be removed in the steps below.
         ChromeSwitchPreference binaryToggle =
                 assumeNonNull(screen.findPreference(BINARY_TOGGLE_KEY));
-        BinaryStatePermissionPreference binaryRadioButton =
-                assumeNonNull(screen.findPreference(BINARY_RADIO_BUTTON_KEY));
         TriStateSiteSettingsPreference triStateToggle =
                 assumeNonNull(screen.findPreference(TRI_STATE_TOGGLE_KEY));
         TriStateCookieSettingsPreference triStateCookieToggle =
@@ -1263,9 +1243,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         if (mGlobalToggleLayout != GlobalToggleLayout.BINARY_TOGGLE) {
             screen.removePreference(binaryToggle);
         }
-        if (mGlobalToggleLayout != GlobalToggleLayout.BINARY_RADIO_BUTTON) {
-            screen.removePreference(binaryRadioButton);
-        }
         if (mGlobalToggleLayout != GlobalToggleLayout.TRI_STATE_TOGGLE) {
             screen.removePreference(triStateToggle);
         }
@@ -1275,9 +1252,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         switch (mGlobalToggleLayout) {
             case GlobalToggleLayout.BINARY_TOGGLE:
                 configureBinaryToggle(binaryToggle, contentType);
-                break;
-            case GlobalToggleLayout.BINARY_RADIO_BUTTON:
-                configureBinaryRadioButton(binaryRadioButton, contentType);
                 break;
             case GlobalToggleLayout.TRI_STATE_TOGGLE:
                 configureTriStateToggle(triStateToggle, contentType);
@@ -1550,34 +1524,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         // Set the checked value.
         binaryToggle.setChecked(
                 WebsitePreferenceBridge.isCategoryEnabled(browserContextHandle, contentType));
-    }
-
-    private void configureBinaryRadioButton(
-            BinaryStatePermissionPreference binaryRadioButton, int contentType) {
-        binaryRadioButton.setOnPreferenceChangeListener(this);
-
-        BrowserContextHandle browserContextHandle =
-                getSiteSettingsDelegate().getBrowserContextHandle();
-        @ContentSettingValues
-        int setting =
-                WebsitePreferenceBridge.getDefaultContentSetting(browserContextHandle, contentType);
-        int[] descriptionIds =
-                ContentSettingsResources.getBinaryStateSettingDescriptionIDs(contentType);
-        @ContentSettingValues
-        @Nullable Integer defaultEnabledValue =
-                ContentSettingsResources.getDefaultEnabledValue(contentType);
-        @ContentSettingValues
-        @Nullable Integer defaultDisabledValue =
-                ContentSettingsResources.getDefaultDisabledValue(contentType);
-
-        binaryRadioButton.setManagedPreferenceDelegate(
-                new SingleCategoryManagedPreferenceDelegate(
-                        getSiteSettingsDelegate().getManagedPreferenceDelegate()));
-        binaryRadioButton.initialize(
-                setting,
-                descriptionIds,
-                defaultEnabledValue != null ? defaultEnabledValue : ContentSettingValues.ASK,
-                defaultDisabledValue != null ? defaultDisabledValue : ContentSettingValues.BLOCK);
     }
 
     private void updateNotificationsSecondaryControls() {
