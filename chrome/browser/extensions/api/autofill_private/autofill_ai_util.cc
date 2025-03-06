@@ -107,9 +107,9 @@ autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
         base::to_underlying(attribute_instance.type().name());
     private_api_attributes.back().type.type_name_as_string =
         base::UTF16ToUTF8(attribute_instance.type().GetNameForI18n());
-    private_api_attributes.back().value =
-        base::UTF16ToUTF8(attribute_instance.GetInfo(
-            attribute_instance.GetTopLevelType(), app_locale));
+    private_api_attributes.back().value = base::UTF16ToUTF8(
+        attribute_instance.GetInfo(attribute_instance.GetTopLevelType(),
+                                   app_locale, /*format_string=*/std::nullopt));
   }
 
   autofill_private::EntityInstance private_api_entity_instance;
@@ -136,7 +136,8 @@ EntityInstanceToPrivateApiEntityInstanceWithLabels(
   // TODO(crbug.com/393318055): Use better labels;
   entity_instance_with_labels.entity_label =
       base::UTF16ToUTF8(entity_instance.attributes()[0].GetInfo(
-          entity_instance.attributes()[0].GetTopLevelType(), app_locale));
+          entity_instance.attributes()[0].GetTopLevelType(), app_locale,
+          /*format_string=*/std::nullopt));
   entity_instance_with_labels.entity_sub_label =
       base::UTF16ToUTF8(entity_instance.type().GetNameForI18n());
   return entity_instance_with_labels;

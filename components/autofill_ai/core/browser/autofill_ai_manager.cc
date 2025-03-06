@@ -231,7 +231,8 @@ std::vector<std::string> GetAttributeStrikeKeys(const EntityInstance& entity,
           return std::pair(std::string(attribute_type.name_as_string()),
                            attribute
                                ? base::UTF16ToUTF8(attribute->GetInfo(
-                                     attribute->GetTopLevelType(), app_locale))
+                                     attribute->GetTopLevelType(), app_locale,
+                                     /*format_string=*/std::nullopt))
                                : std::string());
         });
 

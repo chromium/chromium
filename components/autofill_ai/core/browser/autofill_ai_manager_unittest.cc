@@ -104,8 +104,9 @@ auto HasAttributeWithValue(AttributeType attribute_type,
     }
     base::optional_ref<const AttributeInstance> attribute =
         entity.attribute(attribute_type);
-    return attribute && attribute->GetInfo(attribute->GetTopLevelType(),
-                                           app_locale) == value;
+    return attribute &&
+           attribute->GetInfo(attribute->GetTopLevelType(), app_locale,
+                              /*format_string=*/std::nullopt) == value;
   });
 }
 
@@ -277,7 +278,7 @@ class AutofillAiManagerImportFormTest : public AutofillAiManagerTest {
     base::optional_ref<const autofill::AttributeInstance> instance =
         entity.attribute(*attribute);
     CHECK(instance);
-    return instance->GetInfo(type, app_locale);
+    return instance->GetInfo(type, app_locale, /*format_string=*/std::nullopt);
   }
 
   std::u16string GetValueFromEntityForAttributeTypeName(
@@ -288,7 +289,8 @@ class AutofillAiManagerImportFormTest : public AutofillAiManagerTest {
     base::optional_ref<const autofill::AttributeInstance> instance =
         entity.attribute(attribute_type);
     CHECK(instance);
-    return instance->GetInfo(attribute_type.field_type(), app_locale);
+    return instance->GetInfo(attribute_type.field_type(), app_locale,
+                             /*format_string=*/std::nullopt);
   }
 };
 

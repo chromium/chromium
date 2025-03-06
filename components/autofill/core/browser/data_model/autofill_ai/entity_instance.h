@@ -102,14 +102,15 @@ class AttributeInstance final {
   // unstructured ones.
 
   // Returns the value stored in this attribute instance for a specific `type`,
-  // formatted according to a given `app_locale`.
+  // formatted according to a given `app_locale` and `format_string`.
   //
-  // If `format_string` is nullopt, it defaults to a format that contains all
-  // information. For dates, that is u"YYYY-MM-DD".
-  std::u16string GetInfo(FieldType type,
-                         const std::string& app_locale,
-                         base::optional_ref<const std::u16string>
-                             format_string = std::nullopt) const;
+  // Currently, the `format_string` only matters for dates. If it is empty, it
+  // defaults to u"YYYY-MM-DD". See AutofillField::format_string() for the
+  // grammar of format strings.
+  std::u16string GetInfo(
+      FieldType type,
+      const std::string& app_locale,
+      base::optional_ref<const std::u16string> format_string) const;
 
   class GetRawInfoPassKey {
     constexpr GetRawInfoPassKey() = default;

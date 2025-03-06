@@ -1255,16 +1255,18 @@ TEST_F(AutofillExternalDelegateTest, FillAutofillAiFillsFullForm) {
                               ElementsAre(field_with_value(
                                   field_to_fill,
                                   GetObfuscatedValue(passport_number->GetInfo(
-                                      PASSPORT_NUMBER, /*app_locale=*/"")))),
+                                      PASSPORT_NUMBER, /*app_locale=*/"",
+                                      /*format_string=*/std::nullopt)))),
                               _, _))
       .WillOnce(Return(std::vector<FieldGlobalId>{}));
-  EXPECT_CALL(driver(),
-              ApplyFormAction(
-                  _, mojom::ActionPersistence::kFill,
-                  ElementsAre(field_with_value(
-                      field_to_fill, passport_number->GetInfo(
-                                         PASSPORT_NUMBER, /*app_locale=*/""))),
-                  _, _))
+  EXPECT_CALL(
+      driver(),
+      ApplyFormAction(_, mojom::ActionPersistence::kFill,
+                      ElementsAre(field_with_value(
+                          field_to_fill, passport_number->GetInfo(
+                                             PASSPORT_NUMBER, /*app_locale=*/"",
+                                             /*format_string=*/std::nullopt))),
+                      _, _))
       .WillOnce(Return(std::vector<FieldGlobalId>{}));
 
   Suggestion fill_suggestion =

@@ -65,7 +65,7 @@ std::u16string GetEntityInstanceValueForFieldType(
     FieldType type,
     const std::string& app_locale = kAppLocaleUS) {
   return entity.attribute(*autofill::AttributeType::FromFieldType(type))
-      ->GetInfo(type, app_locale);
+      ->GetInfo(type, app_locale, /*format_string=*/std::nullopt);
 }
 
 std::optional<std::u16string> GetFillValueForField(
@@ -87,7 +87,8 @@ std::optional<std::u16string> GetFillValueForField(
   if (attribute_it == entity_it->attributes().end()) {
     return std::nullopt;
   }
-  return attribute_it->GetInfo(field.Type().GetStorableType(), app_locale);
+  return attribute_it->GetInfo(field.Type().GetStorableType(), app_locale,
+                               field.format_string());
 }
 
 std::unique_ptr<FormStructure> CreateFormStructureWithMultiplePredictions(
@@ -269,9 +270,12 @@ TEST_F(AutofillAiSuggestionsTest, EmptyMainTextForStructuredAttribute) {
       passport.attribute(
           autofill::AttributeType(autofill::AttributeTypeName::kPassportName));
   ASSERT_TRUE(name_attribute);
-  ASSERT_THAT(name_attribute->GetInfo(autofill::NAME_FIRST, kAppLocaleUS), u"");
-  ASSERT_THAT(name_attribute->GetInfo(autofill::NAME_LAST, kAppLocaleUS),
-              u"Miller");
+  ASSERT_THAT(
+      name_attribute->GetInfo(autofill::NAME_FIRST, kAppLocaleUS, std::nullopt),
+      u"");
+  ASSERT_THAT(
+      name_attribute->GetInfo(autofill::NAME_LAST, kAppLocaleUS, std::nullopt),
+      u"Miller");
 
   EXPECT_THAT(CreateFillingSuggestions(*form, form->fields()[0]->global_id(),
                                        {passport}, kAppLocaleUS),

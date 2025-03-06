@@ -296,7 +296,9 @@ bool EntityInstance::ImportOrder(const EntityInstance& lhs,
 
 std::ostream& operator<<(std::ostream& os, const AttributeInstance& a) {
   os << a.type() << ": " << '"'
-     << a.GetInfo(a.GetTopLevelType(), /*app_locale=*/"en-US") << '"';
+     << a.GetInfo(a.GetTopLevelType(), /*app_locale=*/"en-US",
+                  /*format_string=*/std::nullopt)
+     << '"';
   return os;
 }
 
