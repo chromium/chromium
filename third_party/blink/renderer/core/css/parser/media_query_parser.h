@@ -56,6 +56,22 @@ class CORE_EXPORT MediaQueryParser {
     virtual bool SupportsRange() const = 0;
   };
 
+  class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
+    STACK_ALLOCATED();
+
+   public:
+    MediaQueryFeatureSet() = default;
+
+    bool IsAllowed(const AtomicString& feature) const override;
+    bool IsAllowedWithoutValue(
+        const AtomicString& feature,
+        const ExecutionContext* execution_context) const override;
+    bool IsCaseSensitive(const AtomicString& feature) const override {
+      return false;
+    }
+    bool SupportsRange() const override { return true; }
+  };
+
  private:
   friend class ContainerQueryParser;
   friend class CSSIfParser;
