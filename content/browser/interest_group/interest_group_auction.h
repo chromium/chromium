@@ -59,6 +59,10 @@ namespace blink {
 struct AuctionConfig;
 }
 
+namespace network {
+class SharedURLLoaderFactory;
+}
+
 namespace content {
 
 class AdAuctionNegativeTargeter;
@@ -499,11 +503,16 @@ class CONTENT_EXPORT InterestGroupAuction
   // `owned_auction_config_` field. `parent` should be the parent
   // InterestGroupAuction if this is a component auction, and null, otherwise.
   //
+  // `url_loader_factory` is a trusted URLLoaderFactory configured to make
+  // requests associated with the frame running the auction. See
+  // AdAuctionServiceImpl::CreateUnderlyingTrustedURLLoaderFactory().
+  //
   // `is_interest_group_api_allowed_callback` will be used to check whether the
   // sellers of the auction and bids provided via interest groups or
   // additionalBids are permitted to participate.
   InterestGroupAuction(
       auction_worklet::mojom::KAnonymityBidMode kanon_mode,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const url::Origin& main_frame_origin,
       network::mojom::IPAddressSpace ip_address_space,
       const blink::AuctionConfig* config,
@@ -588,7 +597,6 @@ class CONTENT_EXPORT InterestGroupAuction
   std::unique_ptr<InterestGroupAuctionReporter> CreateReporter(
       BrowserContext* browser_context,
       PrivateAggregationManager* private_aggregation_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       AdAuctionPageDataCallback ad_auction_page_data_callback,
       std::unique_ptr<blink::AuctionConfig> auction_config,
       const url::Origin& main_frame_origin,
@@ -1357,6 +1365,8 @@ class CONTENT_EXPORT InterestGroupAuction
 
   // Whether k-anonymity enforcement or simulation (or none) are performed.
   const auction_worklet::mojom::KAnonymityBidMode kanon_mode_;
+
+  const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   const url::Origin main_frame_origin_;
   const network::mojom::IPAddressSpace ip_address_space_;

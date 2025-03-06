@@ -16,6 +16,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
@@ -31,6 +32,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -84,6 +86,7 @@ std::string CreateString(std::uint32_t i, size_t length = 3) {
 // validating all parameters passed to the TrustedSignalsFetcher, without
 // duplicating a lot of code.
 struct BiddingParams {
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
   FrameTreeNodeId frame_tree_node_id;
   url::Origin main_frame_origin;
   network::mojom::IPAddressSpace ip_address_space =
@@ -108,6 +111,7 @@ struct BiddingParams {
 
 // Struct with input parameters for RequestTrustedScoringSignals().
 struct ScoringParams {
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
   FrameTreeNodeId frame_tree_node_id;
   url::Origin main_frame_origin;
   network::mojom::IPAddressSpace ip_address_space =
@@ -162,6 +166,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
     struct PendingBiddingSignalsFetch {
       GURL trusted_signals_url;
       BiddingAndAuctionServerKey bidding_and_auction_key;
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
       FrameTreeNodeId frame_tree_node_id;
       url::Origin main_frame_origin;
       network::mojom::IPAddressSpace ip_address_space;
@@ -179,6 +184,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
     struct PendingScoringSignalsFetch {
       GURL trusted_signals_url;
       BiddingAndAuctionServerKey bidding_and_auction_key;
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
       FrameTreeNodeId frame_tree_node_id;
       url::Origin main_frame_origin;
       network::mojom::IPAddressSpace ip_address_space;
@@ -200,7 +206,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
 
    private:
     void FetchBiddingSignals(
-        network::mojom::URLLoaderFactory* /*unused_url_loader_factory*/,
+        network::mojom::URLLoaderFactory* url_loader_factory,
         FrameTreeNodeId frame_tree_node_id,
         const url::Origin& main_frame_origin,
         network::mojom::IPAddressSpace ip_address_space,
@@ -230,14 +236,16 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
       }
 
       cache_->OnPendingBiddingSignalsFetch(PendingBiddingSignalsFetch(
-          trusted_signals_url, bidding_and_auction_key, frame_tree_node_id,
-          main_frame_origin, ip_address_space, network_partition_nonce,
-          script_origin, std::move(compression_groups_copy),
-          std::move(callback), weak_ptr_factory_.GetWeakPtr()));
+          trusted_signals_url, bidding_and_auction_key,
+          static_cast<network::SharedURLLoaderFactory*>(url_loader_factory),
+          frame_tree_node_id, main_frame_origin, ip_address_space,
+          network_partition_nonce, script_origin,
+          std::move(compression_groups_copy), std::move(callback),
+          weak_ptr_factory_.GetWeakPtr()));
     }
 
     void FetchScoringSignals(
-        network::mojom::URLLoaderFactory* /*unused_url_loader_factory*/,
+        network::mojom::URLLoaderFactory* url_loader_factory,
         FrameTreeNodeId frame_tree_node_id,
         const url::Origin& main_frame_origin,
         network::mojom::IPAddressSpace ip_address_space,
@@ -267,10 +275,13 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
       }
 
       cache_->OnPendingScoringSignalsFetch(PendingScoringSignalsFetch(
-          trusted_signals_url, bidding_and_auction_key, frame_tree_node_id,
-          main_frame_origin, ip_address_space, network_partition_nonce,
-          script_origin, std::move(compression_groups_copy),
-          std::move(callback), weak_ptr_factory_.GetWeakPtr()));
+          trusted_signals_url, bidding_and_auction_key,
+          reinterpret_cast<network::SharedURLLoaderFactory*>(
+              url_loader_factory),
+          frame_tree_node_id, main_frame_origin, ip_address_space,
+          network_partition_nonce, script_origin,
+          std::move(compression_groups_copy), std::move(callback),
+          weak_ptr_factory_.GetWeakPtr()));
     }
 
     const raw_ptr<TestTrustedSignalsCache> cache_;
@@ -280,7 +291,6 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
 
   TestTrustedSignalsCache()
       : TrustedSignalsCacheImpl(
-            /*url_loader_factory=*/nullptr,
             // The use of base::Unretained here means that all async calls must
             // be accounted for before a test completes. The base class always
             // invokes this
@@ -514,6 +524,7 @@ void ValidateFetchParams(const FetcherFetchType& fetch,
                          const ParamType& params,
                          int expected_compression_group_id,
                          int expected_partition_id) {
+  EXPECT_EQ(fetch.url_loader_factory, params.url_loader_factory);
   EXPECT_EQ(fetch.frame_tree_node_id, params.frame_tree_node_id);
   EXPECT_EQ(fetch.main_frame_origin, params.main_frame_origin);
   EXPECT_EQ(fetch.ip_address_space, params.ip_address_space);
@@ -827,6 +838,7 @@ class TrustedSignalsCacheTest : public testing::Test {
 
   BiddingParams CreateDefaultBiddingParams() const {
     BiddingParams out;
+    out.url_loader_factory = url_loader_factory_;
     out.frame_tree_node_id = kFrameTreeNodeId;
     out.main_frame_origin = kMainFrameOrigin;
     out.ip_address_space = network::mojom::IPAddressSpace::kPublic;
@@ -843,6 +855,7 @@ class TrustedSignalsCacheTest : public testing::Test {
 
   ScoringParams CreateDefaultScoringParams() const {
     ScoringParams out;
+    out.url_loader_factory = url_loader_factory_;
     out.frame_tree_node_id = kFrameTreeNodeId;
     out.main_frame_origin = kMainFrameOrigin;
     out.ip_address_space = network::mojom::IPAddressSpace::kPublic;
@@ -1149,6 +1162,13 @@ class TrustedSignalsCacheTest : public testing::Test {
     // Cases shared by bidder and seller tests.
 
     out.emplace_back(CreateDefaultTestCase());
+    out.back().description = "Different SharedURLLoaderFactories";
+    out.back().request_relation = RequestRelation::kDifferentFetches;
+    out.back().params2.url_loader_factory =
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            /*factory_ptr=*/nullptr);
+
+    out.emplace_back(CreateDefaultTestCase());
     out.back().description = "Different FrameTreeNodeIds";
     out.back().request_relation = RequestRelation::kDifferentFetches;
     out.back().params2.frame_tree_node_id = FrameTreeNodeId(2);
@@ -1163,6 +1183,8 @@ class TrustedSignalsCacheTest : public testing::Test {
                                    const BiddingParams& bidding_params2) {
     // In order to merge two sets of params, only `interest_group_names` and
     // `trusted_bidding_signals_keys` may be different.
+    EXPECT_EQ(bidding_params1.url_loader_factory,
+              bidding_params2.url_loader_factory);
     EXPECT_EQ(bidding_params1.frame_tree_node_id,
               bidding_params2.frame_tree_node_id);
     EXPECT_EQ(bidding_params1.main_frame_origin,
@@ -1179,6 +1201,7 @@ class TrustedSignalsCacheTest : public testing::Test {
               bidding_params2.additional_params);
 
     BiddingParams merged_bidding_params{
+        bidding_params1.url_loader_factory,
         bidding_params1.frame_tree_node_id,
         bidding_params1.main_frame_origin,
         bidding_params1.ip_address_space,
@@ -1230,8 +1253,9 @@ class TrustedSignalsCacheTest : public testing::Test {
     // solely for the ValidateFetchParams family of methods.
     CHECK_EQ(1u, bidding_params.interest_group_names.size());
     auto handle = trusted_signals_cache_->RequestTrustedBiddingSignals(
-        bidding_params.frame_tree_node_id, bidding_params.main_frame_origin,
-        bidding_params.ip_address_space, bidding_params.script_origin,
+        bidding_params.url_loader_factory, bidding_params.frame_tree_node_id,
+        bidding_params.main_frame_origin, bidding_params.ip_address_space,
+        bidding_params.script_origin,
         *bidding_params.interest_group_names.begin(),
         bidding_params.execution_mode, bidding_params.joining_origin,
         bidding_params.trusted_signals_url, bidding_params.coordinator,
@@ -1255,11 +1279,12 @@ class TrustedSignalsCacheTest : public testing::Test {
                         bool start_fetch = true) {
     int partition_id = -1;
     auto handle = trusted_signals_cache_->RequestTrustedScoringSignals(
-        scoring_params.frame_tree_node_id, scoring_params.main_frame_origin,
-        scoring_params.ip_address_space, scoring_params.script_origin,
-        scoring_params.trusted_signals_url, scoring_params.coordinator,
-        scoring_params.interest_group_owner, scoring_params.joining_origin,
-        scoring_params.render_url, scoring_params.component_render_urls,
+        scoring_params.url_loader_factory, scoring_params.frame_tree_node_id,
+        scoring_params.main_frame_origin, scoring_params.ip_address_space,
+        scoring_params.script_origin, scoring_params.trusted_signals_url,
+        scoring_params.coordinator, scoring_params.interest_group_owner,
+        scoring_params.joining_origin, scoring_params.render_url,
+        scoring_params.component_render_urls,
         scoring_params.additional_params.Clone(), partition_id);
 
     // The call should never fail.
@@ -1296,6 +1321,12 @@ class TrustedSignalsCacheTest : public testing::Test {
 
   const url::Origin kCoordinator =
       url::Origin::Create(GURL("https://coordinator.test"));
+
+  // Use a SharedURLLoaderFactory that can't be used to make requests. This is
+  // only used in pointer equality tests.
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_ =
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          /*factory_ptr=*/nullptr);
 
   std::unique_ptr<TestTrustedSignalsCache> trusted_signals_cache_;
   mojo::Remote<auction_worklet::mojom::TrustedSignalsCache> cache_mojo_pipe_;

@@ -123,6 +123,7 @@ bool TrustedSignalsCacheImpl::NetworkPartitionNonceKey::operator<(
 TrustedSignalsCacheImpl::FetchKey::FetchKey() = default;
 
 TrustedSignalsCacheImpl::FetchKey::FetchKey(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     FrameTreeNodeId frame_tree_node_id,
     const url::Origin& main_frame_origin,
     network::mojom::IPAddressSpace ip_address_space,
@@ -133,10 +134,11 @@ TrustedSignalsCacheImpl::FetchKey::FetchKey(
     : network_partition_nonce_key(script_origin,
                                   signals_type,
                                   trusted_signals_url),
-      frame_tree_node_id(frame_tree_node_id),
+      url_loader_factory(std::move(url_loader_factory)),
       main_frame_origin(main_frame_origin),
       coordinator(coordinator),
-      ip_address_space(ip_address_space) {}
+      ip_address_space(ip_address_space),
+      frame_tree_node_id(frame_tree_node_id) {}
 
 TrustedSignalsCacheImpl::FetchKey::FetchKey(const FetchKey&) = default;
 TrustedSignalsCacheImpl::FetchKey::FetchKey(FetchKey&&) = default;
@@ -149,11 +151,12 @@ TrustedSignalsCacheImpl::FetchKey& TrustedSignalsCacheImpl::FetchKey::operator=(
 TrustedSignalsCacheImpl::FetchKey::~FetchKey() = default;
 
 bool TrustedSignalsCacheImpl::FetchKey::operator<(const FetchKey& other) const {
-  return std::tie(network_partition_nonce_key, frame_tree_node_id,
-                  main_frame_origin, coordinator, ip_address_space) <
-         std::tie(other.network_partition_nonce_key, other.frame_tree_node_id,
+  return std::tie(network_partition_nonce_key, url_loader_factory,
+                  main_frame_origin, coordinator, ip_address_space,
+                  frame_tree_node_id) <
+         std::tie(other.network_partition_nonce_key, other.url_loader_factory,
                   other.main_frame_origin, other.coordinator,
-                  other.ip_address_space);
+                  other.ip_address_space, other.frame_tree_node_id);
 }
 
 struct TrustedSignalsCacheImpl::Fetch {
@@ -228,13 +231,15 @@ TrustedSignalsCacheImpl::BiddingCacheKey::BiddingCacheKey(
     std::optional<std::string> interest_group_name,
     const GURL& trusted_signals_url,
     const url::Origin& coordinator,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     FrameTreeNodeId frame_tree_node_id,
     const url::Origin& main_frame_origin,
     network::mojom::IPAddressSpace ip_address_space,
     const url::Origin& joining_origin,
     base::Value::Dict additional_params)
     : interest_group_name(std::move(interest_group_name)),
-      fetch_key(frame_tree_node_id,
+      fetch_key(std::move(url_loader_factory),
+                frame_tree_node_id,
                 main_frame_origin,
                 ip_address_space,
                 SignalsType::kBidding,
@@ -356,6 +361,7 @@ TrustedSignalsCacheImpl::ScoringCacheKey::ScoringCacheKey(
     const url::Origin& seller,
     const GURL& trusted_signals_url,
     const url::Origin& coordinator,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     FrameTreeNodeId frame_tree_node_id,
     const url::Origin& main_frame_origin,
     network::mojom::IPAddressSpace ip_address_space,
@@ -367,7 +373,8 @@ TrustedSignalsCacheImpl::ScoringCacheKey::ScoringCacheKey(
     : render_url(render_url),
       component_render_urls(component_render_urls.begin(),
                             component_render_urls.end()),
-      fetch_key(frame_tree_node_id,
+      fetch_key(std::move(url_loader_factory),
+                frame_tree_node_id,
                 main_frame_origin,
                 ip_address_space,
                 SignalsType::kScoring,
@@ -784,10 +791,8 @@ bool TrustedSignalsCacheImpl::ReceiverRestrictions::operator==(
     const ReceiverRestrictions& other) const = default;
 
 TrustedSignalsCacheImpl::TrustedSignalsCacheImpl(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     GetCoordinatorKeyCallback get_coordinator_key_callback)
-    : url_loader_factory_(std::move(url_loader_factory)),
-      get_coordinator_key_callback_(std::move(get_coordinator_key_callback)),
+    : get_coordinator_key_callback_(std::move(get_coordinator_key_callback)),
       network_partition_nonce_cache_(kNonceCacheSize) {}
 
 TrustedSignalsCacheImpl::~TrustedSignalsCacheImpl() {
@@ -814,6 +819,7 @@ TrustedSignalsCacheImpl::CreateRemote(SignalsType signals_type,
 
 std::unique_ptr<TrustedSignalsCacheImpl::Handle>
 TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     FrameTreeNodeId frame_tree_node_id,
     const url::Origin& main_frame_origin,
     network::mojom::IPAddressSpace ip_address_space,
@@ -834,8 +840,9 @@ TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
       interest_group_owner,
       is_group_by_origin ? std::nullopt
                          : std::make_optional(interest_group_name),
-      trusted_signals_url, coordinator, frame_tree_node_id, main_frame_origin,
-      ip_address_space, joining_origin, std::move(additional_params));
+      trusted_signals_url, coordinator, std::move(url_loader_factory),
+      frame_tree_node_id, main_frame_origin, ip_address_space, joining_origin,
+      std::move(additional_params));
 
   BiddingCacheEntryMap::iterator cache_entry_it =
       bidding_cache_entries_.find(cache_key);
@@ -921,6 +928,7 @@ TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
 
 std::unique_ptr<TrustedSignalsCacheImpl::Handle>
 TrustedSignalsCacheImpl::RequestTrustedScoringSignals(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     FrameTreeNodeId frame_tree_node_id,
     const url::Origin& main_frame_origin,
     network::mojom::IPAddressSpace ip_address_space,
@@ -934,9 +942,10 @@ TrustedSignalsCacheImpl::RequestTrustedScoringSignals(
     base::Value::Dict additional_params,
     int& partition_id) {
   ScoringCacheKey cache_key(
-      seller, trusted_signals_url, coordinator, frame_tree_node_id,
-      main_frame_origin, ip_address_space, interest_group_owner, joining_origin,
-      render_url, component_render_urls, std::move(additional_params));
+      seller, trusted_signals_url, coordinator, std::move(url_loader_factory),
+      frame_tree_node_id, main_frame_origin, ip_address_space,
+      interest_group_owner, joining_origin, render_url, component_render_urls,
+      std::move(additional_params));
 
   ScoringCacheEntryMap::iterator cache_entry_it =
       scoring_cache_entries_.find(cache_key);
@@ -1218,7 +1227,7 @@ void TrustedSignalsCacheImpl::StartBiddingSignalsFetch(
     }
   }
   fetch->fetcher->FetchBiddingSignals(
-      url_loader_factory_.get(), fetch_key->frame_tree_node_id,
+      fetch_key->url_loader_factory.get(), fetch_key->frame_tree_node_id,
       fetch_key->main_frame_origin, fetch_key->ip_address_space,
       GetNetworkPartitionNonce(fetch_key->network_partition_nonce_key),
       fetch_key->script_origin(), fetch_key->trusted_signals_url(),
@@ -1264,7 +1273,7 @@ void TrustedSignalsCacheImpl::StartScoringSignalsFetch(
     }
   }
   fetch->fetcher->FetchScoringSignals(
-      url_loader_factory_.get(), fetch_key->frame_tree_node_id,
+      fetch_key->url_loader_factory.get(), fetch_key->frame_tree_node_id,
       fetch_key->main_frame_origin, fetch_key->ip_address_space,
       GetNetworkPartitionNonce(fetch_key->network_partition_nonce_key),
       fetch_key->script_origin(), fetch_key->trusted_signals_url(),

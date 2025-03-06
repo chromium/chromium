@@ -293,7 +293,6 @@ InterestGroupManagerImpl::InterestGroupManagerImpl(
                   base::FeatureList::IsEnabled(
                       features::kFledgeUseKVv2SignalsCache)
               ? std::make_unique<TrustedSignalsCacheImpl>(
-                    url_loader_factory,
                     base::BindRepeating(&InterestGroupManagerImpl::
                                             GetBiddingAndAuctionServerKey,
                                         base::Unretained(this)))
