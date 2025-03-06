@@ -53,6 +53,8 @@ source_set("lib") {
       "features/sync_os_state_api_bindings.h",
       "features/text_decoder.cc",
       "features/text_decoder.h",
+      "features/text_encoder.cc",
+      "features/text_encoder.h",
       "features/tts_interface_binder.cc",
       "features/tts_interface_binder.h",
       "features/user_input_interface_binder.cc",
@@ -75,7 +77,6 @@ source_set("lib") {
     ]
     deps = [
       "public/mojom:os_service_mojom_js__generator",
-      "//components/text_encoder",
       "//third_party/inspector_protocol:crdtp",
     ]
     configs += [ "//v8:external_startup_data" ]

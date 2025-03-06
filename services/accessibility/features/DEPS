@@ -1,5 +1,4 @@
 include_rules = [
-  "+components/text_encoder",
   "+gin",
   "+ui/accessibility",
   "+ui/events",
