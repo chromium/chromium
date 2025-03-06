@@ -4,7 +4,10 @@
 
 package org.chromium.components.embedder_support.contextmenu;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Contains all of the command line switches that are specific to the context menu. */
+@NullMarked
 public final class ContextMenuSwitches {
     // Force enable the popup context menu to unblock drag and drop from web
     // contents on phones.

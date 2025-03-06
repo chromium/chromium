@@ -4,11 +4,12 @@
 
 package org.chromium.components.facilitated_payments;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
  * Both are used to trigger a UI flow within Google Play Services.
  */
 @JNINamespace("payments::facilitated")
+@NullMarked
 class SecurePayload {
     private final byte[] mActionToken;
     private final List<SecureData> mSecureData;
@@ -35,8 +37,7 @@ class SecurePayload {
      * @return null if either of the params are null
      */
     @CalledByNative
-    @Nullable
-    public static SecurePayload create(
+    public static @Nullable SecurePayload create(
             byte[] actionToken, @JniType("std::vector") Object[] secureData) {
         if (actionToken == null || secureData == null) {
             return null;

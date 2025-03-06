@@ -7,8 +7,11 @@ package org.chromium.components.facilitated_payments;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Class containing the key value pairs for the secure data returned from Payments backend. */
 @JNINamespace("payments::facilitated")
+@NullMarked
 public class SecureData {
     private final int mKey;
     private final String mValue;
