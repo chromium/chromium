@@ -315,9 +315,6 @@ extern const char kIndicateIdentityErrorInOverflowMenuDescription[];
 extern const char kInProductHelpDemoModeName[];
 extern const char kInProductHelpDemoModeDescription[];
 
-extern const char kIOSInterruptibleCoordinatorAlwaysDismissedName[];
-extern const char kIOSInterruptibleCoordinatorAlwaysDismissedDescription[];
-
 extern const char kIOSBrowserEditMenuMetricsName[];
 extern const char kIOSBrowserEditMenuMetricsDescription[];
 

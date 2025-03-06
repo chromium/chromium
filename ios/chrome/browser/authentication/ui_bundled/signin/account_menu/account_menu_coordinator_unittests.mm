@@ -171,7 +171,7 @@ class AccountMenuCoordinatorTest : public PlatformTest {
     OCMExpect(view_controller_.dataSource = nil);
     OCMExpect(mediator_.consumer = nil);
     OCMExpect(view_controller_.mutator = nil);
-    [coordinator_ interruptWithAction:SynchronousStopAction() completion:nil];
+    [coordinator_ interruptAnimated:NO completion:nil];
   }
 
   base::test::ScopedFeatureList feature_list_;

@@ -278,11 +278,10 @@ TEST_P(AddAccountSigninManagerTest, Interrupted) {
                                                               identity:nil
                                                                  error:nil]);
   __block BOOL completionCalled = NO;
-  [add_account_signin_manager()
-      interruptWithAction:SigninCoordinatorInterrupt::DismissWithAnimation
-               completion:^{
-                 completionCalled = YES;
-               }];
+  [add_account_signin_manager() interruptAnimated:YES
+                                       completion:^{
+                                         completionCalled = YES;
+                                       }];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       TestTimeouts::action_timeout(), ^bool() {
         return !fake_interaction_manager().isActivityViewPresented;

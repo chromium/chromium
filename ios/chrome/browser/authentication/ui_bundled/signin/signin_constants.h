@@ -45,20 +45,6 @@ typedef NS_ENUM(NSUInteger, IdentitySigninState) {
   IdentitySigninStateSignedInWithSyncEnabled,
 };
 
-// Action to do when the sign-in dialog needs to be interrupted.
-enum class SigninCoordinatorInterrupt {
-  // Stops the sign-in coordinator without dismissing the view. The sign-in
-  // completion block and the interrupt completion block will be called
-  // synchronously.
-  // This should be only used when UI shutdown.
-  // See crbug.com/1455216.
-  UIShutdownNoDismiss,
-  // Stops the sign-in coordinator and dismisses the view without animation.
-  DismissWithoutAnimation,
-  // Stops the sign-in coordinator and dismisses the view with animation.
-  DismissWithAnimation,
-};
-
 // Name of accessibility identifier for the skip sign-in button.
 extern NSString* const kSkipSigninAccessibilityIdentifier;
 // Name of accessibility identifier for the add account button in the sign-in

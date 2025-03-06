@@ -156,47 +156,23 @@
 
 #pragma mark - SigninCoordinator
 
-- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
-                 completion:(ProceduralBlock)completion {
+- (void)interruptAnimated:(BOOL)animated
+               completion:(ProceduralBlock)completion {
   __weak __typeof(self) weakSelf = self;
-  ProceduralBlock finishCompletion = ^() {
+  ProceduralBlock childCompletion = ^{
+    [weakSelf.navigationController.presentingViewController
+        dismissViewControllerAnimated:animated
+                           completion:nil];
     [weakSelf finishWithResult:SigninCoordinatorResultInterrupted identity:nil];
     if (completion) {
       completion();
     }
   };
-  BOOL animated = NO;
-  switch (action) {
-    case SigninCoordinatorInterrupt::UIShutdownNoDismiss: {
-      CHECK(!IsInterruptibleCoordinatorAlwaysDismissedEnabled(),
-            base::NotFatalUntil::M136);
-      [self.childCoordinator
-          interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
-                   completion:finishCompletion];
-      return;
-    }
-    case SigninCoordinatorInterrupt::DismissWithoutAnimation: {
-      animated = NO;
-      break;
-    }
-    case SigninCoordinatorInterrupt::DismissWithAnimation: {
-      animated = YES;
-      break;
-    }
-  }
 
-  ProceduralBlock childCompletion = ^{
-    [weakSelf.navigationController.presentingViewController
-        dismissViewControllerAnimated:animated
-                           completion:nil];
-    finishCompletion();
-  };
-
+  CHECK(self.childCoordinator, base::NotFatalUntil::M137);
   // Interrupt the child coordinator UI first before dismissing the forced
   // sign-in navigation controller.
-  [self.childCoordinator
-      interruptWithAction:SigninCoordinatorInterrupt::DismissWithoutAnimation
-               completion:childCompletion];
+  [self.childCoordinator interruptAnimated:NO completion:childCompletion];
 }
 
 #pragma mark - NSObject

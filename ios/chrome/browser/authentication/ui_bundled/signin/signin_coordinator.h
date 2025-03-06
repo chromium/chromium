@@ -206,17 +206,13 @@ class PrefRegistrySyncable;
 // Interrupts the sign-in flow.
 // `signinCompletion(SigninCoordinatorResultInterrupted, nil)` is guaranteed to
 // be called before `completion()`.
-// When the coordinator is interrupted with `UIShutdownNoDismiss` action, both
-// `signinCompletion()` and `completion()` are called synchronously in this
-// order.
 // When the coordinator is interrupted with `DismissWithoutAnimation` or
 // `DismissWithAnimation`, the view is dismissed first.
 // `signinCompletion()` and then `completion()` are called synchronously.
 //
 // It is still mandatory to call `-[SigninCoordinator stop]` once
 // `signinCompletion()` is called.
-- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
-                 completion:(ProceduralBlock)completion;
+- (void)interruptAnimated:(BOOL)animated completion:(ProceduralBlock)completion;
 
 // ChromeCoordinator.
 - (void)start NS_REQUIRES_SUPER;

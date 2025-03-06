@@ -1256,8 +1256,7 @@ void OnListFamilyMembersResponse(
   // The UI should be stopped before the models they observe are stopped.
   // SigninCoordinator teardown is performed by the `signinCompletion` on
   // termination of async events, do not add additional teardown here.
-  [self.signinCoordinator interruptWithAction:SynchronousStopAction()
-                                   completion:nil];
+  [self.signinCoordinator interruptAnimated:NO completion:nil];
   // `self.signinCoordinator.signinCompletion()` was called in the interrupt
   // method. Therefore now `self.signinCoordinator` is now stopped, and
   // `self.signinCoordinator` is now nil.
@@ -3726,12 +3725,9 @@ using UserFeedbackDataCallback =
 - (void)interruptSigninCoordinatorAnimated:(BOOL)animated
                                 completion:(ProceduralBlock)completion {
   DCHECK(self.signinCoordinator);
-  SigninCoordinatorInterrupt action =
-      animated ? SigninCoordinatorInterrupt::DismissWithAnimation
-               : SigninCoordinatorInterrupt::DismissWithoutAnimation;
 
   self.dismissingSigninPromptFromExternalTrigger = YES;
-  [self.signinCoordinator interruptWithAction:action completion:completion];
+  [self.signinCoordinator interruptAnimated:animated completion:completion];
 }
 
 // Starts the sign-in coordinator with a default cleanup completion.

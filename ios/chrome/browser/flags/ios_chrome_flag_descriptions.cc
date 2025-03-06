@@ -550,14 +550,6 @@ const char kInProductHelpDemoModeDescription[] =
     "an individual promotion causes that promotion but no other promotions to "
     "occur.";
 
-const char kIOSInterruptibleCoordinatorAlwaysDismissedName[] =
-    "InterruptibleChromeCoordinator dismisses all views.";
-const char kIOSInterruptibleCoordinatorAlwaysDismissedDescription[] =
-    "When enabled, the interruptible coordinator’s interrupt methods always "
-    "dismiss their view. Requires "
-    "IOSInterruptibleCoordinatorStoppedSynchronously "
-    "to be enabled.";
-
 const char kIOSBrowserEditMenuMetricsName[] = "Browser edit menu metrics";
 const char kIOSBrowserEditMenuMetricsDescription[] =
     "Collect metrics for edit menu usage.";

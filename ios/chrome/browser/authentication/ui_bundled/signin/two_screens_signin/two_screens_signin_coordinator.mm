@@ -105,10 +105,10 @@ using base::UserMetricsAction;
 - (void)stop {
   if (_navigationController) {
     __block BOOL completionBlockCalled = NO;
-    [self interruptWithAction:SynchronousStopAction()
-                   completion:^{
-                     completionBlockCalled = YES;
-                   }];
+    [self interruptAnimated:NO
+                 completion:^{
+                   completionBlockCalled = YES;
+                 }];
     CHECK(completionBlockCalled);
   }
   [_upgradeSigninLogger disconnect];
@@ -217,8 +217,8 @@ using base::UserMetricsAction;
 
 #pragma mark - SigninCoordinator
 
-- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
-                 completion:(ProceduralBlock)completion {
+- (void)interruptAnimated:(BOOL)animated
+               completion:(ProceduralBlock)completion {
   __weak __typeof(self) weakSelf = self;
   __weak __typeof(_navigationController) weakNavigationController =
       _navigationController;
@@ -228,30 +228,6 @@ using base::UserMetricsAction;
       completion();
     }
   };
-  BOOL animated = NO;
-  switch (action) {
-    case SigninCoordinatorInterrupt::UIShutdownNoDismiss: {
-      CHECK(!IsInterruptibleCoordinatorAlwaysDismissedEnabled(),
-            base::NotFatalUntil::M136);
-      [_childCoordinator
-          interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
-                   completion:^{
-                     [weakNavigationController.presentingViewController
-                         dismissViewControllerAnimated:NO
-                                            completion:nil];
-                     finishCompletion();
-                   }];
-      return;
-    }
-    case SigninCoordinatorInterrupt::DismissWithoutAnimation: {
-      animated = NO;
-      break;
-    }
-    case SigninCoordinatorInterrupt::DismissWithAnimation: {
-      animated = YES;
-      break;
-    }
-  }
 
   ProceduralBlock signinCompletion = ^{
     UIViewController* presentingViewController =
@@ -265,9 +241,7 @@ using base::UserMetricsAction;
 
   // Interrupt the child coordinator UI first before dismissing the new
   // sign-in navigation controller.
-  [_childCoordinator
-      interruptWithAction:SigninCoordinatorInterrupt::DismissWithoutAnimation
-               completion:signinCompletion];
+  [_childCoordinator interruptAnimated:NO completion:signinCompletion];
 }
 
 #pragma mark - HistorySyncCoordinatorDelegate
@@ -284,8 +258,7 @@ using base::UserMetricsAction;
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   RecordAction(UserMetricsAction("Signin_TwoScreens_SwipeDismiss"));
-  [self interruptWithAction:SigninCoordinatorInterrupt::DismissWithoutAnimation
-                 completion:nil];
+  [self interruptAnimated:NO completion:nil];
 }
 
 #pragma mark - NSObject

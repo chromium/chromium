@@ -100,8 +100,7 @@ class FirstRunCoordinatorMetricsHelper final {
     InterruptibleChromeCoordinator* interruptibleChildCoordinator =
         base::apple::ObjCCast<InterruptibleChromeCoordinator>(
             self.childCoordinator);
-    [interruptibleChildCoordinator interruptWithAction:SynchronousStopAction()
-                                            completion:nil];
+    [interruptibleChildCoordinator interruptAnimated:NO completion:nil];
     [self stopChildCoordinator];
   }
   [self.baseViewController dismissViewControllerAnimated:YES completion:nil];

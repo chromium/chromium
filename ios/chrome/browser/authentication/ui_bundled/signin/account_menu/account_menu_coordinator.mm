@@ -238,8 +238,7 @@
 
 - (void)didTapSettingsButton {
   // Close the account menu and open the Settings page.
-  [self stopChildrenAndViewControllerWithAction:SigninCoordinatorInterrupt::
-                                                    DismissWithAnimation];
+  [self stopChildrenAndViewControllerAnimated:YES];
   [self runCompletionWithSigninResult:SigninCoordinatorResultCanceledByUser
                    completionIdentity:nil];
   id<ApplicationCommands> applicationHandler = HandlerForProtocol(
@@ -284,8 +283,7 @@
                         withResult:(SigninCoordinatorResult)signinResult
                     signedIdentity:(id<SystemIdentity>)signedIdentity {
   CHECK_EQ(mediator, _mediator);
-  [self stopChildrenAndViewControllerWithAction:SigninCoordinatorInterrupt::
-                                                    DismissWithAnimation];
+  [self stopChildrenAndViewControllerAnimated:YES];
   [self runCompletionWithSigninResult:signinResult
                    completionIdentity:signedIdentity];
 }
@@ -417,9 +415,9 @@
 
 #pragma mark - SigninCoordinator
 
-- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
-                 completion:(ProceduralBlock)completion {
-  [self stopChildrenAndViewControllerWithAction:action];
+- (void)interruptAnimated:(BOOL)animated
+               completion:(ProceduralBlock)completion {
+  [self stopChildrenAndViewControllerAnimated:animated];
   [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
                    completionIdentity:nil];
   if (completion) {
@@ -522,8 +520,7 @@
 
 // Stops all children, then dismiss the view controller. Executes
 // `completion` synchronously.
-- (void)stopChildrenAndViewControllerWithAction:
-    (SigninCoordinatorInterrupt)action {
+- (void)stopChildrenAndViewControllerAnimated:(BOOL)animated {
   // Stopping all potentially open children views.
   if (!_accountDetailsControllerDismissCallback.is_null()) {
     std::move(_accountDetailsControllerDismissCallback).Run(/*animated=*/false);
@@ -534,15 +531,10 @@
     // Add Account coordinator should be stopped before the Manage Accounts
     // Coordinator, as the former may be presented by the latter.
     [weakSelf stopManageAccountsCoordinator];
-    [weakSelf dismissViewControllerAction:action];
+    [weakSelf dismissViewControllerAnimated:animated];
   };
   if (_signinCoordinator) {
-    SigninCoordinatorInterrupt subviewAction =
-        (action == SigninCoordinatorInterrupt::UIShutdownNoDismiss)
-            ? SigninCoordinatorInterrupt::UIShutdownNoDismiss
-            : SigninCoordinatorInterrupt::DismissWithoutAnimation;
-    [_signinCoordinator interruptWithAction:subviewAction
-                                 completion:dismissAndCompletion];
+    [_signinCoordinator interruptAnimated:NO completion:dismissAndCompletion];
   } else {
     dismissAndCompletion();
   }
@@ -550,7 +542,7 @@
 
 // Unplugs the view and navigation controller. Dismisses the navigation
 // controller as specified by the action.
-- (void)dismissViewControllerAction:(SigninCoordinatorInterrupt)action {
+- (void)dismissViewControllerAnimated:(BOOL)animated {
   if (!_navigationController) {
     // The view controller was already dismissed.
     return;
@@ -562,25 +554,9 @@
   UINavigationController* navigationController = _navigationController;
   _navigationController = nil;
   _viewController = nil;
-  switch (action) {
-    case SigninCoordinatorInterrupt::UIShutdownNoDismiss: {
-      CHECK(!IsInterruptibleCoordinatorAlwaysDismissedEnabled(),
-            base::NotFatalUntil::M136);
-      break;
-    }
-    case SigninCoordinatorInterrupt::DismissWithoutAnimation: {
-      [navigationController.presentingViewController
-          dismissViewControllerAnimated:NO
-                             completion:nil];
-      break;
-    }
-    case SigninCoordinatorInterrupt::DismissWithAnimation: {
-      [navigationController.presentingViewController
-          dismissViewControllerAnimated:YES
-                             completion:nil];
-      break;
-    }
-  }
+  [navigationController.presentingViewController
+      dismissViewControllerAnimated:animated
+                         completion:nil];
 }
 
 @end
