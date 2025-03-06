@@ -106,7 +106,7 @@ class AttributeInstance final {
   //
   // For more control over over which, see GetInfo().
   std::u16string GetCompleteInfo(const std::string& app_locale) const {
-    return GetInfo(GetTopLevelType(), app_locale, std::nullopt);
+    return GetInfo(type().field_type(), app_locale, std::nullopt);
   }
 
   // Returns the value stored in this attribute instance for a specific `type`,
@@ -166,10 +166,6 @@ class AttributeInstance final {
   // Returns the types which are stored in the database for this attribute
   // to be able to correctly reconstruct it at database loading time.
   FieldTypeSet GetDatabaseStoredTypes() const;
-
-  // Returns the FieldType that represents the whole value stored in this
-  // attribute.
-  FieldType GetTopLevelType() const;
 
   // This is a no-op for unstructured attributes, and for structured attributes
   // the function propagates changes in a component to its subcomponents. This

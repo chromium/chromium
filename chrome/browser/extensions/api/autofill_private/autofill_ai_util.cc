@@ -72,7 +72,7 @@ std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
         AttributeTypeName(private_api_attribute_instance.type.type_name));
     AttributeInstance attribute(attribute_type);
     attribute.SetRawInfo(
-        attribute.GetTopLevelType(),
+        attribute.type().field_type(),
         base::UTF8ToUTF16(private_api_attribute_instance.value),
         autofill::VerificationStatus::kUserVerified);
     attribute.FinalizeInfo();
