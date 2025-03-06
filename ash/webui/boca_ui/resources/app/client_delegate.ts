@@ -287,6 +287,9 @@ export class ClientDelegateFactory {
       openFeedbackDialog: async () => {
         await pageHandler.openFeedbackDialog();
       },
+      refreshWorkbook: async () => {
+        await pageHandler.refreshWorkbook();
+      },
     };
   }
 

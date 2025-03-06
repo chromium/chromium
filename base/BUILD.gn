@@ -4133,7 +4133,7 @@ test("base_unittests") {
   }
 
   if (is_win) {
-    deps += [ "//base:scoped_handle_test_dll" ]
+    deps += [ ":scoped_handle_test_dll" ]
     if (current_cpu == "x64" || current_cpu == "arm64") {
       sources += [ "profiler/win32_stack_frame_unwinder_unittest.cc" ]
       deps += [ ":base_profiler_test_support_library" ]
@@ -4673,7 +4673,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/lifetime/Destroyable.java",
     ]
     deps = [
-      "//base:tasks_java",
+      ":tasks_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
@@ -4913,6 +4913,8 @@ if (is_android) {
     srcjar_deps = [ ":build_info_jni" ]
     deps = [
       ":android_info_java",
+      ":base_switches_java",
+      ":command_line_java",
       ":log_java",
       ":tasks_java",
       "//base/version_info/android:version_constants_java",
@@ -4964,6 +4966,9 @@ if (is_android) {
     ]
     sources = [ "android/java/src/org/chromium/base/SysUtils.java" ]
     deps = [
+      ":base_switches_java",
+      ":command_line_java",
+      ":log_java",
       ":tasks_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
@@ -5254,7 +5259,7 @@ if (is_android) {
     testonly = true
 
     deps = [
-      "//base:base_java",
+      ":base_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_test_monitor_java",
       "//third_party/hamcrest:hamcrest_java",

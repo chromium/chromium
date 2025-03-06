@@ -58,7 +58,7 @@ bool Install() {
       base::WrapUnique(WorkItemList::CreateWorkItemList());
 
   install_list->AddCopyTreeWorkItem(
-      source_exe_path, install_directory->AppendASCII(kExecutableName),
+      source_exe_path, install_directory->AppendUTF8(kExecutableName),
       temp_dir.GetPath(), WorkItem::ALWAYS);
   install_list->AddCreateRegKeyWorkItem(HKEY_LOCAL_MACHINE, kAppRegKey,
                                         KEY_WOW64_32KEY);
@@ -100,7 +100,7 @@ bool Uninstall() {
     VLOG(1) << "Failed to get System32 path.";
     return false;
   }
-  cmd_exe_path = cmd_exe_path.AppendASCII("cmd.exe");
+  cmd_exe_path = cmd_exe_path.Append(L"cmd.exe");
 
   // Try deleting the directory 15 times and wait one second between tries.
   const std::wstring command_line = base::StrCat(

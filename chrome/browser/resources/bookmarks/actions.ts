@@ -191,7 +191,7 @@ export function selectItem(
     const endIndex = Math.max(anchorIndex, selectedIndex);
 
     for (let i = startIndex; i <= endIndex; i++) {
-      toSelect.push(displayedList[i]);
+      toSelect.push(displayedList[i]!);
     }
   } else {
     toSelect.push(id);

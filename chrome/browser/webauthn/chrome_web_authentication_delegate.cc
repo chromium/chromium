@@ -78,6 +78,12 @@
 
 namespace {
 
+void LogSignalUnknownCredential(
+    ChromeWebAuthenticationDelegate::SignalUnknownCredentialResult result) {
+  base::UmaHistogramEnumeration(
+      "WebAuthentication.SignalUnknownCredentialRemovedGPMPasskey", result);
+}
+
 void LogSignalCurrentUserDetailsUpdated(
     ChromeWebAuthenticationDelegate::SignalCurrentUserDetailsResult result) {
   base::UmaHistogramEnumeration(
@@ -307,10 +313,21 @@ ChromeWebAuthenticationDelegate::MaybeGetRequestProxy(
   return service && service->IsActive(caller_origin) ? service : nullptr;
 }
 
-void ChromeWebAuthenticationDelegate::DeletePasskey(
+void ChromeWebAuthenticationDelegate::PasskeyUnrecognized(
     content::WebContents* web_contents,
+    const url::Origin& origin,
     const std::vector<uint8_t>& passkey_credential_id,
     const std::string& relying_party_id) {
+  webauthn::PasskeyChangeQuotaTracker* quota_tracker =
+      webauthn::PasskeyChangeQuotaTracker::GetInstance();
+  if (base::FeatureList::IsEnabled(device::kWebAuthnSignalApiHidePasskeys)) {
+    if (!quota_tracker->CanMakeChange(origin)) {
+      LogSignalUnknownCredential(SignalUnknownCredentialResult::kQuotaExceeded);
+      FIDO_LOG(ERROR) << "Dropping removal request from " << origin
+                      << ": quota exceeded.";
+      return;
+    }
+  }
   webauthn::PasskeyModel* passkey_store =
       PasskeyModelFactory::GetInstance()->GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
@@ -318,19 +335,29 @@ void ChromeWebAuthenticationDelegate::DeletePasskey(
                             passkey_credential_id.end());
   std::optional<sync_pb::WebauthnCredentialSpecifics> credential_specifics =
       passkey_store->GetPasskeyByCredentialId(relying_party_id, credential_id);
-  if (credential_specifics) {
-    passkey_store->DeletePasskey(std::move(credential_id), FROM_HERE);
-    PasswordsClientUIDelegate* manage_passwords_ui_controller =
-        PasswordsClientUIDelegateFromWebContents(web_contents);
-    if (manage_passwords_ui_controller) {
-      manage_passwords_ui_controller->OnPasskeyDeleted();
-    }
+  if (!credential_specifics) {
+    LogSignalUnknownCredential(SignalUnknownCredentialResult::kPasskeyNotFound);
+    return;
   }
-  base::UmaHistogramEnumeration(
-      "WebAuthentication.SignalUnknownCredentialRemovedGPMPasskey",
-      credential_specifics.has_value()
-          ? SignalUnknownCredentialResult::kPasskeyRemoved
-          : SignalUnknownCredentialResult::kPasskeyNotFound);
+  if (base::FeatureList::IsEnabled(device::kWebAuthnSignalApiHidePasskeys)) {
+    if (credential_specifics->hidden()) {
+      LogSignalUnknownCredential(
+          SignalUnknownCredentialResult::kPasskeyAlreadyHidden);
+      return;
+    }
+    quota_tracker->TrackChange(origin);
+    passkey_store->SetPasskeyHidden(std::move(credential_id),
+                                    /*hidden=*/true);
+    LogSignalUnknownCredential(SignalUnknownCredentialResult::kPasskeyHidden);
+  } else {
+    passkey_store->DeletePasskey(std::move(credential_id), FROM_HERE);
+    LogSignalUnknownCredential(SignalUnknownCredentialResult::kPasskeyRemoved);
+  }
+  PasswordsClientUIDelegate* manage_passwords_ui_controller =
+      PasswordsClientUIDelegateFromWebContents(web_contents);
+  if (manage_passwords_ui_controller) {
+    manage_passwords_ui_controller->OnPasskeyDeleted();
+  }
 }
 
 void ChromeWebAuthenticationDelegate::DeleteUnacceptedPasskeys(

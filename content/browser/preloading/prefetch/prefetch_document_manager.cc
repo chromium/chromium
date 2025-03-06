@@ -81,21 +81,18 @@ PrefetchDocumentManager::~PrefetchDocumentManager() {
   // `MayReleasePrefetch()` below.
   weak_method_factory_.InvalidateWeakPtrs();
 
-  // On destruction, removes any prefetches that not yet start prefetching from
-  // |PrefetchService|. Other already started prefetches associated by |this|
-  // can still remain and be used after the destruction of |this|.
+  // On destruction, we can reset the PrefetchContainer, because navigations
+  // using the PrefetchContainer can either:
+  // - Continue serving without PrefetchContainer (if the non-redirect head is
+  //   already received)
+  // - Safely fallback to non-prefetching (e.g. if BlockUntilHead)
+  // And the PrefetchContainer can't be used for new navigations (because
+  // currently prefetches are initiator-Document-scoped).
+  // TODO(https://crbug.com/390329781): This logic will be moved to
+  // `PrefetchHandle` soon.
   for (const auto& prefetch_iter : all_prefetches_) {
     if (prefetch_iter.second) {
-      switch (prefetch_iter.second->GetLoadState()) {
-        case PrefetchContainer::LoadState::kNotStarted:
-        case PrefetchContainer::LoadState::kEligible:
-        case PrefetchContainer::LoadState::kFailedIneligible:
-        case PrefetchContainer::LoadState::kFailedHeldback:
-          prefetch_service->MayReleasePrefetch(prefetch_iter.second);
-          break;
-        case PrefetchContainer::LoadState::kStarted:
-          break;
-      }
+      prefetch_service->MayReleasePrefetch(prefetch_iter.second);
     }
   }
 }
@@ -313,57 +310,14 @@ void PrefetchDocumentManager::PrefetchUrl(
 
 bool PrefetchDocumentManager::IsPrefetchAttemptFailedOrDiscarded(
     const GURL& url) {
-  return IsPrefetchAttemptFailedOrDiscardedInternal(
-             url, PreloadingType::kPrefetch) &&
-         IsPrefetchAttemptFailedOrDiscardedInternal(url,
-                                                    PreloadingType::kPrerender);
-}
-
-bool PrefetchDocumentManager::IsPrefetchAttemptFailedOrDiscardedInternal(
-    const GURL& url,
-    PreloadingType planned_max_preloading_type) {
-  auto it =
-      all_prefetches_.find(std::make_pair(url, planned_max_preloading_type));
-  if (it == all_prefetches_.end() || !it->second)
+  PrefetchService* prefetch_service = GetPrefetchService();
+  if (!prefetch_service) {
     return true;
-
-  const auto& container = it->second;
-  if (!container->HasPrefetchStatus())
-    return false;  // the container is not processed yet
-
-  switch (container->GetPrefetchStatus()) {
-    case PrefetchStatus::kPrefetchSuccessful:
-    case PrefetchStatus::kPrefetchResponseUsed:
-      return false;
-    case PrefetchStatus::kPrefetchIneligibleUserHasCookies:
-    case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker:
-    case PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps:
-    case PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition:
-    case PrefetchStatus::kPrefetchIneligibleRetryAfter:
-    case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
-    case PrefetchStatus::kPrefetchIneligibleHostIsNonUnique:
-    case PrefetchStatus::kPrefetchIneligibleDataSaverEnabled:
-    case PrefetchStatus::kPrefetchIneligibleBatterySaverEnabled:
-    case PrefetchStatus::kPrefetchIneligiblePreloadingDisabled:
-    case PrefetchStatus::kPrefetchIneligibleExistingProxy:
-    case PrefetchStatus::kPrefetchIsStale:
-    case PrefetchStatus::kPrefetchNotUsedProbeFailed:
-    case PrefetchStatus::kPrefetchNotStarted:
-    case PrefetchStatus::kPrefetchNotFinishedInTime:
-    case PrefetchStatus::kPrefetchFailedNetError:
-    case PrefetchStatus::kPrefetchFailedNon2XX:
-    case PrefetchStatus::kPrefetchFailedMIMENotSupported:
-    case PrefetchStatus::kPrefetchIsPrivacyDecoy:
-    case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
-    case PrefetchStatus::kPrefetchHeldback:
-    case PrefetchStatus::kPrefetchFailedInvalidRedirect:
-    case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
-    case PrefetchStatus::
-        kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
-    case PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved:
-    case PrefetchStatus::kPrefetchEvictedForNewerPrefetch:
-      return true;
   }
+
+  return prefetch_service->IsPrefetchAttemptFailedOrDiscardedInternal(
+      base::PassKey<PrefetchDocumentManager>(),
+      PrefetchContainer::Key(document_token_, url));
 }
 
 // static

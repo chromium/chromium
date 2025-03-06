@@ -6,13 +6,14 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {LanguageMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ToolbarEvent, VoiceClientSideStatusCode, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {spinnerDebounceTimeout, ToolbarEvent, VoiceClientSideStatusCode, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {VoiceSelectionMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
+import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {hasStyle, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createSpeechSynthesisVoice, stubAnimationFrame, waitForSpinnerTimeout} from './common.js';
+import {createSpeechSynthesisVoice, stubAnimationFrame} from './common.js';
 
 function stringToHtmlTestId(s: string): string {
   return s.replace(/\s/g, '-').replace(/[()]/g, '');
@@ -325,21 +326,20 @@ suite('VoiceSelectionMenu', () => {
     });
 
     test('spinner shows before speech starts and is hidden after', async () => {
-      // Display dropdown menu
-      voiceSelectionMenu.onVoiceSelectionMenuClick(dots);
-
+      openVoiceMenu();
       const previewButton =
           getDropdownItemForVoice(voice1).querySelector<CrIconButtonElement>(
               '#preview-icon')!;
-      previewButton.click();
-
-      await microtasksFinished();
-      await waitForSpinnerTimeout();
-      stubAnimationFrame();
-
       const spinnerVoice0 =
           getDropdownItemForVoice(voice1).querySelector<CrIconButtonElement>(
               '#spinner-span')!;
+
+      const mockTimer = new MockTimer();
+      mockTimer.install();
+      previewButton.click();
+      mockTimer.tick(spinnerDebounceTimeout);
+      mockTimer.uninstall();
+      await microtasksFinished();
 
       // The spinner should be visible and the preview button should be
       // disabled.

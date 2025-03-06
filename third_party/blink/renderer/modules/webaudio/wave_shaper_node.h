@@ -54,7 +54,7 @@ class WaveShaperNode final : public AudioNode {
   // setCurve() is called on the main thread.
   void setCurve(NotShared<DOMFloat32Array>, ExceptionState&);
   void setCurve(const Vector<float>&, ExceptionState&);
-  NotShared<DOMFloat32Array> curve();
+  NotShared<DOMFloat32Array> curve() const;
 
   void setOversample(const V8OverSampleType&);
   V8OverSampleType oversample() const;

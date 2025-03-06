@@ -174,6 +174,9 @@ class MockCloudPolicyClient : public CloudPolicyClient {
   // Sets the DMToken.
   void SetDMToken(const std::string& token);
 
+  // Sets the client id.
+  void SetClientId(const std::string& client_id);
+
   // Injects policy.
   void SetPolicy(const std::string& policy_type,
                  const std::string& settings_entity_id,
@@ -185,6 +188,9 @@ class MockCloudPolicyClient : public CloudPolicyClient {
   // Sets the status field.
   void SetStatus(DeviceManagementStatus status);
 
+  // Get the OAuth token from client
+  std::string GetOAuthToken();
+
   // Make the notification helpers public.
   using CloudPolicyClient::NotifyClientError;
   using CloudPolicyClient::NotifyPolicyFetched;
@@ -192,6 +198,7 @@ class MockCloudPolicyClient : public CloudPolicyClient {
 
   using CloudPolicyClient::client_id_;
   using CloudPolicyClient::dm_token_;
+  using CloudPolicyClient::oauth_token_;
   using CloudPolicyClient::fetched_invalidation_version_;
   using CloudPolicyClient::invalidation_payload_;
   using CloudPolicyClient::invalidation_version_;

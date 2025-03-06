@@ -343,8 +343,8 @@ void AIManager::CreateLanguageModel(
 
         const std::optional<std::string>& system_prompt =
             options->system_prompt;
-        std::vector<blink::mojom::AILanguageModelInitialPromptPtr>&
-            initial_prompts = options->initial_prompts;
+        std::vector<blink::mojom::AILanguageModelPromptPtr>& initial_prompts =
+            options->initial_prompts;
         if (system_prompt.has_value() || !initial_prompts.empty()) {
           // If the initial prompt is provided, we need to set it and
           // invoke the callback after this, because the token counting

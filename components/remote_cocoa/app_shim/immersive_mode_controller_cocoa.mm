@@ -10,7 +10,6 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/mac/mac_util.h"
 #include "components/remote_cocoa/app_shim/features.h"
 #import "components/remote_cocoa/app_shim/immersive_mode_delegate_mac.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
@@ -22,7 +21,8 @@ namespace {
 const double kThinControllerHeight = 0.5;
 
 inline bool IsPermanentThinControllerEnabled() {
-  return base::mac::MacOSMajorVersion() >= 13;
+  return base::FeatureList::IsEnabled(
+      remote_cocoa::features::kFullscreenPermanentThinController);
 }
 
 }  // namespace

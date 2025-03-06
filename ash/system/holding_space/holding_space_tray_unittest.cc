@@ -2016,8 +2016,7 @@ TEST_F(HoldingSpaceTrayTest, EnterAndExitAnimations) {
   transform_recorder.Reset();
 
   // Lock the screen. The tray should animate out.
-  auto* session_controller =
-      ash_test_helper()->test_session_controller_client();
+  auto* session_controller = GetSessionControllerClient();
   session_controller->SetSessionState(session_manager::SessionState::LOCKED);
   ViewVisibilityChangedWaiter().Wait(tray);
   EXPECT_FALSE(test_api()->IsShowingInShelf());

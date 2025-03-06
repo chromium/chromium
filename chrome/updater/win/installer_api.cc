@@ -186,6 +186,8 @@ std::optional<InstallerOutcome> GetLastInstallerOutcome(
 
 InstallerOutcome::InstallerOutcome() = default;
 InstallerOutcome::InstallerOutcome(const InstallerOutcome&) = default;
+InstallerOutcome& InstallerOutcome::operator=(const InstallerOutcome&) =
+    default;
 InstallerOutcome::~InstallerOutcome() = default;
 
 std::optional<base::win::RegKey> ClientStateAppKeyOpen(

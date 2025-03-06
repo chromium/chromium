@@ -269,7 +269,8 @@ void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
               [](CreateSessionCallback callback,
                  base::expected<std::unique_ptr<::boca::Session>,
                                 google_apis::ApiErrorCode> result) {
-                // TODO(b/358476060): Potentially parse error code to UI;
+                // TODO(crbug.com/358476060): Potentially parse error code to
+                // UI;
                 if (!result.has_value()) {
                   std::move(callback).Run(false);
                 } else {
@@ -646,6 +647,11 @@ void BocaAppHandler::CloseTab(const SessionID::id_type tab_id,
 
 void BocaAppHandler::OpenFeedbackDialog(OpenFeedbackDialogCallback callback) {
   BocaAppClient::Get()->OpenFeedbackDialog();
+  std::move(callback).Run();
+}
+
+void BocaAppHandler::RefreshWorkbook(RefreshWorkbookCallback callback) {
+  BocaAppClient::Get()->GetSessionManager()->NotifyAppReload();
   std::move(callback).Run();
 }
 

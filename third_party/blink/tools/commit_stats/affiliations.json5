@@ -75,6 +75,12 @@
       { start: "2012-09-01", domain: "yoav.ws"},
     ]
   },
+  "wanderview@chromium.org": {
+    affiliations: [
+      { start: "2025-03-17", domain: "meta.com" },
+      { start: "2018-07-23", domain: "google.com" },
+    ]
+  },
   "weidongliu@chromium.org": {
     affiliations: [
       { start: "2020-07-10", domain: "tencent.com" },

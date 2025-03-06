@@ -121,8 +121,8 @@ void WaveShaperNode::setCurve(const Vector<float>& curve,
   SetCurveImpl(curve.data(), curve.size(), exception_state);
 }
 
-NotShared<DOMFloat32Array> WaveShaperNode::curve() {
-  Vector<float>* curve = GetWaveShaperHandler().Curve();
+NotShared<DOMFloat32Array> WaveShaperNode::curve() const {
+  const Vector<float>* curve = GetWaveShaperHandler().Curve();
   if (!curve) {
     return NotShared<DOMFloat32Array>(nullptr);
   }
@@ -142,32 +142,12 @@ void WaveShaperNode::setOversample(const V8OverSampleType& type) {
   // AudioBasicProcessorNode::checkNumberOfChannelsForInput() where we can
   // initialize() and uninitialize().
   DeferredTaskHandler::GraphAutoLocker context_locker(context());
-
-  switch (type.AsEnum()) {
-    case V8OverSampleType::Enum::kNone:
-      GetWaveShaperHandler().SetOversample(WaveShaperHandler::kOverSampleNone);
-      return;
-    case V8OverSampleType::Enum::k2X:
-      GetWaveShaperHandler().SetOversample(WaveShaperHandler::kOverSample2x);
-      return;
-    case V8OverSampleType::Enum::k4X:
-      GetWaveShaperHandler().SetOversample(WaveShaperHandler::kOverSample4x);
-      return;
-  }
-  NOTREACHED();
+  GetWaveShaperHandler().SetOversample(type.AsEnum());
 }
 
 V8OverSampleType WaveShaperNode::oversample() const {
-  switch (
-      const_cast<WaveShaperNode*>(this)->GetWaveShaperHandler().Oversample()) {
-    case WaveShaperHandler::kOverSampleNone:
-      return V8OverSampleType(V8OverSampleType::Enum::kNone);
-    case WaveShaperHandler::kOverSample2x:
-      return V8OverSampleType(V8OverSampleType::Enum::k2X);
-    case WaveShaperHandler::kOverSample4x:
-      return V8OverSampleType(V8OverSampleType::Enum::k4X);
-  }
-  NOTREACHED();
+  return V8OverSampleType(
+      const_cast<WaveShaperNode*>(this)->GetWaveShaperHandler().Oversample());
 }
 
 void WaveShaperNode::ReportDidCreate() {

@@ -1876,9 +1876,7 @@ public class StripLayoutHelperTest {
         assertFalse(
                 "New tab button should not be pressed.",
                 mStripLayoutHelper.getNewTabButton().isPressed());
-        assertNull(
-                "No tab was clicked by mouse.",
-                mStripLayoutHelper.getDelayedReorderViewForTesting());
+        assertNull("No tab was clicked by mouse.", mStripLayoutHelper.getDelayedReorderView());
         assertFalse(
                 "Should not start reorder mode when pressing down on tab without mouse.",
                 mStripLayoutHelper.getInReorderModeForTesting());
@@ -1931,9 +1929,7 @@ public class StripLayoutHelperTest {
         assertFalse(
                 "New tab button should not be pressed.",
                 mStripLayoutHelper.getNewTabButton().isPressed());
-        assertNull(
-                "No tab was clicked by mouse.",
-                mStripLayoutHelper.getDelayedReorderViewForTesting());
+        assertNull("No tab was clicked by mouse.", mStripLayoutHelper.getDelayedReorderView());
         assertFalse(
                 "Should not start reorder mode from close button.",
                 mStripLayoutHelper.getInReorderModeForTesting());
@@ -1956,9 +1952,7 @@ public class StripLayoutHelperTest {
         assertFalse(
                 "New tab button should not be pressed.",
                 mStripLayoutHelper.getNewTabButton().isPressed());
-        assertNull(
-                "No tab was clicked by mouse.",
-                mStripLayoutHelper.getDelayedReorderViewForTesting());
+        assertNull("No tab was clicked by mouse.", mStripLayoutHelper.getDelayedReorderView());
         assertFalse(
                 "Should not start reorder mode from close button.",
                 mStripLayoutHelper.getInReorderModeForTesting());

@@ -4941,6 +4941,9 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_TASK_MANAGER_HANDLES_CELL_TEXT" desc="The value displayed in the user/gdi cells.">
         <ph name="NUM_HANDLES">$1<ex>300</ex></ph> (<ph name="NUM_KILOBYTES_LIVE">$2<ex>500</ex></ph> peak)
       </message>
+      <message name="IDS_TASK_MANAGER_TASK_GROUP_CONNECT_TEXT" desc="The text used to connect tasks in the same task group for accessibility features. [ICU_Syntax]">
+        {NUM_TASKS, plural, =1 {<ph name="TASK_ROW">{TASK_ROW}<ex>MyTask</ex></ph>} other {<ph name="TASK_ROW">{TASK_ROW}<ex>MyTask</ex></ph>. Other <ph name="OTHER_TASK_NUM">{OTHER_TASK_NUM}<ex>2</ex></ph> tasks in the same task group: <ph name="OTHER_TASKS">{OTHER_TASKS}<ex>TaskA TaskB</ex></ph>}}
+      </message>
       <message name="IDS_TASK_MANAGER_WEB_BROWSER_CELL_TEXT" desc="The text of the web browser process row">
         Browser
       </message>
@@ -17416,7 +17419,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_PASSKEY_UPGRADE_BUBBLE_MANAGE_BUTTON" desc="The label of a button that opens Google Password Manager settings. Refer to Glossary for the meaning of 'passkey'.">
         Manage passwords and passkeys
       </message>
-
 
       <!-- Web-modal dialog shown during Digital Credential request -->
       <message name="IDS_WEB_DIGITAL_CREDENTIALS_BLUETOOTH_POWER_ON_MANUAL_TITLE">

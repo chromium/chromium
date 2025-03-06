@@ -270,8 +270,10 @@ inline constexpr char16_t kFamilyGroupViewURL[] =
 
 // "Learn more" URL for related website sets.
 inline constexpr char kRelatedWebsiteSetsLearnMoreURL[] =
-    "https://support.google.com/chrome?p=cpn_cookies"
-    "#zippy=%2Callow-related-sites-to-access-your-activity";
+    "https://support.google.com/"
+    "chrome?p=cpn_cookies&rd=1#allow_block_cookies&zippy=%2Callow-or-block-"
+    "third-party-cookies%2Callow-related-sites-to-access-your-activity%2Cabout-"
+    "embedded-content";
 
 // Url to a blogpost about Flash deprecation.
 inline constexpr char kFlashDeprecationLearnMoreURL[] =

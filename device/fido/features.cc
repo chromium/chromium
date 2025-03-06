@@ -172,4 +172,9 @@ BASE_FEATURE(kWebAuthnMicrosoftSoftwareUnexportableKeyProvider,
              "WebAuthenticationMicrosoftSoftwareUnexportableKeyProvider",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Not yet enabled by default.
+BASE_FEATURE(kWebAuthnSignalApiHidePasskeys,
+             "WebAuthenticationSignalApiHidePasskeys",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace device

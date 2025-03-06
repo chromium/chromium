@@ -9,6 +9,8 @@
 
 #include "chrome/browser/serial/web_serial_chooser.h"
 
+class SerialChooserDialogAndroid;
+
 class WebSerialChooserAndroid : public WebSerialChooser {
  public:
   WebSerialChooserAndroid();
@@ -22,6 +24,11 @@ class WebSerialChooserAndroid : public WebSerialChooser {
   void ShowChooser(
       content::RenderFrameHost* frame,
       std::unique_ptr<SerialChooserController> controller) override;
+
+ private:
+  void OnDialogClosed();
+
+  std::unique_ptr<SerialChooserDialogAndroid> dialog_;
 };
 
 #endif  // CHROME_BROWSER_SERIAL_ANDROID_WEB_SERIAL_CHOOSER_ANDROID_H_

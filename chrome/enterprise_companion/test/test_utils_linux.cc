@@ -22,7 +22,7 @@ constexpr char kTestExe[] = "enterprise_companion_test";
 class TestMethodsLinux : public TestMethods {
  public:
   base::FilePath GetTestExePath() override {
-    return base::PathService::CheckedGet(base::DIR_EXE).AppendASCII(kTestExe);
+    return base::PathService::CheckedGet(base::DIR_EXE).Append(kTestExe);
   }
 
   void ExpectInstalled() override {
@@ -31,7 +31,7 @@ class TestMethodsLinux : public TestMethods {
     ASSERT_TRUE(install_dir);
     int exe_mode = 0;
     ASSERT_TRUE(base::GetPosixFilePermissions(
-        install_dir->AppendASCII(kExecutableName), &exe_mode));
+        install_dir->Append(kExecutableName), &exe_mode));
     EXPECT_EQ(exe_mode, base::FILE_PERMISSION_USER_MASK |
                             base::FILE_PERMISSION_READ_BY_GROUP |
                             base::FILE_PERMISSION_EXECUTE_BY_GROUP |

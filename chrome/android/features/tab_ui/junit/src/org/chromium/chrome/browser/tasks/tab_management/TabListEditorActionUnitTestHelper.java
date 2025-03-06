@@ -156,8 +156,7 @@ public class TabListEditorActionUnitTestHelper {
             }
             groupTabs.get(0).setRootId(group.getTabIdAt(0));
             when(filter.getRelatedTabList(group.getTabIdAt(0))).thenReturn(groupTabs);
-            when(filter.getRelatedTabCountForRootId(group.getTabIdAt(0)))
-                    .thenReturn(groupTabs.size());
+            when(filter.getTabCountForGroup(group.getTabGroupId())).thenReturn(groupTabs.size());
 
             if (!group.isGroup() || tabGroupSyncService == null) continue;
 

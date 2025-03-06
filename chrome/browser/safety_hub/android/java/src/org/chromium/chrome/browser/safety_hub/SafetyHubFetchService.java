@@ -175,6 +175,19 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
     }
 
     /**
+     * Schedules the background account passwords fetch job to run after the given delay if the
+     * conditions are met, cancels and cleans up prefs otherwise.
+     */
+    private void scheduleOrCancelAccountPasswordsFetchJob(long delayMs) {
+        if (checkConditionsForAccountPasswords()) {
+            scheduleAccountPasswordsFetchJobAfterDelay(delayMs);
+        } else {
+            mAccountPasswordsFetchService.clearPrefs();
+            cancelAccountPasswordsFetchJob();
+        }
+    }
+
+    /**
      * Triggers several calls to GMSCore to fetch the latest leaked, weak and reused credentials
      * counts for the currently signed-in profile. `onFinishedCallback` is triggered when all calls
      * to GMSCore have returned.
@@ -201,19 +214,27 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
     }
 
     /**
-     * Schedules the background account passwords fetch job to run after the given delay if the
-     * conditions are met, cancels and cleans up prefs otherwise.
+     * Triggers several calls to GMSCore to fetch the latest leaked, weak and reused local
+     * credentials counts. {@link notifyLocalPasswordCountsChanged} is triggered when all calls to
+     * GMSCore have returned.
      */
-    private void scheduleOrCancelAccountPasswordsFetchJob(long delayMs) {
-        if (checkConditionsForAccountPasswords()) {
-            scheduleAccountPasswordsFetchJobAfterDelay(delayMs);
-        } else {
-            mAccountPasswordsFetchService.clearPrefs();
-            cancelAccountPasswordsFetchJob();
+    void fetchLocalCredentialsCount() {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE)) {
+            mLocalPasswordsFetchService.clearPrefs();
+            return;
         }
+
+        Callback<Boolean> onFinishedFetchCallback =
+                (errorOccurred) -> notifyLocalPasswordCountsChanged();
+
+        mLocalPasswordsFetchService.fetchPasswordsCount(onFinishedFetchCallback);
     }
 
-    /** Triggers a call to GMSCore to perform the local-level password checks in the background. */
+    /**
+     * Triggers a call to GMSCore to perform the local-level password checks in the background.
+     * {@link notifyLocalPasswordCountsChanged} is triggered when all calls to GMSCore have
+     * returned.
+     */
     public void runLocalPasswordCheckup() {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE)) {
             mLocalPasswordsFetchService.clearPrefs();

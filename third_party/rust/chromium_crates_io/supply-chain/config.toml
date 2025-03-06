@@ -134,7 +134,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."displaydoc:0.2.5"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."either:1.13.0"]
+[policy."either:1.14.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."equivalent:1.0.2"]
@@ -302,10 +302,10 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."link-cplusplus:1.0.10"]
 criteria = []
 
-[policy."litemap:0.7.4"]
+[policy."litemap:0.7.5"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."log:0.4.25"]
+[policy."log:0.4.26"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."memchr:2.7.4"]
@@ -341,7 +341,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."ppv-lite86:0.2.20"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."proc-macro2:1.0.93"]
+[policy."proc-macro2:1.0.94"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."prost-derive:0.13.5"]
@@ -353,7 +353,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."qr_code:2.0.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."quote:1.0.38"]
+[policy."quote:1.0.39"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."rand:0.8.5"]
@@ -404,13 +404,13 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."rustc_version:0.4.1"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."rustversion:1.0.19"]
+[policy."rustversion:1.0.20"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."ryu:1.0.19"]
+[policy."ryu:1.0.20"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."semver:1.0.25"]
+[policy."semver:1.0.26"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."serde:1.0.217"]
@@ -738,7 +738,7 @@ https://crbug.com/366411886
 """
 
 [[exemptions.ryu]]
-version = "1.0.19"
+version = "1.0.20"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024.
@@ -749,6 +749,7 @@ lack of a fully-audited baseline nothing was recorded in audits.toml
 Exemption updated to 1.0.17 in Feb 2024.
 Exemption updated to 1.0.18 in May 2024.
 Exemption updated to 1.0.19 in Feb 2025.
+Exemption updated to 1.0.20 in Feb 2025.
 """
 
 [[exemptions.smallvec]]

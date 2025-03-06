@@ -161,7 +161,7 @@ function modifyNode(
     nodes: NodeMap, id: string,
     callback: (p1: BookmarkNode) => BookmarkNode): NodeMap {
   const nodeModification: NodeMap = {};
-  nodeModification[id] = callback(nodes[id]);
+  nodeModification[id] = callback(nodes[id]!);
   return Object.assign({}, nodes, nodeModification);
 }
 
@@ -169,7 +169,7 @@ function createBookmark(nodes: NodeMap, action: CreateBookmarkAction): NodeMap {
   const nodeModifications: NodeMap = {};
   nodeModifications[action.id] = action.node;
 
-  const parentNode = nodes[action.parentId];
+  const parentNode = nodes[action.parentId]!;
   const newChildren = parentNode.children!.slice();
   newChildren.splice(action.parentIndex, 0, action.id);
   nodeModifications[action.parentId] = Object.assign({}, parentNode, {
@@ -181,7 +181,7 @@ function createBookmark(nodes: NodeMap, action: CreateBookmarkAction): NodeMap {
 
 function editBookmark(nodes: NodeMap, action: EditBookmarkAction): NodeMap {
   // Do not allow folders to change URL (making them no longer folders).
-  if (!nodes[action.id].url && action.changeInfo.url) {
+  if (!nodes[action.id]!.url && action.changeInfo.url) {
     delete action.changeInfo.url;
   }
 
@@ -200,7 +200,7 @@ function moveBookmark(nodes: NodeMap, action: MoveBookmarkAction): NodeMap {
 
   // Remove from old parent.
   const oldParentId = action.oldParentId;
-  const oldParentChildren = nodes[oldParentId].children!.slice();
+  const oldParentChildren = nodes[oldParentId]!.children!.slice();
   oldParentChildren.splice(action.oldIndex, 1);
   nodeModifications[oldParentId] =
       Object.assign({}, nodes[oldParentId], {children: oldParentChildren});
@@ -209,7 +209,7 @@ function moveBookmark(nodes: NodeMap, action: MoveBookmarkAction): NodeMap {
   const parentId = action.parentId;
   const parentChildren = oldParentId === parentId ?
       oldParentChildren :
-      nodes[parentId].children!.slice();
+      nodes[parentId]!.children!.slice();
   parentChildren.splice(action.index, 0, action.id);
   nodeModifications[parentId] =
       Object.assign({}, nodes[parentId], {children: parentChildren});
@@ -263,7 +263,7 @@ function isAncestorOf(
     if (currentId === ancestorId) {
       return true;
     }
-    currentId = nodes[currentId].parentId;
+    currentId = nodes[currentId]!.parentId;
   }
   return false;
 }
@@ -288,7 +288,7 @@ export function updateSelectedFolder(
       // parent of the deleted node.
       const id = (action as RemoveBookmarkAction).id;
       if (selectedFolder && isAncestorOf(nodes, id, selectedFolder)) {
-        const parentId = nodes[id].parentId;
+        const parentId = nodes[id]!.parentId;
         assert(parentId);
         return parentId;
       }
@@ -302,7 +302,7 @@ function openFolderAndAncestors(
     folderOpenState: FolderOpenState, id: string, nodes: NodeMap):
         FolderOpenState {
   const newFolderOpenState = (new Map(folderOpenState) as FolderOpenState);
-  for (let currentId = id; currentId; currentId = nodes[currentId].parentId!) {
+  for (let currentId = id; currentId; currentId = nodes[currentId]!.parentId!) {
     newFolderOpenState.set(currentId, true);
   }
 
@@ -327,10 +327,10 @@ export function updateFolderOpenState(
           folderOpenState, action as ChangeFolderOpenAction);
     case 'select-folder':
       return openFolderAndAncestors(
-          folderOpenState, nodes[(action as SelectFolderAction).id].parentId!,
+          folderOpenState, nodes[(action as SelectFolderAction).id]!.parentId!,
           nodes);
     case 'move-bookmark':
-      if (!nodes[(action as MoveBookmarkAction).id].children) {
+      if (!nodes[(action as MoveBookmarkAction).id]!.children) {
         return folderOpenState;
       }
       return openFolderAndAncestors(

@@ -37,8 +37,8 @@ bool IsUserElevated() {
 std::optional<base::FilePath> GetLogFilePath() {
   const char* var = std::getenv("ISOLATED_OUTDIR");
   return var ? std::make_optional(
-                   base::FilePath::FromUTF8Unsafe(var).AppendASCII(
-                       "enterprise_companion_integration_test.log"))
+                   base::FilePath::FromUTF8Unsafe(var).Append(FILE_PATH_LITERAL(
+                       "enterprise_companion_integration_test.log")))
              : std::nullopt;
 }
 

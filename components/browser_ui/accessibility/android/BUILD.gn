@@ -120,6 +120,7 @@ robolectric_library("junit") {
 
   deps = [
     ":lib_java",
+    ":page_zoom_utils_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
@@ -144,6 +145,7 @@ android_library("unit_device_javatests") {
   deps = [
     ":java_resources",
     ":lib_java",
+    ":page_zoom_utils_java",
     "//base:base_java_test_support",
     "//base:tasks_java",
     "//components/browser_ui/settings/android:java",

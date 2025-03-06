@@ -76,10 +76,6 @@ void CreateTimingHistogram(const std::string& name, base::TimeDelta sample) {
 
 std::string GetNoticeActionString(NoticeActionTaken action) {
   switch (action) {
-    case NoticeActionTaken::kNotSet:
-    case NoticeActionTaken::kUnknownActionPreMigration:
-    case NoticeActionTaken::kLearnMore_Deprecated:
-      return "";
     case NoticeActionTaken::kAck:
       return "Ack";
     case NoticeActionTaken::kClosed:
@@ -90,10 +86,8 @@ std::string GetNoticeActionString(NoticeActionTaken action) {
       return "OptOut";
     case NoticeActionTaken::kSettings:
       return "Settings";
-    case NoticeActionTaken::kTimedOut:
-      return "TimedOut";
-    case NoticeActionTaken::kOther:
-      return "Other";
+    default:
+      return "";
   }
 }
 
@@ -266,11 +260,6 @@ std::optional<NoticeEvent>
 PrivacySandboxNoticeStorage::NoticeActionToNoticeEvent(
     NoticeActionTaken action) {
   switch (action) {
-    case NoticeActionTaken::kNotSet:
-    case NoticeActionTaken::kUnknownActionPreMigration:
-    case NoticeActionTaken::kLearnMore_Deprecated:
-    case NoticeActionTaken::kOther:
-      return std::nullopt;
     case NoticeActionTaken::kAck:
       return NoticeEvent::kAck;
     case NoticeActionTaken::kClosed:
@@ -281,8 +270,8 @@ PrivacySandboxNoticeStorage::NoticeActionToNoticeEvent(
       return NoticeEvent::kOptOut;
     case NoticeActionTaken::kSettings:
       return NoticeEvent::kSettings;
-    case NoticeActionTaken::kTimedOut:
-      return NoticeEvent::kTimedOut;
+    default:
+      return std::nullopt;
   }
 }
 
@@ -367,19 +356,13 @@ void PrivacySandboxNoticeStorage::RecordHistogramsOnStartup(
       case NoticeActionTaken::kOptOut:
         startup_state = NoticeStartupState::kFlowCompletedWithOptOut;
         break;
-      case NoticeActionTaken::kUnknownActionPreMigration:
-        startup_state = NoticeStartupState::kUnknownState;
-        break;
-      case NoticeActionTaken::kOther:
-        startup_state = NoticeStartupState::kPromptOtherAction;
-        break;
-      case NoticeActionTaken::kTimedOut:
-        startup_state = NoticeStartupState::kTimedOut;
-        break;
       case NoticeActionTaken::kAck:
       case NoticeActionTaken::kClosed:
       case NoticeActionTaken::kSettings:
         startup_state = NoticeStartupState::kFlowCompleted;
+        break;
+      default:
+        startup_state = NoticeStartupState::kUnknownState;
         break;
     }
   }

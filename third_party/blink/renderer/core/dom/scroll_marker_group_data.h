@@ -74,8 +74,8 @@ class ScrollMarkerChooser {
 
   // Compute a ScrollTargetOffsetData for a given element, |scroll_marker|
   // within |scrollable_area|'s content area along the |axis| specified.
-  ScrollTargetOffsetData GetScrollTargetOffsetData(
-      const Element* scroll_marker);
+  std::optional<ScrollMarkerChooser::ScrollTargetOffsetData>
+  GetScrollTargetOffsetData(const Element* scroll_marker);
 
   // Select a scroll marker from the given |candidates| if the
   // |intended_scroll_offset_| is within the region "reserved" so that

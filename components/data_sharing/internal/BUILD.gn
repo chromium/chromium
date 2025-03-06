@@ -221,6 +221,7 @@ if (is_android) {
       "//base:base_java",
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
+      "//components/data_sharing/public:public_java",
       "//net/android:net_java",
       "//third_party/jni_zero:jni_zero_java",
       "//third_party/junit",

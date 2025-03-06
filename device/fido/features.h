@@ -139,6 +139,11 @@ BASE_DECLARE_FEATURE(kWebAuthnRemoteDesktopAllowedOriginsPolicy);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnMicrosoftSoftwareUnexportableKeyProvider);
 
+// Enables hiding passkeys instead of hard deleting them when reported as
+// obsolete by the signal API.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnSignalApiHidePasskeys);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

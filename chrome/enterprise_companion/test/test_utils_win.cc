@@ -33,14 +33,14 @@ namespace enterprise_companion {
 
 namespace {
 
-constexpr char kTestExe[] = "enterprise_companion_test.exe";
+constexpr wchar_t kTestExe[] = L"enterprise_companion_test.exe";
 constexpr wchar_t kRegKeyCompanyCloudManagement[] =
     L"Software\\Policies\\" COMPANY_SHORTNAME_STRING "\\CloudManagement\\";
 
 class TestMethodsWin : public TestMethods {
  public:
   base::FilePath GetTestExePath() override {
-    return base::PathService::CheckedGet(base::DIR_EXE).AppendASCII(kTestExe);
+    return base::PathService::CheckedGet(base::DIR_EXE).Append(kTestExe);
   }
 
   void ExpectInstalled() override {

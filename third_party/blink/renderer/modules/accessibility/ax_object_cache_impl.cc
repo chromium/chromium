@@ -2310,7 +2310,7 @@ void AXObjectCacheImpl::DiscardBadAriaHiddenBecauseOfFocus(AXObject& obj) {
   if (bad_aria_hidden_ancestor->GetElement()) {
     bad_aria_hidden_ancestor->GetElement()->AddConsoleMessage(
         mojom::blink::ConsoleMessageSource::kRendering,
-        mojom::blink::ConsoleMessageLevel::kError,
+        mojom::blink::ConsoleMessageLevel::kWarning,
         String::Format(
             "Blocked aria-hidden on an element because its descendant retained "
             "focus. The focus must not be hidden from assistive technology "
@@ -2319,8 +2319,11 @@ void AXObjectCacheImpl::DiscardBadAriaHiddenBecauseOfFocus(AXObject& obj) {
             "also prevent focus. For more details, see the aria-hidden section "
             "of the WAI-ARIA specification at "
             "https://w3c.github.io/aria/#aria-hidden.\n"
-            "Element with focus: %s\nAncestor with aria-hidden: ",
-            focused_element.TagQName().ToString().Ascii().c_str()));
+            "Element with focus: %s\nAncestor with aria-hidden: %s",
+            AXObject::GetNodeString(&focused_element).Ascii().c_str(),
+            AXObject::GetNodeString(bad_aria_hidden_ancestor->GetElement())
+                .Ascii()
+                .c_str()));
 #if AX_FAIL_FAST_BUILD()
     LOG(ERROR) << "Parent chain for focused node's AXObject:\n"
                << ParentChainToStringHelper(&obj);
@@ -4076,11 +4079,16 @@ void AXObjectCacheImpl::MaybeDisallowImplicitSelectionWithCleanLayout(
       // The active descendant or focus may lose its implicit selected state.
       Node* focus = FocusedNode();
       if (focus == container->GetNode()) {
-        if (AXObject* activedescendant = container->ActiveDescendant()) {
-          AddDirtyObjectToSerializationQueue(activedescendant);
+        if (const Element* activedescendant =
+                AXObject::ElementFromAttributeOrInternals(
+                    container->GetElement(),
+                    html_names::kAriaActivedescendantAttr)) {
+          if (const AXObject* ax_activedescendant = Get(activedescendant)) {
+            AddDirtyObjectToSerializationQueue(ax_activedescendant);
+          }
         }
       }
-      if (AXObject* ax_focus = Get(focus)) {
+      if (const AXObject* ax_focus = Get(focus)) {
         AddDirtyObjectToSerializationQueue(ax_focus);
       }
     }

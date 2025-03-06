@@ -27,6 +27,10 @@ type OldTypesConsumedByClient = {
   [K in keyof old.TypesConsumedByClient &
    keyof current.TypesConsumedByClient]: old.TypesConsumedByClient[K]
 };
+type OldTypesConsumedByHost = {
+  [K in keyof old.TypesConsumedByHost &
+   keyof current.TypesConsumedByHost]: old.TypesConsumedByHost[K]
+};
 
 type CurrentTypesConsumedByClient = {
   [K in keyof old.TypesConsumedByClient &
@@ -73,7 +77,7 @@ export const canNotRemoveAnythingFromClientTypes:
         null as any as DeepRequired<current.TypesConsumedByClient>;
 
 export const canNotRemoveAnythingFromHostTypes:
-    DeepRequired<CurrentTypesConsumedByHost> =
+    DeepRequired<OldTypesConsumedByHost> =
         null as any as DeepRequired<old.TypesConsumedByHost>;
 
 // Ensure ClosedEnums are not modified, and ExtensibleEnums are only extended.

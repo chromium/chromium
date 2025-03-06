@@ -757,7 +757,6 @@ _CHROMEOS_KEVIN_FYI_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig('rendering.desktop')])
 _FUCHSIA_PERF_SMARTDISPLAY_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
-    _GetBenchmarkConfig('speedometer3'),
     _GetBenchmarkConfig('media.mobile'),
     _GetBenchmarkConfig('v8.browsing_mobile'),
 ])

@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_prompt_dict.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_prompt_role.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_ai_language_model_prompt_content.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_ai_language_model_prompt_input.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_ailanguagemodelpromptdict_string.h"
@@ -163,33 +162,21 @@ class CountPromptTokensClient
       receiver_;
 };
 
-// Return `prompt`'s role or the inferred default.
-on_device_model::mojom::blink::Token GetRole(
-    const V8AILanguageModelPrompt* prompt) {
-  if (prompt->IsAILanguageModelPromptDict()) {
-    switch (prompt->GetAsAILanguageModelPromptDict()->role().AsEnum()) {
-      case V8AILanguageModelPromptRole::Enum::kSystem:
-        return on_device_model::mojom::blink::Token::kSystem;
-      case V8AILanguageModelPromptRole::Enum::kUser:
-        return on_device_model::mojom::blink::Token::kUser;
-      case V8AILanguageModelPromptRole::Enum::kAssistant:
-        return on_device_model::mojom::blink::Token::kModel;
-    }
-  }
-  return on_device_model::mojom::blink::Token::kUser;
-}
-
-// Return `prompt`'s content as an InputPiece or an error.
-std::variant<on_device_model::mojom::blink::InputPiecePtr, DOMException*>
-GetContent(const V8AILanguageModelPrompt* prompt,
-           ScriptState* script_state,
-           ExceptionState& exception_state) {
+// Return `prompt`'s content as a mojo struct or yield an error.
+std::variant<mojom::blink::AILanguageModelPromptPtr, DOMException*>
+ConvertPromptToMojo(const V8AILanguageModelPrompt* prompt,
+                    ScriptState* script_state,
+                    ExceptionState& exception_state,
+                    ExecutionContext* execution_context) {
+  auto result = mojom::blink::AILanguageModelPrompt::New();
   if (prompt->IsString()) {
-    return on_device_model::mojom::blink::InputPiece::NewText(
+    result->role = mojom::blink::AILanguageModelPromptRole::kUser;
+    result->content = mojom::blink::AILanguageModelPromptContent::NewText(
         prompt->GetAsString());
   } else if (prompt->IsAILanguageModelPromptDict()) {
     const AILanguageModelPromptDict* dict =
         prompt->GetAsAILanguageModelPromptDict();
+    result->role = AILanguageModel::ConvertRoleToMojo(dict->role());
     const V8AILanguageModelPromptContent* content = dict->content();
     if (dict->type() == V8AILanguageModelPromptType::Enum::kText) {
       if (!content->IsString()) {
@@ -197,10 +184,9 @@ GetContent(const V8AILanguageModelPrompt* prompt,
             DOMExceptionCode::kSyntaxError,
             "Content is not text, or subtype is not supported");
       }
-      return on_device_model::mojom::blink::InputPiece::NewText(
+      result->content = mojom::blink::AILanguageModelPromptContent::NewText(
           content->GetAsString());
-    }
-    if (dict->type() == V8AILanguageModelPromptType::Enum::kImage) {
+    } else if (dict->type() == V8AILanguageModelPromptType::Enum::kImage) {
       if (!content->IsV8ImageBitmapSource()) {
         return MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kSyntaxError,
@@ -213,21 +199,32 @@ GetContent(const V8AILanguageModelPrompt* prompt,
             DOMExceptionCode::kSyntaxError,
             "Unable to get bitmap from image content");
       }
-      return on_device_model::mojom::blink::InputPiece::NewBitmap(
-          bitmap.value());
-    }
-    if (dict->type() == V8AILanguageModelPromptType::Enum::kAudio) {
+      result->content =
+          mojom::blink::AILanguageModelPromptContent::NewBitmap(bitmap.value());
+    } else if (dict->type() == V8AILanguageModelPromptType::Enum::kAudio) {
       if (dict->content()->IsBlob()) {
-        // TODO(crbug.com/382180351): Make blob reading async.
+        // TODO(crbug.com/382180351): Make blob reading async or alternatively
+        // use FileReaderSync instead (fix linker and exception issues).
         SyncedFileReaderAccumulator* blobReader =
             MakeGarbageCollected<SyncedFileReaderAccumulator>();
-        std::pair<FileErrorCode, FileReaderData> data =
-            blobReader->Load(dict->content()->GetAsBlob()->GetBlobDataHandle(),
-                             base::SingleThreadTaskRunner::GetCurrentDefault());
-        WTF::String audio_contents = std::move(data.second).AsBinaryString();
+
+        auto [error_code, reader_data] = blobReader->Load(
+            dict->content()->GetAsBlob()->GetBlobDataHandle(),
+            execution_context->GetTaskRunner(TaskType::kFileReading));
+        if (error_code != FileErrorCode::kOK) {
+          return MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kDataError, "Failed to read blob.");
+        }
+        ArrayBufferContents audio_contents =
+            std::move(reader_data).AsArrayBufferContents();
+        if (!audio_contents.IsValid()) {
+          return MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kDataError, "Failed to read blob.");
+        }
+        // TODO(crbug.com/401010825): Use the file sample rate.
         scoped_refptr<AudioBus> bus = AudioBus::CreateBusFromInMemoryAudioFile(
-            audio_contents.Bytes(), audio_contents.length(),
-            /*mix_to_mono=*/true, /*sample_rate=*/0.0);
+            audio_contents.Data(), audio_contents.DataLength(),
+            /*mix_to_mono=*/true, /*sample_rate=*/48000);
 
         on_device_model::mojom::blink::AudioDataPtr audio_data =
             on_device_model::mojom::blink::AudioData::New();
@@ -238,11 +235,10 @@ GetContent(const V8AILanguageModelPrompt* prompt,
         // TODO(crbug.com/382180351): Avoid a copy.
         audio_data->data = WTF::Vector<float>(bus->length());
         std::copy_n(bus->Channel(0)->Data(), bus->Channel(0)->length(),
-                    audio_data->data.end());
-        return on_device_model::mojom::blink::InputPiece::NewAudio(
+                    audio_data->data.begin());
+        result->content = mojom::blink::AILanguageModelPromptContent::NewAudio(
             std::move(audio_data));
-      }
-      if (dict->content()->IsAudioBuffer()) {
+      } else if (dict->content()->IsAudioBuffer()) {
         AudioBuffer* audio_buffer = dict->content()->GetAsAudioBuffer();
         if (audio_buffer->numberOfChannels() > 2) {
           // TODO(crbug.com/382180351): Support more than 2 channels.
@@ -270,66 +266,70 @@ GetContent(const V8AILanguageModelPrompt* prompt,
                 2.0f;
           }
         }
-        return on_device_model::mojom::blink::InputPiece::NewAudio(
+        result->content = mojom::blink::AILanguageModelPromptContent::NewAudio(
             std::move(audio_data));
-      }
-      return MakeGarbageCollected<DOMException>(DOMExceptionCode::kSyntaxError,
-                                                "Unsupported audio type.");
-    }
-  }
-  return MakeGarbageCollected<DOMException>(DOMExceptionCode::kSyntaxError,
-                                            "Input type not recognized");
-}
-
-// Returns the complete input sequence or an error.
-std::variant<on_device_model::mojom::blink::InputPtr, DOMException*>
-BuildOnDeviceModelInput(const V8AILanguageModelPromptInput* input,
-                        ScriptState* script_state,
-                        ExceptionState& exception_state) {
-  auto current_role = on_device_model::mojom::blink::Token::kDefaultValue;
-  auto on_device_model_input = on_device_model::mojom::blink::Input::New();
-
-  // Adds `prompt` to `on_device_model_input`, updates `current_role` as needed.
-  // Returns an exception if the content cannot be processed.
-  const auto add_prompt = [&](const V8AILanguageModelPrompt* prompt) {
-    auto new_role = GetRole(prompt);
-    if (new_role != current_role) {
-      on_device_model_input->pieces.push_back(
-          on_device_model::mojom::blink::InputPiece::NewToken(new_role));
-      current_role = new_role;
-    }
-    std::variant<on_device_model::mojom::blink::InputPiecePtr, DOMException*>
-        content = GetContent(prompt, script_state, exception_state);
-    if (std::holds_alternative<DOMException*>(content)) {
-      return std::get<DOMException*>(content);
-    }
-    on_device_model_input->pieces.push_back(std::move(
-        std::get<on_device_model::mojom::blink::InputPiecePtr>(content)));
-    // The content was added successfully; nullptr signifies no new exception.
-    return static_cast<DOMException*>(nullptr);
-  };
-
-  if (input->IsAILanguageModelPromptDictOrStringSequence()) {
-    for (const auto& prompt :
-         input->GetAsAILanguageModelPromptDictOrStringSequence()) {
-      if (DOMException* e = add_prompt(prompt)) {
-        return e;
+      } else {
+        return MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kSyntaxError, "Unsupported audio type.");
       }
     }
   } else {
-    CHECK(input->IsV8AILanguageModelPrompt());
-    if (DOMException* e = add_prompt(input->GetAsV8AILanguageModelPrompt())) {
-      return e;
+    return MakeGarbageCollected<DOMException>(DOMExceptionCode::kSyntaxError,
+                                              "Input type not recognized");
+  }
+  return result;
+}
+
+// Populates the `prompts` mojo struct vector from `input`. Returns an exception
+// if some input was specified incorrectly or inaccessible, nullptr otherwise.
+DOMException* BuildPrompts(
+    const V8AILanguageModelPromptInput* input,
+    ScriptState* script_state,
+    ExceptionState& exception_state,
+    ExecutionContext* execution_context,
+    WTF::Vector<mojom::blink::AILanguageModelPromptPtr>& prompts) {
+  if (input->IsAILanguageModelPromptDictOrStringSequence()) {
+    const auto& sequence =
+        input->GetAsAILanguageModelPromptDictOrStringSequence();
+    for (const auto& entry : sequence) {
+      auto prompt = ConvertPromptToMojo(entry, script_state, exception_state,
+                                        execution_context);
+      if (std::holds_alternative<DOMException*>(prompt)) {
+        return std::get<DOMException*>(prompt);
+      }
+      prompts.push_back(
+          std::move(std::get<mojom::blink::AILanguageModelPromptPtr>(prompt)));
     }
+  } else {
+    CHECK(input->IsV8AILanguageModelPrompt());
+    auto* entry = input->GetAsV8AILanguageModelPrompt();
+    auto prompt = ConvertPromptToMojo(entry, script_state, exception_state,
+                                      execution_context);
+    if (std::holds_alternative<DOMException*>(prompt)) {
+      return std::get<DOMException*>(prompt);
+    }
+    prompts.push_back(
+        std::move(std::get<mojom::blink::AILanguageModelPromptPtr>(prompt)));
   }
 
-  on_device_model_input->pieces.push_back(
-      on_device_model::mojom::blink::InputPiece::NewToken(
-          on_device_model::mojom::blink::Token::kEnd));
-  return on_device_model_input;
+  return nullptr;
 }
 
 }  // namespace
+
+// static
+mojom::blink::AILanguageModelPromptRole AILanguageModel::ConvertRoleToMojo(
+    V8AILanguageModelPromptRole role) {
+  switch (role.AsEnum()) {
+    case V8AILanguageModelPromptRole::Enum::kSystem:
+      return mojom::blink::AILanguageModelPromptRole::kSystem;
+    case V8AILanguageModelPromptRole::Enum::kUser:
+      return mojom::blink::AILanguageModelPromptRole::kUser;
+    case V8AILanguageModelPromptRole::Enum::kAssistant:
+      return mojom::blink::AILanguageModelPromptRole::kAssistant;
+  }
+  NOTREACHED();
+}
 
 AILanguageModel::AILanguageModel(
     ExecutionContext* execution_context,
@@ -387,14 +387,13 @@ ScriptPromise<IDLString> AILanguageModel::prompt(
     return promise;
   }
 
-  auto on_device_model_input =
-      BuildOnDeviceModelInput(input, script_state, exception_state);
-  if (std::holds_alternative<DOMException*>(on_device_model_input)) {
-    resolver->Reject(std::get<DOMException*>(on_device_model_input));
+  WTF::Vector<mojom::blink::AILanguageModelPromptPtr> prompts;
+  auto* exception = BuildPrompts(input, script_state, exception_state,
+                                 GetExecutionContext(), prompts);
+  if (exception) {
+    resolver->Reject(exception);
     return promise;
   }
-  CHECK(std::holds_alternative<on_device_model::mojom::blink::InputPtr>(
-      on_device_model_input));
 
   base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
                                     AIMetrics::AISessionType::kLanguageModel),
@@ -426,10 +425,7 @@ ScriptPromise<IDLString> AILanguageModel::prompt(
                     WrapWeakPersistent(this)),
       WTF::BindRepeating(&AILanguageModel::OnContextOverflow,
                          WrapWeakPersistent(this)));
-  language_model_remote_->Prompt(
-      std::move(std::get<on_device_model::mojom::blink::InputPtr>(
-          on_device_model_input)),
-      std::move(pending_remote));
+  language_model_remote_->Prompt(std::move(prompts), std::move(pending_remote));
   return promise;
 }
 
@@ -449,17 +445,16 @@ ReadableStream* AILanguageModel::promptStreaming(
     exception_state.ThrowTypeError("Input type not supported");
     return nullptr;
   }
-  auto on_device_model_input =
-      BuildOnDeviceModelInput(input, script_state, exception_state);
-  if (std::holds_alternative<DOMException*>(on_device_model_input)) {
-    DOMException* e = std::get<DOMException*>(on_device_model_input);
-    CHECK(IsDOMExceptionCode(e->code()));
-    exception_state.ThrowDOMException(static_cast<DOMExceptionCode>(e->code()),
-                                      e->message());
+
+  WTF::Vector<mojom::blink::AILanguageModelPromptPtr> prompts;
+  auto* exception = BuildPrompts(input, script_state, exception_state,
+                                 GetExecutionContext(), prompts);
+  if (exception) {
+    CHECK(IsDOMExceptionCode(exception->code()));
+    exception_state.ThrowDOMException(
+        static_cast<DOMExceptionCode>(exception->code()), exception->message());
     return nullptr;
   }
-  CHECK(std::holds_alternative<on_device_model::mojom::blink::InputPtr>(
-      on_device_model_input));
 
   base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
                                     AIMetrics::AISessionType::kLanguageModel),
@@ -492,10 +487,7 @@ ReadableStream* AILanguageModel::promptStreaming(
           WTF::BindRepeating(&AILanguageModel::OnContextOverflow,
                              WrapWeakPersistent(this)));
 
-  language_model_remote_->Prompt(
-      std::move(std::get<on_device_model::mojom::blink::InputPtr>(
-          on_device_model_input)),
-      std::move(pending_remote));
+  language_model_remote_->Prompt(std::move(prompts), std::move(pending_remote));
   return readable_stream;
 }
 

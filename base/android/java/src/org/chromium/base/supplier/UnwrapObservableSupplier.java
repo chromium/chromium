@@ -55,7 +55,7 @@ public class UnwrapObservableSupplier<P extends @Nullable Object, T extends @Nul
      * @param unwrapFunction Converts the parent value to target value. Should handle null values.
      */
     public UnwrapObservableSupplier(
-            ObservableSupplier<P> parentSupplier, Function<P, T> unwrapFunction) {
+            ObservableSupplier<P> parentSupplier, Function<@Nullable P, T> unwrapFunction) {
         mParentSupplier = parentSupplier;
         mUnwrapFunction = unwrapFunction;
     }
@@ -73,8 +73,7 @@ public class UnwrapObservableSupplier<P extends @Nullable Object, T extends @Nul
         if (!mDelegateSupplier.hasObservers()) {
             // The value in mDelegateSupplier is stale or has never been set, and so we update it
             // by passing through the current parent value to our on change method.
-            onParentSupplierChange(
-                    mParentSupplier.addSyncObserverAndCallIfSet(mOnParentSupplierChangeCallback));
+            mParentSupplier.addSyncObserverAndCallIfNonNull(mOnParentSupplierChangeCallback);
         }
         return mDelegateSupplier.addObserver(obs, behavior);
     }

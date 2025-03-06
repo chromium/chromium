@@ -119,34 +119,32 @@ DISABLE_CFI_DLSYM absl::Status InferenceCalculatorWebGpu::Process(
     return absl::InternalError("Runtime configuration not present!");
   }
 
+  if (config_packet.Get<RuntimeConfig>().blur_state != BlurState::kEnabled) {
+    return absl::InternalError(
+        "Blur is disabled, the calculator should not even run!");
+  }
+
   mediapipe::Packet& input_frame =
       cc->Inputs().Tag(kInputTextureStreamTag).Value();
   mediapipe::GpuBuffer input_buffer = input_frame.Get<mediapipe::GpuBuffer>();
   auto input_buffer_view =
       input_buffer.GetReadView<mediapipe::WebGpuTextureView>();
 
-  if (config_packet.Get<RuntimeConfig>().blur_state == BlurState::kEnabled) {
-    mediapipe::GpuBuffer output_buffer(kBufferWidth, kBufferHeight,
-                                       kBufferFormat);
-    auto output_buffer_view =
-        output_buffer.GetWriteView<mediapipe::WebGpuTextureView>();
+  mediapipe::GpuBuffer output_buffer(kBufferWidth, kBufferHeight,
+                                     kBufferFormat);
+  auto output_buffer_view =
+      output_buffer.GetWriteView<mediapipe::WebGpuTextureView>();
 
-    if (!ml_api->RunInference(inference_engine_,
-                              input_buffer_view.texture().Get(),
-                              output_buffer_view.texture().Get())) {
-      return absl::InternalError("Processing failed");
-    }
-    cc->Outputs()
-        .Tag(kOutputTextureStreamTag)
-        .AddPacket(mediapipe::MakePacket<mediapipe::GpuBuffer>(
-                       std::move(output_buffer))
-                       .At(input_frame.Timestamp()));
-  } else {
-    cc->Outputs()
-        .Tag(kOutputTextureStreamTag)
-        .AddPacket(mediapipe::MakePacket<mediapipe::GpuBuffer>().At(
-            input_frame.Timestamp()));
+  if (!ml_api->RunInference(inference_engine_,
+                            input_buffer_view.texture().Get(),
+                            output_buffer_view.texture().Get())) {
+    return absl::InternalError("Processing failed");
   }
+  cc->Outputs()
+      .Tag(kOutputTextureStreamTag)
+      .AddPacket(
+          mediapipe::MakePacket<mediapipe::GpuBuffer>(std::move(output_buffer))
+              .At(input_frame.Timestamp()));
 
   return absl::OkStatus();
 }

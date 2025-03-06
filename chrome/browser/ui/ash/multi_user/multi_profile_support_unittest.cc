@@ -141,7 +141,7 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
  protected:
   void SwitchActiveUser(const AccountId& id) {
     fake_user_manager_->SwitchActiveUser(id);
-    ash_test_helper()->test_session_controller_client()->SwitchActiveUser(id);
+    GetSessionControllerClient()->SwitchActiveUser(id);
   }
 
   // Set up the test environment for this many windows.
@@ -157,8 +157,7 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
   void SwitchUserAndWaitForAnimation(const AccountId& account_id) {
     CHECK(fake_user_manager_->FindUser(account_id));
     fake_user_manager_->SwitchActiveUser(account_id);
-    ash_test_helper()->test_session_controller_client()->SwitchActiveUser(
-        account_id);
+    GetSessionControllerClient()->SwitchActiveUser(account_id);
     base::TimeTicks now = base::TimeTicks::Now();
     while (
         ash::MultiUserWindowManagerImpl::Get()->IsAnimationRunningForTest()) {
@@ -195,12 +194,12 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
     TestingProfile* profile =
         profile_manager()->CreateTestingProfile(account_id.GetUserEmail());
     ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
-    ash_test_helper()
-        ->test_session_controller_client()
-        ->SetUnownedUserPrefService(account_id, profile->GetPrefs());
-    ash_test_helper()->test_session_controller_client()->AddUserSession(
+
+    GetSessionControllerClient()->SetUnownedUserPrefService(
+        account_id, profile->GetPrefs());
+    GetSessionControllerClient()->AddUserSession(
         {user->GetDisplayEmail(), user->GetType()}, account_id);
-    ash_test_helper()->test_session_controller_client()->SetSessionState(
+    GetSessionControllerClient()->SetSessionState(
         session_manager::SessionState::ACTIVE);
   }
 
@@ -257,8 +256,7 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
   void StartUserTransitionAnimation(const AccountId& account_id) {
     CHECK(fake_user_manager_->FindUser(account_id));
     fake_user_manager_->SwitchActiveUser(account_id);
-    ash_test_helper()->test_session_controller_client()->SwitchActiveUser(
-        account_id);
+    GetSessionControllerClient()->SwitchActiveUser(account_id);
   }
 
   // Call next animation step.
@@ -307,9 +305,7 @@ void MultiProfileSupportTest::SetUp() {
       ash::DeviceSettingsService::Get(),
       TestingBrowserProcess::GetGlobal()->local_state());
   ChromeAshTestBase::SetUp(std::make_unique<TestShellDelegateChromeOS>());
-  ash_test_helper()
-      ->test_session_controller_client()
-      ->set_pref_service_must_exist(true);
+  GetSessionControllerClient()->set_pref_service_must_exist(true);
 
   profile_manager_ = std::make_unique<TestingProfileManager>(
       TestingBrowserProcess::GetGlobal());

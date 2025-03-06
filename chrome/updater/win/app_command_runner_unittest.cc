@@ -438,7 +438,7 @@ TEST_P(RunAppCommandFormatTest, TestCases) {
 
 TEST_F(AppCommandRunnerTest, CheckChromeBrandedName) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_STREQ("Google Chrome", BROWSER_PRODUCT_NAME_STRING);
+  EXPECT_EQ("Google Chrome", BROWSER_PRODUCT_NAME_STRING);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 

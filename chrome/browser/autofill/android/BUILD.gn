@@ -189,6 +189,7 @@ android_library("test_java") {
 
   deps = [
     ":java",
+    ":third_party_provider_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/android:chrome_java",

@@ -177,7 +177,8 @@ int EnterpriseCompanionMain(int argc, const char* const* argv) {
 
 std::optional<base::FilePath> GetLogFilePath() {
   std::optional<base::FilePath> path = GetInstallDirectory();
-  return path ? path->AppendASCII("enterprise_companion.log") : path;
+  return path ? path->Append(FILE_PATH_LITERAL("enterprise_companion.log"))
+              : path;
 }
 
 }  // namespace enterprise_companion

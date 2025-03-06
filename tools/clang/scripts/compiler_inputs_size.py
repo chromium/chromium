@@ -225,7 +225,7 @@ def main():
   total = 0
   for f in sorted(files):
     if f not in deps:
-      raise Exception("Missing deps for '%s'", f)
+      raise Exception("Missing deps for '%s'" % f)
     s = size(f) + sum(size(d) for d in deps[f])
     print('{} {}'.format(f, s))
     total += s

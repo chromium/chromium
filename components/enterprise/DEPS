@@ -13,6 +13,7 @@ include_rules = [
   "+google_apis/gaia",
   "+net",
   "+services/network/public",
+  "+services/network/test",
   "+third_party/protobuf",
   "+third_party/content_analysis_sdk",
   "+ui/gfx",

@@ -82,10 +82,6 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
 
   std::string GetNoticeActionString(NoticeActionTaken action) {
     switch (action) {
-      case NoticeActionTaken::kNotSet:
-      case NoticeActionTaken::kUnknownActionPreMigration:
-      case NoticeActionTaken::kLearnMore_Deprecated:
-        return "";
       case NoticeActionTaken::kAck:
         return "Ack";
       case NoticeActionTaken::kClosed:
@@ -96,10 +92,8 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
         return "OptOut";
       case NoticeActionTaken::kSettings:
         return "Settings";
-      case NoticeActionTaken::kTimedOut:
-        return "TimedOut";
-      case NoticeActionTaken::kOther:
-        return "Other";
+      default:
+        return "";
     }
   }
 
@@ -635,7 +629,7 @@ INSTANTIATE_TEST_SUITE_P(
             {NoticeActionTaken::kOther, std::nullopt},
             {NoticeActionTaken::kSettings, NoticeEvent::kSettings},
             {NoticeActionTaken::kUnknownActionPreMigration, std::nullopt},
-            {NoticeActionTaken::kTimedOut, NoticeEvent::kTimedOut}}));
+            {NoticeActionTaken::kTimedOut, std::nullopt}}));
 
 class PrivacySandboxNoticeDataTest : public testing::Test {};
 
@@ -714,7 +708,7 @@ TEST_F(
                      base::Time::FromMillisecondsSinceUnixEpoch(100)),
       std::make_pair(NoticeEvent::kAck,
                      base::Time::FromMillisecondsSinceUnixEpoch(120)),
-      std::make_pair(NoticeEvent::kDeferred,
+      std::make_pair(NoticeEvent::kSettings,
                      base::Time::FromMillisecondsSinceUnixEpoch(150)),
       std::make_pair(NoticeEvent::kShown,
                      base::Time::FromMillisecondsSinceUnixEpoch(200)),
@@ -723,7 +717,7 @@ TEST_F(
   PrivacySandboxNoticeData data;
   data.SetNoticeEvents(notice_events);
   auto expected = std::make_pair(
-      NoticeEvent::kDeferred, base::Time::FromMillisecondsSinceUnixEpoch(150));
+      NoticeEvent::kSettings, base::Time::FromMillisecondsSinceUnixEpoch(150));
   EXPECT_EQ(data.GetNoticeActionTakenForFirstShownFromEvents(), expected);
 }
 
@@ -737,7 +731,7 @@ TEST_F(
                      base::Time::FromMillisecondsSinceUnixEpoch(110)),
       std::make_pair(NoticeEvent::kAck,
                      base::Time::FromMillisecondsSinceUnixEpoch(120)),
-      std::make_pair(NoticeEvent::kDeferred,
+      std::make_pair(NoticeEvent::kSettings,
                      base::Time::FromMillisecondsSinceUnixEpoch(150)),
       std::make_pair(NoticeEvent::kShown,
                      base::Time::FromMillisecondsSinceUnixEpoch(200)),
@@ -748,7 +742,7 @@ TEST_F(
   PrivacySandboxNoticeData data;
   data.SetNoticeEvents(notice_events);
   auto expected = std::make_pair(
-      NoticeEvent::kDeferred, base::Time::FromMillisecondsSinceUnixEpoch(150));
+      NoticeEvent::kSettings, base::Time::FromMillisecondsSinceUnixEpoch(150));
   EXPECT_EQ(data.GetNoticeActionTakenForFirstShownFromEvents(), expected);
 }
 

@@ -26,8 +26,8 @@ bool InstallToDir(const base::FilePath& install_directory) {
     return false;
   }
 
-  base::FilePath dest_exe_path = install_directory.AppendASCII(kExecutableName);
-  base::FilePath backup_exe_path = dest_exe_path.AddExtensionASCII("old");
+  base::FilePath dest_exe_path = install_directory.Append(kExecutableName);
+  base::FilePath backup_exe_path = dest_exe_path.AddExtension("old");
   if (base::PathExists(dest_exe_path) &&
       !base::CopyFile(dest_exe_path, backup_exe_path)) {
     VPLOG(1) << "Failed to backup existing installation";

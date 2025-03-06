@@ -144,6 +144,13 @@ class CONTENT_EXPORT PrefetchService {
       GURL& url,
       std::optional<net::HttpNoVarySearchData> no_vary_search_hint);
 
+  // Whether the prefetch attempt for `key` has failed or discarded.
+  // Note: the semantics of this method is not super clear and thus is exposed
+  // only for the existing `PrefetchDocumentManager` use case for now.
+  bool IsPrefetchAttemptFailedOrDiscardedInternal(
+      base::PassKey<PrefetchDocumentManager>,
+      PrefetchContainer::Key key) const;
+
   // An interface to notify `PrefetchService` that the given `PrefetchContainer`
   // is no longer needed from outside of the service.
   void MayReleasePrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);

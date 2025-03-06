@@ -17,6 +17,7 @@
 #include "chrome/browser/webauthn/chrome_web_authentication_delegate_base.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/web_authentication_request_proxy.h"
+#include "url/origin.h"
 
 // ChromeWebAuthenticationDelegate is the //chrome layer implementation
 // of content::WebAuthenticationDelegate.
@@ -25,28 +26,40 @@ class ChromeWebAuthenticationDelegate final
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  //
+  // LINT.IfChange(SignalUnknownCredentialResult)
   enum class SignalUnknownCredentialResult {
     kPasskeyNotFound = 0,
     kPasskeyRemoved = 1,
-    kMaxValue = kPasskeyRemoved,
+    kPasskeyHidden = 2,
+    kQuotaExceeded = 3,
+    kPasskeyAlreadyHidden = 4,
+    kMaxValue = kPasskeyAlreadyHidden,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:SignalUnknownCredentialResultEnum)
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  //
+  // LINT.IfChange(SignalAllAcceptedCredentialsResult)
   enum class SignalAllAcceptedCredentialsResult {
     kNoPasskeyRemoved = 0,
     kPasskeyRemoved = 1,
     kMaxValue = kPasskeyRemoved,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:SignalAllAcceptedCredentialsResultEnum)
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  //
+  // LINT.IfChange(SignalCurrentUserDetailsResult)
   enum class SignalCurrentUserDetailsResult {
     kQuotaExceeded = 0,
     kPasskeyUpdated = 1,
     kPasskeyNotUpdated = 2,
     kMaxValue = kPasskeyNotUpdated,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:SignalCurrentUserDetailsResultEnum)
 
 #if BUILDFLAG(IS_MAC)
   // Returns a configuration struct for instantiating the macOS WebAuthn
@@ -80,9 +93,10 @@ class ChromeWebAuthenticationDelegate final
   content::WebAuthenticationRequestProxy* MaybeGetRequestProxy(
       content::BrowserContext* browser_context,
       const url::Origin& caller_origin) override;
-  void DeletePasskey(content::WebContents* web_contents,
-                     const std::vector<uint8_t>& passkey_credential_id,
-                     const std::string& relying_party_id) override;
+  void PasskeyUnrecognized(content::WebContents* web_contents,
+                           const url::Origin& origin,
+                           const std::vector<uint8_t>& passkey_credential_id,
+                           const std::string& relying_party_id) override;
   void DeleteUnacceptedPasskeys(content::WebContents* web_contents,
                                 const std::string& relying_party_id,
                                 const std::vector<uint8_t>& user_id,

@@ -995,7 +995,6 @@ void GpuServiceImpl::CreateGpuMemoryBuffer(
     gfx::GpuMemoryBufferHandle shm_handle;
     shm_handle = gpu::GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
         id, size, format, usage);
-    DCHECK_EQ(gfx::SHARED_MEMORY_BUFFER, shm_handle.type);
     std::move(callback).Run(std::move(shm_handle));
     return;
   }

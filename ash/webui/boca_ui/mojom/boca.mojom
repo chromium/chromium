@@ -309,6 +309,8 @@ interface PageHandler {
   CloseTab(int32 tab_id) => (bool success);
   // Request from the Boca SWA to open the ChromeOS feedback dialog.
   OpenFeedbackDialog() => ();
+  // Refresh the workbook for students.
+  RefreshWorkbook() => ();
 };
 
 // Implemented by renderer process. There is an implementation in the browser

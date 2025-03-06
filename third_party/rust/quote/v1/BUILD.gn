@@ -13,21 +13,21 @@ cargo_crate("lib") {
   epoch = "1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/quote-1.0.38/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/quote-1.0.39/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/quote-1.0.38/src/ext.rs",
-    "//third_party/rust/chromium_crates_io/vendor/quote-1.0.38/src/format.rs",
-    "//third_party/rust/chromium_crates_io/vendor/quote-1.0.38/src/ident_fragment.rs",
-    "//third_party/rust/chromium_crates_io/vendor/quote-1.0.38/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/quote-1.0.38/src/runtime.rs",
-    "//third_party/rust/chromium_crates_io/vendor/quote-1.0.38/src/spanned.rs",
-    "//third_party/rust/chromium_crates_io/vendor/quote-1.0.38/src/to_tokens.rs",
+    "//third_party/rust/chromium_crates_io/vendor/quote-1.0.39/src/ext.rs",
+    "//third_party/rust/chromium_crates_io/vendor/quote-1.0.39/src/format.rs",
+    "//third_party/rust/chromium_crates_io/vendor/quote-1.0.39/src/ident_fragment.rs",
+    "//third_party/rust/chromium_crates_io/vendor/quote-1.0.39/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/quote-1.0.39/src/runtime.rs",
+    "//third_party/rust/chromium_crates_io/vendor/quote-1.0.39/src/spanned.rs",
+    "//third_party/rust/chromium_crates_io/vendor/quote-1.0.39/src/to_tokens.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.0.38"
+  cargo_pkg_version = "1.0.39"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "quote"
   cargo_pkg_description = "Quasi-quoting macro quote!(...)"

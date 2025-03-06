@@ -25,6 +25,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -33,6 +34,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFinishedCallback;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.offline_items_collection.ContentId;
@@ -120,7 +122,10 @@ public class DownloadNotificationService {
 
     @VisibleForTesting
     DownloadNotificationService() {
-        mNotificationManager = BaseNotificationManagerProxyFactory.create();
+        mNotificationManager =
+                ChromeFeatureList.sAsyncNotificationManagerForDownload.isEnabled()
+                        ? BaseNotificationManagerProxyFactory.create()
+                        : NotificationManagerProxyImpl.getInstance();
         mDownloadSharedPreferenceHelper = DownloadSharedPreferenceHelper.getInstance();
         mDownloadForegroundServiceManager = new DownloadForegroundServiceManager();
         mDownloadUserInitiatedTaskManager = new DownloadUserInitiatedTaskManager();

@@ -128,8 +128,8 @@ class PasswordsClientUIDelegate {
   virtual void OnPasskeySaved(bool gpm_pin_created,
                               std::string passkey_rp_id) = 0;
 
-  // Called when a passkey has just been deleted to display a confirmation of
-  // that to the user.
+  // Called when a passkey has just been hidden or deleted to display a
+  // confirmation of to the user. The UI does not distinguish between both.
   virtual void OnPasskeyDeleted() = 0;
 
   // Called when a passkey has just been updated to display a confirmation of

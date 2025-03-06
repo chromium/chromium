@@ -519,4 +519,30 @@ suite('CrLazyListTest', () => {
     // Should render 6 items, because exactly 6 fit in the viewport.
     assertEquals(6, queryItems().length);
   });
+
+  test('Fires items-rendered event', async () => {
+    await setupTest(getTestItems(1));
+    assertEquals(1, queryItems().length);
+
+    const items = getTestItems(12);
+    // Fires event when the list adds items.
+    testApp.listItems = items.slice(0, 6);
+    await eventToPromise('items-rendered', lazyList);
+    assertEquals(6, queryItems().length);
+
+    // Still fires the event if the list changes to a list with the same
+    // length and different items.
+    testApp.listItems = items.slice(6);
+    await eventToPromise('items-rendered', lazyList);
+    assertEquals(6, queryItems().length);
+
+    // Event fires if list changes to shorter length (e.g. items removed).
+    testApp.listItems = items.slice(6, 8);
+    await eventToPromise('items-rendered', lazyList);
+    assertEquals(2, queryItems().length);
+
+    testApp.listItems = [];
+    await eventToPromise('items-rendered', lazyList);
+    assertEquals(0, queryItems().length);
+  });
 });

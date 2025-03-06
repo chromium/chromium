@@ -146,6 +146,20 @@ bool TestPasskeyModel::DeletePasskey(const std::string& credential_id,
   return true;
 }
 
+bool TestPasskeyModel::SetPasskeyHidden(const std::string& credential_id,
+                                        bool hidden) {
+  const auto credential_it =
+      std::ranges::find(credentials_, credential_id,
+                        &sync_pb::WebauthnCredentialSpecifics::credential_id);
+  if (credential_it == credentials_.end()) {
+    return false;
+  }
+  credential_it->set_hidden(hidden);
+  NotifyPasskeysChanged({PasskeyModelChange(
+      PasskeyModelChange::ChangeType::UPDATE, *credential_it)});
+  return true;
+}
+
 void TestPasskeyModel::DeleteAllPasskeys() {
   credentials_.clear();
 }

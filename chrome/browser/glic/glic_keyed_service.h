@@ -63,7 +63,7 @@ class GlicKeyedService : public KeyedService {
                 bool prevent_close,
                 InvocationSource source);
 
-  GlicEnabling* enabling() { return enabling_.get(); }
+  GlicEnabling& enabling() { return *enabling_.get(); }
   GlicMetrics* metrics() { return metrics_.get(); }
   GlicWindowController& window_controller() { return *window_controller_; }
 

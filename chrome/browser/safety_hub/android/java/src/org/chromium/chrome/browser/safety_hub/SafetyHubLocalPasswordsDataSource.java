@@ -206,4 +206,8 @@ public class SafetyHubLocalPasswordsDataSource
     private boolean passwordSavingEnabled() {
         return mPrefService.getBoolean(Pref.CREDENTIALS_ENABLE_SERVICE);
     }
+
+    public void triggerNewCredentialFetch() {
+        mSafetyHubFetchService.fetchLocalCredentialsCount();
+    }
 }

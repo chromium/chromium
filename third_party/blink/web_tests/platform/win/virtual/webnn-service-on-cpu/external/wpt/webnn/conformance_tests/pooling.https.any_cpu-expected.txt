@@ -50,8 +50,8 @@ This is a testharness.js-based test.
 [FAIL] maxPool2d float32 4D tensor options.dilations
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Pool2d in tflite doesn't support dilations."
 [FAIL] maxPool2d float32 4D tensor options.roundingType=ceil
-  assert_true: assert_array_approx_equals_ulp: test maxPool2d float32 actual 99.28312683105469 should be close enough to expected -39.03501892089844 by the acceptable 0 ULP distance, but they have 2158652698 ULP distance expected true got false
+  assert_true: assert_array_approx_equals_ulp: test maxPool2d float32 actual 99.28312683105469 should be close enough to expected -39.03501892089844 by the acceptable 0 ULP distance, but they have 2229449938 ULP distance expected true got false
 [FAIL] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
-  assert_true: assert_array_approx_equals_ulp: test maxPool2d float32 actual 99.28312683105469 should be close enough to expected -39.03501892089844 by the acceptable 0 ULP distance, but they have 2158652698 ULP distance expected true got false
+  assert_true: assert_array_approx_equals_ulp: test maxPool2d float32 actual 99.28312683105469 should be close enough to expected -39.03501892089844 by the acceptable 0 ULP distance, but they have 2229449938 ULP distance expected true got false
 Harness: the test ran to completion.
 

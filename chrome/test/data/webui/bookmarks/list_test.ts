@@ -262,8 +262,8 @@ suite('<bookmarks-list> command manager integration test', function() {
 
   test('show context menu', async () => {
     const commandManager =
-        app.shadowRoot!.querySelector('bookmarks-command-manager')!;
-    const list = app.shadowRoot!.querySelector('bookmarks-list')!;
+        app.shadowRoot.querySelector('bookmarks-command-manager')!;
+    const list = app.shadowRoot.querySelector('bookmarks-list')!;
     list.dispatchEvent(new CustomEvent(
         'contextmenu',
         {bubbles: true, composed: true, detail: {clientX: 0, clientY: 0}}));

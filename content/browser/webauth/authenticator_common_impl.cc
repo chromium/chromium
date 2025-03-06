@@ -1990,9 +1990,10 @@ void AuthenticatorCommonImpl::ContinueReportAfterRpIdCheck(
     DeleteVirtualAuthenticatorCreds(render_frame_host,
                                     *options->unknown_credential_id,
                                     req_state_->relying_party_id);
-    GetWebAuthenticationDelegate()->DeletePasskey(
+    GetWebAuthenticationDelegate()->PasskeyUnrecognized(
         WebContents::FromRenderFrameHost(render_frame_host),
-        *options->unknown_credential_id, req_state_->relying_party_id);
+        req_state_->caller_origin, *options->unknown_credential_id,
+        req_state_->relying_party_id);
   }
   CompleteReportRequest(blink::mojom::AuthenticatorStatus::SUCCESS, nullptr);
 }

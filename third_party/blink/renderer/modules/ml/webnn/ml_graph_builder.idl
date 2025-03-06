@@ -224,7 +224,7 @@ dictionary MLTriangularOptions : MLOperatorOptions {
 
 [
   RuntimeEnabled=MachineLearningNeuralNetwork,
-  Exposed=(Window, DedicatedWorker)
+  Exposed=(Window, Worker)
 ] interface MLGraphBuilder {
   [
     CallWith=ScriptState,

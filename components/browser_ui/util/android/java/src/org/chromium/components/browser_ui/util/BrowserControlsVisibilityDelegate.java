@@ -18,12 +18,6 @@ public class BrowserControlsVisibilityDelegate
      * @param initialValue The initial browser state visibility.
      */
     public BrowserControlsVisibilityDelegate(@BrowserControlsState int initialValue) {
-        set(initialValue);
-    }
-
-    @Override
-    public void set(@BrowserControlsState Integer value) {
-        assert value != null;
-        super.set(value);
+        super.set(initialValue);
     }
 }

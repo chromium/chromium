@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_WAVE_SHAPER_HANDLER_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_over_sample_type.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_basic_processor_handler.h"
 
 namespace blink {
@@ -14,16 +15,15 @@ class AudioNode;
 class AudioProcessor;
 class WaveShaperProcessor;
 
+// WaveShaperHandler implements non-linear distortion effects.
 class WaveShaperHandler final : public AudioHandler {
  public:
-  enum OverSampleType { kOverSampleNone, kOverSample2x, kOverSample4x };
-
   static scoped_refptr<WaveShaperHandler> Create(AudioNode&, float sample_rate);
 
   void SetCurve(const float* curve_data, unsigned curve_length);
-  Vector<float>* Curve();
-  void SetOversample(OverSampleType oversample);
-  OverSampleType Oversample();
+  const Vector<float>* Curve() const;
+  void SetOversample(V8OverSampleType::Enum oversample);
+  V8OverSampleType::Enum Oversample() const;
 
  private:
   WaveShaperHandler(AudioNode& iirfilter_node, float sample_rate);
@@ -41,7 +41,9 @@ class WaveShaperHandler final : public AudioHandler {
 
   unsigned NumberOfChannels();
   AudioProcessor* Processor() { return processor_.get(); }
+  const AudioProcessor* Processor() const { return processor_.get(); }
   WaveShaperProcessor* GetWaveShaperProcessor();
+  const WaveShaperProcessor* GetWaveShaperProcessor() const;
 
   std::unique_ptr<AudioProcessor> processor_;
 };

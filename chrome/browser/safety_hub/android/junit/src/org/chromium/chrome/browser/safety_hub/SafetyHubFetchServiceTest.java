@@ -173,7 +173,7 @@ public class SafetyHubFetchServiceTest {
         ChromeFeatureList.SAFETY_HUB,
         ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
     })
-    public void estAccountPasswordsFetchJobCancelled_WhenPasswordManagerNotAvailable() {
+    public void testAccountPasswordsFetchJobCancelled_WhenPasswordManagerNotAvailable() {
         mSafetyHubTestRule.setSignedInState(true);
         mSafetyHubTestRule.setPasswordManagerAvailable(false, mIsLoginDbDeprecationEnabled);
 
@@ -234,7 +234,7 @@ public class SafetyHubFetchServiceTest {
         ChromeFeatureList.SAFETY_HUB,
         ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS
     })
-    public void testNextTaskScheduled_WhenFetchSucceeds() {
+    public void testAccountPasswordsNextTaskScheduled_whenFetchSucceeds() {
         mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
 
         int breachedCredentialsCount = 5;
@@ -267,6 +267,75 @@ public class SafetyHubFetchServiceTest {
         ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
         ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
     })
+    public void testLocalPasswordsFetch_whenFetchFails() {
+        mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
+
+        mPasswordCheckupClientHelper.setError(new Exception());
+
+        new SafetyHubFetchService(mProfile).fetchLocalCredentialsCount();
+
+        verify(mPrefService, never())
+                .setInteger(eq(Pref.LOCAL_BREACHED_CREDENTIALS_COUNT), anyInt());
+        verify(mPrefService, never()).setInteger(eq(Pref.LOCAL_WEAK_CREDENTIALS_COUNT), anyInt());
+        verify(mPrefService, never()).setInteger(eq(Pref.LOCAL_REUSED_CREDENTIALS_COUNT), anyInt());
+    }
+
+    @Test
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB,
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
+        ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
+    })
+    public void testLocalPasswordsFetch_whenFetchFailsForOneCredentialType() {
+        mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
+
+        mPasswordCheckupClientHelper.setWeakCredentialsError(new Exception());
+        int breachedCredentialsCount = 5;
+        int reusedCredentialsCount = 3;
+        mPasswordCheckupClientHelper.setBreachedCredentialsCount(breachedCredentialsCount);
+        mPasswordCheckupClientHelper.setReusedCredentialsCount(reusedCredentialsCount);
+
+        new SafetyHubFetchService(mProfile).fetchLocalCredentialsCount();
+
+        verify(mPrefService, never()).setInteger(eq(Pref.LOCAL_WEAK_CREDENTIALS_COUNT), anyInt());
+        verify(mPrefService, times(1))
+                .setInteger(Pref.LOCAL_BREACHED_CREDENTIALS_COUNT, breachedCredentialsCount);
+        verify(mPrefService, times(1))
+                .setInteger(Pref.LOCAL_REUSED_CREDENTIALS_COUNT, reusedCredentialsCount);
+    }
+
+    @Test
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB,
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
+        ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
+    })
+    public void testLocalPasswordsFetch_whenFetchSucceeds() {
+        mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
+
+        int breachedCredentialsCount = 5;
+        int weakCredentialsCount = 4;
+        int reusedCredentialsCount = 3;
+        mPasswordCheckupClientHelper.setBreachedCredentialsCount(breachedCredentialsCount);
+        mPasswordCheckupClientHelper.setWeakCredentialsCount(weakCredentialsCount);
+        mPasswordCheckupClientHelper.setReusedCredentialsCount(reusedCredentialsCount);
+
+        new SafetyHubFetchService(mProfile).fetchLocalCredentialsCount();
+
+        verify(mPrefService, times(1))
+                .setInteger(Pref.LOCAL_BREACHED_CREDENTIALS_COUNT, breachedCredentialsCount);
+        verify(mPrefService, times(1))
+                .setInteger(Pref.LOCAL_WEAK_CREDENTIALS_COUNT, weakCredentialsCount);
+        verify(mPrefService, times(1))
+                .setInteger(Pref.LOCAL_REUSED_CREDENTIALS_COUNT, reusedCredentialsCount);
+    }
+
+    @Test
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB,
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
+        ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
+    })
     public void testLocalPasswordsCheckup_whenFetchFails() {
         mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
 
@@ -287,7 +356,6 @@ public class SafetyHubFetchServiceTest {
     })
     public void testLocalPasswordsCheckup_whenFetchFailsForOneCredentialType() {
         mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
-
         mSafetyHubTestRule.setSignedInState(false);
 
         mPasswordCheckupClientHelper.setWeakCredentialsError(new Exception());
@@ -332,7 +400,6 @@ public class SafetyHubFetchServiceTest {
     })
     public void testLocalPasswordsCheckup_whenCheckupSucceeds() {
         mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
-
         mSafetyHubTestRule.setSignedInState(false);
 
         int breachedCredentialsCount = 5;

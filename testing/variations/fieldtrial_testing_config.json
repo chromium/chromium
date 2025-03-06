@@ -1322,6 +1322,9 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AsyncNotificationManager"
+                    ],
+                    "disable_features": [
+                        "AsyncNotificationManagerForDownload"
                     ]
                 }
             ]
@@ -9813,6 +9816,21 @@
             ]
         }
     ],
+    "FastPairAdvertisingFormat2025": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FastPairAdvertisingFormat2025"
+                    ]
+                }
+            ]
+        }
+    ],
     "FastPairHandshakeLongTermRefactor": [
         {
             "platforms": [
@@ -10560,6 +10578,46 @@
                     "name": "Enabled",
                     "enable_features": [
                         "GifRecording"
+                    ]
+                }
+            ]
+        }
+    ],
+    "GlicDogfood": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "GlicEnabled",
+                    "enable_features": [
+                        "ContextualCueing",
+                        "Glic"
+                    ]
+                }
+            ]
+        }
+    ],
+    "GlicDogfoodSettings": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "GlicSettingsEnabled",
+                    "params": {
+                        "has_background": "false"
+                    },
+                    "enable_features": [
+                        "GlicDevelopmentCookies",
+                        "GlicFreURLConfig",
+                        "GlicKeyboardShortcutNewBadge",
+                        "GlicURLConfig",
+                        "IPH_GlicPromo"
                     ]
                 }
             ]

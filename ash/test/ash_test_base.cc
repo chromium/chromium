@@ -421,7 +421,8 @@ void AshTestBase::SetUserPref(const std::string& user_email,
 }
 
 TestSessionControllerClient* AshTestBase::GetSessionControllerClient() {
-  return ash_test_helper_->test_session_controller_client();
+  return ash_test_helper_->test_session_controller_client(
+      base::PassKey<AshTestBase>());
 }
 
 TestSystemTrayClient* AshTestBase::GetSystemTrayClient() {

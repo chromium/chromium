@@ -35,7 +35,6 @@ public interface ObservableSupplier<E> extends Supplier<E> {
             flag = true,
             value = {
                 NotifyBehavior.NOTIFY_ON_ADD,
-                NotifyBehavior.OMIT_NULL_ON_ADD,
                 NotifyBehavior.POST_ON_ADD,
                 NotifyBehavior.NONE,
             })
@@ -48,17 +47,11 @@ public interface ObservableSupplier<E> extends Supplier<E> {
         int NOTIFY_ON_ADD = 1 << 0;
 
         /**
-         * If set, the observer in {@link #addObserver(Callback, int)} method will not be called if
-         * the value being passed into the supplier upon being added is null.
-         */
-        int OMIT_NULL_ON_ADD = 1 << 1;
-
-        /**
          * If set, the observer in {@link #addObserver(Callback, int)} method will be called
          * asynchronously upon being added. This flag only has an effect if {@link #NOTIFY_ON_ADD}
          * is set.
          */
-        int POST_ON_ADD = 1 << 2;
+        int POST_ON_ADD = 1 << 1;
 
         /** All flags disabled. */
         int NONE = 0;
@@ -87,7 +80,7 @@ public interface ObservableSupplier<E> extends Supplier<E> {
     }
 
     /**
-     * Adds an observer that is called immediately, even if the value is not available.
+     * Adds an observer that is called immediately, if the value is non-null.
      *
      * <p>Equivalent to calling {@link #addObserver(Callback, int)} with {@link
      * NotifyBehavior#NOTIFY_ON_ADD}.
@@ -95,26 +88,12 @@ public interface ObservableSupplier<E> extends Supplier<E> {
      * @param obs The observer to add.
      * @return The current object if available, otherwise null.
      */
-    default @Nullable E addSyncObserverAndCall(Callback<E> obs) {
+    default @Nullable E addSyncObserverAndCallIfNonNull(Callback<E> obs) {
         return addObserver(obs, NotifyBehavior.NOTIFY_ON_ADD);
     }
 
     /**
-     * Adds an observer that is called immediately, if the value is available.
-     *
-     * <p>Equivalent to calling {@link #addObserver(Callback, int)} with {@link
-     * NotifyBehavior#NOTIFY_ON_ADD} | {@link NotifyBehavior#OMIT_NULL_ON_ADD}.
-     *
-     * @param obs The observer to add.
-     * @return The current object if available, otherwise null.
-     */
-    default @Nullable E addSyncObserverAndCallIfSet(Callback<E> obs) {
-        return addObserver(obs, NotifyBehavior.NOTIFY_ON_ADD | NotifyBehavior.OMIT_NULL_ON_ADD);
-    }
-
-    /**
-     * Adds a observer that is asynchronously called immediately, even if the value is not
-     * available.
+     * Adds an observer that is asynchronously called immediately, if the value is non-null.
      *
      * <p>Equivalent to calling {@link #addObserver(Callback, int)} with {@link
      * NotifyBehavior#NOTIFY_ON_ADD} | {@link NotifyBehavior#POST_ON_ADD}.
@@ -122,28 +101,8 @@ public interface ObservableSupplier<E> extends Supplier<E> {
      * @param obs The observer to add.
      * @return The current object if available, otherwise null.
      */
-    @Nullable
-    default E addSyncObserverAndPost(Callback<E> obs) {
+    default @Nullable E addSyncObserverAndPostIfNonNull(Callback<E> obs) {
         return addObserver(obs, NotifyBehavior.NOTIFY_ON_ADD | NotifyBehavior.POST_ON_ADD);
-    }
-
-    /**
-     * Adds an observer that is asynchronously called immediately, if the value is available.
-     *
-     * <p>Equivalent to calling {@link #addObserver(Callback, int)} with {@link
-     * NotifyBehavior#NOTIFY_ON_ADD} | {@link NotifyBehavior#POST_ON_ADD} | {@link
-     * NotifyBehavior#OMIT_NULL_ON_ADD}.
-     *
-     * @param obs The observer to add.
-     * @return The current object if available, otherwise null.
-     */
-    @Nullable
-    default E addSyncObserverAndPostIfSet(Callback<E> obs) {
-        return addObserver(
-                obs,
-                NotifyBehavior.NOTIFY_ON_ADD
-                        | NotifyBehavior.POST_ON_ADD
-                        | NotifyBehavior.OMIT_NULL_ON_ADD);
     }
 
     /**
@@ -157,9 +116,8 @@ public interface ObservableSupplier<E> extends Supplier<E> {
      * @param obs An observer to be added.
      * @return The current object or null if it hasn't been set yet.
      */
-    @Nullable
-    default E addObserver(Callback<E> obs) {
-        return addSyncObserverAndPostIfSet(obs);
+    default @Nullable E addObserver(Callback<E> obs) {
+        return addSyncObserverAndPostIfNonNull(obs);
     }
 
     /**

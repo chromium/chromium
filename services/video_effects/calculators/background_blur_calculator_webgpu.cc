@@ -117,11 +117,8 @@ absl::Status BackgroundBlurCalculatorWebGpu::GetContract(
       .Tag(kInputTextureStreamTag)
       .Set<mediapipe::GpuBuffer>();  // original
   cc->Inputs().Tag(kMaskTextureStreamTag).Set<mediapipe::GpuBuffer>();  // mask
-  cc->Inputs()
-      .Tag(kOutputTextureInputStreamTag)
-      .Set<mediapipe::GpuBuffer>();  // result (in-place)
 
-  cc->Outputs().Tag(kOutputTextureOutputStreamTag).Set<mediapipe::GpuBuffer>();
+  cc->Outputs().Tag(kOutputTextureStreamTag).Set<mediapipe::GpuBuffer>();
 
   return absl::OkStatus();
 }
@@ -319,40 +316,21 @@ absl::Status BackgroundBlurCalculatorWebGpu::Process(
     return absl::InternalError("Runtime configuration not present!");
   }
 
+  if (config_packet.Get<RuntimeConfig>().blur_state != BlurState::kEnabled) {
+    return absl::InternalError(
+        "Blur is disabled, the calculator should not even run!");
+  }
+
   mediapipe::Packet& input_packet =
       cc->Inputs().Tag(kInputTextureStreamTag).Value();
   auto input_buffer = input_packet.Get<mediapipe::GpuBuffer>();
   auto input_texture_view =
       input_buffer.GetReadView<mediapipe::WebGpuTextureView>();
 
-  mediapipe::Packet& output_packet =
-      cc->Inputs().Tag(kOutputTextureInputStreamTag).Value();
-  auto output_buffer = output_packet.Get<mediapipe::GpuBuffer>();
+  mediapipe::GpuBuffer output_buffer(
+      input_buffer.width(), input_buffer.height(), input_buffer.format());
   auto output_texture_view =
       output_buffer.GetWriteView<mediapipe::WebGpuTextureView>();
-
-  if (config_packet.Get<RuntimeConfig>().blur_state != BlurState::kEnabled) {
-    wgpu::CommandEncoder command_encoder = device.CreateCommandEncoder();
-    wgpu::TexelCopyTextureInfo source = {.texture =
-                                             input_texture_view.texture()};
-    wgpu::TexelCopyTextureInfo destination = {
-        .texture = output_texture_view.texture()};
-    wgpu::Extent3D extent = {
-        .width = static_cast<uint32_t>(input_buffer.width()),
-        .height = static_cast<uint32_t>(input_buffer.height()),
-        .depthOrArrayLayers = 1};
-    command_encoder.CopyTextureToTexture(&source, &destination, &extent);
-    wgpu::CommandBufferDescriptor command_buffer_descriptor = {
-        .label = "BackgroundBlurCalculatorWebGpuCommandBufferJustCopy",
-    };
-    wgpu::CommandBuffer command_buffer =
-        command_encoder.Finish(&command_buffer_descriptor);
-    device.GetQueue().Submit(1, &command_buffer);
-
-    cc->Outputs().Tag(kOutputTextureOutputStreamTag).AddPacket(output_packet);
-
-    return absl::OkStatus();
-  }
 
   // Mask can only be accessed if the previous calculator produced it, and it
   // should have done so iff runtime config was enabled:
@@ -410,7 +388,11 @@ absl::Status BackgroundBlurCalculatorWebGpu::Process(
 
   device.GetQueue().Submit(/*commandCount=*/1, &command_buffer);
 
-  cc->Outputs().Tag(kOutputTextureOutputStreamTag).AddPacket(output_packet);
+  cc->Outputs()
+      .Tag(kOutputTextureStreamTag)
+      .AddPacket(
+          mediapipe::MakePacket<mediapipe::GpuBuffer>(std::move(output_buffer))
+              .At(input_packet.Timestamp()));
 
   return absl::OkStatus();
 }

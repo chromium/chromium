@@ -16,8 +16,8 @@ const char kExecutableName[] = "enterprise_companion";
 
 std::optional<base::FilePath> GetInstallDirectory() {
   return base::FilePath("/opt/")
-      .AppendASCII(COMPANY_SHORTNAME_LOWERCASE_STRING)
-      .AppendASCII(PRODUCT_FULLNAME_DASHED_LOWERCASE_STRING);
+      .Append(COMPANY_SHORTNAME_LOWERCASE_STRING)
+      .Append(PRODUCT_FULLNAME_DASHED_LOWERCASE_STRING);
 }
 
 std::optional<base::FilePath> FindExistingInstall() {
@@ -25,7 +25,7 @@ std::optional<base::FilePath> FindExistingInstall() {
   if (!path) {
     return std::nullopt;
   }
-  path = path->AppendASCII(kExecutableName);
+  path = path->Append(kExecutableName);
   return base::PathExists(*path) ? path : std::nullopt;
 }
 

@@ -77,6 +77,10 @@ BASE_FEATURE(kAllowedMixedContentInlinePdf,
 BASE_FEATURE(kCopyImageFilenameToClipboard,
              "CopyImageFilenameToClipboard",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableAsyncNotificationManagerForDownload,
+             "EnableAsyncNotificationManagerForDownload",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
 
 }  // namespace download

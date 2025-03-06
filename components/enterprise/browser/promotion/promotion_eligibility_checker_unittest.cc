@@ -4,21 +4,32 @@
 
 #include "components/enterprise/browser/promotion/promotion_eligibility_checker.h"
 
-#include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/test/mock_callback.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "device_management_backend.pb.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "services/network/test/test_network_connection_tracker.h"
+#include "services/network/test/test_shared_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::base::test::EqualsProto;
 
 namespace {
 
 constexpr char kExpectedAccessToken[] = "access_token";
+constexpr char kNonEmptyDMToken[] = "dm_token";
+constexpr char kProfileId[] = "profile_id";
+constexpr char kClientId[] = "client_id";
 
 }  // namespace
 
@@ -31,13 +42,18 @@ class PromotionEligibilityCheckerTest : public testing::Test {
   }
 
   void SetUp() override {
+    client_ = std::make_unique<policy::MockCloudPolicyClient>();
+    client_->SetURLLoaderFactoryForTesting(
+        base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+    client_->SetDMToken(kNonEmptyDMToken);
+    client_->SetClientId(kClientId);
     account_id_ = identity_test_env()
                       ->MakePrimaryAccountAvailable(
                           "test@example.com", signin::ConsentLevel::kSignin)
                       .account_id;
 
     checker_ = std::make_unique<PromotionEligibilityChecker>(
-        identity_test_env()->identity_manager());
+        kProfileId, client_.get(), identity_test_env()->identity_manager());
   }
 
  protected:
@@ -45,19 +61,124 @@ class PromotionEligibilityCheckerTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
   CoreAccountId account_id_;
   std::unique_ptr<PromotionEligibilityChecker> checker_;
+  std::unique_ptr<policy::MockCloudPolicyClient> client_;
 };
 
 TEST_F(PromotionEligibilityCheckerTest, FetchAccessTokenSuccess) {
-  std::string actual_oauth_token;
+  auto client = std::make_unique<policy::MockCloudPolicyClient>();
 
-  checker_->FetchAccessToken(account_id_);
+  auto* client_ptr = client.get();
+
+  checker_->SetCloudPolicyClientForTesting(std::move(client));
+
+  client_ptr->SetDMToken(kNonEmptyDMToken);
+
+  checker_->MaybeCheckPromotionEligibility(account_id_, base::DoNothing());
 
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       kExpectedAccessToken, base::Time::Max());
 
-  actual_oauth_token = checker_->GetFetchedTokenForTesting();
+  EXPECT_EQ(client_ptr->GetOAuthToken(), kExpectedAccessToken);
+}
 
-  EXPECT_EQ(actual_oauth_token, kExpectedAccessToken);
+TEST_F(PromotionEligibilityCheckerTest, DeterminePromotionEligibilitySuccess) {
+  base::MockCallback<base::OnceCallback<void(
+      enterprise_management::GetUserEligiblePromotionsResponse)>>
+      callback;
+
+  enterprise_management::GetUserEligiblePromotionsResponse response;
+  response.mutable_promotions()->set_policy_page_promotion(
+      enterprise_management::CHROME_ENTERPRISE_CORE);
+
+  std::string actual_oauth_token;
+
+  auto client = std::make_unique<policy::MockCloudPolicyClient>();
+
+  auto* client_ptr = client.get();
+
+  EXPECT_CALL(*client, DeterminePromotionEligibility(testing::_))
+      .WillOnce(testing::Invoke(
+          [response](
+              policy::CloudPolicyClient::PromotionEligibilityCallback cb) {
+            std::move(cb).Run(response);
+          }));
+  EXPECT_CALL(callback, Run(EqualsProto(response)));
+
+  checker_->SetCloudPolicyClientForTesting(std::move(client));
+
+  client_ptr->SetDMToken(kNonEmptyDMToken);
+
+  checker_->MaybeCheckPromotionEligibility(account_id_, callback.Get());
+
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kExpectedAccessToken, base::Time::Max());
+}
+
+TEST_F(PromotionEligibilityCheckerTest,
+       DeterminePromotionEligibilityEmptyAccessToken) {
+  base::MockCallback<base::OnceCallback<void(
+      enterprise_management::GetUserEligiblePromotionsResponse)>>
+      callback;
+  auto client = std::make_unique<policy::MockCloudPolicyClient>();
+
+  auto* client_ptr = client.get();
+
+  checker_->SetCloudPolicyClientForTesting(std::move(client));
+
+  client_ptr->SetDMToken(kNonEmptyDMToken);
+
+  EXPECT_CALL(callback,
+              Run(EqualsProto(
+                  enterprise_management::GetUserEligiblePromotionsResponse())));
+
+  checker_->MaybeCheckPromotionEligibility(account_id_, callback.Get());
+
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "", base::Time::Max());
+}
+
+TEST_F(PromotionEligibilityCheckerTest,
+       DeterminePromotionEligibilityInvalidAccessToken) {
+  base::MockCallback<base::OnceCallback<void(
+      enterprise_management::GetUserEligiblePromotionsResponse)>>
+      callback;
+  auto client = std::make_unique<policy::MockCloudPolicyClient>();
+
+  auto* client_ptr = client.get();
+
+  checker_->SetCloudPolicyClientForTesting(std::move(client));
+
+  client_ptr->SetDMToken(kNonEmptyDMToken);
+
+  EXPECT_CALL(callback,
+              Run(EqualsProto(
+                  enterprise_management::GetUserEligiblePromotionsResponse())));
+  checker_->MaybeCheckPromotionEligibility(account_id_, callback.Get());
+
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+}
+
+TEST_F(PromotionEligibilityCheckerTest,
+       DeterminePromotionEligibilityNoDMToken) {
+  base::MockCallback<base::OnceCallback<void(
+      enterprise_management::GetUserEligiblePromotionsResponse)>>
+      callback;
+  std::unique_ptr<policy::MockCloudPolicyClient> client_no_dm_token =
+      std::make_unique<policy::MockCloudPolicyClient>();
+
+  client_no_dm_token->SetDMToken("");
+  client_no_dm_token->SetURLLoaderFactoryForTesting(
+      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+  EXPECT_CALL(callback,
+              Run(EqualsProto(
+                  enterprise_management::GetUserEligiblePromotionsResponse())));
+  PromotionEligibilityChecker checker_no_dm_token(
+      kProfileId, client_no_dm_token.get(),
+      identity_test_env()->identity_manager());
+
+  checker_no_dm_token.MaybeCheckPromotionEligibility(account_id_,
+                                                     callback.Get());
 }
 
 }  // namespace enterprise_promotion

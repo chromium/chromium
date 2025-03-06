@@ -79,6 +79,7 @@ chrome_test_java_helper_deps = [
   "//chrome/browser/first_run/android:java",
   "//chrome/browser/flags:java",
   "//chrome/browser/fullscreen/android:java",
+  "//chrome/browser/gesturenav/android:java",
   "//chrome/browser/history_clusters:java",
   "//chrome/browser/hub:factory_java",
   "//chrome/browser/hub:java",
@@ -142,6 +143,7 @@ chrome_test_java_helper_deps = [
   "//chrome/browser/tab:java",
   "//chrome/browser/tab_group_sync:factory_java",
   "//chrome/browser/tab_group_sync:features_java",
+  "//chrome/browser/tab_group_sync:java",
   "//chrome/browser/tab_ui/android:java",
   "//chrome/browser/tabmodel:java",
   "//chrome/browser/tabmodel/internal:java",
@@ -181,6 +183,7 @@ chrome_test_java_helper_deps = [
   "//chrome/browser/ui/messages/android:java",
   "//chrome/browser/uid/android:java",
   "//chrome/browser/util:java",
+  "//chrome/browser/webid:java",
   "//chrome/test:sync_integration_test_support_java",
   "//chrome/test:test_support_java",
   "//chrome/test/android:chrome_java_integration_test_support",
@@ -707,6 +710,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.device_dialog") {
     "src/org/chromium/chrome/browser/device_dialog/BluetoothChooserDialogTest.java",
     "src/org/chromium/chrome/browser/device_dialog/BluetoothScanningPermissionDialogTest.java",
     "src/org/chromium/chrome/browser/device_dialog/ItemChooserDialogTest.java",
+    "src/org/chromium/chrome/browser/device_dialog/SerialChooserDialogTest.java",
     "src/org/chromium/chrome/browser/device_dialog/UsbChooserDialogTest.java",
   ]
 

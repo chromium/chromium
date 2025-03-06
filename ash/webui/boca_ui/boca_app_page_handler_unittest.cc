@@ -232,6 +232,7 @@ class MockSessionManager : public BocaSessionManager {
               (override));
   MOCK_METHOD((::boca::Session*), GetCurrentSession, (), (override));
   MOCK_METHOD(void, ToggleAppStatus, (bool), (override));
+  MOCK_METHOD(void, NotifyAppReload, (), (override));
   ~MockSessionManager() override = default;
 };
 
@@ -390,8 +391,8 @@ class BocaAppPageHandlerTest : public testing::Test {
     mojo::PendingReceiver<mojom::Page> page_pending_receiver;
     boca_app_handler_ = std::make_unique<BocaAppHandler>(
         remote_.BindNewPipeAndPassReceiver(),
-        // TODO(b/359929870):Setting nullptr for other dependencies for now.
-        // Adding test case for classroom and tab info.
+        // TODO(crbug.com/359929870): Setting nullptr for other dependencies for
+        // now. Adding test case for classroom and tab info.
         page_pending_receiver.InitWithNewPipeAndPassRemote(), web_ui_.get(),
         std::make_unique<MockWebviewAuthHandler>(browser_context,
                                                  kWebviewHostName),
@@ -1933,6 +1934,13 @@ TEST_F(BocaAppPageHandlerTest, OpenFeedbackDialog) {
   EXPECT_TRUE(open_feedback_future.Wait());
 }
 
+TEST_F(BocaAppPageHandlerTest, RefreshWorkbook) {
+  EXPECT_CALL(*session_manager(), NotifyAppReload()).Times(1);
+  base::test::TestFuture<void> refresh_workbook_future;
+  boca_app_handler()->RefreshWorkbook(refresh_workbook_future.GetCallback());
+  EXPECT_TRUE(refresh_workbook_future.Wait());
+}
+
 TEST_F(BocaAppPageHandlerTest, SetViewScreenSessionActiveSucceeded) {
   const std::string student_id = "123";
   EXPECT_CALL(
@@ -1990,8 +1998,8 @@ TEST_F(BocaAppPageHandlerFloatModeTest, SetFloatModeTest) {
   BocaAppHandler::SetFloatModeAndBoundsForWindow(true, window.get(),
                                                  future.GetCallback());
 
-  // TODO(crbug.com/374881187)We don't have a way to verify float state in unit
-  // test, verify bounds for now. Move to browser test in the future.
+  // TODO(crbug.com/374881187): We don't have a way to verify float state in
+  // unit test, verify bounds for now. Move to browser test in the future.
   // WindowState* window_state = WindowState::Get(window.get());
   // EXPECT_TRUE(window_state->IsFloated());
   EXPECT_EQ(400, window->bounds().width());

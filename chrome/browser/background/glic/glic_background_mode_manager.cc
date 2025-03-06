@@ -87,9 +87,9 @@ void GlicBackgroundModeManager::OnProfileAdded(Profile* profile) {
   if (!service) {
     return;
   }
-  GlicEnabling* enabling = service->enabling();
+  GlicEnabling& enabling = service->enabling();
   profile_subscriptions_.emplace(
-      profile, enabling->RegisterEnableChanged(base::BindRepeating(
+      profile, enabling.RegisterEnableChanged(base::BindRepeating(
                    &GlicBackgroundModeManager::OnProfileEnableChanged,
                    base::Unretained(this))));
   auto [it, inserted] = profile_observers_.emplace(profile, this);

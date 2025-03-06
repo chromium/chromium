@@ -1,0 +1,31 @@
+This is a testharness.js-based test.
+[FAIL] identity float32 0D scalar
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] identity float32 1D constant tensor
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] identity float32 1D tensor
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] identity float32 2D tensor
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] identity float32 3D tensor
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] identity float32 4D tensor
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] identity float32 5D tensor
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] identity float16 0D scalar
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] identity float16 1D constant tensor
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] identity float16 1D tensor
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] identity float16 2D tensor
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] identity float16 3D tensor
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] identity float16 4D tensor
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] identity float16 5D tensor
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+Harness: the test ran to completion.
+

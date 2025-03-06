@@ -832,6 +832,11 @@ BASE_FEATURE(kFamilyLinkOnSchoolDevice,
 // Enables the Fast Pair feature.
 BASE_FEATURE(kFastPair, "FastPair", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the usage of the 2025 format for Fast Pair advertisements.
+BASE_FEATURE(kFastPairAdvertisingFormat2025,
+             "FastPairAdvertisingFormat2025",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables logic for handling BLE address rotations during retroactive pair
 // scenarios.
 BASE_FEATURE(kFastPairBleRotation,
@@ -3561,6 +3566,10 @@ bool IsFastInkForSoftwareCursorEnabled() {
 
 bool IsFastPairEnabled() {
   return base::FeatureList::IsEnabled(kFastPair);
+}
+
+bool IsFastPairAdvertisingFormat2025Enabled() {
+  return base::FeatureList::IsEnabled(kFastPairAdvertisingFormat2025);
 }
 
 bool IsFastPairBleRotationEnabled() {

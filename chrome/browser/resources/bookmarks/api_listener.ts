@@ -123,7 +123,7 @@ function onImportBegan() {
 
 function onImportEnded() {
   chrome.bookmarks.getTree().then((results) => {
-    dispatch(refreshNodes(normalizeNodes(results[0])));
+    dispatch(refreshNodes(normalizeNodes(results[0]!)));
   });
   chrome.bookmarks.onCreated.addListener(onBookmarkCreated);
   document.dispatchEvent(new CustomEvent('import-ended'));

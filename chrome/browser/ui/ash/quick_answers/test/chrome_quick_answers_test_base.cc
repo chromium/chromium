@@ -98,8 +98,7 @@ void ChromeQuickAnswersTestBase::SetUp() {
   // Instead, directly notify TestSessionController to inject PrefService.
   // TODO(crbug.com/383442863): the strategy of preference handling needs to be
   // redesigned.
-  auto* test_session_controller_client =
-      ash_test_helper()->test_session_controller_client();
+  auto* test_session_controller_client = GetSessionControllerClient();
   test_session_controller_client->SetUnownedUserPrefService(
       user->GetAccountId(), profile_->GetPrefs());
   test_session_controller_client->AddUserSession(

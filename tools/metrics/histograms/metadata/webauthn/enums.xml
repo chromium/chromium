@@ -95,10 +95,16 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Failure dialog shown"/>
 </enum>
 
+<!-- LINT.IfChange(SignalAllAcceptedCredentialsResultEnum) -->
+
 <enum name="SignalAllAcceptedCredentialsResult">
   <int value="0" label="No passkeys were removed"/>
   <int value="1" label="A passkey was removed"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/chrome_web_authentication_delegate.h:SignalAllAcceptedCredentialsResult) -->
+
+<!-- LINT.IfChange(SignalCurrentUserDetailsResultEnum) -->
 
 <enum name="SignalCurrentUserDetailsResult">
   <int value="0"
@@ -109,10 +115,20 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="No passkeys were updated."/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/webauthn/chrome_web_authentication_delegate.h:SignalCurrentUserDetailsResult) -->
+
+<!-- LINT.IfChange(SignalUnknownCredentialResultEnum) -->
+
 <enum name="SignalUnknownCredentialResult">
   <int value="0" label="The passkey ID was not found, so nothing was removed."/>
   <int value="1" label="The passkey ID was found and removed."/>
+  <int value="2" label="The passkey ID was found and hidden."/>
+  <int value="3"
+      label="The website exceeded the quota, so the request was dropped."/>
+  <int value="4" label="The passkey ID was already hidden."/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/chrome_web_authentication_delegate.h:SignalUnknownCredentialResult) -->
 
 <enum name="SuccessState">
   <int value="0" label="FIDO2 and Passkey Cache calls failed."/>

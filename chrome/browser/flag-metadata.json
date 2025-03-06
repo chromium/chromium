@@ -758,6 +758,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "autofill-save-card-bottomsheet",
+    "owners": [ "kavitasoni@google.com", "chrome-payments-eng@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "autofill-shared-storage-server-card-data",
     "owners": [ "npnavarro@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 130
@@ -3139,7 +3144,9 @@
   {
     "name": "enable-force-dark",
     "owners": [ "beverloo@chromium.org", "pdr@chromium.org" ],
-    "expiry_milestone": 136
+    // This flag enables an automatic dark mode for sites that do not support
+    // it. This flag can be used to test the WebView API for this feature.
+    "expiry_milestone": -1
   },
   {
     "name": "enable-future-v8-vm-features",
@@ -4688,7 +4695,7 @@
     {
     "name": "flex-firmware-update",
     "owners": [ "nicholasbishop@google.com", "chromeos-flex-eng@google.com" ],
-    "expiry_milestone": 136
+    "expiry_milestone": 140
   },
   {
     "name": "floating-snackbar",
@@ -9424,11 +9431,6 @@
     "name": "webxr-hand-anonymization",
     "owners": [ "//components/webxr/OWNERS", "xr-dev@chromium.org" ],
     "expiry_milestone": 150
-  },
-  {
-    "name": "webxr-hand-input",
-    "owners": [ "//components/webxr/OWNERS", "xr-dev@chromium.org" ],
-    "expiry_milestone": 136
   },
   {
     "name": "webxr-incubations",

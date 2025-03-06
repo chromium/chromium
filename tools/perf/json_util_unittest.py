@@ -11,6 +11,8 @@ from unittest import mock
 import json_util
 from parameterized import parameterized  # pylint: disable=import-error
 
+# pylint: disable=too-many-lines
+
 
 class JsonUtilTest(unittest.TestCase):
 
@@ -348,7 +350,7 @@ class JsonUtilTest(unittest.TestCase):
     with self.subTest(name='generate_synthetic_measurements'):
       agent = json_util.JsonUtil(generate_synthetic_measurements=True)
       agent.add(result2_json)
-      synthetic_measurements = {
+      synthetic_measurements_1 = {
           'measurements': {
               'stat': [
                   {
@@ -368,7 +370,109 @@ class JsonUtilTest(unittest.TestCase):
               'subtest_1': 'Speedometer3',
           },
       }
-      expected['results'].extend([synthetic_measurements])
+      synthetic_measurements_2 = {
+          'measurements': {
+              'stat': [
+                  {
+                      'value': 'min',
+                      'measurement': 130.90000000037253
+                  },
+                  {
+                      'value': 'error',
+                      'measurement': 13.676537086499565
+                  },
+              ]
+          },
+          'key': {
+              'improvement_direction': 'down',
+              'unit': 'ms_smallerIsBetter',
+              'test': 'Editor-TipTap_min',
+              'subtest_1': 'Speedometer3',
+          },
+      }
+      synthetic_measurements_3 = {
+          'measurements': {
+              'stat': [
+                  {
+                      'value': 'max',
+                      'measurement': 172.90000000130385
+                  },
+                  {
+                      'value': 'error',
+                      'measurement': 13.676537086499565
+                  },
+              ]
+          },
+          'key': {
+              'improvement_direction': 'down',
+              'unit': 'ms_smallerIsBetter',
+              'test': 'Editor-TipTap_max',
+              'subtest_1': 'Speedometer3',
+          },
+      }
+      synthetic_measurements_4 = {
+          'measurements': {
+              'stat': [
+                  {
+                      'value': 'sum',
+                      'measurement': 1406.9000000022352
+                  },
+                  {
+                      'value': 'error',
+                      'measurement': 13.676537086499565
+                  },
+              ]
+          },
+          'key': {
+              'improvement_direction': 'down',
+              'unit': 'ms_smallerIsBetter',
+              'test': 'Editor-TipTap_sum',
+              'subtest_1': 'Speedometer3',
+          },
+      }
+      synthetic_measurements_5 = {
+          'measurements': {
+              'stat': [
+                  {
+                      'value': 'count',
+                      'measurement': 10.0
+                  },
+                  {
+                      'value': 'error',
+                      'measurement': 13.676537086499565
+                  },
+              ]
+          },
+          'key': {
+              'improvement_direction': 'up',
+              'unit': 'unitless_biggerIsBetter',
+              'test': 'Editor-TipTap_count',
+              'subtest_1': 'Speedometer3',
+          },
+      }
+      synthetic_measurements_6 = {
+          'measurements': {
+              'stat': [
+                  {
+                      'value': 'error',
+                      'measurement': 13.676537086499565
+                  },
+              ]
+          },
+          'key': {
+              'improvement_direction': 'down',
+              'unit': 'ms_smallerIsBetter',
+              'test': 'Editor-TipTap_std',
+              'subtest_1': 'Speedometer3',
+          },
+      }
+      expected['results'].extend([
+          synthetic_measurements_1,
+          synthetic_measurements_2,
+          synthetic_measurements_3,
+          synthetic_measurements_4,
+          synthetic_measurements_5,
+          synthetic_measurements_6])
       got = agent.process(details)
       self.assertDictEqual(got, expected)
     with self.subTest(name='generate_synthetic_measurements_with_subtest'):
@@ -383,8 +487,18 @@ class JsonUtilTest(unittest.TestCase):
               'storyTags'] = 'f0bb92d7-5ab2-42ed-ad7f-d79018aa3b61'
       key['subtest_1'] = 'browse_news'
       key['subtest_2'] = 'browse_news_nytimes_2020'
-      synthetic_measurements['key']['subtest_1'] = 'browse_news'
-      synthetic_measurements['key']['subtest_2'] = 'browse_news_nytimes_2020'
+      synthetic_measurements_1['key']['subtest_1'] = 'browse_news'
+      synthetic_measurements_1['key']['subtest_2'] = 'browse_news_nytimes_2020'
+      synthetic_measurements_2['key']['subtest_1'] = 'browse_news'
+      synthetic_measurements_2['key']['subtest_2'] = 'browse_news_nytimes_2020'
+      synthetic_measurements_3['key']['subtest_1'] = 'browse_news'
+      synthetic_measurements_3['key']['subtest_2'] = 'browse_news_nytimes_2020'
+      synthetic_measurements_4['key']['subtest_1'] = 'browse_news'
+      synthetic_measurements_4['key']['subtest_2'] = 'browse_news_nytimes_2020'
+      synthetic_measurements_5['key']['subtest_1'] = 'browse_news'
+      synthetic_measurements_5['key']['subtest_2'] = 'browse_news_nytimes_2020'
+      synthetic_measurements_6['key']['subtest_1'] = 'browse_news'
+      synthetic_measurements_6['key']['subtest_2'] = 'browse_news_nytimes_2020'
       expected = {
           'version': 1,
           'git_hash': 'CP:1405221',
@@ -393,7 +507,14 @@ class JsonUtilTest(unittest.TestCase):
               'bot': 'win-10-perf',
               'benchmark': 'speedometer3',
           },
-          'results': [measurement, synthetic_measurements],
+          'results': [
+              measurement,
+              synthetic_measurements_1,
+              synthetic_measurements_2,
+              synthetic_measurements_3,
+              synthetic_measurements_4,
+              synthetic_measurements_5,
+              synthetic_measurements_6],
           'links': links,
       }
       agent.add(result2_json_copy)
@@ -558,6 +679,97 @@ class JsonUtilTest(unittest.TestCase):
                       'test': 'abc_avg',
                   },
               },
+              {
+                  'measurements': {
+                      'stat': [
+                          {
+                              'value': 'min',
+                              'measurement': 1.0
+                          },
+                          {
+                              'value': 'error',
+                              'measurement': 1.0
+                          },
+                      ],
+                  },
+                  'key': {
+                      'improvement_direction': 'down',
+                      'unit': 'ms_smallerIsBetter',
+                      'test': 'abc_min',
+                  },
+              },
+              {
+                  'measurements': {
+                      'stat': [
+                          {
+                              'value': 'max',
+                              'measurement': 3.0
+                          },
+                          {
+                              'value': 'error',
+                              'measurement': 1.0
+                          },
+                      ],
+                  },
+                  'key': {
+                      'improvement_direction': 'down',
+                      'unit': 'ms_smallerIsBetter',
+                      'test': 'abc_max',
+                  },
+              },
+              {
+                  'measurements': {
+                      'stat': [
+                          {
+                              'value': 'sum',
+                              'measurement': 6.0
+                          },
+                          {
+                              'value': 'error',
+                              'measurement': 1.0
+                          },
+                      ],
+                  },
+                  'key': {
+                      'improvement_direction': 'down',
+                      'unit': 'ms_smallerIsBetter',
+                      'test': 'abc_sum',
+                  },
+              },
+              {
+                  'measurements': {
+                      'stat': [
+                          {
+                              'value': 'count',
+                              'measurement': 3.0
+                          },
+                          {
+                              'value': 'error',
+                              'measurement': 1.0
+                          },
+                      ],
+                  },
+                  'key': {
+                      'improvement_direction': 'up',
+                      'unit': 'unitless_biggerIsBetter',
+                      'test': 'abc_count',
+                  },
+              },
+              {
+                  'measurements': {
+                      'stat': [
+                          {
+                              'value': 'error',
+                              'measurement': 1.0
+                          },
+                      ],
+                  },
+                  'key': {
+                      'improvement_direction': 'down',
+                      'unit': 'ms_smallerIsBetter',
+                      'test': 'abc_std',
+                  },
+              },
           ],
       ),
       (
@@ -625,6 +837,107 @@ class JsonUtilTest(unittest.TestCase):
                       'improvement_direction': 'down',
                       'unit': 'ms_smallerIsBetter',
                       'test': 'abc_avg',
+                      'subtest_1': 'subtest',
+                      'subtest_2': 'subtest2',
+                  },
+              },
+              {
+                  'measurements': {
+                      'stat': [
+                          {
+                              'value': 'min',
+                              'measurement': 1.0
+                          },
+                          {
+                              'value': 'error',
+                              'measurement': 1.0
+                          },
+                      ],
+                  },
+                  'key': {
+                      'improvement_direction': 'down',
+                      'unit': 'ms_smallerIsBetter',
+                      'test': 'abc_min',
+                      'subtest_1': 'subtest',
+                      'subtest_2': 'subtest2',
+                  },
+              },
+              {
+                  'measurements': {
+                      'stat': [
+                          {
+                              'value': 'max',
+                              'measurement': 3.0
+                          },
+                          {
+                              'value': 'error',
+                              'measurement': 1.0
+                          },
+                      ],
+                  },
+                  'key': {
+                      'improvement_direction': 'down',
+                      'unit': 'ms_smallerIsBetter',
+                      'test': 'abc_max',
+                      'subtest_1': 'subtest',
+                      'subtest_2': 'subtest2',
+                  },
+              },
+              {
+                  'measurements': {
+                      'stat': [
+                          {
+                              'value': 'sum',
+                              'measurement': 6.0
+                          },
+                          {
+                              'value': 'error',
+                              'measurement': 1.0
+                          },
+                      ],
+                  },
+                  'key': {
+                      'improvement_direction': 'down',
+                      'unit': 'ms_smallerIsBetter',
+                      'test': 'abc_sum',
+                      'subtest_1': 'subtest',
+                      'subtest_2': 'subtest2',
+                  },
+              },
+              {
+                  'measurements': {
+                      'stat': [
+                          {
+                              'value': 'count',
+                              'measurement': 3.0
+                          },
+                          {
+                              'value': 'error',
+                              'measurement': 1.0
+                          },
+                      ],
+                  },
+                  'key': {
+                      'improvement_direction': 'up',
+                      'unit': 'unitless_biggerIsBetter',
+                      'test': 'abc_count',
+                      'subtest_1': 'subtest',
+                      'subtest_2': 'subtest2',
+                  },
+              },
+              {
+                  'measurements': {
+                      'stat': [
+                          {
+                              'value': 'error',
+                              'measurement': 1.0
+                          },
+                      ],
+                  },
+                  'key': {
+                      'improvement_direction': 'down',
+                      'unit': 'ms_smallerIsBetter',
+                      'test': 'abc_std',
                       'subtest_1': 'subtest',
                       'subtest_2': 'subtest2',
                   },

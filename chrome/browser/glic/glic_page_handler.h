@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_PAGE_HANDLER_H_
 #define CHROME_BROWSER_GLIC_GLIC_PAGE_HANDLER_H_
 
+#include <vector>
+
+#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -61,11 +64,10 @@ class GlicPageHandler : public glic::mojom::PageHandler {
                     base::TimeDelta duration,
                     ResizeWidgetCallback callback) override;
 
-  void IsProfileEnabled(IsProfileEnabledCallback callback) override;
-
   void WebUiStateChanged(glic::mojom::WebUiState new_state) override;
 
  private:
+  void EnableChange();
   GlicKeyedService* GetGlicService();
 
   // There should at most one WebClientHandler at a time. A new one is created
@@ -77,6 +79,7 @@ class GlicPageHandler : public glic::mojom::PageHandler {
   mojo::Receiver<glic::mojom::PageHandler> receiver_;
   mojo::Remote<glic::mojom::Page> page_;
   mojo::Remote<glic::mojom::WebClient> web_client_;
+  std::vector<base::CallbackListSubscription> subscriptions_;
   base::WeakPtrFactory<GlicPageHandler> weak_ptr_factory_{this};
 };
 

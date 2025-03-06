@@ -286,7 +286,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': 'cd498be64c496b943e002a018d0907739c19799d',
+  'src_internal_revision': 'a70bd4b62c546f4720699b0037d733a1a4676053',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
@@ -294,7 +294,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': 'b389260183010a183ae650c7f4556efdd248a372',
+  'v8_revision': '78f016f51e9feca18082c3dc29b2c8034b5fb25b',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -310,7 +310,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
-  'boringssl_revision': '783ffa84ecf0017dccd5c82151729b0e68974a9e',
+  'boringssl_revision': '620a50da70551c1dbe94e64ba74c0967913203ba',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Fuchsia sdk
   # and whatever else without interference from each other.
@@ -382,7 +382,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '6f29fce188fe574a774e53359d3e6a24a8f0e7fd',
+  'devtools_frontend_revision': '1460ded4b6c32b1578774fd60c488f7aaeabd437',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1141,7 +1141,7 @@ deps = {
   },
 
   'src/chrome/release_scripts': {
-      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '2f6396703b3e06d60d2be2e8a487af0433a64c0f',
+      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + 'df1c348790738b98b12914d00c01c525fc8c804e',
       'condition': 'checkout_chrome_release_scripts',
   },
 
@@ -1470,7 +1470,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '4205af8329d93c52f825ba2210641f6c0b380d2e',
+    '33b6c7a3af748cc737b1a62b10ed6299ba033c02',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1629,7 +1629,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'fctKGF9iSV5EYY1z5I3sYTJLW4lCARmCDMtOtvMsNcYC',
+          'version': 'WKY6e5N8jvYdALeO7J5bPt01a7TY2NJg47PVvIcaBqcC',
       },
     ],
     'condition': 'checkout_android and non_git_source',
@@ -2308,7 +2308,7 @@ deps = {
   },
 
   'src/third_party/libjpeg_turbo':
-    Var('chromium_git') + '/chromium/deps/libjpeg_turbo.git' + '@' + '927aabfcd26897abb9776ecf2a6c38ea5bb52ab6',
+    Var('chromium_git') + '/chromium/deps/libjpeg_turbo.git' + '@' + 'e14cbfaa85529d47f9f55b0f104a579c1061f9ad',
 
   'src/third_party/liblouis/src': {
       'url': Var('chromium_git') + '/external/liblouis-github.git' + '@' + '9700847afb92cb35969bdfcbbfbbb74b9c7b3376',
@@ -2845,7 +2845,7 @@ deps = {
     Var('chromium_git') + '/external/khronosgroup/webgl.git' + '@' + '450cceb587613ac1469c5a131fac15935c99e0e7',
 
   'src/third_party/webgpu-cts/src':
-    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + '4f338fe8c2774df69c53e940e69f6b9c957ace6c',
+    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + 'e787be06eef7b4538bda75a404efc15da6c5fff0',
 
   'src/third_party/webpagereplay':
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
@@ -4596,7 +4596,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '839d041ef553c34d8b32803b7caced547d15207e',
+        '7632815b1575a0763b4f9f01c10d9fc66d55758a',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

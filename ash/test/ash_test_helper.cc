@@ -392,12 +392,6 @@ void AshTestHelper::SetUp(InitParams init_params) {
 
   shell->system_tray_model()->SetClient(system_tray_client_.get());
   prefs_provider_ = std::make_unique<TestPrefServiceProvider>();
-  session_controller_client_ = std::make_unique<TestSessionControllerClient>(
-      shell->session_controller(), prefs_provider_.get(),
-      init_params.create_signin_pref_service);
-  session_controller_client_->set_pref_service_must_exist(
-      !init_params.auto_create_prefs_services);
-  session_controller_client_->InitializeAndSetClient();
 
   // Requires the AppListController the Shell creates.
   app_list_test_helper_ = std::make_unique<AppListTestHelper>();
@@ -458,6 +452,13 @@ void AshTestHelper::SetUp(InitParams init_params) {
   }
 
   fwupd_download_client_ = std::make_unique<FakeFwupdDownloadClient>();
+
+  session_controller_client_ = std::make_unique<TestSessionControllerClient>(
+      shell->session_controller(), prefs_provider_.get(),
+      init_params.create_signin_pref_service);
+  session_controller_client_->set_pref_service_must_exist(
+      !init_params.auto_create_prefs_services);
+  session_controller_client_->InitializeAndSetClient();
 
   // Sign-in after UI is shown.
   if (init_params.start_session) {

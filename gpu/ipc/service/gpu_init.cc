@@ -1204,7 +1204,7 @@ void GpuInit::SetSkiaBackendType() {
   // Record the Skia backend type on GPU initialization.
   UMA_HISTOGRAM_ENUMERATION("GPU.SkiaBackendType", skia_backend_type);
   // Record SkiaBackendType as gr-context-type crash key.
-  static crash_reporter::CrashKeyString<16> crash_key("gr-context-type");
+  static crash_reporter::CrashKeyString<24> crash_key("gr-context-type");
   crash_key.Set(SkiaBackendTypeToString(skia_backend_type));
 }
 

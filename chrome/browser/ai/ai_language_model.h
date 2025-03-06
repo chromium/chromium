@@ -165,7 +165,7 @@ class AILanguageModel : public AIContextBoundObject,
       const optimization_guide::proto::Any& any);
 
   // `blink::mojom::AILanguageModel` implementation.
-  void Prompt(on_device_model::mojom::InputPtr input,
+  void Prompt(std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
               mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                   pending_responder) override;
   void Fork(
@@ -181,8 +181,7 @@ class AILanguageModel : public AIContextBoundObject,
   // and passes the session information back through the callback.
   void SetInitialPrompts(
       const std::optional<std::string> system_prompt,
-      std::vector<blink::mojom::AILanguageModelInitialPromptPtr>
-          initial_prompts,
+      std::vector<blink::mojom::AILanguageModelPromptPtr> initial_prompts,
       CreateLanguageModelCallback callback);
   blink::mojom::AILanguageModelInstanceInfoPtr GetLanguageModelInstanceInfo();
   mojo::PendingRemote<blink::mojom::AILanguageModel> TakePendingRemote();

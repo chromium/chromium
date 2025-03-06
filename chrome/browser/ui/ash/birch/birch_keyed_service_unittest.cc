@@ -575,10 +575,6 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
     return version_info::GetVersion().components()[0];
   }
 
-  TestSessionControllerClient* GetSessionControllerClient() {
-    return ash_test_helper()->test_session_controller_client();
-  }
-
   BirchLostMediaProvider* GetLostMediaProvider() {
     return static_cast<BirchLostMediaProvider*>(
         birch_keyed_service()->GetLostMediaProvider());

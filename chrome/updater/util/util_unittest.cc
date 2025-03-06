@@ -58,9 +58,8 @@ TEST_P(UtilTagArgsTest, AppArgsAndAP) {
     std::optional<tagging::AppArgs> app_args =
         GetAppArgs("8a69f345-c564-463c-aff1-a69d9e530f96");
     ASSERT_NE(app_args, std::nullopt);
-    EXPECT_STREQ(app_args->app_id.c_str(),
-                 "8a69f345-c564-463c-aff1-a69d9e530f96");
-    EXPECT_STREQ(app_args->app_name.c_str(), "TestApp");
+    EXPECT_EQ(app_args->app_id, "8a69f345-c564-463c-aff1-a69d9e530f96");
+    EXPECT_EQ(app_args->app_name, "TestApp");
   }
 }
 

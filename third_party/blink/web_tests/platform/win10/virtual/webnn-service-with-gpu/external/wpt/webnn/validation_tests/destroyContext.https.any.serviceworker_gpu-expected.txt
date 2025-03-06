@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+[FAIL] Context will be lost by destroyed.
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter."
+[FAIL] Context can be destroyed twice.
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter."
+[FAIL] Destroyed context can not build operator.
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter."
+[FAIL] Destroyed context can not create graph builder.
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter."
+[FAIL] Destroyed context can not build graph.
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter."
+[FAIL] Destroyed context can not dispatch.
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter."
+[FAIL] Executing dispatch() before context destroyed is OK.
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter."
+[FAIL] Destroyed context can not create tensor.
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter."
+[FAIL] Destroyed context can not read tensor.
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter."
+[FAIL] Pending promise of readtensor() will be rejected immediately when context is destroyed.
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter."
+[FAIL] Destroyed context can not write tensor.
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter."
+Harness: the test ran to completion.
+

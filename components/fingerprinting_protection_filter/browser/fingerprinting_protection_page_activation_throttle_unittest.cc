@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/strings/to_string.h"
+#include "base/test/metrics/histogram_enum_reader.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -970,9 +971,30 @@ TEST_P(FPFPageActivationThrottleTestGetActivationTest,
   EXPECT_EQ(activation.decision, test_case.expected_decision);
 }
 
-// TODO(crbug.com/366267410): Add unittest to check the equivalence of the
-// ExceptionSource enum defined in
-// `fingerprinting_protection_activatoin_throttle.h` with the associated
-// definition in `enums.xml`
+// Filepath is not found on Android devices, checking on desktop should be
+// sufficient.
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(FPFPageActivationThrottleTest, ExceptionSourceHistograms) {
+  std::optional<base::HistogramEnumEntryMap> sources;
+  std::vector<std::string> missing_sources;
+  {
+    sources =
+        base::ReadEnumFromEnumsXml("FingerprintingProtectionExceptionSource");
+    ASSERT_TRUE(sources.has_value());
+  }
+  for (int i = 0; i <= static_cast<int>(ExceptionSource::EXCEPTION_SOURCE_MAX);
+       ++i) {
+    if (!sources->contains(i)) {
+      missing_sources.push_back(base::NumberToString(i));
+    }
+  }
+  ASSERT_TRUE(missing_sources.empty())
+      << "Exception sources: " << base::JoinString(missing_sources, ", ")
+      << " configured in fingerprinting_protection_page_activation_throttle.h "
+         "but no corresponding enum values were added to "
+         "FingerprintingProtectionExceptionSource enum in "
+         "tools/metrics/histograms/enums.xml.";
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace fingerprinting_protection_filter

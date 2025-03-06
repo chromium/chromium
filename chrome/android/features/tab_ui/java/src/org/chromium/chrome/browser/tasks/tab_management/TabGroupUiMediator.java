@@ -290,7 +290,7 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
                         int numTabs = 0;
                         TabGroupModelFilter filter = getCurrentTabGroupModelFilter();
                         if (mCurrentTabGroupId != null && filter.isTabInTabGroup(tab)) {
-                            numTabs = filter.getRelatedTabCountForRootId(tab.getRootId());
+                            numTabs = filter.getTabCountForGroup(tab.getTabGroupId());
                         }
 
                         RecordHistogram.recordCount1MHistogram(

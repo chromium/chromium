@@ -31,6 +31,27 @@ public final class HubColors {
 
     private HubColors() {}
 
+    /**
+     * Gets the color scheme for a given incognito status.
+     *
+     * @param isIncognito The incognito status.
+     */
+    public static @HubColorScheme int getColorSchemeFromIncognitoStatus(boolean isIncognito) {
+        return isIncognito ? HubColorScheme.INCOGNITO : HubColorScheme.DEFAULT;
+    }
+
+    /**
+     * Gets the background color for a given incognito status.
+     *
+     * @param context The current context.
+     * @param isIncognito The incognito status.
+     */
+    public static @ColorInt int getBackgroundColorFromIncognitoStatus(
+            Context context, boolean isIncognito) {
+        @HubColorScheme int colorScheme = getColorSchemeFromIncognitoStatus(isIncognito);
+        return getBackgroundColor(context, colorScheme);
+    }
+
     /** Returns the color scheme from a pane with a fallback for null. */
     public static @HubColorScheme int getColorSchemeSafe(@Nullable Pane pane) {
         return pane == null ? HubColorScheme.DEFAULT : pane.getColorScheme();

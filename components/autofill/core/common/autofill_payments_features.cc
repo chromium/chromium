@@ -211,6 +211,15 @@ BASE_FEATURE(kAutofillRemovePaymentsButterDropdown,
              "AutofillRemovePaymentsButterDropdown",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_IOS)
+// When enabled, save card bottomsheet will be shown when the user has not
+// previously rejected the offer to save the card, and both a valid expiry date
+// and cardholder name are present.
+BASE_FEATURE(kAutofillSaveCardBottomSheet,
+             "AutofillSaveCardBottomSheet",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // If enabled, we will store autofill server card data in shared storage.
 BASE_FEATURE(kAutofillSharedStorageServerCardData,
              "AutofillSharedStorageServerCardData",

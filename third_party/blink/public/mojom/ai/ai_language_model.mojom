@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "services/on_device_model/public/mojom/on_device_model.mojom";
+import "skia/public/mojom/bitmap.mojom";
 import "third_party/blink/public/mojom/ai/ai_common.mojom";
 import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
 
@@ -47,20 +48,30 @@ struct AILanguageModelInstanceInfo {
   array<AILanguageCode>? expected_input_languages;
 };
 
-// The enum describes the possible roles in the initial prompt.
-enum AILanguageModelInitialPromptRole {
+// The role for a given prompt. See AILanguageModelPromptRole in IDL.
+enum AILanguageModelPromptRole {
   kSystem = 0,
   kUser = 1,
   kAssistant = 2,
-
-  // Append new line here
 };
 
-// Each initial prompt contains a role and the actual content.
-struct AILanguageModelInitialPrompt {
-  AILanguageModelInitialPromptRole role;
-  // This can be any arbitrary string taken from the JavaScript API.
-  string content;
+// The supported prompt input content types. These each contain arbitrary data
+// provided via the JavaScript API. See AILanguageModelPromptContent in IDL.
+union AILanguageModelPromptContent {
+  // Text provided as input.
+  string text;
+
+  // Bitmap provided as input.
+  skia.mojom.BitmapMappedFromTrustedProcess bitmap;
+
+  // Audio provided as input.
+  on_device_model.mojom.AudioData audio;
+};
+
+// A prompt includes a role and content. See AILanguageModelPromptDict in IDL.
+struct AILanguageModelPrompt {
+  AILanguageModelPromptRole role;
+  AILanguageModelPromptContent content;
 };
 
 // This is used when creating a new AILanguageModel.
@@ -68,7 +79,7 @@ struct AILanguageModelCreateOptions {
   AILanguageModelSamplingParams? sampling_params;
   // This can be any arbitrary string taken from the JavaScript API.
   string? system_prompt;
-  array<AILanguageModelInitialPrompt> initial_prompts;
+  array<AILanguageModelPrompt> initial_prompts;
   array<AILanguageCode>? expected_input_languages;
 };
 
@@ -96,13 +107,11 @@ interface AILanguageModelCountPromptTokensClient {
   OnResult(uint32 number_of_tokens);
 };
 
-// A session for a model that allows executing an input and streaming the
-// output.
+// A session for prompting a model with inputs to obtain streaming responses.
 interface AILanguageModel {
-  // Prompts the model on the given input which can be an arbitrary string
-  // from the JavaScript API.
+  // Prompts the model with arbitrary content provided via the JavaScript API.
   Prompt(
-    on_device_model.mojom.Input input,
+    array<AILanguageModelPrompt> prompts,
     pending_remote<ModelStreamingResponder> pending_responder
   );
   // Creates a new session with the same configuration and existing context

@@ -58,6 +58,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
 
     private final @NonNull PaneBackStackHandler mPaneBackStackHandler;
     private final @NonNull ObservableSupplier<Tab> mCurrentTabSupplier;
+    private final @NonNull ObservableSupplier<Integer> mOverviewColorSupplier;
     private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
 
     /**
@@ -143,6 +144,10 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
                     EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
                             getSnackbarContainer(), edgeToEdgeSupplier);
         }
+
+        mOverviewColorSupplier = hubToolbarOverviewColorSupplier;
+        mHubLayoutController.setNewTabIncognitoStateListener(
+                this::setNewColorSchemeFromIncognitoStatus);
     }
 
     /** Removes the hub from the layout tree and cleans up resources. */
@@ -167,6 +172,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
             mEdgeToEdgePadAdjuster.destroy();
             mEdgeToEdgePadAdjuster = null;
         }
+        mHubLayoutController.setNewTabIncognitoStateListener(null);
     }
 
     @Override
@@ -222,6 +228,12 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
     /** Returns the view group to contain the snackbar. */
     public ViewGroup getSnackbarContainer() {
         return mHubPaneHostCoordinator.getSnackbarContainer();
+    }
+
+    private void setNewColorSchemeFromIncognitoStatus(boolean isIncognito) {
+        mHubToolbarCoordinator.setNewColorSchemeFromIncognitoStatus(isIncognito);
+        mHubPaneHostCoordinator.setNewColorSchemeFromTabIncognitoStatus(isIncognito);
+        mMainHubParent.setBackgroundColor(mOverviewColorSupplier.get());
     }
 
     private @Nullable Pane getFocusedPane() {

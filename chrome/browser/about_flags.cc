@@ -5548,9 +5548,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_VR)
-    {"webxr-hand-input", flag_descriptions::kWebXrHandInputName,
-     flag_descriptions::kWebXrHandInputDescription, kOsAll,
-     FEATURE_VALUE_TYPE(device::features::kWebXrHandInput)},
     {"webxr-projection-layers", flag_descriptions::kWebXrProjectionLayersName,
      flag_descriptions::kWebXrProjectionLayersDescription, kOsWin | kOsAndroid,
      FEATURE_VALUE_TYPE(device::features::kWebXrLayers)},

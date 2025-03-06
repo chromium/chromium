@@ -6,7 +6,7 @@
 
 #import <AppKit/AppKit.h>
 
-#include "base/mac/mac_util.h"
+#include "components/remote_cocoa/app_shim/features.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 
@@ -126,7 +126,8 @@ const double kThinControllerHeight = 0.5;
            selector:@selector(windowDidBecomeKey:)
                name:NSWindowDidBecomeKeyNotification
              object:nil];
-    if (base::mac::MacOSMajorVersion() >= 13) {
+    if (base::FeatureList::IsEnabled(
+            remote_cocoa::features::kFullscreenPermanentThinController)) {
       _thinTitlebarViewController =
           [[NSTitlebarAccessoryViewController alloc] init];
       NSView* thinView = [[NSView alloc] init];
