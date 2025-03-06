@@ -2699,8 +2699,6 @@ crbug.com/390467419 [ Mac11 ] external/wpt/geolocation/enabled-by-permission-pol
 crbug.com/390467419 [ Mac14 ] external/wpt/geolocation/enabled-by-permission-policy-attribute-redirect-on-load.https.sub.html [ Failure Timeout ]
 crbug.com/390467419 [ Linux ] external/wpt/geolocation/enabled-by-permission-policy-attribute-redirect-on-load.https.sub.html [ Timeout ]
 crbug.com/390467419 [ Win ] external/wpt/geolocation/enabled-by-permission-policy-attribute-redirect-on-load.https.sub.html [ Timeout ]
-crbug.com/389978322 [ Mac12 ] virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-fractional-offset.html [ Failure ]
-crbug.com/389978322 [ Mac13 ] virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-fractional-offset.html [ Failure ]
 crbug.com/389545685 [ Mac11 ] external/wpt/css/css-position/sticky/position-sticky-fractional-offset.html [ Failure ]
 crbug.com/389545685 [ Mac12 ] external/wpt/css/css-position/sticky/position-sticky-fractional-offset.html [ Failure ]
 crbug.com/389545685 [ Mac13 ] external/wpt/css/css-position/sticky/position-sticky-fractional-offset.html [ Failure ]
@@ -8525,7 +8523,6 @@ crbug.com/348486001 [ Win11-arm64 ] virtual/prerender2-fallback-prefetch-spec-ru
 crbug.com/348101805 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/cross-document-traversal-cross-document-nav.html [ Failure Pass ]
 
 # Flaky on Linux.
-crbug.com/324441376 [ Linux ] virtual/fractional-scroll-offsets/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Failure Pass ]
 crbug.com/324441376 [ Linux ] virtual/fluent-non-overlay-scrollbar/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Failure Pass ]
 crbug.com/324441376 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Failure Pass ]
 crbug.com/324441376 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/mouse-scrolling-on-div-scrollbar-rtl.html [ Failure Pass ]
