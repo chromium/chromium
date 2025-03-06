@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_cueing/contextual_cueing_helper.h"
 
+#include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -72,6 +74,9 @@ class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
     ON_CALL(*fake_optimization_guide_keyed_service,
             ShouldModelExecutionBeAllowedForUser)
         .WillByDefault(testing::Return(true));
+
+    // Bypass glic eligibility check.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(::switches::kGlicDev);
   }
 
   void TearDown() override {
