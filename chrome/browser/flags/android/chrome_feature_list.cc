@@ -307,6 +307,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kPartnerCustomizationsUma,
     &kQuickDeleteAndroidSurvey,
     &kReadAloud,
+    &kReadAloudAudioOverviews,
     &kReadAloudInOverflowMenuInCCT,
     &kReadAloudInMultiWindow,
     &kReadAloudBackgroundPlayback,
@@ -994,6 +995,10 @@ BASE_FEATURE(kQuickDeleteAndroidSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReadAloud, "ReadAloud", base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kReadAloudAudioOverviews,
+             "ReadAloudAudioOverviews",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReadAloudInOverflowMenuInCCT,
              "ReadAloudInOverflowMenuInCCT",

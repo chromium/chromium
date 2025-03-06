@@ -158,6 +158,7 @@ BASE_DECLARE_FEATURE(kPwaRestoreUiAtStartup);
 BASE_DECLARE_FEATURE(kPartnerCustomizationsUma);
 BASE_DECLARE_FEATURE(kQuickDeleteAndroidSurvey);
 BASE_DECLARE_FEATURE(kReadAloud);
+BASE_DECLARE_FEATURE(kReadAloudAudioOverviews);
 BASE_DECLARE_FEATURE(kReadAloudInOverflowMenuInCCT);
 BASE_DECLARE_FEATURE(kReadAloudInMultiWindow);
 BASE_DECLARE_FEATURE(kReadAloudBackgroundPlayback);

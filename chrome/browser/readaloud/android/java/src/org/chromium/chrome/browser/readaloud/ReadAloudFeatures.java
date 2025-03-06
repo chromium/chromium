@@ -111,6 +111,10 @@ public final class ReadAloudFeatures {
         return true;
     }
 
+    public static boolean isAudioOverviewsAllowed() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS);
+    }
+
     public static @IneligibilityReason int getIneligibilityReason() {
         return sIneligibilityReason;
     }
