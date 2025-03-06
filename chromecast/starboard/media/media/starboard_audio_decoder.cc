@@ -180,8 +180,7 @@ BufferStatus StarboardAudioDecoder::PushBuffer(CastDecoderBuffer* buffer) {
   StarboardSampleInfo sample = {};
   sample.type = kStarboardMediaTypeAudio;
   sample.timestamp = buffer->timestamp();
-  sample.side_data = nullptr;
-  sample.side_data_count = 0;
+  sample.side_data = base::span<const StarboardSampleSideData>();
   sample.audio_sample_info = *audio_sample_info_;
 
   decoded_bytes_ += size_of_buffer;

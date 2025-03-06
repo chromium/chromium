@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "chromecast/public/graphics_types.h"
 #include "chromecast/public/media/cast_decoder_buffer.h"
@@ -198,8 +199,7 @@ BufferStatus StarboardVideoDecoder::PushBuffer(CastDecoderBuffer* buffer) {
   StarboardSampleInfo sample = {};
   sample.type = kStarboardMediaTypeVideo;
   sample.timestamp = buffer->timestamp();
-  sample.side_data = nullptr;
-  sample.side_data_count = 0;
+  sample.side_data = base::span<const StarboardSampleSideData>();
   sample.video_sample_info = *video_sample_info_;
 
   decoded_bytes_ += copy_size;

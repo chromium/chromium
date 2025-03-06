@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/starboard/media/media/starboard_api_wrapper_base.h"
 
 #include <starboard/drm.h>
@@ -19,6 +14,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "chromecast/starboard/chromecast/starboard_adapter/public/cast_starboard_api_adapter.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
@@ -83,7 +79,8 @@ void OnPlayerError(SbPlayer player,
   const auto* handler =
       static_cast<const StarboardPlayerCallbackHandler*>(context);
   handler->player_error_fn(player, handler->context,
-                           static_cast<StarboardPlayerError>(error), message);
+                           static_cast<StarboardPlayerError>(error),
+                           std::string(message ? message : ""));
 }
 
 // Converts starboard's representation of a key ID to cast's version-agnostic
@@ -353,15 +350,14 @@ SbPlayerSampleInfo StarboardApiWrapperBase::ToSbPlayerSampleInfo(
   out_info.buffer_size = in_info.buffer_size;
   out_info.timestamp = in_info.timestamp;
 
-  side_data.reserve(in_info.side_data_count);
-  for (int i = 0; i < in_info.side_data_count; ++i) {
-    const StarboardSampleSideData& in_side_data = in_info.side_data[i];
+  side_data.reserve(in_info.side_data.size());
+  for (const StarboardSampleSideData& in_side_data : in_info.side_data) {
     SbPlayerSampleSideData out_side_data;
 
     out_side_data.type =
         static_cast<SbPlayerSampleSideDataType>(in_side_data.type);
-    out_side_data.data = in_side_data.data;
-    out_side_data.size = in_side_data.size;
+    out_side_data.data = in_side_data.data.data();
+    out_side_data.size = in_side_data.data.size();
 
     side_data.push_back(std::move(out_side_data));
   }
@@ -399,13 +395,11 @@ SbPlayerSampleInfo StarboardApiWrapperBase::ToSbPlayerSampleInfo(
            in_drm_info.identifier_size);
     drm_info.identifier_size = in_drm_info.identifier_size;
 
-    subsample_mappings.reserve(in_drm_info.subsample_count);
-    for (int i = 0; i < in_drm_info.subsample_count; ++i) {
+    subsample_mappings.reserve(in_drm_info.subsample_mapping.size());
+    for (const auto& in_mapping : in_drm_info.subsample_mapping) {
       SbDrmSubSampleMapping mapping;
-      mapping.clear_byte_count =
-          in_drm_info.subsample_mapping[i].clear_byte_count;
-      mapping.encrypted_byte_count =
-          in_drm_info.subsample_mapping[i].encrypted_byte_count;
+      mapping.clear_byte_count = in_mapping.clear_byte_count;
+      mapping.encrypted_byte_count = in_mapping.encrypted_byte_count;
       subsample_mappings.push_back(std::move(mapping));
     }
     drm_info.subsample_count = subsample_mappings.size();
@@ -419,22 +413,21 @@ SbPlayerSampleInfo StarboardApiWrapperBase::ToSbPlayerSampleInfo(
   return out_info;
 }
 
-void StarboardApiWrapperBase::WriteSample(void* player,
-                                          StarboardMediaType type,
-                                          StarboardSampleInfo* sample_infos,
-                                          int sample_infos_count) {
+void StarboardApiWrapperBase::WriteSample(
+    void* player,
+    StarboardMediaType type,
+    base::span<const StarboardSampleInfo> sample_infos) {
   std::vector<SbPlayerSampleInfo> samples;
   std::vector<std::vector<SbPlayerSampleSideData>> side_data;
   SbDrmSampleInfo drm_info;
   std::vector<SbDrmSubSampleMapping> subsample_mappings;
-  for (int i = 0; i < sample_infos_count; ++i) {
+  for (const StarboardSampleInfo& sample_info : sample_infos) {
     side_data.push_back({});
-    samples.push_back(ToSbPlayerSampleInfo(sample_infos[i], side_data.back(),
+    samples.push_back(ToSbPlayerSampleInfo(sample_info, side_data.back(),
                                            drm_info, subsample_mappings));
   }
   CallWriteSamples(static_cast<SbPlayer>(player),
-                   static_cast<SbMediaType>(type), samples.data(),
-                   sample_infos_count);
+                   static_cast<SbMediaType>(type), samples);
 }
 
 StarboardMediaSupportType StarboardApiWrapperBase::CanPlayMimeAndKeySystem(

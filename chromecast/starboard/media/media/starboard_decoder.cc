@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
@@ -198,8 +199,8 @@ BufferStatus StarboardDecoder::PushBufferInternal(
   sample_info.buffer_size = buffer_data_size;
   sample_info.drm_info = drm_info.GetDrmSampleInfo();
 
-  starboard_->WriteSample(player_, media_type_, &sample_info,
-                          /*sample_infos_count=*/1);
+  starboard_->WriteSample(player_, media_type_,
+                          base::span_from_ref(sample_info));
 
   // Returning kBufferPending here means that another buffer will not be pushed
   // until Decoder::Delegate::OnPushBufferComplete is called.

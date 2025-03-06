@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/starboard/media/media/starboard_audio_decoder.h"
 
 #include <cstdint>
@@ -226,7 +221,7 @@ TEST_F(StarboardAudioDecoderTest, PushesBufferToStarboard) {
   EXPECT_CALL(
       *starboard_,
       WriteSample(&fake_player_, kStarboardMediaTypeAudio,
-                  Pointee(MatchesAudioConfigAndBuffer(config, buffer)), 1))
+                  ElementsAre(MatchesAudioConfigAndBuffer(config, buffer))))
       .Times(1);
 
   StarboardAudioDecoder decoder(starboard_.get());
@@ -343,25 +338,23 @@ TEST_F(StarboardAudioDecoderTest, PopulatesDrmInfoInSamples) {
 
   EXPECT_CALL(
       *starboard_,
-      WriteSample(&fake_player_, kStarboardMediaTypeAudio,
-                  Pointee(AllOf(MatchesAudioConfigAndBuffer(config, buffer))),
-                  1))
-      .WillOnce(WithArg<2>([&actual_drm_info, &actual_subsamples](
-                               StarboardSampleInfo* sample_infos) {
-        // Since this is only called when the fourth argument is 1, that
-        // means that sample_infos_count is 1.
-        StarboardSampleInfo sample_info = sample_infos[0];
-        if (!sample_info.drm_info) {
-          return;
-        }
-        actual_drm_info = *sample_info.drm_info;
-        const int subsample_count = actual_drm_info.subsample_count;
-        if (subsample_count > 0) {
-          actual_subsamples.assign(
-              actual_drm_info.subsample_mapping,
-              actual_drm_info.subsample_mapping + subsample_count);
-        }
-      }));
+      WriteSample(
+          &fake_player_, kStarboardMediaTypeAudio,
+          ElementsAre(AllOf(MatchesAudioConfigAndBuffer(config, buffer)))))
+      .WillOnce(
+          WithArg<2>([&actual_drm_info, &actual_subsamples](
+                         base::span<const StarboardSampleInfo> sample_infos) {
+            // The "ElementsAre" matcher above ensures that there is exactly one
+            // element in sample_infos.
+            CHECK_EQ(sample_infos.size(), 1UL);
+            StarboardSampleInfo sample_info = sample_infos[0];
+            if (!sample_info.drm_info) {
+              return;
+            }
+            actual_drm_info = *sample_info.drm_info;
+            actual_subsamples.assign(actual_drm_info.subsample_mapping.begin(),
+                                     actual_drm_info.subsample_mapping.end());
+          }));
 
   StarboardAudioDecoder decoder(starboard_.get());
   MockDelegate delegate;
@@ -479,25 +472,23 @@ TEST_F(StarboardAudioDecoderTest,
 
   EXPECT_CALL(
       *starboard_,
-      WriteSample(&fake_player_, kStarboardMediaTypeAudio,
-                  Pointee(AllOf(MatchesAudioConfigAndBuffer(config, buffer))),
-                  1))
-      .WillOnce(WithArg<2>([&actual_drm_info, &actual_subsamples](
-                               StarboardSampleInfo* sample_infos) {
-        // Since this is only called when the fourth argument is 1, that
-        // means that sample_infos_count is 1.
-        StarboardSampleInfo sample_info = sample_infos[0];
-        if (!sample_info.drm_info) {
-          return;
-        }
-        actual_drm_info = *sample_info.drm_info;
-        const int subsample_count = actual_drm_info.subsample_count;
-        if (subsample_count > 0) {
-          actual_subsamples.assign(
-              actual_drm_info.subsample_mapping,
-              actual_drm_info.subsample_mapping + subsample_count);
-        }
-      }));
+      WriteSample(
+          &fake_player_, kStarboardMediaTypeAudio,
+          ElementsAre(AllOf(MatchesAudioConfigAndBuffer(config, buffer)))))
+      .WillOnce(
+          WithArg<2>([&actual_drm_info, &actual_subsamples](
+                         base::span<const StarboardSampleInfo> sample_infos) {
+            // The "ElementsAre" matcher above ensures that there is exactly one
+            // element in sample_infos.
+            CHECK_EQ(sample_infos.size(), 1UL);
+            StarboardSampleInfo sample_info = sample_infos[0];
+            if (!sample_info.drm_info) {
+              return;
+            }
+            actual_drm_info = *sample_info.drm_info;
+            actual_subsamples.assign(actual_drm_info.subsample_mapping.begin(),
+                                     actual_drm_info.subsample_mapping.end());
+          }));
 
   StarboardAudioDecoder decoder(starboard_.get());
   MockDelegate delegate;
@@ -583,12 +574,12 @@ TEST_F(StarboardAudioDecoderTest,
   EXPECT_CALL(
       *starboard_,
       WriteSample(&fake_player_, kStarboardMediaTypeAudio,
-                  Pointee(MatchesAudioConfigAndBuffer(config, buffer_1)), 1))
+                  ElementsAre(MatchesAudioConfigAndBuffer(config, buffer_1))))
       .Times(0);
   EXPECT_CALL(
       *starboard_,
       WriteSample(&fake_player_, kStarboardMediaTypeAudio,
-                  Pointee(MatchesAudioConfigAndBuffer(config, buffer_2)), 1))
+                  ElementsAre(MatchesAudioConfigAndBuffer(config, buffer_2))))
       .Times(1);
 
   StarboardAudioDecoder decoder(starboard_.get());
@@ -699,9 +690,8 @@ TEST_F(StarboardAudioDecoderTest, ConvertsPcmToS16ForPushBeforeInitialization) {
 
   EXPECT_CALL(*starboard_,
               WriteSample(&fake_player_, kStarboardMediaTypeAudio,
-                          Pointee(MatchesAudioConfigAndBuffer(
-                              resampled_config, expected_resampled_buffer)),
-                          1))
+                          ElementsAre(MatchesAudioConfigAndBuffer(
+                              resampled_config, expected_resampled_buffer))))
       .Times(1);
 
   StarboardAudioDecoder decoder(starboard_.get());

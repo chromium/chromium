@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/starboard/media/media/starboard_video_decoder.h"
 
 #include <optional>
@@ -177,7 +172,7 @@ TEST_F(StarboardVideoDecoderTest, PushesBufferToStarboard) {
   EXPECT_CALL(
       *starboard_,
       WriteSample(&fake_player_, kStarboardMediaTypeVideo,
-                  Pointee(MatchesVideoConfigAndBuffer(config, buffer)), 1))
+                  ElementsAre(MatchesVideoConfigAndBuffer(config, buffer))))
       .Times(1);
 
   StarboardVideoDecoder decoder(starboard_.get());
@@ -273,25 +268,23 @@ TEST_F(StarboardVideoDecoderTest, PopulatesDrmInfoInSamples) {
   std::vector<StarboardDrmSubSampleMapping> actual_subsamples;
   EXPECT_CALL(
       *starboard_,
-      WriteSample(&fake_player_, kStarboardMediaTypeVideo,
-                  Pointee(AllOf(MatchesVideoConfigAndBuffer(config, buffer))),
-                  1))
-      .WillOnce(WithArg<2>([&actual_drm_info, &actual_subsamples](
-                               StarboardSampleInfo* sample_infos) {
-        // Since this is only called when the fourth argument is 1, that
-        // means that sample_infos_count is 1.
-        StarboardSampleInfo sample_info = sample_infos[0];
-        if (!sample_info.drm_info) {
-          return;
-        }
-        actual_drm_info = *sample_info.drm_info;
-        const int subsample_count = actual_drm_info.subsample_count;
-        if (subsample_count > 0) {
-          actual_subsamples.assign(
-              actual_drm_info.subsample_mapping,
-              actual_drm_info.subsample_mapping + subsample_count);
-        }
-      }));
+      WriteSample(
+          &fake_player_, kStarboardMediaTypeVideo,
+          ElementsAre(AllOf(MatchesVideoConfigAndBuffer(config, buffer)))))
+      .WillOnce(
+          WithArg<2>([&actual_drm_info, &actual_subsamples](
+                         base::span<const StarboardSampleInfo> sample_infos) {
+            // The "ElementsAre" matcher above ensures that there is exactly one
+            // element in sample_infos.
+            CHECK_EQ(sample_infos.size(), 1UL);
+            StarboardSampleInfo sample_info = sample_infos[0];
+            if (!sample_info.drm_info) {
+              return;
+            }
+            actual_drm_info = *sample_info.drm_info;
+            actual_subsamples.assign(actual_drm_info.subsample_mapping.begin(),
+                                     actual_drm_info.subsample_mapping.end());
+          }));
 
   StarboardVideoDecoder decoder(starboard_.get());
   MockDelegate delegate;
@@ -408,25 +401,23 @@ TEST_F(StarboardVideoDecoderTest,
   std::vector<StarboardDrmSubSampleMapping> actual_subsamples;
   EXPECT_CALL(
       *starboard_,
-      WriteSample(&fake_player_, kStarboardMediaTypeVideo,
-                  Pointee(AllOf(MatchesVideoConfigAndBuffer(config, buffer))),
-                  1))
-      .WillOnce(WithArg<2>([&actual_drm_info, &actual_subsamples](
-                               StarboardSampleInfo* sample_infos) {
-        // Since this is only called when the fourth argument is 1, that
-        // means that sample_infos_count is 1.
-        StarboardSampleInfo sample_info = sample_infos[0];
-        if (!sample_info.drm_info) {
-          return;
-        }
-        actual_drm_info = *sample_info.drm_info;
-        const int subsample_count = actual_drm_info.subsample_count;
-        if (subsample_count > 0) {
-          actual_subsamples.assign(
-              actual_drm_info.subsample_mapping,
-              actual_drm_info.subsample_mapping + subsample_count);
-        }
-      }));
+      WriteSample(
+          &fake_player_, kStarboardMediaTypeVideo,
+          ElementsAre(AllOf(MatchesVideoConfigAndBuffer(config, buffer)))))
+      .WillOnce(
+          WithArg<2>([&actual_drm_info, &actual_subsamples](
+                         base::span<const StarboardSampleInfo> sample_infos) {
+            // The "ElementsAre" matcher above ensures that there is exactly one
+            // element in sample_infos.
+            CHECK_EQ(sample_infos.size(), 1UL);
+            StarboardSampleInfo sample_info = sample_infos[0];
+            if (!sample_info.drm_info) {
+              return;
+            }
+            actual_drm_info = *sample_info.drm_info;
+            actual_subsamples.assign(actual_drm_info.subsample_mapping.begin(),
+                                     actual_drm_info.subsample_mapping.end());
+          }));
 
   StarboardVideoDecoder decoder(starboard_.get());
   MockDelegate delegate;
@@ -565,12 +556,12 @@ TEST_F(StarboardVideoDecoderTest,
   EXPECT_CALL(
       *starboard_,
       WriteSample(&fake_player_, kStarboardMediaTypeVideo,
-                  Pointee(MatchesVideoConfigAndBuffer(config, buffer_1)), 1))
+                  ElementsAre(MatchesVideoConfigAndBuffer(config, buffer_1))))
       .Times(0);
   EXPECT_CALL(
       *starboard_,
       WriteSample(&fake_player_, kStarboardMediaTypeVideo,
-                  Pointee(MatchesVideoConfigAndBuffer(config, buffer_2)), 1))
+                  ElementsAre(MatchesVideoConfigAndBuffer(config, buffer_2))))
       .Times(1);
 
   StarboardVideoDecoder decoder(starboard_.get());
