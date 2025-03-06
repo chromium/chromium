@@ -41,7 +41,8 @@ namespace errors = manifest_errors;
 namespace {
 
 struct ManifestPermissions : public Extension::ManifestData {
-  ManifestPermissions(std::unique_ptr<const PermissionSet> permissions);
+  explicit ManifestPermissions(
+      std::unique_ptr<const PermissionSet> permissions);
   ~ManifestPermissions() override;
 
   std::unique_ptr<const PermissionSet> permissions;
