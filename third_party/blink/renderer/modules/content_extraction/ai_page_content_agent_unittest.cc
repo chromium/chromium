@@ -113,15 +113,14 @@ class AIPageContentAgentTest : public testing::Test {
     }
   }
 
-  void CheckTableNode(
-      const mojom::blink::AIPageContentNode& node,
-      std::optional<String> expected_table_name = std::nullopt) {
+  void CheckTableNode(const mojom::blink::AIPageContentNode& node,
+                      String expected_table_name = String()) {
     const auto& attributes = *node.content_attributes;
     EXPECT_EQ(attributes.attribute_type,
               mojom::blink::AIPageContentAttributeType::kTable);
     ASSERT_TRUE(attributes.table_data);
-    if (expected_table_name) {
-      EXPECT_EQ(attributes.table_data->table_name, *expected_table_name);
+    if (!expected_table_name.IsNull()) {
+      EXPECT_EQ(attributes.table_data->table_name, expected_table_name);
     }
   }
 

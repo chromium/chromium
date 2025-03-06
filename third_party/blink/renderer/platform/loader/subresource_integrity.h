@@ -55,9 +55,8 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
                                         const String& raw_headers,
                                         const FeatureContext*,
                                         IntegrityReport&);
-  static std::optional<String> GetSubresourceIntegrityHash(
-      const SegmentedBuffer*,
-      HashAlgorithm);
+  static String GetSubresourceIntegrityHash(const SegmentedBuffer*,
+                                            HashAlgorithm);
 
   static HashAlgorithm IntegrityAlgorithmToHashAlgorithm(IntegrityAlgorithm);
 

@@ -168,12 +168,12 @@ String GetIntegrityStringFromDigest(const DigestValue& digest,
   return reported_hash.ReleaseString();
 }
 
-std::optional<String> SubresourceIntegrity::GetSubresourceIntegrityHash(
+String SubresourceIntegrity::GetSubresourceIntegrityHash(
     const SegmentedBuffer* buffer,
     HashAlgorithm algorithm) {
   DigestValue digest;
   if (!ComputeDigest(algorithm, buffer, digest)) {
-    return std::nullopt;
+    return String();
   }
   return GetIntegrityStringFromDigest(digest, algorithm);
 }

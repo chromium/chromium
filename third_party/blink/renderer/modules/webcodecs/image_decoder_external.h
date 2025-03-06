@@ -155,7 +155,7 @@ class MODULES_EXPORT ImageDecoderExternal final
     Member<ImageDecodeResult> result;
     std::unique_ptr<base::AtomicFlag> abort_flag;
 
-    std::optional<String> range_error_message;
+    String range_error_message;
     Member<DOMException> exception;
   };
   HeapVector<Member<DecodeRequest>> pending_decodes_;
