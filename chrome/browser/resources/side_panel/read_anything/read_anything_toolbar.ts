@@ -19,7 +19,6 @@ import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/md_select.css.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import type {CrIconElement} from '//resources/cr_elements/cr_icon/cr_icon.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
@@ -117,6 +116,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       previewVoicePlaying: Object,
       areFontsLoaded_: Boolean,
       settingsPrefs: Object,
+      speechRate_: Number,
+      fontName_: String,
     };
   }
 
@@ -223,6 +224,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   ];
 
   rateOptions: number[] = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 4];
+
+  protected speechRate_: number = 1;
+  protected fontName_: string;
 
   private moreOptionsButtons_: MenuButton[] = [];
 
@@ -425,11 +429,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       currentFontIndex = 0;
       this.propagateFontChange_(this.fontOptions_[0]);
     }
-    if (this.isReadAloudEnabled_) {
-      this.setCheckMarkForMenu_(
-          this.$.fontMenu.getIfExists(), currentFontIndex);
-
-    } else {
+    this.fontName_ = this.fontOptions_[currentFontIndex];
+    if (!this.isReadAloudEnabled_) {
       const select = this.$.toolbarContainer.querySelector<HTMLSelectElement>(
           '#font-select');
       assert(select, 'no font select menu');
@@ -443,10 +444,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.updateLinkToggleButton();
 
     if (this.isReadAloudEnabled_) {
-      const speechRate = getCurrentSpeechRate();
-      this.setRateIcon_(speechRate);
-      this.setCheckMarkForMenu_(
-          this.$.rateMenu.getIfExists(), this.rateOptions.indexOf(speechRate));
+      this.speechRate_ = getCurrentSpeechRate();
 
       if (!chrome.readingMode.isPhraseHighlightingEnabled) {
         const highlightOn = chrome.readingMode.isHighlightOn();
@@ -470,12 +468,12 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.fontOptions_ = Object.assign([], chrome.readingMode.supportedFonts);
   }
 
-  private isFontItemSelected_(item: number): boolean {
-    return item !== this.fontOptions_.indexOf(chrome.readingMode.fontName);
+  private isFontItemSelected_(item: number, fontName: string): boolean {
+    return item === this.fontOptions_.indexOf(fontName);
   }
 
-  private isRateItemSelected_(item: number): boolean {
-    return item !== this.rateOptions.indexOf(getCurrentSpeechRate());
+  private isRateItemSelected_(item: number, speechRate: number): boolean {
+    return item === this.rateOptions.indexOf(speechRate);
   }
 
   // Instead of using areFontsLoaded_ directly in this method, we pass
@@ -602,18 +600,17 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     button.setAttribute('aria-label', title);
   }
 
-  private onFontClick_(event: DomRepeatEvent<string>) {
+  protected onFontClick_(event: DomRepeatEvent<string>) {
     this.logger_.logTextSettingsChange(ReadAnythingSettingsChange.FONT_CHANGE);
-    const fontName = event.model.item;
-    this.propagateFontChange_(fontName);
-    this.setCheckMarkForMenu_(this.$.fontMenu.getIfExists(), event.model.index);
+    this.fontName_ = event.model.item;
+    this.propagateFontChange_(this.fontName_);
 
     this.closeMenus_();
   }
 
   private onFontSelectValueChange_(event: Event) {
-    const fontName = (event.target as HTMLSelectElement).value;
-    this.propagateFontChange_(fontName);
+    this.fontName_ = (event.target as HTMLSelectElement).value;
+    this.propagateFontChange_(this.fontName_);
   }
 
   private propagateFontChange_(fontName: string) {
@@ -625,45 +622,13 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   private onRateClick_(event: DomRepeatEvent<number>) {
     this.logger_.logSpeechSettingsChange(
         ReadAloudSettingsChange.VOICE_SPEED_CHANGE);
+    this.speechRate_ = event.model.item;
     // Log which rate is chosen by index rather than the rate value itself.
     this.logger_.logVoiceSpeed(event.model.index);
-    chrome.readingMode.onSpeechRateChange(event.model.item);
+    chrome.readingMode.onSpeechRateChange(this.speechRate_);
     emitEvent(this, ToolbarEvent.RATE);
-    this.setRateIcon_(event.model.item);
-    this.setCheckMarkForMenu_(this.$.rateMenu.getIfExists(), event.model.index);
 
     this.closeMenus_();
-  }
-
-  private setRateIcon_(rate: number) {
-    const button = this.$.toolbarContainer.querySelector('#rate');
-    assert(button, 'no rate button');
-    button?.setAttribute('iron-icon', 'voice-rate:' + rate);
-    button?.setAttribute('aria-label', this.getVoiceSpeedLabel_(rate));
-  }
-
-  private setCheckMarkForMenu_(menu: CrActionMenuElement|null, index: number) {
-    // If the menu has not yet been rendered, don't attempt to set any check
-    // marks yet.
-    if (!menu) {
-      return;
-    }
-    const checked =
-        Array.from(menu.getElementsByClassName('check-mark-hidden-false'));
-    checked.forEach(element => {
-      const iconElement = element as CrIconElement;
-      if (iconElement) {
-        iconElement.classList.toggle('check-mark-hidden-true', true);
-        iconElement.classList.toggle('check-mark-hidden-false', false);
-      }
-    });
-
-    const checkMarks = Array.from(menu.getElementsByClassName('check-mark'));
-    const checkMark = checkMarks[index] as CrIconElement;
-    if (checkMark) {
-      checkMark.classList.toggle('check-mark-hidden-true', false);
-      checkMark.classList.toggle('check-mark-hidden-false', true);
-    }
   }
 
   private onFontSizeIncreaseClick_() {
@@ -927,7 +892,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         this.i18n('readingModeToolbarLabel');
   }
 
-  private getVoiceSpeedLabel_(rate: number = getCurrentSpeechRate()): string {
+  private getVoiceSpeedLabel_(rate: number): string {
     return loadTimeData.getStringF('voiceSpeedWithRateLabel', rate);
   }
 }
