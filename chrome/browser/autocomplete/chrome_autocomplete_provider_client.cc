@@ -12,7 +12,6 @@
 #include "base/strings/cstring_view.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/autocomplete/document_suggestions_service_factory.h"
@@ -77,7 +76,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/app_list/search/essential_search/essential_search_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -123,7 +122,7 @@ constexpr auto kChromeSettingsSubPages = std::to_array<base::cstring_view>({
     chrome::kResetProfileSettingsSubPage,
     chrome::kSearchEnginesSubPage,
     chrome::kSyncSetupSubPage,
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     chrome::kImportDataSubPage,
     chrome::kManageProfileSubPage,
     chrome::kPeopleSubPage,
@@ -387,7 +386,7 @@ bool ChromeAutocompleteProviderClient::IsGuestSession() const {
 }
 
 bool ChromeAutocompleteProviderClient::SearchSuggestEnabled() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return profile_->GetPrefs()->GetBoolean(prefs::kSearchSuggestEnabled) &&
          (!g_browser_process->platform_part() ||
           !g_browser_process->platform_part()->essential_search_manager() ||

@@ -17,8 +17,8 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,9 +30,9 @@
 #include "components/variations/synthetic_trials.h"
 #include "content/public/common/content_features.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace tpcd::experiment {
 namespace {
@@ -58,13 +58,13 @@ ExperimentManagerImpl* ExperimentManagerImpl::GetForProfile(Profile* profile) {
     return nullptr;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Ash internal profile should not be accounted for the experiment
   // eligibility, and therefore should not create the experiment manager.
   if (!ash::IsUserBrowserContext(profile)) {
     return nullptr;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (!features::kCookieDeprecationFacilitatedTestingEnableOTRProfiles.Get() &&
       (profile->IsOffTheRecord() || profile->IsGuestSession())) {

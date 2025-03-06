@@ -31,10 +31,10 @@ TEST_F(RemoteSuggestionsServiceFactoryTest, ServiceInstance) {
 
 // Service is NOT created for System Profiles. Also Android and Ash don't have
 // System Profiles.
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(RemoteSuggestionsServiceFactory::GetForProfile(
       system_profile(), /*create_if_necessary=*/true));
   EXPECT_FALSE(RemoteSuggestionsServiceFactory::GetForProfile(
       system_profile_otr(), /*create_if_necessary=*/true));
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 }
