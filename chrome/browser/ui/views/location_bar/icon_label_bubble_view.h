@@ -108,12 +108,11 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // Returns true when the label should be visible.
   virtual bool ShouldShowLabel() const;
 
-  virtual void SetBackgroundVisibility(
-      BackgroundVisibility background_visibility);
+  void SetBackgroundVisibility(BackgroundVisibility background_visibility);
 
   // Sets whether tonal colors are used for the background of the view when
   // expanded to show the label.
-  virtual void SetUseTonalColorsWhenExpanded(bool use_tonal_colors);
+  void SetUseTonalColorsWhenExpanded(bool use_tonal_colors);
 
   void SetLabel(std::u16string_view label);
   void SetLabel(std::u16string_view label, std::u16string_view accessible_name);

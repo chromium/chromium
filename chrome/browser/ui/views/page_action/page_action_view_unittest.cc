@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/test/mock_tab_interface.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
@@ -28,6 +29,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/test_event.h"
 #include "ui/views/actions/action_view_controller.h"
+#include "ui/views/background.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 
 namespace page_actions {
@@ -58,36 +60,6 @@ class AlwaysActiveTabInterface : public tabs::MockTabInterface {
   bool IsActivated() const override { return true; }
 };
 
-// Some methods in IconLabelBubbleView, from which PageActionView inherits,
-// do not provide getters for certain properties.
-// This class wraps PageActionView to monitor calls to the view for those
-// properties that cannot be retrieved via a getter.
-class TestPageActionView : public PageActionView {
- public:
-  // Inherit parent constructors.
-  using PageActionView::PageActionView;
-
-  void SetUseTonalColorsWhenExpanded(bool use_tonal_colors) final {
-    use_tonal_colors_ = use_tonal_colors;
-    PageActionView::SetUseTonalColorsWhenExpanded(use_tonal_colors);
-  }
-
-  void SetBackgroundVisibility(
-      BackgroundVisibility background_visibility) final {
-    background_visibility_ = background_visibility;
-    PageActionView::SetBackgroundVisibility(background_visibility);
-  }
-
-  bool is_using_tonal_colors() const { return use_tonal_colors_; }
-  BackgroundVisibility background_visible() const {
-    return background_visibility_;
-  }
-
- private:
-  bool use_tonal_colors_ = false;
-  BackgroundVisibility background_visibility_ = BackgroundVisibility::kNever;
-};
-
 // Test class that includes a real controller and model. Prefer to use simpler
 // PageActionViewWithMockModelTest where possible.
 // TODO(crbug.com/388527536): Move any tests possible to the mock model setup.
@@ -102,7 +74,7 @@ class PageActionViewTest : public ChromeViewsTestBase {
         vector_icons::kBackArrowIcon, ui::kColorSysPrimary, kDefaultIconSize);
     action_item_ = actions::ActionManager::Get().AddAction(
         actions::ActionItem::Builder().SetActionId(0).SetImage(image).Build());
-    test_page_action_view_ = std::make_unique<TestPageActionView>(
+    test_page_action_view_ = std::make_unique<PageActionView>(
         action_item_,
         PageActionViewParams{
             .icon_size = kDefaultIconSize,
@@ -132,14 +104,12 @@ class PageActionViewTest : public ChromeViewsTestBase {
     return controller;
   }
 
-  TestPageActionView* page_action_view() {
-    return test_page_action_view_.get();
-  }
+  PageActionView* page_action_view() { return test_page_action_view_.get(); }
   actions::ActionItem* action_item() { return action_item_; }
 
  private:
   std::unique_ptr<PageActionView> page_action_view_;
-  std::unique_ptr<TestPageActionView> test_page_action_view_;
+  std::unique_ptr<PageActionView> test_page_action_view_;
   raw_ptr<actions::ActionItem> action_item_;
 
   testing::NiceMock<MockIconLabelViewDelegate> icon_label_view_delegate_;
@@ -166,7 +136,7 @@ class PageActionViewWithMockModelTest : public ChromeViewsTestBase {
     widget_->Show();
 
     page_action_view_ =
-        widget_->SetContentsView(std::make_unique<TestPageActionView>(
+        widget_->SetContentsView(std::make_unique<PageActionView>(
             action_item_.get(),
             PageActionViewParams{
                 .icon_size = view_icon_size_,
@@ -189,7 +159,7 @@ class PageActionViewWithMockModelTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
-  TestPageActionView* page_action_view() { return page_action_view_.get(); }
+  PageActionView* page_action_view() { return page_action_view_.get(); }
   MockPageActionModel* model() { return &mock_model_; }
   actions::ActionItem* action_item() { return action_item_.get(); }
   int view_icon_size() const { return view_icon_size_; }
@@ -200,7 +170,7 @@ class PageActionViewWithMockModelTest : public ChromeViewsTestBase {
   std::unique_ptr<views::Widget> widget_;
 
   // Owned by widget_.
-  raw_ptr<TestPageActionView> page_action_view_;
+  raw_ptr<PageActionView> page_action_view_;
 
   testing::NiceMock<MockIconLabelViewDelegate> icon_label_view_delegate_;
 
@@ -302,16 +272,15 @@ TEST_F(PageActionViewWithMockModelTest,
   EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
   page_action_view()->OnPageActionModelChanged(*model());
 
-  EXPECT_TRUE(page_action_view()->is_using_tonal_colors());
-  EXPECT_EQ(page_action_view()->background_visible(),
-            IconLabelBubbleView::BackgroundVisibility::kAlways);
+  ASSERT_NE(page_action_view()->GetBackground(), nullptr);
+  EXPECT_EQ(page_action_view()->GetBackground()->get_color(),
+            page_action_view()->GetColorProvider()->GetColor(
+                kColorOmniboxIconBackgroundTonal));
 
   EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(false));
   page_action_view()->OnPageActionModelChanged(*model());
 
-  EXPECT_FALSE(page_action_view()->is_using_tonal_colors());
-  EXPECT_EQ(page_action_view()->background_visible(),
-            IconLabelBubbleView::BackgroundVisibility::kNever);
+  EXPECT_EQ(page_action_view()->GetBackground(), nullptr);
 }
 
 TEST_F(PageActionViewWithMockModelTest, SuggestionText) {
