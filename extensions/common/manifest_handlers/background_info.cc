@@ -354,12 +354,12 @@ bool BackgroundManifestHandler::Validate(
   // Validate that background scripts exist.
   const std::vector<std::string>& background_scripts =
       BackgroundInfo::GetBackgroundScripts(extension);
-  for (size_t i = 0; i < background_scripts.size(); ++i) {
+  for (const auto& background_script : background_scripts) {
     if (!base::PathExists(
-            extension->GetResource(background_scripts[i]).GetFilePath())) {
-      *error = l10n_util::GetStringFUTF8(
-          IDS_EXTENSION_LOAD_BACKGROUND_SCRIPT_FAILED,
-          base::UTF8ToUTF16(background_scripts[i]));
+            extension->GetResource(background_script).GetFilePath())) {
+      *error =
+          l10n_util::GetStringFUTF8(IDS_EXTENSION_LOAD_BACKGROUND_SCRIPT_FAILED,
+                                    base::UTF8ToUTF16(background_script));
       return false;
     }
   }

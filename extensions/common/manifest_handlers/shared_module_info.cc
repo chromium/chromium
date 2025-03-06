@@ -111,8 +111,8 @@ bool SharedModuleInfo::IsExportAllowedByAllowlist(const Extension* extension,
 bool SharedModuleInfo::ImportsExtensionById(const Extension* extension,
                                             const ExtensionId& other_id) {
   const SharedModuleInfo& info = GetSharedModuleInfo(extension);
-  for (size_t i = 0; i < info.imports_.size(); i++) {
-    if (info.imports_[i].extension_id == other_id) {
+  for (const auto& import : info.imports_) {
+    if (import.extension_id == other_id) {
       return true;
     }
   }
