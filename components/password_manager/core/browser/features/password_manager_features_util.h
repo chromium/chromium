@@ -45,14 +45,6 @@ enum class PasswordAccountStorageUsageLevel {
   kSyncing = 2,
 };
 
-// Internal helpers, not meant to be used directly:
-namespace internal {
-bool CanAccountStorageBeEnabled(const PrefService* pref_service,
-                                const syncer::SyncService* sync_service);
-bool IsUserEligibleForAccountStorage(const PrefService* pref_service,
-                                     const syncer::SyncService* sync_service);
-}  // namespace internal
-
 // Whether to instantiate a second PasswordStore whose data is account-scoped.
 // This doesn't necessarily mean the store is being used, e.g. this predicate
 // can return true for a signed-out user. For whether the store can be used,

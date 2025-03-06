@@ -24,60 +24,37 @@
 
 namespace password_manager::features_util {
 
-namespace internal {
+namespace {
 
-// Returns whether the account-scoped password storage can be enabled in
-// principle for the current profile. This is constant for a given profile
-// (until browser restart).
-bool CanAccountStorageBeEnabled(const PrefService* pref_service,
-                                const syncer::SyncService* sync_service) {
-  CHECK(pref_service);
-
-  if (!CanCreateAccountStore(pref_service)) {
-    return false;
-  }
-
-  // |sync_service| is null in incognito mode, or if --disable-sync was
-  // specified on the command-line.
-  if (!sync_service) {
-    return false;
-  }
-
-  // The account-scoped password storage does not work with LocalSync aka
-  // roaming profiles.
-  if (sync_service->IsLocalSyncEnabled()) {
-    return false;
-  }
-
-  return true;
-}
-
-// Whether the currently signed-in user (if any) is eligible for using the
-// account-scoped password storage. This is the case if:
-// - The account storage can be enabled in principle.
-// - Sync-the-feature is NOT enabled (if it is, there's only a single combined
-//   storage).
-// - Sync-the-transport is enabled (i.e. there's a signed-in user, Sync is not
-//   disabled by policy, etc).
-// - Desktop-only: There is no custom passphrase (because Sync transport offers
-//   no way to enter the passphrase yet).
 bool IsUserEligibleForAccountStorage(const PrefService* pref_service,
                                      const syncer::SyncService* sync_service) {
   if (!sync_service) {
     return false;
   }
 
+  if (sync_service->IsLocalSyncEnabled()) {
+    return false;
+  }
+
   // TODO(crbug.com/40067058): Delete this when ConsentLevel::kSync is deleted.
   // See ConsentLevel::kSync documentation for details.
-  if (sync_service->IsSyncFeatureEnabled()) {
-    if (!base::FeatureList::IsEnabled(
-            syncer::kEnablePasswordsAccountStorageForSyncingUsers)) {
-      return false;
-    }
+  if (sync_service->IsSyncFeatureEnabled() &&
+      !base::FeatureList::IsEnabled(
+          syncer::kEnablePasswordsAccountStorageForSyncingUsers)) {
+    return false;
   }
 
   switch (sync_service->GetTransportState()) {
     case syncer::SyncService::TransportState::DISABLED:
+    // Disable in case of an auth error, because then the account store can't
+    // upload data. Worse: signing out in this state might not clear the store,
+    // and the leftover data might end up in another account that signs in
+    // later. See crbug.com/1426774 for a case where this happened with
+    // encryption errors.
+    //
+    // TODO(crbug.com/40262289): Right now the code checks for auth and
+    // encryption errors (below) individually. Checking IsTrackingMetadata()
+    // would take care of all kinds of errors, future and present.
     case syncer::SyncService::TransportState::PAUSED:
       return false;
     case syncer::SyncService::TransportState::START_DEFERRED:
@@ -88,41 +65,39 @@ bool IsUserEligibleForAccountStorage(const PrefService* pref_service,
       break;
   }
 
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
-    // Do not allow account storage if the user has not entered their
-    // passphrase.
-    // TODO (crbug.com/388511834): Reconsider whether other actionable errors
-    // should restrict account storage eligibility as well.
-    if (sync_service->GetUserSettings()->IsPassphraseRequired()) {
-      return false;
-    }
-  } else if (sync_service->GetUserSettings()->IsUsingExplicitPassphrase()) {
+  // Disable in case of encryption errors, following the same rationale as auth
+  // errors above. The presence of encryption errors can only be checked once
+  // the sync engine is initialized. Until then we give it the benefit of the
+  // doubt and say account storage is enabled.
+  // Note: IsPassphraseRequired() and IsTrustedVaultKeyRequired() seem to be
+  // always false until the engine is up, so maybe there's no need to check
+  // IsEngineInitialized() here.
+  if (sync_service->IsEngineInitialized() &&
+      (sync_service->GetUserSettings()->IsPassphraseRequired() ||
+       sync_service->GetUserSettings()->IsTrustedVaultKeyRequired())) {
     return false;
   }
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
   // Check last to avoid tests for signed-out users unnecessarily having to
   // register some prefs to avoid a crash.
-  return CanAccountStorageBeEnabled(pref_service, sync_service);
+  return CanCreateAccountStore(pref_service);
 }
 
-}  // namespace internal
+}  // namespace
 
 bool CanCreateAccountStore(const PrefService* pref_service) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kLoginDbDeprecationAndroid)) {
+  if (base::FeatureList::IsEnabled(features::kLoginDbDeprecationAndroid)) {
     // The login DB deprecation stops migrations to UPM, so the migration
     // status becomes irrelevant. Depending on the GMS Core version, the account
     // store might be backed by an empty backend instead of a real one,
     // but it can be created nonetheless.
     return true;
   }
-  using password_manager::prefs::UseUpmLocalAndSeparateStoresState;
+  using prefs::UseUpmLocalAndSeparateStoresState;
   switch (
       static_cast<UseUpmLocalAndSeparateStoresState>(pref_service->GetInteger(
-          password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores))) {
+          prefs::kPasswordsUseUPMLocalAndSeparateStores))) {
     case UseUpmLocalAndSeparateStoresState::kOff:
       return false;
     // The decision regarding the presence/absence of the account store happens
@@ -144,36 +119,9 @@ bool CanCreateAccountStore(const PrefService* pref_service) {
 
 bool IsAccountStorageEnabled(const PrefService* pref_service,
                              const syncer::SyncService* sync_service) {
-  if (!internal::IsUserEligibleForAccountStorage(pref_service, sync_service)) {
-    return false;
-  }
-
-  if (!sync_service->GetUserSettings()->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kPasswords)) {
-    return false;
-  }
-
-// TODO(crbug.com/40262917): Enable the checks below on Desktop too.
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-  // From this point on, we want to check for encryption errors, which we can
-  // only do when the engine is initialized. In that meantime, we give it the
-  // benefit of the doubt and say account storage is enabled.
-  if (!sync_service->IsEngineInitialized()) {
-    return true;
-  }
-
-  // Encryption errors mean the account store can't upload data, which is bad.
-  // Worse: in some cases sign-out might not clear the store. If another user
-  // signs in later, the leftover data might end up in their account, see
-  // crbug.com/1426774.
-  // TODO(crbug.com/40262289): Hook this code to IsTrackingMetadata().
-  if (sync_service->GetUserSettings()->IsPassphraseRequired() ||
-      sync_service->GetUserSettings()->IsTrustedVaultKeyRequired()) {
-    return false;
-  }
-#endif
-
-  return true;
+  return IsUserEligibleForAccountStorage(pref_service, sync_service) &&
+         sync_service->GetUserSettings()->GetSelectedTypes().Has(
+             syncer::UserSelectableType::kPasswords);
 }
 
 PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
@@ -224,7 +172,7 @@ PasswordAccountStorageUsageLevel ComputePasswordAccountStorageUsageLevel(
 bool ShouldShowAccountStorageSettingToggle(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service) {
-  return internal::IsUserEligibleForAccountStorage(pref_service, sync_service);
+  return IsUserEligibleForAccountStorage(pref_service, sync_service);
 }
 
 void MigrateDefaultProfileStorePref(PrefService* pref_service) {
