@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 
 #include "base/location.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -636,6 +637,7 @@ TEST_F(WebUIBundledCodeCacheV8ScriptRunnerTest, DoesNotProduceCache) {
 // Asserts that resources leveraging the webui bundled code cache will consume
 // the code cache when available.
 TEST_F(WebUIBundledCodeCacheV8ScriptRunnerTest, ConsumesAvailableCodeCache) {
+  base::HistogramTester histogram_tester;
   V8TestingScope scope;
   ClassicScript* classic_script =
       CreateScript(CreateResource(scope.GetIsolate(), UTF8Encoding()));
@@ -647,19 +649,61 @@ TEST_F(WebUIBundledCodeCacheV8ScriptRunnerTest, ConsumesAvailableCodeCache) {
   // cache should be set on the handler.
   scoped_refptr<blink::CachedMetadata> cached_metadata = ProduceCachedMetadata(
       scope.GetIsolate(), scope.GetScriptState(), *classic_script);
+
+  // Set the cached metadata on the handler.
   cache_handler->SetSerializedCachedMetadata(
       mojo_base::BigBuffer(cached_metadata->SerializedData()));
   EXPECT_TRUE(cache_handler->GetCachedMetadata(TagForCodeCache(cache_handler)));
   EXPECT_FALSE(static_cast<WebUIBundledCachedMetadataHandler*>(cache_handler)
                    ->did_use_code_cache_for_testing());
 
-  // Set the cached metadata on the handler, assert that the code cache was
-  // used for the compilation.
+  // Assert that the code cache was used and accepted when the script was
+  // compiled.
   EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
                             *classic_script,
                             mojom::blink::V8CacheOptions::kCode));
   EXPECT_TRUE(static_cast<WebUIBundledCachedMetadataHandler*>(cache_handler)
                   ->did_use_code_cache_for_testing());
+  histogram_tester.ExpectUniqueSample(
+      "Blink.ResourceRequest.WebUIBundledCachedMetadataHandler.ConsumeCache",
+      true, 1);
+}
+
+// Asserts that webui code cache deemed invalid by V8 is appropriately rejected.
+TEST_F(WebUIBundledCodeCacheV8ScriptRunnerTest, RejectsInvalidCodeCache) {
+  base::HistogramTester histogram_tester;
+  V8TestingScope scope;
+  ClassicScript* classic_script =
+      CreateScript(CreateResource(scope.GetIsolate(), UTF8Encoding()));
+  CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
+  EXPECT_EQ(CachedMetadataHandler::ServingSource::kWebUIBundledCache,
+            cache_handler->GetServingSource());
+
+  // Create and compile a different script to generate cached metadata
+  // invalid for use with with `classic_script`.
+  ClassicScript* different_classic_script = CreateScript(CreateResource(
+      scope.GetIsolate(), UTF8Encoding(), Vector<uint8_t>(), DifferentCode()));
+  scoped_refptr<blink::CachedMetadata> different_cached_metadata =
+      ProduceCachedMetadata(scope.GetIsolate(), scope.GetScriptState(),
+                            *different_classic_script);
+
+  // Set the invalid cached metadata on `classic_script`'s handler.
+  cache_handler->SetSerializedCachedMetadata(
+      mojo_base::BigBuffer(different_cached_metadata->SerializedData()));
+  EXPECT_TRUE(cache_handler->GetCachedMetadata(TagForCodeCache(cache_handler)));
+  EXPECT_FALSE(static_cast<WebUIBundledCachedMetadataHandler*>(cache_handler)
+                   ->did_use_code_cache_for_testing());
+
+  // Assert that the code cache was used but rejected when the script was
+  // compiled.
+  EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
+                            *classic_script,
+                            mojom::blink::V8CacheOptions::kCode));
+  EXPECT_TRUE(static_cast<WebUIBundledCachedMetadataHandler*>(cache_handler)
+                  ->did_use_code_cache_for_testing());
+  histogram_tester.ExpectUniqueSample(
+      "Blink.ResourceRequest.WebUIBundledCachedMetadataHandler.ConsumeCache",
+      false, 1);
 }
 
 TEST_F(V8ScriptRunnerTest, discardOffThreadCodeCacheWithDifferentSource) {

@@ -37,7 +37,7 @@ class PLATFORM_EXPORT WebUIBundledCachedMetadataHandler final
   void OnMemoryDump(WebProcessMemoryDump* pmd,
                     const String& dump_prefix) const override;
   size_t GetCodeCacheSize() const override;
-  void DidUseCodeCache() override;
+  void DidUseCodeCache(bool was_rejected) override;
 
   bool did_use_code_cache_for_testing() const {
     return did_use_code_cache_for_testing_;
