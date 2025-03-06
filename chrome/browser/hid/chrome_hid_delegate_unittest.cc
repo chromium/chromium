@@ -48,7 +48,7 @@
 #include "extensions/common/extension_builder.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/account_id/account_id.h"
@@ -204,7 +204,7 @@ class ChromeHidTestHelper {
     EXPECT_TRUE(devices_future.Wait());
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const user_manager::User* SetUpUserManager() {
     // On ChromeOS a user account is needed in order to check whether the user
     // account is affiliated with the device owner for the purposes of applying
@@ -225,7 +225,7 @@ class ChromeHidTestHelper {
   }
 
   void TearDownUserManager() { scoped_user_manager_.reset(); }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Creates a fake extension with the specified `extension_id` so that it can
@@ -857,7 +857,7 @@ class ChromeHidTestHelper {
 
  private:
   std::unique_ptr<device::FakeHidManager> hid_manager_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 #endif
   scoped_refptr<const extensions::Extension> extension_;
@@ -870,7 +870,7 @@ class ChromeHidDelegateRenderFrameTestBase
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     const user_manager::User* user = SetUpUserManager();
     TestingProfile::Builder builder;
     testing_profile_ = builder.Build();
@@ -910,7 +910,7 @@ class ChromeHidDelegateRenderFrameTestBase
 
   void TearDown() override {
     DeleteContents();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     testing_profile_.reset();
     TearDownUserManager();
 #else
@@ -987,7 +987,7 @@ class ChromeHidDelegateRenderFrameTestBase
   }
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<TestingProfile> testing_profile_;
 #else
   std::unique_ptr<TestingProfileManager> profile_manager_;
@@ -1006,7 +1006,7 @@ class ChromeHidDelegateServiceWorkerTestBase
  public:
   void SetUp() override {
     content::EmbeddedWorkerInstanceTestHarness::SetUp();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     SetUpUserManager();
 #endif
     SetUpHidConnectionTracker();
@@ -1017,7 +1017,7 @@ class ChromeHidDelegateServiceWorkerTestBase
 
   void TearDown() override {
     StopWorker();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     TearDownUserManager();
 #endif
     content::EmbeddedWorkerInstanceTestHarness::TearDown();

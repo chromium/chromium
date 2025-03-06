@@ -18,6 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/policy/policy_value_and_status_aggregator.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -42,18 +43,18 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/account_id/account_id.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using ::testing::IsSubsetOf;
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // The set of PII types that can be found in policy status.
 const std::set<redaction::PIIType> kExpectedPIITypesInPolicyStatus = {
@@ -73,7 +74,7 @@ const char* kPolicyStatusFields[] = {policy::kPolicyDescriptionKey, "error",
                                      "policiesPushAvailable", "status",
                                      "timeSinceLastRefresh"};
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Reads the contents of exported policy Json file in to `policies`
 // dictionary.
@@ -146,7 +147,7 @@ class PolicyDataCollectorBrowserTest : public InProcessBrowserTest {
   base::ScopedTempDir temp_dir_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class PolicyDataCollectorBrowserTestAsh
     : public MixinBasedInProcessBrowserTest {
  public:
@@ -198,7 +199,7 @@ class PolicyDataCollectorBrowserTestAsh
   // Use a temporary directory to store data collector output.
   base::ScopedTempDir temp_dir_;
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -306,10 +307,10 @@ IN_PROC_BROWSER_TEST_F(PolicyDataCollectorBrowserTest,
   EXPECT_FALSE(status->empty());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// We test the status in detail for only Ash in
+#if BUILDFLAG(IS_CHROMEOS)
+// We test the status in detail for only ChromeOS in
 // PolicyDataCollectorBrowserTestAsh.CollectPolicyStatus because the Mixins
-// for logged-in user only exists for Ash.
+// for logged-in user only exists for ChromeOS.
 IN_PROC_BROWSER_TEST_F(PolicyDataCollectorBrowserTestAsh, CollectPolicyStatus) {
   // PolicyDataCollector for testing.
   PolicyDataCollector data_collector(ProfileManager::GetActiveUserProfile());
@@ -410,4 +411,4 @@ IN_PROC_BROWSER_TEST_F(PolicyDataCollectorBrowserTestAsh, CollectPolicyStatus) {
     }
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
