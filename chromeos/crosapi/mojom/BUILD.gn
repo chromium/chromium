@@ -27,7 +27,6 @@ mojom("mojom") {
     "drive_integration_service.mojom",
     "echo_private.mojom",
     "embedded_accessibility_helper.mojom",
-    "extension_info_private.mojom",
     "file_change_service_bridge.mojom",
     "file_system_access_cloud_identifier.mojom",
     "file_system_provider.mojom",

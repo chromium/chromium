@@ -58,7 +58,6 @@ class DocumentScanAsh;
 class DriveIntegrationServiceAsh;
 class EchoPrivateAsh;
 class EmbeddedAccessibilityHelperClientAsh;
-class ExtensionInfoPrivateAsh;
 class FileChangeServiceBridgeAsh;
 class FileSystemAccessCloudIdentifierProviderAsh;
 class FileSystemProviderServiceAsh;
@@ -150,8 +149,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<
           ::crosapi::mojom::EmbeddedAccessibilityHelperClientFactory> receiver)
       override;
-  void BindExtensionInfoPrivate(
-      mojo::PendingReceiver<mojom::ExtensionInfoPrivate> receiver) override;
   void BindFileChangeServiceBridge(
       mojo::PendingReceiver<mojom::FileChangeServiceBridge> receiver) override;
   void BindFileSystemAccessCloudIdentifierProvider(
@@ -292,10 +289,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return embedded_accessibility_helper_client_ash_.get();
   }
 
-  ExtensionInfoPrivateAsh* extension_info_private_ash() {
-    return extension_info_private_ash_.get();
-  }
-
   FileSystemAccessCloudIdentifierProviderAsh*
   file_system_access_cloud_identifier_provider_ash() {
     return file_system_access_cloud_identifier_provider_ash_.get();
@@ -404,7 +397,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<EchoPrivateAsh> echo_private_ash_;
   std::unique_ptr<EmbeddedAccessibilityHelperClientAsh>
       embedded_accessibility_helper_client_ash_;
-  std::unique_ptr<ExtensionInfoPrivateAsh> extension_info_private_ash_;
   std::unique_ptr<FileChangeServiceBridgeAsh> file_change_service_bridge_ash_;
   std::unique_ptr<FileSystemAccessCloudIdentifierProviderAsh>
       file_system_access_cloud_identifier_provider_ash_;

@@ -29,7 +29,6 @@
 #include "chrome/browser/ash/crosapi/drive_integration_service_ash.h"
 #include "chrome/browser/ash/crosapi/echo_private_ash.h"
 #include "chrome/browser/ash/crosapi/embedded_accessibility_helper_client_ash.h"
-#include "chrome/browser/ash/crosapi/extension_info_private_ash.h"
 #include "chrome/browser/ash/crosapi/file_change_service_bridge_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_access_cloud_identifier_provider_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
@@ -161,7 +160,6 @@ CrosapiAsh::CrosapiAsh()
       echo_private_ash_(std::make_unique<EchoPrivateAsh>()),
       embedded_accessibility_helper_client_ash_(
           std::make_unique<EmbeddedAccessibilityHelperClientAsh>()),
-      extension_info_private_ash_(std::make_unique<ExtensionInfoPrivateAsh>()),
       file_system_access_cloud_identifier_provider_ash_(
           std::make_unique<FileSystemAccessCloudIdentifierProviderAsh>()),
       file_system_provider_service_ash_(
@@ -335,11 +333,6 @@ void CrosapiAsh::BindEmbeddedAccessibilityHelperClientFactory(
   embedded_accessibility_helper_client_ash_
       ->BindEmbeddedAccessibilityHelperClientFactoryReceiver(
           std::move(receiver));
-}
-
-void CrosapiAsh::BindExtensionInfoPrivate(
-    mojo::PendingReceiver<mojom::ExtensionInfoPrivate> receiver) {
-  extension_info_private_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindFileChangeServiceBridge(

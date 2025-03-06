@@ -27,7 +27,6 @@ import "chromeos/crosapi/mojom/diagnostics_service.mojom";
 import "chromeos/crosapi/mojom/document_scan.mojom";
 import "chromeos/crosapi/mojom/drive_integration_service.mojom";
 import "chromeos/crosapi/mojom/echo_private.mojom";
-import "chromeos/crosapi/mojom/extension_info_private.mojom";
 import "chromeos/crosapi/mojom/file_change_service_bridge.mojom";
 import "chromeos/crosapi/mojom/file_system_access_cloud_identifier.mojom";
 import "chromeos/crosapi/mojom/file_system_provider.mojom";
@@ -223,12 +222,7 @@ interface Crosapi {
       pending_receiver<EmbeddedAccessibilityHelperClientFactory> receiver);
 
   // BindEmojiPicker@89 was removed.
-
-  // ExtensionInfoPrivate is a service that allows trusted extensions in Lacros
-  // to get and set system properties. Implemented in Ash.
-  [MinVersion=72] BindExtensionInfoPrivate@75(
-      pending_receiver<ExtensionInfoPrivate> receiver);
-
+  // BindExtensionInfoPrivate@75 was removed.
   // REMOVED_105@105 was removed.
 
   // NetworkingPrivate is a service that allows users to modify
