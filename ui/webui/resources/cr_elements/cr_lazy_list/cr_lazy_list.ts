@@ -263,6 +263,7 @@ export class CrLazyListElement<T = object> extends CrLitElement {
     } else {
       // Update the container height to 0 since there are no items.
       this.$.container.style.height = '0px';
+      this.fire('items-rendered');
       this.fire('viewport-filled');
     }
   }
@@ -292,6 +293,8 @@ export class CrLazyListElement<T = object> extends CrLitElement {
     }
 
     const added = await this.fillViewHeight_(height);
+    this.fire('items-rendered');
+
     if (added || forceUpdateHeight) {
       await this.updateHeight_();
       this.fire('viewport-filled');
