@@ -2384,6 +2384,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ManifestWithUseCounterFields) {
       kUseCounterHistogram, blink::mojom::WebFeature::kWebAppManifestStartUrl,
       1);
   histogram_tester.ExpectBucketCount(
+      kUseCounterHistogram, blink::mojom::WebFeature::kWebAppManifestIdField,
+      1);
+  histogram_tester.ExpectBucketCount(
       kUseCounterHistogram, blink::mojom::WebFeature::kWebAppManifestDisplay,
       1);
   histogram_tester.ExpectBucketCount(
@@ -2417,6 +2420,27 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ManifestWithUseCounterFields) {
   histogram_tester.ExpectBucketCount(
       kUseCounterHistogram,
       blink::mojom::WebFeature::kWebAppManifestRelated_Applications, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ManifestWithNoUseCounterFields) {
+  base::HistogramTester histogram_tester;
+  GURL test_url = https_server()->GetURL(
+      "/banners/"
+      "manifest_test_page.html?manifest=manifest_with_no_use_counter_fields."
+      "json");
+  NavigateViaLinkClickToURLAndWait(browser(), test_url);
+
+  const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
+
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kWebAppManifestStartUrl, 0);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kWebAppManifestIdField, 0);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kWebAppManifestScope, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_Borderless, Borderless) {

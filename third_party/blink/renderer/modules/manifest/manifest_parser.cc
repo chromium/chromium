@@ -320,7 +320,6 @@ bool ManifestParser::Parse() {
   const auto& [start_url, start_url_parse_result] =
       ParseStartURL(root_object.get(), document_url_);
   manifest_->start_url = start_url;
-  UseCounter::Count(execution_context_, WebFeature::kWebAppManifestStartUrl);
   manifest_->has_valid_specified_start_url =
       start_url_parse_result == ParseStartUrlResult::kParsedFromJson;
 
@@ -328,17 +327,8 @@ bool ManifestParser::Parse() {
       ParseId(root_object.get(), manifest_->start_url);
   manifest_->id = id;
   manifest_->has_custom_id = id_parse_result == ParseIdResultType::kSucceed;
-  if (manifest_->has_custom_id) {
-    UseCounter::Count(execution_context_, WebFeature::kWebAppManifestIdField);
-  }
-
-  if (manifest_->capture_links != mojom::blink::CaptureLinks::kUndefined) {
-    UseCounter::Count(execution_context_,
-                      WebFeature::kWebAppManifestCaptureLinks);
-  }
 
   manifest_->scope = ParseScope(root_object.get(), manifest_->start_url);
-  UseCounter::Count(execution_context_, WebFeature::kWebAppManifestScope);
   manifest_->display = ParseDisplay(root_object.get());
   if (manifest_->display != mojom::blink::DisplayMode::kUndefined) {
     UseCounter::Count(execution_context_, WebFeature::kWebAppManifestDisplay);
@@ -756,6 +746,7 @@ std::pair<KURL, ManifestParser::ParseIdResultType> ManifestParser::ParseId(
   ParseIdResultType parse_result;
   if (id.IsValid()) {
     parse_result = ParseIdResultType::kSucceed;
+    UseCounter::Count(execution_context_, WebFeature::kWebAppManifestIdField);
   } else {
     // If id is not specified, sets to start_url
     parse_result = ParseIdResultType::kDefaultToStartUrl;
@@ -774,6 +765,7 @@ ManifestParser::ParseStartURL(const JSONObject* object,
     return std::make_pair(document_url,
                           ParseStartUrlResult::kDefaultDocumentUrl);
   }
+  UseCounter::Count(execution_context_, WebFeature::kWebAppManifestStartUrl);
   return std::make_pair(start_url, ParseStartUrlResult::kParsedFromJson);
 }
 
@@ -800,6 +792,7 @@ KURL ManifestParser::ParseScope(const JSONObject* object,
 
   DCHECK(scope.IsValid());
   DCHECK(SecurityOrigin::AreSameOrigin(scope, document_url_));
+  UseCounter::Count(execution_context_, WebFeature::kWebAppManifestScope);
   return scope;
 }
 

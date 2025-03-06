@@ -1,5 +1,6 @@
 {
   "name": "Manifest with use counter fields",
+  "id": "some_id",
   "icons": [
     {
       "src": "launcher-icon-1x.png",
@@ -18,7 +19,7 @@
   ],
   "start_url": "different_manifest_test_page.html",
   "display": "fullscreen",
-  "scope": "/banners/scope_a/",
+  "scope": "/",
   "lock_screen": {
     "notifications": true
   },
