@@ -86,8 +86,11 @@ pub(crate) fn generate_ule_validators(
     utils::generate_per_field_offsets(fields, false, |field, prev_offset_ident, size_ident| {
         let ty = &field.field.ty;
         quote! {
-            #[allow(clippy::indexing_slicing)] // generate_per_field_offsets produces valid indices
-            <#ty as zerovec::ule::ULE>::validate_bytes(&bytes[#prev_offset_ident .. #prev_offset_ident + #size_ident])?;
+            if let Some(bytes) = bytes.get(#prev_offset_ident .. #prev_offset_ident + #size_ident) {
+                <#ty as zerovec::ule::ULE>::validate_bytes(bytes)?;
+            } else {
+                return Err(zerovec::ule::UleError::parse::<Self>());
+            }
         }
     })
 }

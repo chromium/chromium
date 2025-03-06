@@ -102,22 +102,21 @@ pub fn derive_impl(
         unsafe impl zerovec::ule::VarULE for #name {
             #[inline]
             fn validate_bytes(bytes: &[u8]) -> Result<(), zerovec::ule::UleError> {
-
-                if bytes.len() < #ule_size {
-                    return Err(zerovec::ule::UleError::parse::<Self>());
-                }
-                #validators
                 debug_assert_eq!(#remaining_offset, #ule_size);
-                #[allow(clippy::indexing_slicing)] // TODO explain
-                let last_field_bytes = &bytes[#remaining_offset..];
+
+                let Some(last_field_bytes) = bytes.get(#remaining_offset..) else {
+                    return Err(zerovec::ule::UleError::parse::<Self>());
+                };
+                #validators
                 #last_field_validator
                 Ok(())
             }
             #[inline]
             unsafe fn from_bytes_unchecked(bytes: &[u8]) -> &Self {
                 // just the unsized part
-                #[allow(clippy::indexing_slicing)] // TODO explain
-                let unsized_bytes = &bytes[#ule_size..];
+                // Safety: The invariants of this function allow us to assume bytes is valid, and
+                // having at least #ule_size bytes is a validity constraint for the ULE type.
+                let unsized_bytes = bytes.get_unchecked(#ule_size..);
                 let unsized_ref = <#unsized_field as zerovec::ule::VarULE>::from_bytes_unchecked(unsized_bytes);
                 // We should use the pointer metadata APIs here when they are stable: https://github.com/rust-lang/rust/issues/81513
                 // For now we rely on all DST metadata being a usize to extract it via a fake slice pointer

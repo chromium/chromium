@@ -557,7 +557,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."zerotrie:0.2.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."zerovec-derive:0.11.0"]
+[policy."zerovec-derive:0.11.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."zerovec:0.11.0"]
@@ -889,7 +889,7 @@ https://crbug.com/366411886
 """
 
 [[exemptions.zerovec-derive]]
-version = "0.11.0"
+version = "0.11.1"
 criteria = ["safe-to-deploy", "ub-risk-2"]
 notes = """
 Requires unsafe review audit. Unsafe code is either authored or reviewed by a
@@ -899,4 +899,6 @@ Part of Google-co-maintained ICU4X project.
 
 
 https://crbug.com/366411886
+
+Exemption updated to 0.11.1 when updating the crate in February 2025.
 """

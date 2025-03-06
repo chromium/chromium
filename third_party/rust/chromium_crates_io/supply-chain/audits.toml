@@ -3790,6 +3790,11 @@ who = "Manish Goregaokar <manishearth@google.com>"
 criteria = "does-not-implement-crypto"
 version = "0.11.0"
 
+[[audits.zerovec-derive]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = "does-not-implement-crypto"
+delta = "0.11.0 -> 0.11.1"
+
 [[trusted.hashbrown]]
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 user-id = 2915 # Amanieu d'Antras (Amanieu)

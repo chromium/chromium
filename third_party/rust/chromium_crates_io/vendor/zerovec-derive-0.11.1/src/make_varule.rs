@@ -414,7 +414,9 @@ fn make_encode_impl(
             let ty = &field.field.ty;
             let accessor = &field.accessor;
             quote!(
-                #[allow(clippy::indexing_slicing)] // generate_per_field_offsets produces valid indices
+                // generate_per_field_offsets produces valid indices,
+                // and we don't care about panics in Encode impls
+                #[allow(clippy::indexing_slicing)]
                 let out = &mut dst[#prev_offset_ident .. #prev_offset_ident + #size_ident];
                 let unaligned = zerovec::ule::AsULE::to_unaligned(self.#accessor);
                 let unaligned_slice = &[unaligned];
@@ -443,7 +445,10 @@ fn make_encode_impl(
                 debug_assert_eq!(self.encode_var_ule_len(), dst.len());
                 #encoders
 
-                #[allow(clippy::indexing_slicing)] // generate_per_field_offsets produces valid remainder
+
+                // generate_per_field_offsets produces valid remainders,
+                // and we don't care about panics in Encode impls
+                #[allow(clippy::indexing_slicing)]
                 let out = &mut dst[#remaining_offset..];
                 #last_encode_write
             }
@@ -486,6 +491,7 @@ enum OwnULETy<'a> {
 #[derive(Clone, Debug)]
 enum UnsizedFieldKind<'a> {
     Cow(OwnULETy<'a>),
+    VarZeroCow(OwnULETy<'a>),
     ZeroVec(&'a Type),
     VarZeroVec(&'a Type),
     /// Custom VarULE type, and the identifier corresponding to the VarULE type
@@ -779,6 +785,7 @@ impl<'a> UnsizedFieldKind<'a> {
                                 "ZeroVec" => Ok(UnsizedFieldKind::ZeroVec(generic)),
                                 "VarZeroVec" => Ok(UnsizedFieldKind::VarZeroVec(generic)),
                                 "Cow" => OwnULETy::new(generic, "Cow").map(UnsizedFieldKind::Cow),
+                                "VarZeroCow" => OwnULETy::new(generic, "VarZeroCow").map(UnsizedFieldKind::VarZeroCow),
                                 _ => Err(PATH_TYPE_IDENTITY_ERROR.into()),
                             }
                         } else {
@@ -801,6 +808,7 @@ impl<'a> UnsizedFieldKind<'a> {
         match *self {
             Self::Ref(ref inner)
             | Self::Cow(ref inner)
+            | Self::VarZeroCow(ref inner)
             | Self::Boxed(ref inner)
             | Self::Growable(ref inner) => {
                 let inner_ule = inner.varule_ty();
@@ -815,7 +823,11 @@ impl<'a> UnsizedFieldKind<'a> {
     // Takes expr `value` and returns it as a value that can be encoded via EncodeAsVarULE
     fn encodeable_value(&self, value: TokenStream2) -> TokenStream2 {
         match *self {
-            Self::Ref(_) | Self::Cow(_) | Self::Growable(_) | Self::Boxed(_) => quote!(&*#value),
+            Self::Ref(_)
+            | Self::Cow(_)
+            | Self::VarZeroCow(_)
+            | Self::Growable(_)
+            | Self::Boxed(_) => quote!(&*#value),
 
             Self::Custom(..) => quote!(&#value),
             Self::ZeroVec(_) | Self::VarZeroVec(_) => quote!(&*#value),
@@ -827,6 +839,7 @@ impl<'a> UnsizedFieldKind<'a> {
         match *self {
             Self::Ref(ref inner)
             | Self::Cow(ref inner)
+            | Self::VarZeroCow(ref inner)
             | Self::Growable(ref inner)
             | Self::Boxed(ref inner) => inner.varule_ty(),
 
@@ -839,7 +852,12 @@ impl<'a> UnsizedFieldKind<'a> {
     fn has_zf(&self) -> bool {
         matches!(
             *self,
-            Self::Ref(_) | Self::Cow(_) | Self::ZeroVec(_) | Self::VarZeroVec(_) | Self::Custom(..)
+            Self::Ref(_)
+                | Self::Cow(_)
+                | Self::VarZeroCow(_)
+                | Self::ZeroVec(_)
+                | Self::VarZeroVec(_)
+                | Self::Custom(..)
         )
     }
 }
