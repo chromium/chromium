@@ -180,6 +180,10 @@ void MerchantTrustChipButtonController::OpenPageInfoSubpage() {
 }
 
 void MerchantTrustChipButtonController::MaybeShowMerchantTrustFeaturePromo() {
+  if (!web_contents()) {
+    return;
+  }
+
   if (auto* interface =
           BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
               web_contents())) {
