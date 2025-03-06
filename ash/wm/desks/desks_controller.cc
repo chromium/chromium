@@ -14,7 +14,6 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_prefs.h"
@@ -433,9 +432,7 @@ DesksController::DesksController()
       FROM_HERE, base::Days(7), this,
       &DesksController::RecordAndResetNumberOfWeeklyActiveDesks);
 
-  if (ash::features::IsDeskButtonEnabled()) {
-    desk_bar_controller_ = std::make_unique<DeskBarController>();
-  }
+  desk_bar_controller_ = std::make_unique<DeskBarController>();
 }
 
 DesksController::~DesksController() {
@@ -642,14 +639,12 @@ void DesksController::NewDesk(DesksCreationRemovalSource source,
   }
 
   if (!is_first_ever_desk) {
-    if (features::IsDeskButtonEnabled()) {
-      PrefService* prefs =
-          Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-      // Record that virtual desks have been used on this device so we can show
-      // the desk button from now on, if the user doesn't and hasn't elected to
-      // hide it from the shelf context menu.
-      SetDeviceUsesDesksPref(prefs, true);
-    }
+    PrefService* prefs =
+        Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+    // Record that virtual desks have been used on this device so we can show
+    // the desk button from now on, if the user doesn't and hasn't elected to
+    // hide it from the shelf context menu.
+    SetDeviceUsesDesksPref(prefs, true);
     desks_restore_util::UpdatePrimaryUserDeskGuidsPrefs();
     desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
     desks_restore_util::UpdatePrimaryUserDeskLacrosProfileIdPrefs();

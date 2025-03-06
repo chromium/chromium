@@ -4614,8 +4614,7 @@ class ContinuousOverviewAnimationTest
   // OverviewTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kContinuousOverviewScrollAnimation,
-                              features::kDeskButton},
+        /*enabled_features=*/{features::kContinuousOverviewScrollAnimation},
         /*disabled_features=*/{});
     OverviewTestBase::SetUp();
 

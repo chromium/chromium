@@ -14,7 +14,6 @@
 #include "ash/test_shell_delegate.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -299,9 +298,7 @@ TEST_P(ShelfContextMenuModelTest, NotificationContainerEnabled) {
 
 class DeskButtonContextMenuModelTest : public ShelfContextMenuModelTest {
  public:
-  DeskButtonContextMenuModelTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kDeskButton);
-  }
+  DeskButtonContextMenuModelTest() = default;
 
   DeskButtonContextMenuModelTest(const DeskButtonContextMenuModelTest&) =
       delete;
@@ -309,9 +306,6 @@ class DeskButtonContextMenuModelTest : public ShelfContextMenuModelTest {
       const DeskButtonContextMenuModelTest&) = delete;
 
   ~DeskButtonContextMenuModelTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,

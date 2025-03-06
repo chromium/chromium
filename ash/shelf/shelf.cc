@@ -9,7 +9,6 @@
 #include "ash/animation/animation_change_type.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_constants.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
@@ -423,7 +422,6 @@ void Shelf::CreateNavigationWidget(aura::Window* container) {
 void Shelf::CreateDeskButtonWidget(aura::Window* container) {
   CHECK(container);
   CHECK(!desk_button_widget_);
-  CHECK(ash::features::IsDeskButtonEnabled());
 
   desk_button_widget_ = std::make_unique<DeskButtonWidget>(this);
   desk_button_widget_->Initialize(container);
@@ -465,9 +463,7 @@ void Shelf::CreateShelfWidget(aura::Window* root) {
   // Create the various shelf components.
   CreateHotseatWidget(shelf_container);
   CreateNavigationWidget(shelf_container);
-  if (ash::features::IsDeskButtonEnabled()) {
-    CreateDeskButtonWidget(shelf_container);
-  }
+  CreateDeskButtonWidget(shelf_container);
   login_shelf_widget_ =
       std::make_unique<LoginShelfWidget>(/*shelf=*/this, shelf_container);
 
@@ -485,9 +481,7 @@ void Shelf::CreateShelfWidget(aura::Window* root) {
   // widget that are instantiated later on, thus why we call it towards the end
   // of this function.
   hotseat_widget()->InitializeAccessibilityProperties();
-  if (ash::features::IsDeskButtonEnabled()) {
-    desk_button_widget()->InitializeAccessibleProperties();
-  }
+  desk_button_widget()->InitializeAccessibleProperties();
   status_area_widget_->InitializeAccessibleProperties();
   status_area_widget_->InitializeTrayButtonsAccessibleNavFocus();
 }
