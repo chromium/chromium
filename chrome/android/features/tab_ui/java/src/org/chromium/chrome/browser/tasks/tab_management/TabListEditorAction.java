@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
@@ -359,7 +360,13 @@ public abstract class TabListEditorAction {
             // TODO(crbug.com/41495189): Find out how we can have a tab ID that is no longer
             // in the tab model here.
             if (tab == null) continue;
-            tabCount += tabGroupModelFilter.getRelatedTabCountForRootId(tab.getRootId());
+
+            @Nullable Token tabGroupId = tab.getTabGroupId();
+            if (tabGroupId != null) {
+                tabCount += tabGroupModelFilter.getTabCountForGroup(tabGroupId);
+            } else {
+                tabCount++;
+            }
         }
         return tabCount;
     }

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.task.PostTask;
@@ -98,28 +99,25 @@ public class TabGroupVisualDataManager {
                         // handover the stored color to the group after merge.
                         if (sourceGroupColor != TabGroupColorUtils.INVALID_COLOR_ID
                                 && targetGroupColor == TabGroupColorUtils.INVALID_COLOR_ID) {
-                           filter.setTabGroupColor(newRootId, sourceGroupColor);
+                            filter.setTabGroupColor(newRootId, sourceGroupColor);
                         } else if (sourceGroupColor == TabGroupColorUtils.INVALID_COLOR_ID
                                 && targetGroupColor == TabGroupColorUtils.INVALID_COLOR_ID) {
-                           filter.setTabGroupColor(
-                                    newRootId,
-                                    TabGroupColorUtils.getNextSuggestedColorId(filter));
+                            filter.setTabGroupColor(
+                                    newRootId, TabGroupColorUtils.getNextSuggestedColorId(filter));
                         }
                     }
 
                     @Override
                     public void willMoveTabOutOfGroup(Tab movedTab, int newRootId) {
                         TabGroupModelFilter filter = filterFromTab(movedTab);
-                        int rootId = movedTab.getRootId();
-                        String title = filter.getTabGroupTitle(rootId);
 
-                        // If the group size is 2, i.e. the group becomes a single tab after
-                        // ungroup, delete the stored visual data. When tab groups of size 1 are
-                        // supported this behavior is no longer valid.
+                        // If the group will become empty (0 tabs) delete the title.
                         boolean shouldDeleteVisualData =
-                                filter.getRelatedTabCountForRootId(rootId)
+                                filter.getTabCountForGroup(movedTab.getTabGroupId())
                                         <= DELETE_DATA_GROUP_SIZE_THRESHOLD;
                         if (shouldDeleteVisualData) {
+                            int rootId = movedTab.getRootId();
+                            @Nullable String title = filter.getTabGroupTitle(rootId);
                             if (title != null) {
                                 filter.deleteTabGroupTitle(rootId);
                             }
