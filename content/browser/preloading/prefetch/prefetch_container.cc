@@ -107,6 +107,13 @@ PrefetchStatus PrefetchStatusFromIneligibleReason(
       return PrefetchStatus::kPrefetchIneligibleUserHasCookies;
     case PreloadingEligibility::kUserHasServiceWorker:
       return PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker;
+    case PreloadingEligibility::kUserHasServiceWorkerNoFetchHandler:
+      return PrefetchStatus::
+          kPrefetchIneligibleUserHasServiceWorkerNoFetchHandler;
+    case PreloadingEligibility::kRedirectFromServiceWorker:
+      return PrefetchStatus::kPrefetchIneligibleRedirectFromServiceWorker;
+    case PreloadingEligibility::kRedirectToServiceWorker:
+      return PrefetchStatus::kPrefetchIneligibleRedirectToServiceWorker;
 
     case PreloadingEligibility::kEligible:
     default:
@@ -134,6 +141,9 @@ std::optional<PreloadingTriggeringOutcome> TriggeringOutcomeFromStatus(
     case PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved:
     case PrefetchStatus::kPrefetchEvictedForNewerPrefetch:
     case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker:
+    case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorkerNoFetchHandler:
+    case PrefetchStatus::kPrefetchIneligibleRedirectFromServiceWorker:
+    case PrefetchStatus::kPrefetchIneligibleRedirectToServiceWorker:
     case PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps:
     case PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition:
     case PrefetchStatus::kPrefetchIneligibleHostIsNonUnique:
@@ -178,6 +188,9 @@ bool StatusUpdateIsPossibleAfterFailure(PrefetchStatus status) {
     case PrefetchStatus::kPrefetchFailedInvalidRedirect:
     case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
     case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker:
+    case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorkerNoFetchHandler:
+    case PrefetchStatus::kPrefetchIneligibleRedirectFromServiceWorker:
+    case PrefetchStatus::kPrefetchIneligibleRedirectToServiceWorker:
     case PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps:
     case PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition:
     case PrefetchStatus::kPrefetchIneligibleHostIsNonUnique:
@@ -790,6 +803,10 @@ void PrefetchContainer::SetTriggeringOutcomeAndFailureReasonFromStatus(
         // PrefetchStatus does not fire a `SetTriggeringOutcome`.
         break;
       case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker:
+      case PrefetchStatus::
+          kPrefetchIneligibleUserHasServiceWorkerNoFetchHandler:
+      case PrefetchStatus::kPrefetchIneligibleRedirectFromServiceWorker:
+      case PrefetchStatus::kPrefetchIneligibleRedirectToServiceWorker:
       case PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps:
       case PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition:
       case PrefetchStatus::kPrefetchIneligibleHostIsNonUnique:

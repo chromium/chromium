@@ -22485,6 +22485,23 @@ Called by update_net_error_codes.py.-->
     The prefetch was evicted to make room for a newer prefetch beacuse it was
     old. This currently only happens when |kPrefetchNewLimits| is enabled.
   </int>
+  <int value="52"
+      label="Prefetch Not Eligible: Redirected from ServiceWorker-controlled
+             URL">
+    The prefetch was cancelled because it was redirected from a
+    ServiceWorker-controlled URL.
+  </int>
+  <int value="53"
+      label="Prefetch Not Eligible: Redirected to ServiceWorker-controlled URL">
+    The prefetch was cancelled because it was redirected to a
+    ServiceWorker-controlled URL.
+  </int>
+  <int value="54"
+      label="Prefetch Not Eligible: User Has ServiceWorker with no fetch
+             handler">
+    The url was not eligible to be prefetched because there was a registered
+    service worker with no fetch handler.
+  </int>
 </enum>
 
 <enum name="PrefetchRedirectNetworkContextTransition">

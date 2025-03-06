@@ -115,6 +115,9 @@ bool ShouldConsiderDecoyRequestForStatus(PreloadingEligibility eligibility) {
   switch (eligibility) {
     case PreloadingEligibility::kUserHasCookies:
     case PreloadingEligibility::kUserHasServiceWorker:
+    case PreloadingEligibility::kUserHasServiceWorkerNoFetchHandler:
+    case PreloadingEligibility::kRedirectFromServiceWorker:
+    case PreloadingEligibility::kRedirectToServiceWorker:
       // If the prefetch is not eligible because of cookie or a service worker,
       // then maybe send a decoy.
       return true;
@@ -525,6 +528,9 @@ bool PrefetchService::IsPrefetchAttemptFailedOrDiscardedInternal(
       return false;
     case PrefetchStatus::kPrefetchIneligibleUserHasCookies:
     case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker:
+    case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorkerNoFetchHandler:
+    case PrefetchStatus::kPrefetchIneligibleRedirectFromServiceWorker:
+    case PrefetchStatus::kPrefetchIneligibleRedirectToServiceWorker:
     case PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps:
     case PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition:
     case PrefetchStatus::kPrefetchIneligibleRetryAfter:
@@ -847,22 +853,33 @@ void PrefetchService::OnGotServiceWorkerResult(
     CHECK(preloading_attempt);
     preloading_attempt->SetServiceWorkerRegisteredCheckDuration(duration);
   }
+  // Note that after ServiceWorker+Prefetch support is implemented,
+  // - For ServiceWorker-eligible prefetches,
+  //   `ServiceWorkerCapability::NO_SERVICE_WORKER` is passed here and thus the
+  //   ServiceWorker-related ineligibility values here are not used.
+  // - For ServiceWorker-ineligible prefetches (e.g. cross-site prefetches),
+  //   they still goes through the checks below and the ServiceWorker-related
+  //   ineligibility values here are still valid and used.
   switch (service_worker_capability) {
     case ServiceWorkerCapability::NO_SERVICE_WORKER:
       break;
     case ServiceWorkerCapability::SERVICE_WORKER_NO_FETCH_HANDLER:
       if (base::FeatureList::IsEnabled(
               features::kPrefetchServiceWorkerNoFetchHandlerFix)) {
-        OnGotEligibility(std::move(prefetch_container),
-                         std::move(redirect_data),
-                         PreloadingEligibility::kUserHasServiceWorker);
+        OnGotEligibility(
+            std::move(prefetch_container), std::move(redirect_data),
+            PreloadingEligibility::kUserHasServiceWorkerNoFetchHandler);
         return;
       }
       break;
-    case ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER:
+    case ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER: {
+      auto eligibility = redirect_data
+                             ? PreloadingEligibility::kRedirectToServiceWorker
+                             : PreloadingEligibility::kUserHasServiceWorker;
       OnGotEligibility(std::move(prefetch_container), std::move(redirect_data),
-                       PreloadingEligibility::kUserHasServiceWorker);
+                       eligibility);
       return;
+    }
   }
   // This blocks same-site cross-origin prefetches that require the prefetch
   // proxy. Same-site prefetches are made using the default network context, and
