@@ -222,7 +222,6 @@ void HttpStreamPool::Group::AddIdleStreamSocket(
   idle_stream_sockets_.emplace_back(std::move(socket), base::TimeTicks::Now());
   pool_->IncrementTotalIdleStreamCount();
   CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly, kIdleTimeLimitExpired);
-  MaybeComplete();
 }
 
 std::unique_ptr<StreamSocket> HttpStreamPool::Group::GetIdleStreamSocket() {

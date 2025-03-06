@@ -216,11 +216,17 @@ int FakeStreamSocket::Connect(CompletionOnceCallback callback) {
 }
 
 bool FakeStreamSocket::IsConnected() const {
+  if (is_connected_override_.has_value()) {
+    return *is_connected_override_;
+  }
+  if (disconnect_after_is_connected_call_) {
+    is_connected_override_ = false;
+  }
   return connected_;
 }
 
 bool FakeStreamSocket::IsConnectedAndIdle() const {
-  return connected_ && is_idle_;
+  return IsConnected() && is_idle_;
 }
 
 bool FakeStreamSocket::WasEverUsed() const {
@@ -234,6 +240,12 @@ bool FakeStreamSocket::GetSSLInfo(SSLInfo* ssl_info) {
   }
 
   return false;
+}
+
+void FakeStreamSocket::DisconnectAfterIsConnectedCall() {
+  connected_ = true;
+  is_connected_override_ = std::nullopt;
+  disconnect_after_is_connected_call_ = true;
 }
 
 StreamKeyBuilder& StreamKeyBuilder::from_key(const HttpStreamKey& key) {
