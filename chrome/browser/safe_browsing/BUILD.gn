@@ -74,6 +74,9 @@ static_library("safe_browsing") {
     "//services/preferences/public/cpp",
   ]
 
+  # Note: is_android is not equivalent to safe_browsing_mode == 2.
+  # Sources and dependencies added to this block must not depend on anything
+  # requiring safe_browsing_mode != 0.
   if (is_android) {
     deps += [
       "//chrome/browser/password_manager/android:utils",
