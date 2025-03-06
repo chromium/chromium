@@ -11,6 +11,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "extensions/browser/extension_function.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -101,6 +102,13 @@ std::string RunFunctionAndReturnError(scoped_refptr<ExtensionFunction> function,
                                       ArgsType args,
                                       content::BrowserContext* context,
                                       FunctionMode mode = FunctionMode::kNone);
+
+// Run `function` with `args` and return the error if set, otherwise the result.
+base::expected<base::Value::List, std::string> RunFunctionAndReturnExpected(
+    scoped_refptr<ExtensionFunction> function,
+    ArgsType args,
+    content::BrowserContext* context,
+    FunctionMode mode = FunctionMode::kNone);
 
 // Create and run |function| with |args|. Works with both synchronous and async
 // functions. Ownership of |function| remains with the caller.
