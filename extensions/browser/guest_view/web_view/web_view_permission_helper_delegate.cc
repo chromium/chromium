@@ -29,4 +29,10 @@ bool WebViewPermissionHelperDelegate::
   return false;
 }
 
+std::optional<content::PermissionResult>
+WebViewPermissionHelperDelegate::OverridePermissionResult(
+    ContentSettingsType type) {
+  return std::nullopt;
+}
+
 }  // namespace extensions

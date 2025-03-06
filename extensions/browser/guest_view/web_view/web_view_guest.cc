@@ -1612,6 +1612,11 @@ bool WebViewGuest::IsPermissionRequestable(ContentSettingsType type) const {
 
 std::optional<content::PermissionResult> WebViewGuest::OverridePermissionResult(
     ContentSettingsType type) const {
+  auto result = web_view_permission_helper_->OverridePermissionResult(type);
+  if (result) {
+    return result;
+  }
+
   if (IsOwnedByControlledFrameEmbedder()) {
     // Permission of content within a Controlled Frame is isolated.
     // Therefore, Controlled Frame decides what the immediate permission result

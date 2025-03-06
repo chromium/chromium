@@ -75,6 +75,7 @@ interface PageElementTypes {
   trialName: HTMLInputElement;
   groupName: HTMLInputElement;
   setExperimentStatus: HTMLSpanElement;
+  testClipboardSave: HTMLButtonElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -313,6 +314,10 @@ $.testLogsBn.addEventListener('click', () => {
   getBrowser()?.getMetrics?.().onResponseStopped?.();
   getBrowser()?.getMetrics?.().onResponseRated?.(false);
   getBrowser()?.getMetrics?.().onSessionTerminated?.();
+});
+
+$.testClipboardSave.addEventListener('click', () => {
+  navigator.clipboard.writeText('This is some junk!');
 });
 
 $.getUserProfileInfoBn.addEventListener('click', async () => {

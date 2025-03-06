@@ -11,8 +11,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/guest_view/common/guest_view_constants.h"
 #include "content/public/browser/media_stream_request.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_types.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -107,6 +109,9 @@ class WebViewPermissionHelper {
 
   void RequestFullscreenPermission(const url::Origin& requesting_origin,
                                    PermissionResponseCallback callback);
+
+  std::optional<content::PermissionResult> OverridePermissionResult(
+      ContentSettingsType type);
 
   enum PermissionResponseAction { DENY, ALLOW, DEFAULT };
 
