@@ -256,7 +256,7 @@ export class BookmarksCommandManagerElement extends
       case Command.SHOW_IN_FOLDER:
         return this.menuSource_ === MenuSource.ITEM && itemIds.size === 1 &&
             this.getState().search.term !== '' &&
-            !isRootOrChildOfRoot(this.getState(), Array.from(itemIds)[0]);
+            !isRootOrChildOfRoot(this.getState(), Array.from(itemIds)[0]!);
       case Command.OPEN_NEW_TAB:
       case Command.OPEN_NEW_WINDOW:
       case Command.OPEN_INCOGNITO:
@@ -289,7 +289,7 @@ export class BookmarksCommandManagerElement extends
             IncognitoAvailability.DISABLED;
       case Command.SORT:
         return this.canChangeList_() &&
-            state.nodes[state.selectedFolder].children!.length > 1;
+            state.nodes[state.selectedFolder]!.children!.length > 1;
       case Command.ADD_BOOKMARK:
       case Command.ADD_FOLDER:
         return this.canChangeList_();
@@ -335,9 +335,9 @@ export class BookmarksCommandManagerElement extends
     const state = this.getState();
     switch (command) {
       case Command.EDIT: {
-        const id = Array.from(itemIds)[0];
+        const id = Array.from(itemIds)[0]!;
         this.ensureEditDialog_().then(
-            dialog => dialog.showEditDialog(state.nodes[id]));
+            dialog => dialog.showEditDialog(state.nodes[id]!));
         break;
       }
       case Command.COPY: {
@@ -353,13 +353,13 @@ export class BookmarksCommandManagerElement extends
           }
 
           this.showTitleToast_(
-              labelPromise, state.nodes[idList[0]].title, false);
+              labelPromise, state.nodes[idList[0]!]!.title, false);
         });
         break;
       }
       case Command.SHOW_IN_FOLDER: {
-        const id = Array.from(itemIds)[0];
-        const parentId = state.nodes[id].parentId;
+        const id = Array.from(itemIds)[0]!;
+        const parentId = state.nodes[id]!.parentId;
         assert(parentId);
         this.dispatch(selectFolder(parentId, state.nodes));
         DialogFocusManager.getInstance().clearFocus();
@@ -369,7 +369,7 @@ export class BookmarksCommandManagerElement extends
       }
       case Command.DELETE: {
         const idList = Array.from(this.minimizeDeletionSet_(itemIds));
-        const title = state.nodes[idList[0]].title;
+        const title = state.nodes[idList[0]!]!.title;
         let labelPromise: Promise<string>;
 
         if (idList.length === 1) {
@@ -400,7 +400,7 @@ export class BookmarksCommandManagerElement extends
         break;
       case Command.OPEN:
         if (this.isFolder_(itemIds)) {
-          const folderId = Array.from(itemIds)[0];
+          const folderId = Array.from(itemIds)[0]!;
           this.dispatch(selectFolder(folderId, state.nodes));
         } else {
           this.openBookmarkIds_(Array.from(itemIds), command);
@@ -495,7 +495,7 @@ export class BookmarksCommandManagerElement extends
     itemIds.forEach(function(itemId) {
       let currentId = itemId;
       while (!isRootNode(currentId)) {
-        const parentId = nodes[currentId].parentId;
+        const parentId = nodes[currentId]!.parentId;
         assert(parentId);
         currentId = parentId;
         if (itemIds.has(currentId)) {
@@ -562,12 +562,12 @@ export class BookmarksCommandManagerElement extends
     const nodes = this.getState().nodes;
 
     itemIds.forEach(function(itemId) {
-      const node = nodes[itemId];
+      const node = nodes[itemId]!;
       if (node.url) {
         result.push(node.id);
       } else {
         node.children!.forEach(function(child) {
-          const childNode = nodes[child];
+          const childNode = nodes[child]!;
           if (childNode.id && childNode.url) {
             result.push(childNode.id);
           }
@@ -583,7 +583,7 @@ export class BookmarksCommandManagerElement extends
     const nodes = this.getState().nodes;
 
     return Array.from(itemIds).some(function(id) {
-      return predicate(nodes[id]);
+      return !!nodes[id] && predicate(nodes[id]);
     });
   }
 
@@ -608,8 +608,8 @@ export class BookmarksCommandManagerElement extends
           return '';
         }
 
-        const id = Array.from(this.menuIds_)[0];
-        const itemUrl = this.getState().nodes[id].url;
+        const id = Array.from(this.menuIds_)[0]!;
+        const itemUrl = this.getState().nodes[id]!.url;
         label = itemUrl ? 'menuEdit' : 'menuRename';
         break;
       case Command.CUT:

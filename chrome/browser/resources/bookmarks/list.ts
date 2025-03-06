@@ -63,7 +63,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
   private focusedIndex_: number = 0;
   private eventTracker_: EventTracker = new EventTracker();
   private searchTerm_: string = '';
-  private selectedFolder_: string = '';
+  protected selectedFolder_: string = '';
   private selectedItems_: Set<string> = new Set();
 
   override firstUpdated() {
@@ -221,7 +221,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
       return;
     }
 
-    const leadId = toHighlight[0];
+    const leadId = toHighlight[0]!;
     this.dispatch(selectAll(toHighlight, this.getState(), leadId));
 
     // Allow cr-lazy-list time to render additions to the list. Note: Do not
@@ -266,7 +266,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
       focusMoved = true;
     } else if (e.key === ' ' && cursorModifier) {
       this.dispatch(
-          selectItem(this.displayedIds_[focusedIndex], this.getState(), {
+          selectItem(this.displayedIds_[focusedIndex]!, this.getState(), {
             clear: false,
             range: false,
             toggle: true,
@@ -283,11 +283,11 @@ export class BookmarksListElement extends BookmarksListElementBase {
       element.focus();
 
       if (cursorModifier && !e.shiftKey) {
-        this.dispatch(updateAnchor(this.displayedIds_[focusedIndex]));
+        this.dispatch(updateAnchor(this.displayedIds_[focusedIndex]!));
       } else {
         // If shift-selecting with no anchor, use the old focus index.
         if (e.shiftKey && this.getState().selection.anchor === null) {
-          this.dispatch(updateAnchor(this.displayedIds_[oldFocusedIndex]));
+          this.dispatch(updateAnchor(this.displayedIds_[oldFocusedIndex]!));
         }
 
         // If the focus moved from something other than a Ctrl + move event,
@@ -299,7 +299,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
         };
 
         this.dispatch(selectItem(
-            this.displayedIds_[focusedIndex], this.getState(), config));
+            this.displayedIds_[focusedIndex]!, this.getState(), config));
       }
     }
 

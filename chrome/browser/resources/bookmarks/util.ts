@@ -18,7 +18,7 @@ export function getDisplayedList(state: BookmarksPageState): string[] {
     return state.search.results;
   }
 
-  const children = state.nodes[state.selectedFolder].children;
+  const children = state.nodes[state.selectedFolder]!.children;
   assert(children);
   return children;
 }
@@ -99,17 +99,17 @@ export function normalizeNodes(rootNode: chrome.bookmarks.BookmarkTreeNode):
       if (node.id === rootNode.id) {
         // Clear the children set on the root node, and add the heading nodes as
         // children.
-        nodeMap[node.id].children = [];
+        nodeMap[node.id]!.children = [];
         for (const headingNode
                  of [buildAccountHeadingNode(), buildLocalHeadingNode()]) {
           nodeMap[headingNode.id] = headingNode;
-          nodeMap[node.id].children!.push(headingNode.id);
+          nodeMap[node.id]!.children!.push(headingNode.id);
         }
       } else if (node.parentId === rootNode.id) {
         // Replace the parent with the appropriate heading nodes.
-        const headingNode = node.syncing ? nodeMap[ACCOUNT_HEADING_NODE_ID] :
-                                           nodeMap[LOCAL_HEADING_NODE_ID];
-        nodeMap[node.id].parentId = headingNode.id;
+        const headingNode = node.syncing ? nodeMap[ACCOUNT_HEADING_NODE_ID]! :
+                                           nodeMap[LOCAL_HEADING_NODE_ID]!;
+        nodeMap[node.id]!.parentId = headingNode.id;
         headingNode.children!.push(node.id);
       }
     }
@@ -151,7 +151,7 @@ export function isShowingSearch(state: BookmarksPageState): boolean {
  */
 export function canEditNode(
     state: BookmarksPageState, itemId: string): boolean {
-  return !isRootOrChildOfRoot(state, itemId) &&
+  return !isRootOrChildOfRoot(state, itemId) && !!state.nodes[itemId] &&
       !state.nodes[itemId].unmodifiable && state.prefs.canEdit;
 }
 
@@ -172,7 +172,7 @@ export function hasChildFolders(id: string, nodes: NodeMap): boolean {
 
   const children = nodes[id].children;
   for (let i = 0; i < children.length; i++) {
-    if (nodes[children[i]].children) {
+    if (nodes[children[i]!]?.children) {
       return true;
     }
   }
