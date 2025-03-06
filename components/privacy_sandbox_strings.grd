@@ -647,9 +647,6 @@
           <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET1" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
             Chrome notes topics of interest based on your recent browsing history. For example, things like Sports, Apparel, and more
           </message>
-          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET2" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
-            Sites you visit can ask Chrome for topics that help limit what sites and their advertising partners can learn about you to show you personalized ads
-          </message>
           <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET3" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
             Chrome auto-deletes ad topics that are older than 4 weeks
           </message>
@@ -661,9 +658,6 @@
           <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET1" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
             Chromium notes topics of interest based on your recent browsing history. For example, things like Sports, Apparel, and more
           </message>
-          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET2" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
-            Sites you visit can ask Chromium for topics that help limit what sites and their advertising partners can learn about you to show you personalized ads
-          </message>
           <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET3" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
             Chromium auto-deletes ad topics that are older than 4 weeks
           </message>
@@ -672,6 +666,9 @@
           </message>
         </else>
       </if>
+      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET2" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
+        Websites and their advertising partners can use ad topics to personalize content for you. Compared to third-party cookies, ad topics helps to limit what sites can learn about you as you browse
+      </message>
       <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET2" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." formatter_data="android_java">
         Some sites may use your activity to personalize your experience for more than just ads. They may also store ad topics for longer than 4 weeks and may combine it with other information they already know about you
       </message>
