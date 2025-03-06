@@ -19,8 +19,7 @@ IN_PROC_BROWSER_TEST_F(BookmarksFocusTest, List) {
   RunTest("bookmarks/list_focus_test.js", "mocha.run()");
 }
 
-// http://crbug.com/1000950 : Flaky.
-IN_PROC_BROWSER_TEST_F(BookmarksFocusTest, DISABLED_DialogFocusManager) {
+IN_PROC_BROWSER_TEST_F(BookmarksFocusTest, DialogFocusManager) {
   RunTest("bookmarks/dialog_focus_manager_test.js", "mocha.run()");
 }
 
