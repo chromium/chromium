@@ -38,7 +38,6 @@
 #include "chrome/browser/ash/crosapi/identity_manager_ash.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/input_methods_ash.h"
-#include "chrome/browser/ash/crosapi/kerberos_in_browser_ash.h"
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 #include "chrome/browser/ash/crosapi/kiosk_session_service_ash.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
@@ -83,7 +82,6 @@
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom.h"
 #include "chromeos/crosapi/mojom/file_change_service_bridge.mojom.h"
-#include "chromeos/crosapi/mojom/kerberos_in_browser.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
@@ -170,7 +168,6 @@ CrosapiAsh::CrosapiAsh()
       identity_manager_ash_(std::make_unique<IdentityManagerAsh>()),
       idle_service_ash_(std::make_unique<IdleServiceAsh>()),
       input_methods_ash_(std::make_unique<InputMethodsAsh>()),
-      kerberos_in_browser_ash_(std::make_unique<KerberosInBrowserAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
       kiosk_session_service_ash_(std::make_unique<KioskSessionServiceAsh>()),
       local_printer_ash_(std::make_unique<LocalPrinterAsh>()),
@@ -396,11 +393,6 @@ void CrosapiAsh::BindInputMethods(
 void CrosapiAsh::BindInSessionAuth(
     mojo::PendingReceiver<chromeos::auth::mojom::InSessionAuth> receiver) {
   chromeos::auth::BindToInSessionAuthService(std::move(receiver));
-}
-
-void CrosapiAsh::BindKerberosInBrowser(
-    mojo::PendingReceiver<crosapi::mojom::KerberosInBrowser> receiver) {
-  kerberos_in_browser_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindKeystoreService(

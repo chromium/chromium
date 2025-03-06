@@ -36,7 +36,6 @@ import "chromeos/crosapi/mojom/fullscreen_controller.mojom";
 import "chromeos/crosapi/mojom/identity_manager.mojom";
 import "chromeos/crosapi/mojom/idle_service.mojom";
 import "chromeos/crosapi/mojom/input_methods.mojom";
-import "chromeos/crosapi/mojom/kerberos_in_browser.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
 import "chromeos/crosapi/mojom/local_printer.mojom";
 import "chromeos/crosapi/mojom/login.mojom";
@@ -292,11 +291,7 @@ interface Crosapi {
       pending_receiver<chromeos.auth.mojom.InSessionAuth> receiver);
 
   // BindNetworkSettingsService@46 was removed.
-
-  // Binds the KerberosInBrowser interface for showing Kerberos UI.
-  // Added in M114.
-  [MinVersion=108]
-  BindKerberosInBrowser@111(pending_receiver<KerberosInBrowser> receiver);
+  // BindKerberosInBrowser@111 was removed.
 
   // Binds the KeystoreService interface for challenging keys.
   // Added in M87.
