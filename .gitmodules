@@ -899,3 +899,7 @@
 	path = webkit/data/test_shell/plugins
 	url = https://chrome-internal.googlesource.com/chrome/data/webkit_plugin_tests
 	gclient-condition = checkout_src_internal
+[submodule "third_party/libdisplay-info/src"]
+	path = third_party/libdisplay-info/src
+	url = https://chromium.googlesource.com/external/gitlab.freedesktop.org/emersion/libdisplay-info
+	gclient-condition = checkout_linux
