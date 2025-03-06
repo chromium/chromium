@@ -21,7 +21,7 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {AppStyleUpdater} from './app_style_updater.js';
 import type {SettingsPrefs} from './common.js';
-import {getCurrentSpeechRate, minOverflowLengthToScroll, playFromSelectionTimeout} from './common.js';
+import {getCurrentSpeechRate, isWhitespace, minOverflowLengthToScroll, playFromSelectionTimeout} from './common.js';
 import type {LanguageToastElement} from './language_toast.js';
 import {ReadAnythingLogger, TimeFrom, TimeTo} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
@@ -1806,8 +1806,20 @@ export class AppElement extends AppElementBase {
     // #getAccessibleBoundary.
     for (let i = 0; i < this.spliceablePunctuationArray.length; i++) {
       const punctuationString = this.spliceablePunctuationArray[i];
-      const lastPunctuationIndex = utteranceText.substring(0, maxSpeechLength)
-                                       .lastIndexOf(punctuationString);
+      let utteranceSubstring = utteranceText.substring(0, maxSpeechLength);
+      let lastPunctuationIndex =
+          utteranceSubstring.lastIndexOf(punctuationString);
+
+      // If we're not in a valid splicing position, try to find another
+      // instance of the current punctuation in the string before moving
+      // on to the next punctuation.
+      while (!this.isValidSplicePosition(
+          lastPunctuationIndex, punctuationString, utteranceSubstring,
+          maxSpeechLength)) {
+        utteranceSubstring = utteranceText.substring(0, lastPunctuationIndex);
+        lastPunctuationIndex =
+            utteranceSubstring.lastIndexOf(punctuationString);
+      }
 
       // To prevent infinite looping, only use the lastCommaIndex if it's not
       // the first character. Otherwise, use getAccessibleBoundary to prevent
@@ -1823,6 +1835,36 @@ export class AppElement extends AppElementBase {
     // speech sounds more natural.
     return chrome.readingMode.getAccessibleBoundary(
         utteranceText, maxSpeechLength);
+  }
+
+  // crbug.com/400786507- If we can't find a better permanent solution for
+  // long delays between sentences, we should look into using
+  // phrase highlighting and / or other i18n libraries here to reduce
+  // duplication and make this more robust.
+  private isValidSplicePosition(
+      splicePosition: number, spliceCharacter: string, utteranceText: string,
+      maxSpeechLength: number): boolean {
+    if (spliceCharacter !== ',' && spliceCharacter !== '-') {
+      return true;
+    }
+
+    if (splicePosition > 0 && splicePosition < maxSpeechLength) {
+      const previousChar = utteranceText.charAt(splicePosition - 1);
+      const nextChar = utteranceText.charAt(splicePosition + 1);
+      // We shouldn't splice on hyphens between two non-whitespace characters.
+      // e.g. twenty-five or 10-4
+      if (spliceCharacter === '-' && !isWhitespace(previousChar) &&
+          !isWhitespace(nextChar)) {
+        return false;
+      }
+
+      // If the previous and next characters are both numbers, don't splice
+      // here to avoid splicing on numbers like 10,000.
+      if (!isNaN(parseInt(previousChar)) && !isNaN(parseInt(nextChar))) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private playText(utteranceText: string) {
@@ -1886,8 +1928,8 @@ export class AppElement extends AppElementBase {
       // we can enable the Read Aloud buttons.
       this.speechEngineLoaded_ = true;
 
-      // Reset the isSpeechBeingRepositioned property after speech starts after
-      // a next / previous button.
+      // Reset the isSpeechBeingRepositioned property after speech starts
+      // after a next / previous button.
       if (this.speechPlayingState.isSpeechBeingRepositioned) {
         this.speechPlayingState = {
           ...this.speechPlayingState,
@@ -1911,17 +1953,16 @@ export class AppElement extends AppElementBase {
               this.wordBoundaryState.tooLongTextOffset + endBoundary,
         };
         // Since our previous utterance was too long, continue speaking pieces
-        // of the current utterance until the utterance is complete. The entire
-        // utterance is highlighted, so there's no need to update highlighting
-        // until the utterance substring is an acceptable size.
+        // of the current utterance until the utterance is complete. The
+        // entire utterance is highlighted, so there's no need to update
+        // highlighting until the utterance substring is an acceptable size.
         this.playText(utteranceText.substring(endBoundary));
         return;
       }
 
-      // Now that we've finiished reading this utterance, update the Granularity
-      // state to point to the next one
-      // Reset the word boundary index whenever we move the granularity
-      // position.
+      // Now that we've finiished reading this utterance, update the
+      // Granularity state to point to the next one Reset the word boundary
+      // index whenever we move the granularity position.
       this.resetToDefaultWordBoundaryState();
       chrome.readingMode.movePositionToNextGranularity();
       // Continue speaking with the next block of text.
@@ -2049,14 +2090,14 @@ export class AppElement extends AppElementBase {
     this.wordBoundaryState = {
       previouslySpokenIndex: 0,
       // If a boundary has been detected, the mode should be reset to
-      // NO_BOUNDARIES instead of BOUNDARIES_NOT_SUPPORTED because we know word
-      // boundaries are supported- we just need to clear the current boundary
-      // state. This allows us to highlight the next word at the start of a
-      // sentence when playback state changes.
-      // However, if there's been a change that potentially impacts if word
-      // boundaries are supported (such as changing the voice), we should
-      // reset to BOUNDARIES_NOT_SUPPORTED because we don't know yet if word
-      // boundaries are supported for this voice.
+      // NO_BOUNDARIES instead of BOUNDARIES_NOT_SUPPORTED because we know
+      // word boundaries are supported- we just need to clear the current
+      // boundary state. This allows us to highlight the next word at the
+      // start of a sentence when playback state changes. However, if there's
+      // been a change that potentially impacts if word boundaries are
+      // supported (such as changing the voice), we should reset to
+      // BOUNDARIES_NOT_SUPPORTED because we don't know yet if word boundaries
+      // are supported for this voice.
       mode: ((this.wordBoundaryState.mode ===
               WordBoundaryMode.BOUNDARY_DETECTED) &&
              !possibleWordBoundarySupportChange) ?
@@ -2177,10 +2218,11 @@ export class AppElement extends AppElementBase {
 
   private scrollHighlightIntoView() {
     // Ensure all the current highlights are in view.
-    // TODO: b/40927698 - Handle if the highlight is longer than the full height
-    // of the window (e.g. when font size is very large). Possibly using word
-    // boundaries to know when we've reached the bottom of the window and need
-    // to scroll so the rest of the current highlight is showing.
+    // TODO: crbug.com/40927698 - Handle if the highlight is longer than the
+    // full height of the window (e.g. when font size is very large). Possibly
+    // using word boundaries to know when we've reached the bottom of the
+    // window and need to scroll so the rest of the current highlight is
+    // showing.
     assert(this.shadowRoot);
     const currentHighlights = this.shadowRoot.querySelectorAll<HTMLElement>(
         '.' + currentReadHighlightClass);
@@ -2197,7 +2239,8 @@ export class AppElement extends AppElementBase {
       // scroll the first highlight to the top instead of centering it.
       firstHighlight.scrollIntoView({block: 'start'});
     } else if ((highlightBottom > window.innerHeight) || (highlightTop < 0)) {
-      // Otherwise center the current highlight if part of it would be cut off.
+      // Otherwise center the current highlight if part of it would be cut
+      // off.
       firstHighlight.scrollIntoView({block: 'center'});
     }
   }
@@ -2227,8 +2270,8 @@ export class AppElement extends AppElementBase {
     const parentOfHighlight = document.createElement('span');
     parentOfHighlight.classList.add(parentOfHighlightClass);
 
-    // First pull out any text within this node before the highlighted section.
-    // Since it's already been highlighted, we fade it out.
+    // First pull out any text within this node before the highlighted
+    // section. Since it's already been highlighted, we fade it out.
     const highlightPrefix =
         currentNode.textContent!.substring(0, highlightStart);
     if (highlightPrefix.length > 0) {
@@ -2304,8 +2347,8 @@ export class AppElement extends AppElementBase {
             WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED ||
         isEspeak(this.selectedVoice_)) {
       // Fall back where word highlighting is not possible. Since espeak
-      // boundaries are different than Google TTS word boundaries, fall back to
-      // sentence boundaries in that case too.
+      // boundaries are different than Google TTS word boundaries, fall back
+      // to sentence boundaries in that case too.
       return chrome.readingMode.sentenceHighlighting;
     }
 
@@ -2377,8 +2420,8 @@ export class AppElement extends AppElementBase {
           toggledLanguage, /* onlyInstallExactGoogleLocaleMatch=*/ true,
           /* retryIfPreviousInstallFailed= */ true);
     } else {
-      // If the language has been deselected, remove the language from the list
-      // of language packs to download
+      // If the language has been deselected, remove the language from the
+      // list of language packs to download
       const langCodeForVoicePackManager =
           convertLangOrLocaleForVoicePackManager(toggledLanguage);
       if (langCodeForVoicePackManager) {
@@ -2396,8 +2439,8 @@ export class AppElement extends AppElementBase {
     chrome.readingMode.onLanguagePrefChange(toggledLanguage, !currentlyEnabled);
 
     if (!currentlyEnabled && !this.selectedVoice_) {
-      // If there were no enabled languages (and thus no selected voice), select
-      // a voice.
+      // If there were no enabled languages (and thus no selected voice),
+      // select a voice.
       this.getSpeechSynthesisVoice();
     }
   }
@@ -2415,7 +2458,8 @@ export class AppElement extends AppElementBase {
     // Cancel the queued up Utterance using the old speech settings
     this.stopSpeech(PauseActionSource.VOICE_SETTINGS_CHANGE);
 
-    // If speech was playing when a setting was changed, continue playing speech
+    // If speech was playing when a setting was changed, continue playing
+    // speech
     if (playSpeechOnChange) {
       this.playSpeech();
     }
@@ -2432,8 +2476,8 @@ export class AppElement extends AppElementBase {
   // Resets formatting on the current highlight, including previous highlight
   // formatting.
   private removeCurrentHighlight() {
-    // The most recent highlight could have been spread across multiple segments
-    // so clear the formatting for all of the segments.
+    // The most recent highlight could have been spread across multiple
+    // segments so clear the formatting for all of the segments.
     for (let i = 0; i < chrome.readingMode.getCurrentText().length; i++) {
       const lastElement = this.previousHighlights_.pop();
       if (lastElement) {
@@ -2497,9 +2541,9 @@ export class AppElement extends AppElementBase {
         browserOrPageBaseLang, storedLanguagesPref, this.availableLangs_,
         this.defaultVoice()?.lang);
 
-    // Only update the unavailable languages in prefs if there are any available
-    // languages. Otherwise, we should wait until the available languages are
-    // updated to do this.
+    // Only update the unavailable languages in prefs if there are any
+    // available languages. Otherwise, we should wait until the available
+    // languages are updated to do this.
     if (this.availableLangs_ && this.availableLangs_.length) {
       this.alignPreferencesWithEnabledLangs_(storedLanguagesPref);
     }
@@ -2517,10 +2561,10 @@ export class AppElement extends AppElementBase {
     // unavailable between reading mode sessions, we may enable a different
     // locale instead, and the now unavailable locale can never be removed
     // by the user, so remove it here and save the newly enabled locale. For
-    // example if the user previously enabled 'pt-pt' and now it is unavailable,
-    // createInitialListOfEnabledLanguages above will enable 'pt-br' instead if
-    // it is available. Thus we should remove 'pt-pt' from preferences here and
-    // add 'pt-br' below.
+    // example if the user previously enabled 'pt-pt' and now it is
+    // unavailable, createInitialListOfEnabledLanguages above will enable
+    // 'pt-br' instead if it is available. Thus we should remove 'pt-pt' from
+    // preferences here and add 'pt-br' below.
     languagesInPref.forEach(storedLanguage => {
       if (!this.enabledLangs.includes(storedLanguage)) {
         chrome.readingMode.onLanguagePrefChange(storedLanguage, false);
@@ -2688,15 +2732,14 @@ export class AppElement extends AppElementBase {
   }
 
   // Kicks off a workflow to install a voice pack.
-  // 1) Checks if Language Pack Manager supports a version of this voice/locale
-  // 2) If so, adds voice to installVoicePackIfPossible set
-  // 3) Kicks off request GetVoicePackInfo to see if the voice is installed
-  // 4) Upon response, if we see the voice is not installed and that it's in
+  // 1) Checks if Language Pack Manager supports a version of this
+  // voice/locale 2) If so, adds voice to installVoicePackIfPossible set 3)
+  // Kicks off request GetVoicePackInfo to see if the voice is installed 4)
+  // Upon response, if we see the voice is not installed and that it's in
   // installVoicePackIfPossible, then we trigger an install request
   private installVoicePackIfPossible(
       langOrLocale: string, onlyInstallExactGoogleLocaleMatch: boolean,
       retryIfPreviousInstallFailed: boolean) {
-
     // Don't attempt to install a language if it's not a Google TTS language
     // available for downloading. It's possible for other non-Google TTS
     // voices to have a valid language code from

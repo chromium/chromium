@@ -91,3 +91,8 @@ export function openMenu(
     });
   });
 }
+
+// Returns true is the given string can be considered whitespace.
+export function isWhitespace(s: string): boolean {
+  return /\s+/g.test(s);
+}
