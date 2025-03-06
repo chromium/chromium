@@ -67,7 +67,7 @@ TEST_F(AutofillAiModelCacheImplTest, AddNewEntry) {
 
   EXPECT_FALSE(cache().Contains(signature1));
   EXPECT_FALSE(cache().Contains(signature2));
-  cache().Update(signature1, AutofillAiModelCache::CacheEntry());
+  cache().Update(signature1, AutofillAiModelCache::ModelResponse(), {});
   EXPECT_TRUE(cache().Contains(signature1));
   EXPECT_FALSE(cache().Contains(signature2));
 }
@@ -78,7 +78,7 @@ TEST_F(AutofillAiModelCacheImplTest, CacheSurvivesRestart) {
   constexpr auto signature = FormSignature(123);
 
   EXPECT_FALSE(cache().Contains(signature));
-  cache().Update(signature, AutofillAiModelCache::CacheEntry());
+  cache().Update(signature, AutofillAiModelCache::ModelResponse(), {});
   EXPECT_TRUE(cache().Contains(signature));
 
   // Simulate restart.
@@ -95,11 +95,11 @@ TEST_F(AutofillAiModelCacheImplTest, MaxCacheSize) {
   constexpr auto signature4 = FormSignature(123456);
 
   RecreateCache(/*max_cache_size=*/3);
-  cache().Update(signature1, AutofillAiModelCache::CacheEntry());
+  cache().Update(signature1, AutofillAiModelCache::ModelResponse(), {});
   AdvanceClock(base::Days(1));
-  cache().Update(signature2, AutofillAiModelCache::CacheEntry());
+  cache().Update(signature2, AutofillAiModelCache::ModelResponse(), {});
   AdvanceClock(base::Days(1));
-  cache().Update(signature3, AutofillAiModelCache::CacheEntry());
+  cache().Update(signature3, AutofillAiModelCache::ModelResponse(), {});
   AdvanceClock(base::Days(1));
   EXPECT_TRUE(cache().Contains(signature1));
   EXPECT_TRUE(cache().Contains(signature2));
@@ -107,7 +107,7 @@ TEST_F(AutofillAiModelCacheImplTest, MaxCacheSize) {
   EXPECT_FALSE(cache().Contains(signature4));
 
   // Adding a fourth entry removes the first one.
-  cache().Update(signature4, AutofillAiModelCache::CacheEntry());
+  cache().Update(signature4, AutofillAiModelCache::ModelResponse(), {});
   EXPECT_FALSE(cache().Contains(signature1));
   EXPECT_TRUE(cache().Contains(signature2));
   EXPECT_TRUE(cache().Contains(signature3));
@@ -128,11 +128,11 @@ TEST_F(AutofillAiModelCacheImplTest, MaxCacheAge) {
   constexpr auto signature3 = FormSignature(12345);
 
   RecreateCache(/*max_cache_size=*/10, /*max_cache_age=*/base::Days(3));
-  cache().Update(signature1, AutofillAiModelCache::CacheEntry());
+  cache().Update(signature1, AutofillAiModelCache::ModelResponse(), {});
   AdvanceClock(base::Days(1));
-  cache().Update(signature2, AutofillAiModelCache::CacheEntry());
+  cache().Update(signature2, AutofillAiModelCache::ModelResponse(), {});
   AdvanceClock(base::Days(1));
-  cache().Update(signature3, AutofillAiModelCache::CacheEntry());
+  cache().Update(signature3, AutofillAiModelCache::ModelResponse(), {});
   AdvanceClock(base::Days(1));
   EXPECT_TRUE(cache().Contains(signature1));
   EXPECT_TRUE(cache().Contains(signature2));

@@ -46,7 +46,9 @@ class AutofillAiModelCacheImpl : public AutofillAiModelCache {
   ~AutofillAiModelCacheImpl() override;
 
   // AutofillAiModelCache:
-  void Update(FormSignature form_signature, CacheEntry entry) override;
+  void Update(FormSignature form_signature,
+              ModelResponse response,
+              base::span<const FieldIdentifier> field_identifiers) override;
   bool Contains(FormSignature form_signature) const override;
   std::map<FormSignature, CacheEntryWithMetadata> GetAllEntries()
       const override;

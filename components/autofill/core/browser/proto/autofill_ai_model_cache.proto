@@ -17,4 +17,14 @@ message AutofillAiModelCacheEntryWithMetadata {
   // The time the cache entry was generated serialized in microseconds since
   // the Windows epoch.
   int64 creation_time = 2;
+
+  message FieldIdentifier {
+    uint32 field_signature = 1;
+    uint32 field_rank_in_signature_group = 2;
+  }
+
+  // Identifiers for the fields described in  `server_response.field_responses`
+  // that allows Autofill to identify them. The size of this member should
+  // match that of `server_response.field_responses`.
+  repeated FieldIdentifier field_identifiers = 3;
 }

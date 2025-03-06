@@ -51,10 +51,24 @@ AutofillAiModelCacheImpl::AutofillAiModelCacheImpl(
 
 AutofillAiModelCacheImpl::~AutofillAiModelCacheImpl() = default;
 
-void AutofillAiModelCacheImpl::Update(FormSignature form_signature,
-                                      CacheEntry entry) {
+void AutofillAiModelCacheImpl::Update(
+    FormSignature form_signature,
+    ModelResponse response,
+    base::span<const FieldIdentifier> field_identifiers) {
+  CHECK_EQ(base::checked_cast<size_t>(response.field_responses_size()),
+           field_identifiers.size());
+
   CacheEntryWithMetadata entry_with_metadata;
-  *entry_with_metadata.mutable_server_response() = std::move(entry);
+  entry_with_metadata.mutable_field_identifiers()->Reserve(
+      field_identifiers.size());
+  for (const FieldIdentifier& field_identifier : field_identifiers) {
+    auto proto = entry_with_metadata.mutable_field_identifiers()->Add();
+    proto->set_field_signature(*field_identifier.signature);
+    proto->set_field_rank_in_signature_group(
+        field_identifier.rank_in_signature_group);
+  }
+
+  *entry_with_metadata.mutable_server_response() = std::move(response);
   entry_with_metadata.set_creation_time(SerializeTime(base::Time::Now()));
   UpdateInDatabase(form_signature, entry_with_metadata);
   in_memory_cache_[form_signature] = std::move(entry_with_metadata);
