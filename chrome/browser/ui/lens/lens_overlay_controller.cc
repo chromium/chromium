@@ -107,7 +107,6 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
-#include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/native_widget.h"
 
@@ -2221,10 +2220,9 @@ void LensOverlayController::ShowOverlay() {
 
   // If the view already exists, we just need to reshow it.
   if (overlay_view_) {
-    CHECK(overlay_web_view_);
-    CHECK(!overlay_view_->GetVisible());
-
-    overlay_view_->SetVisible(true);
+    // Restore the state to show the overlay.
+    preselection_widget_anchor_->SetVisible(true);
+    overlay_web_view_->SetVisible(true);
 
     // Restart the live blur since the view is visible again.
     SetLiveBlur(true);
@@ -2235,21 +2233,16 @@ void LensOverlayController::ShowOverlay() {
     return;
   }
 
-  // Create the view that will house our UI.
-  std::unique_ptr<views::View> host_view = CreateViewForOverlay();
+  // Create the views that will house our UI.
+  overlay_view_ = CreateViewForOverlay();
 
-  // Ensure our view starts with the correct bounds.
-  host_view->SetBoundsRect(contents_web_view->bounds());
-
+  // Sanity check that the overlay view is above the contents web view.
   auto* parent_view = contents_web_view->parent();
-  // Add the view as a sibling of the view housing the tab contents. The
-  // overlay_view_ should be stacked on top of the contents_web_view.
-  overlay_view_ = parent_view->AddChildView(std::move(host_view));
   CHECK(parent_view->GetIndexOf(overlay_view_) >
         parent_view->GetIndexOf(contents_web_view));
 
-  // Observe the contents web view to handle resizing the overlay view.
-  tab_contents_view_observer_.Observe(contents_web_view);
+  // Observe the overlay view to handle resizing the background blur layer.
+  tab_contents_view_observer_.Observe(overlay_view_);
 
   // The overlay needs to be focused on show to immediately begin
   // receiving key events.
@@ -2264,7 +2257,11 @@ void LensOverlayController::ShowOverlay() {
 }
 
 void LensOverlayController::HideOverlay() {
-  overlay_view_->SetVisible(false);
+  // Hide the overlay view, but keep the web view attached to the overlay view
+  // so that the overlay can be re-shown without creating a new web view.
+  preselection_widget_anchor_->SetVisible(false);
+  overlay_web_view_->SetVisible(false);
+
   SetLiveBlur(false);
   HidePreselectionBubble();
   // Re-enable mouse and keyboard events to the tab contents web view.
@@ -2357,23 +2354,14 @@ void LensOverlayController::CloseUIPart2(
   pref_change_registrar_.Reset();
 #endif  // BUILDFLAG(IS_MAC)
 
-  // Cleanup all of the lens overlay related views. Not doing so will result
-  // in dangling pointers when the browser closes. Note the trailing `T` on
-  // the method name -- this removes `overlay_view_` and returns a unique_ptr
-  // to it which we then discard. Without the `T`, it returns nothing and
-  // frees nothing. Since technically the views are owned by
-  // contents_web_view, we need to release our reference using std::exchange
-  // to avoid a dangling pointer which throws an error when DCHECK is on.
+  // Cleanup all of the lens overlay related views. The overlay view is owned by
+  // the browser view and is reused for each Lens overlay session. Clean it up
+  // so it is ready for the next invocation.
   if (overlay_view_) {
-    overlay_web_view_ = nullptr;
-    preselection_widget_anchor_ = nullptr;
-    overlay_view_->RemoveAllChildViews();
-    // TODO(crbug.com/398310157): Adding and removing the Lens overlay view can
-    // cause different behavior if other features of the browser are also
-    // modifying the view hierarchy. The Lens overlay view should be added to
-    // the browser view and stay there unconditionally to avoid this.
-    overlay_view_->parent()->RemoveChildViewT(
-        std::exchange(overlay_view_, nullptr));
+    overlay_view_->RemoveChildViewT(
+        std::exchange(preselection_widget_anchor_, nullptr));
+    overlay_view_->RemoveChildViewT(std::exchange(overlay_web_view_, nullptr));
+    overlay_view_ = nullptr;
   }
 
   lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
@@ -2542,12 +2530,11 @@ void LensOverlayController::InitializeOverlayUI(
   lens::RecordInvocation(invocation_source_, initial_document_type_);
 }
 
-std::unique_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
-  // Create a fill layout host view to make sure the web view and the
-  // preselection anchor covers the entire view as it is resized.
-  std::unique_ptr<views::View> host_view = std::make_unique<views::View>();
-  host_view->SetLayoutManager(std::make_unique<views::FillLayout>());
-  host_view->SetProperty(views::kViewIgnoredByLayoutKey, true);
+raw_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
+  // Grab the host view for the overlay which is owned by the browser view.
+  auto* host_view = tab_->GetBrowserWindowInterface()->LensOverlayView();
+  CHECK(host_view);
+  CHECK(host_view->GetVisible());
 
   // Setup a preselection anchor view. Usually bubbles are anchored to top
   // chrome, but top chrome is not always visible when our overlay is visible.
@@ -2622,7 +2609,7 @@ void LensOverlayController::OnFullscreenStateChanged() {
 }
 
 void LensOverlayController::OnViewBoundsChanged(views::View* observed_view) {
-  CHECK(observed_view == tab_->GetBrowserWindowInterface()->GetWebView());
+  CHECK(observed_view == overlay_view_);
 
   // We now want to start the live blur since the screenshot has resized to
   // allow the blur to peek through.
@@ -2632,7 +2619,6 @@ void LensOverlayController::OnViewBoundsChanged(views::View* observed_view) {
 
   // Set our view to the same bounds as the contents web view so it always
   // covers the tab contents.
-  overlay_view_->SetBoundsRect(observed_view->bounds());
   if (lens_overlay_blur_layer_delegate_) {
     // Set the blur to have the same bounds as our view, but since it is in our
     // views local coordinate system, the blur should be positioned at (0,0).
@@ -3075,12 +3061,12 @@ void LensOverlayController::AddBackgroundBlur() {
   }
 
   // Add our blur layer to the view.
-  overlay_view_->SetPaintToLayer();
-  overlay_view_->layer()->Add(lens_overlay_blur_layer_delegate_->layer());
-  overlay_view_->layer()->StackAtBottom(
+  overlay_web_view_->SetPaintToLayer();
+  overlay_web_view_->layer()->Add(lens_overlay_blur_layer_delegate_->layer());
+  overlay_web_view_->layer()->StackAtBottom(
       lens_overlay_blur_layer_delegate_->layer());
   lens_overlay_blur_layer_delegate_->layer()->SetBounds(
-      overlay_view_->GetLocalBounds());
+      overlay_web_view_->GetLocalBounds());
 }
 
 void LensOverlayController::CloseRequestedByOverlayCloseButton() {

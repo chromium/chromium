@@ -2052,6 +2052,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       [&]() { return controller->state() == State::kOverlay; }));
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
   EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
+  EXPECT_TRUE(controller->GetOverlayWebViewForTesting()->GetVisible());
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->Contains(
+      controller->GetOverlayWebViewForTesting()));
   // Tab contents web view should be disabled.
   ASSERT_FALSE(browser()->GetWebView()->GetEnabled());
 
@@ -2076,7 +2079,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                    ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kBackground; }));
-  EXPECT_FALSE(controller->GetOverlayViewForTesting()->GetVisible());
+  // Overlay view should never be invisible since it is used across tabs.
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
+  EXPECT_FALSE(controller->GetOverlayWebViewForTesting()->GetVisible());
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return !coordinator->IsSidePanelShowing(); }));
   // Tab contents web view should be enabled.
@@ -2087,6 +2092,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlayAndResults; }));
   EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
+  EXPECT_TRUE(controller->GetOverlayWebViewForTesting()->GetVisible());
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->Contains(
+      controller->GetOverlayWebViewForTesting()));
   // Side panel should come back when returning to previous tab.
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return coordinator->IsSidePanelShowing(); }));

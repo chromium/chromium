@@ -1186,6 +1186,10 @@ views::View* Browser::TopContainer() {
   return window_->GetTopContainer();
 }
 
+views::View* Browser::LensOverlayView() {
+  return window_->GetLensOverlayView();
+}
+
 base::CallbackListSubscription Browser::RegisterActiveTabDidChange(
     ActiveTabChangeCallback callback) {
   return did_active_tab_change_callback_list_.Add(std::move(callback));

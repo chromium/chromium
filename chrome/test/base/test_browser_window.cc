@@ -328,6 +328,10 @@ views::View* TestBrowserWindow::GetTopContainer() {
   return nullptr;
 }
 
+views::View* TestBrowserWindow::GetLensOverlayView() {
+  return nullptr;
+}
+
 DownloadBubbleUIController* TestBrowserWindow::GetDownloadBubbleUIController() {
   return nullptr;
 }

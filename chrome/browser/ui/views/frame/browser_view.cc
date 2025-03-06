@@ -283,6 +283,7 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/external_focus_tracker.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/views_features.h"
@@ -1035,6 +1036,18 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
     contents_view = contents_web_view_;
   }
 
+  // Create the view that will house the Lens overlay. This view is visible but
+  // transparent view that is used as a container for the Lens overlay WebView.
+  // It must have a higher index than contents_view so that it is drawn on top
+  // of it. Uses a fill layout so that the overlay WebView can fill the entire
+  // container.
+  auto lens_overlay_view = std::make_unique<views::View>();
+  lens_overlay_view->SetID(VIEW_ID_LENS_OVERLAY);
+  lens_overlay_view->SetVisible(true);
+  lens_overlay_view->SetLayoutManager(std::make_unique<views::FillLayout>());
+  lens_overlay_view_ =
+      contents_container->AddChildView(std::move(lens_overlay_view));
+
   contents_scrim_view_ =
       contents_container->AddChildView(std::make_unique<ScrimView>());
 #if BUILDFLAG(ENABLE_GLIC)
@@ -1059,12 +1072,12 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 
 #if BUILDFLAG(ENABLE_GLIC)
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
-      devtools_web_view_, contents_view, contents_scrim_view_, glic_border_,
-      watermark_view_));
+      devtools_web_view_, contents_view, lens_overlay_view_,
+      contents_scrim_view_, glic_border_, watermark_view_));
 #else
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
-      devtools_web_view_, contents_view, contents_scrim_view_, nullptr,
-      watermark_view_));
+      devtools_web_view_, contents_view, lens_overlay_view_,
+      contents_scrim_view_, nullptr, watermark_view_));
 #endif
 
   toolbar_ = top_container_->AddChildView(
@@ -1196,6 +1209,7 @@ BrowserView::~BrowserView() {
   infobar_container_ = nullptr;
   multi_contents_view_ = nullptr;
   contents_web_view_ = nullptr;
+  lens_overlay_view_ = nullptr;
   devtools_web_view_ = nullptr;
   contents_scrim_view_ = nullptr;
   window_scrim_view_ = nullptr;
@@ -3444,6 +3458,10 @@ DownloadShelf* BrowserView::GetDownloadShelf() {
 
 views::View* BrowserView::GetTopContainer() {
   return top_container_;
+}
+
+views::View* BrowserView::GetLensOverlayView() {
+  return lens_overlay_view_;
 }
 
 DownloadBubbleUIController* BrowserView::GetDownloadBubbleUIController() {

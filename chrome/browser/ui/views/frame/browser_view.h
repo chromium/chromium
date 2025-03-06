@@ -635,6 +635,7 @@ class BrowserView : public BrowserWindow,
   bool IsDownloadShelfVisible() const override;
   DownloadShelf* GetDownloadShelf() override;
   views::View* GetTopContainer() override;
+  views::View* GetLensOverlayView() override;
   DownloadBubbleUIController* GetDownloadBubbleUIController() override;
   void ConfirmBrowserCloseWithPendingDownloads(
       int download_count,
@@ -1253,6 +1254,12 @@ class BrowserView : public BrowserWindow,
 
   // The view that contains devtools window for the selected WebContents.
   raw_ptr<views::WebView> devtools_web_view_ = nullptr;
+
+  // The view that contains the Lens overlay. The Lens Overlay is a UI overlay
+  // that is shown on top of the web contents. It therefore must always have the
+  // same bounds as the contents_web_view_, but also be above the
+  // contents_web_view_.
+  raw_ptr<views::View> lens_overlay_view_ = nullptr;
 
   // The view that overlays a watermark on the contents container.
   raw_ptr<enterprise_watermark::WatermarkView> watermark_view_ = nullptr;
