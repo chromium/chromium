@@ -551,7 +551,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."zerofrom-derive:0.1.6"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."zerofrom:0.1.5"]
+[policy."zerofrom:0.1.6"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."zerotrie:0.2.0"]

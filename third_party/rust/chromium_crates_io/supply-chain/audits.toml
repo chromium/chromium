@@ -3756,6 +3756,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 version = "0.1.5"
 notes = "Contains no unsafe"
 
+[[audits.zerofrom]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.1.5 -> 0.1.6"
+notes = "Only minor cfg tweaks."
+
 [[audits.zerofrom-derive]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]

@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.71.1"
+rust-version = "1.81"
 name = "zerofrom"
-version = "0.1.5"
+version = "0.1.6"
 authors = ["Manish Goregaokar <manishsmail@gmail.com>"]
 build = false
 include = [
@@ -26,6 +26,7 @@ include = [
     "LICENSE",
     "README.md",
 ]
+autolib = false
 autobins = false
 autoexamples = false
 autotests = false
@@ -52,6 +53,11 @@ all-features = true
 [package.metadata.workspaces]
 independent = true
 
+[features]
+alloc = []
+default = ["alloc"]
+derive = ["dep:zerofrom-derive"]
+
 [lib]
 name = "zerofrom"
 path = "src/lib.rs"
@@ -60,8 +66,3 @@ path = "src/lib.rs"
 version = "0.1.3"
 optional = true
 default-features = false
-
-[features]
-alloc = []
-default = ["alloc"]
-derive = ["dep:zerofrom-derive"]
