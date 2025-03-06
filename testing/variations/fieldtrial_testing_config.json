@@ -20403,6 +20403,31 @@
             ]
         }
     ],
+    "SafetyHubDisruptiveNotificationRevocation": [
+        {
+            "platforms": [
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows",
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "ShadowRun_20250227",
+                    "params": {
+                        "max_engagement_score": "0",
+                        "min_notification_count": "3",
+                        "shadow_run": "true"
+                    },
+                    "enable_features": [
+                        "SafetyHubDisruptiveNotificationRevocation"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafetyHubOneOffHats": [
         {
             "platforms": [

@@ -187,6 +187,25 @@ TEST_F(DisruptiveNotificationPermissionsManagerTest,
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerTest,
+       DontRevokePermissionZeroNotificationCount) {
+  base::HistogramTester t;
+  GURL url("https://www.example.com");
+  SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
+  // No notification engagement entry by default.
+  site_engagement_service()->ResetBaseScoreForURL(url, 0);
+
+  manager()->RevokeDisruptiveNotifications();
+
+  base::Value stored_value = hcsm()->GetWebsiteSetting(
+      url, url,
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
+  EXPECT_TRUE(stored_value.is_none());
+
+  t.ExpectBucketCount(kRevocationResultHistogram,
+                      RevocationResult::kNotDisruptive, 1);
+}
+
+TEST_F(DisruptiveNotificationPermissionsManagerTest,
        NotEligableNotificationContentSettings) {
   base::HistogramTester t;
   // Already blocked notification.
