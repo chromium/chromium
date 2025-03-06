@@ -122,7 +122,7 @@ void Sanitizer::removeElement(
   RemoveElement(getFrom(element));
 }
 
-void Sanitizer::replaceWithChildrenElement(
+void Sanitizer::replaceElementWithChildren(
     const V8UnionSanitizerElementNamespaceOrString* element) {
   ReplaceElement(getFrom(element));
 }
@@ -510,7 +510,7 @@ bool Sanitizer::setFrom(const SanitizerConfig* config, bool safe) {
   }
   if (config->hasReplaceWithChildrenElements()) {
     for (const auto& element : config->replaceWithChildrenElements()) {
-      replaceWithChildrenElement(element);
+      replaceElementWithChildren(element);
     }
   }
   if (config->hasAttributes()) {

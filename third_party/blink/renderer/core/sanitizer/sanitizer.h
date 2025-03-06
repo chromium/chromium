@@ -53,7 +53,7 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   void allowElement(
       const V8UnionSanitizerElementNamespaceWithAttributesOrString*);
   void removeElement(const V8UnionSanitizerElementNamespaceOrString*);
-  void replaceWithChildrenElement(
+  void replaceElementWithChildren(
       const V8UnionSanitizerElementNamespaceOrString*);
   void allowAttribute(const V8UnionSanitizerAttributeNamespaceOrString*);
   void removeAttribute(const V8UnionSanitizerAttributeNamespaceOrString*);
