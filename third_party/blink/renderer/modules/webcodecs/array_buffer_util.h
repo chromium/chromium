@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_ARRAY_BUFFER_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_ARRAY_BUFFER_UTIL_H_
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/types/to_address.h"
 #include "media/base/decoder_buffer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybufferallowshared_arraybufferviewallowshared.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
@@ -30,17 +27,17 @@ base::span<T> AsSpan(const AllowSharedBufferSource* buffer_union) {
     case AllowSharedBufferSource::ContentType::kArrayBufferAllowShared: {
       auto* buffer = buffer_union->GetAsArrayBufferAllowShared();
       return (buffer && !buffer->IsDetached())
-                 ? base::span<T>(
+                 ? UNSAFE_TODO(base::span<T>(
                        reinterpret_cast<T*>(buffer->DataMaybeShared()),
-                       buffer->ByteLength())
+                       buffer->ByteLength()))
                  : base::span<T>();
     }
     case AllowSharedBufferSource::ContentType::kArrayBufferViewAllowShared: {
       auto* buffer = buffer_union->GetAsArrayBufferViewAllowShared().Get();
       return (buffer && !buffer->IsDetached())
-                 ? base::span<T>(
+                 ? UNSAFE_TODO(base::span<T>(
                        reinterpret_cast<T*>(buffer->BaseAddressMaybeShared()),
-                       buffer->byteLength())
+                       buffer->byteLength()))
                  : base::span<T>();
     }
   }
@@ -73,8 +70,9 @@ class ArrayBufferContentsExternalMemory
       : contents_(std::move(contents)), span_(span) {
     // Check that `span` refers to the memory inside `contents`.
     auto* contents_data = static_cast<const uint8_t*>(contents_.Data());
-    CHECK_GE(span.data(), contents_data);
-    CHECK_LE(span.data() + span.size(), contents_data + contents_.DataLength());
+    CHECK_GE(base::to_address(span.begin()), contents_data);
+    CHECK_LE(base::to_address(span.end()),
+             UNSAFE_TODO(contents_data + contents_.DataLength()));
   }
 
   const base::span<const uint8_t> Span() const override { return span_; }

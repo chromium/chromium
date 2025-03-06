@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webcodecs/audio_decoder.h"
 
+#include <memory>
+#include <vector>
+
 #include "base/metrics/histogram_functions.h"
+#include "base/types/to_address.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_decoder_config.h"
@@ -34,9 +33,6 @@
 #include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-
-#include <memory>
-#include <vector>
 
 namespace blink {
 
@@ -285,9 +281,8 @@ AudioDecoder::MakeMediaAudioDecoderConfig(const ConfigType& config,
     }
 
     if (!desc_wrapper.empty()) {
-      const uint8_t* start = desc_wrapper.data();
-      const size_t size = desc_wrapper.size();
-      extra_data.assign(start, start + size);
+      extra_data.assign(base::to_address(desc_wrapper.begin()),
+                        base::to_address(desc_wrapper.end()));
     }
   }
 

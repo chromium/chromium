@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webcodecs/background_readback.h"
 
 #include "base/feature_list.h"
@@ -271,7 +266,7 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToBuffer(
   uint32_t offset = dest_layout.Offset(0);
   uint32_t stride = dest_layout.Stride(0);
 
-  uint8_t* dst_pixels = dest_buffer.data() + offset;
+  uint8_t* dst_pixels = dest_buffer.subspan(offset).data();
   size_t max_bytes_written = stride * src_rect.height();
   if (stride <= 0 || max_bytes_written > dest_buffer.size()) {
     DLOG(ERROR) << "Buffer is not sufficiently large for readback";
@@ -388,7 +383,7 @@ bool SyncReadbackThread::ReadbackToBuffer(
     const gfx::Size sample_size =
         media::VideoFrame::SampleSize(dest_layout.Format(), i);
     gfx::Rect plane_src_rect = PlaneRect(src_rect, sample_size);
-    uint8_t* dest_pixels = dest_buffer.data() + dest_layout.Offset(i);
+    uint8_t* dest_pixels = dest_buffer.subspan(dest_layout.Offset(i)).data();
     if (!media::ReadbackTexturePlaneToMemorySync(*frame, i, plane_src_rect,
                                                  dest_pixels,
                                                  dest_layout.Stride(i), ri)) {

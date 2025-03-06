@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 
 #include <limits>
@@ -493,16 +488,18 @@ void CopyMappablePlanes(const media::VideoFrame& src_frame,
         media::VideoFrame::SampleSize(dest_layout.Format(), i);
     const int sample_bytes =
         media::VideoFrame::BytesPerElement(dest_layout.Format(), i);
-    const uint8_t* src =
-        src_frame.data(i) +
-        src_rect.y() / sample_size.height() * src_frame.stride(i) +
-        src_rect.x() / sample_size.width() * sample_bytes;
-    libyuv::CopyPlane(
-        src, static_cast<int>(src_frame.stride(i)),
-        dest_buffer.data() + dest_layout.Offset(i),
-        static_cast<int>(dest_layout.Stride(i)),
-        PlaneSize(src_rect.width(), sample_size.width()) * sample_bytes,
-        PlaneSize(src_rect.height(), sample_size.height()));
+    UNSAFE_TODO({
+      const uint8_t* src =
+          src_frame.data(i) +
+          src_rect.y() / sample_size.height() * src_frame.stride(i) +
+          src_rect.x() / sample_size.width() * sample_bytes;
+      libyuv::CopyPlane(
+          src, static_cast<int>(src_frame.stride(i)),
+          dest_buffer.data() + dest_layout.Offset(i),
+          static_cast<int>(dest_layout.Stride(i)),
+          PlaneSize(src_rect.width(), sample_size.width()) * sample_bytes,
+          PlaneSize(src_rect.height(), sample_size.height()));
+    });
   }
 }
 
@@ -522,7 +519,7 @@ bool CopyTexturablePlanes(media::VideoFrame& src_frame,
     const gfx::Size sample_size =
         media::VideoFrame::SampleSize(dest_layout.Format(), i);
     gfx::Rect plane_src_rect = PlaneRect(src_rect, sample_size);
-    uint8_t* dest_pixels = dest_buffer.data() + dest_layout.Offset(i);
+    uint8_t* dest_pixels = dest_buffer.subspan(dest_layout.Offset(i)).data();
     if (!media::ReadbackTexturePlaneToMemorySync(src_frame, i, plane_src_rect,
                                                  dest_pixels,
                                                  dest_layout.Stride(i), ri)) {
@@ -1051,10 +1048,10 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
         const int rows = PlaneSize(crop.height(), sample_size.height());
         const int columns = PlaneSize(crop.width(), sample_size.width());
         const int row_bytes = columns * sample_bytes;
-        libyuv::CopyPlane(buffer.data() + src_layout.Offset(i),
-                          static_cast<int>(src_layout.Stride(i)),
-                          frame->writable_data(i),
-                          static_cast<int>(frame->stride(i)), row_bytes, rows);
+        UNSAFE_TODO(libyuv::CopyPlane(
+            buffer.data() + src_layout.Offset(i),
+            static_cast<int>(src_layout.Stride(i)), frame->writable_data(i),
+            static_cast<int>(frame->stride(i)), row_bytes, rows));
       }
     }
   }
@@ -1292,7 +1289,7 @@ void VideoFrame::ConvertAndCopyToRGB(scoped_refptr<media::VideoFrame> frame,
 
   const wtf_size_t plane = 0;
   DCHECK_EQ(dest_layout.NumPlanes(), 1u);
-  uint8_t* dst = buffer.data() + dest_layout.Offset(plane);
+  uint8_t* dst = buffer.subspan(dest_layout.Offset(plane)).data();
   auto sk_canvas = SkCanvas::MakeRasterDirect(dst_image_info, dst,
                                               dest_layout.Stride(plane));
 
