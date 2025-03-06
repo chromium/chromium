@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "content/public/browser/gpu_data_manager.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -286,8 +287,12 @@ class GlicBorderView::BorderViewUpdater {
 
 GlicBorderView::GlicBorderView(Browser* browser)
     : updater_(std::make_unique<BorderViewUpdater>(browser, this)),
-      shader_(ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_GLIC_BORDER_SHADER)),
+      shader_(
+          content::GpuDataManager::GetInstance()->HardwareAccelerationEnabled()
+              ? ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+                    IDR_GLIC_BORDER_SHADER)
+              : ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+                    IDR_GLIC_SIMPLIFIED_BORDER_SHADER)),
       creation_time_(base::TimeTicks::Now()),
       theme_service_(ThemeServiceFactory::GetForProfile(browser->GetProfile())),
       browser_(browser) {
