@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -50,6 +51,7 @@ class AutofillAiModelCacheImpl : public AutofillAiModelCache {
               ModelResponse response,
               base::span<const FieldIdentifier> field_identifiers) override;
   bool Contains(FormSignature form_signature) const override;
+  void Erase(FormSignature form_signature) override;
   std::map<FormSignature, CacheEntryWithMetadata> GetAllEntries()
       const override;
 
@@ -61,6 +63,7 @@ class AutofillAiModelCacheImpl : public AutofillAiModelCache {
   void TrimEntries();
   void UpdateInDatabase(FormSignature form_signature,
                         const CacheEntryWithMetadata& entry);
+  void EraseInDatabase(base::span<const FormSignature> form_signatures);
 
   void OnDatabaseInit(leveldb_proto::Enums::InitStatus status);
   void OnDatabaseLoadKeysAndEntries(

@@ -38,6 +38,10 @@ class AutofillAiModelCache : public KeyedService {
   // Returns whether the cache contains an entry with `form_signature`.
   virtual bool Contains(FormSignature form_signature) const = 0;
 
+  // Removes the cache entry with `form_signature`. No-op if no such entry
+  // exists.
+  virtual void Erase(FormSignature form_signature) = 0;
+
   // Returns the entire content of the cache, including metadata (such as
   // creation dates).
   virtual std::map<FormSignature, CacheEntryWithMetadata> GetAllEntries()

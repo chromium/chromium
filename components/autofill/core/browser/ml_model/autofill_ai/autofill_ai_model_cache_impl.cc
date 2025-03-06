@@ -82,6 +82,11 @@ bool AutofillAiModelCacheImpl::Contains(FormSignature form_signature) const {
              SerializeTime(base::Time::Now() - max_cache_age_);
 }
 
+void AutofillAiModelCacheImpl::Erase(FormSignature form_signature) {
+  in_memory_cache_.erase(form_signature);
+  EraseInDatabase({form_signature});
+}
+
 std::map<FormSignature, AutofillAiModelCache::CacheEntryWithMetadata>
 AutofillAiModelCacheImpl::GetAllEntries() const {
   return in_memory_cache_;
@@ -116,16 +121,14 @@ void AutofillAiModelCacheImpl::TrimEntries() {
     return;
   }
 
-  auto entries_to_save = std::make_unique<Database::KeyEntryVector>();
-  auto keys_to_remove = std::make_unique<std::vector<std::string>>();
-  keys_to_remove->reserve(deletions_overall);
+  std::vector<FormSignature> signatures_to_remove;
+  signatures_to_remove.reserve(deletions_overall);
   for (const auto [_, signature_to_delete] :
        base::span(entries_by_creation_time).first(deletions_overall)) {
     in_memory_cache_.erase(signature_to_delete);
-    keys_to_remove->emplace_back(base::NumberToString(*signature_to_delete));
+    signatures_to_remove.push_back(signature_to_delete);
   }
-  db_->UpdateEntries(std::move(entries_to_save), std::move(keys_to_remove),
-                     /*callback=*/base::DoNothing());
+  EraseInDatabase(signatures_to_remove);
 }
 
 void AutofillAiModelCacheImpl::UpdateInDatabase(
@@ -137,6 +140,21 @@ void AutofillAiModelCacheImpl::UpdateInDatabase(
   auto entries_to_save = std::make_unique<Database::KeyEntryVector>();
   entries_to_save->emplace_back(base::NumberToString(*form_signature), entry);
   auto keys_to_remove = std::make_unique<std::vector<std::string>>();
+  db_->UpdateEntries(std::move(entries_to_save), std::move(keys_to_remove),
+                     /*callback=*/base::DoNothing());
+}
+
+void AutofillAiModelCacheImpl::EraseInDatabase(
+    base::span<const FormSignature> form_signatures) {
+  if (!db_initialized_) {
+    return;
+  }
+
+  auto entries_to_save = std::make_unique<Database::KeyEntryVector>();
+  auto keys_to_remove = std::make_unique<std::vector<std::string>>();
+  *keys_to_remove = base::ToVector(
+      form_signatures,
+      [](FormSignature signature) { return base::NumberToString(*signature); });
   db_->UpdateEntries(std::move(entries_to_save), std::move(keys_to_remove),
                      /*callback=*/base::DoNothing());
 }

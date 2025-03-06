@@ -157,6 +157,24 @@ TEST_F(AutofillAiModelCacheImplTest, MaxCacheAge) {
   EXPECT_TRUE(cache().Contains(signature3));
 }
 
+TEST_F(AutofillAiModelCacheImplTest, Erase) {
+  constexpr auto signature1 = FormSignature(123);
+  constexpr auto signature2 = FormSignature(1234);
+
+  cache().Update(signature1, AutofillAiModelCache::ModelResponse(), {});
+  cache().Update(signature2, AutofillAiModelCache::ModelResponse(), {});
+  EXPECT_TRUE(cache().Contains(signature1));
+  EXPECT_TRUE(cache().Contains(signature2));
+
+  cache().Erase(signature2);
+  EXPECT_TRUE(cache().Contains(signature1));
+  EXPECT_FALSE(cache().Contains(signature2));
+
+  cache().Erase(signature1);
+  EXPECT_FALSE(cache().Contains(signature1));
+  EXPECT_FALSE(cache().Contains(signature2));
+}
+
 // Tests that `Autofill.AutofillAi.ModelCache.InitSuccess` is emitted on
 // startup.
 TEST_F(AutofillAiModelCacheImplTest, InitSuccessMetric) {
