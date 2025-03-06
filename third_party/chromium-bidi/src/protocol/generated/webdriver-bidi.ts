@@ -188,6 +188,7 @@ export namespace Session {
     beforeUnload?: Session.UserPromptHandlerType;
     confirm?: Session.UserPromptHandlerType;
     default?: Session.UserPromptHandlerType;
+    file?: Session.UserPromptHandlerType;
     prompt?: Session.UserPromptHandlerType;
   };
 }
@@ -801,12 +802,13 @@ export namespace BrowsingContext {
 }
 export namespace BrowsingContext {
   export type SetViewportParameters = {
-    context: BrowsingContext.BrowsingContext;
+    context?: BrowsingContext.BrowsingContext;
     viewport?: BrowsingContext.Viewport | null;
     /**
      * Must be greater than `0`.
      */
     devicePixelRatio?: number | null;
+    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
   };
 }
 export namespace BrowsingContext {
@@ -2331,6 +2333,19 @@ export namespace Input {
     context: BrowsingContext.BrowsingContext;
     element: Script.SharedReference;
     files: [...string[]];
+  };
+}
+export namespace Input {
+  export type FileDialogOpened = {
+    method: 'input.fileDialogOpened';
+    params: Input.FileDialogInfo;
+  };
+}
+export namespace Input {
+  export type FileDialogInfo = {
+    context: BrowsingContext.BrowsingContext;
+    element?: Script.SharedReference;
+    multiple: boolean;
   };
 }
 export type WebExtensionCommand = WebExtension.Install | WebExtension.Uninstall;

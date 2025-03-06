@@ -236,7 +236,7 @@ export namespace BrowsingContext {
     return parseObject(
       params,
       WebDriverBidi.BrowsingContext.SetViewportParametersSchema,
-    );
+    ) as Protocol.BrowsingContext.SetViewportParameters;
   }
 
   export function parseTraverseHistoryParams(

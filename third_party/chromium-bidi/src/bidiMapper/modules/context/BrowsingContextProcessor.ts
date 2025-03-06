@@ -24,6 +24,7 @@ import {
   type EmptyResult,
   NoSuchUserContextException,
   NoSuchAlertException,
+  UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
 import {CdpErrorConstants} from '../../../utils/cdpErrorConstants.js';
 import type {EventManager} from '../session/EventManager.js';
@@ -195,7 +196,20 @@ export class BrowsingContextProcessor {
   async setViewport(
     params: BrowsingContext.SetViewportParameters,
   ): Promise<EmptyResult> {
-    const context = this.#browsingContextStorage.getContext(params.context);
+    if (params.userContexts === undefined && params.context === undefined) {
+      throw new InvalidArgumentException(
+        'Either userContexts or context must be provided',
+      );
+    }
+    if (params.userContexts !== undefined && params.context !== undefined) {
+      throw new InvalidArgumentException(
+        'userContexts and context are mutually exclusive',
+      );
+    }
+    if (params.userContexts !== undefined) {
+      throw new UnsupportedOperationException('userContexts is not supported');
+    }
+    const context = this.#browsingContextStorage.getContext(params.context!);
     if (!context.isTopLevelContext()) {
       throw new InvalidArgumentException(
         'Emulating viewport is only supported on the top-level context',

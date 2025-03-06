@@ -260,6 +260,7 @@ export namespace Session {
       beforeUnload: Session.UserPromptHandlerTypeSchema.optional(),
       confirm: Session.UserPromptHandlerTypeSchema.optional(),
       default: Session.UserPromptHandlerTypeSchema.optional(),
+      file: Session.UserPromptHandlerTypeSchema.optional(),
       prompt: Session.UserPromptHandlerTypeSchema.optional(),
     }),
   );
@@ -981,9 +982,10 @@ export namespace BrowsingContext {
 export namespace BrowsingContext {
   export const SetViewportParametersSchema = z.lazy(() =>
     z.object({
-      context: BrowsingContext.BrowsingContextSchema,
+      context: BrowsingContext.BrowsingContextSchema.optional(),
       viewport: z.union([BrowsingContext.ViewportSchema, z.null()]).optional(),
       devicePixelRatio: z.union([z.number().gt(0), z.null()]).optional(),
+      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
     }),
   );
 }
@@ -2972,6 +2974,23 @@ export namespace Input {
       context: BrowsingContext.BrowsingContextSchema,
       element: Script.SharedReferenceSchema,
       files: z.array(z.string()),
+    }),
+  );
+}
+export namespace Input {
+  export const FileDialogOpenedSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('input.fileDialogOpened'),
+      params: Input.FileDialogInfoSchema,
+    }),
+  );
+}
+export namespace Input {
+  export const FileDialogInfoSchema = z.lazy(() =>
+    z.object({
+      context: BrowsingContext.BrowsingContextSchema,
+      element: Script.SharedReferenceSchema.optional(),
+      multiple: z.boolean(),
     }),
   );
 }
