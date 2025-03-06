@@ -11,6 +11,7 @@
 #include "ash/display/output_protection_delegate.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/desks/desks_util.h"
+#include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -1639,69 +1640,6 @@ static bool IsOccludedByPreviousSqs(
   return false;
 }
 
-// Try to share the |SharedQuadState| (sqs) when a single layer can be
-// reconstructed. This is important for performance reasons in the occlusion
-// code and correctness in the per edge anti-alias code.
-static viz::SharedQuadState* AppendOrCreateSharedQuadState(
-    viz::DrawQuad::Material quad_type,
-    float opacity,
-    const std::unique_ptr<viz::CompositorRenderPass>& render_pass,
-    const gfx::Transform& quad_to_target_transform,
-    const gfx::Rect& quad_rect,
-    const gfx::MaskFilterInfo& msk,
-    const std::optional<gfx::Rect>& quad_clip_rect,
-    const bool are_contents_opaque) {
-  viz::SharedQuadState* quad_state =
-      !render_pass->shared_quad_state_list.empty()
-          ? render_pass->shared_quad_state_list.back()
-          : nullptr;
-  auto test_union = quad_rect;
-  bool is_sealed_union = false;
-  if (quad_state) {
-    // A sealed union is when the combined rect has no gaps and can form a
-    // single layer rect.
-    test_union.Union(quad_state->quad_layer_rect);
-    if ((test_union.width() == quad_rect.width() &&
-         test_union.width() == quad_state->quad_layer_rect.width())) {
-      if (quad_rect.height() + quad_state->quad_layer_rect.height() >=
-          test_union.height())
-        is_sealed_union = true;
-    }
-
-    if ((test_union.height() == quad_rect.height() &&
-         test_union.height() == quad_state->quad_layer_rect.height())) {
-      if (quad_rect.width() + quad_state->quad_layer_rect.width() >=
-          test_union.width())
-        is_sealed_union = true;
-    }
-  }
-
-  bool prev_texture_draw_quad = false;
-  if (!render_pass->quad_list.empty()) {
-    prev_texture_draw_quad = render_pass->quad_list.back()->material ==
-                             viz::DrawQuad::Material::kTextureContent;
-  }
-
-  if (quad_type != viz::DrawQuad::Material::kTextureContent &&
-      !prev_texture_draw_quad && quad_state && is_sealed_union &&
-      quad_to_target_transform == quad_state->quad_to_target_transform &&
-      opacity == quad_state->opacity &&
-      quad_clip_rect == quad_state->clip_rect &&
-      are_contents_opaque == quad_state->are_contents_opaque &&
-      msk == quad_state->mask_filter_info) {
-    // Expland the layer portion of the sqs.
-    quad_state->quad_layer_rect = test_union;
-    quad_state->visible_quad_layer_rect = test_union;
-  } else {
-    quad_state = render_pass->CreateAndAppendSharedQuadState();
-    quad_state->SetAll(quad_to_target_transform, quad_rect, quad_rect, msk,
-                       quad_clip_rect, are_contents_opaque, opacity,
-                       SkBlendMode::kSrcOver, /*sorting_context=*/0,
-                       /*layer_id=*/0u, /*fast_rounded_corner=*/false);
-  }
-  return quad_state;
-}
-
 void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
                                     const gfx::PointF& to_parent_dp,
                                     bool needs_full_damage,
@@ -1860,99 +1798,69 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
       background_color = SkColors::kBlack;  // Avoid writing alpha < 1
 
     if (state_.basic_state.alpha != 0.0f) {
-      const bool requires_texture_draw_quad =
-          state_.basic_state.only_visible_on_secure_output ||
-          state_.overlay_priority_hint != OverlayPriority::LOW;
-
-      const viz::SharedQuadState* quad_state = AppendOrCreateSharedQuadState(
-          requires_texture_draw_quad ? viz::DrawQuad::Material::kTextureContent
-                                     : viz::DrawQuad::Material::kTiledContent,
-          state_.basic_state.alpha, render_pass, quad_to_target_transform,
-          quad_rect, msk, quad_clip_rect, are_contents_opaque);
-
       // Our historical implementation of the wayland blending protocol is to
       // treat blend none as fully opaque alpha and not simply "src". This allow
       // us to treat client buffers as rgbx. For an example see b/305977429
       const bool force_rgbx_for_opaque =
           are_contents_opaque && current_resource_has_alpha_;
-      // Draw quad is only needed if buffer is not fully transparent.
+      UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.TextureDrawQuad", true);
+      viz::SharedQuadState* quad_state =
+          render_pass->CreateAndAppendSharedQuadState();
+      quad_state->SetAll(quad_to_target_transform, quad_rect, quad_rect, msk,
+                         quad_clip_rect, are_contents_opaque,
+                         state_.basic_state.alpha, SkBlendMode::kSrcOver,
+                         /*sorting_context=*/0,
+                         /*layer_id=*/0u, /*fast_rounded_corner=*/false);
+      viz::TextureDrawQuad* texture_quad =
+          render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
+      texture_quad->SetNew(
+          quad_state, quad_rect, quad_rect,
+          /* needs_blending=*/!are_contents_opaque, current_resource_.id,
+          /* premultiplied*/ true, uv_crop.origin(), uv_crop.bottom_right(),
+          background_color,
+          /* nearest*/ false, state_.basic_state.only_visible_on_secure_output,
+          gfx::ProtectedVideoType::kClear);
+      if (current_resource_.is_overlay_candidate) {
+        texture_quad->set_resource_size_in_pixels(current_resource_.size);
+      }
 
-      if (requires_texture_draw_quad) {
-        UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.TextureDrawQuad", true);
-        viz::TextureDrawQuad* texture_quad =
-            render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
-        texture_quad->SetNew(quad_state, quad_rect, quad_rect,
-                             /* needs_blending=*/!are_contents_opaque,
-                             current_resource_.id,
-                             /* premultiplied*/ true, uv_crop.origin(),
-                             uv_crop.bottom_right(), background_color,
-                             /* nearest*/ false,
-                             state_.basic_state.only_visible_on_secure_output,
-                             gfx::ProtectedVideoType::kClear);
-        if (current_resource_.is_overlay_candidate)
-          texture_quad->set_resource_size_in_pixels(current_resource_.size);
+      if (force_rgbx_for_opaque) {
+        texture_quad->set_force_rgbx();
+      }
 
-        if (force_rgbx_for_opaque) {
-          texture_quad->set_force_rgbx();
-        }
+      CHECK_EQ(exo::OverlayPriority::REGULAR, state_.overlay_priority_hint);
 
-        switch (state_.overlay_priority_hint) {
-          case OverlayPriority::LOW:
-            texture_quad->overlay_priority_hint = viz::OverlayPriority::kLow;
-            break;
-          case OverlayPriority::REQUIRED:
-            texture_quad->overlay_priority_hint =
-                viz::OverlayPriority::kRequired;
-            break;
-          case OverlayPriority::REGULAR:
-            texture_quad->overlay_priority_hint =
-                viz::OverlayPriority::kRegular;
-            break;
-        }
-
-        if (state_.buffer.has_value() && state_.buffer->buffer() &&
-            ShouldDisableOverlay(state_.buffer->buffer()->GetFormat())) {
-          texture_quad->overlay_priority_hint = viz::OverlayPriority::kLow;
-        }
+      if (state_.buffer.has_value() && state_.buffer->buffer() &&
+          ShouldDisableOverlay(state_.buffer->buffer()->GetFormat())) {
+        texture_quad->overlay_priority_hint = viz::OverlayPriority::kLow;
+      }
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
-        if (state_.basic_state.only_visible_on_secure_output &&
-            state_.buffer.has_value() && state_.buffer->buffer() &&
-            state_.buffer->buffer()->NeedsHardwareProtection()) {
-          texture_quad->protected_video_type =
-              gfx::ProtectedVideoType::kHardwareProtected;
-        }
+      if (state_.basic_state.only_visible_on_secure_output &&
+          state_.buffer.has_value() && state_.buffer->buffer() &&
+          state_.buffer->buffer()->NeedsHardwareProtection()) {
+        texture_quad->protected_video_type =
+            gfx::ProtectedVideoType::kHardwareProtected;
+      }
 #endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 
-        if (!damage_rect_px.IsEmpty()) {
-          texture_quad->damage_rect = gfx::ToEnclosedRect(damage_rect_px);
-          render_pass->has_per_quad_damage = true;
-          // Clear handled damage so it will not be added to the |render_pass|.
-          damage_rect_px = gfx::RectF();
-        }
-      } else {
-        UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.TileDrawQuad", true);
-        viz::TileDrawQuad* tile_quad =
-            render_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
-        // TODO(crbug.com/40229946): Support AA quads coming from exo.
-        constexpr bool kForceAntiAliasingOff = true;
-        tile_quad->SetNew(
-            quad_state, quad_rect, quad_rect,
-            /* needs_blending=*/!are_contents_opaque, current_resource_.id,
-            gfx::ScaleRect(uv_crop, current_resource_.size.width(),
-                           current_resource_.size.height()),
-            current_resource_.size,
-            /* is_premultiplied=*/true,
-            /* nearest_neighbor */ false, kForceAntiAliasingOff);
+      if (!damage_rect_px.IsEmpty()) {
+        texture_quad->damage_rect = gfx::ToEnclosedRect(damage_rect_px);
+        render_pass->has_per_quad_damage = true;
+        // Clear handled damage so it will not be added to the |render_pass|.
+        damage_rect_px = gfx::RectF();
       }
     }
     frame->resource_list.push_back(current_resource_);
   } else if (state_.basic_state.alpha != 0.0f) {
     UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.SolidColorDrawQuad", true);
-    const viz::SharedQuadState* quad_state = AppendOrCreateSharedQuadState(
-        viz::DrawQuad::Material::kSolidColor, state_.basic_state.alpha,
-        render_pass, quad_to_target_transform, quad_rect, msk, quad_clip_rect,
-        are_contents_opaque);
+    viz::SharedQuadState* quad_state =
+        render_pass->CreateAndAppendSharedQuadState();
+    quad_state->SetAll(quad_to_target_transform, quad_rect, quad_rect, msk,
+                       quad_clip_rect, are_contents_opaque,
+                       state_.basic_state.alpha, SkBlendMode::kSrcOver,
+                       /*sorting_context=*/0,
+                       /*layer_id=*/0u, /*fast_rounded_corner=*/false);
     SkColor4f color = state_.buffer.has_value() && state_.buffer->buffer()
                           ? state_.buffer->buffer()->GetColor()
                           : SkColors::kBlack;

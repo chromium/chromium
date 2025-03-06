@@ -9,6 +9,7 @@
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_helper.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -145,9 +146,6 @@ TEST_F(SubSurfaceTest, ParentDamageOnReorder) {
 
   auto parent = std::make_unique<Surface>();
   parent->Attach(buffer.get());
-  // Set the overlay priority hint to low to prevent a texture draw quad from
-  // being used.
-  parent->SetOverlayPriorityHint(OverlayPriority::LOW);
   auto surface1 = std::make_unique<Surface>();
   auto surface2 = std::make_unique<Surface>();
   auto non_sibling_surface = std::make_unique<Surface>();
@@ -166,8 +164,12 @@ TEST_F(SubSurfaceTest, ParentDamageOnReorder) {
       /*needs_full_damage=*/false, frame_sink_holder->resource_manager(),
       /*device_scale_factor=*/std::nullopt, &frame1);
 
+  const viz::TextureDrawQuad* parent_quad1 = viz::TextureDrawQuad::MaterialCast(
+      frame1.render_pass_list.back()->quad_list.back());
+
   // Parent surface damage is extended when sub_surface stacking order changes.
-  EXPECT_FALSE(frame1.render_pass_list.back()->damage_rect.IsEmpty());
+  EXPECT_FALSE(frame1.render_pass_list.back()->damage_rect.IsEmpty() &&
+               parent_quad1->damage_rect->IsEmpty());
 
   sub_surface1->PlaceAbove(surface2.get());  // no-op
   sub_surface2->PlaceBelow(surface1.get());  // no-op
@@ -180,8 +182,15 @@ TEST_F(SubSurfaceTest, ParentDamageOnReorder) {
       /*needs_full_damage=*/false, frame_sink_holder->resource_manager(),
       /*device_scale_factor=*/std::nullopt, &frame2);
 
+  const viz::TextureDrawQuad* parent_quad2 = viz::TextureDrawQuad::MaterialCast(
+      frame2.render_pass_list.back()->quad_list.back());
+
+  gfx::Rect parent_quad2_damage_rect =
+      parent_quad2->damage_rect.value_or(gfx::Rect());
+
   // Parent surface damage is unaffected.
-  EXPECT_TRUE(frame2.render_pass_list.back()->damage_rect.IsEmpty());
+  EXPECT_TRUE(frame2.render_pass_list.back()->damage_rect.IsEmpty() &&
+              parent_quad2_damage_rect.IsEmpty());
 }
 
 TEST_F(SubSurfaceTest, SetCommitBehavior) {
