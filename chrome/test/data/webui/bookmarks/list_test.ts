@@ -189,8 +189,7 @@ suite('<bookmarks-list> integration test', function() {
     assertDeepEquals('5', store.data.selection.anchor);
   });
 
-  // TODO(b/343974530) disable for flaky / unpredictable failures.
-  test.skip('delete restores focus on item after anchor', async function() {
+  test('delete restores focus on item after anchor', async function() {
     customClick(items[2]!);
     customClick(items[4]!, {ctrlKey: true});
     assertDeepEquals(['5', '9'], normalizeIterable(store.data.selection.items));
