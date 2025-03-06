@@ -288,8 +288,8 @@ void Mp4MovieTrackHeaderBoxWriter::Write(BoxByteStream& writer) {
   }
   writer.WriteU16(0);  // reserved.
 
-  for (auto* it = std::begin(kDisplayIdentityMatrix);
-       it != std::end(kDisplayIdentityMatrix); ++it) {
+  for (auto* it = std::begin(box_->matrix); it != std::end(box_->matrix);
+       ++it) {
     writer.WriteU32(*it);
   }
 
