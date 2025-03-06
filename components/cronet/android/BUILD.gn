@@ -1381,8 +1381,10 @@ android_library("cronet_javatests") {
   # Adding deps here won't include those deps in the cronet_tests_java.jar.
   # Please add to cronet_javatests_deps_to_package_no_build_info instead.
   deps = [
+    ":base_feature_overrides_java_proto",
     ":cronet_all_java",
     ":cronet_api_helpers_java",
+    ":cronet_stats_log_java",
     ":cronet_urlconnection_impl_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
