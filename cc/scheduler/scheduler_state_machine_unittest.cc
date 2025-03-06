@@ -1170,17 +1170,12 @@ bool RunOneFrameAndReturnWhetherMainFrameIsIssued(
   // If we send a BeginMainFrame(), simulate the fast path, where main is fast
   // enough to catch the next deadline.
   bool send_begin_main_frame = state.ShouldSendBeginMainFrame();
-  // If no BeginMainFrame is going to be sent, don't wait for it.
-  auto expected_state =
-      send_begin_main_frame
-          ? SchedulerStateMachine::BeginImplFrameDeadlineMode::LATE
-          : SchedulerStateMachine::BeginImplFrameDeadlineMode::IMMEDIATE;
-  EXPECT_EQ(expected_state, state.CurrentBeginImplFrameDeadlineMode());
   if (send_begin_main_frame) {
-    send_begin_main_frame = true;
     EXPECT_ACTION_UPDATE_STATE(
         SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
     EXPECT_MAIN_FRAME_STATE(SchedulerStateMachine::BeginMainFrameState::SENT);
+    EXPECT_EQ(SchedulerStateMachine::BeginImplFrameDeadlineMode::LATE,
+              state.CurrentBeginImplFrameDeadlineMode());
     EXPECT_FALSE(state.NeedsCommit());
     EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
     state.NotifyReadyToCommit();
@@ -1194,12 +1189,15 @@ bool RunOneFrameAndReturnWhetherMainFrameIsIssued(
     EXPECT_TRUE(state.active_tree_needs_first_draw());
     EXPECT_TRUE(state.needs_redraw());
   } else {
+    EXPECT_EQ(SchedulerStateMachine::BeginImplFrameDeadlineMode::IMMEDIATE,
+              state.CurrentBeginImplFrameDeadlineMode());
     // Still need to require a draw, otherwise nothing will happen below.
     state.SetNeedsRedraw(true);
   }
 
   // Expect to do nothing until BeginImplFrame deadline
   EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
+
   state.OnBeginImplFrameDeadline();
   EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::DRAW_IF_POSSIBLE);
   state.DidSubmitCompositorFrame();
