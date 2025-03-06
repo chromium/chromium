@@ -3861,6 +3861,10 @@
       status: "stable",
     },
     {
+      name: "ScrollbarGutterFixedPosBugfix",
+      status: "stable",
+    },
+    {
       name: "ScrollbarWidth",
       status: "stable",
     },
