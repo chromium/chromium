@@ -102,8 +102,7 @@ class PLATFORM_EXPORT PlainTextPainter
  private:
   const PlainTextNode& CreateNode(const TextRun& text_run,
                                   const Font& font,
-                                  bool supports_bidi = true,
-                                  bool bidi_overridden = false);
+                                  bool supports_bidi = true);
 
   const Mode mode_;
 };

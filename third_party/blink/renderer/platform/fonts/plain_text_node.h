@@ -74,10 +74,8 @@ using PlainTextItemList = HeapVector<PlainTextItem, 25>;
 class PLATFORM_EXPORT PlainTextNode : public GarbageCollected<PlainTextNode> {
  public:
   // normalize_space - Enables canvas-specific whitespace normalization
-  // bidi_overridden - Adjusts offset values for leading/trailing BiDi controls
   PlainTextNode(const TextRun& run,
                 bool normalize_space,
-                bool bidi_overridden,
                 const Font& font,
                 bool supports_bidi);
   void Trace(Visitor* visitor) const;

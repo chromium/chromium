@@ -102,11 +102,10 @@ gfx::RectF PlainTextPainter::SelectionRectForText(
 
 const PlainTextNode& PlainTextPainter::CreateNode(const TextRun& text_run,
                                                   const Font& font,
-                                                  bool supports_bidi,
-                                                  bool bidi_overridden) {
+                                                  bool supports_bidi) {
   // TODO(crbug.com/389726691): Introduce a cache.
-  return *MakeGarbageCollected<PlainTextNode>(
-      text_run, mode_ == kCanvas, bidi_overridden, font, supports_bidi);
+  return *MakeGarbageCollected<PlainTextNode>(text_run, mode_ == kCanvas, font,
+                                              supports_bidi);
 }
 
 }  // namespace blink
