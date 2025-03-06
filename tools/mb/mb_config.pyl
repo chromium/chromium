@@ -40,6 +40,11 @@
       'ChromeOS FYI Release Skylab (jacuzzi)': 'gpu_tests_chromeos_jacuzzi_release_trybot_dcheck_off_no_symbols_reclient_skylab',
     },
 
+    'chrome.orderfile': {
+      'android-arm32-orderfile': 'official_android_arm32_orderfile',
+      'android-arm64-orderfile': 'official_android_arm64_orderfile',
+    },
+
     'chrome.pgo': {
       'android-arm32-pgo': 'official_android_arm32_pgo',
       'android-arm64-pgo': 'official_android_arm64_pgo',
@@ -217,6 +222,11 @@
 
     'tryserver.chrome.gpu': {
       'gpu-fyi-try-chromeos-skylab-jacuzzi': 'gpu_tests_chromeos_jacuzzi_release_trybot_dcheck_off_no_symbols_reclient_skylab',
+    },
+
+    'tryserver.chrome.orderfile': {
+      'android-arm32-orderfile': 'official_android_arm32_orderfile',
+      'android-arm64-orderfile': 'official_android_arm64_orderfile',
     },
 
     'tryserver.chrome.pgo': {
@@ -428,8 +438,16 @@
       'clang_tot', 'official', 'no_widevine_cdm_host_verification', 'x64', 'mac'
     ],
 
+    'official_android_arm32_orderfile': [
+      'official', 'reclient', 'android', 'android_external', 'arm', 'minimal_symbols', 'orderfile',
+    ],
+
     'official_android_arm32_pgo': [
       'official', 'reclient', 'android', 'android_external', 'arm', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1', 'stable_version_code',
+    ],
+
+    'official_android_arm64_orderfile': [
+      'official', 'reclient', 'android', 'android_external', 'arm64', 'minimal_symbols', 'orderfile',
     ],
 
     'official_android_arm64_pgo': [
@@ -856,6 +874,10 @@
       'gn_args': 'devtools_skip_typecheck=false',
     },
 
+    'devtools_instrumentation_dumping': {
+      'gn_args': 'devtools_instrumentation_dumping=true',
+    },
+
     'disable_stripping': {
       'gn_args': 'enable_stripping=false',
     },
@@ -957,6 +979,10 @@
       'gn_args': 'enable_keystone_registration_framework=false',
     },
 
+    'no_proguard_obfuscation': {
+      'gn_args': 'enable_proguard_obfuscation=false',
+    },
+
     'no_symbols': {
       'gn_args': 'symbol_level=0',
     },
@@ -976,6 +1002,14 @@
 
     'optimization_guide': {
         'gn_args': 'build_with_internal_optimization_guide=true'
+    },
+
+    'order_profiling': {
+      'gn_args': 'use_order_profiling=true',
+    },
+
+    'orderfile': {
+      'mixins': ['no_proguard_obfuscation', 'devtools_instrumentation_dumping', 'order_profiling'],
     },
 
     'ozone_headless': {
