@@ -335,7 +335,6 @@ struct MEDIA_EXPORT TrackHeader : FullBox {
   base::TimeDelta duration;
   bool is_audio;
   gfx::Size natural_size;
-  int32_t matrix[9];
 };
 
 // Track (`trak`) box.

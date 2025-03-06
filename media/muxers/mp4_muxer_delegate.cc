@@ -20,7 +20,6 @@
 #include "media/formats/mp4/fourccs.h"
 #include "media/formats/mp4/mp4_status.h"
 #include "media/muxers/box_byte_stream.h"
-#include "media/muxers/constants.h"
 #include "media/muxers/mp4_box_writer.h"
 #include "media/muxers/mp4_fragment_box_writer.h"
 #include "media/muxers/mp4_movie_box_writer.h"
@@ -270,18 +269,6 @@ void Mp4MuxerDelegate::BuildMovieVideoTrack(
 
   // `tkhd`.
   video_track.header.natural_size = params.visible_rect_size;
-  if (params.transformation) {
-    auto mat = params.transformation->GetMatrix();
-    video_track.header.matrix[0] = mat[0];
-    video_track.header.matrix[1] = mat[1];
-    video_track.header.matrix[3] = mat[2];
-    video_track.header.matrix[4] = mat[3];
-  } else {
-    // If VideoParameters do not have a VideoTransformation, we should provide a
-    // default matrix that has zero rotations, zero mirroring, normal zoom.
-    std::copy(std::begin(kDisplayIdentityMatrix),
-              std::end(kDisplayIdentityMatrix), video_track.header.matrix);
-  }
 
   // `hdlr`
   mp4::writable_boxes::MediaHandler media_handler(/*is_audio=*/false);

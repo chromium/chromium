@@ -54,7 +54,7 @@ struct MEDIA_EXPORT VideoTransformation {
   // Create a matrix based on the rotation and mirrored. Only 8 matrices are
   // valid when limiting to {0,90,180,270} rotations and boolean of hflip (i.e.
   // mirrored).
-  std::array<int32_t, 4> GetMatrix() const;
+  std::array<int32_t, 4> GetMatrix();
 
   // The video rotation value, in 90 degree steps.
   VideoRotation rotation;
