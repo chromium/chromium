@@ -262,7 +262,6 @@ ci.thin_tester(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_15.android_browsertests.filter",
                 ],
-                ci_only = True,
                 swarming = targets.swarming(
                     shards = 20,
                 ),
