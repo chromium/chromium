@@ -14,7 +14,6 @@
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/base/data_type.h"
-#import "components/sync/base/features.h"
 #import "components/sync/base/passphrase_enums.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "components/webauthn/core/browser/passkey_sync_bridge.h"
@@ -294,9 +293,6 @@ TEST_F(PasswordSettingsMediatorTest,
 // created (has non-degraded recoverability status) and with a bootstrapped
 // device (keys being returned from the passkey trusted vault).
 TEST_F(PasswordSettingsMediatorTest, ShowsUpdateGPMPinButtonForEligibleUser) {
-  if (!syncer::IsWebauthnCredentialSyncEnabled()) {
-    GTEST_SKIP() << "This build configuration does not support passkeys.";
-  }
   EXPECT_CALL(*trusted_vault_backend_, GetDegradedRecoverabilityStatus(
                                            fake_identity_, kPasskeysDomain, _))
       .WillOnce(WithArg<2>(
@@ -315,9 +311,6 @@ TEST_F(PasswordSettingsMediatorTest, ShowsUpdateGPMPinButtonForEligibleUser) {
 // GPM Pin created (is in degraded recoverability).
 TEST_F(PasswordSettingsMediatorTest,
        DoesNotShowChangeGPMPinButtonWithNoGPMPinCreated) {
-  if (!syncer::IsWebauthnCredentialSyncEnabled()) {
-    GTEST_SKIP() << "This build configuration does not support passkeys.";
-  }
   EXPECT_CALL(*trusted_vault_backend_, GetDegradedRecoverabilityStatus(
                                            fake_identity_, kPasskeysDomain, _))
       .WillOnce(WithArg<2>(
@@ -331,9 +324,6 @@ TEST_F(PasswordSettingsMediatorTest,
 // bootstrapped their device (no keys returned from the passkey trusted vault).
 TEST_F(PasswordSettingsMediatorTest,
        DoesNotShowChangeGPMPinButtonWhenNotBootstrapped) {
-  if (!syncer::IsWebauthnCredentialSyncEnabled()) {
-    GTEST_SKIP() << "This build configuration does not support passkeys.";
-  }
   EXPECT_CALL(*trusted_vault_backend_, GetDegradedRecoverabilityStatus(
                                            fake_identity_, kPasskeysDomain, _))
       .WillOnce(WithArg<2>(
@@ -364,9 +354,7 @@ TEST_F(PasswordSettingsMediatorTest, CountsProfileStorePasswordsAsLocal) {
               PasswordForm::Store::kAccountStore);
   [[consumer_ verify] setCanBulkMove:NO localPasswordsCount:2];
 
-  if (syncer::IsWebauthnCredentialSyncEnabled()) {
-    // Count should not be increased for a passkey.
-    AddPasskey();
-    [[consumer_ verify] setCanBulkMove:NO localPasswordsCount:2];
-  }
+  // Count should not be increased for a passkey.
+  AddPasskey();
+  [[consumer_ verify] setCanBulkMove:NO localPasswordsCount:2];
 }

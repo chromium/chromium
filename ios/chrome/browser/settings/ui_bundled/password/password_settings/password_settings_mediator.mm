@@ -18,7 +18,6 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/base/data_type.h"
-#import "components/sync/base/features.h"
 #import "components/sync/base/passphrase_enums.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service_utils.h"
@@ -200,9 +199,7 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
 
   [self updateShowBulkMovePasswordsToAccount];
 
-  if (syncer::IsWebauthnCredentialSyncEnabled()) {
-    [self checkUserCanChangeGPMPin];
-  }
+  [self checkUserCanChangeGPMPin];
 }
 
 - (void)userDidStartBulkMoveLocalPasswordsToAccountFlow {
@@ -417,12 +414,10 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   [self.consumer setUserEmail:base::SysUTF8ToNSString(
                                   _syncService->GetAccountInfo().email)];
   [self updateShowBulkMovePasswordsToAccount];
-  if (syncer::IsWebauthnCredentialSyncEnabled()) {
-    [self.consumer
-        setCanChangeGPMPin:password_manager::sync_util::GetAccountForSaving(
-                               _prefService, _syncService)
-                               .has_value()];
-  }
+  [self.consumer
+      setCanChangeGPMPin:password_manager::sync_util::GetAccountForSaving(
+                             _prefService, _syncService)
+                             .has_value()];
 }
 
 #pragma mark - Private

@@ -632,12 +632,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   CheckPasswordManagerWidgetPromoInstructionScreenVisible();
 }
 
-#define REQUIRE_PASSKEYS                                         \
-  if (!syncer::IsWebauthnCredentialSyncEnabled()) {              \
-    EARL_GREY_TEST_DISABLED(                                     \
-        @"This build configuration does not support passkeys."); \
-  }
-
 }  // namespace
 
 // Various tests for the main Password Manager UI.
@@ -2212,7 +2206,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 - (void)testEditPasskeyUsername {
-  REQUIRE_PASSKEYS
   SaveExamplePasskeyToStore();
 
   OpenPasswordManager();
@@ -2259,7 +2252,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 - (void)testEditPasskeyUserDisplayName {
-  REQUIRE_PASSKEYS
   SaveExamplePasskeyToStore();
 
   OpenPasswordManager();
@@ -2306,7 +2298,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 - (void)testDeletePasskey {
-  REQUIRE_PASSKEYS
   SaveExamplePasskeyToStore();
 
   OpenPasswordManager();
@@ -3002,8 +2993,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 // Tests that the "Turn on AutoFill…" button is only visible on iOS 18+ when
 // AutoFill is off.
 - (void)testTurnOnPasswordsInOtherAppsItemVisibility {
-  REQUIRE_PASSKEYS
-
   OpenPasswordManager();
   OpenSettingsSubmenu();
 
@@ -3041,8 +3030,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 // gets re-enabled after a 10 seconds delay.
 - (void)testTapsOnTurnOnPasswordsInOtherAppsItem {
   if (@available(iOS 18, *)) {
-    REQUIRE_PASSKEYS
-
     OpenPasswordManager();
     OpenSettingsSubmenu();
 

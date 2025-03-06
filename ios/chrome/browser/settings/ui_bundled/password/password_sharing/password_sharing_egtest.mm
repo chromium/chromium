@@ -81,12 +81,6 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
     }                                                          \
   }
 
-#define REQUIRE_PASSKEYS                                         \
-  if (!syncer::IsWebauthnCredentialSyncEnabled()) {              \
-    EARL_GREY_TEST_DISABLED(                                     \
-        @"This build configuration does not support passkeys."); \
-  }
-
 }  // namespace
 
 // Test case for the Password Sharing flow.
@@ -277,7 +271,6 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 
 - (void)testShareButtonDisabledWithJustPasskeys {
   DISABLE_ON_IPAD_WITH_IOS_17
-  REQUIRE_PASSKEYS
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasskeyToStoreAndOpenDetails];
 
@@ -287,7 +280,6 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 
 - (void)testShareButtonEnabledWithMixOfPasswordsAndPasskeys {
   DISABLE_ON_IPAD_WITH_IOS_17
-  REQUIRE_PASSKEYS
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasskeyAndPasswordToStoreAndOpenDetails];
 

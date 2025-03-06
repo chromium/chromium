@@ -17,7 +17,6 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/cells/table_view_stacked_details_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/credential_details.h"
@@ -434,10 +433,6 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestPassword) {
 
 // Tests that passkey is displayed properly.
 TEST_F(PasswordDetailsTableViewControllerTest, TestPasskey) {
-  if (!syncer::IsWebauthnCredentialSyncEnabled()) {
-    GTEST_SKIP() << "This build configuration does not support passkeys.";
-  }
-
   base::Time creation_time = SetPasskey();
   EXPECT_EQ(1, NumberOfSections());
   EXPECT_EQ(4, NumberOfItemsInSection(0));

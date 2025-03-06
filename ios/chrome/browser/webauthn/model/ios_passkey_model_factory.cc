@@ -38,10 +38,6 @@ IOSPasskeyModelFactory::~IOSPasskeyModelFactory() {}
 
 std::unique_ptr<KeyedService> IOSPasskeyModelFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  if (!syncer::IsWebauthnCredentialSyncEnabled()) {
-    return nullptr;
-  }
-
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   auto sync_bridge = std::make_unique<webauthn::PasskeySyncBridge>(
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());

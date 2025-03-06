@@ -111,9 +111,7 @@ syncer::DataTypeController::TypeVector CreateControllers(
   builder.SetIdentityManager(IdentityManagerFactory::GetForProfile(profile));
   builder.SetDataTypeStoreService(
       DataTypeStoreServiceFactory::GetForProfile(profile));
-  builder.SetPasskeyModel(syncer::IsWebauthnCredentialSyncEnabled()
-                              ? IOSPasskeyModelFactory::GetForProfile(profile)
-                              : nullptr);
+  builder.SetPasskeyModel(IOSPasskeyModelFactory::GetForProfile(profile));
   builder.SetPasswordReceiverService(
       IOSChromePasswordReceiverServiceFactory::GetForProfile(profile));
   builder.SetPasswordSenderService(
@@ -327,9 +325,7 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(IOSChromePasswordReceiverServiceFactory::GetInstance());
   DependsOn(IOSChromePasswordSenderServiceFactory::GetInstance());
   DependsOn(IOSChromeProfilePasswordStoreFactory::GetInstance());
-  if (syncer::IsWebauthnCredentialSyncEnabled()) {
-    DependsOn(IOSPasskeyModelFactory::GetInstance());
-  }
+  DependsOn(IOSPasskeyModelFactory::GetInstance());
   if (base::FeatureList::IsEnabled(
           send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
     DependsOn(IOSSharingMessageBridgeFactory::GetInstance());

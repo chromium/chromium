@@ -1227,8 +1227,7 @@ BASE_FEATURE(kIOSPasskeysM2,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IOSPasskeysM2Enabled() {
-  return syncer::IsWebauthnCredentialSyncEnabled() &&
-         base::FeatureList::IsEnabled(kIOSPasskeysM2);
+  return base::FeatureList::IsEnabled(kIOSPasskeysM2);
 }
 
 const char kFullscreenTransitionSlower[] = "SlowFullscreenTransitionSpeed";

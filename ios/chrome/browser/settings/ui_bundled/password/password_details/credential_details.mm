@@ -7,7 +7,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/affiliations/core/browser/affiliation_utils.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#import "components/sync/base/features.h"
 
 @implementation CredentialDetails
 
@@ -59,8 +58,7 @@
         credential.federation_origin.IsValid()) {
       _credentialType = CredentialTypeFederation;
     }
-    if (syncer::IsWebauthnCredentialSyncEnabled() &&
-        !credential.passkey_credential_id.empty()) {
+    if (!credential.passkey_credential_id.empty()) {
       _credentialType = CredentialTypePasskey;
     }
   }
