@@ -8594,11 +8594,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "template-url-reconciliation",
-    "owners": [ "ender@google.com", "chrome-mobile-search@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "terminal-dev",
     "owners": [ "joelhockey@chromium.org", "//chrome/browser/ash/guest_os/OWNERS" ],
     // This flag is used by CrOS Terminal developers for testing SSH on devices

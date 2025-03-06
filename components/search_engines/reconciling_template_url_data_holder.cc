@@ -66,7 +66,8 @@ ReconcilingTemplateURLDataHolder::FindMatchingBuiltInDefinitionsByKeyword(
   std::unique_ptr<TemplateURLData> result;
   if (engine_iter != prepopulated_urls.end()) {
     result = std::move(*engine_iter);
-  } else if (switches::kReconcileWithAllKnownEngines.Get()) {
+  } else {
+    // Search the entire search engine database to find matching entry.
     auto all_engines = TemplateURLPrepopulateData::GetAllPrepopulatedEngines();
     for (const auto* engine : all_engines) {
       if (engine->keyword == keyword) {
@@ -91,7 +92,8 @@ ReconcilingTemplateURLDataHolder::FindMatchingBuiltInDefinitionsById(
   std::unique_ptr<TemplateURLData> result;
   if (engine_iter != prepopulated_urls.end()) {
     result = std::move(*engine_iter);
-  } else if (switches::kReconcileWithAllKnownEngines.Get()) {
+  } else {
+    // Search the entire search engine database to find matching entry.
     auto all_engines = TemplateURLPrepopulateData::GetAllPrepopulatedEngines();
     for (const auto* engine : all_engines) {
       if (engine->id == prepopulate_id) {
@@ -121,9 +123,7 @@ void ReconcilingTemplateURLDataHolder::SetAndReconcile(
 
   // Evaluate whether items should be reconciled.
   // Permit merging Play entries if feature is enabled.
-  bool reconcile_by_keyword =
-      search_engine_->created_from_play_api &&
-      base::FeatureList::IsEnabled(switches::kTemplateUrlReconciliation);
+  bool reconcile_by_keyword = search_engine_->created_from_play_api;
 
   // Permit merging by Prepopulated ID (except Play entries).
   bool reconcile_by_id =

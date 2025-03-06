@@ -5481,11 +5481,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kClayBlockingVariations,
                                     "ClayBlocking")},
 
-    {"template-url-reconciliation",
-     flag_descriptions::kTemplateUrlReconciliationName,
-     flag_descriptions::kTemplateUrlReconciliationDialogDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(switches::kTemplateUrlReconciliation)},
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
