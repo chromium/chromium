@@ -25,6 +25,10 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="binary_toggle"
         android:defaultValue="true" />
+    <!-- A common binary radio button group, only shown for specific categories that allow
+         turning default values for that category.-->
+    <org.chromium.components.browser_ui.site_settings.BinaryStatePermissionPreference
+        android:key="binary_radio_button" />
     <!-- A common Allow/Ask/Block 3-state toggle (radio group). Only shown when
          the category requires these 3 states. Mutually exclusive with the
          "binary_toggle" above and the "four_state_cookie_toggle" below. -->
