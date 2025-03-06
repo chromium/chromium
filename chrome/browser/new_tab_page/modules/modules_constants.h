@@ -24,6 +24,15 @@ inline constexpr std::array<const char*, 2> kMicrosoftAuthDependentModuleIds = {
     kOutlookCalendarModuleId,
 };
 
+// Default order for modules.
+inline constexpr std::array<const char*, 6> kOrderedModuleIds = {
+    ntp_modules::kMicrosoftAuthenticationModuleId,
+    ntp_modules::kOutlookCalendarModuleId,
+    ntp_modules::kMicrosoftFilesModuleId,
+    ntp_modules::kGoogleCalendarModuleId,
+    ntp_modules::kDriveModuleId,
+    ntp_modules::kMostRelevantTabResumptionModuleId};
+
 }  // namespace ntp_modules
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_MODULES_MODULES_CONSTANTS_H_
