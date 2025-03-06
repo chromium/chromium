@@ -48,6 +48,9 @@ enum AutoscrollType {
   kAutoscrollForDragAndDrop,
   kAutoscrollForSelection,
   kAutoscrollForMiddleClick,
+#if BUILDFLAG(IS_IOS)
+  kAutoscrollForSelectionToPoint,
+#endif  // BUILDFLAG(IS_IOS)
 };
 
 enum MiddleClickMode {
@@ -83,6 +86,11 @@ class CORE_EXPORT AutoscrollController final
                          const gfx::PointF& event_position,
                          base::TimeTicks event_time);
 
+#if BUILDFLAG(IS_IOS)
+  void StartAutoscrollForSelectionToPoint(LayoutObject* layout_object,
+                                          const gfx::PointF& point_in_viewport);
+#endif  // BUILDFLAG(IS_IOS)
+
   // Middle-click autoscroll.
   void StartMiddleClickAutoscroll(LocalFrame*,
                                   LayoutBox* scrollable,
@@ -116,6 +124,10 @@ class CORE_EXPORT AutoscrollController final
 
   PhysicalOffset drag_and_drop_autoscroll_reference_position_;
   base::TimeTicks drag_and_drop_autoscroll_start_time_;
+
+#if BUILDFLAG(IS_IOS)
+  PhysicalOffset autoscroll_to_point_reference_position_;
+#endif  // BUILDFLAG(IS_IOS)
 
   // Middle-click autoscroll.
   Member<LayoutBox> horizontal_autoscroll_layout_box_ = nullptr;

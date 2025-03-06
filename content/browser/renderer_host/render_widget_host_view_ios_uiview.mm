@@ -695,11 +695,11 @@ static void* kObservingContext = &kObservingContext;
 }
 
 - (void)autoscrollToPoint:(CGPoint)point {
-  // This is a good place to tell Blink to auto scroll.
+  _view->StartAutoscrollForSelectionToPoint(gfx::PointF(point.x, point.y));
 }
 
 - (void)cancelAutoscroll {
-  // This is a good place to tell Blink to stop auto scroll.
+  _view->StopAutoscroll();
 }
 
 - (UITextRange*)markedTextRange {

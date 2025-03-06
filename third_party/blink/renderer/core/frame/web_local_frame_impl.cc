@@ -284,6 +284,11 @@
 #include "third_party/blink/renderer/core/layout/layout_font_accessor_win.h"
 #endif
 
+#if BUILDFLAG(IS_IOS)
+#include "third_party/blink/renderer/core/editing/dom_selection.h"
+#include "third_party/blink/renderer/core/page/autoscroll_controller.h"
+#endif  // BUILDFLAG(IS_IOS)
+
 namespace blink {
 
 namespace {
@@ -1615,6 +1620,34 @@ void WebLocalFrameImpl::MoveCaretSelection(
       GetFrame()->View()->ViewportToFrame(point_in_viewport);
   GetFrame()->Selection().MoveCaretSelection(point_in_contents);
 }
+
+#if BUILDFLAG(IS_IOS)
+void WebLocalFrameImpl::StartAutoscrollForSelectionToPoint(
+    const gfx::PointF& point_in_viewport) {
+  TRACE_EVENT0("blink",
+               "WebLocalFrameImpl::StartAutoscrollForSelectionToPoint");
+  if (!ViewImpl() || !ViewImpl()->GetPage()) {
+    return;
+  }
+  auto* element = GetFrame()->GetDocument()->GetSelection()->baseNode();
+  if (!element) {
+    return;
+  }
+  ViewImpl()
+      ->GetPage()
+      ->GetAutoscrollController()
+      .StartAutoscrollForSelectionToPoint(element->GetLayoutObject(),
+                                          point_in_viewport);
+}
+
+void WebLocalFrameImpl::StopAutoscroll() {
+  TRACE_EVENT0("blink", "WebLocalFrameImpl::StopAutoscroll");
+  if (!ViewImpl() || !ViewImpl()->GetPage()) {
+    return;
+  }
+  ViewImpl()->GetPage()->GetAutoscrollController().StopAutoscroll();
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 bool WebLocalFrameImpl::SetEditableSelectionOffsets(int start, int end) {
   TRACE_EVENT0("blink", "WebLocalFrameImpl::setEditableSelectionOffsets");

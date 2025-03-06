@@ -134,7 +134,18 @@ typedef WTF::HashMap<const LayoutBox*, LayoutUnit> OverrideSizeMap;
 
 // Size of border belt for autoscroll. When mouse pointer in border belt,
 // autoscroll is started.
-static const int kAutoscrollBeltSize = 20;
+#if BUILDFLAG(IS_IOS)
+static constexpr int kAutoscrollBeltSizeInDIPs = 20;
+// Size of border bottom belt for autoscroll on iOS. When users drag the right
+// handle of selection on iOS, the Y value of point that passed from
+// BETextInput's autoscrollToPoint is smaller that the Y value that users touch.
+static constexpr int kAutoscrollBeltSizeInDIPsBottom = 60;
+#else
+// TODO(crbug.com/398066579): Figure out if these can be in DIPs.
+static constexpr int kAutoscrollBeltSize = 20;
+static constexpr int kAutoscrollBeltSizeBottom = 20;
+#endif  // BUILDFLAG(IS_IOS)
+
 static const unsigned kBackgroundObscurationTestMaxDepth = 4;
 
 struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
@@ -1540,6 +1551,18 @@ PhysicalOffset LayoutBox::CalculateAutoscrollDirection(
   if (!frame_view)
     return PhysicalOffset();
 
+#if BUILDFLAG(IS_IOS)
+  float autoscroll_belt_size_in_viewport =
+      frame_view->GetChromeClient()->WindowToViewportScalar(
+          GetFrame(), kAutoscrollBeltSizeInDIPs);
+  float autoscroll_belt_size_for_bottom_in_viewport =
+      frame_view->GetChromeClient()->WindowToViewportScalar(
+          GetFrame(), kAutoscrollBeltSizeInDIPsBottom);
+#else
+  float autoscroll_belt_size_in_viewport = kAutoscrollBeltSize;
+  float autoscroll_belt_size_for_bottom_in_viewport = kAutoscrollBeltSizeBottom;
+#endif  // BUILDFLAG(IS_IOS)
+
   PhysicalRect absolute_scrolling_box(AbsoluteBoundingBoxRect());
 
   // Exclude scrollbars so the border belt (activation area) starts from the
@@ -1549,18 +1572,24 @@ PhysicalOffset LayoutBox::CalculateAutoscrollDirection(
 
   PhysicalRect belt_box =
       View()->GetFrameView()->ConvertToRootFrame(absolute_scrolling_box);
-  belt_box.Inflate(LayoutUnit(-kAutoscrollBeltSize));
+  LayoutUnit autoscroll_belt_size_layout_unit =
+      LayoutUnit(autoscroll_belt_size_in_viewport);
+  belt_box.ContractEdges(
+      autoscroll_belt_size_layout_unit, autoscroll_belt_size_layout_unit,
+      LayoutUnit(autoscroll_belt_size_for_bottom_in_viewport),
+      autoscroll_belt_size_layout_unit);
+
   gfx::PointF point = point_in_root_frame;
 
   if (point.x() < belt_box.X())
-    point.Offset(-kAutoscrollBeltSize, 0);
+    point.Offset(-autoscroll_belt_size_in_viewport, 0);
   else if (point.x() > belt_box.Right())
-    point.Offset(kAutoscrollBeltSize, 0);
+    point.Offset(autoscroll_belt_size_in_viewport, 0);
 
   if (point.y() < belt_box.Y())
-    point.Offset(0, -kAutoscrollBeltSize);
+    point.Offset(0, -autoscroll_belt_size_in_viewport);
   else if (point.y() > belt_box.Bottom())
-    point.Offset(0, kAutoscrollBeltSize);
+    point.Offset(0, autoscroll_belt_size_for_bottom_in_viewport);
 
   return PhysicalOffset::FromVector2dFRound(point - point_in_root_frame);
 }

@@ -4560,6 +4560,26 @@ void WebFrameWidgetImpl::MoveCaret(const gfx::Point& point_in_dips) {
       widget_base_->DIPsToRoundedBlinkSpace(point_in_dips));
 }
 
+#if BUILDFLAG(IS_IOS)
+void WebFrameWidgetImpl::StartAutoscrollForSelectionToPoint(
+    const gfx::PointF& point_in_dips) {
+  WebLocalFrameImpl* focused_frame = FocusedWebLocalFrameInWidget();
+  if (!focused_frame) {
+    return;
+  }
+  focused_frame->StartAutoscrollForSelectionToPoint(
+      widget_base_->DIPsToBlinkSpace(point_in_dips));
+}
+
+void WebFrameWidgetImpl::StopAutoscroll() {
+  WebLocalFrameImpl* focused_frame = FocusedWebLocalFrameInWidget();
+  if (!focused_frame) {
+    return;
+  }
+  focused_frame->StopAutoscroll();
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 void WebFrameWidgetImpl::SelectAroundCaret(
     mojom::blink::SelectionGranularity granularity,
     bool should_show_handle,
