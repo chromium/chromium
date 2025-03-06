@@ -19,7 +19,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
@@ -56,12 +55,12 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/shell.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -75,7 +74,7 @@ static const char* kFamiliesHost = "families.google.com";
 static const char* kIframeHost1 = "www.iframe1.com";
 static const char* kIframeHost2 = "www.iframe2.com";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kLocalUrlAccessCommand[] = "requestUrlAccessLocal";
 #endif
 constexpr char kRemoteUrlAccessCommand[] = "requestUrlAccessRemote";
@@ -1021,7 +1020,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
 // The switches::kHostWindowBounds commandline flag doesn't appear to work
 // for tests on other platforms.
 // TODO(b/300426225): enable these tests on Linux/Mac/Windows.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class SupervisedUserNarrowWidthIframeFilterTest
     : public SupervisedUserIframeFilterTest {
  protected:
@@ -1254,7 +1253,7 @@ IN_PROC_BROWSER_TEST_P(ChromeOSLocalWebApprovalsTest,
   EXPECT_FALSE(IsRemoteApprovalsButtonBeingShown(blocked_frame));
   EXPECT_TRUE(IsLocalApprovalsInsteadButtonBeingShown(blocked_frame));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class SupervisedUserNavigationThrottleOnlyEnabledForSupervisedUsers
     : public SupervisedUserNavigationThrottleTestBase,
