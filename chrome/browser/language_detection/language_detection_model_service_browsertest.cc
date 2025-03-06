@@ -119,7 +119,7 @@ class LanguageDetectionModelServiceDisabledBrowserTest
             return e.toString();
             }
             })();
-        )", ))
+        )"))
                   .ExtractString(),
               result);
   }
