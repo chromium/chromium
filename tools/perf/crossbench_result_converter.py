@@ -81,7 +81,7 @@ def convert(crossbench_out_dir: pathlib.Path,
   """
 
   if benchmark and benchmark.startswith('loadline'):
-    _loadline(crossbench_out_dir, out_filename, benchmark)
+    _loadline(crossbench_out_dir, out_filename, benchmark, results_label)
     return
 
   crossbench_json_filename = _get_crossbench_json_path(crossbench_out_dir)
