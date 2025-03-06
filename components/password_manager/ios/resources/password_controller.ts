@@ -377,13 +377,13 @@ function getPasswordFormDataList(formDataList: AutofillFormData[]) {
  * JS object containing the form data.
  * @return Object of data from formElement.
  */
-function getPasswordFormDataFromUnownedElements(): object|void {
+function getPasswordFormDataFromUnownedElements(): object|null {
   const fieldsets: fillConstants.FormControlElement[] = [];
   const unownedControlElements =
       gCrWeb.fill.getUnownedAutofillableFormFieldElements(
           document.all, fieldsets);
   if (unownedControlElements.length === 0) {
-    return;
+    return null;
   }
   const unownedForm = new gCrWeb['common'].JSONSafeObject();
   const hasUnownedForm = gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData(
