@@ -41,6 +41,11 @@ class AIWriter : public AIContextBoundObject, public blink::mojom::AIWriter {
                  pending_responder) override;
 
  private:
+  void DidGetExecutionInputSize(
+      mojo::RemoteSetElementId responder_id,
+      optimization_guide::proto::WritingAssistanceApiRequest request,
+      uint32_t number_of_tokens);
+
   void ModelExecutionCallback(
       mojo::RemoteSetElementId responder_id,
       optimization_guide::OptimizationGuideModelStreamingExecutionResult

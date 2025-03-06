@@ -83,8 +83,7 @@ class AIManager : public base::SupportsUserData::Data,
  private:
   FRIEND_TEST_ALL_PREFIXES(AIManagerTest, CanCreate);
   FRIEND_TEST_ALL_PREFIXES(AIManagerTest, NoUAFWithInvalidOnDeviceModelPath);
-  FRIEND_TEST_ALL_PREFIXES(AISummarizerUnitTest,
-                           CreateSummarizerWithoutService);
+  FRIEND_TEST_ALL_PREFIXES(AISummarizerTest, CreateSummarizerWithoutService);
   FRIEND_TEST_ALL_PREFIXES(AIManagerIsLanguagesSupportedTest, OneVector);
   FRIEND_TEST_ALL_PREFIXES(AIManagerIsLanguagesSupportedTest,
                            TwoVectorsAndOneCode);

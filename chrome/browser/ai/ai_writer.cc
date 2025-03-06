@@ -101,11 +101,44 @@ void AIWriter::Write(const std::string& input,
   request.set_rewrite_text(input);
   // TODO(crbug.com/390006887): Pass shared context with session creation.
   request.set_shared_context(options_->shared_context.value_or(std::string()));
+
+  mojo::RemoteSetElementId responder_id =
+      responder_set_.Add(std::move(pending_responder));
+
+  session_->GetExecutionInputSizeInTokens(
+      optimization_guide::MultimodalMessageReadView(request),
+      base::BindOnce(&AIWriter::DidGetExecutionInputSize,
+                     weak_ptr_factory_.GetWeakPtr(), responder_id, request));
+}
+
+void AIWriter::DidGetExecutionInputSize(
+    mojo::RemoteSetElementId responder_id,
+    optimization_guide::proto::WritingAssistanceApiRequest request,
+    uint32_t number_of_tokens) {
+  blink::mojom::ModelStreamingResponder* responder =
+      responder_set_.Get(responder_id);
+  if (!responder) {
+    // It might be possible for the responder mojo connection to be closed
+    // before this callback is invoked, in this case, we can't do anything.
+    return;
+  }
+
+  if (!session_) {
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
+    return;
+  }
+
+  if (number_of_tokens > blink::mojom::kWritingAssistanceMaxInputTokenSize) {
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
+    return;
+  }
+
   session_->ExecuteModel(
       request,
       base::BindRepeating(&AIWriter::ModelExecutionCallback,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          responder_set_.Add(std::move(pending_responder))));
+                          weak_ptr_factory_.GetWeakPtr(), responder_id));
 }
 
 void AIWriter::ModelExecutionCallback(

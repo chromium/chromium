@@ -420,8 +420,8 @@ void AILanguageModel::PromptGetInputSizeCompletion(
 
   auto result = context_->ReserveSpace(number_of_tokens);
   if (result == Context::SpaceReservationResult::kInsufficientSpace) {
-    responder->OnError(blink::mojom::ModelStreamingResponseStatus::
-                           kErrorPromptRequestTooLarge);
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
     return;
   }
 

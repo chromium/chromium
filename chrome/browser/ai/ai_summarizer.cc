@@ -55,11 +55,11 @@ optimization_guide::proto::SummarizerOutputLength ToProtoLength(
 AISummarizer::AISummarizer(
     AIContextBoundObjectSet& context_bound_object_set,
     std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-        summarize_session,
+        session,
     blink::mojom::AISummarizerCreateOptionsPtr options,
     mojo::PendingReceiver<blink::mojom::AISummarizer> receiver)
     : AIContextBoundObject(context_bound_object_set),
-      summarize_session_(std::move(summarize_session)),
+      session_(std::move(session)),
       receiver_(this, std::move(receiver)),
       options_(std::move(options)) {
   receiver_.set_disconnect_handler(base::BindOnce(
@@ -102,6 +102,63 @@ std::string AISummarizer::CombineContexts(const std::string& shared_context,
   return final_context;
 }
 
+void AISummarizer::Summarize(
+    const std::string& input,
+    const std::string& context,
+    mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
+        pending_responder) {
+  if (!session_) {
+    mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
+        std::move(pending_responder));
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
+    return;
+  }
+
+  mojo::RemoteSetElementId responder_id =
+      responder_set_.Add(std::move(pending_responder));
+  optimization_guide::proto::SummarizeRequest request;
+  request.set_article(input);
+  request.set_allocated_options(ToProtoOptions(options_).release());
+  request.set_context(
+      CombineContexts(options_->shared_context.value_or(""), context));
+
+  session_->GetExecutionInputSizeInTokens(
+      optimization_guide::MultimodalMessageReadView(request),
+      base::BindOnce(&AISummarizer::DidGetExecutionInputSize,
+                     weak_ptr_factory_.GetWeakPtr(), responder_id, request));
+}
+
+void AISummarizer::DidGetExecutionInputSize(
+    mojo::RemoteSetElementId responder_id,
+    optimization_guide::proto::SummarizeRequest request,
+    uint32_t number_of_tokens) {
+  blink::mojom::ModelStreamingResponder* responder =
+      responder_set_.Get(responder_id);
+  if (!responder) {
+    // It might be possible for the responder mojo connection to be closed
+    // before this callback is invoked, in this case, we can't do anything.
+    return;
+  }
+
+  if (!session_) {
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
+    return;
+  }
+
+  if (number_of_tokens > blink::mojom::kWritingAssistanceMaxInputTokenSize) {
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
+    return;
+  }
+
+  session_->ExecuteModel(
+      request,
+      base::BindRepeating(&AISummarizer::ModelExecutionCallback,
+                          weak_ptr_factory_.GetWeakPtr(), responder_id));
+}
+
 void AISummarizer::ModelExecutionCallback(
     mojo::RemoteSetElementId responder_id,
     optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
@@ -127,30 +184,4 @@ void AISummarizer::ModelExecutionCallback(
   if (result.response->is_complete) {
     responder->OnCompletion(/*context_info=*/nullptr);
   }
-}
-
-void AISummarizer::Summarize(
-    const std::string& input,
-    const std::string& context,
-    mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
-        pending_responder) {
-  if (!summarize_session_) {
-    mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
-        std::move(pending_responder));
-    responder->OnError(
-        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
-    return;
-  }
-
-  mojo::RemoteSetElementId responder_id =
-      responder_set_.Add(std::move(pending_responder));
-  optimization_guide::proto::SummarizeRequest request;
-  request.set_article(input);
-  request.set_allocated_options(ToProtoOptions(options_).release());
-  request.set_context(
-      CombineContexts(options_->shared_context.value_or(""), context));
-  summarize_session_->ExecuteModel(
-      request,
-      base::BindRepeating(&AISummarizer::ModelExecutionCallback,
-                          weak_ptr_factory_.GetWeakPtr(), responder_id));
 }

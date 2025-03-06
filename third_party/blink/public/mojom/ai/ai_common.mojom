@@ -4,6 +4,10 @@
 
 module blink.mojom;
 
+// The maximum number of tokens allowed for the input for the Writing Assistance
+// APIs (summarizer, writer, rewriter).
+const uint64 kWritingAssistanceMaxInputTokenSize = 6000;
+
 struct AILanguageCode {
   // BCP 47 language code used for the Built-in AI APIs.
   // This code may be hardcoded in Chrome or passed from the JS API.

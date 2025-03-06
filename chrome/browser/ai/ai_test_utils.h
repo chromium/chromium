@@ -9,6 +9,7 @@
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/summarize.pb.h"
 #include "components/optimization_guide/proto/features/writing_assistance_api.pb.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -118,6 +119,10 @@ class AITestUtils {
     virtual void SetupMockOptimizationGuideKeyedService();
     virtual void SetupNullOptimizationGuideKeyedService();
 
+    // Optimization guide keyed service should be set up before calling this
+    // method.
+    void SetupMockSession();
+
     blink::mojom::AIManager* GetAIManagerInterface();
     mojo::Remote<blink::mojom::AIManager> GetAIManagerRemote();
     size_t GetAIManagerContextBoundObjectSetSize();
@@ -127,6 +132,7 @@ class AITestUtils {
 
     raw_ptr<MockOptimizationGuideKeyedService>
         mock_optimization_guide_keyed_service_;
+    testing::NiceMock<optimization_guide::MockSession> session_;
 
    private:
     std::unique_ptr<AIManager> ai_manager_;

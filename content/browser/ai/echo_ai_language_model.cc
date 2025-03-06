@@ -42,8 +42,8 @@ void EchoAILanguageModel::DoMockExecution(
   }
 
   if (input.size() > EchoAIManagerImpl::kMaxContextSizeInTokens) {
-    responder->OnError(blink::mojom::ModelStreamingResponseStatus::
-                           kErrorPromptRequestTooLarge);
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
     return;
   }
   if (current_tokens_ >
