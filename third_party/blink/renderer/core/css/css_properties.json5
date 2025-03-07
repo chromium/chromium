@@ -4281,7 +4281,7 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       compositable: true,
-      field_group: "*",
+      field_group: "svg",  // Not SVG, but frequently used with it.
       field_template: "primitive",
       default_value: "1.0",
       type_name: "float",
@@ -5989,7 +5989,7 @@
       interpolable: true,
       compositable: true,
       layout_dependent: true,
-      field_group: "*",
+      field_group: "svg",  // Not SVG, but frequently used with it.
       field_template: "external",
       include_paths: ["third_party/blink/renderer/platform/transforms/transform_operations.h"],
       keywords: ["none"],
