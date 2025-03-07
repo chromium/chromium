@@ -241,8 +241,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_AVOID_SLOW_RASTER_PIPELINE_BLURS
 
-#define SK_DAWN_TEXTURE_INFO_IS_STRUCT
-
 #define SK_USE_LEGACY_MISMATCHED_BLIT  // http://review.skia.org/953516
 
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
