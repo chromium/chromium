@@ -64,6 +64,7 @@ class SystemHealthStory(
   TAGS = []
   PLATFORM_SPECIFIC = False
   WEBVIEW_NOT_SUPPORTED = False
+  HEAVY_PAGE = False  # True to allow longer runtimes.
 
   def __init__(self, story_set, take_memory_measurement,
       extra_browser_args=None):
@@ -106,7 +107,9 @@ class SystemHealthStory(
 
   def _Measure(self, action_runner):
     if self._take_memory_measurement:
-      action_runner.MeasureMemory(deterministic_mode=True)
+      action_runner.MeasureMemory(
+          deterministic_mode=True,
+          timeout_in_seconds=300 if self.HEAVY_PAGE else 60)
     else:
       action_runner.Wait(_WAIT_TIME_AFTER_LOAD)
 
