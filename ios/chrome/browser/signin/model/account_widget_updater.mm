@@ -89,6 +89,32 @@ void AccountWidgetUpdater::UpdateLoadedAccounts() {
   NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
   [shared_defaults setObject:accounts forKey:app_group::kAccountsOnDevice];
 
+  NSDictionary* urls_info =
+      [shared_defaults objectForKey:app_group::kSuggestedItemsForMultiprofile];
+  NSDictionary* last_modification_dates_info = [shared_defaults
+      objectForKey:app_group::
+                       kSuggestedItemsLastModificationDateForMultiprofile];
+
+  // An account was removed, 'urls_info' and
+  // 'last_modification_dates_info' need to be updated.
+  if (urls_info.count > accounts.count) {
+    NSMutableDictionary* updated_urls = [NSMutableDictionary dictionary];
+    NSMutableDictionary* updated_dates = [NSMutableDictionary dictionary];
+
+    for (NSString* gaia in urls_info) {
+      if (accounts[gaia]) {
+        updated_urls[gaia] = urls_info[gaia];
+        updated_dates[gaia] = last_modification_dates_info[gaia];
+      }
+    }
+    [shared_defaults setObject:updated_urls
+                        forKey:app_group::kSuggestedItemsForMultiprofile];
+    [shared_defaults
+        setObject:updated_dates
+           forKey:app_group::
+                      kSuggestedItemsLastModificationDateForMultiprofile];
+  }
+
 #if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
   [WidgetTimelinesUpdater reloadAllTimelines];
 #endif
