@@ -1059,4 +1059,19 @@ BASE_DECLARE_FEATURE(kIPHAblation);
 // Returns true if IPH ablation is enabled.
 bool IsIPHAblationEnabled();
 
+// Feature that prevents certain gesture recognition for IPHs.
+BASE_DECLARE_FEATURE(kIPHGestureRecognitionAblation);
+
+// Returns true if taps inside the IPH bubble should be ignored.
+bool IsIPHGestureRecognitionInsideTapAblationEnabled();
+
+// Returns true if taps outside the IPH bubble should be ignored.
+bool IsIPHGestureRecognitionOutsideTapAblationEnabled();
+
+// Returns true if pans outside the IPH bubble should be ignored.
+bool IsIPHGestureRecognitionPanAblationEnabled();
+
+// Returns true if swipes during an IPH presentation should be ignored.
+bool IsIPHGestureRecognitionSwipeAblationEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
