@@ -931,10 +931,13 @@ void RuleInvalidationDataVisitor<VisitorType>::
         // TODO(futhark): We can extract the features from the current compound
         // to optimize this.
         SetWholeSubtreeInvalid(invalidation_set);
-        AddFeaturesToInvalidationSet(
+        InvalidationSetType* sibling_descendant_set =
             EnsureSiblingDescendantInvalidationSet(
-                To<SiblingInvalidationSet>(invalidation_set)),
-            descendant_features);
+                To<SiblingInvalidationSet>(invalidation_set));
+        if (sibling_descendant_set != nullptr) {
+          AddFeaturesToInvalidationSet(sibling_descendant_set,
+                                       descendant_features);
+        }
         return;
       } else {
         AddFeaturesToInvalidationSet(invalidation_set, descendant_features);
@@ -954,9 +957,12 @@ void RuleInvalidationDataVisitor<VisitorType>::
         SetInvalidatesNth(sibling_invalidation_set);
       }
     } else {
-      AddFeaturesToInvalidationSet(
-          EnsureSiblingDescendantInvalidationSet(sibling_invalidation_set),
-          descendant_features);
+      InvalidationSetType* sibling_descendant_set =
+          EnsureSiblingDescendantInvalidationSet(sibling_invalidation_set);
+      if (sibling_descendant_set != nullptr) {
+        AddFeaturesToInvalidationSet(sibling_descendant_set,
+                                     descendant_features);
+      }
     }
     return;
   }
@@ -1060,16 +1066,21 @@ void RuleInvalidationDataVisitor<VisitorType>::
         const InvalidationSetFeatures& descendant_features) {
   SiblingInvalidationSetType* universal_set =
       EnsureUniversalSiblingInvalidationSet();
-  AddFeaturesToInvalidationSet(universal_set, sibling_features);
-  UpdateMaxDirectAdjacentSelectors(
-      universal_set, sibling_features.max_direct_adjacent_selectors);
+  if (universal_set != nullptr) {
+    AddFeaturesToInvalidationSet(universal_set, sibling_features);
+    UpdateMaxDirectAdjacentSelectors(
+        universal_set, sibling_features.max_direct_adjacent_selectors);
 
-  if (&sibling_features == &descendant_features) {
-    SetInvalidatesSelf(universal_set);
-  } else {
-    AddFeaturesToInvalidationSet(
-        EnsureSiblingDescendantInvalidationSet(universal_set),
-        descendant_features);
+    if (&sibling_features == &descendant_features) {
+      SetInvalidatesSelf(universal_set);
+    } else {
+      InvalidationSetType* sibling_descendant_set =
+          EnsureSiblingDescendantInvalidationSet(universal_set);
+      if (sibling_descendant_set != nullptr) {
+        AddFeaturesToInvalidationSet(sibling_descendant_set,
+                                     descendant_features);
+      }
+    }
   }
 }
 
