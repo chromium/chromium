@@ -930,9 +930,11 @@ Element* Element::GetShadowReferenceTarget(const QualifiedName& name) const {
           GetExecutionContext())) {
     return nullptr;
   }
-
-  // TODO (crbug.com/353750122): Disallow aria-owns from participating in
-  // ReferenceTarget.
+  if (!RuntimeEnabledFeatures::ShadowRootReferenceTargetAriaOwnsEnabled(
+          GetExecutionContext()) &&
+      name == html_names::kAriaOwnsAttr) {
+    return nullptr;
+  }
 
   if (ShadowRoot* shadow_root = GetShadowRoot()) {
     if (Element* target = shadow_root->referenceTargetElement()) {
@@ -948,6 +950,11 @@ Element* Element::GetShadowReferenceTarget(const QualifiedName& name) const {
 Element* Element::GetShadowReferenceTargetOrSelf(const QualifiedName& name) {
   if (!RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
           GetExecutionContext())) {
+    return this;
+  }
+  if (!RuntimeEnabledFeatures::ShadowRootReferenceTargetAriaOwnsEnabled(
+          GetExecutionContext()) &&
+      name == html_names::kAriaOwnsAttr) {
     return this;
   }
   ShadowRoot* shadow_root = GetShadowRoot();
