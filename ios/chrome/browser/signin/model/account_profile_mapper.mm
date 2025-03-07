@@ -217,7 +217,8 @@ class AccountProfileMapper::Assigner
   ProfileAttributesStorageIOS* GetProfileAttributesStorage();
 
   // Helper to delete a profile given its name.
-  void DeleteProfileNamed(std::string_view name);
+  void DeleteProfileNamed(std::string_view name,
+                          bool* updating_profile_attributes_storage);
 
   // Iterates over all identities and, if necessary, assigns them to profiles.
   // Also cleans up mappings (and related profiles) if identities have been
@@ -406,7 +407,8 @@ void AccountProfileMapper::Assigner::MakePersonalProfileManagedWithGaiaID(
              ->GetAttributesForProfileWithName(*abandoned_managed_profile_name)
              .IsFullyInitialized());
 
-    DeleteProfileNamed(*abandoned_managed_profile_name);
+    DeleteProfileNamed(*abandoned_managed_profile_name,
+                       &is_updating_profile_attributes_storage_);
   }
 
   // Register a new personal profile.
@@ -463,7 +465,8 @@ void AccountProfileMapper::Assigner::UpdateIdentityProfileMappings() {
         } else {
           // A managed identity was removed, so its corresponding profile
           // should be deleted.
-          DeleteProfileNamed(profile_name);
+          DeleteProfileNamed(profile_name,
+                             &is_updating_profile_attributes_storage_);
         }
 
         [gaia_ids_failed_fetching_ removeObject:gaia_id.ToNSString()];
@@ -521,7 +524,12 @@ AccountProfileMapper::Assigner::GetProfileAttributesStorage() {
                           : nullptr;
 }
 
-void AccountProfileMapper::Assigner::DeleteProfileNamed(std::string_view name) {
+void AccountProfileMapper::Assigner::DeleteProfileNamed(
+    std::string_view name,
+    bool* updating_profile_attributes_storage) {
+  base::AutoReset<bool> updating_attributes(updating_profile_attributes_storage,
+                                            true);
+
   if (handler_) {
     [handler_ deleteProfile:name completion:base::DoNothing()];
     return;
