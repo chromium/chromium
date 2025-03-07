@@ -5218,7 +5218,8 @@ class DidChangeVerticalScrollDirectionObserver : public WebContentsObserver {
 // Tests that DidChangeVerticalScrollDirection is called only when the vertical
 // scroll direction has changed and that it includes the correct details.
 // TODO(crbug.com/40862270): This is flaky on the Mac10.14 bot.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/401544068): This is failing on Android bots.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_DidChangeVerticalScrollDirection \
   DISABLED_DidChangeVerticalScrollDirection
 #else
