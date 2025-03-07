@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -31,7 +32,7 @@ class BubbleSignInPromoSignInButtonView : public views::View {
   // |callback| is called every time the user interacts with this button.
   explicit BubbleSignInPromoSignInButtonView(
       views::Button::PressedCallback callback,
-      bool is_autofill_promo,
+      signin_metrics::AccessPoint access_point,
       ui::ButtonStyle button_style,
       std::u16string button_text);
 
@@ -40,7 +41,7 @@ class BubbleSignInPromoSignInButtonView : public views::View {
   BubbleSignInPromoSignInButtonView(const AccountInfo& account_info,
                                     const gfx::Image& account_icon,
                                     views::Button::PressedCallback callback,
-                                    bool is_autofill_promo,
+                                    signin_metrics::AccessPoint access_point,
                                     std::u16string button_text,
                                     std::u16string button_accessibility_text);
   BubbleSignInPromoSignInButtonView(const BubbleSignInPromoSignInButtonView&) =
