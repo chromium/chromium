@@ -1323,7 +1323,13 @@ chromium-metrics-reviews@google.com.
     enum="Boolean" expires_after="2025-12-08">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>Recorded when a permission prompt creation is in progress.</summary>
+  <summary>
+    Recorded when a permission prompt creation is in progress.
+
+    Note: The meaning of this metric's boolean value flipped for M-136, starting
+    from 07.03.2025 (see crbug.com/400381904). Updated meaning: if this
+    evaluates to true this means that the prompt could be displayed.
+  </summary>
   <token key="PermissionType" variants="AllPermissionTypes"/>
   <token key="Gesture">
     <variant name="Gesture"/>

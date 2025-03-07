@@ -326,8 +326,8 @@ void RecordEngagementMetric(
 
   DCHECK(action == "Accepted" || action == "Denied" || action == "Dismissed" ||
          action == "Ignored" || action == "AcceptedOnce");
-  std::string name = "Permissions.Engagement." + action + '.' +
-                     GetPermissionRequestString(type);
+  std::string name = base::StrCat({"Permissions.Engagement.", action, ".",
+                                   GetPermissionRequestString(type)});
 
   double engagement_score = PermissionsClient::Get()->GetSiteEngagementScore(
       web_contents->GetBrowserContext(), requests[0]->requesting_origin());
@@ -807,7 +807,8 @@ void PermissionUmaUtil::RecordActivityIndicator(
   }
 
   base::UmaHistogramEnumeration(
-      "Permissions.ActivityIndicator.LHS." + indicators_type + "." + action,
+      base::StrCat(
+          {"Permissions.ActivityIndicator.LHS.", indicators_type, ".", action}),
       state);
 }
 
@@ -832,10 +833,10 @@ void PermissionUmaUtil::RecordDismissalType(
   std::string permission_type = GetPermissionRequestString(type);
   std::string permission_disposition =
       GetPromptDispositionString(ui_disposition);
-  base::UmaHistogramEnumeration("Permissions.Prompt." + permission_type + "." +
-                                    permission_disposition +
-                                    ".Dismissed.Method",
-                                dismissalType);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Permissions.Prompt.", permission_type, ".",
+                    permission_disposition, ".Dismissed.Method"}),
+      dismissalType);
 }
 
 void PermissionUmaUtil::RecordPermissionRequestedFromFrame(
@@ -938,14 +939,15 @@ void PermissionUmaUtil::RecordPermissionRecoverySuccessRate(
   std::string permission_string = GetPermissionRequestString(
       GetUmaValueForRequestType(ContentSettingsTypeToRequestType(permission)));
 
-  base::UmaHistogramEnumeration("Permissions.PageInfo.Changed." +
-                                    permission_string + ".Reallowed.Outcome",
-                                change_info);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Permissions.PageInfo.Changed.", permission_string,
+                    ".Reallowed.Outcome"}),
+      change_info);
 }
 
 void PermissionUmaUtil::RecordPermissionPromptAttempt(
     const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>& requests,
-    bool IsLocationBarEditingOrEmpty) {
+    bool can_display_prompt) {
   DCHECK(!requests.empty());
 
   RequestTypeForUma request_type = GetUmaValueForRequests(requests);
@@ -974,10 +976,10 @@ void PermissionUmaUtil::RecordPermissionPromptAttempt(
       NOTREACHED();
   }
 
-  std::string histogram_name =
-      "Permissions.Prompt." + permission_type + "." + gesture + ".Attempt";
+  std::string histogram_name = base::StrCat(
+      {"Permissions.Prompt.", permission_type, ".", gesture, ".Attempt"});
 
-  base::UmaHistogramBoolean(histogram_name, IsLocationBarEditingOrEmpty);
+  base::UmaHistogramBoolean(histogram_name, can_display_prompt);
 }
 
 void PermissionUmaUtil::PermissionPromptShown(
@@ -1056,10 +1058,10 @@ void PermissionUmaUtil::PermissionPromptResolved(
         predicted_grant_likelihood, permission_request_relevance,
         prediction_decision_held_back);
 
-    std::string priorDismissPrefix =
-        "Permissions.Prompt." + action_string + ".PriorDismissCount2.";
-    std::string priorIgnorePrefix =
-        "Permissions.Prompt." + action_string + ".PriorIgnoreCount2.";
+    std::string priorDismissPrefix = base::StrCat(
+        {"Permissions.Prompt.", action_string, ".PriorDismissCount2."});
+    std::string priorIgnorePrefix = base::StrCat(
+        {"Permissions.Prompt.", action_string, ".PriorIgnoreCount2."});
     RecordPermissionPromptPriorCount(
         permission, priorDismissPrefix,
         autoblocker->GetDismissCount(requesting_origin, permission));
@@ -1068,9 +1070,10 @@ void PermissionUmaUtil::PermissionPromptResolved(
         autoblocker->GetIgnoreCount(requesting_origin, permission));
   }
 
-  base::UmaHistogramEnumeration("Permissions.Action.WithDisposition." +
-                                    GetPromptDispositionString(ui_disposition),
-                                permission_action, PermissionAction::NUM);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Permissions.Action.WithDisposition.",
+                    GetPromptDispositionString(ui_disposition)}),
+      permission_action, PermissionAction::NUM);
 
   RequestTypeForUma type = GetUmaValueForRequests(requests);
 
@@ -1078,25 +1081,27 @@ void PermissionUmaUtil::PermissionPromptResolved(
   std::string permission_disposition =
       GetPromptDispositionString(ui_disposition);
 
-  base::UmaHistogramEnumeration("Permissions.Prompt." + permission_type + "." +
-                                    permission_disposition + ".Action",
-                                permission_action, PermissionAction::NUM);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Permissions.Prompt.", permission_type, ".",
+                    permission_disposition, ".Action"}),
+      permission_action, PermissionAction::NUM);
 
   if (!time_to_action.is_zero()) {
-    base::UmaHistogramLongTimes("Permissions.Prompt." + permission_type + "." +
-                                    permission_disposition + "." +
-                                    action_string + ".TimeToAction",
-                                time_to_action);
+    base::UmaHistogramLongTimes(
+        base::StrCat({"Permissions.Prompt.", permission_type, ".",
+                      permission_disposition, ".", action_string,
+                      ".TimeToAction"}),
+        time_to_action);
   }
 
   if (permission_action == PermissionAction::IGNORED &&
       ui_disposition !=
           PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE &&
       ui_disposition != PermissionPromptDisposition::ANCHORED_BUBBLE) {
-    base::UmaHistogramBoolean("Permissions.Prompt." + permission_type + "." +
-                                  permission_disposition +
-                                  ".Ignored.DidShowBubble",
-                              did_show_prompt);
+    base::UmaHistogramBoolean(
+        base::StrCat({"Permissions.Prompt.", permission_type, ".",
+                      permission_disposition, ".Ignored.DidShowBubble"}),
+        did_show_prompt);
   }
 
   if (requests[0]->request_type() == RequestType::kGeolocation ||
@@ -1105,18 +1110,20 @@ void PermissionUmaUtil::PermissionPromptResolved(
             PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP ||
         ui_disposition == PermissionPromptDisposition::MESSAGE_UI ||
         ui_disposition == PermissionPromptDisposition::MINI_INFOBAR) {
-      base::UmaHistogramBoolean("Permissions.Prompt." + permission_type + "." +
-                                    permission_disposition + "." +
-                                    action_string + ".DidClickManage",
-                                did_click_managed);
+      base::UmaHistogramBoolean(
+          base::StrCat({"Permissions.Prompt.", permission_type, ".",
+                        permission_disposition, ".", action_string,
+                        ".DidClickManage"}),
+          did_click_managed);
     } else if (ui_disposition == PermissionPromptDisposition::
                                      LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP ||
                ui_disposition == PermissionPromptDisposition::MESSAGE_UI ||
                ui_disposition == PermissionPromptDisposition::MINI_INFOBAR) {
-      base::UmaHistogramBoolean("Permissions.Prompt." + permission_type + "." +
-                                    permission_disposition + "." +
-                                    action_string + ".DidClickLearnMore",
-                                did_click_learn_more);
+      base::UmaHistogramBoolean(
+          base::StrCat({"Permissions.Prompt.", permission_type, ".",
+                        permission_disposition, ".", action_string,
+                        ".DidClickLearnMore"}),
+          did_click_learn_more);
     }
   }
 }  // namespace permissions
@@ -1539,9 +1546,9 @@ void PermissionUmaUtil::RecordTimeElapsedBetweenGrantAndUse(
   base::UmaHistogramCustomCounts(base_histogram, delta.InSeconds(), 1,
                                  base::Days(365).InSeconds(), 100);
   if (!source_suffix.empty()) {
-    base::UmaHistogramCustomCounts(base_histogram + "." + source_suffix,
-                                   delta.InSeconds(), 1,
-                                   base::Days(365).InSeconds(), 100);
+    base::UmaHistogramCustomCounts(
+        base::StrCat({base_histogram, ".", source_suffix}), delta.InSeconds(),
+        1, base::Days(365).InSeconds(), 100);
   }
 }
 
@@ -1625,7 +1632,8 @@ std::string PermissionUmaUtil::GetOneTimePermissionEventHistogram(
 
   std::string permission_type = GetPermissionRequestString(
       GetUmaValueForRequestType(ContentSettingsTypeToRequestType(type)));
-  return "Permissions.OneTimePermission." + permission_type + ".Event";
+  return base::StrCat(
+      {"Permissions.OneTimePermission.", permission_type, ".Event"});
 }
 
 // static
@@ -1877,9 +1885,9 @@ void PermissionUmaUtil::RecordIgnoreReason(
     PermissionIgnoredReason reason) {
   RequestTypeForUma request_type = GetUmaValueForRequests(requests);
 
-  std::string histogram_name =
-      "Permissions.Prompt." + GetPermissionRequestString(request_type) + "." +
-      GetPromptDispositionString(prompt_disposition) + ".IgnoredReason";
+  std::string histogram_name = base::StrCat(
+      {"Permissions.Prompt.", GetPermissionRequestString(request_type), ".",
+       GetPromptDispositionString(prompt_disposition), ".IgnoredReason"});
   base::UmaHistogramEnumeration(histogram_name, reason,
                                 PermissionIgnoredReason::NUM);
 }
@@ -1913,10 +1921,10 @@ void PermissionUmaUtil::RecordElementAnchoredBubbleDismiss(
 
   RequestTypeForUma type = GetUmaValueForRequests(requests);
 
-  base::UmaHistogramEnumeration("Permissions.Prompt." +
-                                    GetPermissionRequestString(type) +
-                                    ".ElementAnchoredBubble.DismissedReason",
-                                reason);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Permissions.Prompt.", GetPermissionRequestString(type),
+                    ".ElementAnchoredBubble.DismissedReason"}),
+      reason);
 }
 
 // static
@@ -1942,8 +1950,8 @@ void PermissionUmaUtil::RecordElementAnchoredBubbleOsMetrics(
   }
 
   base::UmaHistogramEnumeration(
-      "Permissions.Prompt." + GetPermissionRequestString(type) +
-          ".ElementAnchoredBubble." + screen_type + ".OsScreenAction",
+      base::StrCat({"Permissions.Prompt.", GetPermissionRequestString(type),
+                    ".ElementAnchoredBubble.", screen_type, ".OsScreenAction"}),
       action);
 
   std::string screen_action;
@@ -1968,11 +1976,11 @@ void PermissionUmaUtil::RecordElementAnchoredBubbleOsMetrics(
         NOTREACHED();
     }
 
-    base::UmaHistogramLongTimes("Permissions.Prompt." +
-                                    GetPermissionRequestString(type) +
-                                    ".ElementAnchoredBubble." + screen_type +
-                                    "." + screen_action + ".TimeToAction",
-                                time_to_action);
+    base::UmaHistogramLongTimes(
+        base::StrCat({"Permissions.Prompt.", GetPermissionRequestString(type),
+                      ".ElementAnchoredBubble.", screen_type, ".",
+                      screen_action, ".TimeToAction"}),
+        time_to_action);
   }
 }
 
@@ -1983,10 +1991,10 @@ void PermissionUmaUtil::RecordElementAnchoredBubbleVariantUMA(
 
   RequestTypeForUma type = GetUmaValueForRequests(requests);
 
-  base::UmaHistogramEnumeration("Permissions.Prompt." +
-                                    GetPermissionRequestString(type) +
-                                    ".ElementAnchoredBubble.Variant",
-                                variant);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Permissions.Prompt.", GetPermissionRequestString(type),
+                    ".ElementAnchoredBubble.Variant"}),
+      variant);
 }
 
 // static
@@ -2057,13 +2065,14 @@ void PermissionUmaUtil::RecordPermissionRegrantForUnusedSites(
       NOTREACHED();
   }
   base::UmaHistogramExactLinear(
-      "Settings.SafetyCheck.UnusedSitePermissionsRegrantDays" +
-          source_ui_string + "." +
-          PermissionUtil::GetPermissionString(content_settings_type),
+      base::StrCat(
+          {"Settings.SafetyCheck.UnusedSitePermissionsRegrantDays",
+           source_ui_string, ".",
+           PermissionUtil::GetPermissionString(content_settings_type)}),
       days_since_revocation.value(), 31);
   base::UmaHistogramExactLinear(
-      "Settings.SafetyCheck.UnusedSitePermissionsRegrantDays" +
-          source_ui_string + ".All",
+      base::StrCat({"Settings.SafetyCheck.UnusedSitePermissionsRegrantDays",
+                    source_ui_string, ".All"}),
       days_since_revocation.value(), 31);
 }
 
