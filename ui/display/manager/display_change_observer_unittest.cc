@@ -853,11 +853,11 @@ TEST_F(DisplayResolutionTest, CheckEffectiveResolutionUMAIndex) {
   }
 #endif
 
-  // With the current set of display configs and zoom levels, there are only 340
+  // With the current set of display configs and zoom levels, there are only 356
   // possible effective resolutions for internal displays in chromebooks. Update
   // this value when adding a new display config, and re-generate the
   // EffectiveResolution value in enum.xml.
-  EXPECT_EQ(logical_resolutions.size(), 340ul);
+  EXPECT_EQ(logical_resolutions.size(), 356ul);
 }
 
 // Make sure that when display zoom is applied, the effective device scale
