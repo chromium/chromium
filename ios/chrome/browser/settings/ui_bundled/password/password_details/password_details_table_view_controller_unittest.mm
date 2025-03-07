@@ -136,17 +136,11 @@ NSString* DisplayName() {
   self.credential = credential;
 }
 
-- (void)didFinishEditingPasswordDetails {
+- (void)didFinishEditingCredentialDetails {
 }
 
 - (BOOL)isUsernameReused:(NSString*)newUsername forDomain:(NSString*)domain {
   return NO;
-}
-
-- (void)passwordDetailsViewController:
-            (PasswordDetailsTableViewController*)viewController
-                didAddPasswordDetails:(NSString*)username
-                             password:(NSString*)password {
 }
 
 - (void)dismissWarningForPassword:(CredentialDetails*)password {
