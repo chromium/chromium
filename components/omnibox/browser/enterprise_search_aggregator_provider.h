@@ -139,7 +139,8 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
                                 const std::string& image_url,
                                 const std::string& icon_url,
                                 const std::u16string& description,
-                                const std::u16string& contents);
+                                const std::u16string& contents,
+                                const std::u16string& fill_into_edit);
 
   // Owned by AutocompleteController.
   const raw_ptr<AutocompleteProviderClient> client_;
