@@ -542,6 +542,11 @@ const char kRestart[] = "restart";
 // on OS X and Windows.
 const char kRestoreLastSession[] = "restore-last-session";
 
+// Indicates that the URL in the command line should open in the active tab
+// instead of a new tab. In case of multiple URLS given as arguments, the
+// first one will replace the active tab.
+const char kSameTab[] = "same-tab";
+
 // This flag sets the checkboxes for sharing audio during screen capture to off
 // by default. It is primarily intended to be used for tests.
 const char kScreenCaptureAudioDefaultUnchecked[] =
