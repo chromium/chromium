@@ -1368,7 +1368,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1936157145127842922">Mostra nella cartella</translation>
 <translation id="1936931585862840749">Specifica un numero per indicare la quantità di copie da stampare (da 1 a <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Impossibile importare il tipo di architettura del contenitore <ph name="ARCHITECTURE_CONTAINER" /> con questo dispositivo che invece è <ph name="ARCHITECTURE_DEVICE" />. Puoi provare a ripristinare questo contenitore in un diverso dispositivo oppure puoi accedere ai file all'interno dell'immagine del contenitore aprendoli nell'app File.</translation>
-<translation id="1938116692670653897">Tema cromatico attuale</translation>
 <translation id="1938351510777341717">Comando esterno</translation>
 <translation id="1940221956626514677">Personalizza la barra degli strumenti</translation>
 <translation id="1940546824932169984">Dispositivi connessi</translation>

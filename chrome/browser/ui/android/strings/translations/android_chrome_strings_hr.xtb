@@ -13,6 +13,7 @@
 <translation id="1036348656032585052">Isključi</translation>
 <translation id="1045899828449635435">Izbrisati i podatke s ovih web-lokacija?</translation>
 <translation id="1049743911850919806">Anonimno</translation>
+<translation id="1052842760770519282">Neke od vaših zaporki nisu dostupne</translation>
 <translation id="1058669287135776095">Niste povezani s internetom. Provjerite internetsku vezu i pokušajte ponovo.</translation>
 <translation id="10614374240317010">Zaporke se nikad ne spremaju</translation>
 <translation id="107147699690128016">Ako promijenite datotečni nastavak, datoteka bi se mogla otvoriti u nekoj drugoj aplikaciji i mogla bi izložiti vaš uređaj opasnosti.</translation>
@@ -71,6 +72,7 @@
 <translation id="1269129608791067105">Ovdje ćete pronaći svoju povijest</translation>
 <translation id="1273937721055267968">Blokiraj <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Dodirnite za proširivanje</translation>
+<translation id="1289129165308566697">Pogledajte svoju povijest na drugim uređajima</translation>
 <translation id="129553762522093515">Nedavno zatvoreno</translation>
 <translation id="1298077576058087471">Uštedite do 60% podataka, pročitajte današnje vijesti</translation>
 <translation id="1303339473099049190">Ta zaporka nije pronađena. Provjerite jeste li je točno napisali pa pokušajte ponovno.</translation>
@@ -365,6 +367,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2666092431469916601">Gornji</translation>
 <translation id="2669454659051515572">Svi koji upotrebljavaju ovaj uređaj mogu vidjeti preuzete datoteke</translation>
 <translation id="2677748264148917807">Napusti</translation>
+<translation id="2687009626279857299">Prestao je funkcionirati na ovom uređaju</translation>
 <translation id="2702516483241149200">Novo: dijelite vezu koja se pomiče na ovaj tekst</translation>
 <translation id="2705073298859543115">Izradi sažetak</translation>
 <translation id="2708051474374549906">Proaktivna zaštita u stvarnom vremenu od opasnih web-lokacija, preuzimanja i proširenja koja se temelji na slanju vaših podataka o pregledavanju Googleu</translation>
@@ -950,6 +953,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5424588387303617268">Dostupno: <ph name="GIGABYTES" /> GB</translation>
 <translation id="543338862236136125">Uredite zaporku</translation>
 <translation id="5433691172869980887">Korisničko je ime kopirano</translation>
+<translation id="5436928407363358055">Da biste lako nastavili tamo gdje ste stali, sinkronizirajte svoju povijest i kartice</translation>
 <translation id="5438292632479953702">Ponovno preuzmi</translation>
 <translation id="5439191312780166229">Upozorava vas na opasne web-lokacije, čak i one za koje Google još nije znao, analiziranjem više podataka s web-lokacija od standardne zaštite. Možete preskočiti Chromeova upozorenja.</translation>
 <translation id="5441137934526263133">Web-lokacija ne funkcionira? Blokirani su kolačići treće strane</translation>

@@ -1368,7 +1368,6 @@
 <translation id="1936157145127842922">在資料夾中顯示</translation>
 <translation id="1936931585862840749">使用數字指定列印份數 (1 至 <ph name="MAX_COPIES" />)。</translation>
 <translation id="1937774647013465102">這個裝置使用 <ph name="ARCHITECTURE_DEVICE" />，因此無法匯入容器架構類型 <ph name="ARCHITECTURE_CONTAINER" />。你可以嘗試將這個容器還原至其他裝置，或透過 Files 應用程式開啟這個容器映像檔，以存取其中的檔案。</translation>
-<translation id="1938116692670653897">目前的色彩主題</translation>
 <translation id="1938351510777341717">外部 Command 鍵</translation>
 <translation id="1940221956626514677">自訂工具列</translation>
 <translation id="1940546824932169984">已連結的裝置</translation>

@@ -1383,7 +1383,6 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1936157145127842922">Rodyti aplanke</translation>
 <translation id="1936931585862840749">Skaičiumi nurodykite, kiek kopijų spausdinti (nuo 1 iki <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Nepavyko importuoti sudėtinio rodinio architektūros tipo „<ph name="ARCHITECTURE_CONTAINER" />“ naudojant šį įrenginį, kuris yra „<ph name="ARCHITECTURE_DEVICE" />“. Galite pabandyti atkurti šį sudėtinį rodinį naudodami kitą įrenginį arba galite pasiekti failus šiame sudėtinio rodinio vaizde atidarę Failų programą.</translation>
-<translation id="1938116692670653897">Dabartinė spalvų tema</translation>
 <translation id="1938351510777341717">Išorinė komanda</translation>
 <translation id="1940221956626514677">Tinkinti įrankių juostą</translation>
 <translation id="1940546824932169984">Prijungti įrenginiai</translation>
@@ -1449,6 +1448,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1980168597243156">Kosminė stotis</translation>
 <translation id="1981434377190976112">Skaityti visus jūsų duomenis visose svetainėse</translation>
 <translation id="1982851102516626421">Esate atsijungę</translation>
+<translation id="1983612835086592681">Atidarėte per pastarąją savaitę</translation>
 <translation id="1984417487208496350">Apsaugos nėra (nerekomenduojama)</translation>
 <translation id="1984683754853869253">Ar norite sukurti naują mokslo įstaigos profilį?</translation>
 <translation id="198507684520034826">Pagalba</translation>
@@ -5987,6 +5987,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5186788525428341874">Galite naudoti šį prieigos raktą, kad sparčiau prisijungtumėte skirtinguose įrenginiuose. Jis bus išsaugotas „Google“ slaptažodžių tvarkyklėje kaip priskirtas el. pašto adresui <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Įdiegti puslapį kaip programą...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188242000716462162">Bendrina <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Naudoti vietovės informaciją. Leiskite „ChromeOS“ ir „Android“ programoms, svetainėms bei paslaugoms, turinčioms leidimą pasiekti vietovės duomenis, naudoti jūsų įrenginio vietovės informaciją. Vietovės nustatymo tikslumo funkcija „Android“ programoms ir paslaugoms teikia tikslesnę vietovės informaciją. Kad galėtų tai daryti, „Google“ periodiškai apdoroja informaciją apie įrenginio jutiklius ir belaidžius signalus iš jūsų įrenginio, kad galėtų kaupti belaidžio signalo vietovių informaciją. Šie duomenys naudojami neidentifikuojant jūsų, kad būtų galima gerinti vietovės nustatymo tikslumą ir paslaugas pagal vietovę bei tobulinti, teikti ir prižiūrėti „Google“ paslaugas, pagrįstas „Google“ ir trečiųjų šalių teisėtu interesu tenkinti naudotojų poreikius. <ph name="BEGIN_LINK1" />Sužinokite daugiau apie vietovės informacijos naudojimą<ph name="END_LINK1" /></translation>
 <translation id="5189274947477567401">Atsisakius proceso bendrinimo reikia iš naujo paleisti naršyklę. Ši naršyklė bus paleista iš naujo dabar.</translation>
 <translation id="5189404424758444348">Stimpankas</translation>
@@ -8041,6 +8042,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="668599234725812620">Atidaryti „Google Play“</translation>
 <translation id="6686490380836145850">Uždaryti dešinėje esančius skirtukus</translation>
 <translation id="6686665106869989887">Skirtukas perkeltas dešinėn</translation>
+<translation id="6686676261102452995">Atidarėte šiandien</translation>
 <translation id="6686817083349815241">Išsaugokite slaptažodį</translation>
 <translation id="6687008241368170505">Keisti „Google“ slaptažodžių tvarkyklės PIN kodą</translation>
 <translation id="6687079240787935001">Slėpti: <ph name="MODULE_TITLE" /></translation>
@@ -10157,6 +10159,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8176529144855282213">Norėdami įjungti prieigą prie mikrofono, įjunkite fizinį įrenginio jungiklį</translation>
 <translation id="8177196903785554304">Išsami tinklo informacija</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Skirtuko perkėlimas į naują langą}one{Skirtukų perkėlimas į naują langą}few{Skirtukų perkėlimas į naują langą}many{Skirtukų perkėlimas į naują langą}other{Skirtukų perkėlimas į naują langą}}</translation>
+<translation id="8178657161962192959">Atidarėte vakar</translation>
 <translation id="8179976553408161302">Įvesti</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" />, <ph name="PRINTER_STATUS" />. <ph name="ITEM_POSITION" /> spausdintuvas iš <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Energijos taupymo priemonė įjungta</translation>

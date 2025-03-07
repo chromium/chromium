@@ -270,6 +270,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2259659629660284697">Eksporto fjalëkalimet…</translation>
 <translation id="2276696007612801991">Identifikohu në "Llogarinë tënde të Google" për të kontrolluar fjalëkalimet e tua</translation>
 <translation id="2278052315791335171">Fshirja e këtij fjalëkalimi nuk do ta fshijë llogarinë tënde në <ph name="SITE" /></translation>
+<translation id="2281243904606300427"><ph name="TAB_TITLE" />, skeda e zgjedhur "e fshehtë"</translation>
 <translation id="2286841657746966508">Adresa e faturimit</translation>
 <translation id="228704530595896923">Listë e opsioneve të ndarjes.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Shiko <ph name="TABS_COUNT_ONE" /> skedë}other{Shiko <ph name="TABS_COUNT_MANY" /> skeda}}</translation>
@@ -329,6 +330,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> artikuj të fshirë</translation>
 <translation id="253498598929009420">Sajti do të mund të shikojë përmbajtjet në ekranin tënd</translation>
 <translation id="2536728043171574184">Po shikon një kopje offline të kësaj faqeje</translation>
+<translation id="2542548955756682219"><ph name="TAB_TITLE" />, skedë</translation>
 <translation id="2546283357679194313">Kukit dhe të dhënat e faqes</translation>
 <translation id="2547843573592965873">Kyçja e profilit i mban të sigurta informacionet e tua në makinë, duke përfshirë fjalëkalimet, pagesat dhe më shumë që janë ruajtur në "Llogarinë tënde të Google".</translation>
 <translation id="254973855621628293">Fjalëkalimet e ruajtura në këtë pajisje</translation>
@@ -472,6 +474,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 fjalëkalim dhe artikuj të tjerë janë ruajtur vetëm në këtë pajisje. Për t'i përdorur në pajisjet e tua të tjera, ruaji në "Llogarinë tënde të Google", <ph name="ACCOUNT_EMAIL" />.}other{# fjalëkalime dhe artikuj të tjerë janë ruajtur vetëm në këtë pajisje. Për t'i përdorur në pajisjet e tua të tjera, ruaji në "Llogarinë tënde të Google", <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="3187472288455401631">Matja e reklamave</translation>
+<translation id="3189635831478931757">Grupi i skedave "<ph name="GROUP_TITLE" />"</translation>
 <translation id="3207960819495026254">Regjistruar në faqeshënues</translation>
 <translation id="3208584281581115441">Kontrollo tani</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> u fshi</translation>
@@ -748,6 +751,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4523326818319942067">ora e fundit</translation>
 <translation id="452750746583162491">Rishiko të dhënat e tua të sinkronizuara</translation>
 <translation id="4532845899244822526">Zgjidh dosjen</translation>
+<translation id="4535755320005483982">Grupi i ndarë i skedave "<ph name="GROUP_TITLE" />"</translation>
 <translation id="4543131175509360848">Asnjë fletë e çelësave të kalimit</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> skedë}other{<ph name="TAB_COUNT_MANY" /> skeda, <ph name="TAB_COUNT_INCOGNITO" /> të fshehta}}</translation>
 <translation id="4558311620361989323">Shkurtoret e faqes së uebit</translation>
@@ -1249,6 +1253,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="6756507620369789050">Ndaj komente</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="676305334223455055">Identifikohu për të marrë përmbajtje bazuar në interesat e tu</translation>
+<translation id="6764137532716892442">Grupi i ndarë i skedave "<ph name="GROUP_TITLE" />" me aktivitet të ri</translation>
 <translation id="6767294960381293877">Lista e pajisjeve për të ndarë një skedë e hapur në gjysmë lartësi.</translation>
 <translation id="6785476624617658922">"Kushtet shtesë të shërbimit" të Chrome dhe të ChromeOS</translation>
 <translation id="6795633245022906657">Hap me shpejtësi një skedë të re. Për ta modifikuar këtë shkurtore, shko te "Cilësimet".</translation>
@@ -1315,6 +1320,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Shiko <ph name="TABS_COUNT_ONE" /> skedë me aktivitet të ri në grupet e ndara të skedave}other{Shiko <ph name="TABS_COUNT_MANY" /> skeda me aktivitet të ri në grupet e ndara të skedave}}</translation>
 <translation id="6971862865055170158">Mos e mirato</translation>
+<translation id="6976223255612495095"><ph name="TAB_TITLE" />, skedë e re ose e përditësuar</translation>
 <translation id="6978717888677691380">Sajtet që ke bllokuar</translation>
 <translation id="6979737339423435258">Gjatë të gjithë kohës</translation>
 <translation id="6983306615164277634">Mund të prekësh dhe të mbash shtypur shiritin e adresës për të ndryshuar pozicionin.</translation>
@@ -1708,6 +1714,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8676276370198826499">Regjistrohu në <ph name="SITE_ETLD_PLUS_ONE" /> me <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Verifikimet e identifikimit</translation>
 <translation id="8683039184091909753">imazhi</translation>
+<translation id="8688183792442786085"><ph name="TAB_TITLE" />, skeda e zgjedhur</translation>
 <translation id="869891660844655955">Data e skadimit</translation>
 <translation id="8699120352855309748">Mos ofro t'i përkthesh këto gjuhë</translation>
 <translation id="8712637175834984815">E kuptova</translation>
@@ -1841,4 +1848,5 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="988091779042748639">Për të fshirë historikun e shfletimit në modalitetin "I fshehtë" nga pajisja jote, mbylli të gjitha skedat "e fshehta".</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> skeda</translation>
 <translation id="996149300115483134">Menyja e kartave të furnizimit është mbyllur</translation>
+<translation id="99907655649633293"><ph name="TAB_TITLE" />, skedë "e fshehtë"</translation>
 </translationbundle>

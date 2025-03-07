@@ -591,6 +591,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1407069428457324124">Thème sombre</translation>
 <translation id="1407135791313364759">Tout ouvrir</translation>
 <translation id="140723521119632973">Activation cellulaire</translation>
+<translation id="1407908250220330281">Ce profil sera désormais géré</translation>
 <translation id="1407970155431887387">Cliquer pour ouvrir la boîte de dialogue Modifier pour <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="1408504635543854729">Explorer le contenu de l'appareil dans l'application Fichiers. Le contenu est restreint par un administrateur et ne peut pas être modifié.</translation>
 <translation id="1408980562518920698">Gérer les renseignements personnels</translation>
@@ -801,6 +802,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1549966883323105187">Accédez plus rapidement à vos mots de passe enregistrés</translation>
 <translation id="1550656959113606473">Chrome par défaut</translation>
 <translation id="1552301827267621511">L'extension « <ph name="EXTENSION_NAME" /> » a activé un moteur de recherche différent : <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552357433305859738">Continuer à synchroniser les données avec ce profil et fusionner les données</translation>
 <translation id="1552752544932680961">Gérer l'extension</translation>
 <translation id="1553538517812678578">Sans limites</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Apprenez-en plus<ph name="LINK_END" /> au sujet de Microsoft 365 sur votre Chromebook.</translation>
@@ -1369,7 +1371,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1936157145127842922">Afficher dans le dossier</translation>
 <translation id="1936931585862840749">Utilisez un nombre pour indiquer le nombre de copies à imprimer (1 à <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Impossible d'importer le type d'architecture de conteneur <ph name="ARCHITECTURE_CONTAINER" /> avec cet appareil, qui utilise <ph name="ARCHITECTURE_DEVICE" />. Vous pouvez essayer de restaurer ce conteneur sur un autre appareil ou bien essayer d'accéder aux fichiers qu'il contient à l'aide de l'application Fichiers.</translation>
-<translation id="1938116692670653897">Thème de couleurs actuel</translation>
 <translation id="1938351510777341717">Commande externe</translation>
 <translation id="1940221956626514677">Personnaliser la barre d'outils</translation>
 <translation id="1940546824932169984">Appareils connectés</translation>
@@ -1435,6 +1436,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1980168597243156">Station spatiale</translation>
 <translation id="1981434377190976112">Lire l'intégralité de vos données sur tous les sites Web</translation>
 <translation id="1982851102516626421">Vous êtes déconnecté</translation>
+<translation id="1983612835086592681">Vous avez ouvert ce document la semaine passée</translation>
 <translation id="1984417487208496350">Aucune protection (non recommandé)</translation>
 <translation id="1984683754853869253">Voulez-vous créer un profil pour l'école?</translation>
 <translation id="198507684520034826">Aide</translation>
@@ -2241,6 +2243,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="2530166226437958497">Dépannage</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Un problème est survenu, et <ph name="DEVICE_OS" /> n'a pas pu être installé.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Pour obtenir de l'aide supplémentaire, consultez la page g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532117279786409580">En savoir plus</translation>
 <translation id="2532144599248877204">Prolonge l'autonomie de la pile en maintenant le niveau de recharge autour de 80 %. La pile se rechargera complètement avant que vous ne la débranchiez de la prise comme d'habitude.</translation>
 <translation id="2532146950330687938">Préparation de l'appareil en cours…</translation>
 <translation id="2532198298278778531">Gérer le DNS sécurisé dans les paramètres de Chrome OS Flex</translation>
@@ -3142,6 +3145,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3183139917765991655">Importateur de profils</translation>
 <translation id="3183143381919926261">Réseaux de données cellulaires</translation>
 <translation id="3183700187146209259">Impossible d'installer le logiciel du numériseur</translation>
+<translation id="3183750649832309748">Votre organisation, <ph name="ACCOUNT_MANAGER" />, pourra consulter certaines informations, notamment</translation>
 <translation id="3183944777708523606">Position des moniteurs</translation>
 <translation id="3184536091884214176">Configurez ou gérez les imprimantes CUPS. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">Utilisez ce NIP pour modifier les paramètres de contrôles parentaux.
@@ -3169,6 +3173,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3202499879214571401">Suspendre l'écran de diffusion sur <ph name="DEVICE_NAME" /></translation>
 <translation id="3202578601642193415">La plus récente</translation>
 <translation id="3204648577100496185">Les données associées à cette application pourraient être retirées de cet appareil</translation>
+<translation id="3204717934117444051">Les données enregistrées uniquement sur cet appareil resteront dans le profil existant. Elles ne seront pas synchronisées avec <ph name="EMAIL" />.</translation>
 <translation id="3207344462385471911">Vous voyez des recherches suggérées et des rabais sur les articles qui pourraient vous intéresser en fonction de votre activité récente.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4338,6 +4343,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
 <translation id="3995138139523574647">Appareil USB-C (port arrière-droit)</translation>
 <translation id="3995963973192100066">Faire jouer l'animation</translation>
+<translation id="3997537546406230684">Créer un profil pour le travail et conserver mes données existantes séparément</translation>
 <translation id="399788104667917863">Épingler à la barre d'outils</translation>
 <translation id="3998780825367526465">Afficher les images d'aperçu des onglets</translation>
 <translation id="3998976413398910035">Gérer les imprimantes</translation>
@@ -5783,6 +5789,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5059526285558225588">Choisir quoi partager</translation>
 <translation id="5060332552815861872">Il y a 1 imprimante à enregistrer.</translation>
 <translation id="5060419232449737386">Paramètres des sous-titres</translation>
+<translation id="5061270227873845372">Vous avez actuellement <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> et autres. Votre organisation pourra voir et gérer ces données.</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Ce dossier contient un favori. Voulez-vous vraiment le supprimer?}one{Ce dossier contient # favori. Voulez-vous vraiment le supprimer?}other{Ce dossier contient # favoris. Voulez-vous vraiment le supprimer?}}</translation>
 <translation id="5061531353537614467">Toundra</translation>
 <translation id="5062930723426326933">Échec de la connexion. Veuillez vous connecter à Internet, puis réessayer.</translation>
@@ -5966,6 +5973,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5186788525428341874">Vous pouvez utiliser cette clé d'accès pour vous connecter plus rapidement sur l'ensemble de vos appareils. Elle sera enregistrée dans le gestionnaire de mots de passe Google du compte <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Installer la page en tant qu'application…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188242000716462162">Partagé par <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Utiliser la position. Autorisez les applis, les sites Web et les services ChromeOS et Android disposant d'une autorisation de localisation à utiliser la position de votre appareil. La précision de la localisation fournit une position plus précise pour les applis et les services Android. Pour ce faire, Google traite périodiquement des informations sur les capteurs de l'appareil et les signaux sans fil émis par votre appareil afin de recueillir de façon participative des données sur la position des signaux sans fil. Ces données sont utilisées sans vous identifier pour améliorer la précision de la localisation et les services basés sur l'emplacement. Elles le sont aussi pour améliorer, pour fournir et pour maintenir les services de Google en fonction des intérêts légitimes de Google et de tiers envers la satisfaction des besoins des utilisateurs. <ph name="BEGIN_LINK1" />En savoir plus sur l'utilisation de la position<ph name="END_LINK1" /></translation>
 <translation id="5189274947477567401">La désactivation du partage de processus nécessite un redémarrage du navigateur. Ce navigateur va redémarrer maintenant.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
@@ -8014,6 +8022,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="668599234725812620">Ouvrir Google Play</translation>
 <translation id="6686490380836145850">Fermer les onglets à la droite</translation>
 <translation id="6686665106869989887">Onglet déplacé vers la droite</translation>
+<translation id="6686676261102452995">Vous avez ouvert ce document aujourd'hui</translation>
 <translation id="6686817083349815241">Enregistrer votre mot de passe</translation>
 <translation id="6687008241368170505">Modifier le NIP du gestionnaire de mots de passe Google</translation>
 <translation id="6687079240787935001">Masquer <ph name="MODULE_TITLE" /></translation>
@@ -9395,6 +9404,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, dans <ph name="PAGE_TITLE" />.</translation>
 <translation id="7672726198839739113">Bloqué. L'horaire est actuellement défini de <ph name="SUNRISE_TIME" /> à <ph name="SUNSET_TIME" /> et peut seulement être mis à jour manuellement.</translation>
 <translation id="7673313156293624327">Journaux de ChromeOS Shill (gestionnaire de connexion)</translation>
+<translation id="767381852303199643">Que voulez-vous faire avec vos données de profil existantes?</translation>
 <translation id="7674416868315480713">Désactiver toutes les redirections de ports dans Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> applications</translation>
 <translation id="7674542105240814168">Accès à la position refusé</translation>
@@ -9626,6 +9636,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Les mots personnalisés enregistrés s'afficheront ici</translation>
 <translation id="7836577093182643605">Liste des sujets bloqués que vous ne souhaitez pas partager avec les sites</translation>
+<translation id="7836745198769390202">Vous avez actuellement <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> et autres. Votre organisation pourra voir et gérer ces données.</translation>
 <translation id="7836850009646241041">Essayez de toucher votre clé de sécurité à nouveau</translation>
 <translation id="7838838951812478896">Impossible d'enregistrer « <ph name="NETWORK_NAME" /> » à partir de <ph name="DEVICE_NAME" /></translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> envoyé à l'appareil <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> envoyé à l'appareil <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> envoyés à l'appareil <ph name="DEVICE_NAME" />}}</translation>
@@ -10126,6 +10137,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8176529144855282213">Pour activer l'accès au microphone, activez le commutateur de microphone physique sur votre appareil</translation>
 <translation id="8177196903785554304">Détails sur le réseau</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Déplacer l'onglet vers une nouvelle fenêtre}one{Déplacer l'onglet vers une nouvelle fenêtre}other{Déplacer les onglets vers une nouvelle fenêtre}}</translation>
+<translation id="8178657161962192959">Vous avez ouvert ce document hier</translation>
 <translation id="8179976553408161302">Entrée</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Imprimante <ph name="ITEM_POSITION" /> sur <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Économiseur d'énergie activé</translation>
@@ -11386,6 +11398,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="9052404922357793350">Continuer le blocage</translation>
 <translation id="90528604757378587">L'activité en arrière-plan et certains effets visuels, comme le défilement fluide, peuvent être limités.</translation>
 <translation id="9053563360605707198">Imprimer sur les deux côtés</translation>
+<translation id="9055810458113674066">Vous avez actuellement <ph name="NUMBERED_ITEM" /> et autres. Votre organisation pourra voir et gérer ces données.</translation>
 <translation id="9056788090206401048">Bluetooth doit être activé pour utiliser votre clé d'accès sur un autre appareil. Vous pouvez toujours gérer cette option dans les paramètres.</translation>
 <translation id="9056810968620647706">Aucune correspondance trouvée</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> veut accéder au contenu suivant :</translation>

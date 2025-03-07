@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">Շարունակելով՝ դուք ընդունում եք <ph name="BEGIN_LINK" />Օգտագործման պայմանները<ph name="END_LINK" />։</translation>
 <translation id="10614374240317010">Կայքեր, որոնց համար գաղտնաբառերը երբեք չեն պահվում</translation>
 <translation id="1062138828266376352">Ձեր PIN կոդը չի փոխվել։ Ստուգեք ձեր ինտերնետ կապը և նորից փորձեք</translation>
+<translation id="1072476005125066234">Կարծիքներ՝ հիմնված ձեր հետաքրքրությունների վրա</translation>
 <translation id="1074827084851510304">Դուք պատրաստվում եք ջնջել {password_count} գաղտնաբառ և այն կայքերի ու հավելվածների ցանկը, որոնց մուտքի տվյալներն ընտրել եք չպահել։ Հաշիվները, որոնք ստեղծել եք կայքերի կամ հավելվածների համար, չեն ջնջվի։</translation>
 <translation id="1076421457278169141">Կոդը ընթերցվեց</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} ներդիր}one{{count} ներդիր}other{{count} ներդիր}}</translation>
@@ -267,6 +268,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" /> հաշվում նույն գաղտնաբառն է օգտագործվում</translation>
 <translation id="2059166748188874810">Մունիցիպալիտետ</translation>
 <translation id="2060114494785549741">Ջնջել 1 ամսից</translation>
+<translation id="2060638295449304809">Այս հասցեն պահված է միայն այս սարքում։ Գաղտնաբառը ձեր մյուս սարքերում օգտագործելու համար պահեք այն ձեր Google հաշվում, <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">Միավորի տեսակի ընտրիչ</translation>
 <translation id="2067852168641682340">Ամեն անգամ պահել այս հաշվում</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 ներդիր}one{{count} ներդիր}other{{count} ներդիր}}</translation>
@@ -895,6 +897,7 @@
 <translation id="4824480232751123840">Ձայնի ուժգնություն</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ու ևս 1}one{{domain} ու ևս {count}}other{{domain} ու ևս {count}}}</translation>
 <translation id="4826588772550366629">տեսախցիկն ու խոսափողը</translation>
+<translation id="4828431027673677473">Ապրանքներ՝ հիմնված ձեր հետաքրքրությունների վրա</translation>
 <translation id="4833786495304741580">Ավտոմատ ուղարկում է Google-ին օգտագործման վիճակագրությունը և խափանումների մասին հաշվետվությունները:</translation>
 <translation id="483689884442613745">Պահել…</translation>
 <translation id="4840495572919996524">Ձեր էջանիշները, պատմությունը, գաղտնաբառերն ու այլ կարգավորումներ կհամաժամացվեն ձեր Google հաշվի հետ:</translation>
@@ -1734,6 +1737,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="828291969289324795">{count,plural, =1{Ավելացնել ներդիր նոր խմբում}one{Ավելացնել ներդիր նոր խմբում}other{Ավելացնել ներդիրներ նոր խմբում}}</translation>
 <translation id="8283172974887967105">Սահմանել…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" />․ ծանուցումներն անջատվեցին</translation>
+<translation id="8290077367744012649">Հետևեք գներին ձեր ներդիրներից</translation>
 <translation id="8299417921174340354">Գաղտնաբառերն օգտագործելու համար նախ պետք է ձեր սարքում անցակոդ սահմանեք։</translation>
 <translation id="8299613349954694191">Բացեք ինկոգնիտո ներդիր՝ համացանցում գաղտնի կերպով կայքեր այցելելու համար։</translation>
 <translation id="8307481894409578819">Չհաջողվեց վերբեռնել այս ֆայլը</translation>

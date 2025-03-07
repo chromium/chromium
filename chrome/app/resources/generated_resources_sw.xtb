@@ -1376,7 +1376,6 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1936157145127842922">Onyesha katika Folda</translation>
 <translation id="1936931585862840749">Tumia namba kuonyesha idadi ya nakala za kuchapisha (moja hadi <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Haiwezi kupakia metadata ya aina ya usanifu wa<ph name="ARCHITECTURE_CONTAINER" /> kwa kutumia kifaa hiki ambacho ni <ph name="ARCHITECTURE_DEVICE" />. Unaweza kujaribu kurejesha metadata hii kwenye kifaa tofauti, au unaweza kufikia faili zilizo ndani ya picha ya metadata hii kwa kuzifungua katika programu ya Faili.</translation>
-<translation id="1938116692670653897">Mandhari ya sasa ya rangi</translation>
 <translation id="1938351510777341717">Amri ya Nje</translation>
 <translation id="1940221956626514677">Badilisha upendavyo upau wa vidhibiti</translation>
 <translation id="1940546824932169984">Vifaa vilivyounganishwa</translation>
@@ -1442,6 +1441,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1980168597243156">Kituo cha angani</translation>
 <translation id="1981434377190976112">Kusoma data yako yote kwenye tovuti zote</translation>
 <translation id="1982851102516626421">Umeondoka kwenye akaunti</translation>
+<translation id="1983612835086592681">Uliifungua wiki iliyopita</translation>
 <translation id="1984417487208496350">Hamna ulinzi (haipendekezwi)</translation>
 <translation id="1984683754853869253">Je, ungependa kufungua wasifu mpya wa shuleni?</translation>
 <translation id="198507684520034826">Usaidizi</translation>
@@ -5979,6 +5979,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5186788525428341874">Unaweza kutumia ufunguo huu wa siri ili uingie katika akaunti kwa haraka kwenye vifaa vyako vyote. Utahifadhiwa kwenye Kidhibiti cha Manenosiri cha Google kwa ajili ya <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Weka Ukurasa wa wavuti kama Programu...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188242000716462162">Imetumwa na <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Tumia data ya mahali. Ruhusu tovuti, huduma za ChromeOS na programu za Android zenye ruhusa ya mahali zitumie data ya mahali kifaa chako kilipo. Mipangilio ya Usahihi wa Mahali hutoa data sahihi zaidi ya mahali inayotumiwa na programu pamoja na huduma za Android. Ili kufanya hivyo, Google huchakata mara kwa mara maelezo kuhusu vitambuzi vya vifaa na mawimbi ya simu za mkononi kutoka kwenye kifaa chako ili kukusanya data ya mahali ambako mawimbi ya simu za mkononi yako. Data hii hutumika bila kukutambulisha ili kuboresha usahihi wa mahali na huduma zinazotegemea mahali na pia kuboresha, kutoa na kudumisha huduma za Google kulingana na sababu halali za Google na washirika wengine ili kutimiza mahitaji ya watumiaji. <ph name="BEGIN_LINK1" />Pata maelezo zaidi kuhusu jinsi ya kutumia data ya mahali<ph name="END_LINK1" /></translation>
 <translation id="5189274947477567401">Kujiondoa katika mchakato wa kutuma huhitaji uzime kisha uwashe kivinjari. Kivinjari hiki kitazima kisha kiwake sasa.</translation>
 <translation id="5189404424758444348">Sayansi dhahania ya mvuke</translation>
@@ -8026,6 +8027,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="668599234725812620">Fungua Google Play</translation>
 <translation id="6686490380836145850">Funga vichupo vilivyo upande wa kulia</translation>
 <translation id="6686665106869989887">Kichupo kimewekwa kulia</translation>
+<translation id="6686676261102452995">Umeifungua leo</translation>
 <translation id="6686817083349815241">Hifadhi nenosiri lako</translation>
 <translation id="6687008241368170505">Badilisha PIN ya Kidhibiti cha Manenosiri cha Google</translation>
 <translation id="6687079240787935001">Ficha <ph name="MODULE_TITLE" /></translation>
@@ -10143,6 +10145,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8176529144855282213">Ili uruhusu ufikiaji wa maikrofoni, washa swichi ya maikrofoni kwenye kifaa chako</translation>
 <translation id="8177196903785554304">Maelezo ya Mtandao</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Hamishia kichupo kwenye dirisha jipya}other{Hamishia vichupo kwenye dirisha jipya}}</translation>
+<translation id="8178657161962192959">Uliifungua jana</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Printa ya <ph name="ITEM_POSITION" /> kati ya <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Kiokoa Nishati kimewashwa</translation>

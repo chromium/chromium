@@ -1365,7 +1365,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1936157145127842922">Shfaq në dosje</translation>
 <translation id="1936931585862840749">Përdor një numër për të treguar sa kopje do të printohen (1 deri në <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Nuk mund të importojë llojin e arkitekturës së kontejnerit <ph name="ARCHITECTURE_CONTAINER" /> me këtë pajisje që është <ph name="ARCHITECTURE_DEVICE" />. Mund të provosh ta restaurosh këtë kontejner në një pajisje tjetër ose mund të kesh qasje te skedarët brenda këtij imazhi kontejneri duke hapur aplikacionin "Skedarët".</translation>
-<translation id="1938116692670653897">Tema aktuale e ngjyrës</translation>
 <translation id="1938351510777341717">Komandë e jashtme</translation>
 <translation id="1940221956626514677">Personalizo shiritin e veglave</translation>
 <translation id="1940546824932169984">Pajisjet e lidhura</translation>
@@ -3804,6 +3803,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3670229581627177274">Aktivizo Bluetooth-in</translation>
 <translation id="3670480940339182416">Sajtet mund të përdorin optimizuesin e V8</translation>
 <translation id="3671764914317109892">Përdor gjuhën e përditshme për të kërkuar te historiku i shfletimit. Gjithashtu mund të bësh pyetje dhe të marrësh përgjigje bazuar në historikun tënd të shfletimit.</translation>
+<translation id="3671982238795754537">Mëso më shumë rreth çelësave të kalimit</translation>
 <translation id="3672681487849735243">Është zbuluar një gabim fabrike</translation>
 <translation id="3673097791729989571">Identifikimi i organizuar nga <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">Kodi PIN është përditësuar</translation>
@@ -4720,6 +4720,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4289540628985791613">Përmbledhje</translation>
 <translation id="428963538941819373">Këto sajte mund të përdorin informacionet që kanë ruajtur në lidhje me ty kur ti shfleton në <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Zgjidh një PIN</translation>
+<translation id="4290526909608432059">Mbështetja për aplikacionet e Chrome do të përfundojë së shpejti. Për të mësuar për opsionet e tua, kontakto me zhvilluesin e aplikacionit dhe ekipin e mbështetjes për teknologjinë e informacionit.</translation>
 <translation id="4290791284969893584">Pasi të mbyllësh një faqe, detyrat që ke nisur mund të mos përfundojnë</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> anëtar</translation>
 <translation id="4290898381118933198">Rrëshqit shpejt për të naviguar mes faqeve</translation>
@@ -8512,6 +8513,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Porta seriale e lidhur</translation>
 <translation id="7033616203784997570">Hyrja duhet të jetë maksimumi 62 karaktere</translation>
 <translation id="7034692021407794547">Një administrator me privilegjet e "Menaxhimit të faturimit" duhet të pranojë në fillim Kushtet e shërbimit të Google Meet Hardware në seksionin Google Meet Hardware të panelit të administratorit.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> sapo krijoi një çelës kalimi për llogarinë tënde. Çelësat e kalimit ofrojnë një mënyrë më të shpejtë dhe më të sigurt për t'u identifikuar dhe ruhen në "Menaxherin e fjalëkalimeve të Google" për <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Për Linux rekomandohet <ph name="DISK_SIZE" /> hapësirë. Për të rritur nivelin e hapësirës së lirë, fshi skedarë nga pajisja jote.</translation>
 <translation id="7037157058268992880">Harrova kodin PIN</translation>
 <translation id="7037509989619051237">Teksti për t'u shikuar paraprakisht</translation>
@@ -10552,6 +10554,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8477178913400731244">Fshi të dhënat</translation>
 <translation id="8477241577829954800">E zëvendësuar</translation>
 <translation id="8477384620836102176">&amp;Të përgjithshme</translation>
+<translation id="8477446666255316832">Identifikohu më shpejt herën tjetër</translation>
 <translation id="8479176401914456949">Kod i pavlefshëm. Provo përsëri.</translation>
 <translation id="8480869669560681089">Pajisje e panjohur nga <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Konfirmo lejen e USB-së</translation>

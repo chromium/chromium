@@ -1379,7 +1379,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1936157145127842922">Mostrar na pasta</translation>
 <translation id="1936931585862840749">Use um número para indicar quantas cópias serão impressas (1 a <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Não é possível importar o tipo de arquitetura de contêiner <ph name="ARCHITECTURE_CONTAINER" /> com este dispositivo, que é <ph name="ARCHITECTURE_DEVICE" />. Tente restaurar esse contêiner em um dispositivo diferente ou acesse os arquivos que estão dentro desta imagem do contêiner abrindo-os no app Arquivos.</translation>
-<translation id="1938116692670653897">Tema de cores atual</translation>
 <translation id="1938351510777341717">Comando externo</translation>
 <translation id="1940221956626514677">Personalizar a barra de ferramentas</translation>
 <translation id="1940546824932169984">Dispositivos conectados</translation>

@@ -13,6 +13,7 @@
 <translation id="1036348656032585052">Tắt</translation>
 <translation id="1045899828449635435">Đồng thời xóa dữ liệu khỏi các trang web này?</translation>
 <translation id="1049743911850919806">Ẩn danh</translation>
+<translation id="1052842760770519282">Không sử dụng được một số mật khẩu của bạn</translation>
 <translation id="1058669287135776095">Bạn không có kết nối mạng. Hãy kiểm tra kết nối Internet rồi thử lại.</translation>
 <translation id="10614374240317010">Không bao giờ lưu</translation>
 <translation id="107147699690128016">Nếu bạn thay đổi đuôi tệp, thì tệp có thể mở trong một ứng dụng khác và tiềm ẩn nguy cơ đối với thiết bị.</translation>
@@ -71,6 +72,7 @@
 <translation id="1269129608791067105">Bạn sẽ thấy nhật ký ở đây</translation>
 <translation id="1273937721055267968">Chặn <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Nhấn để mở rộng</translation>
+<translation id="1289129165308566697">Xem nhật ký của bạn trên các thiết bị khác</translation>
 <translation id="129553762522093515">Các thẻ đã đóng gần đây</translation>
 <translation id="1298077576058087471">Tiết kiệm tới 60% dữ liệu, đọc tin tức hôm nay</translation>
 <translation id="1303339473099049190">Không tìm thấy mật khẩu đó. Hãy kiểm tra chính tả rồi thử lại.</translation>
@@ -270,6 +272,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2259659629660284697">Xuất mật khẩu...</translation>
 <translation id="2276696007612801991">Đăng nhập vào Tài khoản Google của bạn để kiểm tra mật khẩu</translation>
 <translation id="2278052315791335171">Thao tác xóa mật khẩu này sẽ không xóa tài khoản của bạn trên <ph name="SITE" /></translation>
+<translation id="2281243904606300427"><ph name="TAB_TITLE" />, thẻ ẩn danh được chọn</translation>
 <translation id="2286841657746966508">Địa chỉ thanh toán</translation>
 <translation id="228704530595896923">Danh sách các lựa chọn chia sẻ.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Xem <ph name="TABS_COUNT_ONE" /> thẻ}other{Xem <ph name="TABS_COUNT_MANY" /> thẻ}}</translation>
@@ -329,6 +332,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2534155362429831547">Đã xóa <ph name="NUMBER_OF_ITEMS" /> mục</translation>
 <translation id="253498598929009420">Trang web này sẽ có thể xem nội dung trên màn hình của bạn</translation>
 <translation id="2536728043171574184">Xem bản sao ngoại tuyến của trang này</translation>
+<translation id="2542548955756682219"><ph name="TAB_TITLE" />, thẻ</translation>
 <translation id="2546283357679194313">Cookie và dữ liệu trang web</translation>
 <translation id="2547843573592965873">Khoá hồ sơ giúp đảm bảo an toàn cho thông tin của bạn trong ô tô, trong đó có mật khẩu, thông tin thanh toán và những thông tin khác mà bạn đã lưu trong Tài khoản Google.</translation>
 <translation id="254973855621628293">Đã lưu mật khẩu vào thiết bị này</translation>
@@ -363,6 +367,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2666092431469916601">Hàng đầu</translation>
 <translation id="2669454659051515572">Bất cứ ai sử dụng thiết bị này đều có thể xem các tệp đã tải xuống</translation>
 <translation id="2677748264148917807">Rời khỏi</translation>
+<translation id="2687009626279857299">Đã ngừng hoạt động trên thiết bị này</translation>
 <translation id="2702516483241149200">Mới: chia sẻ một đường liên kết dẫn tới văn bản này</translation>
 <translation id="2705073298859543115">Tạo nội dung tóm tắt</translation>
 <translation id="2708051474374549906">Khả năng bảo vệ chủ động theo thời gian thực trước các trang web, nội dung tải xuống và tiện ích nguy hiểm, dựa trên dữ liệu duyệt web được gửi tới Google</translation>
@@ -472,6 +477,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3169472444629675720">Khám phá</translation>
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 mật khẩu và các dữ liệu khác chỉ được lưu trên thiết bị này. Để sử dụng cả trên các thiết bị khác, hãy lưu vào Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn.}other{# mật khẩu và các dữ liệu khác chỉ được lưu trên thiết bị này. Để sử dụng cả trên các thiết bị khác, hãy lưu vào Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn.}}</translation>
 <translation id="3187472288455401631">Đo lường quảng cáo</translation>
+<translation id="3189635831478931757">Nhóm thẻ <ph name="GROUP_TITLE" /></translation>
 <translation id="3207960819495026254">Đã đánh dấu trang</translation>
 <translation id="3208584281581115441">Kiểm tra ngay</translation>
 <translation id="3211426585530211793">Đã xóa <ph name="ITEM_TITLE" /></translation>
@@ -748,6 +754,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4523326818319942067">một giờ qua</translation>
 <translation id="452750746583162491">Xem lại các dữ liệu đã đồng bộ hóa của bạn</translation>
 <translation id="4532845899244822526">Chọn thư mục</translation>
+<translation id="4535755320005483982">Nhóm thẻ <ph name="GROUP_TITLE" /> được chia sẻ</translation>
 <translation id="4543131175509360848">Trang thông báo "Không có khoá truy cập nào"</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> thẻ}other{<ph name="TAB_COUNT_MANY" /> thẻ, <ph name="TAB_COUNT_INCOGNITO" /> ẩn danh}}</translation>
 <translation id="4558311620361989323">Phím tắt cho trang web</translation>
@@ -946,6 +953,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5424588387303617268">Còn trống <ph name="GIGABYTES" /> GB</translation>
 <translation id="543338862236136125">Chỉnh sửa mật khẩu</translation>
 <translation id="5433691172869980887">Đã sao chép tên người dùng</translation>
+<translation id="5436928407363358055">Hãy đồng bộ hoá nhật ký và thẻ để dễ dàng xem tiếp nội dung đang xem dở</translation>
 <translation id="5438292632479953702">Tải xuống lần nữa</translation>
 <translation id="5439191312780166229">Cảnh báo cho bạn về các trang web nguy hiểm, kể cả trang web mà Google chưa từng biết, bằng cách phân tích nhiều dữ liệu trên các trang web hơn so với chế độ bảo vệ tiêu chuẩn. Bạn có thể chọn bỏ qua cảnh báo của Chrome.</translation>
 <translation id="5441137934526263133">Trang web không hoạt động? Bạn đã chặn cookie của bên thứ ba</translation>
@@ -1039,7 +1047,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5855546874025048181">Tinh chỉnh: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Đã xảy ra lỗi. Không thể cập nhật tính năng Theo dõi giá.</translation>
 <translation id="5859968346865909126">Bạn có thể bật hoặc tắt chế độ này trong phần cài đặt.</translation>
-<translation id="5860033963881614850">Tắt</translation>
+<translation id="5860033963881614850">Đang tắt</translation>
 <translation id="5860491529813859533">Bật</translation>
 <translation id="5864419784173784555">Đang chờ đến lần tải xuống tiếp theo…</translation>
 <translation id="5865733239029070421">Tự động gửi số liệu thống kê sử dụng và báo cáo sự cố cho Google</translation>
@@ -1249,6 +1257,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6756507620369789050">Chia sẻ ý kiến phản hồi</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="676305334223455055">Đăng nhập để nhận nội dung dựa trên mối quan tâm của bạn</translation>
+<translation id="6764137532716892442">Đã chia sẻ nhóm thẻ <ph name="GROUP_TITLE" /> có hoạt động mới</translation>
 <translation id="6767294960381293877">Danh sách các thiết bị mà bạn có thể chia sẻ một thẻ đã mở ở nửa dưới của màn hình.</translation>
 <translation id="6785476624617658922">Điều khoản dịch vụ bổ sung của Chrome và ChromeOS</translation>
 <translation id="6795633245022906657">Mở nhanh một thẻ mới. Để chỉnh sửa lối tắt này, hãy chuyển đến phần Cài đặt.</translation>
@@ -1315,6 +1324,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Xem <ph name="TABS_COUNT_ONE" /> thẻ có hoạt động mới trong các nhóm thẻ được chia sẻ}other{Xem <ph name="TABS_COUNT_MANY" /> thẻ có hoạt động mới trong các nhóm thẻ được chia sẻ}}</translation>
 <translation id="6971862865055170158">Không phê duyệt</translation>
+<translation id="6976223255612495095"><ph name="TAB_TITLE" />, thẻ mới hoặc thẻ đã cập nhật</translation>
 <translation id="6978717888677691380">Các trang web bạn đã chặn</translation>
 <translation id="6979737339423435258">Từ trước đến nay</translation>
 <translation id="6983306615164277634">Bạn cũng có thể chạm và giữ thanh địa chỉ để thay đổi vị trí.</translation>
@@ -1708,6 +1718,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8676276370198826499">Đăng ký trên <ph name="SITE_ETLD_PLUS_ONE" /> bằng tài khoản <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Xác minh việc đăng nhập</translation>
 <translation id="8683039184091909753">hình ảnh</translation>
+<translation id="8688183792442786085"><ph name="TAB_TITLE" />, thẻ được chọn</translation>
 <translation id="869891660844655955">Ngày hết hạn</translation>
 <translation id="8699120352855309748">Không đề xuất dịch những ngôn ngữ này</translation>
 <translation id="8712637175834984815">Tôi hiểu</translation>
@@ -1841,4 +1852,5 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="988091779042748639">Để xoá nhật ký duyệt web ở chế độ Ẩn danh khỏi thiết bị của bạn, hãy đóng tất cả thẻ Ẩn danh.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> thẻ</translation>
 <translation id="996149300115483134">Trình đơn thẻ nguồn cấp dữ liệu đang đóng</translation>
+<translation id="99907655649633293"><ph name="TAB_TITLE" />, thẻ ẩn danh</translation>
 </translationbundle>

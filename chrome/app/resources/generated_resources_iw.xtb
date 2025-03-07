@@ -1377,7 +1377,6 @@
 <translation id="1936157145127842922">הצג בתיקייה</translation>
 <translation id="1936931585862840749">יש להזין מספר שמציין כמה עותקים יש להדפיס (1 עד <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">לא ניתן לייבא ארכיטקטורת מאגר מסוג <ph name="ARCHITECTURE_CONTAINER" /> באמצעות המכשיר הזה, כי הוא מסוג <ph name="ARCHITECTURE_DEVICE" />. אפשר לנסות לשחזר את המאגר במכשיר אחר או לפתוח את האפליקציה 'קבצים' כדי לגשת לקבצים בתוך תמונת המאגר.</translation>
-<translation id="1938116692670653897">ערכת הצבעים הנוכחית</translation>
 <translation id="1938351510777341717">‏מקש Command חיצוני</translation>
 <translation id="1940221956626514677">התאמה אישית של סרגל הכלים</translation>
 <translation id="1940546824932169984">מכשירים מחוברים</translation>

@@ -590,6 +590,7 @@
 <translation id="1407069428457324124">အမှောင်နောက်ခံ</translation>
 <translation id="1407135791313364759">အားလုံး ဖွင့်ရန်</translation>
 <translation id="140723521119632973">ဆယ်လူလာ စတင်ခြင်း</translation>
+<translation id="1407908250220330281">ဤပရိုဖိုင်ကို ယခု စီမံပါမည်</translation>
 <translation id="1407970155431887387"><ph name="SEARCH_ENGINE_NAME" /> အတွက် ‘တည်းဖြတ်ရန်’ ဒိုင်ယာလော့ဖွင့်ရန် နှိပ်ပါ</translation>
 <translation id="1408504635543854729">စက်ပစ္စည်း၏ အကြောင်းအရာများကို Files အက်ပ်ထဲတွင် ရှာပါ။ အကြောင်းအရာကို စီမံခန့်ခွဲသူက ပိတ်ပင်ထားသောကြောင့် မွမ်းမံပြင်ဆင်၍မရပါ။</translation>
 <translation id="1408980562518920698">ကိုယ်ရေးကိုယ်တာ အချက်အလက်များကို စီမံရန်</translation>
@@ -800,6 +801,7 @@
 <translation id="1549966883323105187">သိမ်းထားသော စကားဝှက်များသို့ ပိုမြန်စွာ သွားနိုင်သည်</translation>
 <translation id="1550656959113606473">မူရင်း Chrome</translation>
 <translation id="1552301827267621511"><ph name="SEARCH_PROVIDER_DOMAIN" /> အသုံးပြုရန် <ph name="EXTENSION_NAME" /> နောက်ဆက်တွဲက ရှာဖွေမှုစနစ်ကို ပြောင်းလိုက်သည်</translation>
+<translation id="1552357433305859738">ဤပရိုဖိုင်နှင့် ဆက်လက်စင့်ခ်လုပ်ပြီး ဒေတာပေါင်းစည်းရန်</translation>
 <translation id="1552752544932680961">အိတ်စတန်းရှင်း စီမံမည်</translation>
 <translation id="1553538517812678578">အကန့်အသတ်မရှိ</translation>
 <translation id="1553947773881524342">Chromebook တွင် Microsoft 365 အကြောင်း <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" />။</translation>
@@ -1376,7 +1378,6 @@
 <translation id="1936157145127842922">ဖိုလ်ဒါ ထဲမှာ ပြရန်</translation>
 <translation id="1936931585862840749">မိတ္တူမည်မျှ ပုံနှိပ်ထုတ်ယူလိုကြောင်း ဖော်ပြရန် နံပါတ်ကို အသုံးပြုပါ (၁ မှ <ph name="MAX_COPIES" />)။</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> ဖြစ်သော ဤစက်ပစ္စည်းဖြင့်<ph name="ARCHITECTURE_CONTAINER" /> ကွန်တိန်နာ ဖွဲ့စည်းပုံ အမျိုးအစားကို ထည့်သွင်း၍ မရပါ။ ဤကွန်တိန်နာကို အခြားစက်ပစ္စည်းတစ်ခုတွင် ပြန်ယူကြည့်နိုင်သည် သို့မဟုတ် Files အက်ပ်တွင် ဖွင့်ခြင်းဖြင့် ဤကွန်တိန်နာ ကွန်ပျူတာစနစ်မိတ္တူအတွင်းရှိ ဖိုင်များကို ဝင်သုံးနိုင်သည်။</translation>
-<translation id="1938116692670653897">လက်ရှိ အရောင်အပြင်အဆင်</translation>
 <translation id="1938351510777341717">ပြင်ပကွန်မန်း</translation>
 <translation id="1940221956626514677">ကိရိယာဘား စိတ်ကြိုက်လုပ်ရန်</translation>
 <translation id="1940546824932169984">ချိတ်ဆက်ထားသော စက်ပစ္စည်းများ</translation>
@@ -1442,6 +1443,7 @@
 <translation id="1980168597243156">အာကာသစခန်း</translation>
 <translation id="1981434377190976112">ဝဘ်ဆိုက်အားလုံးပေါ်ရှိ သင့်ဒေတာအားလုံးကို ဖတ်ရှုခြင်း</translation>
 <translation id="1982851102516626421">ထွက်ထားသည်</translation>
+<translation id="1983612835086592681">ပြီးခဲ့သောအပတ်က ဖွင့်ထားသည်</translation>
 <translation id="1984417487208496350">ကာကွယ်မှုမရှိပါ (အကြံပြုမထားပါ)</translation>
 <translation id="1984683754853869253">ကျောင်းအတွက် ပရိုဖိုင်အသစ် ပြုလုပ်လိုပါသလား။</translation>
 <translation id="198507684520034826">အကူအညီ</translation>
@@ -2251,6 +2253,7 @@
 <translation id="2530166226437958497">ပြဿနာရှာဖွေဖြေရှင်းခြင်း</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />တစ်ခုခုမှားသွားပြီး <ph name="DEVICE_OS" /> ကို ထည့်သွင်း၍မရပါ။<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />နောက်ထပ်အကူအညီလိုလျှင် ဤသို့ ဝင်ကြည့်ပါ- g.co/flex/InstallErrors။<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532117279786409580">နောက်ထပ်အချက်အလက် ရယူရန်</translation>
 <translation id="2532144599248877204">သင့်ဘက်ထရီအားကို ၈၀% လောက်တွင် ထားခြင်းဖြင့် ဘက်ထရီ သက်တမ်း ပိုရှည်စေသည်။ ပုံမှန်အားဖြင့် ပလပ်မဖြုတ်မီမှာပင် ဘက်ထရီကို အားအပြည့်သွင်းပါလိမ့်မည်။</translation>
 <translation id="2532146950330687938">စက်ကို အသင့်ပြင်နေသည်…</translation>
 <translation id="2532198298278778531">ChromeOS Flex ဆက်တင်များတွင် လုံခြုံသည့် DNS ကို စီမံရန်</translation>
@@ -3151,6 +3154,7 @@
 <translation id="3183139917765991655">Profile Importer</translation>
 <translation id="3183143381919926261">မိုဘိုင်းဒေတာ ကွန်ရက်များ</translation>
 <translation id="3183700187146209259">စကင်ဖတ်စနစ်ဆော့ဖ်ဝဲ ထည့်သွင်း၍မရပါ</translation>
+<translation id="3183750649832309748">သင့်အဖွဲ့အစည်း <ph name="ACCOUNT_MANAGER" /> သည် အောက်ပါတို့အပါအဝင် အချက်အလက်အချို့ကို ကြည့်နိုင်မည်-</translation>
 <translation id="3183944777708523606">မော်နီတာ အစီအစဉ်</translation>
 <translation id="3184536091884214176">CUPS ပုံနှိပ်စက်များကို စနစ်ထည့်သွင်းပါ သို့မဟုတ် စီမံပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">မိဘအထိန်းအချုပ် ဆက်တင်များပြောင်းရန် ဤပင်နံပါတ် သုံးပါ။
@@ -3178,6 +3182,7 @@
 <translation id="3202499879214571401"><ph name="DEVICE_NAME" /> သို့ ကာစ်လုပ်ခြင်း ခဏရပ်ရန်</translation>
 <translation id="3202578601642193415">အသစ်ဆုံး</translation>
 <translation id="3204648577100496185">ဤအက်ပ်နှင့်ဆက်စပ်သည့် ဒေတာကို ဤစက်ပစ္စည်းမှ ဖယ်ရှားနိုင်သည်</translation>
+<translation id="3204717934117444051">ဤစက်တွင်သာ သိမ်းထားသောဒေတာသည် လက်ရှိပရိုဖိုင်တွင် ဆက်ရှိပါမည်။ ၎င်းကို <ph name="EMAIL" /> သို့ စင့်ခ်မလုပ်ပါ</translation>
 <translation id="3207344462385471911">မကြာသေးမီက သင်၏လုပ်ဆောင်ချက်ပေါ် အခြေခံပြီး သင်စိတ်ဝင်စားလောက်မည့် အကြံပြု ရှာဖွေမှုများနှင့် လျှော့ဈေးဖြင့် ဝယ်နိုင်သည်များကို တွေ့နေရခြင်းဖြစ်သည်။
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4346,6 +4351,7 @@
 <translation id="3994878504415702912">&amp;ဇူးမ်</translation>
 <translation id="3995138139523574647">USB-C ကိရိယာ (ညာဘက် နောက်ပိုင်း ပို့တ်)</translation>
 <translation id="3995963973192100066">လှုပ်ရှားသက်ဝင်ပုံများ ဖွင့်ရန်</translation>
+<translation id="3997537546406230684">အလုပ်အတွက် ပရိုဖိုင်အသစ် ပြုလုပ်ပြီး လက်ရှိဒေတာကို သီးခြားခွဲထားရန်</translation>
 <translation id="399788104667917863">ကိရိယာဘားတွင် ပင်ထိုးရန်</translation>
 <translation id="3998780825367526465">တဘ်၏ အစမ်းကြည့်ရှုသည့်ပုံများ ပြပါ</translation>
 <translation id="3998976413398910035">ပရင်တာများကို စီမံခန့်ခွဲရန်</translation>
@@ -5792,6 +5798,7 @@
 <translation id="5059526285558225588">မျှဝေလိုသည်များကို ရွေးပါ</translation>
 <translation id="5060332552815861872">သိမ်းဆည်းရန် ပရင်တာ ၁ ခုရှိသည်။</translation>
 <translation id="5060419232449737386">ခေါင်းစီး ဆက်တင်များ</translation>
+<translation id="5061270227873845372">သင့်တွင် <ph name="NUMBERED_ITEM_1" />၊ <ph name="NUMBERED_ITEM_2" />၊ <ph name="NUMBERED_ITEM_3" /> စသည်တို့ လောလောဆယ်ရှိသည်။ သင့်အဖွဲ့အစည်းက ဤဒေတာကို ကြည့်နိုင်၊ စီမံနိုင်မည်</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{ဤဖိုင်တွဲတွင် ဝဘ်လိပ်စာ တစ်ခု ပါဝင်သည်။ ဖျက်လိုသည်မှာ သေချာပါသလား။}other{ဤဖိုင်တွဲတွင် ဝဘ်လိပ်စာ # ခု ပါဝင်သည်။ ဖျက်လိုသည်မှာ သေချာပါသလား။}}</translation>
 <translation id="5061531353537614467">တန်ဒြာ</translation>
 <translation id="5062930723426326933">လက်မှတ်ထိုး ဝင်မှု မအောင်မြင်ခဲ့ပါ၊ ကျေးဇူးပြုပြီး အင်တာနက်သို့ ဆက်ပြီး ထပ်စမ်းပါ။</translation>
@@ -5975,6 +5982,7 @@
 <translation id="5186788525428341874">သင့်စက်များတွင် ပိုမိုမြန်ဆန်စွာ လက်မှတ်ထိုးဝင်ရန် ဤလျှို့ဝှက်ကီးကို သုံးနိုင်သည်။ ၎င်းကို <ph name="ACCOUNT_NAME" /> အတွက် Google Password Manager တွင် သိမ်းပါမည်။</translation>
 <translation id="5187641678926990264">&amp;စာမျက်နှာကို အက်ပ်အဖြစ် ထည့်သွင်းရန်…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188242000716462162"><ph name="USER_NAME" /> က မျှဝေထားသည်</translation>
 <translation id="5188648870018555788">တည်နေရာသုံးရန်။ ChromeOS၊ Android အက်ပ်များ၊ ဝဘ်ဆိုက်များ၊ တည်နေရာခွင့်ပြုချက် ပါဝင်သည့် ဝန်ဆောင်မှုများအား သင့်စက်၏တည်နေရာကို သုံးခွင့်ပြုသည်။ ‘တည်နေရာတိကျမှန်ကန်မှု’ သည် Android အက်ပ်နှင့် ဝန်ဆောင်မှုများအတွက် ပိုမိုတိကျသော တည်နေရာကို ပေးသည်။ ထိုသို့လုပ်ဆောင်ရန် Google သည် သင့်စက်မှ စက်အာရုံခံကိရိယာနှင့် ကြိုးမဲ့အချက်ပြမှုများအကြောင်း အချက်အလက်များကို လူထုအရင်းအမြစ်ကို အသုံးချထားသော ကြိုးမဲ့အချက်ပြမှု တည်နေရာများသို့ အခါအားလျော်စွာ စီမံပို့ဆောင်သည်။ တည်နေရာတိကျမှန်ကန်မှုနှင့် တည်နေရာအခြေခံ ဝန်ဆောင်မှုများ ပိုမိုကောင်းမွန်စေရန်၊ အသုံးပြုသူများ၏ လိုအပ်ချက်များကို ဖြည့်ဆည်းပေးရန်အတွက် Google နှင့် ပြင်ပအဖွဲ့အစည်းများ၏ တရားဝင် အကျိုးခံစားခွင့်များအပေါ် အခြေခံထားသော Google ဝန်ဆောင်မှုများကို ပိုကောင်းအောင်လုပ်ရန်၊ ပံ့ပိုးရန်၊ ထိန်းသိမ်းရန် သင်မည်သူမည်ဝါဖြစ်ကြောင်း မဖော်ပြဘဲ ၎င်းတို့ကို အသုံးပြုသည်။ <ph name="BEGIN_LINK1" />တည်နေရာအသုံးပြုခြင်းအကြောင်း ပိုမိုလေ့လာရန်<ph name="END_LINK1" /></translation>
 <translation id="5189274947477567401">လုပ်ငန်းစဉ် မျှဝေခြင်းမှ ထွက်ပါက ဘရောင်ဇာ ပြန်စရန် လိုအပ်သည်။ ဤဘရောင်ဇာ ယခု ပြန်စမည်။</translation>
 <translation id="5189404424758444348">၁၉ ရာစု စိတ်ကူးယဉ်သိပ္ပံ</translation>
@@ -8020,6 +8028,7 @@
 <translation id="668599234725812620">Google Play ကို ဖွင့်ရန်</translation>
 <translation id="6686490380836145850">ညာဘက်ရှိ တဲဘ်များကို ပိတ်ရန်</translation>
 <translation id="6686665106869989887">တဘ်ကို ညာသို့ရွှေ့လိုက်သည်</translation>
+<translation id="6686676261102452995">ယနေ့ ဖွင့်ထားသည်</translation>
 <translation id="6686817083349815241">သင့်လျှို့ဝှက်စကားလုံးအား သိမ်းမည်</translation>
 <translation id="6687008241368170505">Google Password Manager ပင်နံပါတ် ပြောင်းခြင်း</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> ကို ဖျောက်ရန်</translation>
@@ -9401,6 +9410,7 @@
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />၊ <ph name="PAGE_TITLE" /> အတွင်း။</translation>
 <translation id="7672726198839739113">ပိတ်ထားသည်။ အချိန်ဇယားကို လောလောဆယ် <ph name="SUNRISE_TIME" /> - <ph name="SUNSET_TIME" /> သို့ သတ်မှတ်လိုက်ပြီး လူကိုယ်တိုင်သာ အပ်ဒိတ်လုပ်နိုင်သည်။</translation>
 <translation id="7673313156293624327">ChromeOS Shill (ချိတ်ဆက်မှုမန်နေဂျာ) မှတ်တမ်းများ</translation>
+<translation id="767381852303199643">သင်၏ လက်ရှိပရိုဖိုင်ဒေတာကို ဘာလုပ်လိုသလဲ။</translation>
 <translation id="7674416868315480713">Linux တွင် ထပ်ဆင့်ပို့ထားသော ပို့တ်အားလုံးကို ပိတ်ရန်</translation>
 <translation id="7674537509496907005">အက်ပ် <ph name="APP_COUNT" /> ခု</translation>
 <translation id="7674542105240814168">တည်နေရာသုံးခွင့် ငြင်းပယ်ထားသည်</translation>
@@ -9632,6 +9642,7 @@
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /><ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">သိမ်းဆည်းထားသော စိတ်ကြိုက်စကားလုံးများကို ဤနေရာတွင် တွေ့ရပါမည်</translation>
 <translation id="7836577093182643605">ဝဘ်ဆိုက်များနှင့် မျှဝေလိုခြင်းမရှိ၍ သင်ပိတ်ပင်ထားသော အကြောင်းအရာစာရင်း</translation>
+<translation id="7836745198769390202">သင့်တွင် <ph name="NUMBERED_ITEM_1" />၊ <ph name="NUMBERED_ITEM_2" /> စသည်တို့ လောလောဆယ်ရှိသည်။ သင့်အဖွဲ့အစည်းက ဤဒေတာကို ကြည့်နိုင်၊ စီမံနိုင်မည်</translation>
 <translation id="7836850009646241041">သင့်လုံခြုံရေးကီးကို ထပ်ထိကြည့်ပါ</translation>
 <translation id="7838838951812478896"><ph name="DEVICE_NAME" /> ထံမှ '<ph name="NETWORK_NAME" />' ကို သိမ်း၍မရပါ</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> သို့ <ph name="ATTACHMENTS" /> ပို့ထားသည်}other{<ph name="DEVICE_NAME" /> သို့ <ph name="ATTACHMENTS" /> ပို့ထားသည်}}</translation>
@@ -10132,6 +10143,7 @@
 <translation id="8176529144855282213">မိုက်ခရိုဖုန်းသုံးခွင့် ဖွင့်ရန် သင့်စက်၏ ပကတိမိုက်ခရိုဖုန်းခလုတ်ကို ဖွင့်ရမည်</translation>
 <translation id="8177196903785554304">ကွန်ရက် အသေးစိတ်</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{တဘ်ကို ဝင်းဒိုးအသစ်သို့ ရွှေ့ရန်}other{တဘ်များကို ဝင်းဒိုးအသစ်သို့ ရွှေ့ရန်}}</translation>
+<translation id="8178657161962192959">မနေ့က ဖွင့်ထားသည်</translation>
 <translation id="8179976553408161302">အင်တာ</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />။ ပရင်တာ <ph name="NUM_PRINTERS" /> ခုအနက် <ph name="ITEM_POSITION" /> ခုမြောက်။</translation>
 <translation id="8180785270975217276">‘စွမ်းအင်ချွေတာစနစ်’ ဖွင့်ထားသည်</translation>
@@ -11392,6 +11404,7 @@
 <translation id="9052404922357793350">ဆက်ပိတ်ထားရန်</translation>
 <translation id="90528604757378587">ချောမွေ့စွာလှိမ့်ခြင်းကဲ့သို့ နောက်ခံလုပ်ဆောင်ချက်နှင့် ဖန်တီးပြသချက်အချို့ကို ကန့်သတ်နိုင်သည်။</translation>
 <translation id="9053563360605707198">နှစ်ဘက်စလုံးတွင် ပုံနှိပ်ထုတ်ရန်</translation>
+<translation id="9055810458113674066">သင့်တွင် <ph name="NUMBERED_ITEM" /> နှင့် အခြားအရာများ လောလောဆယ်ရှိသည်။ သင့်အဖွဲ့အစည်းက ဤဒေတာကို ကြည့်နိုင်၊ စီမံနိုင်မည်</translation>
 <translation id="9056788090206401048">သင့်လျှို့ဝှက်ကီးကို အခြားစက်တွင်သုံးရန် ဘလူးတုသ် ဖွင့်ရမည်။ ၎င်းကို ဆက်တင်များ၌ အချိန်မရွေး စီမံနိုင်သည်။</translation>
 <translation id="9056810968620647706">တိုက်ဆိုင်တာ မတွေ့ရပါ။</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> သည် အောက်ပါ အကြောင်းအရာကို သုံးလိုသည်-</translation>

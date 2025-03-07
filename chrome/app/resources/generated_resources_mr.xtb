@@ -1379,7 +1379,6 @@
 <translation id="1936157145127842922">फोल्डरमध्ये दर्शवा</translation>
 <translation id="1936931585862840749">किती प्रती प्रिंट करायच्या ते दर्शवण्यासाठी संख्या वापरा (१ ते <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> असलेल्या या डिव्हाइस सह <ph name="ARCHITECTURE_CONTAINER" /> प्रकारचे आर्किटेक्चर कंटेनर इंपोर्ट करू शकत नाही. तुम्ही हा कंटेनर वेगळ्या डिव्हाइसमध्ये रिस्टोअर करण्याचा प्रयत्न करू शकता किंवा तुम्ही या कंटेनर प्रतिमेच्या फाइल Files ॲपमध्ये उघडून ॲक्सेस करू शकता.</translation>
-<translation id="1938116692670653897">सद्य रंग थीम</translation>
 <translation id="1938351510777341717">बाह्य कमांड</translation>
 <translation id="1940221956626514677">टूलबार कस्टमाइझ करा</translation>
 <translation id="1940546824932169984">कनेक्‍ट केलेली डिव्हाइस</translation>
@@ -1445,6 +1444,7 @@
 <translation id="1980168597243156">अंतराळ केंद्र</translation>
 <translation id="1981434377190976112">सर्व वेबसाइटवरील तुमचा सर्व डेटा वाचू शकते</translation>
 <translation id="1982851102516626421">तुम्ही साइन आउट केले आहे</translation>
+<translation id="1983612835086592681">तुम्ही मागील आठवड्यामध्ये उघडल्या होत्या</translation>
 <translation id="1984417487208496350">संरक्षण नाही (शिफारस केली जात नाही)</translation>
 <translation id="1984683754853869253">शाळेसाठी तुम्हाला नवीन प्रोफाइल तयार करायची का?</translation>
 <translation id="198507684520034826">मदत</translation>
@@ -5981,6 +5981,7 @@
 <translation id="5186788525428341874">तुमच्या सर्व डिव्हाइसवर आणखी वेगाने साइन इन करण्यासाठी तुम्ही ही पासकी वापरू शकता. तो <ph name="ACCOUNT_NAME" /> साठी Google Password Manager यामध्ये सेव्ह केला जाईल.</translation>
 <translation id="5187641678926990264">&amp;पेज हे अ‍ॅप म्हणून इंस्टॉल करा...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188242000716462162"><ph name="USER_NAME" /> यांनी शेअर केले आहे</translation>
 <translation id="5188648870018555788">स्थान वापरा. स्थान परवानगी असलेल्या ChromeOS आणि Android अ‍ॅप्स, वेबसाइट व सेवांना तुमच्या डिव्हाइसचे स्थान वापरण्याची अनुमती द्या. स्थान अचूकता हे Android अ‍ॅप्स आणि सेवांसाठी अधिक अचूक स्थान पुरवते. हे करण्यासाठी, वायरलेस सिग्नल स्थानांना क्राउडसोर्स करण्याकरिता Google वेळोवेळी डिव्हाइस सेन्सर आणि तुमच्या डिव्हाइसच्या वायरलेस सिग्नलबद्दलच्या माहितीवर प्रक्रिया करते. स्थान अचूकता आणि स्थान आधारित सेवांमध्ये सुधारणा करण्यासाठी व वापरकर्त्यांच्या आवश्यकता पूर्ण करण्याच्या Google व तृतीय पक्षांच्या कायदेशीर हितसंबंधांच्या आधारे Google सेवांमध्ये सुधारणा करण्यासाठी, त्या पुरवण्यासाठी आणि त्यांची देखभाल करण्यासाठी ही माहिती तुम्हाला न ओळखता वापरली जाते. <ph name="BEGIN_LINK1" />स्थान वापरण्याबद्दल अधिक जाणून घ्या<ph name="END_LINK1" /></translation>
 <translation id="5189274947477567401">प्रक्रिया शेअर करण्याची निवड रद्द करण्यासाठी ब्राउझर रीस्टार्ट करणे आवश्यक आहे. हा ब्राउझर आता रीस्टार्ट होईल.</translation>
 <translation id="5189404424758444348">स्टीमपंक</translation>
@@ -8031,6 +8032,7 @@ I feel - विटांची इमारत</translation>
 <translation id="668599234725812620">Google Play उघडा</translation>
 <translation id="6686490380836145850">उजवीकडील टॅब बंद करा</translation>
 <translation id="6686665106869989887">टॅब उजवीकडे हलवला आहे</translation>
+<translation id="6686676261102452995">तुम्ही आज उघडल्या होत्या</translation>
 <translation id="6686817083349815241">तुमचा पासवर्ड सेव्ह करा</translation>
 <translation id="6687008241368170505">Google Password Manager चा पिन बदला</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> लपवा</translation>
@@ -10145,6 +10147,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8176529144855282213">मायक्रोफोनचा अ‍ॅक्सेस सुरू करण्यासाठी, तुमच्या डिव्हाइसवरील मायक्रोफोनचा प्रत्यक्ष स्विच सुरू करा</translation>
 <translation id="8177196903785554304">नेटवर्क तपशील</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{टॅब नवीन विंडोवर हलवा}other{टॅब नवीन विंडोवर हलवा}}</translation>
+<translation id="8178657161962192959">तुम्ही काल उघडल्या होत्या</translation>
 <translation id="8179976553408161302">एंटर</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. <ph name="NUM_PRINTERS" /> पैकी <ph name="ITEM_POSITION" /> प्रिंटर.</translation>
 <translation id="8180785270975217276">एनर्जी सेव्हर सुरू झाला आहे</translation>

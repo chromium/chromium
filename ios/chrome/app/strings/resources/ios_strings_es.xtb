@@ -1153,6 +1153,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5898848375214731122">Masa</translation>
 <translation id="5899314093904173337">Para compartir con personas que estén cerca de ti, pídeles que escaneen este código QR con su aplicación de cámara o de escáner de códigos QR</translation>
 <translation id="5911030830365207728">Traductor de Google</translation>
+<translation id="5917913282764181683">Eliminar automáticamente tus descargas</translation>
 <translation id="5922999516621365983">Arrastra la pestaña aquí para fijarla.</translation>
 <translation id="5936006948844852401">Gestionar almacenamiento</translation>
 <translation id="5936065461722368675">Traducir página completa</translation>
@@ -1475,7 +1476,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7218491361283758048">Código postal</translation>
 <translation id="7221173315674413369">Descubre nuevas funciones y consejos en Novedades</translation>
 <translation id="722339453342442311">Comprobar ahora</translation>
-<translation id="7227235818314667565">Administrar uso compartido</translation>
+<translation id="7227235818314667565">Gestionar uso compartido</translation>
 <translation id="7233006041370588369">Selecciona la contraseña que quieras rellenar.</translation>
 <translation id="7241135764990439166">El modo Incógnito no está disponible</translation>
 <translation id="7248046129087111453">Puede que el <ph name="BEGIN_LINK" />historial de búsqueda<ph name="END_LINK" /> y <ph name="BEGIN_LINK" />otras formas de actividad<ph name="END_LINK" /> se guarden en tu cuenta de Google.</translation>

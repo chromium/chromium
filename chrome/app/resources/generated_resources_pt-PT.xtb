@@ -1368,7 +1368,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1936157145127842922">Mostrar na pasta</translation>
 <translation id="1936931585862840749">Utilize um número para indicar as cópias a imprimir (1 a <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Não é possível importar o tipo de arquitetura de contentor <ph name="ARCHITECTURE_CONTAINER" /> com este dispositivo cuja arquitetura é <ph name="ARCHITECTURE_DEVICE" />. Pode tentar restaurar este contentor para um dispositivo diferente ou pode aceder aos ficheiros contidos na imagem deste contentor através da aplicação Ficheiros.</translation>
-<translation id="1938116692670653897">Tema de cores atual</translation>
 <translation id="1938351510777341717">Comando externo</translation>
 <translation id="1940221956626514677">Personalizar barra de ferramentas</translation>
 <translation id="1940546824932169984">Dispositivos ligados</translation>

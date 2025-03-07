@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">Ved å fortsette godtar du <ph name="BEGIN_LINK" />vilkårene for bruk<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Aldri lagret</translation>
 <translation id="1062138828266376352">PIN-koden ble ikke endret. Sjekk internettilkoblingen, og prøv på nytt</translation>
+<translation id="1072476005125066234">Anmeldelser basert på interessene dine</translation>
 <translation id="1074827084851510304">Du er i ferd med å slette {password_count} passord samt listen over nettsteder og apper du har valgt å aldri lagre påloggingsinformasjon for. Eventuelle kontoer du har opprettet for nettsteder og apper, blir ikke slettet.</translation>
 <translation id="1076421457278169141">Koden er skannet</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} fane}other{{count} faner}}</translation>
@@ -267,6 +268,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" /> kontoer bruker det samme passordet</translation>
 <translation id="2059166748188874810">Kommune</translation>
 <translation id="2060114494785549741">Slett om 1 måned</translation>
+<translation id="2060638295449304809">Denne adressen er bare lagret på denne enheten. For å bruke den på andre enheter, lagre den i Google-kontoen din (<ph name="USER_EMAIL" />).</translation>
 <translation id="20638360198452347">Enhetstypevelger</translation>
 <translation id="2067852168641682340">Lagre i denne kontoen hver gang</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 fane}other{{count} faner}}</translation>
@@ -895,6 +897,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4824480232751123840">Volum</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} og 1 til}other{{domain} og {count} til}}</translation>
 <translation id="4826588772550366629">kamera og mikrofon</translation>
+<translation id="4828431027673677473">Produkter basert på interessene dine</translation>
 <translation id="4833786495304741580">Sender automatisk bruksstatistikk og programstopprapporter til Google.</translation>
 <translation id="483689884442613745">Lagre…</translation>
 <translation id="4840495572919996524">Bokmerkene, loggen, passord med mer synkroniseres ikke lenger med Google-kontoen din.</translation>
@@ -1734,6 +1737,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="828291969289324795">{count,plural, =1{Legg fanen til i en ny gruppe}other{Legg fanene til i en ny gruppe}}</translation>
 <translation id="8283172974887967105">Angi…</translation>
 <translation id="8289930144142009940">Varsler for <ph name="FEATURE_NAME" /> er slått av</translation>
+<translation id="8290077367744012649">Spor priser fra fanene dine</translation>
 <translation id="8299417921174340354">For å bruke passord må du først angi en adgangskode på enheten din.</translation>
 <translation id="8299613349954694191">Åpne en inkognitofane for å surfe privat på nettet.</translation>
 <translation id="8307481894409578819">Kunne ikke laste opp denne filen</translation>

@@ -1370,7 +1370,6 @@
 <translation id="1936157145127842922">แสดงในโฟลเดอร์</translation>
 <translation id="1936931585862840749">ใช้ตัวเลขเพื่อระบุจำนวนสำเนาที่ต้องการพิมพ์ (1 ถึง <ph name="MAX_COPIES" />)</translation>
 <translation id="1937774647013465102">นำเข้าสถาปัตยกรรมคอนเทนเนอร์ประเภท <ph name="ARCHITECTURE_CONTAINER" /> ด้วยอุปกรณ์นี้ ซึ่งเป็นประเภท <ph name="ARCHITECTURE_DEVICE" /> ไม่ได้ คุณลองคืนค่าคอนเทนเนอร์นี้ไปยังอุปกรณ์อื่นได้ หรือเข้าถึงไฟล์ภายในรูปภาพของคอนเทนเนอร์นี้โดยเปิดในแอป Files</translation>
-<translation id="1938116692670653897">ธีมสีปัจจุบัน</translation>
 <translation id="1938351510777341717">แป้น Command ภายนอก</translation>
 <translation id="1940221956626514677">ปรับแต่งแถบเครื่องมือ</translation>
 <translation id="1940546824932169984">อุปกรณ์ที่เชื่อมต่อ</translation>
@@ -1436,6 +1435,7 @@
 <translation id="1980168597243156">สถานีอวกาศ</translation>
 <translation id="1981434377190976112">อ่านข้อมูลทั้งหมดของคุณในทุกเว็บไซต์</translation>
 <translation id="1982851102516626421">คุณออกจากระบบแล้ว</translation>
+<translation id="1983612835086592681">คุณเปิดเมื่อสัปดาห์ที่แล้ว</translation>
 <translation id="1984417487208496350">ไม่มีการปกป้อง (ไม่แนะนำ)</translation>
 <translation id="1984683754853869253">คุณต้องการสร้างโปรไฟล์ใหม่สำหรับโรงเรียนไหม</translation>
 <translation id="198507684520034826">วิธีใช้</translation>
@@ -5968,6 +5968,7 @@
 <translation id="5186788525428341874">คุณสามารถใช้พาสคีย์นี้เพื่อลงชื่อเข้าใช้อุปกรณ์ต่างๆ ได้เร็วขึ้น เพราะระบบจะบันทึกไว้ในเครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="ACCOUNT_NAME" /></translation>
 <translation id="5187641678926990264">ติดตั้งหน้าเว็บเป็นแอป...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188242000716462162">แชร์โดย <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">ใช้ตำแหน่ง อนุญาตให้แอป เว็บไซต์ และบริการของ ChromeOS รวมถึง Android ที่มีสิทธิ์เข้าถึงตำแหน่งใช้ตำแหน่งของอุปกรณ์ ความแม่นยำของตำแหน่งจะระบุตำแหน่งที่แม่นยำยิ่งขึ้นสำหรับแอปและบริการต่างๆ ของ Android Google ทำเช่นนี้ได้ด้วยการประมวลผลข้อมูลเกี่ยวกับเซ็นเซอร์และสัญญาณไร้สายจากอุปกรณ์ของคุณเป็นระยะเพื่อรวบรวมข้อมูลตำแหน่งของสัญญาณไร้สายจากมวลชน ข้อมูลเหล่านี้มีการใช้โดยไม่ระบุตัวตนของคุณเพื่อปรับปรุงความแม่นยำของตำแหน่งและบริการตามตำแหน่ง รวมถึงเพื่อปรับปรุง จัดหา และดูแลรักษาบริการของเราโดยอิงตามประโยชน์โดยชอบด้วยกฎหมายของ Google และของบุคคลที่สามในการตอบสนองความต้องการของผู้ใช้ <ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติมเกี่ยวกับการใช้ตำแหน่ง<ph name="END_LINK1" /></translation>
 <translation id="5189274947477567401">การเลือกไม่ใช้การแชร์กระบวนการจำเป็นต้องรีสตาร์ทเบราว์เซอร์ เบราว์เซอร์จะรีสตาร์ทตอนนี้</translation>
 <translation id="5189404424758444348">สตีมพังก์</translation>
@@ -8011,6 +8012,7 @@
 <translation id="668599234725812620">เปิด Google Play</translation>
 <translation id="6686490380836145850">ปิดแท็บทางด้านขวา</translation>
 <translation id="6686665106869989887">แท็บถูกย้ายไปทางขวา</translation>
+<translation id="6686676261102452995">คุณเปิดวันนี้</translation>
 <translation id="6686817083349815241">บันทึกรหัสผ่าน</translation>
 <translation id="6687008241368170505">เปลี่ยน PIN ของเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="6687079240787935001">ซ่อน<ph name="MODULE_TITLE" /></translation>
@@ -10126,6 +10128,7 @@
 <translation id="8176529144855282213">หากต้องการเปิดการเข้าถึงไมโครโฟน ให้เปิดสวิตช์ตัวไมโครโฟนบนอุปกรณ์</translation>
 <translation id="8177196903785554304">รายละเอียดเครือข่าย</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{ย้ายแท็บไปที่หน้าต่างใหม่}other{ย้ายแท็บไปที่หน้าต่างใหม่}}</translation>
+<translation id="8178657161962192959">คุณเปิดเมื่อวานนี้</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" /> เครื่องพิมพ์ที่ <ph name="ITEM_POSITION" /> จาก <ph name="NUM_PRINTERS" /></translation>
 <translation id="8180785270975217276">เปิดโหมดประหยัดพลังงานแล้ว</translation>

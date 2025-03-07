@@ -1370,7 +1370,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1936157145127842922">Weergeven in map</translation>
 <translation id="1936931585862840749">Gebruik een cijfer om aan te geven hoeveel exemplaren er moeten worden afgedrukt (1-<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Kan type containerarchitectuur <ph name="ARCHITECTURE_CONTAINER" /> niet importeren met dit apparaat. Dit apparaat is <ph name="ARCHITECTURE_DEVICE" />. Je kunt proberen deze container te herstellen op een ander apparaat of je kunt toegang krijgen tot bestanden in deze containerimage door ze te openen in de app Bestanden.</translation>
-<translation id="1938116692670653897">Huidig kleurenthema</translation>
 <translation id="1938351510777341717">Externe opdracht</translation>
 <translation id="1940221956626514677">Werkbalk aanpassen</translation>
 <translation id="1940546824932169984">Verbonden apparaten</translation>
@@ -1436,6 +1435,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1980168597243156">Ruimtestation</translation>
 <translation id="1981434377190976112">Al je gegevens op alle websites lezen</translation>
 <translation id="1982851102516626421">Je bent uitgelogd</translation>
+<translation id="1983612835086592681">Afgelopen week geopend door jou</translation>
 <translation id="1984417487208496350">Geen beveiliging (niet aanbevolen)</translation>
 <translation id="1984683754853869253">Wil je een nieuw profiel maken voor school?</translation>
 <translation id="198507684520034826">Help</translation>
@@ -5967,6 +5967,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5186788525428341874">Je kunt deze toegangssleutel gebruiken om sneller in te loggen op al je apparaten. Deze wordt opgeslagen in Google Wachtwoordmanager voor <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">Pagina &amp;installeren als app...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188242000716462162">Gedeeld door <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Gebruik de locatie. Sta toe dat ChromeOS- en Android-apps, websites en services met locatierechten de locatie van je apparaat gebruiken. Locatienauwkeurigheid biedt een nauwkeurigere locatie voor Android-apps en -services. Hiervoor verwerkt Google periodiek gegevens over apparaatsensoren en draadloze signalen van je apparaat om bij te dragen aan draadloze signaallocaties op basis van crowdsourcing. Deze worden zonder je te identificeren gebruikt om de locatienauwkeurigheid en services op een fysieke locatie te verbeteren. Ze worden ook gebruikt om de services van Google te verbeteren, aan te bieden en te onderhouden op basis van de gerechtvaardigde belangen van Google en derden om aan de behoeften van gebruikers te voldoen. <ph name="BEGIN_LINK1" />Meer informatie over het gebruik van locatie<ph name="END_LINK1" /></translation>
 <translation id="5189274947477567401">Als je je wilt afmelden voor het delen van processen, start je de browser opnieuw op. Deze browser wordt nu opnieuw opgestart.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
@@ -8010,6 +8011,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="668599234725812620">Google Play openen</translation>
 <translation id="6686490380836145850">Tabbladen aan de rechterkant sluiten</translation>
 <translation id="6686665106869989887">Tabblad naar rechts verplaatst</translation>
+<translation id="6686676261102452995">Vandaag geopend door jou</translation>
 <translation id="6686817083349815241">Je wachtwoord opslaan</translation>
 <translation id="6687008241368170505">Pincode voor Google Wachtwoordmanager wijzigen</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> verbergen</translation>
@@ -10124,6 +10126,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8176529144855282213">Zet de fysieke microfoonschakelaar op je apparaat aan om toegang tot de microfoon aan te zetten</translation>
 <translation id="8177196903785554304">Netwerkdetails</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Tabblad verplaatsen naar nieuw venster}other{Tabbladen verplaatsen naar nieuw venster}}</translation>
+<translation id="8178657161962192959">Gisteren geopend door jou</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Printer <ph name="ITEM_POSITION" /> van <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Energiebesparing staat aan</translation>

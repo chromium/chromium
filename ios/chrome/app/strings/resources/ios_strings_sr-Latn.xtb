@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">Ako nastavite, prihvatate <ph name="BEGIN_LINK" />Uslove korišćenja usluge<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Nikada se ne čuva</translation>
 <translation id="1062138828266376352">PIN nije promenjen. Proverite internet vezu i probajte ponovo</translation>
+<translation id="1072476005125066234">Recenzije na osnovu interesovanja</translation>
 <translation id="1074827084851510304">Izbrisaćete lozinke ({password_count}) i listu sajtova i aplikacija za koje ste odabrali da nikada ne čuvate podatke za prijavljivanje. Nalozi koje ste otvorili za sajtove i aplikacije neće biti izbrisani.</translation>
 <translation id="1076421457278169141">Skenirali ste kôd</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} kartica}one{{count} kartica}few{{count} kartice}other{{count} kartica}}</translation>
@@ -267,6 +268,7 @@
 <translation id="2049727122989709386">Nalozi (<ph name="COUNT" />) koriste istu lozinku</translation>
 <translation id="2059166748188874810">Opština</translation>
 <translation id="2060114494785549741">Izbriši za 1 mesec</translation>
+<translation id="2060638295449304809">Ova adresa se čuva samo na ovom uređaju. Da biste je koristili na drugim uređajima, sačuvajte je na Google nalogu, <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">Birač tipa jedinice</translation>
 <translation id="2067852168641682340">Sačuvaj na ovom nalogu svaki put</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 kartica}one{{count} kartica}few{{count} kartice}other{{count} kartica}}</translation>
@@ -895,6 +897,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4824480232751123840">Zapremina</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} i još 1}one{{domain} i još {count}}few{{domain} i još {count}}other{{domain} i još {count}}}</translation>
 <translation id="4826588772550366629">kamera i mikrofon</translation>
+<translation id="4828431027673677473">Proizvodi na osnovu interesovanja</translation>
 <translation id="4833786495304741580">Automatski šalje Google-u statistiku korišćenja i izveštaje o otkazivanju.</translation>
 <translation id="483689884442613745">Sačuvaj…</translation>
 <translation id="4840495572919996524">Obeleživači, istorija, lozinke i drugi podaci više se neće sinhronizovati sa Google nalogom.</translation>
@@ -1150,6 +1153,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5898848375214731122">Masa</translation>
 <translation id="5899314093904173337">Da biste delili sa ljudima u blizini, dajte im da skeniraju ovaj QR kôd pomoću kamere ili aplikacije za skeniranje QR koda</translation>
 <translation id="5911030830365207728">Google prevodilac</translation>
+<translation id="5917913282764181683">Automatski brišite preuzimanja</translation>
 <translation id="5922999516621365983">Prevucite karticu ovde da biste je zakačili.</translation>
 <translation id="5936006948844852401">Upravljaj prostorom</translation>
 <translation id="5936065461722368675">Prevedi celu stranicu</translation>
@@ -1734,6 +1738,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="828291969289324795">{count,plural, =1{Dodaj karticu u novu grupu}one{Dodaj kartice u novu grupu}few{Dodaj kartice u novu grupu}other{Dodaj kartice u novu grupu}}</translation>
 <translation id="8283172974887967105">Podesi…</translation>
 <translation id="8289930144142009940">Obaveštenja za funkciju <ph name="FEATURE_NAME" /> su isključena</translation>
+<translation id="8290077367744012649">Pratite cene sa kartica</translation>
 <translation id="8299417921174340354">Da biste koristili lozinke, prvo morate da podesite šifru na uređaju.</translation>
 <translation id="8299613349954694191">Otvorite karticu bez arhiviranja da biste privatno pregledali veb.</translation>
 <translation id="8307481894409578819">Otpremanje ovog fajla nije uspelo</translation>

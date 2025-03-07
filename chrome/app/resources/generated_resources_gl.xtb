@@ -1367,7 +1367,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1936157145127842922">Mostrar no cartafol</translation>
 <translation id="1936931585862840749">Utiliza un número para indicar cantas copias se deben imprimir (de 1 a <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Non se pode importar a arquitectura do contedor de tipo <ph name="ARCHITECTURE_CONTAINER" /> con este dispositivo, que é <ph name="ARCHITECTURE_DEVICE" />. Podes tentar restaurar este contedor nun dispositivo diferente ou podes acceder aos ficheiros incluídos na imaxe deste contedor abrindo a aplicación Ficheiros.</translation>
-<translation id="1938116692670653897">Tema de cor actual</translation>
 <translation id="1938351510777341717">Comando externo</translation>
 <translation id="1940221956626514677">Barra de ferramentas personalizada</translation>
 <translation id="1940546824932169984">Dispositivos conectados</translation>

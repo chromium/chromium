@@ -1377,7 +1377,6 @@
 <translation id="1936157145127842922">نمایش در پوشه</translation>
 <translation id="1936931585862840749">از شماره‌ای برای مشخص کردن تعداد کپی‌های چاپ استفاده کنید (۱ تا <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">‏نمی‌توان با این دستگاه که <ph name="ARCHITECTURE_DEVICE" /> است، محتوای با نوع معماری <ph name="ARCHITECTURE_CONTAINER" /> را وارد کرد. می‌توانید این محتوا را در دستگاه دیگری بازیابی کنید، یا اینکه برنامه Files را باز کنید و ازطریق آن به فایل‌های درون این تصویر محتوی دسترسی یابید.</translation>
-<translation id="1938116692670653897">مضمون رنگ‌های فعلی</translation>
 <translation id="1938351510777341717">فرمان خارجی</translation>
 <translation id="1940221956626514677">سفارشی‌سازی نوارابزار</translation>
 <translation id="1940546824932169984">دستگاه‌های متصل</translation>
@@ -1443,6 +1442,7 @@
 <translation id="1980168597243156">ایستگاه فضایی</translation>
 <translation id="1981434377190976112">همه داده‌های شما را در همه وب‌سایت‌ها بخواند</translation>
 <translation id="1982851102516626421">از سیستم خارج شده‌اید</translation>
+<translation id="1983612835086592681">در هفته گذشته آن را باز کردید</translation>
 <translation id="1984417487208496350">بدون محافظت (توصیه نمی‌شود)</translation>
 <translation id="1984683754853869253">می‌خواهید نمایه جدیدی برای تحصیل ایجاد کنید؟</translation>
 <translation id="198507684520034826">راهنما</translation>
@@ -5981,6 +5981,7 @@
 <translation id="5186788525428341874">‏می‌توانید از این گذرکلید برای ورود سریع‌تر به سیستم در همه دستگاه‌هایتان استفاده کنید. این گذرواژه در «مدیر گذرواژه Google» برای <ph name="ACCOUNT_NAME" /> ذخیره خواهد شد.</translation>
 <translation id="5187641678926990264">نصب صفحه به‌عنوان برنامه…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188242000716462162">هم‌رسانی‌شده توسط <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">‏استفاده از مکان. برنامه‌ها، وب‌سایت‌ها، و سرویس‌های Android و ChromeOS که اجازه مکان دارند مجاز می‌شوند از مکان دستگاهتان استفاده کنند. «دقت مکان» مکان دقیق‌تری برای برنامه‌ها و سرویس‌های Android ارائه می‌دهد. برای انجام این کار، Google به‌صورت دوره‌ای اطلاعات مربوط به حسگرهای دستگاه و سیگنال‌های بی‌سیم دستگاه شما را برای انبوه‌سپاری کردن مکان‌های سیگنال بی‌سیم پردازش می‌کند. از این اطلاعات بدون شناسایی شما برای بهبود دقت مکان و خدمات مکان‌مبنا و بهبود، ارائه، و حفظ سرویس‌های Google براساس منافع مشروع Google و اشخاص ثالث به‌منظور برآورده کردن نیازهای کاربران استفاده می‌شود. <ph name="BEGIN_LINK1" />درباره استفاده از مکان بیشتر بدانید<ph name="END_LINK1" /></translation>
 <translation id="5189274947477567401">انصراف دادن از هم‌رسانی پردازش نیاز به بازراه‌اندازی مرورگر دارد. این مرورگر اکنون بازراه‌اندازی می‌شود.</translation>
 <translation id="5189404424758444348">استیم‌پانک</translation>
@@ -8030,6 +8031,7 @@
 <translation id="668599234725812620">‏باز کردن Google Play</translation>
 <translation id="6686490380836145850">بستن برگه‌های سمت راست</translation>
 <translation id="6686665106869989887">برگه به راست منتقل شد</translation>
+<translation id="6686676261102452995">امروز آن را باز کردید</translation>
 <translation id="6686817083349815241">ذخیره گذرواژه‌تان</translation>
 <translation id="6687008241368170505">‏تغییر پین «مدیر گذرواژه Google»</translation>
 <translation id="6687079240787935001">پنهان کردن <ph name="MODULE_TITLE" /></translation>
@@ -10145,6 +10147,7 @@
 <translation id="8176529144855282213">برای روشن کردن دسترسی میکروفون، کلید فیزیکی میکروفون را روی دستگاهتان روشن کنید</translation>
 <translation id="8177196903785554304">جزئیات شبکه</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{انتقال دادن برگه به پنجره جدید}one{انتقال دادن برگه‌ها به پنجره جدید}other{انتقال دادن برگه‌ها به پنجره جدید}}</translation>
+<translation id="8178657161962192959">دیروز آن را باز کردید</translation>
 <translation id="8179976553408161302">ورود</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. چاپگر <ph name="ITEM_POSITION" /> از <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">«بهینه‌سازی انرژی» روشن است</translation>

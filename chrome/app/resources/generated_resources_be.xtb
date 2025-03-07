@@ -593,6 +593,7 @@
 <translation id="1407069428457324124">Цёмная тэма</translation>
 <translation id="1407135791313364759">Адкрыць усе</translation>
 <translation id="140723521119632973">Актывацыя SIM-карты ў мабільнай сетцы</translation>
+<translation id="1407908250220330281">Цяпер гэтым профілем будзе кіраваць ваша арганізацыя</translation>
 <translation id="1407970155431887387">Націсніце, каб адкрыць дыялогавае акно рэдагавання для пункта "<ph name="SEARCH_ENGINE_NAME" />"</translation>
 <translation id="1408504635543854729">Глядзець змесціва прылады ў праграме "Файлы". Змесціва нельга мадыфікаваць: дазволы на яго абмежаваны адміністратарам.</translation>
 <translation id="1408980562518920698">Кіраваць асабістай інфармацыяй</translation>
@@ -803,6 +804,7 @@
 <translation id="1549966883323105187">Як хутчэй выкарыстоўваць захаваныя паролі</translation>
 <translation id="1550656959113606473">Стандартная тэма Chrome</translation>
 <translation id="1552301827267621511">Пашырэнне "<ph name="EXTENSION_NAME" />" зрабіла стандартнай пошукавай сістэмай наступную: <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552357433305859738">Працягнуць іх сінхранізацыю з гэтым профілем і аб’яднаць даныя</translation>
 <translation id="1552752544932680961">Кіраваць пашырэннем</translation>
 <translation id="1553538517812678578">неабмежавана</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /> пра Microsoft 365 на Chromebook.</translation>
@@ -1371,7 +1373,6 @@
 <translation id="1936157145127842922">Паказаць у папцы</translation>
 <translation id="1936931585862840749">Каб указаць, колькі копій друкаваць, увядзіце лік (ад 1 да <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Не ўдалося імпартаваць кантэйнер з тыпам архітэктуры "<ph name="ARCHITECTURE_CONTAINER" />" на прыладу з тыпам "<ph name="ARCHITECTURE_DEVICE" />". Можна паспрабаваць аднавіць гэты кантэйнер на іншай прыладзе або атрымаць доступ да файлаў у кантэйнеры, адкрыўшы яго вобраз у праграме "Файлы".</translation>
-<translation id="1938116692670653897">Бягучая колеравая тэма</translation>
 <translation id="1938351510777341717">Знешняя клавіша Command</translation>
 <translation id="1940221956626514677">Наладзіць панэль інструментаў</translation>
 <translation id="1940546824932169984">Падключаныя прылады</translation>
@@ -1437,6 +1438,7 @@
 <translation id="1980168597243156">Касмічная станцыя</translation>
 <translation id="1981434377190976112">Праглядаць усе вашы даныя на ўсіх вэб-сайтах</translation>
 <translation id="1982851102516626421">Вы выйшлі з уліковага запісу</translation>
+<translation id="1983612835086592681">Вы адкрывалі на мінулым тыдні</translation>
 <translation id="1984417487208496350">Без абароны (не рэкамендуецца)</translation>
 <translation id="1984683754853869253">Стварыць новы профіль для навучання?</translation>
 <translation id="198507684520034826">Даведка</translation>
@@ -2241,6 +2243,7 @@
 <translation id="2530166226437958497">Пошук і выпраўленне непаладак</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Нешта пайшло не так. Не ўдалося ўсталяваць <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Дадатковую інфармацыю шукайце на старонцы g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532117279786409580">Дадатковая інфармацыя</translation>
 <translation id="2532144599248877204">Падаўжае тэрмін службы акумулятара, падтрымліваючы 80-працэнтны ўзровень зарадкі. К таму моманту, калі вы звычайна адключаеце тэлефон ад сілкавання, акумулятар будзе зараджаны поўнасцю.</translation>
 <translation id="2532146950330687938">Прылада падрыхтоўваецца...</translation>
 <translation id="2532198298278778531">Кіраванне абароненай DNS у наладах Chrome OS Flex</translation>
@@ -3140,6 +3143,7 @@
 <translation id="3183139917765991655">Сродак імпарту профілю</translation>
 <translation id="3183143381919926261">Сеткі мабільнай перадачы даных</translation>
 <translation id="3183700187146209259">Не ўдаецца ўсталяваць праграмнае забеспячэнне для сканера</translation>
+<translation id="3183750649832309748">Ваша арганізацыя (<ph name="ACCOUNT_MANAGER" />) зможа праглядаць некаторую інфармацыю, у тым ліку наступную:</translation>
 <translation id="3183944777708523606">Размяшчэнне манітораў</translation>
 <translation id="3184536091884214176">Наладжванне прынтараў CUPS і кіраванне імі. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">Каб змяніць налады бацькоўскага кантролю, увядзіце гэты PIN-код.
@@ -3167,6 +3171,7 @@
 <translation id="3202499879214571401">Прыпыніць трансляцыю экрана на прыладу "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3202578601642193415">самыя новыя</translation>
 <translation id="3204648577100496185">Даныя, звязаныя з дадзенай праграмай, могуць быць выдалены з гэтай прылады</translation>
+<translation id="3204717934117444051">Даныя, захаваныя толькі на гэтай прыладзе, застануцца ў існуючым профілі. Яны не будуць сінхранізавацца з уліковым запісам <ph name="EMAIL" />.</translation>
 <translation id="3207344462385471911">Вы бачыце рэкамендацыі пошукавых запытаў і скідкі, якія могуць быць вам цікавыя (на падставе вашых нядаўніх дзеянняў).
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4334,6 +4339,7 @@
 <translation id="3994878504415702912">&amp;Маштаб</translation>
 <translation id="3995138139523574647">Прылада USB-C (задні порт справа)</translation>
 <translation id="3995963973192100066">Прайграць анімацыю</translation>
+<translation id="3997537546406230684">Стварыць новы профіль для працы і трымаць мае існуючыя даныя асобна</translation>
 <translation id="399788104667917863">Замацаваць на панэлі інструментаў</translation>
 <translation id="3998780825367526465">Паказваць відарысы перадпрагляду ўкладак</translation>
 <translation id="3998976413398910035">Кіраваць прынтарамі</translation>
@@ -5780,6 +5786,7 @@
 <translation id="5059526285558225588">Выберыце, што абагульваць</translation>
 <translation id="5060332552815861872">Даступны 1 прынтар, які можна захаваць.</translation>
 <translation id="5060419232449737386">Налады субцітраў</translation>
+<translation id="5061270227873845372">У вас ёсць <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> і іншыя даныя. Ваша арганізацыя зможа праглядаць гэтыя даныя і кіраваць імі.</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{У гэтай папцы ёсць закладка. Вы ўпэўненыя, што хочаце яе выдаліць?}one{У гэтай папцы ёсць # закладка. Вы ўпэўненыя, што хочаце яе выдаліць?}few{У гэтай папцы ёсць # закладкі. Вы ўпэўненыя, што хочаце яе выдаліць?}many{У гэтай папцы ёсць # закладак. Вы ўпэўненыя, што хочаце яе выдаліць?}other{У гэтай папцы ёсць # закладкі. Вы ўпэўненыя, што хочаце яе выдаліць?}}</translation>
 <translation id="5061531353537614467">Тундра</translation>
 <translation id="5062930723426326933">Уваход не выкананы. Падключыцеся да інтэрнэту і паўтарыце спробу.</translation>
@@ -5963,6 +5970,7 @@
 <translation id="5186788525428341874">Праз гэты ключ доступу вы можаце хутчэй уваходзіць у свае прылады. Ён будзе захаваны ў Менеджары пароляў Google для ўліковага запісу <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Усталяваць старонку як праграму...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188242000716462162">Абагулена карыстальнікам <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Выкарыстанне геаданых. Дайце праграмам, вэб-сайтам і сэрвісам для Android і ChromeOS дазвол на доступ да геаданых прылады. Дзякуючы наладзе "Дакладнасць вызначэння месцазнаходжання" праграмы і сэрвісы для Android атрымліваюць больш дакладныя геаданыя. Для работы гэтай функцыі Google перыядычна апрацоўвае звесткі пра датчыкі прылады і бесправадныя сігналы з вашай прылады і збірае агульную базу месцазнаходжанняў бесправадных сігналаў. Гэта ананімныя даныя, якія выкарыстоўваюцца для павышэння дакладнасці вызначэння месцазнаходжання і паляпшэння сэрвісаў на аснове геалакацыі, а таксама для забеспячэння работы, падтрымкі і паляпшэння нашых сэрвісаў у адпаведнасці з законнымі інтарэсамі Google і старонніх суб’ектаў з мэтай задавальнення патрэб карыстальнікаў. <ph name="BEGIN_LINK1" />Даведацца больш пра выкарыстанне геалакацыі<ph name="END_LINK1" /></translation>
 <translation id="5189274947477567401">Каб адмовіцца ад абагульвання, трэба перазапусціць браўзер. Гэты браўзер будзе перазапушчаны.</translation>
 <translation id="5189404424758444348">Стымпанк</translation>
@@ -8015,6 +8023,7 @@
 <translation id="668599234725812620">Адкрыць Google Play</translation>
 <translation id="6686490380836145850">Закрыць укладкі справа</translation>
 <translation id="6686665106869989887">Укладка перамешчана ўправа</translation>
+<translation id="6686676261102452995">Вы адкрывалі сёння</translation>
 <translation id="6686817083349815241">Захаваць пароль</translation>
 <translation id="6687008241368170505">Змяніць PIN-код Менеджара пароляў Google</translation>
 <translation id="6687079240787935001">Схаваць: <ph name="MODULE_TITLE" /></translation>
@@ -9396,6 +9405,7 @@
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, старонка "<ph name="PAGE_TITLE" />".</translation>
 <translation id="7672726198839739113">Заблакіравана. Выбраны расклад: <ph name="SUNRISE_TIME" /> – <ph name="SUNSET_TIME" />. Змяніць яго можна толькі ўручную.</translation>
 <translation id="7673313156293624327">Журналы ChromeOS Shill (менеджар падключэнняў)</translation>
+<translation id="767381852303199643">Што вы хочаце зрабіць з існуючымі данымі профілю?</translation>
 <translation id="7674416868315480713">Выключыць усе парты, якія пераадрасоўваюцца ў сістэме Linux</translation>
 <translation id="7674537509496907005">Праграм: <ph name="APP_COUNT" /></translation>
 <translation id="7674542105240814168">Доступ да даных геалакацыі забаронены</translation>
@@ -9627,6 +9637,7 @@
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Дададзеныя карыстальнікам словы, якія былі захаваны, з’явяцца тут</translation>
 <translation id="7836577093182643605">Спіс заблакіраваных вамі тэм, якія вы не хочаце абагульваць з сайтамі</translation>
+<translation id="7836745198769390202">У вас ёсць <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> і іншыя даныя. Ваша арганізацыя зможа праглядаць гэтыя даныя і кіраваць імі.</translation>
 <translation id="7836850009646241041">Паспрабуйце дакрануцца да ключа бяспекі яшчэ раз</translation>
 <translation id="7838838951812478896">Не ўдалося захаваць даныя сеткі "<ph name="NETWORK_NAME" />" з прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> адпраўлены на гэту прыладу: <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> адпраўлены на гэту прыладу: <ph name="DEVICE_NAME" />}few{<ph name="ATTACHMENTS" /> адпраўлены на гэту прыладу: <ph name="DEVICE_NAME" />}many{<ph name="ATTACHMENTS" /> адпраўлены на гэту прыладу: <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> адпраўлены на гэту прыладу: <ph name="DEVICE_NAME" />}}</translation>
@@ -10127,6 +10138,7 @@
 <translation id="8176529144855282213">Каб даць доступ да мікрафона, выкарыстайце спецыяльны фізічны пераключальнік на прыладзе</translation>
 <translation id="8177196903785554304">Інфармацыя пра сетку</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Перамясціць укладку ў новае акно}one{Перамясціць укладкі ў новае акно}few{Перамясціць укладкі ў новае акно}many{Перамясціць укладкі ў новае акно}other{Перамясціць укладкі ў новае акно}}</translation>
+<translation id="8178657161962192959">Вы адкрывалі ўчора</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> – <ph name="PRINTER_STATUS" />. Прынтар <ph name="ITEM_POSITION" /> з <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Эканомія энергіі ўключана</translation>
@@ -11390,6 +11402,7 @@
 <translation id="9052404922357793350">Працягнуць блакіроўку</translation>
 <translation id="90528604757378587">Дзеянні ў фонавым рэжыме і работа некаторых візуальных эфектаў (напрыклад, плаўнага прагортвання) могуць быць абмежаваны.</translation>
 <translation id="9053563360605707198">Друк на абодвух баках</translation>
+<translation id="9055810458113674066">У вас ёсць <ph name="NUMBERED_ITEM" /> і іншыя даныя. Ваша арганізацыя зможа праглядаць гэтыя даныя і кіраваць імі.</translation>
 <translation id="9056788090206401048">Для выкарыстання ключа доступу на іншай прыладзе трэба ўключыць Bluetooth. Кіраваць гэтым параметрам можна праз налады.</translation>
 <translation id="9056810968620647706">Супадзенняў не знойдзена.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> запытвае доступ да наступнага змесціва:</translation>

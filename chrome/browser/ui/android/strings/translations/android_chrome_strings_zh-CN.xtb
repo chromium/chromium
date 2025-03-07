@@ -13,6 +13,7 @@
 <translation id="1036348656032585052">关闭</translation>
 <translation id="1045899828449635435">一并清除来自这些网站的数据？</translation>
 <translation id="1049743911850919806">无痕</translation>
+<translation id="1052842760770519282">您的部分密码无法使用</translation>
 <translation id="1058669287135776095">您目前处于离线状态。请检查您的互联网连接状况，然后重试。</translation>
 <translation id="10614374240317010">一律不保存</translation>
 <translation id="107147699690128016">如果您更改文件扩展名，此文件可能会在另一应用中打开并对您的设备造成危害。</translation>
@@ -71,6 +72,7 @@
 <translation id="1269129608791067105">您的历史记录会显示在此处</translation>
 <translation id="1273937721055267968">屏蔽 <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">点按即可展开</translation>
+<translation id="1289129165308566697">查看其他设备上的历史记录</translation>
 <translation id="129553762522093515">最近关闭的标签页</translation>
 <translation id="1298077576058087471">节省高达 60% 的数据流量，阅读今日新闻</translation>
 <translation id="1303339473099049190">找不到该密码。请检查拼写，然后重试。</translation>
@@ -365,6 +367,7 @@
 <translation id="2666092431469916601">顶部</translation>
 <translation id="2669454659051515572">任何使用此设备的用户都能看到已下载的文件</translation>
 <translation id="2677748264148917807">离开</translation>
+<translation id="2687009626279857299">已停止在此设备上运行</translation>
 <translation id="2702516483241149200">新功能：可分享能够定位到此文本的链接</translation>
 <translation id="2705073298859543115">创建摘要</translation>
 <translation id="2708051474374549906">根据系统向 Google 发送的浏览数据，实时地主动防范危险的网站、下载内容和扩展程序</translation>
@@ -950,6 +953,7 @@
 <translation id="5424588387303617268">可用存储空间：<ph name="GIGABYTES" /> GB</translation>
 <translation id="543338862236136125">修改密码</translation>
 <translation id="5433691172869980887">已复制用户名</translation>
+<translation id="5436928407363358055">同步历史记录和标签页，无缝衔接浏览体验</translation>
 <translation id="5438292632479953702">再次下载</translation>
 <translation id="5439191312780166229">基于比“标准保护”更全面的网站数据进行分析，针对危险网站（甚至是 Google 之前未知的网站）向您发出警告。您可以选择忽略 Chrome 警告。</translation>
 <translation id="5441137934526263133">网站无法正常运行？这是因为第三方 Cookie 已被屏蔽</translation>

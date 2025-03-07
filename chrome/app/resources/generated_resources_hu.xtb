@@ -1379,7 +1379,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1936157145127842922">Megjelenítés mappában</translation>
 <translation id="1936931585862840749">Számmal jelezze, hogy hány példányt szeretne nyomtatni (1–<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Nem lehet importálni a tároló <ph name="ARCHITECTURE_CONTAINER" /> architektúratípusát, ugyanis az eszköz architektúrájának típusa <ph name="ARCHITECTURE_DEVICE" />. Megpróbálhatja helyreállítani ezt a tárolót egy másik eszközön, vagy a Fájlok alkalmazás megnyitásával hozzáférhet a tároló lemezképében lévő fájlokhoz.</translation>
-<translation id="1938116692670653897">Jelenlegi színösszeállítás</translation>
 <translation id="1938351510777341717">Külső parancs</translation>
 <translation id="1940221956626514677">Eszköztár személyre szabása</translation>
 <translation id="1940546824932169984">Társított eszközök</translation>
@@ -1445,6 +1444,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1980168597243156">Űrállomás</translation>
 <translation id="1981434377190976112">Az Ön összes adatának olvasása az összes webhelyen</translation>
 <translation id="1982851102516626421">Nincs bejelentkezve</translation>
+<translation id="1983612835086592681">Megnyitotta az elmúlt egy hétben</translation>
 <translation id="1984417487208496350">Nincs védelem (nem javasolt)</translation>
 <translation id="1984683754853869253">Szeretne új profilt létrehozni az iskolához?</translation>
 <translation id="198507684520034826">Súgó</translation>
@@ -5982,6 +5982,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5186788525428341874">Ezzel az azonosítókulccsal gyorsabban bejelentkezhet az eszközein. A rendszer elmenti a fiókhoz (<ph name="ACCOUNT_NAME" />) tartozó Google Jelszókezelőbe.</translation>
 <translation id="5187641678926990264">&amp;Oldal telepítése alkalmazásként…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188242000716462162">Megosztotta: <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Helyadatok használata. Engedélyezheti a helymeghatározási jogosultsággal rendelkező ChromeOS- és Android-alkalmazások, webhelyek és szolgáltatások számára, hogy használják az eszköz helyadatait. A Helymeghatározás pontossága beállítás pontosabb helyadatokat szolgáltat az androidos alkalmazások és szolgáltatások számára. Ebből a célból a Google rendszeresen feldolgozza az eszköz érzékelőitől és a vezeték nélküli jelekből kapott információkat, hogy hozzájáruljon a vezeték nélküli jelek alapján történő közösségi helymeghatározáshoz. Ezek – az Ön azonosítása nélkül – arra szolgálnak, hogy javítsák a helymeghatározás pontosságát és a helyalapú szolgáltatásokat, valamint javítsák, biztosítsák és fenntartsák a Google szolgáltatásait a Google-nak és harmadik feleknek a felhasználói igények kiszolgálására vonatkozó jogos érdekei alapján. <ph name="BEGIN_LINK1" />További információ a helyadatok használatáról.<ph name="END_LINK1" /></translation>
 <translation id="5189274947477567401">A folyamatmegosztás letiltásához újra kell indítania a böngészőt. A böngésző most újraindul.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
@@ -8030,6 +8031,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="668599234725812620">A Google Play megnyitása</translation>
 <translation id="6686490380836145850">Jobbra lévő lapok bezárása</translation>
 <translation id="6686665106869989887">Lap jobbra helyezve</translation>
+<translation id="6686676261102452995">Ma nyitotta meg</translation>
 <translation id="6686817083349815241">Jelszó mentése</translation>
 <translation id="6687008241368170505">A Google Jelszókezelő PIN-kódjának módosítása</translation>
 <translation id="6687079240787935001">A következők elrejtése: <ph name="MODULE_TITLE" /></translation>
@@ -10145,6 +10147,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8176529144855282213">A mikrofonhoz való hozzáférés engedélyezéséhez kapcsolja be az eszköz mikrofonjának fizikai kapcsolóját</translation>
 <translation id="8177196903785554304">Hálózat részletei</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Lap áthelyezése új ablakba}other{Lapok áthelyezése új ablakba}}</translation>
+<translation id="8178657161962192959">Tegnap nyitotta meg</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. <ph name="NUM_PRINTERS" />/<ph name="ITEM_POSITION" />. nyomtató.</translation>
 <translation id="8180785270975217276">Az energiatakarékos mód be van kapcsolva</translation>

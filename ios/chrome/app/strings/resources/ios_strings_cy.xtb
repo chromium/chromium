@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">Drwy barhau, rydych yn cytuno i'r <ph name="BEGIN_LINK" />Telerau Gwasanaeth<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Erioed wedi'i gadw</translation>
 <translation id="1062138828266376352">Ni chafodd eich PIN ei newid. Gwiriwch eich cysylltiad rhyngrwyd a rhowch gynnig arall arni</translation>
+<translation id="1072476005125066234">Adolygiadau yn seiliedig ar eich diddordebau</translation>
 <translation id="1074827084851510304">Rydych ar fin dileu {password_count} o gyfrineiriau a'r rhestr o wefannau ac apiau y gwnaethoch ddewis peidio byth â chadw mewngofnodi. Ni fydd unrhyw gyfrif a grëwyd gennych ar gyfer gwefannau ac apiau yn cael ei ddileu.</translation>
 <translation id="1076421457278169141">Mae'r cod wedi'i sganio</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} tab}zero{{count} tab}two{{count} dab}few{{count} tab}many{{count} tab}other{{count} tab}}</translation>
@@ -267,6 +268,7 @@
 <translation id="2049727122989709386">Mae <ph name="COUNT" /> cyfrif yn defnyddio'r un cyfrinair</translation>
 <translation id="2059166748188874810">Bwrdeistref</translation>
 <translation id="2060114494785549741">Dileu mewn 1 mis</translation>
+<translation id="2060638295449304809">Mae'r cyfeiriad hwn yn cael ei gadw i'r ddyfais hon yn unig. I'w ddefnyddio ar eich dyfeisiau eraill, cadwch ef yn eich Cyfrif Google, <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">Dewisydd math o uned</translation>
 <translation id="2067852168641682340">Cadw i'r cyfrif hwn bob tro</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 tab}zero{{count} tab}two{{count} dab}few{{count} tab}many{{count} tab}other{{count} tab}}</translation>
@@ -895,6 +897,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4824480232751123840">Lefel y sain</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ac 1 arall}two{{domain} a {count} arall}few{{domain} a {count} arall}many{{domain} a {count} arall}other{{domain} a {count} arall}}</translation>
 <translation id="4826588772550366629">camera a meicroffon</translation>
+<translation id="4828431027673677473">Cynhyrchion sy'n seiliedig ar eich diddordebau</translation>
 <translation id="4833786495304741580">Yn anfon ystadegau defnydd ac adroddiadau damweiniau at Google yn awtomatig.</translation>
 <translation id="483689884442613745">Cadw…</translation>
 <translation id="4840495572919996524">Ni fydd eich nodau tudalen, eich hanes, eich cyfrineiriau, a rhagor yn cael eu cysoni i'ch Cyfrif Google mwyach.</translation>
@@ -1734,6 +1737,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="828291969289324795">{count,plural, =1{Ychwanegu'r Tab at Grŵp Newydd}zero{Ychwanegu'r Tabiau at Grŵp Newydd}two{Ychwanegu'r Tabiau at Grŵp Newydd}few{Ychwanegu'r Tabiau at Grŵp Newydd}many{Ychwanegu'r Tabiau at Grŵp Newydd}other{Ychwanegu'r Tabiau at Grŵp Newydd}}</translation>
 <translation id="8283172974887967105">Gosod…</translation>
 <translation id="8289930144142009940">Hysbysiadau <ph name="FEATURE_NAME" /> wedi'u diffodd</translation>
+<translation id="8290077367744012649">Olrhain prisiau o'ch tabiau</translation>
 <translation id="8299417921174340354">I ddefnyddio cyfrineiriau, rhaid i chi osod cod pas ar eich dyfais yn gyntaf.</translation>
 <translation id="8299613349954694191">Gallwch agor tab Anhysbys i bori'r we yn breifat.</translation>
 <translation id="8307481894409578819">Ni ellir lawrlwytho'r ffeil hon</translation>

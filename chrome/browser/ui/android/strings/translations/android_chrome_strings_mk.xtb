@@ -270,6 +270,7 @@
 <translation id="2259659629660284697">Извезување лозинки…</translation>
 <translation id="2276696007612801991">Најавете се на сметката на Google за да ги проверите лозинките</translation>
 <translation id="2278052315791335171">Со бришењето на лозинкава нема да се избрише вашата сметка на <ph name="SITE" /></translation>
+<translation id="2281243904606300427"><ph name="TAB_TITLE" />, избрана картичка „Инкогнито“</translation>
 <translation id="2286841657746966508">Адреса за наплата</translation>
 <translation id="228704530595896923">Список со опции за споделување.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Погледнете <ph name="TABS_COUNT_ONE" /> картичка}one{Погледнете <ph name="TABS_COUNT_MANY" /> картичка}other{Погледнете <ph name="TABS_COUNT_MANY" /> картички}}</translation>
@@ -329,6 +330,7 @@
 <translation id="2534155362429831547">Избришани се <ph name="NUMBER_OF_ITEMS" /> ставки</translation>
 <translation id="253498598929009420">Сајтот ќе може да ги гледа содржините на вашиот екран</translation>
 <translation id="2536728043171574184">Се прикажува офлајн копија на страницата</translation>
+<translation id="2542548955756682219"><ph name="TAB_TITLE" />, картичка</translation>
 <translation id="2546283357679194313">Колачиња и податоци од сајтот</translation>
 <translation id="2547843573592965873">Вашето заклучување на профилот ги штити вашите податоци во автомобилот, како и лозинките, плаќањата и другите работи зачувани во вашата сметка на Google.</translation>
 <translation id="254973855621628293">Лозинките се зачувани на овој уред</translation>
@@ -472,6 +474,7 @@
 <translation id="3169472444629675720">Откриј</translation>
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 лозинка и други ставки се зачувани само на овој уред. За да ги користите на другите ваши уреди, зачувајте ги во вашата сметка на Google, <ph name="ACCOUNT_EMAIL" />.}one{# лозинка и други ставки се зачувани само на овој уред. За да ги користите на другите ваши уреди, зачувајте ги во вашата сметка на Google, <ph name="ACCOUNT_EMAIL" />.}other{# лозинки и други ставки се зачувани само на овој уред. За да ги користите на другите ваши уреди, зачувајте ги во вашата сметка на Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="3187472288455401631">Мерење реклами</translation>
+<translation id="3189635831478931757">Група картички <ph name="GROUP_TITLE" /></translation>
 <translation id="3207960819495026254">Обележано</translation>
 <translation id="3208584281581115441">Провери сега</translation>
 <translation id="3211426585530211793">Избришана е ставката <ph name="ITEM_TITLE" /></translation>
@@ -748,6 +751,7 @@
 <translation id="4523326818319942067">минатиот час</translation>
 <translation id="452750746583162491">Прегледајте ги синхронизираните податоци</translation>
 <translation id="4532845899244822526">Избери папка</translation>
+<translation id="4535755320005483982">Споделена група картички <ph name="GROUP_TITLE" /></translation>
 <translation id="4543131175509360848">Нема лист со криптографски клучеви</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> картичка}one{<ph name="TAB_COUNT_MANY" /> картичка, <ph name="TAB_COUNT_INCOGNITO" /> инкогнито}other{<ph name="TAB_COUNT_MANY" /> картички, <ph name="TAB_COUNT_INCOGNITO" /> инкогнито}}</translation>
 <translation id="4558311620361989323">Кратенки на веб-страница</translation>
@@ -1249,6 +1253,7 @@
 <translation id="6756507620369789050">Споделете повратни информации</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="676305334223455055">Најавете се за да добивате содржини согласно со вашите интереси</translation>
+<translation id="6764137532716892442">Споделена група картички <ph name="GROUP_TITLE" /> со нова активност</translation>
 <translation id="6767294960381293877">Списокот со уреди за споделување картичка е отворен на половина екран.</translation>
 <translation id="6785476624617658922">Дополнителни услови за користење на Chrome и Chrome OS</translation>
 <translation id="6795633245022906657">Брзо отворете нова картичка. За да ја измените кратенкава, одете во „Поставки“.</translation>
@@ -1315,6 +1320,7 @@
 <translation id="6965382102122355670">Во ред</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Погледнете <ph name="TABS_COUNT_ONE" /> картичка со нова активност во споделените групи картички}one{Погледнете <ph name="TABS_COUNT_MANY" /> картичка со нова активност во споделените групи картички}other{Погледнете <ph name="TABS_COUNT_MANY" /> картички со нова активност во споделените групи картички}}</translation>
 <translation id="6971862865055170158">Не одобрувај</translation>
+<translation id="6976223255612495095"><ph name="TAB_TITLE" />, нова или ажурирана картичка</translation>
 <translation id="6978717888677691380">Сајтови што сте ги блокирале</translation>
 <translation id="6979737339423435258">Целосната историја</translation>
 <translation id="6983306615164277634">Може и да ја допрете и задржите лентата за адреси за да ја промените позицијата.</translation>
@@ -1708,6 +1714,7 @@
 <translation id="8676276370198826499">Регистрирајте се на <ph name="SITE_ETLD_PLUS_ONE" /> со <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Потврди за најавување</translation>
 <translation id="8683039184091909753">слика</translation>
+<translation id="8688183792442786085"><ph name="TAB_TITLE" />, избрана картичка</translation>
 <translation id="869891660844655955">Рок на важност</translation>
 <translation id="8699120352855309748">Не нуди превод за овие јазици</translation>
 <translation id="8712637175834984815">Сфатив</translation>
@@ -1841,4 +1848,5 @@
 <translation id="988091779042748639">Затворете ги сите картички „Инкогнито“ за да се избрише историјата на прелистувањето во режимот „Инкогнито“ од уредот.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> картички</translation>
 <translation id="996149300115483134">Менито на картичката за активност е затворено</translation>
+<translation id="99907655649633293"><ph name="TAB_TITLE" />, картичка „Инкогнито“</translation>
 </translationbundle>

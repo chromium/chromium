@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">继续操作即表示您同意遵守<ph name="BEGIN_LINK" />《服务条款》<ph name="END_LINK" />。</translation>
 <translation id="10614374240317010">一律不保存</translation>
 <translation id="1062138828266376352">PIN 码未更改。请检查网络连接，然后重试</translation>
+<translation id="1072476005125066234">根据您的兴趣推荐的评价</translation>
 <translation id="1074827084851510304">您即将删除 {password_count} 个密码以及您选择一律不保存登录信息的网站和应用列表。您为网站和应用创建的任何账号都不会被删除。</translation>
 <translation id="1076421457278169141">已扫描代码</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} 个标签页}other{{count} 个标签页}}</translation>
@@ -267,6 +268,7 @@
 <translation id="2049727122989709386">有 <ph name="COUNT" /> 个账号在使用同一密码</translation>
 <translation id="2059166748188874810">自治市</translation>
 <translation id="2060114494785549741">1 个月后删除</translation>
+<translation id="2060638295449304809">此地址仅会保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 <ph name="USER_EMAIL" /> 中</translation>
 <translation id="20638360198452347">单位类型选择器</translation>
 <translation id="2067852168641682340">每次都保存到此账号</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 个标签页}other{{count} 个标签页}}</translation>
@@ -895,6 +897,7 @@
 <translation id="4824480232751123840">体积</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} 以及另外 1 个}other{{domain} 以及另外 {count} 个}}</translation>
 <translation id="4826588772550366629">摄像头和麦克风</translation>
+<translation id="4828431027673677473">根据您的兴趣推荐的商品</translation>
 <translation id="4833786495304741580">自动将使用情况统计信息和崩溃报告发送至 Google。</translation>
 <translation id="483689884442613745">保存…</translation>
 <translation id="4840495572919996524">您的书签、历史记录、密码和其他信息将不再同步到您的 Google 账号中。</translation>
@@ -1734,6 +1737,7 @@
 <translation id="828291969289324795">{count,plural, =1{在新标签页分组中添加标签页}other{在新标签页分组中添加标签页}}</translation>
 <translation id="8283172974887967105">设置…</translation>
 <translation id="8289930144142009940">“<ph name="FEATURE_NAME" />”通知已关闭</translation>
+<translation id="8290077367744012649">跟踪标签页上的价格</translation>
 <translation id="8299417921174340354">您必须先在设备上设置密码，才能使用密码。</translation>
 <translation id="8299613349954694191">打开一个无痕式标签页即可私密地浏览网页。</translation>
 <translation id="8307481894409578819">无法上传此文件</translation>

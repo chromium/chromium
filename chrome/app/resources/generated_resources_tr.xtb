@@ -1368,7 +1368,6 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1936157145127842922">Klasörde Göster</translation>
 <translation id="1936931585862840749">Yazdırılacak kopya sayısını göstermek için bir sayı (1-<ph name="MAX_COPIES" /> arası) kullanın.</translation>
 <translation id="1937774647013465102">Bu cihaz (<ph name="ARCHITECTURE_DEVICE" />) ile kapsayıcı mimarisinin türü <ph name="ARCHITECTURE_CONTAINER" /> içe aktarılamıyor. Bu kapsayıcıyı farklı bir cihaza geri yüklemeyi deneyebilir veya Files uygulamasını açarak bu kapsayıcı görüntüsündeki dosyalara erişebilirsiniz.</translation>
-<translation id="1938116692670653897">Mevcut renk teması</translation>
 <translation id="1938351510777341717">Harici Komut</translation>
 <translation id="1940221956626514677">Araç çubuğunu özelleştir</translation>
 <translation id="1940546824932169984">Bağlı cihazlar</translation>
@@ -3804,6 +3803,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3670229581627177274">Bluetooth'u aç</translation>
 <translation id="3670480940339182416">Siteler, V8 optimize ediciyi kullanabilir</translation>
 <translation id="3671764914317109892">Günlük dil kullanarak tarama geçmişinizde arama yapabilirsiniz. Ayrıca, tarama geçmişinize göre soru sorabilir ve yanıt alabilirsiniz.</translation>
+<translation id="3671982238795754537">Geçiş anahtarları hakkında daha fazla bilgi edinin</translation>
 <translation id="3672681487849735243">Bir fabrika hatası saptandı</translation>
 <translation id="3673097791729989571">Oturum açma işlemini <ph name="SAML_DOMAIN" /> barındırıyor</translation>
 <translation id="3673287357837016374">PIN'iniz güncellendi</translation>
@@ -4720,6 +4720,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4289540628985791613">Genel bakış</translation>
 <translation id="428963538941819373">Bu siteler, <ph name="HOST" /> sitesinde gezinirken hakkınızda kaydettikleri bilgileri kullanabilir</translation>
 <translation id="4289732974614035569">PIN seçin</translation>
+<translation id="4290526909608432059">Chrome uygulamalarının desteği yakında sonlandırılacak. Kullanabileceğiniz seçenekler hakkında bilgi edinmek için uygulama geliştiriciyle veya BT destek ekibinizle iletişime geçin.</translation>
 <translation id="4290791284969893584">Bir sayfa kapatıldıktan sonra, başladığınız görevler tamamlanmayabilir</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> üye</translation>
 <translation id="4290898381118933198">Sayfa değiştirmek için hızla kaydırın</translation>
@@ -8515,6 +8516,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Seri bağlantı noktası bağlandı</translation>
 <translation id="7033616203784997570">Yapacağınız giriş en fazla 62 karakter olabilir</translation>
 <translation id="7034692021407794547">Faturalandırma Yönetimi ayrıcalıklarına sahip yönetici, önce Yönetici konsolunun Google Meet Hardware bölümünde Google Meet Hardware Hizmet Şartları'nı kabul etmelidir.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" />, hesabınız için geçiş anahtarı oluşturdu. Geçiş anahtarları, hem daha hızlı hem de güvenle oturum açabileceğiniz bir yöntemdir ve <ph name="USER" /> için Google Şifre Yöneticisi'ne kaydedilir. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Linux için <ph name="DISK_SIZE" /> alan olması önerilir. Boş alanı artırmak için cihazdan bazı dosyaları silin.</translation>
 <translation id="7037157058268992880">PIN'i unuttum</translation>
 <translation id="7037509989619051237">Önizlenecek metin</translation>
@@ -10556,6 +10558,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8477178913400731244">Verileri sil</translation>
 <translation id="8477241577829954800">Geçersiz kılındı</translation>
 <translation id="8477384620836102176">&amp;Genel</translation>
+<translation id="8477446666255316832">Bir dahaki sefere daha hızlı oturum açın</translation>
 <translation id="8479176401914456949">Geçersiz kod. Lütfen tekrar deneyin.</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> firmasından bilinmeyen cihaz</translation>
 <translation id="8481187309597259238">USB İznini Onaylayın</translation>

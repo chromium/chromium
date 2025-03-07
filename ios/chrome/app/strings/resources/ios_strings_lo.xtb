@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">ໂດຍການສືບຕໍ່, ແມ່ນຖືວ່າທ່ານຍອມຮັບ <ph name="BEGIN_LINK" />ຂໍ້ກຳນົດບໍລິການ<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">ຢ່າ​ບັນທຶກ</translation>
 <translation id="1062138828266376352">PIN ຂອງທ່ານບໍ່ໄດ້ຮັບການປ່ຽນແປງ. ກະລຸນາກວດສອບການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານແລ້ວລອງໃໝ່</translation>
+<translation id="1072476005125066234">ຄຳຕິຊົມທີ່ອີງຕາມຄວາມສົນໃຈຂອງທ່ານ</translation>
 <translation id="1074827084851510304">ທ່ານກຳລັງຈະລຶບລະຫັດຜ່ານ {password_count} ລາຍການ ພ້ອມທັງລາຍຊື່ເວັບໄຊ ແລະ ແອັບທີ່ທ່ານເລືອກທີ່ຈະບໍ່ບັນທຶກຂໍ້ມູນການເຂົ້າສູ່ລະບົບ. ລະບົບຈະບໍ່ລຶບບັນຊີໃດກໍຕາມທີ່ທ່ານສ້າງໄວ້ສຳລັບເວັບໄຊ ແລະ ແອັບ.</translation>
 <translation id="1076421457278169141">ສະແກນລະຫັດແລ້ວ</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} ແຖບ}other{{count} ແຖບ}}</translation>
@@ -267,6 +268,7 @@
 <translation id="2049727122989709386">ມີ <ph name="COUNT" /> ບັນຊີໃຊ້ລະຫັດຜ່ານດຽວກັນ</translation>
 <translation id="2059166748188874810">ເທດສະບານ</translation>
 <translation id="2060114494785549741">ລຶບໃນ 1 ເດືອນ</translation>
+<translation id="2060638295449304809">ທີ່ຢູ່ນີ້ຈະຖືກບັນທຶກໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ. ເພື່ອນຳໃຊ້ຢູ່ອຸປະກອນເຄື່ອງອື່ນໆຂອງທ່ານ, ໃຫ້ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">ຕົວເລືອກປະເພດຫົວໜ່ວຍ</translation>
 <translation id="2067852168641682340">ບັນທຶກໃສ່ໃນບັນຊີນີ້ທຸກເທື່ອ</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 ແຖບ}other{{count} ແຖບ}}</translation>
@@ -895,6 +897,7 @@
 <translation id="4824480232751123840">ບໍລິມາດ</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ແລະ ອີກ 1 ລາຍການ}other{{domain} ແລະ ອີກ {count} ລາຍການ}}</translation>
 <translation id="4826588772550366629">ກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນ</translation>
+<translation id="4828431027673677473">ຜະລິດຕະພັນທີ່ອີງຕາມຄວາມສົນໃຈຂອງທ່ານ</translation>
 <translation id="4833786495304741580">ສົ່ງສະຖິຕິການໃຊ້ ແລະ ລາຍງານການຂັດຂ້ອງໃຫ້ Google ໂດຍອັດຕະໂນມັດ.</translation>
 <translation id="483689884442613745">ບັນທຶກ…</translation>
 <translation id="4840495572919996524">ບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານຂອງທ່ານ ແລະ ອື່ນໆຈະບໍ່ຊິ້ງຂໍ້ມູນກັບບັນຊີ Google ຂອງທ່ານອີກຕໍ່ໄປ.</translation>
@@ -1735,6 +1738,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="828291969289324795">{count,plural, =1{ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່}other{ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່}}</translation>
 <translation id="8283172974887967105">ຕັ້ງ…</translation>
 <translation id="8289930144142009940">ການແຈ້ງເຕືອນ <ph name="FEATURE_NAME" /> ປິດແລ້ວ</translation>
+<translation id="8290077367744012649">ຕິດຕາມລາຄາຈາກແຖບຂອງທ່ານ</translation>
 <translation id="8299417921174340354">ເພື່ອໃຊ້ລະຫັດຜ່ານ, ທ່ານຕ້ອງຕັ້ງລະຫັດຜ່ານໃນອຸປະກອນຂອງທ່ານກ່ອນ.</translation>
 <translation id="8299613349954694191">ເປີດແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນເພື່ອທ່ອງເວັບແບບສ່ວນຕົວ.</translation>
 <translation id="8307481894409578819">ບໍ່ສາມາດອັບໂຫຼດໄຟລ໌ນີ້ໄດ້</translation>

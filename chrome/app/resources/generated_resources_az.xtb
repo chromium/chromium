@@ -1366,7 +1366,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1936157145127842922">Qovluqda göstərin</translation>
 <translation id="1936931585862840749">Neçə nüsxə çap etmək istədiyinizi rəqəm ilə (1-<ph name="MAX_COPIES" /> arasında) göstərin</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_CONTAINER" /> konteyner forma növü <ph name="ARCHITECTURE_DEVICE" /> cihazı ilə import edilə bilməz. Bu konteyneri fərqli cihaza bərpa edə, yaxud onu Fayl tətbiqində açaraq konteyner şəklin daxilindəki faylları əldə edə bilərsiniz.</translation>
-<translation id="1938116692670653897">Cari rəng teması</translation>
 <translation id="1938351510777341717">Xarici Əmr</translation>
 <translation id="1940221956626514677">Alətlər panelini fərdiləşdirin</translation>
 <translation id="1940546824932169984">Qoşulmuş cihazlar</translation>
@@ -1432,6 +1431,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1980168597243156">Kosmik stansiya</translation>
 <translation id="1981434377190976112">Bütün veb saytlarda bütün datanızı oxumaq</translation>
 <translation id="1982851102516626421">Çıxış etdiniz</translation>
+<translation id="1983612835086592681">Keçən həftə açdınız</translation>
 <translation id="1984417487208496350">Qoruma yoxdur (tövsiyə edilmir)</translation>
 <translation id="1984683754853869253">Məktəb üçün yeni profil yaratmaq istəyirsiniz?</translation>
 <translation id="198507684520034826">Yardım</translation>
@@ -5968,6 +5968,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5186788525428341874">Cihazlarda daha sürətlə daxil olmaq üçün bu giriş açarından istifadə edə bilərsiniz. <ph name="ACCOUNT_NAME" /> üçün Google Parol Menecerində yadda saxlanılacaq.</translation>
 <translation id="5187641678926990264">&amp;Səhifəni tətbiq kimi quraşdırın...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188242000716462162"><ph name="USER_NAME" /> tərəfindən paylaşılıb</translation>
 <translation id="5188648870018555788">Məkandan istifadə. Məkan icazəsi olan ChromeOS, habelə Android tətbiq, veb-sayt və xidmətlərinə cihaz məkanından istifadə etmək icazəsi verin. Məkan Dəqiqliyi Android tətbiq və xidmətləri üçün daha dəqiq məkan təmin edir. Bunun üçün Google simsiz siqnal məkanları üzrə kütləvi qaynaq yaratmaq məqsədilə cihaz sensorları və cihazdan gələn simsiz siqnallar haqqında məlumatları vaxtaşırı emal edir. Bu məlumatlar kimliyinizi müəyyənləşdirmədən məkan dəqiqliyini və məkan əsaslı xidmətləri təkmilləşdirmək, Google xidmətlərini Google və üçüncü tərəflərin qanuni maraqlarına uyğun olmaqla istifadəçilərin ehtiyaclarına xidmət edəcək şəkildə təkmilləşdirmək, təmin etmək və davam etdirmək üçün istifadə edilir. <ph name="BEGIN_LINK1" />Məkandan istifadə haqqında ətraflı məlumat əldə edin<ph name="END_LINK1" /></translation>
 <translation id="5189274947477567401">Proses paylaşımından imtina etmək üçün brauzer yenidən başladılmalıdır. Bu brauzer indi yenidən başlayacaq.</translation>
 <translation id="5189404424758444348">Stimpank</translation>
@@ -8013,6 +8014,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="668599234725812620">Google Play'i açın</translation>
 <translation id="6686490380836145850">Sağ panelləri bağlayın</translation>
 <translation id="6686665106869989887">Tab sağa köçürüldü</translation>
+<translation id="6686676261102452995">Bu gün açdınız</translation>
 <translation id="6686817083349815241">Parolunuzu yadda saxlayın</translation>
 <translation id="6687008241368170505">Google Parol Meneceri PIN-ni dəyişin</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> modulunu gizlədin</translation>
@@ -10127,6 +10129,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8176529144855282213">Mikrofon girişini aktiv etmək üçün cihazınızda fiziki mikrofon keçiricisini aktiv edin</translation>
 <translation id="8177196903785554304">Şəbəkə Detalları</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Tabeli yeni pəncərəyə köçürün}other{Tabelləri yeni pəncərəyə köçürün}}</translation>
+<translation id="8178657161962192959">Dünən açdınız</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Printer <ph name="ITEM_POSITION" />/<ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Enerjiyə Qənaət aktivdir</translation>

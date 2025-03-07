@@ -1381,7 +1381,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1936157145127842922">Ipakita sa Folder</translation>
 <translation id="1936931585862840749">Gumamit ng numero para isaad kung gaano karaming kopya ang ipi-print (1 hanggang <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Hindi puwedeng mag-import ng uri ng architecture ng container na <ph name="ARCHITECTURE_CONTAINER" /> sa device na ito na <ph name="ARCHITECTURE_DEVICE" />. Maaari mong subukang i-restore ang container na ito sa ibang device, o puwede mong i-access ang mga file sa loob ng ganitong larawan ng container sa pamamagitan ng pagbukas sa app na Mga File.</translation>
-<translation id="1938116692670653897">Kasalukuyang tema ng kulay</translation>
 <translation id="1938351510777341717">External na Command</translation>
 <translation id="1940221956626514677">I-customize ang toolbar</translation>
 <translation id="1940546824932169984">Mga nakakonektang device</translation>
@@ -1447,6 +1446,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1980168597243156">Space station</translation>
 <translation id="1981434377190976112">Basahin ang lahat ng iyong data sa lahat ng website</translation>
 <translation id="1982851102516626421">Naka-sign out ka</translation>
+<translation id="1983612835086592681">Binuksan mo sa nakalipas na linggo</translation>
 <translation id="1984417487208496350">Walang proteksyon (hindi inirerekomenda)</translation>
 <translation id="1984683754853869253">Gusto mo bang gumawa ng bagong profile para sa paaralan?</translation>
 <translation id="198507684520034826">Tulong</translation>
@@ -5985,6 +5985,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5186788525428341874">Puwede mong gamitin ang passkey na ito para mas mabilis na makapag-sign sa lahat ng iyong device. Mase-save ito sa Google Password Manager para sa <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;I-install ang Page bilang App...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188242000716462162">Na-share ni <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Gumamit ng lokasyon. Payagan ang mga app, website, at serbisyo ng ChromeOS at Android na may pahintulot sa lokasyon na gamitin ang lokasyon ng iyong device. Nagbibigay ang Katumpakan ng Lokasyon ng mas tumpak na lokasyon para sa mga app at serbisyo ng Android. Para magawa ito, pana-panahong pinoproseso ng Google ang impormasyon tungkol sa mga sensor ng device at wireless na signal mula sa iyong device para i-crowdsource ang mga lokasyon ng wireless na signal. Ginagamit ang mga ito nang hindi ibinibigay ang pagkakakilanlan mo para mapahusay ang katumpakan ng lokasyon at mga serbisyong batay sa lokasyon, at para mapahusay, maibigay, at mapanatili ang mga serbisyo ng Google batay sa mga lehitimong interes ng Google at mga third party para matugunan ang mga pangangailangan ng mga user. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa paggamit ng lokasyon<ph name="END_LINK1" /></translation>
 <translation id="5189274947477567401">Nire-require sa pag-opt out sa pag-share ng proseso ang pag-restart ng browser. Magre-restart na ngayon ang browser na ito.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
@@ -8034,6 +8035,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="668599234725812620">Buksan ang Google Play</translation>
 <translation id="6686490380836145850">Isara ang mga tab sa kanan</translation>
 <translation id="6686665106869989887">Inilipat sa kanan ang tab</translation>
+<translation id="6686676261102452995">Binuksan mo ngayong araw</translation>
 <translation id="6686817083349815241">I-save ang iyong password</translation>
 <translation id="6687008241368170505">Palitan ang PIN sa Google Password Manager</translation>
 <translation id="6687079240787935001">Itago ang <ph name="MODULE_TITLE" /></translation>
@@ -10150,6 +10152,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8176529144855282213">Para i-on ang access sa mikropono, i-on ang pisikal na switch ng mikropono sa iyong device</translation>
 <translation id="8177196903785554304">Mga Detalye ng Network</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Ilipat ang tab sa bagong window}one{Maglipat ng mga tab sa bagong window}other{Maglipat ng mga tab sa bagong window}}</translation>
+<translation id="8178657161962192959">Binuksan mo kahapon</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Printer <ph name="ITEM_POSITION" /> ng <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Na-on ang Energy Saver</translation>

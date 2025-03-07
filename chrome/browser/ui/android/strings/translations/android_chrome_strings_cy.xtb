@@ -13,6 +13,7 @@
 <translation id="1036348656032585052">Diffodd</translation>
 <translation id="1045899828449635435">Clirio data o'r gwefannau hyn hefyd?</translation>
 <translation id="1049743911850919806">Anhysbys</translation>
+<translation id="1052842760770519282">Nid yw rhai o'ch cyfrineiriau yn hygyrch</translation>
 <translation id="1058669287135776095">Rydych chi all-lein. Gwiriwch eich cysylltiad rhyngrwyd a rhowch gynnig arall arni.</translation>
 <translation id="10614374240317010">Erioed wedi'i gadw</translation>
 <translation id="107147699690128016">Os byddwch yn newid yr estyniad ffeil, gall y ffeil agor mewn apiau gwahanol ac mae'n bosib y bydd yn berygl i'ch dyfais.</translation>
@@ -71,6 +72,7 @@
 <translation id="1269129608791067105">Byddwch yn gweld eich hanes yma</translation>
 <translation id="1273937721055267968">Rhwystro <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Tapiwch i ehangu</translation>
+<translation id="1289129165308566697">Gweld eich hanes ar ddyfeisiau eraill</translation>
 <translation id="129553762522093515">Wedi'u cau'n ddiweddar</translation>
 <translation id="1298077576058087471">Arbedwch hyd at 60% o ddata, darllenwch newyddion heddiw</translation>
 <translation id="1303339473099049190">Methu â dod o hyd i'r cyfrinair hwnnw. Gwiriwch eich sillafu a rhowch gynnig arall arni.</translation>
@@ -365,6 +367,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2666092431469916601">Brig</translation>
 <translation id="2669454659051515572">Gall unrhyw un sy'n defnyddio'r ddyfais hon weld ffeiliau sydd wedi'u lawrlwytho</translation>
 <translation id="2677748264148917807">Gadael</translation>
+<translation id="2687009626279857299">Wedi stopio gweithio ar y ddyfais hon</translation>
 <translation id="2702516483241149200">Newydd: gallwch rannu dolen sy'n sgrolio i'r testun hwn</translation>
 <translation id="2705073298859543115">Creu crynodeb</translation>
 <translation id="2708051474374549906">Amddiffyniad amser real, rhagweithiol yn erbyn gwefannau, lawrlwythiadau ac estyniadau peryglus sy'n seiliedig ar anfon eich data pori i Google</translation>
@@ -950,6 +953,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="5424588387303617268">Mae <ph name="GIGABYTES" /> GB ar gael</translation>
 <translation id="543338862236136125">Golygu cyfrinair</translation>
 <translation id="5433691172869980887">Copïwyd enw defnyddiwr</translation>
+<translation id="5436928407363358055">I barhau'n hawdd o ble'r oeddech chi, cysonwch eich hanes a'ch tabiau</translation>
 <translation id="5438292632479953702">Lawrlwytho eto</translation>
 <translation id="5439191312780166229">Yn eich rhybuddio am wefannau peryglus, hyd yn oed rhai nad oedd Google yn gwybod amdanynt o'r blaen, trwy ddadansoddi mwy o ddata o wefannau na diogelwch safonol. Gallwch ddewis hepgor rhybuddion Chrome.</translation>
 <translation id="5441137934526263133">Gwefan ddim yn gweithio? Mae cwcis trydydd parti yn cael eu rhwystro</translation>

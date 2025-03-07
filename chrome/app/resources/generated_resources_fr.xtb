@@ -1369,7 +1369,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1936157145127842922">Afficher dans le dossier</translation>
 <translation id="1936931585862840749">Indiquez le nombre de copies à imprimer (1 à <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Impossible d'importer le type d'architecture de conteneur <ph name="ARCHITECTURE_CONTAINER" /> avec l'appareil <ph name="ARCHITECTURE_DEVICE" />. Vous pouvez essayer de restaurer ce conteneur dans un autre appareil ou accéder aux fichiers inclus dans l'image de ce conteneur en les ouvrant dans l'application Fichiers.</translation>
-<translation id="1938116692670653897">Thème de couleurs actuel</translation>
 <translation id="1938351510777341717">Commande externe</translation>
 <translation id="1940221956626514677">Personnaliser la barre d'outils</translation>
 <translation id="1940546824932169984">Appareils connectés</translation>
@@ -3807,6 +3806,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3670229581627177274">Activer le Bluetooth</translation>
 <translation id="3670480940339182416">Les sites peuvent utiliser l'optimiseur V8</translation>
 <translation id="3671764914317109892">Utilisez un langage courant pour faire une recherche dans votre historique de navigation. Vous pouvez aussi poser des questions et obtenir des réponses en fonction de votre historique de navigation.</translation>
+<translation id="3671982238795754537">En savoir plus sur les clés d'accès</translation>
 <translation id="3672681487849735243">Une erreur a été détectée dans la configuration d'usine</translation>
 <translation id="3673097791729989571">Connexion hébergée par <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">Votre code a été mis à jour</translation>
@@ -4723,6 +4723,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4289540628985791613">Présentation</translation>
 <translation id="428963538941819373">Ces sites peuvent utiliser les informations qu'ils ont enregistrées vous concernant lorsque vous parcourez <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Sélectionner un code</translation>
+<translation id="4290526909608432059">Les applications Chrome ne seront bientôt plus prises en charge. Pour connaître vos options, contactez le développeur de l'appli ou votre équipe d'assistance informatique.</translation>
 <translation id="4290791284969893584">Si vous fermez une page, les tâches lancées risquent de ne pas être terminées</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> membre</translation>
 <translation id="4290898381118933198">Balayer l'écran pour changer de page</translation>
@@ -8519,6 +8520,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> (port de série connecté)</translation>
 <translation id="7033616203784997570">La saisie ne doit pas dépasser 62 caractères</translation>
 <translation id="7034692021407794547">Un administrateur qui dispose du droit "Gestion de la facturation" doit d'abord accepter les conditions d'utilisation du matériel Google Meet dans la section "Matériel Google Meet" de la Console d'administration.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> vient de créer une clé d'accès pour votre compte. Les clés d'accès sont un moyen plus rapide et plus sécurisé de se connecter. Elles sont enregistrées dans le Gestionnaire de mots de passe de Google pour <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Espace libre recommandé pour Linux : <ph name="DISK_SIZE" />. Pour libérer de l'espace, supprimez des fichiers de votre appareil.</translation>
 <translation id="7037157058268992880">Code oublié</translation>
 <translation id="7037509989619051237">Texte de test</translation>
@@ -10561,6 +10563,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8477178913400731244">Supprimer les données</translation>
 <translation id="8477241577829954800">Remplacé</translation>
 <translation id="8477384620836102176">&amp;Général</translation>
+<translation id="8477446666255316832">Connectez-vous plus vite la prochaine fois</translation>
 <translation id="8479176401914456949">Code non valide. Veuillez réessayer.</translation>
 <translation id="8480869669560681089">Appareil de <ph name="VENDOR_NAME" /> inconnu</translation>
 <translation id="8481187309597259238">Confirmer l'autorisation USB</translation>

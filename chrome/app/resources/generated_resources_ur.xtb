@@ -1370,7 +1370,6 @@
 <translation id="1936157145127842922">فولڈر میں دکھائیں</translation>
 <translation id="1936931585862840749">پرنٹ کرنے کی خاطر کاپیوں کی تعداد بتانے کیلئے نمبر (1 سے <ph name="MAX_COPIES" /> تک) کا استعمال کریں۔</translation>
 <translation id="1937774647013465102">اس آلہ جو کہ <ph name="ARCHITECTURE_DEVICE" /> ہے کے ساتھ کنٹینر کے فن تعمیر کی قسم <ph name="ARCHITECTURE_CONTAINER" /> کو درآمد نہیں کیا جا سکتا۔ آپ اس کنٹینر کو کسی دوسرے آلہ میں بحال کرنے کی کوشش کر سکتے ہیں، یا فائلز ایپ میں کھول کر اس کنٹینر کی تصویر کے اندر موجود فائلوں تک رسائی حاصل کر سکتے ہیں۔</translation>
-<translation id="1938116692670653897">موجودہ کلر تھیم</translation>
 <translation id="1938351510777341717">بیرونی کمانڈ</translation>
 <translation id="1940221956626514677">ٹول بار کو حسب ضرورت بنائیں</translation>
 <translation id="1940546824932169984">منسلک آلات</translation>
@@ -1436,6 +1435,7 @@
 <translation id="1980168597243156">اسپیس اسٹیشن</translation>
 <translation id="1981434377190976112">سبھی ویب سائٹس پر اپنا سبھی ڈیٹا پڑھیں</translation>
 <translation id="1982851102516626421">آپ سائن آؤٹ ہیں</translation>
+<translation id="1983612835086592681">آپ نے گزشتہ ہفتہ میں کھولا ہے</translation>
 <translation id="1984417487208496350">کوئی تحفظ نہیں (تجویز نہیں کی جاتی ہے)</translation>
 <translation id="1984683754853869253">کیا آپ اسکول کے لیے ایک نئی پروفائل بنانا چاہتے ہیں؟</translation>
 <translation id="198507684520034826">مدد</translation>
@@ -5970,6 +5970,7 @@
 <translation id="5186788525428341874">‏آپ اپنے سبھی آلات پر تیزی سے سائن ان کرنے کے لیے اس پاس کی کا استعمال کر سکتے ہیں۔ اسے <ph name="ACCOUNT_NAME" /> کے Google پاس ورڈ مینیجر میں محفوظ کیا جائے گا۔</translation>
 <translation id="5187641678926990264">صفحہ بطور ایپ انسٹال کریں...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188242000716462162">اشتراک کردہ بذریعہ <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">‏مقام استعمال کریں۔ مقام کی اجازت والی ChromeOS اور Android ایپس، ویب سائٹس اور سروسز کو اپنے آلے کا مقام استعمال کرنے کی اجازت دیں۔ مقام کی درستگی Android ایپس اور سروسز کے لیے مزید درست مقام فراہم کرتی ہے۔ ایسا کرنے کے لیے، Google وقتاً فوقتاً آپ کے آلے سے وائرلیس سگنل کے مقامات کو کراؤڈ سورس کرنے کے لیے آلے کے سینسرز اور وائرلیس سگنلز سے متعلق معلومات پر کارروائی کرتا ہے۔ ان کا استعمال آپ کی شناخت کیے بغیر مقام کی درستگی اور مقام پر مبنی سروسز کو بہتر بنانے، ساتھ ہی Google اور فریقین ثالث کی جائز دلچسپیوں پر مبنی Google کی سروسز کو بھی بہتر بنانے، انہیں فراہم کرنے اور ان کو برقرار رکھنے کے لیے کیا جاتا ہے تاکہ صارفین کی ضروریات کو پورا کیا جا سکے۔ <ph name="BEGIN_LINK1" />مقام استعمال کرنے کے بارے میں مزید جانیں<ph name="END_LINK1" /></translation>
 <translation id="5189274947477567401">عمل کے اشتراک سے آپٹ آؤٹ کرنے کے لیے براؤزر کو ری اسٹارٹ کرنے کی ضرورت ہے۔ یہ براؤزر اب ری اسٹارٹ ہوگا۔</translation>
 <translation id="5189404424758444348">اسٹیم پنک</translation>
@@ -8015,6 +8016,7 @@
 <translation id="668599234725812620">‏Google Play کھولیں</translation>
 <translation id="6686490380836145850">دائیں جانب والے ٹیبز بند کریں</translation>
 <translation id="6686665106869989887">ٹیب دائیں طرف منتقل کیا گیا</translation>
+<translation id="6686676261102452995">آپ نے آج کھولا</translation>
 <translation id="6686817083349815241">اپنا پاس ورڈ محفوظ کریں</translation>
 <translation id="6687008241368170505">‏‫Google پاس ورڈ مینیجر کا PIN تبدیل کریں</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> چھپائیں</translation>
@@ -10129,6 +10131,7 @@
 <translation id="8176529144855282213">مائیکروفون تک رسائی کو آن کرنے کے لیے، اپنے آلے پر فزیکل مائیکروفون سوئچ کو آن کریں</translation>
 <translation id="8177196903785554304">نیٹ ورک کی تفصیلات</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{ٹیب کو نئی ونڈو میں منتقل کریں}other{ٹیبز کو نئی ونڈو میں منتقل کریں}}</translation>
+<translation id="8178657161962192959">آپ نے گزشتہ کل کھولا تھا</translation>
 <translation id="8179976553408161302">انٹر</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />۔ <ph name="NUM_PRINTERS" /> میں سے <ph name="ITEM_POSITION" /> پرنٹر۔</translation>
 <translation id="8180785270975217276">انرجی سیور آن ہو گیا</translation>

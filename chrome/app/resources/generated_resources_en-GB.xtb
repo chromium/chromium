@@ -1380,7 +1380,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1936157145127842922">Show in Folder</translation>
 <translation id="1936931585862840749">Use a number to indicate how many copies to print (1 to <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Cannot import container architecture type <ph name="ARCHITECTURE_CONTAINER" /> with this device which is <ph name="ARCHITECTURE_DEVICE" />. You can try restoring this container into a different device, or you can access the files inside this container image by opening in Files app.</translation>
-<translation id="1938116692670653897">Current colour theme</translation>
 <translation id="1938351510777341717">External command</translation>
 <translation id="1940221956626514677">Customise toolbar</translation>
 <translation id="1940546824932169984">Connected devices</translation>
@@ -1446,6 +1445,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1980168597243156">Space station</translation>
 <translation id="1981434377190976112">Read all your data on all websites</translation>
 <translation id="1982851102516626421">You're signed out</translation>
+<translation id="1983612835086592681">You opened in the past week</translation>
 <translation id="1984417487208496350">No protection (not recommended)</translation>
 <translation id="1984683754853869253">Do you want to create a new profile for school?</translation>
 <translation id="198507684520034826">Help</translation>
@@ -5984,6 +5984,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5186788525428341874">You can use this passkey to sign in faster across your devices. It will be saved to Google Password Manager for <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Install page as app…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188242000716462162">Shared by <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Use location. Allow ChromeOS and Android apps, websites and services with location permission to use your device's location. Location Accuracy provides more accurate location for Android apps and services. To do this, Google periodically processes information about device sensors and wireless signals from your device to crowdsource wireless signal locations. These are used without identifying you to improve location accuracy and location-based services and to improve, provide and maintain Google's services based on Google's and third parties' legitimate interests to serve users' needs. <ph name="BEGIN_LINK1" />Learn more about using location<ph name="END_LINK1" /></translation>
 <translation id="5189274947477567401">Opting out of process sharing requires a browser restart. This browser will restart now.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
@@ -8031,6 +8032,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="668599234725812620">Open Google Play</translation>
 <translation id="6686490380836145850">Close tabs to the right</translation>
 <translation id="6686665106869989887">Tab moved right</translation>
+<translation id="6686676261102452995">You opened today</translation>
 <translation id="6686817083349815241">Save your password</translation>
 <translation id="6687008241368170505">Change Google Password Manager PIN</translation>
 <translation id="6687079240787935001">Hide <ph name="MODULE_TITLE" /></translation>
@@ -10147,6 +10149,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8176529144855282213">To turn on microphone access, turn on the physical microphone switch on your device</translation>
 <translation id="8177196903785554304">Network Details</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Move tab to new window}other{Move tabs to new window}}</translation>
+<translation id="8178657161962192959">You opened yesterday</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Printer <ph name="ITEM_POSITION" /> of <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Energy saver turned on</translation>

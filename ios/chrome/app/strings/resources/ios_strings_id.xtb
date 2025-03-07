@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">Dengan melanjutkan, Anda menyetujui <ph name="BEGIN_LINK" />Persyaratan Layanan<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Jangan pernah disimpan</translation>
 <translation id="1062138828266376352">PIN Anda tidak diubah. Periksa koneksi internet Anda, lalu coba lagi</translation>
+<translation id="1072476005125066234">Ulasan berdasarkan minat Anda</translation>
 <translation id="1074827084851510304">Anda akan menghapus {password_count} sandi dan daftar situs &amp; aplikasi yang Anda pilih agar tidak pernah menyimpan info login. Akun apa pun yang Anda buat untuk situs dan aplikasi tidak akan dihapus.</translation>
 <translation id="1076421457278169141">Kode telah dipindai</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} tab}other{{count} tab}}</translation>
@@ -267,6 +268,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" /> akun menggunakan sandi yang sama</translation>
 <translation id="2059166748188874810">Kotamadya</translation>
 <translation id="2060114494785549741">Hapus dalam 1 bulan</translation>
+<translation id="2060638295449304809">Alamat ini hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan alamat di Akun Google Anda, <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">Pemilih jenis satuan</translation>
 <translation id="2067852168641682340">Selalu simpan ke akun ini</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 tab}other{{count} tab}}</translation>
@@ -895,6 +897,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} dan 1 lainnya}other{{domain} dan {count} lainnya}}</translation>
 <translation id="4826588772550366629">kamera dan mikrofon</translation>
+<translation id="4828431027673677473">Produk berdasarkan minat Anda</translation>
 <translation id="4833786495304741580">Otomatis mengirim statistik penggunaan dan laporan kerusakan ke Google.</translation>
 <translation id="483689884442613745">Simpan…</translation>
 <translation id="4840495572919996524">Bookmark, histori, sandi, dan informasi Anda lainnya tidak akan lagi disinkronkan ke Akun Google Anda.</translation>
@@ -1734,6 +1737,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="828291969289324795">{count,plural, =1{Tambahkan Tab ke Grup Baru}other{Tambahkan Tab ke Grup Baru}}</translation>
 <translation id="8283172974887967105">Setel …</translation>
 <translation id="8289930144142009940">Notifikasi <ph name="FEATURE_NAME" /> dinonaktifkan</translation>
+<translation id="8290077367744012649">Pantau harga dari tab Anda</translation>
 <translation id="8299417921174340354">Untuk menggunakan sandi, Anda harus menyetel kode sandi di perangkat terlebih dahulu.</translation>
 <translation id="8299613349954694191">Buka tab Samaran untuk menjelajahi web secara pribadi.</translation>
 <translation id="8307481894409578819">File ini tidak dapat diupload</translation>

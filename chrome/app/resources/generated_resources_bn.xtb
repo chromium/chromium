@@ -591,6 +591,7 @@
 <translation id="1407069428457324124">ডার্ক থিম</translation>
 <translation id="1407135791313364759">সব খুলুন</translation>
 <translation id="140723521119632973">সেলুলার চালু করা</translation>
+<translation id="1407908250220330281">এই প্রোফাইল এখন ম্যানেজ করা হবে</translation>
 <translation id="1407970155431887387"><ph name="SEARCH_ENGINE_NAME" />-এর জন্য এডিট ডায়ালগ খুলতে ক্লিক করুন</translation>
 <translation id="1408504635543854729">ফাইল অ্যাপে ডিভাইসের কন্টেন্ট খুঁজে দেখুন। একজন অ্যাডমিনিস্ট্রেটর কন্টেন্টটি সীমাবদ্ধ করে আছে এবং মডিফাই করা যাবে না।</translation>
 <translation id="1408980562518920698">ব্যক্তিগত তথ্য ম্যানেজ করুন</translation>
@@ -802,6 +803,7 @@
 <translation id="1549966883323105187">আরও চটপট আপনার সেভ করা পাসওয়ার্ড পান</translation>
 <translation id="1550656959113606473">ডিফল্ট ক্রোম</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" এক্সটেনশনের মাধ্যমে ডিফল্ট সার্চ ইঞ্জিনকে ওভাররাইড করা হয়েছে এবং এখন <ph name="SEARCH_PROVIDER_DOMAIN" />-এর মাধ্যমে কন্ট্রোল করা হচ্ছে</translation>
+<translation id="1552357433305859738">এই প্রোফাইলে সিঙ্ক করা চালিয়ে যান এবং ডেটা মার্জ করুন</translation>
 <translation id="1552752544932680961">এক্সটেনশান পরিচালনা করুন</translation>
 <translation id="1553538517812678578">সীমাহীন</translation>
 <translation id="1553947773881524342">আপনার Chromebook-এ Microsoft 365 সম্পর্কে <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" />।</translation>
@@ -1379,7 +1381,6 @@
 <translation id="1936157145127842922">ফোল্ডারে দেখান</translation>
 <translation id="1936931585862840749">কতগুলি কপি প্রিন্ট হবে তা নির্দিষ্ট করতে একটি সংখ্যা ব্যবহার করুন (১ থেকে <ph name="MAX_COPIES" />-এর মধ্যে)।</translation>
 <translation id="1937774647013465102">এই ডিভাইস <ph name="ARCHITECTURE_DEVICE" /> হওয়ার ফলে <ph name="ARCHITECTURE_CONTAINER" /> ধরনের কন্টেনার আর্কিটেকচার ইম্পোর্ট করা যাচ্ছে না। আপনি একটি অন্য ডিভাইসে এই কন্টেনার ফিরিয়ে আনার চেষ্টা করতে পারেন অথবা 'ফাইল' অ্যাপ খুলে কন্টেনার ছবির অন্তর্ভুক্ত ফাইল অ্যাক্সেস করতে পারেন।</translation>
-<translation id="1938116692670653897">বর্তমান রঙের থিম</translation>
 <translation id="1938351510777341717">এক্সটার্নাল কমান্ড</translation>
 <translation id="1940221956626514677">টুলবার কাস্টমাইজ করুন</translation>
 <translation id="1940546824932169984">সংযুক্ত ডিভাইস</translation>
@@ -1445,6 +1446,7 @@
 <translation id="1980168597243156">স্পেস স্টেশন</translation>
 <translation id="1981434377190976112">সমস্ত ওয়েবসাইটে আপনার ডেটা পড়তে পারে</translation>
 <translation id="1982851102516626421">আপনি সাইন-আউট করেছেন</translation>
+<translation id="1983612835086592681">আপনি গত সপ্তাহে খুলেছেন</translation>
 <translation id="1984417487208496350">সুরক্ষিত নয় (সাজেস্ট করা হচ্ছে না)</translation>
 <translation id="1984683754853869253">আপনি কি স্কুলের জন্য নতুন প্রোফাইল তৈরি করতে চান?</translation>
 <translation id="198507684520034826">সহায়তা</translation>
@@ -2254,6 +2256,7 @@
 <translation id="2530166226437958497">সমস্যার সমাধান</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />কিছু সমস্যা হয়েছে এবং <ph name="DEVICE_OS" /> ইনস্টল করা যায়নি।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />আরও সাহায্য পেতে এই লিঙ্কে যান: g.co/flex/InstallErrors<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532117279786409580">আরও তথ্য পান</translation>
 <translation id="2532144599248877204">আপনার ব্যাটারি প্রায় ৮০% রেখে ব্যাটারির আয়ু বাড়ায়। আপনি সাধারণত এটি ডিসকানেক্ট করার আগে ব্যাটারি সম্পূর্ণরূপে চার্জ হবে।</translation>
 <translation id="2532146950330687938">ডিভাইস রেডি করা হচ্ছে...</translation>
 <translation id="2532198298278778531">ChromeOS Flex সেটিংসে নিরাপদ ডিএনএস ম্যানেজ করুন</translation>
@@ -3153,6 +3156,7 @@
 <translation id="3183139917765991655">প্রোফাইল আমদানিকারক</translation>
 <translation id="3183143381919926261">মোবাইল ডেটা নেটওয়ার্ক</translation>
 <translation id="3183700187146209259">স্ক্যানার সফ্টওয়্যার ইনস্টল করা যাচ্ছে না</translation>
+<translation id="3183750649832309748">আপনার সংস্থা, <ph name="ACCOUNT_MANAGER" />, কিছু তথ্য দেখতে পাবে, যার মধ্যে এগুলি রয়েছে</translation>
 <translation id="3183944777708523606">মনিটর সাজানো</translation>
 <translation id="3184536091884214176">CUPS প্রিন্টার সেট-আপ বা ম্যানেজ করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">অভিভাবকীয় নিয়ন্ত্রণের সেটিংস পরিবর্তন করতে পিন ব্যবহার করুন।
@@ -3180,6 +3184,7 @@
 <translation id="3202499879214571401"><ph name="DEVICE_NAME" />-এ স্ক্রিন কাস্ট করা পজ করুন</translation>
 <translation id="3202578601642193415">নবীনতম</translation>
 <translation id="3204648577100496185">এই অ্যাপের ডেটাও হয়ত ডিভাইস থেকে মুছে যাবে</translation>
+<translation id="3204717934117444051">শুধুমাত্র এই ডিভাইসে সেভ করা ডেটা আগে থাকা প্রোফাইলে রয়ে যাবে। এটি <ph name="EMAIL" />-এর সাথে সিঙ্ক হবে না</translation>
 <translation id="3207344462385471911">আপনার সাম্প্রতিক অ্যাক্টিভিটির ভিত্তিতে সাজেস্ট করা সার্চ ও কেনাকাটায় ছাড় দেখছেন যাতে আপনি আগ্রহী হতে পারেন।
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4348,6 +4353,7 @@
 <translation id="3994878504415702912">&amp;জুম</translation>
 <translation id="3995138139523574647">USB-C ডিভাইস (ডান দিকের পিছনের পোর্ট)</translation>
 <translation id="3995963973192100066">অ্যানিমেশন চালান</translation>
+<translation id="3997537546406230684">অফিসের জন্য নতুন প্রোফাইল তৈরি করুন এবং আমার আগে থেকে থাকা ডেটা আলাদা করে রাখুন</translation>
 <translation id="399788104667917863">টুলবারে পিন করুন</translation>
 <translation id="3998780825367526465">ট্যাবের প্রিভিউ দেখার ছবি দেখুন</translation>
 <translation id="3998976413398910035">প্রিন্টার পরিচালনা করুন</translation>
@@ -5795,6 +5801,7 @@
 <translation id="5059526285558225588">কী শেয়ার করতে চান তা বেছে নিন</translation>
 <translation id="5060332552815861872">সেভ করার জন্য ১টি প্রিন্টার উপলভ্য আছে।</translation>
 <translation id="5060419232449737386">ক্যাপশন সেটিংস</translation>
+<translation id="5061270227873845372">আপনার বর্তমানে <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> ও আরও কিছু তথ্য রয়েছে। আপনার সংস্থা এই ডেটা দেখতে ও ম্যানেজ করতে পারবে</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{এই ফোল্ডারটিতে একটি বুকমার্ক আছে। এটা মুছে ফেলার বিষয়ে আপনি কি নিশ্চিত?}one{এই ফোল্ডারটিতে #টি বুকমার্ক আছে। এটা মুছে ফেলার বিষয়ে আপনি কি নিশ্চিত?}other{এই ফোল্ডারটিতে #টি বুকমার্ক আছে। এটা মুছে ফেলার বিষয়ে আপনি কি নিশ্চিত?}}</translation>
 <translation id="5061531353537614467">তুন্দ্রা</translation>
 <translation id="5062930723426326933">সাইন-ইন করা যায়নি, অনুগ্রহ করে ইন্টারনেটে কানেক্ট করে আবার চেষ্টা করুন৷</translation>
@@ -5978,6 +5985,7 @@
 <translation id="5186788525428341874">আপনার বিভিন্ন ডিভাইসে ঝটপট সাইন-ইন করার জন্য এই পাসকী ব্যবহার করতে পারবেন। <ph name="ACCOUNT_NAME" />-এর জন্য Google Password Manager-এ এটি সেভ করা হবে।</translation>
 <translation id="5187641678926990264">&amp;পেজ অ্যাপ হিসেবে ইনস্টল করুন...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188242000716462162"><ph name="USER_NAME" /> শেয়ার করেছেন</translation>
 <translation id="5188648870018555788">লোকেশন ব্যবহার করুন। লোকেশন অ্যাক্সেস করার অনুমতি থাকা ChromeOS ও Android অ্যাপ, ওয়েবসাইট ও পরিষেবাকে আপনার ডিভাইসের লোকেশন ব্যবহার করার অনুমতি দিন। 'লোকেশন অ্যাকুরেসি' সেটিং Android অ্যাপ ও পরিষেবার জন্য আরও নিখুঁত লোকেশন প্রদান করে। এটি করতে, নির্দিষ্ট সময়ের ব্যবধানে Google আপনার ডিভাইস থেকে ওয়্যারলেস সিগন্যাল ও ডিভাইস সেন্সর বিষয়ক তথ্য নিয়ে প্রসেস করে, যাতে ওয়্যারলেস সিগন্যালের লোকেশন ক্রাউডসোর্স করা যায়। এগুলি আপনাকে শনাক্ত না করেই করা হয়, যাতে 'লোকেশন অ্যাকুরেসি' সেটিং এবং লোকেশন-ভিত্তিক পরিষেবাকে আরও উন্নত করা যায় এবং ব্যবহারকারীর প্রয়োজনীয়তা পূরণ করতে, Google ও থার্ড-পার্টির আইনগত স্বার্থের উপর ভিত্তি করে, Google-এর পরিষেবা প্রদান ও উন্নতি করা যায় এবং তা বজায় রাখা যায়। <ph name="BEGIN_LINK1" />লোকেশন ব্যবহার করা সম্পর্কে আরও জানুন<ph name="END_LINK1" /></translation>
 <translation id="5189274947477567401">প্রসেস শেয়ারিং থেকে অপ্ট-আউট করার জন্য ব্রাউজার রিস্টার্ট করতে হয়। এই ব্রাউজার এখন রিস্টার্ট করা হবে।</translation>
 <translation id="5189404424758444348">স্টিমপাঙ্ক</translation>
@@ -8028,6 +8036,7 @@
 <translation id="668599234725812620">Google Play খুলুন</translation>
 <translation id="6686490380836145850">ডানদিকের ট্যাবগুলি বন্ধ করুন</translation>
 <translation id="6686665106869989887">ট্যাব ডানদিকে সরে গেছে</translation>
+<translation id="6686676261102452995">আপনি আজ খুলেছেন</translation>
 <translation id="6686817083349815241">আপনার পাসওয়ার্ড সেভ করুন</translation>
 <translation id="6687008241368170505">Google Password Manager পিন পরিবর্তন করুন</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> লুকান</translation>
@@ -9410,6 +9419,7 @@
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, <ph name="PAGE_TITLE" /> এ।</translation>
 <translation id="7672726198839739113">ব্লক করা আছে। বর্তমানে <ph name="SUNRISE_TIME" /> - <ph name="SUNSET_TIME" />-এ শিডিউল সেট করা রয়েছে এবং শুধু ম্যানুয়ালি তা আপডেট করা যেতে পারে।</translation>
 <translation id="7673313156293624327">ChromeOS Shill (কানেকশন ম্যানেজার) লগ</translation>
+<translation id="767381852303199643">আপনার আগে থেকে থাকা প্রোফাইল ডেটা দিয়ে কী করতে চান?</translation>
 <translation id="7674416868315480713">ডিঅ্যাক্টিভেট করা সমস্ত পোস্ট Linux-এ ফরওয়ার্ড করা হয়</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" />টি অ্যাপ</translation>
 <translation id="7674542105240814168">লোকেশন অ্যাক্সেস দেওয়া হয়নি</translation>
@@ -9640,6 +9650,7 @@
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">সংরক্ষিত কাস্টম শব্দ এখানে দেখা যাবে</translation>
 <translation id="7836577093182643605">আপনি ব্লক করেছেন এমন বিষয়গুলির তালিকা যা আপনি সাইটে শেয়ার করতে চান না</translation>
+<translation id="7836745198769390202">আপনার বর্তমানে <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> ও আরও কিছু তথ্য রয়েছে। আপনার সংস্থা এই ডেটা দেখতে ও ম্যানেজ করতে পারবে</translation>
 <translation id="7836850009646241041">আপনার নিরাপত্তা কী আবার স্পর্শ করার চেষ্টা করুন</translation>
 <translation id="7838838951812478896"><ph name="DEVICE_NAME" /> থেকে '<ph name="NETWORK_NAME" />'সেভ করা যায়নি</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="DEVICE_NAME" />-এ <ph name="ATTACHMENTS" /> পাঠানো হয়েছে}one{<ph name="DEVICE_NAME" />-এ <ph name="ATTACHMENTS" /> পাঠানো হয়েছে}other{<ph name="DEVICE_NAME" />-এ <ph name="ATTACHMENTS" /> পাঠানো হয়েছে}}</translation>
@@ -10141,6 +10152,7 @@
 <translation id="8176529144855282213">মাইক্রোফোন অ্যাক্সেস চালু করতে, আপনার ডিভাইসে ফিজিক্যাল মাইক্রোফোন সুইচ চালু করুন</translation>
 <translation id="8177196903785554304">নেটওয়ার্কের বিশদ বিবরণ</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{ট্যাবটি নতুন উইন্ডোতে খুলুন}one{ট্যাবগুলি নতুন উইন্ডোতে খুলুন}other{ট্যাবগুলি নতুন উইন্ডোতে খুলুন}}</translation>
+<translation id="8178657161962192959">আপনি গতকাল খুলেছেন</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />। <ph name="NUM_PRINTERS" />-এর মধ্যে <ph name="ITEM_POSITION" /> নম্বর প্রিন্টার।</translation>
 <translation id="8180785270975217276">পাওয়ার সেভার চালু আছে</translation>
@@ -11402,6 +11414,7 @@
 <translation id="9052404922357793350">ব্লক করা চালিয়ে যান</translation>
 <translation id="90528604757378587">ব্যাকগ্রাউন্ড অ্যাক্টিভিটি এবং স্মুথ স্ক্রলিংয়ের মতো কিছু ভিজ্যুয়াল এফেক্ট সীমিত করা হতে পারে।</translation>
 <translation id="9053563360605707198">দুটি দিকেই প্রিন্ট</translation>
+<translation id="9055810458113674066">আপনার বর্তমানে <ph name="NUMBERED_ITEM" />টি আইটেম ও আরও কিছু তথ্য রয়েছে। আপনার সংস্থা এই ডেটা দেখতে ও ম্যানেজ করতে পারবে</translation>
 <translation id="9056788090206401048">অন্য ডিভাইসে আপনার পাসকী ব্যবহার করার জন্য ব্লুটুথ চালু থাকতে হবে। 'সেটিংস' থেকে যেকোনও সময় এটি ম্যানেজ করতে পারবেন।</translation>
 <translation id="9056810968620647706">কোন মিল খুঁজে পাওয়া যায় নি৷</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> নিচের কন্টেন্ট অ্যাক্সেস করতে চাইছে:</translation>

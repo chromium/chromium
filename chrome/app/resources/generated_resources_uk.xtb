@@ -1381,7 +1381,6 @@
 <translation id="1936157145127842922">Показати в папці</translation>
 <translation id="1936931585862840749">Введіть число, щоб зазначити кількість копій для друку (від 1 до <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Не вдається імпортувати контейнер архітектури <ph name="ARCHITECTURE_CONTAINER" /> на пристрій з архітектурою <ph name="ARCHITECTURE_DEVICE" />. Ви можете спробувати відновити цей контейнер на іншому пристрої або отримати доступ до його вмісту в додатку Файли.</translation>
-<translation id="1938116692670653897">Поточна колірна тема</translation>
 <translation id="1938351510777341717">Зовнішня клавіша Command</translation>
 <translation id="1940221956626514677">Налаштувати панель інструментів</translation>
 <translation id="1940546824932169984">Підключені пристрої</translation>

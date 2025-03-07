@@ -1370,7 +1370,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1936157145127842922">Zobrazit ve složce</translation>
 <translation id="1936931585862840749">Počet kopií, které chcete vytisknout, je třeba zadat jako číslo (od 1 do <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Typ architektury kontejneru <ph name="ARCHITECTURE_CONTAINER" /> do tohoto zařízení s architekturou <ph name="ARCHITECTURE_DEVICE" /> nelze importovat. Můžete tento kontejner zkusit obnovit do jiného zařízení nebo soubory v obrazu kontejneru otevřít v aplikaci Soubory.</translation>
-<translation id="1938116692670653897">Aktuální barevný motiv</translation>
 <translation id="1938351510777341717">Externí příkaz</translation>
 <translation id="1940221956626514677">Přizpůsobit lištu</translation>
 <translation id="1940546824932169984">Připojená zařízení</translation>
@@ -3808,6 +3807,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3670229581627177274">zapněte Bluetooth</translation>
 <translation id="3670480940339182416">Weby mohou používat optimalizátor V8</translation>
 <translation id="3671764914317109892">Běžným jazykem vyhledávejte ve své historii prohlížení. Můžete taky klást otázky a získávat odpovědi na základě své historie prohlížení.</translation>
+<translation id="3671982238795754537">Další informace o přístupových klíčích</translation>
 <translation id="3672681487849735243">Byla zjištěna chyba z výroby</translation>
 <translation id="3673097791729989571">Přihlášení hostuje doména <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">Váš kód PIN byl aktualizován</translation>
@@ -4723,6 +4723,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4289540628985791613">Přehled</translation>
 <translation id="428963538941819373">Tyto weby mohou při procházení webu <ph name="HOST" /> používat informace, které o vás uložily</translation>
 <translation id="4289732974614035569">Zvolte PIN</translation>
+<translation id="4290526909608432059">Podpora aplikací pro Chrome bude brzy ukončena. S dotazy ohledně možných řešení se obraťte na vývojáře aplikace nebo na svůj tým podpory IT.</translation>
 <translation id="4290791284969893584">Po zavření stránky se zahájené úlohy nemusí dokončit</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> člen</translation>
 <translation id="4290898381118933198">Přecházení mezi stránkami přejížděním prstem</translation>
@@ -8517,6 +8518,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – připojeno k sériovému portu</translation>
 <translation id="7033616203784997570">Lze zadat maximálně 62 znaků</translation>
 <translation id="7034692021407794547">Administrátor s oprávněním Správa fakturace musí nejdříve v administrátorské konzoli v sekci Hardware Google Meet přijmout smluvní podmínky hardwaru Google Meet.</translation>
+<translation id="7036550011779986598">Web <ph name="RP_ID" /> právě vytvořil přístupový klíč pro váš účet. Přístupové klíče představují jednodušší a bezpečnější způsob přihlášení a ukládají se do Správce hesel Google uživatele <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Pro Linux je doporučeno <ph name="DISK_SIZE" /> místa. Místo uvolníte smazáním souborů ze zařízení.</translation>
 <translation id="7037157058268992880">Zapomenutý PIN</translation>
 <translation id="7037509989619051237">Text k náhledu</translation>
@@ -10558,6 +10560,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8477178913400731244">Vymazat data</translation>
 <translation id="8477241577829954800">Nahrazen</translation>
 <translation id="8477384620836102176">&amp;Obecné</translation>
+<translation id="8477446666255316832">Příště se přihlaste rychleji</translation>
 <translation id="8479176401914456949">Neplatný kód. Zkuste to znovu.</translation>
 <translation id="8480869669560681089">Neznámé zařízení od dodavatele <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Potvrzení oprávnění USB</translation>

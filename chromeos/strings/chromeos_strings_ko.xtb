@@ -406,6 +406,7 @@
 <translation id="2787237339470862294">현재 지원되지 않는 언어입니다.</translation>
 <translation id="2787435249130282949">키보드 더 밝게</translation>
 <translation id="2805756323405976993">앱</translation>
+<translation id="2822702442014805146">요약 및 이름 생성 모델 다운로드 중</translation>
 <translation id="28232023175184696">인터넷에 연결할 수 없습니다. 다시 시도하려면 클릭하세요.</translation>
 <translation id="2855718259207180827">양모</translation>
 <translation id="2859243502336719778">중요 업데이트</translation>
@@ -827,6 +828,7 @@
 <translation id="4891842000192098784">스트레스</translation>
 <translation id="4897058166682006107">기기의 왼쪽 이어폰 배터리 잔량이 <ph name="BATTERY_PERCENTAGE" />%입니다.</translation>
 <translation id="4905998861748258752">화면 보호기 옵션을 선택하려면 기능을 사용 설정하세요.</translation>
+<translation id="4910853326379896417">요약 및 이름 생성 모델 다운로드 완료</translation>
 <translation id="4910858703033903787">APN 유형</translation>
 <translation id="4917385247580444890">강함</translation>
 <translation id="4917889632206600977">중지됨 - 용지 부족</translation>
@@ -864,6 +866,7 @@
 <translation id="5056587122125565772">이미지 만들기</translation>
 <translation id="5078711626843651677">발화자 라벨 지정이 완료될 때까지 음성 모델이 기기에 임시로 저장됩니다. 언제든지 설정에서 이 기능을 사용 중지할 수 있습니다.</translation>
 <translation id="5078983345702708852">미래적</translation>
+<translation id="5085224064082122501">요약 및 이름 생성을 위한 모델을 다운로드할 수 없습니다. 다시 시도하거나 Chromebook을 다시 시작하세요.</translation>
 <translation id="5087864757604726239">뒤로</translation>
 <translation id="5088172560898466307">서버 호스트 이름</translation>
 <translation id="5089810972385038852">시/도</translation>
@@ -1431,6 +1434,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB 터치스크린</translation>
 <translation id="757747079855995705">석조</translation>
+<translation id="7584853321964440104">다운로드할 수 없습니다. 다시 시도하거나 Chromebook을 다시 시작하세요.</translation>
 <translation id="7590883480672980941">입력 설정</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> 남음</translation>
 <translation id="7600430297804876776"><ph name="MANAGER" /> 관리자가 <ph name="DEVICE_TYPE" />을 사용할 수 있는 시기를 설정했습니다.</translation>

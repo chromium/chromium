@@ -592,6 +592,7 @@
 <translation id="1407069428457324124">Մուգ թեմա</translation>
 <translation id="1407135791313364759">Բացել բոլորը</translation>
 <translation id="140723521119632973">Բջջային ցանցի ակտիվացում</translation>
+<translation id="1407908250220330281">Այս պրոֆիլն այժմ կկառավարվի</translation>
 <translation id="1407970155431887387">Սեղմեք՝ <ph name="SEARCH_ENGINE_NAME" />-ի կարգավորումների փոփոխման պատուհանը բացելու համար</translation>
 <translation id="1408504635543854729">Դիտեք սարքի բովանդակությունը «Ֆայլեր» հավելվածում: Բովանդակության հասանելիությունը սահմանափակված է ադմինիստրատորի կողմից, և այն հնարավոր չէ փոփոխել։</translation>
 <translation id="1408980562518920698">Կառավարել անձնական տեղեկությունները</translation>
@@ -802,6 +803,7 @@
 <translation id="1549966883323105187">Ավելի արագ բացեք ձեր պահված գաղտնաբառերը</translation>
 <translation id="1550656959113606473">Կանխադրված Chrome</translation>
 <translation id="1552301827267621511">«<ph name="EXTENSION_NAME" />» ընդլայնումը փոխել է օգտագործվող որոնիչը։ Այժմ օգտագործվում է <ph name="SEARCH_PROVIDER_DOMAIN" />-ը։</translation>
+<translation id="1552357433305859738">Շարունակեք համաժամացնել այս պրոֆիլի հետ և միավորել տվյալները</translation>
 <translation id="1552752544932680961">Կառավարել ընդլայնումը</translation>
 <translation id="1553538517812678578">անսահմանափակ</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Իմացեք ավելին<ph name="LINK_END" /> ձեր Chromebook-ում տեղադրված Microsoft 365-ի մասին։</translation>
@@ -1370,7 +1372,6 @@
 <translation id="1936157145127842922">Ցուցադրել պանակում</translation>
 <translation id="1936931585862840749">Թվերով նշեք՝ քանի օրինակ է անհրաժեշտ տպել (1-ից <ph name="MAX_COPIES" />)։</translation>
 <translation id="1937774647013465102">Կոնտեյների կառուցվածքի <ph name="ARCHITECTURE_CONTAINER" /> տեսակը չի կարող ներմուծվել այս սարք, քանի որ այն <ph name="ARCHITECTURE_DEVICE" /> է: Կարող եք փորձել վերականգնել այս կոնտեյները մեկ այլ սարքում կամ բացել կոնտեյների պատկերը «Ֆայլեր» հավելվածում և օգտվել ֆայլերից:</translation>
-<translation id="1938116692670653897">Ընթացիկ գունային թեման</translation>
 <translation id="1938351510777341717">Արտաքին Command ստեղն</translation>
 <translation id="1940221956626514677">Հարմարեցնել գործիքագոտին</translation>
 <translation id="1940546824932169984">Միացված սարքեր</translation>
@@ -1436,6 +1437,7 @@
 <translation id="1980168597243156">Տիեզերակայան</translation>
 <translation id="1981434377190976112">Կարդալ ձեր տվյալները բոլոր կայքերում</translation>
 <translation id="1982851102516626421">Դուք դուրս եք եկել հաշվից</translation>
+<translation id="1983612835086592681">Դուք բացել եք անցած շաբաթ</translation>
 <translation id="1984417487208496350">Առանց պաշտպանության (խորհուրդ չի տրվում)</translation>
 <translation id="1984683754853869253">Ցանկանո՞ւմ եք ստեղծել նոր պրոֆիլ դպրոցի համար։</translation>
 <translation id="198507684520034826">Օգնություն</translation>
@@ -2240,6 +2242,7 @@
 <translation id="2530166226437958497">Անսարքությունների վերացում</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Սխալի պատճառով չհաջողվեց տեղադրել <ph name="DEVICE_OS" />-ը։<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Լրացուցիչ օգնության համար այցելեք g.co/flex/InstallErrors էջ։<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532117279786409580">Իմացեք ավելին</translation>
 <translation id="2532144599248877204">Երկարացնում է մարտկոցի աշխատաժամանակը՝ լիցքը պահելով մոտ 80%-ի մակարդակում։ Մարտկոցն ամբողջությամբ լիցքավորված կլինի մինչև այն պահը, երբ դուք սովորաբար անջատում եք սարքը հոսանքից։</translation>
 <translation id="2532146950330687938">Սարքը շուտով պատրաստ կլինի...</translation>
 <translation id="2532198298278778531">Ապահով DNS սերվերի կառավարում ChromeOS Flex-ի կարգավորումներում</translation>
@@ -3139,6 +3142,7 @@
 <translation id="3183139917765991655">Պրոֆիլի ներմուծիչ</translation>
 <translation id="3183143381919926261">Տվյալների փոխանցման ցանցեր</translation>
 <translation id="3183700187146209259">Չհաջողվել տեղադրել սկաների ծրագիրը</translation>
+<translation id="3183750649832309748">Ձեր կազմակերպությունը, <ph name="ACCOUNT_MANAGER" />-ը, կկարողանան դիտել որոշ տեղեկություններ, այդ թվում՝</translation>
 <translation id="3183944777708523606">Փոխել դիրքը</translation>
 <translation id="3184536091884214176">CUPS տպիչների կարգավորում և կառավարում <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">Օգտագործեք այս PIN կոդը՝ ծնողական վերահսկողության կարգավորումները փոխելու համար։
@@ -3166,6 +3170,7 @@
 <translation id="3202499879214571401">Դադարեցնել էկրանի հեռարձակումը <ph name="DEVICE_NAME" /> սարքին</translation>
 <translation id="3202578601642193415">Ամենանոր</translation>
 <translation id="3204648577100496185">Այս հավելվածին առնչվող տվյալները կարող են հեռացվել այս սարքից</translation>
+<translation id="3204717934117444051">Տվյալները, որոնք պահվում են միայն այս սարքում, կմնան առկա պրոֆիլում։ Այն չի համաժամեցվի <ph name="EMAIL" />-ի հետ</translation>
 <translation id="3207344462385471911">Դուք տեսնում եք առաջարկվող որոնումներ և գնումների զեղչեր, որոնք կարող են ձեզ հետաքրքրել, ձեր վերջին գործողությունների հիման վրա։
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4333,6 +4338,7 @@
 <translation id="3994878504415702912">&amp;Խոշորացնել</translation>
 <translation id="3995138139523574647">USB-C սարք (հետևի ձախակողմյան միացք)</translation>
 <translation id="3995963973192100066">Նվագարկել շարժանկարը</translation>
+<translation id="3997537546406230684">Ստեղծել նոր պրոֆիլ աշխատանքի համար և պահել իմ առկա տվյալներն առանձին</translation>
 <translation id="399788104667917863">Ամրացնել գործիքագոտում</translation>
 <translation id="3998780825367526465">Ցուցադրել ներդիրների նախադիտման պատկերները</translation>
 <translation id="3998976413398910035">Կառավարել տպիչները</translation>
@@ -5779,6 +5785,7 @@
 <translation id="5059526285558225588">Ինչ տվյալներ հասանելի դարձնել</translation>
 <translation id="5060332552815861872">Կա 1 տպիչ, որը կարող եք պահել։</translation>
 <translation id="5060419232449737386">Ենթագրերի կարգավորումներ</translation>
+<translation id="5061270227873845372">Այս պահին ունեք <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> և ավելին։ Ձեր կազմակերպությունը կկարողանա տեսնել և կառավարել այս տվյալները</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Այս պանակը էջանիշ է պարունակում: Ուզո՞ւմ եք ջնջել այն:}one{Այս պանակը պարունակում է # էջանիշ: Ուզո՞ւմ եք ջնջել այն:}other{Այս պանակը պարունակում է # էջանիշ: Ուզո՞ւմ եք ջնջել այն:}}</translation>
 <translation id="5061531353537614467">Տունդրա</translation>
 <translation id="5062930723426326933">Մուտքը չհաջողվեց: Կապակցվեք համացանցին և կրկին փորձեք:</translation>
@@ -5962,6 +5969,7 @@
 <translation id="5186788525428341874">Դուք ավելի արագ մուտք կգործեք ձեր սարքերում այս մուտքի բանալու միջոցով։ Այն կպահվի <ph name="ACCOUNT_NAME" /> հաշվի Google գաղտնաբառերի կառավարչում։</translation>
 <translation id="5187641678926990264">&amp;Տեղադրել էջը որպես հավելված…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188242000716462162">Ով է կիսվել՝ <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Տեղորոշման օգտագործում։ Թույլատրել ChromeOS-ի և Android-ի՝ տեղորոշման թույլտվություն ունեցող հավելվածներին, կայքերին ու ծառայություններին օգտագործել ձեր սարքի տեղադրությունը։ Տեղորոշման ճշգրտությունը տեղադրության ավելի ճշգրիտ տվյալներ է տրամադրում Android հավելվածների և ծառայությունների համար։ Այդ նպատակով Google-ը պարբերաբար մշակում է սարքի սենսորների և սարքից ստացվող անլար ազդանշանների մասին տեղեկությունները՝ անլար ազդանշանների գտնվելու վայրերի մասին տվյալներ հավաքելու համար։ Դրանք օգտագործվում են առանց ձեզ նույնականացնելու և միտված են բարելավելու տեղադրության ճշգրտությունը և տեղադրության տվյալների հիման վրա աշխատող ծառայությունները, ինչպես նաև լավացնելու, տրամադրելու և աջակցելու Google-ի ծառայությունները՝ ելնելով Google-ի և երրորդ կողմերի օրինական շահերից՝ օգտատերերի կարիքները սպասարկելու համար։ <ph name="BEGIN_LINK1" />Իմանալ ավելին տեղադրության տվյալների օգտագործման մասին<ph name="END_LINK1" /></translation>
 <translation id="5189274947477567401">Գործընթացի ընդհանուր օգտագործումն անջատելու համար պահանջվում է դիտարկիչի վերագործարկում։ Դիտարկիչն այժմ կվերագործարկվի։</translation>
 <translation id="5189404424758444348">Սթիմպանկ</translation>
@@ -8007,6 +8015,7 @@
 <translation id="668599234725812620">Բացել Google Play-ը</translation>
 <translation id="6686490380836145850">Փակել աջ կողմի ներդիրները</translation>
 <translation id="6686665106869989887">Ներդիրը տեղափոխվեց աջ</translation>
+<translation id="6686676261102452995">Դուք բացել եք այսօր</translation>
 <translation id="6686817083349815241">Պահել գաղտնաբառը</translation>
 <translation id="6687008241368170505">Փոխել Google գաղտնաբառերի կառավարչի PIN կոդը</translation>
 <translation id="6687079240787935001">Թաքցնել «<ph name="MODULE_TITLE" />» զամբյուղը</translation>
@@ -9388,6 +9397,7 @@
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, <ph name="PAGE_TITLE" />-ում։</translation>
 <translation id="7672726198839739113">Արգելափակված է։ Ընտրված ժամանակացույցը (<ph name="SUNRISE_TIME" /> – <ph name="SUNSET_TIME" />) հնարավոր է թարմացնել միայն ձեռքով։</translation>
 <translation id="7673313156293624327">Shill (կապի կառավարչի) մատյաններ ChromeOS-ի համար</translation>
+<translation id="767381852303199643">Ի՞նչ կցանկանայիք անել ձեր պրոֆիլի առկա տվյալների հետ։</translation>
 <translation id="7674416868315480713">Ապակտիվացնել բոլոր միացքները, որոնք փոխանցվում են Լինուքսում</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> հավելված</translation>
 <translation id="7674542105240814168">Տեղորոշման թույլտվությունը մերժված է</translation>
@@ -9618,6 +9628,7 @@
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Պահված հատուկ բառերը կցուցադրվեն այստեղ</translation>
 <translation id="7836577093182643605">Արգելափակված թեմաները, որոնցով չեք ցանկանում կիսվել կայքերի հետ</translation>
+<translation id="7836745198769390202">Այս պահին ունեք <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> և ավելին։ Ձեր կազմակերպությունը կկարողանա տեսնել և կառավարել այս տվյալները</translation>
 <translation id="7836850009646241041">Փորձեք նորից հպել անվտանգության ձեր բանալուն</translation>
 <translation id="7838838951812478896">Չհաջողվեց պահել «<ph name="NETWORK_NAME" />» ցանցը <ph name="DEVICE_NAME" /> սարքից</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ուղարկվեց <ph name="DEVICE_NAME" /> սարքին}one{<ph name="ATTACHMENTS" /> ուղարկվեց <ph name="DEVICE_NAME" /> սարքին}other{<ph name="ATTACHMENTS" /> ուղարկվեց <ph name="DEVICE_NAME" /> սարքին}}</translation>
@@ -10118,6 +10129,7 @@
 <translation id="8176529144855282213">Խոսափողի հասանելիությունը միացնելու համար միացրեք ձեր սարքի խոսափողի ֆիզիկական անջատիչը</translation>
 <translation id="8177196903785554304">Ցանցի տեղեկություններ</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Բացել ներդիրը նոր պատուհանում}one{Բացել ներդիրները նոր պատուհանում}other{Բացել ներդիրները նոր պատուհանում}}</translation>
+<translation id="8178657161962192959">Դուք բացել եք երեկ</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />։ Տպիչ <ph name="ITEM_POSITION" />՝ <ph name="NUM_PRINTERS" />-ից։</translation>
 <translation id="8180785270975217276">Էներգիայի տնտեսումը միացված է</translation>
@@ -11379,6 +11391,7 @@
 <translation id="9052404922357793350">Շարունակել արգելափակումը</translation>
 <translation id="90528604757378587">Աշխատանքը ֆոնային ռեժիմում և որոշ վիզուալ էֆեկտներ, օրինակ՝ սահուն ոլորումը, կարող են սահմանափակվել։</translation>
 <translation id="9053563360605707198">Տպել երկու կողմին</translation>
+<translation id="9055810458113674066">Այս պահին ունեք <ph name="NUMBERED_ITEM" /> և ավելին։ Ձեր կազմակերպությունը կկարողանա տեսնել և կառավարել այս տվյալները</translation>
 <translation id="9056788090206401048">Bluetooth-ը պետք է միացված լինի, որպեսզի կարողանաք օգտագործել ձեր մուտքի բանալին մեկ այլ սարքում։ Սա կարող եք ցանկացած ժամանակ կառավարել կարգավորումներում։</translation>
 <translation id="9056810968620647706">Համընկնումներ չեն գտնվել:</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" />-ին անհրաժեշտ է հետևյալ բովանդակությունն օգտագործելու թույլտվություն՝</translation>

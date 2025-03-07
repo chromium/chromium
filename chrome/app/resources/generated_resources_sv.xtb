@@ -1378,7 +1378,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1936157145127842922">Visa i mapp</translation>
 <translation id="1936931585862840749">Använd ett nummer som anger hur många kopior som ska skrivas ut (1 till <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Det går inte att importera en behållararkitektur av typen <ph name="ARCHITECTURE_CONTAINER" /> med den här enheten, som är en <ph name="ARCHITECTURE_DEVICE" />. Du kan testa att återställa behållaren till en annan enhet, eller så kan du öppna filerna i behållarbilden via appen Filer.</translation>
-<translation id="1938116692670653897">Aktuellt färgtema</translation>
 <translation id="1938351510777341717">Extern kommandotangent</translation>
 <translation id="1940221956626514677">Anpassa verktygsfältet</translation>
 <translation id="1940546824932169984">Anslutna enheter</translation>
@@ -3821,6 +3820,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3670229581627177274">Aktivera Bluetooth</translation>
 <translation id="3670480940339182416">Webbplatser kan använda V8-optimeraren</translation>
 <translation id="3671764914317109892">Använd vardagligt språk för att söka i webbhistoriken. Du kan även ställa frågor och få svar baserat på din webbhistorik.</translation>
+<translation id="3671982238795754537">Läs mer om nycklar</translation>
 <translation id="3672681487849735243">Ett fabriksfel har upptäckts</translation>
 <translation id="3673097791729989571">Inloggningen tillhandahålls av <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">Din pinkod har uppdaterats</translation>
@@ -4737,6 +4737,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4289540628985791613">Översikt</translation>
 <translation id="428963538941819373">Dessa webbplatser kan använda information som de har sparat om dig när du surfar på <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Välj pinkod</translation>
+<translation id="4290526909608432059">Stödet för Chrome-appar upphör snart. Kontakta apputvecklaren eller IT-supporten om du vill veta mer om dina alternativ.</translation>
 <translation id="4290791284969893584">När du stänger en sida kanske åtgärder som du startat inte slutförs</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> medlem</translation>
 <translation id="4290898381118933198">Navigera mellan sidor genom att svepa</translation>
@@ -8532,6 +8533,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – Serieporten är ansluten</translation>
 <translation id="7033616203784997570">Ange högst 62 tecken</translation>
 <translation id="7034692021407794547">En administratör med behörigheten Fakturahantering måste först godkänna användarvillkoren för Google Meet-hårdvara i avsnittet Google Meet-hårdvara i administratörskonsolen.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> har precis skapat en nyckel för ditt konto. Nycklar är ett snabbare och säkrare sätt att logga in och sparas i Google Lösenordshantering för <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> utrymme rekommenderas för Linux. Frigör utrymme genom att radera filer på enheten.</translation>
 <translation id="7037157058268992880">Glömt pinkoden</translation>
 <translation id="7037509989619051237">Text för förhandsgranskning</translation>
@@ -10574,6 +10576,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8477178913400731244">Ta bort data</translation>
 <translation id="8477241577829954800">Ersatt</translation>
 <translation id="8477384620836102176">&amp;Allmänt</translation>
+<translation id="8477446666255316832">Logga in snabbare nästa gång</translation>
 <translation id="8479176401914456949">Ogiltig kod. Försök igen.</translation>
 <translation id="8480869669560681089">Okänd enhet från <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Bekräfta USB-behörighet</translation>

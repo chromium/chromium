@@ -1365,7 +1365,6 @@
 <translation id="1936157145127842922">Қалтада көрсету</translation>
 <translation id="1936931585862840749">Басып шығарылатын көшірмелер санын көрсетіңіз (1-<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_CONTAINER" /> контейнер архитектурасы түрін бұл құрылғымен (<ph name="ARCHITECTURE_DEVICE" />) импорттау мүмкін емес. Бұл контейнерді басқа құрылғыда қалпына келтіріп көруіңізге болады немесе файлдарға контейнер кескінін Files қолданбасынан ашу арқылы кіре аласыз.</translation>
-<translation id="1938116692670653897">Қазіргі түс тақырыбы</translation>
 <translation id="1938351510777341717">Сыртқы пәрмен</translation>
 <translation id="1940221956626514677">Құралдар тақтасын бейімдеу</translation>
 <translation id="1940546824932169984">Жалғанған құрылғылар</translation>
@@ -3803,6 +3802,7 @@
 <translation id="3670229581627177274">Bluetooth функциясын қосу</translation>
 <translation id="3670480940339182416">Сайттар V8 оңтайландырғышын пайдалана алады</translation>
 <translation id="3671764914317109892">Браузерді қолдану тарихынан іздеу үшін кәдімгі тілді пайдаланыңыз. Браузерді қолдану тарихы бойынша сұрақ қоюға және жауаптар алуға да болады.</translation>
+<translation id="3671982238795754537">Кіру кілттері туралы толық ақпарат алыңыз.</translation>
 <translation id="3672681487849735243">Зауыттық қате анықталды</translation>
 <translation id="3673097791729989571">Кіру хосы: <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">PIN кодыңыз өзгертілді</translation>
@@ -4719,6 +4719,7 @@
 <translation id="4289540628985791613">Шолу</translation>
 <translation id="428963538941819373">Бұл сайттар сіз <ph name="HOST" /> хостына шолу жасаған кезде сіз туралы сақталған ақпаратты пайдалана алады.</translation>
 <translation id="4289732974614035569">PIN кодын таңдау</translation>
+<translation id="4290526909608432059">Chrome қолданбаларына жақында қолдау көрсетілмейтін болады. Қолжетімді опциялар туралы ақпарат алу үшін қолданба әзірлеушісіне немесе АТ қолдау көрсету ұжымына хабарласыңыз.</translation>
 <translation id="4290791284969893584">Бетті жапқан соң, басталған тапсырмалар аяқталмауы мүмкін.</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> мүше</translation>
 <translation id="4290898381118933198">Беттен бетке өту үшін сырғытыңыз</translation>
@@ -8508,6 +8509,7 @@
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – сериялық ұяшық жалғанған.</translation>
 <translation id="7033616203784997570">62 таңбадан аспауы керек.</translation>
 <translation id="7034692021407794547">Төлемдерді басқару құқығы бар әкімші, алдымен Әкімші консолінің "Google Meet жабдығы" бөлімінде Google Meet жабдығының Қызмет көрсету шарттарын қабылдауы керек.</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> аккаунтыңыз үшін қазір ғана кіру кілтін жасады. Кіру кілттері жылдам әрі қауіпсіз кіру жолын ұсынады және <ph name="USER" /> аккаунтына арналған Google Password Manager қызметінде сақталады. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Linux үшін <ph name="DISK_SIZE" /> орын қажет. Орын босату үшін құрылғыдан файлдарды жойыңыз.</translation>
 <translation id="7037157058268992880">PIN кодын ұмытып қалдым</translation>
 <translation id="7037509989619051237">Мәтінді алдын ала көру</translation>
@@ -10548,6 +10550,7 @@
 <translation id="8477178913400731244">Деректерді жою</translation>
 <translation id="8477241577829954800">Алмастырылған</translation>
 <translation id="8477384620836102176">&amp;Жалпы</translation>
+<translation id="8477446666255316832">Келесі жолы аккаунтқа жылдамырақ кіріңіз</translation>
 <translation id="8479176401914456949">Код жарамсыз. Қайталап көріңіз.</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> белгісіз құрылғысы</translation>
 <translation id="8481187309597259238">USB рұқсатын растау</translation>

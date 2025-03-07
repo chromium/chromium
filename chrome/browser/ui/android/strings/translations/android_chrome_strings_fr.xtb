@@ -270,6 +270,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2259659629660284697">Exporter les mots de passe…</translation>
 <translation id="2276696007612801991">Connectez-vous à votre compte Google pour vérifier vos mots de passe</translation>
 <translation id="2278052315791335171">La suppression de ce mot de passe n'entraînera pas celle de votre compte sur <ph name="SITE" /></translation>
+<translation id="2281243904606300427"><ph name="TAB_TITLE" />, onglet de navigation privée sélectionné</translation>
 <translation id="2286841657746966508">Adresse de facturation</translation>
 <translation id="228704530595896923">Liste des options de partage.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Voir <ph name="TABS_COUNT_ONE" /> onglet}one{Voir <ph name="TABS_COUNT_MANY" /> onglet}other{Voir <ph name="TABS_COUNT_MANY" /> onglets}}</translation>
@@ -329,6 +330,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> éléments supprimés</translation>
 <translation id="253498598929009420">Le site pourra voir le contenu de votre écran</translation>
 <translation id="2536728043171574184">Affichage d'une copie hors connexion de la page</translation>
+<translation id="2542548955756682219"><ph name="TAB_TITLE" />, onglet</translation>
 <translation id="2546283357679194313">Cookies et données des sites</translation>
 <translation id="2547843573592965873">Le verrouillage du profil protège vos informations dans la voiture, y compris les mots de passe, les paiements et d'autres informations enregistrées dans votre compte Google.</translation>
 <translation id="254973855621628293">Mots de passe enregistrés sur cet appareil</translation>
@@ -472,6 +474,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 mot de passe et d'autres éléments ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google (<ph name="ACCOUNT_EMAIL" />).}one{# mot de passe et d'autres éléments ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google (<ph name="ACCOUNT_EMAIL" />).}other{# mots de passe et d'autres éléments ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="3187472288455401631">Mesure des annonces</translation>
+<translation id="3189635831478931757">Groupe d'onglets <ph name="GROUP_TITLE" /></translation>
 <translation id="3207960819495026254">Favori</translation>
 <translation id="3208584281581115441">Vérifier maintenant</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> a été supprimé</translation>
@@ -748,6 +751,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4523326818319942067">dernière heure</translation>
 <translation id="452750746583162491">Examiner vos données synchronisées</translation>
 <translation id="4532845899244822526">Sélectionner un dossier</translation>
+<translation id="4535755320005483982">Groupe d'onglets <ph name="GROUP_TITLE" /> partagé</translation>
 <translation id="4543131175509360848">Aucune feuille de clés d'accès</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> onglet}one{<ph name="TAB_COUNT_MANY" /> onglet, <ph name="TAB_COUNT_INCOGNITO" /> en navigation privée}other{<ph name="TAB_COUNT_MANY" /> onglets, <ph name="TAB_COUNT_INCOGNITO" /> en navigation privée}}</translation>
 <translation id="4558311620361989323">Raccourcis de pages Web</translation>
@@ -1249,6 +1253,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6756507620369789050">Envoyer des commentaires</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="676305334223455055">Connectez-vous pour obtenir des contenus basés sur vos centres d'intérêt</translation>
+<translation id="6764137532716892442">Groupe d'onglets <ph name="GROUP_TITLE" /> partagé avec une nouvelle activité</translation>
 <translation id="6767294960381293877">La liste des appareils avec lesquels vous pouvez partager un onglet est ouverte à mi-hauteur.</translation>
 <translation id="6785476624617658922">Conditions d'utilisation supplémentaires de Chrome et Chrome OS</translation>
 <translation id="6795633245022906657">Ouvrir rapidement un nouvel onglet. Pour modifier ce raccourci, accédez aux paramètres.</translation>
@@ -1315,6 +1320,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Voir <ph name="TABS_COUNT_ONE" /> onglet avec une nouvelle activité dans les groupes d'onglets partagés}one{Voir <ph name="TABS_COUNT_MANY" /> onglet avec une nouvelle activité dans les groupes d'onglets partagés}other{Voir <ph name="TABS_COUNT_MANY" /> onglets avec une nouvelle activité dans les groupes d'onglets partagés}}</translation>
 <translation id="6971862865055170158">Ne pas approuver</translation>
+<translation id="6976223255612495095"><ph name="TAB_TITLE" />, nouvel onglet ou onglet mis à jour</translation>
 <translation id="6978717888677691380">Sites que vous avez bloqués</translation>
 <translation id="6979737339423435258">Toutes les données</translation>
 <translation id="6983306615164277634">Vous pouvez aussi appuyer de manière prolongée sur la barre d'adresse pour changer la position.</translation>
@@ -1708,6 +1714,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8676276370198826499">Inscrivez-vous à <ph name="SITE_ETLD_PLUS_ONE" /> avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Validations de connexion</translation>
 <translation id="8683039184091909753">image</translation>
+<translation id="8688183792442786085"><ph name="TAB_TITLE" />, onglet sélectionné</translation>
 <translation id="869891660844655955">Date d'expiration</translation>
 <translation id="8699120352855309748">Ne pas proposer de traduire ces langues</translation>
 <translation id="8712637175834984815">OK</translation>
@@ -1841,4 +1848,5 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="988091779042748639">Pour supprimer l'historique de navigation privée de votre appareil, fermez tous les onglets de navigation privée.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> onglets</translation>
 <translation id="996149300115483134">Le menu de la carte de flux est fermé</translation>
+<translation id="99907655649633293"><ph name="TAB_TITLE" />, onglet de navigation privée</translation>
 </translationbundle>

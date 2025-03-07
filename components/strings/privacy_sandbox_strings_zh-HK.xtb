@@ -30,7 +30,6 @@
 <translation id="33479675708419823">登入 Chrome 後，就能使用此設定確保 IP 位址不外洩。如果 Chrome 認為某個網站可能會追蹤使用者，就會透過私隱權伺服器送出部分流量。進一步瞭解<ph name="LINK_BEGIN" />IP 保護措施的運作方式<ph name="LINK_END" /></translation>
 <translation id="3425311689852411591">需使用第三方 Cookie 的網站應可正常運作</translation>
 <translation id="3442071090395342573">Chromium 會在 30 天後刪除你與網站分享的任何活動資料。如果你再次瀏覽網站，該網站可能會再次在清單中顯示。進一步瞭解如何<ph name="BEGIN_LINK" />在 Chromium 中管理廣告私隱權<ph name="END_LINK" />。</translation>
-<translation id="3462771089292989917">你瀏覽的網站可向 Chrome 索取主題資料，協助限制網站及其廣告合作夥伴可取得哪些個人資料以顯示個人化廣告</translation>
 <translation id="3467081767799433066">廣告成效評估功能讓各網站分享特定類型的資料 (例如使用者是否在瀏覽網站後購物)，以瞭解廣告成效。</translation>
 <translation id="3529311220178827364">進一步了解點樣隱藏 IP 位址</translation>
 <translation id="3624583033347146597">選擇第三方 Cookie 偏好設定</translation>
@@ -58,7 +57,6 @@
 <translation id="4894490899128180322">如果網站無法正常運作，你可嘗試暫時允許所瀏覽的網站使用第三方 Cookie</translation>
 <translation id="5055880590417889642">活動記錄是網站可用於建議廣告的其中一種資料。即使關閉網站建議廣告設定，網站仍可放送廣告，但廣告可能會較不相關。進一步瞭解</translation>
 <translation id="5117284457376555514">網站無法使用第三方 Cookie 提供個人化內容和廣告以及瞭解你在其他網站執行的操作，除非你允許相關網站存取這類 Cookie。部分網站的功能可能無法正常運作。</translation>
-<translation id="5159179910795721586">你瀏覽的網站可向 Chromium 索取主題資料，協助限制網站及其廣告合作夥伴可取得哪些個人資料以顯示個人化廣告</translation>
 <translation id="5165490319523240316">網站及其廣告合作夥伴可以根據你的活動 (例如停留在網站的時間)，在其他網站顯示個人化廣告。例如，如果你瀏覽某網站為晚餐尋找食譜，該網站可能會判斷你對烹飪感興趣。之後，另一個網站可能會根據第一個網站的建議，向你顯示雜貨送貨服務的相關廣告。</translation>
 <translation id="544199055391706031">活動記錄是網站可用於建議廣告的其中一種資料。即使關閉網站建議廣告設定，網站仍可放送廣告，但廣告可能會較不相關。進一步瞭解<ph name="BEGIN_LINK" />網站建議廣告<ph name="END_LINK" />。</translation>
 <translation id="5574580428711706114">Google 會要求公司公開聲明，不會跨網站使用此資料追蹤你。公司有責任向使用者告知資料的使用方式。<ph name="BEGIN_LINK1" />參閱《私隱權政策》瞭解詳情<ph name="LINK_END1" />。</translation>

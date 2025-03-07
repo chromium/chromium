@@ -1371,7 +1371,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1936157145127842922">Kuva kaustas</translation>
 <translation id="1936931585862840749">Kasutage numbrit, mis näitab, kui palju koopiaid printida (1 kuni <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Selle seadmega, mis põhineb arhitektuuril <ph name="ARCHITECTURE_DEVICE" />, ei saa konteineri arhitektuuri tüüpi <ph name="ARCHITECTURE_CONTAINER" /> importida. Võite proovida konteineri muus seadmes taastada või rakendusega Failid selles konteinerikujutises olevatele failidele juurde pääseda.</translation>
-<translation id="1938116692670653897">Praegune värviteema</translation>
 <translation id="1938351510777341717">Väline Command-klahv</translation>
 <translation id="1940221956626514677">Kohanda tööriistariba</translation>
 <translation id="1940546824932169984">Ühendatud seadmed</translation>
@@ -1437,6 +1436,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1980168597243156">Kosmosejaam</translation>
 <translation id="1981434377190976112">Kõigil veebisaitidel kõigi teie andmete lugemine</translation>
 <translation id="1982851102516626421">Olete välja logitud</translation>
+<translation id="1983612835086592681">Avasite eelmisel nädalal</translation>
 <translation id="1984417487208496350">Kaitseta (ei ole soovitatav)</translation>
 <translation id="1984683754853869253">Kas soovite kooli jaoks uue profiili luua?</translation>
 <translation id="198507684520034826">Abi</translation>
@@ -5975,6 +5975,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5186788525428341874">Selle pääsuvõtme abil saate eri seadmetes kiiremini sisse logida. See salvestatakse konto <ph name="ACCOUNT_NAME" /> Google’i paroolihaldurisse.</translation>
 <translation id="5187641678926990264">&amp;Installi leht rakendusena...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188242000716462162">Jagas <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Asukoha kasutamine. Lubage asukohale juurdepääsu loaga ChromeOS-i ja Androidi rakendustel, veebisaitidel ning teenustel teie seadme asukohta kasutada. Asukohatäpsus pakub Androidi rakenduste ja teenuste jaoks täpsemat asukohta. Selleks töötleb Google regulaarselt teavet seadme andurite ja teie seadme juhtmeta signaalide kohta, et juhtmeta signaalide asukohti ühiselt tuvastada. Neid kasutatakse teie isikut tuvastamata asukohatäpsuse ja asukohapõhiste teenuste parandamiseks ning Google’i teenuste täiustamiseks, pakkumiseks ja haldamiseks, lähtudes Google’i ning kolmandate osapoolte õigustatud huvidest, et kasutajate vajadusi rahuldada. <ph name="BEGIN_LINK1" />Lisateave asukoha kasutamise kohta<ph name="END_LINK1" /></translation>
 <translation id="5189274947477567401">Protsessi jagamisest loobumiseks on vaja brauser taaskäivitada. Brauser taaskäivitub nüüd.</translation>
 <translation id="5189404424758444348">Aurupunk</translation>
@@ -8022,6 +8023,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="668599234725812620">Ava Google Play</translation>
 <translation id="6686490380836145850">Sule vahelehed paremalt</translation>
 <translation id="6686665106869989887">Vaheleht teisaldati paremale</translation>
+<translation id="6686676261102452995">Avasite täna</translation>
 <translation id="6686817083349815241">Parooli salvestamine</translation>
 <translation id="6687008241368170505">Google'i paroolihalduri PIN-koodi muutmine</translation>
 <translation id="6687079240787935001">Peida <ph name="MODULE_TITLE" /></translation>
@@ -10138,6 +10140,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8176529144855282213">Mikrofonile juurdepääsu sisselülitamiseks lülitage oma seadmes sisse mikrofoni füüsiline lüliti</translation>
 <translation id="8177196903785554304">Võrgu üksikasjad</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Teisalda vaheleht uude aknasse}other{Teisalda vahelehed uude aknasse}}</translation>
+<translation id="8178657161962192959">Avasite eile</translation>
 <translation id="8179976553408161302">Sisestusklahv</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Printer <ph name="ITEM_POSITION" />/<ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Energiasäästja on sisse lülitatud</translation>
