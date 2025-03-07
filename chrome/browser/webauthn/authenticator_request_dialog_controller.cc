@@ -2585,13 +2585,13 @@ AuthenticatorRequestDialogController::GetRenderFrameHost() const {
 
 void AuthenticatorRequestDialogController::StartPasskeyUpgradeRequest() {
   CHECK(enclave_request_callback_);
+  SetCurrentStep(Step::kPasskeyUpgrade);
   passkey_upgrade_request_controller_ =
       std::make_unique<PasskeyUpgradeRequestController>(
           GetRenderFrameHost(), std::move(enclave_request_callback_));
   passkey_upgrade_request_controller_->TryUpgradePasswordToPasskey(
       model_->relying_party_id, model_->user_entity.name.value_or(""),
       /*delegate=*/this);
-  SetCurrentStep(Step::kPasskeyUpgrade);
 }
 
 void AuthenticatorRequestDialogController::PopulatePasswords() {
