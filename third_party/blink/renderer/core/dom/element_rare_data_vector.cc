@@ -97,6 +97,12 @@ PseudoElement* ElementRareDataVector::GetPseudoElement(
     return nullptr;
   return data->GetPseudoElement(pseudo_id, document_transition_tag);
 }
+bool ElementRareDataVector::HasViewTransitionGroupPseudoElement() const {
+  PseudoElementData* data =
+      static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
+  return data && data->HasViewTransitionGroupPseudoElement();
+}
+
 PseudoElementData::PseudoElementVector
 ElementRareDataVector::GetPseudoElements() const {
   PseudoElementData* data =
