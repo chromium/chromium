@@ -71,7 +71,12 @@ ContextualCueingPageData::ContextualCueingPageData(
   FindMatchingConfig();
 }
 
-ContextualCueingPageData::~ContextualCueingPageData() = default;
+ContextualCueingPageData::~ContextualCueingPageData() {
+  if (cueing_decision_callback_) {
+    std::move(cueing_decision_callback_)
+        .Run(base::unexpected(NudgeDecision::kNudgeDecisionInterrupted));
+  }
+}
 
 PAGE_USER_DATA_KEY_IMPL(ContextualCueingPageData);
 
@@ -86,7 +91,8 @@ void ContextualCueingPageData::FindMatchingConfig() {
     }
     auto decision = DidMatchCueingConditions(config);
     if (decision == kAllowed) {
-      std::move(cueing_decision_callback_).Run(std::move(config.cue_label()));
+      std::move(cueing_decision_callback_)
+          .Run(base::ok(std::move(config.cue_label())));
       return;
     } else if (decision == kNeedsPdfPageCount) {
       needs_pdf_page_count = true;
@@ -110,7 +116,8 @@ void ContextualCueingPageData::FindMatchingConfig() {
     return;
   }
   // None of the config matched, and no client-signals were requested.
-  std::move(cueing_decision_callback_).Run(std::string());
+  std::move(cueing_decision_callback_)
+      .Run(base::unexpected(NudgeDecision::kClientConditionsUnmet));
 }
 
 ContextualCueingPageData::CueingConfigurationDecision

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_PAGE_DATA_H_
 #define CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_PAGE_DATA_H_
 
+#include "base/types/expected.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/pdf/common/constants.h"
@@ -18,7 +20,8 @@ namespace contextual_cueing {
 class ContextualCueingPageData
     : public content::PageUserData<ContextualCueingPageData> {
  public:
-  using CueingDecisionCallback = base::OnceCallback<void(std::string)>;
+  using CueingDecisionCallback =
+      base::OnceCallback<void(base::expected<std::string, NudgeDecision>)>;
 
   ContextualCueingPageData(const ContextualCueingPageData&) = delete;
   ContextualCueingPageData& operator=(const ContextualCueingPageData&) = delete;
