@@ -103,7 +103,7 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
   void Cleanup() { receiver_.reset(); }
 
  private:
-  void Close(v8::Local<v8::Value> exception) {
+  void Close(v8::Local<v8::Value> exception, int net_error) {
     close_called_with_ = !exception.IsEmpty();
   }
 

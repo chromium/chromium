@@ -124,7 +124,6 @@ group("absl_component_deps") {
 
     # absl internal utilities used by protobuf.
     "//third_party/abseil-cpp/absl/container:layout",
-    "//third_party/abseil-cpp/absl/utility:if_constexpr",
   ]
 
   if (is_component_build) {

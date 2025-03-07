@@ -465,6 +465,55 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenAppUrlShortcut) {
             web_contents->GetLastCommittedURL().ExtractFileName());
 }
 
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
+                       KSameTabSwitchReplacesActiveTab) {
+  // Use a couple of arbitrary URLs.
+  std::vector<GURL> urls;
+  urls.push_back(ui_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(FILE_PATH_LITERAL("title1.html"))));
+  urls.push_back(ui_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(FILE_PATH_LITERAL("title2.html"))));
+  urls.push_back(ui_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(FILE_PATH_LITERAL("title3.html"))));
+
+  DisableWhatsNewPage();
+
+  // Open a browser window with some preloaded tabs.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("http://localhost"), WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  EXPECT_EQ(1, tab_strip->count());  // Verify one tab is open.
+
+  // Set the first tab as the active tab.
+  tab_strip->ActivateTabAt(0);
+  EXPECT_EQ(0, tab_strip->active_index());
+
+  // Add the --kSameTab switch and URLs to the command line.
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitch(switches::kSameTab);  // Add the switch.
+  command_line.AppendArg(urls[0].spec());         // First URL.
+  command_line.AppendArg(urls[1].spec());         // Second URL.
+  command_line.AppendArg(urls[2].spec());         // Third URL.
+
+  // Process the command line to simulate the launch.
+  ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
+      command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
+      {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
+
+  // Verify the behavior:
+  // - The active tab's URL should be replaced by the first URL.
+  EXPECT_EQ(urls[0], tab_strip->GetWebContentsAt(0)->GetVisibleURL());
+
+  // - The remaining URLs should open in new tabs.
+  EXPECT_EQ(3, tab_strip->count());  // Verify total tabs.
+  EXPECT_EQ(urls[1], tab_strip->GetWebContentsAt(1)->GetVisibleURL());
+  EXPECT_EQ(urls[2], tab_strip->GetWebContentsAt(2)->GetVisibleURL());
+}
+
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenAppUrlIncognitoShortcut) {
   // Add --app=<url> and --incognito to the command line. Tests launching
   // legacy apps which may have been created by "Add to Desktop" in old versions

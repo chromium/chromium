@@ -553,27 +553,9 @@ const char kEnterpriseForceManualEnrollmentInTestBuilds[] =
 const char kEnterpriseEnableUnifiedStateDetermination[] =
     "enterprise-enable-state-determination";
 
-// Whether to enable forced enterprise re-enrollment.
-const char kEnterpriseEnableForcedReEnrollment[] =
-    "enterprise-enable-forced-re-enrollment";
-
 // Whether to enable forced enterprise re-enrollment on Flex.
 const char kEnterpriseEnableForcedReEnrollmentOnFlex[] =
     "enterprise-enable-forced-re-enrollment-on-flex";
-
-// Whether to enable initial enterprise enrollment.
-const char kEnterpriseEnableInitialEnrollment[] =
-    "enterprise-enable-initial-enrollment";
-
-// Power of the power-of-2 initial modulus that will be used by the
-// auto-enrollment client. E.g. "4" means the modulus will be 2^4 = 16.
-const char kEnterpriseEnrollmentInitialModulus[] =
-    "enterprise-enrollment-initial-modulus";
-
-// Power of the power-of-2 maximum modulus that will be used by the
-// auto-enrollment client.
-const char kEnterpriseEnrollmentModulusLimit[] =
-    "enterprise-enrollment-modulus-limit";
 
 // Disallow blocking developer mode through enterprise device policy:
 // - Fail enterprise enrollment if enrolling would block dev mode.

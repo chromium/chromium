@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest, MAYBE_ReshowOnMove) {
           EXPECT_EQ(reason, ExclusiveAccessBubbleHideReason::kTimeout);
         });
     GetExclusiveAccessManager()->context()->UpdateExclusiveAccessBubble(
-        {.url = GURL("http://example.com"),
+        {.origin = url::Origin::Create(GURL("http://example.com")),
          .type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION},
         std::move(callback));
     EXPECT_TRUE(IsExclusiveAccessBubbleDisplayed());
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest, MAYBE_ReshowOnClick) {
         });
 
     GetExclusiveAccessManager()->context()->UpdateExclusiveAccessBubble(
-        {.url = GURL("http://example.com"),
+        {.origin = url::Origin::Create(GURL("http://example.com")),
          .type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION},
         std::move(callback));
     EXPECT_TRUE(IsExclusiveAccessBubbleDisplayed());

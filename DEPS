@@ -286,19 +286,19 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': 'ff3d5537e3da3af7873dd2950dcbc176528615cb',
+  'src_internal_revision': '4f3dc894501ca0de0f62bd001ab8aee3e6bdd626',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '263308ea438650f9ffef08e0b5cd9f26f266792c',
+  'skia_revision': '79f8af105a612cbf45d060b6edee1a8620ed9647',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': 'a5a93fa7eed87073390ebd289d43e4178a5d2892',
+  'v8_revision': 'dfb1af23fdc1a3506ae8aa250be618562cdc4a86',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': 'ab98c698498e3c5966079478a046ac47fd58c694',
+  'angle_revision': 'd7538152f59d5446d3daf9c33cb6c5a44a75fdf7',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -310,7 +310,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
-  'boringssl_revision': '90e641cefeb2c02deb3b2d0f65729212cf9f0d2b',
+  'boringssl_revision': '5d4b8d99a14a64df946f48d87dbaf6691f3cdeaf',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Fuchsia sdk
   # and whatever else without interference from each other.
@@ -382,7 +382,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'e3e0616bf4e5ef292c143e693c9091336b2518d0',
+  'devtools_frontend_revision': 'cd948cc439505b68ef00d1b00783bf764c0cd269',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -406,7 +406,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': '34355d0e9f380ee383c3472d7685517677cec4f5',
+  'dawn_revision': '63ec302970c5f247200239639514dc56a63b117d',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -1141,7 +1141,7 @@ deps = {
   },
 
   'src/chrome/release_scripts': {
-      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '96a57d4ac7a83b1b3aa6edf92e2ea98f37c36195',
+      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '7489e1cb89b646298d2325b37d7d216d29e6b3bd',
       'condition': 'checkout_chrome_release_scripts',
   },
 
@@ -1470,7 +1470,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '9f9b19fd599749fd5e87f87dc17de116793b383a',
+    '7f702118e51db0324abf8e52e4cc221074878ebc',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1629,7 +1629,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'HVznLlCfjJ8q3AID6QOwSAnQHreinvvPPzINNbw4hoQC',
+          'version': 'pPfESfZRGhO7sr7gJcJHrQab-ZZi7h7_By6QsXkQT9gC',
       },
     ],
     'condition': 'checkout_android and non_git_source',
@@ -2513,7 +2513,7 @@ deps = {
     Var('pdfium_git') + '/pdfium.git' + '@' +  Var('pdfium_revision'),
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'ad0e86e17317ced2963ffb8958453968d8275a08',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + '5c17fc6e089cecec6bd75073875f57c99dcd2f02',
 
   'src/base/tracing/test/data': {
     'bucket': 'perfetto',
@@ -2875,7 +2875,7 @@ deps = {
     Var('chromium_git') + '/external/khronosgroup/webgl.git' + '@' + '450cceb587613ac1469c5a131fac15935c99e0e7',
 
   'src/third_party/webgpu-cts/src':
-    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + 'fe6ac50b97644a06e78166e7d3e89265940f4308',
+    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + 'b9f6db2a2a2bf985470a72e06481bd151d6b6513',
 
   'src/third_party/webpagereplay':
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
@@ -3000,7 +3000,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/boca_app/app',
-        'version': 'kKa9wOil7YliEcrszUnseXs2rvlxiIbTmyI_vI5TJyEC',
+        'version': 'w8wLY2wMulR3_GSkpzuuM_9c318XGQAb8DnSS51XuK4C',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -3055,7 +3055,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/projector_app/app',
-        'version': 'loo9tq5NBW1gSz0lpRhxeYfmlR2p1vYfdly0HkeBO-EC',
+        'version': 'P96kvRfO660NoVOtorfWGNgZ4lqB1WIV_VahAGg0jhkC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4571,7 +4571,7 @@ deps = {
 
   'src/components/optimization_guide/internal': {
       'url': Var('chrome_git') + '/chrome/components/optimization_guide.git' + '@' +
-        '58351c5ac740cd3fe80e135d6027237dec5a01d3',
+        '34ef06a22f466d2492cdc3af9f8b8b70a3c0255a',
       'condition': 'checkout_src_internal',
   },
 
@@ -4637,7 +4637,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '855885155b3c12d4f4a0aac9ac7806a4d4cc55ac',
+        'cfe781f652866239ebf73c6f29fd15c7dc92d17b',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

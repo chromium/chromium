@@ -18,20 +18,27 @@
 
 #ifdef GPR_WINDOWS
 
+#include <grpc/event_engine/event_engine.h>
+#include <grpc/event_engine/memory_allocator.h>
+
 #include <list>
 
 #include "absl/base/thread_annotations.h"
 #include "absl/status/statusor.h"
-
-#include <grpc/event_engine/event_engine.h>
-#include <grpc/event_engine/memory_allocator.h>
-
 #include "src/core/lib/event_engine/common_closures.h"
+#include "src/core/lib/event_engine/thread_pool/thread_pool.h"
 #include "src/core/lib/event_engine/windows/iocp.h"
-#include "src/core/lib/gprpp/sync.h"
+#include "src/core/lib/iomgr/port.h"
+#include "src/core/util/sync.h"
 
-namespace grpc_event_engine {
-namespace experimental {
+#ifdef GRPC_HAVE_UNIX_SOCKET
+// clang-format off
+#include <ws2def.h>
+#include <afunix.h>
+// clang-format on
+#endif
+
+namespace grpc_event_engine::experimental {
 
 class WindowsEventEngineListener : public EventEngine::Listener {
  public:
@@ -39,7 +46,7 @@ class WindowsEventEngineListener : public EventEngine::Listener {
       IOCP* iocp, AcceptCallback accept_cb,
       absl::AnyInvocable<void(absl::Status)> on_shutdown,
       std::unique_ptr<MemoryAllocatorFactory> memory_allocator_factory,
-      std::shared_ptr<EventEngine> engine, Executor* executor_,
+      std::shared_ptr<EventEngine> engine, ThreadPool* thread_pool_,
       const EndpointConfig& config);
   ~WindowsEventEngineListener() override;
   absl::StatusOr<int> Bind(const EventEngine::ResolvedAddress& addr) override;
@@ -119,9 +126,15 @@ class WindowsEventEngineListener : public EventEngine::Listener {
 
     // The cached AcceptEx for that port.
     LPFN_ACCEPTEX AcceptEx;
+    // Buffer to hold the local and remote address.
     // This seemingly magic number comes from AcceptEx's documentation. each
     // address buffer needs to have at least 16 more bytes at their end.
+#ifdef GRPC_HAVE_UNIX_SOCKET
+    // unix addr is larger than ip addr.
+    uint8_t addresses_[(sizeof(sockaddr_un) + 16) * 2] = {};
+#else
     uint8_t addresses_[(sizeof(sockaddr_in6) + 16) * 2] = {};
+#endif
     // The parent listener
     WindowsEventEngineListener* listener_;
     // shared state for asynchronous cleanup of overlapped operations
@@ -136,7 +149,7 @@ class WindowsEventEngineListener : public EventEngine::Listener {
   IOCP* const iocp_;
   const EndpointConfig& config_;
   std::shared_ptr<EventEngine> engine_;
-  Executor* executor_;
+  ThreadPool* thread_pool_;
   const std::unique_ptr<MemoryAllocatorFactory> memory_allocator_factory_;
   AcceptCallback accept_cb_;
   absl::AnyInvocable<void(absl::Status)> on_shutdown_;
@@ -147,8 +160,7 @@ class WindowsEventEngineListener : public EventEngine::Listener {
   bool listeners_shutdown_ ABSL_GUARDED_BY(port_listeners_mu_) = false;
 };
 
-}  // namespace experimental
-}  // namespace grpc_event_engine
+}  // namespace grpc_event_engine::experimental
 
 #endif
 

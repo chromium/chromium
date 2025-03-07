@@ -12,9 +12,3 @@ absl_source_set("utility") {
     "//third_party/abseil-cpp/absl/meta:type_traits",
   ]
 }
-
-# TODO: crbug.com/398801447 - Remove when protobuf stops using this header.
-absl_source_set("if_constexpr") {
-  public = [ "internal/if_constexpr.h" ]
-  deps = [ "//third_party/abseil-cpp/absl/base:config" ]
-}

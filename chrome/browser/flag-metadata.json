@@ -1418,11 +1418,6 @@
     "expiry_milestone": 133
   },
   {
-    "name": "clear-undecryptable-passwords",
-    "owners": [ "sygiet@google.com", "vasilii@chromium.org" ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "click-to-call",
     "owners": [ "ellyjones@chromium.org" ],
     "expiry_milestone": 115
@@ -1488,11 +1483,6 @@
     "expiry_milestone": 136
   },
   {
-    "name": "compose-polite-nudge",
-    "owners": ["//components/compose/OWNERS", "chrome-compose-frontend@google.com"],
-    "expiry_milestone": 134
-  },
-  {
     "name": "compose-proactive-nudge",
     "owners": ["//components/compose/OWNERS", "chrome-compose-frontend@google.com"],
     "expiry_milestone": 136
@@ -1515,21 +1505,6 @@
   {
     "name": "conch",
     "owners": ["pihsun@chromium.org"],
-    "expiry_milestone": 140
-  },
-  {
-    "name": "conch-expand-transcription-language",
-    "owners": ["hsuanling@google.com"],
-    "expiry_milestone": 140
-  },
-  {
-    "name": "conch-gen-ai",
-    "owners": ["hsuanling@google.com"],
-    "expiry_milestone": 140
-  },
-  {
-    "name": "conch-large-model",
-    "owners": ["hsuanling@google.com"],
     "expiry_milestone": 140
   },
   {
@@ -1711,7 +1686,7 @@
       "tsergeant@chromium.org",
       "crosdev-commerce-eng@google.com"
     ],
-    "expiry_milestone": 136
+    "expiry_milestone": 142
   },
   {
     "name": "cros-mall-managed",
@@ -1719,7 +1694,7 @@
       "tsergeant@chromium.org",
       "crosdev-commerce-eng@google.com"
     ],
-    "expiry_milestone": 136
+    "expiry_milestone": 142
   },
   {
     "name": "cros-mall-url",
@@ -1727,7 +1702,7 @@
       "tsergeant@chromium.org",
       "crosdev-commerce-eng@google.com"
     ],
-    "expiry_milestone": 136
+    "expiry_milestone": 142
   },
   {
     "name": "cros-privacy-hub-app-permissions-v2",
@@ -5470,6 +5445,11 @@
     "name": "ip-protection-proxy-opt-out",
     "owners": [ "awillia@chromium.org", "//chrome/browser/ip_protection/OWNERS" ],
     "expiry_milestone": 148
+  },
+  {
+    "name": "iph-autofill-credit-card-benefit-feature",
+    "owners": [ "viplavkadam@google.com", "payments-autofill-team@google.com"],
+    "expiry_milestone": 145
   },
   {
     "name": "iph-extensions-menu-feature",

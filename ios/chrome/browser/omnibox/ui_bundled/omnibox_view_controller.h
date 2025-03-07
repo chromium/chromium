@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/orchestrator/ui_bundled/location_bar_offset_provider.h"
 
 @class LayoutGuideCenter;
+@protocol OmniboxMutator;
 @protocol OmniboxKeyboardDelegate;
 @protocol OmniboxReturnDelegate;
 @class OmniboxViewController;
@@ -50,6 +51,9 @@ class OmniboxTextChangeDelegate;
                                                      LocationBarOffsetProvider,
                                                      OmniboxConsumer,
                                                      OmniboxViewConsumer>
+
+/// Mutator of the omnibox.
+@property(nonatomic, weak) id<OmniboxMutator> mutator;
 
 /// Whether the UI is configured for search-only mode.
 @property(nonatomic, assign) BOOL isSearchOnlyUI;

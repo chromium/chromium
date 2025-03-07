@@ -78,11 +78,13 @@ extern const char kFeedSettingDiscoverReferrerParameter[];
 // A parameter to indicate whether the label should be removed from the discover
 // feed header.
 extern const char kDeprecateFeedHeaderParameterRemoveLabel[];
-// A parameter to indicate whether the top padding above the Doodle should be
-// increased.
-extern const char kDeprecateFeedHeaderParameterTopPadding[];
 // A parameter to indicate whether we should enlarge the Doodle and the fakebox.
 extern const char kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox[];
+// Parameters controlling the padding/spacing between NTP elements.
+extern const char kDeprecateFeedHeaderParameterTopPadding[];
+extern const char kDeprecateFeedHeaderParameterSearchFieldTopMargin[];
+extern const char kDeprecateFeedHeaderParameterSpaceBetweenModules[];
+extern const char kDeprecateFeedHeaderParameterHeaderBottomPadding[];
 
 // Parameter to remove the three-dot menu from the account menu.
 extern const char kDisableAccountMenuEllipsisParam[];
@@ -111,9 +113,11 @@ bool IsiPadFeedGhostCardsEnabled();
 bool ShouldRemoveDiscoverLabel(bool is_google_default_search_engine);
 bool ShouldEnlargeLogoAndFakebox();
 
-// Top padding that should be added to the top of the NTP. Returns 0 if the NTP
-// should not be padded.
-double TopPaddingToNTP();
+// If feed header should be deprecated, retrieve the value for `param_name` for
+// the `kDeprecateFeedHeader`. Otherwise, return the default value.
+double GetDeprecateFeedHeaderParameterValueAsDouble(
+    const std::string& param_name,
+    double default_value);
 
 // YES if the account menu is enabled without the three-dot menu.
 bool IdentityDiscAccountMenuEnabledWithoutEllipsis();

@@ -91,7 +91,8 @@ void UDPReadableStreamWrapper::CloseStream() {
 
   socket_listener_.reset();
 
-  std::move(on_close_).Run(/*exception=*/v8::Local<v8::Value>());
+  std::move(on_close_).Run(/*exception=*/v8::Local<v8::Value>(),
+                           /*net_error=*/net::OK);
 }
 
 void UDPReadableStreamWrapper::ErrorStream(int32_t error_code) {
@@ -118,7 +119,7 @@ void UDPReadableStreamWrapper::ErrorStream(int32_t error_code) {
 
   Controller()->Error(exception);
 
-  std::move(on_close_).Run(exception);
+  std::move(on_close_).Run(exception, error_code);
 }
 
 // Invoked when data is received.

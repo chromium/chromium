@@ -25,6 +25,9 @@ const CGFloat kFaviconSize = 20;
 // The size of an avatar image.
 const CGFloat kAvatarSize = 30;
 
+// The maximum number of logs to query, and thus display in the list.
+const int kMaxNumberOfLogs = 5;
+
 ActivityLogType ConvertCollaborationEvent(
     collaboration::messaging::CollaborationEvent collaboration_event) {
   switch (collaboration_event) {
@@ -73,6 +76,7 @@ ActivityLogType ConvertCollaborationEvent(
   CHECK(syncService);
   CHECK(shareKitService);
   if ((self = [super init])) {
+    _tabGroup = tabGroup;
     _messagingService = messagingService;
     _faviconLoader = faviconLoader;
     _syncService = syncService;
@@ -93,6 +97,7 @@ ActivityLogType ConvertCollaborationEvent(
 // Creates recent activity logs and passes them to the consumer.
 - (void)populateItemsFromService {
   collaboration::messaging::ActivityLogQueryParams params;
+  params.result_length = kMaxNumberOfLogs;
   tab_groups::CollaborationId collabID =
       tab_groups::utils::GetTabGroupCollabID(_tabGroup.get(), _syncService);
   params.collaboration_id = data_sharing::GroupId(collabID.value());
@@ -118,20 +123,24 @@ ActivityLogType ConvertCollaborationEvent(
 
     // Get a user's icon from the avatar URL and set it to `item`.
     // The image is asynchronously loaded.
-    if (_shareKitService->IsSupported() &&
-        log.activity_metadata.triggering_user.has_value()) {
-      ShareKitAvatarConfiguration* config =
-          [[ShareKitAvatarConfiguration alloc] init];
-      data_sharing::GroupMember user =
-          log.activity_metadata.triggering_user.value();
-      config.avatarUrl =
-          [NSURL URLWithString:base::SysUTF8ToNSString(user.avatar_url.spec())];
-      // Use email intead when the display name is empty.
-      config.displayName = user.display_name.empty()
-                               ? base::SysUTF8ToNSString(user.email)
-                               : base::SysUTF8ToNSString(user.display_name);
-      config.avatarSize = CGSizeMake(kAvatarSize, kAvatarSize);
-      item.avatarPrimitive = _shareKitService->AvatarImage(config);
+    if (_shareKitService->IsSupported()) {
+      std::optional<data_sharing::GroupMember> user =
+          log.activity_metadata.triggering_user
+              ? log.activity_metadata.triggering_user
+              : log.activity_metadata.affected_user;
+
+      if (user.has_value()) {
+        ShareKitAvatarConfiguration* config =
+            [[ShareKitAvatarConfiguration alloc] init];
+        config.avatarUrl = [NSURL
+            URLWithString:base::SysUTF8ToNSString(user->avatar_url.spec())];
+        // Use email intead when the display name is empty.
+        config.displayName = user->display_name.empty()
+                                 ? base::SysUTF8ToNSString(user->email)
+                                 : base::SysUTF8ToNSString(user->display_name);
+        config.avatarSize = CGSizeMake(kAvatarSize, kAvatarSize);
+        item.avatarPrimitive = _shareKitService->AvatarImage(config);
+      }
     }
 
     [items addObject:item];

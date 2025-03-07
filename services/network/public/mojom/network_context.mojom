@@ -1523,6 +1523,14 @@ interface NetworkContext {
              string sct_list)
       => (int32 error_code, CertVerifyResult cv_result, bool pkp_bypassed);
 
+  // Checks the given certificate against the CertVerifier and CTVerifier.
+  // This implementation is specific for use by Signed Exchange.
+  VerifyCertForSignedExchange(X509Certificate certificate,
+                              HostPortPair host_port,
+                              string ocsp_response,
+                              string sct_list)
+      => (int32 error_code, CertVerifyResult cv_result, bool pkp_bypassed);
+
   // Adds explicitly-specified data as if it was processed from an
   // HSTS header. Used by tests and implementation of chrome://net-internals.
   AddHSTS(string host, mojo_base.mojom.Time expiry, bool include_subdomains)

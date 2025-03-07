@@ -234,7 +234,7 @@ chromium-metrics-reviews@google.com.
   <int value="64" label="AudioCodecsAddedL16"/>
   <int value="65" label="AudioCodecsRtcpFbAudioNack"/>
   <int value="66" label="AudioCodecsFmtpOpusFec"/>
-  <int value="67" label="AudioCodecsFmtpOpusPacketizationTime"/>
+  <int value="67" label="AudioCodecsFmtpOpusCbr"/>
   <int value="68" label="AudioCodecsFmtpOpusStereo"/>
   <int value="69" label="AudioCodecsFmtpOpusDtx"/>
   <int value="70" label="AudioCodecsFmtp"/>

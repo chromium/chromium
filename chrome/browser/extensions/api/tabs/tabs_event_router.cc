@@ -18,12 +18,16 @@
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
+#include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/favicon/content/content_favicon_driver.h"
@@ -36,6 +40,7 @@
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "ui/gfx/range/range.h"
 
 using base::Value;
 using content::WebContents;
@@ -289,6 +294,34 @@ void TabsEventRouter::TabPinnedStateChanged(TabStripModel* tab_strip_model,
   DispatchTabUpdatedEvent(contents, std::move(changed_property_names));
 }
 
+void TabsEventRouter::OnTabGroupChanged(const TabGroupChange& change) {
+  // Maintain the previous tabstrip observation call sequence for extension so
+  // that it does not cause a breaking change for clients during detaching and
+  // re-inserting tab groups.
+  if (change.type == TabGroupChange::kCreated &&
+      change.GetCreateChange()->reason() ==
+          TabGroupChange::TabGroupCreationReason::
+              kInsertedFromAnotherTabstrip) {
+    for (tabs::TabInterface* tab :
+         change.GetCreateChange()->GetDetachedTabs()) {
+      std::set<std::string> changed_property_names;
+      changed_property_names.insert(kGroupIdKey);
+      DispatchTabUpdatedEvent(tab->GetContents(),
+                              std::move(changed_property_names));
+    }
+  } else if (change.type == TabGroupChange::kClosed &&
+             change.GetCloseChange()->reason() ==
+                 TabGroupChange::TabGroupClosureReason::
+                     kDetachedToAnotherTabstrip) {
+    for (tabs::TabInterface* tab : change.GetCloseChange()->GetDetachedTabs()) {
+      std::set<std::string> changed_property_names;
+      changed_property_names.insert(kGroupIdKey);
+      DispatchTabUpdatedEvent(tab->GetContents(),
+                              std::move(changed_property_names));
+    }
+  }
+}
+
 void TabsEventRouter::TabGroupedStateChanged(
     TabStripModel* tab_strip_model,
     std::optional<tab_groups::TabGroupId> old_group,
@@ -346,11 +379,11 @@ void TabsEventRouter::OnFaviconUpdated(
   }
 }
 
-void TabsEventRouter::OnTabLifecycleStateChange(
-    content::WebContents* contents,
+void TabsEventRouter::OnLifecycleUnitStateChanged(
+    resource_coordinator::LifecycleUnit* lifecycle_unit,
     ::mojom::LifecycleUnitState previous_state,
-    ::mojom::LifecycleUnitState new_state,
-    std::optional<LifecycleUnitDiscardReason> discard_reason) {
+    ::mojom::LifecycleUnitStateChangeReason reason) {
+  const ::mojom::LifecycleUnitState new_state = lifecycle_unit->GetState();
   auto previous_or_new_state_is = [&](::mojom::LifecycleUnitState state) {
     return previous_state == state || new_state == state;
   };
@@ -372,7 +405,9 @@ void TabsEventRouter::OnTabLifecycleStateChange(
   }
 
   if (!changed_property_names.empty()) {
-    DispatchTabUpdatedEvent(contents, std::move(changed_property_names));
+    DispatchTabUpdatedEvent(
+        lifecycle_unit->AsTabLifecycleUnitExternal()->GetWebContents(),
+        std::move(changed_property_names));
   }
 }
 

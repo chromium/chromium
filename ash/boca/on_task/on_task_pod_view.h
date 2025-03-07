@@ -30,8 +30,12 @@ class ASH_EXPORT OnTaskPodView : public views::BoxLayoutView {
   ~OnTaskPodView() override;
 
   // Test element accessors:
+  IconButton* get_back_button_for_testing() { return back_button_; }
+  IconButton* get_forward_button_for_testing() { return forward_button_; }
   IconButton* reload_tab_button_for_testing() { return reload_tab_button_; }
   IconButton* snap_pod_button_for_testing() { return snap_pod_button_; }
+
+  void OnPageNavigationContextUpdate();
 
  private:
   // Adds shortcut buttons to the OnTask pod view.
@@ -46,6 +50,8 @@ class ASH_EXPORT OnTaskPodView : public views::BoxLayoutView {
   // Pointers to components hosted by the OnTask pod view.
   raw_ptr<IconButton> snap_pod_button_;
   raw_ptr<views::Separator> left_separator_;
+  raw_ptr<IconButton> back_button_;
+  raw_ptr<IconButton> forward_button_;
   raw_ptr<IconButton> reload_tab_button_;
 
   base::WeakPtrFactory<OnTaskPodView> weak_ptr_factory_{this};

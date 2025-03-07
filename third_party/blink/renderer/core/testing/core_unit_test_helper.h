@@ -121,7 +121,7 @@ class RenderingTest : public PageTestBase {
   explicit RenderingTest(LocalFrameClient* = nullptr);
 
   const Node* HitTest(int x, int y);
-  HitTestResult::NodeSet RectBasedHitTest(const PhysicalRect& rect);
+  const HitTestResult::NodeSet& RectBasedHitTest(const PhysicalRect& rect);
 
  protected:
   void SetUp() override;

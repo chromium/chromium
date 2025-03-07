@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.password_manager;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -17,6 +19,14 @@ import java.io.File;
 /** Bridge allowing Java code to query details about the login DB deprecation state. */
 @NullMarked
 public class LoginDbDeprecationUtilBridge {
+
+    @Nullable private static Boolean sHasCsvFileForTesting;
+
+    /** For testing only. */
+    public static void setHasCsvFileForTesting(boolean hasFileForTesting) {
+        sHasCsvFileForTesting = hasFileForTesting;
+        ResettersForTesting.register(() -> sHasCsvFileForTesting = null);
+    }
 
     /**
      * Retrieves the path to the auto-exported passwords CSV.
@@ -35,6 +45,9 @@ public class LoginDbDeprecationUtilBridge {
      * @return true if an auto-exported passwords CSV file exists.
      */
     public static boolean hasPasswordsInCsv(Profile profile) {
+        if (sHasCsvFileForTesting != null) {
+            return sHasCsvFileForTesting;
+        }
         String path = getAutoExportCsvFilePath(profile);
         File file = new File(path);
         // If the file is scheduled for deletion, it means that there is no more use for it and

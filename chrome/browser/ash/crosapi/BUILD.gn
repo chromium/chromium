@@ -115,15 +115,6 @@ static_library("crosapi") {
     "vpn_service_ash.h",
   ]
 
-  if (use_cups) {
-    sources += [
-      "print_job_info_idl_conversions.cc",
-      "print_job_info_idl_conversions.h",
-      "printing_metrics_ash.cc",
-      "printing_metrics_ash.h",
-    ]
-  }
-
   deps = [
     "//ash",
     "//ash/constants",
@@ -392,12 +383,6 @@ static_library("crosapi") {
     "//chrome/browser/ui/webui/signin/ash",
     "//chrome/browser/web_applications/app_service",
   ]
-
-  if (use_cups) {
-    deps += [ "//chrome/browser/chromeos/extensions/printing_metrics" ]
-    allow_circular_includes_from +=
-        [ "//chrome/browser/chromeos/extensions/printing_metrics" ]
-  }
 }
 
 static_library("test_support") {
@@ -465,10 +450,6 @@ source_set("unit_tests") {
     "payment_app_instance_ash_unittest.cc",
     "primary_profile_creation_waiter_unittest.cc",
   ]
-
-  if (use_cups) {
-    sources += [ "print_job_info_idl_conversions_unittest.cc" ]
-  }
 
   deps = [
     ":crosapi",

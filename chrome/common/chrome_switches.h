@@ -162,6 +162,7 @@ extern const char kProxyServer[];
 extern const char kRemoteDebuggingTargets[];
 extern const char kRestart[];
 extern const char kRestoreLastSession[];
+extern const char kSameTab[];
 extern const char kScreenCaptureAudioDefaultUnchecked[];
 extern const char kSilentDebuggerExtensionAPI[];
 extern const char kSilentLaunch[];

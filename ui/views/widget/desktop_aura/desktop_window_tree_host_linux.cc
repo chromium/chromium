@@ -348,7 +348,7 @@ DesktopWindowTreeHostLinux::GetKeyboardLayoutMap() {
 void DesktopWindowTreeHostLinux::OnCompleteSwapWithNewSize(
     const gfx::Size& size) {
   if (GetX11Extension()) {
-    GetX11Extension()->OnCompleteSwapAfterResize();
+    GetX11Extension()->OnCompleteSwapAfterResize(size);
   }
 }
 

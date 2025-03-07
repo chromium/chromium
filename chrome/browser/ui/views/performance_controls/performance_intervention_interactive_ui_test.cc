@@ -14,8 +14,9 @@
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -55,26 +56,25 @@
 
 namespace {
 
-class DiscardObserver : public resource_coordinator::TabLifecycleObserver,
+class DiscardObserver : public resource_coordinator::LifecycleUnitObserver,
                         public ui::test::StateObserver<bool> {
  public:
   explicit DiscardObserver(int expected_tab_discarded_count)
       : expected_tab_discarded_count_(expected_tab_discarded_count) {
-    resource_coordinator::GetTabLifecycleUnitSource()->AddTabLifecycleObserver(
+    resource_coordinator::GetTabLifecycleUnitSource()->AddLifecycleObserver(
         this);
   }
 
   ~DiscardObserver() override {
-    resource_coordinator::GetTabLifecycleUnitSource()
-        ->RemoveTabLifecycleObserver(this);
+    resource_coordinator::GetTabLifecycleUnitSource()->RemoveLifecycleObserver(
+        this);
   }
 
-  void OnTabLifecycleStateChange(
-      content::WebContents* contents,
-      ::mojom::LifecycleUnitState previous_state,
-      ::mojom::LifecycleUnitState new_state,
-      std::optional<LifecycleUnitDiscardReason> discard_reason) override {
-    if (new_state == ::mojom::LifecycleUnitState::DISCARDED) {
+  void OnLifecycleUnitStateChanged(
+      resource_coordinator::LifecycleUnit* lifecycle_unit,
+      ::mojom::LifecycleUnitState last_state,
+      ::mojom::LifecycleUnitStateChangeReason reason) override {
+    if (lifecycle_unit->GetState() == ::mojom::LifecycleUnitState::DISCARDED) {
       expected_tab_discarded_count_--;
     }
 

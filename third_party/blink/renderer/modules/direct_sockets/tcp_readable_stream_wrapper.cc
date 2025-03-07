@@ -146,7 +146,7 @@ void TCPReadableStreamWrapper::CloseStream() {
   SetState(State::kClosed);
 
   ResetPipe();
-  std::move(on_close_).Run(v8::Local<v8::Value>());
+  std::move(on_close_).Run(v8::Local<v8::Value>(), net::OK);
   return;
 }
 
@@ -176,7 +176,7 @@ void TCPReadableStreamWrapper::ErrorStream(int32_t error_code) {
       DCHECK(ReadableStream::IsReadable(Readable()));
       NonThrowableExceptionState exception_state;
       Controller()->close(script_state, exception_state);
-      std::move(on_close_).Run(v8::Local<v8::Value>());
+      std::move(on_close_).Run(v8::Local<v8::Value>(), error_code);
     }
     return;
   }
@@ -190,12 +190,13 @@ void TCPReadableStreamWrapper::ErrorStream(int32_t error_code) {
 
   if (data_pipe_) {
     pending_exception_.Reset(script_state->GetIsolate(), exception);
+    pending_net_error_ = error_code;
     return;
   }
 
   Controller()->error(script_state,
                       ScriptValue(script_state->GetIsolate(), exception));
-  std::move(on_close_).Run(exception);
+  std::move(on_close_).Run(exception, error_code);
 }
 
 void TCPReadableStreamWrapper::ResetPipe() {
@@ -239,7 +240,7 @@ void TCPReadableStreamWrapper::OnHandleReset(MojoResult result,
                         ScriptValue(script_state->GetIsolate(), exception));
 
     SetState(State::kAborted);
-    std::move(on_close_).Run(exception);
+    std::move(on_close_).Run(exception, pending_net_error_);
 
     pending_exception_.Reset();
   } else if (graceful_peer_shutdown_) {
@@ -248,7 +249,8 @@ void TCPReadableStreamWrapper::OnHandleReset(MojoResult result,
     Controller()->close(script_state, exception_state);
 
     SetState(State::kClosed);
-    std::move(on_close_).Run(v8::Local<v8::Value>());
+    std::move(on_close_).Run(/*exception=*/v8::Local<v8::Value>(),
+                             /*net_error=*/net::OK);
   }
 }
 

@@ -1,0 +1,2 @@
+This is a testharness.js-based test.
+[FAIL] Reject with NotFoundError if there is no BT radio present.

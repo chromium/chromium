@@ -35,7 +35,6 @@ static_library("sync") {
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/app/theme:theme_resources",
-    "//chrome/browser:browser_process",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
     "//chrome/browser/ui/ash/multi_user",

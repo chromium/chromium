@@ -9,7 +9,6 @@
 
 #include "base/files/file.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/services/file_util/buildflags.h"
 #include "chrome/services/file_util/public/mojom/file_util_service.mojom.h"
 #include "components/safe_browsing/buildflags.h"
@@ -90,7 +89,7 @@ class FakeFileUtilService : public chrome::mojom::FileUtilService {
 
  private:
   // chrome::mojom::FileUtilService implementation
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void BindZipFileCreator(
       mojo::PendingReceiver<chrome::mojom::ZipFileCreator> receiver) override;
 #endif

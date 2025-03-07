@@ -250,7 +250,8 @@ PolicyUI::PolicyUI(web::WebUIIOS* web_ui, const std::string& host)
 // static
 bool PolicyUI::ShouldLoadTestPage(ProfileIOS* profile) {
   AuthenticationService* auth_service =
-      AuthenticationServiceFactory::GetForProfile(profile);
+      AuthenticationServiceFactory::GetForProfile(
+          profile->GetOriginalProfile());
   // Test page should only load if testing is enabled and the profile is not
   // managed.
   return policy::utils::IsPolicyTestingEnabled(profile->GetPrefs(),

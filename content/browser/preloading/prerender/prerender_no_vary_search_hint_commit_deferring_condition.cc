@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
@@ -43,11 +42,6 @@ PrerenderNoVarySearchHintCommitDeferringCondition::MaybeCreate(
     NavigationRequest& navigation_request,
     NavigationType navigation_type,
     std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id) {
-  // Don't create if No-Vary-Search support for prerender is not enabled.
-  if (!base::FeatureList::IsEnabled(blink::features::kPrerender2NoVarySearch)) {
-    return nullptr;
-  }
-
   // Don't create if this navigation is not for prerender page activation.
   if (navigation_type != NavigationType::kPrerenderedPageActivation) {
     return nullptr;
@@ -114,7 +108,6 @@ PrerenderNoVarySearchHintCommitDeferringCondition::
     : CommitDeferringCondition(navigation_request),
       candidate_prerender_frame_tree_node_id_(
           candidate_prerender_frame_tree_node_id) {
-  CHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2NoVarySearch));
   CHECK(candidate_prerender_frame_tree_node_id_);
   FrameTreeNode* prerender_frame_tree_node =
       GetRootPrerenderFrameTreeNode(candidate_prerender_frame_tree_node_id_);

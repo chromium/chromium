@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <script src="../../../resources/testharness.js"></script>
+  <script src="../../../resources/testharnessreport.js"></script>
+</head>
+
+<body>
+  <div id="input-1" aria-owns="fancy-child"></div>
+  <fancy-child id="fancy-child">
+    <template shadowrootmode="closed" shadowrootreferencetarget="real-child">
+    <span id="real-child">Real child</span>
+    </template>
+  </fancy-child>
+
+  <script>
+    test(function (t) {
+      const input = document.getElementById('input-1');
+      const axInput = accessibilityController.accessibleElementById("input-1");
+      assert_equals(axInput.childrenCount, 1);
+      const axFancyChild = accessibilityController.accessibleElementById("fancy-child");
+      // aria-owns is excluded for now. See https://github.com/WICG/webcomponents/issues/1091 for more details.
+      assert_equals(axInput.childAtIndex(0), axFancyChild);
+    }, "Reference target does not support aria-owns, i.e.,the ownership is not forwarded to the referenced element.");
+  </script>
+</body>
+</html>

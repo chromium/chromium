@@ -86,6 +86,7 @@
   },
   "chromium.android.fyi": {
     "android-10-x86-fyi-rel": "ci/android-10-x86-fyi-rel/gn-args.json",
+    "android-11-x86-fyi-rel": "ci/android-11-x86-fyi-rel/gn-args.json",
     "android-12l-x64-fyi-dbg": "ci/android-12l-x64-fyi-dbg/gn-args.json",
     "android-13-x64-fyi-rel": "ci/android-13-x64-fyi-rel/gn-args.json",
     "android-14-arm64-fyi-rel": "ci/android-14-arm64-fyi-rel/gn-args.json",

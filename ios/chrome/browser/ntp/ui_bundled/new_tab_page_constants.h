@@ -44,9 +44,6 @@ extern const CGFloat kHomeModuleContainerCornerRadius;
 // expressed as a percentage which includes both sides.
 extern const CGFloat kHomeModuleMinimumPadding;
 
-// The vertical spacing between modules on the Home surface.
-extern const CGFloat kSpaceBetweenModules;
-
 // The maximum number of times to show the new badge on the Customization menu
 // entrypoint.
 extern const NSInteger kCustomizationNewBadgeMaxImpressionCount;

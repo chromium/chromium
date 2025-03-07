@@ -1340,7 +1340,7 @@ try_.builder(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "main_builder",
             apply_configs = [
                 "mb",
             ],
@@ -1600,7 +1600,7 @@ try_.gpu.optional_tests_builder(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "main_builder",
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(

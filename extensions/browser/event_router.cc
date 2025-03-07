@@ -524,6 +524,13 @@ void EventRouter::AddLazyListenerForServiceWorker(
     const ExtensionId& extension_id,
     const GURL& worker_scope_url,
     const std::string& event_name) {
+  if (!crx_file::id_util::IdIsValid(extension_id)) {
+    bad_message::ReceivedBadMessage(
+        GetRenderProcessHostForCurrentReceiver(),
+        bad_message::ER_INVALID_EXTENSION_ID_FOR_PROCESS);
+    return;
+  }
+
   // TODO(richardzh): Passing in browser context from the process.
   // Browser context is added to listener object in order to separate lazy
   // listeners for regular and incognito(split) context. The first step adds
@@ -636,6 +643,13 @@ void EventRouter::RemoveLazyListenerForServiceWorker(
     const ExtensionId& extension_id,
     const GURL& worker_scope_url,
     const std::string& event_name) {
+  if (!crx_file::id_util::IdIsValid(extension_id)) {
+    bad_message::ReceivedBadMessage(
+        GetRenderProcessHostForCurrentReceiver(),
+        bad_message::ER_INVALID_EXTENSION_ID_FOR_PROCESS);
+    return;
+  }
+
   // TODO(richardzh): Passing in browser context from the process.
   // Browser context is added to listener object in order to separate lazy
   // listeners for regular and incognito(split) context. The first step adds

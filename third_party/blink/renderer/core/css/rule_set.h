@@ -95,10 +95,6 @@ enum class ValidPropertyFilter : unsigned {
   // Defined in a @position-try rule. Only properties listed in
   // https://drafts.csswg.org/css-anchor-position-1/#fallback-rule are valid.
   kPositionTry,
-  // Defined in an @page rule. Will only allow properties and descriptors that
-  // have an effect with PageMarginBoxes disabled (i.e. page size, margins and
-  // orientation).
-  kLimitedPageContext,
   // Defined in an @page rule.
   // See https://drafts.csswg.org/css-page-3/#page-property-list
   kPageContext,

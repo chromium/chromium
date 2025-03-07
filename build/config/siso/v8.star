@@ -4,11 +4,17 @@
 # found in the LICENSE file.
 """Siso configuration for V8 builds."""
 
+load("@builtin//lib/gn.star", "gn")
 load("@builtin//struct.star", "module")
 load("./platform.star", "platform")
 
 def __step_config(ctx, step_config):
     remote_run = True  # Turn this to False when you do file access trace.
+    if "args.gn" in ctx.metadata:
+        gn_args = gn.args(ctx)
+        if gn_args.get("target_cpu", "").strip('"') == "x86":
+            # RBE doesn't support ELF32
+            remote_run = False
     step_config["rules"].extend([
         {
             "name": "v8/torque",

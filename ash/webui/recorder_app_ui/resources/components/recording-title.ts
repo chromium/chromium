@@ -61,8 +61,15 @@ export class RecordingTitle extends ReactiveLitElement {
       position-anchor: --title-textfield;
       position-area: bottom span-right;
       margin-top: 4.5px;
-      max-width: 402px;
+
+      /* Prevents overflow and excessive resizing beyond content size. */
+      max-width: calc-size(
+        fit-content,
+        /* Excludes page margins, icon-button size, and header padding. */
+        min(size, 100vw - 16px * 2 - 44px - var(--header-padding))
+      );
       min-width: 360px;
+      width: fit-content;
     }
 
     #title {

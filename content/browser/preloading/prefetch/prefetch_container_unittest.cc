@@ -90,7 +90,10 @@ class PrefetchContainerTestBase : public RenderViewHostTestHarness {
         PrefetchType(PreloadingTriggerType::kEmbedder,
                      /*use_prefetch_proxy=*/true),
         blink::mojom::Referrer(), std::move(referring_origin),
-        /*no_vary_search_hint=*/std::nullopt, /*attempt=*/nullptr);
+        /*no_vary_search_hint=*/std::nullopt,
+        PreloadPipelineInfo::Create(
+            /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
+        /*attempt=*/nullptr);
   }
 
   bool SetCookie(const GURL& url, const std::string& value) {
@@ -310,7 +313,10 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer_Embedder) {
       PrefetchType(PreloadingTriggerType::kEmbedder,
                    /*use_prefetch_proxy=*/false),
       blink::mojom::Referrer(), /*referring_origin=*/std::nullopt,
-      /*no_vary_search_hint=*/std::nullopt, /*attempt=*/nullptr);
+      /*no_vary_search_hint=*/std::nullopt,
+      PreloadPipelineInfo::Create(
+          /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
+      /*attempt=*/nullptr);
 
   EXPECT_EQ(prefetch_container.GetReferringRenderFrameHostId(),
             GlobalRenderFrameHostId());

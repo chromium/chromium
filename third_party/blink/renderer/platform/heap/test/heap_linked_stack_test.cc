@@ -14,7 +14,7 @@ class HeapLinkedStackTest : public TestSupportingGC {};
 }  // namespace
 
 TEST_F(HeapLinkedStackTest, PushPop) {
-  using Stack = HeapLinkedStack<Member<IntegerObject>>;
+  using Stack = GCedHeapLinkedStack<Member<IntegerObject>>;
 
   ClearOutOldGarbage();
   IntegerObject::destructor_calls = 0;

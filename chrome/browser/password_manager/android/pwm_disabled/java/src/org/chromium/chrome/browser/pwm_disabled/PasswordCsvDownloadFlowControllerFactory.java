@@ -4,12 +4,20 @@
 
 package org.chromium.chrome.browser.pwm_disabled;
 
+import org.chromium.base.ResettersForTesting;
+
 /**
  * Creates and holds a unique instance of a {@link PasswordCsvDownloadFlowController} for as long as
  * the download flow is ongoing.
  */
 public class PasswordCsvDownloadFlowControllerFactory {
     private static PasswordCsvDownloadFlowController sController;
+
+    /** Testing only */
+    public static void setControllerForTesting(PasswordCsvDownloadFlowController controller) {
+        sController = controller;
+        ResettersForTesting.register(() -> sController = null);
+    }
 
     private PasswordCsvDownloadFlowControllerFactory() {}
 

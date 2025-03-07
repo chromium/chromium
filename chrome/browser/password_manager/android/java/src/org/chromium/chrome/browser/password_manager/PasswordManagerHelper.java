@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
+import org.chromium.chrome.browser.pwm_disabled.PasswordManagerUnavailableDialogCoordinator;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
@@ -171,8 +172,82 @@ public class PasswordManagerHelper {
                 referrer,
                 ManagePasswordsReferrer.MAX_VALUE);
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)) {
+            showPasswordSettingsPreLoginDbDeprecation(
+                    context,
+                    referrer,
+                    modalDialogManagerSupplier,
+                    managePasskeys,
+                    account,
+                    customTabIntentHelper);
+            return;
+        }
+
         PrefService prefService = UserPrefs.get(mProfile);
 
+        if (!PasswordManagerUtilBridge.isPasswordManagerAvailable(prefService)
+                && !prefService.getBoolean(Pref.UPM_UNMIGRATED_PASSWORDS_EXPORTED)) {
+            // The automatic export is ongoing. Usually a dialog offering the user to download
+            // the auto-exported CSV would be shown, but until the CSV is written, the dialog
+            // can't be shown. This is a rare corner-case.
+            return;
+        }
+
+        if (!showPwmUnavailableOrDownloadCsvDialog(context, referrer, modalDialogManagerSupplier)) {
+            LoadingModalDialogCoordinator loadingDialogCoordinator =
+                    LoadingModalDialogCoordinator.create(modalDialogManagerSupplier, context);
+            launchTheCredentialManager(
+                    referrer,
+                    syncService,
+                    loadingDialogCoordinator,
+                    modalDialogManagerSupplier,
+                    context,
+                    account);
+        }
+    }
+
+    private boolean showPwmUnavailableOrDownloadCsvDialog(
+            Context context,
+            @ManagePasswordsReferrer int referrer,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+        if (LoginDbDeprecationUtilBridge.hasPasswordsInCsv(mProfile)) {
+            showDownloadCsvDialog(context, referrer, modalDialogManagerSupplier);
+            return true;
+        }
+
+        if (!PasswordManagerUtilBridge.isPasswordManagerAvailable(UserPrefs.get(mProfile))) {
+            new PasswordManagerUnavailableDialogCoordinator()
+                    .showDialog(
+                            context,
+                            modalDialogManagerSupplier.get(),
+                            PasswordManagerUtilBridge.isGooglePlayServicesUpdatable()
+                                    ? GmsUpdateLauncher::launch
+                                    : null);
+            return true;
+        }
+        return false;
+    }
+
+    private void showDownloadCsvDialog(
+            Context context,
+            @ManagePasswordsReferrer int referrer,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+        if (referrer == ManagePasswordsReferrer.CHROME_SETTINGS) {
+            PasswordAccessLossDialogHelper.launchExportFlow(
+                    context, mProfile, modalDialogManagerSupplier);
+        } else {
+            PasswordExportLauncher.showMainSettingsAndStartExport(context);
+        }
+    }
+
+    private void showPasswordSettingsPreLoginDbDeprecation(
+            Context context,
+            @ManagePasswordsReferrer int referrer,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            boolean managePasskeys,
+            @Nullable String account,
+            CustomTabIntentHelper customTabIntentHelper) {
         if (PasswordAccessLossDialogHelper.tryShowAccessLossWarning(
                 mProfile,
                 context,
@@ -183,6 +258,8 @@ public class PasswordManagerHelper {
             return;
         }
 
+        PrefService prefService = UserPrefs.get(mProfile);
+        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
         // Force instantiation of GMSCore password settings if GMSCore update is required. Launching
         // Password settings will fail and instead the blocking dialog with the suggestion to update
         // will be displayed.

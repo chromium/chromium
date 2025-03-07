@@ -65,11 +65,11 @@ std::unique_ptr<TemplateURL> CreatePrepopulateTemplateURL(
     int prepopulate_id,
     const std::string& keyword,
     TemplateURLID id,
-    bool is_play_api_turl = false) {
+    RegulatoryExtensionType reg_ext_type = RegulatoryExtensionType::kDefault) {
   std::unique_ptr<TemplateURLData> data =
       CreatePrepopulateTemplateURLData(prepopulate_id, keyword);
   data->id = id;
-  data->created_from_play_api = is_play_api_turl;
+  data->regulatory_origin = reg_ext_type;
   return std::make_unique<TemplateURL>(*data);
 }
 
@@ -180,7 +180,8 @@ TEST(TemplateURLServiceUtilTest, MergeEnginesFromPrepopulateData_PlayAPI) {
   TemplateURLService::OwnedTemplateURLVector local_turls;
 
   // Start with single search engine created from Play API data.
-  local_turls.push_back(CreatePrepopulateTemplateURL(0, "play", 1, true));
+  local_turls.push_back(CreatePrepopulateTemplateURL(
+      0, "play", 1, RegulatoryExtensionType::kAndroidEEA));
 
   // Test that prepopulated search engine with matching keyword is merged with
   // Play API search engine. Search URL should come from Play API search engine.
@@ -192,7 +193,8 @@ TEST(TemplateURLServiceUtilTest, MergeEnginesFromPrepopulateData_PlayAPI) {
   ASSERT_EQ(local_turls.size(), 1U);
   // Merged search engine should have both Play API flag and valid
   // prepopulate_id.
-  EXPECT_TRUE(local_turls[0]->created_from_play_api());
+  ASSERT_EQ(local_turls[0]->GetRegulatoryExtensionType(),
+            RegulatoryExtensionType::kAndroidEEA);
   EXPECT_EQ(1, local_turls[0]->prepopulate_id());
   EXPECT_NE(prepopulated_search_url, local_turls[0]->url());
 
@@ -203,7 +205,8 @@ TEST(TemplateURLServiceUtilTest, MergeEnginesFromPrepopulateData_PlayAPI) {
   MergeEnginesFromPrepopulateData(nullptr, &prepopulated_turls, &local_turls,
                                   nullptr, nullptr);
   ASSERT_EQ(local_turls.size(), 1U);
-  EXPECT_TRUE(local_turls[0]->created_from_play_api());
+  ASSERT_EQ(local_turls[0]->GetRegulatoryExtensionType(),
+            RegulatoryExtensionType::kAndroidEEA);
   EXPECT_EQ(local_turls[0]->keyword(), u"play");
 
   // Test that removing search engine from prepopulated list doesn't delete Play
@@ -212,7 +215,8 @@ TEST(TemplateURLServiceUtilTest, MergeEnginesFromPrepopulateData_PlayAPI) {
   MergeEnginesFromPrepopulateData(nullptr, &prepopulated_turls, &local_turls,
                                   nullptr, nullptr);
   ASSERT_EQ(local_turls.size(), 1U);
-  EXPECT_TRUE(local_turls[0]->created_from_play_api());
+  ASSERT_EQ(local_turls[0]->GetRegulatoryExtensionType(),
+            RegulatoryExtensionType::kAndroidEEA);
   EXPECT_EQ(local_turls[0]->prepopulate_id(), 0);
 }
 

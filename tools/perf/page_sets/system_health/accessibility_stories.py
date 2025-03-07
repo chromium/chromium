@@ -54,6 +54,15 @@ class AccessibilityAmazonStory2018(_AccessibilityStory):
   URL = 'https://www.amazon.com/gp/offer-listing/B01IENFJ14'
   TAGS = [story_tags.ACCESSIBILITY, story_tags.YEAR_2018]
 
+
+class AccessibilityLargeLoadStory2025(_AccessibilityStory):
+  """web_contents_impl.cc. Good example of a very large page."""
+  NAME = 'load_accessibility:tech:codesearch:2025'
+  URL = ('https://source.chromium.org/chromium/chromium/src/+/main:' +
+         'content/browser/web_contents/web_contents_impl.cc')
+  TAGS = [story_tags.ACCESSIBILITY, story_tags.YEAR_2025]
+  HEAVY_PAGE = True
+
 class AccessibilityYouTubeHomepageStory(_AccessibilityStory):
   """Tests interacting with the YouTube home page."""
   NAME = 'browse_accessibility:media:youtube'

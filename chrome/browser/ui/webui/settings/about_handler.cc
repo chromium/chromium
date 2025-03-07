@@ -824,6 +824,7 @@ void AboutHandler::HandleOpenProductLicenseOther(
 
 void AboutHandler::HandleIsExtendedUpdatesOptInEligible(
     const base::Value::List& args) {
+  AllowJavascript();
   CHECK_EQ(4U, args.size());
   ash::ExtendedUpdatesController::Params params{
       .eol_passed = args[1].GetBool(),

@@ -494,7 +494,8 @@ std::string TemplateURLRef::ReplaceSearchTerms(
 #if BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(
           switches::kRemoveSearchEngineChoiceAttribution) &&
-      owner_->created_from_play_api()) {
+      owner_->GetRegulatoryExtensionType() ==
+          RegulatoryExtensionType::kAndroidEEA) {
     // Append attribution parameter to query originating from Play API search
     // engine.
     query_params.push_back("chrome_dse_attribution=1");
@@ -1684,8 +1685,8 @@ bool TemplateURL::IsBetterThanConflictingEngine(
                                 : base::Time(),
         // Prefer engines that CANNOT be auto-replaced.
         !engine->safe_for_autoreplace(),
-        // Prefer engines created by Play API.
-        engine->created_from_play_api(),
+        // Prefer engines created by regulatory programs.
+        engine->CreatedByRegulatoryProgram(),
         // Favor prepopulated engines over other auto-generated engines.
         engine->prepopulate_id() > 0,
         // Favor starter pack engines over other auto-generated engines.
@@ -2017,11 +2018,12 @@ bool TemplateURL::CreatedByEnterpriseSearchAggregatorPolicy() const {
   return data().CreatedByEnterpriseSearchAggregatorPolicy();
 }
 
+bool TemplateURL::CreatedByRegulatoryProgram() const {
+  return GetRegulatoryExtensionType() != RegulatoryExtensionType::kDefault;
+}
+
 RegulatoryExtensionType TemplateURL::GetRegulatoryExtensionType() const {
-  if (data().created_from_play_api) {
-    return RegulatoryExtensionType::kAndroidEEA;
-  }
-  return RegulatoryExtensionType::kDefault;
+  return data().regulatory_origin;
 }
 
 const TemplateURLData::RegulatoryExtension* TemplateURL::GetRegulatoryExtension(

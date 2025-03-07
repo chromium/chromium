@@ -613,12 +613,6 @@
       status: "experimental",
     },
     {
-      // Full support for box-decoration-break, including block fragmentation,
-      // not just -webkit-box-decoration-break with inlines at line breaks.
-      name: "BoxDecorationBreak",
-      status: "stable",
-    },
-    {
       name: "BrowserVerifiedUserActivationKeyboard",
       base_feature: "none",
       public: true,
@@ -2657,11 +2651,6 @@
       base_feature: "none",
     },
     {
-      // crbug.com/365814218
-      name: "LineBoxBelowLeadingFloats",
-      status: "stable",
-    },
-    {
       name: "ListItemWithCounterSetNotSetExplicitValue",
       status: "stable",
     },
@@ -3199,12 +3188,6 @@
     {
       name: "OverscrollCustomization",
       status: "experimental",
-    },
-    // Support for page margin boxes.
-    // https://www.w3.org/TR/css-page-3/#margin-boxes
-    {
-      name: "PageMarginBoxes",
-      status: "stable",
     },
     {
       name: "PagePopup",
@@ -4060,6 +4043,11 @@
       name: "ShadowRootReferenceTarget",
       status: "experimental",
       origin_trial_feature_name: "ShadowRootReferenceTarget"
+    },
+    {
+      // If enabled, Reference Target will support aria-owns.
+      // https://github.com/WICG/webcomponents/issues/1091
+      name: "ShadowRootReferenceTargetAriaOwns",
     },
     {
       // crbug.com/329677645

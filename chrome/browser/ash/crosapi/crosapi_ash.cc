@@ -108,10 +108,6 @@
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #endif  // BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
 
-#if BUILDFLAG(USE_CUPS)
-#include "chrome/browser/ash/crosapi/printing_metrics_ash.h"
-#endif  // BUILDFLAG(USE_CUPS)
-
 namespace crosapi {
 namespace {
 
@@ -184,9 +180,6 @@ CrosapiAsh::CrosapiAsh()
       policy_service_ash_(std::make_unique<PolicyServiceAsh>()),
       nonclosable_app_toast_service_ash_(
           std::make_unique<NonclosableAppToastServiceAsh>()),
-#if BUILDFLAG(USE_CUPS)
-      printing_metrics_ash_(std::make_unique<PrintingMetricsAsh>()),
-#endif  // BUILDFLAG(USE_CUPS)
       telemetry_diagnostic_routine_service_ash_(
           std::make_unique<ash::TelemetryDiagnosticsRoutineServiceAsh>()),
       telemetry_event_service_ash_(
@@ -506,13 +499,6 @@ void CrosapiAsh::BindNonclosableAppToastService(
 void CrosapiAsh::BindPrintPreviewCrosDelegate(
     mojo::PendingReceiver<mojom::PrintPreviewCrosDelegate> receiver) {
   print_preview_webcontents_adapter_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindPrintingMetrics(
-    mojo::PendingReceiver<mojom::PrintingMetrics> receiver) {
-#if BUILDFLAG(USE_CUPS)
-  printing_metrics_ash_->BindReceiver(std::move(receiver));
-#endif  // BUILDFLAG(USE_CUPS)
 }
 
 void CrosapiAsh::BindReceiver(

@@ -28,9 +28,11 @@ find third_party/grpc/source \
   -o -name '*.inc' \) -delete
 # Keep the top-level LICENSE because it's used by README.chromium.
 mv /tmp/grpc/LICENSE third_party/grpc/source/
-# Fuzzing files.
-mkdir -p third_party/grpc/source/test/core/json
-mv /tmp/grpc/test/core/json/corpus/ \
-  third_party/grpc/source/test/core/json
+
+# No quotes here on purpose.
+for patch in $(ls third_party/grpc/patches/) ; do
+  echo "Applying ${patch}..."
+  git apply "third_party/grpc/patches/${patch}"
+done
 
 echo 'Done'

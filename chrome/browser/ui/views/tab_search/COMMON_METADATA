@@ -1,0 +1,6 @@
+monorail: {
+  component: "UI>Browser>TabSearch"
+}
+buganizer_public: {
+  component_id: 1457267
+}

@@ -803,7 +803,6 @@ class TemplateURL {
     return data().policy_origin;
   }
   bool enforced_by_policy() const { return data().enforced_by_policy; }
-  bool created_from_play_api() const { return data().created_from_play_api; }
   bool featured_by_policy() const { return data().featured_by_policy; }
 
   int usage_count() const { return data().usage_count; }
@@ -968,6 +967,8 @@ class TemplateURL {
   // Returns whether this search engine was created by the
   // EnterpriseSearchAggregatorSettings policy.
   bool CreatedByEnterpriseSearchAggregatorPolicy() const;
+  // Returns whether this search engine was created by a regulatory program.
+  bool CreatedByRegulatoryProgram() const;
 
   void SetURL(const std::string& url);
   void SetPrepopulateId(int id);

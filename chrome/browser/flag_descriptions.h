@@ -163,9 +163,6 @@ extern const char kChangeUnfocusedPriorityDescription[];
 extern const char kClassifyUrlOnProcessResponseEventName[];
 extern const char kClassifyUrlOnProcessResponseEventDescription[];
 
-extern const char kClearUndecryptablePasswordsName[];
-extern const char kClearUndecryptablePasswordsDescription[];
-
 extern const char kClickToCallName[];
 extern const char kClickToCallDescription[];
 
@@ -386,6 +383,9 @@ extern const char
 
 extern const char kAutofillEnableFpanRiskBasedAuthenticationName[];
 extern const char kAutofillEnableFpanRiskBasedAuthenticationDescription[];
+
+extern const char kIPHAutofillCreditCardBenefitFeatureName[];
+extern const char kIPHAutofillCreditCardBenefitFeatureDescription[];
 
 extern const char kAutofillEnableCardBenefitsForAmericanExpressName[];
 extern const char kAutofillEnableCardBenefitsForAmericanExpressDescription[];
@@ -3584,15 +3584,6 @@ extern const char kChromeboxUsbPassthroughRestrictionsDescription[];
 extern const char kConchName[];
 extern const char kConchDescription[];
 
-extern const char kConchExpandTranscriptionLanguageName[];
-extern const char kConchExpandTranscriptionLanguageDescription[];
-
-extern const char kConchGenAiName[];
-extern const char kConchGenAiDescription[];
-
-extern const char kConchLargeModelName[];
-extern const char kConchLargeModelDescription[];
-
 extern const char kConchSystemAudioFromMicName[];
 extern const char kConchSystemAudioFromMicDescription[];
 
@@ -4633,9 +4624,6 @@ extern const char kComposeNudgeAtCursorDescription[];
 
 extern const char kComposeProactiveNudgeName[];
 extern const char kComposeProactiveNudgeDescription[];
-
-extern const char kComposePoliteNudgeName[];
-extern const char kComposePoliteNudgeDescription[];
 
 extern const char kComposeSegmentationPromotionName[];
 extern const char kComposeSegmentationPromotionDescription[];

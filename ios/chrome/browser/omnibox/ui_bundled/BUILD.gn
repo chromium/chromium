@@ -108,6 +108,7 @@ source_set("omnibox_internal") {
     "omnibox_coordinator.mm",
     "omnibox_mediator.h",
     "omnibox_mediator.mm",
+    "omnibox_mutator.h",
     "omnibox_return_key_forwarding_delegate.h",
     "omnibox_return_key_forwarding_delegate.mm",
     "omnibox_text_field_ios.h",

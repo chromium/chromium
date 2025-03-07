@@ -75,10 +75,8 @@
         constraintEqualToAnchor:self.view.trailingAnchor],
     [self.verticalStackView.topAnchor
         constraintEqualToAnchor:self.view.topAnchor
-                       constant:
-                           (IsHomeCustomizationEnabled()
-                                ? 0
-                                : content_suggestions::HeaderBottomPadding())],
+                       constant:content_suggestions::HeaderBottomPadding(
+                                    self.traitCollection)],
     [self.verticalStackView.bottomAnchor
         constraintEqualToAnchor:self.view.bottomAnchor
                        constant:(IsHomeCustomizationEnabled()

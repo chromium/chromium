@@ -21,10 +21,6 @@
 
 class GURL;
 
-namespace base {
-class WaitableEvent;
-}
-
 namespace viz {
 class RasterContextProvider;
 }  // namespace viz
@@ -66,7 +62,6 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
       const std::vector<const ResourcePool::InUsePoolResource*>& resources,
       base::OnceClosure callback,
       uint64_t pending_callback_id) override;
-  void SetShutdownEvent(base::WaitableEvent* shutdown_event) override;
   void Shutdown() override;
 
   // Playback raster source and copy result into |resource|.
@@ -152,7 +147,6 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
 
   const raw_ptr<viz::RasterContextProvider> compositor_context_provider_;
   const raw_ptr<viz::RasterContextProvider> worker_context_provider_;
-  raw_ptr<base::WaitableEvent> shutdown_event_ = nullptr;
   const int max_bytes_per_copy_operation_;
   const bool use_partial_raster_;
 

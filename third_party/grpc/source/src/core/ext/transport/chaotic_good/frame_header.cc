@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <grpc/support/port_platform.h>
-
 #include "src/core/ext/transport/chaotic_good/frame_header.h"
 
-#include <string.h>
+#include <grpc/support/port_platform.h>
 
 #include <cstdint>
 
 #include "absl/status/status.h"
+#include "absl/strings/str_cat.h"
 
 namespace grpc_core {
 namespace chaotic_good {
@@ -41,46 +40,57 @@ uint32_t ReadLittleEndianUint32(const uint8_t* data) {
 }
 }  // namespace
 
+// Serializes a frame header into a buffer of 24 bytes.
 void FrameHeader::Serialize(uint8_t* data) const {
-  WriteLittleEndianUint32(
-      static_cast<uint32_t>(type) | (flags.ToInt<uint32_t>() << 8), data);
+  WriteLittleEndianUint32((static_cast<uint32_t>(type) << 16) |
+                              static_cast<uint32_t>(payload_connection_id),
+                          data);
   WriteLittleEndianUint32(stream_id, data + 4);
-  WriteLittleEndianUint32(header_length, data + 8);
-  WriteLittleEndianUint32(message_length, data + 12);
-  WriteLittleEndianUint32(trailer_length, data + 16);
-  memset(data + 20, 0, 44);
+  WriteLittleEndianUint32(payload_length, data + 8);
 }
 
+// Parses a frame header from a buffer of 24 bytes. All 24 bytes are consumed.
 absl::StatusOr<FrameHeader> FrameHeader::Parse(const uint8_t* data) {
   FrameHeader header;
-  const uint32_t type_and_flags = ReadLittleEndianUint32(data);
-  header.type = static_cast<FrameType>(type_and_flags & 0xff);
-  const uint32_t flags = type_and_flags >> 8;
-  if (flags > 7) return absl::InvalidArgumentError("Invalid flags");
-  header.flags = BitSet<3>::FromInt(flags);
-  header.stream_id = ReadLittleEndianUint32(data + 4);
-  header.header_length = ReadLittleEndianUint32(data + 8);
-  header.message_length = ReadLittleEndianUint32(data + 12);
-  header.trailer_length = ReadLittleEndianUint32(data + 16);
-  for (int i = 0; i < 44; i++) {
-    if (data[20 + i] != 0) return absl::InvalidArgumentError("Invalid padding");
+  const uint32_t type_and_conn_id = ReadLittleEndianUint32(data);
+  if (type_and_conn_id & 0xff000000u) {
+    return absl::InternalError("Non-zero reserved byte received");
   }
+  header.type = static_cast<FrameType>(type_and_conn_id >> 16);
+  header.payload_connection_id = type_and_conn_id & 0xffff;
+  header.stream_id = ReadLittleEndianUint32(data + 4);
+  header.payload_length = ReadLittleEndianUint32(data + 8);
   return header;
 }
 
-namespace {
-uint64_t RoundUp(uint64_t x) {
-  if (x % 64 == 0) return x;
-  return x + 64 - (x % 64);
+std::string FrameHeader::ToString() const {
+  return absl::StrCat("[type:", type, " conn:", payload_connection_id,
+                      " stream_id:", stream_id,
+                      " payload_length:", payload_length, "]");
 }
-}  // namespace
 
-FrameSizes FrameHeader::ComputeFrameSizes() const {
-  FrameSizes sizes;
-  sizes.message_offset = RoundUp(header_length);
-  sizes.trailer_offset = sizes.message_offset + RoundUp(message_length);
-  sizes.frame_length = sizes.trailer_offset + RoundUp(trailer_length);
-  return sizes;
+std::string FrameTypeString(FrameType type) {
+  switch (type) {
+    case FrameType::kSettings:
+      return "Settings";
+    case FrameType::kClientInitialMetadata:
+      return "ClientInitialMetadata";
+    case FrameType::kClientEndOfStream:
+      return "ClientEndOfStream";
+    case FrameType::kMessage:
+      return "Message";
+    case FrameType::kServerInitialMetadata:
+      return "ServerInitialMetadata";
+    case FrameType::kServerTrailingMetadata:
+      return "ServerTrailingMetadata";
+    case FrameType::kCancel:
+      return "Cancel";
+    case FrameType::kBeginMessage:
+      return "BeginMessage";
+    case FrameType::kMessageChunk:
+      return "MessageChunk";
+  }
+  return absl::StrCat("Unknown[", static_cast<int>(type), "]");
 }
 
 }  // namespace chaotic_good

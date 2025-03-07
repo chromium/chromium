@@ -575,6 +575,22 @@ void Swap() {
   EXPECT_TRUE(obj2);
 }
 
+template <typename Container>
+void SwapExplicit() {
+  WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
+  WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
+  Container* container1 = MakeGarbageCollected<Container>();
+  container1->insert(obj1.Get());
+  Container* container2 = MakeGarbageCollected<Container>();
+  container2->insert(obj2.Get());
+  IncrementalMarkingTestDriver driver(ThreadState::Current());
+  driver.StartGC();
+  container1->Swap(*container2);
+  driver.FinishGC();
+  EXPECT_TRUE(obj1);
+  EXPECT_TRUE(obj2);
+}
+
 }  // namespace
 
 TEST_F(IncrementalMarkingTest, HeapHashSetInsert) {
@@ -606,27 +622,27 @@ TEST_F(IncrementalMarkingTest, HeapHashSetSwap) {
 // =============================================================================
 
 TEST_F(IncrementalMarkingTest, HeapLinkedHashSetInsert) {
-  Insert<HeapLinkedHashSet<Member<LinkedObject>>>();
+  Insert<GCedHeapLinkedHashSet<Member<LinkedObject>>>();
   // Weak references are strongified for the current cycle.
-  Insert<HeapLinkedHashSet<WeakMember<LinkedObject>>>();
+  Insert<GCedHeapLinkedHashSet<WeakMember<LinkedObject>>>();
 }
 
 TEST_F(IncrementalMarkingTest, HeapLinkedHashSetCopy) {
-  Copy<HeapLinkedHashSet<Member<LinkedObject>>>();
+  Copy<GCedHeapLinkedHashSet<Member<LinkedObject>>>();
   // Weak references are strongified for the current cycle.
-  Copy<HeapLinkedHashSet<WeakMember<LinkedObject>>>();
+  Copy<GCedHeapLinkedHashSet<WeakMember<LinkedObject>>>();
 }
 
 TEST_F(IncrementalMarkingTest, HeapLinkedHashSetMove) {
-  Move<HeapLinkedHashSet<Member<LinkedObject>>>();
+  Move<GCedHeapLinkedHashSet<Member<LinkedObject>>>();
   // Weak references are strongified for the current cycle.
-  Move<HeapLinkedHashSet<WeakMember<LinkedObject>>>();
+  Move<GCedHeapLinkedHashSet<WeakMember<LinkedObject>>>();
 }
 
 TEST_F(IncrementalMarkingTest, HeapLinkedHashSetSwap) {
-  Swap<HeapLinkedHashSet<Member<LinkedObject>>>();
+  SwapExplicit<GCedHeapLinkedHashSet<Member<LinkedObject>>>();
   // Weak references are strongified for the current cycle.
-  Swap<HeapLinkedHashSet<WeakMember<LinkedObject>>>();
+  SwapExplicit<GCedHeapLinkedHashSet<WeakMember<LinkedObject>>>();
 }
 
 // =============================================================================

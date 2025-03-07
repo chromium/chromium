@@ -776,7 +776,6 @@ source_set("extensions") {
       "//chrome/browser:browser_public_dependencies",
       "//chrome/browser/extensions/api:api_registration",
       "//chrome/browser/media/webrtc",
-      "//chrome/browser/resource_coordinator:tab_lifecycle_observer",
       "//chrome/browser/task_manager",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/bookmarks",
@@ -1076,13 +1075,15 @@ source_set("extensions") {
         ]
 
         deps += [
-          # TODO(crbug.com/40230380): Find an appropriate spot for printing_metrics.
           "//chrome/browser/chromeos/extensions/printing_metrics",
           "//chrome/browser/chromeos/printing",
           "//chrome/browser/pdf:pdf_pref_names",
           "//chromeos/printing",
           "//printing/backend",
         ]
+
+        allow_circular_includes_from +=
+            [ "//chrome/browser/chromeos/extensions/printing_metrics" ]
       }
 
       deps += [

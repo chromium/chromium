@@ -448,9 +448,16 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        // Polyfilled using MIN and MAX.
        /*clamp_input=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(5)},
-       /*concat_inputs=*/kAllDataTypesExceptUint4,
-       /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
-       /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
+       /*concat_inputs=*/{kAllDataTypesExceptUint4, SupportedRanks::UpTo(8)},
+       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/conv.cc
+       /*conv2d_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)},
+       /*conv2d_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
+       /*conv_transpose2d_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)},
+       /*conv_transpose2d_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
        /*cumulative_sum_input=*/
        {kFloat16To32AndInt32To64, SupportedRanks::NonScalarUpTo(8)},
        // DequantizeLinear may be emulated by sub and mul ops that only support
@@ -2121,6 +2128,12 @@ auto GraphBuilderTflite::SerializeClamp(const mojom::Clamp& clamp)
 
 auto GraphBuilderTflite::SerializeConcat(const mojom::Concat& concat)
     -> base::expected<OperatorOffset, std::string> {
+  CHECK(std::ranges::all_of(
+      concat.input_operand_ids, [&](uint64_t input_operand_id) {
+        return context_properties_.data_type_limits.concat_inputs.Supports(
+            GetOperand(input_operand_id).descriptor);
+      }));
+
   // TODO(crbug.com/369649350): Support float16 without dequantize operator.
   base::FixedArray<int32_t> operator_inputs_index(
       concat.input_operand_ids.size());
@@ -2170,12 +2183,12 @@ auto GraphBuilderTflite::SerializeCumulativeSum(
 auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
     -> base::expected<OperatorOffset, std::string> {
   const mojom::Operand& input_operand = GetOperand(conv2d.input_operand_id);
-  const OperandDataType input_data_type = input_operand.descriptor.data_type();
+  const mojom::Operand& filter_operand = GetOperand(conv2d.filter_operand_id);
   switch (conv2d.kind) {
     case mojom::Conv2d::Kind::kDirect:
       // TODO(crbug.com/328733319): Support other tensor data types.
-      CHECK(context_properties_.data_type_limits.conv2d_input.Has(
-          input_data_type));
+      CHECK(context_properties_.data_type_limits.conv2d_input.SupportsAll(
+          {input_operand.descriptor, filter_operand.descriptor}));
 
       // TFLite internally performs a truncating cast. See crbug.com/384999508.
       if (!base::IsValueInRangeForNumericType<int16_t>(
@@ -2188,8 +2201,10 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
       break;
     case mojom::Conv2d::Kind::kTransposed:
       // TODO(crbug.com/328733319): Support other tensor data types.
-      CHECK(context_properties_.data_type_limits.conv_transpose2d_input.Has(
-          input_data_type));
+      CHECK(context_properties_.data_type_limits.conv_transpose2d_input
+                .SupportsAll(
+                    {input_operand.descriptor, filter_operand.descriptor}));
+
       // TODO(crbug.com/364348906): Support dilations and groups parameter for
       // convTranspose2d
       if (conv2d.dilations->height != 1 || conv2d.dilations->width != 1 ||
@@ -2209,7 +2224,6 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
 
   // Get tflite padding mode with the size2d of input, filter, dilation.
   const auto& input_shape = input_operand.descriptor.shape();
-  CHECK_EQ(input_shape.size(), 4u);
   const uint32_t input_channels = input_shape[3];
   const mojom::Operand& output_operand = GetOperand(conv2d.output_operand_id);
   const auto& output_shape = output_operand.descriptor.shape();
@@ -2219,10 +2233,7 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
                                                 .width = input_shape[2]};
   // For nhwc input layout, the default filter layout is ohwi for
   // regular/transpose conv2d and ihwo for depthwise conv2d.
-  const mojom::Operand& filter_operand = GetOperand(conv2d.filter_operand_id);
-  CHECK_EQ(filter_operand.descriptor.Rank(), 4u);
   const auto& filter_shape = filter_operand.descriptor.shape();
-  CHECK_EQ(filter_shape.size(), 4u);
   const webnn::Size2d<uint32_t> filter_size2d = {.height = filter_shape[1],
                                                  .width = filter_shape[2]};
   ASSIGN_OR_RETURN(
@@ -2244,6 +2255,15 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
   // output channel.
   int32_t bias_index;
   if (conv2d.bias_operand_id) {
+    const mojom::Operand& bias_operand = GetOperand(*conv2d.bias_operand_id);
+    if (conv2d.kind == mojom::Conv2d::Kind::kDirect) {
+      CHECK(context_properties_.data_type_limits.conv2d_bias.Supports(
+          bias_operand.descriptor));
+    } else {
+      CHECK(context_properties_.data_type_limits.conv_transpose2d_bias.Supports(
+          bias_operand.descriptor));
+    }
+
     ASSIGN_OR_RETURN(const TensorInfo& bias_tensor_info,
                      SerializeInputTensorInfo(*conv2d.bias_operand_id));
     bias_index = bias_tensor_info.index;

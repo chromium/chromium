@@ -19,19 +19,18 @@
 #ifndef GRPC_SRC_CORE_LIB_IOMGR_RESOLVE_ADDRESS_H
 #define GRPC_SRC_CORE_LIB_IOMGR_RESOLVE_ADDRESS_H
 
+#include <grpc/event_engine/event_engine.h>
 #include <grpc/support/port_platform.h>
-
 #include <stddef.h>
 
+#include "absl/container/flat_hash_set.h"
 #include "absl/status/statusor.h"
-
-#include <grpc/event_engine/event_engine.h>
-
-#include "src/core/lib/gprpp/orphanable.h"
-#include "src/core/lib/gprpp/time.h"
+#include "src/core/lib/event_engine/handle_containers.h"
 #include "src/core/lib/iomgr/pollset_set.h"
 #include "src/core/lib/iomgr/port.h"
 #include "src/core/lib/iomgr/resolved_address.h"
+#include "src/core/util/orphanable.h"
+#include "src/core/util/time.h"
 
 #define GRPC_MAX_SOCKADDR_SIZE 128
 
@@ -43,9 +42,21 @@ constexpr Duration kDefaultDNSRequestTimeout = Duration::Minutes(2);
 // A singleton class used for async and blocking DNS resolution
 class DNSResolver {
  public:
-  using TaskHandle = ::grpc_event_engine::experimental::EventEngine::
-      DNSResolver::LookupTaskHandle;
-  static constexpr TaskHandle kNullHandle{0, 0};
+  /// Task handle for DNS Resolution requests.
+  struct LookupTaskHandle {
+    intptr_t keys[2];
+    static const LookupTaskHandle kInvalid;
+    friend bool operator==(const LookupTaskHandle& lhs,
+                           const LookupTaskHandle& rhs);
+    friend bool operator!=(const LookupTaskHandle& lhs,
+                           const LookupTaskHandle& rhs);
+  };
+  using TaskHandle = LookupTaskHandle;
+  using TaskHandleSet = absl::flat_hash_set<
+      TaskHandle,
+      grpc_event_engine::experimental::TaskHandleComparator<TaskHandle>::Hash>;
+
+  static const TaskHandle kNullHandle;
 
   virtual ~DNSResolver() {}
 

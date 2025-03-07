@@ -89,7 +89,7 @@ class PresentationReceiverWindowView final
   // ExclusiveAccessContext overrides.
   Profile* GetProfile() final;
   bool IsFullscreen() const final;
-  void EnterFullscreen(const GURL& url,
+  void EnterFullscreen(const url::Origin& origin,
                        ExclusiveAccessBubbleType bubble_type,
                        const int64_t display_id) final;
   void ExitFullscreen() final;

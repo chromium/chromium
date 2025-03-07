@@ -234,12 +234,6 @@ const char kClassifyUrlOnProcessResponseEventDescription[] =
     "to be rendered, rather than before the request (or any redirect)"
     "is issued.";
 
-const char kClearUndecryptablePasswordsName[] =
-    "Removes passwords that can no longer be decrypted";
-const char kClearUndecryptablePasswordsDescription[] =
-    "If enabled local passwords that current encryption key cannot decrypt, "
-    "will be deleted to restore the full functionality of password manager.";
-
 const char kClickToCallName[] = "Click-To-Call";
 const char kClickToCallDescription[] = "Enable the click-to-call feature.";
 
@@ -619,6 +613,12 @@ const char kAutofillEnableFpanRiskBasedAuthenticationName[] =
 const char kAutofillEnableFpanRiskBasedAuthenticationDescription[] =
     "When enabled, server card retrieval will begin with a risk-based check "
     "instead of jumping straight to CVC or biometric auth.";
+
+const char kIPHAutofillCreditCardBenefitFeatureName[] =
+    "Enable Card Benefits in-product help bubble";
+const char kIPHAutofillCreditCardBenefitFeatureDescription[] =
+    "Enables In-Product-Help that appears when at least one autofill credit "
+    "card suggestion includes card benefits.";
 
 const char kAutofillEnableCardBenefitsForAmericanExpressName[] =
     "Enable showing card benefits for American Express cards";
@@ -6092,21 +6092,6 @@ const char kCrostiniVirtualKeyboardSupportDescription[] =
 const char kConchName[] = "Conch feature";
 const char kConchDescription[] = "Enable Conch on ChromeOS.";
 
-const char kConchExpandTranscriptionLanguageName[] =
-    "Transcription language options for Conch";
-const char kConchExpandTranscriptionLanguageDescription[] =
-    "Expand transcription language options for Conch on ChromeOS.";
-
-const char kConchGenAiName[] = "GenAI features for Conch";
-const char kConchGenAiDescription[] =
-    "Enable this flag to use GenAI for Conch on ChromeOS.";
-
-const char kConchLargeModelName[] = "GenAI models for Conch";
-const char kConchLargeModelDescription[] =
-    "Enable this flag to use large model for Conch on ChromeOS. Note that "
-    "GenAI features may become unusable if models are unavailable on this "
-    "device";
-
 const char kConchSystemAudioFromMicName[] = "System audio capture for Conch";
 const char kConchSystemAudioFromMicDescription[] =
     "Capture system audio from microphone for Conch on ChromeOS.";
@@ -7840,11 +7825,6 @@ const char kComposeNudgeAtCursorDescription[] =
 const char kComposeProactiveNudgeName[] = "Compose Proactive Nudge";
 const char kComposeProactiveNudgeDescription[] =
     "Enables proactive nudging for Compose";
-
-const char kComposePoliteNudgeName[] = "Compose Polite a11y announcement";
-const char kComposePoliteNudgeDescription[] =
-    "Uses polite announcements to alert the user that a compose popup is "
-    "available to interact with.";
 
 const char kComposeSegmentationPromotionName[] =
     "Compose Segmentation Promotion";

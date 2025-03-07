@@ -143,6 +143,7 @@ static_library("safe_browsing") {
       "download_protection/check_client_download_request_base.h",
       "download_protection/check_file_system_access_write_request.cc",
       "download_protection/check_file_system_access_write_request.h",
+      "download_protection/deep_scanning_metadata.cc",
       "download_protection/deep_scanning_metadata.h",
       "download_protection/download_item_metadata.cc",
       "download_protection/download_item_metadata.h",

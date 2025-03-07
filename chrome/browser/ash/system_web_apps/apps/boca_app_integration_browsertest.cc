@@ -2,13 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/boca_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/files/file_path.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "base/time/time.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ash/boca/boca_manager.h"
 #include "chrome/browser/ash/boca/boca_manager_factory.h"
 #include "chrome/browser/ash/system_web_apps/apps/boca_web_app_info.h"
@@ -16,12 +21,15 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
+#include "chromeos/ash/components/boca/proto/session.pb.h"
+#include "chromeos/ash/components/boca/session_api/constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -49,6 +57,13 @@ class MockBocaSessionObserver : public ash::boca::BocaSessionManager::Observer {
               (override));
 
   MOCK_METHOD(void, OnAppReloaded, (), (override));
+
+  MOCK_METHOD(void,
+              OnSessionCaptionConfigUpdated,
+              (const std::string& group_name,
+               const ::boca::CaptionsConfig& config,
+               const std::string& tachyon_group_id),
+              (override));
 };
 
 class BocaAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
@@ -58,9 +73,7 @@ class BocaAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
     WaitForTestSystemAppInstall();
 
     // Register mock observer for testing purposes.
-    ash::BocaManager* const boca_manager =
-        ash::BocaManagerFactory::GetInstance()->GetForProfile(profile());
-    boca_manager->GetBocaSessionManager()->AddObserver(session_observer());
+    boca_session_manager()->AddObserver(session_observer());
   }
 
   void LaunchAndWait() {
@@ -69,6 +82,24 @@ class BocaAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
     observer.StartWatchingNewWebContents();
     ash::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::BOCA);
     observer.Wait();
+  }
+
+  void LaunchAndWaitAppConnectionOpened() {
+    base::test::TestFuture<bool> app_status_future;
+    boca_session_manager()->set_on_app_status_toggled_cb_for_test(
+        app_status_future.GetCallback());
+    LaunchAndWait();
+    EXPECT_TRUE(app_status_future.Get());
+  }
+
+  void CloseAndWaitAppConnectionClosed() {
+    base::test::TestFuture<bool> app_status_future;
+    boca_session_manager()->set_on_app_status_toggled_cb_for_test(
+        app_status_future.GetCallback());
+    Browser* const boca_app_browser =
+        ash::FindSystemWebAppBrowser(profile(), ash::SystemWebAppType::BOCA);
+    boca_app_browser->window()->Close();
+    EXPECT_FALSE(app_status_future.Get());
   }
 
   void LoadTestExtension() {
@@ -89,6 +120,24 @@ class BocaAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
 
   NiceMock<MockBocaSessionObserver>* session_observer() {
     return &session_observer_;
+  }
+
+  std::unique_ptr<::boca::Session> GetSessionWithCaptionsEnabled() {
+    ::boca::SessionConfig session_config;
+    session_config.mutable_captions_config()->set_captions_enabled(true);
+    std::unique_ptr<::boca::Session> session =
+        std::make_unique<::boca::Session>();
+    session->mutable_student_group_configs()->insert(
+        {ash::boca::kMainStudentGroupName, session_config});
+    session->set_session_id("session-id");
+    session->set_session_state(::boca::Session::ACTIVE);
+    return session;
+  }
+
+  ash::boca::BocaSessionManager* boca_session_manager() {
+    return ash::BocaManagerFactory::GetInstance()
+        ->GetForProfile(profile())
+        ->GetBocaSessionManager();
   }
 
  private:
@@ -130,6 +179,47 @@ IN_PROC_BROWSER_TEST_P(BocaAppProviderIntegrationTest,
   // Load extension and verify extensions container remains missing.
   LoadTestExtension();
   EXPECT_THAT(toolbar_button_container->extensions_container(), IsNull());
+}
+
+IN_PROC_BROWSER_TEST_P(BocaAppProviderIntegrationTest,
+                       NotifyIfSessionCaptionsUpdatedAfterReload) {
+  LaunchAndWaitAppConnectionOpened();
+  Browser* const boca_app_browser =
+      ash::FindSystemWebAppBrowser(profile(), ash::SystemWebAppType::BOCA);
+  content::TestNavigationObserver observer(
+      (GURL(ash::boca::kChromeBocaAppUntrustedIndexURL)));
+  observer.WatchExistingWebContents();
+  boca_app_browser->command_controller()->ExecuteCommand(
+      IDC_RELOAD, base::TimeTicks::Now());
+  observer.Wait();
+
+  EXPECT_CALL(*session_observer(), OnSessionCaptionConfigUpdated).Times(1);
+  ash::boca::BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
+      GetSessionWithCaptionsEnabled(), /*dispatch_event=*/true);
+}
+
+IN_PROC_BROWSER_TEST_P(BocaAppProviderIntegrationTest,
+                       NotifyIfSessionCaptionsUpdatedAfterAppLaunch) {
+  LaunchAndWaitAppConnectionOpened();
+  EXPECT_CALL(*session_observer(), OnSessionCaptionConfigUpdated).Times(1);
+  ash::boca::BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
+      GetSessionWithCaptionsEnabled(), /*dispatch_event=*/true);
+}
+
+IN_PROC_BROWSER_TEST_P(BocaAppProviderIntegrationTest,
+                       DoesNotNotifyIfSessionCaptionsUpdatedButAppNotLaunched) {
+  EXPECT_CALL(*session_observer(), OnSessionCaptionConfigUpdated).Times(0);
+  ash::boca::BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
+      GetSessionWithCaptionsEnabled(), /*dispatch_event=*/true);
+}
+
+IN_PROC_BROWSER_TEST_P(BocaAppProviderIntegrationTest,
+                       DoesNotNotifyIfSessionCaptionsUpdatedButAppIsClosed) {
+  LaunchAndWait();
+  CloseAndWaitAppConnectionClosed();
+  EXPECT_CALL(*session_observer(), OnSessionCaptionConfigUpdated).Times(0);
+  ash::boca::BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
+      GetSessionWithCaptionsEnabled(), /*dispatch_event=*/true);
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

@@ -160,8 +160,7 @@ TEST_F(KeywordTableTest, Keywords) {
   EXPECT_EQ(keyword.last_visited.ToTimeT(),
             restored_keyword.last_visited.ToTimeT());
   EXPECT_EQ(keyword.policy_origin, restored_keyword.policy_origin);
-  EXPECT_EQ(keyword.created_from_play_api,
-            restored_keyword.created_from_play_api);
+  EXPECT_EQ(keyword.regulatory_origin, restored_keyword.regulatory_origin);
   EXPECT_EQ(keyword.usage_count, restored_keyword.usage_count);
   EXPECT_EQ(keyword.prepopulate_id, restored_keyword.prepopulate_id);
   EXPECT_EQ(keyword.is_active, restored_keyword.is_active);
@@ -181,7 +180,7 @@ TEST_F(KeywordTableTest, UpdateKeyword) {
   keyword.originating_url = GURL("http://originating.url/");
   keyword.input_encodings.push_back("Shift_JIS");
   keyword.prepopulate_id = 5;
-  keyword.created_from_play_api = true;
+  keyword.regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
   keyword.starter_pack_id = 0;
   keyword.enforced_by_policy = false;
   keyword.featured_by_policy = false;
@@ -201,8 +200,7 @@ TEST_F(KeywordTableTest, UpdateKeyword) {
   EXPECT_EQ(keyword.input_encodings, restored_keyword.input_encodings);
   EXPECT_EQ(keyword.id, restored_keyword.id);
   EXPECT_EQ(keyword.prepopulate_id, restored_keyword.prepopulate_id);
-  EXPECT_EQ(keyword.created_from_play_api,
-            restored_keyword.created_from_play_api);
+  EXPECT_EQ(keyword.regulatory_origin, restored_keyword.regulatory_origin);
   EXPECT_EQ(keyword.is_active, restored_keyword.is_active);
   EXPECT_EQ(keyword.starter_pack_id, restored_keyword.starter_pack_id);
   EXPECT_EQ(keyword.enforced_by_policy, restored_keyword.enforced_by_policy);
