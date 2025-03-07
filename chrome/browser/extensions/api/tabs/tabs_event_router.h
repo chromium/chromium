@@ -78,6 +78,7 @@ class TabsEventRouter
                               std::optional<tab_groups::TabGroupId> new_group,
                               tabs::TabInterface* tab,
                               int index) override;
+  void OnTabGroupChanged(const TabGroupChange& change) override;
 
   // ZoomObserver:
   void OnZoomControllerDestroyed(
