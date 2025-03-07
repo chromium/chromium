@@ -1,5 +1,5 @@
 {
-  "android-11-x86-rel": {
+  "android-11-x86-fyi-rel": {
     "gtest_tests": [
       {
         "args": [
@@ -49,7 +49,6 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
-          "--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -593,7 +592,6 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11_12.cc_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -685,6 +683,8 @@
         "args": [
           "--git-revision=${got_revision}",
           "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.chrome_public_test_apk.filter",
+          "--timeout-scale=2.0",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -709,7 +709,7 @@
         },
         "swarming": {
           "dimensions": {
-            "cores": "4",
+            "cores": "8",
             "cpu": "x86-64",
             "device_os": null,
             "device_type": null,
@@ -825,8 +825,7 @@
               "caches": "android_30_google_apis_x86"
             }
           },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_browsertests",
         "test_id_prefix": "ninja://components:components_browsertests/"
@@ -834,7 +833,6 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
-          "--gtest_filter=-FieldFormatterTest.DifferentLocales",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -900,7 +898,7 @@
         },
         "swarming": {
           "dimensions": {
-            "cores": "4",
+            "cores": "8",
             "cpu": "x86-64",
             "device_os": null,
             "device_type": null,
@@ -919,7 +917,7 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 15
+          "shards": 30
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
@@ -927,8 +925,6 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.content_shell_test_apk.filter",
-          "--timeout-scale=2.0",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1021,7 +1017,6 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1474,7 +1469,6 @@
         "args": [
           "--use-cmd-decoder=validating",
           "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.gl_tests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1926,7 +1920,6 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.media_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2161,6 +2154,51 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
+            "perfetto_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "perfetto_unittests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cores": "4",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "named_caches": [
+            {
+              "name": "android_30_google_apis_x86",
+              "path": ".android_emulator/android_30_google_apis_x86"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_30_google_apis_x86"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "perfetto_unittests",
+        "test_id_prefix": "ninja://third_party/perfetto:perfetto_unittests/"
+      },
+      {
+        "args": [
+          "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
             "sandbox_linux_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
@@ -2198,7 +2236,6 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
-          "--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2740,7 +2777,6 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.viz_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2833,7 +2869,6 @@
         "args": [
           "--webview-process-mode=multiple",
           "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
-          "--gtest_filter=-org.chromium.net.NetworkChangeNotifierTest.testNetworkChangeNotifierJavaObservers",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2988,6 +3023,51 @@
         "test": "webview_trichrome_cts_tests",
         "test_id_prefix": "ninja://android_webview/test:webview_trichrome_cts_tests/",
         "variant_id": "instant_mode"
+      },
+      {
+        "args": [
+          "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "webview_ui_test_app_test_apk"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "webview_ui_test_app_test_apk",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cores": "4",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "named_caches": [
+            {
+              "name": "android_30_google_apis_x86",
+              "path": ".android_emulator/android_30_google_apis_x86"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_30_google_apis_x86"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "webview_ui_test_app_test_apk",
+        "test_id_prefix": "ninja://android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk/"
       },
       {
         "args": [

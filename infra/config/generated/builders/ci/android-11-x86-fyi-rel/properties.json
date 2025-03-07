@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/android-11-x86-fyi-rel/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -38,7 +41,8 @@
           "builder": "android-11-x86-fyi-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-11-x86-fyi-rel/targets"
     }
   },
   "$build/siso": {

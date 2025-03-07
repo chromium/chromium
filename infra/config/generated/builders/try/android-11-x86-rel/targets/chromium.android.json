@@ -685,13 +685,9 @@
         "args": [
           "--git-revision=${got_revision}",
           "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.chrome_public_test_apk.filter",
-          "--timeout-scale=2.0",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
@@ -713,7 +709,7 @@
         },
         "swarming": {
           "dimensions": {
-            "cores": "8",
+            "cores": "4",
             "cpu": "x86-64",
             "device_os": null,
             "device_type": null,
@@ -888,8 +884,6 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
@@ -906,7 +900,7 @@
         },
         "swarming": {
           "dimensions": {
-            "cores": "8",
+            "cores": "4",
             "cpu": "x86-64",
             "device_os": null,
             "device_type": null,
@@ -925,7 +919,7 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 30
+          "shards": 15
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"

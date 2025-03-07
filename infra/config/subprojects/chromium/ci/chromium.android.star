@@ -3627,21 +3627,6 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11_12.cc_unittests.filter",
                 ],
             ),
-            "chrome_public_test_apk": targets.mixin(
-                args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.chrome_public_test_apk.filter",
-                    "--timeout-scale=2.0",
-                ],
-                # TODO(crbug.com/40210655) Remove experiment and enable on
-                # trybot once the device offline issue is resolved.
-                ci_only = True,
-                experiment_percentage = 100,
-                swarming = targets.swarming(
-                    dimensions = {
-                        "cores": "8",
-                    },
-                ),
-            ),
             "components_browsertests": targets.mixin(
                 swarming = targets.swarming(
                     shards = 2,
@@ -3652,21 +3637,6 @@ ci.builder(
                     # TODO(crbug.com/40174843): Fix the test failure
                     "--gtest_filter=-FieldFormatterTest.DifferentLocales",
                 ],
-            ),
-            "content_browsertests": targets.mixin(
-                # TODO(crbug.com/40152686): Remove ci_only and experiment_percentage
-                # after the test suite is green.
-                ci_only = True,
-                experiment_percentage = 100,
-                # TODO(crbug.com/40152686): Revisit the shard number once failed tests
-                # are fixed.
-                swarming = targets.swarming(
-                    dimensions = {
-                        # use 8-core to shorten runtime
-                        "cores": "8",
-                    },
-                    shards = 30,
-                ),
             ),
             "content_shell_test_apk": targets.mixin(
                 args = [
