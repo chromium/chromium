@@ -47,6 +47,7 @@
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -3379,6 +3380,37 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_THAT(test_api(form_data_importer()).fetched_card_instrument_id(),
               testing::Optional(filled_card.instrument_id()));
 }
+
+// BNPL suggestion is limited to Windows, macOS, Linux, and ChromeOS.
+// Therefore, the system will only check for supported BNPL issuers on these
+// platforms.
+// TODO(crbug.com/401370610): Update when BNPL is launched to other platform.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+// Tests that, in the BNPL flow, a VCN is not fetched again due to prior
+// authorization.
+TEST_F(BrowserAutofillManagerTest,
+       ShouldFetchCreditCard_VcnNotFetchedForSupportedBnplIssuer) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableBuyNowPayLaterSyncing);
+  BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
+  CreditCard credit_card = test::GetVirtualCard();
+  credit_card.set_issuer_id(issuer.issuer_id());
+  test_api(client().GetPersonalDataManager().payments_data_manager())
+      .AddBnplIssuer(issuer);
+
+  EXPECT_CALL(cc_access_manager(), FetchCreditCard).Times(0);
+
+  FormData form = CreateTestCreditCardFormData(/*is_https=*/true,
+                                               /*use_month_type=*/false);
+  FormsSeen({form});
+  manager().FillOrPreviewCreditCardForm(
+      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
+      credit_card, AutofillTriggerSource::kPopup);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 // Test that the importing logic is called on form submit.
 TEST_F(BrowserAutofillManagerTest, FormSubmitted_FormDataImporter) {

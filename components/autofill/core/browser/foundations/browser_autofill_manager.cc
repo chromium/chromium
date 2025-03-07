@@ -345,13 +345,26 @@ bool ShouldShowSuggestionsForAutocompleteUnrecognizedFields(
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
+bool IsBnplVcn(const AutofillClient& client, const CreditCard& credit_card) {
+  return base::Contains(client.GetPaymentsAutofillClient()
+                            ->GetPaymentsDataManager()
+                            .GetBnplIssuers(),
+                        credit_card.issuer_id(), &BnplIssuer::issuer_id);
+}
+
 // Checks if the `credit_card` needs to be fetched in order to complete the
 // current filling flow.
 // TODO(crbug.com/40227496): Only use parsed data.
 bool ShouldFetchCreditCard(const FormData& form,
                            const FormStructure& form_structure,
                            const AutofillField& autofill_field,
-                           const CreditCard& credit_card) {
+                           const CreditCard& credit_card,
+                           const AutofillClient& client) {
+  if (IsBnplVcn(client, credit_card)) {
+    // This is a BNPL VCN, so fetching is not needed because an authentication
+    // already happened.
+    return false;
+  }
   if (WillFillCreditCardNumberOrCvc(
           form.fields(), form_structure.fields(), autofill_field,
           /*card_has_cvc=*/!credit_card.cvc().empty())) {
@@ -1646,7 +1659,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
       case AutofillTriggerSource::kKeyboardAccessory:
       case AutofillTriggerSource::kTouchToFillCreditCard:
         return ShouldFetchCreditCard(form, *form_structure, *autofill_field,
-                                     credit_card);
+                                     credit_card, client());
       case AutofillTriggerSource::kScanCreditCard:
       case AutofillTriggerSource::kDevtools:
       case AutofillTriggerSource::kFastCheckout:
