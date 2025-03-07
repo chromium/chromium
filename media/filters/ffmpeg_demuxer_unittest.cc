@@ -1628,6 +1628,39 @@ TEST_F(FFmpegDemuxerTest, Read_Flac_192kHz_Mp4) {
                    192000, kSampleFormatS32);
 }
 
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+// Verifies that a mkv file without proper duration information doesn't just
+// assume durations are zero for all buffers.
+TEST_F(FFmpegDemuxerTest, Read_MissingDurations) {
+  CreateDemuxer("testsrc-no-durations-h264.mkv");
+  InitializeDemuxer();
+  auto* stream = GetStream(DemuxerStream::VIDEO);
+  ASSERT_NE(stream, nullptr);
+
+  auto VerifyBuffersHaveNoDuration = [&]() {
+    base::RunLoop loop;
+    stream->Read(1, base::BindLambdaForTesting(
+                        [&](DemuxerStream::Status status,
+                            DemuxerStream::DecoderBufferVector buffers) {
+                          ASSERT_EQ(status, DemuxerStream::kOk);
+                          ASSERT_EQ(buffers.size(), 1u);
+                          for (auto& buffer : buffers) {
+                            EXPECT_EQ(buffer->duration(), kNoTimestamp);
+                          }
+                          loop.QuitWhenIdle();
+                        }));
+    loop.Run();
+  };
+
+  VerifyBuffersHaveNoDuration();
+
+  // For this particular file, after a seek ffmpeg returns 1ms durations...
+  Seek(base::TimeDelta());
+
+  VerifyBuffersHaveNoDuration();
+}
+#endif
+
 // Verify that FFmpeg demuxer falls back to choosing disabled streams for
 // seeking if there's no suitable enabled stream found.
 TEST_F(FFmpegDemuxerTest, Seek_FallbackToDisabledVideoStream) {

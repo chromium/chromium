@@ -599,6 +599,13 @@ be identical, and then tag the primary as `EBU_3213_E` inside the container.
 ffmpeg -f lavfi -i testsrc=s=320x240:r=1:d=1 -pix_fmt yuv420p -vf "colorspace=space=bt470bg:range=tv:primaries=smpte170m:trc=smpte170m:ispace=smpte170m:irange=tv:iprimaries=smpte170m:itrc=smpte170m" -color_range 1 -colorspace 6 -color_primaries 22 -color_trc 6 -c:v vp9 ebu-3213-e-vp9.mp4
 ```
 
+#### testsrc-no-durations-h264.mkv
+
+Playback of vp9.mp4 file recorded via MediaRecorder({mimeType: "video/webm;codecs=h264,opus"}) in Chrome 133.0.6943.132.
+```
+ffmpeg -f lavfi -i testsrc=rate=10:n=1 -t 1 -pix_fmt yuv420p -vcodec vp9 vp9.mp4
+```
+
 ### AAC test data from MPEG-DASH demoplayer (44100 Hz, stereo)
 Duration of each packet is (1024/44100 Hz), approximately 23.22 ms.
 
