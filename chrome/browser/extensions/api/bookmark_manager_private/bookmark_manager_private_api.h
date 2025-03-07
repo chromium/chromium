@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/extensions/api/bookmarks_core/bookmarks_function.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
@@ -20,6 +21,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_function.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
@@ -87,6 +89,16 @@ class BookmarkManagerPrivateAPI : public BrowserContextKeyedAPI,
 
   // Created lazily upon OnListenerAdded.
   std::unique_ptr<BookmarkManagerPrivateEventRouter> event_router_;
+};
+
+template <>
+struct BrowserContextFactoryDependencies<BookmarkManagerPrivateAPI> {
+  static void DeclareFactoryDependencies(
+      BrowserContextKeyedAPIFactory<BookmarkManagerPrivateAPI>* factory) {
+    factory->DependsOn(BookmarkModelFactory::GetInstance());
+    factory->DependsOn(BookmarkUndoServiceFactory::GetInstance());
+    factory->DependsOn(EventRouterFactory::GetInstance());
+  }
 };
 
 // Class that handles the drag and drop related chrome.bookmarkManagerPrivate

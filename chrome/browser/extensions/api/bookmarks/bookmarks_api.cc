@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -82,6 +83,10 @@ void BookmarkEventRouter::BookmarkModelLoaded(bool ids_reassigned) {
 }
 
 void BookmarkEventRouter::BookmarkModelBeingDeleted() {
+  // This codepath is unexpected because `this` is owned by a KeyedService that
+  // depends on BookmarkModelFactory, which means BookmarkModel must outlive
+  // `this`.
+  NOTREACHED(base::NotFatalUntil::M138);
   model_ = nullptr;
 }
 
