@@ -38,12 +38,6 @@ class TestSharedStorageObserver
   void OnConfigPopulated(
       const std::optional<FencedFrameConfig>& config) override;
 
-  bool EventParamsMatch(const SharedStorageEventParams& expected_params,
-                        const SharedStorageEventParams& actual_params);
-
-  bool AccessesMatch(const Access& expected_access,
-                     const Access& actual_access);
-
   void ExpectAccessObserved(const std::vector<Access>& expected_accesses);
 
  private:

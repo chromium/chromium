@@ -7,6 +7,7 @@
 
 #include <map>
 #include <optional>
+#include <ostream>
 
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/messaging/cloneable_message.h"
@@ -77,6 +78,12 @@ class CONTENT_EXPORT SharedStorageEventParams {
       std::optional<std::string> value,
       std::optional<bool> ignore_if_present);
 };
+
+CONTENT_EXPORT bool operator==(const SharedStorageEventParams& lhs,
+                               const SharedStorageEventParams& rhs);
+
+CONTENT_EXPORT std::ostream& operator<<(std::ostream& os,
+                                        const SharedStorageEventParams& params);
 
 }  // namespace content
 

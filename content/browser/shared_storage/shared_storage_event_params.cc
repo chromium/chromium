@@ -2,14 +2,63 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/shared_storage/shared_storage_event_params.h"
+
 #include <algorithm>
+#include <ostream>
 
 #include "base/debug/crash_logging.h"
-#include "content/browser/shared_storage/shared_storage_event_params.h"
+#include "base/strings/strcat.h"
 
 namespace content {
 
+namespace {
+using SharedStorageUrlSpecWithMetadata =
+    SharedStorageEventParams::SharedStorageUrlSpecWithMetadata;
+
 const size_t kSharedStorageSerializedDataLengthLimitForEventParams = 1024;
+
+std::string SerializeOptionalString(std::optional<std::string> str) {
+  if (str) {
+    return *str;
+  }
+
+  return "std::nullopt";
+}
+
+std::string SerializeOptionalBool(std::optional<bool> b) {
+  if (b) {
+    return base::ToString(*b);
+  }
+
+  return "std::nullopt";
+}
+
+std::string SerializeOptionalUrlsWithMetadata(
+    std::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
+        urls_with_metadata) {
+  if (!urls_with_metadata) {
+    return "std::nullopt";
+  }
+
+  std::vector<std::string> urls_str_vector = {"{ "};
+  for (const auto& url_with_metadata : *urls_with_metadata) {
+    urls_str_vector.push_back("{url: ");
+    urls_str_vector.push_back(url_with_metadata.url);
+    urls_str_vector.push_back(", reporting_metadata: { ");
+    for (const auto& metadata_pair : url_with_metadata.reporting_metadata) {
+      urls_str_vector.push_back("{");
+      urls_str_vector.push_back(metadata_pair.first);
+      urls_str_vector.push_back(" : ");
+      urls_str_vector.push_back(metadata_pair.second);
+      urls_str_vector.push_back("} ");
+    }
+    urls_str_vector.push_back("}} ");
+  }
+  urls_str_vector.push_back("}");
+
+  return base::StrCat(urls_str_vector);
+}
 
 std::string MaybeTruncateSerializedData(
     const blink::CloneableMessage& serialized_data) {
@@ -21,6 +70,8 @@ std::string MaybeTruncateSerializedData(
   return std::string(serialized_data.owned_encoded_message.begin(),
                      serialized_data.owned_encoded_message.begin() + length);
 }
+
+}  // namespace
 
 SharedStorageEventParams::SharedStorageUrlSpecWithMetadata::
     SharedStorageUrlSpecWithMetadata() = default;
@@ -131,6 +182,32 @@ SharedStorageEventParams SharedStorageEventParams::CreateForGetOrDelete(
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateDefault() {
   return SharedStorageEventParams();
+}
+
+// Note that for `serialized_data`, we only match its presence or absence.
+bool operator==(const SharedStorageEventParams& lhs,
+                const SharedStorageEventParams& rhs) {
+  return lhs.script_source_url == rhs.script_source_url &&
+         lhs.operation_name == rhs.operation_name &&
+         !!lhs.serialized_data == !!rhs.serialized_data &&
+         lhs.urls_with_metadata == rhs.urls_with_metadata &&
+         lhs.key == rhs.key && lhs.value == rhs.value &&
+         lhs.ignore_if_present == rhs.ignore_if_present;
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         const SharedStorageEventParams& params) {
+  os << "{ Script Source URL: "
+     << SerializeOptionalString(params.script_source_url)
+     << "; Operation Name: " << SerializeOptionalString(params.operation_name)
+     << "; Serialized Data: " << SerializeOptionalString(params.serialized_data)
+     << "; URLs With Metadata: "
+     << SerializeOptionalUrlsWithMetadata(params.urls_with_metadata)
+     << "; Key: " << SerializeOptionalString(params.key)
+     << "; Value: " << SerializeOptionalString(params.value)
+     << "; Ignore If Present: "
+     << SerializeOptionalBool(params.ignore_if_present) << " }";
+  return os;
 }
 
 }  // namespace content
