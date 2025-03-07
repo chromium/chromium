@@ -29,10 +29,6 @@ class ChromiumDepGraph {
                     url: 'https://maven.google.com/androidx/multidex/multidex/2.0.0/multidex-2.0.0.aar'),
             com_google_android_datatransport_transport_api: new PropertyOverride(
                     description: 'Interfaces for data logging in gmscore SDKs.'),
-            com_google_android_datatransport_transport_backend_cct: new PropertyOverride(
-                    exclude: true),  // We're not using datatransport functionality.
-            com_google_android_datatransport_transport_runtime: new PropertyOverride(
-                    exclude: true),  // We're not using datatransport functionality.
             com_google_android_gms_play_services_cloud_messaging: new PropertyOverride(
                     description: 'Firebase Cloud Messaging library that interfaces with gmscore.'),
             com_google_android_gms_play_services_location: new PropertyOverride(
@@ -71,8 +67,6 @@ class ChromiumDepGraph {
                     description: 'Common classes for Firebase SDKs.'),
             com_google_firebase_firebase_components: new PropertyOverride(
                     description: 'Provides dependency management for Firebase SDKs.'),
-            com_google_firebase_firebase_datatransport: new PropertyOverride(
-                    exclude: true),  // We're not using datatransport functionality.
             com_google_firebase_firebase_encoders_json: new PropertyOverride(
                     description: 'JSON encoders used in Firebase SDKs.'),
             com_google_firebase_firebase_encoders: new PropertyOverride(
