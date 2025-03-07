@@ -15,6 +15,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceDialogFragmentCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.ViewUtils;
@@ -28,7 +29,7 @@ public class ClearWebsiteStorageDialog extends PreferenceDialogFragmentCompat {
     private static @Nullable Callback<Boolean> sCallback;
 
     // The view containing the dialog ui elements.
-    private @Nullable View mDialogView;
+    private @MonotonicNonNull View mDialogView;
 
     public static ClearWebsiteStorageDialog newInstance(
             Preference preference, Callback<Boolean> callback, boolean isGroup) {
@@ -65,7 +66,7 @@ public class ClearWebsiteStorageDialog extends PreferenceDialogFragmentCompat {
                     .post(
                             () -> {
                                 ViewUtils.requestLayout(
-                                        assumeNonNull(mDialogView),
+                                        mDialogView,
                                         "ClearWebsiteStorageDialog.onConfigurationChanged"
                                                 + " Runnable");
                             });

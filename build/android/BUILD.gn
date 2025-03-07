@@ -56,6 +56,7 @@ if (enable_java_templates) {
       "java/src/org/chromium/build/annotations/IdentifierNameString.java",
       "java/src/org/chromium/build/annotations/Initializer.java",
       "java/src/org/chromium/build/annotations/MockedInTests.java",
+      "java/src/org/chromium/build/annotations/MonotonicNonNull.java",
       "java/src/org/chromium/build/annotations/NullMarked.java",
       "java/src/org/chromium/build/annotations/NullUnmarked.java",
       "java/src/org/chromium/build/annotations/Nullable.java",
