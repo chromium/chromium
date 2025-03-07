@@ -2084,19 +2084,35 @@ void BrowserAutofillManager::OnLoadedServerPredictionsImpl(
     }
 
     AutofillAiModelCache* model_cache = client().GetAutofillAiModelCache();
-    if (!model_cache || model_cache->Contains(form->form_signature())) {
+    if (!model_cache) {
+      LOG_AF(log_manager())
+          << LoggingScope::kAutofillAi
+          << "Form for model run detected, but cache unavailable." << Br{}
+          << *form;
       return;
+    }
+    if (model_cache->Contains(form->form_signature())) {
+      LOG_AF(log_manager()) << LoggingScope::kAutofillAi
+                            << "Form for model run detected, but its signature "
+                               "is already contained in the cache."
+                            << Br{} << *form;
+      continue;
     }
 
     AutofillAiModelExecutor* model_executor =
         client().GetAutofillAiModelExecutor();
     if (!model_executor) {
+      LOG_AF(log_manager())
+          << LoggingScope::kAutofillAi
+          << "Form for model run detected, but the model is unavailable."
+          << Br{} << *form;
       return;
     }
 
-    // TODO(crbug.com/395555410): Try to run the model.
+    LOG_AF(log_manager()) << LoggingScope::kAutofillAi
+                          << "Requesting model run for form." << Br{} << *form;
+    model_executor->GetPredictions(form->ToFormData());
   }
-  // Implement.
 }
 
 void BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue(

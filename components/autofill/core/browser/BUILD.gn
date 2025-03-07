@@ -1014,6 +1014,8 @@ static_library("test_support") {
     "metrics/ukm_metrics_test_utils.h",
     "ml_model/autofill_ai/mock_autofill_ai_model_cache.cc",
     "ml_model/autofill_ai/mock_autofill_ai_model_cache.h",
+    "ml_model/autofill_ai/mock_autofill_ai_model_executor.cc",
+    "ml_model/autofill_ai/mock_autofill_ai_model_executor.h",
     "payments/bnpl_manager_test_api.h",
     "payments/credit_card_access_manager_test_api.h",
     "payments/credit_card_access_manager_test_base.cc",
