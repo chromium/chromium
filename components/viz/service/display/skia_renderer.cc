@@ -2644,12 +2644,29 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("viz.quads"),
                "SkiaRenderer::DrawTextureQuad");
 
+  // Sometimes we use different color space for overlays to make sure we stay on
+  // hardware path for power efficiency even if it's slightly incorrect. To
+  // avoid color changes during promotion we use the same color space for
+  // compositing.
+  std::optional<gfx::ColorSpace> overlay_color_space;
+#if BUILDFLAG(IS_ANDROID)
+  if (quad->is_stream_video) {
+    // If overlay processor would override color space, override it here to to
+    // avoid color changes during promotion.
+    overlay_color_space =
+        OverlayProcessorSurfaceControl::GetOverrideColorSpace();
+  }
+#endif
+
   // We need only RGB portion of the color space, YUV conversion handled in
   // skia.
   const gfx::ColorSpace src_color_space =
-      resource_provider()->GetColorSpace(quad->resource_id).GetAsFullRangeRGB();
+      overlay_color_space.value_or(resource_provider()
+                                       ->GetColorSpace(quad->resource_id)
+                                       .GetAsFullRangeRGB());
   const gfx::HDRMetadata& src_hdr_metadata =
       resource_provider()->GetHDRMetadata(quad->resource_id);
+
   const bool needs_color_conversion_filter =
       ((quad->is_video_frame && src_color_space.IsHDR()) ||
        src_color_space.IsToneMappedByDefault()) &&
@@ -2660,17 +2677,9 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   if (needs_color_conversion_filter) {
     override_color_space = CurrentDrawLayerColorSpace().ToSkColorSpace();
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  if (quad->is_stream_video) {
-    // If overlay processor would override color space, override it here to to
-    // avoid color changes during promotion.
-    if (auto overlay_color_space =
-            OverlayProcessorSurfaceControl::GetOverrideColorSpace()) {
-      override_color_space = overlay_color_space->ToSkColorSpace();
-    }
+  if (overlay_color_space) {
+    override_color_space = overlay_color_space->ToSkColorSpace();
   }
-#endif
 
   ScopedSkImageBuilder builder(
       this, quad->resource_id, /*maybe_concurrent_reads=*/true,
