@@ -17,7 +17,6 @@ static_library("first_run") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/login",

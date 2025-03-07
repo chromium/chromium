@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/input_method/editor_context.h"
 #include "chrome/browser/ash/input_method/editor_helpers.h"
 #include "chrome/browser/ash/input_method/input_methods_by_language.h"
-#include "chrome/browser/browser_process.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "content/public/browser/service_process_host.h"
 
