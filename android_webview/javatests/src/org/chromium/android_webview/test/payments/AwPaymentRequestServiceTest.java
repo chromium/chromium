@@ -496,7 +496,9 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
         }
         AndroidPaymentAppFinder.setPackageManagerDelegateForTest(packageManagerDelegate);
         AndroidPaymentAppFinder.setDownloaderForTest(new MockPaymentManifestDownloader());
-        AndroidPaymentAppFinder.setAndroidIntentLauncherForTest(new MockAndroidIntentLauncher());
+        AndroidPaymentAppFinder.setAndroidIntentLauncherForTest(
+                new MockAndroidIntentLauncher(
+                        /* returnShippingAddress= */ false, /* returnContactInfo= */ false));
         AndroidPaymentAppFinder.bypassIsReadyToPayServiceInTest();
     }
 
