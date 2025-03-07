@@ -192,7 +192,8 @@ TEST(TemplateURLServiceUtilTest, MergeEnginesFromPrepopulateData_PlayAPI) {
   ASSERT_EQ(local_turls.size(), 1U);
   // Merged search engine should have both Play API flag and valid
   // prepopulate_id.
-  EXPECT_TRUE(local_turls[0]->created_from_play_api());
+  ASSERT_EQ(local_turls[0]->GetRegulatoryExtensionType(),
+            RegulatoryExtensionType::kAndroidEEA);
   EXPECT_EQ(1, local_turls[0]->prepopulate_id());
   EXPECT_NE(prepopulated_search_url, local_turls[0]->url());
 
@@ -203,7 +204,8 @@ TEST(TemplateURLServiceUtilTest, MergeEnginesFromPrepopulateData_PlayAPI) {
   MergeEnginesFromPrepopulateData(nullptr, &prepopulated_turls, &local_turls,
                                   nullptr, nullptr);
   ASSERT_EQ(local_turls.size(), 1U);
-  EXPECT_TRUE(local_turls[0]->created_from_play_api());
+  ASSERT_EQ(local_turls[0]->GetRegulatoryExtensionType(),
+            RegulatoryExtensionType::kAndroidEEA);
   EXPECT_EQ(local_turls[0]->keyword(), u"play");
 
   // Test that removing search engine from prepopulated list doesn't delete Play
@@ -212,7 +214,8 @@ TEST(TemplateURLServiceUtilTest, MergeEnginesFromPrepopulateData_PlayAPI) {
   MergeEnginesFromPrepopulateData(nullptr, &prepopulated_turls, &local_turls,
                                   nullptr, nullptr);
   ASSERT_EQ(local_turls.size(), 1U);
-  EXPECT_TRUE(local_turls[0]->created_from_play_api());
+  ASSERT_EQ(local_turls[0]->GetRegulatoryExtensionType(),
+            RegulatoryExtensionType::kAndroidEEA);
   EXPECT_EQ(local_turls[0]->prepopulate_id(), 0);
 }
 

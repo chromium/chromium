@@ -235,7 +235,8 @@ class TemplateURLServiceWithDatabaseUnitTest
         std::make_unique<TemplateURL>(CreatePlayAPITemplateURLData(keyword)));
 
     CHECK(template_url);
-    CHECK(template_url->created_from_play_api());
+    CHECK(template_url->GetRegulatoryExtensionType() ==
+          RegulatoryExtensionType::kAndroidEEA);
     CHECK_EQ(template_url,
              template_url_service().GetTemplateURLForKeyword(keyword));
 
@@ -277,7 +278,8 @@ TEST_F(TemplateURLServiceWithDatabaseUnitTest, ResetPlayAPISearchEngine) {
   auto* new_play_engine =
       template_url_service().GetTemplateURLForKeyword(kNewPlayEngineKeyword);
   EXPECT_TRUE(new_play_engine);
-  EXPECT_TRUE(new_play_engine->created_from_play_api());
+  ASSERT_EQ(new_play_engine->GetRegulatoryExtensionType(),
+            RegulatoryExtensionType::kAndroidEEA);
   EXPECT_EQ(new_play_engine, template_url_service().GetDefaultSearchProvider());
 
   // We still have the same number of engines.
@@ -302,7 +304,8 @@ TEST_F(TemplateURLServiceWithDatabaseUnitTest,
   auto* new_play_engine =
       template_url_service().GetTemplateURLForKeyword(kNewPlayEngineKeyword);
   EXPECT_TRUE(new_play_engine);
-  EXPECT_TRUE(new_play_engine->created_from_play_api());
+  ASSERT_EQ(new_play_engine->GetRegulatoryExtensionType(),
+            RegulatoryExtensionType::kAndroidEEA);
   EXPECT_EQ(new_play_engine, template_url_service().GetDefaultSearchProvider());
 }
 
@@ -325,7 +328,8 @@ TEST_F(TemplateURLServiceWithDatabaseUnitTest,
   auto* new_play_engine =
       template_url_service().GetTemplateURLForKeyword(overriden_keyword);
   EXPECT_TRUE(new_play_engine);
-  EXPECT_TRUE(new_play_engine->created_from_play_api());
+  ASSERT_EQ(new_play_engine->GetRegulatoryExtensionType(),
+            RegulatoryExtensionType::kAndroidEEA);
   EXPECT_EQ(new_play_engine->prepopulate_id(), /* bing_id */ 3);
   EXPECT_EQ(new_play_engine, template_url_service().GetDefaultSearchProvider());
 
@@ -374,7 +378,8 @@ TEST_F(TemplateURLServiceWithDatabaseUnitTest,
   auto* new_play_engine =
       template_url_service().GetTemplateURLForKeyword(kNewPlayEngineKeyword);
   EXPECT_TRUE(new_play_engine);
-  EXPECT_TRUE(new_play_engine->created_from_play_api());
+  ASSERT_EQ(new_play_engine->GetRegulatoryExtensionType(),
+            RegulatoryExtensionType::kAndroidEEA);
   EXPECT_EQ(new_play_engine, template_url_service().GetDefaultSearchProvider());
 
   // The old prepopulated engine is still there and is exposed when looking up
@@ -405,7 +410,8 @@ TEST_F(TemplateURLServiceWithDatabaseUnitTest,
   auto* new_play_engine =
       template_url_service().GetTemplateURLForKeyword(play_engine_keyword);
   EXPECT_TRUE(new_play_engine);
-  EXPECT_TRUE(new_play_engine->created_from_play_api());
+  ASSERT_EQ(new_play_engine->GetRegulatoryExtensionType(),
+            RegulatoryExtensionType::kAndroidEEA);
   EXPECT_EQ(new_play_engine, template_url_service().GetDefaultSearchProvider());
 
   // This is the only known engine matching this keyword.
@@ -442,7 +448,8 @@ TEST_F(TemplateURLServiceWithDatabaseUnitTest,
   auto* new_play_engine =
       template_url_service().GetTemplateURLForKeyword(kNewPlayEngineKeyword);
   EXPECT_TRUE(new_play_engine);
-  EXPECT_TRUE(new_play_engine->created_from_play_api());
+  ASSERT_EQ(new_play_engine->GetRegulatoryExtensionType(),
+            RegulatoryExtensionType::kAndroidEEA);
 
   EXPECT_NE(new_play_engine, template_url_service().GetDefaultSearchProvider());
 

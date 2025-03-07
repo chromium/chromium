@@ -236,17 +236,17 @@ void MergeIntoEngineData(const TemplateURL* original_turl,
   DCHECK(original_turl->starter_pack_id() == 0 ||
          original_turl->starter_pack_id() == url_to_update->starter_pack_id);
   // When the user modified search engine's properties or search engine is
-  // imported from Play API data we need to preserve certain search engine
-  // properties from overriding with prepopulated data.
+  // imported from regulatory extensions we need to preserve certain search
+  // engine properties from overriding with prepopulated data.
   bool preserve_user_edits =
-      (merge_option != TemplateURLMergeOption::kOverwriteUserEdits &&
-       (!original_turl->safe_for_autoreplace() ||
-        original_turl->created_from_play_api()));
+      merge_option != TemplateURLMergeOption::kOverwriteUserEdits &&
+      (!original_turl->safe_for_autoreplace() ||
+       original_turl->CreatedByRegulatoryProgram());
   if (preserve_user_edits) {
     url_to_update->safe_for_autoreplace = original_turl->safe_for_autoreplace();
     url_to_update->SetShortName(original_turl->short_name());
     url_to_update->SetKeyword(original_turl->keyword());
-    if (original_turl->created_from_play_api()) {
+    if (original_turl->CreatedByRegulatoryProgram()) {
       // TODO(crbug.com/40646573): Search url from Play API might contain
       // attribution info and therefore should be preserved through prepopulated
       // data update. In the future we might decide to take different approach
@@ -258,7 +258,8 @@ void MergeIntoEngineData(const TemplateURL* original_turl,
   url_to_update->sync_guid = original_turl->sync_guid();
   url_to_update->date_created = original_turl->date_created();
   url_to_update->last_modified = original_turl->last_modified();
-  url_to_update->created_from_play_api = original_turl->created_from_play_api();
+  url_to_update->created_from_play_api =
+      original_turl->data().created_from_play_api;
 }
 
 ActionsFromCurrentData::ActionsFromCurrentData() = default;
@@ -290,12 +291,11 @@ ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
     const TemplateURL* default_search_provider) {
   // Create a map to hold all provided |template_urls| that originally came from
   // prepopulate data (i.e. have a non-zero prepopulate_id()).
-  TemplateURL* play_api_turl = nullptr;
+  std::map<std::u16string_view, TemplateURL*> regulatory_entries;
   std::map<int, TemplateURL*> id_to_turl;
   for (auto& turl : existing_urls) {
-    if (turl->created_from_play_api()) {
-      DCHECK_EQ(nullptr, play_api_turl);
-      play_api_turl = turl.get();
+    if (turl->CreatedByRegulatoryProgram()) {
+      regulatory_entries.insert({turl->keyword(), turl.get()});
     }
     int prepopulate_id = turl->prepopulate_id();
     if (prepopulate_id > 0)
@@ -316,9 +316,9 @@ ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
     if (existing_url_iter != id_to_turl.end()) {
       existing_url = existing_url_iter->second;
       id_to_turl.erase(existing_url_iter);
-    } else if (play_api_turl &&
-               play_api_turl->keyword() == prepopulated_url->keyword()) {
-      existing_url = play_api_turl;
+    } else if (auto iter = regulatory_entries.find(prepopulated_url->keyword());
+               iter != regulatory_entries.end()) {
+      existing_url = iter->second;
     }
 
     if (existing_url != nullptr) {
@@ -348,8 +348,8 @@ ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
          (template_url->prepopulate_id() !=
           default_search_provider->prepopulate_id()) ||
          (template_url->keyword() != default_search_provider->keyword()))) {
-      if (template_url->created_from_play_api()) {
-        // Don't remove the entry created from Play API. Just reset
+      if (template_url->CreatedByRegulatoryProgram()) {
+        // Don't remove the entry created from regulatory extensions. Just reset
         // prepopulate_id for it.
         TemplateURLData data = template_url->data();
         data.prepopulate_id = 0;

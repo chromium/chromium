@@ -50,6 +50,7 @@
 #include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/enterprise/enterprise_search_manager.h"
 #include "components/search_engines/keyword_web_data_service.h"
+#include "components/search_engines/regulatory_extension_type.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_type.h"
@@ -590,7 +591,7 @@ bool TemplateURLService::IsPrepopulatedOrDefaultProviderByPolicy(
     const TemplateURL* t_url) const {
   return (t_url->prepopulate_id() > 0 ||
           t_url->CreatedByDefaultSearchProviderPolicy() ||
-          t_url->created_from_play_api()) &&
+          t_url->CreatedByRegulatoryProgram()) &&
          t_url->SupportsReplacement(search_terms_data());
 }
 
@@ -1090,7 +1091,8 @@ bool TemplateURLService::ResetPlayAPISearchEngine(
       keyword_to_turl_.equal_range(new_play_api_turl->keyword());
   for (auto it = match_range.first; it != match_range.second; ++it) {
     TemplateURL* same_keyword_engine = it->second;
-    if (same_keyword_engine->created_from_play_api()) {
+    if (same_keyword_engine->GetRegulatoryExtensionType() ==
+        RegulatoryExtensionType::kAndroidEEA) {
       // We will look into replacing this one below, don't consider it a blocker
       // yet.
       continue;
@@ -1106,8 +1108,11 @@ bool TemplateURLService::ResetPlayAPISearchEngine(
   // 1.B) We can only have 1 Play API engine at a time. we have to remove the
   // old one, if it exits. If it's the current default, we'll have to remove it
   // first.
-  auto found =
-      std::ranges::find_if(template_urls_, &TemplateURL::created_from_play_api);
+  auto found = std::ranges::find_if(template_urls_, [](const auto& turl) {
+    return turl->GetRegulatoryExtensionType() ==
+           RegulatoryExtensionType::kAndroidEEA;
+  });
+
   if (found != template_urls_.cend()) {
     // There is already an old Play API engine. To proceed we'll need to remove
     // it.
@@ -3006,11 +3011,12 @@ void TemplateURLService::MergeInSyncTemplateURL(
     // The conflict resolution code below sometimes resets the TemplateURL's
     // GUID, which can trigger deleting any Policy-created engines. Avoid this
     // use-after-free bug by excluding any Policy-created engines. Also exclude
-    // Play API created engines, as those also seem local-only and should not
-    // be merged into Synced engines. crbug.com/1414224.
+    // engines selected as part of regulatory program, as those also seem
+    // local-only and should not be merged into Synced engines.
+    // crbug.com/1414224.
     if (local_turl->type() == TemplateURL::NORMAL &&
         !local_turl->CreatedByPolicy() &&
-        !local_turl->created_from_play_api()) {
+        !local_turl->CreatedByRegulatoryProgram()) {
       local_duplicates.push_back(local_turl);
     }
   }
