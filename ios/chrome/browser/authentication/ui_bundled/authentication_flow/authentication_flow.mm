@@ -659,7 +659,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   }
   [_performer
       showManagedConfirmationForHostedDomain:_identityToSignInHostedDomain
-                                   userEmail:_identityToSignIn.userEmail
+                                    identity:_identityToSignIn
                               viewController:_presentingViewController
                                      browser:_browser
                    skipBrowsingDataMigration:skipBrowsingDataMigration

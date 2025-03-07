@@ -262,7 +262,7 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
 }
 
 - (void)showManagedConfirmationForHostedDomain:(NSString*)hostedDomain
-                                     userEmail:(NSString*)userEmail
+                                      identity:(id<SystemIdentity>)identity
                                 viewController:(UIViewController*)viewController
                                        browser:(Browser*)browser
                      skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration
@@ -281,7 +281,7 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
     _managedConfirmationScreenCoordinator =
         [[ManagedProfileCreationCoordinator alloc]
                        initWithBaseViewController:viewController
-                                        userEmail:userEmail
+                                         identity:identity
                                      hostedDomain:hostedDomain
                                           browser:browser
                         skipBrowsingDataMigration:skipBrowsingDataMigration

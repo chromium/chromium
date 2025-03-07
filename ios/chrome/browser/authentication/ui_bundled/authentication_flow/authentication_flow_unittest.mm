@@ -182,7 +182,7 @@ class AuthenticationFlowTest : public PlatformTest {
     if (hosted_domain.length) {
       OCMStub([performer_mock_
                   showManagedConfirmationForHostedDomain:hosted_domain
-                                               userEmail:user_email
+                                                identity:identity
                                           viewController:view_controller_mock_
                                                  browser:browser_.get()
                                skipBrowsingDataMigration:NO
