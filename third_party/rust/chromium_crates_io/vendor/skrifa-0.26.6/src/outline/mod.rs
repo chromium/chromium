@@ -83,6 +83,7 @@ mod cff;
 mod glyf;
 mod hint;
 mod hint_reliant;
+mod memory;
 mod metrics;
 mod path;
 mod unscaled;
@@ -674,29 +675,11 @@ pub(super) fn with_glyf_memory<R>(
     memory: Option<&mut [u8]>,
     mut f: impl FnMut(&mut [u8]) -> R,
 ) -> R {
-    // Wrap in a function and prevent inlining to avoid stack allocation
-    // and zeroing if we don't take this code path.
-    #[inline(never)]
-    fn stack_mem<const STACK_SIZE: usize, R>(mut f: impl FnMut(&mut [u8]) -> R) -> R {
-        f(&mut [0u8; STACK_SIZE])
-    }
     match memory {
         Some(buf) => f(buf),
         None => {
             let buf_size = outline.required_buffer_size(hinting);
-            // Use bucketed stack allocations to prevent excessive zeroing of
-            // memory
-            if buf_size <= 512 {
-                stack_mem::<512, _>(f)
-            } else if buf_size <= 1024 {
-                stack_mem::<1024, _>(f)
-            } else if buf_size <= 2048 {
-                stack_mem::<2048, _>(f)
-            } else if buf_size <= 4096 {
-                stack_mem::<4096, _>(f)
-            } else {
-                f(&mut vec![0u8; buf_size])
-            }
+            memory::with_temporary_memory(buf_size, f)
         }
     }
 }

@@ -3068,6 +3068,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.26.4 -> 0.26.5"
 notes = "Contains fixes for hdmx metrics for fonts such as Arimo, Tinos, Market Sans."
 
+[[audits.skrifa]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.26.5 -> 0.26.6"
+notes = "Cherry-pick of hang in GSUB processing in Skrifa during autohinting."
+
 [[audits.small_ctor]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]

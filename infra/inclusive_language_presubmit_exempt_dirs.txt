@@ -209,8 +209,7 @@ extensions/common/manifest_handlers 1 1
 extensions/shell/common 1 1
 google_apis/gaia 1 1
 gpu/config 1 1
-infra 4 2
-infra/config/generated/luci 1 1
+infra 5 3
 infra/config/generators 2 1
 infra/config/gn_args 1 1
 infra/config/subprojects/webrtc/consoles 1 1
@@ -251,7 +250,7 @@ net/data/fuzzer_dictionaries 5 4
 net/disk_cache/blockfile 1 1
 net/dns 1 1
 net/docs 3 1
-net/http 23 2
+net/http 22 2
 net/proxy_resolution 1 1
 net/socket 1 1
 net/tools/crash_cache 1 1
