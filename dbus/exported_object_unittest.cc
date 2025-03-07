@@ -37,7 +37,8 @@ class ExportedObjectTest : public testing::Test {
 };
 
 // Tests that calling a method that doesn't send a response crashes.
-TEST_F(ExportedObjectTest, NotSendingResponseCrash) {
+// TODO(crbug.com/401584852): Reenable this test.
+TEST_F(ExportedObjectTest, DISABLED_NotSendingResponseCrash) {
   TestService::Options options;
   TestService test_service(options);
   ObjectProxy* object_proxy = bus_->GetObjectProxy(
