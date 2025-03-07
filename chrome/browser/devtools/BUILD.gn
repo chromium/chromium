@@ -5,13 +5,15 @@
 import("//extensions/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 
-if (!is_android) {
+enable_devtools_frontend = !is_android || is_desktop_android
+
+if (enable_devtools_frontend) {
   import("//build/config/features.gni")
   import("//chrome/common/features.gni")
   import("//tools/grit/grit_rule.gni")
 }
 
-if (!is_android) {
+if (enable_devtools_frontend) {
   _inspector_protocol = "//third_party/inspector_protocol"
   import("$_inspector_protocol/inspector_protocol.gni")
 
@@ -137,6 +139,47 @@ static_library("devtools") {
     "//ui/events:dom_keycode_converter",
   ]
 
+  if (enable_devtools_frontend) {
+    sources += [
+      "aida_client.cc",
+      "aida_client.h",
+      "devtools_embedder_message_dispatcher.cc",
+      "devtools_embedder_message_dispatcher.h",
+      "devtools_file_helper.cc",
+      "devtools_file_helper.h",
+      "devtools_file_storage.cc",
+      "devtools_file_storage.h",
+      "devtools_file_system_indexer.cc",
+      "devtools_file_system_indexer.h",
+      "devtools_file_watcher.cc",
+      "devtools_file_watcher.h",
+      "devtools_select_file_dialog.cc",
+      "devtools_select_file_dialog.h",
+      "devtools_settings.cc",
+      "devtools_settings.h",
+      "devtools_ui_bindings.cc",
+      "devtools_ui_bindings.h",
+      "features.cc",
+      "features.h",
+      "url_constants.cc",
+      "url_constants.h",
+      "visual_logging.cc",
+      "visual_logging.h",
+    ]
+    deps += [
+      ":protocol_generated_sources",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/ui/hats",
+      "//components/infobars/content",
+      "//components/infobars/core",
+      "//components/metrics/structured:structured_events",
+      "//components/privacy_sandbox:tracking_protection_settings",
+      "//ui/shell_dialogs",
+    ]
+  }
+
   if (!is_android) {
     public_deps += [
       "//chrome/browser/ui:browser_list",
@@ -147,29 +190,23 @@ static_library("devtools") {
       "//chrome:resources",
       "//chrome:strings",
       "//chrome/app/theme:theme_resources",
-      "//chrome/browser:browser_process",
       "//chrome/browser/apps/app_service:constants",
       "//chrome/browser/media/router:media_router_feature",
-      "//chrome/browser/profiles:profile",
       "//chrome/browser/task_manager",
       "//chrome/browser/themes",
       "//chrome/browser/ui:browser_navigator_params_headers",
       "//chrome/browser/ui/exclusive_access",
-      "//chrome/browser/ui/hats",
       "//chrome/browser/ui/prefs",
       "//chrome/browser/ui/tab_contents",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/web_applications",
       "//chrome/common",
       "//components/guest_view/browser",
-      "//components/infobars/content",
-      "//components/infobars/core",
       "//components/input",
       "//components/javascript_dialogs",
       "//components/keep_alive_registry",
       "//components/keyed_service/content",
       "//components/language/core/browser",
-      "//components/metrics/structured:structured_events",
       "//components/pref_registry",
       "//components/prefs",
       "//components/search_engines:search_engines",
@@ -187,7 +224,6 @@ static_library("devtools") {
       "//third_party/leveldatabase",
       "//ui/base/cursor",
       "//ui/base/cursor/mojom:cursor_type",
-      "//ui/shell_dialogs",
       "//ui/views/controls/webview",
     ]
     if (is_chromeos) {
@@ -197,8 +233,6 @@ static_library("devtools") {
       ]
     }
     sources += [
-      "aida_client.cc",
-      "aida_client.h",
       "chrome_devtools_manager_delegate.cc",
       "chrome_devtools_manager_delegate.h",
       "chrome_devtools_session.cc",
@@ -236,34 +270,16 @@ static_library("devtools") {
       "devtools_contents_resizing_strategy.cc",
       "devtools_contents_resizing_strategy.h",
       "devtools_dock_tile.h",
-      "devtools_embedder_message_dispatcher.cc",
-      "devtools_embedder_message_dispatcher.h",
       "devtools_eye_dropper.cc",
       "devtools_eye_dropper.h",
-      "devtools_file_helper.cc",
-      "devtools_file_helper.h",
-      "devtools_file_storage.cc",
-      "devtools_file_storage.h",
-      "devtools_file_system_indexer.cc",
-      "devtools_file_system_indexer.h",
-      "devtools_file_watcher.cc",
-      "devtools_file_watcher.h",
       "devtools_infobar_delegate.cc",
       "devtools_infobar_delegate.h",
-      "devtools_select_file_dialog.cc",
-      "devtools_select_file_dialog.h",
-      "devtools_settings.cc",
-      "devtools_settings.h",
       "devtools_targets_ui.cc",
       "devtools_targets_ui.h",
       "devtools_toggle_action.cc",
       "devtools_toggle_action.h",
-      "devtools_ui_bindings.cc",
-      "devtools_ui_bindings.h",
       "devtools_window.cc",
       "devtools_window.h",
-      "features.cc",
-      "features.h",
       "global_confirm_info_bar.cc",
       "global_confirm_info_bar.h",
       "process_sharing_infobar_delegate.cc",
@@ -272,10 +288,6 @@ static_library("devtools") {
       "remote_debugging_server.h",
       "serialize_host_descriptions.cc",
       "serialize_host_descriptions.h",
-      "url_constants.cc",
-      "url_constants.h",
-      "visual_logging.cc",
-      "visual_logging.h",
     ]
     if (enable_service_discovery) {
       sources += [
@@ -292,7 +304,6 @@ static_library("devtools") {
   }
   if (!is_android) {
     deps += [
-      ":protocol_generated_sources",
       "//chrome/app:command_ids",
       "//chrome/browser/ui/media_router",
       "//components/custom_handlers",
