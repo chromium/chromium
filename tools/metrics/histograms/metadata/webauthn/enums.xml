@@ -98,8 +98,12 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(SignalAllAcceptedCredentialsResultEnum) -->
 
 <enum name="SignalAllAcceptedCredentialsResult">
-  <int value="0" label="No passkeys were removed"/>
+  <int value="0" label="No passkeys were changed"/>
   <int value="1" label="A passkey was removed"/>
+  <int value="2" label="A passkey was hidden"/>
+  <int value="3" label="A passkey was restored"/>
+  <int value="4"
+      label="The website exceeded the quota, so the request was dropped."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/webauthn/chrome_web_authentication_delegate.h:SignalAllAcceptedCredentialsResult) -->
