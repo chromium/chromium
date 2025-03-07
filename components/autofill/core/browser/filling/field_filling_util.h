@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/span.h"
+#include "components/autofill/core/browser/data_quality/addresses/address_normalizer.h"
 #include "components/autofill/core/common/form_field_data.h"
 
 namespace autofill {
@@ -60,6 +61,24 @@ std::u16string GetCountrySelectControlValue(
     const std::u16string& value,
     base::span<const SelectOption> field_options,
     std::string* failure_to_fill = nullptr);
+
+// Returns appropriate state value that matches `field`.
+// The canonical state is checked if it fits in the field and at last the
+// abbreviations are tried. Does not return a state if neither |state_value| nor
+// the canonical state name nor its abbreviation fit into the field.
+std::u16string GetStateTextForInput(const std::u16string& state_value,
+                                    const std::string& country_code,
+                                    uint64_t field_max_length,
+                                    std::string* failure_to_fill);
+
+// Gets the state value to fill in a select control.
+// Returns an empty string if no value for filling was found.
+std::u16string GetStateSelectControlValue(
+    const std::u16string& value,
+    base::span<const SelectOption> field_options,
+    const std::string& country_code,
+    AddressNormalizer* address_normalizer,
+    std::string* failure_to_fill);
 
 }  // namespace autofill
 

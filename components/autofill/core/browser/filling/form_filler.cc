@@ -972,7 +972,8 @@ FormFiller::FieldFillingData FormFiller::GetFieldFillingData(
               -> std::pair<std::u16string, std::optional<FieldType>> {
             return GetFillValueAndTypeForEntity(
                 CHECK_DEREF(entity), autofill_field, action_persistence,
-                manager_->client().GetAppLocale());
+                manager_->client().GetAppLocale(),
+                manager_->client().GetAddressNormalizer());
           }},
       filling_payload);
   return {value_to_fill, filling_type, /*value_is_an_override=*/false};

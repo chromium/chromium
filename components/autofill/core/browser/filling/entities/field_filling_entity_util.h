@@ -16,6 +16,7 @@
 
 namespace autofill {
 
+class AddressNormalizer;
 class AutofillField;
 class EntityDataManager;
 class EntityInstance;
@@ -32,7 +33,8 @@ std::pair<std::u16string, std::optional<FieldType>>
 GetFillValueAndTypeForEntity(const EntityInstance& entity,
                              const AutofillField& field,
                              mojom::ActionPersistence action_persistence,
-                             const std::string& app_locale);
+                             const std::string& app_locale,
+                             AddressNormalizer* address_normalizer);
 
 }  // namespace autofill
 
