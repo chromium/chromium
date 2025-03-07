@@ -141,7 +141,7 @@ class DepsBuilder(object):
                being_tested=False,
                ignore_temp_rules=False,
                ignore_specific_rules=False):
-    """Creates a new DepsBuilder.
+    r"""Creates a new DepsBuilder.
 
     Args:
       base_directory: local path to root of checkout, e.g. C:\chr\src.
@@ -185,7 +185,7 @@ class DepsBuilder(object):
 
   def _ApplyRules(self, existing_rules, includes, specific_includes,
                   cur_dir_norm):
-    """Applies the given include rules, returning the new rules.
+    r"""Applies the given include rules, returning the new rules.
 
     Args:
       existing_rules: A set of existing rules that will be combined.
