@@ -153,6 +153,8 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(
                                 : ActionInfo::DefaultState::kDisabled;
   }
 
+  // TODO(crbug.com/344639840): Load optional `icon_variants` key.
+
   return result;
 }
 

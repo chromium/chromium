@@ -20,16 +20,17 @@
 
 namespace extensions {
 
-using IconVariantsFeatureFreeManifestTest = ManifestTest;
+// Don't enable the icon variants feature. Warn if the key is used, but don't
+// create an error.
+using NoIconVariantsFeatureManifestTest = ManifestTest;
 
-// Test that icon_variants doesn't create an error when the feature isn't
-// enabled, even in the event of warnings.
-TEST_F(IconVariantsFeatureFreeManifestTest, Warnings) {
+TEST_F(NoIconVariantsFeatureManifestTest, Warnings) {
   LoadAndExpectWarnings("icon_variants.json",
                         {"'icon_variants' requires canary channel or newer, "
                          "but this is the stable channel."});
 }
 
+// Enable the icon variants feature.
 class IconVariantsManifestTest : public ManifestTest {
  public:
   IconVariantsManifestTest() {
@@ -349,6 +350,23 @@ TEST_F(IconVariantsManifestTest, ColorSchemesKeyValid) {
   scoped_refptr<extensions::Extension> extension(
       LoadAndExpectSuccess(manifest_data));
   ASSERT_TRUE(extension->install_warnings().empty());
+}
+
+// Warn, don't error, if manifest.json has an empty action.icon_variants.
+// Similar to ExtensionAction*Test, but specifically related to IconVariants.
+TEST_F(IconVariantsManifestTest, Action) {
+  ManifestData manifest_data = ManifestData::FromJSON(
+      R"({
+      "name": "Test",
+      "version": "1",
+      "manifest_version": 3,
+      "action": {"icon_variants": {}}
+    })");
+  scoped_refptr<extensions::Extension> extension(
+      LoadAndExpectSuccess(manifest_data));
+  EXPECT_EQ(1u, extension->install_warnings().size());
+  EXPECT_EQ("Unrecognized manifest key 'action'.",
+            extension->install_warnings()[0].message);
 }
 
 }  // namespace extensions
