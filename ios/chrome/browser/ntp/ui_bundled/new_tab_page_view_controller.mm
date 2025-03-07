@@ -43,6 +43,7 @@
 #import "ui/base/device_form_factor.h"
 
 namespace {
+
 // Animation time for the shift up/down animations to focus/defocus omnibox.
 const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 // The minimum height of the feed container.
@@ -50,6 +51,14 @@ const CGFloat kFeedContainerMinimumHeight = 1000;
 // Added height to the feed container so that it doesn't end abruptly on
 // overscroll.
 const CGFloat kFeedContainerExtraHeight = 500;
+
+// Vertical spacing between modules.
+CGFloat SpaceBetweenModules() {
+  return GetDeprecateFeedHeaderParameterValueAsDouble(
+      kDeprecateFeedHeaderParameterSpaceBetweenModules,
+      /*default_value=*/14);
+}
+
 }  // namespace
 
 @interface NewTabPageViewController () <UICollectionViewDelegate,
@@ -632,7 +641,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
         (viewController == self.magicStackCollectionView ||
          viewController == self.contentSuggestionsViewController ||
          viewController == self.feedHeaderViewController)) {
-      heightAboveFeed += kSpaceBetweenModules;
+      heightAboveFeed += SpaceBetweenModules();
     }
   }
   if (!IsHomeCustomizationEnabled()) {
@@ -640,7 +649,8 @@ const CGFloat kFeedContainerExtraHeight = 500;
       heightAboveFeed += kBottomMagicStackPadding;
     }
     if (!self.contentSuggestionsViewController) {
-      heightAboveFeed += content_suggestions::HeaderBottomPadding();
+      heightAboveFeed +=
+          content_suggestions::HeaderBottomPadding(self.traitCollection);
     }
   }
   return heightAboveFeed;
@@ -1216,7 +1226,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
       self.fakeOmniboxConstraints = @[
         [viewBelowHeader.topAnchor
             constraintEqualToAnchor:self.headerViewController.view.bottomAnchor
-                           constant:kSpaceBetweenModules],
+                           constant:SpaceBetweenModules()],
       ];
     }
   } else {
@@ -1232,7 +1242,8 @@ const CGFloat kFeedContainerExtraHeight = 500;
       self.fakeOmniboxConstraints = @[
         [self.magicStackCollectionView.view.topAnchor
             constraintEqualToAnchor:self.headerViewController.view.bottomAnchor
-                           constant:content_suggestions::HeaderBottomPadding()],
+                           constant:content_suggestions::HeaderBottomPadding(
+                                        self.traitCollection)],
       ];
     }
   }
@@ -1510,7 +1521,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
       UIView* viewAbove = self.viewControllersAboveFeed[index - 1].view;
       [NSLayoutConstraint activateConstraints:@[
         [view.topAnchor constraintEqualToAnchor:viewAbove.bottomAnchor
-                                       constant:kSpaceBetweenModules],
+                                       constant:SpaceBetweenModules()],
       ]];
     }
   }
@@ -1665,7 +1676,8 @@ const CGFloat kFeedContainerExtraHeight = 500;
       // Add in half of the margin between the fakebox and the rest of the
       // content suggestions, to ensure there is enough height to fully
       // finish the fakebox to omnibox transition.
-      minimumHeight += content_suggestions::HeaderBottomPadding() / 2;
+      minimumHeight +=
+          content_suggestions::HeaderBottomPadding(self.traitCollection) / 2;
     }
   }
 

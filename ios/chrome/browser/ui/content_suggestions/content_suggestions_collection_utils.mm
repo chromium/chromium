@@ -181,7 +181,8 @@ CGFloat DoodleTopMargin(BOOL logo_is_showing,
   // If Magic Stack is not enabled, this value is zero (e.g. no-op).
   top_margin -= ReducedNTPTopMarginSpaceForMagicStack();
   top_margin += kDoodleTopMarginOther;
-  top_margin += TopPaddingToNTP();
+  top_margin += GetDeprecateFeedHeaderParameterValueAsDouble(
+      kDeprecateFeedHeaderParameterTopPadding, /*default_value=*/0);
   return top_margin;
 }
 
@@ -190,7 +191,9 @@ CGFloat HeaderSeparatorHeight() {
 }
 
 CGFloat SearchFieldTopMargin() {
-  return kSearchFieldTopMargin;
+  return GetDeprecateFeedHeaderParameterValueAsDouble(
+      kDeprecateFeedHeaderParameterSearchFieldTopMargin,
+      /*default_value=*/kSearchFieldTopMargin);
 }
 
 CGFloat SearchFieldWidth(CGFloat width, UITraitCollection* trait_collection) {
@@ -258,7 +261,11 @@ CGFloat HeightForLogoHeader(BOOL logo_is_showing,
   return header_height;
 }
 
-CGFloat HeaderBottomPadding() {
+CGFloat HeaderBottomPadding(UITraitCollection* trait_collection) {
+  if (IsHomeCustomizationEnabled() && IsSplitToolbarMode(trait_collection)) {
+    return GetDeprecateFeedHeaderParameterValueAsDouble(
+        kDeprecateFeedHeaderParameterHeaderBottomPadding, 0);
+  }
   return kNTPShrunkLogoSearchFieldBottomPadding;
 }
 

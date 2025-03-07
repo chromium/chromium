@@ -16,9 +16,15 @@
 #pragma mark - Constants
 
 const char kDeprecateFeedHeaderParameterRemoveLabel[] = "remove-feed-label";
-const char kDeprecateFeedHeaderParameterTopPadding[] = "top-padding";
 const char kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox[] =
     "enlarge-logo-n-fakebox";
+const char kDeprecateFeedHeaderParameterTopPadding[] = "top-padding";
+const char kDeprecateFeedHeaderParameterSearchFieldTopMargin[] =
+    "search-field-top-margin";
+const char kDeprecateFeedHeaderParameterSpaceBetweenModules[] =
+    "space-between-modules";
+const char kDeprecateFeedHeaderParameterHeaderBottomPadding[] =
+    "header-bottom-padding";
 
 #pragma mark - Feature declarations
 
@@ -130,6 +136,16 @@ double TopPaddingToNTP() {
                    kDeprecateFeedHeader,
                    kDeprecateFeedHeaderParameterTopPadding, 0)
              : 0;
+}
+
+double GetDeprecateFeedHeaderParameterValueAsDouble(
+    const std::string& param_name,
+    double default_value) {
+  if (!ShouldDeprecateFeedHeader()) {
+    return default_value;
+  }
+  return base::GetFieldTrialParamByFeatureAsDouble(kDeprecateFeedHeader,
+                                                   param_name, default_value);
 }
 
 bool IdentityDiscAccountMenuEnabledWithoutEllipsis() {
