@@ -6,7 +6,8 @@ import * as fill_constants from '//components/autofill/ios/form_util/resources/f
 import {isTextAreaElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import {getFrameId} from '//ios/web/public/js_messaging/resources/frame_id.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
+import {isTextField, sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
+
 
 /**
  * @fileoverview Installs Autofill management functions on the __gCrWeb object.
@@ -402,7 +403,7 @@ __gCrWeb.autofill['clearAutofilledFields'] = function(
     }
 
     let value = null;
-    if (__gCrWeb.fill.isTextInput(element) || isTextAreaElement(element)) {
+    if (isTextField(element) || isTextAreaElement(element)) {
       value = '';
     } else if (__gCrWeb.fill.isSelectElement(element)) {
       // Reset to the first index.
@@ -557,10 +558,10 @@ __gCrWeb.autofill.fillFormField = function(data, field) {
   }
 
   let filled = false;
-  if (__gCrWeb.fill.isTextInput(field) || isTextAreaElement(field)) {
+  if (isTextField(field) || isTextAreaElement(field)) {
     let sanitizedValue = data['value'];
 
-    if (__gCrWeb.fill.isTextInput(field)) {
+    if (isTextField(field)) {
       // If the 'max_length' attribute contains a negative value, the default
       // maxlength value is used.
       let maxLength = data['max_length'];
