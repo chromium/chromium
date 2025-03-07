@@ -16,6 +16,7 @@
 #include "ui/aura/window_tree_host_platform.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
+#include "ui/platform_window/extensions/x11_extension.h"
 
 #endif  // BUILDFLAG(IS_LINUX)
 
@@ -48,11 +49,11 @@ AsyncWidgetRequestWaiter::~AsyncWidgetRequestWaiter() {
 void AsyncWidgetRequestWaiter::Wait() {
   CHECK(!waited_) << "`Wait` may only be called once.";
 #if BUILDFLAG(IS_LINUX)
+  auto* host = aura::WindowTreeHostPlatform::GetHostForWindow(
+      widget_->GetNativeWindow());
   if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
     // Wait for a Wayland roundtrip to ensure all side effects have been
     // processed.
-    auto* host = aura::WindowTreeHostPlatform::GetHostForWindow(
-        widget_->GetNativeWindow());
     auto* wayland_extension = ui::GetWaylandExtension(*host->platform_window());
     wayland_extension->RoundTripQueue();
 
@@ -72,6 +73,15 @@ void AsyncWidgetRequestWaiter::Wait() {
     // to be processed on the server side.
     wayland_extension->RoundTripQueue();
     wayland_extension->SetLatchImmediately(true);
+  } else if (ui::OzonePlatform::GetPlatformNameForTest() == "x11") {
+    // Setting the window bounds on X11 is asynchronous, so the platform window
+    // pretends the bounds change completed successfully until it can sync with
+    // the WM. This may cause inconsistent state with respect to other caches
+    // such as x11::WindowCache. Wait for the WM sync to complete to ensure
+    // consistency.
+    auto* x11_extension = ui::GetX11Extension(*host->platform_window());
+    CHECK(base::test::RunUntil(
+        [&]() { return !x11_extension->IsWmSyncActiveForTest(); }));
   } else {
     NOTIMPLEMENTED_LOG_ONCE();
   }

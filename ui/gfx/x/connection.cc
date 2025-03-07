@@ -412,6 +412,17 @@ int Connection::GetFd() {
   return Ready() ? xcb_get_file_descriptor(XcbConnection()) : -1;
 }
 
+bool Connection::CanSyncWithWm() const {
+  // For some WMs, we don't need to experimentally sync with them to determine
+  // sync support, so we can use WmSync right away. For now, only check for
+  // Openbox since that's what is used in tests. The list may be expanded as
+  // nearly all WMs should work with WmSync.
+  if (GetWmName() == "Openbox") {
+    return true;
+  }
+  return synced_with_wm_;
+}
+
 const std::string& Connection::DisplayString() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return display_string_;

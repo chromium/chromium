@@ -52,11 +52,17 @@ gfx::Rect GeometryCache::GetBoundsPx() {
 }
 
 void GeometryCache::OnQueryTreeResponse(QueryTreeResponse response) {
+  if (have_parent_) {
+    return;
+  }
   OnParentChanged(response ? response->parent : Window::None,
                   geometry_.origin());
 }
 
 void GeometryCache::OnGetGeometryResponse(GetGeometryResponse response) {
+  if (have_geometry_) {
+    return;
+  }
   OnGeometryChanged(response ? gfx::Rect(response->x, response->y,
                                          response->width, response->height)
                              : gfx::Rect());
