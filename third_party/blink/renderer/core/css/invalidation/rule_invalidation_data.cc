@@ -486,7 +486,6 @@ void RuleInvalidationData::ExtractInvalidationSets(
     InvalidationSet* invalidation_set,
     DescendantInvalidationSet*& descendants,
     SiblingInvalidationSet*& siblings) {
-  CHECK(invalidation_set->IsAlive());
   if (auto* descendant =
           DynamicTo<DescendantInvalidationSet>(invalidation_set)) {
     descendants = descendant;
