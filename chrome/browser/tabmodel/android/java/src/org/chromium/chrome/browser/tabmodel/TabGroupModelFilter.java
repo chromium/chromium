@@ -292,17 +292,6 @@ public interface TabGroupModelFilter extends TabList {
     LazyOneshotSupplier<Set<Token>> getLazyAllTabGroupIds(
             List<Tab> tabsToExclude, boolean includePendingClosures);
 
-    /**
-     * Returns a lazy oneshot supplier that generates all the root IDs except those requested to be
-     * excluded.
-     *
-     * @param tabsToExclude The list of tabs to exclude.
-     * @param includePendingClosures Whether to include pending tab closures.
-     * @return A lazy oneshot supplier containing all the root IDs.
-     */
-    LazyOneshotSupplier<Set<Integer>> getLazyAllRootIds(
-            List<Tab> tabsToExclude, boolean includePendingClosures);
-
     /** Returns the current title of the tab group. */
     String getTabGroupTitle(int rootId);
 
