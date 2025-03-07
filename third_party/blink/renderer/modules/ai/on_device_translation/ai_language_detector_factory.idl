@@ -4,17 +4,23 @@
     SecureContext
 ]
 interface AILanguageDetectorFactory {
+    [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<AIAvailability> availability();
   [
     Measure,
     CallWith=ScriptState,
     RaisesException
   ]
   Promise<AILanguageDetector> create(optional AILanguageDetectorCreateOptions options = {});
-  // TODO(crbug.com/390459311): Replace with availability.
   [
     CallWith=ScriptState,
     RaisesException
   ]
+  // TODO(crbug.com/392185835): Remove capabilities method.
   Promise<AILanguageDetectorCapabilities> capabilities();
 };
 
