@@ -1018,12 +1018,15 @@ RTCStats* RTCStatsToIDL(ScriptState* script_state,
 
   v8_stats->setId(String::FromUTF8(stat.id()));
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
-  DocumentLoadTiming& time_converter =
-      window->GetFrame()->Loader().GetDocumentLoader()->GetTiming();
-  v8_stats->setTimestamp(time_converter
-                             .MonotonicTimeToPseudoWallTime(
-                                 ConvertToBaseTimeTicks(stat.timestamp()))
-                             .InMillisecondsF());
+  if (window && window->GetFrame() &&
+      window->GetFrame()->Loader().GetDocumentLoader()) {
+    DocumentLoadTiming& time_converter =
+        window->GetFrame()->Loader().GetDocumentLoader()->GetTiming();
+    v8_stats->setTimestamp(time_converter
+                               .MonotonicTimeToPseudoWallTime(
+                                   ConvertToBaseTimeTicks(stat.timestamp()))
+                               .InMillisecondsF());
+  }
   v8_stats->setType(String::FromUTF8(stat.type()));
   return v8_stats;
 }
