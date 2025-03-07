@@ -421,6 +421,12 @@ const char kTangibleSyncDescription[] =
 const char kDisableInstanceLimitName[] = "Disable Instance Limit";
 const char kDisableInstanceLimitDescription[] =
     "Disable limit on number of app instances allowed (current limit is 5).";
+
+const char kClearInstanceInfoWhenClosedIntentionallyName[] =
+    "Clear Instance Info When Closed Intentionally";
+const char kClearInstanceInfoWhenClosedIntentionallyDescription[] =
+    "When enabled, permanently cleanup and remove the browser instance when a "
+    "window is explicitly closed by the user (eg: via the Close button).";
 #endif
 
 const char kEnableBenchmarkingName[] = "Enable benchmarking";

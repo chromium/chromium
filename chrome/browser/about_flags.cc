@@ -6321,6 +6321,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDisableInstanceLimitDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kDisableInstanceLimit)},
 
+    {"clear-instance-info-when-closed-intentionally",
+     flag_descriptions::kClearInstanceInfoWhenClosedIntentionallyName,
+     flag_descriptions::kClearInstanceInfoWhenClosedIntentionallyDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kClearInstanceInfoWhenClosedIntentionally)},
+
     {"change-unfocused-priority",
      flag_descriptions::kChangeUnfocusedPriorityName,
      flag_descriptions::kChangeUnfocusedPriorityDescription, kOsAndroid,

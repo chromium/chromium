@@ -246,6 +246,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kClankStartupLatencyInjection,
     &kClankWhatsNew,
     &kClearBrowsingDataAndroidSurvey,
+    &kClearInstanceInfoWhenClosedIntentionally,
     &kCommandLineOnNonRooted,
     &kContextMenuTranslateWithGoogleLens,
     &kContextMenuSysUiMatchesActivity,
@@ -757,6 +758,10 @@ BASE_FEATURE(kClankWhatsNew,
 
 BASE_FEATURE(kClearBrowsingDataAndroidSurvey,
              "ClearBrowsingDataAndroidSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kClearInstanceInfoWhenClosedIntentionally,
+             "ClearInstanceInfoWhenClosedIntentionally",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCommandLineOnNonRooted,

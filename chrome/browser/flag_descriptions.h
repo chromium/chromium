@@ -264,6 +264,9 @@ extern const char kDevToolsCSSValueTracingDescription[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kDisableInstanceLimitName[];
 extern const char kDisableInstanceLimitDescription[];
+
+extern const char kClearInstanceInfoWhenClosedIntentionallyName[];
+extern const char kClearInstanceInfoWhenClosedIntentionallyDescription[];
 #endif
 
 extern const char kEnableBenchmarkingName[];
