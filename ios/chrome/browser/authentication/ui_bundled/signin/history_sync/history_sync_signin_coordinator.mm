@@ -49,11 +49,10 @@
   [_syncPopupCoordinator start];
 }
 
-#pragma mark - SigninCoordinator
+#pragma mark - InterruptibleChromeCoordinator
 
-- (void)interruptAnimated:(BOOL)animated
-               completion:(ProceduralBlock)completion {
-  [_syncPopupCoordinator interruptAnimated:animated completion:completion];
+- (void)interruptAnimated:(BOOL)animated {
+  [_syncPopupCoordinator interruptAnimated:animated];
 }
 
 #pragma mark - HistorySyncPopupCoordinatorDelegate

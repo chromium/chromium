@@ -1256,7 +1256,7 @@ void OnListFamilyMembersResponse(
   // The UI should be stopped before the models they observe are stopped.
   // SigninCoordinator teardown is performed by the `signinCompletion` on
   // termination of async events, do not add additional teardown here.
-  [self.signinCoordinator interruptAnimated:NO completion:nil];
+  [self.signinCoordinator interruptAnimated:NO];
   // `self.signinCoordinator.signinCompletion()` was called in the interrupt
   // method. Therefore now `self.signinCoordinator` is now stopped, and
   // `self.signinCoordinator` is now nil.
@@ -3679,55 +3679,41 @@ using UserFeedbackDataCallback =
 
   if (self.settingsNavigationController && !self.dismissingSettings) {
     self.dismissingSettings = YES;
-    // Store a reference to the presentingViewController in case the user
-    // is dismissing the Signin screen and then dismisses Settings before
-    // the Signin screen is done animating, which will delay the execution of
-    // the `dismissSettings` block stopping the code from accessing
-    // the `presentingViewController` property.
-    __weak UIViewController* weakPresentingViewController =
-        [self.settingsNavigationController presentingViewController];
-    ProceduralBlock dismissSettings = ^() {
-      UIViewController* strongPresentingViewController =
-          weakPresentingViewController;
-      if (strongPresentingViewController) {
-        [strongPresentingViewController
-            dismissViewControllerAnimated:animated
-                               completion:resetAndDismiss];
-      } else {
-        // The view is already dismissed. Completion should still be called.
-        resetAndDismiss();
-      }
-      weakSelf.dismissingSettings = NO;
-    };
     // `self.signinCoordinator` can be presented on top of the settings, to
     // present the Trusted Vault reauthentication `self.signinCoordinator` has
     // to be closed first.
     if (self.signinCoordinator) {
       // If signinCoordinator is already dismissing, completion execution will
       // happen when it is done animating.
-      [self interruptSigninCoordinatorAnimated:animated
-                                    completion:dismissSettings];
-    } else {
-      dismissSettings();
+      [self interruptSigninCoordinatorAnimated:animated];
     }
-  } else if (self.signinCoordinator) {
-    // `self.signinCoordinator` can be presented without settings, from the
-    // bookmarks or the recent tabs view.
-    [self interruptSigninCoordinatorAnimated:animated
-                                  completion:resetAndDismiss];
+    UIViewController* presentingViewController =
+        self.settingsNavigationController.presentingViewController;
+    if (presentingViewController) {
+      [presentingViewController dismissViewControllerAnimated:animated
+                                                   completion:resetAndDismiss];
+    } else {
+      // The view is already dismissed. Completion should still be called.
+      resetAndDismiss();
+    }
+    self.dismissingSettings = NO;
   } else {
+    if (self.signinCoordinator) {
+      // `self.signinCoordinator` can be presented without settings, from the
+      // bookmarks or the recent tabs view.
+      [self interruptSigninCoordinatorAnimated:animated];
+    }
     resetAndDismiss();
   }
 }
 
 // Interrupts the sign-in coordinator actions and dismisses its views either
 // with or without animation.
-- (void)interruptSigninCoordinatorAnimated:(BOOL)animated
-                                completion:(ProceduralBlock)completion {
+- (void)interruptSigninCoordinatorAnimated:(BOOL)animated {
   DCHECK(self.signinCoordinator);
 
   self.dismissingSigninPromptFromExternalTrigger = YES;
-  [self.signinCoordinator interruptAnimated:animated completion:completion];
+  [self.signinCoordinator interruptAnimated:animated];
 }
 
 // Starts the sign-in coordinator with a default cleanup completion.
@@ -4278,14 +4264,12 @@ using UserFeedbackDataCallback =
 
 - (void)policyWatcherBrowserAgentNotifySignInDisabled:
     (PolicyWatcherBrowserAgent*)policyWatcher {
-  auto signinInterrupted = ^{
-    policyWatcher->SignInUIDismissed();
-  };
 
   if (self.signinCoordinator) {
-    [self interruptSigninCoordinatorAnimated:YES completion:signinInterrupted];
+    [self interruptSigninCoordinatorAnimated:YES];
     UMA_HISTOGRAM_BOOLEAN(
         "Enterprise.BrowserSigninIOS.SignInInterruptedByPolicy", true);
+    policyWatcher->SignInUIDismissed();
   }
 }
 

@@ -355,13 +355,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   if (_state == AuthenticationState::kDone) {
     return;
   }
-  __weak __typeof(self) weakSelf = self;
-  [_performer interruptWithCompletion:^() {
-    [weakSelf performerInterrupted];
-  }];
-}
-
-- (void)performerInterrupted {
+  [_performer interrupt];
   if (_state != AuthenticationState::kDone) {
     // The performer might not have been able to continue the flow if it was
     // waiting for a callback (e.g. waiting for AccountReconcilor). In this

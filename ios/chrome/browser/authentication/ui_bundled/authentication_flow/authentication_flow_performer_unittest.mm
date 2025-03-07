@@ -83,17 +83,6 @@ class AuthenticationFlowPerformerTest : public PlatformTest {
   ProtocolFake* fake_command_endpoint_ = nil;
 };
 
-// Tests the AuthenticationFlowPerformer is interrupted and the interrupt
-// completion is called.
-TEST_F(AuthenticationFlowPerformerTest,
-       TestSimpleInterruptWithoutDialogDisplayed) {
-  __block BOOL completion_called = NO;
-  [authentication_flow_performer_ interruptWithCompletion:^() {
-    completion_called = YES;
-  }];
-  EXPECT_TRUE(completion_called);
-}
-
 // Tests `-[AuthenticationFlowPerformer signOutForAccountSwitchWithProfile:]`.
 TEST_F(AuthenticationFlowPerformerTest, SignoutForSwitch) {
   base::HistogramTester histogram_tester;

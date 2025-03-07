@@ -133,13 +133,11 @@ TEST_F(TwoScreensSigninCoordinatorTest, PresentScreens) {
   base::HistogramTester histogram_tester;
   __block SigninCoordinatorResult signin_result;
   __block id<SystemIdentity> signin_completion_identity;
-  __block BOOL completion_block_done = NO;
   coordinator_.signinCompletion =
       ^(SigninCoordinatorResult signinResult,
         id<SystemIdentity> signinCompletionIdentity) {
         signin_result = signinResult;
         signin_completion_identity = signinCompletionIdentity;
-        completion_block_done = YES;
       };
 
   EXPECT_EQ(PresentedViewController(), nil);
@@ -158,16 +156,7 @@ TEST_F(TwoScreensSigninCoordinatorTest, PresentScreens) {
       [TopViewController() isKindOfClass:[HistorySyncViewController class]]);
 
   // Shut it down.
-  __block BOOL interrupt_completion_done = NO;
-  [coordinator_ interruptAnimated:YES
-                       completion:^{
-                         interrupt_completion_done = YES;
-                       }];
-  auto completion_condition = ^{
-    return completion_block_done && interrupt_completion_done;
-  };
-  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::Seconds(1), true, completion_condition));
+  [coordinator_ interruptAnimated:YES];
   EXPECT_EQ(signin_result, SigninCoordinatorResultInterrupted);
   EXPECT_EQ(signin_completion_identity, nil);
   [coordinator_ stop];

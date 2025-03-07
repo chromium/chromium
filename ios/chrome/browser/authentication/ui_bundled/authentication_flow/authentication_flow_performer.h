@@ -43,9 +43,8 @@ using OnProfileSwitchCompletion =
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Cancels any outstanding work and dismisses an alert view (if shown). Calls
-// `completion` synchronously.
-- (void)interruptWithCompletion:(ProceduralBlock)completion;
+// Cancels any outstanding work and dismisses an alert view (if shown).
+- (void)interrupt;
 
 // Fetches the list of data types with unsync data in the primary account.
 // `-[id<AuthenticationFlowPerformerDelegate>

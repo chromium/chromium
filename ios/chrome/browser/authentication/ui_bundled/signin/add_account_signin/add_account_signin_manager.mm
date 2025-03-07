@@ -125,18 +125,10 @@ void LogAddAccountToDeviceHistograms(SigninAddAccountToDeviceResult result,
                                }];
 }
 
-- (void)interruptAnimated:(BOOL)animated
-               completion:(ProceduralBlock)completion {
+- (void)interruptAnimated:(BOOL)animated {
   self.signinInterrupted = YES;
   [self.identityInteractionManager cancelAuthActivityAnimated:animated];
-  // If `identityInteractionManager` completion callback has not been called
-  // yet, the add account needs to be fully done by calling:
-  // `operationCompletedWithIdentity:error:`, before calling `completion` See
-  // crbug.com/1227658.
   [self operationCompletedWithIdentity:nil error:nil];
-  if (completion) {
-    completion();
-  }
 }
 
 #pragma mark - Private

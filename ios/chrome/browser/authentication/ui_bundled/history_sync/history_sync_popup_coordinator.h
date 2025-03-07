@@ -6,12 +6,14 @@
 #define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_HISTORY_SYNC_HISTORY_SYNC_POPUP_COORDINATOR_H_
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 namespace signin_metrics {
 enum class AccessPoint : int;
 }  // namespace signin_metrics
 
 @class HistorySyncPopupCoordinator;
+typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 
 // Delegate for the history sync coordinator.
 @protocol HistorySyncPopupCoordinatorDelegate <NSObject>
@@ -24,7 +26,8 @@ enum class AccessPoint : int;
 @end
 
 // Coordinator to present the History Sync Opt-In screen.
-@interface HistorySyncPopupCoordinator : InterruptibleChromeCoordinator
+@interface HistorySyncPopupCoordinator
+    : ChromeCoordinator <InterruptibleChromeCoordinator>
 
 // delegate for HistorySyncCoordinator.
 @property(nonatomic, weak) id<HistorySyncPopupCoordinatorDelegate> delegate;

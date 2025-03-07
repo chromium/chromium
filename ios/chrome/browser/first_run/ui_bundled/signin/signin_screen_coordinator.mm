@@ -145,15 +145,8 @@
 
 #pragma mark - InterruptibleChromeCoordinator
 
-- (void)interruptAnimated:(BOOL)animated
-               completion:(ProceduralBlock)completion {
-  if (self.addAccountSigninCoordinator) {
-    [self.addAccountSigninCoordinator interruptAnimated:animated
-                                             completion:nil];
-  }
-  if (completion) {
-    completion();
-  }
+- (void)interruptAnimated:(BOOL)animated {
+  [self.addAccountSigninCoordinator interruptAnimated:animated];
 }
 
 #pragma mark - Private

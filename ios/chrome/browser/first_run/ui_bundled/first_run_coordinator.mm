@@ -97,10 +97,12 @@ class FirstRunCoordinatorMetricsHelper final {
     // Chrome is being shutdown.
     base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                   first_run::kFirstRunInterrupted);
-    InterruptibleChromeCoordinator* interruptibleChildCoordinator =
-        base::apple::ObjCCast<InterruptibleChromeCoordinator>(
-            self.childCoordinator);
-    [interruptibleChildCoordinator interruptAnimated:NO completion:nil];
+    ChromeCoordinator* childCoordinator = self.childCoordinator;
+    if ([childCoordinator
+            conformsToProtocol:@protocol(InterruptibleChromeCoordinator)]) {
+      [((id<InterruptibleChromeCoordinator>)childCoordinator)
+          interruptAnimated:NO];
+    }
     [self stopChildCoordinator];
   }
   [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
