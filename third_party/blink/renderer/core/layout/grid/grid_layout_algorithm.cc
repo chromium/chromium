@@ -133,10 +133,8 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
       intrinsic_block_size += BorderScrollbarPadding().BlockSum();
     }
   } else {
-    grid_sizing_tree = node.ChildLayoutBlockedByDisplayLock()
-                           ? BuildGridSizingTreeIgnoringChildren()
-                           : BuildGridSizingTree(&oof_children);
-    ComputeGridGeometry(grid_sizing_tree, &intrinsic_block_size);
+    ComputeGridGeometry(&grid_sizing_tree, &intrinsic_block_size,
+                        &oof_children);
   }
 
   Vector<EBreakBetween> row_break_between;
@@ -552,37 +550,17 @@ wtf_size_t GridLayoutAlgorithm::BuildGridSizingSubtree(
 
 GridSizingTree GridLayoutAlgorithm::BuildGridSizingTree(
     HeapVector<Member<LayoutBox>>* opt_oof_children) const {
+  DCHECK(!GetConstraintSpace().GetGridLayoutSubtree());
+
   GridSizingTree sizing_tree;
-
-  if (const auto* layout_subtree =
-          GetConstraintSpace().GetGridLayoutSubtree()) {
-    const auto& node = Node();
-
-    bool must_invalidate_placement_cache = false;
-    auto& sizing_node = sizing_tree.CreateSizingTreeNode(
-        node, node.ConstructGridItems(node.CachedLineResolver(),
-                                      &must_invalidate_placement_cache,
-                                      opt_oof_children));
-
-    DCHECK(!must_invalidate_placement_cache)
-        << "We shouldn't need to invalidate the placement cache if we relied "
-           "on the cached line resolver; it must produce the same placement.";
-
-    const auto& layout_data = layout_subtree->LayoutData();
-    sizing_node.layout_data = layout_data;
-
-    for (auto& grid_item : sizing_node.GetGridItems()) {
-      grid_item.ComputeSetIndices(layout_data.Columns());
-      grid_item.ComputeSetIndices(layout_data.Rows());
-    }
-  } else {
-    BuildGridSizingSubtree(&sizing_tree, opt_oof_children);
-  }
+  BuildGridSizingSubtree(&sizing_tree, opt_oof_children);
   return sizing_tree;
 }
 
 GridSizingTree GridLayoutAlgorithm::BuildGridSizingTreeIgnoringChildren()
     const {
+  DCHECK(!GetConstraintSpace().GetGridLayoutSubtree());
+
   GridSizingTree sizing_tree;
   BuildGridSizingSubtree(&sizing_tree, /*opt_oof_children=*/nullptr,
                          /*opt_subgrid_data=*/kNoSubgriddedItemData,
@@ -592,80 +570,97 @@ GridSizingTree GridLayoutAlgorithm::BuildGridSizingTreeIgnoringChildren()
   return sizing_tree;
 }
 
-LayoutUnit GridLayoutAlgorithm::Baseline(
-    const GridLayoutData& layout_data,
-    const GridItemData& grid_item,
-    GridTrackSizingDirection track_direction) const {
-  // "If a box spans multiple shared alignment contexts, then it participates
-  //  in first/last baseline alignment within its start-most/end-most shared
-  //  alignment context along that axis"
-  // https://www.w3.org/TR/css-align-3/#baseline-sharing-group
-  const auto& track_collection = (track_direction == kForColumns)
-                                     ? layout_data.Columns()
-                                     : layout_data.Rows();
-  const auto& [begin_set_index, end_set_index] =
-      grid_item.SetIndices(track_direction);
-
-  return (grid_item.BaselineGroup(track_direction) == BaselineGroup::kMajor)
-             ? track_collection.MajorBaseline(begin_set_index)
-             : track_collection.MinorBaseline(end_set_index - 1);
-}
-
 void GridLayoutAlgorithm::ComputeGridGeometry(
-    const GridSizingTree& grid_sizing_tree,
-    LayoutUnit* intrinsic_block_size) {
+    GridSizingTree* grid_sizing_tree,
+    LayoutUnit* intrinsic_block_size,
+    HeapVector<Member<LayoutBox>>* oof_children) {
+  DCHECK(grid_sizing_tree);
   DCHECK(intrinsic_block_size);
+  DCHECK(oof_children);
+
   DCHECK_NE(grid_available_size_.inline_size, kIndefiniteSize);
 
-  const auto& constraint_space = GetConstraintSpace();
-  const bool is_standalone_grid = !constraint_space.GetGridLayoutSubtree();
-
-  bool needs_additional_pass = false;
-  if (is_standalone_grid) {
-    InitializeTrackSizes(grid_sizing_tree);
-
-    CompleteTrackSizingAlgorithm(grid_sizing_tree, kForColumns,
-                                 SizingConstraint::kLayout,
-                                 &needs_additional_pass);
-    CompleteTrackSizingAlgorithm(grid_sizing_tree, kForRows,
-                                 SizingConstraint::kLayout,
-                                 &needs_additional_pass);
-  }
-
-  const auto& border_scrollbar_padding = BorderScrollbarPadding();
-  auto& sizing_data = grid_sizing_tree.TreeRootData();
-  auto& layout_data = sizing_data.layout_data;
-
   const auto& node = Node();
-  const auto& container_style = Style();
+  const auto& constraint_space = GetConstraintSpace();
+  const auto& border_scrollbar_padding = BorderScrollbarPadding();
 
-  if (contain_intrinsic_block_size_) {
-    *intrinsic_block_size = *contain_intrinsic_block_size_;
-  } else {
-    *intrinsic_block_size = layout_data.Rows().CalculateSetSpanSize() +
-                            border_scrollbar_padding.BlockSum();
+  auto CalculateIntrinsicBlockSize = [&](const GridItems& grid_items,
+                                         const GridLayoutData& layout_data) {
+    if (contain_intrinsic_block_size_) {
+      return *contain_intrinsic_block_size_;
+    }
+
+    auto intrinsic_block_size = layout_data.Rows().CalculateSetSpanSize() +
+                                border_scrollbar_padding.BlockSum();
 
     // TODO(layout-dev): This isn't great but matches legacy. Ideally this
     // would only apply when we have only flexible track(s).
-    if (sizing_data.GetGridItems().IsEmpty() && node.HasLineIfEmpty()) {
-      *intrinsic_block_size = std::max(
-          *intrinsic_block_size, border_scrollbar_padding.BlockSum() +
-                                     node.EmptyLineBlockSize(GetBreakToken()));
+    if (grid_items.IsEmpty() && node.HasLineIfEmpty()) {
+      intrinsic_block_size = std::max(
+          intrinsic_block_size, border_scrollbar_padding.BlockSum() +
+                                    node.EmptyLineBlockSize(GetBreakToken()));
     }
 
-    *intrinsic_block_size = ClampIntrinsicBlockSize(
-        constraint_space, node, GetBreakToken(), border_scrollbar_padding,
-        *intrinsic_block_size);
-  }
+    return ClampIntrinsicBlockSize(constraint_space, node, GetBreakToken(),
+                                   border_scrollbar_padding,
+                                   intrinsic_block_size);
+  };
 
-  if (!is_standalone_grid) {
+  // If we have a layout subtree in the constraint space, it means we are in a
+  // subgrid whose geometry is already computed. We can exit early by simply
+  // copying the layout data and constructing our grid items.
+  if (const auto* layout_subtree = constraint_space.GetGridLayoutSubtree()) {
+    auto& sizing_node = grid_sizing_tree->CreateSizingTreeNode(
+        node, /*non_subgridded_items=*/nullptr);
+
+    const auto& layout_data = layout_subtree->LayoutData();
+    sizing_node.layout_data = layout_data;
+
+    if (!node.ChildLayoutBlockedByDisplayLock()) {
+      bool must_invalidate_placement_cache = false;
+      sizing_node.SetGridItems(node.ConstructGridItems(
+          node.CachedLineResolver(), &must_invalidate_placement_cache,
+          oof_children));
+
+      DCHECK(!must_invalidate_placement_cache)
+          << "We shouldn't need to invalidate the placement cache if we relied "
+             "on the cached line resolver; it must produce the same placement.";
+
+      GridTrackSizingAlgorithm::CacheGridItemsProperties(
+          layout_data.Columns(), &sizing_node.GetGridItems());
+      GridTrackSizingAlgorithm::CacheGridItemsProperties(
+          layout_data.Rows(), &sizing_node.GetGridItems());
+    }
+
+    *intrinsic_block_size =
+        CalculateIntrinsicBlockSize(sizing_node.GetGridItems(), layout_data);
     return;
   }
 
+  *grid_sizing_tree = node.ChildLayoutBlockedByDisplayLock()
+                          ? BuildGridSizingTreeIgnoringChildren()
+                          : BuildGridSizingTree(oof_children);
+
+  InitializeTrackSizes(*grid_sizing_tree);
+
+  bool needs_additional_pass = false;
+  CompleteTrackSizingAlgorithm(*grid_sizing_tree, kForColumns,
+                               SizingConstraint::kLayout,
+                               &needs_additional_pass);
+  CompleteTrackSizingAlgorithm(*grid_sizing_tree, kForRows,
+                               SizingConstraint::kLayout,
+                               &needs_additional_pass);
+
+  const auto& layout_data = grid_sizing_tree->TreeRootData().layout_data;
+  *intrinsic_block_size = CalculateIntrinsicBlockSize(
+      grid_sizing_tree->TreeRootData().GetGridItems(), layout_data);
+
+  const auto& container_style = Style();
   const bool applies_auto_min_size =
-      container_style.LogicalMinHeight().HasAuto() &&
+      !container_style.AspectRatio().IsAuto() &&
       container_style.IsOverflowVisibleOrClip() &&
-      !container_style.AspectRatio().IsAuto();
+      container_style.LogicalMinHeight().HasAuto();
+
   if (grid_available_size_.block_size == kIndefiniteSize ||
       applies_auto_min_size) {
     const auto block_size = ComputeBlockSizeForFragment(
@@ -722,17 +717,17 @@ void GridLayoutAlgorithm::ComputeGridGeometry(
   }
 
   if (needs_additional_pass) {
-    InitializeTrackSizes(grid_sizing_tree, kForColumns);
-    CompleteTrackSizingAlgorithm(grid_sizing_tree, kForColumns,
+    InitializeTrackSizes(*grid_sizing_tree, kForColumns);
+    CompleteTrackSizingAlgorithm(*grid_sizing_tree, kForColumns,
                                  SizingConstraint::kLayout);
 
-    InitializeTrackSizes(grid_sizing_tree, kForRows);
-    CompleteTrackSizingAlgorithm(grid_sizing_tree, kForRows,
+    InitializeTrackSizes(*grid_sizing_tree, kForRows);
+    CompleteTrackSizingAlgorithm(*grid_sizing_tree, kForRows,
                                  SizingConstraint::kLayout);
   }
 
   // Calculate final alignment baselines of the entire grid sizing tree.
-  CompleteFinalBaselineAlignment(grid_sizing_tree);
+  CompleteFinalBaselineAlignment(*grid_sizing_tree);
 }
 
 LayoutUnit GridLayoutAlgorithm::ComputeIntrinsicBlockSizeIgnoringChildren()
@@ -780,6 +775,25 @@ const LayoutResult* LayoutGridItemForMeasure(
     disable_side_effects.emplace();
   }
   return node.Layout(constraint_space);
+}
+
+LayoutUnit Baseline(const GridItemData& grid_item,
+                    const GridLayoutData& layout_data,
+                    GridTrackSizingDirection track_direction) {
+  // "If a box spans multiple shared alignment contexts, then it participates
+  //  in first/last baseline alignment within its start-most/end-most shared
+  //  alignment context along that axis"
+  // https://www.w3.org/TR/css-align-3/#baseline-sharing-group
+  const auto& track_collection = (track_direction == kForColumns)
+                                     ? layout_data.Columns()
+                                     : layout_data.Rows();
+
+  const auto& [begin_set_index, end_set_index] =
+      grid_item.SetIndices(track_direction);
+
+  return (grid_item.BaselineGroup(track_direction) == BaselineGroup::kMajor)
+             ? track_collection.MajorBaseline(begin_set_index)
+             : track_collection.MinorBaseline(end_set_index - 1);
 }
 
 LayoutUnit GetExtraMarginForBaseline(const BoxStrut& margins,
@@ -877,7 +891,7 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
   LayoutUnit baseline_shim;
   auto CalculateBaselineShim = [&](LayoutUnit baseline) -> void {
     const auto track_baseline =
-        Baseline(sizing_subtree.LayoutData(), *grid_item, track_direction);
+        Baseline(*grid_item, sizing_subtree.LayoutData(), track_direction);
 
     if (track_baseline == LayoutUnit::Min())
       return;
@@ -3335,7 +3349,7 @@ void GridLayoutAlgorithm::PlaceGridItems(
       // The baseline offset is the difference between the grid item's baseline
       // and its track baseline.
       const LayoutUnit baseline_delta =
-          Baseline(sizing_data.layout_data, grid_item, track_direction) -
+          Baseline(grid_item, sizing_data.layout_data, track_direction) -
           GetLogicalBaseline(grid_item, baseline_fragment, track_direction);
       if (grid_item.BaselineGroup(track_direction) == BaselineGroup::kMajor)
         return baseline_delta;

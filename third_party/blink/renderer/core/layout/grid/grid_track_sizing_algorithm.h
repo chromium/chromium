@@ -15,6 +15,7 @@
 namespace blink {
 
 class GridItems;
+class GridLayoutTrackCollection;
 class GridSizingTrackCollection;
 struct BoxStrut;
 struct GridItemData;
@@ -58,7 +59,7 @@ class GridTrackSizingAlgorithm {
   // Caches the track span properties necessary for the track sizing algorithm
   // to work based on the grid items' placement within the track collection.
   static void CacheGridItemsProperties(
-      const GridSizingTrackCollection& track_collection,
+      const GridLayoutTrackCollection& track_collection,
       GridItems* grid_items);
 
   // Calculates the specified `[column|row]-gap` of the container.
