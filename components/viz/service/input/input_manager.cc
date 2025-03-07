@@ -82,6 +82,8 @@ constexpr char kParentInputSCName[] = "ChromeParentInputSurfaceControl";
 
 constexpr char kInputReceiverCreationResultHistogram[] =
     "Android.InputOnViz.InputReceiverCreationResult";
+constexpr char kStateProcessingResultHistogram[] =
+    "Android.InputOnViz.Viz.StateProcessingResult";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -95,6 +97,15 @@ enum class CreateAndroidInputReceiverResult {
   kSuccessfulButNullTransferToken = 6,
   kReuseExistingInputReceiver = 7,
   kMaxValue = kReuseExistingInputReceiver,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class InputOnVizStateProcessingResult {
+  kProcessedSuccessfully = 0,
+  kCouldNotFindViewForFrameSinkId = 1,
+  kFrameSinkIdCorrespondsToChildView = 2,
+  kMaxValue = kFrameSinkIdCorrespondsToChildView,
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -403,9 +414,24 @@ void InputManager::StateOnTouchTransfer(
   base::WeakPtr<RenderInputRouterSupportAndroidInterface>
       support_android_interface = nullptr;
   if (iter != frame_sink_metadata_map_.end()) {
-    auto* support_android = static_cast<RenderInputRouterSupportAndroid*>(
-        iter->second.rir_support.get());
-    support_android_interface = support_android->GetWeakPtr();
+    RenderInputRouterSupportBase* support_base = iter->second.rir_support.get();
+    CHECK(support_base);
+    if (support_base->GetRootView() == support_base) {
+      auto* support_android = static_cast<RenderInputRouterSupportAndroid*>(
+          iter->second.rir_support.get());
+      support_android_interface = support_android->GetWeakPtr();
+      UMA_HISTOGRAM_ENUMERATION(
+          kStateProcessingResultHistogram,
+          InputOnVizStateProcessingResult::kProcessedSuccessfully);
+    } else {
+      UMA_HISTOGRAM_ENUMERATION(
+          kStateProcessingResultHistogram,
+          InputOnVizStateProcessingResult::kFrameSinkIdCorrespondsToChildView);
+    }
+  } else {
+    UMA_HISTOGRAM_ENUMERATION(
+        kStateProcessingResultHistogram,
+        InputOnVizStateProcessingResult::kCouldNotFindViewForFrameSinkId);
   }
   android_state_transfer_handler_.StateOnTouchTransfer(
       std::move(state), support_android_interface);
