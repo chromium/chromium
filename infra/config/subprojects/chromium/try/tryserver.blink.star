@@ -253,6 +253,7 @@ try_.builder(
     ),
     builderless = True,
     os = os.WINDOWS_ANY,
+    siso_remote_linking = True,
 )
 
 try_.builder(
