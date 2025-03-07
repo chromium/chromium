@@ -38,7 +38,6 @@
 #include "chrome/browser/ui/views/tabs/window_finder.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
-#include "glic_window_controller.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_observer.h"
 #include "ui/views/controls/webview/webview.h"
