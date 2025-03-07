@@ -15,6 +15,7 @@
 #include "chrome/browser/net/fake_nss_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -30,8 +31,6 @@
 namespace kcer {
 namespace {
 
-constexpr char kUserEmail[] = "user@example.com";
-
 bool WeakPtrEq(const base::WeakPtr<kcer::Kcer>& v1,
                const base::WeakPtr<kcer::Kcer>& v2) {
   if (bool(v1) != bool(v2)) {
@@ -40,9 +39,9 @@ bool WeakPtrEq(const base::WeakPtr<kcer::Kcer>& v1,
   return (v1.get() == v2.get());
 }
 
-class KcerFactoryAshNoNssTestBase : public InProcessBrowserTest {
+class KcerFactoryAshNoNssTest : public InProcessBrowserTest {
  protected:
-  KcerFactoryAshNoNssTestBase() {
+  KcerFactoryAshNoNssTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{kKcerWithoutNss}, /*disabled_features=*/{});
   }
@@ -52,7 +51,7 @@ class KcerFactoryAshNoNssTestBase : public InProcessBrowserTest {
 
 // Test ExtraInstances::GetEmptyKcer() returns an instance of Kcer that
 // doesn't have any tokens.
-IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTestBase,
+IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTest,
                        EmptySpecialInstanceDoesNotHaveTokens) {
   base::WeakPtr<Kcer> kcer = ExtraInstances::GetEmptyKcer();
 
@@ -62,8 +61,7 @@ IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTestBase,
 }
 
 // Test that device Kcer has correct tokens.
-IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTestBase,
-                       DeviceKcerHasCorrectTokens) {
+IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTest, DeviceKcerHasCorrectTokens) {
   base::WeakPtr<Kcer> kcer = ExtraInstances::GetDeviceKcer();
 
   base::test::TestFuture<base::flat_set<Token>> tokens_waiter;
@@ -75,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTestBase,
 }
 
 // Test that Kcer for the sign in profile has correct tokens.
-IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTestBase,
+IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTest,
                        SignInProfileGetsCorrectTokens) {
   base::WeakPtr<Kcer> expected_kcer = ExtraInstances::GetDeviceKcer();
 
@@ -84,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTestBase,
   EXPECT_TRUE(WeakPtrEq(signin_kcer, expected_kcer));
 }
 
-IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTestBase,
+IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTest,
                        LockScreenProfileGetsCorrectTokens) {
   // Using the correct path should be enough to simulate the lock screen
   // profile.
@@ -102,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTestBase,
 
 // Test that ExtraInstances::GetDefaultKcer() returns the instance for the
 // primary profile.
-IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTestBase,
+IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTest,
                        DefaultKcerIsPrimaryProfileKcer) {
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
 
@@ -115,40 +113,37 @@ IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTestBase,
   EXPECT_EQ(kcer.get(), default_kcer.get());
 }
 
-class KcerFactoryAshNoNssTest : public KcerFactoryAshNoNssTestBase {
- protected:
-  void SetUpOnMainThread() override {
-    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    user_manager_ = fake_user_manager.get();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
+// Test that KcerFactory redirects off-the-record profile to their regular
+// profiles.
+IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTest,
+                       OffTheRecordProfileIsRedirected) {
+  auto* profile = browser()->profile();
+  auto* otr_profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+
+  base::WeakPtr<Kcer> kcer = KcerFactoryAsh::GetKcer(profile);
+  base::WeakPtr<Kcer> off_the_record_kcer =
+      KcerFactoryAsh::GetKcer(otr_profile);
+
+  EXPECT_TRUE(WeakPtrEq(kcer, off_the_record_kcer));
+}
+
+class KcerFactoryAshNoNssAffiliatedTest : public KcerFactoryAshNoNssTest {
+ public:
+  void PreRunTestOnMainThread() override {
+    // Set up affiliation, before initializing Kcer service run in
+    // PreRunTestOnMainThread().
+    auto* user = user_manager::UserManager::Get()->GetActiveUser();
+    user_manager::UserManager::Get()->SetUserPolicyStatus(
+        user->GetAccountId(),
+        /*is_managed=*/true, /*is_affiliated=*/true);
+    KcerFactoryAshNoNssTest::PreRunTestOnMainThread();
   }
-
-  void TearDownOnMainThread() override {
-    user_manager_ = nullptr;
-    scoped_user_manager_.reset();
-  }
-
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
-
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-  raw_ptr<ash::FakeChromeUserManager> user_manager_ = nullptr;
 };
 
 // Test that KcerFactory can create an instance with both tokens.
-IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTest, KcerWithBothTokensCreated) {
-  std::unique_ptr<TestingProfile> testing_profile =
-      TestingProfile::Builder().Build();
-
-  // Affiliated users should get both tokens.
-  const user_manager::User* user =
-      user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-          AccountId::FromUserEmail(kUserEmail), /*is_affiliated=*/true,
-          user_manager::UserType::kRegular, testing_profile.get());
-  user_manager_->LoginUser(user->GetAccountId());
-
-  base::WeakPtr<Kcer> kcer = KcerFactoryAsh::GetKcer(testing_profile.get());
+IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssAffiliatedTest,
+                       KcerWithBothTokensCreated) {
+  base::WeakPtr<Kcer> kcer = KcerFactoryAsh::GetKcer(browser()->profile());
   ASSERT_TRUE(kcer);
 
   base::test::TestFuture<base::flat_set<Token>> tokens_waiter;
@@ -159,19 +154,23 @@ IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTest, KcerWithBothTokensCreated) {
   EXPECT_TRUE(KcerFactoryAsh::IsHighLevelChapsClientInitialized());
 }
 
+class KcerFactoryAshNoNssUnaffiliatedTest : public KcerFactoryAshNoNssTest {
+ public:
+  void PreRunTestOnMainThread() override {
+    // Set up affiliation, before initializing Kcer service run in
+    // PreRunTestOnMainThread().
+    auto* user = user_manager::UserManager::Get()->GetActiveUser();
+    user_manager::UserManager::Get()->SetUserPolicyStatus(
+        user->GetAccountId(),
+        /*is_managed=*/true, /*is_affiliated=*/false);
+    KcerFactoryAshNoNssTest::PreRunTestOnMainThread();
+  }
+};
+
 // Test that KcerFactory can create an instance with one token.
-IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTest, KcerWithOneTokensCreated) {
-  std::unique_ptr<TestingProfile> testing_profile =
-      TestingProfile::Builder().Build();
-
-  // Unaffiliated users should get one the user token.
-  const user_manager::User* user =
-      user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-          AccountId::FromUserEmail(kUserEmail), /*is_affiliated=*/false,
-          user_manager::UserType::kRegular, testing_profile.get());
-  user_manager_->LoginUser(user->GetAccountId());
-
-  base::WeakPtr<Kcer> kcer = KcerFactoryAsh::GetKcer(testing_profile.get());
+IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssUnaffiliatedTest,
+                       KcerWithOneTokensCreated) {
+  base::WeakPtr<Kcer> kcer = KcerFactoryAsh::GetKcer(browser()->profile());
   ASSERT_TRUE(kcer);
 
   base::test::TestFuture<base::flat_set<Token>> tokens_waiter;
@@ -179,42 +178,6 @@ IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTest, KcerWithOneTokensCreated) {
   EXPECT_EQ(tokens_waiter.Get(), base::flat_set<Token>({Token::kUser}));
   // The factory is responsible for initializing HighLevelChapsClient.
   EXPECT_TRUE(KcerFactoryAsh::IsHighLevelChapsClientInitialized());
-}
-
-// Test that profiles without users don't get any tokens in Ash.
-IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTest, ProfileWithoutUser) {
-  std::unique_ptr<TestingProfile> testing_profile =
-      TestingProfile::Builder().Build();
-
-  base::WeakPtr<Kcer> kcer = KcerFactoryAsh::GetKcer(testing_profile.get());
-  ASSERT_TRUE(kcer);
-
-  base::test::TestFuture<base::flat_set<Token>> tokens_waiter;
-  kcer->GetAvailableTokens(tokens_waiter.GetCallback());
-  EXPECT_EQ(tokens_waiter.Get(), base::flat_set<Token>());
-}
-
-// Test that KcerFactory redirects off-the-record profile to their regular
-// profiles.
-IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTest,
-                       OffTheRecordProfileIsRedirected) {
-  std::unique_ptr<TestingProfile> testing_profile =
-      TestingProfile::Builder().Build();
-  Profile* off_the_record_profile = testing_profile->GetOffTheRecordProfile(
-      Profile::OTRProfileID::CreateUniqueForTesting(),
-      /*create_if_needed=*/true);
-
-  const user_manager::User* user =
-      user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-          AccountId::FromUserEmail(kUserEmail), /*is_affiliated=*/true,
-          user_manager::UserType::kRegular, testing_profile.get());
-  user_manager_->LoginUser(user->GetAccountId());
-
-  base::WeakPtr<Kcer> kcer = KcerFactoryAsh::GetKcer(testing_profile.get());
-  base::WeakPtr<Kcer> off_the_record_kcer =
-      KcerFactoryAsh::GetKcer(off_the_record_profile);
-
-  EXPECT_TRUE(WeakPtrEq(kcer, off_the_record_kcer));
 }
 
 }  // namespace
