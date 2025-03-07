@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_view.h"
@@ -94,7 +93,7 @@ void SendTabToSelfToolbarIconController::DismissEntries(
 
 void SendTabToSelfToolbarIconController::OnBrowserSetLastActive(
     Browser* browser) {
-  if (!GetActiveDelegate() || browser->profile() != profile_.get()) {
+  if (browser->profile() != profile_.get()) {
     return;
   }
 
@@ -130,32 +129,6 @@ void SendTabToSelfToolbarIconController::ShowToolbarButton(
       ->ShowBubble(entry, button);
 
   send_tab_to_self::RecordNotificationShown();
-}
-
-void SendTabToSelfToolbarIconController::AddDelegate(
-    SendTabToSelfToolbarIconControllerDelegate* delegate) {
-  delegate_list_.push_back(delegate);
-}
-
-void SendTabToSelfToolbarIconController::RemoveDelegate(
-    SendTabToSelfToolbarIconControllerDelegate* delegate) {
-  for (unsigned int i = 0; i < delegate_list_.size(); i++) {
-    if (delegate_list_[i] == delegate) {
-      delegate_list_.erase(delegate_list_.begin() + i);
-      return;
-    }
-  }
-}
-
-SendTabToSelfToolbarIconControllerDelegate*
-SendTabToSelfToolbarIconController::GetActiveDelegate() {
-  for (send_tab_to_self::SendTabToSelfToolbarIconControllerDelegate* delegate :
-       delegate_list_) {
-    if (delegate->IsActive()) {
-      return delegate;
-    }
-  }
-  return nullptr;
 }
 
 const Profile* SendTabToSelfToolbarIconController::profile() const {

@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -58,7 +57,6 @@ SendTabToSelfToolbarBubbleView::SendTabToSelfToolbarBubbleView(
     const SendTabToSelfEntry& entry,
     base::OnceCallback<void(NavigateParams*)> navigate_callback)
     : views::BubbleDialogDelegateView(parent, views::BubbleBorder::TOP_RIGHT),
-      toolbar_button_(parent),
       navigate_callback_(std::move(navigate_callback)),
       browser_(browser),
       title_(entry.GetTitle()),
