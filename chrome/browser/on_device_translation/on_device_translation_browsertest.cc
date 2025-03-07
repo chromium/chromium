@@ -848,6 +848,42 @@ class OnDeviceTranslationV1BrowserTest : public OnDeviceTranslationBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// The language model limit is not triggered when the V1 flag is enabled.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationV1BrowserTest,
+                       NoLanguageModelLimitation) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  const base::span<const LanguagePackKey> language_packs =
+      base::span(kLanguagePackKeys);
+  NavigateToEmptyPage();
+
+  // Expect that the number of available language packs is less than the
+  // installable language pack size, given there is no limitation in place.
+  size_t installable_package_count =
+      on_device_translation::GetInstallablePackageCount(0);
+  ASSERT_LE(language_packs.size() + 1, installable_package_count);
+
+  // Add all the languages we're going to test to the selected languages so we
+  // don't fail `PassAcceptLanguagesCheck`.
+  SetSelectedLanguages(language_packs);
+
+  // Test that we can install all of the possible language packs for
+  // translation.
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      language_packs);
+  for (const auto& language_pack_key : language_packs) {
+    TestSimpleTranslationWorks(browser(), language_pack_key);
+  }
+
+  // Get the last language pack key.
+  LanguagePackKey last_language_pack = *(language_packs.end() - 1);
+
+  // Confirm that the last language pack install succeeded.
+  TestTranslationAvailable(browser(), GetSourceLanguageCode(last_language_pack),
+                           GetTargetLanguageCode(last_language_pack),
+                           "available");
+}
+
 // Tests that `ai.translator.availability()` for a translation
 // containing a language outside of English + the user's preferred languages.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationV1BrowserTest,
