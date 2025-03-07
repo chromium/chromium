@@ -13155,6 +13155,14 @@ experimental domain BluetoothEmulation
     parameters
       # State of the simulated central.
       CentralState state
+      # If the simulated central supports low-energy.
+      boolean leSupported
+
+  # Set the state of the simulated central.
+  command setSimulatedCentralState
+    parameters
+      # State of the simulated central.
+      CentralState state
 
   # Disable the BluetoothEmulation domain.
   command disable
