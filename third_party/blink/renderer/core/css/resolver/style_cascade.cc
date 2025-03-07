@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/core/css/try_value_flips.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -334,7 +335,9 @@ void StyleCascade::Apply(CascadeFilter filter) {
       if (const auto* numeric = DynamicTo<CSSNumericLiteralValue>(value)) {
         DCHECK(numeric->GetType() == CSSNumericLiteralValue::UnitType::kEms);
         if (numeric->DoubleValue() != 2.0) {
-          CountUse(WebFeature::kH1UserAgentFontSizeInSectionApplied);
+          Deprecation::CountDeprecation(
+              GetDocument().GetExecutionContext(),
+              WebFeature::kH1UserAgentFontSizeInSectionApplied);
         }
       }
     }

@@ -243,6 +243,16 @@
       ],
     },
     {
+      name: "H1UserAgentFontSizeInSection",
+      message: "The website has an <h1> tag within an <article>, <aside>, <nav>, or <section>, and relies on deprecated UA stylesheet rules for the resulting font size. See the second block of 'x h1' styles in https://html.spec.whatwg.org/multipage/rendering.html#sections-and-headings. These special rules are deprecated and will be removed. See https://github.com/whatwg/html/issues/7867.",
+      translation_note: "This warning occurs when a site uses <h1> inside <section>. It means the behavior may change in a future Chrome release, when these special rules are removed.",
+      web_features: [
+        "kH1UserAgentFontSizeInSectionApplied",
+      ],
+      chrome_status_feature: 6192419898654720,
+      milestone: 136,
+    },
+    {
       name: "HostCandidateAttributeGetter",
       message: "`RTCPeerConnectionIceErrorEvent.hostCandidate` is deprecated. Please use `RTCPeerConnectionIceErrorEvent.address` or `RTCPeerConnectionIceErrorEvent.port` instead.",
       translation_note: "A deprecation warning shown to developers in the DevTools Issues tab when code tries to use the deprecated hostCandidate field, guiding developers to use the equivalent information in the .address and .port fields instead.",

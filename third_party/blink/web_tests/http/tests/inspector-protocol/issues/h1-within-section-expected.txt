@@ -1,0 +1,20 @@
+Verifies that H1 within section (without font overrides) triggers a deprecation issue.
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 0
+                    lineNumber : -1
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+                }
+                type : H1UserAgentFontSizeInSection
+            }
+        }
+    }
+}
+
