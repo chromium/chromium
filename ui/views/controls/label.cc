@@ -1409,6 +1409,11 @@ gfx::Size Label::GetBoundedTextSize(const SizeBounds& available_size) const {
     const int width = w.is_bounded() ? w.value() : 0;
     // SetDisplayRect() has side-effect. The text height will change to respect
     // width.
+    // TODO(crbug.com/400028865): full_text_'s eliding behavior should align
+    // with the label. Currently, it always returns non-elided width,
+    // effectively preventing the label to shrink. It should be as small as the
+    // width of "...". This issue currently causes overflow in a horizontal
+    // layout that has multiple single-line labels.
     full_text_->SetDisplayRect(gfx::Rect(0, 0, width, 0));
     size = full_text_->GetStringSize();
 
