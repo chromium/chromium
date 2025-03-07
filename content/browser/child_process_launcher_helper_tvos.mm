@@ -75,5 +75,12 @@ void ChildProcessLauncherHelper::SetProcessPriorityOnLauncherThread(
   NOTREACHED();
 }
 
+base::File OpenFileToShare(const base::FilePath& path,
+                           base::MemoryMappedFile::Region* region) {
+  // Not used yet (until required files are described in the service manifest on
+  // tvOS).
+  NOTREACHED();
+}
+
 }  // namespace internal
 }  // namespace content
