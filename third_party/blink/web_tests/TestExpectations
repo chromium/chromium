@@ -8981,7 +8981,6 @@ crbug.com/394919517 [ Mac ] external/wpt/css/css-pseudo/selection-background-pai
 crbug.com/383946052 [ Android ] external/wpt/screen-capture/tentative/getdisplaymedia-captured-surface-resolution.https.html [ Failure ]
 crbug.com/383946052 [ Fuchsia ] external/wpt/screen-capture/tentative/getdisplaymedia-captured-surface-resolution.https.html [ Failure ]
 crbug.com/383946052 [ Linux ] external/wpt/screen-capture/tentative/getdisplaymedia-captured-surface-resolution.https.html [ Failure ]
-crbug.com/383946052 [ Mac ] external/wpt/screen-capture/tentative/getdisplaymedia-captured-surface-resolution.https.html [ Failure ]
 
 # Also failing on WebKit Linux ASAN
 crbug.com/391728750 [ Linux ] external/wpt/ai/translator/ai_translator_translate.tentative.https.any.html [ Failure Timeout ]
