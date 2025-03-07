@@ -94,6 +94,7 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // Any currently running assistive tech that should prevent accessibility from
   // being auto-disabled.
   AssistiveTech ActiveKnownAssistiveTech() override;
+  bool IsKnownScreenReaderActiveSlow() override;
   bool IsAccessibleBrowser() override;
   void AddUIThreadHistogramCallback(base::OnceClosure callback) override;
   void AddOtherThreadHistogramCallback(base::OnceClosure callback) override;

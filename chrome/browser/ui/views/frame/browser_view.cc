@@ -228,6 +228,7 @@
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/installable_web_app_check_result.h"
 #include "components/webapps/browser/banners/web_app_banner_data.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/permission_controller.h"
@@ -908,7 +909,8 @@ class BrowserView::AccessibilityModeObserver : public ui::AXModeObserver {
     // asynchronously since AXMode changes can happen while AXTree updates or
     // notifications are in progress, and |MaybeInitializeWebUITabStrip| can
     // destroy things synchronously.
-    if (mode.has_mode(ui::AXMode::kExtendedProperties)) {
+    if (content::BrowserAccessibilityState::GetInstance()
+            ->IsKnownScreenReaderActiveSlow()) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&BrowserView::MaybeInitializeWebUITabStrip,
                                     browser_view_->GetAsWeakPtr()));

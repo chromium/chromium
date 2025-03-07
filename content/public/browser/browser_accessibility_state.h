@@ -118,6 +118,10 @@ class CONTENT_EXPORT BrowserAccessibilityState {
 
   virtual AssistiveTech ActiveKnownAssistiveTech() = 0;
 
+  // Returns true if there is an ActiveKnownAssistiveTech() matching a
+  // screen reader. Note, on some platforms this is slow to compute.
+  virtual bool IsKnownScreenReaderActiveSlow() = 0;
+
   // Returns true if the browser should be customized for accessibility.
   virtual bool IsAccessibleBrowser() = 0;
 

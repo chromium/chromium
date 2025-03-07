@@ -323,6 +323,32 @@ BrowserAccessibilityStateImpl::ActiveKnownAssistiveTech() {
   return kNone;
 }
 
+bool BrowserAccessibilityStateImpl::IsKnownScreenReaderActiveSlow() {
+  // There is no need to run asssistive tech detection code if the
+  // AXMode does not have kExtendedProperties set, because an assistive tech
+  // would have made API calls causing that AXMode to be set.
+  if (GetAccessibilityMode().has_mode((ui::AXMode::kExtendedProperties))) {
+    return false;
+  }
+  UpdateKnownAssistiveTechSlow();
+  switch (ActiveKnownAssistiveTech()) {
+    case kUnknown:
+      NOTREACHED();
+    case kNone:
+    case kZoomText:
+      return false;
+    case kChromeVox:
+    case kJaws:
+    case kNarrator:
+    case kNvda:
+    case kOrca:
+    case kSupernova:
+    case kTalkback:
+    case kVoiceOver:
+      return true;
+  }
+}
+
 void BrowserAccessibilityStateImpl::EnableAccessibility() {
   if (!allow_ax_mode_changes_) {
     return;
