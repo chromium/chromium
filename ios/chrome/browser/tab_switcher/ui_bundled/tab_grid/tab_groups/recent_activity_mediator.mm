@@ -25,6 +25,9 @@ const CGFloat kFaviconSize = 20;
 // The size of an avatar image.
 const CGFloat kAvatarSize = 30;
 
+// The maximum number of logs to query, and thus display in the list.
+const int kMaxNumberOfLogs = 5;
+
 ActivityLogType ConvertCollaborationEvent(
     collaboration::messaging::CollaborationEvent collaboration_event) {
   switch (collaboration_event) {
@@ -94,7 +97,7 @@ ActivityLogType ConvertCollaborationEvent(
 // Creates recent activity logs and passes them to the consumer.
 - (void)populateItemsFromService {
   collaboration::messaging::ActivityLogQueryParams params;
-  params.result_length = 5;
+  params.result_length = kMaxNumberOfLogs;
   tab_groups::CollaborationId collabID =
       tab_groups::utils::GetTabGroupCollabID(_tabGroup.get(), _syncService);
   params.collaboration_id = data_sharing::GroupId(collabID.value());
