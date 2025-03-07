@@ -128,9 +128,6 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
     raw_ptr<ResourcePool::Backing> backing_;
 
     // These fields are for use on the worker thread.
-    const gfx::Size resource_size_;
-    const viz::SharedImageFormat shared_image_format_;
-    const gfx::ColorSpace color_space_;
     const bool resource_has_previous_content_;
     const bool depends_on_at_raster_decodes_;
     const bool depends_on_hardware_accelerated_jpeg_candidates_;

@@ -51,9 +51,6 @@ GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates)
     : client_(client),
-      resource_size_(in_use_resource.size()),
-      shared_image_format_(in_use_resource.format()),
-      color_space_(in_use_resource.color_space()),
       resource_has_previous_content_(resource_has_previous_content),
       depends_on_at_raster_decodes_(depends_on_at_raster_decodes),
       depends_on_hardware_accelerated_jpeg_candidates_(
@@ -352,10 +349,10 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
     } else if (client_->is_using_raw_draw_) {
       flags |= gpu::SHARED_IMAGE_USAGE_RAW_DRAW;
     }
-    backing_->set_shared_image(
-        sii->CreateSharedImage({shared_image_format_, resource_size_,
-                                color_space_, flags, "GpuRasterTile"},
-                               gpu::kNullSurfaceHandle));
+    backing_->set_shared_image(sii->CreateSharedImage(
+        {backing_->format(), backing_->size(), backing_->color_space(), flags,
+         "GpuRasterTile"},
+        gpu::kNullSurfaceHandle));
     CHECK(backing_->shared_image());
     mailbox_needs_clear = true;
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
@@ -387,8 +384,8 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
   ri->BeginRasterCHROMIUM(
       raster_source->background_color(), mailbox_needs_clear,
       playback_settings.msaa_sample_count, msaa_mode, use_lcd_text,
-      playback_settings.visible, color_space_, playback_settings.hdr_headroom,
-      backing_->shared_image()->mailbox().name);
+      playback_settings.visible, backing_->color_space(),
+      playback_settings.hdr_headroom, backing_->shared_image()->mailbox().name);
 
   gfx::Vector2dF recording_to_raster_scale = transform.scale();
   recording_to_raster_scale.InvScale(raster_source->recording_scale_factor());
