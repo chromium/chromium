@@ -60,6 +60,9 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
 
       /* To have the border-radius applied to content. */
       overflow: hidden;
+      max-width: inherit;
+      min-width: inherit;
+      resize: horizontal;
 
       & > cra-icon-button {
         position: absolute;
