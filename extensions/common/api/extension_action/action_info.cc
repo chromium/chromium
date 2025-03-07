@@ -66,8 +66,8 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(
     std::u16string* error) {
   auto result = std::make_unique<ActionInfo>(type);
 
-  // Read the page action |default_icon| (optional).
-  // The |default_icon| value can be either dictionary {icon size -> icon path}
+  // Read the action `default_icon` (optional).
+  // The `default_icon` value can be either dictionary {icon size -> icon path}
   // or non empty string value.
   if (const base::Value* default_icon = dict.Find(keys::kActionDefaultIcon)) {
     std::string default_icon_str;
@@ -93,7 +93,7 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(
     }
   }
 
-  // Read the page action title from |default_title| if present, |name| if not
+  // Read the action title from `default_title` if present, `name` if not
   // (both optional).
   if (const base::Value* default_title = dict.Find(keys::kActionDefaultTitle)) {
     if (!default_title->is_string()) {
@@ -123,10 +123,10 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(
       if (extension->origin().IsSameOriginWith(popup_url)) {
         result->default_popup_url = popup_url;
       } else {
-        install_warnings->push_back(extensions::InstallWarning(
+        install_warnings->emplace_back(
             extensions::manifest_errors::kInvalidExtensionOriginPopup,
             GetManifestKeyForActionType(type),
-            extensions::manifest_keys::kActionDefaultPopup));
+            extensions::manifest_keys::kActionDefaultPopup);
       }
     } else {
       // An empty string is treated as having no popup.
@@ -135,7 +135,7 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(
   }
 
   if (const base::Value* default_state = dict.Find(keys::kActionDefaultState)) {
-    // The default_state key is only valid for TYPE_ACTION; throw an error for
+    // The `default_state` key is only valid for TYPE_ACTION; throw an error for
     // others.
     if (type != ActionInfo::Type::kAction) {
       *error = errors::kDefaultStateShouldNotBeSet;
