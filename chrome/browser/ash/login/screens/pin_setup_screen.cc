@@ -308,10 +308,6 @@ void PinSetupScreen::DetermineHardwareSupport() {
 void PinSetupScreen::OnHasLoginSupport(bool login_available) {
   if (hardware_support_.has_value()) {
     LOG(WARNING) << "Hardware support for login determined too late.";
-    // Generate a crash report to investigate this edge case. This is unlikely
-    // to happen nowadays.
-    // TODO(b/369749485): Remove once no longer necessary.
-    base::debug::DumpWithoutCrashing();
     return;
   }
 
