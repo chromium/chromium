@@ -1438,6 +1438,7 @@
 <translation id="3536227077203206203">Autorisé cette fois</translation>
 <translation id="3537165859691846083">Lettre plus</translation>
 <translation id="353816159217417898">Écran (paginé)</translation>
+<translation id="3541016556608204104">En savoir plus sur les Connecteurs Chrome Enterprise</translation>
 <translation id="3542628208405253498">Image de la carte</translation>
 <translation id="3542768452570884558">Ouvrir le lien dans une nouvelle fenêtre</translation>
 <translation id="3543935938072367282">Payer plus vite grâce au remplissage automatique</translation>
@@ -2766,6 +2767,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5910140988253729859">Annuler le remplissage automatique</translation>
 <translation id="5911020115933784199">Événements et répertoires</translation>
 <translation id="5911110632211230665">Ouverture bloquée</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> a ajouté cet onglet</translation>
 <translation id="5915189366813702112">Régimes de travail flexibles</translation>
 <translation id="59174027418879706">Activé</translation>
 <translation id="5918373444239520146">Gadgets et appareils électroniques portatifs</translation>
@@ -4624,6 +4626,7 @@ Détails supplémentaires :
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> utilise un protocole non pris en charge.</translation>
 <translation id="918454845714257218">Vérifiez le code sur le <ph name="SIDE_OF_CARD" /> et réessayez</translation>
 <translation id="9186203289258525843">Bouton Définir Chrome comme navigateur par défaut, activez-le pour définir Chrome comme navigateur par défaut du système</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> a modifié cet onglet</translation>
 <translation id="9189789270972826888">Cliquez sur les détails de la carte ci-dessous pour copier-coller le contenu si la carte n'a pas été remplie automatiquement. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Les sujets datant d'il y a plus de quatre semaines sont automatiquement supprimés</translation>
 <translation id="9191834167571392248">Perforation en bas à gauche</translation>

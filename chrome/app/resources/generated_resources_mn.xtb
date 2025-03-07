@@ -6961,7 +6961,6 @@
 <translation id="5911533659001334206">Товчлол харагч</translation>
 <translation id="5911545422157959623">Зочны горимд хавчуурга боломжгүй</translation>
 <translation id="5914016309240354769">Байгаль</translation>
-<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> энэ табыг нэмсэн</translation>
 <translation id="5914724413750400082">Модулиуд (<ph name="MODULUS_NUM_BITS" /> бит): 
 <ph name="MODULUS_HEX_DUMP" /> 
 Нийтийн жишиг (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> бит): 
@@ -8242,6 +8241,7 @@
 <translation id="6831043979455480757">Хөрвүүлэх</translation>
 <translation id="6832218595502288407">Зүүн талд эгнүүлэх</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Табыг хасаж, бүлгийг устгах уу?}=1{Табуудыг хасаж, бүлгийг устгах уу?}other{Табуудыг хасаж, бүлгүүдийг устгах уу?}}</translation>
+<translation id="6833103209700200188">Хуудасны доод хэсэг</translation>
 <translation id="6833479554815567477">Табыг <ph name="GROUP_NAME" /> бүлгээс хассан - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Тэнцвэртэй (санал болгосон)</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" />-ээ шинэчлэхийн тулд интернэтэд холбогдоно уу.</translation>
@@ -11580,7 +11580,6 @@
 <translation id="918352324374649435">{COUNT,plural, =1{Апп}other{# апп}}</translation>
 <translation id="9186963452600581158">Хүүхдийн Google Бүртгэлээр нэвтрэх</translation>
 <translation id="9187967020623675250">Товчнууд таарахгүй байна. <ph name="RESPONSE" />-н тулд дурын товчийг дарна уу.</translation>
-<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> энэ табыг өөрчилсөн</translation>
 <translation id="9192019773545828776">Яриагаар өгөх саналыг сонссоноор та төхөөрөмжөө дэлгэц рүү нь харалгүйгээр ашиглах боломжтой. Холбогдсон төхөөрөмжөөр брайл санал хүсэлт өгөх боломжтой. ChromeVox-г асаах болон унтраахын тулд Ctrl + Alt + Z-г ашиглана уу. Шилжихийн тулд Search + Зүүн сум эсвэл баруун сумыг ашиглана уу. Сонгох (Идэвхжүүлэх) бол Search + Space-г ашиглана уу.</translation>
 <translation id="9195969368671142407">Танай байгууллага таны Google Бүртгэлд хадгалахыг хязгаарлахад та табын бүлэг хуваалцах, нэгдэх боломжгүй</translation>
 <translation id="919686179725692564">Аппуудаа хуулбарлах талаар нэмэлт мэдээлэл авна уу</translation>

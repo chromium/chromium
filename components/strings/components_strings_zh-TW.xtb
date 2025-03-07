@@ -138,6 +138,7 @@
 <translation id="1230244617745022071"><ph name="SOURCE" /> (自動偵測)</translation>
 <translation id="1232569758102978740">未命名</translation>
 <translation id="1236081509407217141">要允許 VR 嗎？</translation>
+<translation id="1236689197410206751">Afterpay</translation>
 <translation id="1240347957665416060">你的裝置名稱</translation>
 <translation id="124116460088058876">更多語言</translation>
 <translation id="1243027604378859286">作者：</translation>
@@ -1800,6 +1801,7 @@
 <translation id="415440494507469262">將分頁加入比較表</translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4165422751765527461">在新分頁中開啟說明中心文章</translation>
+<translation id="4165584779486830267">現在可以使用 Affirm 或 Zip 分期付款。</translation>
 <translation id="4165986682804962316">網站設定</translation>
 <translation id="4169535189173047238">不允許</translation>
 <translation id="4171400957073367226">驗證簽名無效</translation>
@@ -2764,6 +2766,7 @@
 <translation id="5910140988253729859">復原自動填入</translation>
 <translation id="5911020115933784199">活動與展演資訊</translation>
 <translation id="5911110632211230665">已禁止開啟</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" />已新增這個分頁</translation>
 <translation id="5915189366813702112">彈性工作安排</translation>
 <translation id="59174027418879706">已啟用</translation>
 <translation id="5918373444239520146">小型裝置與隨身電子設備</translation>
@@ -4623,6 +4626,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> 使用了不支援的通訊協定。</translation>
 <translation id="918454845714257218">請確認<ph name="SIDE_OF_CARD" />的安全碼，然後再試一次</translation>
 <translation id="9186203289258525843">「將 Chrome 設為預設瀏覽器」按鈕，啟動後即可將 Chrome 設為系統預設瀏覽器</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" />已變更這個分頁</translation>
 <translation id="9189789270972826888">點選下方的卡片資料，即可複製及貼上 (如果系統未自動填入)。<ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">系統會自動刪除 4 週前的主題</translation>
 <translation id="9191834167571392248">打孔 (左下方)</translation>

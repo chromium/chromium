@@ -138,6 +138,7 @@
 <translation id="1230244617745022071"><ph name="SOURCE" />（自动检测）</translation>
 <translation id="1232569758102978740">无标题</translation>
 <translation id="1236081509407217141">允许 VR？</translation>
+<translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">您的设备名称</translation>
 <translation id="124116460088058876">更多语言</translation>
 <translation id="1243027604378859286">作者：</translation>
@@ -1435,6 +1436,7 @@
 <translation id="3536227077203206203">这次可以使用</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">屏幕（分页）</translation>
+<translation id="3541016556608204104">详细了解 Chrome 企业版接口</translation>
 <translation id="3542628208405253498">虚拟卡图片</translation>
 <translation id="3542768452570884558">在新窗口中打开链接</translation>
 <translation id="3543935938072367282">利用自动填充功能更快结账</translation>
@@ -1798,6 +1800,7 @@
 <translation id="415440494507469262">向比较表格添加标签页</translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4165422751765527461">在新标签页中打开帮助中心文章</translation>
+<translation id="4165584779486830267">现在，您可以使用 Affirm 或 Zip 分期付款。</translation>
 <translation id="4165986682804962316">网站设置</translation>
 <translation id="4169535189173047238">不允许</translation>
 <translation id="4171400957073367226">验证签名无效</translation>
@@ -2762,6 +2765,7 @@
 <translation id="5910140988253729859">撤消自动填充</translation>
 <translation id="5911020115933784199">活动与演出</translation>
 <translation id="5911110632211230665">禁止打开</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" />添加了此标签页</translation>
 <translation id="5915189366813702112">弹性工作安排</translation>
 <translation id="59174027418879706">已启用</translation>
 <translation id="5918373444239520146">小工具和便携式电子产品</translation>
@@ -4621,6 +4625,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> 使用了不受支持的协议。</translation>
 <translation id="918454845714257218">请查看<ph name="SIDE_OF_CARD" />的安全码，然后重试</translation>
 <translation id="9186203289258525843">“将 Chrome 设为默认浏览器”按钮，激活它即可将 Chrome 设为系统的默认浏览器</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" />更改了此标签页</translation>
 <translation id="9189789270972826888">如果卡片未填写，请点击下方的卡片详细信息进行复制粘贴。<ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">系统会自动删除保留时长超过 4 周的主题</translation>
 <translation id="9191834167571392248">打孔（左下角）</translation>

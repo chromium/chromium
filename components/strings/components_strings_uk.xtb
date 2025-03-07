@@ -2766,6 +2766,7 @@
 <translation id="5910140988253729859">Скасувати автозаповнення</translation>
 <translation id="5911020115933784199">Події і розклади</translation>
 <translation id="5911110632211230665">Неможливо відкрити</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> додає цю вкладку</translation>
 <translation id="5915189366813702112">Гнучка організація праці</translation>
 <translation id="59174027418879706">Увімкнено</translation>
 <translation id="5918373444239520146">Гаджети й портативні електронні пристрої</translation>
@@ -4627,6 +4628,7 @@
 <translation id="9183425211371246419">Протокол, який використовує хост <ph name="HOST_NAME" />, не підтримується.</translation>
 <translation id="918454845714257218">Перевірте код на <ph name="SIDE_OF_CARD" /> й повторіть спробу</translation>
 <translation id="9186203289258525843">Кнопка "Зробити Chrome веб-переглядачем за умовчанням"; активуйте, щоб зробити Chrome веб-переглядачем системи за умовчанням</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> змінює цю вкладку</translation>
 <translation id="9189789270972826888">Якщо дані картки не заповнено автоматично, натисніть їх нижче, щоб скопіювати й вставити інформацію. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Теми, які зберігаються понад 4 тижні, автоматично видаляються</translation>
 <translation id="9191834167571392248">Пробити отвір унизу ліворуч</translation>

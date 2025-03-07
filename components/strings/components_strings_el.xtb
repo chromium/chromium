@@ -1439,6 +1439,7 @@
 <translation id="3536227077203206203">Επιτράπηκε για αυτήν τη φορά</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">Οθόνη (Με σελίδα)</translation>
+<translation id="3541016556608204104">Περισσότερα σχετικά με το Chrome Enterprise Connectors</translation>
 <translation id="3542628208405253498">Εικόνα κάρτας</translation>
 <translation id="3542768452570884558">Άνοιγμα συνδέσμου σε νέο παράθυρο</translation>
 <translation id="3543935938072367282">Ταχύτερη ολοκλήρωση αγορών με την αυτόματη συμπλήρωση</translation>
@@ -2770,6 +2771,7 @@
 <translation id="5910140988253729859">Αναίρεση αυτόματης συμπλήρωσης</translation>
 <translation id="5911020115933784199">Εκδηλώσεις και καταχωρίσεις</translation>
 <translation id="5911110632211230665">Το άνοιγμα έχει αποκλειστεί</translation>
+<translation id="5914465277418006379">Ο χρήστης <ph name="MEMBER_FIRST_NAME" /> πρόσθεσε αυτή την καρτέλα</translation>
 <translation id="5915189366813702112">Ευέλικτες συνθήκες εργασίας</translation>
 <translation id="59174027418879706">Ενεργοποιημένο</translation>
 <translation id="5918373444239520146">Gadget και φορητές ηλεκτρονικές συσκευές</translation>
@@ -4631,6 +4633,7 @@
 <translation id="9183425211371246419">Ο κεντρικός υπολογιστής <ph name="HOST_NAME" /> χρησιμοποιεί μη υποστηριζόμενο πρωτόκολλο.</translation>
 <translation id="918454845714257218">Ελέγξτε τον κωδικό στο <ph name="SIDE_OF_CARD" /> και δοκιμάστε ξανά</translation>
 <translation id="9186203289258525843">Κουμπί Ορισμός Chrome ως προεπιλεγμένου προγράμματος περιήγησης, ενεργοποιήστε το για να ορίσετε το Chrome ως το προεπιλεγμένο πρόγραμμα περιήγησης του συστήματος</translation>
+<translation id="9189468832660648522">Ο χρήστης <ph name="MEMBER_FIRST_NAME" /> άλλαξε αυτή την καρτέλα</translation>
 <translation id="9189789270972826888">Κάντε κλικ στις λεπτομέρειες της κάρτας παρακάτω για αντιγραφή και επικόλληση, εάν η κάρτα δεν έχει συμπληρωθεί. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Τα θέματα που είναι παλαιότερα των 4 εβδομάδων διαγράφονται αυτόματα</translation>
 <translation id="9191834167571392248">Τρύπημα κάτω αριστερά</translation>

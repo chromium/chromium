@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">চালিয়ে যাওয়ার অর্থ হল আপনি <ph name="BEGIN_LINK" />পরিষেবার শর্তাবলী<ph name="END_LINK" />তে সম্মতি দিচ্ছেন।</translation>
 <translation id="10614374240317010">কখনও সংরক্ষিত হয়নি</translation>
 <translation id="1062138828266376352">আপনার পিন পরিবর্তন করা হয়নি। আপনার ইন্টারনেট কানেকশন ঠিক আছে কিনা দেখে নিয়ে আবার চেষ্টা করুন</translation>
+<translation id="1072476005125066234">আপনার আগ্রহের ভিত্তিতে রিভিউ</translation>
 <translation id="1074827084851510304">আপনি {password_count}টি পাসওয়ার্ড এবং যেসব অ্যাপ ও সাইটের ক্ষেত্রে সাইন-ইন সংক্রান্ত তথ্য কখনই সেভ না করার সিদ্ধান্ত নিয়েছেন, তার তালিকা আপনি মুছে দিতে চলেছেন। কোনও সাইট বা অ্যাপের জন্য আপনার তৈরি করা কোনও অ্যাকাউন্ট মুছে ফেলা হবে না।</translation>
 <translation id="1076421457278169141">কোড স্ক্যান করা হয়েছে</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count}টি ট্যাব}one{{count}টি ট্যাব}other{{count}টি ট্যাব}}</translation>
@@ -264,6 +265,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" />টি অ্যাকাউন্ট একই পাসওয়ার্ড ব্যবহার করছে</translation>
 <translation id="2059166748188874810">মিউনিসিপ্যালিটি</translation>
 <translation id="2060114494785549741">১ মাসের মধ্যে মুছে দিন</translation>
+<translation id="2060638295449304809">এই ঠিকানাটি শুধুমাত্র এই ডিভাইসে সেভ আছে। এটি অন্য ডিভাইসে ব্যবহার করার জন্য আপনার Google অ্যাকাউন্টে সেভ করুন, <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">ইউনিটের ধরন বাছাইকারী</translation>
 <translation id="2067852168641682340">প্রতিবার এই অ্যাকাউন্টে সেভ করুন</translation>
 <translation id="2074119687904553223">{count,plural, =1{১টি ট্যাব}one{{count}টি ট্যাব}other{{count}টি ট্যাব}}</translation>
@@ -888,6 +890,7 @@
 <translation id="4824480232751123840">ভলিউম</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} এবং আরও ১টি}one{{domain} এবং আরও {count}টি}other{{domain} এবং আরও {count}টি}}</translation>
 <translation id="4826588772550366629">ক্যামেরা এবং মাইক্রোফোন</translation>
+<translation id="4828431027673677473">আপনার আগ্রহের ভিত্তিতে প্রোডাক্ট</translation>
 <translation id="4833786495304741580">Google-কে অটোমেটিক ব্যবহারের পরিসংখ্যান ও ক্র্যাশ রিপোর্ট পাঠায়।</translation>
 <translation id="483689884442613745">সেভ করুন…</translation>
 <translation id="4840495572919996524">আপনার বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং আরও অনেক কিছু আপনার Google অ্যাকাউন্টের সাথে আর সিঙ্ক করা হবে না।</translation>
@@ -1725,6 +1728,7 @@
 <translation id="828291969289324795">{count,plural, =1{নতুন গ্রুপে ট্যাব যোগ করুন}one{নতুন গ্রুপে ট্যাব যোগ করুন}other{নতুন গ্রুপে ট্যাব যোগ করুন}}</translation>
 <translation id="8283172974887967105">সেট করুন…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" /> সম্পর্কিত বিজ্ঞপ্তি বন্ধ করুন</translation>
+<translation id="8290077367744012649">আপনার ট্যাব থেকে দাম ট্র্যাক করুন</translation>
 <translation id="8299417921174340354">পাসওয়ার্ড ব্যবহার করার জন্য, আপনাকে ডিভাইসে প্রথমে একটি পাসকোড সেট করতে হবে।</translation>
 <translation id="8307481894409578819">এই ফাইলটি আপলোড করা যায়নি</translation>
 <translation id="8319076807703933069">নতুন ট্যাবে সার্চ করুন</translation>

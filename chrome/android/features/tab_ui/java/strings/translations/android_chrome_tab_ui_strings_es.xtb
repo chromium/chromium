@@ -31,6 +31,7 @@ Si lo eliminas, todos los usuarios perderán inmediatamente el acceso al grupo d
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestaña}other{<ph name="TABS_COUNT_MANY" /> pestañas}}</translation>
 <translation id="1909810060368225529">Aviso: Todos los usuarios pueden ver los cambios que se hagan en este grupo de pestañas compartido. Todos los usuarios pueden hacer cambios en tus grupos de pestañas compartidos</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Añadir <ph name="TABS_COUNT_ONE" /> pestaña seleccionada a marcadores}other{Añadir <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas a marcadores}}</translation>
+<translation id="2055057176188061528">Selecciona un grupo de pestañas o crea uno nuevo</translation>
 <translation id="2118649612461486615">Información de la tienda</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Puedes volver a abrir las pestañas y los grupos cerrados desde las secciones Pestañas recientes y Grupo de pestañas. Tu pestaña de Incógnito no estará disponible.}other{Puedes volver a abrir las pestañas y los grupos cerrados desde las secciones Pestañas recientes y Grupo de pestañas. Tus # pestañas de Incógnito no estarán disponibles.}}</translation>
 <translation id="2162620598375156287">Ahora, por <ph name="CURRENT_PRICE" /> en <ph name="SOURCE_WEBSITE" /></translation>
@@ -67,6 +68,7 @@ Si lo eliminas, todos los usuarios perderán inmediatamente el acceso al grupo d
 <translation id="3194464645767632461">puntuación</translation>
 <translation id="3328308545011660196">Sugerencia: Hay <ph name="NUMBER_OF_TABS" /> pestañas que parecen relacionadas. ¿Quieres agruparlas?</translation>
 <translation id="3547352561153509682">Se eliminará el grupo de todos los dispositivos en los que se haya iniciado sesión con <ph name="USER_EMAIL" /></translation>
+<translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> pestaña nueva}other{<ph name="MANY_ADDED" /> pestañas nuevas}}</translation>
 <translation id="3613492231657284463">Ocultar cuadro de diálogo de pestañas inactivas</translation>
 <translation id="3619255692378312441">Gestionar acceso</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -74,6 +76,7 @@ Si lo eliminas, todos los usuarios perderán inmediatamente el acceso al grupo d
 <translation id="3810973564298564668">Gestionar</translation>
 <translation id="381219490185664296">¿Desagrupar grupo de pestañas?</translation>
 <translation id="3940195383040445971">Seguir precios en pestañas</translation>
+<translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> pestaña nueva, <ph name="ANY_CLOSED" /> cerrada}other{<ph name="MANY_ADDED" /> pestañas nuevas, <ph name="ANY_CLOSED" /> cerradas}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Agrupar pestaña}other{Agrupar pestañas}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestaña inactiva}other{<ph name="TABS_COUNT_MANY" /> pestañas inactivas}}</translation>
 <translation id="3969565576924904454">Abrir <ph name="TITLE_OF_GROUP" /></translation>

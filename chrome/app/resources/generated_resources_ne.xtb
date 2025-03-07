@@ -3803,6 +3803,7 @@
 <translation id="3670229581627177274">ब्लुटुथलाई अन गर्नुहोस्</translation>
 <translation id="3670480940339182416">साइटहरू V8 अप्टिमाइजर प्रयोग गर्न सक्छन्</translation>
 <translation id="3671764914317109892">आफ्नो ब्राउजिङ हिस्ट्री खोज्न बोलीचालीको भाषा प्रयोग गर्नुहोस्। तपाईं आफ्नो ब्राउजिङ हिस्ट्रीका आधारमा प्रश्नहरू सोध्न र जवाफहरू प्राप्त गर्न पनि सक्नुहुन्छ।</translation>
+<translation id="3671982238795754537">पासकीहरूका बारेमा थप जान्नुहोस्</translation>
 <translation id="3672681487849735243">फ्याक्ट्री त्रुटि पत्ता लागेको छ</translation>
 <translation id="3673097791729989571"><ph name="SAML_DOMAIN" /> ले साइन इन गर्ने कार्य होस्ट गर्छ</translation>
 <translation id="3673287357837016374">तपाईंको PIN परिवर्तन गरिएको छ</translation>
@@ -4718,6 +4719,7 @@
 <translation id="4289540628985791613">समीक्षा</translation>
 <translation id="428963538941819373">यी साइटहरूले तपाईंका बारेमा सेभ गरिएको जानकारी तपाईंले <ph name="HOST" /> ब्राउज गर्दा प्रयोग गर्न सक्छन्</translation>
 <translation id="4289732974614035569">PIN छान्नुहोस्</translation>
+<translation id="4290526909608432059">चाँडै नै Chrome एपहरूका लागि ग्राहक सेवा प्रदान गर्न छाडिने छ। आफ्ना लागि उपलब्ध विकल्पहरूका बारेमा जान्न एपका विकासकर्ता वा आफ्नो IT ग्राहक सेवा टोलीलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="4290791284969893584">पेज बन्द गरेपछि तपाईंले सुरु गर्नुभएका कार्यहरू समाप्त नहुन सक्छन्</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> सदस्य</translation>
 <translation id="4290898381118933198">एक पेजबाट अर्को पेजमा जान स्वाइप गर्नुहोस्</translation>
@@ -6945,7 +6947,6 @@
 <translation id="5911533659001334206">सर्टकटको दर्शक</translation>
 <translation id="5911545422157959623">बुकमार्कहरू अतिथि मोडमा उपलब्ध हुँदैनन्</translation>
 <translation id="5914016309240354769">प्रकृति</translation>
-<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> ले यो ट्याब हाल्नुभयो</translation>
 <translation id="5914724413750400082">मापांक (<ph name="MODULUS_NUM_BITS" /> बिटहरू): <ph name="MODULUS_HEX_DUMP" /> 
 सार्वजनिक प्रकाशक ( <ph name="PUBLIC_EXPONENT_NUM_BITS" /> बिट): 
 <ph name="EXPONENT_HEX_DUMP" /></translation>
@@ -8226,6 +8227,7 @@
 <translation id="6831043979455480757">अनुवाद गर्नुहोस्</translation>
 <translation id="6832218595502288407">बायाँतिर एलाइन गर्नुहोस्</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{ट्याब हटाउने र समूह मेटाउने हो?}=1{ट्याबहरू हटाउने र समूह मेटाउने हो?}other{ट्याबहरू हटाउने र समूहहरू मेटाउने हो?}}</translation>
+<translation id="6833103209700200188">फुटर</translation>
 <translation id="6833479554815567477">यो ट्याब <ph name="GROUP_NAME" /> समूहबाट हटाइयो - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">सन्तुलित (सिफारिस गरिएको)</translation>
 <translation id="6835762382653651563">कृपया तपाईँको <ph name="DEVICE_TYPE" /> अद्यावधिक गर्न इन्टरनेटमा कनेक्ट गर्नुहोस्।</translation>
@@ -8511,6 +8513,7 @@
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - क्रमिक पोर्टमा जडान गरियो</translation>
 <translation id="7033616203784997570">बढीमा ६२ वटा वर्ण प्रयोग गर्न मिल्छ</translation>
 <translation id="7034692021407794547">'बिलिङ व्यवस्थापन' नामक विशेषाधिकार भएका कुनै एड्मिनले एड्मिन कन्सोलको Google Meet हार्डवेयर खण्डमा गई Google Meet हार्डवेयरको सेवाका सर्तहरू स्वीकार गरेपछि मात्र तपाईं डिभाइस दर्ता गर्न सक्नुहुन्छ।</translation>
+<translation id="7036550011779986598"><ph name="RP_ID" /> ले भर्खरै तपाईंको खाताको पासकी बनाएको छ। पासकीहरू प्रयोग गरी अझ छिटो र सुरक्षित रूपमा साइन इन गर्न सकिन्छ। पासकीहरू <ph name="USER" /> को Google पासवर्ड म्यानेजरमा सेभ गरिन्छन्। <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Linux प्रयोग गर्न <ph name="DISK_SIZE" /> ठाउँ खाली राख्न सिफारिस गरिन्छ। थप ठाउँ खाली गर्न आफ्नो यन्त्रमा भएका फाइलहरू मेटाउनुहोस्।</translation>
 <translation id="7037157058268992880">PIN बिर्सिएँ</translation>
 <translation id="7037509989619051237">पाठवाचकको पूर्वावलोकन</translation>
@@ -10552,6 +10555,7 @@
 <translation id="8477178913400731244">डेटा मेटाउनुहोस्</translation>
 <translation id="8477241577829954800">सुपरसिडेड</translation>
 <translation id="8477384620836102176">&amp;सामान्य</translation>
+<translation id="8477446666255316832">अर्को पटक अझ छिटो साइन इन गर्नुहोस्</translation>
 <translation id="8479176401914456949">कोड अवैध छ। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> को अज्ञात यन्त्र</translation>
 <translation id="8481187309597259238">USB अनुमति निश्चित गर्नुहोस्</translation>
@@ -11566,7 +11570,6 @@
 <translation id="918352324374649435">{COUNT,plural, =1{एप}other{# वटा एप}}</translation>
 <translation id="9186963452600581158">आफ्ना बच्चाको Google खाता प्रयोग गरी साइन इन गर्नुहोस्</translation>
 <translation id="9187967020623675250">की मिलेन। तपाईं <ph name="RESPONSE" /> चाहनुहुन्छ भने कुनै की थिच्नुहोस्।</translation>
-<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> ले यो ट्याब परिवर्तन गर्नुभयो</translation>
 <translation id="9192019773545828776">तपाईं स्क्रिनमा नहेरिकन आफ्नो डिभाइस प्रयोग गर्न सक्नुहोस् भन्नाका लागि बोलेर दिइने प्रतिक्रिया सुन्नुहोस्। डिभाइस कनेक्ट गरेर ब्रेल प्रतिक्रिया प्राप्त गर्न सकिन्छ। ChromeVox अन र अफ गर्न Ctrl + Alt + Z थिच्नुहोस्। एउटा वस्तुबाट अर्को वस्तुमा जान Search + लेफ्ट एरो वा राइट एरो प्रयोग गर्नुहोस्। चयन (एक्टिभेट) गर्न Search + Space थिच्नुहोस्।</translation>
 <translation id="9195969368671142407">तपाईंको सङ्गठनले तपाईंको Google खातामा सेभ गर्न पाइने कुराहरूको सीमा तोकेका अवस्थामा तपाईं ट्याब समूह सेयर गर्न वा तिनमा सामेल हुन पाउनुहुन्न</translation>
 <translation id="919686179725692564">आफ्नो डिभाइसमा भएका एपहरू ब्याकअप गर्ने तरिकाका बारेमा थप जान्नुहोस्</translation>

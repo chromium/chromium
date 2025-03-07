@@ -1439,6 +1439,7 @@
 <translation id="3536227077203206203">এই সময় অনুমতি দেওয়া আছে</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">স্ক্রিন (পেজেড)</translation>
+<translation id="3541016556608204104">Chrome Enterprise Connectors সম্পর্কে আরও তথ্য</translation>
 <translation id="3542628208405253498">কার্ডের ছবি</translation>
 <translation id="3542768452570884558">নতুন উইন্ডোতে লিঙ্ক খুলুন</translation>
 <translation id="3543935938072367282">'অটোফিল' ফিচার ব্যবহার করে ঝটপট চেক আউট করুন</translation>
@@ -2767,6 +2768,7 @@
 <translation id="5910140988253729859">অটোফিল আগের অবস্থায় ফিরিয়ে আনুন</translation>
 <translation id="5911020115933784199">ইভেন্ট ও তালিকা</translation>
 <translation id="5911110632211230665">ফাইল খোলার অনুমতি নেই</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> এই ট্যাব যোগ করেছেন</translation>
 <translation id="5915189366813702112">কাজের ফ্লেক্সিবল ব্যবস্থা</translation>
 <translation id="59174027418879706">সক্ষমিত</translation>
 <translation id="5918373444239520146">গ্যাজেট ও পোর্টেবল ইলেকট্রনিক্স</translation>
@@ -4626,6 +4628,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> একটি অসমর্থিত প্রোটোকল ব্যবহার করে।</translation>
 <translation id="918454845714257218"><ph name="SIDE_OF_CARD" />-এর কোডটি চেক করে আবার চেষ্টা করুন</translation>
 <translation id="9186203289258525843">'ডিফল্ট ব্রাউজার হিসেবে Chrome সেট করুন' বোতাম, সিস্টেমের ডিফল্ট ব্রাউজার হিসেবে Chrome সেট করতে এটি চালু করুন</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> এই ট্যাব পরিবর্তন করেছেন</translation>
 <translation id="9189789270972826888">কার্ডের বিবরণ পূরণ করা না হলে, কপি ও পেস্ট করতে নিচে দেওয়া কার্ডের বিবরণে ক্লিক করুন। <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">৪ সপ্তাহের বেশি পুরনো বিষয় অটোমেটিক মুছে দেওয়া হয়</translation>
 <translation id="9191834167571392248">নিচে বাঁদিকে পাঞ্চ করুন</translation>

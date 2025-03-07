@@ -2766,6 +2766,7 @@
 <translation id="5910140988253729859">ऑटोफिल पहिल्यासारखे करा</translation>
 <translation id="5911020115933784199">इव्हेंट आणि सूची</translation>
 <translation id="5911110632211230665">फाइल उघडणे ब्लॉक केले आहे</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> यांनी हा टॅब जोडला आहे</translation>
 <translation id="5915189366813702112">कर्मचाऱ्याच्या सोयीनुसार काम करण्याच्या सुविधा</translation>
 <translation id="59174027418879706">सक्षम</translation>
 <translation id="5918373444239520146">गॅजेट आणि पोर्टेबल इलेक्ट्रॉनिक वस्तू</translation>
@@ -4627,6 +4628,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> असमर्थित प्रोटोकॉल वापरतो.</translation>
 <translation id="918454845714257218"><ph name="SIDE_OF_CARD" /> येथील कोड तपासा आणि पुन्हा प्रयत्न करा</translation>
 <translation id="9186203289258525843">Chrome ला डीफॉल्ट ब्राउझर म्हणून सेट करा बटण, Chrome ला सिस्टीमचा डीफॉल्ट ब्राउझर म्हणून सेट करण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> यांनी हा टॅब बदलला आहे</translation>
 <translation id="9189789270972826888">कार्ड भरले नसल्यास कॉपी आणि पेस्ट करण्यासाठी खालील कार्ड तपशिलांवर क्लिक करा. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">४ आठवड्यांहून जुने विषय ऑटो-डिलीट केले जातात</translation>
 <translation id="9191834167571392248">पंच बॉटम लेफ्ट</translation>

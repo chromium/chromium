@@ -2766,6 +2766,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5910140988253729859">Ontdoen outovul</translation>
 <translation id="5911020115933784199">Geleenthede en lysinskrywings</translation>
 <translation id="5911110632211230665">Oopmaak word verhoed</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> het hierdie oortjie bygevoeg</translation>
 <translation id="5915189366813702112">Plooibare werkreëlings</translation>
 <translation id="59174027418879706">Geaktiveer</translation>
 <translation id="5918373444239520146">Apparate en draagbare elektronika</translation>
@@ -4625,6 +4626,7 @@ Bykomende besonderhede:
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> gebruik 'n ongesteunde protokol.</translation>
 <translation id="918454845714257218">Gaan die kode op die <ph name="SIDE_OF_CARD" /> na en probeer weer</translation>
 <translation id="9186203289258525843">Knoppie om Chrome as verstekblaaier te stel; aktiveer om Chrome as die stelsel se verstekblaaier te stel</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> het hierdie oortjie verander</translation>
 <translation id="9189789270972826888">Klik kaartbesonderhede hier onder om te kopieer en plak as die kaart nie ingevul is nie. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Onderwerpe ouer as 4 weke word outomaties uitgevee</translation>
 <translation id="9191834167571392248">Pons links onder</translation>

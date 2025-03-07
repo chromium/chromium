@@ -1438,6 +1438,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3536227077203206203">Đã cho phép sử dụng cho lần này</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">In lụa (Phân trang)</translation>
+<translation id="3541016556608204104">Tìm hiểu thêm về Chrome Enterprise Connectors</translation>
 <translation id="3542628208405253498">Hình ảnh trên thẻ</translation>
 <translation id="3542768452570884558">Mở đường liên kết trong cửa sổ mới</translation>
 <translation id="3543935938072367282">Thanh toán nhanh hơn nhờ tính năng tự động điền</translation>
@@ -2766,6 +2767,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5910140988253729859">Huỷ thao tác tự động điền</translation>
 <translation id="5911020115933784199">Sự kiện và trang thông tin</translation>
 <translation id="5911110632211230665">Đã chặn việc mở tệp</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> đã thêm thẻ này</translation>
 <translation id="5915189366813702112">Sắp xếp công việc linh hoạt</translation>
 <translation id="59174027418879706">Đã bật</translation>
 <translation id="5918373444239520146">Tiện ích và thiết bị điện tử cầm tay</translation>
@@ -4627,6 +4629,7 @@ Thông tin chi tiết bổ sung:
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> sử dụng giao thức không được hỗ trợ.</translation>
 <translation id="918454845714257218">Hãy kiểm tra mã trên <ph name="SIDE_OF_CARD" /> rồi thử lại</translation>
 <translation id="9186203289258525843">Nút Đặt Chrome làm trình duyệt mặc định, hãy nhấn nút này để đặt Chrome làm trình duyệt mặc định của hệ thống</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> đã thay đổi thẻ này</translation>
 <translation id="9189789270972826888">Nếu thẻ chưa được điền, hãy nhấp vào thông tin thẻ bên dưới để sao chép và dán. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Các chủ đề đã tồn tại hơn 4 tuần sẽ tự động bị xoá</translation>
 <translation id="9191834167571392248">Đục lỗ dưới cùng bên trái</translation>
