@@ -18,7 +18,7 @@ class WebViewSafeBrowsingClient : public SafeBrowsingClient {
   base::WeakPtr<SafeBrowsingClient> AsWeakPtr() override;
   PrefService* GetPrefs() override;
   SafeBrowsingService* GetSafeBrowsingService() override;
-  safe_browsing::RealTimeUrlLookupService* GetRealTimeUrlLookupService()
+  safe_browsing::RealTimeUrlLookupServiceBase* GetRealTimeUrlLookupService()
       override;
   safe_browsing::HashRealTimeService* GetHashRealTimeService() override;
   variations::VariationsService* GetVariationsService() override;
