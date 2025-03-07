@@ -23,7 +23,6 @@
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
@@ -71,19 +70,19 @@ using PerformanceManager = performance_manager::PerformanceManager;
 
 constexpr base::TimeDelta kShortDelay = base::Seconds(1);
 
-class MockTabLifecycleObserver : public TabLifecycleObserver {
+class MockLifecycleUnitObserver : public LifecycleUnitObserver {
  public:
-  MockTabLifecycleObserver() = default;
+  MockLifecycleUnitObserver() = default;
 
-  MockTabLifecycleObserver(const MockTabLifecycleObserver&) = delete;
-  MockTabLifecycleObserver& operator=(const MockTabLifecycleObserver&) = delete;
+  MockLifecycleUnitObserver(const MockLifecycleUnitObserver&) = delete;
+  MockLifecycleUnitObserver& operator=(const MockLifecycleUnitObserver&) =
+      delete;
 
   MOCK_METHOD(void,
-              OnTabLifecycleStateChange,
-              (content::WebContents * contents,
-               mojom::LifecycleUnitState previous_state,
-               mojom::LifecycleUnitState new_state,
-               std::optional<LifecycleUnitDiscardReason> discard_reason),
+              OnLifecycleUnitStateChanged,
+              (LifecycleUnit*,
+               LifecycleUnitState,
+               LifecycleUnitStateChangeReason),
               (override));
 };
 

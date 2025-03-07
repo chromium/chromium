@@ -14,7 +14,6 @@
 #include "chrome/browser/resource_coordinator/discard_metrics_lifecycle_unit_observer.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_source_observer.h"
 #include "chrome/browser/resource_coordinator/resource_coordinator_parts.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
@@ -148,14 +147,14 @@ TabLifecycleUnitExternal* TabLifecycleUnitSource::GetTabLifecycleUnitExternal(
   return lu->AsTabLifecycleUnitExternal();
 }
 
-void TabLifecycleUnitSource::AddTabLifecycleObserver(
-    TabLifecycleObserver* observer) {
-  tab_lifecycle_observers_.AddObserver(observer);
+void TabLifecycleUnitSource::AddLifecycleObserver(
+    LifecycleUnitObserver* observer) {
+  lifecycle_unit_observers_.AddObserver(observer);
 }
 
-void TabLifecycleUnitSource::RemoveTabLifecycleObserver(
-    TabLifecycleObserver* observer) {
-  tab_lifecycle_observers_.RemoveObserver(observer);
+void TabLifecycleUnitSource::RemoveLifecycleObserver(
+    LifecycleUnitObserver* observer) {
+  lifecycle_unit_observers_.RemoveObserver(observer);
 }
 
 void TabLifecycleUnitSource::SetFocusedTabStripModelForTesting(
@@ -333,20 +332,15 @@ void TabLifecycleUnitSource::OnLifecycleUnitStateChanged(
     LifecycleUnit* lifecycle_unit,
     LifecycleUnitState last_state,
     LifecycleUnitStateChangeReason reason) {
-  ::mojom::LifecycleUnitState new_state = lifecycle_unit->GetState();
-  std::optional<::mojom::LifecycleUnitDiscardReason> discard_reason;
-  if (last_state == ::mojom::LifecycleUnitState::DISCARDED ||
-      new_state == ::mojom::LifecycleUnitState::DISCARDED) {
-    discard_reason = lifecycle_unit->GetDiscardReason();
-  }
-  tab_lifecycle_observers_.Notify(
-      &TabLifecycleObserver::OnTabLifecycleStateChange,
-      lifecycle_unit->AsTabLifecycleUnitExternal()->GetWebContents(),
-      last_state, new_state, discard_reason);
+  lifecycle_unit_observers_.Notify(
+      &LifecycleUnitObserver::OnLifecycleUnitStateChanged, lifecycle_unit,
+      last_state, reason);
 }
 
 void TabLifecycleUnitSource::OnLifecycleUnitDestroyed(
     LifecycleUnit* lifecycle_unit) {
+  lifecycle_unit_observers_.Notify(
+      &LifecycleUnitObserver::OnLifecycleUnitDestroyed, lifecycle_unit);
   lifecycle_unit_observations_.RemoveObservation(lifecycle_unit);
 }
 

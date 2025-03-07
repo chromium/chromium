@@ -776,7 +776,6 @@ source_set("extensions") {
       "//chrome/browser:browser_public_dependencies",
       "//chrome/browser/extensions/api:api_registration",
       "//chrome/browser/media/webrtc",
-      "//chrome/browser/resource_coordinator:tab_lifecycle_observer",
       "//chrome/browser/task_manager",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/bookmarks",

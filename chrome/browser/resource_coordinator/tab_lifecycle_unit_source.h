@@ -26,7 +26,6 @@ class WebContents;
 
 namespace resource_coordinator {
 
-class TabLifecycleObserver;
 class TabLifecycleStateObserver;
 class TabLifecycleUnitExternal;
 
@@ -57,8 +56,8 @@ class TabLifecycleUnitSource : public BrowserListObserver,
 
   // Adds / removes an observer that is notified when the discarded state of any
   // tab changes.
-  void AddTabLifecycleObserver(TabLifecycleObserver* observer);
-  void RemoveTabLifecycleObserver(TabLifecycleObserver* observer);
+  void AddLifecycleObserver(LifecycleUnitObserver* observer);
+  void RemoveLifecycleObserver(LifecycleUnitObserver* observer);
 
   // Pretend that |tab_strip| is the TabStripModel of the focused window.
   void SetFocusedTabStripModelForTesting(TabStripModel* tab_strip);
@@ -154,11 +153,11 @@ class TabLifecycleUnitSource : public BrowserListObserver,
   raw_ptr<TabLifecycleUnit> focused_lifecycle_unit_ = nullptr;
 
   // Observers notified when the discarded state of any tab changes.
-  base::ObserverList<TabLifecycleObserver>::UncheckedAndDanglingUntriaged
-      tab_lifecycle_observers_;
+  base::ObserverList<LifecycleUnitObserver>::UncheckedAndDanglingUntriaged
+      lifecycle_unit_observers_;
 
-  // Observes all LifecycleUnits tracked by this source to convert their
-  // notifications to TabLifecycleObserver notifications.
+  // Observes all LifecycleUnits tracked by this source to forward their
+  // notifications to `lifecycle_unit_observers_`
   base::ScopedMultiSourceObservation<LifecycleUnit, LifecycleUnitObserver>
       lifecycle_unit_observations_{this};
 
@@ -170,19 +169,20 @@ class TabLifecycleUnitSource : public BrowserListObserver,
 
 namespace base {
 
-// Adaptor to allow base::ScopedObservation to install TabLifecycleObservers.
+// Adaptor to allow base::ScopedObservation to install LifecycleUnitObservers
+// for all tabs.
 template <>
 struct ScopedObservationTraits<resource_coordinator::TabLifecycleUnitSource,
-                               resource_coordinator::TabLifecycleObserver> {
+                               resource_coordinator::LifecycleUnitObserver> {
   static void AddObserver(
       resource_coordinator::TabLifecycleUnitSource* source,
-      resource_coordinator::TabLifecycleObserver* observer) {
-    source->AddTabLifecycleObserver(observer);
+      resource_coordinator::LifecycleUnitObserver* observer) {
+    source->AddLifecycleObserver(observer);
   }
   static void RemoveObserver(
       resource_coordinator::TabLifecycleUnitSource* source,
-      resource_coordinator::TabLifecycleObserver* observer) {
-    source->RemoveTabLifecycleObserver(observer);
+      resource_coordinator::LifecycleUnitObserver* observer) {
+    source->RemoveLifecycleObserver(observer);
   }
 };
 

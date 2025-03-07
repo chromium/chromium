@@ -1840,7 +1840,6 @@ static_library("browser") {
     "//chrome/browser/google",
     "//chrome/browser/headless",
     "//chrome/browser/profiles",
-    "//chrome/browser/resource_coordinator:tab_lifecycle_observer",
     "//chrome/browser/ui/tabs:tab_enums",
   ]
 

@@ -38,6 +38,10 @@ class TestLifecycleUnit : public LifecycleUnitBase {
 
   void SetCanDiscard(bool can_discard) { can_discard_ = can_discard; }
 
+  void SetDiscardReason(LifecycleUnitDiscardReason discard_reason) {
+    discard_reason_ = discard_reason;
+  }
+
   // LifecycleUnit:
   TabLifecycleUnitExternal* AsTabLifecycleUnitExternal() override;
   base::TimeTicks GetLastFocusedTimeTicks() const override;
@@ -57,6 +61,8 @@ class TestLifecycleUnit : public LifecycleUnitBase {
   base::Time last_focused_time_;
   LifecycleUnit::SortKey sort_key_;
   bool can_discard_ = true;
+  LifecycleUnitDiscardReason discard_reason_ =
+      ::mojom::LifecycleUnitDiscardReason::EXTERNAL;
   std::optional<DecisionFailureReason> failure_reason_;
 };
 
