@@ -7,12 +7,20 @@ package org.chromium.chrome.browser.safety_hub;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.IntDef;
+
+import org.chromium.base.CallbackController;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.safety_hub.SafetyHubLocalPasswordsDataSource.ModuleType;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleOption;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Mediator for the Safety Hub local password module. Populates the {@link
@@ -22,6 +30,28 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  */
 public class SafetyHubLocalPasswordsModuleMediator
         implements SafetyHubModuleMediator, SafetyHubLocalPasswordsDataSource.Observer {
+
+    /**
+     * State machine for the loading indicator.
+     *
+     * <p>On idle, no indicator is being shown. On showing indicator, the loading indicator is being
+     * shown and cannot be removed from the UI, to avoid flashing. On waiting for results, the
+     * loading indicator is being shown but can be removed as soon as a state change occurs.
+     */
+    @IntDef({
+        IndicatorState.IDLE,
+        IndicatorState.SHOWING_INDICATOR,
+        IndicatorState.WAITING_FOR_RESULTS
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface IndicatorState {
+        int IDLE = 0;
+        int SHOWING_INDICATOR = 1;
+        int WAITING_FOR_RESULTS = 2;
+    }
+
+    private static final int LOADING_DELAY_MS = 1000;
+
     private final SafetyHubExpandablePreference mPreference;
     private final SafetyHubModuleMediatorDelegate mMediatorDelegate;
     private final SafetyHubModuleDelegate mModuleDelegate;
@@ -29,6 +59,12 @@ public class SafetyHubLocalPasswordsModuleMediator
     private SafetyHubLocalPasswordsDataSource mLocalPasswordsDataSource;
     private SafetyHubModuleHelper mModuleHelper;
     private PropertyModel mModel;
+
+    private @IndicatorState int mIndicatorState = IndicatorState.IDLE;
+    private CallbackController mCallbackController;
+
+    private boolean mStateChangedCalled;
+    private boolean mOrderUpdated;
 
     SafetyHubLocalPasswordsModuleMediator(
             SafetyHubExpandablePreference preference,
@@ -56,13 +92,25 @@ public class SafetyHubLocalPasswordsModuleMediator
         mLocalPasswordsDataSource.setUp();
 
         if (mLocalPasswordsDataSource.maybeTriggerPasswordCheckup()) {
+            mIndicatorState = IndicatorState.SHOWING_INDICATOR;
             mModuleHelper =
                     new SafetyHubLocalPasswordsCheckingModuleHelper(mPreference.getContext());
+
+            mCallbackController = new CallbackController();
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_DEFAULT,
+                    mCallbackController.makeCancelable(this::onMinimumLoadingTimeElapsed),
+                    LOADING_DELAY_MS);
         }
     }
 
     @Override
     public void destroy() {
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
+        }
+
         if (mLocalPasswordsDataSource != null) {
             mLocalPasswordsDataSource.destroy();
             mLocalPasswordsDataSource = null;
@@ -74,6 +122,13 @@ public class SafetyHubLocalPasswordsModuleMediator
         if (isLoading()) {
             updatePreference();
         } else {
+            mLocalPasswordsDataSource.updateState();
+        }
+    }
+
+    private void onMinimumLoadingTimeElapsed() {
+        mIndicatorState = IndicatorState.WAITING_FOR_RESULTS;
+        if (mStateChangedCalled) {
             mLocalPasswordsDataSource.updateState();
         }
     }
@@ -133,9 +188,14 @@ public class SafetyHubLocalPasswordsModuleMediator
             overridePreferenceForManaged();
         }
 
-        mModel.set(SafetyHubModuleProperties.ORDER, getOrder());
         mModel.set(SafetyHubModuleProperties.ICON, getIcon(mPreference.getContext()));
         mModel.set(SafetyHubModuleProperties.HAS_PROGRESS_BAR, isLoading());
+
+        // Only update the order one time to avoid the module jumping.
+        if (!mOrderUpdated) {
+            mOrderUpdated = true;
+            mModel.set(SafetyHubModuleProperties.ORDER, getOrder());
+        }
     }
 
     @Override
@@ -168,6 +228,14 @@ public class SafetyHubLocalPasswordsModuleMediator
 
     @Override
     public void stateChanged(@ModuleType int moduleType) {
+        mStateChangedCalled = true;
+        // Loading indicator has not been shown long enough, delay showing the results until a later
+        // date.
+        if (mIndicatorState == IndicatorState.SHOWING_INDICATOR) {
+            return;
+        }
+        mIndicatorState = IndicatorState.IDLE;
+
         updateModule(moduleType);
         mMediatorDelegate.onUpdateNeeded();
     }
