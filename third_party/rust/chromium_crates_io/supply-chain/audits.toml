@@ -1127,6 +1127,12 @@ who = "Takuto Ikuta <tikuta@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.140 -> 1.0.141"
 
+[[audits.cxxbridge-cmd]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.141 -> 1.0.143"
+notes = "Clippy lint suppression and... a C++ deduction guide for cxx::Slice."
+
 [[audits.cxxbridge-flags]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -1207,6 +1213,12 @@ delta = "1.0.137 -> 1.0.140"
 who = "Takuto Ikuta <tikuta@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.0.140 -> 1.0.141"
+
+[[audits.cxxbridge-flags]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.141 -> 1.0.143"
+notes = "Only changes for rustdoc generation."
 
 [[audits.cxxbridge-macro]]
 who = "danakj <danakj@chromium.org>"

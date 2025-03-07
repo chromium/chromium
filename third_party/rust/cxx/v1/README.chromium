@@ -1,9 +1,9 @@
 Name: cxx
 URL: https://crates.io/crates/cxx
-Version: 1.0.141
-Revision: 926094db8792e43cc0e3f33b422f6319dbd2cfff
+Version: 1.0.143
+Revision: 03b025dd0380a4845a3ab26497691d47e322e2db
 License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/cxx-1.0.141/LICENSE-APACHE
+License File: //third_party/rust/chromium_crates_io/vendor/cxx-1.0.143/LICENSE-APACHE
 Shipped: yes
 Security Critical: yes
 
