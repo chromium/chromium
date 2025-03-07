@@ -317,7 +317,6 @@
         "accent-color",
         "background",
         "background-color",
-        "background-current-color",
         "blend-mode",
         "border-image",
         "border-outline-visited-color",
@@ -329,6 +328,7 @@
         "color",
         "compositing",
         "corner-shape",
+        "currentcolor",
         "filter-data",
         "has-transform",
         "inset",
@@ -1213,7 +1213,7 @@
       supports_incremental_style: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
-      invalidate: ["accent-color", "background-current-color", "border-visual", "color", "outline"],
+      invalidate: ["accent-color", "border-visual", "color", "currentcolor", "outline"],
     },
     {
       name: "direction",
@@ -8746,7 +8746,7 @@
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       is_visited_highlight_colors: true,
-      invalidate: ["background-current-color", "border-visual", "color"],
+      invalidate: ["border-visual", "color", "currentcolor"],
     },
     {
       name: "-internal-visited-caret-color",
