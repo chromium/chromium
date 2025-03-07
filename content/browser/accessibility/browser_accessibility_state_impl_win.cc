@@ -116,7 +116,7 @@ class WindowsAccessibilityEnabler
 
     // Firing a UIA event can cause UIA to call back into our APIs, don't
     // consider this to be usage.
-    if (firinis_uia_active__events_) {
+    if (firing_uia_events_) {
       return;
     }
 
@@ -130,14 +130,14 @@ class WindowsAccessibilityEnabler
         mode);
   }
 
-  void StartFiringUIAEvents() override { firinis_uia_active__events_ = true; }
+  void StartFiringUIAEvents() override { firing_uia_events_ = true; }
 
-  void EndFiringUIAEvents() override { firinis_uia_active__events_ = false; }
+  void EndFiringUIAEvents() override { firing_uia_events_ = false; }
 
   // This should be set to true while we are firing uia events. Firing UIA
   // events causes UIA to call back into our APIs, this should not be considered
   // usage.
-  bool firinis_uia_active__events_ = false;
+  bool firing_uia_events_ = false;
   bool screen_reader_honeypot_queried_ = false;
   bool acc_name_called_ = false;
 };
