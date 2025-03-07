@@ -8009,7 +8009,7 @@ void RenderFrameHostImpl::DraggableRegionsChanged(
 }
 
 void RenderFrameHostImpl::NotifyDocumentInteractive() {
-  if (IsOutermostMainFrame()) {
+  if (IsInPrimaryMainFrame()) {
     double trigger_rate = GetConfidenceRandomizedTriggerRate();
     blink::mojom::ConfidenceLevel randomized_confidence =
         GenerateRandomizedConfidenceLevel(
