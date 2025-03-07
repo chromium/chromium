@@ -9043,3 +9043,4 @@ crbug.com/397311089 [ Linux Debug ] external/wpt/fetch/fetch-later/new-window.te
 crbug.com/401565283 [ Linux Debug ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_adapter/context.py [ Failure ]
 crbug.com/401565283 [ Linux Debug ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_adapter/state.py [ Failure ]
 crbug.com/401565283 [ Linux Debug ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_preconnected_peripheral/simulate_preconnected_peripheral.py [ Failure ]
+crbug.com/396746625 [ Linux ] wpt_internal/mediacapture-extensions/MediaStreamTrack-configurationchange.https.window.html [ Pass Failure ]
