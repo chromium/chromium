@@ -155,9 +155,10 @@ def ParseJavaSource(data, services_map, path=None):
 
 class _MetadataParser:
 
-  def __init__(self, chromium_code, excluded_globs):
+  def __init__(self, chromium_code, exclude_globs, include_globs):
     self._chromium_code = chromium_code
-    self._excluded_globs = excluded_globs
+    self._exclude_globs = exclude_globs
+    self._include_globs = include_globs
     # Map of .java path -> .srcjar/nested/path.java.
     self._srcjar_files = {}
     # Map of @ServiceImpl class -> impl class
@@ -196,7 +197,10 @@ class _MetadataParser:
 
   def _ShouldIncludeInJarInfo(self, fully_qualified_name):
     name_as_class_glob = fully_qualified_name.replace('.', '/') + '.class'
-    return not build_utils.MatchesGlob(name_as_class_glob, self._excluded_globs)
+    if self._include_globs and not build_utils.MatchesGlob(
+        name_as_class_glob, self._include_globs):
+      return False
+    return not build_utils.MatchesGlob(name_as_class_glob, self._exclude_globs)
 
   def ParseAndWriteInfoFile(self, output_path, java_files, kt_files=None):
     """Writes a .jar.info file.
@@ -340,7 +344,8 @@ def _RunCompiler(changes,
   build_utils.DeleteDirectory(temp_dir)
   os.makedirs(temp_dir)
   metadata_parser = _MetadataParser(options.chromium_code,
-                                    options.jar_info_exclude_globs)
+                                    options.jar_info_exclude_globs,
+                                    options.jar_info_include_globs)
   try:
     classes_dir = os.path.join(temp_dir, 'classes')
 
@@ -495,6 +500,9 @@ def _ParseOptions(argv):
       '--jar-info-exclude-globs',
       help='GN list of exclude globs to filter from generated .info files.')
   parser.add_argument(
+      '--jar-info-include-globs',
+      help='GN list of inlclude globs to filter from generated .info files.')
+  parser.add_argument(
       '--chromium-code',
       action='store_true',
       help='Whether code being compiled should be built with stricter '
@@ -532,6 +540,8 @@ def _ParseOptions(argv):
   options.java_srcjars = action_helpers.parse_gn_list(options.java_srcjars)
   options.jar_info_exclude_globs = action_helpers.parse_gn_list(
       options.jar_info_exclude_globs)
+  options.jar_info_include_globs = action_helpers.parse_gn_list(
+      options.jar_info_include_globs)
 
   additional_jar_files = []
   for arg in options.additional_jar_files or []:
@@ -644,8 +654,10 @@ def main(argv,
     input_paths += [x[0] for x in options.additional_jar_files]
 
     input_strings = (
-        javac_cmd + javac_args + options.classpath + java_files + kt_files +
-        [options.warnings_as_errors, options.jar_info_exclude_globs])
+        javac_cmd + javac_args + options.classpath + java_files + kt_files + [
+            options.warnings_as_errors, options.jar_info_exclude_globs,
+            options.jar_info_include_globs
+        ])
 
     # Use md5_check for |pass_changes| feature.
     md5_check.CallAndWriteDepfileIfStale(do_it,
