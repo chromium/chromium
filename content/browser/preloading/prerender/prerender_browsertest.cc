@@ -886,7 +886,7 @@ class NoVarySearchPrerenderBrowserTest : public PrerenderBrowserTest {
 
   NoVarySearchPrerenderBrowserTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kPrerender2NoVarySearch,
+        features::kPrerender2NoVarySearch,
         {{"wait_for_headers_timeout_eager_prerender", "500"}});
   }
 
