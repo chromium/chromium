@@ -38,6 +38,9 @@ class GlicWindowAnimator : public gfx::AnimationDelegate {
   // Runs the attached close animation for the Glic widget.
   void RunCloseAnimation(GlicButton* glic_button, base::OnceClosure callback);
 
+  // Fades in the GlicView's web view layer.
+  void FadeInWebView();
+
   // Sets the background color and corner radius of the Glic widget.
   void SetRoundedRectBackground();
 
@@ -55,13 +58,20 @@ class GlicWindowAnimator : public gfx::AnimationDelegate {
                        base::TimeDelta duration,
                        base::OnceClosure callback);
 
+  // Sets the visibility of the GlicView's web view.
+  void SetGlicWebViewVisibility(bool is_visible);
+
   // Called when the programmatic resize has finished. Public for use by
   // GlicWindowResizeAnimation.
   void ResizeFinished();
 
-  // Called when the opacity fading animation has finished. Public for use by
-  // GlicWindowOpacityAnimation.
-  void FadeComplete();
+  // Called when the widget's opacity fading animation has finished. Public for
+  // use by GlicWindowOpacityAnimation.
+  void OnWindowOpacityAnimationEnded();
+
+  // Called when the view's opacity fading animation has finished. Public for
+  // use by GlicViewOpacityAnimation.
+  void OnViewOpacityAnimationEnded();
 
   // Gets the bounds for the widget's resize animation. If there is an animation
   // already ongoing, use the target bounds for that animation. Otherwise, use
@@ -79,16 +89,25 @@ class GlicWindowAnimator : public gfx::AnimationDelegate {
 
   // Sets target opacity for the widget (must exist) and creates a
   // GlicWindowOpacityAnimation instance to begin a new opacity animation.
-  void AnimateOpacity(float start_opacity,
-                      float target_opacity,
-                      base::TimeDelta duration);
+  void AnimateWindowOpacity(float start_opacity,
+                            float target_opacity,
+                            base::TimeDelta duration);
+
+  // Sets target opacity for the GlicView's web view and creates a
+  // GlicViewOpacityAnimation instance to begin a new animation.
+  void AnimateViewOpacity(float start_opacity,
+                          float target_opacity,
+                          base::TimeDelta duration);
 
   // GlicWindowController owns GlicWindowAnimator and will outlive it
   const raw_ptr<GlicWindowController> window_controller_;
   std::unique_ptr<GlicWindowResizeAnimation> window_resize_animation_;
 
   class GlicWindowOpacityAnimation;
-  std::unique_ptr<GlicWindowOpacityAnimation> opacity_animation_;
+  std::unique_ptr<GlicWindowOpacityAnimation> glic_window_opacity_animation_;
+
+  class GlicViewOpacityAnimation;
+  std::unique_ptr<GlicViewOpacityAnimation> glic_view_opacity_animation_;
 
   base::WeakPtrFactory<GlicWindowAnimator> weak_ptr_factory_{this};
 };

@@ -7,8 +7,11 @@
 #include "chrome/browser/glic/glic_view.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/glic/glic_window_resize_animation.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/webview/webview.h"
 
 namespace glic {
 
@@ -53,7 +56,7 @@ class GlicWindowAnimator::GlicWindowOpacityAnimation
   // gfx::LinearAnimation:
   void AnimationEnded(const Animation* animation) {
     // Destroys `this`.
-    window_animator_->FadeComplete();
+    window_animator_->OnWindowOpacityAnimationEnded();
   }
 
  private:
@@ -61,6 +64,47 @@ class GlicWindowAnimator::GlicWindowOpacityAnimation
   raw_ptr<GlicWindowController> window_controller_;
   const float start_opacity_;
   const float target_opacity_;
+};
+
+class GlicWindowAnimator::GlicViewOpacityAnimation {
+ public:
+  GlicViewOpacityAnimation(GlicWindowAnimator* window_animator,
+                           GlicWindowController* window_controller)
+      : window_animator_(window_animator),
+        window_controller_(window_controller) {}
+
+  GlicViewOpacityAnimation(const GlicViewOpacityAnimation&) = delete;
+  GlicViewOpacityAnimation& operator=(const GlicViewOpacityAnimation&) = delete;
+  ~GlicViewOpacityAnimation() = default;
+
+  void StartFade(base::TimeDelta duration,
+                 float start_opacity,
+                 float target_opacity) {
+    views::WebView* web_view = window_controller_->GetGlicView()->web_view();
+    window_animator_->SetGlicWebViewVisibility(true);
+    if (!web_view->layer()) {
+      web_view->SetPaintToLayer();
+    }
+    web_view->layer()->SetOpacity(start_opacity);
+
+    views::AnimationBuilder()
+        .SetPreemptionStrategy(
+            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+        .OnEnded(base::BindOnce(&GlicViewOpacityAnimation::AnimationEnded,
+                                base::Unretained(this)))
+        .Once()
+        .SetDuration(duration)
+        .SetOpacity(web_view->layer(), target_opacity);
+  }
+
+  void AnimationEnded() {
+    // Destroys `this`.
+    window_animator_->OnViewOpacityAnimationEnded();
+  }
+
+ private:
+  raw_ptr<GlicWindowAnimator> window_animator_;
+  raw_ptr<GlicWindowController> window_controller_;
 };
 
 GlicWindowAnimator::GlicWindowAnimator(GlicWindowController* window_controller)
@@ -82,8 +126,8 @@ void GlicWindowAnimator::RunOpenAttachedAnimation(GlicButton* glic_button,
   SetRoundedRectBackground();
 
   // Fade in widget while resizing out.
-  AnimateOpacity(0.0f, 1.0f,
-                 base::Milliseconds(kAttachedWidgetOpacityDurationMs));
+  AnimateWindowOpacity(0.0f, 1.0f,
+                       base::Milliseconds(kAttachedWidgetOpacityDurationMs));
   AnimateBounds(target_bounds, base::Milliseconds(kResizeAnimationDurationMs),
                 std::move(callback));
 }
@@ -95,8 +139,8 @@ void GlicWindowAnimator::RunOpenDetachedAnimation(base::OnceClosure callback) {
   SetRoundedRectBackground();
 
   // Fade in widget while animating down.
-  AnimateOpacity(0.0f, 1.0f,
-                 base::Milliseconds(kDetachedWidgetOpacityDurationMs));
+  AnimateWindowOpacity(0.0f, 1.0f,
+                       base::Milliseconds(kDetachedWidgetOpacityDurationMs));
   AnimateBounds(target_bounds, base::Milliseconds(kResizeAnimationDurationMs),
                 std::move(callback));
 }
@@ -104,20 +148,39 @@ void GlicWindowAnimator::RunOpenDetachedAnimation(base::OnceClosure callback) {
 void GlicWindowAnimator::RunCloseAnimation(GlicButton* glic_button,
                                            base::OnceClosure callback) {
   // The widget is going away so it's fine to replace any existing animation.
+  window_controller_->GetGlicView()->web_view()->DestroyLayer();
   AnimateBounds(glic_button->GetBoundsWithInset(),
                 base::Milliseconds(kResizeAnimationDurationMs),
                 std::move(callback));
 }
 
-void GlicWindowAnimator::AnimateOpacity(float start_opacity,
-                                        float target_opacity,
-                                        base::TimeDelta duration) {
+void GlicWindowAnimator::FadeInWebView() {
+  AnimateViewOpacity(0.0f, 1.0f,
+                     base::Milliseconds(kAttachedWidgetOpacityDurationMs));
+}
+
+void GlicWindowAnimator::AnimateViewOpacity(float start_opacity,
+                                            float target_opacity,
+                                            base::TimeDelta duration) {
+  CHECK(window_controller_->GetGlicView());
+
+  // Ensure that GlicView is visible before running its opacity animation.
+  window_controller_->GetGlicView()->SetVisible(true);
+  glic_view_opacity_animation_ =
+      std::make_unique<GlicViewOpacityAnimation>(this, window_controller_);
+  glic_view_opacity_animation_->StartFade(duration, start_opacity,
+                                          target_opacity);
+}
+
+void GlicWindowAnimator::AnimateWindowOpacity(float start_opacity,
+                                              float target_opacity,
+                                              base::TimeDelta duration) {
   CHECK(window_controller_->GetGlicWidget());
 
   window_controller_->GetGlicWidget()->SetOpacity(start_opacity);
-  opacity_animation_ = std::make_unique<GlicWindowOpacityAnimation>(
+  glic_window_opacity_animation_ = std::make_unique<GlicWindowOpacityAnimation>(
       this, window_controller_, duration, start_opacity, target_opacity);
-  opacity_animation_->Start();
+  glic_window_opacity_animation_->Start();
 }
 
 void GlicWindowAnimator::SetRoundedRectBackground() {
@@ -178,14 +241,26 @@ gfx::Rect GlicWindowAnimator::GetCurrentTargetBounds() {
   }
 }
 
+void GlicWindowAnimator::SetGlicWebViewVisibility(bool is_visible) {
+  views::WebView* web_view = window_controller_->GetGlicView()->web_view();
+  if (web_view->GetVisible() != is_visible) {
+    web_view->SetVisible(is_visible);
+  }
+}
+
 void GlicWindowAnimator::ResizeFinished() {
   // Destroy window_resize_animation_.
   window_resize_animation_.reset();
 }
 
-void GlicWindowAnimator::FadeComplete() {
-  // Destroy opacity_animation_.
-  opacity_animation_.reset();
+void GlicWindowAnimator::OnWindowOpacityAnimationEnded() {
+  // Destroy glic_window_opacity_animation_.
+  glic_window_opacity_animation_.reset();
+}
+
+void GlicWindowAnimator::OnViewOpacityAnimationEnded() {
+  // Destroy glic_view_opacity_animation_.
+  glic_view_opacity_animation_.reset();
 }
 
 }  // namespace glic

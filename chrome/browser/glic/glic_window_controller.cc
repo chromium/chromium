@@ -507,8 +507,9 @@ void GlicWindowController::AuthCheckDoneBeforeShow(
   // Immediately hook up the WebView to the WebContents.
   GetGlicView()->web_view()->SetWebContents(contents_->web_contents());
 
-  // TODO(sanaakbani): fade this in.
-  GetGlicView()->web_view()->SetVisible(false);
+  // Make the web view invisible for now, then fade it in after the open
+  // animation finishes.
+  glic_window_animator_->SetGlicWebViewVisibility(false);
 
   // If the web client is already initialized, wait for it to load in parallel.
   if (web_client_) {
@@ -609,8 +610,7 @@ void GlicWindowController::OpenAnimationFinished() {
 
     // Note: this logic may never be called if state_ != kOpenAnimation when the
     // open animation is finished (or cancelled).
-    // TODO(sanaakbani): fade this in.
-    GetGlicView()->web_view()->SetVisible(true);
+    glic_window_animator_->FadeInWebView();
 
     if (glic_loaded_) {
       ShowFinish();
@@ -623,8 +623,10 @@ void GlicWindowController::ShowFinish() {
   if (state_ == State::kClosed || state_ == State::kOpen) {
     return;
   }
-  // TODO(sanaakbani): fade this in.
-  GetGlicView()->SetVisible(true);
+
+  // In the case that the open animation was skipped, the web view should still
+  // be visible now.
+  glic_window_animator_->SetGlicWebViewVisibility(true);
   state_ = State::kOpen;
 
   // Record the presentation time of showing the glic panel in an UMA histogram.
