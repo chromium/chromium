@@ -290,10 +290,18 @@ views::Textfield* SearchResultsPanel::GetSearchBoxTextfield() const {
 
 std::vector<CaptureModeSessionFocusCycler::HighlightableView*>
 SearchResultsPanel::GetHighlightableItems() const {
-  return {
-      CaptureModeSessionFocusCycler::HighlightHelper::Get(close_button_.get()),
-      CaptureModeSessionFocusCycler::HighlightHelper::Get(
-          search_box_view_->textfield_.get())};
+  std::vector<CaptureModeSessionFocusCycler::HighlightableView*>
+      highlightable_items;
+  CHECK(close_button_);
+  highlightable_items.push_back(
+      CaptureModeSessionFocusCycler::HighlightHelper::Get(close_button_.get()));
+  if (!features::IsSunfishLensWebEnabled()) {
+    CHECK(search_box_view_);
+    highlightable_items.push_back(
+        CaptureModeSessionFocusCycler::HighlightHelper::Get(
+            search_box_view_->textfield_.get()));
+  }
+  return highlightable_items;
 }
 
 void SearchResultsPanel::Navigate(const GURL& url) {
