@@ -1111,9 +1111,8 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
   allowed_types.Put(syncer::INCOMING_PASSWORD_SHARING_INVITATION);
   allowed_types.Put(syncer::OUTGOING_PASSWORD_SHARING_INVITATION);
 
-  if (base::FeatureList::IsEnabled(switches::kEnablePreferencesAccountStorage) &&
-      base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (base::FeatureList::IsEnabled(
+          switches::kEnablePreferencesAccountStorage)) {
     allowed_types.Put(syncer::PREFERENCES);
     allowed_types.Put(syncer::PRIORITY_PREFERENCES);
   }
@@ -1153,5 +1152,18 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
                         syncer::PRINTERS_AUTHORIZATION_SERVERS,
                         syncer::WIFI_CONFIGURATIONS, syncer::WORKSPACE_DESK});
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics) &&
+      base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)) {
+    allowed_types.Put(syncer::THEMES);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          syncer::kSeparateLocalAndAccountSearchEngines)) {
+    allowed_types.Put(syncer::SEARCH_ENGINES);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   return allowed_types;
 }
