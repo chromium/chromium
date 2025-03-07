@@ -319,7 +319,7 @@ void RecordDiscardSceneStillConnected(NSSet<UISceneSession*>* scene_sessions,
 // Helper used to call -unloadProfileMarkedForDeletion:completion: from
 // a callback.
 void UnloadProfileMarkedForDeletion(MainController* controller,
-                                    std::string_view profile_name,
+                                    const std::string& profile_name,
                                     ProfileDeletedCallback completion) {
   [controller unloadProfileMarkedForDeletion:profile_name
                                   completion:std::move(completion)];
@@ -1678,8 +1678,9 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
 
   __weak MainController* weakSelf = self;
   base::RepeatingClosure closure = BarrierClosure(
-      scenes.count, base::BindOnce(&UnloadProfileMarkedForDeletion, weakSelf,
-                                   profileName, std::move(completion)));
+      scenes.count,
+      base::BindOnce(&UnloadProfileMarkedForDeletion, weakSelf,
+                     std::string(profileName), std::move(completion)));
 
   for (SceneState* scene in scenes) {
     [self changeProfile:personalProfile
