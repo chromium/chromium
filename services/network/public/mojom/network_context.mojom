@@ -4,6 +4,7 @@
 
 module network.mojom;
 
+import "components/content_settings/core/common/content_settings.mojom";
 import "components/ip_protection/mojom/core.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -1029,6 +1030,10 @@ interface NetworkContext {
 
   // Set Trust Token blocking to |block|.
   SetBlockTrustTokens(bool block);
+
+  // Sets the list of TRACKING_PROTECTION content setting exceptions in IpProtectionCore.
+  SetTrackingProtectionContentSetting(
+    array<content_settings.mojom.ContentSettingPatternSource> settings);
 
   // Clears network objects with implicit URL history information. Data related
   // to events that happened prior to |start_time| and after |end_time| may be
