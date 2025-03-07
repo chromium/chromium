@@ -549,12 +549,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
             switch (data.tailoredWarningType) {
               case TailoredWarningType.kCookieTheft:
                 return loadTimeData.getString('dangerDownloadCookieTheft');
-              case TailoredWarningType.kCookieTheftWithAccountInfo:
-                return data.accountEmail ?
-                    loadTimeData.getStringF(
-                        'dangerDownloadCookieTheftAndAccountDesc',
-                        data.accountEmail) :
-                    loadTimeData.getString('dangerDownloadCookieTheft');
               case TailoredWarningType.kSuspiciousArchive:
               case TailoredWarningType.kNoApplicableTailoredWarningType:
                 return loadTimeData.getString('dangerDownloadDesc');
@@ -567,7 +561,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
                 return loadTimeData.getString(
                     'dangerUncommonSuspiciousArchiveDesc');
               case TailoredWarningType.kCookieTheft:
-              case TailoredWarningType.kCookieTheftWithAccountInfo:
               case TailoredWarningType.kNoApplicableTailoredWarningType:
                 return loadTimeData.getString('dangerUncommonDesc');
               default:

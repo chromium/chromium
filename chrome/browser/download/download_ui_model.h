@@ -52,8 +52,8 @@ class DownloadUIModel {
     kNoTailoredWarning = 0,
     // Base cookie theft warning.
     kCookieTheft = 1,
-    // Cookie theft warning with account info.
-    kCookieTheftWithAccountInfo = 2,
+    // Deprecated. Cookie theft warning with account info.
+    // kCookieTheftWithAccountInfo = 2,
     // Suspicious archive warning.
     kSuspiciousArchive = 3,
     kMaxValue = kSuspiciousArchive

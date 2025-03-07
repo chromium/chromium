@@ -83,10 +83,6 @@ std::string GetDangerTypeStringData(const DownloadItemModel& model) {
     case DownloadUIModel::TailoredWarningType::kCookieTheft:
       base::StrAppend(&danger_type_string, {", Cookie theft"});
       break;
-    case DownloadUIModel::TailoredWarningType::kCookieTheftWithAccountInfo:
-      base::StrAppend(&danger_type_string,
-                      {", Cookie theft with account info"});
-      break;
     case DownloadUIModel::TailoredWarningType::kSuspiciousArchive:
       base::StrAppend(&danger_type_string, {", Suspicious archive"});
       break;

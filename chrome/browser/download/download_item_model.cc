@@ -941,10 +941,6 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
 
 TailoredWarningType DownloadItemModel::GetTailoredWarningType() const {
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  if (!base::FeatureList::IsEnabled(safe_browsing::kDownloadTailoredWarnings)) {
-    return TailoredWarningType::kNoTailoredWarning;
-  }
-
   download::DownloadDangerType danger_type = GetDangerType();
   TailoredVerdict tailored_verdict = safe_browsing::DownloadProtectionService::
       GetDownloadProtectionTailoredVerdict(download_);
@@ -958,10 +954,6 @@ TailoredWarningType DownloadItemModel::GetTailoredWarningType() const {
           download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE &&
       tailored_verdict.tailored_verdict_type() ==
           TailoredVerdict::COOKIE_THEFT) {
-    if (base::Contains(tailored_verdict.adjustments(),
-                       TailoredVerdict::ACCOUNT_INFO_STRING)) {
-      return TailoredWarningType::kCookieTheftWithAccountInfo;
-    }
     return TailoredWarningType::kCookieTheft;
   }
 #endif
@@ -996,7 +988,6 @@ DangerUiPattern DownloadItemModel::GetDangerUiPattern() const {
 
   switch (GetTailoredWarningType()) {
     case TailoredWarningType::kCookieTheft:
-    case TailoredWarningType::kCookieTheftWithAccountInfo:
       return DangerUiPattern::kDangerous;
     case TailoredWarningType::kSuspiciousArchive:
       return DangerUiPattern::kSuspicious;

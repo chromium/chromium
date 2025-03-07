@@ -453,30 +453,6 @@ suite('ItemTest', function() {
     });
     await microtasksFinished();
     assertDescriptionText(loadTimeData.getString('dangerDownloadCookieTheft'));
-
-    // Cookie theft with account
-    item.data = createDownload({
-      filePath: 'unique1',
-      hideDate: false,
-      state: State.kDangerous,
-      dangerType: DangerType.kCookieTheft,
-      tailoredWarningType: TailoredWarningType.kCookieTheftWithAccountInfo,
-      accountEmail: 'alice@gmail.com',
-    });
-    await microtasksFinished();
-    assertDescriptionText(loadTimeData.getStringF(
-        'dangerDownloadCookieTheftAndAccountDesc', 'alice@gmail.com'));
-
-    // Cookie theft with empty account
-    item.data = createDownload({
-      filePath: 'unique1',
-      hideDate: false,
-      state: State.kDangerous,
-      dangerType: DangerType.kCookieTheft,
-      tailoredWarningType: TailoredWarningType.kCookieTheftWithAccountInfo,
-    });
-    await microtasksFinished();
-    assertDescriptionText(loadTimeData.getString('dangerDownloadCookieTheft'));
   });
 
   test('icon aria-hidden determined by display type', async () => {

@@ -114,10 +114,6 @@ BASE_DECLARE_FEATURE(kDlpRegionalizedEndpoints);
 // replace the downloads url.
 BASE_DECLARE_FEATURE(kDownloadsPageReferrerUrl);
 
-// The kill switch for download tailored warnings. The main control is on the
-// server-side.
-BASE_DECLARE_FEATURE(kDownloadTailoredWarnings);
-
 // Enables HaTS surveys for users encountering desktop download warnings on the
 // download bubble or the downloads page.
 BASE_DECLARE_FEATURE(kDownloadWarningSurvey);
