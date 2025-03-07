@@ -1108,6 +1108,13 @@ void SkiaRenderer::FinishDrawingFrame() {
     // Mac doesn't use the plane_z_order field and it needs to have primary
     // plane last in the list of overlays.
     current_frame()->overlay_list.push_back(surface_candidate);
+#elif BUILDFLAG(IS_ANDROID)
+    // Android respects plane_z_order and order in the list shouldn't matter,
+    // but it surfaces the bug when the planes are not hidden properly. As we
+    // use only underlays, we should keep primary plane first so it would hide
+    // planes that are not supposed to be visible.
+    const auto insert_positon = current_frame()->overlay_list.begin();
+    current_frame()->overlay_list.insert(insert_positon, surface_candidate);
 #else
     // Other platforms respect plane_z_order so the list order doesn't matter.
     current_frame()->overlay_list.push_back(surface_candidate);
