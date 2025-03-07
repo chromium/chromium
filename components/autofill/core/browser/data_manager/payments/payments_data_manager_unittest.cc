@@ -122,7 +122,8 @@ class PaymentsDataManagerHelper : public PaymentsDataManagerTestBase {
   PaymentsDataManagerHelper() = default;
 
   void ResetPaymentsDataManager(bool use_sync_transport_mode = false,
-                                std::string app_locale = "en-US") {
+                                std::string app_locale = "en-US",
+                                std::string country_code = "US") {
     payments_data_manager_.reset();
     MakePrimaryAccountAvailable(use_sync_transport_mode, identity_test_env_,
                                 sync_service_);
@@ -130,7 +131,7 @@ class PaymentsDataManagerHelper : public PaymentsDataManagerTestBase {
         profile_database_service_, account_database_service_,
         /*image_fetcher=*/nullptr, /*shared_storage_handler=*/nullptr,
         prefs_.get(), &sync_service_, identity_test_env_.identity_manager(),
-        GeoIpCountryCode("US"), app_locale);
+        GeoIpCountryCode(country_code), app_locale);
     payments_data_manager_->Refresh();
     WaitForOnPaymentsDataChanged();
   }
@@ -3850,6 +3851,31 @@ TEST_F(PaymentsDataManagerTest,
   ASSERT_EQ(1U, payments_data_manager().GetLinkedBnplIssuers().size());
 
   ResetPaymentsDataManager(false, "en-CA");
+
+  test_api(payments_data_manager())
+      .AddBnplIssuer(test::GetTestLinkedBnplIssuer());
+  test_api(payments_data_manager())
+      .AddBnplIssuer(test::GetTestUnlinkedBnplIssuer());
+
+  EXPECT_TRUE(payments_data_manager().GetBnplIssuers().empty());
+  EXPECT_TRUE(payments_data_manager().GetUnlinkedBnplIssuers().empty());
+  EXPECT_TRUE(payments_data_manager().GetLinkedBnplIssuers().empty());
+}
+
+// Tests that Buy-now-pay-later issuer getters does not return any issuers if
+// `experiment_country_code` is not "US".
+TEST_F(PaymentsDataManagerTest,
+       BnplIssuerGetters_AutofillBnplLanguageCodeNotSupported) {
+  test_api(payments_data_manager())
+      .AddBnplIssuer(test::GetTestLinkedBnplIssuer());
+  test_api(payments_data_manager())
+      .AddBnplIssuer(test::GetTestUnlinkedBnplIssuer());
+
+  ASSERT_EQ(2U, payments_data_manager().GetBnplIssuers().size());
+  ASSERT_EQ(1U, payments_data_manager().GetUnlinkedBnplIssuers().size());
+  ASSERT_EQ(1U, payments_data_manager().GetLinkedBnplIssuers().size());
+
+  ResetPaymentsDataManager(false, "en-US", "CA");
 
   test_api(payments_data_manager())
       .AddBnplIssuer(test::GetTestLinkedBnplIssuer());
