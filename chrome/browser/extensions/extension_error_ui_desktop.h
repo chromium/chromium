@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_ERROR_UI_DEFAULT_H_
-#define CHROME_BROWSER_EXTENSIONS_EXTENSION_ERROR_UI_DEFAULT_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_ERROR_UI_DESKTOP_H_
+#define CHROME_BROWSER_EXTENSIONS_EXTENSION_ERROR_UI_DESKTOP_H_
 
 #include <memory>
 
@@ -19,14 +19,14 @@ namespace extensions {
 class ManagementPolicy;
 class ExtensionGlobalError;
 
-class ExtensionErrorUIDefault : public ExtensionErrorUI {
+class ExtensionErrorUIDesktop : public ExtensionErrorUI {
  public:
-  explicit ExtensionErrorUIDefault(ExtensionErrorUI::Delegate* delegate);
+  explicit ExtensionErrorUIDesktop(ExtensionErrorUI::Delegate* delegate);
 
-  ExtensionErrorUIDefault(const ExtensionErrorUIDefault&) = delete;
-  ExtensionErrorUIDefault& operator=(const ExtensionErrorUIDefault&) = delete;
+  ExtensionErrorUIDesktop(const ExtensionErrorUIDesktop&) = delete;
+  ExtensionErrorUIDesktop& operator=(const ExtensionErrorUIDesktop&) = delete;
 
-  ~ExtensionErrorUIDefault() override;
+  ~ExtensionErrorUIDesktop() override;
 
   bool ShowErrorInBubbleView() override;
   void ShowExtensions() override;
@@ -47,4 +47,4 @@ class ExtensionErrorUIDefault : public ExtensionErrorUI {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_EXTENSION_ERROR_UI_DEFAULT_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_EXTENSION_ERROR_UI_DESKTOP_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_error_ui_default.h"
+#include "chrome/browser/extensions/extension_error_ui_desktop.h"
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
@@ -209,14 +209,14 @@ class ExtensionGlobalError : public GlobalErrorWithStandardBubble {
   ExtensionGlobalError& operator=(const ExtensionGlobalError&) = delete;
 };
 
-ExtensionErrorUIDefault::ExtensionErrorUIDefault(
+ExtensionErrorUIDesktop::ExtensionErrorUIDesktop(
     ExtensionErrorUI::Delegate* delegate)
     : profile_(Profile::FromBrowserContext(delegate->GetContext())),
       global_error_(std::make_unique<ExtensionGlobalError>(delegate)) {}
 
-ExtensionErrorUIDefault::~ExtensionErrorUIDefault() = default;
+ExtensionErrorUIDesktop::~ExtensionErrorUIDesktop() = default;
 
-bool ExtensionErrorUIDefault::ShowErrorInBubbleView() {
+bool ExtensionErrorUIDesktop::ShowErrorInBubbleView() {
   Browser* browser = chrome::FindLastActiveWithProfile(profile_);
   if (!browser)
     return false;
@@ -226,12 +226,12 @@ bool ExtensionErrorUIDefault::ShowErrorInBubbleView() {
   return true;
 }
 
-void ExtensionErrorUIDefault::ShowExtensions() {
+void ExtensionErrorUIDesktop::ShowExtensions() {
   DCHECK(browser_);
   chrome::ShowExtensions(browser_);
 }
 
-void ExtensionErrorUIDefault::Close() {
+void ExtensionErrorUIDesktop::Close() {
   if (global_error_->HasShownBubbleView()) {
     // Will end up calling into |global_error_|->OnBubbleViewDidClose,
     // possibly synchronously.
@@ -239,11 +239,11 @@ void ExtensionErrorUIDefault::Close() {
   }
 }
 
-GlobalErrorWithStandardBubble* ExtensionErrorUIDefault::GetErrorForTesting() {
+GlobalErrorWithStandardBubble* ExtensionErrorUIDesktop::GetErrorForTesting() {
   return global_error_.get();
 }
 
-void ExtensionErrorUIDefault::SetManagementPolicyForTesting(
+void ExtensionErrorUIDesktop::SetManagementPolicyForTesting(
     ManagementPolicy* management_policy) {
   global_error_->SetManagementPolicy(management_policy);
 }
