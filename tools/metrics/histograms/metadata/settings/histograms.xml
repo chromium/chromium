@@ -799,6 +799,19 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   </summary>
 </histogram>
 
+<histogram
+    name="Settings.SafetyHub.DisruptiveNotificationRevocations.RevocationResult"
+    enum="DisruptiveNotificationRevocationResult" expires_after="2026-02-26">
+  <owner>olesiamarukhnno@google.com</owner>
+  <owner>antoniosartori@chromium.org</owner>
+  <summary>
+    Tracks results of the disruptive notification feature. Recorded every time
+    the safety hub check runs (once a day). The metric is recorded per each
+    notification content setting. It indicates whether the notification should
+    be revoked, or the reason why it shouldn't be revoked.
+  </summary>
+</histogram>
+
 <histogram name="Settings.SafetyHub.EntryPointImpression"
     enum="SafetyHubEntryPoint" expires_after="2025-07-27">
   <owner>sideyilmaz@chromium.org</owner>

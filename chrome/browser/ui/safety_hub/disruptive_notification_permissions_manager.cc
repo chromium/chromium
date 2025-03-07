@@ -6,6 +6,7 @@
 
 #include "base/containers/map_util.h"
 #include "base/json/values_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
@@ -19,6 +20,9 @@
 #include "url/gurl.h"
 
 namespace {
+
+constexpr char kRevocationResultHistogram[] =
+    "Settings.SafetyHub.DisruptiveNotificationRevocations.RevocationResult";
 
 base::Value UpdateContentSettingValue(
     scoped_refptr<HostContentSettingsMap> hcsm,
@@ -64,10 +68,6 @@ DisruptiveNotificationPermissionsManager::
 void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
   ContentSetting default_notification_setting =
       hcsm_->GetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS);
-  // Only can revoke notification permissions if ASK is the default setting.
-  if (default_notification_setting != CONTENT_SETTING_ASK) {
-    return;
-  }
 
   // Get daily average notification count of pattern pairs.
   std::map<std::pair<ContentSettingsPattern, ContentSettingsPattern>, int>
@@ -76,25 +76,41 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
 
   for (const auto& item :
        hcsm_->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS)) {
+    // Skip default content setting.
+    if (item.primary_pattern == ContentSettingsPattern::Wildcard() &&
+        item.secondary_pattern == ContentSettingsPattern::Wildcard()) {
+      continue;
+    }
+
     // Only granted permissions can be revoked.
     if (item.GetContentSetting() != CONTENT_SETTING_ALLOW) {
+      base::UmaHistogramEnumeration(
+          kRevocationResultHistogram,
+          RevocationResult::kNotAllowedContentSetting);
       continue;
     }
 
     // Invalid primary pattern cannot be revoked.
     if (!item.primary_pattern.IsValid()) {
+      base::UmaHistogramEnumeration(kRevocationResultHistogram,
+                                    RevocationResult::kInvalidContentSetting);
       continue;
     }
 
     // Only URLs that belong to a single origin can be revoked.
     if (!content_settings::PatternAppliesToSingleOrigin(
             item.primary_pattern, item.secondary_pattern)) {
+      base::UmaHistogramEnumeration(
+          kRevocationResultHistogram,
+          RevocationResult::kNotSiteScopedContentSetting);
       continue;
     }
 
     // Only user controlled permissions can be revoked.
     if (content_settings::GetSettingSourceFromProviderType(item.source) !=
         content_settings::SettingSource::kUser) {
+      base::UmaHistogramEnumeration(kRevocationResultHistogram,
+                                    RevocationResult::kManagedContentSetting);
       continue;
     }
 
@@ -120,6 +136,11 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
         dict.Set(safety_hub::kRevokedStatusDictKeyStr,
                  safety_hub::kFalsePositiveStr);
         UpdateContentSettingValue(hcsm_, url, info, std::move(dict));
+        base::UmaHistogramEnumeration(kRevocationResultHistogram,
+                                      RevocationResult::kFalsePositive);
+      } else {
+        base::UmaHistogramEnumeration(kRevocationResultHistogram,
+                                      RevocationResult::kAlreadyInRevokeList);
       }
       continue;
     }
@@ -129,6 +150,15 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
         std::make_pair(item.primary_pattern, item.secondary_pattern));
     if (notification_count &&
         !IsNotificationDisruptive(url, *notification_count)) {
+      base::UmaHistogramEnumeration(kRevocationResultHistogram,
+                                    RevocationResult::kNotDisruptive);
+      continue;
+    }
+
+    // Only can revoke notification permissions if ASK is the default setting.
+    if (default_notification_setting != CONTENT_SETTING_ASK) {
+      base::UmaHistogramEnumeration(kRevocationResultHistogram,
+                                    RevocationResult::kNoRevokeDefaultBlock);
       continue;
     }
 
@@ -137,6 +167,8 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
     default_constraint.set_lifetime(safety_hub_util::GetCleanUpThreshold());
     StoreRevokedDisruptiveNotificationPermission(url, default_constraint,
                                                  *notification_count);
+    base::UmaHistogramEnumeration(kRevocationResultHistogram,
+                                  RevocationResult::kRevoke);
   }
 }
 

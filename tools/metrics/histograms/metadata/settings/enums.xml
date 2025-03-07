@@ -98,6 +98,22 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Search history in MyActivity"/>
 </enum>
 
+<!-- LINT.IfChange(DisruptiveNotificationRevocationResult) -->
+
+<enum name="DisruptiveNotificationRevocationResult">
+  <int value="0" label="Content setting not allowed"/>
+  <int value="1" label="Invalid content setting"/>
+  <int value="2" label="Content setting not site scoped"/>
+  <int value="3" label="Managed content setting"/>
+  <int value="4" label="Site already in the revoke list"/>
+  <int value="5" label="False positive"/>
+  <int value="6" label="Site not disruptive"/>
+  <int value="7" label="Revoke notification"/>
+  <int value="8" label="Notification not revoked because of default block"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h:RevocationResult) -->
+
 <enum name="FirstPartySetsState">
   <int value="0" label="Not Relevant"/>
   <int value="1" label="Enabled"/>
