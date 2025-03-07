@@ -394,10 +394,13 @@ void WallpaperControllerClientImpl::MakeTransparent(
       SK_ColorTRANSPARENT);
 
   // Turn off the web contents background.
-  static_cast<ContentsWebView*>(BrowserView::GetBrowserViewForNativeWindow(
-                                    web_contents->GetTopLevelNativeWindow())
-                                    ->contents_web_view())
-      ->SetBackgroundVisible(false);
+  std::vector<ContentsWebView*> contents_views =
+      BrowserView::GetBrowserViewForNativeWindow(
+          web_contents->GetTopLevelNativeWindow())
+          ->GetAllVisibleContentsWebViews();
+  for (ContentsWebView* contents_view : contents_views) {
+    contents_view->SetBackgroundVisible(false);
+  }
 }
 
 void WallpaperControllerClientImpl::MakeOpaque(
@@ -405,10 +408,13 @@ void WallpaperControllerClientImpl::MakeOpaque(
   // Reversing `contents_web_view` is sufficient to make the view opaque,
   // as `window_backdrop`, `top_level_window` and `web_contents` are not
   // highly impactful to the animated theme change effect.
-  static_cast<ContentsWebView*>(BrowserView::GetBrowserViewForNativeWindow(
-                                    web_contents->GetTopLevelNativeWindow())
-                                    ->contents_web_view())
-      ->SetBackgroundVisible(true);
+  std::vector<ContentsWebView*> contents_views =
+      BrowserView::GetBrowserViewForNativeWindow(
+          web_contents->GetTopLevelNativeWindow())
+          ->GetAllVisibleContentsWebViews();
+  for (ContentsWebView* contents_view : contents_views) {
+    contents_view->SetBackgroundVisible(true);
+  }
 }
 
 void WallpaperControllerClientImpl::OnVolumeMounted(

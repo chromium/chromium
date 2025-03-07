@@ -283,9 +283,10 @@ class BrowserView : public BrowserWindow,
     return exclusive_access_bubble_.get();
   }
 
-  // Accessor for the contents and devtools WebViews.
-  // TODO(crbug.com/393451405): This accessor is used extensively, audit
-  // whether this breaks any use cases when side by side is enabled.
+  // Accessors for the contents and devtools WebViews.
+  // Will return the single active contents view. If side by side is enabled,
+  // it may make more sense to use GetAllVisibleContentsWebViews() depending on
+  // the use case.
   ContentsWebView* contents_web_view() {
     return static_cast<ContentsWebView*>(GetContentsView());
   }
@@ -865,6 +866,8 @@ class BrowserView : public BrowserWindow,
     return accessibility_focus_highlight_.get();
   }
 #endif
+
+  std::vector<ContentsWebView*> GetAllVisibleContentsWebViews();
 
   bool should_show_window_controls_overlay_toggle() const {
     return should_show_window_controls_overlay_toggle_;

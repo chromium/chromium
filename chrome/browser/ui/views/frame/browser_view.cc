@@ -4612,6 +4612,21 @@ void BrowserView::CloseTabSearchBubble() {
   }
 }
 
+std::vector<ContentsWebView*> BrowserView::GetAllVisibleContentsWebViews() {
+  std::vector<ContentsWebView*> contents_views;
+  if (multi_contents_view_) {
+    contents_views.push_back(multi_contents_view_->GetActiveContentsView());
+    ContentsWebView* inactive_contents_view =
+        multi_contents_view_->GetInactiveContentsView();
+    if (inactive_contents_view->GetVisible()) {
+      contents_views.push_back(inactive_contents_view);
+    }
+  } else {
+    contents_views.push_back(contents_web_view_);
+  }
+  return contents_views;
+}
+
 void BrowserView::RevealTabStripIfNeeded() {
   if (!immersive_mode_controller_->IsEnabled()) {
     return;
