@@ -764,12 +764,11 @@ void AXPlatformNodeWin::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
 
   if (std::optional<DWORD> native_event = MojoEventToMSAAEvent(event_type)) {
     HWND hwnd = GetDelegate()->GetTargetForNativeAccessibilityEvent();
-    if (!hwnd)
-      return;
-
-    TRACE_EVENT("accessibility", "NotifyWinEvent", "native_event",
-                base::StringPrintf("0x%04lX", native_event.value()));
-    ::NotifyWinEvent((*native_event), hwnd, OBJID_CLIENT, -GetUniqueId());
+    if (hwnd) {
+      TRACE_EVENT("accessibility", "NotifyWinEvent", "native_event",
+                  base::StringPrintf("0x%04lX", native_event.value()));
+      ::NotifyWinEvent((*native_event), hwnd, OBJID_CLIENT, -GetUniqueId());
+    }
   }
 
   if (std::optional<PROPERTYID> uia_property =
