@@ -571,19 +571,19 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
             GURL("https://www.google.com/?q=john%40example.com"));
   EXPECT_EQ(matches[0].image_url, GURL("https://example.com/image.png"));
 
-  EXPECT_EQ(matches[1].type, AutocompleteMatchType::SEARCH_SUGGEST);
-  EXPECT_EQ(matches[1].relevance, 500);
-  EXPECT_EQ(matches[1].contents, u"John's Document 1");
-  EXPECT_EQ(matches[1].description, u"");
-  EXPECT_EQ(matches[1].destination_url,
-            GURL("https://www.google.com/?q=John%27s+Document+1"));
+  EXPECT_EQ(matches[1].type, AutocompleteMatchType::NAVSUGGEST);
+  EXPECT_EQ(matches[1].relevance, 501);
+  EXPECT_EQ(matches[1].contents, u"");
+  EXPECT_EQ(matches[1].description, u"John's doodle");
+  EXPECT_EQ(matches[1].destination_url, GURL("https://www.example.com"));
+  EXPECT_EQ(matches[1].icon_url, GURL("https://example.com/icon.png"));
 
-  EXPECT_EQ(matches[2].type, AutocompleteMatchType::NAVSUGGEST);
+  EXPECT_EQ(matches[2].type, AutocompleteMatchType::SEARCH_SUGGEST);
   EXPECT_EQ(matches[2].relevance, 500);
-  EXPECT_EQ(matches[2].contents, u"");
-  EXPECT_EQ(matches[2].description, u"John's doodle");
-  EXPECT_EQ(matches[2].destination_url, GURL("https://www.example.com"));
-  EXPECT_EQ(matches[2].icon_url, GURL("https://example.com/icon.png"));
+  EXPECT_EQ(matches[2].contents, u"John's Document 1");
+  EXPECT_EQ(matches[2].description, u"");
+  EXPECT_EQ(matches[2].destination_url,
+            GURL("https://www.google.com/?q=John%27s+Document+1"));
 }
 
 // Test results with missing expected fields are skipped.
@@ -593,8 +593,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, ParseWithMissingFields) {
   EXPECT_THAT(
       GetMatches(),
       testing::ElementsAre(u"https://www.google.com/?q=john%40example.com",
-                           u"https://www.google.com/?q=John%27s+Document+1",
-                           u"www.example.com"));
+                           u"www.example.com",
+                           u"https://www.google.com/?q=John%27s+Document+1"));
 }
 
 // Test non-dict results are skipped.
@@ -710,8 +710,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest,
   EXPECT_THAT(
       GetMatches(),
       testing::ElementsAre(u"https://www.google.com/?q=john%40example.com",
-                           u"https://www.google.com/?q=John%27s+Document+1",
-                           u"https://www.example.com"));
+                           u"https://www.example.com",
+                           u"https://www.google.com/?q=John%27s+Document+1"));
 }
 
 // Test things work when using an unfeatured keyword.
@@ -741,8 +741,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, UnfeaturedKeyword) {
   EXPECT_EQ(provider_->matches_[0].keyword, u"unfeatured");
   EXPECT_THAT(GetMatches(), testing::ElementsAre(
                                 u"http://www.yahoo.com/john@example.com",
-                                u"http://www.yahoo.com/John's%20Document%201",
-                                u"https://www.example.com"));
+                                u"https://www.example.com",
+                                u"http://www.yahoo.com/John's%20Document%201"));
 }
 
 // Test things work in unscoped mode.
@@ -761,8 +761,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, UnscopedMode) {
   EXPECT_THAT(
       GetMatches(),
       testing::ElementsAre(u"https://www.google.com/?q=john%40example.com",
-                           u"https://www.google.com/?q=John%27s+Document+1",
-                           u"https://www.example.com"));
+                           u"https://www.example.com",
+                           u"https://www.google.com/?q=John%27s+Document+1"));
 }
 
 TEST_F(EnterpriseSearchAggregatorProviderTest, Limits) {
@@ -805,9 +805,66 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Limits) {
       testing::ElementsAre(
           ScoredMatch{u"https://www.google.com/?q=mango-1-people", 600},
           ScoredMatch{u"https://www.google.com/?q=mango-2-people", 600},
+          ScoredMatch{u"url-mango-1", 501}, ScoredMatch{u"url-mango-2", 501},
+          ScoredMatch{u"https://www.google.com/?q=mango-1-query", 500},
+          ScoredMatch{u"https://www.google.com/?q=mango-2-query", 500}));
+
+  // At most 4 per type when scoped. Filtered matches shouldn't count against
+  // the limit.
+  provider_->adjusted_input_ = CreateInput(u"mango m", true);
+  ParseResponse(CreateResponse(
+      {
+          CreateQueryResult("grape-1-query"),
+          CreateQueryResult("grape-2-query"),
+          CreateQueryResult("grape-3-query"),
+          CreateQueryResult("mango-1-query"),
+          CreateQueryResult("mango-2-query"),
+          CreateQueryResult("mango-3-query"),
+          CreateQueryResult("mango-4-query"),
+          CreateQueryResult("mango-5-query"),
+      },
+      {
+          CreatePeopleResult("displayName", "grape-1-people", "givenName",
+                             "familyName"),
+          CreatePeopleResult("displayName", "grape-2-people", "givenName",
+                             "familyName"),
+          CreatePeopleResult("displayName", "grape-3-people", "givenName",
+                             "familyName"),
+          CreatePeopleResult("displayName", "mango-1-people", "givenName",
+                             "familyName"),
+          CreatePeopleResult("displayName", "mango-2-people", "givenName",
+                             "familyName"),
+          CreatePeopleResult("displayName", "mango-3-people", "givenName",
+                             "familyName"),
+          CreatePeopleResult("displayName", "mango-4-people", "givenName",
+                             "familyName"),
+          CreatePeopleResult("displayName", "mango-5-people", "givenName",
+                             "familyName"),
+      },
+      {
+          CreateContentResult("grape-1-content", "mime_type", "url-grape-1"),
+          CreateContentResult("grape-2-content", "mime_type", "url-grape-2"),
+          CreateContentResult("grape-3-content", "mime_type", "url-grape-3"),
+          CreateContentResult("mango-1-content", "mime_type", "url-mango-1"),
+          CreateContentResult("mango-2-content", "mime_type", "url-mango-2"),
+          CreateContentResult("mango-3-content", "mime_type", "url-mango-3"),
+          CreateContentResult("mango-4-content", "mime_type", "url-mango-4"),
+          CreateContentResult("mango-5-content", "mime_type", "url-mango-5"),
+      }));
+  EXPECT_THAT(
+      GetScoredMatches(),
+      // Using `UnorderedElementsAre()` because `partial_sort()` is not-stable.
+      testing::UnorderedElementsAre(
+          ScoredMatch{u"https://www.google.com/?q=mango-1-people", 600},
+          ScoredMatch{u"https://www.google.com/?q=mango-2-people", 600},
+          ScoredMatch{u"https://www.google.com/?q=mango-3-people", 600},
+          ScoredMatch{u"https://www.google.com/?q=mango-4-people", 600},
+          ScoredMatch{u"url-mango-1", 501}, ScoredMatch{u"url-mango-2", 501},
+          ScoredMatch{u"url-mango-3", 501}, ScoredMatch{u"url-mango-4", 501},
           ScoredMatch{u"https://www.google.com/?q=mango-1-query", 500},
           ScoredMatch{u"https://www.google.com/?q=mango-2-query", 500},
-          ScoredMatch{u"url-mango-1", 500}, ScoredMatch{u"url-mango-2", 500}));
+          ScoredMatch{u"https://www.google.com/?q=mango-3-query", 500},
+          ScoredMatch{u"https://www.google.com/?q=mango-4-query", 500}));
 
   // Types that have less than 2 results aren't backfilled by other types.
   provider_->adjusted_input_ = CreateInput(u"mango m", false);
@@ -822,8 +879,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Limits) {
           CreateContentResult("mango-3-content", "mime_type", "url-mango-3"),
       }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"url-mango-1", 500},
-                                   ScoredMatch{u"url-mango-2", 500}));
+              testing::ElementsAre(ScoredMatch{u"url-mango-1", 501},
+                                   ScoredMatch{u"url-mango-2", 501}));
 
   // The best 2 suggestions should be shown, even if they're not
   // the 1st 2.
@@ -836,8 +893,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Limits) {
           CreateContentResult("mango-3-content", "mime_type", "url-mango-3"),
       }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"url-mango-2", 500},
-                                   ScoredMatch{u"url-mango-3", 500}));
+              testing::ElementsAre(ScoredMatch{u"url-mango-2", 501},
+                                   ScoredMatch{u"url-mango-3", 501}));
 
   // Can show more than 2 per type when scoped.
   provider_->adjusted_input_ = CreateInput(u"mango m", true);
@@ -878,16 +935,16 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Limits) {
           ScoredMatch{u"https://www.google.com/?q=mango-1-people", 600},
           ScoredMatch{u"https://www.google.com/?q=mango-2-people", 600},
           ScoredMatch{u"https://www.google.com/?q=mango-3-people", 600},
+          ScoredMatch{u"url-mango-1", 501}, ScoredMatch{u"url-mango-2", 501},
+          ScoredMatch{u"url-mango-3", 501},
           ScoredMatch{u"https://www.google.com/?q=mango-1-query", 500},
           ScoredMatch{u"https://www.google.com/?q=mango-2-query", 500},
-          ScoredMatch{u"https://www.google.com/?q=mango-3-query", 500},
-          ScoredMatch{u"url-mango-1", 500}, ScoredMatch{u"url-mango-2", 500},
-          ScoredMatch{u"url-mango-3", 500}));
+          ScoredMatch{u"https://www.google.com/?q=mango-3-query", 500}));
 
   // Limit low-quality suggestions. Only the 1st 2 matches are allowed to score
   // lower than 500. Even if the 1st 2 matches score higher than 500, the
   // remaining matches must also score higher than 500.
-  provider_->adjusted_input_ = CreateInput(u"m ma", true);
+  provider_->adjusted_input_ = CreateInput(u"m ma", false);
   ParseResponse(CreateResponse(
       {
           CreateQueryResult("grape-1-query"),
@@ -924,6 +981,50 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Limits) {
       testing::ElementsAre(
           ScoredMatch{u"https://www.google.com/?q=mango-1-people", 300},
           ScoredMatch{u"https://www.google.com/?q=mango-2-people", 300}));
+
+  // Scoped inputs have a higher limit of 8 matches allowed to score lower than
+  // 500. Even if the 1st 2 matches score higher than 500, the remaining matches
+  // must also score higher than 500.
+  provider_->adjusted_input_ = CreateInput(u"m ma", true);
+  ParseResponse(CreateResponse(
+      {
+          CreateQueryResult("grape-1-query"),
+          CreateQueryResult("grape-2-query"),
+          CreateQueryResult("grape-3-query"),
+          CreateQueryResult("mango-1-query"),
+          CreateQueryResult("mango-2-query"),
+          CreateQueryResult("mango-3-query"),
+      },
+      {
+          CreatePeopleResult("displayName", "grape-1-people", "givenName",
+                             "familyName"),
+          CreatePeopleResult("displayName", "grape-2-people", "givenName",
+                             "familyName"),
+          CreatePeopleResult("displayName", "grape-3-people", "givenName",
+                             "familyName"),
+          CreatePeopleResult("displayName", "mango-1-people", "givenName",
+                             "familyName"),
+          CreatePeopleResult("displayName", "mango-2-people", "givenName",
+                             "familyName"),
+          CreatePeopleResult("displayName", "mango-3-people", "givenName",
+                             "familyName"),
+      },
+      {
+          CreateContentResult("grape-1-content", "mime_type", "url-grape-1"),
+          CreateContentResult("grape-2-content", "mime_type", "url-grape-2"),
+          CreateContentResult("grape-3-content", "mime_type", "url-grape-3"),
+          CreateContentResult("mango-1-content", "mime_type", "url-mango-1"),
+          CreateContentResult("mango-2-content", "mime_type", "url-mango-2"),
+          CreateContentResult("mango-3-content", "mime_type", "url-mango-3"),
+      }));
+  EXPECT_THAT(
+      GetScoredMatches(),
+      testing::ElementsAre(
+          ScoredMatch{u"https://www.google.com/?q=mango-1-people", 300},
+          ScoredMatch{u"https://www.google.com/?q=mango-2-people", 300},
+          ScoredMatch{u"https://www.google.com/?q=mango-3-people", 300},
+          ScoredMatch{u"url-mango-1", 201}, ScoredMatch{u"url-mango-2", 201},
+          ScoredMatch{u"url-mango-3", 201}));
 }
 
 TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
@@ -947,8 +1048,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
   EXPECT_THAT(GetScoredMatches(),
               testing::ElementsAre(
                   ScoredMatch{u"https://www.google.com/?q=matchUserName", 600},
-                  ScoredMatch{u"https://www.google.com/?q=matchQuery", 500},
-                  ScoredMatch{u"url", 500}));
+                  ScoredMatch{u"url", 501},
+                  ScoredMatch{u"https://www.google.com/?q=matchQuery", 500}));
 
   // Score using weighted sum of matches.
   provider_->adjusted_input_ = CreateInput(u"zero on tw th", true);
@@ -961,9 +1062,9 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
           CreateContentResult("zero one two three", "mime_type", "url-0123"),
       }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"url-0123", 700},
-                                   ScoredMatch{u"url-012", 600},
-                                   ScoredMatch{u"url-01", 500}));
+              testing::ElementsAre(ScoredMatch{u"url-0123", 701},
+                                   ScoredMatch{u"url-012", 601},
+                                   ScoredMatch{u"url-01", 501}));
 
   // Duplicate matches do not count.
   // - If the input repeats a word, only 1 should count.
@@ -976,7 +1077,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
                          CreateContentResult("one one", "one one", "url-1"),
                      }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"url-1", 400}));
+              testing::ElementsAre(ScoredMatch{u"url-1", 401}));
 
   // Each input word can match only 1 result word.
   provider_->adjusted_input_ = CreateInput(u"one one", true);
@@ -986,7 +1087,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
                          CreateContentResult("one oneTwo", "mime_type", "url"),
                      }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"url", 400}));
+              testing::ElementsAre(ScoredMatch{u"url", 401}));
 
   // A result word can match multiple input words. This is just a side effect
   // of the implementation rather than intentional design.
@@ -997,7 +1098,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
                          CreateContentResult("one", "mime_type", "url"),
                      }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"url", 600}));
+              testing::ElementsAre(ScoredMatch{u"url", 601}));
 
   // Matches outside contents and description contribute less to the score.
   provider_->adjusted_input_ = CreateInput(u"one two three four five", true);
@@ -1008,8 +1109,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
           CreateContentResult("title", "one two three four five", "outside"),
       }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"inside", 800},
-                                   ScoredMatch{u"outside", 500}));
+              testing::ElementsAre(ScoredMatch{u"inside", 801},
+                                   ScoredMatch{u"outside", 501}));
 
   // Short input words contribute less to the score.
   provider_->adjusted_input_ = CreateInput(u"on two three four five", true);
@@ -1019,7 +1120,45 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
           CreateContentResult("one", "two three four five", "url"),
       }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"url", 500}));
+              testing::ElementsAre(ScoredMatch{u"url", 501}));
+
+  // Short input words contribute less to score, except for exact (non-prefix)
+  // matches in people suggestions.
+  provider_->adjusted_input_ = CreateInput(u"weak ab", true);
+  ParseResponse(
+      CreateResponse({},
+                     {
+                         {CreatePeopleResult("ab", "ab", "weak", "")},
+                         {CreatePeopleResult("abc", "abc", "weak", "")},
+                     },
+                     {
+                         CreateContentResult("ab", "weak", "url-ab"),
+                         CreateContentResult("abc", "weak", "url-abc"),
+                     }));
+  EXPECT_THAT(GetScoredMatches(),
+              testing::ElementsAre(
+                  ScoredMatch{u"https://www.google.com/?q=ab", 600},
+                  ScoredMatch{u"https://www.google.com/?q=abc", 300},
+                  ScoredMatch{u"url-ab", 201}, ScoredMatch{u"url-abc", 201}));
+
+  // For all suggestions, long input words contribute fully to the score
+  // regardless of whether they fully or prefix match.
+  provider_->adjusted_input_ = CreateInput(u"weak abc", true);
+  ParseResponse(
+      CreateResponse({},
+                     {
+                         {CreatePeopleResult("abc", "abc", "weak", "")},
+                         {CreatePeopleResult("abcd", "abcd", "weak", "")},
+                     },
+                     {
+                         CreateContentResult("abc", "weak", "url-abc"),
+                         CreateContentResult("abcd", "weak", "url-abcd"),
+                     }));
+  EXPECT_THAT(GetScoredMatches(),
+              testing::ElementsAre(
+                  ScoredMatch{u"https://www.google.com/?q=abc", 600},
+                  ScoredMatch{u"https://www.google.com/?q=abcd", 600},
+                  ScoredMatch{u"url-abc", 501}, ScoredMatch{u"url-abcd", 501}));
 
   // Matches outside human-readable fields aren't considered in scoring.
   provider_->adjusted_input_ = CreateInput(u"title url", true);
@@ -1029,8 +1168,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
                                    CreateContentResult("title", "mime", "url2"),
                                }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"url1", 400},
-                                   ScoredMatch{u"url2", 400}));
+              testing::ElementsAre(ScoredMatch{u"url1", 401},
+                                   ScoredMatch{u"url2", 401}));
 
   // Suggestions that match every input words, when there are at least 2, should
   // be scored higher.
@@ -1041,7 +1180,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
                          CreateContentResult("one two three", "mime", "url"),
                      }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"url", 1000}));
+              testing::ElementsAre(ScoredMatch{u"url", 1001}));
 
   // Suggestions that match every input words, when there is not at least 2,
   // should not be scored higher.
@@ -1052,7 +1191,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
                          CreateContentResult("one two three", "mime", "url"),
                      }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"url", 400}));
+              testing::ElementsAre(ScoredMatch{u"url", 401}));
 
   // Suggestions that match at least 2 but not all inputs words should not be
   // scored higher.
@@ -1063,7 +1202,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
                          CreateContentResult("one two three", "mime", "url"),
                      }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"url", 800}));
+              testing::ElementsAre(ScoredMatch{u"url", 801}));
 
   // Require at least 1 strong match or 2 weak matches.
   provider_->adjusted_input_ = CreateInput(u"title", true);
@@ -1072,7 +1211,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
                                    CreateContentResult("title", "mime", "url"),
                                }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"url", 400}));
+              testing::ElementsAre(ScoredMatch{u"url", 401}));
 
   // Require at least 1 strong match or 2 weak matches.
   provider_->adjusted_input_ = CreateInput(u"mimeA mimeB", true);
@@ -1083,7 +1222,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
                          CreateContentResult("title", "mimeA mimeB", "url-2"),
                      }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"url-2", 200}));
+              testing::ElementsAre(ScoredMatch{u"url-2", 201}));
 
   // Require at least half the input words to match.
   provider_->adjusted_input_ = CreateInput(u"title x y", true);
@@ -1111,8 +1250,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
   EXPECT_THAT(GetScoredMatches(),
               testing::ElementsAre(
                   ScoredMatch{u"https://www.google.com/?q=userName", 600},
-                  ScoredMatch{u"https://www.google.com/?q=query", 500},
-                  ScoredMatch{u"url", 500}));
+                  ScoredMatch{u"url", 501},
+                  ScoredMatch{u"https://www.google.com/?q=query", 500}));
 
   // People matches must match all input words.
   provider_->adjusted_input_ = CreateInput(u"query q unmatched", true);
@@ -1129,8 +1268,24 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
       {
           CreateContentResult("title query", "mime_type", "url"),
       }));
-  EXPECT_THAT(
-      GetScoredMatches(),
-      testing::ElementsAre(ScoredMatch{u"https://www.google.com/?q=query", 500},
-                           ScoredMatch{u"url", 500}));
+  EXPECT_THAT(GetScoredMatches(),
+              testing::ElementsAre(
+                  ScoredMatch{u"url", 501},
+                  ScoredMatch{u"https://www.google.com/?q=query", 500}));
+
+  // When content and query matches equally match the input, content matches
+  // should be preferred.
+  provider_->adjusted_input_ = CreateInput(u"query", true);
+  ParseResponse(CreateResponse(
+      {
+          CreateQueryResult("query"),
+      },
+      {},
+      {
+          CreateContentResult("query", "mime_type", "url"),
+      }));
+  EXPECT_THAT(GetScoredMatches(),
+              testing::ElementsAre(
+                  ScoredMatch{u"url", 401},
+                  ScoredMatch{u"https://www.google.com/?q=query", 400}));
 }
