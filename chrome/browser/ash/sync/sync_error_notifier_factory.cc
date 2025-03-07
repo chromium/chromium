@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/sync/sync_error_notifier_factory.h"
 
 #include "chrome/browser/ash/sync/sync_error_notifier.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 

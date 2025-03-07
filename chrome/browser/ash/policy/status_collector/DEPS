@@ -24,7 +24,6 @@ include_rules = [
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/chrome_content_browser_client.h",
   "+chrome/browser/crash_upload_list",
   "+chrome/browser/policy",

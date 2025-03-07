@@ -24,7 +24,6 @@
 #include "chrome/browser/ash/printing/printer_event_tracker_factory.h"
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
 #include "chrome/browser/ash/printing/usb_printer_util.h"
-#include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/printing/ppd_provider.h"

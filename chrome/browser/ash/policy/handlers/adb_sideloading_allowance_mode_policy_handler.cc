@@ -14,8 +14,6 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/reset_screen.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"

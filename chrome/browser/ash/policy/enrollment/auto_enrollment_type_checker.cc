@@ -19,7 +19,6 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chromeos/ash/components/system/factory_ping_embargo_check.h"
 #include "chromeos/ash/components/system/statistics_provider.h"

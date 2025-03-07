@@ -33,7 +33,6 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_activity_report_interface.h"
 #include "chrome/browser/ash/policy/status_collector/child_activity_storage.h"
 #include "chrome/browser/ash/policy/status_collector/status_collector_state.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"

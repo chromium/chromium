@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"

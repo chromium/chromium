@@ -35,7 +35,6 @@ static_library("status_collector") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_mode",
     "//chrome/browser/ash/app_mode/isolated_web_app",
