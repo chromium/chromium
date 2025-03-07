@@ -10172,11 +10172,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsWin | kOsLinux | kOsMac | kOsCrOS,
      FEATURE_VALUE_TYPE(compose::features::kEnableComposeNudgeAtCursor)},
 
-    {"compose-polite-nudge", flag_descriptions::kComposePoliteNudgeName,
-     flag_descriptions::kComposePoliteNudgeDescription,
-     kOsWin | kOsLinux | kOsMac | kOsCrOS,
-     FEATURE_VALUE_TYPE(autofill::features::kComposePopupAnnouncePolitely)},
-
     {"compose-segmentation-promotion",
      flag_descriptions::kComposeSegmentationPromotionName,
      flag_descriptions::kComposeSegmentationPromotionDescription,

@@ -290,21 +290,18 @@ bool PopupViewViews::Show(
   // Compose has separate on show announcements.
   // TODO(crbug.com/340359989): Replace with AutofillComposeDelegate::OnShow
   if (controller_->GetMainFillingProduct() == FillingProduct::kCompose) {
-    const bool announce_politely =
-        base::FeatureList::IsEnabled(features::kComposePopupAnnouncePolitely);
-
     switch (controller_->GetSuggestionAt(0).type) {
       case SuggestionType::kComposeResumeNudge:
       case SuggestionType::kComposeSavedStateNotification: {
         const std::u16string saved_state_message = l10n_util::GetStringUTF16(
             IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW_RESUME);
-        a11y_announcer_.Run(saved_state_message, announce_politely);
+        a11y_announcer_.Run(saved_state_message, /*polite=*/true);
         break;
       }
       case SuggestionType::kComposeProactiveNudge: {
         const std::u16string proactive_message = l10n_util::GetStringUTF16(
             IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW_PROACTIVE);
-        a11y_announcer_.Run(proactive_message, announce_politely);
+        a11y_announcer_.Run(proactive_message, /*polite=*/true);
         break;
       }
       case SuggestionType::kComposeDisable:

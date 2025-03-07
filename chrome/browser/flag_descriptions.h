@@ -4637,9 +4637,6 @@ extern const char kComposeNudgeAtCursorDescription[];
 extern const char kComposeProactiveNudgeName[];
 extern const char kComposeProactiveNudgeDescription[];
 
-extern const char kComposePoliteNudgeName[];
-extern const char kComposePoliteNudgeDescription[];
-
 extern const char kComposeSegmentationPromotionName[];
 extern const char kComposeSegmentationPromotionDescription[];
 
