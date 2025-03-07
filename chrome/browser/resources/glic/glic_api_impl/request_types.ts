@@ -323,6 +323,7 @@ export type WebClientInitialStatePrivate =
       chromeVersion: ChromeVersion,
       focusedTabData: FocusedTabDataPrivate,
       scrollToEnabled: boolean,
+      loggingEnabled: boolean,
     }>;
 
 // TabData format for postMessage transport.

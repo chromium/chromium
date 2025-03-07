@@ -900,6 +900,8 @@ const char kGlicOpenOnStartup[] = "glic-open-on-startup";
 const char kGlicAllowedOrigins[] = "glic-webui-allowed-origins";
 // Dev mode for glic only exposed via command line flag.
 const char kGlicDev[] = "glic-dev";
+// Whether additional logging is enabled in the glic api host.
+const char kGlicHostLogging[] = "glic-host-logging";
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

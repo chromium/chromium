@@ -185,6 +185,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
           patch: chromeVersion[3] || 0,
         },
         scrollToEnabled: loadTimeData.getBoolean('enableScrollTo'),
+        loggingEnabled: loadTimeData.getBoolean('loggingEnabled'),
       }),
     };
   }
@@ -501,10 +502,12 @@ export class GlicApiHost implements PostMessageRequestHandler {
   constructor(
       private browserProxy: BrowserProxy, private windowProxy: WindowProxy,
       private embeddedOrigin: string, embedder: ApiHostEmbedder) {
-    this.postMessageReceiver =
-        new PostMessageRequestReceiver(embeddedOrigin, windowProxy, this);
+    this.postMessageReceiver = new PostMessageRequestReceiver(
+        embeddedOrigin, windowProxy, this, 'glic_api_host');
+    this.postMessageReceiver.setLoggingEnabled(
+        loadTimeData.getBoolean('loggingEnabled'));
     this.sender = new PostMessageRequestSender(
-        windowProxy, embeddedOrigin, this.senderId);
+        windowProxy, embeddedOrigin, this.senderId, 'glic_api_host');
     this.handler = new WebClientHandlerRemote();
     this.browserProxy.handler.createWebClient(
         this.handler.$.bindNewPipeAndPassReceiver());
@@ -569,6 +572,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
     }
 
     this.stopBootstrapPing();
+
     const response =
         await handlerFunction.call(this.messageHandler, payload, extras);
     if (!response) {
