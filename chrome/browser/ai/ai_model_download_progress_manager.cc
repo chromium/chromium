@@ -101,26 +101,40 @@ void AIModelDownloadProgressManager::Reporter::OnEvent(
     return;
   }
 
+  if (!has_previous_progress_event_) {
+    has_previous_progress_event_ = true;
+    last_reported_progress_ = 0;
+    last_progress_time_ = base::TimeTicks::Now();
+
+    // Must always fire the zero progress event first.
+    observer_remote_->OnDownloadProgressUpdate(
+        0, AIUtils::kNormalizedDownloadProgressMax);
+  }
+
   int64_t bytes_so_far = item.downloaded_bytes;
   int64_t total_bytes = item.total_bytes;
 
   CHECK_GE(bytes_so_far, 0);
   CHECK_LE(bytes_so_far, total_bytes);
 
-  if (!has_previous_progress_event_) {
-    has_previous_progress_event_ = true;
-
-    // Just send zero for the first event unless `bytes_so_far` is equal to
-    // `total_bytes`.
-    observer_remote_->OnDownloadProgressUpdate(
-        0, AIUtils::kNormalizedDownloadProgressMax);
-    if (bytes_so_far != total_bytes) {
+  // Only report this event if we're at 100% or if more than 50ms has passed
+  // since the last time we reported a progress event.
+  if (bytes_so_far != total_bytes) {
+    base::TimeTicks current_time = base::TimeTicks::Now();
+    if (current_time - last_progress_time_ <= base::Milliseconds(50)) {
       return;
     }
   }
 
   int normalized_progress =
       AIUtils::NormalizeModelDownloadProgress(bytes_so_far, total_bytes);
+
+  // Don't report progress events we've already sent.
+  if (normalized_progress <= last_reported_progress_) {
+    CHECK(normalized_progress == last_reported_progress_);
+    return;
+  }
+  last_reported_progress_ = normalized_progress;
 
   // Send the progress event to the observer.
   observer_remote_->OnDownloadProgressUpdate(

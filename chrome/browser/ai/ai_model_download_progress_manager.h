@@ -77,6 +77,9 @@ class AIModelDownloadProgressManager {
 
     bool has_previous_progress_event_ = false;
 
+    int last_reported_progress_ = 0;
+    base::TimeTicks last_progress_time_;
+
     base::WeakPtrFactory<Reporter> weak_ptr_factory_{this};
   };
 
