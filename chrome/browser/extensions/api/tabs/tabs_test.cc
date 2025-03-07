@@ -358,7 +358,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetCurrentWindow) {
   EXPECT_GE(*tab0_id, 0);
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetAllWindows) {
+// TODO(crbug.com/40745605): Test is flaky on Linux debug builds.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_GetAllWindows DISABLED_GetAllWindows
+#else
+#define MAYBE_GetAllWindows GetAllWindows
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_GetAllWindows) {
   const size_t NUM_WINDOWS = 5;
   std::set<int> window_ids;
   std::set<int> result_ids;
