@@ -1606,6 +1606,12 @@ mojom("mojom_permissions_policy") {
           mojom = "network.mojom.ParsedPermissionsPolicyDeclaration"
           cpp = "::network::ParsedPermissionsPolicyDeclaration"
         },
+        {
+          mojom = "network.mojom.PermissionsPolicy"
+          cpp = "::network::PermissionsPolicy"
+          default_constructible = false
+          move_only = true
+        },
       ]
       traits_headers = [ "//services/network/public/cpp/permissions_policy/permissions_policy_mojom_traits.h" ]
       traits_public_deps = [

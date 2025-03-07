@@ -15,6 +15,7 @@
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_features.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_features_bitset.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_features_generated.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "url/gurl.h"
@@ -26,6 +27,10 @@ PermissionsPolicy::Allowlist::Allowlist() = default;
 PermissionsPolicy::Allowlist::Allowlist(const Allowlist& rhs) = default;
 
 PermissionsPolicy::Allowlist::~Allowlist() = default;
+
+PermissionsPolicy::Allowlist::Allowlist(Allowlist&&) noexcept = default;
+PermissionsPolicy::Allowlist& PermissionsPolicy::Allowlist::operator=(
+    Allowlist&&) noexcept = default;
 
 PermissionsPolicy::Allowlist PermissionsPolicy::Allowlist::FromDeclaration(
     const network::ParsedPermissionsPolicyDeclaration& parsed_declaration) {
@@ -479,6 +484,13 @@ const network::mojom::PermissionsPolicyFeature
             kBrowsingTopicsBackwardCompatible,
         network::mojom::PermissionsPolicyFeature::kSharedStorage,
         network::mojom::PermissionsPolicyFeature::kRunAdAuction};
+
+PermissionsPolicy::PermissionsPolicy(mojo::DefaultConstruct::Tag)
+    : feature_list_(GetPermissionsPolicyFeatureListUnloadNone()) {}
+
+PermissionsPolicy::PermissionsPolicy(PermissionsPolicy&&) noexcept = default;
+PermissionsPolicy& PermissionsPolicy::operator=(PermissionsPolicy&&) noexcept =
+    default;
 
 PermissionsPolicy::PermissionsPolicy(
     url::Origin origin,

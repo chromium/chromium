@@ -709,6 +709,7 @@ source_set("tests") {
     "permissions_policy/origin_with_possible_wildcards_unittest.cc",
     "permissions_policy/permissions_policy_declaration_unittest.cc",
     "permissions_policy/permissions_policy_features_bitset_unittest.cc",
+    "permissions_policy/permissions_policy_mojom_traits_unittest.cc",
     "permissions_policy/permissions_policy_unittest.cc",
     "proxy_config_mojom_traits_unittest.cc",
     "request_destination_unittest.cc",
