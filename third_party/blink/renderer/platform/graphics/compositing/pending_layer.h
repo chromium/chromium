@@ -69,6 +69,7 @@ class PLATFORM_EXPORT PendingLayer {
   cc::HitTestOpaqueness GetHitTestOpaqueness() const {
     return hit_test_opaqueness_;
   }
+  bool HasText() const { return has_text_; }
 
   void SetCompositingTypeToOverlap() {
     DCHECK_EQ(compositing_type_, kOther);

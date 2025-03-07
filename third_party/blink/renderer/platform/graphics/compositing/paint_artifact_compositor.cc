@@ -1016,6 +1016,7 @@ void PaintArtifactCompositor::Update(
   }
 
   cc::LayerSelection layer_selection;
+  HashSet<int> layers_having_text;
   for (auto& pending_layer : pending_layers_) {
     pending_layer.UpdateCompositedLayer(
         old_pending_layer_matcher.Find(pending_layer), layer_selection,
@@ -1049,6 +1050,9 @@ void PaintArtifactCompositor::Update(
             ScrollTranslationStateForLayer(pending_layer));
 
     layer_list_builder.Add(&layer);
+    if (pending_layer.HasText()) {
+      layers_having_text.insert(layer.id());
+    }
 
     layer.set_property_tree_sequence_number(
         root_layer_->property_tree_sequence_number());
@@ -1080,7 +1084,8 @@ void PaintArtifactCompositor::Update(
       g_s_property_tree_sequence_number);
 
   auto layers = layer_list_builder.Finalize();
-  property_tree_manager.UpdateConditionalRenderSurfaceReasons(layers);
+  property_tree_manager.UpdateConditionalRenderSurfaceReasons(
+      layers, layers_having_text);
   root_layer_->SetChildLayerList(std::move(layers));
 
   // Mark the property trees as having been rebuilt.
