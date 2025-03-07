@@ -119,7 +119,7 @@ const Node* RenderingTest::HitTest(int x, int y) {
   return result.InnerNode();
 }
 
-HitTestResult::NodeSet RenderingTest::RectBasedHitTest(
+const HitTestResult::NodeSet& RenderingTest::RectBasedHitTest(
     const PhysicalRect& rect) {
   HitTestLocation location(rect);
   HitTestResult result(

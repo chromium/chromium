@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -64,7 +65,8 @@ class CORE_EXPORT ReportingContext : public GarbageCollected<ReportingContext>,
   void SendToReportingAPI(Report* report, const String& endpoint) const;
 
   HeapLinkedHashSet<Member<blink::ReportingObserver>> observers_;
-  HeapHashMap<String, Member<HeapLinkedHashSet<Member<Report>>>> report_buffer_;
+  HeapHashMap<String, Member<GCedHeapLinkedHashSet<Member<Report>>>>
+      report_buffer_;
   Member<ExecutionContext> execution_context_;
 
   // This is declared mutable so that the service endpoint can be cached by

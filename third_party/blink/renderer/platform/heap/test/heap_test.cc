@@ -1604,9 +1604,9 @@ void OrderedSetHelper(bool strong) {
 
 TEST_F(HeapTest, HeapWeakLinkedHashSet) {
   ClearOutOldGarbage();
-  OrderedSetHelper<HeapLinkedHashSet<Member<IntWrapper>>>(true);
+  OrderedSetHelper<GCedHeapLinkedHashSet<Member<IntWrapper>>>(true);
   ClearOutOldGarbage();
-  OrderedSetHelper<HeapLinkedHashSet<WeakMember<IntWrapper>>>(false);
+  OrderedSetHelper<GCedHeapLinkedHashSet<WeakMember<IntWrapper>>>(false);
 }
 
 namespace {
@@ -1831,7 +1831,7 @@ TEST_F(HeapTest, HeapWeakCollectionTypes) {
   typedef HeapHashMap<Member<IntWrapper>, WeakMember<IntWrapper>> StrongWeak;
   typedef HeapHashMap<WeakMember<IntWrapper>, WeakMember<IntWrapper>> WeakWeak;
   typedef HeapHashSet<WeakMember<IntWrapper>> WeakSet;
-  typedef HeapLinkedHashSet<WeakMember<IntWrapper>> WeakOrderedSet;
+  using WeakOrderedSet = GCedHeapLinkedHashSet<WeakMember<IntWrapper>>;
 
   ClearOutOldGarbage();
 

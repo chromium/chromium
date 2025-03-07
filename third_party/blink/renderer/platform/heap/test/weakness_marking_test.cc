@@ -153,7 +153,7 @@ TEST_F(WeaknessMarkingTest, SwapIntoAlreadyProcessedWeakSet) {
   // Test ensures that an empty weak set that has already been marked sets up
   // weakness callbacks. This is important as another backing may be swapped in
   // at some point after marking it initially.
-  using WeakLinkedSet = HeapLinkedHashSet<WeakMember<IntegerObject>>;
+  using WeakLinkedSet = GCedHeapLinkedHashSet<WeakMember<IntegerObject>>;
   Persistent<WeakLinkedSet> holder3(MakeGarbageCollected<WeakLinkedSet>());
   Persistent<WeakLinkedSet> holder4(MakeGarbageCollected<WeakLinkedSet>());
   holder3->insert(MakeGarbageCollected<IntegerObject>(1));
