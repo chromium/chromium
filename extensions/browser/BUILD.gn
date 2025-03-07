@@ -214,6 +214,8 @@ source_set("browser_sources") {
     "blocklist_extension_prefs.cc",
     "blocklist_extension_prefs.h",
     "blocklist_state.h",
+    "bookmark_app_util.cc",
+    "bookmark_app_util.h",
     "browser_context_keyed_api_factory.h",
     "browser_frame_context_data.cc",
     "browser_frame_context_data.h",

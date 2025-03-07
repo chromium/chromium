@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/bookmark_app_util.h"
+#include "extensions/browser/bookmark_app_util.h"
 
 #include <map>
 #include <memory>
@@ -22,7 +22,7 @@ namespace {
 // on this machine. The default value (i.e. if the pref is not set) is to be
 // fully locally installed, so that hosted apps or bookmark apps created /
 // synced before this pref existed will be treated as locally installed.
-const char kPrefLocallyInstalled[] = "locallyInstalled";
+constexpr char kPrefLocallyInstalled[] = "locallyInstalled";
 
 }  // namespace
 
