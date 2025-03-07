@@ -97,6 +97,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/network/http_header_map.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -188,6 +189,39 @@ static std::unique_ptr<protocol::Network::Headers> BuildObjectForHeaders(
     headers_object->setString(header.key.GetString(), header.value);
   protocol::ErrorSupport errors;
   return protocol::Network::Headers::fromValue(headers_object.get(), &errors);
+}
+
+String NetErrorToString(int net_error) {
+  switch (net_error) {
+    case net::ERR_ABORTED:
+      return protocol::Network::ErrorReasonEnum::Aborted;
+    case net::ERR_TIMED_OUT:
+      return protocol::Network::ErrorReasonEnum::TimedOut;
+    case net::ERR_ACCESS_DENIED:
+      return protocol::Network::ErrorReasonEnum::AccessDenied;
+    case net::ERR_CONNECTION_CLOSED:
+      return protocol::Network::ErrorReasonEnum::ConnectionClosed;
+    case net::ERR_CONNECTION_RESET:
+      return protocol::Network::ErrorReasonEnum::ConnectionReset;
+    case net::ERR_CONNECTION_REFUSED:
+      return protocol::Network::ErrorReasonEnum::ConnectionRefused;
+    case net::ERR_CONNECTION_ABORTED:
+      return protocol::Network::ErrorReasonEnum::ConnectionAborted;
+    case net::ERR_CONNECTION_FAILED:
+      return protocol::Network::ErrorReasonEnum::ConnectionFailed;
+    case net::ERR_NAME_NOT_RESOLVED:
+      return protocol::Network::ErrorReasonEnum::NameNotResolved;
+    case net::ERR_INTERNET_DISCONNECTED:
+      return protocol::Network::ErrorReasonEnum::InternetDisconnected;
+    case net::ERR_ADDRESS_UNREACHABLE:
+      return protocol::Network::ErrorReasonEnum::AddressUnreachable;
+    case net::ERR_BLOCKED_BY_CLIENT:
+      return protocol::Network::ErrorReasonEnum::BlockedByClient;
+    case net::ERR_BLOCKED_BY_RESPONSE:
+      return protocol::Network::ErrorReasonEnum::BlockedByResponse;
+    default:
+      return protocol::Network::ErrorReasonEnum::Failed;
+  }
 }
 
 class InspectorFileReaderLoaderClient final
@@ -2066,6 +2100,58 @@ void InspectorNetworkAgent::WebTransportConnectionEstablished(
 void InspectorNetworkAgent::WebTransportClosed(uint64_t transport_id) {
   GetFrontend()->webTransportClosed(
       IdentifiersFactory::SubresourceRequestId(transport_id),
+      base::TimeTicks::Now().since_origin().InSecondsF());
+}
+
+void InspectorNetworkAgent::DirectTCPSocketCreated(
+    ExecutionContext* execution_context,
+    uint64_t identifier,
+    const String& remote_addr,
+    uint16_t remote_port,
+    protocol::Network::DirectTCPSocketOptions& options) {
+  std::unique_ptr<v8_inspector::protocol::Runtime::API::StackTrace>
+      current_stack_trace =
+          CaptureSourceLocation(execution_context)->BuildInspectorObject();
+
+  std::unique_ptr<protocol::Network::Initiator> initiator_object;
+  if (current_stack_trace) {
+    initiator_object =
+        protocol::Network::Initiator::create()
+            .setType(protocol::Network::Initiator::TypeEnum::Script)
+            .build();
+    initiator_object->setStack(std::move(current_stack_trace));
+  }
+
+  GetFrontend()->directTCPSocketCreated(
+      IdentifiersFactory::SubresourceRequestId(identifier), remote_addr,
+      remote_port, options.Clone(),
+      base::TimeTicks::Now().since_origin().InSecondsF(),
+      std::move(initiator_object));
+}
+
+void InspectorNetworkAgent::DirectTCPSocketOpened(
+    uint64_t identifier,
+    const String& remote_addr,
+    uint16_t remote_port,
+    std::optional<String> local_addr,
+    std::optional<uint16_t> local_port) {
+  GetFrontend()->directTCPSocketOpened(
+      IdentifiersFactory::SubresourceRequestId(identifier), remote_addr,
+      remote_port, base::TimeTicks::Now().since_origin().InSecondsF(),
+      std::move(local_addr), std::move(local_port));
+}
+
+void InspectorNetworkAgent::DirectTCPSocketAborted(uint64_t identifier,
+                                                   int net_error) {
+  GetFrontend()->directTCPSocketAborted(
+      IdentifiersFactory::SubresourceRequestId(identifier),
+      NetErrorToString(net_error),
+      base::TimeTicks::Now().since_origin().InSecondsF());
+}
+
+void InspectorNetworkAgent::DirectTCPSocketClosed(uint64_t identifier) {
+  GetFrontend()->directTCPSocketClosed(
+      IdentifiersFactory::SubresourceRequestId(identifier),
       base::TimeTicks::Now().since_origin().InSecondsF());
 }
 

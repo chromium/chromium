@@ -217,7 +217,8 @@ void TCPWritableStreamWrapper::CloseStream() {
   }
 
   ResetPipe();
-  std::move(on_close_).Run(/*exception=*/v8::Local<v8::Value>());
+  std::move(on_close_).Run(/*exception=*/v8::Local<v8::Value>(),
+                           /*net_error=*/net::OK);
 }
 
 void TCPWritableStreamWrapper::ErrorStream(int32_t error_code) {
@@ -255,7 +256,7 @@ void TCPWritableStreamWrapper::ErrorStream(int32_t error_code) {
                         ScriptValue(script_state->GetIsolate(), exception));
   }
 
-  std::move(on_close_).Run(exception);
+  std::move(on_close_).Run(exception, error_code);
 }
 
 void TCPWritableStreamWrapper::ResetPipe() {

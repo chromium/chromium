@@ -60,7 +60,8 @@ void TCPServerReadableStreamWrapper::CloseStream() {
 
   tcp_server_socket_.reset();
 
-  std::move(on_close_).Run(/*exception=*/v8::Local<v8::Value>());
+  std::move(on_close_).Run(/*exception=*/v8::Local<v8::Value>(),
+                           /*net_error=*/net::OK);
 }
 
 void TCPServerReadableStreamWrapper::ErrorStream(int32_t error_code) {
@@ -84,7 +85,7 @@ void TCPServerReadableStreamWrapper::ErrorStream(int32_t error_code) {
       script_state->GetIsolate(), DOMExceptionCode::kNetworkError,
       String{"Server socket closed: " + net::ErrorToString(error_code)});
   Controller()->Error(exception);
-  std::move(on_close_).Run(exception);
+  std::move(on_close_).Run(exception, error_code);
 }
 
 void TCPServerReadableStreamWrapper::Trace(Visitor* visitor) const {

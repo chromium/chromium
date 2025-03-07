@@ -7404,6 +7404,60 @@ domain Network
       # Timestamp.
       MonotonicTime timestamp
 
+  experimental type DirectSocketDnsQueryType extends string
+    enum
+      ipv4
+      ipv6
+
+  experimental type DirectTCPSocketOptions extends object
+    properties
+      # TCP_NODELAY option
+      boolean noDelay
+      # Expected to be unsigned integer.
+      optional number keepAliveDelay
+      # Expected to be unsigned integer.
+      optional number sendBufferSize
+      # Expected to be unsigned integer.
+      optional number receiveBufferSize
+      optional DirectSocketDnsQueryType dnsQueryType
+
+
+  # Fired upon direct_socket.TCPSocket creation.
+  experimental event directTCPSocketCreated
+    parameters
+      RequestId identifier
+      string remoteAddr
+      # Unsigned int 16.
+      integer remotePort
+      DirectTCPSocketOptions options
+      MonotonicTime timestamp
+      optional Initiator initiator
+
+  # Fired when direct_socket.TCPSocket connection is opened.
+  experimental event directTCPSocketOpened
+    parameters
+      RequestId identifier
+      string remoteAddr
+      # Expected to be unsigned integer.
+      integer remotePort
+      MonotonicTime timestamp
+      optional string localAddr
+      # Expected to be unsigned integer.
+      optional integer localPort
+
+  # Fired when direct_socket.TCPSocket is aborted.
+  experimental event directTCPSocketAborted
+    parameters
+      RequestId identifier
+      string errorMessage
+      MonotonicTime timestamp
+
+  # Fired when direct_socket.TCPSocket is closed.
+  experimental event directTCPSocketClosed
+    parameters
+      RequestId identifier
+      MonotonicTime timestamp
+
   experimental type PrivateNetworkRequestPolicy extends string
     enum
       Allow
@@ -9444,7 +9498,7 @@ domain Page
       autoReject
       autoOptOut
 
-# Sets the Secure Payment Confirmation transaction mode.
+  # Sets the Secure Payment Confirmation transaction mode.
   # https://w3c.github.io/secure-payment-confirmation/#sctn-automation-set-spc-transaction-mode
   experimental command setSPCTransactionMode
     parameters

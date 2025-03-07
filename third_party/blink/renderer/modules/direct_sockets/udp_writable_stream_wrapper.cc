@@ -177,7 +177,8 @@ void UDPWritableStreamWrapper::CloseStream() {
   SetState(State::kClosed);
   DCHECK(!write_promise_resolver_);
 
-  std::move(on_close_).Run(/*exception=*/v8::Local<v8::Value>());
+  std::move(on_close_).Run(/*exception=*/v8::Local<v8::Value>(),
+                           /*net_error=*/net::OK);
 }
 
 void UDPWritableStreamWrapper::ErrorStream(int32_t error_code) {
@@ -209,7 +210,7 @@ void UDPWritableStreamWrapper::ErrorStream(int32_t error_code) {
                         ScriptValue(script_state->GetIsolate(), exception));
   }
 
-  std::move(on_close_).Run(exception);
+  std::move(on_close_).Run(exception, error_code);
 }
 
 }  // namespace blink
