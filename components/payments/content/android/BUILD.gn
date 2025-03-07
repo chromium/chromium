@@ -453,6 +453,7 @@ android_library("test_support_java") {
   sources = [
     "javatests/src/org/chromium/components/payments/MockAndroidIntentLauncher.java",
     "javatests/src/org/chromium/components/payments/MockPackageManagerDelegate.java",
+    "javatests/src/org/chromium/components/payments/MockPaymentManifestDownloader.java",
   ]
   deps = [
     ":full_java",
@@ -461,5 +462,6 @@ android_library("test_support_java") {
     "//components/payments/content/android:minimal_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
+    "//url:url_java",
   ]
 }

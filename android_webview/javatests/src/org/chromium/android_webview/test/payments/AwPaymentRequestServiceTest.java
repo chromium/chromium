@@ -31,11 +31,9 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.payments.AndroidPaymentAppFinder;
 import org.chromium.components.payments.MockAndroidIntentLauncher;
 import org.chromium.components.payments.MockPackageManagerDelegate;
-import org.chromium.components.payments.PaymentManifestDownloader;
+import org.chromium.components.payments.MockPaymentManifestDownloader;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.net.test.util.TestWebServer;
-import org.chromium.url.GURL;
-import org.chromium.url.Origin;
 
 /** Tests that the PaymentRequest API works as expected in WebView. */
 @RunWith(Parameterized.class)
@@ -495,69 +493,11 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                     "001122334455AABBCCDDEEFF");
         }
         AndroidPaymentAppFinder.setPackageManagerDelegateForTest(packageManagerDelegate);
-        AndroidPaymentAppFinder.setDownloaderForTest(new MockPaymentManifestDownloader());
+        AndroidPaymentAppFinder.setDownloaderForTest(
+                new MockPaymentManifestDownloader(PAYMENT_METHOD_NAME));
         AndroidPaymentAppFinder.setAndroidIntentLauncherForTest(
                 new MockAndroidIntentLauncher(
                         /* returnShippingAddress= */ false, /* returnContactInfo= */ false));
         AndroidPaymentAppFinder.bypassIsReadyToPayServiceInTest();
-    }
-
-    /**
-     * An override for the downloader with static responses instead of querying servers on the
-     * network.
-     */
-    private static final class MockPaymentManifestDownloader extends PaymentManifestDownloader {
-        // The fingerprints[0].value is the SHA256 of the string "AABBCCDDEEFF001122334455".
-        private static final String MANIFEST_JSON =
-                """
-            {
-              "default_applications": ["/web-pay/manifest.json"],
-              "related_applications": [{
-                  "platform": "play",
-                  "id": "test.payments.app",
-                  "min_version": "1",
-                  "fingerprints": [{
-                    "type": "sha256_cert",
-                    "value": "79:5C:8E:4D:57:7B:76:49:3A:0A:0B:93:B9:BE:06:50:CE:E4:75:80:62:65:02:FB:F6:F9:91:AB:6E:BE:21:7E"
-                  }]
-              }]
-            }
-            """;
-        // The fingerprints[0].value is the SHA256 of the string "001122334455AABBCCDDEEFF".
-        private static final String OTHER_MANIFEST_JSON =
-                """
-            {
-              "default_applications": ["/web-pay/manifest.json"],
-              "related_applications": [{
-                  "platform": "play",
-                  "id": "test.payments.other.app",
-                  "min_version": "1",
-                  "fingerprints": [{
-                    "type": "sha256_cert",
-                    "value": "01:9D:A6:93:7D:A2:1D:64:25:D8:D4:93:37:29:55:20:D9:54:16:A0:99:DD:E3:CA:31:EE:94:A4:70:AD:BD:70"
-                  }]
-              }]
-            }
-            """;
-
-        @Override
-        public void downloadPaymentMethodManifest(
-                Origin merchantOrigin, GURL url, ManifestDownloadCallback callback) {
-            callback.onPaymentMethodManifestDownloadSuccess(
-                    url,
-                    Origin.create(url),
-                    url.getSpec().equals(PAYMENT_METHOD_NAME)
-                            ? MANIFEST_JSON
-                            : OTHER_MANIFEST_JSON);
-        }
-
-        @Override
-        public void downloadWebAppManifest(
-                Origin paymentMethodManifestOrigin, GURL url, ManifestDownloadCallback callback) {
-            callback.onWebAppManifestDownloadSuccess(
-                    url.getSpec().startsWith(PAYMENT_METHOD_NAME)
-                            ? MANIFEST_JSON
-                            : OTHER_MANIFEST_JSON);
-        }
     }
 }
