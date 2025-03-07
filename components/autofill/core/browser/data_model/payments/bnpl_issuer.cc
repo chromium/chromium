@@ -33,6 +33,8 @@ BnplIssuer::EligiblePriceRange::~EligiblePriceRange() = default;
 bool BnplIssuer::EligiblePriceRange::operator==(
     const BnplIssuer::EligiblePriceRange&) const = default;
 
+BnplIssuer::BnplIssuer() = default;
+
 bool operator==(const BnplIssuer& a, const BnplIssuer& b) = default;
 
 BnplIssuer::BnplIssuer(std::optional<int64_t> instrument_id,
