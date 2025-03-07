@@ -1194,7 +1194,7 @@ void LoginAuthUserView::ShowRemoveAccountDialog() {
                         remove_account_dialog_->GetBubbleOpener()->HasFocus();
 
   if (!remove_account_dialog_->parent()) {
-    login_views_utils::GetBubbleContainer(this)->AddChildView(
+    login_views_utils::GetBubbleContainer(this)->AddChildViewRaw(
         remove_account_dialog_.get());
   }
 

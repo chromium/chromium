@@ -111,7 +111,7 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
 
       // Move the tab strip to the `tab_overlay_widget`, the host of the
       // `tab_overlay_view`.
-      browser_view_->tab_overlay_view()->AddChildView(
+      browser_view_->tab_overlay_view()->AddChildViewRaw(
           browser_view_->tab_strip_region_view());
 
       browser_view_->tab_strip_region_view()->SetBorder(

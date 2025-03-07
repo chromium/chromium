@@ -503,7 +503,7 @@ LoginPinView::LoginPinView(Style keyboard_style,
   bool show_letters = keyboard_style == Style::kAlphanumeric;
 
   auto add_digit_button = [&](View* row, int value) {
-    digit_buttons_.push_back(row->AddChildView(
+    digit_buttons_.push_back(row->AddChildViewRaw(
         new DigitPinButton(value, show_letters, kButtonSize, on_key)));
   };
 

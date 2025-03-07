@@ -1466,21 +1466,21 @@ TEST_F(ShellSurfaceTest, AckRotateFocus) {
 
   views::View* v1 = new views::View();
   v1->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  surface1->AddChildView(v1);
+  surface1->AddChildViewRaw(v1);
   surface1->set_rotate_focus_callback(dummy_cb);
 
   std::unique_ptr<ShellSurface> surface2 =
       test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
   views::View* v2 = new views::View();
   v2->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  surface2->AddChildView(v2);
+  surface2->AddChildViewRaw(v2);
   surface2->set_rotate_focus_callback(dummy_cb);
 
   std::unique_ptr<ShellSurface> surface3 =
       test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
   views::View* v3 = new views::View();
   v3->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  surface3->AddChildView(v3);
+  surface3->AddChildViewRaw(v3);
   surface3->set_rotate_focus_callback(dummy_cb);
 
   ash::Shell::Get()->focus_cycler()->AddWidget(surface1->GetWidget());
