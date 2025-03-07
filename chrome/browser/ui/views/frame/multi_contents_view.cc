@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
+#include "chrome/browser/ui/views/status_bubble_views.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/types/event_type.h"
@@ -50,6 +51,10 @@ ContentsWebView* MultiContentsView::GetActiveContentsView() {
 
 ContentsWebView* MultiContentsView::GetInactiveContentsView() {
   return active_position_ == 0 ? end_contents_view_ : start_contents_view_;
+}
+
+bool MultiContentsView::IsInSplitView() {
+  return resize_area_->GetVisible();
 }
 
 void MultiContentsView::SetWebContents(content::WebContents* web_contents,
@@ -130,7 +135,7 @@ void MultiContentsView::Layout(PassKey) {
 MultiContentsView::ViewWidths MultiContentsView::GetViewWidths(
     gfx::Rect available_space) {
   ViewWidths widths;
-  if (resize_area_->GetVisible()) {
+  if (IsInSplitView()) {
     CHECK(start_contents_view_->GetVisible() &&
           end_contents_view_->GetVisible());
     widths.resize_width = resize_area_->GetPreferredSize().width();
@@ -150,7 +155,7 @@ MultiContentsView::ViewWidths MultiContentsView::GetViewWidths(
 
 MultiContentsView::ViewWidths MultiContentsView::ClampToMinWidth(
     ViewWidths widths) {
-  if (!resize_area_->GetVisible()) {
+  if (!IsInSplitView()) {
     // Don't clamp if in a single-view state, where other views should be 0
     // width.
     return widths;

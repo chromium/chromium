@@ -25,25 +25,18 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentsWebView,
                                       kContentsWebViewElementId);
 
 ContentsWebView::ContentsWebView(content::BrowserContext* browser_context)
-    : views::WebView(browser_context), status_bubble_(nullptr) {
+    : views::WebView(browser_context) {
   // Draws the ContentsWebView background.
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   SetProperty(views::kElementIdentifierKey, kContentsWebViewElementId);
+  status_bubble_ = std::make_unique<StatusBubbleViews>(this);
+  status_bubble_->Reposition();
 }
 
 ContentsWebView::~ContentsWebView() = default;
 
-void ContentsWebView::SetStatusBubble(StatusBubbleViews* status_bubble) {
-  status_bubble_ = status_bubble;
-  DCHECK(!status_bubble_ || status_bubble_->base_view() == this);
-  if (status_bubble_) {
-    status_bubble_->Reposition();
-  }
-  OnPropertyChanged(&status_bubble_, views::kPropertyEffectsNone);
-}
-
 StatusBubbleViews* ContentsWebView::GetStatusBubble() const {
-  return status_bubble_;
+  return status_bubble_.get();
 }
 
 void ContentsWebView::SetBackgroundVisible(bool background_visible) {
@@ -73,9 +66,7 @@ bool ContentsWebView::GetNeedsNotificationWhenVisibleBoundsChange() const {
 }
 
 void ContentsWebView::OnVisibleBoundsChanged() {
-  if (status_bubble_) {
-    status_bubble_->Reposition();
-  }
+  status_bubble_->Reposition();
 }
 
 void ContentsWebView::OnThemeChanged() {
@@ -165,5 +156,4 @@ void ContentsWebView::RenderViewReady() {
 }
 
 BEGIN_METADATA(ContentsWebView)
-ADD_PROPERTY_METADATA(StatusBubbleViews*, StatusBubble)
 END_METADATA

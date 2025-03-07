@@ -34,9 +34,6 @@ class ContentsWebView : public views::WebView,
   ContentsWebView& operator=(const ContentsWebView&) = delete;
   ~ContentsWebView() override;
 
-  // Sets the status bubble, which should be repositioned every time
-  // this view changes visible bounds.
-  void SetStatusBubble(StatusBubbleViews* status_bubble);
   StatusBubbleViews* GetStatusBubble() const;
 
   // Toggles whether the background is visible.
@@ -61,7 +58,7 @@ class ContentsWebView : public views::WebView,
 
  private:
   void UpdateBackgroundColor();
-  raw_ptr<StatusBubbleViews> status_bubble_;
+  std::unique_ptr<StatusBubbleViews> status_bubble_ = nullptr;
 
   bool background_visible_ = true;
 

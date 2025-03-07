@@ -80,7 +80,6 @@ class LocationBarView;
 class MultiContentsView;
 class ScrimView;
 class SidePanel;
-class StatusBubbleViews;
 class TabSearchBubbleHost;
 class TabStrip;
 class TabStripRegionView;
@@ -514,7 +513,7 @@ class BrowserView : public BrowserWindow,
   ui::ElementContext GetElementContext() override;
   int GetTopControlsHeight() const override;
   void SetTopControlsGestureScrollInProgress(bool in_progress) override;
-  StatusBubble* GetStatusBubble() override;
+  std::vector<StatusBubble*> GetStatusBubbles() override;
   void UpdateTitleBar() override;
   void BookmarkBarStateChanged(
       BookmarkBar::AnimateChangeType change_type) override;
@@ -1288,9 +1287,6 @@ class BrowserView : public BrowserWindow,
   // devtools_web_view_ or any of its children. Used to restore focus once
   // the devtools_web_view_ is hidden.
   std::unique_ptr<views::ExternalFocusTracker> devtools_focus_tracker_;
-
-  // The Status information bubble that appears at the bottom of the window.
-  std::unique_ptr<StatusBubbleViews> status_bubble_;
 
   // The scrim view that covers the browser window when a window-modal dialog is
   // showing.
