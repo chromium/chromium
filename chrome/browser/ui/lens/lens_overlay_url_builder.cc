@@ -96,6 +96,10 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 inline constexpr char kLensFootprintParameterKey[] = "lns_fp";
 inline constexpr char kLensFootprintParameterValue[] = "1";
 
+// Query parameter for the lens surface.
+inline constexpr char kLensSurfaceParameterKey[] = "lns_surface";
+inline constexpr char kLensSurfaceParameterLensOverlayValue[] = "42";
+
 // Url path for redirects from the results base URL.
 inline constexpr char kUrlRedirectPath[] = "/url";
 
@@ -278,6 +282,11 @@ GURL BuildTextOnlySearchURL(
     url_with_query_params = net::AppendOrReplaceQueryParameter(
         url_with_query_params, kLensModeParameterKey,
         kLensModeParameterTextValue);
+    if (lens::features::IsUpdatedClientContextEnabled()) {
+      url_with_query_params = net::AppendOrReplaceQueryParameter(
+          url_with_query_params, kLensSurfaceParameterKey,
+          kLensSurfaceParameterLensOverlayValue);
+    }
   }
   url_with_query_params =
       AppendCommonSearchParametersToURL(url_with_query_params, use_dark_mode);
@@ -324,6 +333,11 @@ GURL BuildLensSearchURL(
   url_with_query_params = net::AppendOrReplaceQueryParameter(
       url_with_query_params, kLensFootprintParameterKey,
       kLensFootprintParameterValue);
+  if (lens::features::IsUpdatedClientContextEnabled()) {
+    url_with_query_params = net::AppendOrReplaceQueryParameter(
+        url_with_query_params, kLensSurfaceParameterKey,
+        kLensSurfaceParameterLensOverlayValue);
+  }
 
   // The search url should use the search session id from the cluster info.
   url_with_query_params = net::AppendOrReplaceQueryParameter(

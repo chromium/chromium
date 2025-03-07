@@ -52,7 +52,8 @@ class LensOverlayUrlBuilderTest : public testing::Test {
               {"use-video-context-for-text-only-requests", "true"},
               {"use-video-context-for-multimodal-requests", "true"},
           }},
-         {lens::features::kLensOverlayTranslateLanguages, {}}},
+         {lens::features::kLensOverlayTranslateLanguages, {}},
+         {lens::features::kLensOverlayUpdatedClientContext, {}}},
         /*disabled_features=*/{});
   }
 
@@ -159,7 +160,8 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLForLensTextSelection) {
   std::string text_query = "Apples";
   std::map<std::string, std::string> additional_params;
   std::string expected_url = base::StringPrintf(
-      "%s?source=chrome.cr.menu&q=%s&lns_fp=1&lns_mode=text&gsc=2&hl=%s&cs=0",
+      "%s?source=chrome.cr.menu&q=%s&lns_fp=1&lns_mode=text&lns_surface=42&gsc="
+      "2&hl=%s&cs=0",
       kResultsSearchBaseUrl, text_query.c_str(), kLanguage);
 
   EXPECT_EQ(lens::BuildTextOnlySearchURL(
@@ -319,7 +321,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLEmptyClusterInfo) {
 
   std::string expected_url = base::StringPrintf(
       "%s?source=chrome.cr.menu&gsc=2&hl=%s&cs=0&q=%s&lns_mode=mu&"
-      "lns_fp=1&gsessionid=&udm=24&vsrid=%s",
+      "lns_fp=1&lns_surface=42&gsessionid=&udm=24&vsrid=%s",
       kResultsSearchBaseUrl, kLanguage, escaped_text_query.c_str(),
       EncodeRequestId(request_id.get()).c_str());
 
@@ -352,7 +354,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLWithSessionId) {
 
   std::string expected_url = base::StringPrintf(
       "%s?source=chrome.cr.menu&gsc=2&hl=%s&cs=0&q=%s&lns_mode=mu&"
-      "lns_fp=1&gsessionid=%s&udm=24&vsrid=%s",
+      "lns_fp=1&lns_surface=42&gsessionid=%s&udm=24&vsrid=%s",
       kResultsSearchBaseUrl, kLanguage, escaped_text_query.c_str(),
       search_session_id.c_str(), EncodeRequestId(request_id.get()).c_str());
 
@@ -389,7 +391,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLWithNoTextQuery) {
 
   std::string expected_url = base::StringPrintf(
       "%s?source=chrome.cr.menu&gsc=2&hl=%s&cs=0&q=&lns_mode=un&"
-      "lns_fp=1&gsessionid=%s&udm=26&vsrid=%s",
+      "lns_fp=1&lns_surface=42&gsessionid=%s&udm=26&vsrid=%s",
       kResultsSearchBaseUrl, kLanguage, search_session_id.c_str(),
       encoded_request_id.c_str());
 
@@ -426,7 +428,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLWithAdditionalParams) {
 
   std::string expected_url = base::StringPrintf(
       "%s?source=chrome.cr.menu&param=value&gsc=2&hl=%s&cs=0&q=&lns_"
-      "mode=un&lns_fp=1&gsessionid=%s&udm=26&"
+      "mode=un&lns_fp=1&lns_surface=42&gsessionid=%s&udm=26&"
       "vsrid=%s",
       kResultsSearchBaseUrl, kLanguage, search_session_id.c_str(),
       encoded_request_id.c_str());
@@ -469,7 +471,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildMultimodalSearchURLWithVideoContext) {
       EncodeVideoContext(std::make_optional<GURL>(kPageUrl));
   std::string expected_url = base::StringPrintf(
       "%s?source=chrome.cr.menu&gsc=2&hl=%s&cs=0&vidcip=%s&q=%s&lns_"
-      "mode=mu&lns_fp=1&gsessionid=%s&udm=24&"
+      "mode=mu&lns_fp=1&lns_surface=42&gsessionid=%s&udm=24&"
       "vsrid=%s",
       kResultsSearchBaseUrl, kLanguage, expected_video_context.c_str(),
       escaped_text_query.c_str(), search_session_id.c_str(),
@@ -508,7 +510,7 @@ TEST_F(LensOverlayUrlBuilderTest,
 
   std::string expected_url = base::StringPrintf(
       "%s?source=chrome.cr.menu&gsc=2&hl=%s&cs=0&q=&lns_"
-      "mode=un&lns_fp=1&gsessionid=%s&udm=26&"
+      "mode=un&lns_fp=1&lns_surface=42&gsessionid=%s&udm=26&"
       "vsrid=%s",
       kResultsSearchBaseUrl, kLanguage, search_session_id.c_str(),
       encoded_request_id.c_str());
@@ -533,7 +535,8 @@ TEST_F(LensOverlayUrlBuilderTest,
        {lens::features::kLensOverlayContextualSearchbox,
         {
             {"use-video-context-for-multimodal-requests", "false"},
-        }}},
+        }},
+       {lens::features::kLensOverlayUpdatedClientContext, {}}},
       /*disabled_features=*/{});
 
   std::string text_query = "Green Apples";
@@ -562,7 +565,7 @@ TEST_F(LensOverlayUrlBuilderTest,
 
   std::string expected_url = base::StringPrintf(
       "%s?source=chrome.cr.menu&gsc=2&hl=%s&cs=0&q=%s&lns_"
-      "mode=mu&lns_fp=1&gsessionid=%s&udm=24&"
+      "mode=mu&lns_fp=1&lns_surface=42&gsessionid=%s&udm=24&"
       "vsrid=%s",
       kResultsSearchBaseUrl, kLanguage, escaped_text_query.c_str(),
       search_session_id.c_str(), encoded_request_id.c_str());

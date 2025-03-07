@@ -11,4 +11,5 @@ package lens;
 enum Surface {
   SURFACE_UNSPECIFIED = 0;
   SURFACE_CHROMIUM = 4;
+  SURFACE_LENS_OVERLAY = 42;
 }
