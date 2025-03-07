@@ -1287,6 +1287,7 @@ if (current_toolchain == default_toolchain) {
       "javatests:chrome_test_java_org.chromium.chrome.browser.bookmarks",
       "javatests:chrome_test_java_org.chromium.chrome.browser.browserservices",
       "javatests:chrome_test_java_org.chromium.chrome.browser.browsing_data",
+      "javatests:chrome_test_java_org.chromium.chrome.browser.collaboration",
       "javatests:chrome_test_java_org.chromium.chrome.browser.compositor",
       "javatests:chrome_test_java_org.chromium.chrome.browser.contextualsearch",
       "javatests:chrome_test_java_org.chromium.chrome.browser.customtabs",
