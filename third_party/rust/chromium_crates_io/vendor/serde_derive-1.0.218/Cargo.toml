@@ -13,7 +13,7 @@
 edition = "2015"
 rust-version = "1.61"
 name = "serde_derive"
-version = "1.0.217"
+version = "1.0.218"
 authors = [
     "Erick Tryzelaar <erick.tryzelaar@gmail.com>",
     "David Tolnay <dtolnay@gmail.com>",
@@ -43,7 +43,12 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/serde-rs/serde"
 
 [package.metadata.docs.rs]
-rustdoc-args = ["--generate-link-to-definition"]
+rustdoc-args = [
+    "--generate-link-to-definition",
+    "--extern-html-root-url=core=https://doc.rust-lang.org",
+    "--extern-html-root-url=alloc=https://doc.rust-lang.org",
+    "--extern-html-root-url=std=https://doc.rust-lang.org",
+]
 targets = ["x86_64-unknown-linux-gnu"]
 
 [features]

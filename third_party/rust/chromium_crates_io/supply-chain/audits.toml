@@ -3015,6 +3015,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.0.216 -> 1.0.217"
 notes = "Minimal changes, nothing unsafe"
 
+[[audits.serde]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.217 -> 1.0.218"
+notes = "No changes outside comments and documentation."
+
 [[audits.serde_derive]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = "ub-risk-0"
@@ -3112,6 +3118,12 @@ who = "Dustin J. Mitchell <djmitche@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.0.216 -> 1.0.217"
 notes = "No changes"
+
+[[audits.serde_derive]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.217 -> 1.0.218"
+notes = "No changes outside comments and documentation."
 
 [[audits.serde_json]]
 who = "danakj@chromium.org"

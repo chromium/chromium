@@ -104,9 +104,9 @@
 /// # }
 /// ```
 ///
-/// [`Deserializer`]: trait.Deserializer.html
-/// [`Visitor`]: de/trait.Visitor.html
-/// [`Deserializer::deserialize_any`]: trait.Deserializer.html#tymethod.deserialize_any
+/// [`Deserializer`]: crate::Deserializer
+/// [`Visitor`]: crate::de::Visitor
+/// [`Deserializer::deserialize_any`]: crate::Deserializer::deserialize_any
 #[macro_export(local_inner_macros)]
 macro_rules! forward_to_deserialize_any {
     (<$visitor:ident: Visitor<$lifetime:tt>> $($func:ident)*) => {

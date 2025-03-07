@@ -101,8 +101,8 @@
 //!    - SocketAddrV6
 //!
 //! [Implementing `Deserialize`]: https://serde.rs/impl-deserialize.html
-//! [`Deserialize`]: ../trait.Deserialize.html
-//! [`Deserializer`]: ../trait.Deserializer.html
+//! [`Deserialize`]: crate::Deserialize
+//! [`Deserializer`]: crate::Deserializer
 //! [`LinkedHashMap<K, V>`]: https://docs.rs/linked-hash-map/*/linked_hash_map/struct.LinkedHashMap.html
 //! [`postcard`]: https://github.com/jamesmunns/postcard
 //! [`linked-hash-map`]: https://crates.io/crates/linked-hash-map

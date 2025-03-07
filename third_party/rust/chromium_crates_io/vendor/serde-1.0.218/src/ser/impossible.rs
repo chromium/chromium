@@ -49,14 +49,14 @@ use crate::ser::{
 /// }
 /// ```
 ///
-/// [`Serializer`]: trait.Serializer.html
-/// [`SerializeSeq`]: trait.SerializeSeq.html
-/// [`SerializeTuple`]: trait.SerializeTuple.html
-/// [`SerializeTupleStruct`]: trait.SerializeTupleStruct.html
-/// [`SerializeTupleVariant`]: trait.SerializeTupleVariant.html
-/// [`SerializeMap`]: trait.SerializeMap.html
-/// [`SerializeStruct`]: trait.SerializeStruct.html
-/// [`SerializeStructVariant`]: trait.SerializeStructVariant.html
+/// [`Serializer`]: crate::Serializer
+/// [`SerializeSeq`]: crate::ser::SerializeSeq
+/// [`SerializeTuple`]: crate::ser::SerializeTuple
+/// [`SerializeTupleStruct`]: crate::ser::SerializeTupleStruct
+/// [`SerializeTupleVariant`]: crate::ser::SerializeTupleVariant
+/// [`SerializeMap`]: crate::ser::SerializeMap
+/// [`SerializeStruct`]: crate::ser::SerializeStruct
+/// [`SerializeStructVariant`]: crate::ser::SerializeStructVariant
 pub struct Impossible<Ok, Error> {
     void: Void,
     ok: PhantomData<Ok>,

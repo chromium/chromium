@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.31"
 name = "serde"
-version = "1.0.217"
+version = "1.0.218"
 authors = [
     "Erick Tryzelaar <erick.tryzelaar@gmail.com>",
     "David Tolnay <dtolnay@gmail.com>",
@@ -47,7 +47,12 @@ features = [
     "rc",
     "unstable",
 ]
-rustdoc-args = ["--generate-link-to-definition"]
+rustdoc-args = [
+    "--generate-link-to-definition",
+    "--extern-html-root-url=core=https://doc.rust-lang.org",
+    "--extern-html-root-url=alloc=https://doc.rust-lang.org",
+    "--extern-html-root-url=std=https://doc.rust-lang.org",
+]
 targets = ["x86_64-unknown-linux-gnu"]
 
 [package.metadata.playground]
@@ -67,7 +72,6 @@ unstable = []
 [lib]
 name = "serde"
 path = "src/lib.rs"
-doc-scrape-examples = false
 
 [dependencies.serde_derive]
 version = "1"
@@ -77,4 +81,4 @@ optional = true
 version = "1"
 
 [target."cfg(any())".dependencies.serde_derive]
-version = "=1.0.217"
+version = "=1.0.218"
