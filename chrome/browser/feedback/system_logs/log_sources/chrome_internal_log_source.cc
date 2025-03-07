@@ -24,7 +24,6 @@
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/google/google_brand.h"
@@ -45,7 +44,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "ui/display/types/display_constants.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/ash_interfaces.h"
 #include "base/i18n/time_formatting.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -95,7 +94,7 @@ constexpr char kPowerApiListKey[] = "chrome.power extensions";
 constexpr char kChromeVersionTag[] = "CHROME VERSION";
 constexpr char kSkiaGraphiteStatusKey[] = "skia_graphite_status";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kArcPolicyComplianceReportKey[] =
     "CHROMEOS_ARC_POLICY_COMPLIANCE_REPORT";
 constexpr char kArcDpcVersionKey[] = "CHROMEOS_ARC_DPC_VERSION";
@@ -119,7 +118,7 @@ constexpr char kFailedKnowledgeFactorAttempts[] =
 constexpr char kRecordedAuthEvents[] = "RECORDED_AUTH_EVENTS";
 #else
 constexpr char kOsVersionTag[] = "OS VERSION";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 constexpr char kUsbKeyboardDetected[] = "usb_keyboard_detected";
@@ -141,7 +140,7 @@ constexpr char kUpdateHresult[] = "update_hresult";
 constexpr char kCpuArch[] = "cpu_arch";
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 std::string GetPrimaryAccountTypeString() {
   DCHECK(user_manager::UserManager::Get());
@@ -303,14 +302,14 @@ void OnPopulateMonitorInfoAsync(std::unique_ptr<SystemLogsResponse> response,
   PopulateDiskSpaceLogsAsync(std::move(response), std::move(callback));
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 std::string GetChromeVersionString() {
   // Version of the current running browser.
   std::string browser_version =
       chrome::GetVersionString(chrome::WithExtendedStable(true));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // If the device is receiving LTS updates, add a prefix to the version string.
   // The value of the policy is ignored here.
   std::string value;
@@ -318,7 +317,7 @@ std::string GetChromeVersionString() {
       ash::CrosSettings::Get()->GetString(ash::kReleaseLtsTag, &value);
   if (is_lts)
     browser_version = kLTSChromeVersionPrefix + browser_version;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return browser_version;
 }
 
@@ -408,10 +407,10 @@ void PopulateUsbKeyboardDetected(std::unique_ptr<SystemLogsResponse> response,
 
 ChromeInternalLogSource::ChromeInternalLogSource()
     : SystemLogsSource("ChromeInternal") {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::BindCrosDisplayConfigController(
       cros_display_config_.BindNewPipeAndPassReceiver());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 ChromeInternalLogSource::~ChromeInternalLogSource() = default;
@@ -423,7 +422,7 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
   auto response = std::make_unique<SystemLogsResponse>();
   response->emplace(kChromeVersionTag, GetChromeVersionString());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   response->emplace(kChromeEnrollmentTag, GetEnrollmentStatusString());
 #else
   // On ChromeOS, this will be pulled in from the LSB_RELEASE.
@@ -469,7 +468,7 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
   if (ProfileManager::GetLastUsedProfile()->IsChild())
     response->emplace("account_type", "child");
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Store ARC enabled status.
   bool is_arc_enabled = arc::IsArcPlayStoreEnabledForProfile(
       ProfileManager::GetLastUsedProfile());
@@ -502,7 +501,7 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
 #else
   // On other platforms, we're done. Invoke the callback.
   std::move(callback).Run(std::move(response));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void ChromeInternalLogSource::PopulateSyncLogs(SystemLogsResponse* response) {
@@ -592,7 +591,7 @@ void ChromeInternalLogSource::PopulateVariations(SystemLogsResponse* response) {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ChromeInternalLogSource::PopulateLocalStateSettings(
     SystemLogsResponse* response) {
   // Extract the "settings" entry in the local state and serialize back to
@@ -644,7 +643,7 @@ void ChromeInternalLogSource::PopulateOnboardingTime(
                         time, "yyyy-MM-dd", icu::TimeZone::getGMT()));
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 void ChromeInternalLogSource::PopulateEnrolledToDomain(

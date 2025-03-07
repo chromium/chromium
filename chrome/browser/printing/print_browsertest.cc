@@ -28,7 +28,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/printing/browser_printing_context_factory_for_test.h"
@@ -596,7 +595,7 @@ PrintBrowserTest::PrintAndWaitUntilPreviewIsReadyAndMaybeLoaded(
   switch (params.invoke_method) {
     case InvokePrintMethod::kStartPrint:
       StartPrint(web_contents,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
                  /*print_renderer=*/mojo::NullAssociatedRemote(),
 #endif
                  /*print_preview_disabled=*/false, params.print_only_selection);

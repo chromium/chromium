@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/feedback/system_logs/log_sources/chrome_internal_log_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/device_event_log_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/memory_details_log_source.h"
@@ -21,7 +20,7 @@
 #include "chrome/browser/feedback/system_logs/log_sources/chrome_root_store_log_source.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/system_logs/bluetooth_log_source.h"
 #include "chrome/browser/ash/system_logs/command_line_log_source.h"
 #include "chrome/browser/ash/system_logs/connected_input_devices_log_source.h"
@@ -60,7 +59,7 @@ SystemLogsFetcher* BuildAboutSystemLogsFetcher(content::WebUI* web_ui) {
   fetcher->AddSource(std::make_unique<ChromeRootStoreLogSource>());
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // These sources rely on scrubbing in SystemLogsFetcher.
   fetcher->AddSource(std::make_unique<BluetoothLogSource>());
   fetcher->AddSource(std::make_unique<CommandLineLogSource>());
