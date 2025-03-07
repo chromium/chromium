@@ -4475,7 +4475,13 @@ TEST_F(
   // Autocomplete is set to off, so suggestions should not get returned from
   // single_field_fill_router().
   EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly(Return(false));
+      .WillRepeatedly([&](const FormStructure*, const FormFieldData& field,
+                          const AutofillField*, const AutofillClient&,
+                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
+                              on_suggestions_returned) {
+        std::move(on_suggestions_returned).Run(field.global_id(), {});
+        return false;
+      });
 
   OnAskForValuesToFill(form, email_field);
 
@@ -4500,9 +4506,15 @@ TEST_F(BrowserAutofillManagerTest,
   field.set_should_autocomplete(false);
 
   // Autocomplete is set to off, so suggestions should not get returned from
-  // |single_field_fill_router()|.
+  // `single_field_fill_router()`.
   EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly(Return(false));
+      .WillRepeatedly([&](const FormStructure*, const FormFieldData& field,
+                          const AutofillField*, const AutofillClient&,
+                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
+                              on_suggestions_returned) {
+        std::move(on_suggestions_returned).Run(field.global_id(), {});
+        return false;
+      });
 
   OnAskForValuesToFill(form, field);
 
@@ -7557,7 +7569,13 @@ TEST_F(BrowserAutofillManagerTest,
   // Autocomplete suggestions (and all others for that matter) should be empty
   // in order to `SuggestionType::kAddressEntryOnTyping` to exist.
   EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly(Return(false));
+      .WillRepeatedly([&](const FormStructure*, const FormFieldData& field,
+                          const AutofillField*, const AutofillClient&,
+                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
+                              on_suggestions_returned) {
+        std::move(on_suggestions_returned).Run(field.global_id(), {});
+        return false;
+      });
   FormsSeen({form});
   OnAskForValuesToFill(form, form.fields()[0]);
 
@@ -7778,7 +7796,13 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
           Suggestion(SuggestionType::kCreateNewPlusAddress)}));
   // Single field form fill suggestions request - No results.
   EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions)
-      .WillOnce(Return(false));
+      .WillRepeatedly([&](const FormStructure*, const FormFieldData& field,
+                          const AutofillField*, const AutofillClient&,
+                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
+                              on_suggestions_returned) {
+        std::move(on_suggestions_returned).Run(field.global_id(), {});
+        return false;
+      });
 
   EXPECT_CALL(plus_address_delegate(),
               OnPlusAddressSuggestionShown(
@@ -7972,7 +7996,13 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   EXPECT_CALL(plus_address_delegate(), OnPlusAddressSuggestionShown).Times(0);
   // Single field form fill suggestions request - No results.
   EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions)
-      .WillOnce(Return(false));
+      .WillRepeatedly([&](const FormStructure*, const FormFieldData& field,
+                          const AutofillField*, const AutofillClient&,
+                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
+                              on_suggestions_returned) {
+        std::move(on_suggestions_returned).Run(field.global_id(), {});
+        return false;
+      });
 
   // Set up our form data. Notably, the first field is an email address.
   FormData form = test::GetFormData(

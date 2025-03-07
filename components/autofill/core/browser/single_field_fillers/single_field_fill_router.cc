@@ -71,8 +71,16 @@ bool SingleFieldFillRouter::OnGetSingleFieldSuggestions(
                                                  on_suggestions_returned)) {
     return true;
   }
-  return autocomplete_history_manager_->OnGetSingleFieldSuggestions(
-      field, client, on_suggestions_returned);
+  if (autocomplete_history_manager_->OnGetSingleFieldSuggestions(
+          field, client, on_suggestions_returned)) {
+    return true;
+  }
+
+  CancelPendingQueries();
+  if (on_suggestions_returned) {
+    std::move(on_suggestions_returned).Run(field.global_id(), {});
+  }
+  return false;
 }
 
 void SingleFieldFillRouter::CancelPendingQueries() {

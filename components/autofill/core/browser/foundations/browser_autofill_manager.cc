@@ -1370,21 +1370,15 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
   }
 
   if (should_offer_single_field_form_fill) {
-    bool handled_by_single_field_form_filler =
-        client().GetSingleFieldFillRouter().OnGetSingleFieldSuggestions(
-            form_structure, field, autofill_field, client(),
-            base::BindRepeating(
-                [](base::OnceCallback<void(std::vector<Suggestion>)> callback,
-                   FieldGlobalId field_id,
-                   const std::vector<Suggestion>& suggestions) {
-                  std::move(callback).Run(suggestions);
-                },
-                barrier_callback));
-    if (!handled_by_single_field_form_filler) {
-      client().GetSingleFieldFillRouter().CancelPendingQueries();
-      std::move(barrier_callback).Run({});
-      return;
-    }
+    client().GetSingleFieldFillRouter().OnGetSingleFieldSuggestions(
+        form_structure, field, autofill_field, client(),
+        base::BindRepeating(
+            [](base::OnceCallback<void(std::vector<Suggestion>)> callback,
+               FieldGlobalId field_id,
+               const std::vector<Suggestion>& suggestions) {
+              std::move(callback).Run(suggestions);
+            },
+            barrier_callback));
   }
 }
 
