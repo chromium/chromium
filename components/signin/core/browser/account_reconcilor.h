@@ -68,22 +68,6 @@ class AccountReconcilor
     THREAD_CHECKER(thread_checker_);
   };
 
-  // Helper class to indicate that synced data is being deleted. The object
-  // must be destroyed when the data deletion is complete.
-  class ScopedSyncedDataDeletion {
-   public:
-    ScopedSyncedDataDeletion(const ScopedSyncedDataDeletion&) = delete;
-    ScopedSyncedDataDeletion& operator=(const ScopedSyncedDataDeletion&) =
-        delete;
-
-    ~ScopedSyncedDataDeletion();
-
-   private:
-    friend class AccountReconcilor;
-    explicit ScopedSyncedDataDeletion(AccountReconcilor* reconcilor);
-    base::WeakPtr<AccountReconcilor> reconcilor_;
-  };
-
   class Observer {
    public:
     virtual ~Observer() = default;
@@ -149,11 +133,6 @@ class AccountReconcilor
   // Adds ands removes observers.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
-
-  // ScopedSyncedDataDeletion can be created when synced data is being removed
-  // and destroyed when the deletion is complete. It prevents the Sync account
-  // from being invalidated during the deletion.
-  std::unique_ptr<ScopedSyncedDataDeletion> GetScopedSyncDataDeletion();
 
   // Returns true if reconcilor is blocked.
   bool IsReconcileBlocked() const;
@@ -538,10 +517,6 @@ class AccountReconcilor
   std::unique_ptr<base::OneShotTimer> timer_ =
       std::make_unique<base::OneShotTimer>();
   base::TimeDelta timeout_;
-
-  // Greater than 0 when synced data is being deleted, and it is important to
-  // not invalidate the primary token while this is happening.
-  int synced_data_deletion_in_progress_count_ = 0;
 
   // Note: when the reconcilor is blocked with `BlockReconcile()` the state is
   // set to kScheduled rather than kInactive as this is only used to temporarily

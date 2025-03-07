@@ -418,8 +418,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowsingDataRemoverBrowserTest, SyncToken) {
       secondary_account.account_id));
 }
 
-// Test that Sync is not paused when cookies are cleared, if synced data is
-// being deleted.
+// Test that Sync is not paused when cookies are cleared.
 IN_PROC_BROWSER_TEST_F(DiceBrowsingDataRemoverBrowserTest,
                        SyncTokenScopedDeletion) {
   Profile* profile = browser()->profile();
@@ -432,10 +431,6 @@ IN_PROC_BROWSER_TEST_F(DiceBrowsingDataRemoverBrowserTest,
   const char kSecondaryAccountId[] = "secondary_account_id";
   AccountInfo secondary_account =
       AddAccountToProfile(kSecondaryAccountId, profile, /*is_primary=*/false);
-  // Sync data is being deleted.
-  std::unique_ptr<AccountReconcilor::ScopedSyncedDataDeletion> deletion =
-      AccountReconcilorFactory::GetForProfile(profile)
-          ->GetScopedSyncDataDeletion();
   // Clear cookies.
   RemoveAndWait(content::BrowsingDataRemover::DATA_TYPE_COOKIES);
   // Check that the Sync token was not revoked.
@@ -450,8 +445,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowsingDataRemoverBrowserTest,
       secondary_account.account_id));
 }
 
-// Test that Sync is left in error when cookies are cleared, even if synced data
-// is being deleted.
+// Test that Sync is left in error when cookies are cleared.
 IN_PROC_BROWSER_TEST_F(DiceBrowsingDataRemoverBrowserTest, SyncTokenError) {
   Profile* profile = browser()->profile();
   // Set a Gaia cookie.
@@ -468,10 +462,6 @@ IN_PROC_BROWSER_TEST_F(DiceBrowsingDataRemoverBrowserTest, SyncTokenError) {
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
               CREDENTIALS_REJECTED_BY_SERVER));
 
-  // Sync data is being deleted.
-  std::unique_ptr<AccountReconcilor::ScopedSyncedDataDeletion> deletion =
-      AccountReconcilorFactory::GetForProfile(profile)
-          ->GetScopedSyncDataDeletion();
   // Clear cookies.
   RemoveAndWait(content::BrowsingDataRemover::DATA_TYPE_COOKIES);
   // Check that the account was not removed and Sync was paused.

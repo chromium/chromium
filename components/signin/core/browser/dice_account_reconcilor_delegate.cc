@@ -396,8 +396,7 @@ void DiceAccountReconcilorDelegate::RevokeSecondaryTokensForReconcileIfNeeded(
   }
 }
 
-void DiceAccountReconcilorDelegate::OnAccountsCookieDeletedByUserAction(
-    bool synced_data_deletion_in_progress) {
+void DiceAccountReconcilorDelegate::OnAccountsCookieDeletedByUserAction() {
   ConsentLevel consent_level = GetConsentLevelForPrimaryAccount();
   // Revoke secondary tokens to avoid reconcilor rebuilding cookies.
   RevokeAllSecondaryTokens(
@@ -424,21 +423,8 @@ void DiceAccountReconcilorDelegate::OnAccountsCookieDeletedByUserAction(
   }
 #endif
 
-  if (synced_data_deletion_in_progress &&
-      identity_manager_->HasPrimaryAccount(ConsentLevel::kSync)) {
-    // If sync data deletion in progress, avoid invalidating the sync
-    // account unless it is already in a persistent error state. This is needed
-    // to ensure the data gets deleted from the google account.
-    CoreAccountId primary_sync_account =
-        identity_manager_->GetPrimaryAccountId(ConsentLevel::kSync);
-    if (!identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
-            primary_sync_account)) {
-      return;
-    }
-  }
-
-  // The primary account should be paused if the account cookie is deleted by
-  // user action.
+  // The primary account should be invalidated if the account cookie is deleted
+  // by user action.
   auto* accounts_mutator = identity_manager_->GetAccountsMutator();
   accounts_mutator->InvalidateRefreshTokenForPrimaryAccount(
       signin_metrics::SourceForRefreshTokenOperation::

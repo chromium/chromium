@@ -32,8 +32,7 @@ class DiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
   void RevokeSecondaryTokensForReconcileIfNeeded(
       const std::vector<gaia::ListedAccount>& gaia_accounts) override;
   void OnReconcileFinished(const CoreAccountId& first_account) override;
-  void OnAccountsCookieDeletedByUserAction(
-      bool synced_data_deletion_in_progress) override;
+  void OnAccountsCookieDeletedByUserAction() override;
   bool RevokeSecondaryTokensBeforeMultiloginIfNeeded(
       const std::vector<CoreAccountId>& chrome_accounts,
       const std::vector<gaia::ListedAccount>& gaia_accounts,
