@@ -97,7 +97,7 @@ void IpProtectionTelemetryUma::ProxyChainFallback(int proxy_chain_id) {
 }
 
 void IpProtectionTelemetryUma::EmptyTokenCache(ProxyLayer value) {
-  base::UmaHistogramEnumeration("NetworkService.IpProtection.EmptyTokenCache",
+  base::UmaHistogramEnumeration("NetworkService.IpProtection.EmptyTokenCache2",
                                 value);
 }
 

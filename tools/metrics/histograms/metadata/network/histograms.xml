@@ -4986,7 +4986,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NetworkService.IpProtection.EmptyTokenCache"
+<histogram name="NetworkService.IpProtection.EmptyTokenCache2"
     enum="IpProtectionProxyLayer" expires_after="2025-07-06">
   <owner>djmitche@chromium.org</owner>
   <owner>ashleynewson@chromium.org</owner>
@@ -4994,7 +4994,8 @@ chromium-metrics-reviews@google.com.
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
   <summary>
     Records which token cache (if any) was empty when calling
-    `IpProtectionConfigCache::AreAuthTokensAvailable()`.
+    `IpProtectionConfigCache::AreAuthTokensAvailable()`. This metric is NOT
+    emitted if the cache has never been filled.
   </summary>
 </histogram>
 

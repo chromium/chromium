@@ -121,6 +121,8 @@ class IpProtectionTelemetry {
 
   // The token cache for the given layer was empty during a call to
   // OnResolveProxy.
+  //
+  // Note: This is not called if the token cache was never filled.
   virtual void EmptyTokenCache(ProxyLayer) = 0;
 
   // An `OnResolveProxy` call has completed with the given result.
