@@ -26,6 +26,20 @@ import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender, Respo
 import type {AnnotatedPageDataPrivate, FocusedTabCandidatePrivate, FocusedTabDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientInitialStatePrivate} from './request_types.js';
 import {ErrorWithReasonImpl, ImageAlphaType, ImageColorType, requestTypeToHistogramSuffix} from './request_types.js';
 
+// Time interval for periodically sending responsiveness check to the web
+// client.
+const WEB_CLIENT_RESPONSIVENESS_CHECK_TIME_INTERVAL_MS = 1000;
+
+// Maximum time to wait for glicWebClientCheckResponsive response before
+// flagging as unresponsive.
+const WEB_CLIENT_RESPONSIVENESS_CHECK_TIMEOUT_MS = 500;
+
+export enum WebClientState {
+  UNINITIALIZED,
+  RESPONSIVE,
+  UNRESPONSIVE,
+}
+
 // Implemented by the embedder of GlicApiHost.
 export interface ApiHostEmbedder {
   // Called when the guest requests resize.
@@ -38,6 +52,9 @@ export interface ApiHostEmbedder {
   // Called when the notifyPanelWillOpen promise resolves to open the panel
   // when triggered from the browser.
   webClientReady(): void;
+
+  // Called when the web client state is changed.
+  webClientStateChanged(state: WebClientState): void;
 }
 
 // Turn everything except void into a promise.
@@ -156,7 +173,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   constructor(
       private handler: WebClientHandlerInterface,
       private sender: PostMessageRequestSender,
-      private embedder: ApiHostEmbedder) {}
+      private embedder: ApiHostEmbedder, private host: GlicApiHost) {}
 
   destroy() {
     if (this.receiver) {
@@ -199,6 +216,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
 
     if (request.success) {
       this.handler.webClientInitialized();
+      this.host.webClientInitialized();
     } else {
       this.handler.webClientInitializeFailed();
     }
@@ -497,7 +515,10 @@ export class GlicApiHost implements PostMessageRequestHandler {
   private readonly postMessageReceiver: PostMessageRequestReceiver;
   private sender: PostMessageRequestSender;
   private handler: WebClientHandlerRemote;
+  private embedder: ApiHostEmbedder|undefined;  // Undefined after destroy().
   private bootstrapPingIntervalId: number|undefined;
+  private webClientResponsivenessCheckInternalId: number|undefined;
+  private webClientState: WebClientState = WebClientState.UNINITIALIZED;
 
   constructor(
       private browserProxy: BrowserProxy, private windowProxy: WindowProxy,
@@ -512,7 +533,8 @@ export class GlicApiHost implements PostMessageRequestHandler {
     this.browserProxy.handler.createWebClient(
         this.handler.$.bindNewPipeAndPassReceiver());
     this.messageHandler =
-        new HostMessageHandler(this.handler, this.sender, embedder);
+        new HostMessageHandler(this.handler, this.sender, embedder, this);
+    this.embedder = embedder;
 
     this.bootstrapPingIntervalId =
         window.setInterval(this.bootstrapPing.bind(this), 50);
@@ -520,7 +542,10 @@ export class GlicApiHost implements PostMessageRequestHandler {
   }
 
   destroy() {
+    // prevent calling into embedder on destruction.
+    this.embedder = undefined;
     window.clearInterval(this.bootstrapPingIntervalId);
+    this.stopWebClientResponsivenessCheck();
     this.postMessageReceiver.destroy();
     this.messageHandler.destroy();
     this.sender.destroy();
@@ -532,6 +557,12 @@ export class GlicApiHost implements PostMessageRequestHandler {
     // be able to handle the message, if it hasn't already.
     this.bootstrapPing();
     this.stopBootstrapPing();
+  }
+
+  // Called when the web client is initialized.
+  webClientInitialized() {
+    this.webClientState = WebClientState.RESPONSIVE;
+    this.startWebClientResponsivenessCheck();
   }
 
   // Sends a message to the webview which is required to initialize the client.
@@ -555,6 +586,44 @@ export class GlicApiHost implements PostMessageRequestHandler {
     if (this.bootstrapPingIntervalId !== undefined) {
       window.clearInterval(this.bootstrapPingIntervalId);
       this.bootstrapPingIntervalId = undefined;
+    }
+  }
+
+  startWebClientResponsivenessCheck() {
+    this.webClientResponsivenessCheckInternalId =
+        window.setInterval(async () => {
+          const responsePromise = this.sender.requestWithResponse(
+              'glicWebClientCheckResponsive', undefined);
+
+          let timeoutId: number|undefined;
+          const timeoutPromise = new Promise((_, reject) => {
+            timeoutId = setTimeout(
+                () => reject(
+                    new Error('No response received within the timeout.')),
+                WEB_CLIENT_RESPONSIVENESS_CHECK_TIMEOUT_MS);
+          });
+
+          try {
+            await Promise.race([responsePromise, timeoutPromise]);
+            clearTimeout(timeoutId);
+            if (this.webClientState !== WebClientState.RESPONSIVE) {
+              this.webClientState = WebClientState.RESPONSIVE;
+              this.embedder?.webClientStateChanged(WebClientState.RESPONSIVE);
+            }
+          } catch (e) {
+            console.warn(e);
+            if (this.webClientState !== WebClientState.UNRESPONSIVE) {
+              this.webClientState = WebClientState.UNRESPONSIVE;
+              this.embedder?.webClientStateChanged(WebClientState.UNRESPONSIVE);
+            }
+          }
+        }, WEB_CLIENT_RESPONSIVENESS_CHECK_TIME_INTERVAL_MS);
+  }
+
+  stopWebClientResponsivenessCheck() {
+    if (this.webClientResponsivenessCheckInternalId !== undefined) {
+      clearInterval(this.webClientResponsivenessCheckInternalId);
+      this.webClientResponsivenessCheckInternalId = undefined;
     }
   }
 

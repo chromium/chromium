@@ -204,6 +204,7 @@ export declare interface WebClientRequestTypes {
       panelActive: boolean,
     },
   };
+  glicWebClientCheckResponsive: {};
 }
 
 

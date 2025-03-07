@@ -130,6 +130,10 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
   glicWebClientNotifyPanelActiveChanged(payload: {panelActive: boolean}): void {
     this.host.panelActiveValue.assignAndSignal(payload.panelActive);
   }
+
+  async glicWebClientCheckResponsive(): Promise<void> {
+    return this.webClient.checkResponsive?.();
+  }
 }
 
 class GlicBrowserHostImpl implements GlicBrowserHost {
