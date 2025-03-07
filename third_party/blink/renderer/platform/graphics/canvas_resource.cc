@@ -90,37 +90,6 @@ void CanvasResource::Release() {
   }
 }
 
-void CanvasResourceSharedImage::UploadSoftwareRenderingResults(
-    SkSurface* sk_surface) {
-  auto scoped_mapping = GetClientSharedImage()->Map();
-  if (!scoped_mapping) {
-    LOG(ERROR) << "MapSharedImage failed.";
-    return;
-  }
-
-  sk_surface->readPixels(
-      scoped_mapping->GetSkPixmapForPlane(0, CreateSkImageInfo()), 0, 0);
-
-  // Making the below call is not necessary for the case where the the software
-  // compositor is being used, as all accesses to the SI's backing happen via
-  // shared memory. It's also not currently trivial to add in this case as
-  // setting the sync token here would require it to later be verified before it
-  // is sent to the display compositor.
-  if (GetClientSharedImage()->is_software()) {
-    return;
-  }
-
-  // Unmap the SI, inform the service that the SharedImage's backing memory was
-  // written to on the CPU and update this resource's sync token to ensure
-  // proper sequencing of future accesses to the SI with respect to this call on
-  // the service side.
-  scoped_mapping.reset();
-
-  DCHECK(!is_cross_thread());
-  owning_thread_data().sync_token =
-      GetClientSharedImage()->BackingWasExternallyUpdated(gpu::SyncToken());
-}
-
 gpu::InterfaceBase* CanvasResource::InterfaceBase() const {
   if (!ContextProviderWrapper())
     return nullptr;
@@ -649,6 +618,37 @@ void CanvasResourceSharedImage::EndExternalWrite(
   // sync token will be chained after `external_write_sync_token` thanks to the
   // wait above.
   owning_thread_data_.mailbox_needs_new_sync_token = true;
+}
+
+void CanvasResourceSharedImage::UploadSoftwareRenderingResults(
+    SkSurface* sk_surface) {
+  auto scoped_mapping = GetClientSharedImage()->Map();
+  if (!scoped_mapping) {
+    LOG(ERROR) << "MapSharedImage failed.";
+    return;
+  }
+
+  sk_surface->readPixels(
+      scoped_mapping->GetSkPixmapForPlane(0, CreateSkImageInfo()), 0, 0);
+
+  // Making the below call is not necessary for the case where the the software
+  // compositor is being used, as all accesses to the SI's backing happen via
+  // shared memory. It's also not currently trivial to add in this case as
+  // setting the sync token here would require it to later be verified before it
+  // is sent to the display compositor.
+  if (GetClientSharedImage()->is_software()) {
+    return;
+  }
+
+  // Unmap the SI, inform the service that the SharedImage's backing memory was
+  // written to on the CPU and update this resource's sync token to ensure
+  // proper sequencing of future accesses to the SI with respect to this call on
+  // the service side.
+  scoped_mapping.reset();
+
+  DCHECK(!is_cross_thread());
+  owning_thread_data().sync_token =
+      GetClientSharedImage()->BackingWasExternallyUpdated(gpu::SyncToken());
 }
 
 const gpu::SyncToken
