@@ -79,5 +79,11 @@
     ]
   },
   "builder_group": "chromium.chromiumos",
-  "recipe": "chromium"
+  "gardener_rotations": [
+    "chrome_browser_release"
+  ],
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chrome_browser_release"
+  ]
 }

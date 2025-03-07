@@ -69,7 +69,13 @@
   },
   "archive_prefix": "centipede",
   "builder_group": "chromium.fuzz",
+  "gardener_rotations": [
+    "chrome_browser_release"
+  ],
   "recipe": "chromium/fuzz",
+  "sheriff_rotations": [
+    "chrome_browser_release"
+  ],
   "upload_bucket": "chromium-browser-centipede",
   "upload_directory": "asan"
 }

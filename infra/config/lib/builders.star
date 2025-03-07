@@ -122,9 +122,15 @@ siso = struct(
 def _rotation(name, console_name):
     if not name:
         fail("Rotations must be created with a name")
+    return struct(
+        name = name,
+        console_name = console_name,
+    )
+
+def _main_rotation(name, console_name):
     return branches.value(
         branch_selector = branches.selector.MAIN,
-        value = struct(
+        value = _rotation(
             name = name,
             console_name = console_name,
         ),
@@ -134,16 +140,16 @@ def _rotation(name, console_name):
 # New rotations can be added, but won't automatically show up in SoM without
 # changes to SoM code.
 gardener_rotations = struct(
-    ANDROID = _rotation("android", "android rotation"),
-    ANGLE = _rotation("angle", "angle rotation"),
-    CHROMIUM = _rotation("chromium", "chromium rotation"),
-    CFT = _rotation("cft", "cft rotation"),
-    DAWN = _rotation("dawn", "dawn rotation"),
-    FUCHSIA = _rotation("fuchsia", "fuchsia rotation"),
-    CHROMIUM_CLANG = _rotation("chromium.clang", "chromium.clang rotation"),
-    CHROMIUM_GPU = _rotation("chromium.gpu", "chromium.gpu rotation"),
-    IOS = _rotation("ios", "ios rotation"),
-    CHROMIUMOS = _rotation("chromiumos", "chromiumos rotation"),  # This group is not on SoM.
+    ANDROID = _main_rotation("android", "android rotation"),
+    ANGLE = _main_rotation("angle", "angle rotation"),
+    CHROMIUM = _main_rotation("chromium", "chromium rotation"),
+    CFT = _main_rotation("cft", "cft rotation"),
+    DAWN = _main_rotation("dawn", "dawn rotation"),
+    FUCHSIA = _main_rotation("fuchsia", "fuchsia rotation"),
+    CHROMIUM_CLANG = _main_rotation("chromium.clang", "chromium.clang rotation"),
+    CHROMIUM_GPU = _main_rotation("chromium.gpu", "chromium.gpu rotation"),
+    IOS = _main_rotation("ios", "ios rotation"),
+    CHROMIUMOS = _main_rotation("chromiumos", "chromiumos rotation"),  # This group is not on SoM.
 )
 
 # Free disk space in a machine reserved for build tasks.

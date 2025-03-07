@@ -73,6 +73,12 @@
     ]
   },
   "builder_group": "chromium.mac",
+  "gardener_rotations": [
+    "chrome_browser_release"
+  ],
   "recipe": "chromium",
+  "sheriff_rotations": [
+    "chrome_browser_release"
+  ],
   "xcode_build_version": "16c5032a"
 }

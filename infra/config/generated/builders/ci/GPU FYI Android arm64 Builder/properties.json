@@ -111,6 +111,12 @@
     ]
   },
   "builder_group": "chromium.gpu.fyi",
+  "gardener_rotations": [
+    "chrome_browser_release"
+  ],
   "perf_dashboard_machine_group": "ChromiumGPUFYI",
-  "recipe": "chromium"
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chrome_browser_release"
+  ]
 }
