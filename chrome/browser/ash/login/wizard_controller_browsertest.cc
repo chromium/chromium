@@ -654,17 +654,6 @@ class WizardControllerFlowTest : public WizardControllerTest {
     command_line->AppendSwitchASCII(
         switches::kEnterpriseEnableUnifiedStateDetermination,
         policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
-
-    // TODO(crbug.com/383047722) Remove once
-    // `AutoEnrollmentTypeChecker::IsEnabled` stops checking for FRE and
-    // initial enrollment.
-    // This affects `AutoEnrollmentCheckScreen::MaybeSkip`.
-    command_line->AppendSwitchASCII(
-        switches::kEnterpriseEnableForcedReEnrollment,
-        policy::AutoEnrollmentTypeChecker::kForcedReEnrollmentNever);
-    command_line->AppendSwitchASCII(
-        switches::kEnterpriseEnableInitialEnrollment,
-        policy::AutoEnrollmentTypeChecker::kInitialEnrollmentNever);
   }
 
   void InitNetworkPortalDetector() {

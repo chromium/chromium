@@ -19,6 +19,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -127,6 +128,8 @@ class TPMFirmwareUpdateTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  // We need a fake statistics provider as
+  // `AutoEnrollmentTypeChecker::IsEnabled` needs it.
   system::ScopedFakeStatisticsProvider statistics_provider_;
 };
 
@@ -135,12 +138,7 @@ class TPMFirmwareUpdateModesTest : public TPMFirmwareUpdateTest {
   TPMFirmwareUpdateModesTest() {
     callback_ = base::BindOnce(&TPMFirmwareUpdateModesTest::RecordResponse,
                                base::Unretained(this));
-    statistics_provider_.SetVpdStatus(
-        system::StatisticsProvider::VpdStatus::kValid);
     cros_settings_test_helper_.InstallAttributes()->set_device_locked(false);
-    // TODO(b/353731379): Remove when removing legacy state determination code.
-    command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-        ash::switches::kEnterpriseEnableUnifiedStateDetermination, "never");
   }
 
   void RecordResponse(const std::set<Mode>& modes) {
@@ -170,24 +168,6 @@ TEST_F(TPMFirmwareUpdateModesTest, FeatureDisabled) {
   EXPECT_TRUE(callback_modes_.empty());
 }
 
-TEST_F(TPMFirmwareUpdateModesTest, FRERequired) {
-  statistics_provider_.SetMachineStatistic(system::kCheckEnrollmentKey, "1");
-  GetAvailableUpdateModes(std::move(callback_), base::TimeDelta());
-  EXPECT_TRUE(callback_received_);
-  EXPECT_TRUE(callback_modes_.empty());
-}
-
-TEST_F(TPMFirmwareUpdateModesTest, FRERequiredDueToInvalidRwVpdStatus) {
-  statistics_provider_.SetVpdStatus(
-      system::StatisticsProvider::VpdStatus::kRwInvalid);
-  base::test::TestFuture<std::set<Mode>> future;
-  GetAvailableUpdateModes(future.GetCallback<const std::set<Mode>&>(),
-                          base::TimeDelta());
-
-  const auto& modes = future.Get();
-  EXPECT_TRUE(modes.empty());
-}
-
 TEST_F(TPMFirmwareUpdateModesTest, Pending) {
   SetUpdateAvailability(Availability::kPending);
   GetAvailableUpdateModes(std::move(callback_), base::TimeDelta());
@@ -198,44 +178,41 @@ TEST_F(TPMFirmwareUpdateModesTest, Pending) {
 
 TEST_F(TPMFirmwareUpdateModesTest, ConsumerOwned) {
   SetConsumerOwned();
-  statistics_provider_.SetVpdStatus(
-      system::StatisticsProvider::VpdStatus::kInvalid);
   GetAvailableUpdateModes(std::move(callback_), base::TimeDelta());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(callback_received_);
   EXPECT_EQ(kAllModes, callback_modes_);
+}
+
+TEST_F(TPMFirmwareUpdateModesTest, NotAvailable) {
+  // On device, Unified State Determination is enabled by default.
+  // For ChromeOS on Chrome, it is turned off by default.
+  // Enabling it here by command line to have a unified test setup.
+  command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+      ash::switches::kEnterpriseEnableUnifiedStateDetermination,
+      policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationAlways);
+
+  GetAvailableUpdateModes(std::move(callback_), base::TimeDelta());
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(callback_received_);
+  EXPECT_TRUE(callback_modes_.empty());
 }
 
 TEST_F(TPMFirmwareUpdateModesTest, Available) {
+  command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+      ash::switches::kEnterpriseEnableUnifiedStateDetermination,
+      policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
   GetAvailableUpdateModes(std::move(callback_), base::TimeDelta());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(callback_received_);
   EXPECT_EQ(kAllModes, callback_modes_);
 }
 
-TEST_F(TPMFirmwareUpdateModesTest, AvailableWithInvalidVpdStatus) {
-  statistics_provider_.SetVpdStatus(
-      system::StatisticsProvider::VpdStatus::kInvalid);
-  base::test::TestFuture<std::set<Mode>> future;
-  GetAvailableUpdateModes(future.GetCallback<const std::set<Mode>&>(),
-                          base::TimeDelta());
-
-  const auto& modes = future.Get();
-  EXPECT_EQ(kAllModes, modes);
-}
-
-TEST_F(TPMFirmwareUpdateModesTest, AvailableWithInvalidRoVpdStatus) {
-  statistics_provider_.SetVpdStatus(
-      system::StatisticsProvider::VpdStatus::kRoInvalid);
-  base::test::TestFuture<std::set<Mode>> future;
-  GetAvailableUpdateModes(future.GetCallback<const std::set<Mode>&>(),
-                          base::TimeDelta());
-
-  const auto& modes = future.Get();
-  EXPECT_EQ(kAllModes, modes);
-}
-
 TEST_F(TPMFirmwareUpdateModesTest, AvailableAfterWaiting) {
+  command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+      ash::switches::kEnterpriseEnableUnifiedStateDetermination,
+      policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
+
   SetUpdateAvailability(Availability::kPending);
   GetAvailableUpdateModes(std::move(callback_), base::Seconds(5));
   task_environment_.RunUntilIdle();
@@ -263,6 +240,10 @@ TEST_F(TPMFirmwareUpdateModesTest, AvailableAfterWaiting) {
 }
 
 TEST_F(TPMFirmwareUpdateModesTest, NoUpdateVulnerableSRK) {
+  command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+      ash::switches::kEnterpriseEnableUnifiedStateDetermination,
+      policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
+
   SetUpdateAvailability(Availability::kUnavailableROCAVulnerable);
   GetAvailableUpdateModes(std::move(callback_), base::TimeDelta());
   task_environment_.RunUntilIdle();
@@ -279,6 +260,10 @@ TEST_F(TPMFirmwareUpdateModesTest, NoUpdateNonVulnerableSRK) {
 }
 
 TEST_F(TPMFirmwareUpdateModesTest, Timeout) {
+  command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+      ash::switches::kEnterpriseEnableUnifiedStateDetermination,
+      policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
+
   SetUpdateAvailability(Availability::kPending);
   GetAvailableUpdateModes(std::move(callback_), base::Seconds(5));
   task_environment_.RunUntilIdle();
