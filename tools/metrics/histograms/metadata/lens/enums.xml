@@ -188,6 +188,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.IfChange(LensOverlayMimeType) -->
 
+<!-- The MimeType enum used for UKM metrics. -->
+
 <enum name="MimeType">
   <summary>
     The mime type of the document the Lens Overlay is invoked on.
@@ -200,6 +202,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Video"/>
   <int value="6" label="Audio"/>
   <int value="7" label="Json"/>
+  <int value="8" label="AnnotatedPageContent"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_mime_type.h:LensOverlayMimeType) -->
