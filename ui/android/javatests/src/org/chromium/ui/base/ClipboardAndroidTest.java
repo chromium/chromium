@@ -188,6 +188,7 @@ public class ClipboardAndroidTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/383804517")
     public void hasUrlAndGetUrlTest() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
