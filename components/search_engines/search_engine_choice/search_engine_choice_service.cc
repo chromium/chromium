@@ -333,7 +333,7 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
 
 int SearchEngineChoiceService::GetCountryId() {
   return regional_capabilities_service_->GetCountryId().GetRestricted(
-      regional_capabilities::CountryAccessKey<SearchEngineChoiceService>(
+      regional_capabilities::CountryAccessKey(
           regional_capabilities::CountryAccessReason::
               kSearchEngineChoiceServiceDeprecatedForwardCall));
 }
@@ -358,7 +358,7 @@ SearchEngineChoiceService::GetChoiceScreenData(
   return std::make_unique<search_engines::ChoiceScreenData>(
       std::move(owned_template_urls),
       regional_capabilities_service_->GetCountryId().GetRestricted(
-          regional_capabilities::CountryAccessKey<SearchEngineChoiceService>(
+          regional_capabilities::CountryAccessKey(
               regional_capabilities::CountryAccessReason::
                   kSearchEngineChoiceServiceCacheChoiceScreenData)),
       search_terms_data);
@@ -525,7 +525,7 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
   const base::Version& current_version = version_info::GetVersion();
   regional_capabilities::CountryId country_id =
       regional_capabilities_service_->GetCountryId().GetRestricted(
-          regional_capabilities::CountryAccessKey<SearchEngineChoiceService>(
+          regional_capabilities::CountryAccessKey(
               regional_capabilities::CountryAccessReason::
                   kSearchEngineChoiceServiceReprompting));
   const std::string wildcard_string("*");

@@ -7,8 +7,12 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
+#include "components/autofill/core/browser/payments/constants.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_view.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
@@ -16,6 +20,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 using base::MockCallback;
+using base::MockOnceClosure;
 using base::OnceCallback;
 using base::UTF8ToUTF16;
 using l10n_util::GetStringFUTF16;
@@ -37,51 +42,81 @@ class BnplTosControllerImplTest : public Test {
  public:
   void SetUp() override {
     controller_ = std::make_unique<BnplTosControllerImpl>();
+
     std::unique_ptr<BnplTosView> view = std::make_unique<BnplTosView>();
     view_ = view.get();
-    ON_CALL(mock_callback_, Run).WillByDefault(Return(ByMove(std::move(view))));
+    ON_CALL(create_view_callback_, Run)
+        .WillByDefault(Return(ByMove(std::move(view))));
+
+    account_info_.email = "somebody@example.test";
+    issuer_ = BnplIssuer(/*instrument_id=*/std::nullopt,
+                         std::string(kBnplAffirmIssuerId),
+                         std::vector<BnplIssuer::EligiblePriceRange>{});
+    LegalMessageLine::Parse(
+        base::JSONReader::Read(
+            "{ \"line\" : [ { \"template\": \"This is a legal message with"
+            "{0}.\", \"template_parameter\": [ { \"display_text\": "
+            "\"a link\", \"url\": \"http://www.example.com/\" "
+            "} ] }] }")
+            ->GetDict(),
+        &legal_message_lines_, true);
+
+    BnplTosModel model;
+    model.account_info = account_info_;
+    model.issuer = issuer_;
+    model.legal_message_lines = legal_message_lines_;
+
+    EXPECT_CALL(create_view_callback_, Run());
+    controller_->Show(create_view_callback_.Get(), std::move(model),
+                      accept_callback_.Get(), cancel_callback_.Get());
+    EXPECT_EQ(View(), view_);
   }
 
-  void TearDown() override {
-    // Avoid dangling pointer.
-    view_ = nullptr;
-  }
-
-  void ShowView() { controller_->Show(mock_callback_.Get()); }
+  void TearDown() override { view_ = nullptr; }
 
   BnplTosView* View() { return controller_->view_.get(); }
 
-  u16string IssuerName() { return controller_->issuer_name_; }
+  u16string IssuerName() { return controller_->model_.issuer.GetDisplayName(); }
 
-  const LegalMessageLines& LegalMessageLines() {
-    return controller_->legal_message_lines_;
-  }
+  MockCallback<OnceCallback<std::unique_ptr<BnplTosView>()>>
+      create_view_callback_;
+  AccountInfo account_info_;
+  BnplIssuer issuer_;
+  LegalMessageLines legal_message_lines_;
+  MockOnceClosure accept_callback_;
+  MockOnceClosure cancel_callback_;
 
   std::unique_ptr<BnplTosControllerImpl> controller_;
-  MockCallback<OnceCallback<std::unique_ptr<BnplTosView>()>> mock_callback_;
   raw_ptr<BnplTosView> view_;
 };
 
-TEST_F(BnplTosControllerImplTest, ShowView) {
-  EXPECT_CALL(mock_callback_, Run());
-  ShowView();
-  EXPECT_EQ(View(), view_);
-}
-
 TEST_F(BnplTosControllerImplTest, ShowView_MultipleTimes) {
-  EXPECT_CALL(mock_callback_, Run()).Times(1);
-  ShowView();
-  ShowView();
+  // Show() was already called once during Setup().
+  MockCallback<OnceCallback<std::unique_ptr<BnplTosView>()>>
+      new_create_view_callback_;
+
+  EXPECT_CALL(new_create_view_callback_, Run()).Times(0);
+  controller_->Show(new_create_view_callback_.Get(), BnplTosModel(),
+                    accept_callback_.Get(), cancel_callback_.Get());
 }
 
-TEST_F(BnplTosControllerImplTest, OnClosed) {
-  EXPECT_CALL(mock_callback_, Run());
-  ShowView();
-
+TEST_F(BnplTosControllerImplTest, OnClosed_UserAccepted) {
   // Avoid dangling pointer.
   view_ = nullptr;
 
-  controller_->OnViewClosing(true);
+  EXPECT_CALL(accept_callback_, Run());
+  EXPECT_CALL(cancel_callback_, Run()).Times(0);
+  controller_->OnViewClosing(/*user_accepted=*/true);
+  EXPECT_EQ(View(), nullptr);
+}
+
+TEST_F(BnplTosControllerImplTest, OnClosed_UserCancelled) {
+  // Avoid dangling pointer.
+  view_ = nullptr;
+
+  EXPECT_CALL(cancel_callback_, Run());
+  EXPECT_CALL(accept_callback_, Run()).Times(0);
+  controller_->OnViewClosing(/*user_accepted=*/false);
   EXPECT_EQ(View(), nullptr);
 }
 
@@ -124,13 +159,15 @@ TEST_F(BnplTosControllerImplTest, GetLinkText) {
 }
 
 TEST_F(BnplTosControllerImplTest, GetLegalMessageLines) {
-  EXPECT_EQ(controller_->GetLegalMessageLines(), LegalMessageLines());
+  EXPECT_EQ(controller_->GetLegalMessageLines(), legal_message_lines_);
 }
 
 TEST_F(BnplTosControllerImplTest, GetAccountInfo) {
-  // TODO: crbug.com/391141123 - Check both email and profile avatar when
-  // real account info is implemented.
-  EXPECT_EQ(controller_->GetAccountInfo().email, "somebody@example.test");
+  EXPECT_EQ(controller_->GetAccountInfo().email, account_info_.email);
+}
+
+TEST_F(BnplTosControllerImplTest, GetIssuerId) {
+  EXPECT_EQ(controller_->GetIssuerId(), issuer_.issuer_id());
 }
 
 }  // namespace autofill

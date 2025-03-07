@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "chrome/common/url_constants.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
@@ -45,21 +46,13 @@ void IsolatedWebAppResponseReaderFactory::CreateResponseReader(
     const web_package::SignedWebBundleId& web_bundle_id,
     Flags flags,
     Callback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!web_bundle_id.is_for_proxy_mode());
-
-  GURL base_url(
-      base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
-                    web_bundle_id.id()}));
-
-  std::unique_ptr<SignedWebBundleReader> reader =
-      SignedWebBundleReader::Create(web_bundle_path, std::move(base_url));
-
-  SignedWebBundleReader& reader_ref = *reader.get();
-  reader_ref.ReadIntegrityBlock(base::BindOnce(
-      &IsolatedWebAppResponseReaderFactory::OnIntegrityBlockRead,
-      weak_ptr_factory_.GetWeakPtr(), std::move(reader), web_bundle_path,
-      web_bundle_id, flags, std::move(callback)));
+  IwaKeyDistributionInfoProvider::GetInstance()
+      ->OnMaybeDownloadedComponentDataReady()
+      .Post(FROM_HERE,
+            base::BindOnce(
+                &IsolatedWebAppResponseReaderFactory::CreateResponseReaderImpl,
+                weak_ptr_factory_.GetWeakPtr(), web_bundle_path, web_bundle_id,
+                flags, std::move(callback)));
 }
 
 // static
@@ -86,6 +79,28 @@ std::string IsolatedWebAppResponseReaderFactory::ErrorToString(
       return base::StringPrintf("Failed to validate metadata: %s",
                                 error.message().c_str());
   }
+}
+
+void IsolatedWebAppResponseReaderFactory::CreateResponseReaderImpl(
+    const base::FilePath& web_bundle_path,
+    const web_package::SignedWebBundleId& web_bundle_id,
+    Flags flags,
+    Callback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!web_bundle_id.is_for_proxy_mode());
+
+  GURL base_url(
+      base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
+                    web_bundle_id.id()}));
+
+  std::unique_ptr<SignedWebBundleReader> reader =
+      SignedWebBundleReader::Create(web_bundle_path, std::move(base_url));
+
+  SignedWebBundleReader& reader_ref = *reader.get();
+  reader_ref.ReadIntegrityBlock(base::BindOnce(
+      &IsolatedWebAppResponseReaderFactory::OnIntegrityBlockRead,
+      weak_ptr_factory_.GetWeakPtr(), std::move(reader), web_bundle_path,
+      web_bundle_id, flags, std::move(callback)));
 }
 
 void IsolatedWebAppResponseReaderFactory::OnIntegrityBlockRead(

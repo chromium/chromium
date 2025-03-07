@@ -188,9 +188,6 @@ class Widget::PaintAsActiveLockImpl : public Widget::PaintAsActiveLock {
 ////////////////////////////////////////////////////////////////////////////////
 // Widget, InitParams:
 
-Widget::InitParams::InitParams(Type type)
-    : InitParams(NATIVE_WIDGET_OWNS_WIDGET, type) {}
-
 Widget::InitParams::InitParams(Ownership ownership, Type type)
     : type(type), ownership(ownership) {}
 

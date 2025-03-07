@@ -178,6 +178,7 @@ build_webui("build") {
     static_files += [
       "time_of_day/thumbnails/clouds.jpg",
       "time_of_day/thumbnails/new_mexico.jpg",
+      "time_of_day/thumbnails/jupiter.jpg",
     ]
   }
 

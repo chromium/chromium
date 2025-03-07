@@ -49,10 +49,11 @@ class UsbDeviceInfo : public DevicePermissionsPrompt::Prompt::DeviceInfo {
         device_->vendor_id, device_->product_id,
         device_->manufacturer_name.value_or(std::u16string()),
         device_->product_name.value_or(std::u16string()),
-        std::u16string(),  // Serial number is displayed separately.
+        u"",  // Serial number is displayed separately.
         true);
-    serial_number_ =
-        device_->serial_number ? *(device_->serial_number) : std::u16string();
+    if (device_->serial_number) {
+      serial_number_ = *device_->serial_number;
+    }
   }
 
   ~UsbDeviceInfo() override {}
@@ -122,13 +123,14 @@ class UsbDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
   // extensions::UsbDeviceManager::Observer implementation
   void OnDeviceRemoved(const device::mojom::UsbDeviceInfo& device) override {
     for (auto it = devices_.begin(); it != devices_.end(); ++it) {
-      UsbDeviceInfo* entry = static_cast<UsbDeviceInfo*>((*it).get());
+      UsbDeviceInfo* entry = static_cast<UsbDeviceInfo*>(it->get());
       if (entry->device()->guid == device.guid) {
-        size_t index = it - devices_.begin();
-        std::u16string device_name = (*it)->name();
-        devices_.erase(it);
-        if (observer())
+        if (observer()) {
+          size_t index = it - devices_.begin();
+          const std::u16string& device_name = entry->name();
           observer()->OnDeviceRemoved(index, device_name);
+        }
+        devices_.erase(it);
         return;
       }
     }
@@ -143,11 +145,13 @@ class UsbDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
 
   void MaybeAddDevice(const device::mojom::UsbDeviceInfo& device,
                       bool initial_enumeration) {
-    if (!device::UsbDeviceFilterMatchesAny(filters_, device))
+    if (!device::UsbDeviceFilterMatchesAny(filters_, device)) {
       return;
+    }
 
-    if (initial_enumeration)
+    if (initial_enumeration) {
       remaining_initial_devices_++;
+    }
 
     auto device_info = std::make_unique<UsbDeviceInfo>(device.Clone());
 #if BUILDFLAG(IS_CHROMEOS)
@@ -166,8 +170,9 @@ class UsbDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
   void AddCheckedDevice(std::unique_ptr<UsbDeviceInfo> device_info,
                         bool initial_enumeration,
                         bool allowed) {
-    if (allowed)
+    if (allowed) {
       AddDevice(std::move(device_info));
+    }
 
     if (initial_enumeration && --remaining_initial_devices_ == 0 &&
         observer()) {
@@ -188,9 +193,9 @@ class HidDeviceInfo : public DevicePermissionsPrompt::Prompt::DeviceInfo {
       : device_(std::move(device)) {
     name_ = DevicePermissionsManager::GetPermissionMessage(
         device_->vendor_id, device_->product_id,
-        std::u16string(),  // HID devices include manufacturer in product name.
+        u"",  // HID devices include manufacturer in product name.
         base::UTF8ToUTF16(device_->product_name),
-        std::u16string(),  // Serial number is displayed separately.
+        u"",  // Serial number is displayed separately.
         false);
     serial_number_ = base::UTF8ToUTF16(device_->serial_number);
   }
@@ -242,10 +247,11 @@ class HidDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     auto receiver = hid_manager_.BindNewPipeAndPassReceiver();
     const auto& binder = GetHidManagerBinderOverride();
-    if (binder)
+    if (binder) {
       binder.Run(std::move(receiver));
-    else
+    } else {
       content::GetDeviceService().BindHidManager(std::move(receiver));
+    }
 
     hid_manager_->GetDevicesAndSetClient(
         receiver_.BindNewEndpointAndPassRemote(),
@@ -264,7 +270,7 @@ class HidDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
         if (permissions_manager) {
           DCHECK(hid_device->device());
           permissions_manager->AllowHidDevice(extension()->id(),
-                                              *(hid_device->device()));
+                                              *hid_device->device());
         }
         devices.push_back(std::move(hid_device->device()));
       }
@@ -280,13 +286,14 @@ class HidDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
 
   void DeviceRemoved(device::mojom::HidDeviceInfoPtr device) override {
     for (auto it = devices_.begin(); it != devices_.end(); ++it) {
-      HidDeviceInfo* entry = static_cast<HidDeviceInfo*>((*it).get());
+      HidDeviceInfo* entry = static_cast<HidDeviceInfo*>(it->get());
       if (entry->device()->guid == device->guid) {
-        size_t index = it - devices_.begin();
-        std::u16string device_name = (*it)->name();
-        devices_.erase(it);
-        if (observer())
+        if (observer()) {
+          size_t index = it - devices_.begin();
+          const std::u16string& device_name = entry->name();
           observer()->OnDeviceRemoved(index, device_name);
+        }
+        devices_.erase(it);
         return;
       }
     }
@@ -311,8 +318,9 @@ class HidDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
 
   void OnDevicesEnumerated(
       std::vector<device::mojom::HidDeviceInfoPtr> devices) {
-    for (auto& device : devices)
+    for (auto& device : devices) {
       MaybeAddDevice(std::move(device), /*initial_enumeration=*/true);
+    }
   }
 
   // Returns true if `device` contains at least one unprotected report in any
@@ -331,8 +339,9 @@ class HidDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
       return;
     }
 
-    if (initial_enumeration)
+    if (initial_enumeration) {
       remaining_initial_devices_++;
+    }
 
     auto device_info = std::make_unique<HidDeviceInfo>(std::move(device));
 #if BUILDFLAG(IS_CHROMEOS)
@@ -349,8 +358,9 @@ class HidDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
   void AddCheckedDevice(std::unique_ptr<HidDeviceInfo> device_info,
                         bool initial_enumeration,
                         bool allowed) {
-    if (allowed)
+    if (allowed) {
       AddDevice(std::move(device_info));
+    }
 
     if (initial_enumeration && --remaining_initial_devices_ == 0 &&
         observer()) {
@@ -389,19 +399,24 @@ void DevicePermissionsPrompt::Prompt::SetObserver(Observer* observer) {
 
 std::u16string DevicePermissionsPrompt::Prompt::GetDeviceName(
     size_t index) const {
-  DCHECK_LT(index, devices_.size());
+  if (index >= devices_.size()) {
+    return u"";
+  }
   return devices_[index]->name();
 }
 
 std::u16string DevicePermissionsPrompt::Prompt::GetDeviceSerialNumber(
     size_t index) const {
-  DCHECK_LT(index, devices_.size());
+  if (index >= devices_.size()) {
+    return u"";
+  }
   return devices_[index]->serial_number();
 }
 
 void DevicePermissionsPrompt::Prompt::GrantDevicePermission(size_t index) {
-  DCHECK_LT(index, devices_.size());
-  devices_[index]->set_granted();
+  if (index < devices_.size()) {
+    devices_[index]->set_granted();
+  }
 }
 
 DevicePermissionsPrompt::Prompt::~Prompt() {
@@ -411,8 +426,9 @@ void DevicePermissionsPrompt::Prompt::AddDevice(
     std::unique_ptr<DeviceInfo> device) {
   std::u16string device_name = device->name();
   devices_.push_back(std::move(device));
-  if (observer_)
+  if (observer_) {
     observer_->OnDeviceAdded(devices_.size() - 1, device_name);
+  }
 }
 
 DevicePermissionsPrompt::DevicePermissionsPrompt(

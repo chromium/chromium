@@ -969,8 +969,7 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
 
   if (base::FeatureList::IsEnabled(
           blink::features::kFledgeEnableSampleDebugReportOnCookieSetting)) {
-    // TODO(crbug.com/391877228): Set its value based on cookie settings.
-    bool for_debugging_only_sampling = false;
+    bool for_debugging_only_sampling = ShouldSampleDebugReport();
     message_obj[cbor::Value("enableSampledDebugReporting")] =
         cbor::Value(for_debugging_only_sampling);
     message_elements_size +=

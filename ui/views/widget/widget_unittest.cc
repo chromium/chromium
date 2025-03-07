@@ -2697,7 +2697,9 @@ TEST_F(DesktopWidgetTest, GetPossiblyDestroyedParent) {
 
   const auto create_widget = [](Widget* parent, bool is_desktop) {
     Widget* widget = new Widget;
-    Widget::InitParams init_params(Widget::InitParams::TYPE_WINDOW);
+    Widget::InitParams init_params(
+        Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+        Widget::InitParams::TYPE_WINDOW);
     init_params.parent = parent->GetNativeView();
     init_params.context = parent->GetNativeView();
     if (is_desktop) {

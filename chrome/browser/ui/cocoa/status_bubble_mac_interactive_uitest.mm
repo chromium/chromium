@@ -23,7 +23,7 @@ class StatusBubbleMacInteractiveUITest : public InProcessBrowserTest {
 // do not work properly.
 IN_PROC_BROWSER_TEST_F(StatusBubbleMacInteractiveUITest,
                        DISABLED_TestSettingStatusDoesNotUnhideApp) {
-  StatusBubble* status_bubble = browser()->window()->GetStatusBubble();
+  StatusBubble* status_bubble = browser()->window()->GetStatusBubbles().front();
 
   EXPECT_FALSE(NSApp.hidden);
   [NSApp hide:nil];

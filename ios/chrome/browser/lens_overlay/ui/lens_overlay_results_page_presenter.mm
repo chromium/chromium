@@ -123,8 +123,8 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
         constraintEqualToAnchor:_baseViewController.view.rightAnchor],
   ]];
 
-  [_delegate
-      onResultsPageVisibleAreaLayoutGuideAdjusted:_visibleAreaLayoutGuide];
+  [_delegate lensOverlayResultsPagePresenter:self
+             didAdjustVisibleAreaLayoutGuide:_visibleAreaLayoutGuide];
 }
 
 - (void)presentResultsPageAnimated:(BOOL)animated
@@ -313,7 +313,8 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
     [_displayLink invalidate];
     [self sheetPresentationHeightChanged:0];
     [_windowPanTracker stopTracking];
-    [self.delegate onResultsPageWillInitiateGestureDrivenDismiss];
+    [self.delegate
+        lensOverlayResultsPagePresenterWillInitiateGestureDrivenDismiss:self];
   }
 }
 
@@ -333,8 +334,8 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
   CGFloat estimatedMediumDetentHeight =
       _detentsManager.estimatedMediumDetentHeight;
   CGFloat offsetNeeded = estimatedMediumDetentHeight + kSelectionOffsetPadding;
-
-  [self.delegate onResultsPageVerticalOcclusionInsetsSettled:offsetNeeded];
+  [_delegate lensOverlayResultsPagePresenter:self
+               updateVerticalOcclusionOffset:offsetNeeded];
 }
 
 #pragma mark - UIPanGestureRecognizer handlers
@@ -394,8 +395,8 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
 
 - (void)lensOverlayDetentsManagerDidChangeDimensionState:
     (LensOverlayDetentsManager*)detentsManager {
-  [self.delegate
-      onResultsPageDimensionStateChanged:detentsManager.sheetDimension];
+  [_delegate lensOverlayResultsPagePresenter:self
+                     didUpdateDimensionState:detentsManager.sheetDimension];
 }
 
 - (BOOL)lensOverlayDetentsManagerShouldDismissBottomSheet:

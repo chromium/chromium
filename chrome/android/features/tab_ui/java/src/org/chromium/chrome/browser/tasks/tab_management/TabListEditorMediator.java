@@ -230,7 +230,6 @@ class TabListEditorMediator
         mTabListCoordinator.prepareTabGridView();
         mVisibleTabs.clear();
         mVisibleTabs.addAll(tabs);
-        mSelectionDelegate.setSelectionModeEnabledForZeroItems(true);
 
         mResetHandler.resetWithListOfTabs(tabs, recyclerViewPosition, /* quickMode= */ false);
 

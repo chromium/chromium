@@ -34,9 +34,10 @@ class AXTreeDistillerTestBase : public ChromeRenderViewTest {
     // all HTML attributes into the accessibility tree. It should be removed
     // ASAP.
     //
-    // |ui::AXMode::kScreenReader| is needed for heading level information.
+    // |ui::AXMode::kExtendedProperties| is needed for heading level
+    // information.
     const ui::AXMode ax_mode = ui::AXMode::kWebContents | ui::AXMode::kHTML |
-                               ui::AXMode::kScreenReader;
+                               ui::AXMode::kExtendedProperties;
     render_frame->CreateAXTreeSnapshotter(ax_mode)->Snapshot(
         /* max_nodes= */ 0,
         /* timeout= */ {}, &snapshot);

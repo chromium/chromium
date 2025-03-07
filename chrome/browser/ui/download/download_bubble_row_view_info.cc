@@ -343,7 +343,6 @@ void DownloadBubbleRowViewInfo::PopulateForTailoredWarning(
     case TailoredWarningType::kSuspiciousArchive:
       return PopulateSuspiciousUiPattern();
     case TailoredWarningType::kCookieTheft:
-    case TailoredWarningType::kCookieTheftWithAccountInfo:
       return PopulateDangerousUiPattern();
     case TailoredWarningType::kNoTailoredWarning: {
       NOTREACHED();

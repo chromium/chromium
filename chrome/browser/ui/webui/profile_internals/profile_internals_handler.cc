@@ -43,8 +43,8 @@ std::string ProfileInternalsHandler::CountryIdToDebugString(
     return "unknown";
   }
 
-  return country_codes::CountryIDToCountryString(country_id->GetRestricted(
-      regional_capabilities::CountryAccessKey<ProfileInternalsHandler>(
+  return country_codes::CountryIDToCountryString(
+      country_id->GetRestricted(regional_capabilities::CountryAccessKey(
           regional_capabilities::CountryAccessReason::
               kProfileInternalsDisplayInDebugUi)));
 }

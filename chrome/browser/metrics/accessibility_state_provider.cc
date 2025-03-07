@@ -19,7 +19,7 @@ metrics::SystemProfileProto::AccessibilityState::AXMode ModeFlagsToProtoEnum(
       return metrics::SystemProfileProto::AccessibilityState::WEB_CONTENTS;
     case ui::AXMode::kInlineTextBoxes:
       return metrics::SystemProfileProto::AccessibilityState::INLINE_TEXT_BOXES;
-    case ui::AXMode::kScreenReader:
+    case ui::AXMode::kExtendedProperties:
       return metrics::SystemProfileProto::AccessibilityState::SCREEN_READER;
     case ui::AXMode::kHTML:
       return metrics::SystemProfileProto::AccessibilityState::HTML;
@@ -65,7 +65,7 @@ void AccessibilityStateProvider::ProvideSystemProfileMetrics(
   MaybeAddAccessibilityModeFlags(mode, ui::AXMode::kNativeAPIs, state);
   MaybeAddAccessibilityModeFlags(mode, ui::AXMode::kWebContents, state);
   MaybeAddAccessibilityModeFlags(mode, ui::AXMode::kInlineTextBoxes, state);
-  MaybeAddAccessibilityModeFlags(mode, ui::AXMode::kScreenReader, state);
+  MaybeAddAccessibilityModeFlags(mode, ui::AXMode::kExtendedProperties, state);
   MaybeAddAccessibilityModeFlags(mode, ui::AXMode::kHTML, state);
   MaybeAddAccessibilityModeFlags(mode, ui::AXMode::kHTMLMetadata, state);
   MaybeAddAccessibilityModeFlags(mode, ui::AXMode::kLabelImages, state);

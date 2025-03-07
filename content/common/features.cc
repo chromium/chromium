@@ -440,6 +440,13 @@ BASE_FEATURE(kSkipEarlyCommitPendingForCrashedFrame,
              "SkipEarlyCommitPendingForCrashedFrame",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_WIN)
+// Skip granting access to the data path if it has already been set.
+BASE_FEATURE(kSkipGrantAccessToDataPathIfAlreadySet,
+             "SkipGrantAccessToDataPathIfAlreadySet",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kTextInputClient,
              "TextInputClient",

@@ -7,6 +7,7 @@
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @class HistorySyncCoordinator;
 namespace history_sync {
@@ -28,7 +29,7 @@ enum class AccessPoint : int;
 
 // Coordinator for history sync view. The current implementation supports only
 // showing the view in a navigation controller.
-@interface HistorySyncCoordinator : InterruptibleChromeCoordinator
+@interface HistorySyncCoordinator : ChromeCoordinator
 
 // Records metric if the History Sync Opt-In screen is skipped for the given
 // reason, for the given access point.

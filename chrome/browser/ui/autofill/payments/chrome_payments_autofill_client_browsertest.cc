@@ -9,6 +9,10 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
+#include "components/autofill/core/browser/payments/constants.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,7 +47,12 @@ class ChromePaymentsAutofillClientBrowserTest
   void ShowUi(const std::string& name) override {
     switch (GetParam().dialog) {
       case DialogEnum::BnplTos:
-        client()->ShowBnplTos();
+        BnplTosModel model;
+        model.issuer = BnplIssuer(
+            /*instrument_id=*/std::nullopt, std::string(kBnplAffirmIssuerId),
+            std::vector<BnplIssuer::EligiblePriceRange>());
+        client()->ShowBnplTos(std::move(model), base::DoNothing(),
+                              base::DoNothing());
         break;
     }
   }

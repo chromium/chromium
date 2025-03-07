@@ -2210,6 +2210,12 @@ who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.17.15 -> 0.17.16"
 
+[[audits.png]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.17.16 -> 0.18.0-rc"
+notes = "Still no `unsafe`, no cryptography, and justified usage of `std::fs`."
+
 [[audits.potential_utf]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]

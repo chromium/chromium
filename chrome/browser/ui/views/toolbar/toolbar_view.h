@@ -68,10 +68,6 @@ namespace page_actions {
 class PageActionView;
 }  // namespace page_actions
 
-namespace send_tab_to_self {
-class SendTabToSelfToolbarIconView;
-}
-
 namespace views {
 class FlexLayout;
 }
@@ -181,10 +177,6 @@ class ToolbarView : public views::AccessiblePaneView,
     return pinned_toolbar_actions_container_;
   }
   MediaToolbarButtonView* media_button() const { return media_button_; }
-  send_tab_to_self::SendTabToSelfToolbarIconView* send_tab_to_self_button()
-      const {
-    return send_tab_to_self_button_;
-  }
   BrowserAppMenuButton* app_menu_button() const { return app_menu_button_; }
   HomeButton* home_button() const { return home_; }
   AppMenuIconController* app_menu_icon_controller() {
@@ -317,8 +309,6 @@ class ToolbarView : public views::AccessiblePaneView,
       nullptr;
   raw_ptr<AvatarToolbarButton> avatar_ = nullptr;
   raw_ptr<MediaToolbarButtonView> media_button_ = nullptr;
-  raw_ptr<send_tab_to_self::SendTabToSelfToolbarIconView>
-      send_tab_to_self_button_ = nullptr;
   raw_ptr<BrowserAppMenuButton> app_menu_button_ = nullptr;
   raw_ptr<DownloadToolbarButtonView> download_button_ = nullptr;
   raw_ptr<views::View> new_tab_button_ = nullptr;

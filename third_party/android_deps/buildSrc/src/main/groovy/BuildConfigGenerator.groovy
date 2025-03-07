@@ -592,8 +592,15 @@ No modifications.
                   jar_path = "${DOWNLOAD_ROOT_DIRECTORY}/${libPath}/${dependency.fileName}"
                   output_name = "${dependency.id}"
                 """.stripIndent(/* forceGroovyBehavior */ true))
-            if (dependency.supportsAndroid) {
+            if (dependency.isRobolectric) {
+                sb.append('  is_robolectric = true\n')
+            } else {
+              if (dependency.supportsAndroid) {
                 sb.append('  supports_android = true\n')
+              }
+              if (dependency.requiresAndroid) {
+                  sb.append('  requires_android = true\n')
+              }
             }
         } else if (dependency.extension == 'aar') {
             String targetType = isAndroidX ? 'androidx_android_aar_prebuilt' : 'android_aar_prebuilt'
@@ -713,20 +720,10 @@ No modifications.
     private static void addSpecialTreatment(StringBuilder sb, String dependencyId, String dependencyExtension) {
         addPreconditionsOverrideTreatment(sb, dependencyId)
 
-        if (dependencyId.startsWith('org_robolectric')) {
-            sb.append('  is_robolectric = true\n')
-        }
         if (dependencyExtension == 'aar' && dependencyId.startsWith('com_android_support')) {
             // The androidx and com_android_support libraries have duplicate resources such as
             // 'primary_text_default_material_dark'.
             sb.append('  resource_overlay = true\n')
-        }
-        if (dependencyExtension == 'jar' && (
-                dependencyId.startsWith('io_grpc_') ||
-                        dependencyId == 'com_google_firebase_firebase_encoders' ||
-                        dependencyId == 'com_google_guava_guava_android')) {
-            sb.append('  # https://crbug.com/1412551\n')
-            sb.append('  requires_android = true\n')
         }
 
         switch (dependencyId) {
@@ -860,14 +857,6 @@ No modifications.
             case 'net_sf_kxml_kxml2':
                 sb.append('  # Target needs to exclude *xmlpull* files as already included in Android SDK.\n')
                 sb.append('  jar_excluded_patterns = [ "*xmlpull*" ]\n')
-                break
-            case 'org_jetbrains_kotlinx_kotlinx_coroutines_android':
-            case 'org_jetbrains_kotlinx_kotlinx_coroutines_guava':
-                sb.append('requires_android = true')
-                break
-            case 'org_mockito_mockito_android':
-                sb.append('  # Depends on third_party/byte_buddy:byte_buddy_android_java\n')
-                sb.append('  requires_android = true\n')
                 break
             case 'org_mockito_mockito_core':
                 sb.append('  # Uses java.time which does not exist until API 26.\n')

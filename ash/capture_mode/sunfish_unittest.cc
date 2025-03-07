@@ -822,7 +822,7 @@ TEST_F(SunfishTest, DragSearchResultsPanel) {
                                                  /*is_active=*/false);
   widget->SetBounds(gfx::Rect(100, 100,
                               capture_mode::kSearchResultsPanelTotalWidth,
-                              capture_mode::kSearchResultsPanelHeight));
+                              capture_mode::kSearchResultsPanelTotalHeight));
   widget->Show();
 
   auto* search_results_panel =
@@ -1941,17 +1941,17 @@ TEST_F(SunfishTest, PanelBounds) {
                       capture_mode::kSearchResultsPanelTotalWidth -
                       capture_mode::kPanelWorkAreaSpacing;
   const int default_y = work_area.bottom() -
-                        capture_mode::kSearchResultsPanelHeight -
+                        capture_mode::kSearchResultsPanelTotalHeight -
                         capture_mode::kPanelWorkAreaSpacing;
   // TODO(hewer): Remove this when the feedback button is removed.
   const int above_button_y = feedback_bounds.y() -
-                             capture_mode::kSearchResultsPanelHeight -
+                             capture_mode::kSearchResultsPanelTotalHeight -
                              capture_mode::kPanelButtonSpacing;
 
   // By default, the panel should appear on the left side.
   gfx::Rect target_bounds(left_x, default_y,
                           capture_mode::kSearchResultsPanelTotalWidth,
-                          capture_mode::kSearchResultsPanelHeight);
+                          capture_mode::kSearchResultsPanelTotalHeight);
   EXPECT_EQ(controller->GetSearchResultsPanel()->GetBoundsInScreen(),
             target_bounds);
 

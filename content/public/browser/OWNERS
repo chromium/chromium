@@ -4,3 +4,4 @@
 # Security review is required for new callers of some ServiceProcessHostOptions.
 per-file service_process_host_passkeys.h=set noparent
 per-file service_process_host_passkeys.h=file://sandbox/OWNERS
+per-file browser_accessibility_state.h=grt@chromium.org,dtseng@chromium.org,aleventhal@chromium.org,benjamin.beaudry@microsoft.com

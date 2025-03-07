@@ -377,8 +377,6 @@ class DownloadBubbleSecurityViewInfoTailoredWarningTest
  public:
   DownloadBubbleSecurityViewInfoTailoredWarningTest() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    scoped_feature_list_.InitAndEnableFeature(
-        safe_browsing::kDownloadTailoredWarnings);
   }
 
   ~DownloadBubbleSecurityViewInfoTailoredWarningTest() override = default;
@@ -386,29 +384,22 @@ class DownloadBubbleSecurityViewInfoTailoredWarningTest
  protected:
   void SetupTailoredWarningForItem(
       download::DownloadDangerType danger_type,
-      TailoredVerdict::TailoredVerdictType tailored_verdict_type,
-      std::vector<TailoredVerdict::ExperimentalWarningAdjustment> adjustments) {
+      TailoredVerdict::TailoredVerdictType tailored_verdict_type) {
     ON_CALL(item(), GetDangerType()).WillByDefault(Return(danger_type));
     TailoredVerdict tailored_verdict;
     tailored_verdict.set_tailored_verdict_type(tailored_verdict_type);
-    for (const auto& adjustment : adjustments) {
-      tailored_verdict.add_adjustments(adjustment);
-    }
     safe_browsing::DownloadProtectionService::SetDownloadProtectionData(
         &item(), "token",
         safe_browsing::ClientDownloadResponse::SAFE,  // placeholder
         tailored_verdict);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(DownloadBubbleSecurityViewInfoTailoredWarningTest,
        GetInfoForTailoredWarning_CookieTheft) {
   SetupTailoredWarningForItem(
       download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
-      TailoredVerdict::COOKIE_THEFT, /*adjustments=*/{});
+      TailoredVerdict::COOKIE_THEFT);
   RefreshInfo();
 
   ASSERT_TRUE(info().has_primary_button());
@@ -423,8 +414,7 @@ TEST_F(DownloadBubbleSecurityViewInfoTailoredWarningTest,
 TEST_F(DownloadBubbleSecurityViewInfoTailoredWarningTest,
        GetInfoForTailoredWarning_SuspiciousArchive) {
   SetupTailoredWarningForItem(download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT,
-                              TailoredVerdict::SUSPICIOUS_ARCHIVE,
-                              /*adjustments=*/{});
+                              TailoredVerdict::SUSPICIOUS_ARCHIVE);
   RefreshInfo();
 
   ASSERT_TRUE(info().has_primary_button());
@@ -437,42 +427,5 @@ TEST_F(DownloadBubbleSecurityViewInfoTailoredWarningTest,
   EXPECT_FALSE(info().secondary_button().is_prominent);
   EXPECT_EQ(info().warning_summary(),
             u"This archive file includes other files that may hide malware");
-}
-
-TEST_F(DownloadBubbleSecurityViewInfoTailoredWarningTest,
-       GetInfoForTailoredWarning_AccountInfoStringWithAccount) {
-  SetupTailoredWarningForItem(
-      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
-      TailoredVerdict::COOKIE_THEFT, {TailoredVerdict::ACCOUNT_INFO_STRING});
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile());
-  signin::SetPrimaryAccount(identity_manager, "test@example.com",
-                            signin::ConsentLevel::kSignin);
-  RefreshInfo();
-
-  ASSERT_TRUE(info().has_primary_button());
-  EXPECT_FALSE(info().has_secondary_button());
-  EXPECT_EQ(info().primary_button().command,
-            DownloadCommands::Command::DISCARD);
-  EXPECT_TRUE(info().primary_button().is_prominent);
-  EXPECT_EQ(info().warning_summary(),
-            u"This file can harm your personal and social network accounts, "
-            u"including test@example.com");
-}
-
-TEST_F(DownloadBubbleSecurityViewInfoTailoredWarningTest,
-       GetInfoForTailoredWarning_AccountInfoStringWithoutAccount) {
-  SetupTailoredWarningForItem(
-      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
-      TailoredVerdict::COOKIE_THEFT, {TailoredVerdict::ACCOUNT_INFO_STRING});
-  RefreshInfo();
-
-  ASSERT_TRUE(info().has_primary_button());
-  EXPECT_FALSE(info().has_secondary_button());
-  EXPECT_EQ(info().primary_button().command,
-            DownloadCommands::Command::DISCARD);
-  EXPECT_TRUE(info().primary_button().is_prominent);
-  EXPECT_EQ(info().warning_summary(),
-            u"This file can harm your personal and social network accounts");
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)

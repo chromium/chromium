@@ -22,6 +22,7 @@
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
 #include "content/services/auction_worklet/private_model_training_bindings.h"
+#include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
@@ -6143,6 +6144,10 @@ TEST_F(ContextRecyclerTest, RegisterAdMacroBindings) {
 }
 
 TEST_F(ContextRecyclerTest, EncodeUtf8) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kFledgeTextConversionHelpers);
+
   const char kScript[] = R"(
     function assertEq(l, r, label) {
       if (l !== r)
@@ -6160,24 +6165,24 @@ TEST_F(ContextRecyclerTest, EncodeUtf8) {
     }
 
     function test1() {
-      assertByteArray(encoderObj.encodeUtf8('ABC'),
+      assertByteArray(protectedAudience.encodeUtf8('ABC'),
                       [65, 66, 67]);
     }
 
     function test2() {
-      assertByteArray(encoderObj.encodeUtf8('A \u0490'),
+      assertByteArray(protectedAudience.encodeUtf8('A \u0490'),
                       [65, 32, 0xD2, 0x90]);
     }
 
     // Unmatched surrogate.
     function test3() {
-      assertByteArray(encoderObj.encodeUtf8('A\uD800C'),
+      assertByteArray(protectedAudience.encodeUtf8('A\uD800C'),
                       [65, 0xEF, 0xBF, 0xBD, 67]);
     }
 
     // Matched surrogate.
     function test4() {
-      assertByteArray(encoderObj.encodeUtf8('A\uD83D\uDE02C'),
+      assertByteArray(protectedAudience.encodeUtf8('A\uD83D\uDE02C'),
                       [65, 0xF0, 0x9F, 0x98, 0x82, 67]);
     }
 
@@ -6186,7 +6191,7 @@ TEST_F(ContextRecyclerTest, EncodeUtf8) {
       let obj = {
         toString: () => "ABC"
       };
-      assertByteArray(encoderObj.encodeUtf8(obj),
+      assertByteArray(protectedAudience.encodeUtf8(obj),
                       [65, 66, 67]);
     }
   )";
@@ -6203,13 +6208,6 @@ TEST_F(ContextRecyclerTest, EncodeUtf8) {
   for (const char* test : {"test1", "test2", "test3", "test4", "test5"}) {
     SCOPED_TRACE(test);
     ContextRecyclerScope scope(context_recycler);
-    v8::Local<v8::Context> context = scope.GetContext();
-
-    v8::Local<v8::Object> obj = v8::Object::New(helper_->isolate());
-    context_recycler.text_conversion_helpers()->ReInitialize(context, obj);
-    context->Global()
-        ->Set(context, helper_->CreateStringFromLiteral("encoderObj"), obj)
-        .Check();
 
     std::vector<std::string> error_msgs;
     Run(scope, script, test, error_msgs);
@@ -6218,10 +6216,14 @@ TEST_F(ContextRecyclerTest, EncodeUtf8) {
 }
 
 TEST_F(ContextRecyclerTest, EncodeUtf8Failure) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kFledgeTextConversionHelpers);
+
   const char kScript[] = R"(
     // Not enough arguments.
     function test1() {
-      encoderObj.encodeUtf8();
+      protectedAudience.encodeUtf8();
     }
 
     // String conversion failure.
@@ -6229,7 +6231,7 @@ TEST_F(ContextRecyclerTest, EncodeUtf8Failure) {
       let obj = {
         toString: () => { throw 'ouch' }
       };
-      encoderObj.encodeUtf8(obj);
+      protectedAudience.encodeUtf8(obj);
     }
   )";
 
@@ -6254,13 +6256,6 @@ TEST_F(ContextRecyclerTest, EncodeUtf8Failure) {
   for (const auto& test : kTests) {
     SCOPED_TRACE(test.functionName);
     ContextRecyclerScope scope(context_recycler);
-    v8::Local<v8::Context> context = scope.GetContext();
-
-    v8::Local<v8::Object> obj = v8::Object::New(helper_->isolate());
-    context_recycler.text_conversion_helpers()->ReInitialize(context, obj);
-    context->Global()
-        ->Set(context, helper_->CreateStringFromLiteral("encoderObj"), obj)
-        .Check();
 
     std::vector<std::string> error_msgs;
     Run(scope, script, test.functionName, error_msgs);
@@ -6269,6 +6264,10 @@ TEST_F(ContextRecyclerTest, EncodeUtf8Failure) {
 }
 
 TEST_F(ContextRecyclerTest, DecodeUtf8) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kFledgeTextConversionHelpers);
+
   const char kScript[] = R"(
     function assertEq(l, r, label) {
       if (l !== r)
@@ -6286,32 +6285,33 @@ TEST_F(ContextRecyclerTest, DecodeUtf8) {
     }
 
     function test1() {
-      assertString(encoderObj.decodeUtf8(new Uint8Array([65, 66, 67])),
+      assertString(protectedAudience.decodeUtf8(new Uint8Array([65, 66, 67])),
                    'ABC');
     }
 
     function test2() {
-      assertString(encoderObj.decodeUtf8(new Uint8Array([65, 32, 0xD2, 0x90])),
+      assertString(protectedAudience.decodeUtf8(
+                       new Uint8Array([65, 32, 0xD2, 0x90])),
                    'A \u0490');
     }
 
     // Broken utf-8 --- gets a replacement character.
     function test3() {
-      assertString(encoderObj.decodeUtf8(new Uint8Array([65, 32, 0xD2])),
+      assertString(protectedAudience.decodeUtf8(new Uint8Array([65, 32, 0xD2])),
                    'A \uFFFD');
     }
 
     // Utf-8 for just a single surrogate. Every byte ended up replaced with a
     // replacement character.
     function test4() {
-      assertString(encoderObj.decodeUtf8(new Uint8Array(
+      assertString(protectedAudience.decodeUtf8(new Uint8Array(
                       [65, 32, 0xED, 0xA0, 0x80, 66])),
                    'A \uFFFD\uFFFD\uFFFDB');
     }
 
     // Utf-8 for something that requires two Utf-16 characters.
     function test5() {
-      assertString(encoderObj.decodeUtf8(new Uint8Array(
+      assertString(protectedAudience.decodeUtf8(new Uint8Array(
                       [65, 0xF0, 0x9F, 0x98, 0x82, 67])),
                    'A\uD83D\uDE02C');
     }
@@ -6323,9 +6323,9 @@ TEST_F(ContextRecyclerTest, DecodeUtf8) {
       for (let i = 0; i < fullView.length; ++i)
         fullView[i] = 65 + i;
       let partialView = new Uint8Array(buffer, 2, 3);
-      assertString(encoderObj.decodeUtf8(fullView),
+      assertString(protectedAudience.decodeUtf8(fullView),
                    'ABCDEFGH');
-      assertString(encoderObj.decodeUtf8(partialView),
+      assertString(protectedAudience.decodeUtf8(partialView),
                    'CDE');
     }
   )";
@@ -6343,13 +6343,6 @@ TEST_F(ContextRecyclerTest, DecodeUtf8) {
        {"test1", "test2", "test3", "test4", "test5", "test6"}) {
     SCOPED_TRACE(test);
     ContextRecyclerScope scope(context_recycler);
-    v8::Local<v8::Context> context = scope.GetContext();
-
-    v8::Local<v8::Object> obj = v8::Object::New(helper_->isolate());
-    context_recycler.text_conversion_helpers()->ReInitialize(context, obj);
-    context->Global()
-        ->Set(context, helper_->CreateStringFromLiteral("encoderObj"), obj)
-        .Check();
 
     std::vector<std::string> error_msgs;
     Run(scope, script, test, error_msgs);
@@ -6358,15 +6351,19 @@ TEST_F(ContextRecyclerTest, DecodeUtf8) {
 }
 
 TEST_F(ContextRecyclerTest, DecodeUtf8Failure) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kFledgeTextConversionHelpers);
+
   const char kScript[] = R"(
     // Not enough arguments.
     function test1() {
-      encoderObj.decodeUtf8();
+      protectedAudience.decodeUtf8();
     }
 
     // Wrong type.
     function test2() {
-      encoderObj.decodeUtf8([65,66]);
+      protectedAudience.decodeUtf8([65,66]);
     }
   )";
 
@@ -6393,13 +6390,6 @@ TEST_F(ContextRecyclerTest, DecodeUtf8Failure) {
   for (const auto& test : kTests) {
     SCOPED_TRACE(test.functionName);
     ContextRecyclerScope scope(context_recycler);
-    v8::Local<v8::Context> context = scope.GetContext();
-
-    v8::Local<v8::Object> obj = v8::Object::New(helper_->isolate());
-    context_recycler.text_conversion_helpers()->ReInitialize(context, obj);
-    context->Global()
-        ->Set(context, helper_->CreateStringFromLiteral("encoderObj"), obj)
-        .Check();
 
     std::vector<std::string> error_msgs;
     Run(scope, script, test.functionName, error_msgs);

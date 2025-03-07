@@ -26,6 +26,7 @@ namespace data_sharing {
 namespace {
 
 const size_t kMaxRecordedGroupEvents = 1000;
+const size_t kReadGroupsBatchSize = 50;
 
 VersionToken ComputeVersionToken(
     const sync_pb::CollaborationGroupSpecifics& specifics) {
@@ -280,10 +281,29 @@ void GroupDataModel::ScheduleNextPeriodicPolling() {
 void GroupDataModel::FetchGroupsFromSDK(
     const std::vector<GroupId>& added_or_updated_groups) {
   has_ongoing_group_fetch_ = true;
+  outstanding_batches_ = static_cast<size_t>(
+      std::ceil(static_cast<double>(added_or_updated_groups.size()) /
+                kReadGroupsBatchSize));
 
+  // The ReadGroups API has a restrictions groups that can be
+  // fetched in one request. So, we break the request into batches and issue
+  // them in parallel.
+  for (size_t i = 0; i < added_or_updated_groups.size();
+       i += kReadGroupsBatchSize) {
+    std::vector<GroupId> batch(
+        added_or_updated_groups.begin() + i,
+        added_or_updated_groups.begin() +
+            std::min(i + kReadGroupsBatchSize, added_or_updated_groups.size()));
+
+    FetchBatchOfGroupsFromSDK(batch);
+  }
+}
+
+void GroupDataModel::FetchBatchOfGroupsFromSDK(
+    const std::vector<GroupId>& batch) {
   std::map<GroupId, VersionToken> group_versions;
   data_sharing_pb::ReadGroupsParams params;
-  for (const GroupId& group_id : added_or_updated_groups) {
+  for (const GroupId& group_id : batch) {
     auto collaboration_group_specifics_opt =
         collaboration_group_sync_bridge_->GetSpecifics(group_id);
     CHECK(collaboration_group_specifics_opt.has_value());
@@ -299,22 +319,18 @@ void GroupDataModel::FetchGroupsFromSDK(
   }
 
   sdk_delegate_->ReadGroups(
-      params, base::BindOnce(&GroupDataModel::OnGroupsFetchedFromSDK,
+      params, base::BindOnce(&GroupDataModel::OnBatchOfGroupsFetchedFromSDK,
                              weak_ptr_factory_.GetWeakPtr(), group_versions,
                              base::Time::Now()));
 }
 
-void GroupDataModel::OnGroupsFetchedFromSDK(
+void GroupDataModel::OnBatchOfGroupsFetchedFromSDK(
     const std::map<GroupId, VersionToken>& requested_groups_and_versions,
     const base::Time& requested_at_timestamp,
     const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&
         read_groups_result) {
   if (!read_groups_result.has_value()) {
-    has_ongoing_group_fetch_ = false;
-    if (has_pending_changes_) {
-      // Some changes happened while the fetch was in flight, process them now.
-      ProcessGroupChanges(/*is_initial_load=*/false);
-    }
+    HandleBatchCompletion();
     // TODO(crbug.com/301390275): handle entire request failure.
     return;
   }
@@ -353,10 +369,16 @@ void GroupDataModel::OnGroupsFetchedFromSDK(
     }
   }
 
-  has_ongoing_group_fetch_ = false;
-  if (has_pending_changes_) {
-    // Some changes happened while the fetch was in flight, process them now.
-    ProcessGroupChanges(/*is_initial_load=*/false);
+  HandleBatchCompletion();
+}
+
+void GroupDataModel::HandleBatchCompletion() {
+  if (--outstanding_batches_ == 0) {
+    has_ongoing_group_fetch_ = false;
+    if (has_pending_changes_) {
+      // Some changes happened while the fetch was in flight, process them now.
+      ProcessGroupChanges(/*is_initial_load=*/false);
+    }
   }
 }
 

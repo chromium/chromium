@@ -195,7 +195,7 @@ TEST_F(AutofillAiSuggestionsTest,
 
   FieldType triggering_field_type = autofill::PASSPORT_NUMBER;
   std::unique_ptr<FormStructure> form = CreateFormStructure(
-      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY_TAG});
+      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY});
 
   form->field(0)->set_value(u"12");
 
@@ -305,13 +305,13 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_DedupeSuggestions) {
   FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
   std::unique_ptr<FormStructure> form =
       CreateFormStructure({triggering_field_type, autofill::PASSPORT_NUMBER,
-                           autofill::PASSPORT_ISSUING_COUNTRY_TAG});
+                           autofill::PASSPORT_ISSUING_COUNTRY});
   std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
       *form, form->fields()[0]->global_id(), entities, kAppLocaleUS);
 
   // The passport with passport_a_with_different_expiry_date should be
   // deduped because while it has an unique attribute (expiry date), the form
-  // does not contain a field with autofill::PASSPORT_ISSUE_DATE_TAG, which
+  // does not contain a field with autofill::PASSPORT_ISSUE_DATE, which
   // makes it identical to `passport`. The passport with
   // passport_a_without_an_expiry_date should be deduped because it is a
   // proper subset of `passport`.
@@ -385,8 +385,8 @@ TEST_F(AutofillAiSuggestionsTest,
 
   FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
   std::unique_ptr<FormStructure> form = CreateFormStructure(
-      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY_TAG,
-       autofill::PASSPORT_EXPIRATION_DATE_TAG});
+      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY,
+       autofill::PASSPORT_EXPIRATION_DATE});
   std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
       *form, form->fields()[0]->global_id(), {passport_entity}, kAppLocaleUS);
 
@@ -405,7 +405,7 @@ TEST_F(
 
   FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
   std::unique_ptr<FormStructure> form = CreateFormStructure(
-      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY_TAG,
+      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY,
        autofill::PASSPORT_NUMBER});
   std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
       *form, form->fields()[0]->global_id(),
@@ -430,12 +430,12 @@ TEST_F(AutofillAiSuggestionsTest,
       MakePassportWithRandomGuid({.expiry_date = u"2018-12-31"});
 
   FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
-  // Note that `autofill::PASSPORT_ISSUING_COUNTRY_TAG` appears twice in the
+  // Note that `autofill::PASSPORT_ISSUING_COUNTRY` appears twice in the
   // form, yet due to deduping it only adds its equivalent label once.
   std::unique_ptr<FormStructure> form = CreateFormStructure(
-      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY_TAG,
-       autofill::PASSPORT_ISSUING_COUNTRY_TAG, autofill::PASSPORT_NUMBER,
-       autofill::PASSPORT_EXPIRATION_DATE_TAG});
+      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY,
+       autofill::PASSPORT_ISSUING_COUNTRY, autofill::PASSPORT_NUMBER,
+       autofill::PASSPORT_EXPIRATION_DATE});
   std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
       *form, form->fields()[0]->global_id(),
       {passport_entity, passport_entity_b, passport_entity_c}, kAppLocaleUS);
@@ -472,7 +472,7 @@ TEST_F(
 
   FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
   std::unique_ptr<FormStructure> form = CreateFormStructure(
-      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY_TAG});
+      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY});
   std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
       *form, form->fields()[0]->global_id(),
       {passport_entity_a, passport_entity_b, passport_entity_c}, kAppLocaleUS);
@@ -502,8 +502,8 @@ TEST_F(
 
   FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
   std::unique_ptr<FormStructure> form = CreateFormStructure(
-      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY_TAG,
-       autofill::PASSPORT_NUMBER, autofill::PASSPORT_EXPIRATION_DATE_TAG});
+      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY,
+       autofill::PASSPORT_NUMBER, autofill::PASSPORT_EXPIRATION_DATE});
   std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
       *form, form->fields()[0]->global_id(),
       {passport_entity, passport_entity_b}, kAppLocaleUS);
@@ -527,7 +527,7 @@ TEST_F(
 
   FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
   std::unique_ptr<FormStructure> form = CreateFormStructure(
-      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY_TAG,
+      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY,
        autofill::PASSPORT_NUMBER});
   std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
       *form, form->fields()[0]->global_id(),

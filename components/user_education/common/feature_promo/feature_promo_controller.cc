@@ -232,10 +232,10 @@ FeaturePromoControllerCommon::CloseBubbleAndContinuePromoWithReason(
   return FeaturePromoHandle(GetAsWeakPtr(), &iph_feature);
 }
 
-bool FeaturePromoControllerCommon::CheckScreenReaderPromptAvailable(
+bool FeaturePromoControllerCommon::CheckExtendedPropertiesPromptAvailable(
     bool for_demo) const {
   if (!ui::AXPlatform::GetInstance().GetMode().has_mode(
-          ui::AXMode::kScreenReader)) {
+          ui::AXMode::kExtendedProperties)) {
     return false;
   }
 

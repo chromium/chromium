@@ -22,7 +22,7 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     const GridLineResolver line_resolver(algorithm.Style(),
                                          /*auto_repetitions=*/0);
     virtual_masonry_items_ =
-        algorithm.VirtualMasonryItems(line_resolver, &start_offset);
+        algorithm.BuildVirtualMasonryItems(line_resolver, &start_offset);
 
     grid_axis_tracks_ = std::make_unique<GridSizingTrackCollection>(
         algorithm.BuildGridAxisTracks(line_resolver, SizingConstraint::kLayout,
@@ -89,7 +89,6 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
 };
 
 TEST_F(MasonryLayoutAlgorithmTest, BuildMasonryItems) {
-  LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
     #masonry {

@@ -145,14 +145,13 @@
   [super stop];
 }
 
-#pragma mark - SigninCoordinator
+#pragma mark - InterruptibleChromeCoordinator
 
-- (void)interruptAnimated:(BOOL)animated
-               completion:(ProceduralBlock)completion {
+- (void)interruptAnimated:(BOOL)animated {
   if (_addAccountSigninCoordinator) {
     CHECK(!_identityChooserCoordinator);
     CHECK(!_activityOverlayCoordinator);
-    [_addAccountSigninCoordinator interruptAnimated:animated completion:nil];
+    [_addAccountSigninCoordinator interruptAnimated:animated];
   } else if (_identityChooserCoordinator) {
     CHECK(!_activityOverlayCoordinator);
     [self stopIdentityChooserCoordinator];
@@ -163,9 +162,6 @@
   [_mediator interrupt];
   [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
                    completionIdentity:nil];
-  if (completion) {
-    completion();
-  }
 }
 
 #pragma mark - IdentityChooserCoordinatorDelegate

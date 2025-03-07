@@ -72,12 +72,9 @@ class CORE_EXPORT GridLayoutAlgorithm
 
   const LayoutResult* LayoutInternal();
 
-  LayoutUnit Baseline(const GridLayoutData& layout_data,
-                      const GridItemData& grid_item,
-                      GridTrackSizingDirection track_direction) const;
-
-  void ComputeGridGeometry(const GridSizingTree& grid_sizing_tree,
-                           LayoutUnit* intrinsic_block_size);
+  void ComputeGridGeometry(GridSizingTree* grid_sizing_tree,
+                           LayoutUnit* intrinsic_block_size,
+                           HeapVector<Member<LayoutBox>>* oof_children);
 
   LayoutUnit ComputeIntrinsicBlockSizeIgnoringChildren() const;
 

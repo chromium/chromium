@@ -274,16 +274,12 @@ void BluetoothGattDescriptorServiceProviderImpl::ReadValue(
     // the delegate, which should know how to handle it.
   }
 
-  // GetValue() promises to only call either the success or error callback.
-  auto split_response_sender =
-      base::SplitOnceCallback(std::move(response_sender));
-
   DCHECK(delegate_);
   delegate_->GetValue(
       device_path,
       base::BindOnce(&BluetoothGattDescriptorServiceProviderImpl::OnReadValue,
                      weak_ptr_factory_.GetWeakPtr(), method_call,
-                     std::move(split_response_sender.first)));
+                     std::move(response_sender)));
 }
 
 void BluetoothGattDescriptorServiceProviderImpl::WriteValue(

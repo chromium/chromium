@@ -12,7 +12,6 @@
 #include "base/token.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"

@@ -784,20 +784,18 @@ Called by update_autofill_enums.py.-->
       label="PASSPORT_NUMBER: Not autofilled or autofilled value edited"/>
   <int value="10817" label="PASSPORT_NUMBER: Autofilled value accepted"/>
   <int value="10880"
-      label="PASSPORT_ISSUING_COUNTRY_TAG: Not autofilled or autofilled value
+      label="PASSPORT_ISSUING_COUNTRY: Not autofilled or autofilled value
              edited"/>
   <int value="10881"
-      label="PASSPORT_ISSUING_COUNTRY_TAG: Autofilled value accepted"/>
+      label="PASSPORT_ISSUING_COUNTRY: Autofilled value accepted"/>
   <int value="10944"
-      label="PASSPORT_EXPIRATION_DATE_TAG: Not autofilled or autofilled value
+      label="PASSPORT_EXPIRATION_DATE: Not autofilled or autofilled value
              edited"/>
   <int value="10945"
-      label="PASSPORT_EXPIRATION_DATE_TAG: Autofilled value accepted"/>
+      label="PASSPORT_EXPIRATION_DATE: Autofilled value accepted"/>
   <int value="11008"
-      label="PASSPORT_ISSUE_DATE_TAG: Not autofilled or autofilled value
-             edited"/>
-  <int value="11009"
-      label="PASSPORT_ISSUE_DATE_TAG: Autofilled value accepted"/>
+      label="PASSPORT_ISSUE_DATE: Not autofilled or autofilled value edited"/>
+  <int value="11009" label="PASSPORT_ISSUE_DATE: Autofilled value accepted"/>
   <int value="11072"
       label="LOYALTY_MEMBERSHIP_PROGRAM: Not autofilled or autofilled value
              edited"/>
@@ -837,15 +835,15 @@ Called by update_autofill_enums.py.-->
              edited"/>
   <int value="11649" label="DRIVERS_LICENSE_NUMBER: Autofilled value accepted"/>
   <int value="11712"
-      label="DRIVERS_LICENSE_EXPIRATION_DATE_TAG: Not autofilled or
-             autofilled value edited"/>
-  <int value="11713"
-      label="DRIVERS_LICENSE_EXPIRATION_DATE_TAG: Autofilled value accepted"/>
-  <int value="11776"
-      label="DRIVERS_LICENSE_ISSUE_DATE_TAG: Not autofilled or autofilled
+      label="DRIVERS_LICENSE_EXPIRATION_DATE: Not autofilled or autofilled
              value edited"/>
+  <int value="11713"
+      label="DRIVERS_LICENSE_EXPIRATION_DATE: Autofilled value accepted"/>
+  <int value="11776"
+      label="DRIVERS_LICENSE_ISSUE_DATE: Not autofilled or autofilled value
+             edited"/>
   <int value="11777"
-      label="DRIVERS_LICENSE_ISSUE_DATE_TAG: Autofilled value accepted"/>
+      label="DRIVERS_LICENSE_ISSUE_DATE: Autofilled value accepted"/>
 </enum>
 
 <enum name="AutofillDeveloperEngagement">
@@ -1121,12 +1119,12 @@ Called by update_autofill_enums.py.-->
   <int value="2689" label="PASSPORT_NAME_TAG: accepted"/>
   <int value="2704" label="PASSPORT_NUMBER: edited"/>
   <int value="2705" label="PASSPORT_NUMBER: accepted"/>
-  <int value="2720" label="PASSPORT_ISSUING_COUNTRY_TAG: edited"/>
-  <int value="2721" label="PASSPORT_ISSUING_COUNTRY_TAG: accepted"/>
-  <int value="2736" label="PASSPORT_EXPIRATION_DATE_TAG: edited"/>
-  <int value="2737" label="PASSPORT_EXPIRATION_DATE_TAG: accepted"/>
-  <int value="2752" label="PASSPORT_ISSUE_DATE_TAG: edited"/>
-  <int value="2753" label="PASSPORT_ISSUE_DATE_TAG: accepted"/>
+  <int value="2720" label="PASSPORT_ISSUING_COUNTRY: edited"/>
+  <int value="2721" label="PASSPORT_ISSUING_COUNTRY: accepted"/>
+  <int value="2736" label="PASSPORT_EXPIRATION_DATE: edited"/>
+  <int value="2737" label="PASSPORT_EXPIRATION_DATE: accepted"/>
+  <int value="2752" label="PASSPORT_ISSUE_DATE: edited"/>
+  <int value="2753" label="PASSPORT_ISSUE_DATE: accepted"/>
   <int value="2768" label="LOYALTY_MEMBERSHIP_PROGRAM: edited"/>
   <int value="2769" label="LOYALTY_MEMBERSHIP_PROGRAM: accepted"/>
   <int value="2784" label="LOYALTY_MEMBERSHIP_PROVIDER: edited"/>
@@ -1147,10 +1145,10 @@ Called by update_autofill_enums.py.-->
   <int value="2897" label="DRIVERS_LICENSE_REGION: accepted"/>
   <int value="2912" label="DRIVERS_LICENSE_NUMBER: edited"/>
   <int value="2913" label="DRIVERS_LICENSE_NUMBER: accepted"/>
-  <int value="2928" label="DRIVERS_LICENSE_EXPIRATION_DATE_TAG: edited"/>
-  <int value="2929" label="DRIVERS_LICENSE_EXPIRATION_DATE_TAG: accepted"/>
-  <int value="2944" label="DRIVERS_LICENSE_ISSUE_DATE_TAG: edited"/>
-  <int value="2945" label="DRIVERS_LICENSE_ISSUE_DATE_TAG: accepted"/>
+  <int value="2928" label="DRIVERS_LICENSE_EXPIRATION_DATE: edited"/>
+  <int value="2929" label="DRIVERS_LICENSE_EXPIRATION_DATE: accepted"/>
+  <int value="2944" label="DRIVERS_LICENSE_ISSUE_DATE: edited"/>
+  <int value="2945" label="DRIVERS_LICENSE_ISSUE_DATE: accepted"/>
 </enum>
 
 <enum name="AutofillErrorDialogType">
@@ -1971,9 +1969,9 @@ Called by update_autofill_enums.py.-->
   <int value="167" label="NAME_LAST_CORE"/>
   <int value="168" label="PASSPORT_NAME_TAG"/>
   <int value="169" label="PASSPORT_NUMBER"/>
-  <int value="170" label="PASSPORT_ISSUING_COUNTRY_TAG"/>
-  <int value="171" label="PASSPORT_EXPIRATION_DATE_TAG"/>
-  <int value="172" label="PASSPORT_ISSUE_DATE_TAG"/>
+  <int value="170" label="PASSPORT_ISSUING_COUNTRY"/>
+  <int value="171" label="PASSPORT_EXPIRATION_DATE"/>
+  <int value="172" label="PASSPORT_ISSUE_DATE"/>
   <int value="173" label="LOYALTY_MEMBERSHIP_PROGRAM"/>
   <int value="174" label="LOYALTY_MEMBERSHIP_PROVIDER"/>
   <int value="175" label="VEHICLE_OWNER_TAG"/>
@@ -1984,8 +1982,8 @@ Called by update_autofill_enums.py.-->
   <int value="180" label="DRIVERS_LICENSE_NAME_TAG"/>
   <int value="181" label="DRIVERS_LICENSE_REGION"/>
   <int value="182" label="DRIVERS_LICENSE_NUMBER"/>
-  <int value="183" label="DRIVERS_LICENSE_EXPIRATION_DATE_TAG"/>
-  <int value="184" label="DRIVERS_LICENSE_ISSUE_DATE_TAG"/>
+  <int value="183" label="DRIVERS_LICENSE_EXPIRATION_DATE"/>
+  <int value="184" label="DRIVERS_LICENSE_ISSUE_DATE"/>
 </enum>
 
 <enum name="AutofillFilledCardInformationBubbleFieldClicked">
@@ -3488,12 +3486,12 @@ Called by update_autofill_enums.py.-->
   <int value="673" label="PASSPORT_NAME_TAG: Accepted"/>
   <int value="676" label="PASSPORT_NUMBER: Ignored"/>
   <int value="677" label="PASSPORT_NUMBER: Accepted"/>
-  <int value="680" label="PASSPORT_ISSUING_COUNTRY_TAG: Ignored"/>
-  <int value="681" label="PASSPORT_ISSUING_COUNTRY_TAG: Accepted"/>
-  <int value="684" label="PASSPORT_EXPIRATION_DATE_TAG: Ignored"/>
-  <int value="685" label="PASSPORT_EXPIRATION_DATE_TAG: Accepted"/>
-  <int value="688" label="PASSPORT_ISSUE_DATE_TAG: Ignored"/>
-  <int value="689" label="PASSPORT_ISSUE_DATE_TAG: Accepted"/>
+  <int value="680" label="PASSPORT_ISSUING_COUNTRY: Ignored"/>
+  <int value="681" label="PASSPORT_ISSUING_COUNTRY: Accepted"/>
+  <int value="684" label="PASSPORT_EXPIRATION_DATE: Ignored"/>
+  <int value="685" label="PASSPORT_EXPIRATION_DATE: Accepted"/>
+  <int value="688" label="PASSPORT_ISSUE_DATE: Ignored"/>
+  <int value="689" label="PASSPORT_ISSUE_DATE: Accepted"/>
   <int value="692" label="LOYALTY_MEMBERSHIP_PROGRAM: Ignored"/>
   <int value="693" label="LOYALTY_MEMBERSHIP_PROGRAM: Accepted"/>
   <int value="696" label="LOYALTY_MEMBERSHIP_PROVIDER: Ignored"/>
@@ -3514,10 +3512,10 @@ Called by update_autofill_enums.py.-->
   <int value="725" label="DRIVERS_LICENSE_REGION: Accepted"/>
   <int value="728" label="DRIVERS_LICENSE_NUMBER: Ignored"/>
   <int value="729" label="DRIVERS_LICENSE_NUMBER: Accepted"/>
-  <int value="732" label="DRIVERS_LICENSE_EXPIRATION_DATE_TAG: Ignored"/>
-  <int value="733" label="DRIVERS_LICENSE_EXPIRATION_DATE_TAG: Accepted"/>
-  <int value="736" label="DRIVERS_LICENSE_ISSUE_DATE_TAG: Ignored"/>
-  <int value="737" label="DRIVERS_LICENSE_ISSUE_DATE_TAG: Accepted"/>
+  <int value="732" label="DRIVERS_LICENSE_EXPIRATION_DATE: Ignored"/>
+  <int value="733" label="DRIVERS_LICENSE_EXPIRATION_DATE: Accepted"/>
+  <int value="736" label="DRIVERS_LICENSE_ISSUE_DATE: Ignored"/>
+  <int value="737" label="DRIVERS_LICENSE_ISSUE_DATE: Accepted"/>
 </enum>
 
 <!-- LINT.IfChange(FormSubmissionOutcomeIOS) -->

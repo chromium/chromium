@@ -25,7 +25,7 @@ SafeBrowsingService* FakeSafeBrowsingClient::GetSafeBrowsingService() {
   return safe_browsing_service_.get();
 }
 
-safe_browsing::RealTimeUrlLookupService*
+safe_browsing::RealTimeUrlLookupServiceBase*
 FakeSafeBrowsingClient::GetRealTimeUrlLookupService() {
   return lookup_service_;
 }

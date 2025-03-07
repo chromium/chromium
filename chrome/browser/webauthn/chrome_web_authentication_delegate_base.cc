@@ -180,8 +180,9 @@ void ChromeWebAuthenticationDelegateBase::PasskeyUnrecognized(
     const std::string& relying_party_id) {
   NOTIMPLEMENTED();
 }
-void ChromeWebAuthenticationDelegateBase::DeleteUnacceptedPasskeys(
+void ChromeWebAuthenticationDelegateBase::SignalAllAcceptedCredentials(
     content::WebContents* web_contents,
+    const url::Origin& origin,
     const std::string& relying_party_id,
     const std::vector<uint8_t>& user_id,
     const std::vector<std::vector<uint8_t>>& all_accepted_credentials_ids) {

@@ -358,32 +358,39 @@ class ChromiumDepGraph {
 
         topLevelIds.each { id -> dependencies.get(id).visible = true }
 
-        (resolvedDeps['testCompile'] + resolvedDeps['testCompileLatest']).each { id ->
+        (resolvedDeps['testCompile']).each { id ->
+            DependencyDescription dep = dependencies.get(id)
+            assert dep: "No dependency collected for artifact ${id}"
+            dep.testOnly = true
+            dep.isRobolectric = true
+        }
+        (resolvedDeps['testCompileLatest'] + resolvedDeps['androidTestCompile'] + resolvedDeps['androidTestCompileLatest']).each { id ->
             DependencyDescription dep = dependencies.get(id)
             assert dep: "No dependency collected for artifact ${id}"
             dep.testOnly = true
         }
-
-        (resolvedDeps['androidTestCompile'] + resolvedDeps['androidTestCompileLatest']).each { id ->
+        (resolvedDeps['compile'] + resolvedDeps['compileLatest'] + resolvedDeps['androidTestCompile'] + resolvedDeps['androidTestCompileLatest']).each { id ->
             DependencyDescription dep = dependencies.get(id)
             assert dep: "No dependency collected for artifact ${id}"
             dep.supportsAndroid = true
-            dep.testOnly = true
+            dep.requiresAndroid = true
+            dep.isRobolectric = false
         }
 
         (resolvedDeps['buildCompile'] + resolvedDeps['buildCompileNoDeps'] + resolvedDeps['buildCompileLatest']).each { id ->
             DependencyDescription dep = dependencies.get(id)
             assert dep: "No dependency collected for artifact ${id}"
             dep.usedInBuild = true
+            dep.requiresAndroid = false
+            dep.isRobolectric = false
             dep.testOnly = false
         }
 
         (resolvedDeps['compile'] + resolvedDeps['compileLatest']).each { id ->
             DependencyDescription dep = dependencies.get(id)
             assert dep: "No dependency collected for artifact ${id}"
-            dep.supportsAndroid = true
-            dep.testOnly = false
             dep.isShipped = true
+            dep.testOnly = false
         }
         autorolledConfigNames.each { configName ->
             resolvedDeps[configName].each { id ->
@@ -825,7 +832,10 @@ class ChromiumDepGraph {
         // lowercase since 3pp uses the directory name as part of the CIPD names. However CIPD does not allow uppercase
         // in names.
         String directoryName
-        boolean supportsAndroid, visible, exclude, testOnly, isShipped, usedInBuild
+        boolean visible, exclude, testOnly, isShipped, usedInBuild
+        boolean supportsAndroid
+        boolean requiresAndroid
+        boolean isRobolectric
         boolean generateTarget = true
         boolean isAutorolled = false
         boolean licenseAndroidCompatible

@@ -29,7 +29,7 @@ ui::AXMode::ModeFlagHistogramValue ModeFlagsToEnum(uint32_t mode_flags) {
       return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_WEB_CONTENTS;
     case ui::AXMode::kInlineTextBoxes:
       return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_INLINE_TEXT_BOXES;
-    case ui::AXMode::kScreenReader:
+    case ui::AXMode::kExtendedProperties:
       return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_SCREEN_READER;
     case ui::AXMode::kHTML:
       return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_HTML;
@@ -107,7 +107,7 @@ void MetricsProviderCommon::RecordA11yFlags() {
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kNativeAPIs);
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kWebContents);
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kInlineTextBoxes);
-    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kScreenReader);
+    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kExtendedProperties);
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kHTML);
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kHTMLMetadata);
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kLabelImages);

@@ -4,7 +4,7 @@
 
 import {PauseActionSource, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -233,11 +233,11 @@ suite('WordHighlighting', () => {
         'I save you, will you save me too- Can you see through the mist, ' +
         'Look, cross the bay Can you see the green light, It\'s yours, ' +
         'Daisy Fay.';
-    assertGT(longSentence.length, app.maxSpeechLengthForWordBoundaries);
+    assertGT(longSentence.length, MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES);
     setSimpleAxTreeWithText(longSentence);
 
     const lastIndex =
-        longSentence.substring(0, app.maxSpeechLengthForWordBoundaries)
+        longSentence.substring(0, MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES)
             .lastIndexOf(',');
     app.updateBoundary(lastIndex);
     app.playSpeech();

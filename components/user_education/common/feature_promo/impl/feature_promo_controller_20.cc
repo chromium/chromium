@@ -428,7 +428,7 @@ FeaturePromoResult FeaturePromoController20::MaybeShowPromoCommon(
   // TODO(crbug.com/40200981): Currently this must be called before
   // ShouldTriggerHelpUI() below. See bug for details.
   const bool screen_reader_available =
-      CheckScreenReaderPromptAvailable(for_demo || in_iph_demo_mode_);
+      CheckExtendedPropertiesPromptAvailable(for_demo || in_iph_demo_mode_);
 
   if (!for_demo && !feature_engagement_tracker()->ShouldTriggerHelpUI(
                        params.feature.get())) {

@@ -96,6 +96,7 @@
 #include "base/files/scoped_temp_file.h"
 #include "base/rand_util.h"
 #include "content/browser/network/network_service_process_tracker_win.h"
+#include "content/common/features.h"
 #include "sandbox/policy/features.h"
 #endif
 
@@ -354,6 +355,49 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest,
             directory_size);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN)
+class NetworkServiceSkipGrantAccessBrowserTest
+    : public NetworkServiceBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kSkipGrantAccessToDataPathIfAlreadySet};
+};
+
+IN_PROC_BROWSER_TEST_F(NetworkServiceSkipGrantAccessBrowserTest,
+                       HttpCacheWrittenToDisk) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Create network context with cache pointing to the temp cache dir.
+  mojo::Remote<network::mojom::NetworkContext> network_context;
+  network::mojom::NetworkContextParamsPtr context_params =
+      network::mojom::NetworkContextParams::New();
+  context_params->cert_verifier_params = GetCertVerifierParams(
+      cert_verifier::mojom::CertVerifierCreationParams::New());
+  context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
+  context_params->file_paths->http_cache_directory = GetCacheDirectory();
+  CreateNetworkContextInNetworkService(
+      network_context.BindNewPipeAndPassReceiver(), std::move(context_params));
+
+  network::mojom::URLLoaderFactoryParamsPtr params =
+      network::mojom::URLLoaderFactoryParams::New();
+  params->process_id = network::mojom::kBrowserProcessId;
+  params->automatically_assign_isolation_info = true;
+  params->is_orb_enabled = false;
+  params->is_trusted = true;
+  mojo::Remote<network::mojom::URLLoaderFactory> loader_factory;
+  network_context->CreateURLLoaderFactory(
+      loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+  // Load a URL and check the cache index size.
+  LoadURL(embedded_test_server()->GetURL("/cachetime"), loader_factory.get());
+
+  FlushNetworkServiceInstanceForTesting();
+  disk_cache::FlushCacheThreadForTesting();
+
+  EXPECT_GT(base::ComputeDirectorySize(GetCacheIndexDirectory()), 0);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 class NetworkConnectionObserver

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_BNPL_MANAGER_TEST_API_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_BNPL_MANAGER_TEST_API_H_
 
+#include <utility>
+
 #include "base/check_deref.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 
@@ -38,6 +40,12 @@ class BnplManagerTestApi {
     bnpl_manager_->ongoing_flow_state_->issuer_id = std::move(issuer_id);
   }
 
+  void SetOnBnplVcnFetchedCallback(
+      BnplManager::OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback) {
+    bnpl_manager_->ongoing_flow_state_->on_bnpl_vcn_fetched_callback =
+        std::move(on_bnpl_vcn_fetched_callback);
+  }
+
   void FetchVcnDetails() { bnpl_manager_->FetchVcnDetails(); }
 
   void OnVcnDetailsFetched(
@@ -48,6 +56,10 @@ class BnplManagerTestApi {
 
   BnplManager::OngoingFlowState* GetOngoingFlowState() {
     return bnpl_manager_->ongoing_flow_state_.get();
+  }
+
+  const std::string& GetIssuerId() const {
+    return bnpl_manager_->ongoing_flow_state_->issuer_id;
   }
 
   void OnTosDialogAccepted() { bnpl_manager_->OnTosDialogAccepted(); }

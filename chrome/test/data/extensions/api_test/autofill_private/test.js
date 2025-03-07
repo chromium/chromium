@@ -41,13 +41,13 @@ var ENTITY_INSTANCE = {
   },
   attributes: [
     {type: {typeName: 6, typeNameAsString: 'License plate'}, value: 'ABCDE'},
-    {type: {typeName: 8, typeNameAsString: 'Make'}, value: 'Toyota'},
   ],
   guid: GUID,
-  nickname: 'Personal car'
+  nickname: 'Personal car',
 };
 
-var UPDATED_ENTITY_INSTANCE = {...ENTITY_INSTANCE, nickname: 'Work car'};
+var UPDATED_ENTITY_INSTANCE = structuredClone(ENTITY_INSTANCE);
+UPDATED_ENTITY_INSTANCE.attributes[0].value = 'XYZ';
 
 var failOnceCalled = function() {
   chrome.test.fail();
@@ -885,19 +885,35 @@ var availableTests = [
   },
 
   async function addEntityInstance() {
-    await chrome.autofillPrivate.addOrUpdateEntityInstance(ENTITY_INSTANCE);
-    chrome.test.succeed();
+    chrome.test.listenOnce(
+        chrome.autofillPrivate.onEntityInstancesChanged,
+        chrome.test.callbackPass(function(entityInstancesWithLabelsList) {
+          chrome.test.assertEq(
+              [entityInstaceToEntityInstanceWithLabels(ENTITY_INSTANCE)],
+              entityInstancesWithLabelsList);
+        }));
+    chrome.autofillPrivate.addOrUpdateEntityInstance(ENTITY_INSTANCE);
   },
 
   async function updateEntityInstance() {
-    await chrome.autofillPrivate.addOrUpdateEntityInstance(
-        UPDATED_ENTITY_INSTANCE);
-    chrome.test.succeed();
+    chrome.test.listenOnce(
+        chrome.autofillPrivate.onEntityInstancesChanged,
+        chrome.test.callbackPass(function(entityInstancesWithLabelsList) {
+          chrome.test.assertEq(
+              [entityInstaceToEntityInstanceWithLabels(
+                  UPDATED_ENTITY_INSTANCE)],
+              entityInstancesWithLabelsList);
+        }));
+    chrome.autofillPrivate.addOrUpdateEntityInstance(UPDATED_ENTITY_INSTANCE);
   },
 
   async function removeEntityInstance() {
-    await chrome.autofillPrivate.removeEntityInstance(GUID);
-    chrome.test.succeed();
+    chrome.test.listenOnce(
+        chrome.autofillPrivate.onEntityInstancesChanged,
+        chrome.test.callbackPass(function(entityInstancesWithLabelsList) {
+          chrome.test.assertEq([], entityInstancesWithLabelsList);
+        }));
+    chrome.autofillPrivate.removeEntityInstance(GUID);
   },
 
   async function loadEmptyEntityInstancesList() {

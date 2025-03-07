@@ -39,6 +39,7 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.Acces
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SHOW_ON_SCREEN;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.EXTRA_DATA_TEXT_CHARACTER_LOCATION_ARG_LENGTH;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.EXTRA_DATA_TEXT_CHARACTER_LOCATION_ARG_START_INDEX;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.EXTRA_DATA_TEXT_CHARACTER_LOCATION_IN_WINDOW_KEY;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEMENT_GRANULARITY_CHARACTER;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEMENT_GRANULARITY_PARAGRAPH;
@@ -1801,6 +1802,62 @@ public class WebContentsAccessibilityTest {
         Assert.assertTrue(result[0].left < result[1].left);
         Assert.assertTrue(result[1].left < result[2].left);
         Assert.assertTrue(result[2].left < result[3].left);
+    }
+
+    /**
+     * Test |AccessibilityNodeInfo| object for character bounds in screen coordinates should be
+     * different in window coordinates.
+     */
+    @Test
+    @SmallTest
+    public void testNodeInfo_extraDataAdded_characterLocationsInScreenDiffersFromInWindow() {
+        setupTestWithHTML("<h1>Simple test page</h1><section><p>Text</p></section>");
+
+        // Wait until we find a node in the accessibility tree with the text "Text".
+        int textNodeVirtualViewId = waitForNodeMatching(sTextMatcher, "Text");
+        mNodeInfo = createAccessibilityNodeInfo(textNodeVirtualViewId);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+
+        // Call the API we want to test - addExtraDataToAccessibilityNodeInfo.
+        final Bundle arguments = new Bundle();
+        arguments.putInt(EXTRA_DATA_TEXT_CHARACTER_LOCATION_ARG_START_INDEX, 0);
+        arguments.putInt(EXTRA_DATA_TEXT_CHARACTER_LOCATION_ARG_LENGTH, 4);
+
+        // Load bounds in screen coordinates.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.mNodeProvider.addExtraDataToAccessibilityNodeInfo(
+                            textNodeVirtualViewId,
+                            mNodeInfo,
+                            EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY,
+                            arguments);
+                });
+
+        Bundle extrasInScreen = mNodeInfo.getExtras();
+        RectF[] resultInScreen =
+                (RectF[]) extrasInScreen.getParcelableArray(EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY);
+        RectF boundsInScreen = resultInScreen[0];
+
+        // Load bounds in window coordinates.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.mNodeProvider.addExtraDataToAccessibilityNodeInfo(
+                            textNodeVirtualViewId,
+                            mNodeInfo,
+                            EXTRA_DATA_TEXT_CHARACTER_LOCATION_IN_WINDOW_KEY,
+                            arguments);
+                });
+        Bundle extrasInWindow = mNodeInfo.getExtras();
+        RectF[] resultInWindow =
+                (RectF[])
+                        extrasInWindow.getParcelableArray(
+                                EXTRA_DATA_TEXT_CHARACTER_LOCATION_IN_WINDOW_KEY);
+        RectF boundsInWindow = resultInWindow[0];
+
+        // Bounds in window should be no larger than bounds in screen, since coordinates in screen
+        // is the coordinates in window plus the location of the window.
+        Assert.assertTrue(boundsInWindow.left <= boundsInScreen.left);
+        Assert.assertTrue(boundsInWindow.top <= boundsInScreen.top);
     }
 
     /** Test |AccessibilityNodeInfo| object for image data for a node in Android O. */

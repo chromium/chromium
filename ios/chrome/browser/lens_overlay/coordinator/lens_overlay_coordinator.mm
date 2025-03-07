@@ -652,12 +652,15 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
 #pragma mark - LensOverlayResultsPagePresenterDelegate
 
-- (void)onResultsPageWillInitiateGestureDrivenDismiss {
+- (void)lensOverlayResultsPagePresenterWillInitiateGestureDrivenDismiss:
+    (LensOverlayResultsPagePresenter*)presenter {
   [self destroyLensUI:YES
                reason:lens::LensOverlayDismissalSource::kBottomSheetDismissed];
 }
 
-- (void)onResultsPageDimensionStateChanged:(SheetDimensionState)state {
+- (void)lensOverlayResultsPagePresenter:
+            (LensOverlayResultsPagePresenter*)presenter
+                didUpdateDimensionState:(SheetDimensionState)state {
   if (_associatedTabHelper) {
     _associatedTabHelper->RecordSheetDimensionState(state);
   }
@@ -680,7 +683,9 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   }
 }
 
-- (void)onResultsPageVerticalOcclusionInsetsSettled:(CGFloat)offsetNeeded {
+- (void)lensOverlayResultsPagePresenter:
+            (LensOverlayResultsPagePresenter*)presenter
+          updateVerticalOcclusionOffset:(CGFloat)offsetNeeded {
   UIWindow* sceneWindow = self.browser->GetSceneState().window;
   CGFloat topOffset = kTopHeaderPadding + sceneWindow.safeAreaInsets.top;
   [_selectionViewController
@@ -689,8 +694,9 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
                 animated:YES];
 }
 
-- (void)onResultsPageVisibleAreaLayoutGuideAdjusted:
-    (UILayoutGuide*)visibleAreaLayoutGuide {
+- (void)lensOverlayResultsPagePresenter:
+            (LensOverlayResultsPagePresenter*)presenter
+        didAdjustVisibleAreaLayoutGuide:(UILayoutGuide*)visibleAreaLayoutGuide {
   _selectionViewController.visibleAreaLayoutGuide = visibleAreaLayoutGuide;
 }
 

@@ -6,9 +6,9 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_BNPL_TOS_CONTROLLER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
-
-struct AccountInfo;
+#include "components/signin/public/identity_manager/account_info.h"
 
 namespace autofill {
 
@@ -18,6 +18,23 @@ struct TextWithLink {
   std::u16string text;
   gfx::Range offset;
   GURL url;
+};
+
+// BnplTosModel holds the data required to show the BNPL ToS view.
+struct BnplTosModel {
+  BnplTosModel();
+
+  BnplTosModel(BnplTosModel&& other);
+  BnplTosModel& operator=(BnplTosModel&& other);
+
+  ~BnplTosModel();
+
+  // Used to show the user's email and profile image.
+  AccountInfo account_info;
+  // Used to show the BNPL Issuer logo and name.
+  BnplIssuer issuer;
+  // Used to show the legal message.
+  LegalMessageLines legal_message_lines;
 };
 
 // Interface that exposes controller functionality to BnplTosView.
@@ -36,9 +53,10 @@ class BnplTosController {
   virtual std::u16string GetApproveText() const = 0;
   virtual TextWithLink GetLinkText() const = 0;
   virtual const LegalMessageLines& GetLegalMessageLines() const = 0;
-
   // Returns the account info of the signed-in user.
-  virtual AccountInfo GetAccountInfo() const = 0;
+  virtual const AccountInfo& GetAccountInfo() const = 0;
+  // Return the BNPL issuer id.
+  virtual const std::string& GetIssuerId() const = 0;
 
   virtual base::WeakPtr<BnplTosController> GetWeakPtr() = 0;
 

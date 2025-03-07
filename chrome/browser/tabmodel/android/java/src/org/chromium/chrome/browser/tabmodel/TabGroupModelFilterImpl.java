@@ -1651,22 +1651,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                 });
     }
 
-    @Override
-    public LazyOneshotSupplier<Set<Integer>> getLazyAllRootIds(
-            List<Tab> tabsToExclude, boolean includePendingClosures) {
-        return LazyOneshotSupplier.fromSupplier(
-                () -> {
-                    Set<Integer> rootIds = new HashSet<>();
-                    forEachTabInTabListExcept(
-                            tabsToExclude,
-                            includePendingClosures,
-                            tab -> {
-                                rootIds.add(tab.getRootId());
-                            });
-                    return rootIds;
-                });
-    }
-
     private void forEachTabInTabListExcept(
             List<Tab> tabsToExclude, boolean includePendingClosures, Callback<Tab> callback) {
         Set<Tab> tabsToExcludeSet = new HashSet<>(tabsToExclude);

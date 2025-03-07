@@ -8,7 +8,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.TimingMetric;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchBackgroundTask.DonateResult;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController.AuxiliarySearchDataType;
 
@@ -103,37 +102,34 @@ public class AuxiliarySearchMetrics {
     public static final String HISTOGRAM_DONATION_STATUS =
             "Search.AuxiliarySearch.DonationRequestStatus";
 
-    /** Captures the amount of time spent querying bookmarks. */
-    @VisibleForTesting
-    public static final String HISTOGRAM_QUERYTIME_BOOKMARKS =
-            "Search.AuxiliarySearch.QueryTime.Bookmarks";
-
     /** Captures the amount of time spent querying tabs. */
     @VisibleForTesting
     public static final String HISTOGRAM_QUERYTIME_TABS = "Search.AuxiliarySearch.QueryTime.Tabs";
+
+    /** Captures the amount of time spent querying history database, e.g, Tabs and CCTs. */
+    @VisibleForTesting
+    public static final String HISTOGRAM_QUERYTIME_HISTORY =
+            "Search.AuxiliarySearch.QueryTime.History";
 
     /** Captures the amount of time spent querying the favicons of tabs. */
     @VisibleForTesting
     public static final String HISTOGRAM_QUERYTIME_FAVICONS =
             "Search.AuxiliarySearch.QueryTime.Favicons";
 
-    /** Captures the cumulative amount of time spent querying searchable data. */
-    @VisibleForTesting
-    public static final String HISTOGRAM_QUERYTIME_TOTAL = "Search.AuxiliarySearch.QueryTime";
-
-    /** Captures the amount of donated bookmarks. */
-    @VisibleForTesting
-    public static final String HISTOGRAM_DONATEDCOUNT_BOOKMARKS =
-            "Search.AuxiliarySearch.DonationSent.Bookmarks";
-
     /** Captures the amount of donated tabs. */
     @VisibleForTesting
     public static final String HISTOGRAM_DONATEDCOUNT_TABS =
-            "Search.AuxiliarySearch.DonationSent.Tabs";
+            "Search.AuxiliarySearch.DonationCount.Tabs";
 
-    /** Captures the amount of all donated content. */
+    /** Captures the amount of donated CCTs. */
     @VisibleForTesting
-    public static final String HISTOGRAM_DONATEDCOUNT_TOTAL = "Search.AuxiliarySearch.DonationSent";
+    public static final String HISTOGRAM_DONATEDCOUNT_CCTS =
+            "Search.AuxiliarySearch.DonationCount.CustomTabs";
+
+    /** Captures the amount of donated MVTs. */
+    @VisibleForTesting
+    public static final String HISTOGRAM_DONATEDCOUNT_TOP_SITES =
+            "Search.AuxiliarySearch.DonationCount.TopSites";
 
     /** Captures the total number of favicons available for the first donation. */
     @VisibleForTesting
@@ -223,27 +219,33 @@ public class AuxiliarySearchMetrics {
                 HISTOGRAM_DONATION_STATUS, status, RequestStatus.NUM_ENTRIES);
     }
 
-    /** Record the amount of time for querying bookmarks. */
-    public static TimingMetric recordQueryBookmarksTime() {
-        return TimingMetric.mediumUptime(HISTOGRAM_QUERYTIME_BOOKMARKS);
-    }
-
     /** Record the amount of time for querying tabs. */
     public static void recordQueryTabTime(long queryTimeInMs) {
         RecordHistogram.recordTimesHistogram(HISTOGRAM_QUERYTIME_TABS, queryTimeInMs);
     }
 
-    /** Record the amount of time for querying bookmarks and tabs. */
-    public static void recordTotalQueryTime(long queryTimeInMs) {
-        RecordHistogram.recordTimesHistogram(HISTOGRAM_QUERYTIME_TOTAL, queryTimeInMs);
+    /** Record the amount of time for querying tabs and CCTs from the history database. */
+    public static void recordQueryHistoryDataTime(long queryTimeInMs) {
+        RecordHistogram.recordTimesHistogram(HISTOGRAM_QUERYTIME_HISTORY, queryTimeInMs);
     }
 
-    /** Record the count of bookmarks and tabs donated to Auxiliary Search. */
-    public static void recordDonationCount(int bookmarkCount, int tabCount) {
-        RecordHistogram.recordCount100Histogram(HISTOGRAM_DONATEDCOUNT_BOOKMARKS, bookmarkCount);
-        RecordHistogram.recordCount100Histogram(HISTOGRAM_DONATEDCOUNT_TABS, tabCount);
-        RecordHistogram.recordCount1000Histogram(
-                HISTOGRAM_DONATEDCOUNT_TOTAL, bookmarkCount + tabCount);
+    /**
+     * Record the count of different entry types donated to Auxiliary Search, e.g, Tabs, CCTs and
+     * top sites. If the count of any type is 0, we don't log the type.
+     */
+    public static void recordDonationCount(int[] counts) {
+        for (int i = 0; i < counts.length; i++) {
+            if (counts[i] == 0) continue;
+
+            switch (i) {
+                case AuxiliarySearchEntryType.TAB -> RecordHistogram.recordCount100Histogram(
+                        HISTOGRAM_DONATEDCOUNT_TABS, counts[i]);
+                case AuxiliarySearchEntryType.CUSTOM_TAB -> RecordHistogram.recordCount100Histogram(
+                        HISTOGRAM_DONATEDCOUNT_CCTS, counts[i]);
+                case AuxiliarySearchEntryType.TOP_SITE -> RecordHistogram.recordCount100Histogram(
+                        HISTOGRAM_DONATEDCOUNT_TOP_SITES, counts[i]);
+            }
+        }
     }
 
     /** Record the amount of time for querying a favicon. */

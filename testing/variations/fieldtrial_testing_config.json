@@ -116,6 +116,21 @@
             ]
         }
     ],
+    "AccessibilityManifestV3BrailleIme": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AccessibilityManifestV3BrailleIme"
+                    ]
+                }
+            ]
+        }
+    ],
     "AccessibilityPageZoomV2": [
         {
             "platforms": [
@@ -483,26 +498,6 @@
                     },
                     "enable_features": [
                         "ChromeSurveyNextAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AndroidHubSearch": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "enable_bookmark_provider": "true",
-                        "enable_history_provider": "true",
-                        "enable_press_enter_to_search": "true"
-                    },
-                    "enable_features": [
-                        "AndroidHubSearch"
                     ]
                 }
             ]
@@ -15239,6 +15234,27 @@
             ]
         }
     ],
+    "NoThrowForCSPBlockedWorker": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NoThrowForCSPBlockedWorker"
+                    ]
+                }
+            ]
+        }
+    ],
     "NonAndroidUseFrameIntervalDecider": [
         {
             "platforms": [
@@ -22856,6 +22872,21 @@
                     },
                     "enable_features": [
                         "SkiaGraphite"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SkipGrantAccessToDataPathIfAlreadySet": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SkipGrantAccessToDataPathIfAlreadySet"
                     ]
                 }
             ]

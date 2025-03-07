@@ -43,8 +43,8 @@
 #include "services/network/public/cpp/resource_request.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "android_webview/browser_jni_headers/AwContentsBackgroundThreadClient_jni.h"
 #include "android_webview/browser_jni_headers/AwContentsIoThreadClient_jni.h"
+#include "android_webview/browser_jni_headers/ShouldInterceptRequestMediator_jni.h"
 
 using base::LazyInstance;
 using base::android::AttachCurrentThread;
@@ -517,7 +517,7 @@ void StartShouldInterceptRequest(
 
   devtools_instrumentation::ScopedEmbedderCallbackTask embedder_callback(
       "shouldInterceptRequest");
-  Java_AwContentsBackgroundThreadClient_shouldInterceptRequestFromNative(
+  Java_ShouldInterceptRequestMediator_shouldInterceptRequestFromNative(
       env, obj, java_web_resource_request.jurl, request.is_outermost_main_frame,
       request.has_user_gesture, java_web_resource_request.jmethod,
       java_web_resource_request.jheader_names,
@@ -587,8 +587,8 @@ void AwContentsIoThreadClient::ShouldInterceptRequestAsync(
   JNIEnv* env = AttachCurrentThread();
   if (!bg_thread_client_object_) {
     bg_thread_client_object_.Reset(
-        Java_AwContentsIoThreadClient_getBackgroundThreadClient(env,
-                                                                java_object_));
+        Java_AwContentsIoThreadClient_getShouldInterceptRequestMediator(
+            env, java_object_));
   }
 
   if (bg_thread_client_object_) {

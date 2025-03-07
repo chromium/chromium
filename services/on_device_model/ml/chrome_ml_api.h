@@ -15,9 +15,6 @@
 
 // This header defines the public interface to the ChromeML shared library.
 
-// TODO: crbug.com/379723772 - Remove this when internal code migrates.
-using ::ml::ModelBackendType;
-
 extern "C" {
 
 typedef struct TfLiteDelegate TfLiteDelegate;

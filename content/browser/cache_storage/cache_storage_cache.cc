@@ -30,6 +30,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -446,7 +447,7 @@ blink::mojom::FetchAPIRequestPtr CreateRequest(
 
 blink::mojom::FetchAPIResponsePtr CreateResponse(
     const proto::CacheMetadata& metadata,
-    const std::string& cache_name) {
+    const std::u16string& cache_name) {
   // We no longer support Responses with only a single URL entry.  This field
   // was deprecated in M57.
   if (metadata.response().has_url())
@@ -504,7 +505,7 @@ blink::mojom::FetchAPIResponsePtr CreateResponse(
       padding, network::mojom::FetchResponseSource::kCacheStorage, headers,
       mime_type, request_method, /*blob=*/nullptr,
       blink::mojom::ServiceWorkerResponseError::kUnknown, response_time,
-      cache_name,
+      base::UTF16ToUTF8(cache_name),
       std::vector<std::string>(
           metadata.response().cors_exposed_header_names().begin(),
           metadata.response().cors_exposed_header_names().end()),
@@ -607,7 +608,7 @@ struct CacheStorageCache::BatchInfo {
 std::unique_ptr<CacheStorageCache> CacheStorageCache::CreateMemoryCache(
     const storage::BucketLocator& bucket_locator,
     storage::mojom::CacheStorageOwner owner,
-    const std::string& cache_name,
+    const std::u16string& cache_name,
     CacheStorage* cache_storage,
     scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
@@ -626,7 +627,7 @@ std::unique_ptr<CacheStorageCache> CacheStorageCache::CreateMemoryCache(
 std::unique_ptr<CacheStorageCache> CacheStorageCache::CreatePersistentCache(
     const storage::BucketLocator& bucket_locator,
     storage::mojom::CacheStorageOwner owner,
-    const std::string& cache_name,
+    const std::u16string& cache_name,
     CacheStorage* cache_storage,
     const base::FilePath& path,
     scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
@@ -1047,7 +1048,7 @@ void CacheStorageCache::SetSchedulerForTesting(
 CacheStorageCache::CacheStorageCache(
     const storage::BucketLocator& bucket_locator,
     storage::mojom::CacheStorageOwner owner,
-    const std::string& cache_name,
+    const std::u16string& cache_name,
     const base::FilePath& path,
     CacheStorage* cache_storage,
     scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,

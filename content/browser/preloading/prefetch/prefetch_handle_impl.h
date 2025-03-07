@@ -13,15 +13,31 @@
 
 namespace content {
 
+enum class PrefetchStatus;
+
 class PrefetchHandleImpl final : public PrefetchHandle {
  public:
   PrefetchHandleImpl(base::WeakPtr<PrefetchService> prefetch_service,
                      base::WeakPtr<PrefetchContainer> prefetch_container);
   ~PrefetchHandleImpl() override;
 
+  // TODO(crbug.com/390329781): The following methods are tentative interface
+  // for incrementally migrating `//content/` internal code to `PrefetchHandle`.
+  // Revisit the semantics when exposing for the public API.
+
+  // Sets the `PrefetchStatus` that will be set to the `PrefetchContainer` when
+  // this handle is destroyed and the `PrefetchContainer`'s `LoadState` is
+  // `kStarted` at that time.
+  void SetPrefetchStatusOnReleaseStartedPrefetch(
+      PrefetchStatus prefetch_status_on_release_started_prefetch);
+
+  // Returns true if the underlying `PrefetchContainer` is alive.
+  bool IsAlive() const { return !!prefetch_container_; }
+
  private:
   base::WeakPtr<PrefetchService> prefetch_service_;
   base::WeakPtr<PrefetchContainer> prefetch_container_;
+  std::optional<PrefetchStatus> prefetch_status_on_release_started_prefetch_;
 };
 
 }  // namespace content

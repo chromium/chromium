@@ -5013,15 +5013,6 @@ const char kEnableCrOSSodaConchLanguagesName[] = "SODA Conch Languages.";
 const char kEnableCrOSSodaConchLanguagesDescription[] =
     "Enable Conch specific SODA language models.";
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-const char kEsbDownloadRowPromoFeatureName[] =
-    "Enable ESB Download Row promotion";
-const char kEsbDownloadRowPromoFeatureDescription[] =
-    "Promotes Enhanced Safe Browsing (ESB) on a user's most recent "
-    "dangerous/suspicious download by adding an extra row under the download "
-    "that links to the chrome://settings/security page.";
-#endif
-
 const char kFreezingOnEnergySaverName[] =
     "Freeze CPU intensive background tabs on Energy Saver";
 const char kFreezingOnEnergySaverDescription[] =
@@ -5527,7 +5518,9 @@ const char kMacImeLiveConversionFixDescription[] =
 const char kMacLoopbackAudioForScreenShareName[] =
     "Mac System Audio Loopback for Screen Sharing";
 const char kMacLoopbackAudioForScreenShareDescription[] =
-    "Enable system audio sharing when screen sharing on macOS 13.0+.";
+    "Enable system audio sharing when screen sharing on macOS 13-14. This "
+    "won't have any effect on macOS 15+ unless the feature "
+    "MacSystemAudioLoopbackOverride is enabled.";
 
 const char kMacPWAsNotificationAttributionName[] =
     "Mac PWA notification attribution";

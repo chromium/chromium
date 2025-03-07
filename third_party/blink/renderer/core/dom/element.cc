@@ -8709,6 +8709,11 @@ PseudoElement* Element::GetPseudoElement(
   return nullptr;
 }
 
+bool Element::HasViewTransitionGroupChildren() const {
+  ElementRareDataVector* data = GetElementRareData();
+  return data && data->HasViewTransitionGroupPseudoElement();
+}
+
 Element* Element::GetStyledPseudoElement(
     PseudoId pseudo_id,
     const AtomicString& view_transition_name) const {

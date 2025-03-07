@@ -225,8 +225,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   rateOptions: number[] = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 4];
 
-  protected speechRate_: number = 1;
-  protected fontName_: string;
+  private speechRate_: number = 1;
+  private fontName_: string;
 
   private moreOptionsButtons_: MenuButton[] = [];
 
@@ -468,21 +468,19 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.fontOptions_ = Object.assign([], chrome.readingMode.supportedFonts);
   }
 
-  private isFontItemSelected_(item: number, fontName: string): boolean {
-    return item === this.fontOptions_.indexOf(fontName);
+  private isFontItemSelected_(item: number): boolean {
+    return item === this.fontOptions_.indexOf(this.fontName_);
   }
 
-  private isRateItemSelected_(item: number, speechRate: number): boolean {
-    return item === this.rateOptions.indexOf(speechRate);
+  private isRateItemSelected_(item: number): boolean {
+    return item === this.rateOptions.indexOf(this.speechRate_);
   }
 
-  // Instead of using areFontsLoaded_ directly in this method, we pass
-  // the variable through HTML to force a re-render when the variable changes.
-  private getFontItemLabel_(item: string, areFontsLoaded: boolean): string {
+  private getFontItemLabel_(item: string): string {
     // Before fonts are loaded, append the loading text to the font names
     // so that the names will appear in the font menu like:
     // Poppins (loading).
-    return areFontsLoaded ?
+    return this.areFontsLoaded_ ?
         `${item}` :
         `${item}\u00A0${this.i18n('readingModeFontLoadingText')}`;
   }
@@ -812,8 +810,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     // either the values of `isSpeechActive` or `isAudioCurrentlyPlaying`
     // change, the previously scheduled callback is canceled and a new callback
     // is scheduled.
-    // TODO (b/339860819) improve debouncer logic so that the spinner disappears
-    // immediately when speech starts playing, or when the pause button is hit.
+    // TODO: crbug.com/339860819 - improve debouncer logic so that the spinner
+    // disappears immediately when speech starts playing, or when the pause
+    // button is hit.
     if (this.spinnerDebouncerCallbackHandle_ !== undefined) {
       clearTimeout(this.spinnerDebouncerCallbackHandle_);
     }
@@ -892,8 +891,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         this.i18n('readingModeToolbarLabel');
   }
 
-  private getVoiceSpeedLabel_(rate: number): string {
-    return loadTimeData.getStringF('voiceSpeedWithRateLabel', rate);
+  private getVoiceSpeedLabel_(): string {
+    return loadTimeData.getStringF('voiceSpeedWithRateLabel', this.speechRate_);
   }
 }
 

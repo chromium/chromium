@@ -76,12 +76,11 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   void AddAccessibilityModeFlags(ui::AXMode mode) override;
   void RemoveAccessibilityModeFlags(ui::AXMode mode) override;
   void ResetAccessibilityMode() override;
-  // These methods indicate the presence of AXMode::kScreenReader, which is
+  // These methods indicate the presence of AXMode::kAllProperties, which is
   // a misnomer because it is used by many clients, and not just screen readers.
   // Methods with "KnownAssistiveTech" in the name deal with actual
   // screen reader usage.
-  // TODO(accessibility) Rename these methods and AXMode::kScreenReader to
-  // something like kAllProperties.
+  // TODO(accessibility) Rename these methods to fix the misnomer.
   void OnScreenReaderDetected() override;
   void OnScreenReaderStopped() override;
   // Some platforms have a strong signal indicating the presence of a
@@ -95,6 +94,7 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // Any currently running assistive tech that should prevent accessibility from
   // being auto-disabled.
   AssistiveTech ActiveKnownAssistiveTech() override;
+  bool IsKnownScreenReaderActiveSlow() override;
   bool IsAccessibleBrowser() override;
   void AddUIThreadHistogramCallback(base::OnceClosure callback) override;
   void AddOtherThreadHistogramCallback(base::OnceClosure callback) override;

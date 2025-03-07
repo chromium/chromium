@@ -73,8 +73,8 @@ enum class SigninAddAccountToDeviceResult : int {
 - (void)showSigninWithIntent:(AddAccountSigninIntent)signinIntent;
 
 // Interrupts the add account view. `animated` controls whether the dismissal is
-// animated. `completion` is invoked synchronously.
-- (void)interruptAnimated:(BOOL)animated completion:(ProceduralBlock)completion;
+// animated.
+- (void)interruptAnimated:(BOOL)animated;
 
 @end
 

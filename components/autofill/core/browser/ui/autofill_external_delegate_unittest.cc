@@ -803,6 +803,26 @@ TEST_F(AutofillExternalDelegateTest, SuggestionsShownWithCreditCardEntry) {
   external_delegate().OnSuggestionsShown(suggestions);
 }
 
+// Tests that the Autofill delegate fills a form with a VCN when a suggestion
+// containing a BNPL entry is accepted, and the user completes the flow.
+TEST_F(AutofillExternalDelegateTest, AcceptedBnplEntry_FormIsFilled) {
+  IssueOnQuery();
+  CreditCard card = test::GetVirtualCard();
+  card.set_issuer_id(payments::BnplManager::GetSupportedBnplIssuerIds()[0]);
+
+  EXPECT_CALL(
+      client().GetPaymentsAutofillClient()->CreateOrGetMockBnplManager(),
+      InitBnplFlow)
+      .WillOnce(RunOnceCallback<1>(card));
+  EXPECT_CALL(manager(),
+              FillOrPreviewCreditCardForm(
+                  mojom::ActionPersistence::kFill, HasQueriedFormId(),
+                  IsQueriedFieldId(), card, AutofillTriggerSource::kPopup));
+
+  external_delegate().DidAcceptSuggestion(
+      test::CreateAutofillSuggestion(SuggestionType::kBnplEntry), {});
+}
+
 // Test that the Autofill popup is able to display warnings explaining why
 // Autofill is disabled for a website.
 // Regression test for http://crbug.com/247880

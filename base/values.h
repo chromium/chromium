@@ -33,6 +33,556 @@
 
 namespace base {
 
+class DictValue;
+class Value;
+
+using BlobStorage = std::vector<uint8_t>;
+
+// Represents a list of Values.
+class BASE_EXPORT GSL_OWNER ListValue {
+ public:
+  using iterator = CheckedContiguousIterator<Value>;
+  using const_iterator = CheckedContiguousConstIterator<Value>;
+  using reverse_iterator = std::reverse_iterator<iterator>;
+  using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+  using value_type = Value;
+
+  // Creates a list with the given capacity reserved.
+  // Correctly using this will greatly reduce the code size and improve
+  // performance when creating a list whose size is known up front.
+  static ListValue with_capacity(size_t capacity);
+
+  ListValue();
+
+  ListValue(ListValue&&) noexcept;
+  ListValue& operator=(ListValue&&) noexcept;
+
+  // Deleted to prevent accidental copying.
+  ListValue(const ListValue&) = delete;
+  ListValue& operator=(const ListValue&) = delete;
+
+  ~ListValue();
+
+  // Returns true if there are no values in this list and false otherwise.
+  bool empty() const;
+
+  // Returns the number of values in this list.
+  size_t size() const;
+
+  // Returns an iterator to the first value in this list.
+  iterator begin();
+  const_iterator begin() const;
+  const_iterator cbegin() const;
+
+  // Returns an iterator following the last value in this list. May not be
+  // dereferenced.
+  iterator end();
+  const_iterator end() const;
+  const_iterator cend() const;
+
+  // Returns a reverse iterator preceding the first value in this list. May
+  // not be dereferenced.
+  reverse_iterator rend();
+  const_reverse_iterator rend() const;
+
+  // Returns a reverse iterator to the last value in this list.
+  reverse_iterator rbegin();
+  const_reverse_iterator rbegin() const;
+
+  // Returns a reference to the first value in the container. Fails with
+  // `CHECK()` if the list is empty.
+  const Value& front() const LIFETIME_BOUND;
+  Value& front() LIFETIME_BOUND;
+
+  // Returns a reference to the last value in the container. Fails with
+  // `CHECK()` if the list is empty.
+  const Value& back() const LIFETIME_BOUND;
+  Value& back() LIFETIME_BOUND;
+
+  // Increase the capacity of the backing container, but does not change
+  // the size. Assume all existing iterators will be invalidated.
+  void reserve(size_t capacity);
+
+  // Resizes the list.
+  // If `new_size` is greater than current size, the extra elements in the
+  // back will be destroyed.
+  // If `new_size` is less than current size, new default-initialized elements
+  // will be added to the back.
+  // Assume all existing iterators will be invalidated.
+  void resize(size_t new_size);
+
+  // Returns a reference to the value at `index` in this list. Fails with a
+  // `CHECK()` if `index >= size()`.
+  const Value& operator[](size_t index) const;
+  Value& operator[](size_t index);
+
+  // Returns true if the specified `val` is present in the list.
+  bool contains(bool val) const;
+  bool contains(int val) const;
+  bool contains(double val) const;
+  // Note: std::u16string_view overload intentionally omitted: Value
+  // internally stores strings as UTF-8.
+  bool contains(std::string_view val) const;
+  bool contains(const char* val) const;
+  bool contains(const BlobStorage& val) const;
+  bool contains(const DictValue& val) const;
+  bool contains(const ListValue& val) const;
+
+  // Removes all value from this list.
+  REINITIALIZES_AFTER_MOVE void clear();
+
+  // Removes the value referenced by `pos` in this list and returns an
+  // iterator to the value following the removed value.
+  iterator erase(iterator pos);
+  const_iterator erase(const_iterator pos);
+
+  // Remove the values in the range [`first`, `last`). Returns iterator to the
+  // first value following the removed range, which is `last`. If `first` ==
+  // `last`, removes nothing and returns `last`.
+  iterator erase(iterator first, iterator last);
+  const_iterator erase(const_iterator first, const_iterator last);
+
+  // Creates a deep copy of this dictionary.
+  ListValue Clone() const;
+
+  // Appends `value` to the end of this list.
+  void Append(Value&& value) &;
+  void Append(bool value) &;
+  template <typename T>
+  void Append(const T*) & = delete;
+  void Append(int value) &;
+  void Append(double value) &;
+  void Append(std::string_view value) &;
+  void Append(std::u16string_view value) &;
+  void Append(const char* value) &;
+  void Append(const char16_t* value) &;
+  void Append(std::string&& value) &;
+  void Append(BlobStorage&& value) &;
+  void Append(DictValue&& value) &;
+  void Append(ListValue&& value) &;
+
+  // Rvalue overrides of the `Append` methods, which allow you to construct
+  // a `Value::List` builder-style:
+  //
+  // Value::List result =
+  //   Value::List().Append("first value").Append(2).Append(true);
+  //
+  // Each method returns a rvalue reference to `this`, so this is as efficient
+  // as stand-alone calls to `Append`, while at the same time making it harder
+  // to accidentally append to the wrong list.
+  //
+  // The equivalent code without using these builder-style methods:
+  //
+  // Value::List no_builder_example;
+  // no_builder_example.Append("first value");
+  // no_builder_example.Append(2);
+  // no_builder_example.Append(true);
+  //
+  ListValue&& Append(Value&& value) &&;
+  ListValue&& Append(bool value) &&;
+  template <typename T>
+  ListValue&& Append(const T*) && = delete;
+  ListValue&& Append(int value) &&;
+  ListValue&& Append(double value) &&;
+  ListValue&& Append(std::string_view value) &&;
+  ListValue&& Append(std::u16string_view value) &&;
+  ListValue&& Append(const char* value) &&;
+  ListValue&& Append(const char16_t* value) &&;
+  ListValue&& Append(std::string&& value) &&;
+  ListValue&& Append(BlobStorage&& value) &&;
+  ListValue&& Append(DictValue&& value) &&;
+  ListValue&& Append(ListValue&& value) &&;
+
+  // Inserts `value` before `pos` in this list. Returns an iterator to the
+  // inserted value.
+  // TODO(dcheng): Should this provide the same set of overloads that Append()
+  // does?
+  iterator Insert(const_iterator pos, Value&& value);
+
+  // Erases all values equal to `value` from this list.
+  size_t EraseValue(const Value& value);
+
+  // Erases all values for which `predicate` evaluates to true from this list.
+  template <typename Predicate>
+  size_t EraseIf(Predicate predicate) {
+    return std::erase_if(storage_, predicate);
+  }
+
+  // Estimates dynamic memory usage. Requires tracing support
+  // (enable_base_tracing gn flag), otherwise always returns 0. See
+  // base/trace_event/memory_usage_estimator.h for more info.
+  size_t EstimateMemoryUsage() const;
+
+  // Serializes to a string for logging and debug purposes.
+  std::string DebugString() const;
+
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+  // Write this object into a trace.
+  void WriteIntoTrace(perfetto::TracedValue) const;
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+
+ private:
+  using ListStorage = std::vector<Value>;
+
+  BASE_EXPORT friend bool operator==(const ListValue& lhs,
+                                     const ListValue& rhs);
+  BASE_EXPORT friend bool operator!=(const ListValue& lhs,
+                                     const ListValue& rhs);
+  BASE_EXPORT friend bool operator<(const ListValue& lhs, const ListValue& rhs);
+  BASE_EXPORT friend bool operator>(const ListValue& lhs, const ListValue& rhs);
+  BASE_EXPORT friend bool operator<=(const ListValue& lhs,
+                                     const ListValue& rhs);
+  BASE_EXPORT friend bool operator>=(const ListValue& lhs,
+                                     const ListValue& rhs);
+
+  explicit ListValue(const std::vector<Value>& storage);
+
+  // Shared implementation of public `contains()` methods.
+  template <typename T, typename R>
+    requires std::equality_comparable_with<T, R>
+  bool contains(const T& val,
+                bool (Value::*test)() const,
+                R (Value::*get)() const) const;
+
+  std::vector<Value> storage_;
+};
+
+// Represents a dictionary of string keys to Values.
+class BASE_EXPORT GSL_OWNER DictValue {
+ public:
+  using iterator = detail::dict_iterator;
+  using const_iterator = detail::const_dict_iterator;
+
+  DictValue();
+
+  DictValue(DictValue&&) noexcept;
+  DictValue& operator=(DictValue&&) noexcept;
+
+  // Deleted to prevent accidental copying.
+  DictValue(const DictValue&) = delete;
+  DictValue& operator=(const DictValue&) = delete;
+
+  // Takes move_iterators iterators that return std::pair<std::string, Value>,
+  // and moves their values into a new Dict. Adding all entries at once
+  // results in a faster initial sort operation. Takes move iterators to avoid
+  // having to clone the input.
+  template <class IteratorType>
+  explicit DictValue(std::move_iterator<IteratorType> first,
+                     std::move_iterator<IteratorType> last) {
+    // Need to move into a vector first, since `storage_` currently uses
+    // unique_ptrs.
+    std::vector<std::pair<std::string, std::unique_ptr<Value>>> values;
+    for (auto current = first; current != last; ++current) {
+      // With move iterators, no need to call Clone(), but do need to move
+      // to a temporary first, as accessing either field individually will
+      // directly from the iterator will delete the other field.
+      auto value = *current;
+      values.emplace_back(std::move(value.first),
+                          std::make_unique<Value>(std::move(value.second)));
+    }
+    storage_ = flat_map<std::string, std::unique_ptr<Value>>(std::move(values));
+  }
+
+  ~DictValue();
+
+  // Returns true if there are no entries in this dictionary and false
+  // otherwise.
+  bool empty() const;
+
+  // Returns the number of entries in this dictionary.
+  size_t size() const;
+
+  // Returns an iterator to the first entry in this dictionary.
+  iterator begin();
+  const_iterator begin() const;
+  const_iterator cbegin() const;
+
+  // Returns an iterator following the last entry in this dictionary. May not
+  // be dereferenced.
+  iterator end();
+  const_iterator end() const;
+  const_iterator cend() const;
+
+  // Returns true if `key` is an entry in this dictionary.
+  bool contains(std::string_view key) const;
+
+  // Removes all entries from this dictionary.
+  REINITIALIZES_AFTER_MOVE void clear();
+
+  // Removes the entry referenced by `pos` in this dictionary and returns an
+  // iterator to the entry following the removed entry.
+  iterator erase(iterator pos);
+  iterator erase(const_iterator pos);
+
+  // Creates a deep copy of this dictionary.
+  DictValue Clone() const;
+
+  // Merges the entries from `dict` into this dictionary. If an entry with the
+  // same key exists in this dictionary and `dict`:
+  // - if both entries are dictionaries, they will be recursively merged
+  // - otherwise, the already-existing entry in this dictionary will be
+  //   overwritten with the entry from `dict`.
+  void Merge(DictValue dict);
+
+  // Finds the entry corresponding to `key` in this dictionary. Returns
+  // nullptr if there is no such entry.
+  const Value* Find(std::string_view key) const;
+  Value* Find(std::string_view key);
+
+  // Similar to `Find()` above, but returns `std::nullopt`/`nullptr` if the
+  // type of the entry does not match. `bool`, `int`, and `double` are
+  // returned in a wrapped `std::optional`; blobs, `Value::Dict`, and
+  // `Value::List` are returned by pointer.
+  std::optional<bool> FindBool(std::string_view key) const;
+  std::optional<int> FindInt(std::string_view key) const;
+  // Returns a non-null value for both `Value::Type::DOUBLE` and
+  // `Value::Type::INT`, converting the latter to a double.
+  std::optional<double> FindDouble(std::string_view key) const;
+  const std::string* FindString(std::string_view key) const;
+  std::string* FindString(std::string_view key);
+  const BlobStorage* FindBlob(std::string_view key) const;
+  BlobStorage* FindBlob(std::string_view key);
+  const DictValue* FindDict(std::string_view key) const;
+  DictValue* FindDict(std::string_view key);
+  const ListValue* FindList(std::string_view key) const;
+  ListValue* FindList(std::string_view key);
+
+  // If there's a value of the specified type at `key` in this dictionary,
+  // returns it. Otherwise, creates an empty container of the specified type,
+  // inserts it at `key`, and returns it. If there's a value of some other
+  // type at `key`, will overwrite that entry.
+  DictValue* EnsureDict(std::string_view key);
+  ListValue* EnsureList(std::string_view key);
+
+  // Sets an entry with `key` and `value` in this dictionary, overwriting any
+  // existing entry with the same `key`. Returns a pointer to the set `value`.
+  Value* Set(std::string_view key, Value&& value) &;
+  Value* Set(std::string_view key, bool value) &;
+  template <typename T>
+  Value* Set(std::string_view, const T*) & = delete;
+  Value* Set(std::string_view key, int value) &;
+  Value* Set(std::string_view key, double value) &;
+  Value* Set(std::string_view key, std::string_view value) &;
+  Value* Set(std::string_view key, std::u16string_view value) &;
+  Value* Set(std::string_view key, const char* value) &;
+  Value* Set(std::string_view key, const char16_t* value) &;
+  Value* Set(std::string_view key, std::string&& value) &;
+  Value* Set(std::string_view key, BlobStorage&& value) &;
+  Value* Set(std::string_view key, DictValue&& value) &;
+  Value* Set(std::string_view key, ListValue&& value) &;
+
+  // Rvalue overrides of the `Set` methods, which allow you to construct
+  // a `Value::Dict` builder-style:
+  //
+  // Value::Dict result =
+  //     Value::Dict()
+  //         .Set("key-1", "first value")
+  //         .Set("key-2", 2)
+  //         .Set("key-3", true)
+  //         .Set("nested-dictionary", Value::Dict()
+  //                                       .Set("nested-key-1", "value")
+  //                                       .Set("nested-key-2", true))
+  //         .Set("nested-list", Value::List()
+  //                                 .Append("nested-list-value")
+  //                                 .Append(5)
+  //                                 .Append(true));
+  //
+  // Each method returns a rvalue reference to `this`, so this is as efficient
+  // as stand-alone calls to `Set`, while also making it harder to
+  // accidentally insert items in the wrong dictionary.
+  //
+  // The equivalent code without using these builder-style methods:
+  //
+  // Value::Dict no_builder_example;
+  // no_builder_example.Set("key-1", "first value")
+  // no_builder_example.Set("key-2", 2)
+  // no_builder_example.Set("key-3", true)
+  // Value::Dict nested_dictionary;
+  // nested_dictionary.Set("nested-key-1", "value");
+  // nested_dictionary.Set("nested-key-2", true);
+  // no_builder_example.Set("nested_dictionary",
+  //                        std::move(nested_dictionary));
+  // Value::List nested_list;
+  // nested_list.Append("nested-list-value");
+  // nested_list.Append(5);
+  // nested_list.Append(true);
+  // no_builder_example.Set("nested-list", std::move(nested_list));
+  //
+  // Sometimes `git cl format` does a less than perfect job formatting these
+  // chained `Set` calls. In these cases you can use a trailing empty comment
+  // to influence the code formatting:
+  //
+  // Value::Dict result = Value::Dict().Set(
+  //     "nested",
+  //     base::Value::Dict().Set("key", "value").Set("other key", "other"));
+  //
+  // Value::Dict result = Value::Dict().Set("nested",
+  //                                        base::Value::Dict() //
+  //                                           .Set("key", "value")
+  //                                           .Set("other key", "value"));
+  //
+  DictValue&& Set(std::string_view key, Value&& value) &&;
+  DictValue&& Set(std::string_view key, bool value) &&;
+  template <typename T>
+  DictValue&& Set(std::string_view, const T*) && = delete;
+  DictValue&& Set(std::string_view key, int value) &&;
+  DictValue&& Set(std::string_view key, double value) &&;
+  DictValue&& Set(std::string_view key, std::string_view value) &&;
+  DictValue&& Set(std::string_view key, std::u16string_view value) &&;
+  DictValue&& Set(std::string_view key, const char* value) &&;
+  DictValue&& Set(std::string_view key, const char16_t* value) &&;
+  DictValue&& Set(std::string_view key, std::string&& value) &&;
+  DictValue&& Set(std::string_view key, BlobStorage&& value) &&;
+  DictValue&& Set(std::string_view key, DictValue&& value) &&;
+  DictValue&& Set(std::string_view key, ListValue&& value) &&;
+
+  // Removes the entry corresponding to `key` from this dictionary. Returns
+  // true if an entry was removed or false otherwise.
+  bool Remove(std::string_view key);
+
+  // Similar to `Remove()`, but returns the value corresponding to the removed
+  // entry or `std::nullopt` otherwise.
+  std::optional<Value> Extract(std::string_view key);
+
+  // Equivalent to the above methods but operating on paths instead of keys.
+  // A path is shorthand syntax for referring to a key nested inside
+  // intermediate dictionaries, with components delimited by ".". Paths may
+  // not be empty.
+  //
+  // Prefer the non-path methods above when possible. Paths that have only one
+  // component (i.e. no dots in the path) should never use the path-based
+  // methods.
+  //
+  // Originally, the path-based APIs were the only way of specifying a key, so
+  // there are likely to be many legacy (and unnecessary) uses of the path
+  // APIs that do not actually require traversing nested dictionaries.
+  const Value* FindByDottedPath(std::string_view path) const;
+  Value* FindByDottedPath(std::string_view path);
+
+  std::optional<bool> FindBoolByDottedPath(std::string_view path) const;
+  std::optional<int> FindIntByDottedPath(std::string_view path) const;
+  // Returns a non-null value for both `Value::Type::DOUBLE` and
+  // `Value::Type::INT`, converting the latter to a double.
+  std::optional<double> FindDoubleByDottedPath(std::string_view path) const;
+  const std::string* FindStringByDottedPath(std::string_view path) const;
+  std::string* FindStringByDottedPath(std::string_view path);
+  const BlobStorage* FindBlobByDottedPath(std::string_view path) const;
+  BlobStorage* FindBlobByDottedPath(std::string_view path);
+  const DictValue* FindDictByDottedPath(std::string_view path) const;
+  DictValue* FindDictByDottedPath(std::string_view path);
+  const ListValue* FindListByDottedPath(std::string_view path) const;
+  ListValue* FindListByDottedPath(std::string_view path);
+
+  // Creates a new entry with a dictionary for any non-last component that is
+  // missing an entry while performing the path traversal. Will fail if any
+  // non-last component of the path refers to an already-existing entry that
+  // is not a dictionary. Returns `nullptr` on failure.
+  //
+  // Warning: repeatedly using this API to enter entries in the same nested
+  // dictionary is inefficient, so please do not write the following:
+  //
+  // bad_example.SetByDottedPath("a.nested.dictionary.field_1", 1);
+  // bad_example.SetByDottedPath("a.nested.dictionary.field_2", "value");
+  // bad_example.SetByDottedPath("a.nested.dictionary.field_3", 1);
+  //
+  Value* SetByDottedPath(std::string_view path, Value&& value) &;
+  Value* SetByDottedPath(std::string_view path, bool value) &;
+  template <typename T>
+  Value* SetByDottedPath(std::string_view, const T*) & = delete;
+  Value* SetByDottedPath(std::string_view path, int value) &;
+  Value* SetByDottedPath(std::string_view path, double value) &;
+  Value* SetByDottedPath(std::string_view path, std::string_view value) &;
+  Value* SetByDottedPath(std::string_view path, std::u16string_view value) &;
+  Value* SetByDottedPath(std::string_view path, const char* value) &;
+  Value* SetByDottedPath(std::string_view path, const char16_t* value) &;
+  Value* SetByDottedPath(std::string_view path, std::string&& value) &;
+  Value* SetByDottedPath(std::string_view path, BlobStorage&& value) &;
+  Value* SetByDottedPath(std::string_view path, DictValue&& value) &;
+  Value* SetByDottedPath(std::string_view path, ListValue&& value) &;
+
+  // Rvalue overrides of the `SetByDottedPath` methods, which allow you to
+  // construct a `Value::Dict` builder-style:
+  //
+  // Value::Dict result =
+  //     Value::Dict()
+  //         .SetByDottedPath("a.nested.dictionary.with.key-1", "first value")
+  //         .Set("local-key-1", 2));
+  //
+  // Each method returns a rvalue reference to `this`, so this is as efficient
+  // as (and less mistake-prone than) stand-alone calls to `Set`.
+  //
+  // Warning: repeatedly using this API to enter entries in the same nested
+  // dictionary is inefficient, so do not write this:
+  //
+  // Value::Dict bad_example =
+  //   Value::Dict()
+  //     .SetByDottedPath("nested.dictionary.key-1", "first value")
+  //     .SetByDottedPath("nested.dictionary.key-2", "second value")
+  //     .SetByDottedPath("nested.dictionary.key-3", "third value");
+  //
+  // Instead, simply write this
+  //
+  // Value::Dict good_example =
+  //   Value::Dict()
+  //     .Set("nested",
+  //          base::Value::Dict()
+  //            .Set("dictionary",
+  //                 base::Value::Dict()
+  //                   .Set(key-1", "first value")
+  //                   .Set(key-2", "second value")
+  //                   .Set(key-3", "third value")));
+  //
+  //
+  DictValue&& SetByDottedPath(std::string_view path, Value&& value) &&;
+  DictValue&& SetByDottedPath(std::string_view path, bool value) &&;
+  template <typename T>
+  DictValue&& SetByDottedPath(std::string_view, const T*) && = delete;
+  DictValue&& SetByDottedPath(std::string_view path, int value) &&;
+  DictValue&& SetByDottedPath(std::string_view path, double value) &&;
+  DictValue&& SetByDottedPath(std::string_view path, std::string_view value) &&;
+  DictValue&& SetByDottedPath(std::string_view path,
+                              std::u16string_view value) &&;
+  DictValue&& SetByDottedPath(std::string_view path, const char* value) &&;
+  DictValue&& SetByDottedPath(std::string_view path, const char16_t* value) &&;
+  DictValue&& SetByDottedPath(std::string_view path, std::string&& value) &&;
+  DictValue&& SetByDottedPath(std::string_view path, BlobStorage&& value) &&;
+  DictValue&& SetByDottedPath(std::string_view path, DictValue&& value) &&;
+  DictValue&& SetByDottedPath(std::string_view path, ListValue&& value) &&;
+
+  bool RemoveByDottedPath(std::string_view path);
+
+  std::optional<Value> ExtractByDottedPath(std::string_view path);
+
+  // Estimates dynamic memory usage. Requires tracing support
+  // (enable_base_tracing gn flag), otherwise always returns 0. See
+  // base/trace_event/memory_usage_estimator.h for more info.
+  size_t EstimateMemoryUsage() const;
+
+  // Serializes to a string for logging and debug purposes.
+  std::string DebugString() const;
+
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+  // Write this object into a trace.
+  void WriteIntoTrace(perfetto::TracedValue) const;
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+
+ private:
+  BASE_EXPORT friend bool operator==(const DictValue& lhs,
+                                     const DictValue& rhs);
+  BASE_EXPORT friend bool operator!=(const DictValue& lhs,
+                                     const DictValue& rhs);
+  BASE_EXPORT friend bool operator<(const DictValue& lhs, const DictValue& rhs);
+  BASE_EXPORT friend bool operator>(const DictValue& lhs, const DictValue& rhs);
+  BASE_EXPORT friend bool operator<=(const DictValue& lhs,
+                                     const DictValue& rhs);
+  BASE_EXPORT friend bool operator>=(const DictValue& lhs,
+                                     const DictValue& rhs);
+
+  // TODO(dcheng): Replace with `flat_map<std::string, Value>` once no caller
+  // relies on stability of pointers anymore.
+  flat_map<std::string, std::unique_ptr<Value>> storage_;
+};
+
 // The `Value` class is a variant type can hold one of the following types:
 // - null
 // - bool
@@ -150,10 +700,10 @@ namespace base {
 //       list.
 class BASE_EXPORT GSL_OWNER Value {
  public:
-  using BlobStorage = std::vector<uint8_t>;
+  using BlobStorage = BlobStorage;
 
-  class Dict;
-  class List;
+  using Dict = DictValue;
+  using List = ListValue;
 
   enum class Type : unsigned char {
     NONE = 0,
@@ -291,546 +841,7 @@ class BASE_EXPORT GSL_OWNER Value {
   Dict TakeDict() &&;
   List TakeList() &&;
 
-  // Represents a dictionary of string keys to Values.
-  class BASE_EXPORT GSL_OWNER Dict {
-   public:
-    using iterator = detail::dict_iterator;
-    using const_iterator = detail::const_dict_iterator;
 
-    Dict();
-
-    Dict(Dict&&) noexcept;
-    Dict& operator=(Dict&&) noexcept;
-
-    // Deleted to prevent accidental copying.
-    Dict(const Dict&) = delete;
-    Dict& operator=(const Dict&) = delete;
-
-    // Takes move_iterators iterators that return std::pair<std::string, Value>,
-    // and moves their values into a new Dict. Adding all entries at once
-    // results in a faster initial sort operation. Takes move iterators to avoid
-    // having to clone the input.
-    template <class IteratorType>
-    explicit Dict(std::move_iterator<IteratorType> first,
-                  std::move_iterator<IteratorType> last) {
-      // Need to move into a vector first, since `storage_` currently uses
-      // unique_ptrs.
-      std::vector<std::pair<std::string, std::unique_ptr<Value>>> values;
-      for (auto current = first; current != last; ++current) {
-        // With move iterators, no need to call Clone(), but do need to move
-        // to a temporary first, as accessing either field individually will
-        // directly from the iterator will delete the other field.
-        auto value = *current;
-        values.emplace_back(std::move(value.first),
-                            std::make_unique<Value>(std::move(value.second)));
-      }
-      storage_ =
-          flat_map<std::string, std::unique_ptr<Value>>(std::move(values));
-    }
-
-    ~Dict();
-
-    // Returns true if there are no entries in this dictionary and false
-    // otherwise.
-    bool empty() const;
-
-    // Returns the number of entries in this dictionary.
-    size_t size() const;
-
-    // Returns an iterator to the first entry in this dictionary.
-    iterator begin();
-    const_iterator begin() const;
-    const_iterator cbegin() const;
-
-    // Returns an iterator following the last entry in this dictionary. May not
-    // be dereferenced.
-    iterator end();
-    const_iterator end() const;
-    const_iterator cend() const;
-
-    // Returns true if `key` is an entry in this dictionary.
-    bool contains(std::string_view key) const;
-
-    // Removes all entries from this dictionary.
-    REINITIALIZES_AFTER_MOVE void clear();
-
-    // Removes the entry referenced by `pos` in this dictionary and returns an
-    // iterator to the entry following the removed entry.
-    iterator erase(iterator pos);
-    iterator erase(const_iterator pos);
-
-    // Creates a deep copy of this dictionary.
-    Dict Clone() const;
-
-    // Merges the entries from `dict` into this dictionary. If an entry with the
-    // same key exists in this dictionary and `dict`:
-    // - if both entries are dictionaries, they will be recursively merged
-    // - otherwise, the already-existing entry in this dictionary will be
-    //   overwritten with the entry from `dict`.
-    void Merge(Dict dict);
-
-    // Finds the entry corresponding to `key` in this dictionary. Returns
-    // nullptr if there is no such entry.
-    const Value* Find(std::string_view key) const;
-    Value* Find(std::string_view key);
-
-    // Similar to `Find()` above, but returns `std::nullopt`/`nullptr` if the
-    // type of the entry does not match. `bool`, `int`, and `double` are
-    // returned in a wrapped `std::optional`; blobs, `Value::Dict`, and
-    // `Value::List` are returned by pointer.
-    std::optional<bool> FindBool(std::string_view key) const;
-    std::optional<int> FindInt(std::string_view key) const;
-    // Returns a non-null value for both `Value::Type::DOUBLE` and
-    // `Value::Type::INT`, converting the latter to a double.
-    std::optional<double> FindDouble(std::string_view key) const;
-    const std::string* FindString(std::string_view key) const;
-    std::string* FindString(std::string_view key);
-    const BlobStorage* FindBlob(std::string_view key) const;
-    BlobStorage* FindBlob(std::string_view key);
-    const Dict* FindDict(std::string_view key) const;
-    Dict* FindDict(std::string_view key);
-    const List* FindList(std::string_view key) const;
-    List* FindList(std::string_view key);
-
-    // If there's a value of the specified type at `key` in this dictionary,
-    // returns it. Otherwise, creates an empty container of the specified type,
-    // inserts it at `key`, and returns it. If there's a value of some other
-    // type at `key`, will overwrite that entry.
-    Dict* EnsureDict(std::string_view key);
-    List* EnsureList(std::string_view key);
-
-    // Sets an entry with `key` and `value` in this dictionary, overwriting any
-    // existing entry with the same `key`. Returns a pointer to the set `value`.
-    Value* Set(std::string_view key, Value&& value) &;
-    Value* Set(std::string_view key, bool value) &;
-    template <typename T>
-    Value* Set(std::string_view, const T*) & = delete;
-    Value* Set(std::string_view key, int value) &;
-    Value* Set(std::string_view key, double value) &;
-    Value* Set(std::string_view key, std::string_view value) &;
-    Value* Set(std::string_view key, std::u16string_view value) &;
-    Value* Set(std::string_view key, const char* value) &;
-    Value* Set(std::string_view key, const char16_t* value) &;
-    Value* Set(std::string_view key, std::string&& value) &;
-    Value* Set(std::string_view key, BlobStorage&& value) &;
-    Value* Set(std::string_view key, Dict&& value) &;
-    Value* Set(std::string_view key, List&& value) &;
-
-    // Rvalue overrides of the `Set` methods, which allow you to construct
-    // a `Value::Dict` builder-style:
-    //
-    // Value::Dict result =
-    //     Value::Dict()
-    //         .Set("key-1", "first value")
-    //         .Set("key-2", 2)
-    //         .Set("key-3", true)
-    //         .Set("nested-dictionary", Value::Dict()
-    //                                       .Set("nested-key-1", "value")
-    //                                       .Set("nested-key-2", true))
-    //         .Set("nested-list", Value::List()
-    //                                 .Append("nested-list-value")
-    //                                 .Append(5)
-    //                                 .Append(true));
-    //
-    // Each method returns a rvalue reference to `this`, so this is as efficient
-    // as stand-alone calls to `Set`, while also making it harder to
-    // accidentally insert items in the wrong dictionary.
-    //
-    // The equivalent code without using these builder-style methods:
-    //
-    // Value::Dict no_builder_example;
-    // no_builder_example.Set("key-1", "first value")
-    // no_builder_example.Set("key-2", 2)
-    // no_builder_example.Set("key-3", true)
-    // Value::Dict nested_dictionary;
-    // nested_dictionary.Set("nested-key-1", "value");
-    // nested_dictionary.Set("nested-key-2", true);
-    // no_builder_example.Set("nested_dictionary",
-    //                        std::move(nested_dictionary));
-    // Value::List nested_list;
-    // nested_list.Append("nested-list-value");
-    // nested_list.Append(5);
-    // nested_list.Append(true);
-    // no_builder_example.Set("nested-list", std::move(nested_list));
-    //
-    // Sometimes `git cl format` does a less than perfect job formatting these
-    // chained `Set` calls. In these cases you can use a trailing empty comment
-    // to influence the code formatting:
-    //
-    // Value::Dict result = Value::Dict().Set(
-    //     "nested",
-    //     base::Value::Dict().Set("key", "value").Set("other key", "other"));
-    //
-    // Value::Dict result = Value::Dict().Set("nested",
-    //                                        base::Value::Dict() //
-    //                                           .Set("key", "value")
-    //                                           .Set("other key", "value"));
-    //
-    Dict&& Set(std::string_view key, Value&& value) &&;
-    Dict&& Set(std::string_view key, bool value) &&;
-    template <typename T>
-    Dict&& Set(std::string_view, const T*) && = delete;
-    Dict&& Set(std::string_view key, int value) &&;
-    Dict&& Set(std::string_view key, double value) &&;
-    Dict&& Set(std::string_view key, std::string_view value) &&;
-    Dict&& Set(std::string_view key, std::u16string_view value) &&;
-    Dict&& Set(std::string_view key, const char* value) &&;
-    Dict&& Set(std::string_view key, const char16_t* value) &&;
-    Dict&& Set(std::string_view key, std::string&& value) &&;
-    Dict&& Set(std::string_view key, BlobStorage&& value) &&;
-    Dict&& Set(std::string_view key, Dict&& value) &&;
-    Dict&& Set(std::string_view key, List&& value) &&;
-
-    // Removes the entry corresponding to `key` from this dictionary. Returns
-    // true if an entry was removed or false otherwise.
-    bool Remove(std::string_view key);
-
-    // Similar to `Remove()`, but returns the value corresponding to the removed
-    // entry or `std::nullopt` otherwise.
-    std::optional<Value> Extract(std::string_view key);
-
-    // Equivalent to the above methods but operating on paths instead of keys.
-    // A path is shorthand syntax for referring to a key nested inside
-    // intermediate dictionaries, with components delimited by ".". Paths may
-    // not be empty.
-    //
-    // Prefer the non-path methods above when possible. Paths that have only one
-    // component (i.e. no dots in the path) should never use the path-based
-    // methods.
-    //
-    // Originally, the path-based APIs were the only way of specifying a key, so
-    // there are likely to be many legacy (and unnecessary) uses of the path
-    // APIs that do not actually require traversing nested dictionaries.
-    const Value* FindByDottedPath(std::string_view path) const;
-    Value* FindByDottedPath(std::string_view path);
-
-    std::optional<bool> FindBoolByDottedPath(std::string_view path) const;
-    std::optional<int> FindIntByDottedPath(std::string_view path) const;
-    // Returns a non-null value for both `Value::Type::DOUBLE` and
-    // `Value::Type::INT`, converting the latter to a double.
-    std::optional<double> FindDoubleByDottedPath(std::string_view path) const;
-    const std::string* FindStringByDottedPath(std::string_view path) const;
-    std::string* FindStringByDottedPath(std::string_view path);
-    const BlobStorage* FindBlobByDottedPath(std::string_view path) const;
-    BlobStorage* FindBlobByDottedPath(std::string_view path);
-    const Dict* FindDictByDottedPath(std::string_view path) const;
-    Dict* FindDictByDottedPath(std::string_view path);
-    const List* FindListByDottedPath(std::string_view path) const;
-    List* FindListByDottedPath(std::string_view path);
-
-    // Creates a new entry with a dictionary for any non-last component that is
-    // missing an entry while performing the path traversal. Will fail if any
-    // non-last component of the path refers to an already-existing entry that
-    // is not a dictionary. Returns `nullptr` on failure.
-    //
-    // Warning: repeatedly using this API to enter entries in the same nested
-    // dictionary is inefficient, so please do not write the following:
-    //
-    // bad_example.SetByDottedPath("a.nested.dictionary.field_1", 1);
-    // bad_example.SetByDottedPath("a.nested.dictionary.field_2", "value");
-    // bad_example.SetByDottedPath("a.nested.dictionary.field_3", 1);
-    //
-    Value* SetByDottedPath(std::string_view path, Value&& value) &;
-    Value* SetByDottedPath(std::string_view path, bool value) &;
-    template <typename T>
-    Value* SetByDottedPath(std::string_view, const T*) & = delete;
-    Value* SetByDottedPath(std::string_view path, int value) &;
-    Value* SetByDottedPath(std::string_view path, double value) &;
-    Value* SetByDottedPath(std::string_view path, std::string_view value) &;
-    Value* SetByDottedPath(std::string_view path, std::u16string_view value) &;
-    Value* SetByDottedPath(std::string_view path, const char* value) &;
-    Value* SetByDottedPath(std::string_view path, const char16_t* value) &;
-    Value* SetByDottedPath(std::string_view path, std::string&& value) &;
-    Value* SetByDottedPath(std::string_view path, BlobStorage&& value) &;
-    Value* SetByDottedPath(std::string_view path, Dict&& value) &;
-    Value* SetByDottedPath(std::string_view path, List&& value) &;
-
-    // Rvalue overrides of the `SetByDottedPath` methods, which allow you to
-    // construct a `Value::Dict` builder-style:
-    //
-    // Value::Dict result =
-    //     Value::Dict()
-    //         .SetByDottedPath("a.nested.dictionary.with.key-1", "first value")
-    //         .Set("local-key-1", 2));
-    //
-    // Each method returns a rvalue reference to `this`, so this is as efficient
-    // as (and less mistake-prone than) stand-alone calls to `Set`.
-    //
-    // Warning: repeatedly using this API to enter entries in the same nested
-    // dictionary is inefficient, so do not write this:
-    //
-    // Value::Dict bad_example =
-    //   Value::Dict()
-    //     .SetByDottedPath("nested.dictionary.key-1", "first value")
-    //     .SetByDottedPath("nested.dictionary.key-2", "second value")
-    //     .SetByDottedPath("nested.dictionary.key-3", "third value");
-    //
-    // Instead, simply write this
-    //
-    // Value::Dict good_example =
-    //   Value::Dict()
-    //     .Set("nested",
-    //          base::Value::Dict()
-    //            .Set("dictionary",
-    //                 base::Value::Dict()
-    //                   .Set(key-1", "first value")
-    //                   .Set(key-2", "second value")
-    //                   .Set(key-3", "third value")));
-    //
-    //
-    Dict&& SetByDottedPath(std::string_view path, Value&& value) &&;
-    Dict&& SetByDottedPath(std::string_view path, bool value) &&;
-    template <typename T>
-    Dict&& SetByDottedPath(std::string_view, const T*) && = delete;
-    Dict&& SetByDottedPath(std::string_view path, int value) &&;
-    Dict&& SetByDottedPath(std::string_view path, double value) &&;
-    Dict&& SetByDottedPath(std::string_view path, std::string_view value) &&;
-    Dict&& SetByDottedPath(std::string_view path, std::u16string_view value) &&;
-    Dict&& SetByDottedPath(std::string_view path, const char* value) &&;
-    Dict&& SetByDottedPath(std::string_view path, const char16_t* value) &&;
-    Dict&& SetByDottedPath(std::string_view path, std::string&& value) &&;
-    Dict&& SetByDottedPath(std::string_view path, BlobStorage&& value) &&;
-    Dict&& SetByDottedPath(std::string_view path, Dict&& value) &&;
-    Dict&& SetByDottedPath(std::string_view path, List&& value) &&;
-
-    bool RemoveByDottedPath(std::string_view path);
-
-    std::optional<Value> ExtractByDottedPath(std::string_view path);
-
-    // Estimates dynamic memory usage. Requires tracing support
-    // (enable_base_tracing gn flag), otherwise always returns 0. See
-    // base/trace_event/memory_usage_estimator.h for more info.
-    size_t EstimateMemoryUsage() const;
-
-    // Serializes to a string for logging and debug purposes.
-    std::string DebugString() const;
-
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-    // Write this object into a trace.
-    void WriteIntoTrace(perfetto::TracedValue) const;
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
-
-   private:
-    BASE_EXPORT friend bool operator==(const Dict& lhs, const Dict& rhs);
-    BASE_EXPORT friend bool operator!=(const Dict& lhs, const Dict& rhs);
-    BASE_EXPORT friend bool operator<(const Dict& lhs, const Dict& rhs);
-    BASE_EXPORT friend bool operator>(const Dict& lhs, const Dict& rhs);
-    BASE_EXPORT friend bool operator<=(const Dict& lhs, const Dict& rhs);
-    BASE_EXPORT friend bool operator>=(const Dict& lhs, const Dict& rhs);
-
-    // TODO(dcheng): Replace with `flat_map<std::string, Value>` once no caller
-    // relies on stability of pointers anymore.
-    flat_map<std::string, std::unique_ptr<Value>> storage_;
-  };
-
-  // Represents a list of Values.
-  class BASE_EXPORT GSL_OWNER List {
-   public:
-    using iterator = CheckedContiguousIterator<Value>;
-    using const_iterator = CheckedContiguousConstIterator<Value>;
-    using reverse_iterator = std::reverse_iterator<iterator>;
-    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
-    using value_type = Value;
-
-    // Creates a list with the given capacity reserved.
-    // Correctly using this will greatly reduce the code size and improve
-    // performance when creating a list whose size is known up front.
-    static List with_capacity(size_t capacity);
-
-    List();
-
-    List(List&&) noexcept;
-    List& operator=(List&&) noexcept;
-
-    // Deleted to prevent accidental copying.
-    List(const List&) = delete;
-    List& operator=(const List&) = delete;
-
-    ~List();
-
-    // Returns true if there are no values in this list and false otherwise.
-    bool empty() const;
-
-    // Returns the number of values in this list.
-    size_t size() const;
-
-    // Returns an iterator to the first value in this list.
-    iterator begin();
-    const_iterator begin() const;
-    const_iterator cbegin() const;
-
-    // Returns an iterator following the last value in this list. May not be
-    // dereferenced.
-    iterator end();
-    const_iterator end() const;
-    const_iterator cend() const;
-
-    // Returns a reverse iterator preceding the first value in this list. May
-    // not be dereferenced.
-    reverse_iterator rend();
-    const_reverse_iterator rend() const;
-
-    // Returns a reverse iterator to the last value in this list.
-    reverse_iterator rbegin();
-    const_reverse_iterator rbegin() const;
-
-    // Returns a reference to the first value in the container. Fails with
-    // `CHECK()` if the list is empty.
-    const Value& front() const LIFETIME_BOUND;
-    Value& front() LIFETIME_BOUND;
-
-    // Returns a reference to the last value in the container. Fails with
-    // `CHECK()` if the list is empty.
-    const Value& back() const LIFETIME_BOUND;
-    Value& back() LIFETIME_BOUND;
-
-    // Increase the capacity of the backing container, but does not change
-    // the size. Assume all existing iterators will be invalidated.
-    void reserve(size_t capacity);
-
-    // Resizes the list.
-    // If `new_size` is greater than current size, the extra elements in the
-    // back will be destroyed.
-    // If `new_size` is less than current size, new default-initialized elements
-    // will be added to the back.
-    // Assume all existing iterators will be invalidated.
-    void resize(size_t new_size);
-
-    // Returns a reference to the value at `index` in this list. Fails with a
-    // `CHECK()` if `index >= size()`.
-    const Value& operator[](size_t index) const;
-    Value& operator[](size_t index);
-
-    // Returns true if the specified `val` is present in the list.
-    bool contains(bool val) const;
-    bool contains(int val) const;
-    bool contains(double val) const;
-    // Note: std::u16string_view overload intentionally omitted: Value
-    // internally stores strings as UTF-8.
-    bool contains(std::string_view val) const;
-    bool contains(const char* val) const;
-    bool contains(const BlobStorage& val) const;
-    bool contains(const Dict& val) const;
-    bool contains(const List& val) const;
-
-    // Removes all value from this list.
-    REINITIALIZES_AFTER_MOVE void clear();
-
-    // Removes the value referenced by `pos` in this list and returns an
-    // iterator to the value following the removed value.
-    iterator erase(iterator pos);
-    const_iterator erase(const_iterator pos);
-
-    // Remove the values in the range [`first`, `last`). Returns iterator to the
-    // first value following the removed range, which is `last`. If `first` ==
-    // `last`, removes nothing and returns `last`.
-    iterator erase(iterator first, iterator last);
-    const_iterator erase(const_iterator first, const_iterator last);
-
-    // Creates a deep copy of this dictionary.
-    List Clone() const;
-
-    // Appends `value` to the end of this list.
-    void Append(Value&& value) &;
-    void Append(bool value) &;
-    template <typename T>
-    void Append(const T*) & = delete;
-    void Append(int value) &;
-    void Append(double value) &;
-    void Append(std::string_view value) &;
-    void Append(std::u16string_view value) &;
-    void Append(const char* value) &;
-    void Append(const char16_t* value) &;
-    void Append(std::string&& value) &;
-    void Append(BlobStorage&& value) &;
-    void Append(Dict&& value) &;
-    void Append(List&& value) &;
-
-    // Rvalue overrides of the `Append` methods, which allow you to construct
-    // a `Value::List` builder-style:
-    //
-    // Value::List result =
-    //   Value::List().Append("first value").Append(2).Append(true);
-    //
-    // Each method returns a rvalue reference to `this`, so this is as efficient
-    // as stand-alone calls to `Append`, while at the same time making it harder
-    // to accidentally append to the wrong list.
-    //
-    // The equivalent code without using these builder-style methods:
-    //
-    // Value::List no_builder_example;
-    // no_builder_example.Append("first value");
-    // no_builder_example.Append(2);
-    // no_builder_example.Append(true);
-    //
-    List&& Append(Value&& value) &&;
-    List&& Append(bool value) &&;
-    template <typename T>
-    List&& Append(const T*) && = delete;
-    List&& Append(int value) &&;
-    List&& Append(double value) &&;
-    List&& Append(std::string_view value) &&;
-    List&& Append(std::u16string_view value) &&;
-    List&& Append(const char* value) &&;
-    List&& Append(const char16_t* value) &&;
-    List&& Append(std::string&& value) &&;
-    List&& Append(BlobStorage&& value) &&;
-    List&& Append(Dict&& value) &&;
-    List&& Append(List&& value) &&;
-
-    // Inserts `value` before `pos` in this list. Returns an iterator to the
-    // inserted value.
-    // TODO(dcheng): Should this provide the same set of overloads that Append()
-    // does?
-    iterator Insert(const_iterator pos, Value&& value);
-
-    // Erases all values equal to `value` from this list.
-    size_t EraseValue(const Value& value);
-
-    // Erases all values for which `predicate` evaluates to true from this list.
-    template <typename Predicate>
-    size_t EraseIf(Predicate predicate) {
-      return std::erase_if(storage_, predicate);
-    }
-
-    // Estimates dynamic memory usage. Requires tracing support
-    // (enable_base_tracing gn flag), otherwise always returns 0. See
-    // base/trace_event/memory_usage_estimator.h for more info.
-    size_t EstimateMemoryUsage() const;
-
-    // Serializes to a string for logging and debug purposes.
-    std::string DebugString() const;
-
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-    // Write this object into a trace.
-    void WriteIntoTrace(perfetto::TracedValue) const;
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
-
-   private:
-    using ListStorage = std::vector<Value>;
-
-    BASE_EXPORT friend bool operator==(const List& lhs, const List& rhs);
-    BASE_EXPORT friend bool operator!=(const List& lhs, const List& rhs);
-    BASE_EXPORT friend bool operator<(const List& lhs, const List& rhs);
-    BASE_EXPORT friend bool operator>(const List& lhs, const List& rhs);
-    BASE_EXPORT friend bool operator<=(const List& lhs, const List& rhs);
-    BASE_EXPORT friend bool operator>=(const List& lhs, const List& rhs);
-
-    explicit List(const std::vector<Value>& storage);
-
-    // Shared implementation of public `contains()` methods.
-    template <typename T, typename R>
-      requires std::equality_comparable_with<T, R>
-    bool contains(const T& val,
-                  bool (Value::*test)() const,
-                  R (Value::*get)() const) const {
-      return std::ranges::any_of(storage_, [&](const Value& value) {
-        return (value.*test)() && (value.*get)() == val;
-      });
-    }
-
-    std::vector<Value> storage_;
-  };
 
   // Note: Do not add more types. See the file-level comment above for why.
 
@@ -1155,6 +1166,16 @@ BASE_EXPORT std::ostream& operator<<(std::ostream& out,
 // Stream operator so that enum class Types can be used in log statements.
 BASE_EXPORT std::ostream& operator<<(std::ostream& out,
                                      const Value::Type& type);
+
+template <typename T, typename R>
+  requires std::equality_comparable_with<T, R>
+bool ListValue::contains(const T& val,
+                         bool (Value::*test)() const,
+                         R (Value::*get)() const) const {
+  return std::ranges::any_of(storage_, [&](const Value& value) {
+    return (value.*test)() && (value.*get)() == val;
+  });
+}
 
 }  // namespace base
 

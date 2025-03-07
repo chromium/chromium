@@ -5,9 +5,13 @@
 #include "dbus/exported_object.h"
 
 #include <stdint.h>
+
+#include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -22,6 +26,59 @@
 #include "dbus/util.h"
 
 namespace dbus {
+
+namespace {
+
+// Helper to ensure the wrapped `ResponseSender` is invoked. To use it, use the
+// factory method to create wrapping callback owning an instance of this class.
+// The wrapping callback must run. Otherwise, CHECK in destructor will trigger.
+class ResponseSenderWrapper {
+ public:
+  ResponseSenderWrapper(std::string interface,
+                        std::string member,
+                        ExportedObject::ResponseSender sender)
+      : interface_(std::move(interface)),
+        member_(std::move(member)),
+        sender_(std::move(sender)) {}
+
+  ResponseSenderWrapper(ResponseSenderWrapper&) = delete;
+  ResponseSenderWrapper& operator&(ResponseSenderWrapper&) = delete;
+
+  ~ResponseSenderWrapper() {
+    SCOPED_CRASH_KEY_STRING32("ResponseSenderWrapper", "DBusInterface",
+                              interface_);
+    SCOPED_CRASH_KEY_STRING32("ResponseSenderWrapper", "DBusMember", member_);
+
+    // `sender_` must have run (or not set).
+    CHECK(sender_.is_null())
+        << "ResponseSender did not run for " << interface_ << "." << member_;
+    ;
+  }
+
+  // Convenience factory.
+  static ExportedObject::ResponseSender Create(
+      std::string interface,
+      std::string member,
+      ExportedObject::ResponseSender sender) {
+    return base::BindOnce(
+        &ResponseSenderWrapper::RunSender,
+        std::make_unique<ResponseSenderWrapper>(
+            std::move(interface), std::move(member), std::move(sender)));
+  }
+
+ private:
+  void RunSender(std::unique_ptr<Response> response) {
+    CHECK(sender_);
+
+    std::move(sender_).Run(std::move(response));
+  }
+
+  const std::string interface_;
+  const std::string member_;
+  ExportedObject::ResponseSender sender_;
+};
+
+}  // namespace
 
 ExportedObject::ExportedObject(Bus* bus,
                                const ObjectPath& object_path)
@@ -229,8 +286,8 @@ DBusHandlerResult ExportedObject::HandleMessage(
   dbus_message_ref(raw_message);
   std::unique_ptr<MethodCall> method_call(
       MethodCall::FromRawMessage(raw_message));
-  const std::string interface = method_call->GetInterface();
-  const std::string member = method_call->GetMember();
+  std::string interface = method_call->GetInterface();
+  std::string member = method_call->GetMember();
 
   if (interface.empty()) {
     // We don't support method calls without interface.
@@ -256,8 +313,10 @@ DBusHandlerResult ExportedObject::HandleMessage(
   } else {
     // If the D-Bus thread is not used, just call the method directly.
     MethodCall* method = method_call.get();
-    iter->second.Run(method, base::BindOnce(&ExportedObject::SendResponse, this,
-                                            std::move(method_call)));
+    iter->second.Run(method, ResponseSenderWrapper::Create(
+                                 std::move(interface), std::move(member),
+                                 base::BindOnce(&ExportedObject::SendResponse,
+                                                this, std::move(method_call))));
   }
 
   // It's valid to say HANDLED here, and send a method response at a later
@@ -269,9 +328,11 @@ void ExportedObject::RunMethod(const MethodCallCallback& method_call_callback,
                                std::unique_ptr<MethodCall> method_call) {
   bus_->AssertOnOriginThread();
   MethodCall* method = method_call.get();
-  method_call_callback.Run(method,
-                           base::BindOnce(&ExportedObject::SendResponse, this,
-                                          std::move(method_call)));
+  method_call_callback.Run(
+      method, ResponseSenderWrapper::Create(
+                  method->GetInterface(), method->GetMember(),
+                  base::BindOnce(&ExportedObject::SendResponse, this,
+                                 std::move(method_call))));
 }
 
 void ExportedObject::SendResponse(std::unique_ptr<MethodCall> method_call,

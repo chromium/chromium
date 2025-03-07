@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -23,11 +24,32 @@ namespace autofill_private = extensions::api::autofill_private;
 
 namespace extensions::autofill_ai_util {
 
+namespace {
+
 using autofill::AttributeInstance;
 using autofill::AttributeTypeName;
 using autofill::EntityInstance;
 using autofill::EntityType;
 using autofill::EntityTypeName;
+
+// Converts an `autofill::EntityInstance` object to an
+// `api::autofill_private::EntityInstanceWithLabels` object, according to a
+// given `app_locale`.
+autofill_private::EntityInstanceWithLabels
+EntityInstanceToPrivateApiEntityInstanceWithLabels(
+    const EntityInstance& entity_instance,
+    const std::string& app_locale) {
+  autofill_private::EntityInstanceWithLabels entity_instance_with_labels;
+  entity_instance_with_labels.guid = entity_instance.guid().AsLowercaseString();
+  // TODO(crbug.com/393318055): Use better labels.
+  entity_instance_with_labels.entity_label = base::UTF16ToUTF8(
+      entity_instance.attributes()[0].GetCompleteInfo(app_locale));
+  entity_instance_with_labels.entity_sub_label =
+      base::UTF16ToUTF8(entity_instance.type().GetNameForI18n());
+  return entity_instance_with_labels;
+}
+
+}  // namespace
 
 std::string GetAddEntityStringForI18n(EntityType entity_type) {
   switch (entity_type.name()) {
@@ -126,18 +148,15 @@ autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
   return private_api_entity_instance;
 }
 
-autofill_private::EntityInstanceWithLabels
-EntityInstanceToPrivateApiEntityInstanceWithLabels(
-    const EntityInstance& entity_instance,
+std::vector<autofill_private::EntityInstanceWithLabels>
+EntityInstancesToPrivateApiEntityInstancesWithLabels(
+    base::span<const EntityInstance> entity_instances,
     const std::string& app_locale) {
-  autofill_private::EntityInstanceWithLabels entity_instance_with_labels;
-  entity_instance_with_labels.guid = entity_instance.guid().AsLowercaseString();
-  // TODO(crbug.com/393318055): Use better labels;
-  entity_instance_with_labels.entity_label = base::UTF16ToUTF8(
-      entity_instance.attributes()[0].GetCompleteInfo(app_locale));
-  entity_instance_with_labels.entity_sub_label =
-      base::UTF16ToUTF8(entity_instance.type().GetNameForI18n());
-  return entity_instance_with_labels;
+  return base::ToVector(
+      entity_instances, [&](const EntityInstance& entity_instance) {
+        return EntityInstanceToPrivateApiEntityInstanceWithLabels(
+            entity_instance, app_locale);
+      });
 }
 
 }  // namespace extensions::autofill_ai_util

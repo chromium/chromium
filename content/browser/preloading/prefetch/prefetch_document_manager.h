@@ -26,6 +26,7 @@
 namespace content {
 
 class PrefetchContainer;
+class PrefetchHandle;
 class PrefetchService;
 class PreloadingPredictor;
 
@@ -142,7 +143,7 @@ class CONTENT_EXPORT PrefetchDocumentManager
   //
   // We allow normal prefetch and prefetch ahead of prerender with the same key
   // here, to handle and merge them in `PrefetchService`.
-  std::map<std::pair<GURL, PreloadingType>, base::WeakPtr<PrefetchContainer>>
+  std::map<std::pair<GURL, PreloadingType>, std::unique_ptr<PrefetchHandle>>
       all_prefetches_;
 
   // Stores whether or not canary checks have been started for this page.

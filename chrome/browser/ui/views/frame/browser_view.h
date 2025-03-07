@@ -35,7 +35,6 @@
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
-#include "chrome/browser/ui/views/frame/web_contents_close_handler.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -80,7 +79,6 @@ class LocationBarView;
 class MultiContentsView;
 class ScrimView;
 class SidePanel;
-class StatusBubbleViews;
 class TabSearchBubbleHost;
 class TabStrip;
 class TabStripRegionView;
@@ -91,7 +89,6 @@ class TopContainerView;
 class TopControlsSlideController;
 class TopControlsSlideControllerTest;
 class WebAppFrameToolbarView;
-class WebContentsCloseHandler;
 class WebUITabStripContainerView;
 
 namespace gfx {
@@ -286,9 +283,10 @@ class BrowserView : public BrowserWindow,
     return exclusive_access_bubble_.get();
   }
 
-  // Accessor for the contents and devtools WebViews.
-  // TODO(crbug.com/393451405): This accessor is used extensively, audit
-  // whether this breaks any use cases when side by side is enabled.
+  // Accessors for the contents and devtools WebViews.
+  // Will return the single active contents view. If side by side is enabled,
+  // it may make more sense to use GetAllVisibleContentsWebViews() depending on
+  // the use case.
   ContentsWebView* contents_web_view() {
     return static_cast<ContentsWebView*>(GetContentsView());
   }
@@ -514,7 +512,7 @@ class BrowserView : public BrowserWindow,
   ui::ElementContext GetElementContext() override;
   int GetTopControlsHeight() const override;
   void SetTopControlsGestureScrollInProgress(bool in_progress) override;
-  StatusBubble* GetStatusBubble() override;
+  std::vector<StatusBubble*> GetStatusBubbles() override;
   void UpdateTitleBar() override;
   void BookmarkBarStateChanged(
       BookmarkBar::AnimateChangeType change_type) override;
@@ -868,6 +866,8 @@ class BrowserView : public BrowserWindow,
     return accessibility_focus_highlight_.get();
   }
 #endif
+
+  std::vector<ContentsWebView*> GetAllVisibleContentsWebViews();
 
   bool should_show_window_controls_overlay_toggle() const {
     return should_show_window_controls_overlay_toggle_;
@@ -1289,9 +1289,6 @@ class BrowserView : public BrowserWindow,
   // the devtools_web_view_ is hidden.
   std::unique_ptr<views::ExternalFocusTracker> devtools_focus_tracker_;
 
-  // The Status information bubble that appears at the bottom of the window.
-  std::unique_ptr<StatusBubbleViews> status_bubble_;
-
   // The scrim view that covers the browser window when a window-modal dialog is
   // showing.
   // This is currently not used on macOS where the platform draws a native
@@ -1363,8 +1360,6 @@ class BrowserView : public BrowserWindow,
       ui::TouchUiController::Get()->RegisterCallback(
           base::BindRepeating(&BrowserView::TouchModeChanged,
                               base::Unretained(this)));
-
-  std::unique_ptr<WebContentsCloseHandler> web_contents_close_handler_;
 
   // The class that registers for keyboard shortcuts for extension commands.
   std::unique_ptr<ExtensionKeybindingRegistryViews>

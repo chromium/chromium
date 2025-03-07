@@ -873,6 +873,16 @@ BASE_FEATURE_PARAM(std::string,
                    "FledgeBiddingAndAuctionKeyConfig",
                    "");
 
+// See https://github.com/WICG/turtledove/issues/1334
+BASE_FEATURE(kFledgeOriginScopedKeys,
+             "FledgeOriginScopedKeys",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(std::string,
+                   kFledgeOriginScopedKeyConfig,
+                   &kFledgeOriginScopedKeys,
+                   "FledgeOriginScopedKeyConfig",
+                   "");
+
 // See in the header.
 BASE_FEATURE(kFledgeConsiderKAnonymity,
              "FledgeConsiderKAnonymity",
@@ -1818,6 +1828,10 @@ BASE_FEATURE(kNoForcedFrameUpdatesForWebTests,
 
 BASE_FEATURE(kNoThrottlingVisibleAgent,
              "NoThrottlingVisibleAgent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kNoThrowForCSPBlockedWorker,
+             "NoThrowForCSPBlockedWorker",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOpenAllUrlsOrFilesOnDrop,

@@ -394,9 +394,13 @@ bool BookmarkMenuDelegate::IsTriggerableEvent(views::MenuItemView* menu,
                         event_utils::IsPossibleDispositionEvent(e);
   const bool is_command_click = is_click && (e.flags() & ui::EF_COMMAND_DOWN);
 
-  // Cmd+Click (or Win+Click) to open all bookmark pages in a submenu.
+  // To open all bookmark pages in a submenu:
+  // 1. Cmd+Click (or Win+Click on Windows) on the submenu.
+  // 2. middle-mouse click the submenu.
   if (menu->GetType() == MenuItemView::Type::kSubMenu) {
-    return is_command_click;
+    const bool is_middle_mouse =
+        e.IsMouseEvent() && (e.flags() & ui::EF_MIDDLE_MOUSE_BUTTON);
+    return is_command_click || is_middle_mouse;
   }
 
   return is_click;

@@ -3407,11 +3407,12 @@ even if they fit the naming pattern. -->
     <variant name="WinNarrator" summary="Windows, specifically Narrator."/>
     <variant name="WinNVDA" summary="Windows, specifically NVDA"/>
     <variant name="WinScreenReader2"
-        summary="Windows. This is tracking the presence of the kScreenReader
-                 mode flag. In this case, Chrome has detected accessibility
-                 calls that would normally only occur from a screen reader.
-                 See also the more specific metrics such as
-                 Accessibility.WinJAWS/WinNVDA, or Accessibility.ModeFlag"/>
+        summary="Windows. This is tracking the presence of the
+                 kExtendedProperties mode flag. In this case, Chrome has
+                 detected accessibility calls that would normally only occur
+                 from a screen reader. See also the more specific metrics
+                 such as Accessibility.WinJAWS/WinNVDA, or
+                 Accessibility.ModeFlag"/>
     <variant name="WinSupernova" summary="Windows, specifically Supernova."/>
   </token>
   <token key="ReportDelay" variants="ReportDelay"/>

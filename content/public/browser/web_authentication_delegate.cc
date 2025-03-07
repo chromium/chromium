@@ -107,8 +107,9 @@ void WebAuthenticationDelegate::PasskeyUnrecognized(
     const std::vector<uint8_t>& passkey_credential_id,
     const std::string& relying_party_id) {}
 
-void WebAuthenticationDelegate::DeleteUnacceptedPasskeys(
+void WebAuthenticationDelegate::SignalAllAcceptedCredentials(
     content::WebContents* web_contents,
+    const url::Origin& origin,
     const std::string& relying_party_id,
     const std::vector<uint8_t>& user_id,
     const std::vector<std::vector<uint8_t>>& all_accepted_credentials_ids) {}

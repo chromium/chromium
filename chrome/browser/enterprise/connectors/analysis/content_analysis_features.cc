@@ -6,10 +6,6 @@
 
 namespace enterprise_connectors {
 
-BASE_FEATURE(kStopRegisterFcmEnabled,
-             "StopRegisterFcmEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableAsyncUploadAfterVerdict,
              "EnableAsyncUploadAfterVerdict",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -17,9 +13,5 @@ BASE_FEATURE(kEnableAsyncUploadAfterVerdict,
 BASE_FEATURE(kEnableResumableUploadOnConsumerScan,
              "EnableResumableUploadOnConsumerScan",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsStopRegisterFcmEnabled() {
-  return base::FeatureList::IsEnabled(kStopRegisterFcmEnabled);
-}
 
 }  // namespace enterprise_connectors

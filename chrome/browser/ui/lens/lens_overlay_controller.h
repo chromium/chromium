@@ -840,6 +840,11 @@ class LensOverlayController : public LensSearchboxClient,
   // Hides the overlay view and restores input to the tab contents web view.
   void HideOverlay();
 
+  // Hide the shared overlay view if it is not being used by another tab. This
+  // is determined by checking if any of the children of the overlay view are
+  // visible.
+  void MaybeHideSharedOverlayView();
+
   // Closes the overlay UI and sets state to kOff. This method is the final
   // cleanup of closing the overlay UI. This resets all state internal to the
   // LensOverlayController.

@@ -1108,6 +1108,13 @@ void SkiaRenderer::FinishDrawingFrame() {
     // Mac doesn't use the plane_z_order field and it needs to have primary
     // plane last in the list of overlays.
     current_frame()->overlay_list.push_back(surface_candidate);
+#elif BUILDFLAG(IS_ANDROID)
+    // Android respects plane_z_order and order in the list shouldn't matter,
+    // but it surfaces the bug when the planes are not hidden properly. As we
+    // use only underlays, we should keep primary plane first so it would hide
+    // planes that are not supposed to be visible.
+    const auto insert_positon = current_frame()->overlay_list.begin();
+    current_frame()->overlay_list.insert(insert_positon, surface_candidate);
 #else
     // Other platforms respect plane_z_order so the list order doesn't matter.
     current_frame()->overlay_list.push_back(surface_candidate);
@@ -2644,12 +2651,29 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("viz.quads"),
                "SkiaRenderer::DrawTextureQuad");
 
+  // Sometimes we use different color space for overlays to make sure we stay on
+  // hardware path for power efficiency even if it's slightly incorrect. To
+  // avoid color changes during promotion we use the same color space for
+  // compositing.
+  std::optional<gfx::ColorSpace> overlay_color_space;
+#if BUILDFLAG(IS_ANDROID)
+  if (quad->is_stream_video) {
+    // If overlay processor would override color space, override it here to to
+    // avoid color changes during promotion.
+    overlay_color_space =
+        OverlayProcessorSurfaceControl::GetOverrideColorSpace();
+  }
+#endif
+
   // We need only RGB portion of the color space, YUV conversion handled in
   // skia.
   const gfx::ColorSpace src_color_space =
-      resource_provider()->GetColorSpace(quad->resource_id).GetAsFullRangeRGB();
+      overlay_color_space.value_or(resource_provider()
+                                       ->GetColorSpace(quad->resource_id)
+                                       .GetAsFullRangeRGB());
   const gfx::HDRMetadata& src_hdr_metadata =
       resource_provider()->GetHDRMetadata(quad->resource_id);
+
   const bool needs_color_conversion_filter =
       ((quad->is_video_frame && src_color_space.IsHDR()) ||
        src_color_space.IsToneMappedByDefault()) &&
@@ -2660,20 +2684,9 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   if (needs_color_conversion_filter) {
     override_color_space = CurrentDrawLayerColorSpace().ToSkColorSpace();
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  if (quad->is_stream_video) {
-    // If overlay processor would override color space, override it here to to
-    // avoid color changes during promotion.
-    if (auto overlay_color_space =
-            OverlayProcessorSurfaceControl::GetOverrideColorSpace()) {
-      override_color_space = overlay_color_space->ToSkColorSpace();
-    }
+  if (overlay_color_space) {
+    override_color_space = overlay_color_space->ToSkColorSpace();
   }
-#else
-  // Only on android stream video can be composited.
-  CHECK(!quad->is_stream_video);
-#endif
 
   ScopedSkImageBuilder builder(
       this, quad->resource_id, /*maybe_concurrent_reads=*/true,

@@ -884,21 +884,21 @@ EntityInstance GetPassportEntityInstance(PassportEntityOptions options) {
   }
   if (options.country) {
     attributes.emplace_back(AttributeType(kPassportCountry));
-    attributes.back().SetInfo(PASSPORT_ISSUING_COUNTRY_TAG, options.country,
+    attributes.back().SetInfo(PASSPORT_ISSUING_COUNTRY, options.country,
                               /*app_locale=*/"en-US",
                               /*format_string=*/u"",
                               VerificationStatus::kNoStatus);
   }
   if (options.expiry_date) {
     attributes.emplace_back(AttributeType(kPassportExpiryDate));
-    attributes.back().SetInfo(PASSPORT_EXPIRATION_DATE_TAG, options.expiry_date,
+    attributes.back().SetInfo(PASSPORT_EXPIRATION_DATE, options.expiry_date,
                               /*app_locale=*/"",
                               /*format_string=*/u"YYYY-MM-DD",
                               VerificationStatus::kNoStatus);
   }
   if (options.issue_date) {
     attributes.emplace_back(AttributeType(kPassportIssueDate));
-    attributes.back().SetInfo(PASSPORT_ISSUE_DATE_TAG, options.issue_date,
+    attributes.back().SetInfo(PASSPORT_ISSUE_DATE, options.issue_date,
                               /*app_locale=*/"",
                               /*format_string=*/u"YYYY-MM-DD",
                               VerificationStatus::kNoStatus);
@@ -935,16 +935,16 @@ EntityInstance GetDriversLicenseEntityInstance(DriversLicenseOptions options) {
   if (options.expiration_date) {
     attributes.emplace_back(AttributeType(kDriversLicenseExpirationDate));
     attributes.back().SetInfo(
-        DRIVERS_LICENSE_EXPIRATION_DATE_TAG, options.expiration_date,
+        DRIVERS_LICENSE_EXPIRATION_DATE, options.expiration_date,
         /*app_locale=*/"", /*format_string=*/u"YYYY-MM-DD",
         VerificationStatus::kNoStatus);
   }
   if (options.issue_date) {
     attributes.emplace_back(AttributeType(kDriversLicenseIssueDate));
-    attributes.back().SetInfo(
-        DRIVERS_LICENSE_ISSUE_DATE_TAG, options.issue_date,
-        /*app_locale=*/"", /*format_string=*/u"YYYY-MM-DD",
-        VerificationStatus::kNoStatus);
+    attributes.back().SetInfo(DRIVERS_LICENSE_ISSUE_DATE, options.issue_date,
+                              /*app_locale=*/"",
+                              /*format_string=*/u"YYYY-MM-DD",
+                              VerificationStatus::kNoStatus);
   }
   return EntityInstance(
       EntityType(EntityTypeName::kDriversLicense), std::move(attributes),

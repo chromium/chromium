@@ -79,9 +79,9 @@ Found 50 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: <wss://!"$&'()*+,-.;=_`{}~/> against <about:blank>
   assert_equals: href expected "wss://!\\"$&'()*+,-.;=_`{}~/" but got "wss://!\\"$&'()%2A+,-.;=_`{}~/"
 [FAIL] Parsing: <foo://host/ !"$%&'()*+,-./:;<=>@[\\]^_`{|}~> against <about:blank>
-  assert_equals: href expected "foo://host/%20!%22$%&'()*+,-./:;%3C=%3E@[\\\\]^_%60%7B|%7D~" but got "foo://host/%20!%22$%&'()*+,-./:;%3C=%3E@[\\\\]%5E_%60%7B%7C%7D~"
+  assert_equals: href expected "foo://host/%20!%22$%&'()*+,-./:;%3C=%3E@[\\\\]%5E_%60%7B|%7D~" but got "foo://host/%20!%22$%&'()*+,-./:;%3C=%3E@[\\\\]%5E_%60%7B%7C%7D~"
 [FAIL] Parsing: <wss://host/ !"$%&'()*+,-./:;<=>@[\\]^_`{|}~> against <about:blank>
-  assert_equals: href expected "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]^_%60%7B|%7D~" but got "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]%5E_%60%7B%7C%7D~"
+  assert_equals: href expected "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]%5E_%60%7B|%7D~" but got "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]%5E_%60%7B%7C%7D~"
 [FAIL] Parsing: <foo://host/dir/? !"$%&'()*+,-./:;<=>?@[\\]^_`{|}~> against <about:blank>
   assert_equals: href expected "foo://host/dir/?%20!%22$%&'()*+,-./:;%3C=%3E?@[\\\\]^_`{|}~" but got "foo://host/dir/?%20!%22$%&%27()*+,-./:;%3C=%3E?@[\\\\]^_`{|}~"
 [FAIL] Parsing: <https://xn--/> against <about:blank>

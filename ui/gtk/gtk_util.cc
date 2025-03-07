@@ -704,8 +704,7 @@ GdkEvent* GdkEventFromKeyEvent(const ui::KeyEvent& key_event) {
   int hw_code = GetKeyEventProperty(key_event, ui::kPropertyKeyboardHwKeyCode);
   int group = GetKeyEventProperty(key_event, ui::kPropertyKeyboardGroup);
 
-  // Get GdkKeymap
-  GdkKeymap* keymap = GtkUi::GetPlatform()->GetGdkKeymap();
+  GdkKeymap* keymap = gdk_keymap_get_for_display(gdk_display_get_default());
 
   // Get keyval and state
   GdkModifierType state = GetGdkKeyEventState(key_event);

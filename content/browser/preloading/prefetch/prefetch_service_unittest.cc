@@ -452,7 +452,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
         PreloadPipelineInfo::Create(planned_max_preloading_type));
   }
 
-  void MakePrefetchFromEmbedder(
+  [[nodiscard]] std::unique_ptr<PrefetchHandle> MakePrefetchFromEmbedder(
       const GURL& prefetch_url,
       const PrefetchType& prefetch_type,
       const blink::mojom::Referrer& referrer = blink::mojom::Referrer(),
@@ -465,9 +465,9 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
         PreloadPipelineInfo::Create(
             /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
         /*attempt=*/nullptr);
-    BrowserContextImpl::From(browser_context())
+    return BrowserContextImpl::From(browser_context())
         ->GetPrefetchService()
-        ->AddPrefetchContainer(std::move(prefetch_container));
+        ->AddPrefetchContainerWithHandle(std::move(prefetch_container));
   }
 
   std::unique_ptr<content::PrefetchHandle> MakePrefetchFromBrowserContext(
@@ -1612,9 +1612,10 @@ TEST_P(PrefetchServiceTest, SuccessCase_Embedder) {
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
           /*num_on_prefetch_likely_calls=*/std::nullopt));
 
-  MakePrefetchFromEmbedder(GURL("https://example.com"),
-                           PrefetchType(PreloadingTriggerType::kEmbedder,
-                                        /*use_prefetch_proxy=*/false));
+  auto handle =
+      MakePrefetchFromEmbedder(GURL("https://example.com"),
+                               PrefetchType(PreloadingTriggerType::kEmbedder,
+                                            /*use_prefetch_proxy=*/false));
   task_environment()->RunUntilIdle();
 
   VerifyCommonRequestStateForEmbedders(GURL("https://example.com"),
@@ -1658,9 +1659,10 @@ TEST_P(PrefetchServiceTest,
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
           /*num_on_prefetch_likely_calls=*/std::nullopt));
 
-  MakePrefetchFromEmbedder(GURL("https://example.com"),
-                           PrefetchType(PreloadingTriggerType::kEmbedder,
-                                        /*use_prefetch_proxy=*/false));
+  auto handle =
+      MakePrefetchFromEmbedder(GURL("https://example.com"),
+                               PrefetchType(PreloadingTriggerType::kEmbedder,
+                                            /*use_prefetch_proxy=*/false));
   task_environment()->RunUntilIdle();
 
   VerifyCommonRequestStateForEmbedders(GURL("https://example.com"),
@@ -3353,9 +3355,10 @@ TEST_P(PrefetchServiceTest, NoVarySearchSuccessCase_Embedder) {
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
           /*num_on_prefetch_likely_calls=*/std::nullopt));
 
-  MakePrefetchFromEmbedder(GURL("https://example.com?a=1"),
-                           PrefetchType(PreloadingTriggerType::kEmbedder,
-                                        /*use_prefetch_proxy=*/false));
+  auto handle =
+      MakePrefetchFromEmbedder(GURL("https://example.com?a=1"),
+                               PrefetchType(PreloadingTriggerType::kEmbedder,
+                                            /*use_prefetch_proxy=*/false));
   task_environment()->RunUntilIdle();
 
   VerifyCommonRequestStateForEmbedders(GURL("https://example.com?a=1"),

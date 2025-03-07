@@ -372,9 +372,7 @@ BASE_FEATURE(kSuppressIntermediateACUpdatesOnLowEndDevices,
              DISABLED);
 
 // (Android only) Show the search feature in the hub.
-BASE_FEATURE(kAndroidHubSearch,
-             "AndroidHubSearch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidHubSearch, "AndroidHubSearch", ENABLED);
 
 // When enabled, delay focusTab to prioritize navigation
 // (https://crbug.com/374852568).

@@ -13,13 +13,11 @@
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/offline_items_collection/core/fail_state.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -537,28 +535,6 @@ void DownloadBubbleSecurityViewInfo::PopulateForTailoredWarning(
       PopulateForDangerousUi(l10n_util::GetStringUTF16(
           IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_COOKIE_THEFT));
       return;
-    case TailoredWarningType::kCookieTheftWithAccountInfo: {
-      std::string email;
-      if (auto* identity_manager =
-              IdentityManagerFactory::GetForProfile(model.profile());
-          identity_manager) {
-        email = identity_manager
-                    ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                    .email;
-      }
-      base::UmaHistogramBoolean(
-          "SBClientDownload.TailoredWarning.HasVaidEmailForAccountInfo",
-          !email.empty());
-      if (!email.empty()) {
-        PopulateForDangerousUi(l10n_util::GetStringFUTF16(
-            IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_COOKIE_THEFT_AND_ACCOUNT,
-            base::ASCIIToUTF16(email)));
-        return;
-      }
-      PopulateForDangerousUi(l10n_util::GetStringUTF16(
-          IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_COOKIE_THEFT));
-      return;
-    }
     case TailoredWarningType::kNoTailoredWarning: {
       NOTREACHED();
     }

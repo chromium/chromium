@@ -17,4 +17,18 @@ if (!is_android) {
       "//content/public/browser:browser",
     ]
   }
+
+  # All clients that want to use AXTreeFixing need to do so via
+  # the router, and only the router can access the internal
+  # connections to downstream services.
+  source_set("internal") {
+    visibility = [ ":impl" ]
+
+    sources = [
+      "internal/ax_tree_fixing_screen_ai_service.cc",
+      "internal/ax_tree_fixing_screen_ai_service.h",
+    ]
+
+    deps = [ "//base" ]
+  }
 }

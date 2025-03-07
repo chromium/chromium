@@ -2945,11 +2945,6 @@ extern const char kEnableCrOSSodaLanguagesDescription[];
 extern const char kEnableCrOSSodaConchLanguagesName[];
 extern const char kEnableCrOSSodaConchLanguagesDescription[];
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-extern const char kEsbDownloadRowPromoFeatureName[];
-extern const char kEsbDownloadRowPromoFeatureDescription[];
-#endif
-
 extern const char kFreezingOnEnergySaverName[];
 extern const char kFreezingOnEnergySaverDescription[];
 

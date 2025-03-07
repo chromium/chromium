@@ -32,9 +32,8 @@ std::vector<std::unique_ptr<TemplateURLData>> Resolver::GetPrepopulatedEngines()
       // TODO(crbug.com/328040066): Refactor the `TemplateURLPrepopulateData`
       // helpers to accept `CountryIdHolder` and extract the raw country ID
       // only where it needs to be used.
-      regional_capabilities_->GetCountryId().GetRestricted(
-          CountryAccessKey<Resolver>(
-              CountryAccessReason::kTemplateURLPrepopulateDataResolution)));
+      regional_capabilities_->GetCountryId().GetRestricted(CountryAccessKey(
+          CountryAccessReason::kTemplateURLPrepopulateDataResolution)));
 }
 
 std::unique_ptr<TemplateURLData> Resolver::GetPrepopulatedEngine(
@@ -44,9 +43,8 @@ std::unique_ptr<TemplateURLData> Resolver::GetPrepopulatedEngine(
       // TODO(crbug.com/328040066): Refactor the `TemplateURLPrepopulateData`
       // helpers to accept `CountryIdHolder` and extract the raw country ID
       // only where it needs to be used.
-      regional_capabilities_->GetCountryId().GetRestricted(
-          CountryAccessKey<Resolver>(
-              CountryAccessReason::kTemplateURLPrepopulateDataResolution)),
+      regional_capabilities_->GetCountryId().GetRestricted(CountryAccessKey(
+          CountryAccessReason::kTemplateURLPrepopulateDataResolution)),
       prepopulated_id);
 }
 
@@ -57,9 +55,8 @@ std::unique_ptr<TemplateURLData> Resolver::GetEngineFromFullList(
       // TODO(crbug.com/328040066): Refactor the `TemplateURLPrepopulateData`
       // helpers to accept `CountryIdHolder` and extract the raw country ID
       // only where it needs to be used.
-      regional_capabilities_->GetCountryId().GetRestricted(
-          CountryAccessKey<Resolver>(
-              CountryAccessReason::kTemplateURLPrepopulateDataResolution)),
+      regional_capabilities_->GetCountryId().GetRestricted(CountryAccessKey(
+          CountryAccessReason::kTemplateURLPrepopulateDataResolution)),
       prepopulated_id);
 }
 
@@ -69,9 +66,8 @@ std::unique_ptr<TemplateURLData> Resolver::GetFallbackSearch() const {
       // TODO(crbug.com/328040066): Refactor the `TemplateURLPrepopulateData`
       // helpers to accept `CountryIdHolder` and extract the raw country ID
       // only where it needs to be used.
-      regional_capabilities_->GetCountryId().GetRestricted(
-          CountryAccessKey<Resolver>(
-              CountryAccessReason::kTemplateURLPrepopulateDataResolution)));
+      regional_capabilities_->GetCountryId().GetRestricted(CountryAccessKey(
+          CountryAccessReason::kTemplateURLPrepopulateDataResolution)));
 }
 
 std::optional<BuiltinKeywordsMetadata>

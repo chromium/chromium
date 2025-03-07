@@ -4,9 +4,53 @@
 
 #include "chrome/browser/accessibility/tree_fixing/ax_tree_fixing_services_router.h"
 
+#include <memory>
+
+#include "base/check.h"
+#include "chrome/browser/accessibility/tree_fixing/internal/ax_tree_fixing_screen_ai_service.h"
+#include "ui/accessibility/ax_tree_update.h"
+
 namespace tree_fixing {
 
-AXTreeFixingServicesRouter::AXTreeFixingServicesRouter(Profile* profile) {}
+AXTreeFixingServicesRouter::AXTreeFixingServicesRouter(Profile* profile)
+    : profile_(profile) {}
 AXTreeFixingServicesRouter::~AXTreeFixingServicesRouter() = default;
+
+void AXTreeFixingServicesRouter::IdentifyMainNode(
+    const ui::AXTreeUpdate& ax_tree,
+    MainNodeIdentificationCallback callback) {
+  // If this is the first time any client has requested tree fixing in a form
+  // that is handled by the ScreenAI service, then create an instance to connect
+  // to the service now.
+  if (!screen_ai_service_) {
+    screen_ai_service_ =
+        std::make_unique<AXTreeFixingScreenAIService>(this, profile_);
+  }
+
+  // Store the callback for later use, and make a request to ScreenAI.
+  pending_callbacks_.emplace_back(next_request_id_, std::move(callback));
+  screen_ai_service_->IdentifyMainNode(ax_tree, next_request_id_);
+  next_request_id_++;
+}
+
+void AXTreeFixingServicesRouter::OnMainNodeIdentified(ui::AXTreeID tree_id,
+                                                      ui::AXNodeID node_id,
+                                                      int request_id) {
+  CHECK(!pending_callbacks_.empty());
+
+  // Find the callback associated with the returned request ID, and call it with
+  // the identified tree_id and node_id for the upstream client to use. Remove
+  // the pending callback since we have fulfilled the contract.
+  for (auto it = pending_callbacks_.begin(); it != pending_callbacks_.end();
+       ++it) {
+    if (it->first == request_id) {
+      MainNodeIdentificationCallback callback = std::move(it->second);
+      pending_callbacks_.erase(it);
+      std::move(callback).Run(std::make_pair(tree_id, node_id));
+      return;
+    }
+  }
+  NOTREACHED();
+}
 
 }  // namespace tree_fixing

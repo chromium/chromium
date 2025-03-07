@@ -13,6 +13,7 @@
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
+#include "content/browser/preloading/prefetch/prefetch_handle_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/preload_pipeline_info_impl.h"
@@ -81,21 +82,6 @@ PrefetchDocumentManager::~PrefetchDocumentManager() {
   // `this` (especially `PrefetchWillBeDestroyed()`) during
   // `MayReleasePrefetch()` below.
   weak_method_factory_.InvalidateWeakPtrs();
-
-  // On destruction, we can reset the PrefetchContainer, because navigations
-  // using the PrefetchContainer can either:
-  // - Continue serving without PrefetchContainer (if the non-redirect head is
-  //   already received)
-  // - Safely fallback to non-prefetching (e.g. if BlockUntilHead)
-  // And the PrefetchContainer can't be used for new navigations (because
-  // currently prefetches are initiator-Document-scoped).
-  // TODO(https://crbug.com/390329781): This logic will be moved to
-  // `PrefetchHandle` soon.
-  for (const auto& prefetch_iter : all_prefetches_) {
-    if (prefetch_iter.second) {
-      prefetch_service->MayReleasePrefetch(prefetch_iter.second);
-    }
-  }
 }
 
 // static
@@ -142,7 +128,7 @@ void PrefetchDocumentManager::ProcessCandidates(
     }
   }
   base::flat_set<GURL> url_set(std::move(urls_from_candidates));
-  std::vector<base::WeakPtr<PrefetchContainer>> prefetches_to_evict;
+  std::vector<std::pair<GURL, PreloadingType>> prefetches_to_evict;
   for (const auto& [all_prefetches_key, prefetch] : all_prefetches_) {
     const auto& [url, planned_max_preloading_type] = all_prefetches_key;
 
@@ -153,25 +139,15 @@ void PrefetchDocumentManager::ProcessCandidates(
       continue;
     }
 
-    if (prefetch && !base::Contains(url_set, url)) {
-      prefetches_to_evict.push_back(prefetch);
+    if (!base::Contains(url_set, url)) {
+      static_cast<PrefetchHandleImpl*>(prefetch.get())
+          ->SetPrefetchStatusOnReleaseStartedPrefetch(
+              PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved);
+      prefetches_to_evict.push_back(all_prefetches_key);
     }
   }
-  for (const auto& prefetch : prefetches_to_evict) {
-    all_prefetches_.erase(
-        std::make_pair(prefetch->GetURL(), PreloadingType::kPrefetch));
-    switch (prefetch->GetLoadState()) {
-      case PrefetchContainer::LoadState::kNotStarted:
-      case PrefetchContainer::LoadState::kEligible:
-      case PrefetchContainer::LoadState::kFailedIneligible:
-      case PrefetchContainer::LoadState::kFailedHeldback:
-        break;
-      case PrefetchContainer::LoadState::kStarted:
-        prefetch->SetPrefetchStatus(
-            PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved);
-        break;
-    }
-    GetPrefetchService()->MayReleasePrefetch(prefetch);
+  for (const auto& all_prefetches_key : prefetches_to_evict) {
+    all_prefetches_.erase(all_prefetches_key);
   }
 
   auto should_process_entry =
@@ -246,12 +222,8 @@ void PrefetchDocumentManager::PrefetchUrl(
   // Skip prefetches that have already been requested.
   auto prefetch_container_iter = all_prefetches_.find(all_prefetches_key);
   if (prefetch_container_iter != all_prefetches_.end() &&
-      prefetch_container_iter->second != nullptr) {
-    if (prefetch_container_iter->second->GetPrefetchType() != prefetch_type) {
-      // TODO(crbug.com/40215782): Handle changing the PrefetchType of an
-      // existing prefetch.
-    }
-
+      static_cast<PrefetchHandleImpl*>(prefetch_container_iter->second.get())
+          ->IsAlive()) {
     return;
   }
 
@@ -294,20 +266,17 @@ void PrefetchDocumentManager::PrefetchUrl(
 
   // `PreloadingPrediction` is added in `PreloadingDecider`.
 
-  // Create a new |PrefetchContainer| and take ownership of it
   auto container = std::make_unique<PrefetchContainer>(
       static_cast<RenderFrameHostImpl&>(render_frame_host()), document_token_,
       url, prefetch_type, referrer, std::move(no_vary_search_hint),
       weak_method_factory_.GetWeakPtr(), std::move(preload_pipeline_info),
       attempt->GetWeakPtr());
   DVLOG(1) << *container << ": created";
-  all_prefetches_[all_prefetches_key] = container->GetWeakPtr();
 
   referring_page_metrics_.prefetch_attempted_count++;
 
-  // Send a reference of the new |PrefetchContainer| to |PrefetchService| to
-  // start the prefetch process.
-  prefetch_service->AddPrefetchContainer(std::move(container));
+  all_prefetches_[all_prefetches_key] =
+      prefetch_service->AddPrefetchContainerWithHandle(std::move(container));
 }
 
 bool PrefetchDocumentManager::IsPrefetchAttemptFailedOrDiscarded(
@@ -336,25 +305,9 @@ void PrefetchDocumentManager::ResetPrefetchAheadOfPrerenderIfExist(
     return;
   }
 
-  base::WeakPtr<PrefetchContainer> prefetch = it->second;
-
-  if (!prefetch) {
-    return;
-  }
-
-  switch (prefetch->GetLoadState()) {
-    case PrefetchContainer::LoadState::kNotStarted:
-    case PrefetchContainer::LoadState::kEligible:
-    case PrefetchContainer::LoadState::kFailedIneligible:
-    case PrefetchContainer::LoadState::kFailedHeldback:
-      break;
-    case PrefetchContainer::LoadState::kStarted:
-      prefetch->SetPrefetchStatus(
+  static_cast<PrefetchHandleImpl*>(it->second.get())
+      ->SetPrefetchStatusOnReleaseStartedPrefetch(
           PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved);
-      break;
-  }
-
-  GetPrefetchService()->MayReleasePrefetch(prefetch);
   all_prefetches_.erase(it);
 }
 

@@ -111,6 +111,66 @@ SearchAggregatorProvider::SearchAggregatorProvider() {
                                            "disable_drive", true)
                       .Get();
 
+  scoring_max_matches_created_per_type =
+      base::FeatureParam<size_t>(&kSearchAggregatorProvider,
+                                 "scoring_max_matches_created_per_type", 40)
+          .Get();
+  scoring_max_scoped_matches_shown_per_type =
+      base::FeatureParam<size_t>(&kSearchAggregatorProvider,
+                                 "scoring_max_scoped_matches_shown_per_type", 4)
+          .Get();
+  scoring_max_unscoped_matches_shown_per_type =
+      base::FeatureParam<size_t>(&kSearchAggregatorProvider,
+                                 "scoring_max_unscoped_matches_shown_per_type",
+                                 2)
+          .Get();
+  scoring_min_char_for_strong_text_match =
+      base::FeatureParam<size_t>(&kSearchAggregatorProvider,
+                                 "scoring_min_char_for_strong_text_match", 3)
+          .Get();
+  scoring_min_words_for_full_text_match_boost =
+      base::FeatureParam<size_t>(&kSearchAggregatorProvider,
+                                 "scoring_min_words_for_full_text_match_boost",
+                                 2)
+          .Get();
+  scoring_full_text_match_score =
+      base::FeatureParam<int>(&kSearchAggregatorProvider,
+                              "scoring_full_text_match_score", 1000)
+          .Get();
+  scoring_score_per_strong_text_match =
+      base::FeatureParam<int>(&kSearchAggregatorProvider,
+                              "scoring_score_per_strong_text_match", 400)
+          .Get();
+  scoring_score_per_weak_text_match =
+      base::FeatureParam<int>(&kSearchAggregatorProvider,
+                              "scoring_score_per_weak_text_match", 100)
+          .Get();
+  scoring_max_text_score =
+      base::FeatureParam<int>(&kSearchAggregatorProvider,
+                              "scoring_max_text_score", 800)
+          .Get();
+  scoring_people_score_boost =
+      base::FeatureParam<int>(&kSearchAggregatorProvider,
+                              "scoring_people_score_boost", 100)
+          .Get();
+  scoring_prefer_contents_over_queries =
+      base::FeatureParam<bool>(&kSearchAggregatorProvider,
+                               "scoring_prefer_contents_over_queries", true)
+          .Get();
+  scoring_scoped_max_low_quality_matches =
+      base::FeatureParam<size_t>(&kSearchAggregatorProvider,
+                                 "scoring_scoped_max_low_quality_matches", 6)
+          .Get();
+  scoring_unscoped_max_low_quality_matches =
+      base::FeatureParam<size_t>(&kSearchAggregatorProvider,
+                                 "scoring_unscoped_max_low_quality_matches", 2)
+          .Get();
+  // 400 + 100
+  scoring_low_quality_threshold =
+      base::FeatureParam<int>(&kSearchAggregatorProvider,
+                              "scoring_low_quality_threshold", 500)
+          .Get();
+
   name = base::FeatureParam<std::string>(&kSearchAggregatorProvider, "name", "")
              .Get();
   shortcut = base::FeatureParam<std::string>(&kSearchAggregatorProvider,

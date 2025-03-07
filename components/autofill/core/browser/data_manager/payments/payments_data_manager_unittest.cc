@@ -3875,6 +3875,112 @@ TEST_F(PaymentsDataManagerTest, SetAutofillHasSeenBnpl) {
   payments_data_manager().SetAutofillHasSeenBnpl();
   ASSERT_TRUE(payments_data_manager().IsAutofillHasSeenBnplPrefEnabled());
 }
+
+// Tests that Buy-now-pay-later issuers are loaded when the
+// `kAutofillBnplEnabled` pref is turned on.
+TEST_F(
+    PaymentsDataManagerTest,
+    OnPaymentInstrumentEnabledPrefChange_BnplEnabledPrefIsOn_LoadsBnplIssuers) {
+  prefs::SetAutofillBnplEnabled(prefs_.get(), false);
+
+  sync_pb::PaymentInstrument payment_instrument_1 =
+      test::CreatePaymentInstrumentWithLinkedBnplIssuer(
+          1234L, std::string(kBnplAffirmIssuerId), "USD",
+          /*min_price_in_micros=*/0,
+          /*max_price_in_micros=*/35'000'000);
+  ASSERT_TRUE(
+      GetServerDataTable()->SetPaymentInstruments({payment_instrument_1}));
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstrumentCreationOptions(
+      {test::CreatePaymentInstrumentCreationOptionWithBnplIssuer("5678")}));
+
+  ASSERT_TRUE(payments_data_manager().GetBnplIssuers().empty());
+  ASSERT_TRUE(payments_data_manager().GetUnlinkedBnplIssuers().empty());
+  ASSERT_TRUE(payments_data_manager().GetLinkedBnplIssuers().empty());
+
+  prefs::SetAutofillBnplEnabled(prefs_.get(), true);
+  WaitForOnPaymentsDataChanged();
+
+  EXPECT_EQ(2U, payments_data_manager().GetBnplIssuers().size());
+  EXPECT_EQ(1U, payments_data_manager().GetUnlinkedBnplIssuers().size());
+  EXPECT_EQ(1U, payments_data_manager().GetLinkedBnplIssuers().size());
+}
+
+// Tests that Buy-now-pay-later issuers are cleared when the
+// `kAutofillBnplEnabled` pref is turned off.
+TEST_F(
+    PaymentsDataManagerTest,
+    OnPaymentInstrumentEnabledPrefChange_BnplEnabledPrefIsOff_ClearsBnplIssuers) {
+  ASSERT_TRUE(prefs::IsAutofillBnplEnabled(prefs_.get()));
+
+  test_api(payments_data_manager())
+      .AddBnplIssuer(test::GetTestLinkedBnplIssuer());
+  test_api(payments_data_manager())
+      .AddBnplIssuer(test::GetTestUnlinkedBnplIssuer());
+
+  ASSERT_EQ(2U, payments_data_manager().GetBnplIssuers().size());
+  ASSERT_EQ(1U, payments_data_manager().GetUnlinkedBnplIssuers().size());
+  ASSERT_EQ(1U, payments_data_manager().GetLinkedBnplIssuers().size());
+
+  prefs::SetAutofillBnplEnabled(prefs_.get(), false);
+  WaitForOnPaymentsDataChanged();
+
+  EXPECT_TRUE(payments_data_manager().GetBnplIssuers().empty());
+  EXPECT_TRUE(payments_data_manager().GetUnlinkedBnplIssuers().empty());
+  EXPECT_TRUE(payments_data_manager().GetLinkedBnplIssuers().empty());
+}
+
+// Tests that eWallet data is unchanged when the `kAutofillBnplEnabled` pref
+// pref is turned on/off.
+TEST_F(
+    PaymentsDataManagerTest,
+    OnPaymentInstrumentEnabledPrefChange_BnplEnabledPrefChanged_EwalletsUnchanged) {
+  sync_pb::PaymentInstrument ewallet_1 =
+      test::CreatePaymentInstrumentWithEwalletAccount(1234L);
+  sync_pb::PaymentInstrument ewallet_2 =
+      test::CreatePaymentInstrumentWithEwalletAccount(2345L);
+  sync_pb::PaymentInstrument linked_issuer =
+      test::CreatePaymentInstrumentWithLinkedBnplIssuer(
+          3456L, std::string(kBnplAffirmIssuerId), "USD",
+          /*min_price_in_micros=*/0,
+          /*max_price_in_micros=*/35'000'000);
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstruments(
+      {ewallet_1, ewallet_2, linked_issuer}));
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstrumentCreationOptions(
+      {test::CreatePaymentInstrumentCreationOptionWithBnplIssuer("5678")}));
+
+  // Since the PaymentsDataManager was initialized before adding the
+  // payment instruments to the WebDatabase, we expect `GetEwalletAccounts()`
+  // and `GetBnplIssuers()` to return an empty list.
+  EXPECT_EQ(0U, payments_data_manager().GetEwalletAccounts().size());
+  EXPECT_EQ(0U, payments_data_manager().GetBnplIssuers().size());
+
+  // We need to call `Refresh()` to ensure that the payment instruments
+  // are loaded again from the WebDatabase.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  EXPECT_EQ(2U, payments_data_manager().GetBnplIssuers().size());
+  EXPECT_EQ(1U, payments_data_manager().GetUnlinkedBnplIssuers().size());
+  EXPECT_EQ(1U, payments_data_manager().GetLinkedBnplIssuers().size());
+  EXPECT_EQ(2U, payments_data_manager().GetEwalletAccounts().size());
+
+  ASSERT_TRUE(prefs::IsAutofillBnplEnabled(prefs_.get()));
+  prefs::SetAutofillBnplEnabled(prefs_.get(), false);
+  WaitForOnPaymentsDataChanged();
+
+  EXPECT_TRUE(payments_data_manager().GetBnplIssuers().empty());
+  EXPECT_TRUE(payments_data_manager().GetUnlinkedBnplIssuers().empty());
+  EXPECT_TRUE(payments_data_manager().GetLinkedBnplIssuers().empty());
+  EXPECT_EQ(2U, payments_data_manager().GetEwalletAccounts().size());
+
+  prefs::SetAutofillBnplEnabled(prefs_.get(), true);
+  WaitForOnPaymentsDataChanged();
+
+  EXPECT_EQ(2U, payments_data_manager().GetBnplIssuers().size());
+  EXPECT_EQ(1U, payments_data_manager().GetUnlinkedBnplIssuers().size());
+  EXPECT_EQ(1U, payments_data_manager().GetLinkedBnplIssuers().size());
+  EXPECT_EQ(2U, payments_data_manager().GetEwalletAccounts().size());
+}
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

@@ -124,7 +124,6 @@ export class TestIconLoader extends TestBrowserProxy implements IconLoader {
 export function createDownload(config?: Partial<MojomData>): MojomData {
   return Object.assign(
       {
-        accountEmail: '',
         byExtId: '',
         byExtName: '',
         dangerType: DangerType.kNoApplicableDangerType,

@@ -413,16 +413,12 @@
   [self startSigninCoordinatorWithCompletion:nil];
 }
 
-#pragma mark - SigninCoordinator
+#pragma mark - InterruptibleChromeCoordinator
 
-- (void)interruptAnimated:(BOOL)animated
-               completion:(ProceduralBlock)completion {
+- (void)interruptAnimated:(BOOL)animated {
   [self stopChildrenAndViewControllerAnimated:animated];
   [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
                    completionIdentity:nil];
-  if (completion) {
-    completion();
-  }
 }
 
 #pragma mark - ManageAccountsCoordinatorDelegate
@@ -526,18 +522,11 @@
     std::move(_accountDetailsControllerDismissCallback).Run(/*animated=*/false);
   }
   [self stopSignoutActionSheetCoordinator];
-  __weak __typeof(self) weakSelf = self;
-  ProceduralBlock dismissAndCompletion = ^() {
-    // Add Account coordinator should be stopped before the Manage Accounts
-    // Coordinator, as the former may be presented by the latter.
-    [weakSelf stopManageAccountsCoordinator];
-    [weakSelf dismissViewControllerAnimated:animated];
-  };
-  if (_signinCoordinator) {
-    [_signinCoordinator interruptAnimated:NO completion:dismissAndCompletion];
-  } else {
-    dismissAndCompletion();
-  }
+  [_signinCoordinator interruptAnimated:NO];
+  // Add Account coordinator should be stopped before the Manage Accounts
+  // Coordinator, as the former may be presented by the latter.
+  [self stopManageAccountsCoordinator];
+  [self dismissViewControllerAnimated:animated];
 }
 
 // Unplugs the view and navigation controller. Dismisses the navigation

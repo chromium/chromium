@@ -1682,7 +1682,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
       }
     }
   }
-  [self.delegate didFinishEditingPasswordDetails];
+  [self.delegate didFinishEditingCredentialDetails];
   [super editButtonPressed];
   [self reloadData];
 }

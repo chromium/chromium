@@ -43,7 +43,8 @@ suite('PaymentsSectionCardRows', function() {
   test('verifyCreditCardFields', async function() {
     const creditCard = createCreditCardEntry();
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
     const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
     assertEquals(
         creditCard.metadata!.summaryLabel,
@@ -55,7 +56,8 @@ suite('PaymentsSectionCardRows', function() {
     const creditCard = createCreditCardEntry();
     creditCard.metadata!.isLocal = true;
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
     const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
     const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
     assertTrue(!!menuButton);
@@ -68,7 +70,8 @@ suite('PaymentsSectionCardRows', function() {
     let creditCard = createCreditCardEntry();
     creditCard.metadata!.isLocal = true;
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
     const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
     const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
     assertTrue(!!menuButton);
@@ -129,7 +132,8 @@ suite('PaymentsSectionCardRows', function() {
     const creditCard = createCreditCardEntry();
     creditCard.metadata!.isLocal = false;
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
     const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
     const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
     assertFalse(!!menuButton);
@@ -146,7 +150,8 @@ suite('PaymentsSectionCardRows', function() {
         creditCard.metadata!.isVirtualCardEnrollmentEligible = true;
         creditCard.metadata!.isVirtualCardEnrolled = false;
         const section = await createPaymentsSection(
-            [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+            [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+            /*prefValues=*/ {});
         const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
         const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
         assertTrue(!!menuButton);
@@ -161,7 +166,8 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
     creditCard.metadata!.isVirtualCardEnrolled = false;
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
     const creditCardList = section.$.paymentsList;
     assertTrue(!!creditCardList);
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
@@ -172,7 +178,8 @@ suite('PaymentsSectionCardRows', function() {
   test('verifyCardImage', async function() {
     const creditCard = createCreditCardEntry();
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
 
     const creditCardList = section.$.paymentsList;
     assertTrue(!!creditCardList);
@@ -194,7 +201,8 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.metadata!.isVirtualCardEnrolled = false;
 
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
 
     // Local credit cards will show the overflow menu.
@@ -225,7 +233,8 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.metadata!.isVirtualCardEnrolled = false;
 
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
 
     // No overflow menu for VCN-ineligible server cards.
@@ -242,7 +251,8 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.metadata!.isVirtualCardEnrolled = false;
 
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
 
     // Server cards that are eligible for virtual card enrollment should show
@@ -274,7 +284,8 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.metadata!.isVirtualCardEnrolled = true;
 
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
 
     // Server cards that are eligible for virtual card enrollment should show
@@ -306,7 +317,8 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.metadata!.isVirtualCardEnrolled = false;
 
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
 
     const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
@@ -335,7 +347,8 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.metadata!.isVirtualCardEnrolled = true;
 
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
 
     const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
@@ -359,7 +372,8 @@ suite('PaymentsSectionCardRows', function() {
     const creditCard = createCreditCardEntry();
 
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
 
     const creditCardList = section.$.paymentsList;
     assertTrue(!!creditCardList);
@@ -382,7 +396,8 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
     creditCard.metadata!.isVirtualCardEnrolled = false;
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
 
     const creditCardList = section.$.paymentsList;
     assertTrue(!!creditCardList);
@@ -399,7 +414,8 @@ suite('PaymentsSectionCardRows', function() {
         creditCard.metadata!.isVirtualCardEnrollmentEligible = true;
         creditCard.metadata!.isVirtualCardEnrolled = false;
         const section = await createPaymentsSection(
-            [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+            [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+            /*prefValues=*/ {});
 
         const creditCardList = section.$.paymentsList;
         assertTrue(!!creditCardList);
@@ -425,7 +441,8 @@ suite('PaymentsSectionCardRows', function() {
         creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
         creditCard.metadata!.isVirtualCardEnrolled = true;
         const section = await createPaymentsSection(
-            [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+            [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+            /*prefValues=*/ {});
 
         const creditCardList = section.$.paymentsList;
         assertTrue(!!creditCardList);
@@ -453,7 +470,8 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.metadata!.isVirtualCardEnrolled = true;
     creditCard.cvc = '***';
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
 
     const creditCardList = section.$.paymentsList;
     assertTrue(!!creditCardList);
@@ -508,7 +526,8 @@ suite('PaymentsSectionCardRows', function() {
         creditCard.productTermsUrl = 'https://google.com/';
       }
       await createPaymentsSection(
-          [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+          [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+          /*prefValues=*/ {});
 
       const paymentsList = getLocalAndServerCreditCardListItems();
 
@@ -572,7 +591,8 @@ suite('PaymentsSectionCardRows', function() {
         creditCard.productTermsUrl = 'https://google.com/';
       }
       await createPaymentsSection(
-          [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+          [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+          /*prefValues=*/ {});
 
       const paymentsList = getLocalAndServerCreditCardListItems();
 
@@ -633,7 +653,8 @@ suite('PaymentsSectionCardRows', function() {
         serverCreditCard.productTermsUrl = 'https://google.com/';
       }
       await createPaymentsSection(
-          [serverCreditCard], /*ibans=*/[], /*prefValues=*/ {});
+          [serverCreditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+          /*prefValues=*/ {});
 
       const paymentsList = getLocalAndServerCreditCardListItems();
 
@@ -695,7 +716,8 @@ suite('PaymentsSectionCardRows', function() {
         serverCreditCard.productTermsUrl = 'https://google.com/';
       }
       await createPaymentsSection(
-          [serverCreditCard], /*ibans=*/[], /*prefValues=*/ {});
+          [serverCreditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+          /*prefValues=*/ {});
 
       const paymentsList = getLocalAndServerCreditCardListItems();
 
@@ -740,7 +762,9 @@ suite('PaymentsSectionCardRows', function() {
     const creditCard = createCreditCardEntry();
     creditCard.metadata!.isLocal = false;
     creditCard.productTermsUrl = 'https://google.com/';
-    await createPaymentsSection([creditCard], /*ibans=*/[], /*prefValues=*/ {});
+    await createPaymentsSection(
+        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
 
     const paymentsList = getLocalAndServerCreditCardListItems();
 
@@ -778,7 +802,9 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.network = 'Visa';
     creditCard.metadata!.isLocal = false;
     creditCard.productTermsUrl = 'https://google.com/';
-    await createPaymentsSection([creditCard], /*ibans=*/[], /*prefValues=*/ {});
+    await createPaymentsSection(
+        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
 
     const paymentsList = getLocalAndServerCreditCardListItems();
     assertTrue(!!paymentsList);
@@ -815,6 +841,7 @@ suite('PaymentsSectionCardRows', function() {
           }
           await createPaymentsSection(
               [serverCreditCard, localCreditCard], /*ibans=*/[],
+              /*payOverTimeIssuers=*/[],
               /*prefValues=*/ {});
 
           let serverCardExpectedSublabel = serverCreditCard.expirationMonth +
@@ -873,7 +900,8 @@ suite('PaymentsSectionEditCreditCardLink', function() {
     creditCard.instrumentId = '123';
 
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
 
     const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
     const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
@@ -900,7 +928,8 @@ suite('PaymentsSectionEditCreditCardLink', function() {
         creditCard.instrumentId = '';
 
         const section = await createPaymentsSection(
-            [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+            [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+            /*prefValues=*/ {});
 
         const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
         const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
@@ -926,7 +955,8 @@ suite('PaymentsSectionEditCreditCardLink', function() {
         creditCard.instrumentId = '123';
 
         const section = await createPaymentsSection(
-            [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+            [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+            /*prefValues=*/ {});
 
         const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
         assertFalse(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));

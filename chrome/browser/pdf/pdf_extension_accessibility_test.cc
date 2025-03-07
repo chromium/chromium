@@ -239,10 +239,10 @@ class PDFExtensionAccessibilityTest : public PDFExtensionTestBase {
     // Spoof a screen reader.
     if (enabled) {
       content::BrowserAccessibilityState::GetInstance()
-          ->AddAccessibilityModeFlags(ui::AXMode::kScreenReader);
+          ->AddAccessibilityModeFlags(ui::AXMode::kExtendedProperties);
     } else {
       content::BrowserAccessibilityState::GetInstance()
-          ->RemoveAccessibilityModeFlags(ui::AXMode::kScreenReader);
+          ->RemoveAccessibilityModeFlags(ui::AXMode::kExtendedProperties);
     }
   }
 };

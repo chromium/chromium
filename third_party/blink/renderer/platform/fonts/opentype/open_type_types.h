@@ -22,14 +22,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_OPEN_TYPE_TYPES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_OPEN_TYPE_TYPES_H_
 
+#include "base/compiler_specific.h"
 #include "base/numerics/byte_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -90,15 +86,16 @@ struct TableBase {
   static const T* ValidatePtr(const Vector<char>& buffer,
                               const void* position) {
     const T* casted = reinterpret_cast<const T*>(position);
-    if (!IsValidEnd(buffer, &casted[1]))
+    if (!IsValidEnd(buffer, UNSAFE_TODO(&casted[1]))) {
       return nullptr;
+    }
     return casted;
   }
 
   template <typename T>
   const T* ValidateOffset(const Vector<char>& buffer, uint16_t offset) const {
-    return ValidatePtr<T>(buffer,
-                          reinterpret_cast<const int8_t*>(this) + offset);
+    return ValidatePtr<T>(
+        buffer, UNSAFE_TODO(reinterpret_cast<const int8_t*>(this) + offset));
   }
 };
 

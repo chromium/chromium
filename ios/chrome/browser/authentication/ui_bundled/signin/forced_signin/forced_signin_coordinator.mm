@@ -24,7 +24,8 @@
 @interface ForcedSigninCoordinator () <FirstRunScreenDelegate>
 
 @property(nonatomic, strong) ScreenProvider* screenProvider;
-@property(nonatomic, strong) InterruptibleChromeCoordinator* childCoordinator;
+@property(nonatomic, strong)
+    ChromeCoordinator<InterruptibleChromeCoordinator>* childCoordinator;
 
 // The view controller used by ForcedSigninCoordinator.
 @property(nonatomic, strong) UINavigationController* navigationController;
@@ -112,8 +113,8 @@
 }
 
 // Creates a screen coordinator according to `type`.
-- (InterruptibleChromeCoordinator*)createChildCoordinatorWithScreenType:
-    (ScreenType)type {
+- (ChromeCoordinator<InterruptibleChromeCoordinator>*)
+    createChildCoordinatorWithScreenType:(ScreenType)type {
   switch (type) {
     case kSignIn:
       return [[SigninScreenCoordinator alloc]
@@ -154,25 +155,17 @@
   [self presentScreen:[self.screenProvider nextScreenType]];
 }
 
-#pragma mark - SigninCoordinator
+#pragma mark - InterruptibleChromeCoordinator
 
-- (void)interruptAnimated:(BOOL)animated
-               completion:(ProceduralBlock)completion {
-  __weak __typeof(self) weakSelf = self;
-  ProceduralBlock childCompletion = ^{
-    [weakSelf.navigationController.presentingViewController
-        dismissViewControllerAnimated:animated
-                           completion:nil];
-    [weakSelf finishWithResult:SigninCoordinatorResultInterrupted identity:nil];
-    if (completion) {
-      completion();
-    }
-  };
-
-  CHECK(self.childCoordinator, base::NotFatalUntil::M137);
+- (void)interruptAnimated:(BOOL)animated {
   // Interrupt the child coordinator UI first before dismissing the forced
   // sign-in navigation controller.
-  [self.childCoordinator interruptAnimated:NO completion:childCompletion];
+  [self.childCoordinator interruptAnimated:NO];
+
+  [self.navigationController.presentingViewController
+      dismissViewControllerAnimated:animated
+                         completion:nil];
+  [self finishWithResult:SigninCoordinatorResultInterrupted identity:nil];
 }
 
 #pragma mark - NSObject

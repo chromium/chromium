@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.profiles;
 
 import android.os.SystemClock;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.TraceEvent;
@@ -54,8 +56,9 @@ public class ProfileManagerUtils {
         }
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         void flushPersistentDataForAllProfiles();
 
         void removeSessionCookiesForAllProfiles();

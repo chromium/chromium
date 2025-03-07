@@ -61,6 +61,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
@@ -69,12 +70,16 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "capture_mode_util.h"
+#include "components/lens/lens_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/template_url.h"
 #include "components/user_manager/user_type.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/url_util.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/aura/env.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -84,6 +89,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/image/image_util.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -150,6 +156,16 @@ constexpr char kCanShowSunfishRegionNudge[] =
 
 // The ID for the toast shown when text is copied to clipboard.
 constexpr char kCaptureModeTextCopiedToastId[] = "capture_mode_text_copied";
+
+// Lens POST request parameters.
+constexpr char kQueryParamEntryPointName[] = "ep";
+constexpr char kQueryParamEntryPointValueLauncher[] = "63";
+constexpr char kQueryParamEntryPointValueScreenshot[] = "64";
+constexpr char kQueryParamSurfaceName[] = "s";
+constexpr char kQueryParamSurfaceValue[] = "43";
+constexpr char kQueryParamViewportWidthName[] = "vpw";
+constexpr char kQueryParamViewportHeightName[] = "vph";
+constexpr char kQueryParamStartTimeName[] = "st";
 
 // An invalid IDS value used as a placeholder to not show a message in a
 // notification.
@@ -567,10 +583,11 @@ gfx::Rect CalculateSearchResultPanelScreenBounds(
   // Attempt to place the panel on the left by default.
   gfx::Rect bounds(
       work_area_in_screen.x() + capture_mode::kPanelWorkAreaSpacing,
-      work_area_in_screen.bottom() - capture_mode::kSearchResultsPanelHeight -
+      work_area_in_screen.bottom() -
+          capture_mode::kSearchResultsPanelTotalHeight -
           capture_mode::kPanelWorkAreaSpacing,
       capture_mode::kSearchResultsPanelTotalWidth,
-      capture_mode::kSearchResultsPanelHeight);
+      capture_mode::kSearchResultsPanelTotalHeight);
 
   // If the region would then intersect with the panel, attempt to place the
   // panel on the right.
@@ -600,11 +617,19 @@ gfx::Rect CalculateSearchResultPanelScreenBounds(
   // instead place it just above the button.
   if (bounds.Intersects(feedback_bounds_in_screen)) {
     bounds.set_y(feedback_bounds_in_screen.y() -
-                 capture_mode::kSearchResultsPanelHeight -
+                 capture_mode::kSearchResultsPanelTotalHeight -
                  capture_mode::kPanelButtonSpacing);
   }
 
   return bounds;
+}
+
+// Returns true if the given `image` is too large to be uploaded to the Lens Web
+// API as-is and needs to be downscaled first.
+bool NeedsDownscale(const gfx::Image& image) {
+  return (image.Height() * image.Width() > lens::kMaxAreaForImageSearch) &&
+         (image.Width() > lens::kMaxPixelsForImageSearch ||
+          image.Height() > lens::kMaxPixelsForImageSearch);
 }
 
 }  // namespace
@@ -2081,9 +2106,61 @@ void CaptureModeController::OnPrimaryAccountAccessTokenAvailable(
     const gfx::Image& original_image,
     base::WeakPtr<BaseCaptureModeSession> image_search_token,
     const std::string& access_token) {
-  if (!image_search_token) {
+  if (!image_search_token || access_token.empty()) {
     return;
   }
+
+  // Create the POST request and add the access token for authentication.
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->method = net::HttpRequestHeaders::kPostMethod;
+  resource_request->headers.SetHeader(
+      net::HttpRequestHeaders::kAuthorization,
+      base::StringPrintf("Bearer %s", access_token.c_str()));
+
+  gfx::Image image = original_image;
+  if (NeedsDownscale(original_image)) {
+    image = gfx::ResizedImageForMaxDimensions(
+        original_image, lens::kMaxPixelsForImageSearch,
+        lens::kMaxPixelsForImageSearch, lens::kMaxAreaForImageSearch);
+  }
+
+  // Create the search URL and encode the image for the body of the request.
+  TemplateURLRef::PostContent post_content;
+  GURL search_url = delegate_->GetBaseSearchURLAndPostContent(
+      image, original_image.Size(), &post_content);
+
+  // Append necessary parameters to the URL.
+  // Entry point.
+  std::string entry_point_value =
+      (capture_mode_session_->active_behavior()->behavior_type() ==
+       BehaviorType::kSunfish)
+          ? kQueryParamEntryPointValueLauncher
+          : kQueryParamEntryPointValueScreenshot;
+  search_url = net::AppendOrReplaceQueryParameter(
+      search_url, kQueryParamEntryPointName, entry_point_value);
+
+  // Client surface (e.g., Photos, YouTube, Chromnient, etc.).
+  search_url = net::AppendOrReplaceQueryParameter(
+      search_url, kQueryParamSurfaceName, kQueryParamSurfaceValue);
+
+  // Viewport dimensions.
+  search_url = net::AppendOrReplaceQueryParameter(
+      search_url, kQueryParamViewportWidthName,
+      base::NumberToString(capture_mode::kSearchResultsPanelWebViewWidth));
+  search_url = net::AppendOrReplaceQueryParameter(
+      search_url, kQueryParamViewportHeightName,
+      base::NumberToString(capture_mode::kSearchResultsPanelWebViewHeight));
+
+  // Start time.
+  const std::string epoch_time =
+      base::NumberToString(base::Time::Now().InMillisecondsSinceUnixEpoch());
+  search_url = net::AppendOrReplaceQueryParameter(
+      search_url, kQueryParamStartTimeName, epoch_time);
+
+  resource_request->url = search_url;
+
+  // TODO: crbug.com/395939382 - Create a `SimpleURLLoader` and dispatch the
+  // POST request to get the SRP URL.
 
   // TODO: crbug.com/395939382 - Navigate to the proper URL once it has been
   // returned by the Lens Web API.

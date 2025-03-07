@@ -16,13 +16,13 @@ import java.util.function.BooleanSupplier;
 @Lifetime.WebView
 class AwContentsIoThreadClientImpl extends AwContentsIoThreadClient {
     private final AwSettings mSettings;
-    private final AwContentsBackgroundThreadClient mBackgroundThreadClient;
+    private final ShouldInterceptRequestMediator mBackgroundThreadClient;
     // We could turn this into a delegate if we start needing more things from AwContents.
     private final BooleanSupplier mShouldAcceptCookies;
 
     public AwContentsIoThreadClientImpl(
             AwSettings settings,
-            AwContentsBackgroundThreadClient backgroundThreadClient,
+            ShouldInterceptRequestMediator backgroundThreadClient,
             BooleanSupplier shouldAcceptCookies) {
         mSettings = settings;
         mBackgroundThreadClient = backgroundThreadClient;
@@ -35,7 +35,7 @@ class AwContentsIoThreadClientImpl extends AwContentsIoThreadClient {
     }
 
     @Override
-    public AwContentsBackgroundThreadClient getBackgroundThreadClient() {
+    public ShouldInterceptRequestMediator getShouldInterceptRequestMediator() {
         return mBackgroundThreadClient;
     }
 

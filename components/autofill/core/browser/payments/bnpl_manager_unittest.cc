@@ -267,14 +267,20 @@ TEST_F(BnplManagerTest, TosDialogAccepted_PrefetchedRiskDataLoaded) {
 }
 
 // Tests that FetchVcnDetails calls the payments network interface with the
-// request details filled out correctly, and once the VCN is filled the state of
-// BnplManager is reset.
+// request details filled out correctly, and verifies that the VCN is correctly
+// filled and the state of BnplManager is reset.
 TEST_F(BnplManagerTest, FetchVcnDetails_CallsGetBnplPaymentInstrument) {
   bnpl_manager_->InitBnplFlow(1'000'000, base::DoNothing());
+  // TODO(crbug.com/400500799): Remove test helper method and set arguments from
+  // source.
   test_api(*bnpl_manager_)
       .PopulateManagerWithUserAndBnplIssuerDetails(
           kBillingCustomerNumber, kInstrumentId, kRiskData, kContextToken,
           kRedirectUrl, kIssuerId);
+  base::MockCallback<BnplManager::OnBnplVcnFetchedCallback>
+      on_bnpl_vcn_fetched_callback;
+  test_api(*bnpl_manager_)
+      .SetOnBnplVcnFetchedCallback(on_bnpl_vcn_fetched_callback.Get());
 
   EXPECT_CALL(*payments_network_interface_,
               GetBnplPaymentInstrumentForFetchingVcn(
@@ -283,12 +289,38 @@ TEST_F(BnplManagerTest, FetchVcnDetails_CallsGetBnplPaymentInstrument) {
                             kContextToken, kRedirectUrl, kIssuerId),
                   /*callback=*/_));
 
+  BnplFetchVcnResponseDetails response_details;
+  response_details.pan = "1234";
+  response_details.cvv = "123";
+  response_details.cardholder_name = "Cercei";
+  response_details.expiration_month = "11";
+  response_details.expiration_year = "2035";
+  // Verify that a successful GetBnplPaymentInstrumentForFetchingVcn request
+  // results in a VCN being correctly created from the
+  // BnplFetchVcnResponseDetails.
+  EXPECT_CALL(on_bnpl_vcn_fetched_callback, Run(_))
+      .Times(1)
+      .WillOnce([&response_details, this](const CreditCard& credit_card) {
+        EXPECT_EQ(credit_card.number(),
+                  base::UTF8ToUTF16(response_details.pan));
+        EXPECT_EQ(credit_card.record_type(),
+                  CreditCard::RecordType::kVirtualCard);
+        EXPECT_EQ(credit_card.cvc(), base::UTF8ToUTF16(response_details.cvv));
+        EXPECT_EQ(credit_card.issuer_id(),
+                  test_api(*bnpl_manager_).GetIssuerId());
+        EXPECT_EQ(credit_card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL),
+                  base::UTF8ToUTF16(response_details.cardholder_name));
+        EXPECT_EQ(credit_card.Expiration2DigitMonthAsString(),
+                  base::UTF8ToUTF16(response_details.expiration_month));
+        EXPECT_EQ(credit_card.Expiration4DigitYearAsString(),
+                  base::UTF8ToUTF16(response_details.expiration_year));
+      });
   EXPECT_NE(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 
   test_api(*bnpl_manager_).FetchVcnDetails();
   test_api(*bnpl_manager_)
       .OnVcnDetailsFetched(PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
-                           BnplFetchVcnResponseDetails());
+                           response_details);
 
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 }

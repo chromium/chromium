@@ -1334,17 +1334,22 @@ void PropertyTreeManager::PopulateCcEffectNode(
 }
 
 void PropertyTreeManager::UpdateConditionalRenderSurfaceReasons(
-    const cc::LayerList& layers) {
+    const cc::LayerList& layers,
+    const HashSet<int>& layers_having_text) {
   // This vector is indexed by effect node id. The value is the number of
   // layers and sub-render-surfaces controlled by this effect.
   wtf_size_t tree_size = base::checked_cast<wtf_size_t>(effect_tree_.size());
   Vector<int> effect_layer_counts(tree_size);
+  Vector<bool> has_text(tree_size);
   Vector<bool> has_child_surface(tree_size);
   Vector<bool> has_backdrop_effect_descendant(tree_size);
   // Initialize the vector to count directly controlled layers.
   for (const auto& layer : layers) {
-    if (layer->draws_content())
+    if (layer->draws_content()) {
       effect_layer_counts[layer->effect_tree_index()]++;
+      has_text[layer->effect_tree_index()] |=
+          layers_having_text.Contains(layer->id());
+    }
   }
 
   // In the effect tree, parent always has lower id than children, so the
@@ -1357,7 +1362,7 @@ void PropertyTreeManager::UpdateConditionalRenderSurfaceReasons(
         effect->render_surface_reason == cc::RenderSurfaceReason::kNone &&
         !has_backdrop_effect_descendant[id] &&
         !effect->may_have_backdrop_effect && effect->has_2d_scale_transform &&
-        effect_layer_counts[id] >= 2) {
+        effect_layer_counts[id] >= 2 && !has_text[id]) {
       effect->render_surface_reason =
           cc::RenderSurfaceReason::k2DScaleTransformWithCompositedDescendants;
     }
@@ -1384,11 +1389,11 @@ void PropertyTreeManager::UpdateConditionalRenderSurfaceReasons(
       // Otherwise all layers count as controlled layers of the parent.
       effect_layer_counts[effect->parent_id] += effect_layer_counts[id];
       has_child_surface[effect->parent_id] |= has_child_surface[id];
+      has_text[effect->parent_id] |= has_text[id];
     }
 
-    if (effect->parent_id != cc::kInvalidPropertyNodeId &&
-        (effect->may_have_backdrop_effect ||
-         has_backdrop_effect_descendant[id])) {
+    if (effect->may_have_backdrop_effect ||
+        has_backdrop_effect_descendant[id]) {
       has_backdrop_effect_descendant[effect->parent_id] = true;
     }
 

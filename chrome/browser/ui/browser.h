@@ -832,7 +832,7 @@ class Browser : public TabStripModelObserver,
   // returns the current browser.
   Browser* GetBrowserForOpeningWebUi();
 
-  StatusBubble* GetStatusBubbleForTesting();
+  std::vector<StatusBubble*> GetStatusBubblesForTesting();
   UnloadController* GetUnloadControllerForTesting() {
     return &unload_controller_;
   }
@@ -1172,10 +1172,12 @@ class Browser : public TabStripModelObserver,
 
   // Getters for UI ///////////////////////////////////////////////////////////
 
-  // Returns the StatusBubble from the current toolbar. It is possible for
-  // this to return NULL if called before the toolbar has initialized.
+  // Returns the list of StatusBubbles from the current toolbar. It is possible
+  // for this to be empty if called before the toolbar has initialized. In a
+  // split view, there will be multiple status bubbles with the active one
+  // listed first.
   // TODO(beng): remove this.
-  StatusBubble* GetStatusBubble();
+  std::vector<StatusBubble*> GetStatusBubbles();
 
   // Session restore functions ////////////////////////////////////////////////
 

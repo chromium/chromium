@@ -992,7 +992,7 @@ bool OverlayProcessorWebView::ProcessForFrameSinkId(
     // invalidate and normal draw would remove this overlay candidate.
     if (quad->material == viz::TextureDrawQuad::kMaterial) {
       auto* texture_quad = viz::TextureDrawQuad::MaterialCast(quad);
-      DCHECK(texture_quad->is_stream_video);
+      DCHECK(texture_quad->is_video_frame);
 
       auto uv_rect = gfx::BoundingRect(texture_quad->uv_top_left,
                                        texture_quad->uv_bottom_right);

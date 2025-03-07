@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsMenuObserverTest,
 #else
   // Spoof a screen reader.
   content::ScopedAccessibilityModeOverride scoped_accessibility_mode(
-      ui::AXMode::kScreenReader);
+      ui::AXMode::kExtendedProperties);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   menu()->GetPrefs()->SetBoolean(prefs::kAccessibilityImageLabelsEnabled,
                                  false);
