@@ -44,7 +44,7 @@ public class TabGroupListBottomSheetCoordinator {
         int EXISTING_GROUP = 1;
     }
 
-    interface TabGroupParityBottomSheetCoordinatorDelegate {
+    interface TabGroupListBottomSheetCoordinatorDelegate {
         /** Requests to show the bottom sheet content. */
         boolean requestShowContent();
 
@@ -143,8 +143,8 @@ public class TabGroupListBottomSheetCoordinator {
 
     /** Creates the delegate. */
     @VisibleForTesting
-    TabGroupParityBottomSheetCoordinatorDelegate createDelegate() {
-        return new TabGroupParityBottomSheetCoordinatorDelegate() {
+    TabGroupListBottomSheetCoordinatorDelegate createDelegate() {
+        return new TabGroupListBottomSheetCoordinatorDelegate() {
             @Override
             public boolean requestShowContent() {
                 return mBottomSheetController.requestShowContent(mView, /* animate= */ true);

@@ -67,7 +67,7 @@ class TabGroupListBottomSheetRowMediator {
 
         builder.with(
                 TabGroupRowProperties.TIMESTAMP_EVENT,
-                new TabGroupTimeAgo(savedTabGroup.creationTimeMs, TimestampEvent.UPDATED));
+                new TabGroupTimeAgo(savedTabGroup.updateTimeMs, TimestampEvent.UPDATED));
         builder.with(
                 TabGroupRowProperties.ROW_CLICK_RUNNABLE,
                 () -> {

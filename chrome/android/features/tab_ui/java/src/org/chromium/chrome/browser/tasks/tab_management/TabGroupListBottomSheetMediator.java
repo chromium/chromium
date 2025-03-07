@@ -10,7 +10,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.RowType;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabGroupCreationCallback;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabGroupParityBottomSheetCoordinatorDelegate;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabGroupListBottomSheetCoordinatorDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -33,7 +33,7 @@ import java.util.List;
 @NullMarked
 public class TabGroupListBottomSheetMediator {
     private final BottomSheetController mBottomSheetController;
-    private final TabGroupParityBottomSheetCoordinatorDelegate mDelegate;
+    private final TabGroupListBottomSheetCoordinatorDelegate mDelegate;
     private final ModelList mModelList;
     private final TabGroupModelFilter mFilter;
     private final TabGroupCreationCallback mTabGroupCreationCallback;
@@ -81,7 +81,7 @@ public class TabGroupListBottomSheetMediator {
             DataSharingService dataSharingService,
             CollaborationService collaborationService,
             BottomSheetController bottomSheetController,
-            TabGroupParityBottomSheetCoordinatorDelegate delegate,
+            TabGroupListBottomSheetCoordinatorDelegate delegate,
             boolean showNewGroupRow) {
         mModelList = modelList;
         mFilter = filter;
