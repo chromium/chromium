@@ -222,7 +222,7 @@ TEST_F(GetFillValueAndTypeForEntityTest, FillingLocalizedCountries) {
            {"ar-LB", u"لبنان"}}) {
     AutofillField field;
     FieldPrediction prediction;
-    prediction.set_type(PASSPORT_ISSUING_COUNTRY_TAG);
+    prediction.set_type(PASSPORT_ISSUING_COUNTRY);
     prediction.set_source(
         autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
             FieldPrediction::SOURCE_AUTOFILL_AI);
@@ -252,7 +252,7 @@ TEST_F(GetFillValueAndTypeForEntityTest, FillingSelectControlWithCountries) {
            {{"France", "Sweden", "Canada", "Brazil"}, u"Sweden"}}) {
     AutofillField field{test::CreateTestSelectField(options)};
     FieldPrediction prediction;
-    prediction.set_type(PASSPORT_ISSUING_COUNTRY_TAG);
+    prediction.set_type(PASSPORT_ISSUING_COUNTRY);
     prediction.set_source(
         autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
             FieldPrediction::SOURCE_AUTOFILL_AI);

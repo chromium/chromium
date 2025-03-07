@@ -391,9 +391,9 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
         case IMPROVED_PREDICTION:
         case PASSPORT_NAME_TAG:
         case PASSPORT_NUMBER:
-        case PASSPORT_ISSUING_COUNTRY_TAG:
-        case PASSPORT_EXPIRATION_DATE_TAG:
-        case PASSPORT_ISSUE_DATE_TAG:
+        case PASSPORT_ISSUING_COUNTRY:
+        case PASSPORT_EXPIRATION_DATE:
+        case PASSPORT_ISSUE_DATE:
         case LOYALTY_MEMBERSHIP_PROGRAM:
         case LOYALTY_MEMBERSHIP_PROVIDER:
         case LOYALTY_MEMBERSHIP_ID:
@@ -405,8 +405,8 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
         case DRIVERS_LICENSE_NAME_TAG:
         case DRIVERS_LICENSE_REGION:
         case DRIVERS_LICENSE_NUMBER:
-        case DRIVERS_LICENSE_EXPIRATION_DATE_TAG:
-        case DRIVERS_LICENSE_ISSUE_DATE_TAG:
+        case DRIVERS_LICENSE_EXPIRATION_DATE:
+        case DRIVERS_LICENSE_ISSUE_DATE:
           NOTREACHED() << field_type << " type is not in that group.";
       }
       break;

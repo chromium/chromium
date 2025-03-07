@@ -485,8 +485,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="CREDIT_CARD_TYPE"/>
   <variant name="CREDIT_CARD_VERIFICATION_CODE"/>
   <variant name="DELIVERY_INSTRUCTIONS"/>
-  <variant name="DRIVERS_LICENSE_EXPIRATION_DATE_TAG"/>
-  <variant name="DRIVERS_LICENSE_ISSUE_DATE_TAG"/>
+  <variant name="DRIVERS_LICENSE_EXPIRATION_DATE"/>
+  <variant name="DRIVERS_LICENSE_ISSUE_DATE"/>
   <variant name="DRIVERS_LICENSE_NAME_TAG"/>
   <variant name="DRIVERS_LICENSE_NUMBER"/>
   <variant name="DRIVERS_LICENSE_REGION"/>
@@ -520,9 +520,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="NOT_USERNAME"/>
   <variant name="NUMERIC_QUANTITY"/>
   <variant name="ONE_TIME_CODE"/>
-  <variant name="PASSPORT_EXPIRATION_DATE_TAG"/>
-  <variant name="PASSPORT_ISSUE_DATE_TAG"/>
-  <variant name="PASSPORT_ISSUING_COUNTRY_TAG"/>
+  <variant name="PASSPORT_EXPIRATION_DATE"/>
+  <variant name="PASSPORT_ISSUE_DATE"/>
+  <variant name="PASSPORT_ISSUING_COUNTRY"/>
   <variant name="PASSPORT_NAME_TAG"/>
   <variant name="PASSPORT_NUMBER"/>
   <variant name="PASSWORD"/>

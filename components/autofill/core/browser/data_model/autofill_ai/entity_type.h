@@ -95,11 +95,11 @@ constexpr FieldType AttributeType::field_type() const {
     case AttributeTypeName::kPassportNumber:
       return PASSPORT_NUMBER;
     case AttributeTypeName::kPassportCountry:
-      return PASSPORT_ISSUING_COUNTRY_TAG;
+      return PASSPORT_ISSUING_COUNTRY;
     case AttributeTypeName::kPassportExpiryDate:
-      return PASSPORT_EXPIRATION_DATE_TAG;
+      return PASSPORT_EXPIRATION_DATE;
     case AttributeTypeName::kPassportIssueDate:
-      return PASSPORT_ISSUE_DATE_TAG;
+      return PASSPORT_ISSUE_DATE;
     case AttributeTypeName::kVehicleOwner:
       return VEHICLE_OWNER_TAG;
     case AttributeTypeName::kVehicleLicensePlate:
@@ -117,9 +117,9 @@ constexpr FieldType AttributeType::field_type() const {
     case AttributeTypeName::kDriversLicenseNumber:
       return DRIVERS_LICENSE_NUMBER;
     case AttributeTypeName::kDriversLicenseExpirationDate:
-      return DRIVERS_LICENSE_EXPIRATION_DATE_TAG;
+      return DRIVERS_LICENSE_EXPIRATION_DATE;
     case AttributeTypeName::kDriversLicenseIssueDate:
-      return DRIVERS_LICENSE_ISSUE_DATE_TAG;
+      return DRIVERS_LICENSE_ISSUE_DATE;
   }
   NOTREACHED();
 }
