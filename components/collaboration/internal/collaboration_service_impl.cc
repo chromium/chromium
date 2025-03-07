@@ -272,6 +272,25 @@ SigninStatus CollaborationServiceImpl::GetSigninStatus() {
   return status;
 }
 
+CollaborationStatus
+CollaborationServiceImpl::GetCollaborationStatusWithoutEntreprise() {
+  // Check if device policy allow signin.
+  if (!profile_prefs_->GetBoolean(prefs::kSigninAllowed)) {
+    return CollaborationStatus::kDisabledForPolicy;
+  }
+
+  CollaborationStatus status = CollaborationStatus::kDisabled;
+  if (base::FeatureList::IsEnabled(
+          data_sharing::features::kDataSharingFeature)) {
+    status = CollaborationStatus::kEnabledCreateAndJoin;
+  } else if (base::FeatureList::IsEnabled(
+                 data_sharing::features::kDataSharingJoinOnly)) {
+    status = CollaborationStatus::kAllowedToJoin;
+  }
+
+  return status;
+}
+
 CollaborationStatus CollaborationServiceImpl::GetCollaborationStatus() {
   // Check if device policy allow signin.
   if (!profile_prefs_->GetBoolean(prefs::kSigninAllowed)) {
@@ -336,7 +355,8 @@ void CollaborationServiceImpl::RefreshServiceStatus() {
   ServiceStatus new_status;
   new_status.sync_status = GetSyncStatus();
   new_status.signin_status = GetSigninStatus();
-  new_status.collaboration_status = GetCollaborationStatus();
+  // TODO(crbug.com/401348665): Enable entreprise check again after TGSS fix.
+  new_status.collaboration_status = GetCollaborationStatusWithoutEntreprise();
 
   if (new_status != current_status_) {
     CollaborationService::Observer::ServiceStatusUpdate update;
