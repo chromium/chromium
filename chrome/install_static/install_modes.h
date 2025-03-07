@@ -31,6 +31,7 @@
 #include <string>
 
 #include "build/branding_buildflags.h"
+#include "chrome/install_static/install_constants.h"
 
 // Include the brand-specific values. Each of these must define:
 // - enum InstallConstantIndex: named indices of the brand's kInstallModes
@@ -61,6 +62,9 @@ extern const size_t kProductPathNameLength;
 // The brand-specific safe browsing client name.
 extern const char kSafeBrowsingName[];
 
+// A brand's collection of install modes.
+extern const InstallConstants kInstallModes[];
+
 // The following convenience functions behave conditionally on whether or not
 // the brand uses Chrome's integration with Google Update. For brands that do
 // not (e.g., Chromium), they return something like "Software\Chromium" or
@@ -71,9 +75,6 @@ extern const char kSafeBrowsingName[];
 std::wstring GetClientsKeyPath(const wchar_t* app_guid);
 std::wstring GetClientStateKeyPath(const wchar_t* app_guid);
 std::wstring GetClientStateMediumKeyPath(const wchar_t* app_guid);
-
-static_assert(kInstallModes.size() == NUM_INSTALL_MODES,
-              "Imbalance between kInstallModes and InstallConstantIndex");
 
 }  // namespace install_static
 

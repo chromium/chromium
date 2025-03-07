@@ -1010,8 +1010,9 @@ ShellUtil::DefaultState ProbeCurrentDefaultHandlers(
 
     // See if another mode is the default handler for this protocol.
     size_t current_app_len = std::char_traits<wchar_t>::length(current_app);
-    const auto it = std::ranges::find_if(
-        install_static::kInstallModes,
+    const auto* it = std::find_if(
+        &install_static::kInstallModes[0],
+        &install_static::kInstallModes[install_static::NUM_INSTALL_MODES],
         [current_install_mode_index, &current_app,
          current_app_len](const install_static::InstallConstants& mode) {
           if (mode.index == current_install_mode_index) {
@@ -1028,9 +1029,8 @@ ShellUtil::DefaultState ProbeCurrentDefaultHandlers(
           return current_app_len == mode_prog_id_prefix.length() ||
                  current_app[mode_prog_id_prefix.length()] == L'.';
         });
-    if (it == install_static::kInstallModes.end()) {
+    if (it == &install_static::kInstallModes[install_static::NUM_INSTALL_MODES])
       return ShellUtil::NOT_DEFAULT;
-    }
     other_mode_is_default = true;
   }
   // This mode is default if it has all of the protocols.

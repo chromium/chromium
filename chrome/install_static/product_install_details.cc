@@ -35,12 +35,13 @@ std::wstring GetCurrentProcessExePath() {
 
 const InstallConstants* FindInstallMode(const std::wstring& suffix) {
   // Search for a mode with the matching suffix.
-  for (const auto& mode : kInstallModes) {
+  for (int i = 0; i < NUM_INSTALL_MODES; ++i) {
+    const InstallConstants& mode = kInstallModes[i];
     if (!_wcsicmp(suffix.c_str(), mode.install_suffix))
       return &mode;
   }
   // The first mode is always the default if all else fails.
-  return &kInstallModes.front();
+  return &kInstallModes[0];
 }
 
 }  // namespace
