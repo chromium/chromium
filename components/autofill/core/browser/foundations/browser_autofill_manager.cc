@@ -1333,10 +1333,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
        autofill_field->Type().GetStorableType() == FieldType::USERNAME ||
        autofill_field->Type().GetStorableType() == FieldType::SINGLE_USERNAME);
 
-  const size_t barrier_calls =
-      static_cast<size_t>(should_offer_single_field_form_fill) +
-      static_cast<size_t>(should_offer_plus_addresses);
-  if (barrier_calls == 0) {
+  // Early return to avoid running password form classifications.
+  if (!should_offer_plus_addresses && !should_offer_single_field_form_fill) {
     std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions),
                             std::nullopt);
     return;
@@ -1345,40 +1343,39 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
   const PasswordFormClassification password_form_classification =
       client().ClassifyAsPasswordForm(*this, form.global_id(),
                                       field.global_id());
-  // The barrier callback bundles requests to generate suggestions for plus
-  // addresses and single field form fill suggestions.
-  // TODO(crbug.com/324557053): Remove the BarrierCallback as one of the
-  // branches is not async anymore.
-  auto barrier_callback = base::BarrierCallback<std::vector<Suggestion>>(
-      barrier_calls,
-      base::BindOnce(
-          &BrowserAutofillManager::
-              OnGeneratedPlusAddressAndSingleFieldFillSuggestions,
-          weak_ptr_factory_.GetWeakPtr(),
-          AutofillPlusAddressDelegate::SuggestionContext::kAutocomplete,
-          password_form_classification.type, form, field,
-          should_offer_single_field_form_fill, std::move(callback)));
 
+  std::vector<Suggestion> plus_address_suggestions;
   if (should_offer_plus_addresses) {
-    std::vector<Suggestion> plus_address_suggestions =
+    plus_address_suggestions =
         client().GetPlusAddressDelegate()->GetSuggestionsFromPlusAddresses(
             plus_addresses, client().GetLastCommittedPrimaryMainFrameOrigin(),
             client().IsOffTheRecord(), form, field,
             GetFieldTypeGroupsFromFormStructure(form_structure),
             password_form_classification, trigger_source);
-    barrier_callback.Run(std::move(plus_address_suggestions));
   }
+
+  auto on_single_field_suggestions_callback = base::BindOnce(
+      &BrowserAutofillManager::
+          OnGeneratedPlusAddressAndSingleFieldFillSuggestions,
+      weak_ptr_factory_.GetWeakPtr(),
+      AutofillPlusAddressDelegate::SuggestionContext::kAutocomplete,
+      password_form_classification.type, form, field,
+      should_offer_single_field_form_fill, std::move(callback),
+      std::move(plus_address_suggestions));
 
   if (should_offer_single_field_form_fill) {
     client().GetSingleFieldFillRouter().OnGetSingleFieldSuggestions(
         form_structure, field, autofill_field, client(),
-        base::BindRepeating(
+        base::BindOnce(
             [](base::OnceCallback<void(std::vector<Suggestion>)> callback,
                FieldGlobalId field_id,
                const std::vector<Suggestion>& suggestions) {
               std::move(callback).Run(suggestions);
             },
-            barrier_callback));
+            std::move(on_single_field_suggestions_callback)));
+  } else {
+    std::move(on_single_field_suggestions_callback)
+        .Run(/*single_field_suggestions=*/{});
   }
 }
 
@@ -1390,8 +1387,20 @@ void BrowserAutofillManager::
         const FormFieldData& field,
         bool should_offer_single_field_form_fill,
         OnGenerateSuggestionsCallback callback,
-        std::vector<std::vector<Suggestion>> suggestion_lists) {
-  if (std::ranges::all_of(suggestion_lists, &std::vector<Suggestion>::empty)) {
+        std::vector<Suggestion> plus_address_suggestions,
+        std::vector<Suggestion> single_field_suggestions) {
+  std::vector<Suggestion> suggestions;
+  suggestions.reserve(plus_address_suggestions.size() +
+                      single_field_suggestions.size());
+  // Prioritize plus address over single field form fill suggestions.
+  suggestions.insert(suggestions.cend(),
+                     std::make_move_iterator(plus_address_suggestions.begin()),
+                     std::make_move_iterator(plus_address_suggestions.end()));
+  suggestions.insert(suggestions.cend(),
+                     std::make_move_iterator(single_field_suggestions.begin()),
+                     std::make_move_iterator(single_field_suggestions.end()));
+
+  if (suggestions.empty()) {
     // Note the check below is the same done for regular autocomplete
     // suggestions.
     // TODO(crbug.com/381994105): Consider adding
@@ -1413,31 +1422,7 @@ void BrowserAutofillManager::
     return;
   }
 
-  std::vector<Suggestion> suggestions;
-  for (std::vector<Suggestion>& suggestion_list : suggestion_lists) {
-    suggestions.insert(suggestions.cend(),
-                       std::make_move_iterator(suggestion_list.begin()),
-                       std::make_move_iterator(suggestion_list.end()));
-  }
-
-  auto GetSuggestionPriority = [](FillingProduct product) {
-    return product == FillingProduct::kPlusAddresses ? 1 : 2;
-  };
-
-  // Prioritize plus address over single field form fill suggestions.
-  std::ranges::stable_sort(suggestions, [&](const Suggestion& s1,
-                                            const Suggestion& s2) {
-    return GetSuggestionPriority(GetFillingProductFromSuggestionType(s1.type)) <
-           GetSuggestionPriority(GetFillingProductFromSuggestionType(s2.type));
-  });
-
-  const bool has_pa_suggestions =
-      std::ranges::any_of(suggestions, [](const Suggestion& suggestion) {
-        return GetFillingProductFromSuggestionType(suggestion.type) ==
-               FillingProduct::kPlusAddresses;
-      });
-
-  if (has_pa_suggestions) {
+  if (!plus_address_suggestions.empty()) {
     client().GetPlusAddressDelegate()->OnPlusAddressSuggestionShown(
         *this, form.global_id(), field.global_id(), suggestions_context,
         password_form_type, suggestions[0].type);
