@@ -66,10 +66,13 @@ void ChromePrefetchManager::StartPrefetchFromCCT(
   // TODO(crbug.com/40288091): Specify appropriate referrer value that comes
   // from CCT.
   std::unique_ptr<content::PrefetchHandle> prefetch_handle =
-      GetWebContents().StartPrefetch(prefetch_url, use_prefetch_proxy,
-                                     blink::mojom::Referrer(), referring_origin,
-                                     preloading_attempt->GetWeakPtr(),
-                                     holdback_status_override);
+      GetWebContents().StartPrefetch(
+          prefetch_url, use_prefetch_proxy, blink::mojom::Referrer(),
+          referring_origin,
+          content::PreloadPipelineInfo::Create(
+              /*planned_max_preloading_type=*/content::PreloadingType::
+                  kPrefetch),
+          preloading_attempt->GetWeakPtr(), holdback_status_override);
   // TODO(crbug.com/40288091): Clean up staled handles. Please see
   // crrev.com/c/5534282/comment/cea1fdce_ada24c2b/ for more discussions,
   if (prefetch_handle) {

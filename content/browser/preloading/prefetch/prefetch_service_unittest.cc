@@ -462,6 +462,8 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
     auto prefetch_container = std::make_unique<PrefetchContainer>(
         *web_contents(), prefetch_url, prefetch_type, referrer,
         std::move(referring_origin), /*no_vary_search_hint=*/std::nullopt,
+        PreloadPipelineInfo::Create(
+            /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
         /*attempt=*/nullptr);
     BrowserContextImpl::From(browser_context())
         ->GetPrefetchService()

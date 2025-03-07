@@ -997,6 +997,7 @@ class CONTENT_EXPORT WebContentsImpl
       bool use_prefetch_proxy,
       const blink::mojom::Referrer& referrer,
       const std::optional<url::Origin>& referring_origin,
+      scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       base::WeakPtr<PreloadingAttempt> attempt,
       std::optional<PreloadingHoldbackStatus> holdback_status_override)
       override;
