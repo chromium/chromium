@@ -9034,3 +9034,4 @@ crbug.com/395503013 [ Mac ] external/wpt/soft-navigation-heuristics/first-intera
 
 # Gardener 2025-03-07
 crbug.com/400818436 virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-logical.https.any.html?cpu [ Pass Timeout ]
+crbug.com/398165466 [ Mac12 ] http/tests/inspector-protocol/tracing/screenshots.js [ Pass Timeout ]
