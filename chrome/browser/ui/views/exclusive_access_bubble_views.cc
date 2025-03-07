@@ -31,7 +31,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
-#include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/base/l10n/l10n_util_win.h"
@@ -148,7 +148,7 @@ void ExclusiveAccessBubbleViews::Update(
   DCHECK(EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE != params.type ||
          params.has_download);
   bool already_shown = IsShowing() || IsVisible();
-  if (params_.type == params.type && params_.url == params.url &&
+  if (params_.type == params.type && params_.origin == params.origin &&
       !params.force_update && already_shown) {
     return;
   }
@@ -172,7 +172,7 @@ void ExclusiveAccessBubbleViews::Update(
   const bool entering_tab_fullscreen =
       !IsTabFullscreenType(params_.type) && IsTabFullscreenType(params.type);
 
-  params_.url = params.url;
+  params_.origin = params.origin;
   // When a request to notify about a download is made, the bubble type
   // should be preserved from the old value, and not be updated.
   if (!params.has_download) {

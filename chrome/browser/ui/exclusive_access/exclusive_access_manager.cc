@@ -130,16 +130,17 @@ void ExclusiveAccessManager::UpdateBubble(
     ExclusiveAccessBubbleHideCallback first_hide_callback,
     bool force_update) {
   exclusive_access_context_->UpdateExclusiveAccessBubble(
-      {.url = GetExclusiveAccessBubbleURL(),
+      {.origin = GetExclusiveAccessBubbleOrigin(),
        .type = GetExclusiveAccessExitBubbleType(),
        .force_update = force_update},
       std::move(first_hide_callback));
 }
 
-GURL ExclusiveAccessManager::GetExclusiveAccessBubbleURL() const {
-  GURL result = fullscreen_controller_.GetURLForExclusiveAccessBubble();
-  if (!result.is_valid()) {
-    result = pointer_lock_controller_.GetURLForExclusiveAccessBubble();
+url::Origin ExclusiveAccessManager::GetExclusiveAccessBubbleOrigin() const {
+  url::Origin result =
+      fullscreen_controller_.GetOriginForExclusiveAccessBubble();
+  if (result.opaque()) {
+    result = pointer_lock_controller_.GetOriginForExclusiveAccessBubble();
   }
   return result;
 }

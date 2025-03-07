@@ -463,10 +463,10 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
   PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/false);
   browser()->exclusive_access_manager()->context()->UpdateExclusiveAccessBubble(
       {
-          .url = GURL(
-              "http://www.example.com"),  // Should be non-empty to show bubble
+          .origin = url::Origin::Create(GURL(
+              "http://www.example.com")),  // Should be non-empty to show bubble
           .type = ExclusiveAccessBubbleType::
-              EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION,
+              EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION,
           .force_update = true,
       },
       base::NullCallback());
@@ -477,10 +477,10 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
                        HideExclusiveAccessBubbleWhenLocked) {
   PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
   browser()->exclusive_access_manager()->context()->UpdateExclusiveAccessBubble(
-      {.url = GURL(
-           "http://www.example.com"),  // Should be non-empty to show bubble
+      {.origin = url::Origin::Create(GURL(
+           "http://www.example.com")),  // Should be non-empty to show bubble
        .type = ExclusiveAccessBubbleType::
-           EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION,
+           EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION,
        .force_update = true},
       base::NullCallback());
   EXPECT_FALSE(browser_view()->IsExclusiveAccessBubbleDisplayed());

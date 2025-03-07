@@ -15,6 +15,7 @@
 #include "ui/base/ozone_buildflags.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 using ExclusiveAccessManagerTest = ExclusiveAccessTest;
 
@@ -181,4 +182,36 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessManagerPressAndHoldEscTest,
     task_runner->FastForwardBy(base::Seconds(0.5));
     EXPECT_TRUE(IsExclusiveAccessBubbleDisplayed());
   }
+}
+
+IN_PROC_BROWSER_TEST_F(ExclusiveAccessManagerTest,
+                       GetOriginForFullscreenBubble) {
+  const GURL kTestUrl("https://example.com");
+  const url::Origin kTestOrigin = url::Origin::Create(kTestUrl);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kTestUrl));
+  EXPECT_FALSE(GetExclusiveAccessManager()
+                   ->context()
+                   ->IsExclusiveAccessBubbleDisplayed());
+
+  // Enter fullscreen
+  EnterActiveTabFullscreen();
+  EXPECT_EQ(kTestOrigin,
+            GetExclusiveAccessManager()->GetExclusiveAccessBubbleOrigin());
+}
+
+IN_PROC_BROWSER_TEST_F(ExclusiveAccessManagerTest,
+                       GetOriginForPointerLockBubble) {
+  const GURL kTestUrl("https://example.com");
+  const url::Origin kTestOrigin = url::Origin::Create(kTestUrl);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kTestUrl));
+  EXPECT_FALSE(GetExclusiveAccessManager()
+                   ->context()
+                   ->IsExclusiveAccessBubbleDisplayed());
+
+  RequestToLockPointer(/*user_gesture=*/true,
+                       /*last_unlocked_by_target=*/false);
+  EXPECT_EQ(kTestOrigin,
+            GetExclusiveAccessManager()->GetExclusiveAccessBubbleOrigin());
 }

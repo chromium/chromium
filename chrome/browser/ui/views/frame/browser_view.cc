@@ -450,14 +450,15 @@ bool WidgetHasChildModalDialog(views::Widget* parent_widget) {
 // Returns whether immmersive fullscreen should replace fullscreen. This
 // should only occur for "browser-fullscreen" for tabbed-typed windows (not
 // for tab-fullscreen and not for app/popup type windows).
-bool ShouldUseImmersiveFullscreenForUrl(const GURL& url) {
+bool ShouldUseImmersiveFullscreenForUrl(ExclusiveAccessBubbleType type) {
   // Kiosk mode needs the whole screen.
   if (IsRunningInAppMode()) {
     return false;
   }
   // An empty URL signifies browser fullscreen. Immersive is used for browser
   // fullscreen only.
-  return url.is_empty();
+  return type ==
+         EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION;
 }
 #endif
 
@@ -2138,7 +2139,7 @@ void BrowserView::Restore() {
   frame_->Restore();
 }
 
-void BrowserView::EnterFullscreen(const GURL& url,
+void BrowserView::EnterFullscreen(const url::Origin& origin,
                                   ExclusiveAccessBubbleType bubble_type,
                                   const int64_t display_id) {
   if (base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState)) {
@@ -2190,7 +2191,7 @@ void BrowserView::UpdateExclusiveAccessBubble(
     // However, do show the bubble in a managed guest session (see
     // crbug.com/741069).
     // Immersive mode logic for downloads is handled by the download controller.
-    should_close_bubble |= ShouldUseImmersiveFullscreenForUrl(params.url) &&
+    should_close_bubble |= ShouldUseImmersiveFullscreenForUrl(params.type) &&
                            !chromeos::IsManagedGuestSession();
 #endif
   }
@@ -2305,24 +2306,27 @@ void BrowserView::FullscreenStateChanged() {
   // TODO(b/365146870): Remove once we consolidate locked fullscreen with
   // OnTask.
   bool avoid_using_immersive_mode =
-      platform_util::IsBrowserLockedFullscreen(browser_.get());
-  if (browser_->IsLockedForOnTask()) {
-    avoid_using_immersive_mode = false;
-  }
+      platform_util::IsBrowserLockedFullscreen(browser_.get()) &&
+      !browser_->IsLockedForOnTask();
+
   if (avoid_using_immersive_mode) {
     immersive_mode_controller_->SetEnabled(false);
   } else {
     // Enable immersive before the browser refreshes its list of enabled
     // commands.
-    bool should_stay_immersive =
-        !IsFullscreen() &&
-        immersive_mode_controller_->ShouldStayImmersiveAfterExitingFullscreen();
-    GURL url = IsFullscreen() ? GetExclusiveAccessManager()
-                                    ->fullscreen_controller()
-                                    ->GetURLForExclusiveAccessBubble()
-                              : GURL();
-    if (ShouldUseImmersiveFullscreenForUrl(url) && !should_stay_immersive) {
-      immersive_mode_controller_->SetEnabled(IsFullscreen());
+    // Enable immersive mode when entering browser fullscreen, unless it's in
+    // app mode.
+    if (IsFullscreen()) {
+      bool enable_immersive =
+          !IsRunningInAppMode() && GetExclusiveAccessManager()
+                                       ->fullscreen_controller()
+                                       ->IsFullscreenForBrowser();
+      immersive_mode_controller_->SetEnabled(enable_immersive);
+    } else if (!immersive_mode_controller_
+                    ->ShouldStayImmersiveAfterExitingFullscreen()) {
+      // Disable immersive mode if not required to stay immersive after exiting
+      // fullscreen.
+      immersive_mode_controller_->SetEnabled(false);
     }
   }
 #endif
