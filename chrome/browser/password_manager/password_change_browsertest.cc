@@ -316,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   const GURL main_url = WebContents()->GetLastCommittedURL();
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(testing::Return(embedded_test_server()->GetURL(
-          "/password/update_form_empty_fields.html")));
+          "/password/update_form_empty_fields_no_submit.html")));
 
   StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
 
@@ -391,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, GeneratedPasswordIsPreSaved) {
   const GURL main_url = WebContents()->GetLastCommittedURL();
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(testing::Return(embedded_test_server()->GetURL(
-          "/password/update_form_empty_fields.html")));
+          "/password/update_form_empty_fields_no_submit.html")));
 
   StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
   // Activate tab with password change to simplify testing.
@@ -450,19 +450,11 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
       PasswordChangeOutcome::
           PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME);
 
-  auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
-  browser()->tab_strip_model()->ActivateTabAt(1);
-  PasswordsNavigationObserver password_change_page_observer(web_contents);
-  EXPECT_TRUE(password_change_page_observer.Wait());
-
   base::WeakPtr<PasswordChangeDelegate> delegate =
       password_change_service()
           ->GetPasswordChangeDelegate(WebContents())
           ->AsWeakPtr();
-
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    // Keep trying to mark successful submission.
-    delegate->OnPasswordFormSubmission(web_contents);
+  EXPECT_TRUE(base::test::RunUntil([delegate]() {
     return delegate->GetCurrentState() ==
            PasswordChangeDelegate::State::kPasswordSuccessfullyChanged;
   }));
@@ -476,9 +468,6 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
     // the metrics report.
     return delegate == nullptr;
   }));
-  ASSERT_EQ(
-      ManagePasswordsUIController::FromWebContents(web_contents)->GetState(),
-      password_manager::ui::MANAGE_STATE);
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
       PasswordChangeDelegate::State::kPasswordSuccessfullyChanged, 1);
@@ -526,16 +515,9 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
       PasswordChangeOutcome::
           PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME);
 
-  auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
-  PasswordsNavigationObserver password_change_page_observer(web_contents);
-  EXPECT_TRUE(password_change_page_observer.Wait());
-
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
-
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    // Keep trying to mark successful submission.
-    delegate->OnPasswordFormSubmission(web_contents);
+  EXPECT_TRUE(base::test::RunUntil([delegate]() {
     return delegate->GetCurrentState() ==
            PasswordChangeDelegate::State::kPasswordSuccessfullyChanged;
   }));
@@ -589,16 +571,9 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
               /*execution_info=*/nullptr),
           /*log_entry=*/nullptr));
 
-  auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
-  PasswordsNavigationObserver password_change_page_observer(web_contents);
-  EXPECT_TRUE(password_change_page_observer.Wait());
-
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
-
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    // Keep trying to mark successful submission.
-    delegate->OnPasswordFormSubmission(web_contents);
+  EXPECT_TRUE(base::test::RunUntil([delegate]() {
     return delegate->GetCurrentState() ==
            PasswordChangeDelegate::State::kPasswordChangeFailed;
   }));
@@ -647,18 +622,12 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       PasswordChangeErrorCase::
           PasswordChangeSubmissionData_PasswordChangeErrorCase_PAGE_ERROR);
 
-  auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
-  PasswordsNavigationObserver password_change_page_observer(web_contents);
-  EXPECT_TRUE(password_change_page_observer.Wait());
-
   base::WeakPtr<PasswordChangeDelegate> delegate =
       password_change_service()
           ->GetPasswordChangeDelegate(WebContents())
           ->AsWeakPtr();
 
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    // Keep trying to mark successful submission.
-    delegate->OnPasswordFormSubmission(web_contents);
+  EXPECT_TRUE(base::test::RunUntil([delegate]() {
     return delegate->GetCurrentState() ==
            PasswordChangeDelegate::State::kPasswordChangeFailed;
   }));
@@ -719,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
 
   // Wait until the state is changed from `kWaitingForChangePasswordForm` to any
   // other state. The bubble should disappear then.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
+  ASSERT_TRUE(base::test::RunUntil([delegate]() {
     return delegate->GetCurrentState() !=
            PasswordChangeDelegate::State::kWaitingForChangePasswordForm;
   }));
@@ -785,16 +754,9 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       PasswordChangeOutcome::
           PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME);
 
-  auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
-  PasswordsNavigationObserver password_change_page_observer(web_contents);
-  EXPECT_TRUE(password_change_page_observer.Wait());
-
   PasswordChangeDelegate* delegate =
-      password_change_service()->GetPasswordChangeDelegate(web_contents);
-
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    // Keep trying to mark successful submission.
-    delegate->OnPasswordFormSubmission(web_contents);
+      password_change_service()->GetPasswordChangeDelegate(WebContents());
+  EXPECT_TRUE(base::test::RunUntil([delegate]() {
     return delegate->GetCurrentState() ==
            PasswordChangeDelegate::State::kPasswordSuccessfullyChanged;
   }));
@@ -816,15 +778,9 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       PasswordChangeOutcome::
           PasswordChangeSubmissionData_PasswordChangeOutcome_UNSUCCESSFUL_OUTCOME);
 
-  auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
-  PasswordsNavigationObserver password_change_page_observer(web_contents);
-  EXPECT_TRUE(password_change_page_observer.Wait());
-
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    // Keep trying to mark successful submission.
-    delegate->OnPasswordFormSubmission(web_contents);
+  ASSERT_TRUE(base::test::RunUntil([delegate]() {
     return delegate->GetCurrentState() ==
            PasswordChangeDelegate::State::kPasswordChangeFailed;
   }));
@@ -879,9 +835,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
 
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(web_contents);
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    // Keep trying to mark successful submission.
-    delegate->OnPasswordFormSubmission(web_contents);
+  EXPECT_TRUE(base::test::RunUntil([delegate]() {
     return delegate->GetCurrentState() ==
            PasswordChangeDelegate::State::kPasswordSuccessfullyChanged;
   }));
@@ -911,10 +865,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
 
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
-
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    // Keep trying to mark successful submission.
-    delegate->OnPasswordFormSubmission(web_contents);
+  EXPECT_TRUE(base::test::RunUntil([delegate]() {
     return delegate->GetCurrentState() ==
            PasswordChangeDelegate::State::kPasswordSuccessfullyChanged;
   }));
@@ -940,19 +891,22 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       PasswordChangeOutcome::
           PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME);
 
-  auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
-  PasswordsNavigationObserver password_change_page_observer(web_contents);
-  EXPECT_TRUE(password_change_page_observer.Wait());
-
-  PasswordChangeDelegate* delegate =
-      password_change_service()->GetPasswordChangeDelegate(WebContents());
-
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    // Keep trying to mark successful submission.
-    delegate->OnPasswordFormSubmission(web_contents);
+  base::WeakPtr<PasswordChangeDelegate> delegate =
+      password_change_service()
+          ->GetPasswordChangeDelegate(WebContents())
+          ->AsWeakPtr();
+  EXPECT_TRUE(base::test::RunUntil([delegate]() {
     return delegate->GetCurrentState() ==
            PasswordChangeDelegate::State::kPasswordSuccessfullyChanged;
   }));
   // Tab is still open.
-  EXPECT_EQ(2, tab_strip->count());
+  ASSERT_EQ(2, tab_strip->count());
+
+  // Check its state.
+  delegate->Stop();
+  ASSERT_TRUE(base::test::RunUntil([&delegate]() { return !delegate; }));
+  auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
+  EXPECT_EQ(
+      ManagePasswordsUIController::FromWebContents(web_contents)->GetState(),
+      password_manager::ui::MANAGE_STATE);
 }
