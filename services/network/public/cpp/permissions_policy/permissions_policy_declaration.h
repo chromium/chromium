@@ -18,7 +18,8 @@ namespace network {
 // replicated between a RenderFrame and any of its associated
 // RenderFrameProxies. A list of these form a ParsedPermissionsPolicy. NOTE:
 // These types are used for replication frame state between processes.
-struct COMPONENT_EXPORT(NETWORK_CPP) ParsedPermissionsPolicyDeclaration final {
+struct COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
+    ParsedPermissionsPolicyDeclaration final {
   ParsedPermissionsPolicyDeclaration();
   explicit ParsedPermissionsPolicyDeclaration(
       network::mojom::PermissionsPolicyFeature feature);

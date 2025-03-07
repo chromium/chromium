@@ -11,28 +11,37 @@ namespace network {
 
 namespace switches {
 
-COMPONENT_EXPORT(NETWORK_CPP) extern const char kForceEffectiveConnectionType[];
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+extern const char kForceEffectiveConnectionType[];
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 extern const char kForcePermissionPolicyUnloadDefaultEnabled[];
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 extern const char kHostResolverRules[];
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 extern const char kIgnoreCertificateErrorsSPKIList[];
-COMPONENT_EXPORT(NETWORK_CPP) extern const char kLogNetLog[];
-COMPONENT_EXPORT(NETWORK_CPP) extern const char kNetLogCaptureMode[];
-COMPONENT_EXPORT(NETWORK_CPP) extern const char kNetLogMaxSizeMb[];
-COMPONENT_EXPORT(NETWORK_CPP) extern const char kSSLKeyLogFile[];
-COMPONENT_EXPORT(NETWORK_CPP) extern const char kTestThirdPartyCookiePhaseout[];
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES) extern const char kLogNetLog[];
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+extern const char kNetLogCaptureMode[];
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+extern const char kNetLogMaxSizeMb[];
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+extern const char kSSLKeyLogFile[];
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+extern const char kTestThirdPartyCookiePhaseout[];
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 extern const char kUnsafelyTreatInsecureOriginAsSecure[];
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 extern const char kAdditionalTrustTokenKeyCommitments[];
-COMPONENT_EXPORT(NETWORK_CPP) extern const char kUseFirstPartySet[];
-COMPONENT_EXPORT(NETWORK_CPP) extern const char kUseRelatedWebsiteSet[];
-COMPONENT_EXPORT(NETWORK_CPP) extern const char kIpAddressSpaceOverrides[];
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+extern const char kUseFirstPartySet[];
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+extern const char kUseRelatedWebsiteSet[];
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+extern const char kIpAddressSpaceOverrides[];
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 extern const char kDisableSharedDictionaryStorageCleanupForTesting[];
-COMPONENT_EXPORT(NETWORK_CPP) extern const char kIgnoreBadMessageForTesting[];
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+extern const char kIgnoreBadMessageForTesting[];
 
 }  // namespace switches
 

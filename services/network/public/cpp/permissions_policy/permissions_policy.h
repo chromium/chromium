@@ -98,13 +98,13 @@ namespace network {
 // |PermissionsPolicyFeatureDefault| in permissions_policy_features.h for
 // details)
 
-class COMPONENT_EXPORT(NETWORK_CPP) PermissionsPolicy {
+class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) PermissionsPolicy {
  public:
   // Represents a collection of origins which make up an allowlist in a
   // permissions policy. This collection may be set to match every origin
   // (corresponding to the "*" syntax in the policy string, in which case the
   // Contains() method will always return true.
-  class COMPONENT_EXPORT(NETWORK_CPP) Allowlist final {
+  class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) Allowlist final {
    public:
     Allowlist();
     Allowlist(const Allowlist& rhs);

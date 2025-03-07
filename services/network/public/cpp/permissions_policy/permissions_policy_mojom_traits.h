@@ -15,7 +15,7 @@
 namespace mojo {
 
 template <>
-class COMPONENT_EXPORT(NETWORK_CPP)
+class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
     StructTraits<network::mojom::OriginWithPossibleWildcardsDataView,
                  network::OriginWithPossibleWildcards> {
  public:
@@ -45,7 +45,7 @@ class COMPONENT_EXPORT(NETWORK_CPP)
 };
 
 template <>
-class COMPONENT_EXPORT(NETWORK_CPP)
+class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
     StructTraits<network::mojom::ParsedPermissionsPolicyDeclarationDataView,
                  network::ParsedPermissionsPolicyDeclaration> {
  public:
