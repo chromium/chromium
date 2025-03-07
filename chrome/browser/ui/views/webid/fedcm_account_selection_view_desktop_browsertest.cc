@@ -261,7 +261,9 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
       dialog_view->GetWidget()->GetWindowBoundsInScreen();
   gfx::Rect non_occluding_bounds =
       gfx::Rect(prompt_widget_bounds.right() + 1, 0, 100, 100);
-  views::Widget::InitParams init_params(views::Widget::InitParams::TYPE_WINDOW);
+  views::Widget::InitParams init_params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   init_params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   init_params.bounds = non_occluding_bounds;
   auto pip_widget = std::make_unique<views::Widget>(std::move(init_params));

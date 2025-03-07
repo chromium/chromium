@@ -122,7 +122,9 @@ std::unique_ptr<views::Widget> CreateWidget(
           .SetModalType(ui::mojom::ModalType::kSystem)
           .Build();
 
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.delegate = feature_tour_dialog.release();
   params.name = "QuickInsertFeatureTourWidget";
   params.activatable = views::Widget::InitParams::Activatable::kYes;
