@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/mac/mac_util.h"
 #include "components/remote_cocoa/app_shim/bridged_content_view.h"
 #include "components/remote_cocoa/app_shim/immersive_mode_controller_cocoa.h"
 #include "components/remote_cocoa/app_shim/immersive_mode_tabbed_controller_cocoa.h"
@@ -31,6 +32,10 @@ constexpr float kTabOverlayViewHeight = 50;
 constexpr float kTabOverlayViewWidth = kBrowserWidth;
 constexpr float kPopupHeight = 100;
 constexpr float kPopupWidth = kPopupHeight;
+
+inline bool UsePermanentThinController() {
+  return base::mac::MacOSMajorVersion() >= 13;
+}
 
 void SetupWindow(NativeWidgetMacNSWindow* window,
                  CGFloat width,
@@ -115,7 +120,9 @@ class CocoaImmersiveModeControllerTest : public ui::CocoaTest {
   }
 
   void TearDown() override {
-    EXPECT_EQ(browser_.titlebarAccessoryViewControllers.count, 0u);
+    unsigned int expected_controllers = UsePermanentThinController() ? 1u : 0u;
+    EXPECT_EQ(browser_.titlebarAccessoryViewControllers.count,
+              expected_controllers);
 
     [tab_overlay_ close];
     tab_overlay_ = nil;
@@ -130,6 +137,9 @@ class CocoaImmersiveModeControllerTest : public ui::CocoaTest {
   BrowserNativeWidgetWindow* browser() { return browser_; }
   NativeWidgetMacOverlayNSWindow* overlay() { return overlay_; }
   NativeWidgetMacOverlayNSWindow* tab_overlay() { return tab_overlay_; }
+  NSArray<__kindof NSTitlebarAccessoryViewController*>* controllers() {
+    return browser_.titlebarAccessoryViewControllers;
+  }
 
  private:
   BrowserNativeWidgetWindow* __strong browser_;
@@ -143,7 +153,7 @@ TEST_F(CocoaImmersiveModeControllerTest, ImmersiveModeController) {
   auto immersive_mode_controller =
       std::make_unique<ImmersiveModeControllerCocoa>(browser(), overlay());
   immersive_mode_controller->Init();
-  EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 2u);
+  EXPECT_EQ(controllers().count, 2u);
 }
 
 // Test that reveal locks work as expected.
@@ -156,10 +166,11 @@ TEST_F(CocoaImmersiveModeControllerTest, RevealLock) {
   // Autohide top chrome.
   immersive_mode_controller->UpdateToolbarVisibility(
       mojom::ToolbarVisibilityStyle::kAutohide);
-  EXPECT_EQ(
-      browser()
-          .titlebarAccessoryViewControllers.firstObject.fullScreenMinHeight,
-      0);
+  EXPECT_EQ(controllers().count, 2u);
+  // The thin controller's height is 0.5px.
+  EXPECT_EQ(controllers().firstObject.fullScreenMinHeight, 0.5);
+  // The regular controller's height is 0.
+  EXPECT_EQ(controllers().lastObject.fullScreenMinHeight, 0);
 
   // Grab 3 reveal locks and make sure that top chrome is displayed.
   EXPECT_EQ(immersive_mode_controller->reveal_lock_count(), 0);
@@ -167,27 +178,18 @@ TEST_F(CocoaImmersiveModeControllerTest, RevealLock) {
   immersive_mode_controller->RevealLock();
   immersive_mode_controller->RevealLock();
   EXPECT_EQ(immersive_mode_controller->reveal_lock_count(), 3);
-  EXPECT_EQ(
-      browser()
-          .titlebarAccessoryViewControllers.firstObject.fullScreenMinHeight,
-      browser()
-          .titlebarAccessoryViewControllers.firstObject.view.frame.size.height);
+  EXPECT_EQ(controllers().lastObject.fullScreenMinHeight,
+            controllers().lastObject.view.frame.size.height);
 
   // Let go of 2 reveal locks and make sure that top chrome is still displayed.
   immersive_mode_controller->RevealUnlock();
   immersive_mode_controller->RevealUnlock();
-  EXPECT_EQ(
-      browser()
-          .titlebarAccessoryViewControllers.firstObject.fullScreenMinHeight,
-      browser()
-          .titlebarAccessoryViewControllers.firstObject.view.frame.size.height);
+  EXPECT_EQ(controllers().lastObject.fullScreenMinHeight,
+            controllers().lastObject.view.frame.size.height);
 
   // Let go of the final reveal lock and make sure top chrome is hidden.
   immersive_mode_controller->RevealUnlock();
-  EXPECT_EQ(
-      browser()
-          .titlebarAccessoryViewControllers.firstObject.fullScreenMinHeight,
-      0);
+  EXPECT_EQ(controllers().lastObject.fullScreenMinHeight, 0);
 }
 
 // Test that IsReveal() reflects the toolbar visibility.
@@ -239,6 +241,8 @@ TEST_F(CocoaImmersiveModeControllerTest, IsRevealed) {
 
 // Test ImmersiveModeController toolbar visibility.
 TEST_F(CocoaImmersiveModeControllerTest, ToolbarVisibility) {
+  unsigned int baseline_controllers = UsePermanentThinController() ? 1u : 0u;
+  ASSERT_EQ(controllers().count, baseline_controllers);
   // Controller under test.
   auto immersive_mode_controller =
       std::make_unique<ImmersiveModeTabbedControllerCocoa>(browser(), overlay(),
@@ -260,11 +264,14 @@ TEST_F(CocoaImmersiveModeControllerTest, ToolbarVisibility) {
 
   immersive_mode_controller->UpdateToolbarVisibility(
       mojom::ToolbarVisibilityStyle::kNone);
-  EXPECT_TRUE(browser().titlebarAccessoryViewControllers.firstObject.hidden);
+  // The first object is the permanent thin controller, if present.
+  // The last object is the regular controller.
+  EXPECT_EQ(controllers().count, 2u);
+  EXPECT_TRUE(controllers().lastObject.hidden);
 
   immersive_mode_controller->UpdateToolbarVisibility(
       mojom::ToolbarVisibilityStyle::kAutohide);
-  EXPECT_FALSE(browser().titlebarAccessoryViewControllers.firstObject.hidden);
+  EXPECT_FALSE(controllers().lastObject.hidden);
 }
 
 // Test ImmersiveModeTabbedController construction and destruction.
@@ -277,10 +284,10 @@ TEST_F(CocoaImmersiveModeControllerTest, Tabbed) {
   immersive_mode_controller->UpdateToolbarVisibility(
       mojom::ToolbarVisibilityStyle::kAutohide);
 
-  EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 3u);
+  EXPECT_EQ(controllers().count, 3u);
   immersive_mode_controller->UpdateToolbarVisibility(
       mojom::ToolbarVisibilityStyle::kNone);
-  EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 2u);
+  EXPECT_EQ(controllers().count, 2u);
 }
 
 // Test ImmersiveModeTabbedController reveal lock tests.
