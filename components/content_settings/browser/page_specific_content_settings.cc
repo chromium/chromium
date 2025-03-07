@@ -242,8 +242,8 @@ bool DelayUntilCommitIfNecessary(content::RenderFrameHost* rfh,
 }
 
 bool IsThirdPartyCookieDetails(const content::CookieAccessDetails& details) {
-  return net::SchemefulSite(details.url) !=
-             net::SchemefulSite(details.first_party_url) ||
+  return !net::SchemefulSite::IsSameSite(details.url,
+                                         details.first_party_url) ||
          !details.site_for_cookies.IsFirstParty(details.url);
 }
 
