@@ -161,9 +161,7 @@ void BtmPageVisitObserver::DidFinishNavigation(
   }
 
   base::Time now = clock_->Now();
-  current_page_.visit_duration = last_page_change_time_.has_value()
-                                     ? (now - last_page_change_time_.value())
-                                     : base::TimeDelta();
+  current_page_.visit_duration = now - last_page_change_time_;
   auto [navigation, final_url_cookie_access] =
       state->CreateNavigationInfo(*navigation_handle);
   // Don't report the visit right away; put it in the pending queue and wait a

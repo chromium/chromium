@@ -91,7 +91,7 @@ class CONTENT_EXPORT BtmPageVisitObserver : public WebContentsObserver {
   // Metadata on the currently committed page.
   BtmPageVisitInfo current_page_;
   raw_ref<base::Clock> clock_;
-  std::optional<base::Time> last_page_change_time_;
+  base::Time last_page_change_time_;
   // Past page visits that we are still waiting to see if late cookie accesses
   // are reported for them.
   std::deque<VisitTuple> pending_visits_;
