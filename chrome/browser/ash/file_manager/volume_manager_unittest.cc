@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <unordered_set>
@@ -112,7 +113,8 @@ device::mojom::MtpStorageInfoPtr CreateAllowlistedMtpStorageInfo(
 
 class LoggingObserver : public VolumeManagerObserver {
  public:
-  struct Event {
+  class Event {
+   public:
     enum EventType {
       DISK_ADDED,
       DISK_ADD_BLOCKED_BY_POLICY,
@@ -127,29 +129,25 @@ class LoggingObserver : public VolumeManagerObserver {
       PARTITION_COMPLETED,
       RENAME_STARTED,
       RENAME_COMPLETED
-    } type{};
+    };
 
-    // Available on DEVICE_ADDED, DEVICE_REMOVED, VOLUME_MOUNTED,
-    // VOLUME_UNMOUNTED, FORMAT_STARTED, FORMAT_COMPLETED. PARTITION_STARTED,
-    // PARTITION_COMPLETED.
-    std::string device_path;
+    EventType type() const { return type_.value(); }
+    std::string device_path() const { return device_path_.value(); }
+    std::string device_label() const { return device_label_.value(); }
+    std::string volume_id() const { return volume_id_.value(); }
+    bool mounting() const { return mounting_.value(); }
+    ash::MountError mount_error() const { return mount_error_.value(); }
+    bool success() const { return success_.value(); }
 
-    // Available on FORMAT_STARTED, FORMAT_COMPLETED, RENAME_STARTED and
-    // RENAME_COMPLETED, PARTITION_STARTED, PARTITION_COMPLETED.
-    std::string device_label;
-
-    // Available on VOLUME_MOUNTED and VOLUME_UNMOUNTED.
-    std::string volume_id;
-
-    // Available on DISK_ADDED.
-    bool mounting = false;
-
-    // Available on VOLUME_MOUNTED and VOLUME_UNMOUNTED.
-    ash::MountError mount_error{};
-
-    // Available on FORMAT_STARTED and FORMAT_COMPLETED, PARTITION_STARTED,
-    // PARTITION_COMPLETED.
-    bool success = false;
+   private:
+    friend class LoggingObserver;
+    std::optional<EventType> type_;
+    std::optional<std::string> device_path_;
+    std::optional<std::string> device_label_;
+    std::optional<std::string> volume_id_;
+    std::optional<bool> mounting_;
+    std::optional<ash::MountError> mount_error_;
+    std::optional<bool> success_;
   };
 
   LoggingObserver() = default;
@@ -164,57 +162,57 @@ class LoggingObserver : public VolumeManagerObserver {
   // VolumeManagerObserver overrides.
   void OnDiskAdded(const Disk& disk, bool mounting) override {
     Event event;
-    event.type = Event::DISK_ADDED;
-    event.device_path = disk.device_path();  // Keep only device_path.
-    event.mounting = mounting;
+    event.type_ = Event::DISK_ADDED;
+    event.device_path_ = disk.device_path();  // Keep only device_path.
+    event.mounting_ = mounting;
     events_.push_back(event);
   }
 
   void OnDiskAddBlockedByPolicy(const std::string& device_path) override {
     Event event;
-    event.type = Event::DISK_ADD_BLOCKED_BY_POLICY;
-    event.device_path = device_path;
+    event.type_ = Event::DISK_ADD_BLOCKED_BY_POLICY;
+    event.device_path_ = device_path;
     events_.push_back(event);
   }
 
   void OnDiskRemoved(const Disk& disk) override {
     Event event;
-    event.type = Event::DISK_REMOVED;
-    event.device_path = disk.device_path();  // Keep only device_path.
+    event.type_ = Event::DISK_REMOVED;
+    event.device_path_ = disk.device_path();  // Keep only device_path.
     events_.push_back(event);
   }
 
   void OnDeviceAdded(const std::string& device_path) override {
     Event event;
-    event.type = Event::DEVICE_ADDED;
-    event.device_path = device_path;
+    event.type_ = Event::DEVICE_ADDED;
+    event.device_path_ = device_path;
     events_.push_back(event);
   }
 
   void OnDeviceRemoved(const std::string& device_path) override {
     Event event;
-    event.type = Event::DEVICE_REMOVED;
-    event.device_path = device_path;
+    event.type_ = Event::DEVICE_REMOVED;
+    event.device_path_ = device_path;
     events_.push_back(event);
   }
 
   void OnVolumeMounted(ash::MountError error_code,
                        const Volume& volume) override {
     Event event;
-    event.type = Event::VOLUME_MOUNTED;
-    event.device_path = volume.source_path().AsUTF8Unsafe();
-    event.volume_id = volume.volume_id();
-    event.mount_error = error_code;
+    event.type_ = Event::VOLUME_MOUNTED;
+    event.device_path_ = volume.source_path().AsUTF8Unsafe();
+    event.volume_id_ = volume.volume_id();
+    event.mount_error_ = error_code;
     events_.push_back(event);
   }
 
   void OnVolumeUnmounted(ash::MountError error_code,
                          const Volume& volume) override {
     Event event;
-    event.type = Event::VOLUME_UNMOUNTED;
-    event.device_path = volume.source_path().AsUTF8Unsafe();
-    event.volume_id = volume.volume_id();
-    event.mount_error = error_code;
+    event.type_ = Event::VOLUME_UNMOUNTED;
+    event.device_path_ = volume.source_path().AsUTF8Unsafe();
+    event.volume_id_ = volume.volume_id();
+    event.mount_error_ = error_code;
     events_.push_back(event);
   }
 
@@ -222,10 +220,10 @@ class LoggingObserver : public VolumeManagerObserver {
                        const std::string& device_label,
                        bool success) override {
     Event event;
-    event.type = Event::FORMAT_STARTED;
-    event.device_path = device_path;
-    event.device_label = device_label;
-    event.success = success;
+    event.type_ = Event::FORMAT_STARTED;
+    event.device_path_ = device_path;
+    event.device_label_ = device_label;
+    event.success_ = success;
     events_.push_back(event);
   }
 
@@ -233,10 +231,10 @@ class LoggingObserver : public VolumeManagerObserver {
                          const std::string& device_label,
                          bool success) override {
     Event event;
-    event.type = Event::FORMAT_COMPLETED;
-    event.device_path = device_path;
-    event.device_label = device_label;
-    event.success = success;
+    event.type_ = Event::FORMAT_COMPLETED;
+    event.device_path_ = device_path;
+    event.device_label_ = device_label;
+    event.success_ = success;
     events_.push_back(event);
   }
 
@@ -244,10 +242,10 @@ class LoggingObserver : public VolumeManagerObserver {
                           const std::string& device_label,
                           bool success) override {
     Event event;
-    event.type = Event::PARTITION_STARTED;
-    event.device_path = device_path;
-    event.device_label = device_label;
-    event.success = success;
+    event.type_ = Event::PARTITION_STARTED;
+    event.device_path_ = device_path;
+    event.device_label_ = device_label;
+    event.success_ = success;
     events_.push_back(event);
   }
 
@@ -255,10 +253,10 @@ class LoggingObserver : public VolumeManagerObserver {
                             const std::string& device_label,
                             bool success) override {
     Event event;
-    event.type = Event::PARTITION_COMPLETED;
-    event.device_path = device_path;
-    event.device_label = device_label;
-    event.success = success;
+    event.type_ = Event::PARTITION_COMPLETED;
+    event.device_path_ = device_path;
+    event.device_label_ = device_label;
+    event.success_ = success;
     events_.push_back(event);
   }
 
@@ -266,10 +264,10 @@ class LoggingObserver : public VolumeManagerObserver {
                        const std::string& device_label,
                        bool success) override {
     Event event;
-    event.type = Event::RENAME_STARTED;
-    event.device_path = device_path;
-    event.device_label = device_label;
-    event.success = success;
+    event.type_ = Event::RENAME_STARTED;
+    event.device_path_ = device_path;
+    event.device_label_ = device_label;
+    event.success_ = success;
     events_.push_back(event);
   }
 
@@ -277,10 +275,10 @@ class LoggingObserver : public VolumeManagerObserver {
                          const std::string& device_label,
                          bool success) override {
     Event event;
-    event.type = Event::RENAME_COMPLETED;
-    event.device_path = device_path;
-    event.device_label = device_label;
-    event.success = success;
+    event.type_ = Event::RENAME_COMPLETED;
+    event.device_path_ = device_path;
+    event.device_label_ = device_label;
+    event.success_ = success;
     events_.push_back(event);
   }
 
@@ -468,23 +466,23 @@ TEST_F(VolumeManagerTest, OnDriveFileSystemMountAndUnmount) {
 
   ASSERT_EQ(1U, observer.events().size());
   LoggingObserver::Event event = observer.events()[0];
-  EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, event.type);
+  EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, event.type());
   EXPECT_EQ(drive::DriveIntegrationServiceFactory::GetForProfile(profile())
                 ->GetMountPointPath()
                 .AsUTF8Unsafe(),
-            event.device_path);
-  EXPECT_EQ(ash::MountError::kSuccess, event.mount_error);
+            event.device_path());
+  EXPECT_EQ(ash::MountError::kSuccess, event.mount_error());
 
   volume_manager()->OnFileSystemBeingUnmounted();
 
   ASSERT_EQ(2U, observer.events().size());
   event = observer.events()[1];
-  EXPECT_EQ(LoggingObserver::Event::VOLUME_UNMOUNTED, event.type);
+  EXPECT_EQ(LoggingObserver::Event::VOLUME_UNMOUNTED, event.type());
   EXPECT_EQ(drive::DriveIntegrationServiceFactory::GetForProfile(profile())
                 ->GetMountPointPath()
                 .AsUTF8Unsafe(),
-            event.device_path);
-  EXPECT_EQ(ash::MountError::kSuccess, event.mount_error);
+            event.device_path());
+  EXPECT_EQ(ash::MountError::kSuccess, event.mount_error());
 }
 
 TEST_F(VolumeManagerTest, OnDriveFileSystemUnmountWithoutMount) {
@@ -546,9 +544,9 @@ TEST_F(VolumeManagerTest, OnAutoMountableDiskEvent_Added) {
                                              *media_disk);
   ASSERT_EQ(1U, observer.events().size());
   const LoggingObserver::Event& event = observer.events()[0];
-  EXPECT_EQ(LoggingObserver::Event::DISK_ADDED, event.type);
-  EXPECT_EQ("device1", event.device_path);
-  EXPECT_TRUE(event.mounting);
+  EXPECT_EQ(LoggingObserver::Event::DISK_ADDED, event.type());
+  EXPECT_EQ("device1", event.device_path());
+  EXPECT_TRUE(event.mounting());
 
   ASSERT_EQ(1U, disk_mount_manager_->mount_requests().size());
   const FakeDiskMountManager::MountRequest& mount_request =
@@ -574,9 +572,9 @@ TEST_F(VolumeManagerTest, OnAutoMountableDiskEvent_AddedNonMounting) {
                                                *mounted_media_disk);
     ASSERT_EQ(1U, observer.events().size());
     const LoggingObserver::Event& event = observer.events()[0];
-    EXPECT_EQ(LoggingObserver::Event::DISK_ADDED, event.type);
-    EXPECT_EQ("device1", event.device_path);
-    EXPECT_FALSE(event.mounting);
+    EXPECT_EQ(LoggingObserver::Event::DISK_ADDED, event.type());
+    EXPECT_EQ("device1", event.device_path());
+    EXPECT_FALSE(event.mounting());
 
     ASSERT_EQ(0U, disk_mount_manager_->mount_requests().size());
   }
@@ -591,9 +589,9 @@ TEST_F(VolumeManagerTest, OnAutoMountableDiskEvent_AddedNonMounting) {
                                                *no_media_disk);
     ASSERT_EQ(1U, observer.events().size());
     const LoggingObserver::Event& event = observer.events()[0];
-    EXPECT_EQ(LoggingObserver::Event::DISK_ADDED, event.type);
-    EXPECT_EQ("device1", event.device_path);
-    EXPECT_FALSE(event.mounting);
+    EXPECT_EQ(LoggingObserver::Event::DISK_ADDED, event.type());
+    EXPECT_EQ("device1", event.device_path());
+    EXPECT_FALSE(event.mounting());
 
     ASSERT_EQ(0U, disk_mount_manager_->mount_requests().size());
   }
@@ -613,8 +611,8 @@ TEST_F(VolumeManagerTest, OnAutoMountableDiskEvent_ExternalStoragePolicy) {
                                                *media_disk);
     ASSERT_EQ(1U, observer.events().size());
     const LoggingObserver::Event& event = observer.events()[0];
-    EXPECT_EQ(LoggingObserver::Event::DISK_ADD_BLOCKED_BY_POLICY, event.type);
-    EXPECT_EQ("device1", event.device_path);
+    EXPECT_EQ(LoggingObserver::Event::DISK_ADD_BLOCKED_BY_POLICY, event.type());
+    EXPECT_EQ("device1", event.device_path());
     ASSERT_EQ(0U, disk_mount_manager_->mount_requests().size());
   }
 
@@ -628,9 +626,9 @@ TEST_F(VolumeManagerTest, OnAutoMountableDiskEvent_ExternalStoragePolicy) {
                                                *media_disk);
     ASSERT_EQ(1U, observer.events().size());
     const LoggingObserver::Event& event = observer.events()[0];
-    EXPECT_EQ(LoggingObserver::Event::DISK_ADDED, event.type);
-    EXPECT_EQ("device1", event.device_path);
-    EXPECT_TRUE(event.mounting);
+    EXPECT_EQ(LoggingObserver::Event::DISK_ADDED, event.type());
+    EXPECT_EQ("device1", event.device_path());
+    EXPECT_TRUE(event.mounting());
     ASSERT_EQ(1U, disk_mount_manager_->mount_requests().size());
   }
 }
@@ -647,8 +645,8 @@ TEST_F(VolumeManagerTest, OnDiskAutoMountableEvent_Removed) {
 
   ASSERT_EQ(1U, observer.events().size());
   const LoggingObserver::Event& event = observer.events()[0];
-  EXPECT_EQ(LoggingObserver::Event::DISK_REMOVED, event.type);
-  EXPECT_EQ("device1", event.device_path);
+  EXPECT_EQ(LoggingObserver::Event::DISK_REMOVED, event.type());
+  EXPECT_EQ("device1", event.device_path());
 
   ASSERT_EQ(1U, disk_mount_manager_->unmount_requests().size());
   EXPECT_EQ("mount_path", disk_mount_manager_->unmount_requests()[0]);
@@ -664,8 +662,8 @@ TEST_F(VolumeManagerTest, OnAutoMountableDiskEvent_RemovedNotMounted) {
 
   ASSERT_EQ(1U, observer.events().size());
   const LoggingObserver::Event& event = observer.events()[0];
-  EXPECT_EQ(LoggingObserver::Event::DISK_REMOVED, event.type);
-  EXPECT_EQ("device1", event.device_path);
+  EXPECT_EQ(LoggingObserver::Event::DISK_REMOVED, event.type());
+  EXPECT_EQ("device1", event.device_path());
 
   ASSERT_EQ(0U, disk_mount_manager_->unmount_requests().size());
 }
@@ -714,8 +712,8 @@ TEST_F(VolumeManagerTest, OnDeviceEvent_Added) {
 
   ASSERT_EQ(1U, observer.events().size());
   const LoggingObserver::Event& event = observer.events()[0];
-  EXPECT_EQ(LoggingObserver::Event::DEVICE_ADDED, event.type);
-  EXPECT_EQ("device1", event.device_path);
+  EXPECT_EQ(LoggingObserver::Event::DEVICE_ADDED, event.type());
+  EXPECT_EQ("device1", event.device_path());
 }
 
 TEST_F(VolumeManagerTest, OnDeviceEvent_Removed) {
@@ -725,8 +723,8 @@ TEST_F(VolumeManagerTest, OnDeviceEvent_Removed) {
 
   ASSERT_EQ(1U, observer.events().size());
   const LoggingObserver::Event& event = observer.events()[0];
-  EXPECT_EQ(LoggingObserver::Event::DEVICE_REMOVED, event.type);
-  EXPECT_EQ("device1", event.device_path);
+  EXPECT_EQ(LoggingObserver::Event::DEVICE_REMOVED, event.type());
+  EXPECT_EQ("device1", event.device_path());
 }
 
 TEST_F(VolumeManagerTest, OnDeviceEvent_Scanned) {
@@ -749,18 +747,18 @@ TEST_F(VolumeManagerTest, OnMountEvent_MountingAndUnmounting) {
 
   ASSERT_EQ(1U, observer.events().size());
   LoggingObserver::Event event = observer.events()[0];
-  EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, event.type);
-  EXPECT_EQ("device1", event.device_path);
-  EXPECT_EQ(ash::MountError::kSuccess, event.mount_error);
+  EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, event.type());
+  EXPECT_EQ("device1", event.device_path());
+  EXPECT_EQ(ash::MountError::kSuccess, event.mount_error());
 
   volume_manager()->OnMountEvent(DiskMountManager::UNMOUNTING,
                                  ash::MountError::kSuccess, kMountPoint);
 
   ASSERT_EQ(2U, observer.events().size());
   event = observer.events()[1];
-  EXPECT_EQ(LoggingObserver::Event::VOLUME_UNMOUNTED, event.type);
-  EXPECT_EQ("device1", event.device_path);
-  EXPECT_EQ(ash::MountError::kSuccess, event.mount_error);
+  EXPECT_EQ(LoggingObserver::Event::VOLUME_UNMOUNTED, event.type());
+  EXPECT_EQ("device1", event.device_path());
+  EXPECT_EQ(ash::MountError::kSuccess, event.mount_error());
 }
 
 TEST_F(VolumeManagerTest, OnMountEvent_ExternalStoragePolicy) {
@@ -779,8 +777,8 @@ TEST_F(VolumeManagerTest, OnMountEvent_ExternalStoragePolicy) {
                                    ash::MountError::kSuccess, kMountPoint);
     ASSERT_EQ(1U, observer.events().size());
     LoggingObserver::Event event = observer.events()[0];
-    EXPECT_EQ(LoggingObserver::Event::DISK_ADD_BLOCKED_BY_POLICY, event.type);
-    EXPECT_EQ("device1", event.device_path);
+    EXPECT_EQ(LoggingObserver::Event::DISK_ADD_BLOCKED_BY_POLICY, event.type());
+    EXPECT_EQ("device1", event.device_path());
   }
 
   // Set the external storage allowlist.
@@ -793,9 +791,9 @@ TEST_F(VolumeManagerTest, OnMountEvent_ExternalStoragePolicy) {
                                    ash::MountError::kSuccess, kMountPoint);
     ASSERT_EQ(1U, observer.events().size());
     LoggingObserver::Event event = observer.events()[0];
-    EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, event.type);
-    EXPECT_EQ("device1", event.device_path);
-    EXPECT_EQ(ash::MountError::kSuccess, event.mount_error);
+    EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, event.type());
+    EXPECT_EQ("device1", event.device_path());
+    EXPECT_EQ(ash::MountError::kSuccess, event.mount_error());
   }
 }
 
@@ -832,9 +830,9 @@ TEST_F(VolumeManagerTest, OnMountEvent_Remounting) {
 
   ASSERT_EQ(1U, observer.events().size());
   const LoggingObserver::Event& event = observer.events()[0];
-  EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, event.type);
-  EXPECT_EQ("device1", event.device_path);
-  EXPECT_EQ(ash::MountError::kSuccess, event.mount_error);
+  EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, event.type());
+  EXPECT_EQ("device1", event.device_path());
+  EXPECT_EQ(ash::MountError::kSuccess, event.mount_error());
 }
 
 TEST_F(VolumeManagerTest, OnMountEvent_UnmountingWithoutMounting) {
@@ -859,10 +857,10 @@ TEST_F(VolumeManagerTest, OnFormatEvent_Started) {
 
   ASSERT_EQ(1U, observer.events().size());
   const LoggingObserver::Event& event = observer.events()[0];
-  EXPECT_EQ(LoggingObserver::Event::FORMAT_STARTED, event.type);
-  EXPECT_EQ("device1", event.device_path);
-  EXPECT_EQ("label1", event.device_label);
-  EXPECT_TRUE(event.success);
+  EXPECT_EQ(LoggingObserver::Event::FORMAT_STARTED, event.type());
+  EXPECT_EQ("device1", event.device_path());
+  EXPECT_EQ("label1", event.device_label());
+  EXPECT_TRUE(event.success());
 }
 
 TEST_F(VolumeManagerTest, OnFormatEvent_StartFailed) {
@@ -874,10 +872,10 @@ TEST_F(VolumeManagerTest, OnFormatEvent_StartFailed) {
 
   ASSERT_EQ(1U, observer.events().size());
   const LoggingObserver::Event& event = observer.events()[0];
-  EXPECT_EQ(LoggingObserver::Event::FORMAT_STARTED, event.type);
-  EXPECT_EQ("device1", event.device_path);
-  EXPECT_EQ("label1", event.device_label);
-  EXPECT_FALSE(event.success);
+  EXPECT_EQ(LoggingObserver::Event::FORMAT_STARTED, event.type());
+  EXPECT_EQ("device1", event.device_path());
+  EXPECT_EQ("label1", event.device_label());
+  EXPECT_FALSE(event.success());
 }
 
 TEST_F(VolumeManagerTest, OnFormatEvent_Completed) {
@@ -889,10 +887,10 @@ TEST_F(VolumeManagerTest, OnFormatEvent_Completed) {
 
   ASSERT_EQ(1U, observer.events().size());
   const LoggingObserver::Event& event = observer.events()[0];
-  EXPECT_EQ(LoggingObserver::Event::FORMAT_COMPLETED, event.type);
-  EXPECT_EQ("device1", event.device_path);
-  EXPECT_EQ("label1", event.device_label);
-  EXPECT_TRUE(event.success);
+  EXPECT_EQ(LoggingObserver::Event::FORMAT_COMPLETED, event.type());
+  EXPECT_EQ("device1", event.device_path());
+  EXPECT_EQ("label1", event.device_label());
+  EXPECT_TRUE(event.success());
 
   // When "format" is done, VolumeManager requests to mount it.
   ASSERT_EQ(1U, disk_mount_manager_->mount_requests().size());
@@ -913,10 +911,10 @@ TEST_F(VolumeManagerTest, OnFormatEvent_CompletedFailed) {
 
   ASSERT_EQ(1U, observer.events().size());
   const LoggingObserver::Event& event = observer.events()[0];
-  EXPECT_EQ(LoggingObserver::Event::FORMAT_COMPLETED, event.type);
-  EXPECT_EQ("device1", event.device_path);
-  EXPECT_EQ("label1", event.device_label);
-  EXPECT_FALSE(event.success);
+  EXPECT_EQ(LoggingObserver::Event::FORMAT_COMPLETED, event.type());
+  EXPECT_EQ("device1", event.device_path());
+  EXPECT_EQ("label1", event.device_label());
+  EXPECT_FALSE(event.success());
 
   // When "format" is done, VolumeManager requests to mount it.
   ASSERT_EQ(1U, disk_mount_manager_->mount_requests().size());
@@ -937,10 +935,10 @@ TEST_F(VolumeManagerTest, OnPartitionEvent_Started) {
 
   ASSERT_EQ(1U, observer.events().size());
   const LoggingObserver::Event& event = observer.events()[0];
-  EXPECT_EQ(LoggingObserver::Event::PARTITION_STARTED, event.type);
-  EXPECT_EQ("device1", event.device_path);
-  EXPECT_EQ("label1", event.device_label);
-  EXPECT_TRUE(event.success);
+  EXPECT_EQ(LoggingObserver::Event::PARTITION_STARTED, event.type());
+  EXPECT_EQ("device1", event.device_path());
+  EXPECT_EQ("label1", event.device_label());
+  EXPECT_TRUE(event.success());
 }
 
 TEST_F(VolumeManagerTest, OnPartitionEvent_StartFailed) {
@@ -952,10 +950,10 @@ TEST_F(VolumeManagerTest, OnPartitionEvent_StartFailed) {
 
   ASSERT_EQ(1U, observer.events().size());
   const LoggingObserver::Event& event = observer.events()[0];
-  EXPECT_EQ(LoggingObserver::Event::PARTITION_STARTED, event.type);
-  EXPECT_EQ("device1", event.device_path);
-  EXPECT_EQ("label1", event.device_label);
-  EXPECT_FALSE(event.success);
+  EXPECT_EQ(LoggingObserver::Event::PARTITION_STARTED, event.type());
+  EXPECT_EQ("device1", event.device_path());
+  EXPECT_EQ("label1", event.device_label());
+  EXPECT_FALSE(event.success());
 }
 
 TEST_F(VolumeManagerTest, OnPartitionEvent_Completed) {
@@ -967,10 +965,10 @@ TEST_F(VolumeManagerTest, OnPartitionEvent_Completed) {
 
   ASSERT_EQ(1U, observer.events().size());
   const LoggingObserver::Event& event = observer.events()[0];
-  EXPECT_EQ(LoggingObserver::Event::PARTITION_COMPLETED, event.type);
-  EXPECT_EQ("device1", event.device_path);
-  EXPECT_EQ("label1", event.device_label);
-  EXPECT_TRUE(event.success);
+  EXPECT_EQ(LoggingObserver::Event::PARTITION_COMPLETED, event.type());
+  EXPECT_EQ("device1", event.device_path());
+  EXPECT_EQ("label1", event.device_label());
+  EXPECT_TRUE(event.success());
 }
 
 TEST_F(VolumeManagerTest, OnPartitionEvent_CompletedFailed) {
@@ -982,10 +980,10 @@ TEST_F(VolumeManagerTest, OnPartitionEvent_CompletedFailed) {
 
   ASSERT_EQ(1U, observer.events().size());
   const LoggingObserver::Event& event = observer.events()[0];
-  EXPECT_EQ(LoggingObserver::Event::PARTITION_COMPLETED, event.type);
-  EXPECT_EQ("device1", event.device_path);
-  EXPECT_EQ("label1", event.device_label);
-  EXPECT_FALSE(event.success);
+  EXPECT_EQ(LoggingObserver::Event::PARTITION_COMPLETED, event.type());
+  EXPECT_EQ("device1", event.device_path());
+  EXPECT_EQ("label1", event.device_label());
+  EXPECT_FALSE(event.success());
 
   // When "partitioning" fails, VolumeManager requests to mount it for retry.
   ASSERT_EQ(1U, disk_mount_manager_->mount_requests().size());
@@ -1073,24 +1071,14 @@ TEST_F(VolumeManagerTest, ExternalStorageDisabledPolicyMultiProfile) {
       DiskMountManager::DISK_ADDED, *media_disk);
 
   // The profile with external storage enabled should have mounted the volume.
-  bool has_volume_mounted = false;
-  for (size_t i = 0; i < main_observer.events().size(); ++i) {
-    if (main_observer.events()[i].type ==
-        LoggingObserver::Event::VOLUME_MOUNTED) {
-      has_volume_mounted = true;
-    }
-  }
-  EXPECT_TRUE(has_volume_mounted);
+  auto is_volume_mounted = [](const auto& event) {
+    return event.type() == LoggingObserver::Event::VOLUME_MOUNTED;
+  };
+  EXPECT_TRUE(std::ranges::any_of(main_observer.events(), is_volume_mounted));
 
   // The other profiles with external storage disabled should have not.
-  has_volume_mounted = false;
-  for (size_t i = 0; i < secondary_observer.events().size(); ++i) {
-    if (secondary_observer.events()[i].type ==
-        LoggingObserver::Event::VOLUME_MOUNTED) {
-      has_volume_mounted = true;
-    }
-  }
-  EXPECT_FALSE(has_volume_mounted);
+  EXPECT_FALSE(
+      std::ranges::any_of(secondary_observer.events(), is_volume_mounted));
 }
 
 TEST_F(VolumeManagerTest, OnExternalStorageReadOnlyChanged) {
@@ -1252,8 +1240,10 @@ TEST_F(VolumeManagerTest, MTPPlugAndUnplug) {
   // Attach: expect mount events for the MTP and fusebox MTP volumes.
   volume_manager()->OnRemovableStorageAttached(info);
   ASSERT_EQ(2u, observer.events().size());
-  EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, observer.events()[0].type);
-  EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, observer.events()[1].type);
+  EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED,
+            observer.events()[0].type());
+  EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED,
+            observer.events()[1].type());
 
   // The MTP volume should be mounted.
   base::WeakPtr<Volume> volume = volume_manager()->FindVolumeById("mtp:model");
@@ -1277,9 +1267,9 @@ TEST_F(VolumeManagerTest, MTPPlugAndUnplug) {
   volume_manager()->OnRemovableStorageDetached(info);
   ASSERT_EQ(4u, observer.events().size());
   EXPECT_EQ(LoggingObserver::Event::VOLUME_UNMOUNTED,
-            observer.events()[2].type);
+            observer.events()[2].type());
   EXPECT_EQ(LoggingObserver::Event::VOLUME_UNMOUNTED,
-            observer.events()[3].type);
+            observer.events()[3].type());
 
   // The unmount events should remove the MTP and fusebox MTP volumes.
   EXPECT_FALSE(volume);
@@ -1305,8 +1295,8 @@ TEST_F(VolumeManagerTest, MTP_ExternalStoragePolicy) {
     volume_manager()->OnRemovableStorageAttached(info);
     ASSERT_EQ(1u, observer.events().size());
     const LoggingObserver::Event& event = observer.events()[0];
-    EXPECT_EQ(LoggingObserver::Event::DISK_ADD_BLOCKED_BY_POLICY, event.type);
-    EXPECT_EQ("/dummy/device/location", event.device_path);
+    EXPECT_EQ(LoggingObserver::Event::DISK_ADD_BLOCKED_BY_POLICY, event.type());
+    EXPECT_EQ("/dummy/device/location", event.device_path());
   }
 
   // Set the external storage allowlist.
@@ -1320,9 +1310,9 @@ TEST_F(VolumeManagerTest, MTP_ExternalStoragePolicy) {
     volume_manager()->OnRemovableStorageAttached(info);
     ASSERT_EQ(2u, observer.events().size());
     EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED,
-              observer.events()[0].type);
+              observer.events()[0].type());
     EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED,
-              observer.events()[1].type);
+              observer.events()[1].type());
   }
 
   // Cleanup. Detach storage, otherwise crashes in ~MTPDeviceMapService.
@@ -1338,10 +1328,10 @@ TEST_F(VolumeManagerTest, OnRenameEvent_Started) {
 
   ASSERT_EQ(1U, observer.events().size());
   const LoggingObserver::Event& event = observer.events()[0];
-  EXPECT_EQ(LoggingObserver::Event::RENAME_STARTED, event.type);
-  EXPECT_EQ("device1", event.device_path);
-  EXPECT_EQ("label1", event.device_label);
-  EXPECT_TRUE(event.success);
+  EXPECT_EQ(LoggingObserver::Event::RENAME_STARTED, event.type());
+  EXPECT_EQ("device1", event.device_path());
+  EXPECT_EQ("label1", event.device_label());
+  EXPECT_TRUE(event.success());
 }
 
 TEST_F(VolumeManagerTest, OnRenameEvent_StartFailed) {
@@ -1353,10 +1343,10 @@ TEST_F(VolumeManagerTest, OnRenameEvent_StartFailed) {
 
   ASSERT_EQ(1U, observer.events().size());
   const LoggingObserver::Event& event = observer.events()[0];
-  EXPECT_EQ(LoggingObserver::Event::RENAME_STARTED, event.type);
-  EXPECT_EQ("device1", event.device_path);
-  EXPECT_EQ("label1", event.device_label);
-  EXPECT_FALSE(event.success);
+  EXPECT_EQ(LoggingObserver::Event::RENAME_STARTED, event.type());
+  EXPECT_EQ("device1", event.device_path());
+  EXPECT_EQ("label1", event.device_label());
+  EXPECT_FALSE(event.success());
 }
 
 TEST_F(VolumeManagerTest, OnRenameEvent_Completed) {
@@ -1368,10 +1358,10 @@ TEST_F(VolumeManagerTest, OnRenameEvent_Completed) {
 
   ASSERT_EQ(1U, observer.events().size());
   const LoggingObserver::Event& event = observer.events()[0];
-  EXPECT_EQ(LoggingObserver::Event::RENAME_COMPLETED, event.type);
-  EXPECT_EQ("device1", event.device_path);
-  EXPECT_EQ("label1", event.device_label);
-  EXPECT_TRUE(event.success);
+  EXPECT_EQ(LoggingObserver::Event::RENAME_COMPLETED, event.type());
+  EXPECT_EQ("device1", event.device_path());
+  EXPECT_EQ("label1", event.device_label());
+  EXPECT_TRUE(event.success());
 
   // When "rename" is successfully done, VolumeManager requests to mount it.
   ASSERT_EQ(1U, disk_mount_manager_->mount_requests().size());
@@ -1391,10 +1381,10 @@ TEST_F(VolumeManagerTest, OnRenameEvent_CompletedFailed) {
 
   ASSERT_EQ(1U, observer.events().size());
   const LoggingObserver::Event& event = observer.events()[0];
-  EXPECT_EQ(LoggingObserver::Event::RENAME_COMPLETED, event.type);
-  EXPECT_EQ("device1", event.device_path);
-  EXPECT_EQ("label1", event.device_label);
-  EXPECT_FALSE(event.success);
+  EXPECT_EQ(LoggingObserver::Event::RENAME_COMPLETED, event.type());
+  EXPECT_EQ("device1", event.device_path());
+  EXPECT_EQ("label1", event.device_label());
+  EXPECT_FALSE(event.success());
 
   EXPECT_EQ(1U, disk_mount_manager_->mount_requests().size());
 }
@@ -1478,13 +1468,13 @@ TEST_F(VolumeManagerArcTest, OnArcPlayStoreEnabledChanged_Enabled) {
 
   size_t index = 0;
   for (const auto& event : observer.events()) {
-    EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, event.type);
-    EXPECT_EQ(ash::MountError::kSuccess, event.mount_error);
+    EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, event.type());
+    EXPECT_EQ(ash::MountError::kSuccess, event.mount_error());
     if (index < 4) {
       EXPECT_EQ(arc::GetMediaViewVolumeId(arc_volume_ids[index]),
-                event.volume_id);
+                event.volume_id());
     } else {
-      EXPECT_EQ(arc_volume_ids[index], event.volume_id);
+      EXPECT_EQ(arc_volume_ids[index], event.volume_id());
     }
     index++;
   }
@@ -1503,13 +1493,13 @@ TEST_F(VolumeManagerArcTest, OnArcPlayStoreEnabledChanged_Disabled) {
 
   size_t index = 0;
   for (const auto& event : observer.events()) {
-    EXPECT_EQ(LoggingObserver::Event::VOLUME_UNMOUNTED, event.type);
-    EXPECT_EQ(ash::MountError::kSuccess, event.mount_error);
+    EXPECT_EQ(LoggingObserver::Event::VOLUME_UNMOUNTED, event.type());
+    EXPECT_EQ(ash::MountError::kSuccess, event.mount_error());
     if (index < 4) {
       EXPECT_EQ(arc::GetMediaViewVolumeId(arc_volume_ids[index]),
-                event.volume_id);
+                event.volume_id());
     } else {
-      EXPECT_EQ(arc_volume_ids[index], event.volume_id);
+      EXPECT_EQ(arc_volume_ids[index], event.volume_id());
     }
     index++;
   }
@@ -1529,13 +1519,13 @@ TEST_F(VolumeManagerArcTest, ShouldAlwaysMountAndroidVolumesInFilesForTesting) {
 
   size_t index = 0;
   for (const auto& event : observer.events()) {
-    EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, event.type);
-    EXPECT_EQ(ash::MountError::kSuccess, event.mount_error);
+    EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, event.type());
+    EXPECT_EQ(ash::MountError::kSuccess, event.mount_error());
     if (index < 4) {
       EXPECT_EQ(arc::GetMediaViewVolumeId(arc_volume_ids[index]),
-                event.volume_id);
+                event.volume_id());
     } else {
-      EXPECT_EQ(arc_volume_ids[index], event.volume_id);
+      EXPECT_EQ(arc_volume_ids[index], event.volume_id());
     }
     index++;
   }
