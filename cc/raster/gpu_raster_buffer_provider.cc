@@ -18,7 +18,7 @@
 #include "base/rand_util.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/base/histograms.h"
 #include "cc/paint/display_item_list.h"
@@ -78,11 +78,11 @@ GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
     backing_->can_access_shared_image_on_compositor_thread = false;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Only do this in Chrome OS because:
+#if BUILDFLAG(IS_CHROMEOS)
+  // Only do this in ChromeOS because:
   //   1) We will use this timestamp to measure raster scheduling delay and we
   //      only need to collect that data to assess the impact of hardware
-  //      acceleration of image decodes which works only on Chrome OS.
+  //      acceleration of image decodes which works only on ChromeOS.
   //   2) We use CLOCK_MONOTONIC in that OS to get timestamps, so we can assert
   //      certain assumptions.
   creation_time_ = base::TimeTicks::Now();
@@ -289,13 +289,13 @@ void GpuRasterBufferProvider::RasterBufferImpl::PlaybackOnWorkerThreadInternal(
       << "Why are we rastering a tile that's not dirty?";
 
   if (measure_raster_metric) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Use a query to detect when the GPU side is ready to start issuing raster
     // work to the driver. We will use the resulting timestamp to measure raster
-    // scheduling delay. We only care about this in Chrome OS because we will
+    // scheduling delay. We only care about this in ChromeOS because we will
     // use this timestamp to measure raster scheduling delay and we only need to
     // collect that data to assess the impact of hardware acceleration of image
-    // decodes which work only in Chrome OS. Furthermore, we don't count raster
+    // decodes which work only in ChromeOS. Furthermore, we don't count raster
     // work that depends on at-raster image decodes. This is because we want the
     // delay to always include image decoding and uploading time, and at-raster
     // decodes should be relatively rare.
