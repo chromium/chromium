@@ -85,11 +85,13 @@ public interface BrowserControlsStateProvider {
          *     the controls will no longer be moved by viz, which happens only when the browser is
          *     forcing the controls to be fully shown/hidden.
          * @param constraints the visibility constraints of the browser controls.
+         * @param shouldUpdateOffsets should the offset be updated with the renderer's offset.
          */
         default void onControlsConstraintsChanged(
                 BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
                 BrowserControlsOffsetTagsInfo offsetTagsInfo,
-                @BrowserControlsState int constraints) {}
+                @BrowserControlsState int constraints,
+                boolean shouldUpdateOffsets) {}
 
         /** Called when the background color of the controls container changes. */
         default void onBottomControlsBackgroundColorChanged(@ColorInt int color) {}
@@ -157,13 +159,6 @@ public interface BrowserControlsStateProvider {
      * @return Whether or not the browser controls height changes should be animated.
      */
     boolean shouldAnimateBrowserControlsHeightChanges();
-
-    /**
-     * @return Whether or not the browser should update it's property models with new offsets when
-     *     the controls' constraints change. This only needs to be done sometimes when BCIV is
-     *     enabled, to avoid seeing controls jumping/flickering.
-     */
-    boolean shouldUpdateOffsetsWhenConstraintsChange();
 
     /**
      * @return The offset of the controls from the bottom of the screen.

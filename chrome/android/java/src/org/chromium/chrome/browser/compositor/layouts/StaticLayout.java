@@ -223,7 +223,8 @@ public class StaticLayout extends Layout {
                     public void onControlsConstraintsChanged(
                             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
                             BrowserControlsOffsetTagsInfo offsetTagsInfo,
-                            @BrowserControlsState int constraints) {
+                            @BrowserControlsState int constraints,
+                            boolean shouldUpdateOffsets) {
                         if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
                             if (mNeedsOffsetTag) {
                                 mModel.set(
@@ -231,8 +232,7 @@ public class StaticLayout extends Layout {
                                         offsetTagsInfo.getContentOffsetTag());
                             }
 
-                            if (mBrowserControlsStateProvider
-                                    .shouldUpdateOffsetsWhenConstraintsChange()) {
+                            if (shouldUpdateOffsets) {
                                 mModel.set(
                                         LayoutTab.CONTENT_OFFSET,
                                         mBrowserControlsStateProvider.getContentOffset());
