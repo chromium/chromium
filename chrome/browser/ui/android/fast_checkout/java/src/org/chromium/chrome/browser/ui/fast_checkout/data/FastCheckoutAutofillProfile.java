@@ -12,7 +12,6 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public class FastCheckoutAutofillProfile {
     private final String mGUID;
-    private final boolean mIsLocal;
     private final String mFullName;
     private final String mCompanyName;
     private final String mStreetAddress;
@@ -30,7 +29,6 @@ public class FastCheckoutAutofillProfile {
     @CalledByNative
     public FastCheckoutAutofillProfile(
             String guid,
-            boolean isLocal,
             String fullName,
             String companyName,
             String streetAddress,
@@ -45,7 +43,6 @@ public class FastCheckoutAutofillProfile {
             String emailAddress,
             String languageCode) {
         mGUID = guid;
-        mIsLocal = isLocal;
         mFullName = fullName;
         mCompanyName = companyName;
         mStreetAddress = streetAddress;
@@ -64,10 +61,6 @@ public class FastCheckoutAutofillProfile {
     @CalledByNative
     public String getGUID() {
         return mGUID;
-    }
-
-    public boolean getIsLocal() {
-        return mIsLocal;
     }
 
     @CalledByNative
