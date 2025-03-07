@@ -50,7 +50,10 @@ public class SafetyHubLocalPasswordsModuleMediator
         int WAITING_FOR_RESULTS = 2;
     }
 
-    private static final int LOADING_DELAY_MS = 1000;
+    private static final int LOADING_MIN_TIME_MS = 1000;
+    private static final int DEFAULT_LOADING_MAX_TIME_MS = 10000;
+    private static final String LOADING_MAX_TIME_PARAM_NAME =
+            "safety-hub-local-passwords-module-loading-timeout-ms";
 
     private final SafetyHubExpandablePreference mPreference;
     private final SafetyHubModuleMediatorDelegate mMediatorDelegate;
@@ -61,7 +64,10 @@ public class SafetyHubLocalPasswordsModuleMediator
     private PropertyModel mModel;
 
     private @IndicatorState int mIndicatorState = IndicatorState.IDLE;
-    private CallbackController mCallbackController;
+    // Callback when the minimum time showing the loading indicator has elapsed.
+    private CallbackController mMinLoadingCallbackController;
+    // Callback when the maximum time showing the loading indicator has elapsed.
+    private CallbackController mMaxLoadingCallbackController;
 
     private boolean mStateChangedCalled;
     private boolean mOrderUpdated;
@@ -96,20 +102,32 @@ public class SafetyHubLocalPasswordsModuleMediator
             mModuleHelper =
                     new SafetyHubLocalPasswordsCheckingModuleHelper(mPreference.getContext());
 
-            mCallbackController = new CallbackController();
+            mMinLoadingCallbackController = new CallbackController();
             PostTask.postDelayedTask(
                     TaskTraits.UI_DEFAULT,
-                    mCallbackController.makeCancelable(this::onMinimumLoadingTimeElapsed),
-                    LOADING_DELAY_MS);
+                    mMinLoadingCallbackController.makeCancelable(this::onMinimumLoadingTimeElapsed),
+                    LOADING_MIN_TIME_MS);
+
+            mMaxLoadingCallbackController = new CallbackController();
+            int loading_max_time_ms =
+                    ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                            ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE,
+                            LOADING_MAX_TIME_PARAM_NAME,
+                            DEFAULT_LOADING_MAX_TIME_MS);
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_DEFAULT,
+                    mMaxLoadingCallbackController.makeCancelable(this::onMaxLoadingTimeElapsed),
+                    loading_max_time_ms);
         }
     }
 
     @Override
     public void destroy() {
-        if (mCallbackController != null) {
-            mCallbackController.destroy();
-            mCallbackController = null;
+        if (mMinLoadingCallbackController != null) {
+            mMinLoadingCallbackController.destroy();
+            mMinLoadingCallbackController = null;
         }
+        maybeCancelMaxLoadingCallback();
 
         if (mLocalPasswordsDataSource != null) {
             mLocalPasswordsDataSource.destroy();
@@ -126,11 +144,28 @@ public class SafetyHubLocalPasswordsModuleMediator
         }
     }
 
+    private void maybeCancelMaxLoadingCallback() {
+        if (mMaxLoadingCallbackController != null) {
+            mMaxLoadingCallbackController.destroy();
+            mMaxLoadingCallbackController = null;
+        }
+    }
+
     private void onMinimumLoadingTimeElapsed() {
         mIndicatorState = IndicatorState.WAITING_FOR_RESULTS;
         if (mStateChangedCalled) {
             mLocalPasswordsDataSource.updateState();
         }
+    }
+
+    private void onMaxLoadingTimeElapsed() {
+        // The callback that triggers this method is canceled if any result is returned. As such,
+        // the UI will always be in the loading state when this method is ran.
+        assert isLoading();
+
+        // As the max loading time has elapsed, then show the user that no checkup is possible to be
+        // performed at this time.
+        stateChanged(ModuleType.UNAVAILABLE_PASSWORDS);
     }
 
     private SafetyHubModuleHelper getModuleHelper(@ModuleType int moduleType) {
@@ -229,6 +264,11 @@ public class SafetyHubLocalPasswordsModuleMediator
     @Override
     public void stateChanged(@ModuleType int moduleType) {
         mStateChangedCalled = true;
+
+        // As a result is available, cancel the callback for when the maximum time showing the
+        // loading indicator has elapsed.
+        maybeCancelMaxLoadingCallback();
+
         // Loading indicator has not been shown long enough, delay showing the results until a later
         // date.
         if (mIndicatorState == IndicatorState.SHOWING_INDICATOR) {
