@@ -387,6 +387,9 @@ extern const char
 extern const char kAutofillEnableFpanRiskBasedAuthenticationName[];
 extern const char kAutofillEnableFpanRiskBasedAuthenticationDescription[];
 
+extern const char kIPHAutofillCreditCardBenefitFeatureName[];
+extern const char kIPHAutofillCreditCardBenefitFeatureDescription[];
+
 extern const char kAutofillEnableCardBenefitsForAmericanExpressName[];
 extern const char kAutofillEnableCardBenefitsForAmericanExpressDescription[];
 

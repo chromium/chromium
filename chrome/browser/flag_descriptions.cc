@@ -620,6 +620,12 @@ const char kAutofillEnableFpanRiskBasedAuthenticationDescription[] =
     "When enabled, server card retrieval will begin with a risk-based check "
     "instead of jumping straight to CVC or biometric auth.";
 
+const char kIPHAutofillCreditCardBenefitFeatureName[] =
+    "Enable Card Benefits in-product help bubble";
+const char kIPHAutofillCreditCardBenefitFeatureDescription[] =
+    "Enables In-Product-Help that appears when at least one autofill credit "
+    "card suggestion includes card benefits.";
+
 const char kAutofillEnableCardBenefitsForAmericanExpressName[] =
     "Enable showing card benefits for American Express cards";
 const char kAutofillEnableCardBenefitsForAmericanExpressDescription[] =
