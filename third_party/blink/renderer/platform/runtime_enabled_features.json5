@@ -4825,6 +4825,7 @@
     // https://crbug.com/41484826
     {
       name: "WebAuthenticationAlignErrorTypeForPaymentCredentialCreate",
+      status: "experimental",
     },
     // Prototyping https://github.com/w3c/webauthn/issues/2144
     {
