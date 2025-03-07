@@ -38,12 +38,12 @@ enum class ModelPerformanceHint {
 };
 
 // Type of the backend to run the model.
-enum ModelBackendType {
+enum class ModelBackendType {
   // The default WebGPU backend.
-  kGpuBackend = 0,
+  kGpuBackend,
   // The APU accelerator backend. Only available on devices with APU, and need
   // special APU model files.
-  kApuBackend = 1,
+  kApuBackend,
 };
 
 }  // namespace ml
