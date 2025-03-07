@@ -7421,12 +7421,6 @@ const char kCrosMallUrlDescription[] =
 const char kCrosPrivacyHubName[] = "Enable ChromeOS Privacy Hub";
 const char kCrosPrivacyHubDescription[] = "Enables ChromeOS Privacy Hub.";
 
-const char kCrosPrivacyHubAppPermissionsV2Name[] =
-    "Add privacy controls to app specific subpages";
-const char kCrosPrivacyHubAppPermissionsV2Description[] =
-    "When enabled, the user will be able to manage system access of sensors "
-    "from the app specific subpages under the OS Apps section.";
-
 const char kDisableIdleSocketsCloseOnMemoryPressureName[] =
     "Disable closing idle sockets on memory pressure";
 const char kDisableIdleSocketsCloseOnMemoryPressureDescription[] =

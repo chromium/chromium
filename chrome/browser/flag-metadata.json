@@ -1705,11 +1705,6 @@
     "expiry_milestone": 142
   },
   {
-    "name": "cros-privacy-hub-app-permissions-v2",
-    "owners": [ "cros-privacy-features-dev@google.com" ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "cros-soul",
     "owners": [ "cschlosser@chromium.org", "cros-privacy-features-dev@google.com" ],
     "expiry_milestone": 135
