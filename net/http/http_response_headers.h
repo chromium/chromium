@@ -119,6 +119,14 @@ class NET_EXPORT HttpResponseHeaders
   static const char kLastModified[];
   static const char kVary[];
 
+  static constexpr std::string_view kCacheControl = "cache-control";
+  static constexpr std::string_view kNoStore = "no-store";
+  static constexpr std::string_view kNoCache = "no-cache";
+  static constexpr std::string_view kMustRevalidate = "must-revalidate";
+  static constexpr std::string_view kMaxAge = "max-age=";
+  static constexpr std::string_view kStaleWhileRevalidate =
+      "stale-while-revalidate=";
+
   HttpResponseHeaders() = delete;
 
   // Parses the given raw_headers.  raw_headers should be formatted thus:
@@ -363,11 +371,16 @@ class NET_EXPORT HttpResponseHeaders
   // The following methods extract values from the response headers.  If a value
   // is not present, or is invalid, then std::nullopt is returned.  Otherwise,
   // the value is returned directly.
+
+  // Note that GetMaxAgeValue method is intended for testing purposes only and
+  // should not be used in production code.
   std::optional<base::TimeDelta> GetMaxAgeValue() const;
   std::optional<base::TimeDelta> GetAgeValue() const;
   std::optional<base::Time> GetDateValue() const;
   std::optional<base::Time> GetLastModifiedValue() const;
   std::optional<base::Time> GetExpiresValue() const;
+  // Note that GetStaleWhileRevalidateValue method is intended for testing
+  // purposes only and should not be used in production code.
   std::optional<base::TimeDelta> GetStaleWhileRevalidateValue() const;
 
   // Extracts the time value of a particular header.  This method looks for the
@@ -448,6 +461,15 @@ class NET_EXPORT HttpResponseHeaders
     kMaybe,  // Unknown whether commas are present. Needs to be parsed.
   };
 
+  struct CacheControlFreshnessDirectives {
+    // Whether the 'must-revalidate' directive is present
+    bool must_revalidate = false;
+    // Value of the 'max-age' directive in seconds, if present
+    std::optional<base::TimeDelta> max_age;
+    // Value of the 'stale-while-revalidate' directive in seconds, if present
+    std::optional<base::TimeDelta> stale_while_revalidate;
+  };
+
   ~HttpResponseHeaders();
 
   // Initializes from the given raw headers.
@@ -477,8 +499,10 @@ class NET_EXPORT HttpResponseHeaders
 
   // Search the Cache-Control header for a directive matching |directive|. If
   // present, treat its value as a time offset in seconds.
-  std::optional<base::TimeDelta> GetCacheControlDirective(
-      std::string_view directive) const;
+  // Note that the method is intended for testing purposes only and should not
+  // be used in production code.
+  std::optional<base::TimeDelta> GetCacheControlHeaderValueForTesting(
+      const std::string_view directive) const;
 
   // Add header->value pair(s) to our list. The value will be split into
   // multiple values if it contains unquoted commas. If `contains_commas` is
@@ -507,6 +531,27 @@ class NET_EXPORT HttpResponseHeaders
 
   // Adds the values from any 'cache-control: no-cache="foo,bar"' headers.
   void AddNonCacheableHeaders(HeaderSet* header_names) const;
+
+  // Checks if the response contains Cache-Control directives that restrict
+  // caching. Specifically checks for the presence of "no-cache" or "no-store"
+  // directives. It true if either "no-cache" or "no-store" directive is present
+  // in any Cache-Control header, false otherwise.
+  bool HasCacheRestriction() const;
+
+  // Parses Cache-Control headers to extract directives related to response
+  // freshness. Processes "must-revalidate", "max-age", and
+  // "stale-while-revalidate" directives, which control how long a cached
+  // response can be considered fresh and whether it can be used while
+  // asynchronously revalidating in the background.
+  CacheControlFreshnessDirectives ParseCacheControlDirectivesForFreshness()
+      const;
+
+  // Parses the numeric value from a Cache-Control directive that expects
+  // a non-negative integer value (e.g., "max-age=600" or
+  // "stale-while-revalidate=300"). parameter directive_size The length of the
+  // directive name including the equals sign. parameter value The complete
+  // directive string (e.g., "max-age=600"). or not a valid sequence of digits.
+  std::optional<base::TimeDelta> ParseSeconds(std::string_view value) const;
 
   // Adds the set of header names that contain cookie values.
   static void AddSensitiveHeaders(HeaderSet* header_names);
