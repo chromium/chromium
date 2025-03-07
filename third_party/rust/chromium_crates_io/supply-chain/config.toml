@@ -92,10 +92,10 @@ criteria = []
 [policy."cfg-if:1.0.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."clap:4.5.29"]
+[policy."clap:4.5.31"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."clap_builder:4.5.29"]
+[policy."clap_builder:4.5.31"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."clap_lex:0.7.4"]
@@ -473,13 +473,13 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."tinystr:0.8.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."tinyvec:1.8.1"]
+[policy."tinyvec:1.9.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."unicode-bidi:0.3.18"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."unicode-ident:1.0.16"]
+[policy."unicode-ident:1.0.18"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."unicode-linebreak:0.1.5"]
@@ -533,7 +533,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."write16:1.0.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."writeable:0.6.0"]
+[policy."writeable:0.6.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."yoke-derive:0.7.5"]
@@ -548,16 +548,16 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."zerocopy:0.7.35"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."zerofrom-derive:0.1.5"]
+[policy."zerofrom-derive:0.1.6"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."zerofrom:0.1.5"]
+[policy."zerofrom:0.1.6"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."zerotrie:0.2.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."zerovec-derive:0.11.0"]
+[policy."zerovec-derive:0.11.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."zerovec:0.11.0"]
@@ -889,7 +889,7 @@ https://crbug.com/366411886
 """
 
 [[exemptions.zerovec-derive]]
-version = "0.11.0"
+version = "0.11.1"
 criteria = ["safe-to-deploy", "ub-risk-2"]
 notes = """
 Requires unsafe review audit. Unsafe code is either authored or reviewed by a
@@ -899,4 +899,6 @@ Part of Google-co-maintained ICU4X project.
 
 
 https://crbug.com/366411886
+
+Exemption updated to 0.11.1 when updating the crate in February 2025.
 """

@@ -489,15 +489,26 @@ std::vector<ActivityLogItem> MessagingBackendServiceImpl::GetActivityLog(
     return activity_log_for_testing_.at(params.collaboration_id);
   }
 
+  const bool show_activity_for_single_tab = params.local_tab_id.has_value();
   std::vector<ActivityLogItem> result;
   std::vector<collaboration_pb::Message> messages =
       store_->GetRecentMessagesForGroup(params.collaboration_id);
   int message_count = 0;
   for (const auto& message : messages) {
     std::optional<ActivityLogItem> activity_log_item =
-        ConvertMessageToActivityLogItem(message);
+        ConvertMessageToActivityLogItem(message, show_activity_for_single_tab);
     if (!activity_log_item) {
       continue;
+    }
+    // If local_tab_id was supplied, filter for activity on this tab.
+    if (show_activity_for_single_tab) {
+      if (!activity_log_item->activity_metadata.tab_metadata.has_value()) {
+        continue;
+      }
+      if (params.local_tab_id !=
+          activity_log_item->activity_metadata.tab_metadata->local_tab_id) {
+        continue;
+      }
     }
     result.emplace_back(*activity_log_item);
     if (params.result_length == 0) {
@@ -1067,14 +1078,19 @@ MessagingBackendServiceImpl::GetDisplayNameForUserInGroup(
   return std::nullopt;
 }
 
-int GetTitleStringRes(CollaborationEvent collaboration_event) {
+int GetTitleStringRes(CollaborationEvent collaboration_event,
+                      bool is_tab_activity) {
   switch (collaboration_event) {
     case CollaborationEvent::TAB_ADDED:
-      return IDS_DATA_SHARING_RECENT_ACTIVITY_TAB_ADDED;
+      return is_tab_activity
+                 ? IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_THIS_TAB
+                 : IDS_DATA_SHARING_RECENT_ACTIVITY_TAB_ADDED;
     case CollaborationEvent::TAB_REMOVED:
       return IDS_DATA_SHARING_RECENT_ACTIVITY_TAB_REMOVED;
     case CollaborationEvent::TAB_UPDATED:
-      return IDS_DATA_SHARING_RECENT_ACTIVITY_TAB_UPDATED;
+      return is_tab_activity
+                 ? IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_THIS_TAB
+                 : IDS_DATA_SHARING_RECENT_ACTIVITY_TAB_UPDATED;
     case CollaborationEvent::TAB_GROUP_NAME_UPDATED:
       return IDS_DATA_SHARING_RECENT_ACTIVITY_TAB_GROUP_NAME_UPDATED;
     case CollaborationEvent::TAB_GROUP_COLOR_UPDATED:
@@ -1096,7 +1112,8 @@ int GetTitleStringRes(CollaborationEvent collaboration_event) {
 
 std::optional<ActivityLogItem>
 MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
-    const collaboration_pb::Message& message) {
+    const collaboration_pb::Message& message,
+    bool is_tab_activity) {
   switch (message.event_type()) {
     case collaboration_pb::TAB_GROUP_ADDED:
     case collaboration_pb::TAB_GROUP_REMOVED:
@@ -1131,7 +1148,8 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
                            IDS_DATA_SHARING_RECENT_ACTIVITY_UNKNOWN_USER));
 
   item.title_text = l10n_util::GetStringFUTF16(
-      GetTitleStringRes(item.collaboration_event), user_to_show);
+      GetTitleStringRes(item.collaboration_event, is_tab_activity),
+      user_to_show);
 
   // By default, we use an empty description. This is special cased below.
   item.description_text = u"";

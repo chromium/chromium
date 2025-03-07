@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <numeric>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -20,6 +21,7 @@
 #include "base/values.h"
 #include "components/country_codes/country_codes.h"
 #include "components/google/core/common/google_switches.h"
+#include "components/regional_capabilities/regional_capabilities_country_id.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
@@ -38,6 +40,23 @@
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 using base::ASCIIToUTF16;
+using TemplateURLPrepopulateData::BuiltinKeywordsMetadata;
+using TemplateURLPrepopulateData::kCurrentDataVersion;
+
+namespace TemplateURLPrepopulateData {
+bool operator==(const BuiltinKeywordsMetadata& lhs,
+                const BuiltinKeywordsMetadata& rhs) {
+  return lhs.data_version == rhs.data_version &&
+         lhs.country_id == rhs.country_id;
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         const BuiltinKeywordsMetadata& value) {
+  return os << "{country_id=" << value.country_id.GetForTesting()
+            << ", data_version=" << value.data_version << "}";
+}
+
+}  // namespace TemplateURLPrepopulateData
 
 namespace {
 
@@ -173,6 +192,11 @@ class TemplateURLPrepopulateDataTest : public testing::Test {
   }
 
   void OverrideCountryId(int country_id) {
+    OverrideCountryCommandLine(
+        country_codes::CountryIDToCountryString(country_id));
+  }
+
+  void OverrideCountryCommandLine(std::string country_string) {
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kSearchEngineChoiceCountry)) {
       base::CommandLine::ForCurrentProcess()->RemoveSwitch(
@@ -180,8 +204,7 @@ class TemplateURLPrepopulateDataTest : public testing::Test {
     }
 
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kSearchEngineChoiceCountry,
-        country_codes::CountryIDToCountryString(country_id));
+        switches::kSearchEngineChoiceCountry, country_string);
   }
 
  protected:
@@ -722,6 +745,148 @@ TEST_F(TemplateURLPrepopulateDataTest, GetLocalPrepopulatedEngines) {
               testing::IsEmpty());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+struct UpdateRequirementsTestParams {
+  std::string test_case_name;
+  std::string db_country;
+  int db_version;
+  std::string profile_country;
+  std::optional<int> pref_override_version;
+  std::optional<BuiltinKeywordsMetadata> expected_output;
+};
+
+std::ostream& operator<<(std::ostream& os,
+                         const UpdateRequirementsTestParams& value) {
+  os << "{db_country=" << value.db_country
+     << ", db_version=" << value.db_version
+     << ", profile_country=" << value.profile_country;
+
+  if (value.pref_override_version.has_value()) {
+    os << ", pref_override_version=" << value.pref_override_version.value();
+  }
+
+  os << ", expected_output=";
+  if (value.expected_output.has_value()) {
+    os << value.expected_output.value();
+  } else {
+    os << "nullopt";
+  }
+
+  return os << "}";
+}
+
+class TemplateURLPrepopulateDataUpdateRequirementsTest
+    : public TemplateURLPrepopulateDataTest,
+      public testing::WithParamInterface<UpdateRequirementsTestParams> {
+ public:
+  void SetUp() override {
+    TemplateURLPrepopulateDataTest::SetUp();
+    OverrideCountryCommandLine(GetParam().profile_country);
+
+    if (GetParam().pref_override_version.has_value()) {
+      pref_service()->SetInteger(prefs::kSearchProviderOverridesVersion,
+                                 GetParam().pref_override_version.value());
+    }
+  }
+
+  static auto Cases() {
+    return ::testing::ValuesIn({
+        UpdateRequirementsTestParams{
+            .test_case_name = "UpToDateMetadata",
+            .db_country = "DE",
+            .db_version = kCurrentDataVersion,
+            .profile_country = "DE",
+            .expected_output = std::nullopt,  // Update not needed.
+        },
+        {
+            .test_case_name = "DifferentCountry",
+            .db_country = "DE",
+            .db_version = kCurrentDataVersion,
+            .profile_country = "FR",
+            .expected_output = BuildMetadata("FR", kCurrentDataVersion),
+        },
+        {
+            .test_case_name = "DbCountryMissing",
+            .db_country = "",
+            .db_version = kCurrentDataVersion,
+            .profile_country = "FR",
+            .expected_output = std::nullopt,  // Update suppressed.
+        },
+        {
+            .test_case_name = "CountryOverride",
+            .db_country = "DE",
+            .db_version = kCurrentDataVersion,
+            .profile_country = switches::kEeaListCountryOverride,
+            .expected_output = BuildMetadata(country_codes::kCountryIDUnknown,
+                                             kCurrentDataVersion),
+        },
+        {
+            .test_case_name = "DbMoreRecent",
+            .db_country = "DE",
+            .db_version = kCurrentDataVersion + 1,
+            .profile_country = "DE",
+            .expected_output = std::nullopt,  // Update suppressed.
+        },
+        {
+            .test_case_name = "DbOlder",
+            .db_country = "DE",
+            .db_version = kCurrentDataVersion - 1,
+            .profile_country = "DE",
+            .expected_output = BuildMetadata("DE", kCurrentDataVersion),
+        },
+        {
+            .test_case_name = "PrefOverride",
+            .db_country = "DE",
+            .db_version = kCurrentDataVersion,
+            .profile_country = "DE",
+            .pref_override_version = kCurrentDataVersion + 42,
+            .expected_output = BuildMetadata("DE", kCurrentDataVersion + 42),
+        },
+    });
+  }
+
+  static std::string ParamToTestSuffix(
+      const ::testing::TestParamInfo<UpdateRequirementsTestParams>& info) {
+    return info.param.test_case_name;
+  }
+
+  static BuiltinKeywordsMetadata BuildMetadata(int country_id, int version) {
+    return {
+        .country_id = regional_capabilities::CountryIdHolder(country_id),
+        .data_version = version,
+    };
+  }
+
+  static BuiltinKeywordsMetadata BuildMetadata(const std::string& country_code,
+                                               int version) {
+    return BuildMetadata(country_codes::CountryStringToCountryID(country_code),
+                         version);
+  }
+};
+
+TEST_P(TemplateURLPrepopulateDataUpdateRequirementsTest,
+       ComputeDatabaseUpdateRequirements) {
+  WDKeywordsResult::Metadata database_metadata;
+  database_metadata.builtin_keyword_data_version = GetParam().db_version;
+  database_metadata.builtin_keyword_country =
+      GetParam().db_country.empty()
+          ? std::nullopt
+          : std::optional(regional_capabilities::CountryIdHolder(
+                country_codes::CountryStringToCountryID(
+                    GetParam().db_country)));
+
+  std::optional<BuiltinKeywordsMetadata> out =
+      prepopulate_data_resolver().ComputeDatabaseUpdateRequirements(
+          database_metadata);
+
+  EXPECT_EQ(GetParam().expected_output, out);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    TemplateURLPrepopulateDataUpdateRequirementsTest,
+    TemplateURLPrepopulateDataUpdateRequirementsTest::Cases(),
+    TemplateURLPrepopulateDataUpdateRequirementsTest::ParamToTestSuffix);
 
 // -- Choice screen randomization checks --------------------------------------
 

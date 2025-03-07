@@ -35,8 +35,7 @@ bool COMPONENT_EXPORT(TRACING_CPP) IsTracingInitialized();
 // TODO(eseckler): Consider allocating the SMB in parent processes outside the
 // sandbox and supply it via the command line. Then, we can revert to call this
 // earlier and from fewer places again.
-void COMPONENT_EXPORT(TRACING_CPP)
-    EnableStartupTracingIfNeeded(bool with_thread = false);
+void COMPONENT_EXPORT(TRACING_CPP) EnableStartupTracingIfNeeded();
 
 // Enable startup tracing for the current process with the provided config. Sets
 // up ProducerClient and trace event and/or sampler profiler data sources, and

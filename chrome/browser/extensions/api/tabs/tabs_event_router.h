@@ -30,7 +30,7 @@ class WebContents;
 }
 
 namespace resource_coordinator {
-class TabManager;
+class TabLifecycleUnitSource;
 }
 
 namespace extensions {
@@ -230,9 +230,9 @@ class TabsEventRouter
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
 
-  base::ScopedObservation<resource_coordinator::TabManager,
+  base::ScopedObservation<resource_coordinator::TabLifecycleUnitSource,
                           resource_coordinator::TabLifecycleObserver>
-      tab_manager_scoped_observation_{this};
+      tab_source_scoped_observation_{this};
 };
 
 }  // namespace extensions

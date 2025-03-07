@@ -106,6 +106,7 @@
 #include "base/win/windows_version.h"
 #include "chrome/browser/metrics/key_credential_manager_support_reporter_win.h"
 #include "chrome/browser/shell_integration_win.h"
+#include "chrome/browser/win/cloud_synced_folder_checker.h"
 #include "chrome/installer/util/taskbar_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -793,6 +794,20 @@ void RecordWin11HardwareRequirementsMetrics(
                             result.tpm);
 }
 
+void MaybeRecordOneDriveSyncMetrics() {
+  if (!base::FeatureList::IsEnabled(
+          cloud_synced_folder_checker::features::kCloudSyncedFolderChecker)) {
+    return;
+  }
+
+  cloud_synced_folder_checker::CloudSyncStatus status =
+      cloud_synced_folder_checker::EvaluateOneDriveSyncStatus();
+
+  base::UmaHistogramBoolean("Windows.OneDriveSyncState.Synced", status.synced);
+  base::UmaHistogramBoolean("Windows.OneDriveSyncState.DesktopSynced",
+                            status.desktop_synced);
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 void RecordDisplayHDRStatus(const display::Display& display) {
@@ -835,6 +850,8 @@ void RecordStartupMetrics() {
   base::UmaHistogramBoolean("Windows.ParallelDllLoadingEnabled",
                             IsParallelDllLoadingEnabled());
   RecordAppCompatMetrics();
+
+  MaybeRecordOneDriveSyncMetrics();
 
   if (base::win::OSInfo::Kernel32Version() < base::win::Version::WIN11) {
     base::win::HardwareEvaluationResult result =

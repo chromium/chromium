@@ -22,6 +22,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
+#include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -106,12 +108,12 @@ class TabLifecycleUnitFreezeWaiter
     : public resource_coordinator::TabLifecycleObserver {
  public:
   TabLifecycleUnitFreezeWaiter() {
-    resource_coordinator::TabLifecycleUnitExternal::AddTabLifecycleObserver(
+    resource_coordinator::GetTabLifecycleUnitSource()->AddTabLifecycleObserver(
         this);
   }
   ~TabLifecycleUnitFreezeWaiter() override {
-    resource_coordinator::TabLifecycleUnitExternal::RemoveTabLifecycleObserver(
-        this);
+    resource_coordinator::GetTabLifecycleUnitSource()
+        ->RemoveTabLifecycleObserver(this);
   }
 
   void Wait() { run_loop_.Run(); }

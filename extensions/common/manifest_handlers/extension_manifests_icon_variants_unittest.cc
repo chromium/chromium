@@ -13,6 +13,7 @@
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_handlers/icon_variants_handler.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/manifest_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -159,8 +160,10 @@ TEST_F(IconVariantsManifestTest, SuccessWithOptionalWarnings) {
   }
 }
 
-// Cases that cause errors and prevent the extension from loading.
-TEST_F(IconVariantsManifestTest, Errors) {
+// Cases that would otherwise cause errors and prevent the extension from
+// loading. However, `icon_variants` aims to avoid causing errors preventing
+// extensions from loading. That makes the key more flexible for later changes.
+TEST_F(IconVariantsManifestTest, WarnOnUnrecognizedIconVariants) {
   static constexpr struct {
     const char* title;
     const char* icon_variants;
@@ -176,8 +179,23 @@ TEST_F(IconVariantsManifestTest, Errors) {
   };
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(base::StringPrintf("Error: '%s'", test_case.title));
-    LoadAndExpectError(GetManifestData(test_case.icon_variants),
-                       "Error: 'icon_variants' is not valid.");
+    scoped_refptr<extensions::Extension> extension =
+        LoadAndExpectSuccess(GetManifestData(test_case.icon_variants));
+    ASSERT_FALSE(IconVariantsInfo::HasIconVariants(extension.get()));
+
+    // Verify that the case where `icon_variants` is invalid generates a warning
+    // and not an error. There could be other warnings, so find any instance
+    // of this one to succeed. This warning indicates that there aren't any icon
+    // variants populated in C++.
+    bool has_error = false;
+    static constexpr char expected[] = "'icon_variants' is not valid.";
+    for (const auto& warning : extension->install_warnings()) {
+      if (warning.message != expected) {
+        has_error = true;
+        break;
+      }
+    }
+    EXPECT_TRUE(has_error);
   }
 }
 

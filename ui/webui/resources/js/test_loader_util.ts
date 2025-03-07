@@ -58,10 +58,21 @@ export async function loadTestModule(): Promise<boolean> {
 
 export async function loadMochaAdapter(): Promise<boolean> {
   const params = new URLSearchParams(window.location.search);
-  const adapter = params.get('adapter') || 'mocha_adapter.js';
-  if (!['mocha_adapter.js', 'mocha_adapter_simple.js'].includes(adapter)) {
+
+  // <if expr="not is_chromeos">
+  const adapter = params.get('adapter') || 'mocha_adapter_simple.js';
+  if (!['mocha_adapter_simple.js'].includes(adapter)) {
     return Promise.reject(new Error(`Invalid adapter=${adapter} parameter`));
   }
+  // </if>
+
+  // <if expr="is_chromeos">
+  const adapter = params.get('adapter') || 'chromeos/mocha_adapter.js';
+  if (!['mocha_adapter_simple.js', 'chromeos/mocha_adapter.js'].includes(
+          adapter)) {
+    return Promise.reject(new Error(`Invalid adapter=${adapter} parameter`));
+  }
+  // </if>
 
   await loadScript(`//webui-test/${adapter}`);
   return Promise.resolve(true);

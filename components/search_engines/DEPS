@@ -50,6 +50,9 @@ specific_include_rules = {
   "template_url_service_test_util\.cc": [
     "+components/os_crypt/async/browser/test_utils.h"
   ],
+  "template_url_service\.cc": [
+    "+components/regional_capabilities/access/country_access_reason.h"
+  ],
   "template_url_prepopulate_data_resolver\.cc": [
     "+components/regional_capabilities/access/country_access_reason.h"
   ],

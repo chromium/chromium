@@ -28,7 +28,7 @@ message EnhancedCalendarLoggingData {
 }
 
 // The request to execute an Enhanced Calendar query.
-// Next ID: 6
+// Next ID: 7
 message EnhancedCalendarRequest {
   // The web page context used for generating the event. Context is expected to
   // contain calendar event dates or related information to populate the
@@ -44,6 +44,11 @@ message EnhancedCalendarRequest {
   // Used by the model to know which "moment" within the webpage this request
   // refers to.
   string selected_text = 5;
+
+  // The text surrounding the `selected_text` (a longer string which starts
+  // before and ends after), used to help locate the specific instance of the
+  // selected text on a given webpage.
+  string surrounding_text = 6;
 
   reserved 1, 2;
 }

@@ -3511,20 +3511,24 @@ source_set("browser") {
     ]
   }
 
-  if (!is_android && !is_ios && !is_fuchsia) {
+  if ((!is_android || is_desktop_android) && !is_ios && !is_fuchsia) {
     sources += [
-      # Devtools frontend not included in Android and iOS
+      # Devtools frontend not included in mobile Android and iOS
       "devtools/devtools_frontend_host_impl.cc",
       "devtools/devtools_frontend_host_impl.h",
-
-      # Trace report internal UI is not adapted for mobile use.
-      "tracing/trace_report/trace_report_internals_ui.cc",
-      "tracing/trace_report/trace_report_internals_ui.h",
     ]
 
     deps += [
       "//content/browser/devtools:devtools_resources",
       "//content/browser/devtools:devtools_resources_extern",
+    ]
+  }
+
+  if (!is_android && !is_ios && !is_fuchsia) {
+    sources += [
+      # Trace report internal UI is not adapted for mobile use.
+      "tracing/trace_report/trace_report_internals_ui.cc",
+      "tracing/trace_report/trace_report_internals_ui.h",
     ]
   }
 

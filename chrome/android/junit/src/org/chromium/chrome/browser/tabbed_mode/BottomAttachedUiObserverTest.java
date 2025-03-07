@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -487,6 +488,22 @@ public class BottomAttachedUiObserverTest {
 
         mBottomAttachedUiObserver.onSheetOpened(0);
         mColorChangeObserver.assertState(null, false, false);
+        mBottomAttachedUiObserver.onSheetClosed(0);
+        mColorChangeObserver.assertState(null, false, false);
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
+    @Features.DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
+    @Config(sdk = 30)
+    public void testAdaptsColorToBottomSheet_doesNotCoverFullWidth_edgeToEdgeEverywhere() {
+        when(mBottomSheetController.isFullWidth()).thenReturn(false);
+
+        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentYellowBackground);
+        mColorChangeObserver.assertState(null, false, false);
+
+        mBottomAttachedUiObserver.onSheetOpened(0);
+        mColorChangeObserver.assertState(BOTTOM_SHEET_YELLOW, true, false);
         mBottomAttachedUiObserver.onSheetClosed(0);
         mColorChangeObserver.assertState(null, false, false);
     }

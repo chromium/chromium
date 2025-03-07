@@ -50,14 +50,6 @@ class LifecycleUnitBase : public LifecycleUnit {
   void SetState(LifecycleUnitState state,
                 LifecycleUnitStateChangeReason reason);
 
-  // Invoked when the state of the LifecycleUnit changes, before external
-  // observers are notified. Derived classes can override to add their own
-  // logic. The default implementation is empty. |last_state| is the state
-  // before the change and |reason| indicates what caused the change.
-  virtual void OnLifecycleUnitStateChanged(
-      LifecycleUnitState last_state,
-      LifecycleUnitStateChangeReason reason);
-
   // Notifies observers that the LifecycleUnit is being destroyed. This is
   // invoked by derived classes rather than by the base class to avoid notifying
   // observers when the LifecycleUnit has been partially destroyed. This also

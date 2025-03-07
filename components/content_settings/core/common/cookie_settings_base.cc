@@ -561,8 +561,7 @@ bool CookieSettingsBase::IsAllowedBySandboxValue(
 
   url::Origin origin = url::Origin::Create(url);
   url::Origin first_party_origin = url::Origin::Create(first_party_url);
-  return origin.IsSameOriginWith(first_party_origin) ||
-         net::SchemefulSite(origin) == net::SchemefulSite(first_party_origin);
+  return net::SchemefulSite::IsSameSite(origin, first_party_origin);
 }
 
 absl::variant<CookieSettingsBase::AllowAllCookies,
@@ -834,12 +833,10 @@ bool CookieSettingsBase::IsAllowedByStorageAccessGrant(
           net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader)) {
     return false;
   }
-  // The Storage Access API allows access in A(B(A)) case (or similar). Do the
-  // same-origin check first for performance reasons.
+  // The Storage Access API allows access in A(B(A)) case (or similar).
   const url::Origin origin = url::Origin::Create(url);
   const url::Origin first_party_origin = url::Origin::Create(first_party_url);
-  if (origin.IsSameOriginWith(first_party_origin) ||
-      net::SchemefulSite(origin) == net::SchemefulSite(first_party_origin)) {
+  if (net::SchemefulSite::IsSameSite(origin, first_party_origin)) {
     return true;
   }
   if (GetContentSetting(url, first_party_url,

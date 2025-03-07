@@ -14,7 +14,9 @@
 #include "chrome/browser/resource_coordinator/discard_metrics_lifecycle_unit_observer.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_source_observer.h"
 #include "chrome/browser/resource_coordinator/resource_coordinator_parts.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -140,8 +142,9 @@ void TabLifecycleUnitSource::Start() {
 TabLifecycleUnitExternal* TabLifecycleUnitSource::GetTabLifecycleUnitExternal(
     content::WebContents* web_contents) {
   auto* lu = GetTabLifecycleUnit(web_contents);
-  if (!lu)
+  if (!lu) {
     return nullptr;
+  }
   return lu->AsTabLifecycleUnitExternal();
 }
 
@@ -227,9 +230,10 @@ void TabLifecycleUnitSource::OnTabInserted(TabStripModel* tab_strip_model,
     // A tab was created.
     TabLifecycleUnitHolder::CreateForWebContents(contents);
     auto* holder = TabLifecycleUnitHolder::FromWebContents(contents);
-    holder->set_lifecycle_unit(std::make_unique<TabLifecycleUnit>(
-        this, &tab_lifecycle_observers_, contents, tab_strip_model));
+    holder->set_lifecycle_unit(
+        std::make_unique<TabLifecycleUnit>(this, contents, tab_strip_model));
     lifecycle_unit = holder->lifecycle_unit();
+    lifecycle_unit_observations_.AddObservation(lifecycle_unit);
     if (GetFocusedTabStripModel() == tab_strip_model && foreground)
       UpdateFocusedTabTo(lifecycle_unit);
 
@@ -323,6 +327,27 @@ void TabLifecycleUnitSource::OnBrowserSetLastActive(Browser* browser) {
 
 void TabLifecycleUnitSource::OnBrowserNoLongerActive(Browser* browser) {
   UpdateFocusedTab();
+}
+
+void TabLifecycleUnitSource::OnLifecycleUnitStateChanged(
+    LifecycleUnit* lifecycle_unit,
+    LifecycleUnitState last_state,
+    LifecycleUnitStateChangeReason reason) {
+  ::mojom::LifecycleUnitState new_state = lifecycle_unit->GetState();
+  std::optional<::mojom::LifecycleUnitDiscardReason> discard_reason;
+  if (last_state == ::mojom::LifecycleUnitState::DISCARDED ||
+      new_state == ::mojom::LifecycleUnitState::DISCARDED) {
+    discard_reason = lifecycle_unit->GetDiscardReason();
+  }
+  tab_lifecycle_observers_.Notify(
+      &TabLifecycleObserver::OnTabLifecycleStateChange,
+      lifecycle_unit->AsTabLifecycleUnitExternal()->GetWebContents(),
+      last_state, new_state, discard_reason);
+}
+
+void TabLifecycleUnitSource::OnLifecycleUnitDestroyed(
+    LifecycleUnit* lifecycle_unit) {
+  lifecycle_unit_observations_.RemoveObservation(lifecycle_unit);
 }
 
 // static

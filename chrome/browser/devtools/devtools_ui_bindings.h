@@ -23,13 +23,16 @@
 #include "chrome/browser/devtools/devtools_settings.h"
 #include "chrome/browser/devtools/devtools_targets_ui.h"
 #include "chrome/browser/devtools/visual_logging.h"
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/themes/theme_service_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_frontend_host.h"
 #include "ui/gfx/geometry/size.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/themes/theme_service_observer.h"
+#endif
 
 class PortForwardingStatusSerializer;
 class Profile;
@@ -47,8 +50,10 @@ class ContentInfoBarManager;
 class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                            public DevToolsAndroidBridge::DeviceCountListener,
                            public content::DevToolsAgentHostClient,
-                           public DevToolsFileHelper::Delegate,
-                           public ThemeServiceObserver {
+#if !BUILDFLAG(IS_ANDROID)
+                           public ThemeServiceObserver,
+#endif
+                           public DevToolsFileHelper::Delegate {
  public:
   class Delegate {
    public:
@@ -116,8 +121,10 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void Detach();
   bool IsAttachedTo(content::DevToolsAgentHost* agent_host);
 
+#if !BUILDFLAG(IS_ANDROID)
   // ThemeServiceObserver implementation
   void OnThemeChanged() override;
+#endif
 
   static base::Value::Dict GetSyncInformationForProfile(Profile* profile);
 

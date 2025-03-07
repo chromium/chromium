@@ -160,14 +160,6 @@ WebContents* TabManager::DiscardTabByExtension(content::WebContents* contents) {
   return DiscardTabImpl(LifecycleUnitDiscardReason::EXTERNAL);
 }
 
-void TabManager::AddObserver(TabLifecycleObserver* observer) {
-  TabLifecycleUnitExternal::AddTabLifecycleObserver(observer);
-}
-
-void TabManager::RemoveObserver(TabLifecycleObserver* observer) {
-  TabLifecycleUnitExternal::RemoveTabLifecycleObserver(observer);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // TabManager, private:
 

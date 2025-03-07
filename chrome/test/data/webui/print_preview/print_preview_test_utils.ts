@@ -424,6 +424,7 @@ export function getSaveAsPdfDestination(): Destination {
 export function selectOption(
     section: HTMLElement, option: string): Promise<void> {
   const select = section.shadowRoot!.querySelector('select')!;
+  select.focus();
   select.value = option;
   select.dispatchEvent(new CustomEvent('change'));
   return eventToPromise('process-select-change', section);

@@ -31,8 +31,7 @@ pub fn generate(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Result<()
 
 fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     // Load config file, which applies rustenv and cfg flags to some std crates.
-    let config_file_contents = std::fs::read_to_string(paths.std_config_file).unwrap();
-    let config: config::BuildConfig = toml::de::from_str(&config_file_contents).unwrap();
+    let config = config::BuildConfig::from_path(paths.std_config_file)?;
 
     let template_path =
         paths.std_config_file.parent().unwrap().join(&config.gn_config.build_file_template);
@@ -146,7 +145,7 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
     // the set of third-party dependencies vendored in the Rust source package.
     let vendored_crates: HashSet<VendoredCrate> =
         crates::collect_std_vendored_crates(&rust_src_root.join(paths.rust_src_vendor_subdir))
-            .unwrap()
+            .context("Collecting vendored `std` crates")?
             .into_iter()
             .collect();
 
@@ -205,8 +204,7 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
 }
 
 fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
-    let config_file_contents = std::fs::read_to_string(paths.third_party_config_file).unwrap();
-    let config: config::BuildConfig = toml::de::from_str(&config_file_contents).unwrap();
+    let config = config::BuildConfig::from_path(paths.third_party_config_file)?;
 
     let template_path =
         paths.third_party_config_file.parent().unwrap().join(&config.gn_config.build_file_template);

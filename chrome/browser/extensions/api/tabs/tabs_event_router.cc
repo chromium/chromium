@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/api/tabs/tabs_windows_api.h"
 #include "chrome/browser/extensions/api/tabs/windows_event_router.h"
@@ -20,7 +19,8 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
-#include "chrome/browser/resource_coordinator/tab_manager.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
+#include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
@@ -196,7 +196,8 @@ TabsEventRouter::TabsEventRouter(Profile* profile)
   BrowserList::AddObserver(this);
   browser_tab_strip_tracker_.Init();
 
-  tab_manager_scoped_observation_.Observe(g_browser_process->GetTabManager());
+  tab_source_scoped_observation_.Observe(
+      resource_coordinator::GetTabLifecycleUnitSource());
   performance_manager::PageLiveStateDecorator::AddAllPageObserver(this);
 }
 
@@ -329,7 +330,7 @@ void TabsEventRouter::OnZoomChanged(
   DispatchEvent(profile, events::TABS_ON_ZOOM_CHANGE,
                 api::tabs::OnZoomChange::kEventName,
                 api::tabs::OnZoomChange::Create(zoom_change_info),
-                EventRouter::USER_GESTURE_UNKNOWN);
+                EventRouter::UserGestureState::kUnknown);
 }
 
 void TabsEventRouter::OnFaviconUpdated(
@@ -410,7 +411,7 @@ void TabsEventRouter::DispatchTabInsertedAt(TabStripModel* tab_strip_model,
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
   DispatchEvent(profile, events::TABS_ON_ATTACHED,
                 api::tabs::OnAttached::kEventName, std::move(args),
-                EventRouter::USER_GESTURE_UNKNOWN);
+                EventRouter::UserGestureState::kUnknown);
 }
 
 void TabsEventRouter::DispatchTabClosingAt(TabStripModel* tab_strip_model,
@@ -430,7 +431,7 @@ void TabsEventRouter::DispatchTabClosingAt(TabStripModel* tab_strip_model,
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
   DispatchEvent(profile, events::TABS_ON_REMOVED,
                 api::tabs::OnRemoved::kEventName, std::move(args),
-                EventRouter::USER_GESTURE_UNKNOWN);
+                EventRouter::UserGestureState::kUnknown);
 
   UnregisterForTabNotifications(contents);
 }
@@ -455,7 +456,7 @@ void TabsEventRouter::DispatchTabDetachedAt(WebContents* contents,
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
   DispatchEvent(profile, events::TABS_ON_DETACHED,
                 api::tabs::OnDetached::kEventName, std::move(args),
-                EventRouter::USER_GESTURE_UNKNOWN);
+                EventRouter::UserGestureState::kUnknown);
 }
 
 void TabsEventRouter::DispatchActiveTabChanged(WebContents* old_contents,
@@ -476,10 +477,10 @@ void TabsEventRouter::DispatchActiveTabChanged(WebContents* old_contents,
 
   DispatchEvent(profile, events::TABS_ON_SELECTION_CHANGED,
                 api::tabs::OnSelectionChanged::kEventName, args.Clone(),
-                EventRouter::USER_GESTURE_UNKNOWN);
+                EventRouter::UserGestureState::kUnknown);
   DispatchEvent(profile, events::TABS_ON_ACTIVE_CHANGED,
                 api::tabs::OnActiveChanged::kEventName, std::move(args),
-                EventRouter::USER_GESTURE_UNKNOWN);
+                EventRouter::UserGestureState::kUnknown);
 
   // The onActivated event takes one argument: {windowId, tabId}.
   base::Value::List on_activated_args;
@@ -487,7 +488,7 @@ void TabsEventRouter::DispatchActiveTabChanged(WebContents* old_contents,
   on_activated_args.Append(std::move(object_args));
   DispatchEvent(
       profile, events::TABS_ON_ACTIVATED, api::tabs::OnActivated::kEventName,
-      std::move(on_activated_args), EventRouter::USER_GESTURE_UNKNOWN);
+      std::move(on_activated_args), EventRouter::UserGestureState::kUnknown);
 }
 
 void TabsEventRouter::DispatchTabSelectionChanged(
@@ -519,10 +520,10 @@ void TabsEventRouter::DispatchTabSelectionChanged(
   Profile* profile = tab_strip_model->profile();
   DispatchEvent(profile, events::TABS_ON_HIGHLIGHT_CHANGED,
                 api::tabs::OnHighlightChanged::kEventName, args.Clone(),
-                EventRouter::USER_GESTURE_UNKNOWN);
+                EventRouter::UserGestureState::kUnknown);
   DispatchEvent(profile, events::TABS_ON_HIGHLIGHTED,
                 api::tabs::OnHighlighted::kEventName, std::move(args),
-                EventRouter::USER_GESTURE_UNKNOWN);
+                EventRouter::UserGestureState::kUnknown);
 }
 
 void TabsEventRouter::DispatchTabMoved(WebContents* contents,
@@ -540,7 +541,7 @@ void TabsEventRouter::DispatchTabMoved(WebContents* contents,
 
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
   DispatchEvent(profile, events::TABS_ON_MOVED, api::tabs::OnMoved::kEventName,
-                std::move(args), EventRouter::USER_GESTURE_UNKNOWN);
+                std::move(args), EventRouter::UserGestureState::kUnknown);
 }
 
 void TabsEventRouter::DispatchTabReplacedAt(WebContents* old_contents,
@@ -556,7 +557,7 @@ void TabsEventRouter::DispatchTabReplacedAt(WebContents* old_contents,
 
   DispatchEvent(Profile::FromBrowserContext(new_contents->GetBrowserContext()),
                 events::TABS_ON_REPLACED, api::tabs::OnReplaced::kEventName,
-                std::move(args), EventRouter::USER_GESTURE_UNKNOWN);
+                std::move(args), EventRouter::UserGestureState::kUnknown);
 
   UnregisterForTabNotifications(old_contents);
 
@@ -571,7 +572,7 @@ void TabsEventRouter::TabCreatedAt(WebContents* contents,
   auto event = std::make_unique<Event>(events::TABS_ON_CREATED,
                                        api::tabs::OnCreated::kEventName,
                                        base::Value::List(), profile);
-  event->user_gesture = EventRouter::USER_GESTURE_NOT_ENABLED;
+  event->user_gesture = EventRouter::UserGestureState::kNotEnabled;
   event->will_dispatch_callback =
       base::BindRepeating(&WillDispatchTabCreatedEvent, contents, active);
   EventRouter::Get(profile)->BroadcastEvent(std::move(event));
@@ -637,7 +638,7 @@ void TabsEventRouter::DispatchTabUpdatedEvent(
       // The event arguments depend on the extension's permission. They are set
       // in WillDispatchTabUpdatedEvent().
       base::Value::List(), profile);
-  event->user_gesture = EventRouter::USER_GESTURE_NOT_ENABLED;
+  event->user_gesture = EventRouter::UserGestureState::kNotEnabled;
   event->will_dispatch_callback =
       base::BindRepeating(&WillDispatchTabUpdatedEvent, contents,
                           std::move(changed_property_names));

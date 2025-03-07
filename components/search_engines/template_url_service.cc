@@ -45,6 +45,8 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/regional_capabilities/access/country_access_reason.h"
+#include "components/regional_capabilities/regional_capabilities_country_id.h"
 #include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/enterprise/enterprise_search_manager.h"
 #include "components/search_engines/keyword_web_data_service.h"
@@ -1498,8 +1500,7 @@ void TemplateURLService::OnWebDataServiceRequestDone(
         keyword_result.metadata.builtin_keyword_country;
     GetSearchProvidersUsingKeywordResult(
         keyword_result, web_data_service_.get(), &prefs_.get(),
-        &search_engine_choice_service_.get(), prepopulate_data_resolver_.get(),
-        template_urls.get(),
+        prepopulate_data_resolver_.get(), template_urls.get(),
         (default_search_provider_source_ == DefaultSearchManager::FROM_USER)
             ? pre_loading_providers_->default_search_provider()
             : nullptr,
@@ -1530,7 +1531,10 @@ void TemplateURLService::OnWebDataServiceRequestDone(
       web_data_service_->SetBuiltinKeywordDataVersion(
           updated_keywords_metadata.builtin_keyword_data_version);
       web_data_service_->SetBuiltinKeywordCountry(
-          updated_keywords_metadata.builtin_keyword_country);
+          updated_keywords_metadata.builtin_keyword_country->GetRestricted(
+              regional_capabilities::CountryAccessKey<TemplateURLService>(
+                  regional_capabilities::CountryAccessReason::
+                      kTemplateURLServiceDatabaseMetadataCaching)));
 
       // Added 20/08/2024.
       // This is used for database cleanup.

@@ -47,14 +47,16 @@ using base::trace_event::TraceLog;
 }  // namespace
 
 bool g_tracing_initialized_after_featurelist = false;
-bool g_tracing_with_thread = false;
 
 bool IsTracingInitialized() {
   return g_tracing_initialized_after_featurelist;
 }
 
-void EnableStartupTracingIfNeeded(bool with_thread) {
+void EnableStartupTracingIfNeeded() {
   RegisterTracedValueProtoWriter();
+
+  // Create the PerfettoTracedProcess.
+  PerfettoTracedProcess::MaybeCreateInstance();
 
   // Initialize the client library's TrackRegistry to support trace points
   // during startup tracing. We don't setup the client library completely here
@@ -63,14 +65,6 @@ void EnableStartupTracingIfNeeded(bool with_thread) {
   // TODO(eseckler): Make it possible to initialize client lib backends after
   // setting up the client library?
   perfetto::internal::TrackRegistry::InitializeInstance();
-
-  // Create the PerfettoTracedProcess.
-  if (with_thread) {
-    g_tracing_with_thread = true;
-    PerfettoTracedProcess::MaybeCreateInstanceWithThread();
-  } else {
-    PerfettoTracedProcess::MaybeCreateInstance();
-  }
 
   // Ensure TraceLog is initialized first.
   // https://crbug.com/764357
@@ -112,9 +106,7 @@ void InitTracingPostFeatureList(bool enable_consumer) {
   DCHECK(base::FeatureList::GetInstance());
 
   // Create the PerfettoTracedProcess.
-  if (!g_tracing_with_thread) {
-    PerfettoTracedProcess::MaybeCreateInstance();
-  }
+  PerfettoTracedProcess::MaybeCreateInstance();
   PerfettoTracedProcess::Get().OnThreadPoolAvailable(enable_consumer);
 #if BUILDFLAG(IS_WIN)
   tracing::EnableETWExport();

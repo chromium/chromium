@@ -706,14 +706,14 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
     EXPECT_CALL(*mock_event_router,
                 DispatchEventToExtensionMock(
                     item_ptr->extension_id(), MenuManager::kOnContextMenus, _,
-                    &profile, GURL(), EventRouter::USER_GESTURE_ENABLED))
+                    &profile, GURL(), EventRouter::UserGestureState::kEnabled))
         .Times(1)
         .WillOnce(SaveArg<2>(&list));
     EXPECT_CALL(
         *mock_event_router,
         DispatchEventToExtensionMock(
             item_ptr->extension_id(), context_menus::OnClicked::kEventName, _,
-            &profile, GURL(), EventRouter::USER_GESTURE_ENABLED))
+            &profile, GURL(), EventRouter::UserGestureState::kEnabled))
         .Times(1)
         .WillOnce(DeleteArg<2>());
   }

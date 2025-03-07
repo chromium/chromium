@@ -742,7 +742,7 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
                              : kOnWebviewContextMenus)
                       : kOnContextMenus,
         std::move(args_cloned), context);
-    event->user_gesture = EventRouter::USER_GESTURE_ENABLED;
+    event->user_gesture = EventRouter::UserGestureState::kEnabled;
     if (webview_guest) {
       event->filter_info->has_instance_id = true;
       event->filter_info->instance_id = webview_guest->view_instance_id();
@@ -767,7 +767,7 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
         webview_guest ? api::chrome_web_view_internal::OnClicked::kEventName
                       : api::context_menus::OnClicked::kEventName,
         std::move(args), context);
-    event->user_gesture = EventRouter::USER_GESTURE_ENABLED;
+    event->user_gesture = EventRouter::UserGestureState::kEnabled;
     if (webview_guest) {
       event->filter_info->has_instance_id = true;
       event->filter_info->instance_id = webview_guest->view_instance_id();

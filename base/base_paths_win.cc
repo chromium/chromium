@@ -238,6 +238,17 @@ bool PathProviderWin(int key, FilePath* result) {
         return false;
       }
       break;
+    case base::DIR_ONE_DRIVE: {
+      base::win::ScopedCoMem<wchar_t> path_buf;
+      // FOLDERID_OneDrive points on the user OneDrive folder. The default path
+      // is %USERPROFILE%\OneDrive. It is formerly known as FOLDERID_SkyDrive.
+      if (FAILED(SHGetKnownFolderPath(FOLDERID_OneDrive, 0, NULL, &path_buf))) {
+        return false;
+      }
+
+      cur = FilePath(path_buf.get());
+      break;
+    }
     default:
       return false;
   }

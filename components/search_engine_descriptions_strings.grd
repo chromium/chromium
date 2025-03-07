@@ -183,7 +183,7 @@ process but are generated using a script that pulls them from outside the repo.-
         Private. Fast. Fewer Ads. DuckDuckGo never tracks you.
       </message>
       <message name="IDS_ECOSIA_SEARCH_DESCRIPTION" use_name_for_id="true">
-        Plant trees as you search, for free. 200 million trees planted already.
+        Plant trees as you search, for free. 250 million trees planted already.
       </message>
       <message name="IDS_GOOGLE_SEARCH_DESCRIPTION" use_name_for_id="true">
         Find what you need with Google

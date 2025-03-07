@@ -30,6 +30,7 @@
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
+#include "components/search_engines/template_url_prepopulate_data_resolver.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 
@@ -43,48 +44,19 @@ namespace {
 // will contain the associated metadata that should be also added to the
 // database.
 WDKeywordsResult::Metadata ComputeMergeEnginesRequirements(
-    PrefService* prefs,
-    search_engines::SearchEngineChoiceService* search_engine_choice_service,
+    const TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
     const WDKeywordsResult::Metadata& keywords_metadata) {
-  CHECK(prefs);
-  CHECK(search_engine_choice_service);
-
-  const int prepopulate_resource_keyword_version =
-      TemplateURLPrepopulateData::GetDataVersion(prefs);
-  const int country_id = search_engine_choice_service->GetCountryId();
-
-  bool update_builtin_keywords;
-  if (regional_capabilities::HasSearchEngineCountryListOverride()) {
-    // The search engine list is being explicitly overridden, so also force
-    // recomputing it for the keywords database.
-    update_builtin_keywords = true;
-  } else if (keywords_metadata.builtin_keyword_data_version >
-             prepopulate_resource_keyword_version) {
-    // The version in the database is more recent than the version in the Chrome
-    // binary. Downgrades are not supported, so don't update it.
-    update_builtin_keywords = false;
-  } else if (keywords_metadata.builtin_keyword_data_version <
-             prepopulate_resource_keyword_version) {
-    // The built-in data from `prepopulated_engines.json` has been updated.
-    update_builtin_keywords = true;
-  } else if (keywords_metadata.builtin_keyword_country != 0 &&
-             keywords_metadata.builtin_keyword_country != country_id) {
-    // The country associated with the profile has changed.
-    // We skip cases where the country was not previously set to avoid
-    // unnecessary churn. We expect that by the time this might matter, the
-    // client will have this data populated when the search engine choice
-    // feature gets enabled.
-    update_builtin_keywords = true;
-  } else {
-    update_builtin_keywords = false;
-  }
-
   WDKeywordsResult::Metadata out_metadata;
 
-  if (update_builtin_keywords) {
+  std::optional<TemplateURLPrepopulateData::BuiltinKeywordsMetadata>
+      builtin_keywords_metadata =
+          prepopulate_data_resolver.ComputeDatabaseUpdateRequirements(
+              keywords_metadata);
+  if (builtin_keywords_metadata.has_value()) {
     out_metadata.builtin_keyword_data_version =
-        prepopulate_resource_keyword_version;
-    out_metadata.builtin_keyword_country = country_id;
+        builtin_keywords_metadata->data_version;
+    out_metadata.builtin_keyword_country =
+        builtin_keywords_metadata->country_id;
   }
 
   const int starter_pack_data_version =
@@ -525,7 +497,6 @@ void GetSearchProvidersUsingKeywordResult(
     const WDKeywordsResult& keyword_result,
     KeywordWebDataService* service,
     PrefService* prefs,
-    search_engines::SearchEngineChoiceService* search_engine_choice_service,
     const TemplateURLPrepopulateData::Resolver& template_url_data_resolver,
     TemplateURLService::OwnedTemplateURLVector* template_urls,
     TemplateURL* default_search_provider,
@@ -552,9 +523,9 @@ void GetSearchProvidersUsingKeywordResult(
 
   out_updated_keywords_metadata = keyword_result.metadata;
   GetSearchProvidersUsingLoadedEngines(
-      service, prefs, search_engine_choice_service, template_url_data_resolver,
-      template_urls, default_search_provider, search_terms_data,
-      out_updated_keywords_metadata, removed_keyword_guids);
+      service, prefs, template_url_data_resolver, template_urls,
+      default_search_provider, search_terms_data, out_updated_keywords_metadata,
+      removed_keyword_guids);
 
   // If a data change happened, it should not cause a version downgrade.
   // Upgrades (builtin > new) or feature-related merges (builtin == new) only
@@ -567,7 +538,6 @@ void GetSearchProvidersUsingKeywordResult(
 void GetSearchProvidersUsingLoadedEngines(
     KeywordWebDataService* service,
     PrefService* prefs,
-    search_engines::SearchEngineChoiceService* search_engine_choice_service,
     const TemplateURLPrepopulateData::Resolver& template_url_data_resolver,
     TemplateURLService::OwnedTemplateURLVector* template_urls,
     TemplateURL* default_search_provider,
@@ -582,7 +552,7 @@ void GetSearchProvidersUsingLoadedEngines(
                                 search_terms_data, removed_keyword_guids);
 
   WDKeywordsResult::Metadata required_metadata =
-      ComputeMergeEnginesRequirements(prefs, search_engine_choice_service,
+      ComputeMergeEnginesRequirements(template_url_data_resolver,
                                       in_out_keywords_metadata);
 
   if (required_metadata.HasBuiltinKeywordData()) {

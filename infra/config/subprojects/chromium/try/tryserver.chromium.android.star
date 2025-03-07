@@ -1389,6 +1389,7 @@ try_.builder(
         location_filters = [
             "build/android/.+",
             "build/config/android/.+",
+            "chrome/browser/safe_browsing/BUILD.gn",
             "chromecast/.+",
             "components/cast/.+",
             "components/cast_receiver/.+",
@@ -1411,6 +1412,7 @@ try_.builder(
         location_filters = [
             "build/android/.+",
             "build/config/android/.+",
+            "chrome/browser/safe_browsing/BUILD.gn",
             "chromecast/.+",
             "components/cast/.+",
             "components/cast_receiver/.+",
@@ -1433,6 +1435,7 @@ try_.builder(
         location_filters = [
             "build/android/.+",
             "build/config/android/.+",
+            "chrome/browser/safe_browsing/BUILD.gn",
             "chromecast/.+",
             "components/cast/.+",
             "components/cast_receiver/.+",
@@ -1455,6 +1458,7 @@ try_.builder(
         location_filters = [
             "build/android/.+",
             "build/config/android/.+",
+            "chrome/browser/safe_browsing/BUILD.gn",
             "chromecast/.+",
             "components/cast/.+",
             "components/cast_receiver/.+",

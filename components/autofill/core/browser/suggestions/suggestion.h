@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_SUGGESTION_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_SUGGESTION_H_
 
+#include <cstdint>
 #include <optional>
 #include <ostream>
 #include <string>
@@ -114,6 +115,11 @@ struct Suggestion {
     // If true, the user will be presented with a "Terms apply for card
     // benefits" message below the suggestions list on TTF for mobile.
     bool should_display_terms_available = false;
+
+    // The amount of the payment as extracted from the page. For example, used
+    // for BNPL suggestions to confirm the amount is in the supported range for
+    // a BNPL provider.
+    std::optional<uint64_t> extracted_amount_in_micros = std::nullopt;
   };
 
   using Guid = base::StrongAlias<class GuidTag, std::string>;
@@ -377,6 +383,8 @@ struct Suggestion {
         // use this.
         return absl::holds_alternative<Guid>(payload) ||
                absl::holds_alternative<PaymentsPayload>(payload);
+      case SuggestionType::kBnplEntry:
+        return absl::holds_alternative<PaymentsPayload>(payload);
       case SuggestionType::kDevtoolsTestAddressEntry:
       default:
         return absl::holds_alternative<Guid>(payload) ||

@@ -658,18 +658,7 @@ NO_STACK_PROTECTOR int RunZygote(ContentMainDelegate* delegate) {
 
   MainFunctionParams main_params(command_line);
   main_params.zygote_child = true;
-
-  if (process_type == switches::kGpuProcess) {
-    // Once Zygote forks and feature list initializes we can start a thread to
-    // begin tracing immediately.
-    // TODO(https://crbug.com/380411640): Enable for more processes other than
-    // GPU process.
-    tracing::EnableStartupTracingIfNeeded(/*with_thread=*/true);
-    tracing::InitTracingPostFeatureList(/*enable_consumer=*/false);
-    main_params.needs_startup_tracing_after_mojo_init = false;
-  } else {
-    main_params.needs_startup_tracing_after_mojo_init = true;
-  }
+  main_params.needs_startup_tracing_after_mojo_init = true;
 
   // The hang watcher needs to be created once the feature list is available
   // but before the IO thread is started.
@@ -899,27 +888,15 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
   // A sandboxed process won't be able to allocate the SMB needed for startup
   // tracing until Mojo IPC support is brought up, at which point the Mojo
-  // broker will transparently broker the SMB creation. Unless the sandboxed
-  // process stops the trace threads when entering sandbox.
-  // TODO(https://crbug.com/380411640): Implement for other processes other than
-  // GPU process.
-  if (process_type != switches::kGpuProcess &&
-      !sandbox::policy::IsUnsandboxedSandboxType(
+  // broker will transparently broker the SMB creation.
+  if (!sandbox::policy::IsUnsandboxedSandboxType(
           sandbox::policy::SandboxTypeFromCommandLine(command_line))) {
     enable_startup_tracing = false;
     needs_startup_tracing_after_mojo_init_ = true;
   }
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
   if (enable_startup_tracing) {
-    if (process_type == switches::kGpuProcess) {
-      // Without Zygote and posix sandbox we can start a thread to begin tracing
-      // immediately.
-      // TODO(https://crbug.com/380411640): Enable for more processes other than
-      // GPU process.
-      tracing::EnableStartupTracingIfNeeded(/*with_thread=*/true);
-    } else {
-      tracing::EnableStartupTracingIfNeeded(/*with_thread=*/false);
-    }
+    tracing::EnableStartupTracingIfNeeded();
   }
   TRACE_EVENT0("startup,benchmark,rail", "ContentMainRunnerImpl::Initialize");
 
@@ -1134,9 +1111,6 @@ NO_STACK_PROTECTOR int ContentMainRunnerImpl::Run() {
       if (delegate_->ShouldCreateFeatureList(
               ContentMainDelegate::InvokedInChildProcess())) {
         InitializeFieldTrialAndFeatureList();
-      }
-      if (process_type == switches::kGpuProcess) {
-        tracing::InitTracingPostFeatureList(/*enable_consumer=*/false);
       }
       if (delegate_->ShouldInitializeMojo(
               ContentMainDelegate::InvokedInChildProcess())) {
