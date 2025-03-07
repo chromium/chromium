@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/views/tabs/window_finder.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
+#include "glic_window_controller.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_observer.h"
 #include "ui/views/controls/webview/webview.h"
@@ -1139,8 +1140,12 @@ bool GlicWindowController::IsShowing() const {
   return !(state_ == State::kClosed || state_ == State::kCloseAnimation);
 }
 
-bool GlicWindowController::IsAttached() {
+bool GlicWindowController::IsAttached() const {
   return attached_browser_ != nullptr;
+}
+
+bool GlicWindowController::IsDetached() const {
+  return IsShowing() && !IsAttached();
 }
 
 base::CallbackListSubscription

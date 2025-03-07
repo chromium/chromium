@@ -77,6 +77,8 @@ class GlicKeyedService : public KeyedService {
   void PageHandlerRemoved(GlicPageHandler* page_handler);
 
   bool IsWindowShowing() const;
+  // Virtual for testing.
+  virtual bool IsWindowDetached() const;
 
   // Private API for the glic WebUI.
 
@@ -154,6 +156,11 @@ class GlicKeyedService : public KeyedService {
 
   virtual void TryPreload();
   void Reload();
+
+  void SetWindowControllerForTesting(
+      std::unique_ptr<GlicWindowController> window_controller) {
+    window_controller_ = std::move(window_controller);
+  }
 
   Profile* profile() const { return profile_; }
 
