@@ -77,7 +77,7 @@ suite('SpeechUsesMaxTextLength', () => {
 
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
-    maxSpeechLength = app.maxSpeechLength;
+    maxSpeechLength = app.maxSpeechLengthForRemoteVoices;
   });
   // These checks ensure the text used in this test stays up to date
   // in case the maximum speech length changes.
