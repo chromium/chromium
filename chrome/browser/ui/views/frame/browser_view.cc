@@ -1044,7 +1044,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   // container.
   auto lens_overlay_view = std::make_unique<views::View>();
   lens_overlay_view->SetID(VIEW_ID_LENS_OVERLAY);
-  lens_overlay_view->SetVisible(true);
+  lens_overlay_view->SetVisible(false);
   lens_overlay_view->SetLayoutManager(std::make_unique<views::FillLayout>());
   lens_overlay_view_ =
       contents_container->AddChildView(std::move(lens_overlay_view));

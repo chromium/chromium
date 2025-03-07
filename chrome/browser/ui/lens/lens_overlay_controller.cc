@@ -2221,6 +2221,7 @@ void LensOverlayController::ShowOverlay() {
   // If the view already exists, we just need to reshow it.
   if (overlay_view_) {
     // Restore the state to show the overlay.
+    overlay_view_->SetVisible(true);
     preselection_widget_anchor_->SetVisible(true);
     overlay_web_view_->SetVisible(true);
 
@@ -2235,6 +2236,7 @@ void LensOverlayController::ShowOverlay() {
 
   // Create the views that will house our UI.
   overlay_view_ = CreateViewForOverlay();
+  overlay_view_->SetVisible(true);
 
   // Sanity check that the overlay view is above the contents web view.
   auto* parent_view = contents_web_view->parent();
@@ -2261,6 +2263,7 @@ void LensOverlayController::HideOverlay() {
   // so that the overlay can be re-shown without creating a new web view.
   preselection_widget_anchor_->SetVisible(false);
   overlay_web_view_->SetVisible(false);
+  MaybeHideSharedOverlayView();
 
   SetLiveBlur(false);
   HidePreselectionBubble();
@@ -2268,6 +2271,20 @@ void LensOverlayController::HideOverlay() {
   auto* contents_web_view = tab_->GetBrowserWindowInterface()->GetWebView();
   CHECK(contents_web_view);
   contents_web_view->SetEnabled(true);
+}
+
+void LensOverlayController::MaybeHideSharedOverlayView() {
+  if (!overlay_view_) {
+    return;
+  }
+  for (views::View* child : overlay_view_->children()) {
+    if (child->GetVisible()) {
+      // If any child is visible, it is being used by another tab so do not hide
+      // the overlay view.
+      return;
+    }
+  }
+  overlay_view_->SetVisible(false);
 }
 
 void LensOverlayController::CloseUIPart2(
@@ -2361,6 +2378,7 @@ void LensOverlayController::CloseUIPart2(
     overlay_view_->RemoveChildViewT(
         std::exchange(preselection_widget_anchor_, nullptr));
     overlay_view_->RemoveChildViewT(std::exchange(overlay_web_view_, nullptr));
+    MaybeHideSharedOverlayView();
     overlay_view_ = nullptr;
   }
 
@@ -2534,7 +2552,6 @@ raw_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
   // Grab the host view for the overlay which is owned by the browser view.
   auto* host_view = tab_->GetBrowserWindowInterface()->LensOverlayView();
   CHECK(host_view);
-  CHECK(host_view->GetVisible());
 
   // Setup a preselection anchor view. Usually bubbles are anchored to top
   // chrome, but top chrome is not always visible when our overlay is visible.
