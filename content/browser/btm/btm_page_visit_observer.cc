@@ -62,6 +62,10 @@ class NavigationState
     filter_.AddAccess(url, op);
   }
 
+  void RecordServerRedirectAtChainIndex(size_t redirect_chain_index) {
+    server_redirect_chain_indices_.push_back(redirect_chain_index);
+  }
+
   // Returns the navigation info paired with the cookie access of the final
   // (i.e. committed) URL of the navigation.
   std::pair<BtmNavigationInfo, BtmDataAccessType> CreateNavigationInfo(
@@ -70,21 +74,35 @@ class NavigationState
 
     // Populate navigation.server_redirects.
     std::vector<BtmDataAccessType> accesses;
-    filter_.Filter(navigation_handle.GetRedirectChain(), &accesses);
-    for (size_t i = 1; i < navigation_handle.GetRedirectChain().size(); ++i) {
+    std::vector<GURL> urls;
+    const std::vector<GURL>& redirect_chain =
+        navigation_handle.GetRedirectChain();
+    for (const size_t index : server_redirect_chain_indices_) {
+      urls.push_back(redirect_chain[index]);
+    }
+    // We need to add the final committed URL to `urls` because
+    // `filter_.Filter()` requires that `urls` contain all URLs that `filter_`
+    // recorded an access type for.
+    urls.push_back(navigation_handle.GetURL());
+    CHECK(filter_.Filter(urls, &accesses));
+    for (size_t i = 0; i < server_redirect_chain_indices_.size(); ++i) {
       navigation.server_redirects.emplace_back(
-          navigation_handle.GetRedirectChain()[i - 1],
-          btm::GetRedirectSourceId(&navigation_handle, i - 1),
-          IsWrite(accesses[i - 1]));
+          urls[i],
+          btm::GetRedirectSourceId(&navigation_handle,
+                                   server_redirect_chain_indices_[i]),
+          IsWrite(accesses[i]));
     }
 
-    return {std::move(navigation), accesses.back()};
+    BtmDataAccessType committed_url_access_type = accesses.back();
+
+    return {std::move(navigation), committed_url_access_type};
   }
 
   NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
 
  private:
   CookieAccessFilter filter_;
+  std::vector<size_t> server_redirect_chain_indices_;
 };
 
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(NavigationState);
@@ -99,6 +117,30 @@ void BtmPageVisitObserver::DidStartNavigation(
   }
 
   NavigationState::CreateForNavigationHandle(*navigation_handle);
+}
+
+void BtmPageVisitObserver::DidRedirectNavigation(
+    NavigationHandle* navigation_handle) {
+  // Ignore irrelevant navigations.
+  if (navigation_handle->IsSameDocument() ||
+      !navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  NavigationState* navigation_state =
+      NavigationState::GetForNavigationHandle(*navigation_handle);
+  if (!navigation_state) {
+    // We've started observing this navigation after it started. We have no idea
+    // if we've missed redirects already or not, so we skip recording anything
+    // so as not to give bad info.
+    return;
+  }
+
+  // The last item in the redirect chain is the current navigation target (the
+  // destination of the redirect). The most recent redirector is the one before
+  // that.
+  size_t redirector_index = navigation_handle->GetRedirectChain().size() - 2;
+  navigation_state->RecordServerRedirectAtChainIndex(redirector_index);
 }
 
 void BtmPageVisitObserver::DidFinishNavigation(

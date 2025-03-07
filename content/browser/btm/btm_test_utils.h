@@ -113,15 +113,46 @@ base::expected<WebContents*, std::string> OpenInNewTab(
 // Helper function for performing client side cookie access via JS.
 void AccessCookieViaJSIn(WebContents* web_contents, RenderFrameHost* frame);
 
+// Redirect `frame` in `web_contents` to `target_url` via an HTML `<meta>` tag.
+// If `expected_commit_url` is non-null, asserts a final commit URL of
+// `expected_commit_url`; otherwise, asserts a final commit URL of `target_url`.
 [[nodiscard]] testing::AssertionResult ClientSideRedirectViaMetaTag(
     WebContents* web_contents,
     RenderFrameHost* frame,
-    const GURL& target_url);
+    const GURL& target_url,
+    const std::optional<const GURL>& expected_commit_url = std::nullopt);
 
+// Redirect `frame` in `web_contents` to `target_url` via a JavaScript call to
+// `window.location.replace()`. If `expected_commit_url` is non-null, asserts a
+// final commit URL of `expected_commit_url`; otherwise, asserts a final commit
+// URL of `target_url`.
 [[nodiscard]] testing::AssertionResult ClientSideRedirectViaJS(
     WebContents* web_contents,
     RenderFrameHost* frame,
-    const GURL& target_url);
+    const GURL& target_url,
+    const std::optional<const GURL>& expected_commit_url = std::nullopt);
+
+enum class BtmClientRedirectMethod : int {
+  kMetaTag = 0,
+  kJsWindowLocationReplace = 1,
+  kRedirectLikeNavigation = 2,
+};
+
+const auto kAllBtmClientRedirectMethods =
+    testing::Values(BtmClientRedirectMethod::kMetaTag,
+                    BtmClientRedirectMethod::kJsWindowLocationReplace,
+                    BtmClientRedirectMethod::kRedirectLikeNavigation);
+
+std::string StringifyBtmClientRedirectMethod(BtmClientRedirectMethod method);
+
+// Redirect `web_contents` to `redirect_url` using the client redirect method
+// `redirect_method`. Expects the final commit URL to be `expected_commit_url`
+// if non-null, or else `redirect_url`.
+[[nodiscard]] testing::AssertionResult PerformClientRedirect(
+    BtmClientRedirectMethod redirect_method,
+    WebContents* web_contents,
+    const GURL& redirect_url,
+    const std::optional<const GURL>& expected_commit_url = std::nullopt);
 
 // Helper function to navigate to /set-cookie on `host` and wait for
 // OnCookiesAccessed() to be called.
