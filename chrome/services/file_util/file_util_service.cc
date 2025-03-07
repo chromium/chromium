@@ -11,7 +11,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/services/file_util/buildflags.h"
 #include "components/safe_browsing/buildflags.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -20,7 +19,7 @@
 #include "chrome/services/file_util/safe_archive_analyzer.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/services/file_util/zip_file_creator.h"
 #endif
 
@@ -35,7 +34,7 @@ FileUtilService::FileUtilService(
 
 FileUtilService::~FileUtilService() = default;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void FileUtilService::BindZipFileCreator(
     mojo::PendingReceiver<chrome::mojom::ZipFileCreator> receiver) {
   new chrome::ZipFileCreator(std::move(receiver));  // self deleting

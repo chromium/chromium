@@ -4,6 +4,8 @@
 
 #include "chrome/services/file_util/fake_file_util_service.h"
 
+#include "build/build_config.h"
+
 FakeFileUtilService::FakeFileUtilService(
     mojo::PendingReceiver<chrome::mojom::FileUtilService> receiver)
     : receiver_(this, std::move(receiver)) {}
@@ -16,7 +18,7 @@ MockSafeArchiveAnalyzer& FakeFileUtilService::GetSafeArchiveAnalyzer() {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void FakeFileUtilService::BindZipFileCreator(
     mojo::PendingReceiver<chrome::mojom::ZipFileCreator> receiver) {
   NOTREACHED();

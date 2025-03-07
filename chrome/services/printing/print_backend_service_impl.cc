@@ -28,7 +28,6 @@
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/printing/printing_init.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "components/crash/core/common/crash_keys.h"
@@ -516,7 +515,7 @@ void PrintBackendServiceImpl::GetDefaultPrinterName(
       mojom::DefaultPrinterNameResult::NewDefaultPrinterName(default_printer));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void PrintBackendServiceImpl::GetPrinterSemanticCapsAndDefaults(
     const std::string& printer_name,
     mojom::PrintBackendService::GetPrinterSemanticCapsAndDefaultsCallback
@@ -538,7 +537,7 @@ void PrintBackendServiceImpl::GetPrinterSemanticCapsAndDefaults(
       mojom::PrinterSemanticCapsAndDefaultsResult::NewPrinterCaps(
           std::move(printer_caps)));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void PrintBackendServiceImpl::FetchCapabilities(
     const std::string& printer_name,
