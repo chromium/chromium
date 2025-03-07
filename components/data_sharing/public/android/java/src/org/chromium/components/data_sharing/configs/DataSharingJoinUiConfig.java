@@ -7,23 +7,26 @@ package org.chromium.components.data_sharing.configs;
 import android.graphics.Bitmap;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.data_sharing.SharedDataPreview;
 import org.chromium.components.sync.protocol.GroupData;
 
 /** Config class for the Data Sharing Join UI. */
+@NullMarked
 public class DataSharingJoinUiConfig {
 
     // --- Group related Info ---
-    private GroupToken mGroupToken;
+    private @Nullable GroupToken mGroupToken;
 
     // --- Tab Group Details ---
-    private Bitmap mPreviewImage;
-    private SharedDataPreview mSharedDataPreview;
+    private @Nullable Bitmap mPreviewImage;
+    private @Nullable SharedDataPreview mSharedDataPreview;
 
     // --- Join Usage Config ---
-    private JoinCallback mJoinCallback;
-    private DataSharingUiConfig mCommonConfig;
+    private @Nullable JoinCallback mJoinCallback;
+    private @Nullable DataSharingUiConfig mCommonConfig;
 
     /** Callback interface for data sharing join UI events. */
     public interface JoinCallback {
@@ -49,33 +52,33 @@ public class DataSharingJoinUiConfig {
         this.mCommonConfig = builder.mCommonConfig;
     }
 
-    public GroupToken getGroupToken() {
+    public @Nullable GroupToken getGroupToken() {
         return mGroupToken;
     }
 
-    public Bitmap getPreviewImage() {
+    public @Nullable Bitmap getPreviewImage() {
         return mPreviewImage;
     }
 
-    public SharedDataPreview getSharedDataPreview() {
+    public @Nullable SharedDataPreview getSharedDataPreview() {
         return mSharedDataPreview;
     }
 
-    public JoinCallback getJoinCallback() {
+    public @Nullable JoinCallback getJoinCallback() {
         return mJoinCallback;
     }
 
-    public DataSharingUiConfig getCommonConfig() {
+    public @Nullable DataSharingUiConfig getCommonConfig() {
         return mCommonConfig;
     }
 
     // Builder class
     public static class Builder {
-        private GroupToken mGroupToken;
-        private Bitmap mPreviewImage;
-        private SharedDataPreview mSharedDataPreview;
-        private JoinCallback mJoinCallback;
-        private DataSharingUiConfig mCommonConfig;
+        private @Nullable GroupToken mGroupToken;
+        private @Nullable Bitmap mPreviewImage;
+        private @Nullable SharedDataPreview mSharedDataPreview;
+        private @Nullable JoinCallback mJoinCallback;
+        private @Nullable DataSharingUiConfig mCommonConfig;
 
         /**
          * Sets the group token for the data sharing group.

@@ -8,19 +8,21 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.data_sharing.GroupMember;
 
 /** Config class for getting avatar as bitmap. */
+@NullMarked
 public final class DataSharingAvatarBitmapConfig {
 
-    private final Context mContext;
-    private final GroupMember mGroupMember;
+    private final @Nullable Context mContext;
+    private final @Nullable GroupMember mGroupMember;
     private final boolean mIsDarkMode;
     private final int mAvatarSizeInPixels;
     private final @ColorInt int mAvatarFallbackColor;
-    private final DataSharingAvatarCallback mDataSharingAvatarCallback;
+    private final @Nullable DataSharingAvatarCallback mDataSharingAvatarCallback;
 
     /** Interface used to pass the result of avatar loading. */
     @FunctionalInterface
@@ -43,11 +45,11 @@ public final class DataSharingAvatarBitmapConfig {
         this.mDataSharingAvatarCallback = builder.mDataSharingAvatarCallback;
     }
 
-    public Context getContext() {
+    public @Nullable Context getContext() {
         return mContext;
     }
 
-    public GroupMember getGroupMember() {
+    public @Nullable GroupMember getGroupMember() {
         return mGroupMember;
     }
 
@@ -63,18 +65,18 @@ public final class DataSharingAvatarBitmapConfig {
         return mAvatarFallbackColor;
     }
 
-    public DataSharingAvatarCallback getDataSharingAvatarCallback() {
+    public @Nullable DataSharingAvatarCallback getDataSharingAvatarCallback() {
         return mDataSharingAvatarCallback;
     }
 
     /** Builder class for {@link DataSharingAvatarBitmapConfig}. */
     public static final class Builder {
-        private Context mContext;
-        private GroupMember mGroupMember;
+        private @Nullable Context mContext;
+        private @Nullable GroupMember mGroupMember;
         private boolean mIsDarkMode;
         private int mAvatarSizeInPixels;
         private @ColorInt int mAvatarFallbackColor;
-        private DataSharingAvatarCallback mDataSharingAvatarCallback;
+        private @Nullable DataSharingAvatarCallback mDataSharingAvatarCallback;
 
         /**
          * Sets the application context.

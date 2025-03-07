@@ -6,12 +6,16 @@ package org.chromium.components.data_sharing;
 
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Preview of shared data. */
 @JNINamespace("data_sharing")
+@NullMarked
 public class SharedDataPreview {
     public final SharedTabGroupPreview sharedTabGroupPreview;
     // Remove this when downstream change lands.
-    public final SharedTabGroupPreview sharedEntities = null;
+    public final @Nullable SharedTabGroupPreview sharedEntities = null;
 
     public SharedDataPreview(SharedTabGroupPreview sharedTabGroupPreview) {
         this.sharedTabGroupPreview = sharedTabGroupPreview;
