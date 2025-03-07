@@ -39,6 +39,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test.h"
@@ -603,6 +604,26 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallTestNoConsoleErrors,
   loop.Run();
 
   EXPECT_TRUE(delegate->NoConsoleErrors());
+}
+
+// Valid icon measures the `kSuccess` histogram for chrome urls. This can't
+// exist closer to `ManifestIconBrowserTest`, because the `shell()` does not
+// load chrome urls.
+IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallTestNoConsoleErrors,
+                       ChromeUrlHistograms) {
+  base::HistogramTester tester;
+  GURL password_manager("chrome://password-manager/");
+
+  // This involves loading and fetching the icons specified in the manifest, so
+  // histograms are automatically measured.
+  EXPECT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), password_manager));
+
+  tester.ExpectBucketCount("WebApp.ManifestIconDownloader.Result",
+                           content::ManifestIconDownloader::Result::kSuccess,
+                           1);
+  tester.ExpectBucketCount("WebApp.ManifestIconDownloader.ChromeUrl.Result",
+                           content::ManifestIconDownloader::Result::kSuccess,
+                           1);
 }
 
 }  // namespace web_app

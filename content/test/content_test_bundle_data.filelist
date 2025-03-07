@@ -7490,13 +7490,17 @@ data/locks/shared_worker.js
 data/long_response_body.html
 data/mac/mac_system_hotkeys.plist
 data/mac/mac_system_hotkeys_sparse.plist
+data/manifest/128x128-red.png
 data/manifest/404-manifest.html
+data/manifest/bad-icon.png
 data/manifest/dynamic-manifest.html
 data/manifest/empty-manifest.html
 data/manifest/empty-manifest.json
 data/manifest/file-handler-manifest.html
 data/manifest/file-handler-manifest.json
 data/manifest/hung-manifest.html
+data/manifest/icon-manifest.html
+data/manifest/icon-manifest.json
 data/manifest/manifest-cors.json
 data/manifest/manifest-cors.json.mock-http-headers
 data/manifest/no-manifest.html
