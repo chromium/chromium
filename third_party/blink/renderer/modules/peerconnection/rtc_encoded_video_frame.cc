@@ -223,8 +223,8 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata(
     }
     if (std::optional<base::TimeDelta> sender_capture_time_offset =
             delegate_->SenderCaptureTimeOffset()) {
-      metadata->setSenderCaptureTimeOffset(CalculateRTCEncodedFrameTimestamp(
-          context, base::TimeTicks() + *sender_capture_time_offset));
+      metadata->setSenderCaptureTimeOffset(CalculateRTCEncodedFrameTimeDelta(
+          context, *sender_capture_time_offset));
     }
   }
 
