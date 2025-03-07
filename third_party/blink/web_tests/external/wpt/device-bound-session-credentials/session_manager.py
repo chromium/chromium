@@ -21,6 +21,7 @@ class SessionManager:
         self.authorization_value = None
         self.send_challenge_early = False
         self.cookie_has_no_attributes = False
+        self.scope_origin = None
 
     def create_new_session(self):
         session_id = str(len(self.session_to_key_map))
@@ -56,6 +57,10 @@ class SessionManager:
         if cookie_has_no_attributes is not None:
             self.cookie_has_no_attributes = cookie_has_no_attributes
 
+        scope_origin = configuration.get("scopeOrigin")
+        if scope_origin is not None:
+            self.scope_origin = scope_origin
+
     def get_should_refresh_end_session(self):
         return self.should_refresh_end_session
 
@@ -73,10 +78,15 @@ class SessionManager:
             cookie_parts.append(cookie_attributes)
         value_of_set_cookie = "; ".join(cookie_parts)
 
+        scope_origin = ""
+        if self.scope_origin is not None:
+            scope_origin = self.scope_origin
+
         response_body = {
             "session_identifier": session_id,
             "refresh_url": "/device-bound-session-credentials/refresh_session.py",
             "scope": {
+                "origin": scope_origin,
                 "include_site": True,
                 "scope_specification" : [
                     { "type": "exclude", "domain": request.url_parts.hostname, "path": "/device-bound-session-credentials/request_early_challenge.py" },
