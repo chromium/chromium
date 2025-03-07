@@ -60,10 +60,12 @@ if (enable_me2me_host) {
     }
   }
 
-  copy("remoting_me2me_host_copy_crash_uploader") {
-    sources = [ "$root_build_dir/remoting_crash_uploader" ]
-    outputs = [ "$root_build_dir/remoting/crash-uploader" ]
-    deps = [ "//remoting/host/crash:remoting_crash_uploader" ]
+  if (!is_linux || !enable_chromoting_crashpad) {
+    copy("remoting_me2me_host_copy_crash_uploader") {
+      sources = [ "$root_build_dir/remoting_crash_uploader" ]
+      outputs = [ "$root_build_dir/remoting/crash-uploader" ]
+      deps = [ "//remoting/host/crash:remoting_crash_uploader" ]
+    }
   }
 
   copy("remoting_me2me_host_copy_libremoting_core") {

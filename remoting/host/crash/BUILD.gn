@@ -55,13 +55,17 @@ source_set("crash_uploader_main") {
   ]
 }
 
-executable("remoting_crash_uploader") {
-  sources = [ "crash_uploader_entry_point.cc" ]
+# For Linux we've completely moved to Crashpad,
+# so no need to build old crash uploader. crbug.com/398957315
+if (!is_linux || !enable_chromoting_crashpad) {
+  executable("remoting_crash_uploader") {
+    sources = [ "crash_uploader_entry_point.cc" ]
 
-  deps = [
-    ":crash_uploader_main_headers",
-    "//remoting/host:remoting_core",
-  ]
+    deps = [
+      ":crash_uploader_main_headers",
+      "//remoting/host:remoting_core",
+    ]
+  }
 }
 
 if (is_linux && enable_chromoting_crashpad) {
