@@ -436,6 +436,11 @@ struct PickleTraits<T> {
     }
     // Every non-negative integer will fit in a size_t.
     const size_t size = static_cast<size_t>(size_as_int);
+    if (size > iter.RemainingBytes()) {
+      // Every item in the container must consume at least 1 byte, so this size
+      // cannot possibly be correct.
+      return std::nullopt;
+    }
     if constexpr (internal::IsConstructableFromCharLikeIteratorPair<T>) {
       // Highly efficient path for std::string, std::vector<uint8_t>, etc.
       const char* data = nullptr;

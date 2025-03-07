@@ -88,7 +88,16 @@ class BASE_EXPORT PickleIterator {
     return !!GetReadPointerAndAdvance(num_bytes);
   }
 
+  // Returns true if all the data in the Pickle has been consumed.
   bool ReachedEnd() const { return read_index_ == end_index_; }
+
+  // Returns the number of unused bytes remaining in the Pickle. Most code
+  // should not use this. Just call a Read* method and check the return value.
+  // Where this is useful is if you need to allocate space for a container
+  // before reading the data that will fill the container. In that case, this
+  // method can be used to check if the size is plausible before attempting the
+  // allocation.
+  size_t RemainingBytes() const { return end_index_ - read_index_; }
 
  private:
   // Read Type from Pickle.
