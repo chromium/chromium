@@ -4,6 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES, MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createAndSetVoices, createApp} from './common.js';
@@ -85,8 +86,8 @@ suite('SpeechUsesMaxTextLength', () => {
       'This is a mistake Is it pinstripe or plaid Is it two piece or three} ' +
       'Pinstripe plaid what does he need';
 
-  // Sentence longer than maxSpeechLengthForRemoteVoices but shorter than
-  // maxSpeechLengthForWordBoundaries.
+  // Sentence longer than MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES but shorter than
+  // MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES.
   const midLengthSentence =
       'She is late so I\'m off to go scream in a jar She\'s not late ' +
       'Gatsby Stay where you are In a tiny little cabin This is not the time ' +
@@ -124,7 +125,7 @@ suite('SpeechUsesMaxTextLength', () => {
     chrome.readingMode.onConnected = () => {};
 
     app = await createApp();
-    maxSpeechLength = app.maxSpeechLengthForRemoteVoices;
+    maxSpeechLength = MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES;
     speechSynthesis = new FakeSpeechSynthesis();
     app.synth = speechSynthesis;
   });
@@ -188,15 +189,15 @@ suite('SpeechUsesMaxTextLength', () => {
   });
 
   test('correct max length used with natural voices', () => {
-    assertGT(midLengthSentence.length, app.maxSpeechLengthForRemoteVoices);
-    assertLT(midLengthSentence.length, app.maxSpeechLengthForWordBoundaries);
+    assertGT(midLengthSentence.length, MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES);
+    assertLT(midLengthSentence.length, MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES);
 
     // With the remote voices, midSentenceLength is too long and
     // getAccessibleTextLength shortens the text.
     assertTrue(app.isTextTooLong(midLengthSentence.length));
     assertLT(
         app.getAccessibleTextLength(midLengthSentence),
-        app.maxSpeechLengthForRemoteVoices);
+        MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES);
 
 
     createAndSetVoices(app, speechSynthesis, [
@@ -207,7 +208,7 @@ suite('SpeechUsesMaxTextLength', () => {
     // <if expr="not is_chromeos">
     assertFalse(app.isTextTooLong(midLengthSentence.length));
     const boundary = app.getAccessibleTextLength(midLengthSentence);
-    assertGT(boundary, app.maxSpeechLengthForRemoteVoices);
+    assertGT(boundary, MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES);
     assertEquals(boundary, midLengthSentence.length);
     // </if>
 
@@ -220,7 +221,7 @@ suite('SpeechUsesMaxTextLength', () => {
     createAndSetVoices(app, speechSynthesis, [
       {lang: 'en-us', name: 'Google Kristoff (Natural)', localService: true},
     ]);
-    assertGT(longSentence.length, app.maxSpeechLengthForWordBoundaries);
+    assertGT(longSentence.length, MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES);
 
     // On ChromeOS, we don't care about the length of text if we're using
     // local voices.

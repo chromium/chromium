@@ -10,7 +10,7 @@ export {PageCallbackRouter} from '//resources/cr_components/color_change_listene
 export type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 export type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 export type {AppElement, WordBoundaryState} from './app.js';
-export {currentReadHighlightClass, PauseActionSource, previousReadHighlightClass, WordBoundaryMode} from './app.js';
+export {currentReadHighlightClass, MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES, MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES, PauseActionSource, previousReadHighlightClass, WordBoundaryMode} from './app.js';
 export {AppStyleUpdater} from './app_style_updater.js';
 export {getCurrentSpeechRate, playFromSelectionTimeout, spinnerDebounceTimeout, ToolbarEvent} from './common.js';
 export {getNewIndex, isArrow, isForwardArrow, isHorizontalArrow} from './keyboard_util.js';

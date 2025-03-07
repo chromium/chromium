@@ -47,6 +47,18 @@ const linkDataAttribute = 'link';
 // by other characters.
 const IGNORED_HIGHLIGHT_CHARACTERS_REGEX: RegExp = /^[.,!?'"(){}\[\]]+$/;
 
+// The maximum speech length that should be used with remote voices
+// due to a TTS engine bug with voices timing out on too-long text.
+export const MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES: number = 175;
+
+// This corresponds to what would be more than a 2 second delay between
+// sentences.
+export const MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES: number = 250;
+
+// Punctuation that is reasonable to splice audio on if text is too long.
+const SPLICEABLE_PUNCTUATION_ARRAY = [',', '(', ')', '-', '[', ']', '{', '}'];
+
+
 // A two-way map where each key is unique and each value is unique. The keys are
 // DOM nodes and the values are numbers, representing AXNodeIDs.
 class TwoWayMap<K, V> extends Map<K, V> {
@@ -311,11 +323,6 @@ export class AppElement extends AppElementBase {
 
   private imagesEnabled: boolean = false;
 
-  maxSpeechLengthForRemoteVoices: number = 175;
-  // This corresponds to what would be more than a 2 second delay between
-  // sentences.
-  maxSpeechLengthForWordBoundaries: number = 250;
-
   wordBoundaryState: WordBoundaryState = {
     mode: WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED,
     speechUtteranceStartIndex: 0,
@@ -328,10 +335,6 @@ export class AppElement extends AppElementBase {
   firstTextNodeSetForReadAloud: number|null = null;
 
   speechSynthesisLanguage: string;
-
-  // Punctuation that is reasonable to splice audio on if text is too long.
-  private spliceablePunctuationArray = [',', '(', ')', '-', '[', ']', '{', '}'];
-
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -1795,8 +1798,8 @@ export class AppElement extends AppElementBase {
   // Gets the accessible text boundary for the given string.
   getAccessibleTextLength(utteranceText: string): number {
     const maxSpeechLength = this.selectedVoice_?.localService ?
-        this.maxSpeechLengthForWordBoundaries :
-        this.maxSpeechLengthForRemoteVoices;
+        MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES :
+        MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES;
 
     // Splicing on punctuation won't work for all locales, but since this is a
     // simple strategy for splicing text in languages that do use these
@@ -1806,8 +1809,7 @@ export class AppElement extends AppElementBase {
     // TODO: crub.com/1474951 - Investigate if we can utilize comma splices
     // and splices on other punctuation directly in the utils methods called by
     // #getAccessibleBoundary.
-    for (let i = 0; i < this.spliceablePunctuationArray.length; i++) {
-      const punctuationString = this.spliceablePunctuationArray[i];
+    for (const punctuationString of SPLICEABLE_PUNCTUATION_ARRAY) {
       let utteranceSubstring = utteranceText.substring(0, maxSpeechLength);
       let lastPunctuationIndex =
           utteranceSubstring.lastIndexOf(punctuationString);
@@ -1936,6 +1938,15 @@ export class AppElement extends AppElementBase {
 
     message.onend = () => {
       if (isTextTooLong) {
+        // If we've had to splice the text because it was too long, we
+        // should offset word boundary highlights by how long the previous
+        // part of the text segment was. Otherwise, highlights will always
+        // show on the first part of the segment.
+        // e.g. with the phrase "This is a long sentence." if we splice the
+        // sentence into "This is a long" and "sentence," when we speak
+        // "sentence," we need to offset the highlight by the length of
+        // "This is a long" to ensure that "sentence" is highlighted and "This"
+        // is not.
         this.wordBoundaryState = {
           ...this.wordBoundaryState,
           tooLongTextOffset:
@@ -2100,8 +2111,8 @@ export class AppElement extends AppElementBase {
 
   isTextTooLong(textLength: number): boolean {
     const maxSpeechLength = this.selectedVoice_?.localService ?
-        this.maxSpeechLengthForWordBoundaries :
-        this.maxSpeechLengthForRemoteVoices;
+        MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES :
+        MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES;
 
     if (!chrome.readingMode.isChromeOsAsh && this.selectedVoice_ &&
         isNatural(this.selectedVoice_)) {
