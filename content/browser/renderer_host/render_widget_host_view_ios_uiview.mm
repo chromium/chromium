@@ -438,25 +438,36 @@ static void* kObservingContext = &kObservingContext;
               options:(BETextReplacementOptions)options
     completionHandler:
         (void (^)(NSArray<UITextSelectionRect*>* rects))completionHandler {
+  if (replacementText == originalText) {
+    completionHandler(@[]);
+    return;
+  }
+
   auto* state = [self editState];
   if (!state) {
-    _view->ImeCommitText(base::SysNSStringToUTF16(replacementText),
-                         gfx::Range::InvalidRange(), 0);
-  } else {
-    auto len = originalText.length;
-    if (state->selection.length() == 0) {
-      auto pos = state->selection.start();
-      auto start = pos > len ? pos - len : 0;
-      auto end = start + len;
-      gfx::Range replacementRange(start, end);
-      _view->ImeCommitText(base::SysNSStringToUTF16(replacementText),
-                           replacementRange, 0);
-    } else {
-      _view->ImeCommitText(base::SysNSStringToUTF16(replacementText),
-                           state->selection, 0);
-    }
-    gfx::Range replacementRange(0, originalText.length);
+    completionHandler(@[]);
+    return;
   }
+
+  auto originalRange = state->selection;
+  if (state->selection.is_empty()) {
+    auto pos = state->selection.start();
+    auto len = originalText.length;
+    auto start = pos > len ? pos - len : 0;
+    auto end = start + len;
+    originalRange = gfx::Range(start, end);
+  }
+
+  auto textForRange =
+      [[self editText] substringWithRange:originalRange.ToNSRange()];
+  if (textForRange != originalText) {
+    completionHandler(@[]);
+    return;
+  }
+
+  _view->ImeCommitText(base::SysNSStringToUTF16(replacementText), originalRange,
+                       0);
+
   // TODO: bug 388320178 - still don't know what to do with this.
   completionHandler(@[]);
 }
