@@ -897,19 +897,6 @@ class NoVarySearchPrerenderBrowserTest : public PrerenderBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-class DisabledNoVarySearchPrerenderBrowserTest : public PrerenderBrowserTest {
- public:
-  DisabledNoVarySearchPrerenderBrowserTest() {
-    feature_list_.InitAndDisableFeature(
-        blink::features::kPrerender2NoVarySearch);
-  }
-
-  ~DisabledNoVarySearchPrerenderBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 class NoVarySearchHintPrerenderHostObserver : public PrerenderHost::Observer {
  public:
   explicit NoVarySearchHintPrerenderHostObserver(
@@ -1959,28 +1946,6 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
       blink::mojom::SpeculationEagerness::kEager)});
 }
 
-// Tests that the speculationrules No-Vary-Search hint is not populated for the
-// PrerenderHost if kPrerender2NoVarySearch feature is not enabled.
-IN_PROC_BROWSER_TEST_F(DisabledNoVarySearchPrerenderBrowserTest,
-                       NoVarySearchHintIsNotPopulated) {
-  const GURL kInitialUrl = GetUrl("/empty.html");
-  const GURL kPrerenderingUrl = GetUrl("/no_vary_search_a.html?prerender");
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
-
-  // Start prerendering `kPrerenderingUrl`.
-  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
-  FrameTreeNodeId host_id =
-      AddPrerender(kPrerenderingUrl, R"(params=(\\\"a\\\"))");
-  auto* host =
-      web_contents_impl()->GetPrerenderHostRegistry()->FindNonReservedHostById(
-          host_id);
-  ASSERT_TRUE(host);
-  ASSERT_FALSE(host->no_vary_search_hint().has_value());
-}
-
 // Tests that the speculationrules trigger works in the presence of
 // No-Vary-Search for inexact URL in the presence of main frame navigation.
 IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
@@ -2032,93 +1997,6 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
       /*accurate=*/true,
       /*ready_time=*/kMockElapsedTime,
       blink::mojom::SpeculationEagerness::kEager)});
-}
-
-// Test that activation is unsuccessful when navigating to an inexact URL
-// before No-Vary-Search header is back from the server, even if the
-// No-Vary-Search header is matching when it is received.
-IN_PROC_BROWSER_TEST_F(DisabledNoVarySearchPrerenderBrowserTest,
-                       NoVarySearchHintActivationUnsuccessful) {
-  const std::string kTestingRelativeUrl =
-      "/delayed_with_no_vary_search?prerender";
-  const std::string kPrerenderingRelativeUrl = kTestingRelativeUrl + "&a=5";
-  // Create a HTTP response to control prerendering main-frame navigation.
-  net::test_server::ControllableHttpResponse main_prerender_response(
-      embedded_test_server(), kPrerenderingRelativeUrl);
-
-  const std::string kNavigationRelativeUrl = kTestingRelativeUrl + "&a=3";
-  // Create a HTTP response to control main-frame navigation.
-  net::test_server::ControllableHttpResponse main_navigation_response(
-      embedded_test_server(), kNavigationRelativeUrl);
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
-  const GURL kPrerenderingUrl =
-      embedded_test_server()->GetURL(kPrerenderingRelativeUrl);
-  const GURL kNavigationUrl =
-      embedded_test_server()->GetURL(kNavigationRelativeUrl);
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
-
-  // Start prerendering `kPrerenderingUrl`.
-  content::test::PrerenderHostCreationWaiter host_creation_waiter;
-  AddPrerenderAsync(kPrerenderingUrl, R"(params=(\\\"a\\\"))");
-  FrameTreeNodeId host_id = host_creation_waiter.Wait();
-  auto* host =
-      web_contents_impl()->GetPrerenderHostRegistry()->FindNonReservedHostById(
-          host_id);
-  ASSERT_TRUE(host);
-
-  // Start to navigate to kNavigationUrl
-  std::unique_ptr<content::TestNavigationObserver> nav_observer =
-      test::PrerenderTestHelper::NavigatePrimaryPageAsync(*web_contents_impl(),
-                                                          kNavigationUrl);
-  auto* prerender_web_contents =
-      content::WebContents::FromFrameTreeNodeId(host_id);
-  content::test::PrerenderHostObserver host_observer(*prerender_web_contents,
-                                                     host_id);
-
-  NavigationRequest* nav_request =
-      web_contents_impl()->GetPrimaryFrameTree().root()->navigation_request();
-  ASSERT_FALSE(host->were_headers_received());
-  // Make sure PrerenderHostRegistry does not select this prerender as a
-  // potential prerender host to activate.
-  ASSERT_NE(host_id, web_contents_impl()
-                         ->GetPrerenderHostRegistry()
-                         ->FindPotentialHostToActivate(*nav_request));
-  // Make sure that the prerender host is not a match by IsUrlMatch.
-  ASSERT_FALSE(host->IsUrlMatch(kNavigationUrl));
-  main_prerender_response.WaitForRequest();
-  main_prerender_response.Send(
-      net::HTTP_OK, /*content_type=*/"text/html", /*content=*/"",
-      /*cookies=*/{}, /*extra_headers=*/{"No-Vary-Search: params=(\"a\")"});
-  host_observer.WaitForHeaders();
-  ASSERT_TRUE(host->were_headers_received());
-  // Make sure that, after receiving headers the prerender host is not a
-  // match by IsUrlMatch.
-  ASSERT_FALSE(host->IsUrlMatch(kNavigationUrl));
-  ASSERT_NE(host_id, web_contents_impl()
-                         ->GetPrerenderHostRegistry()
-                         ->FindPotentialHostToActivate(*nav_request));
-  // Advance the main navigation.
-  main_navigation_response.WaitForRequest();
-  main_navigation_response.Send(
-      net::HTTP_OK, /*content_type=*/"text/html", /*content=*/"",
-      /*cookies=*/{}, /*extra_headers=*/{"No-Vary-Search: params=(\"a\")"});
-  main_navigation_response.Done();
-  main_prerender_response.Done();
-
-  // Wait for the navigation to finish.
-  nav_observer->Wait();
-
-  // Check that the prerender host was not activated.
-  ASSERT_FALSE(host_observer.was_activated());
-
-  // Navigation should issue a request.
-  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kNavigationUrl);
 }
 
 // Tests that the speculationrules trigger works.

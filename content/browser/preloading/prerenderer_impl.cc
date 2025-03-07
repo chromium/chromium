@@ -288,8 +288,7 @@ bool PrerendererImpl::MaybePrerender(
   }
 
   std::optional<net::HttpNoVarySearchData> no_vary_search_hint;
-  if (base::FeatureList::IsEnabled(blink::features::kPrerender2NoVarySearch) &&
-      candidate->no_vary_search_hint) {
+  if (candidate->no_vary_search_hint) {
     no_vary_search_hint = no_vary_search::ParseHttpNoVarySearchDataFromMojom(
         candidate->no_vary_search_hint);
   }

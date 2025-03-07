@@ -333,29 +333,7 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class NoVarySearchHeaderPrerenderHostTest
-    : public PrerenderHostTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  NoVarySearchHeaderPrerenderHostTest() {
-    bool is_nvs_header_enabled = GetParam();
-    if (is_nvs_header_enabled) {
-      scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kPrerender2NoVarySearch);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          blink::features::kPrerender2NoVarySearch);
-    }
-  }
-
-  ~NoVarySearchHeaderPrerenderHostTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(NoVarySearchHeaderPrerenderHostTest, IsNoVarySearchHeaderSet) {
-  bool is_nvs_header_enabled = GetParam();
+TEST_F(PrerenderHostTest, IsNoVarySearchHeaderSet) {
   // Start prerendering a page.
   const GURL kPrerenderingUrl("https://example.com/next");
   FrameTreeNodeId prerender_frame_tree_node_id =
@@ -367,13 +345,8 @@ TEST_P(NoVarySearchHeaderPrerenderHostTest, IsNoVarySearchHeaderSet) {
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200 OK")
           .AddHeader("No-Vary-Search", "params=(\"a\")")
           .Build());
-  EXPECT_EQ(prerender_host->no_vary_search().has_value(),
-            is_nvs_header_enabled);
+  EXPECT_TRUE(prerender_host->no_vary_search().has_value());
 }
-
-INSTANTIATE_TEST_SUITE_P(PrerenderHostTest,
-                         NoVarySearchHeaderPrerenderHostTest,
-                         ::testing::Bool());
 
 TEST_F(PrerenderHostTest, Activate) {
   // Start prerendering a page.

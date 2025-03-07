@@ -529,8 +529,7 @@ void PrerenderHost::ReadyToCommitNavigation(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(blink::features::kPrerender2NoVarySearch) &&
-      navigation_request->response() &&
+  if (navigation_request->response() &&
       navigation_request->response()->parsed_headers &&
       navigation_request->response()
           ->parsed_headers->no_vary_search_with_parse_error) {

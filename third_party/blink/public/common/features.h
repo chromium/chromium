@@ -1338,9 +1338,10 @@ BLINK_COMMON_EXPORT extern const char
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kPrerender2EarlyDocumentLifecycleUpdate);
 
-// Prerender2 support for No-Vary-Search header. Enables prerender matching
-// at navigation time using non-exact URL matching based on the prerender
-// No-Vary-Search header.
+// This feature was used to launch Prerender2 support for No-Vary-Search header.
+// This work has finished and the old implementation was deleted. Now this flag
+// is just for injecting parameters through field trials as an umberella
+// feature.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrerender2NoVarySearch);
 
 // Enables to warm up compositor on certain loading event of prerender initial

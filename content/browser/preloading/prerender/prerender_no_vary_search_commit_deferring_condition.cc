@@ -13,7 +13,6 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/render_frame_host.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -39,11 +38,6 @@ PrerenderNoVarySearchCommitDeferringCondition::MaybeCreate(
     NavigationRequest& navigation_request,
     NavigationType navigation_type,
     std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id) {
-  // Don't create if No-Vary-Search support for prerender is not enabled.
-  if (!base::FeatureList::IsEnabled(blink::features::kPrerender2NoVarySearch)) {
-    return nullptr;
-  }
-
   // Don't create if this navigation is not for prerender page activation.
   if (navigation_type != NavigationType::kPrerenderedPageActivation) {
     return nullptr;
@@ -76,7 +70,6 @@ PrerenderNoVarySearchCommitDeferringCondition::
     : CommitDeferringCondition(navigation_request),
       candidate_prerender_frame_tree_node_id_(
           candidate_prerender_frame_tree_node_id) {
-  CHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2NoVarySearch));
   CHECK(candidate_prerender_frame_tree_node_id_);
 }
 
