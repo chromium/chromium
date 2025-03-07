@@ -49,8 +49,6 @@ class OfferNotificationBubbleControllerImpl
   const CreditCard* GetLinkedCard() const override;
   const AutofillOfferData* GetOffer() const override;
   bool IsIconVisible() const override;
-  bool ShouldIconExpand() const override;
-  void OnIconExpanded() override;
   void OnBubbleClosed(PaymentsUiClosedReason closed_reason) override;
 
   // Displays an offer notification for the given `offer` on the current page.
@@ -120,9 +118,6 @@ class OfferNotificationBubbleControllerImpl
   BubbleState bubble_state_ = BubbleState::kHidden;
 
   raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
-
-  // Denotes whether the icon should expand in the omnibox.
-  bool icon_should_expand_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
