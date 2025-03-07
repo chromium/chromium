@@ -4961,19 +4961,35 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupCreativeScanningMetadata) {
 
 TEST_F(BidderWorkletTest, GenerateBidTextConversions) {
   RunGenerateBidExpectingExpressionIsTrue(
-      R"(!('encodeUtf8' in browserSignals))");
-  RunGenerateBidExpectingExpressionIsTrue(
-      R"(!('decodeUtf8' in browserSignals))");
+      R"(!('protectedAudience' in globalThis))");
 }
 
 TEST_F(BidderWorkletTextConversionsTest, GenerateBidTextConversions) {
-  RunGenerateBidExpectingExpressionIsTrue(R"('encodeUtf8' in browserSignals)");
-  RunGenerateBidExpectingExpressionIsTrue(R"('decodeUtf8' in browserSignals)");
+  RunGenerateBidExpectingExpressionIsTrue(
+      R"('encodeUtf8' in protectedAudience)");
+  RunGenerateBidExpectingExpressionIsTrue(
+      R"('decodeUtf8' in protectedAudience)");
 
   RunGenerateBidExpectingExpressionIsTrue(
-      "browserSignals.encodeUtf8('A')[0] === 65");
+      "protectedAudience.encodeUtf8('A')[0] === 65");
   RunGenerateBidExpectingExpressionIsTrue(
-      "browserSignals.decodeUtf8(new Uint8Array([65, 32, 68])) === 'A D'");
+      "protectedAudience.decodeUtf8(new Uint8Array([65, 32, 68])) === 'A D'");
+}
+
+// Make sure we don't stomp over an existing user protectedAudience
+TEST_F(BidderWorkletTextConversionsTest, GenerateBidNoGlobalStomp) {
+  const char kScript[] = R"(
+    function protectedAudience() {
+      return {bid: 1, render:"https://response.test/"};
+    }
+
+    function generateBid() {
+      return protectedAudience();
+    }
+  )";
+
+  RunGenerateBidWithJavascriptExpectingResult(kScript,
+                                              TestBidBuilder().Build());
 }
 
 class BidderWorkletCreativeScanningTest : public BidderWorkletTest {
@@ -7853,20 +7869,31 @@ TEST_F(BidderWorkletTest, ReportWinTopLevelTimeout) {
 
 TEST_F(BidderWorkletTest, ReportWinTextConversions) {
   RunReportWinWithFunctionBodyExpectingResult(
-      "sendReportTo('https://foo.test?' + ('encodeUtf8' in browserSignals))",
-      GURL("https://foo.test/?false"));
-  RunReportWinWithFunctionBodyExpectingResult(
-      "sendReportTo('https://foo.test?' + ('decodeUtf8' in browserSignals))",
+      "sendReportTo('https://foo.test?' + ('protectedAudience' in globalThis))",
       GURL("https://foo.test/?false"));
 }
 
 TEST_F(BidderWorkletTextConversionsTest, ReportWinTextConversions) {
   RunReportWinWithFunctionBodyExpectingResult(
-      "sendReportTo('https://foo.test?' + ('encodeUtf8' in browserSignals))",
+      "sendReportTo('https://foo.test?' + ('encodeUtf8' in protectedAudience))",
       GURL("https://foo.test/?true"));
   RunReportWinWithFunctionBodyExpectingResult(
-      "sendReportTo('https://foo.test?' + ('decodeUtf8' in browserSignals))",
+      "sendReportTo('https://foo.test?' + ('decodeUtf8' in protectedAudience))",
       GURL("https://foo.test/?true"));
+}
+
+// Make sure we don't stomp over an existing user protectedAudience object.
+TEST_F(BidderWorkletTextConversionsTest, ReportWinNoGlobalStomp) {
+  const char kScript[] = R"(
+    function protectedAudience() {
+      sendReportTo("https://foo.test");
+    }
+
+    function reportWin() {
+      protectedAudience();
+    }
+  )";
+  RunReportWinWithJavascriptExpectingResult(kScript, GURL("https://foo.test"));
 }
 
 TEST_F(BidderWorkletTest, SendReportToLongUrl) {
