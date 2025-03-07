@@ -4294,11 +4294,6 @@
     "expiry_milestone": 116
   },
   {
-    "name": "esb-download-row-promo",
-    "owners": [ "awado@google.com", "jacastro@chromium.org", "chrome-counter-abuse-alerts@google.com" ],
-    "expiry_milestone": 129
-  },
-  {
     "name": "event-based-log-upload",
     "owners": [ "iremuguz@google.com", "chromeos-commercial-supportability@google.com" ],
     "expiry_milestone": 140

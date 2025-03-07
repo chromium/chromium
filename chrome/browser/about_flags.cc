@@ -10072,13 +10072,6 @@ const FeatureEntry kFeatureEntries[] = {
      STRING_VALUE_TYPE(ash::switches::kSealKey, "")},
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    {"esb-download-row-promo",
-     flag_descriptions::kEsbDownloadRowPromoFeatureName,
-     flag_descriptions::kEsbDownloadRowPromoFeatureDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(feature_engagement::kEsbDownloadRowPromoFeature)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
     {"enable-builtin-hls", flag_descriptions::kEnableBuiltinHlsName,
      flag_descriptions::kEnableBuiltinHlsDescription, kOsAll,
