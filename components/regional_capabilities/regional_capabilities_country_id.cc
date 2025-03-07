@@ -47,5 +47,13 @@ CountryId CountryIdHolder::GetRestricted(
     CountryAccessKey<RegionalCapabilitiesService> access_key) const {
   return GetRestricted(access_key.reason);
 }
+CountryId CountryIdHolder::GetRestricted(
+    CountryAccessKey<TemplateURLService> access_key) const {
+  return GetRestricted(access_key.reason);
+}
+CountryId CountryIdHolder::GetRestricted(
+    CountryAccessKey<ProfileInternalsHandler> access_key) const {
+  return GetRestricted(access_key.reason);
+}
 
 }  // namespace regional_capabilities

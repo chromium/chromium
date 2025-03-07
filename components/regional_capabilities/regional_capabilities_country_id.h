@@ -7,6 +7,9 @@
 
 #include "base/gtest_prod_util.h"
 
+class TemplateURLService;
+class ProfileInternalsHandler;
+
 namespace search_engines {
 class SearchEngineChoiceService;
 }
@@ -46,6 +49,8 @@ class CountryIdHolder final {
   CountryId GetRestricted(
       CountryAccessKey<search_engines::SearchEngineChoiceService>) const;
   CountryId GetRestricted(CountryAccessKey<RegionalCapabilitiesService>) const;
+  CountryId GetRestricted(CountryAccessKey<TemplateURLService>) const;
+  CountryId GetRestricted(CountryAccessKey<ProfileInternalsHandler>) const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(RegionalCapabilitiesCountryIdTest, GetRestricted);

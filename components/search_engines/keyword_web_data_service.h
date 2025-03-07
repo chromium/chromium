@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/timer/timer.h"
+#include "components/regional_capabilities/regional_capabilities_country_id.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/template_url_id.h"
 #include "components/webdata/common/web_data_service_base.h"
@@ -38,15 +39,22 @@ struct WDKeywordsResult {
 
     // Country associated with the keywords data, stored as a country ID,
     // see `country_codes::CountryStringToCountryID()`.
-    int builtin_keyword_country = 0;
+    std::optional<regional_capabilities::CountryIdHolder>
+        builtin_keyword_country;
 
     // Version number of the most recent starter pack data that has been merged
     // into the current keyword data.
     int starter_pack_version = 0;
 
+    Metadata();
+    Metadata(const Metadata&);
+    Metadata& operator=(const Metadata&);
+    ~Metadata();
+
     // Whether any metadata associated with the keywords bundle is set.
     bool HasBuiltinKeywordData() const {
-      return builtin_keyword_data_version != 0 || builtin_keyword_country != 0;
+      return builtin_keyword_data_version != 0 ||
+             builtin_keyword_country.has_value();
     }
 
     // Whether any metadata associated with the starter pack bundle is set.

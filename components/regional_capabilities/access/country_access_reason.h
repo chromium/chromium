@@ -26,6 +26,18 @@ enum class CountryAccessReason {
   // Used for computing of the list of prepopulated search engines.
   // Added with the initial access control migration, see crbug.com/328040066.
   kTemplateURLPrepopulateDataResolution,
+
+  // Used to determine whether the local database of search engines needs to
+  // be refreshed with the latest prepopulated data set. The value obtained
+  // from this access will be cached in the DB to compared later with the
+  // current client state.
+  // Added with the initial access control migration, see crbug.com/328040066.
+  kTemplateURLServiceDatabaseMetadataCaching,
+
+  // Used to print the profile country in the `chrome://profile-internals`
+  // debug page, which intends to help investigate b:380002162.
+  // Added with the initial access control migration, see crbug.com/328040066.
+  kProfileInternalsDisplayInDebugUi,
 };
 
 // Pass key inspired from `base::NonCopyablePassKey` that also allows specifying

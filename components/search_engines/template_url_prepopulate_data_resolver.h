@@ -5,10 +5,13 @@
 #ifndef COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_PREPOPULATE_DATA_RESOLVER_H_
 #define COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_PREPOPULATE_DATA_RESOLVER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ref.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/regional_capabilities/regional_capabilities_country_id.h"
+#include "components/search_engines/keyword_web_data_service.h"
 
 struct TemplateURLData;
 class PrefService;
@@ -18,6 +21,15 @@ class RegionalCapabilitiesService;
 }
 
 namespace TemplateURLPrepopulateData {
+
+// Provides context on TemplateURLPrepopulateData's data set.
+struct BuiltinKeywordsMetadata {
+  // Country for which we are selecting the built-in prepopulate data.
+  regional_capabilities::CountryIdHolder country_id;
+
+  // Version of the built-in prepopulated keywords data.
+  int data_version;
+};
 
 // Resolves prepopulated engines using on various information from the browser
 // context, like country, state of some prefs, etc.
@@ -50,6 +62,14 @@ class Resolver : public KeyedService {
   // May return `nullptr` if for some reason there are no prepopulated search
   // engines available.
   std::unique_ptr<TemplateURLData> GetFallbackSearch() const;
+
+  // Computes whether updates relative to prepopulated search engines need to be
+  // made in the local search engines database.
+  //
+  // Returns `std::nullopt` when no updates are needed, or a `Metadata`
+  // providing country and data version info about the data to be merged in.
+  std::optional<BuiltinKeywordsMetadata> ComputeDatabaseUpdateRequirements(
+      const WDKeywordsResult::Metadata& keywords_database_metadata) const;
 
  private:
   raw_ref<PrefService> profile_prefs_;
