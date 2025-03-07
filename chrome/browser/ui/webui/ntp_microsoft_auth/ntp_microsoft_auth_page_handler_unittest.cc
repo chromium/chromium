@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service.h"
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service_factory.h"
@@ -90,15 +91,17 @@ class NtpMicrosoftAuthUntrustedPageHandlerTest : public testing::Test {
         mock_document_.BindAndGetRemote(), profile_.get());
   }
 
-  MicrosoftAuthUntrustedPageHandler& handler() { return *handler_; }
-  MockMicrosoftAuthService& mock_auth_service() { return *mock_auth_service_; }
-  MockDocument& mock_document() { return mock_document_; }
   MicrosoftAuthServiceObserver& auth_service_observer() {
     return *auth_service_observer_;
   }
+  MicrosoftAuthUntrustedPageHandler& handler() { return *handler_; }
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+  MockMicrosoftAuthService& mock_auth_service() { return *mock_auth_service_; }
+  MockDocument& mock_document() { return mock_document_; }
 
  private:
   testing::NiceMock<MockDocument> mock_document_;
+  base::HistogramTester histogram_tester_;
   // NOTE: The initialization order of these members matters.
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -125,6 +128,24 @@ TEST_F(NtpMicrosoftAuthUntrustedPageHandlerTest, GetAuthState) {
 
   handler().GetAuthState(callback.Get());
   EXPECT_EQ(state, new_tab_page::mojom::AuthState::kSuccess);
+  histogram_tester().ExpectBucketCount("NewTabPage.MicrosoftAuth.AuthStarted",
+                                       new_tab_page::mojom::AuthType::kSilent,
+                                       0);
+}
+
+TEST_F(NtpMicrosoftAuthUntrustedPageHandlerTest, GetAuthStateNone) {
+  base::MockCallback<MicrosoftAuthUntrustedPageHandler::GetAuthStateCallback>
+      callback;
+  new_tab_page::mojom::AuthState state;
+  EXPECT_CALL(callback, Run).WillOnce(MoveArg<0>(&state));
+  ON_CALL(mock_auth_service(), GetAuthState)
+      .WillByDefault(testing::Return(new_tab_page::mojom::AuthState::kNone));
+
+  handler().GetAuthState(callback.Get());
+  EXPECT_EQ(state, new_tab_page::mojom::AuthState::kNone);
+  histogram_tester().ExpectBucketCount("NewTabPage.MicrosoftAuth.AuthStarted",
+                                       new_tab_page::mojom::AuthType::kSilent,
+                                       1);
 }
 
 TEST_F(NtpMicrosoftAuthUntrustedPageHandlerTest, SetAccessToken) {
@@ -155,4 +176,7 @@ TEST_F(NtpMicrosoftAuthUntrustedPageHandlerTest, OnAuthStateUpdated) {
   EXPECT_CALL(mock_document(), AcquireTokenSilent);
 
   auth_service_observer().OnAuthStateUpdated();
+  histogram_tester().ExpectBucketCount("NewTabPage.MicrosoftAuth.AuthStarted",
+                                       new_tab_page::mojom::AuthType::kSilent,
+                                       1);
 }

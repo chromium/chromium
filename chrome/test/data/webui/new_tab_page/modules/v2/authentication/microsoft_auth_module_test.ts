@@ -5,9 +5,10 @@
 import type {DisableModuleEvent, DismissModuleInstanceEvent, MicrosoftAuthModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {microsoftAuthModuleDescriptor, MicrosoftAuthProxyImpl, ParentTrustedDocumentProxy} from 'chrome://new-tab-page/lazy_load.js';
 import {MicrosoftAuthPageHandlerRemote} from 'chrome://new-tab-page/microsoft_auth.mojom-webui.js';
-import {MicrosoftAuthUntrustedDocumentRemote} from 'chrome://new-tab-page/ntp_microsoft_auth_shared_ui.mojom-webui.js';
+import {AuthType, MicrosoftAuthUntrustedDocumentRemote} from 'chrome://new-tab-page/ntp_microsoft_auth_shared_ui.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -17,6 +18,7 @@ import {installMock} from '../../../test_support.js';
 suite('MicrosoftAuthModule', () => {
   let handler: TestMock<MicrosoftAuthPageHandlerRemote>;
   let childDocument: TestMock<MicrosoftAuthUntrustedDocumentRemote>;
+  let metrics: MetricsTracker;
   let microsoftAuthModule: MicrosoftAuthModuleElement;
   const modulesMicrosoftAuthName = 'Microsoft Authentication';
 
@@ -34,9 +36,7 @@ suite('MicrosoftAuthModule', () => {
         MicrosoftAuthUntrustedDocumentRemote,
         mock => ParentTrustedDocumentProxy.setInstance(mock));
 
-    // Set fake metrics. Otherwise, tests fail when creating descriptor
-    // because of the mock |WindowProxy|.
-    fakeMetricsPrivate();
+    metrics = fakeMetricsPrivate();
   });
 
   async function createMicrosoftAuthElement() {
@@ -99,6 +99,9 @@ suite('MicrosoftAuthModule', () => {
 
     // Assert.
     assertEquals(1, childDocument.getCallCount('acquireTokenPopup'));
+    assertEquals(
+        1,
+        metrics.count(`NewTabPage.MicrosoftAuth.AuthStarted`, AuthType.kPopup));
   });
 
   test('does not populate module if handler says not to', async () => {
