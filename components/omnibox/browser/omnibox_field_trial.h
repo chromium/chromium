@@ -762,10 +762,10 @@ bool IsStarterPackPageEnabled();
 // primitives are included.
 #if BUILDFLAG(IS_ANDROID)
 constexpr base::FeatureParam<bool> kAndroidHubSearchEnableBookmarkProvider{
-    &omnibox::kAndroidHubSearch, "enable_bookmark_provider", false};
+    &omnibox::kAndroidHubSearch, "enable_bookmark_provider", true};
 
 constexpr base::FeatureParam<bool> kAndroidHubSearchEnableHistoryProvider{
-    &omnibox::kAndroidHubSearch, "enable_history_provider", false};
+    &omnibox::kAndroidHubSearch, "enable_history_provider", true};
 #endif
 
 // <- Android Hub Search

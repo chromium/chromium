@@ -503,26 +503,6 @@
             ]
         }
     ],
-    "AndroidHubSearch": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "enable_bookmark_provider": "true",
-                        "enable_history_provider": "true",
-                        "enable_press_enter_to_search": "true"
-                    },
-                    "enable_features": [
-                        "AndroidHubSearch"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidLowLatencyCanvas": [
         {
             "platforms": [
