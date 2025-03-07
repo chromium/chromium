@@ -65,11 +65,6 @@ const PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureList(
 COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
 void UpdatePermissionsPolicyFeatureListForTesting();
 
-// TODO(iclelland): Generate, instead of this map, a set of bool flags, one
-// for each feature, as all features are supposed to be represented here.
-using PermissionsPolicyFeatureState =
-    std::map<network::mojom::PermissionsPolicyFeature, bool>;
-
 }  // namespace network
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_PERMISSIONS_POLICY_PERMISSIONS_POLICY_FEATURES_H_

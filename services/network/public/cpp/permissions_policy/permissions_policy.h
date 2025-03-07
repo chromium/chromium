@@ -14,6 +14,7 @@
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_features.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_features_bitset.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "url/origin.h"
@@ -321,7 +322,7 @@ class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) PermissionsPolicy {
   PermissionsPolicy(
       url::Origin origin,
       AllowlistsAndReportingEndpoints allow_lists_and_reporting_endpoints,
-      network::PermissionsPolicyFeatureState inherited_policies,
+      network::PermissionsPolicyFeaturesBitset inherited_policies,
       const network::PermissionsPolicyFeatureList& feature_list,
       bool headerless = false);
   static std::unique_ptr<PermissionsPolicy> CreateFromParentPolicy(
@@ -396,7 +397,7 @@ class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) PermissionsPolicy {
 
   // Records whether or not each feature was enabled for this frame by its
   // parent frame.
-  const network::PermissionsPolicyFeatureState inherited_policies_;
+  const network::PermissionsPolicyFeaturesBitset inherited_policies_;
 
   // The map of features to their default enable state.
   const raw_ref<const network::PermissionsPolicyFeatureList> feature_list_;
