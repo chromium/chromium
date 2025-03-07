@@ -3033,7 +3033,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/assistant/time_of_day',
-        'version': '7okw0Y1HdRp76vhM8AGsWOloCQ83hwMd7Y1k2sDYMJcC',
+        'version': 'VLbxe5avqbXTSa8HRjm9NNtD9H2wYovk8GPPxO0kpvQC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
