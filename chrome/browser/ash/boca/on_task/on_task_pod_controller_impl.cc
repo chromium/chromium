@@ -10,6 +10,7 @@
 #include "ash/boca/on_task/on_task_pod_utils.h"
 #include "ash/boca/on_task/on_task_pod_view.h"
 #include "ash/shell.h"
+#include "ash/style/icon_button.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -58,6 +59,7 @@ OnTaskPodControllerImpl::OnTaskPodControllerImpl(Browser* browser)
   pod_widget_->widget_delegate()->SetAccessibleTitle(
       l10n_util::GetStringUTF16(IDS_ON_TASK_POD_ACCESSIBLE_NAME));
   pod_widget_->SetBounds(CalculateWidgetBounds());
+  OnPageNavigationContextChanged();
   pod_widget_->Show();
 
   browser_window->AddObserver(this);
@@ -67,6 +69,20 @@ OnTaskPodControllerImpl::~OnTaskPodControllerImpl() {
   if (browser_) {
     browser_->window()->GetNativeWindow()->RemoveObserver(this);
   }
+}
+
+void OnTaskPodControllerImpl::MaybeNavigateToPreviousPage() {
+  if (!browser_) {
+    return;
+  }
+  chrome::GoBack(browser_.get(), WindowOpenDisposition::CURRENT_TAB);
+}
+
+void OnTaskPodControllerImpl::MaybeNavigateToNextPage() {
+  if (!browser_) {
+    return;
+  }
+  chrome::GoForward(browser_.get(), WindowOpenDisposition::CURRENT_TAB);
 }
 
 void OnTaskPodControllerImpl::ReloadCurrentPage() {
@@ -90,6 +106,27 @@ void OnTaskPodControllerImpl::OnWindowBoundsChanged(
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
   pod_widget_->SetBounds(CalculateWidgetBounds());
+}
+
+void OnTaskPodControllerImpl::OnPageNavigationContextChanged() {
+  if (!pod_widget_) {
+    return;
+  }
+  views::View* const pod_widget_contents_view = pod_widget_->GetContentsView();
+  if (!pod_widget_contents_view) {
+    return;
+  }
+  OnTaskPodView* const on_task_pod_view =
+      static_cast<OnTaskPodView*>(pod_widget_contents_view);
+  on_task_pod_view->OnPageNavigationContextUpdate();
+}
+
+bool OnTaskPodControllerImpl::CanNavigateToPreviousPage() {
+  return chrome::CanGoBack(browser_.get());
+}
+
+bool OnTaskPodControllerImpl::CanNavigateToNextPage() {
+  return chrome::CanGoForward(browser_.get());
 }
 
 const gfx::Rect OnTaskPodControllerImpl::CalculateWidgetBounds() {

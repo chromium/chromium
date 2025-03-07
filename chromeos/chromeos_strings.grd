@@ -7029,6 +7029,12 @@
       <message name="IDS_ON_TASK_POD_ACCESSIBLE_NAME" desc="Accessible name for the OnTask pod widget.">
         OnTask Pod
       </message>
+      <message name="IDS_ON_TASK_POD_NAVIGATE_BACK_ACCESSIBLE_NAME" desc="Accessible name for the Navigate back button in the OnTask pod.">
+        Click to go back
+      </message>
+      <message name="IDS_ON_TASK_POD_NAVIGATE_FORWARD_ACCESSIBLE_NAME" desc="Accessible name for the Navigate forward button in the OnTask pod.">
+        Click to go forward
+      </message>
       <message name="IDS_ON_TASK_POD_RELOAD_ACCESSIBLE_NAME" desc="Accessible name for the Reload tab button in the OnTask pod.">
         Reload tab
       </message>

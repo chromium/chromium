@@ -72,7 +72,8 @@ specific_include_rules = {
       "+chrome/test/base/ui_test_utils.h"
   ],
   "on_task_pod_controller_impl_browsertest.cc": [
-    "+chrome/browser/ui/tabs/tab_strip_model.h",
+      "+chrome/browser/ui/tabs/tab_strip_model.h",
+      "+chrome/test/base/ui_test_utils.h",
   ],
   "on_task_session_manager_browsertest.cc": [
       "+chrome/browser/ui/browser_commands.h",

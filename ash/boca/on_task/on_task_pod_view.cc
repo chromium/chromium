@@ -68,6 +68,16 @@ void OnTaskPodView::AddShortcutButtons() {
   left_separator_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
   left_separator_->SetPreferredLength(GetPreferredSize().height());
 
+  back_button_ = AddChildView(CreateIconButton(
+      base::BindRepeating(&OnTaskPodController::MaybeNavigateToPreviousPage,
+                          base::Unretained(pod_controller_)),
+      &kKsvBrowserBackIcon, IDS_ON_TASK_POD_NAVIGATE_BACK_ACCESSIBLE_NAME,
+      /*is_togglable=*/false));
+  forward_button_ = AddChildView(CreateIconButton(
+      base::BindRepeating(&OnTaskPodController::MaybeNavigateToNextPage,
+                          base::Unretained(pod_controller_)),
+      &kKsvBrowserForwardIcon, IDS_ON_TASK_POD_NAVIGATE_FORWARD_ACCESSIBLE_NAME,
+      /*is_togglable=*/false));
   reload_tab_button_ = AddChildView(CreateIconButton(
       base::BindRepeating(&OnTaskPodController::ReloadCurrentPage,
                           base::Unretained(pod_controller_)),
@@ -82,6 +92,11 @@ void OnTaskPodView::ToggleSnapLocation() {
   } else {
     pod_controller_->SetSnapLocation(OnTaskPodSnapLocation::kTopLeft);
   }
+}
+
+void OnTaskPodView::OnPageNavigationContextUpdate() {
+  back_button_->SetEnabled(pod_controller_->CanNavigateToPreviousPage());
+  forward_button_->SetEnabled(pod_controller_->CanNavigateToNextPage());
 }
 
 BEGIN_METADATA(OnTaskPodView)

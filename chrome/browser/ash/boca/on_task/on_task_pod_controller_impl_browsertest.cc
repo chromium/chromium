@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/test/browser_test.h"
@@ -217,6 +218,208 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
 
   window_tracker()->InitializeBrowserInfoForTracking(nullptr);
   EXPECT_THAT(on_task_pod_controller(), IsNull());
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
+                       BackAndForwardButtonDisabled) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+
+  // Set up window tracker to track the app window. This is when the OnTask pod
+  // is set up.
+  const SessionID window_id = boca_app_browser->session_id();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{});
+  ASSERT_THAT(on_task_pod_controller(), NotNull());
+
+  // Spawn a new tab for testing purposes.
+  auto* const tab_strip_model = boca_app_browser->tab_strip_model();
+  const GURL tab_url = embedded_test_server()->GetURL("/title1.html");
+  CreateBackgroundTabAndWait(
+      window_id, tab_url, ::boca::LockedNavigationOptions::DOMAIN_NAVIGATION);
+  ASSERT_EQ(tab_strip_model->count(), 2);
+  tab_strip_model->ActivateTabAt(1);
+  ASSERT_FALSE(on_task_pod_controller()->CanNavigateToPreviousPage());
+  ASSERT_FALSE(on_task_pod_controller()->CanNavigateToNextPage());
+
+  tab_strip_model->ActivateTabAt(0);
+  ASSERT_FALSE(on_task_pod_controller()->CanNavigateToPreviousPage());
+  ASSERT_FALSE(on_task_pod_controller()->CanNavigateToNextPage());
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
+                       ForwardButtonDisabled) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+
+  // Set up window tracker to track the app window. This is when the OnTask pod
+  // is set up.
+  const SessionID window_id = boca_app_browser->session_id();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{});
+  ASSERT_THAT(on_task_pod_controller(), NotNull());
+
+  // Spawn a new tab for testing purposes.
+  auto* const tab_strip_model = boca_app_browser->tab_strip_model();
+  const GURL tab_url = embedded_test_server()->GetURL("/title1.html");
+  CreateBackgroundTabAndWait(window_id, tab_url,
+                             ::boca::LockedNavigationOptions::OPEN_NAVIGATION);
+  ASSERT_EQ(tab_strip_model->count(), 2);
+  tab_strip_model->ActivateTabAt(1);
+
+  // Navigate the tab to a new page.
+  const GURL new_url = embedded_test_server()->GetURL("/new_page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(boca_app_browser, new_url));
+  EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
+            new_url);
+  ASSERT_TRUE(on_task_pod_controller()->CanNavigateToPreviousPage());
+  ASSERT_FALSE(on_task_pod_controller()->CanNavigateToNextPage());
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest, BackButtonDisabled) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+
+  // Set up window tracker to track the app window. This is when the OnTask pod
+  // is set up.
+  const SessionID window_id = boca_app_browser->session_id();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{});
+  ASSERT_THAT(on_task_pod_controller(), NotNull());
+
+  // Spawn a new tab for testing purposes.
+  auto* const tab_strip_model = boca_app_browser->tab_strip_model();
+  const GURL tab_url = embedded_test_server()->GetURL("/title1.html");
+  CreateBackgroundTabAndWait(window_id, tab_url,
+                             ::boca::LockedNavigationOptions::OPEN_NAVIGATION);
+  ASSERT_EQ(tab_strip_model->count(), 2);
+  tab_strip_model->ActivateTabAt(1);
+
+  // Navigate the tab to a new page and then navigate back.
+  const GURL new_url = embedded_test_server()->GetURL("/new_page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(boca_app_browser, new_url));
+  EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
+            new_url);
+  ASSERT_TRUE(on_task_pod_controller()->CanNavigateToPreviousPage());
+  on_task_pod_controller()->MaybeNavigateToPreviousPage();
+  content::WaitForLoadStop(tab_strip_model->GetActiveWebContents());
+  EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
+            tab_url);
+  ASSERT_FALSE(on_task_pod_controller()->CanNavigateToPreviousPage());
+  ASSERT_TRUE(on_task_pod_controller()->CanNavigateToNextPage());
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
+                       NavigateBackAndForward) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+
+  // Set up window tracker to track the app window. This is when the OnTask pod
+  // is set up.
+  const SessionID window_id = boca_app_browser->session_id();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{});
+  ASSERT_THAT(on_task_pod_controller(), NotNull());
+
+  // Spawn a new tab for testing purposes.
+  auto* const tab_strip_model = boca_app_browser->tab_strip_model();
+  const GURL tab_url = embedded_test_server()->GetURL("/title1.html");
+  CreateBackgroundTabAndWait(window_id, tab_url,
+                             ::boca::LockedNavigationOptions::OPEN_NAVIGATION);
+  ASSERT_EQ(tab_strip_model->count(), 2);
+  tab_strip_model->ActivateTabAt(1);
+
+  // Navigate the tab to a new page.
+  const GURL new_url = embedded_test_server()->GetURL("/new_page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(boca_app_browser, new_url));
+  EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
+            new_url);
+
+  // Navigate back to the previous page.
+  ASSERT_TRUE(on_task_pod_controller()->CanNavigateToPreviousPage());
+  on_task_pod_controller()->MaybeNavigateToPreviousPage();
+  content::WaitForLoadStop(tab_strip_model->GetActiveWebContents());
+  EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
+            tab_url);
+
+  // Navigate forward to the next page.
+  ASSERT_TRUE(on_task_pod_controller()->CanNavigateToNextPage());
+  on_task_pod_controller()->MaybeNavigateToNextPage();
+  content::WaitForLoadStop(tab_strip_model->GetActiveWebContents());
+  EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
+            new_url);
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
+                       DifferentTabsWithDifferentPod) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+
+  // Set up window tracker to track the app window. This is when the OnTask pod
+  // is set up.
+  const SessionID window_id = boca_app_browser->session_id();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{});
+  ASSERT_THAT(on_task_pod_controller(), NotNull());
+
+  // Spawn two new tabs for testing purposes.
+  auto* const tab_strip_model = boca_app_browser->tab_strip_model();
+  const GURL tab_url_1 = embedded_test_server()->GetURL("/title1.html");
+  CreateBackgroundTabAndWait(window_id, tab_url_1,
+                             ::boca::LockedNavigationOptions::OPEN_NAVIGATION);
+  const GURL tab_url_2 = embedded_test_server()->GetURL("/title2.html");
+  CreateBackgroundTabAndWait(window_id, tab_url_2,
+                             ::boca::LockedNavigationOptions::OPEN_NAVIGATION);
+  ASSERT_EQ(tab_strip_model->count(), 3);
+
+  // Navigate the first tab to a new page.
+  tab_strip_model->ActivateTabAt(1);
+  const GURL new_url = embedded_test_server()->GetURL("/new_page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(boca_app_browser, new_url));
+  EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
+            new_url);
+  ASSERT_TRUE(on_task_pod_controller()->CanNavigateToPreviousPage());
+  ASSERT_FALSE(on_task_pod_controller()->CanNavigateToNextPage());
+
+  // The second tab should have both back and forward buttons disabled.
+  tab_strip_model->ActivateTabAt(2);
+  ASSERT_FALSE(on_task_pod_controller()->CanNavigateToPreviousPage());
+  ASSERT_FALSE(on_task_pod_controller()->CanNavigateToNextPage());
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest, ReloadCurrentTab) {

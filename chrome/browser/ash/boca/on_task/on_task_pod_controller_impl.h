@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "ash/boca/on_task/on_task_pod_controller.h"
+#include "ash/boca/on_task/on_task_pod_view.h"
+#include "ash/style/icon_button.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -30,8 +32,13 @@ class OnTaskPodControllerImpl : public OnTaskPodController,
   ~OnTaskPodControllerImpl() override;
 
   // OnTaskPodController:
+  void MaybeNavigateToPreviousPage() override;
+  void MaybeNavigateToNextPage() override;
   void ReloadCurrentPage() override;
   void SetSnapLocation(OnTaskPodSnapLocation snap_location) override;
+  void OnPageNavigationContextChanged() override;
+  bool CanNavigateToPreviousPage() override;
+  bool CanNavigateToNextPage() override;
 
   // aura::WindowObserver:
   void OnWindowBoundsChanged(aura::Window* window,

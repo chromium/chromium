@@ -24,11 +24,16 @@ class MockOnTaskPodController : public OnTaskPodController {
   MockOnTaskPodController() = default;
   ~MockOnTaskPodController() override = default;
 
+  MOCK_METHOD(void, MaybeNavigateToPreviousPage, (), (override));
+  MOCK_METHOD(void, MaybeNavigateToNextPage, (), (override));
   MOCK_METHOD(void, ReloadCurrentPage, (), (override));
   MOCK_METHOD(void,
               SetSnapLocation,
               (OnTaskPodSnapLocation snap_location),
               (override));
+  MOCK_METHOD(void, OnPageNavigationContextChanged, (), (override));
+  MOCK_METHOD(bool, CanNavigateToPreviousPage, (), (override));
+  MOCK_METHOD(bool, CanNavigateToNextPage, (), (override));
 };
 
 class OnTaskPodViewTest : public AshTestBase {
@@ -55,6 +60,47 @@ TEST_F(OnTaskPodViewTest, OrientationAndAlignment) {
             views::BoxLayout::MainAxisAlignment::kStart);
   EXPECT_EQ(on_task_pod_view_->GetCrossAxisAlignment(),
             views::BoxLayout::CrossAxisAlignment::kStart);
+}
+
+TEST_F(OnTaskPodViewTest, NavigateBackButtonClickNavigatesToPreviousPage) {
+  EXPECT_CALL(mock_on_task_pod_controller_, MaybeNavigateToPreviousPage())
+      .Times(1);
+  LeftClickOn(on_task_pod_view_->get_back_button_for_testing());
+}
+
+TEST_F(OnTaskPodViewTest, BackButtonEnabledWhenCanNavigateToPreviousPage) {
+  EXPECT_CALL(mock_on_task_pod_controller_, CanNavigateToPreviousPage())
+      .WillOnce(testing::Return(true));
+  on_task_pod_view_->OnPageNavigationContextUpdate();
+  EXPECT_TRUE(on_task_pod_view_->get_back_button_for_testing()->GetEnabled());
+}
+
+TEST_F(OnTaskPodViewTest, BackButtonDisabledWhenCannotNavigateToPreviousPage) {
+  EXPECT_CALL(mock_on_task_pod_controller_, CanNavigateToPreviousPage())
+      .WillOnce(testing::Return(false));
+  on_task_pod_view_->OnPageNavigationContextUpdate();
+  EXPECT_FALSE(on_task_pod_view_->get_back_button_for_testing()->GetEnabled());
+}
+
+TEST_F(OnTaskPodViewTest, NavigateForwardButtonClickNavigatesToNextPage) {
+  EXPECT_CALL(mock_on_task_pod_controller_, MaybeNavigateToNextPage()).Times(1);
+  LeftClickOn(on_task_pod_view_->get_forward_button_for_testing());
+}
+
+TEST_F(OnTaskPodViewTest, ForwardButtonEnabledWhenCanNavigateToNextPage) {
+  EXPECT_CALL(mock_on_task_pod_controller_, CanNavigateToNextPage())
+      .WillOnce(testing::Return(true));
+  on_task_pod_view_->OnPageNavigationContextUpdate();
+  EXPECT_TRUE(
+      on_task_pod_view_->get_forward_button_for_testing()->GetEnabled());
+}
+
+TEST_F(OnTaskPodViewTest, ForwardButtonDisabledWhenCannotNavigateToNextPage) {
+  EXPECT_CALL(mock_on_task_pod_controller_, CanNavigateToNextPage())
+      .WillOnce(testing::Return(false));
+  on_task_pod_view_->OnPageNavigationContextUpdate();
+  EXPECT_FALSE(
+      on_task_pod_view_->get_forward_button_for_testing()->GetEnabled());
 }
 
 TEST_F(OnTaskPodViewTest, ReloadTabButtonClickTriggersTabReload) {
