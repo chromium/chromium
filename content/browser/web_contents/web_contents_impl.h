@@ -1011,6 +1011,7 @@ class CONTENT_EXPORT WebContentsImpl
       bool should_warm_up_compositor,
       bool should_prepare_paint_tree,
       PreloadingHoldbackStatus holdback_status_override,
+      scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       PreloadingAttempt* preloading_attempt,
       base::RepeatingCallback<bool(const GURL&,
                                    const std::optional<UrlMatchType>&)>,

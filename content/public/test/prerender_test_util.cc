@@ -669,6 +669,8 @@ PrerenderTestHelper::AddEmbedderTriggeredPrerenderAsync(
       /*should_warm_up_compositor=*/false,
       /*should_prepare_paint_tree=*/false,
       PreloadingHoldbackStatus::kUnspecified,
+      PreloadPipelineInfo::Create(
+          /*planned_max_preloading_type=*/PreloadingType::kPrerender),
       /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
       /*prerender_navigation_handle_callback=*/{});
 }

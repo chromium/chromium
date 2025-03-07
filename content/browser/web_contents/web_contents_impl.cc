@@ -11710,6 +11710,7 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
     bool should_warm_up_compositor,
     bool should_prepare_paint_tree,
     PreloadingHoldbackStatus holdback_status_override,
+    scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
     PreloadingAttempt* preloading_attempt,
     base::RepeatingCallback<bool(const GURL&,
                                  const std::optional<UrlMatchType>&)>
@@ -11724,8 +11725,8 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
       should_warm_up_compositor, should_prepare_paint_tree,
       std::move(url_match_predicate),
       std::move(prerender_navigation_handle_callback),
-      PreloadPipelineInfoImpl::Create(
-          /*planned_max_preloading_type=*/PreloadingType::kPrerender));
+      base::WrapRefCounted(
+          static_cast<PreloadPipelineInfoImpl*>(preload_pipeline_info.get())));
 #if BUILDFLAG(IS_ANDROID)
   attributes.additional_headers = std::move(additional_headers);
 #else
