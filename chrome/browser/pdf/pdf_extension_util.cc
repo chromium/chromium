@@ -10,7 +10,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
@@ -114,7 +114,7 @@ void AddPdfViewerStrings(base::Value::Dict* dict) {
       {"tooltipRotateCCW", IDS_PDF_TOOLTIP_ROTATE_CCW},
       {"tooltipThumbnails", IDS_PDF_TOOLTIP_THUMBNAILS},
       {"zoomTextInputAriaLabel", IDS_PDF_ZOOM_TEXT_INPUT_ARIA_LABEL},
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_PDF_INK2)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_PDF_INK2)
       {"tooltipAnnotate", IDS_PDF_ANNOTATION_ANNOTATE},
       {"annotationDocumentTooLarge", IDS_PDF_ANNOTATION_DOCUMENT_TOO_LARGE},
       {"annotationDocumentProtected", IDS_PDF_ANNOTATION_DOCUMENT_PROTECTED},
@@ -167,7 +167,7 @@ void AddPdfViewerStrings(base::Value::Dict* dict) {
       {"annotationSize12", IDS_PDF_ANNOTATION_SIZE12},
       {"annotationSize16", IDS_PDF_ANNOTATION_SIZE16},
       {"annotationSize20", IDS_PDF_ANNOTATION_SIZE20},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_PDF_INK2)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_PDF_INK2)
 #if BUILDFLAG(ENABLE_PDF_INK2)
       {"ink2Draw", IDS_PDF_INK2_DRAW},
       {"ink2Size", IDS_PDF_INK2_ANNOTATION_SIZE},
@@ -201,11 +201,11 @@ void AddPdfViewerStrings(base::Value::Dict* dict) {
   for (const auto& resource : kPdfResources)
     dict->Set(resource.name, l10n_util::GetStringUTF16(resource.id));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_PDF_INK2)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_PDF_INK2)
   std::u16string edit_string = l10n_util::GetStringUTF16(IDS_EDIT);
   std::erase(edit_string, '&');
   dict->Set("editButton", edit_string);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_PDF_INK2)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_PDF_INK2)
 
   webui::SetLoadTimeDataDefaults(g_browser_process->GetApplicationLocale(),
                                  dict);
@@ -250,10 +250,10 @@ void AddAdditionalData(bool enable_printing,
   // above instead.
   bool printing_enabled = true;
   bool annotations_enabled = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   printing_enabled = enable_printing;
   annotations_enabled = enable_annotations;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(ENABLE_PDF_INK2)
   bool use_ink2 = base::FeatureList::IsEnabled(chrome_pdf::features::kPdfInk2);
   if (use_ink2) {
