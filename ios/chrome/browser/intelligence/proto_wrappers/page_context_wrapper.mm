@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import <memory>
+#import <optional>
 
 #import "base/barrier_closure.h"
 #import "base/check.h"
@@ -15,12 +16,12 @@
 #import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/web/find_in_page/find_in_page_java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
-
-#import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
 namespace {
 
@@ -72,6 +73,10 @@ const char16_t* kInnerTextJavaScript = u"document.body.innerText;";
   return self;
 }
 
+- (void)dealloc {
+  [self stopTextHighlighting];
+}
+
 - (void)populatePageContextFieldsAsync {
   CHECK_GE(_asyncTasksToComplete, 0);
 
@@ -114,20 +119,32 @@ const char16_t* kInnerTextJavaScript = u"document.body.innerText;";
     // user was scrolling, otherwise retrieve the latest version in cache or on
     // disk.
     if (_webState->IsVisible()) {
-      SnapshotTabHelper::FromWebState(_webState.get())
-          ->UpdateSnapshotWithCallback(callback);
+      raw_ptr<SnapshotTabHelper> snapshot_tab_helper =
+          SnapshotTabHelper::FromWebState(_webState.get());
+      auto updateSnapshotCallback =
+          base::BindOnce(^(std::optional<int> result_matches) {
+            // TODO(crbug.com/401282824): Log the matches count to measure
+            // highlighting precision.
+            snapshot_tab_helper->UpdateSnapshotWithCallback(callback);
+          });
+
+      // If there is text to highlight, do it before capturing the screenshot.
+      if (_textToHighlight != nil) {
+        web::WebFrame* main_frame =
+            _webState->GetPageWorldWebFramesManager()->GetMainWebFrame();
+        web::FindInPageJavaScriptFeature* find_in_page_feature =
+            web::FindInPageJavaScriptFeature::GetInstance();
+
+        find_in_page_feature->Search(main_frame,
+                                     base::SysNSStringToUTF8(_textToHighlight),
+                                     std::move(updateSnapshotCallback));
+      } else {
+        std::move(updateSnapshotCallback).Run(std::nullopt);
+      }
     } else {
       SnapshotTabHelper::FromWebState(_webState.get())
           ->RetrieveColorSnapshot(callback);
     }
-  }
-
-  // Create WebState full page PDF, if enabled.
-  if (_shouldGetFullPagePDF) {
-    _webState->CreateFullPagePdf(base::BindOnce(^(NSData* PDFData) {
-      [weakSelf encodeAndSetFullPagePDF:PDFData];
-      page_context_barrier.Run();
-    }));
   }
 
   // Get the WebState's innerText, if enabled.
@@ -171,6 +188,14 @@ const char16_t* kInnerTextJavaScript = u"document.body.innerText;";
       }
     }
   }
+
+  // Create full page PDF representation of the WebState, if enabled.
+  if (_shouldGetFullPagePDF) {
+    _webState->CreateFullPagePdf(base::BindOnce(^(NSData* PDFData) {
+      [weakSelf encodeAndSetFullPagePDF:PDFData];
+      page_context_barrier.Run();
+    }));
+  }
 }
 
 #pragma mark - Setters
@@ -213,6 +238,7 @@ const char16_t* kInnerTextJavaScript = u"document.body.innerText;";
 // All async tasks are complete, execute the overall completion callback.
 // Relinquish ownership to the callback handler.
 - (void)asyncWorkCompletedForPageContext {
+  [self stopTextHighlighting];
   std::move(_completion_callback).Run(std::move(_page_context));
 }
 
@@ -235,6 +261,8 @@ const char16_t* kInnerTextJavaScript = u"document.body.innerText;";
 // Convert UIImage snapshot to PNG, and then to base64 encoded string. Set the
 // tab screenshot on the current PageContext.
 - (void)encodeImageAndSetTabScreenshot:(UIImage*)image {
+  [self stopTextHighlighting];
+
   if (!image) {
     DLOG(WARNING) << "Failed to fetch webpage screenshot.";
     return;
@@ -288,6 +316,25 @@ const char16_t* kInnerTextJavaScript = u"document.body.innerText;";
       [_webFramesInnerTexts componentsJoinedByString:@"\n"];
   _page_context->set_inner_text(
       base::SysNSStringToUTF8(concatenatedInnerTexts));
+}
+
+// Stop the highlighting of text.
+- (void)stopTextHighlighting {
+  if (!_webState) {
+    return;
+  }
+
+  web::WebFrame* main_frame =
+      _webState->GetPageWorldWebFramesManager()->GetMainWebFrame();
+
+  if (!main_frame) {
+    return;
+  }
+
+  web::FindInPageJavaScriptFeature* find_in_page_feature =
+      web::FindInPageJavaScriptFeature::GetInstance();
+
+  find_in_page_feature->Stop(main_frame);
 }
 
 @end

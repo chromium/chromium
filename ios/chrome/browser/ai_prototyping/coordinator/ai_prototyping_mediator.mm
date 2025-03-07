@@ -235,8 +235,12 @@
   [_tabOrganizationRequestWrapper populateRequestFieldsAsync];
 }
 
-- (void)executeEnhancedCalendarQueryWithPrompt:(NSString*)prompt {
+- (void)executeEnhancedCalendarQueryWithPrompt:(NSString*)prompt
+                                  selectedText:(NSString*)selectedText {
   optimization_guide::proto::EnhancedCalendarRequest request;
+
+  // Set the selected text on the request.
+  request.set_selected_text(base::SysNSStringToUTF8(selectedText));
 
   // Set the whitespace-trimmed prompt on the request, if not empty.
   NSString* trimmedPrompt = [prompt
@@ -265,6 +269,7 @@
       completionCallback:std::move(page_context_completion_callback)];
   [_pageContextWrapper setShouldGetInnerText:YES];
   [_pageContextWrapper setShouldGetSnapshot:YES];
+  [_pageContextWrapper setTextToHighlight:selectedText];
   [_pageContextWrapper populatePageContextFieldsAsync];
 }
 
