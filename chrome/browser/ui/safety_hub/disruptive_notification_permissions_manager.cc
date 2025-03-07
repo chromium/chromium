@@ -7,6 +7,8 @@
 #include "base/containers/map_util.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
@@ -66,6 +68,7 @@ DisruptiveNotificationPermissionsManager::
     ~DisruptiveNotificationPermissionsManager() = default;
 
 void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
+  int revoked_sites_count = 0;
   ContentSetting default_notification_setting =
       hcsm_->GetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS);
 
@@ -132,10 +135,15 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
       if (!recorded_score.has_value()) {
         continue;
       }
-      if (recorded_score.value() < site_engagement_service_->GetScore(url)) {
+      const double new_score = site_engagement_service_->GetScore(url);
+      if (recorded_score.value() < new_score) {
         dict.Set(safety_hub::kRevokedStatusDictKeyStr,
                  safety_hub::kFalsePositiveStr);
         UpdateContentSettingValue(hcsm_, url, info, std::move(dict));
+        UMA_HISTOGRAM_COUNTS_100(
+            "Settings.SafetyHub.DisruptiveNotificationRevocations."
+            "FalsePositive.SiteEngagement",
+            new_score);
         base::UmaHistogramEnumeration(kRevocationResultHistogram,
                                       RevocationResult::kFalsePositive);
       } else {
@@ -167,9 +175,18 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
     default_constraint.set_lifetime(safety_hub_util::GetCleanUpThreshold());
     StoreRevokedDisruptiveNotificationPermission(url, default_constraint,
                                                  *notification_count);
+    UMA_HISTOGRAM_COUNTS_100(
+        "Settings.SafetyHub.DisruptiveNotificationRevocations.Proposed."
+        "NotificationCount",
+        *notification_count);
     base::UmaHistogramEnumeration(kRevocationResultHistogram,
                                   RevocationResult::kRevoke);
+    revoked_sites_count++;
   }
+  UMA_HISTOGRAM_COUNTS_100(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations."
+      "RevokedWebsitesCount",
+      revoked_sites_count);
 }
 
 bool DisruptiveNotificationPermissionsManager::IsNotificationDisruptive(
