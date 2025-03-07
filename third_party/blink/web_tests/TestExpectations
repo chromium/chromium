@@ -2606,6 +2606,9 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac14 ] external/wpt/urlpattern/urlpattern.https.any.serviceworker.html [ Crash Failure ]
+external/wpt/webvtt/rendering/cues-with-video/processing-model/portrait.tentative.html [ Failure ]
+external/wpt/webvtt/rendering/cues-with-video/processing-model/selectors/cue/fontsize_smaller_than_container.tentative.html [ Failure ]
 crbug.com/400781219 [ Win11-arm64 ] external/wpt/mathml/presentation-markup/operators/mo-form-dynamic.html [ Failure ]
 crbug.com/400781219 [ Win10.20h2 ] external/wpt/mathml/presentation-markup/operators/mo-form-dynamic.html [ Failure ]
 crbug.com/400504661 [ Mac ] external/wpt/editing/plaintext-only/nested-with-contenteditable-true.html [ Failure ]
