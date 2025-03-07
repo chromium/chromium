@@ -208,7 +208,8 @@ std::unique_ptr<test_server::HttpResponse> ReturnInvalidResponse(
 
 class UnauthorizedThenSuccessResponseContainer {
  public:
-  UnauthorizedThenSuccessResponseContainer(int unauthorize_response_times)
+  explicit UnauthorizedThenSuccessResponseContainer(
+      int unauthorize_response_times)
       : run_times(0), error_respose_times(unauthorize_response_times) {}
 
   std::unique_ptr<test_server::HttpResponse> Return(
@@ -1012,6 +1013,14 @@ std::unique_ptr<test_server::HttpResponse> ReturnResponseForRefreshRequest(
   return response;
 }
 
+std::unique_ptr<test_server::HttpResponse>
+Return401ResponseWithInvalidChallenge(const test_server::HttpRequest& request) {
+  auto response = std::make_unique<test_server::BasicHttpResponse>();
+  response->set_code(HTTP_UNAUTHORIZED);
+  response->AddCustomHeader("Sec-Session-Challenge", "");
+  return response;
+}
+
 TEST_F(RegistrationTest, BasicSuccessForExistingKey) {
   crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(
@@ -1108,6 +1117,31 @@ TEST_F(RegistrationTest, FetchRegistrationAndChallengeRequired) {
           "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
 }
 
+TEST_F(RegistrationTest,
+       FetchRegistrationAndChallengeRequired_InvalidChallengeParams) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&Return401ResponseWithInvalidChallenge));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  auto request_param = RegistrationRequestParam::CreateForTesting(
+      server_.base_url(), /*session_identifier=*/std::nullopt, kChallenge);
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
+  CreateKeyAndRunCallback(base::BindOnce(
+      &RegistrationFetcher::StartFetchWithExistingKey, std::move(request_param),
+      std::ref(unexportable_key_service()), context_.get(),
+      std::ref(isolation_info), /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback()));
+
+  callback.WaitForCall();
+  const base::expected<SessionParams, SessionError>& out_params =
+      callback.outcome();
+  ASSERT_FALSE(out_params.has_value());
+  EXPECT_EQ(out_params.error().type,
+            SessionError::ErrorType::kInvalidChallenge);
+}
+
 TEST_F(RegistrationTest, ContinueFalse) {
   constexpr char kTestingJson[] =
       R"({
@@ -1174,7 +1208,7 @@ TEST_F(RegistrationTest, RetriesOnKeyFailure) {
   ASSERT_TRUE(out_params.has_value());
 }
 
-TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure) {
+TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure_Refresh) {
   crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
@@ -1197,6 +1231,43 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure) {
   TestRegistrationCallback callback;
   auto request_param = RegistrationRequestParam::CreateForTesting(
       server_.base_url(), kSessionIdentifier, kChallenge);
+  CreateKeyAndRunCallback(base::BindOnce(
+      &RegistrationFetcher::StartFetchWithExistingKey, std::move(request_param),
+      std::ref(mock_service), context_.get(),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback()));
+  callback.WaitForCall();
+
+  const base::expected<SessionParams, SessionError>& out_params =
+      callback.outcome();
+  ASSERT_FALSE(out_params.has_value());
+  EXPECT_EQ(out_params.error().type, SessionError::ErrorType::kSigningError);
+}
+
+TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure_Registration) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
+  ASSERT_TRUE(server_.Start());
+
+  unexportable_keys::MockUnexportableKeyService mock_service;
+
+  EXPECT_CALL(mock_service, GetAlgorithm(_))
+      .WillRepeatedly(
+          Invoke(&unexportable_key_service(),
+                 &unexportable_keys::UnexportableKeyService::GetAlgorithm));
+  EXPECT_CALL(mock_service, GetSubjectPublicKeyInfo(_))
+      .WillRepeatedly(Invoke(
+          &unexportable_key_service(),
+          &unexportable_keys::UnexportableKeyService::GetSubjectPublicKeyInfo));
+  EXPECT_CALL(mock_service, SignSlowlyAsync(_, _, _, _))
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<3>(
+          base::unexpected(unexportable_keys::ServiceError::kCryptoApiFailed)));
+
+  TestRegistrationCallback callback;
+  auto request_param = RegistrationRequestParam::CreateForTesting(
+      server_.base_url(), /*session_identifier=*/std::nullopt, kChallenge);
   CreateKeyAndRunCallback(base::BindOnce(
       &RegistrationFetcher::StartFetchWithExistingKey, std::move(request_param),
       std::ref(mock_service), context_.get(),

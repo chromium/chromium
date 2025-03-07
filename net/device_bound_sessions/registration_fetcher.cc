@@ -297,7 +297,7 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
         RunCallbackAndDeleteSelf(base::unexpected(SessionError{
             SessionError::ErrorType::kSigningError,
             net::SchemefulSite(url::Origin::Create(fetcher_endpoint_)),
-            *session_identifier_}));
+            session_identifier_}));
         return;
       }
     }
@@ -336,7 +336,7 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
       RunCallbackAndDeleteSelf(base::unexpected(SessionError{
           SessionError::ErrorType::kInvalidChallenge,
           net::SchemefulSite(url::Origin::Create(fetcher_endpoint_)),
-          *session_identifier_}));
+          session_identifier_}));
       return;
     }
 

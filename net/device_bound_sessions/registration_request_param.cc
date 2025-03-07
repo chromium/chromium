@@ -41,7 +41,7 @@ RegistrationRequestParam RegistrationRequestParam::CreateForRefresh(
 // static
 RegistrationRequestParam RegistrationRequestParam::CreateForTesting(
     const GURL& registration_endpoint,
-    std::string session_identifier,
+    std::optional<std::string> session_identifier,
     std::optional<std::string> challenge) {
   return RegistrationRequestParam(
       registration_endpoint, std::move(session_identifier),
