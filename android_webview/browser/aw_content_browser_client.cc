@@ -117,6 +117,7 @@
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/network_service.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/cookie_manager.mojom-forward.h"
@@ -1449,6 +1450,29 @@ bool AwContentBrowserClient::AllowNonActivatedCrossOriginPaintHolding() {
   // TODO(crbug.com/368087192): We can consider disabling it while monitoring
   // for any breakages.
   return true;
+}
+
+bool AwContentBrowserClient::IsSharedStorageAllowed(
+    content::BrowserContext* browser_context,
+    content::RenderFrameHost* rfh,
+    const url::Origin& top_frame_origin,
+    const url::Origin& accessing_origin,
+    std::string* out_debug_message,
+    bool* out_block_is_site_setting_specific) {
+  // TODO(https://crbug.com/401255068): We should have a more stringent check
+  // here before launching beyond DEV.
+  return base::FeatureList::IsEnabled(network::features::kSharedStorageAPI);
+}
+
+bool AwContentBrowserClient::IsSharedStorageSelectURLAllowed(
+    content::BrowserContext* browser_context,
+    const url::Origin& top_frame_origin,
+    const url::Origin& accessing_origin,
+    std::string* out_debug_message,
+    bool* out_block_is_site_setting_specific) {
+  // TODO(https://crbug.com/401255068): We should have a more stringent check
+  // here before launching beyond DEV.
+  return base::FeatureList::IsEnabled(network::features::kSharedStorageAPI);
 }
 
 }  // namespace android_webview
