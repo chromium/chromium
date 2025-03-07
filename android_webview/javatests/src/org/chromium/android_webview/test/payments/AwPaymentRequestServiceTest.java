@@ -4,10 +4,6 @@
 
 package org.chromium.android_webview.test.payments;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -29,17 +25,15 @@ import org.chromium.android_webview.test.TestAwContentsClient;
 import org.chromium.android_webview.test.TestWebMessageListener;
 import org.chromium.android_webview.test.TestWebMessageListener.Data;
 import org.chromium.android_webview.test.util.JSUtils;
-import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.components.payments.AndroidIntentLauncher;
 import org.chromium.components.payments.AndroidPaymentAppFinder;
+import org.chromium.components.payments.MockAndroidIntentLauncher;
 import org.chromium.components.payments.MockPackageManagerDelegate;
 import org.chromium.components.payments.PaymentManifestDownloader;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.net.test.util.TestWebServer;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -562,28 +556,6 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                     url.getSpec().startsWith(PAYMENT_METHOD_NAME)
                             ? MANIFEST_JSON
                             : OTHER_MANIFEST_JSON);
-        }
-    }
-
-    /**
-     * An app launcher that does not fire off any Android intents, but instead immediately returns a
-     * successful intent result.
-     */
-    private static final class MockAndroidIntentLauncher implements AndroidIntentLauncher {
-        @Override
-        public void launchPaymentApp(
-                Intent intent,
-                Callback<String> errorCallback,
-                WindowAndroid.IntentCallback intentCallback) {
-            Bundle launchParameters = intent.getExtras();
-            String paymentMethodName = launchParameters.getStringArrayList("methodNames").get(0);
-
-            Intent response = new Intent();
-            Bundle extras = new Bundle();
-            extras.putString("methodName", paymentMethodName);
-            extras.putString("details", "{\"key\": \"value\"}");
-            response.putExtras(extras);
-            intentCallback.onIntentCompleted(Activity.RESULT_OK, response);
         }
     }
 }

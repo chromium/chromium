@@ -450,10 +450,16 @@ android_library("unit_device_javatests") {
 
 android_library("test_support_java") {
   testonly = true
-  sources = [ "javatests/src/org/chromium/components/payments/MockPackageManagerDelegate.java" ]
+  sources = [
+    "javatests/src/org/chromium/components/payments/MockAndroidIntentLauncher.java",
+    "javatests/src/org/chromium/components/payments/MockPackageManagerDelegate.java",
+  ]
   deps = [
     ":full_java",
     ":service_java",
+    "//base:callback_java",
+    "//components/payments/content/android:minimal_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
   ]
 }
