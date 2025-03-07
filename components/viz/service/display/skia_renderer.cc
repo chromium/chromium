@@ -2670,9 +2670,6 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
       override_color_space = overlay_color_space->ToSkColorSpace();
     }
   }
-#else
-  // Only on android stream video can be composited.
-  CHECK(!quad->is_stream_video);
 #endif
 
   ScopedSkImageBuilder builder(
