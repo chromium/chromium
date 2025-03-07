@@ -63,29 +63,32 @@ void PopulateCpuInfo(const healthd::CpuInfo& cpu_info,
 
   if (physical_cpus.empty()) {
     EmitSystemDataError(metrics::DataError::kExpectationNotMet);
-    LOG(ERROR) << "No physical cpus in SystemInfo response.";
+    LOG(ERROR) << "No physical CPUs in SystemInfo response.";
     return;
   }
 
-  // If there is more than one physical cpu on the device, use the name of the
+  // If there is more than one physical CPU on the device, use the name of the
   // first CPU.
   out_system_info.cpu_model_name = physical_cpus[0]->model_name.value_or("");
 
-  if (physical_cpus[0]->logical_cpus.empty()) {
-    EmitSystemDataError(metrics::DataError::kExpectationNotMet);
-    LOG(ERROR) << "Device reported having 0 logical CPUs.";
-    return;
+  for (const auto& physical_cpu_ptr : physical_cpus) {
+    if (physical_cpu_ptr->logical_cpus.empty()) {
+      EmitSystemDataError(metrics::DataError::kExpectationNotMet);
+      LOG(ERROR) << "Device reported having a physical CPU with 0 logical CPUs.";
+      return;
+    }
   }
-  // Calculate `max_clock_speed_khz` as the average of all logical core clock
-  // speeds until we decide the best way to consume the information in the UI.
-  uint32_t total_max_ghz = 0;
-  for (const auto& logical_cpu_ptr : physical_cpus[0]->logical_cpus) {
-    total_max_ghz += logical_cpu_ptr->max_clock_speed_khz;
+  // Iterate through physical cores and find the max CPU frequency among
+  // logical CPUs.
+  uint32_t max_clock_speed_khz = 0;
+  for (const auto& physical_cpu_ptr : physical_cpus) {
+    for (const auto& logical_cpu_ptr : physical_cpu_ptr->logical_cpus) {
+      max_clock_speed_khz =
+          std::max(logical_cpu_ptr->max_clock_speed_khz, max_clock_speed_khz);
+    }
   }
 
-  // Integer division.
-  out_system_info.cpu_max_clock_speed_khz =
-      total_max_ghz / physical_cpus[0]->logical_cpus.size();
+  out_system_info.cpu_max_clock_speed_khz = max_clock_speed_khz;
 }
 
 void PopulateVersionInfo(const healthd::SystemInfo& system_info,
@@ -244,20 +247,26 @@ void PopulateAverageCpuTemperature(const healthd::CpuInfo& cpu_info,
 
 void PopulateAverageScaledClockSpeed(const healthd::CpuInfo& cpu_info,
                                      mojom::CpuUsage& out_cpu_usage) {
-  if (cpu_info.physical_cpus.empty() ||
-      cpu_info.physical_cpus[0]->logical_cpus.empty()) {
-    LOG(ERROR) << "Device reported having 0 logical CPUs.";
-    return;
+  for (const auto& physical_cpu_ptr : cpu_info.physical_cpus) {
+    if (physical_cpu_ptr->logical_cpus.empty()) {
+      LOG(ERROR) << "Device reported having a physical CPU with 0 logical CPUs.";
+      return;
+    }
   }
 
-  uint32_t total_scaled_ghz = 0;
-  for (const auto& logical_cpu_ptr : cpu_info.physical_cpus[0]->logical_cpus) {
-    total_scaled_ghz += logical_cpu_ptr->scaling_current_frequency_khz;
+  // Trying to find among physical/logical CPUs for the maximum
+  // frequency.
+
+  uint32_t scaling_current_frequency_khz = 0;
+  for (const auto& physical_cpu_ptr : cpu_info.physical_cpus) {
+    for (const auto& logical_cpu_ptr : physical_cpu_ptr->logical_cpus) {
+      scaling_current_frequency_khz =
+          std::max(logical_cpu_ptr->scaling_current_frequency_khz,
+                   scaling_current_frequency_khz);
+    }
   }
 
-  // Integer division.
-  out_cpu_usage.scaling_current_frequency_khz =
-      total_scaled_ghz / cpu_info.physical_cpus[0]->logical_cpus.size();
+  out_cpu_usage.scaling_current_frequency_khz = scaling_current_frequency_khz;
 }
 
 bool IsLoggingEnabled() {

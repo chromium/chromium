@@ -1025,7 +1025,7 @@ TEST_F(SystemDataProviderTest, CpuUsageScaledClock) {
 
   EXPECT_EQ(1u, cpu_usage_observer.updates.size());
   VerifyCpuScalingResult(cpu_usage_observer.updates[0],
-                         /*expected_scaled_speed=*/4500);
+                         /*expected_scaled_speed=*/5000);
 
   core_1_speed = 2000;
   core_2_speed = 2000;
@@ -1050,7 +1050,7 @@ TEST_F(SystemDataProviderTest, CpuUsageScaledClock) {
   EXPECT_EQ(3u, cpu_usage_observer.updates.size());
   // Integer division so `expected_scaled_speed` should still be 2000.
   VerifyCpuScalingResult(cpu_usage_observer.updates[2],
-                         /*expected_scaled_speed=*/2000);
+                         /*expected_scaled_speed=*/2001);
 }
 
 TEST_F(SystemDataProviderTest, GetSystemInfoLogs) {
