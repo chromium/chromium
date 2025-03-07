@@ -34,6 +34,7 @@ namespace {
 static constexpr char kBiasParam[] = "bias";
 static constexpr char kConditionParam[] = "condition";
 static constexpr char kFalseValueParam[] = "falseValue";
+static constexpr char kFilterParam[] = "filter";
 static constexpr char kIndicesParam[] = "indices";
 static constexpr char kMeanParam[] = "mean";
 static constexpr char kScaleParam[] = "scale";
@@ -190,17 +191,12 @@ struct Conv2dInputOutputInfo {
   uint32_t width;
 };
 
-// Validate and get the input info of 2-D direct and transposed convolution
+// Get the input info of 2-D direct and transposed convolution
 // operation given input operand and attributes.
-base::expected<Conv2dInputOutputInfo, std::string>
-ValidateAndGetConv2dInputInfo(const std::string& label,
-                              const OperandDescriptor& input,
-                              const Conv2dAttributesBase& attributes) {
-  if (input.Rank() != 4) {
-    return base::unexpected(
-        ErrorWithLabel(label, "The input should be a 4-D tensor."));
-  }
-
+Conv2dInputOutputInfo GetConv2dInputInfo(
+    const std::string& label,
+    const OperandDescriptor& input,
+    const Conv2dAttributesBase& attributes) {
   const std::vector<uint32_t>& input_shape = input.shape();
   // The input layout option specifies the layout format of the input tensor.
   uint32_t batches, channels, height, width;
@@ -238,10 +234,6 @@ ValidateConv2dBiasAndCreateOutputOperand(
   const std::string& label = attributes.label;
   // Validate bias operand if it is present.
   if (attributes.bias_operand) {
-    if (attributes.bias_operand->Rank() != 1) {
-      return base::unexpected(
-          ErrorWithLabel(label, "The bias should be a 1-D tensor."));
-    }
     if (attributes.bias_operand->shape()[0] != output_info.channels) {
       return base::unexpected(ErrorWithLabel(
           label, base::StringPrintf("The bias shape should be [%u].",
@@ -605,25 +597,35 @@ base::expected<OperandDescriptor, std::string> ValidateConv2dAndInferOutput(
     const Conv2dAttributes& attributes) {
   const std::string& label = attributes.label;
   // Validate input operand.
-  if (!context_properties.data_type_limits.conv2d_input.Has(
-          input.data_type())) {
+  if (!context_properties.data_type_limits.conv2d_input.Supports(input)) {
     return base::unexpected(ErrorWithLabel(
-        label, NotSupportedInputArgumentTypeError(
-                   input.data_type(),
-                   context_properties.data_type_limits.conv2d_input)));
+        label, NotSupportedInputArgumentError(
+                   input, context_properties.data_type_limits.conv2d_input)));
   }
-  ASSIGN_OR_RETURN(Conv2dInputOutputInfo input_info,
-                   ValidateAndGetConv2dInputInfo(label, input, attributes));
+  Conv2dInputOutputInfo input_info =
+      GetConv2dInputInfo(label, input, attributes);
 
   // Validate filter operand.
+  if (!context_properties.data_type_limits.conv2d_input.Supports(filter)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedArgumentError(
+                   kFilterParam, filter,
+                   context_properties.data_type_limits.conv2d_input)));
+  }
   if (filter.data_type() != input.data_type()) {
     return base::unexpected(ErrorWithLabel(
         label, "The filter data type doesn't match the input data type."));
   }
 
-  if (filter.Rank() != 4) {
-    return base::unexpected(
-        ErrorWithLabel(label, "The filter should be a 4-D tensor."));
+  // Validate bias operand if it is present.
+  if (attributes.bias_operand) {
+    if (!context_properties.data_type_limits.conv2d_bias.Supports(
+            attributes.bias_operand.value())) {
+      return base::unexpected(ErrorWithLabel(
+          label, NotSupportedArgumentError(
+                     kBiasParam, attributes.bias_operand.value(),
+                     context_properties.data_type_limits.conv2d_bias)));
+    }
   }
 
   const std::vector<uint32_t>& filter_shape = filter.shape();
@@ -707,29 +709,40 @@ ValidateConvTranspose2dAndInferOutput(
     const ConvTranspose2dAttributes& attributes) {
   // Validate input operand.
   const std::string& label = attributes.label;
-  if (!context_properties.data_type_limits.conv_transpose2d_input.Has(
-          input.data_type())) {
+  if (!context_properties.data_type_limits.conv_transpose2d_input.Supports(
+          input)) {
     return base::unexpected(ErrorWithLabel(
         label,
-        NotSupportedInputArgumentTypeError(
-            input.data_type(),
+        NotSupportedInputArgumentError(
+            input,
             context_properties.data_type_limits.conv_transpose2d_input)));
   }
-  const auto input_info =
-      ValidateAndGetConv2dInputInfo(label, input, attributes);
-  if (!input_info.has_value()) {
-    return base::unexpected(ErrorWithLabel(label, input_info.error()));
-  }
+  const auto input_info = GetConv2dInputInfo(label, input, attributes);
 
   // Validate filter operand.
+  if (!context_properties.data_type_limits.conv_transpose2d_input.Supports(
+          filter)) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        NotSupportedArgumentError(
+            kFilterParam, filter,
+            context_properties.data_type_limits.conv_transpose2d_input)));
+  }
   if (filter.data_type() != input.data_type()) {
     return base::unexpected(ErrorWithLabel(
         label, "The filter data type doesn't match the input data type."));
   }
 
-  if (filter.Rank() != 4) {
-    return base::unexpected(
-        ErrorWithLabel(label, "The filter should be a 4-D tensor."));
+  // Validate bias operand if it is present.
+  if (attributes.bias_operand) {
+    if (!context_properties.data_type_limits.conv_transpose2d_bias.Supports(
+            attributes.bias_operand.value())) {
+      return base::unexpected(ErrorWithLabel(
+          label,
+          NotSupportedArgumentError(
+              kBiasParam, attributes.bias_operand.value(),
+              context_properties.data_type_limits.conv_transpose2d_bias)));
+    }
   }
 
   const std::vector<uint32_t>& filter_shape = filter.shape();
@@ -763,7 +776,7 @@ ValidateConvTranspose2dAndInferOutput(
     return base::unexpected(
         ErrorWithLabel(label, "The groups should be greater than 0."));
   }
-  if (input_info->channels != input_channels) {
+  if (input_info.channels != input_channels) {
     return base::unexpected(ErrorWithLabel(
         label, "The input channels should equal to filter input channels."));
   }
@@ -790,7 +803,7 @@ ValidateConvTranspose2dAndInferOutput(
     ASSIGN_OR_RETURN(
         Size2d<uint32_t> calculated_output_sizes,
         ValidateAndCalculateConvTranspose2dOutputSizes(
-            input_info->height, input_info->width, filter_height, filter_width,
+            input_info.height, input_info.width, filter_height, filter_width,
             attributes.padding, strides, attributes.dilations,
             // According to WebNN spec:
             // https://webmachinelearning.github.io/webnn/#dom-mlconvtranspose2doptions-outputsizes
@@ -826,14 +839,14 @@ ValidateConvTranspose2dAndInferOutput(
     ASSIGN_OR_RETURN(
         Size2d<uint32_t> output_sizes,
         ValidateAndCalculateConvTranspose2dOutputSizes(
-            input_info->height, input_info->width, filter_height, filter_width,
+            input_info.height, input_info.width, filter_height, filter_width,
             attributes.padding, attributes.strides, attributes.dilations,
             attributes.output_padding, label));
     output_height = output_sizes.height;
     output_width = output_sizes.width;
   }
 
-  Conv2dInputOutputInfo output_info{.batches = input_info->batches,
+  Conv2dInputOutputInfo output_info{.batches = input_info.batches,
                                     .channels = output_channels,
                                     .height = output_height,
                                     .width = output_width};
@@ -2196,7 +2209,16 @@ base::expected<OperandDescriptor, std::string> ValidateConcatAndInferOutput(
     return base::unexpected(
         ErrorWithLabel(label, "The inputs should not be empty."));
   }
-  const std::vector<uint32_t>& first_input_shape = inputs[0].shape();
+
+  for (const auto& input : inputs) {
+    if (!context_properties.data_type_limits.concat_inputs.Supports(input)) {
+      return base::unexpected(ErrorWithLabel(
+          label,
+          NotSupportedInputArgumentError(
+              input, context_properties.data_type_limits.concat_inputs)));
+    }
+  }
+
   const auto first_input_rank = inputs[0].Rank();
   // According to WebNN spec:
   // https://www.w3.org/TR/webnn/#dom-mlgraphbuilder-concat-inputs-axis-axis,
@@ -2211,15 +2233,8 @@ base::expected<OperandDescriptor, std::string> ValidateConcatAndInferOutput(
         "tensor."));
   }
 
+  const std::vector<uint32_t>& first_input_shape = inputs[0].shape();
   const auto output_type = inputs[0].data_type();
-
-  if (!context_properties.data_type_limits.concat_inputs.Has(output_type)) {
-    return base::unexpected(ErrorWithLabel(
-        label,
-        NotSupportedInputArgumentTypeError(
-            output_type, context_properties.data_type_limits.concat_inputs)));
-  }
-
   // The loop skips the first input to avoid repeated checks.
   for (size_t i = 1; i < inputs.size(); ++i) {
     if (inputs[i].data_type() != output_type) {
