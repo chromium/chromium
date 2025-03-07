@@ -424,9 +424,9 @@ TEST_F(ComponentInstallerTest, InstallerRegister_CheckSequence) {
   }
 
   base::RunLoop run_loop;
-  EXPECT_CALL(update_client(), DoUpdate(_, _)).WillOnce(Invoke([&run_loop] {
+  EXPECT_CALL(update_client(), DoUpdate(_, _)).WillOnce([&run_loop] {
     run_loop.QuitClosure().Run();
-  }));
+  });
 
   // Set up expectations for uninteresting calls on the mocks due to component
   // updater waking up after the component is registered.
