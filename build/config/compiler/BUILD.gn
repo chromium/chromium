@@ -2000,6 +2000,15 @@ config("default_warnings") {
         "-Wno-error=unknown-pragmas",
       ]
     }
+
+    # Disable the GNU line marker warning when building a target with Icecc.
+    # This warning appears frequently when compiling files that use GNU-style
+    # line markers with Clang and Icecc. It can negatively impact build
+    # performance and make it more difficult to identify other errors or warning
+    # messages.
+    if (cc_wrapper == "icecc") {
+      cflags += [ "-Wno-gnu-line-marker" ]
+    }
   }
 
   # TODO(crbug.com/354162568): Clean up and enable.
