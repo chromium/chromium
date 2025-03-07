@@ -76,6 +76,9 @@ _DISABLED_TESTS = frozenset({
     'system_health.memory_desktop/load:media:facebook_feed:desktop:2020',
     'system_health.memory_desktop/load:games:miniclip:2018',
 
+    # crbug.com/401513455
+    'system_health.memory_desktop/load_accessibility:tech:codesearch:2025',
+
     # The following tests are disabled because they are disabled on the perf
     # waterfall (using tools/perf/expectations.config) on one platform or
     # another. They may run fine on the CQ, but it isn't worth the bot time to
