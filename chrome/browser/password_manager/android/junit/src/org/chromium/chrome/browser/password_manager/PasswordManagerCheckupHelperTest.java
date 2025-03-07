@@ -20,6 +20,11 @@ import static org.mockito.Mockito.when;
 
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
+import android.content.Context;
+import android.content.pm.PackageInfo;
+
+import androidx.fragment.app.FragmentActivity;
+import androidx.test.core.content.pm.PackageInfoBuilder;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
@@ -34,8 +39,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
+import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
+import org.robolectric.shadows.ShadowPackageManager;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.Callback;
@@ -50,8 +58,12 @@ import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper.PasswordCheckOperation;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.pwm_disabled.PasswordCsvDownloadFlowController;
+import org.chromium.chrome.browser.pwm_disabled.PasswordCsvDownloadFlowControllerFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.components.browser_ui.test.BrowserUiDummyFragmentActivity;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GaiaId;
@@ -60,6 +72,8 @@ import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -1089,6 +1103,127 @@ public class PasswordManagerCheckupHelperTest {
                 mock(Callback.class));
     }
 
+    @Test
+    public void testShowDownloadCsvDialogIfCsvIsPresentAndPwmNotAvailable() {
+        // The dialog exists only if the login db deprecation is enabled.
+        assumeTrue(mIsLoginDbDeprecationEnabled);
+        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
+        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(
+                        eq(mPrefService), eq(true)))
+                .thenReturn(false);
+        when(mPrefService.getBoolean(Pref.UPM_UNMIGRATED_PASSWORDS_EXPORTED)).thenReturn(true);
+        LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(true);
+
+        FragmentActivity testActivity =
+                Robolectric.buildActivity(BrowserUiDummyFragmentActivity.class).setup().get();
+        setUpUpdatableGmsCore(testActivity);
+
+        PasswordCsvDownloadFlowController mockController =
+                mock(PasswordCsvDownloadFlowController.class);
+        PasswordCsvDownloadFlowControllerFactory.setControllerForTesting(mockController);
+        mPasswordManagerHelper.showPasswordCheckup(
+                testActivity,
+                PasswordCheckReferrer.SAFETY_CHECK,
+                mModalDialogManagerSupplier,
+                TEST_NO_EMAIL_ADDRESS);
+
+        verify(mockController)
+                .showDialogAndStartFlow(
+                        eq(testActivity),
+                        eq(mProfile),
+                        /* isGooglePlayServicesAvailable= */ eq(true));
+    }
+
+    @Test
+    public void testShowDownloadCsvDialogIfCsvIsPresentAndNoGms() {
+        // The dialog exists only if the login db deprecation is enabled.
+        assumeTrue(mIsLoginDbDeprecationEnabled);
+        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
+        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(
+                        eq(mPrefService), eq(true)))
+                .thenReturn(false);
+        when(mPrefService.getBoolean(Pref.UPM_UNMIGRATED_PASSWORDS_EXPORTED)).thenReturn(true);
+        LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(true);
+
+        FragmentActivity testActivity =
+                Robolectric.buildActivity(BrowserUiDummyFragmentActivity.class).setup().get();
+
+        PasswordCsvDownloadFlowController mockController =
+                mock(PasswordCsvDownloadFlowController.class);
+        PasswordCsvDownloadFlowControllerFactory.setControllerForTesting(mockController);
+        mPasswordManagerHelper.showPasswordCheckup(
+                testActivity,
+                PasswordCheckReferrer.SAFETY_CHECK,
+                mModalDialogManagerSupplier,
+                TEST_NO_EMAIL_ADDRESS);
+
+        verify(mockController)
+                .showDialogAndStartFlow(
+                        eq(testActivity),
+                        eq(mProfile),
+                        /* isGooglePlayServicesAvailable= */ eq(false));
+    }
+
+    @Test
+    public void testShowPwmUnavailableDialogNoCsvNoGms() {
+        // The dialog exists only if the login db deprecation is enabled.
+        assumeTrue(mIsLoginDbDeprecationEnabled);
+        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
+        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(
+                        eq(mPrefService), eq(true)))
+                .thenReturn(false);
+        when(mPrefService.getBoolean(Pref.UPM_UNMIGRATED_PASSWORDS_EXPORTED)).thenReturn(true);
+        LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(false);
+
+        FragmentActivity testActivity =
+                Robolectric.buildActivity(BrowserUiDummyFragmentActivity.class).setup().get();
+
+        mPasswordManagerHelper.showPasswordCheckup(
+                testActivity,
+                PasswordCheckReferrer.SAFETY_CHECK,
+                mModalDialogManagerSupplier,
+                TEST_NO_EMAIL_ADDRESS);
+        PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
+        assertNotNull(dialogModel);
+        assertEquals(
+                testActivity
+                        .getResources()
+                        .getString(
+                                org.chromium.chrome.browser.access_loss.R.string
+                                        .pwm_disabled_no_gms_dialog_title),
+                dialogModel.get(ModalDialogProperties.TITLE));
+    }
+
+    @Test
+    public void testShowPwmUnavailableDialogNoCsvUpdatableGms() {
+        // The dialog exists only if the login db deprecation is enabled.
+        assumeTrue(mIsLoginDbDeprecationEnabled);
+        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
+        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(
+                        eq(mPrefService), eq(true)))
+                .thenReturn(false);
+        when(mPrefService.getBoolean(Pref.UPM_UNMIGRATED_PASSWORDS_EXPORTED)).thenReturn(true);
+        LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(false);
+
+        FragmentActivity testActivity =
+                Robolectric.buildActivity(BrowserUiDummyFragmentActivity.class).setup().get();
+        setUpUpdatableGmsCore(testActivity);
+        mPasswordManagerHelper.showPasswordCheckup(
+                testActivity,
+                PasswordCheckReferrer.SAFETY_CHECK,
+                mModalDialogManagerSupplier,
+                TEST_NO_EMAIL_ADDRESS);
+        PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
+        assertNotNull(dialogModel);
+        assertEquals(
+                testActivity
+                        .getResources()
+                        .getString(
+                                org.chromium.chrome.browser.access_loss.R.string
+                                        .access_loss_update_gms_title),
+                dialogModel.get(ModalDialogProperties.TITLE));
+    }
+
     private void chooseToSyncPasswords() {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncServiceMock.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.PASSWORDS));
@@ -1283,5 +1418,16 @@ public class PasswordManagerCheckupHelperTest {
             default:
                 throw new AssertionError();
         }
+    }
+
+    private void setUpUpdatableGmsCore(Context context) {
+        ShadowPackageManager shadowPackageManager = Shadows.shadowOf(context.getPackageManager());
+        PackageInfo gmsPackageInfo =
+                PackageInfoBuilder.newBuilder().setPackageName("com.google.android.gms").build();
+        shadowPackageManager.installPackage(gmsPackageInfo);
+
+        PackageInfo playStorePackageInfo =
+                PackageInfoBuilder.newBuilder().setPackageName("com.android.vending").build();
+        shadowPackageManager.installPackage(playStorePackageInfo);
     }
 }

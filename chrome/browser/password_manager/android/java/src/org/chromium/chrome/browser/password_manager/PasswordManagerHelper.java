@@ -193,8 +193,11 @@ public class PasswordManagerHelper {
             // can't be shown. This is a rare corner-case.
             return;
         }
-
-        if (!showPwmUnavailableOrDownloadCsvDialog(context, referrer, modalDialogManagerSupplier)) {
+        boolean isReferrerAFragmentActivity =
+                (referrer == ManagePasswordsReferrer.CHROME_SETTINGS
+                        || referrer == ManagePasswordsReferrer.SAFETY_CHECK);
+        if (!showPwmUnavailableOrDownloadCsvDialog(
+                context, isReferrerAFragmentActivity, modalDialogManagerSupplier)) {
             LoadingModalDialogCoordinator loadingDialogCoordinator =
                     LoadingModalDialogCoordinator.create(modalDialogManagerSupplier, context);
             launchTheCredentialManager(
@@ -209,10 +212,10 @@ public class PasswordManagerHelper {
 
     private boolean showPwmUnavailableOrDownloadCsvDialog(
             Context context,
-            @ManagePasswordsReferrer int referrer,
+            boolean isReferrerAFragmentActivity,
             Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         if (LoginDbDeprecationUtilBridge.hasPasswordsInCsv(mProfile)) {
-            showDownloadCsvDialog(context, referrer, modalDialogManagerSupplier);
+            showDownloadCsvDialog(context, isReferrerAFragmentActivity, modalDialogManagerSupplier);
             return true;
         }
 
@@ -231,9 +234,9 @@ public class PasswordManagerHelper {
 
     private void showDownloadCsvDialog(
             Context context,
-            @ManagePasswordsReferrer int referrer,
+            boolean isReferrerAFragmentActivity,
             Supplier<ModalDialogManager> modalDialogManagerSupplier) {
-        if (referrer == ManagePasswordsReferrer.CHROME_SETTINGS) {
+        if (isReferrerAFragmentActivity) {
             PasswordAccessLossDialogHelper.launchExportFlow(
                     context, mProfile, modalDialogManagerSupplier);
         } else {
@@ -589,7 +592,6 @@ public class PasswordManagerHelper {
             credentialManagerLauncher = getCredentialManagerLauncher();
         } catch (CredentialManagerBackendException exception) {
             if (exception.errorCode != CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED) return;
-
             showGmsUpdateDialog(modalDialogManagerSupplier, context);
             return;
         }
@@ -632,8 +634,24 @@ public class PasswordManagerHelper {
         try {
             checkupClient = getPasswordCheckupClientHelper();
         } catch (PasswordCheckBackendException exception) {
+            // This is slightly different than the access to the management UI where if there
+            // is an auto-exported CSV, a dialog shown even if the password manager is available
+            // If a checkup is possible, the results of the checkup are more important than
+            // the CSV. In addition, the CSV issue is being prominently presented on the
+            // main settings view.
+            if (exception.errorCode == CredentialManagerError.PASSWORD_MANAGER_NOT_AVAILABLE) {
+                if (!UserPrefs.get(mProfile).getBoolean(Pref.UPM_UNMIGRATED_PASSWORDS_EXPORTED)) {
+                    // The auto-exported file is not ready, so there it's not possible to show a
+                    // dialog to download the CSV.
+                    return;
+                }
+                showPwmUnavailableOrDownloadCsvDialog(
+                        context,
+                        referrer == PasswordCheckReferrer.SAFETY_CHECK,
+                        modalDialogManagerSupplier);
+                return;
+            }
             if (exception.errorCode != CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED) return;
-
             showGmsUpdateDialog(modalDialogManagerSupplier, context);
             return;
         }
