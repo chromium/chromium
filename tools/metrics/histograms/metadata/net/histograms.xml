@@ -4094,6 +4094,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicSession.EcnMarksSent" enum="EcnPermutations"
+    expires_after="2025-09-05">
+  <owner>martinduke@google.com</owner>
+  <owner>rch@chromium.org</owner>
+  <summary>
+    The combination of ECN marks sent on a single QuicSession. Recorded when the
+    session is closed.
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicSession.EncryptionEstablishedTime"
     units="Milliseconds" expires_after="2025-07-13">
   <owner>fayang@chromium.org</owner>

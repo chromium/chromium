@@ -1701,6 +1701,7 @@ int MockUDPClientSocket::SetRecvTos() {
 }
 
 int MockUDPClientSocket::SetTos(DiffServCodePoint dscp, EcnCodePoint ecn) {
+  outgoing_ecn_ = ecn;
   return OK;
 }
 

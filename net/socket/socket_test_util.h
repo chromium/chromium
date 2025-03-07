@@ -1114,6 +1114,8 @@ class MockUDPClientSocket : public DatagramClientSocket, public AsyncSocket {
     return tagged_before_data_transferred_;
   }
 
+  EcnCodePoint outgoing_ecn() const { return outgoing_ecn_; }
+
  private:
   int CompleteRead();
 
@@ -1149,6 +1151,7 @@ class MockUDPClientSocket : public DatagramClientSocket, public AsyncSocket {
   bool tagged_before_data_transferred_ = true;
 
   uint8_t last_tos_ = 0;
+  EcnCodePoint outgoing_ecn_ = net::ECN_NOT_ECT;
 
   base::WeakPtrFactory<MockUDPClientSocket> weak_factory_{this};
 };

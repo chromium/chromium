@@ -133,6 +133,14 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketWriter
   // |write_in_progress_|.
   bool force_write_blocked_ = false;
 
+  // The current ECN codepoint the UDP socket is sending.
+  EcnCodePoint outgoing_ecn_ = ECN_NOT_ECT;
+
+  // Bitmap of outgoing IP ECN marks observed on this session. Bit 0 = Not-ECT,
+  // Bit 1 = ECT(1), Bit 2 = ECT(0), Bit 3 = CE. Reported to metrics at the
+  // end of the session.
+  uint8_t outgoing_ecn_history_ = 0;
+
   int retry_count_ = 0;
   // Timer set when a packet should be retried after ENOBUFS.
   base::OneShotTimer retry_timer_;
