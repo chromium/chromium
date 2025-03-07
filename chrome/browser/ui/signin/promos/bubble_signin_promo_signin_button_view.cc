@@ -68,10 +68,12 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
   DCHECK(!account_icon.IsEmpty());
   auto card_title = base::UTF8ToUTF16(account.full_name);
 
+  bool is_signin_promo = signin::IsSignInPromo(access_point);
   bool is_autofill_promo = signin::IsAutofillSigninPromo(access_point);
+
   const views::BoxLayout::Orientation orientation =
-      is_autofill_promo ? views::BoxLayout::Orientation::kVertical
-                        : views::BoxLayout::Orientation::kHorizontal;
+      is_signin_promo ? views::BoxLayout::Orientation::kVertical
+                      : views::BoxLayout::Orientation::kHorizontal;
 
   std::unique_ptr<views::BoxLayout> button_layout =
       std::make_unique<views::BoxLayout>(orientation, gfx::Insets(), 16);
@@ -80,9 +82,8 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
   std::unique_ptr<HoverButton> hover_button = std::make_unique<HoverButton>(
       views::Button::PressedCallback(),
       std::make_unique<BadgedProfilePhoto>(
-          signin::IsSignInPromo(access_point)
-              ? BadgedProfilePhoto::BADGE_TYPE_NONE
-              : BadgedProfilePhoto::BADGE_TYPE_SYNC_OFF,
+          is_signin_promo ? BadgedProfilePhoto::BADGE_TYPE_NONE
+                          : BadgedProfilePhoto::BADGE_TYPE_SYNC_OFF,
           account_icon),
       card_title, base::ASCIIToUTF16(account_->email));
 
@@ -97,7 +98,8 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
                                        views::style::STYLE_SECONDARY);
     const int hover_button_width =
         views::LayoutProvider::Get()->GetDistanceMetric(
-            views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
+            is_autofill_promo ? views::DISTANCE_BUBBLE_PREFERRED_WIDTH
+                              : views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
     // Set the view to take the whole width of the bubble.
     hover_button->SetPreferredSize(
         gfx::Size(hover_button_width,
