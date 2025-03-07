@@ -453,6 +453,7 @@ android_library("test_support_java") {
   sources = [
     "javatests/src/org/chromium/components/payments/MockAndroidIntentLauncher.java",
     "javatests/src/org/chromium/components/payments/MockPackageManagerDelegate.java",
+    "javatests/src/org/chromium/components/payments/MockPaymentAppInstaller.java",
     "javatests/src/org/chromium/components/payments/MockPaymentManifestDownloader.java",
   ]
   deps = [
