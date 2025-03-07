@@ -3712,6 +3712,8 @@ static_library("ui") {
       "views/autofill/payments/autofill_progress_dialog_views.h",
       "views/autofill/payments/bnpl_dialog_footnote.cc",
       "views/autofill/payments/bnpl_dialog_footnote.h",
+      "views/autofill/payments/bnpl_issuer_linked_pill.cc",
+      "views/autofill/payments/bnpl_issuer_linked_pill.h",
       "views/autofill/payments/bnpl_issuer_view.cc",
       "views/autofill/payments/bnpl_issuer_view.h",
       "views/autofill/payments/bnpl_tos_dialog.cc",
