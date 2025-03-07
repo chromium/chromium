@@ -5780,7 +5780,7 @@
   {
     "name": "mac-loopback-audio-for-screen-share",
     "owners": [ "mfoltz@chromium.org", "olka@chromium.org", "eladalon@chromium.org"],
-    "expiry_milestone": 135
+    "expiry_milestone": 145
   },
   {
     "name": "mac-syscall-sandbox",

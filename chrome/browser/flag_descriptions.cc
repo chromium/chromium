@@ -5527,7 +5527,9 @@ const char kMacImeLiveConversionFixDescription[] =
 const char kMacLoopbackAudioForScreenShareName[] =
     "Mac System Audio Loopback for Screen Sharing";
 const char kMacLoopbackAudioForScreenShareDescription[] =
-    "Enable system audio sharing when screen sharing on macOS 13.0+.";
+    "Enable system audio sharing when screen sharing on macOS 13-14. This "
+    "won't have any effect on macOS 15+ unless the feature "
+    "MacSystemAudioLoopbackOverride is enabled.";
 
 const char kMacPWAsNotificationAttributionName[] =
     "Mac PWA notification attribution";
