@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -153,6 +154,7 @@ public class TabGroupListBottomSheetMediator {
     }
 
     private void createNewGroupForTabs(List<Tab> tabs) {
+        RecordUserAction.record("TabGroupParity.BottomSheetRowSelection.NewGroup");
         assert !tabs.isEmpty();
         Tab tab = tabs.get(0);
 
