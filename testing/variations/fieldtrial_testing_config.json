@@ -15132,6 +15132,21 @@
             ]
         }
     ],
+    "NewEtc1Encoder": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseNewEtc1Encoder"
+                    ]
+                }
+            ]
+        }
+    ],
     "NewOSCryptAlgorithmForPasswords": [
         {
             "platforms": [
