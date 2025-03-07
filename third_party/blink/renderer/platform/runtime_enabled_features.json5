@@ -2657,11 +2657,6 @@
       base_feature: "none",
     },
     {
-      // crbug.com/365814218
-      name: "LineBoxBelowLeadingFloats",
-      status: "stable",
-    },
-    {
       name: "ListItemWithCounterSetNotSetExplicitValue",
       status: "stable",
     },

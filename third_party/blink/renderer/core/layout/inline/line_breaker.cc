@@ -785,8 +785,7 @@ void LineBreaker::PrepareNextLine(LineInfo* line_info) {
     // lines solely consisting of leading floats, and those don't count as
     // "formatted lines", since they aren't actually lines, as far as the spec
     // is concerned).
-    if (!RuntimeEnabledFeatures::LineBoxBelowLeadingFloatsEnabled() ||
-        !break_token_ || current_ != break_token_->Start()) {
+    if (!break_token_ || current_ != break_token_->Start()) {
       is_first_formatted_line_ = false;
       use_first_line_style_ = false;
     }
@@ -3646,14 +3645,6 @@ void LineBreaker::HandleFloat(const InlineItem& item,
     DCHECK(exclusion_space_);
     item_result->exclusion_space_before_position_float.CopyFrom(
         *exclusion_space_);
-
-    if (RuntimeEnabledFeatures::LineBoxBelowLeadingFloatsEnabled()) {
-      return;
-    }
-
-    // Don't break after leading floats if indented.
-    if (position_ != 0)
-      item_result->can_break_after = false;
     return;
   }
 
@@ -4066,8 +4057,7 @@ void LineBreaker::HandleOverflow(LineInfo* line_info) {
   }
 
   if (applied_text_indent_ && width_to_rewind > LayoutUnit() &&
-      is_first_formatted_line_ && !leading_floats_.floats.empty() &&
-      RuntimeEnabledFeatures::LineBoxBelowLeadingFloatsEnabled()) {
+      is_first_formatted_line_ && !leading_floats_.floats.empty()) {
     // If there is no inflow content and there are only leading floats, also
     // rewind text indentation. The idea here is that text-indent alone
     // shouldn't contribute to overflow (and it doesn't even belong on this
