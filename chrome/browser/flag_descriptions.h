@@ -4642,9 +4642,6 @@ extern const char kThirdPartyProfileManagementDescription[];
 extern const char kOidcAuthProfileManagementName[];
 extern const char kOidcAuthProfileManagementDescription[];
 
-extern const char kUnoDesktopName[];
-extern const char kUnoDesktopDescription[];
-
 extern const char kExplicitBrowserSigninUIOnDesktopName[];
 extern const char kExplicitBrowserSigninUIOnDesktopDescription[];
 

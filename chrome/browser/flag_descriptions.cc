@@ -7850,11 +7850,6 @@ const char kOidcAuthProfileManagementName[] = "OIDC profile management";
 const char kOidcAuthProfileManagementDescription[] =
     "Enables profile management triggered by OIDC authentications.";
 
-const char kUnoDesktopName[] = "UNO Desktop";
-const char kUnoDesktopDescription[] =
-    "Enables the UNO model on Desktop. This is currently an experiment in a "
-    "prototype stage in order to validate the model.";
-
 const char kExplicitBrowserSigninUIOnDesktopName[] =
     "Explicit Browser Signin UI On Desktop";
 const char kExplicitBrowserSigninUIOnDesktopDescription[] =
