@@ -125,6 +125,8 @@ class PLATFORM_EXPORT CanvasResource
 
   const gfx::ColorSpace& GetColorSpace() const { return color_space_; }
 
+  SkAlphaType GetAlphaType() const { return alpha_type_; }
+
   // The ClientSharedImage containing information on the SharedImage
   // attached to the resource.
   virtual scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() = 0;
