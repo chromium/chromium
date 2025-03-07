@@ -4,13 +4,16 @@
 
 #include "chrome/browser/devtools/remote_debugging_server.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/types/expected.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -20,6 +23,8 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_socket_factory.h"
 #include "content/public/common/content_switches.h"
@@ -95,12 +100,21 @@ class TCPServerSocketFactory
 
 }  // namespace
 
+RemoteDebuggingServer::RemoteDebuggingServer() = default;
+
 // static
 void RemoteDebuggingServer::EnableTetheringForDebug() {
   g_tethering_enabled.Get() = true;
 }
 
-RemoteDebuggingServer::RemoteDebuggingServer() {
+// static
+base::expected<std::unique_ptr<RemoteDebuggingServer>,
+               RemoteDebuggingServer::NotStartedReason>
+RemoteDebuggingServer::GetInstance(PrefService* local_state) {
+  if (!local_state->GetBoolean(prefs::kDevToolsRemoteDebuggingAllowed)) {
+    return base::unexpected(NotStartedReason::kDisabledByPolicy);
+  }
+
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   bool being_debugged = false;
@@ -135,31 +149,36 @@ RemoteDebuggingServer::RemoteDebuggingServer() {
   std::string port_str =
       command_line.GetSwitchValueASCII(::switches::kRemoteDebuggingPort);
   int port;
-  if (!base::StringToInt(port_str, &port) || port < 0 || port >= 65535)
-    return;
-
-  being_debugged = true;
-
-  base::FilePath output_dir;
-  if (!port) {
-    // The client requested an ephemeral port. Must write the selected
-    // port to a well-known location in the profile directory to
-    // bootstrap the connection process.
-    bool result = base::PathService::Get(chrome::DIR_USER_DATA, &output_dir);
-    DCHECK(result);
-  }
-
-  base::FilePath debug_frontend_dir;
-  if (command_line.HasSwitch(::switches::kCustomDevtoolsFrontend)) {
-    GURL custom_devtools_frontend_url(command_line.GetSwitchValueASCII(
-        ::switches::kCustomDevtoolsFrontend));
-    if (custom_devtools_frontend_url.SchemeIsFile()) {
-      net::FileURLToFilePath(custom_devtools_frontend_url, &debug_frontend_dir);
+  if (base::StringToInt(port_str, &port) && port >= 0 && port < 65535) {
+    base::FilePath output_dir;
+    if (!port) {
+      // The client requested an ephemeral port. Must write the selected
+      // port to a well-known location in the profile directory to
+      // bootstrap the connection process.
+      bool result = base::PathService::Get(chrome::DIR_USER_DATA, &output_dir);
+      DCHECK(result);
     }
+
+    base::FilePath debug_frontend_dir;
+    if (command_line.HasSwitch(::switches::kCustomDevtoolsFrontend)) {
+      GURL custom_devtools_frontend_url(command_line.GetSwitchValueASCII(
+          ::switches::kCustomDevtoolsFrontend));
+      if (custom_devtools_frontend_url.SchemeIsFile()) {
+        net::FileURLToFilePath(custom_devtools_frontend_url,
+                               &debug_frontend_dir);
+      }
+    }
+    being_debugged = true;
+    content::DevToolsAgentHost::StartRemoteDebuggingServer(
+        std::make_unique<TCPServerSocketFactory>(port), output_dir,
+        debug_frontend_dir);
   }
-  content::DevToolsAgentHost::StartRemoteDebuggingServer(
-      std::make_unique<TCPServerSocketFactory>(port), output_dir,
-      debug_frontend_dir);
+
+  if (being_debugged) {
+    return base::WrapUnique(new RemoteDebuggingServer);
+  }
+
+  return base::unexpected(NotStartedReason::kNotRequested);
 }
 
 RemoteDebuggingServer::~RemoteDebuggingServer() {
