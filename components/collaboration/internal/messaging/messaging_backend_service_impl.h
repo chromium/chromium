@@ -136,7 +136,8 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
   // should not be part of the activity log and for those std::nullopt is
   // return.
   std::optional<ActivityLogItem> ConvertMessageToActivityLogItem(
-      const collaboration_pb::Message& message);
+      const collaboration_pb::Message& message,
+      bool is_tab_activity);
 
   // Looks for the related collaboration GroupId for the given tab, using the
   // information available in the tab group sync service.

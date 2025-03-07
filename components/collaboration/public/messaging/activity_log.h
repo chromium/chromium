@@ -83,6 +83,10 @@ struct ActivityLogQueryParams {
   // The collaboration associated with the activity log.
   data_sharing::GroupId collaboration_id;
 
+  // An optional tab ID. If set, returns activity log only for the particular
+  // tab. Currently used in desktop only.
+  std::optional<tab_groups::LocalTabID> local_tab_id;
+
   // Max number of rows to be shown in the activity log UI.
   int result_length;
 };
