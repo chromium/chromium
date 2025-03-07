@@ -11,10 +11,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/proto/features/forms_classifications.pb.h"
 
-namespace optimization_guide::proto {
-class AXTreeUpdate;
-}  // namespace optimization_guide::proto
-
 namespace autofill {
 
 class FormData;
@@ -27,12 +23,12 @@ class AutofillAiModelExecutor : public KeyedService {
   using PredictionCallback =
       base::OnceCallback<void(std::optional<Predictions>)>;
 
-  // Retrieves predictions for `form_data` with context of `ax_tree_update`.
-  // Invokes `callback` when done. If the model encountered an error, the
-  // callback's is called with `std::nullopt`.
+  // Retrieves predictions for `form_data`. Invokes `callback` when done and
+  // also writes the result into the `AutofillAiModelCache` tied to the same
+  // profile. If the model encountered an error, the callback is called with
+  // `std::nullopt`.
   virtual void GetPredictions(
       FormData form_data,
-      optimization_guide::proto::AXTreeUpdate ax_tree_update,
       PredictionCallback callback) = 0;
 };
 
