@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
+#include "base/rand_util.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "content/browser/btm/btm_service_impl.h"
@@ -22,6 +23,7 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/origin.h"
 
@@ -260,6 +262,7 @@ void BtmShortVisitObserver::DidFinishNavigation(
         const bool next_site_same = visit_site == next_site;
 
         if (!prev_site_same || !next_site_same) {
+          const int32_t visit_id = static_cast<int32_t>(base::RandUint64());
           ukm::builders::BTM_ShortVisit event(page_source_id_);
           event.SetVisitDuration(visit_seconds)
               .SetExitWasRendererInitiated(
@@ -269,7 +272,8 @@ void BtmShortVisitObserver::DidFinishNavigation(
               // TODO: .SetSiteEngagement()
               .SetPreviousSiteSame(prev_site_same)
               .SetNextSiteSame(next_site_same)
-              .SetPreviousAndNextSiteSame(prev_site_ == next_site);
+              .SetPreviousAndNextSiteSame(prev_site_ == next_site)
+              .SetShortVisitId(visit_id);
           current_page_metrics_->SetUkmBuilder(std::move(event));
           if (current_page_metrics_->is_ready()) {
             current_page_metrics_->Emit();
@@ -279,11 +283,25 @@ void BtmShortVisitObserver::DidFinishNavigation(
             // interaction time. (StoreLastInteraction() will delete the state.)
             pending_metrics_.insert(std::move(current_page_metrics_));
           }
+
+          if (prev_source_id_ != ukm::kInvalidSourceId) {
+            ukm::builders::BTM_ShortVisitNeighbor(prev_source_id_)
+                .SetShortVisitId(visit_id)
+                .SetIsPreceding(true)
+                .Record(ukm::UkmRecorder::Get());
+          }
+
+          ukm::builders::BTM_ShortVisitNeighbor(
+              navigation_handle->GetNextPageUkmSourceId())
+              .SetShortVisitId(visit_id)
+              .SetIsPreceding(false)
+              .Record(ukm::UkmRecorder::Get());
         }
       }
     }
   }
 
+  prev_source_id_ = page_source_id_;
   page_source_id_ = navigation_handle->GetNextPageUkmSourceId();
   last_committed_at_ = clock_->Now();
   prev_site_ = visit_site;
