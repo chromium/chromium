@@ -1762,16 +1762,22 @@ export class AppElement extends AppElementBase {
 
   // Highlights or rehighlights the current granularity, sentence or word.
   highlightCurrentGranularity(
-      axNodeIds: number[], scrollIntoView: boolean = true) {
+      axNodeIds: number[], scrollIntoView: boolean = true,
+      shouldUpdateSentenceHighlight: boolean = true) {
     const highlightGranularity = this.getEffectiveHighlightingGranularity_();
     switch (highlightGranularity) {
       case chrome.readingMode.noHighlighting:
-      // Even without highlighting, we still calculate the sentence highlight,
-      // so that it's visible as soon as the user turns on sentence
+      // Even without highlighting, we may still need to calculate the sentence
+      // highlight, so that it's visible as soon as the user turns on sentence
       // highlighting. The highlight will not be visible, since the highlight
-      // color in this case will be transparent.
+      // color in this case will be transparent. However, we don't need to
+      // recalculate the sentence highlights sometimes, such as during word
+      // boundary events when sentence highlighting is used, since these
+      // highlights have already been calculated.
       case chrome.readingMode.sentenceHighlighting:
-        this.highlightCurrentSentence(axNodeIds, scrollIntoView);
+        if (shouldUpdateSentenceHighlight) {
+          this.highlightCurrentSentence(axNodeIds, scrollIntoView);
+        }
         break;
       case chrome.readingMode.wordHighlighting:
         this.highlightCurrentWord();
@@ -1896,26 +1902,13 @@ export class AppElement extends AppElementBase {
       if (event.name === 'word') {
         this.updateBoundary(event.charIndex);
 
-        const highlightGranularity =
-            this.getEffectiveHighlightingGranularity_();
-        switch (highlightGranularity) {
-          case chrome.readingMode.noHighlighting:
-          case chrome.readingMode.sentenceHighlighting:
-            // No need to update the highlight on word boundary events if
-            // highlighting is off or if sentence highlighting is used.
-            break;
-          case chrome.readingMode.wordHighlighting:
-            this.highlightCurrentWord();
-            break;
-          case chrome.readingMode.phraseHighlighting:
-            this.highlightCurrentPhrase();
-            break;
-          case chrome.readingMode.autoHighlighting:
-          default:
-            // This cannot happen, but ensures the switch statement is
-            // exhaustive.
-            assert(false, 'invalid value for effective highlight');
-        }
+        // No need to update the highlight on word boundary events if
+        // highlighting is off or if sentence highlighting is used.
+        // Therefore, we don't need to pass in axIds because these are
+        // calculated downstream.
+        this.highlightCurrentGranularity(
+            [], /* scrollIntoView= */ true,
+            /*shouldUpdateSentenceHighlight= */ false);
       }
     });
 
