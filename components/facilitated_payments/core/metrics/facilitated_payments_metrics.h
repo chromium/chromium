@@ -73,7 +73,8 @@ enum class EwalletFlowExitedReason {
   kFopSelectorClosedByUser = 12,
   // The device is a foldable device which we don't support yet.
   kFoldableDevice = 13,
-  kMaxValue = kFoldableDevice
+  kMaxStrikes = 14,
+  kMaxValue = kMaxStrikes
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.EwalletFlowExitedReason)
 

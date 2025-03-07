@@ -18,6 +18,7 @@
 namespace autofill {
 class BankAccount;
 class PaymentsDataManager;
+class StrikeDatabase;
 }  // namespace autofill
 
 namespace payments::facilitated {
@@ -79,6 +80,10 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   // Enables features to pass a callback to listen to UI events.
   virtual void SetUiEventListener(
       base::RepeatingCallback<void(UiEvent)> ui_event_listener);
+
+  // Gets the StrikeDatabase associated with the client. Note: Nullptr may be
+  // returned so check before use.
+  virtual autofill::StrikeDatabase* GetStrikeDatabase() = 0;
 };
 
 }  // namespace payments::facilitated

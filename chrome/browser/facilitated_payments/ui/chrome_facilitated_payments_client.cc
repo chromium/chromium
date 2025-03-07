@@ -7,6 +7,7 @@
 #include "base/android/build_info.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -125,6 +126,17 @@ payments::facilitated::ContentFacilitatedPaymentsDriver*
 ChromeFacilitatedPaymentsClient::GetFacilitatedPaymentsDriverForFrame(
     content::RenderFrameHost* render_frame_host) {
   return &driver_factory_.GetOrCreateForFrame(render_frame_host);
+}
+
+autofill::StrikeDatabase* ChromeFacilitatedPaymentsClient::GetStrikeDatabase() {
+  content::BrowserContext* context = GetWebContents().GetBrowserContext();
+
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!profile) {
+    return nullptr;
+  }
+
+  return autofill::StrikeDatabaseFactory::GetForProfile(profile);
 }
 
 void ChromeFacilitatedPaymentsClient::

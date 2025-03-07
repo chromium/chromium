@@ -23,6 +23,7 @@ static_library("browser") {
     "network_api/facilitated_payments_network_interface.h",
     "pix_manager.cc",
     "pix_manager.h",
+    "strike_databases/payment_link_suggestion_strike_database.h",
   ]
 
   public_deps = [
