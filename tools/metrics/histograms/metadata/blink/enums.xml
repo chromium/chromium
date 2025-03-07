@@ -5957,6 +5957,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5353" label="SRIHashAssertion"/>
   <int value="5354" label="SRIPublicKeyAssertion"/>
   <int value="5355" label="ViewTransitionChangeRootElement"/>
+  <int value="5356" label="CSPBlockedWorkerCreation"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
