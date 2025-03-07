@@ -29,7 +29,10 @@ DEFAULT_IGNORE_WARNINGS = (
     # any known version for selecting Proguard configurations embedded under
     # META-INF/. This means that all rules with a '-upto-' qualifier will be
     # excluded and all rules with a -from- qualifier will be included.
-    r'Running R8 version main', )
+    r'Running R8 version main',
+    # https://issuetracker.google.com/327611582
+    r'The companion object Companion could not be found',
+)
 
 _MERGE_SERVICE_ENTRIES = (
     # Uses ServiceLoader to find all implementing classes, so multiple are
