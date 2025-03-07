@@ -85,9 +85,6 @@ std::string_view AutoEnrollmentStateToUmaSuffix(AutoEnrollmentState state) {
           [](AutoEnrollmentSafeguardTimeoutError) {
             return kUMASuffixConnectionError;
           },
-          [](AutoEnrollmentSystemClockSyncError) {
-            return kUMASuffixConnectionError;
-          },
           [](AutoEnrollmentStateKeysRetrievalError) {
             return kUMASuffixStateKeysRetrievalError;
           },
