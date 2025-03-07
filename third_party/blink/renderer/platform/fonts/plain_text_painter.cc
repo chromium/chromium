@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 
+#include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 
@@ -72,8 +73,47 @@ float PlainTextPainter::ComputeSubInlineSize(const TextRun& run,
                                              unsigned to_index,
                                              const Font& font,
                                              gfx::RectF* glyph_bounds) {
-  // TODO(crbug.com/389726691): Implement this without Font::SubRunWidth().
-  return font.SubRunWidth(run, from_index, to_index, glyph_bounds);
+  if (run.length() == 0) {
+    return 0;
+  }
+  FontCachePurgePreventer purge_preventer;
+
+  const PlainTextNode& node = CreateNode(run, font);
+  float x_pos = 0;
+  for (const auto& item : node.ItemList()) {
+    wtf_size_t start_offset = item.StartOffset();
+    if (item.EndOffset() <= from_index || to_index <= start_offset) {
+      continue;
+    }
+    // Calculate the required indexes for this specific run.
+    unsigned run_from = std::max(0u, from_index - start_offset);
+    unsigned run_to = std::min(item.Length(), to_index - start_offset);
+    // Measure the subrun.
+    StringView sub_text(node.TextContent(), start_offset, item.Length());
+    TextRun text_run(sub_text, item.Direction(),
+                     /* directional_override */ false, mode_ == kCanvas);
+    const PlainTextNode& sub_node =
+        CreateNode(text_run, font, /* supports_bidi */ false);
+    CharacterRange character_range =
+        sub_node.ComputeCharacterRange(run_from, run_to);
+
+    // Accumulate the position and the glyph bounding box.
+    if (glyph_bounds) {
+      gfx::RectF range_bounds(character_range.start, -character_range.ascent,
+                              character_range.Width(),
+                              character_range.Height());
+      // ComputeCharacterRange() returns bounds positioned as if the whole run
+      // was there, so the rect has to be moved to align with the current
+      // position.
+      range_bounds.Offset(-range_bounds.x() + x_pos, 0);
+      glyph_bounds->Union(range_bounds);
+    }
+    x_pos += character_range.Width();
+  }
+  if (glyph_bounds) {
+    glyph_bounds->Offset(-glyph_bounds->x(), 0);
+  }
+  return x_pos;
 }
 
 float PlainTextPainter::ComputeInlineSizeWithoutBidi(const TextRun& run,
