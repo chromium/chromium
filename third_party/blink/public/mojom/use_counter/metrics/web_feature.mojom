@@ -4740,6 +4740,7 @@ enum WebFeature {
   kSRIPublicKeyAssertion = 5354,
   kViewTransitionChangeRootElement = 5355,
   kCSPBlockedWorkerCreation = 5356,
+  kV8Navigator_ClearOriginJoinedAdInterestGroups_Method = 5357,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
