@@ -32,14 +32,12 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
   ~AutofillAiModelExecutorImpl() override;
 
   // AutofillAiModelExecutor:
-  void GetPredictions(FormData form_data,
-                      PredictionCallback callback) override;
+  void GetPredictions(FormData form_data) override;
 
  private:
-  // Invokes `callback` when model execution response has been returned.
+  // Writes the model execution response into the cache.
   void OnModelExecuted(
       FormData form_data,
-      PredictionCallback callback,
       optimization_guide::OptimizationGuideModelExecutionResult
           execution_result,
       std::unique_ptr<
