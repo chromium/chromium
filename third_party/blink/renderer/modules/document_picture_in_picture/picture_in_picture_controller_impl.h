@@ -79,6 +79,9 @@ class MODULES_EXPORT PictureInPictureControllerImpl
                             ScriptPromiseResolver<IDLUndefined>*) override;
   bool IsPictureInPictureElement(const Element*) const override;
   void OnPictureInPictureStateChange() override;
+  void OnMediaPositionStateChanged(
+      const media_session::mojom::blink::MediaPositionPtr& media_position)
+      override;
   Element* PictureInPictureElement() const override;
   Element* PictureInPictureElement(TreeScope&) const override;
   bool PictureInPictureEnabled() const override;

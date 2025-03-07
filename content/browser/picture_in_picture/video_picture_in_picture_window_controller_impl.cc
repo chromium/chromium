@@ -200,13 +200,27 @@ void VideoPictureInPictureWindowControllerImpl::UpdatePlaybackState() {
     return;
 
   auto playback_state = VideoOverlayWindow::PlaybackState::kPaused;
+  const std::optional<media_session::MediaPosition>& effective_media_position =
+      GetEffectiveMediaPosition();
   if (IsPlayerActive()) {
     playback_state = VideoOverlayWindow::PlaybackState::kPlaying;
-  } else if (media_position_ && media_position_->end_of_media()) {
+  } else if (effective_media_position.has_value() &&
+             effective_media_position->end_of_media()) {
     playback_state = VideoOverlayWindow::PlaybackState::kEndOfVideo;
   }
 
   window_->SetPlaybackState(playback_state);
+}
+
+void VideoPictureInPictureWindowControllerImpl::UpdateMediaPosition() {
+  const std::optional<media_session::MediaPosition>& effective_position =
+      GetEffectiveMediaPosition();
+  if (window_ && effective_position.has_value()) {
+    window_->SetMediaPosition(*effective_position);
+    window_received_media_position_ = true;
+  } else {
+    window_received_media_position_ = false;
+  }
 }
 
 bool VideoPictureInPictureWindowControllerImpl::TogglePlayPause() {
@@ -262,6 +276,14 @@ bool VideoPictureInPictureWindowControllerImpl::PauseInternal() {
   return false /* paused */;
 }
 
+const std::optional<media_session::MediaPosition>&
+VideoPictureInPictureWindowControllerImpl::GetEffectiveMediaPosition() const {
+  if (media_session_media_position_.has_value()) {
+    return media_session_media_position_;
+  }
+  return pip_session_media_position_;
+}
+
 PictureInPictureResult VideoPictureInPictureWindowControllerImpl::StartSession(
     PictureInPictureServiceImpl* service,
     const MediaPlayerId& player_id,
@@ -280,8 +302,10 @@ PictureInPictureResult VideoPictureInPictureWindowControllerImpl::StartSession(
   if (result != PictureInPictureResult::kSuccess)
     return result;
 
-  if (active_session_)
+  if (active_session_) {
     active_session_->Disconnect();
+    pip_session_media_position_ = std::nullopt;
+  }
 
   source_bounds_ = source_bounds;
 
@@ -321,12 +345,24 @@ void VideoPictureInPictureWindowControllerImpl::OnServiceDeleted(
 
   active_session_->Shutdown();
   active_session_ = nullptr;
+  pip_session_media_position_ = std::nullopt;
 }
 
 void VideoPictureInPictureWindowControllerImpl::SetShowPlayPauseButton(
     bool show_play_pause_button) {
   always_show_play_pause_button_ = show_play_pause_button;
   UpdatePlayPauseButtonVisibility();
+}
+
+void VideoPictureInPictureWindowControllerImpl::SetMediaPosition(
+    const media_session::MediaPosition& media_position) {
+  if (media_position == pip_session_media_position_ &&
+      window_received_media_position_) {
+    return;
+  }
+  pip_session_media_position_ = media_position;
+  UpdatePlaybackState();
+  UpdateMediaPosition();
 }
 
 void VideoPictureInPictureWindowControllerImpl::SkipAd() {
@@ -374,9 +410,13 @@ void VideoPictureInPictureWindowControllerImpl::HangUp() {
 }
 
 void VideoPictureInPictureWindowControllerImpl::SeekTo(base::TimeDelta time) {
+  // Default to the Media Session handler if it's available.
   if (media_session_action_seek_to_handled_) {
     MediaSession::Get(web_contents())->SeekTo(time);
+    return;
   }
+  // Otherwise, directly seek the video player.
+  active_session_->GetMediaPlayerRemote()->RequestSeekTo(time);
 }
 
 void VideoPictureInPictureWindowControllerImpl::MediaSessionInfoChanged(
@@ -462,19 +502,14 @@ void VideoPictureInPictureWindowControllerImpl::MediaSessionPositionChanged(
     const std::optional<media_session::MediaPosition>& media_position) {
   // If we've already sent this position to |window|, then no need to update
   // again.
-  if (media_position == media_position_ && window_received_media_position_) {
+  if (media_position == media_session_media_position_ &&
+      window_received_media_position_) {
     return;
   }
 
-  media_position_ = media_position;
+  media_session_media_position_ = media_position;
   UpdatePlaybackState();
-
-  if (window_ && media_position.has_value()) {
-    window_->SetMediaPosition(*media_position);
-    window_received_media_position_ = true;
-  } else {
-    window_received_media_position_ = false;
-  }
+  UpdateMediaPosition();
 }
 
 void VideoPictureInPictureWindowControllerImpl::MediaSessionImagesChanged(
@@ -558,6 +593,7 @@ void VideoPictureInPictureWindowControllerImpl::OnLeavingPictureInPicture(
 
   active_session_->Shutdown();
   active_session_ = nullptr;
+  pip_session_media_position_ = std::nullopt;
 }
 
 void VideoPictureInPictureWindowControllerImpl::CloseInternal(

@@ -150,6 +150,10 @@ class CORE_EXPORT HTMLVideoElement final
   void MediaRemotingStopped(int error_code) final;
   DisplayType GetDisplayType() const final;
   bool IsInAutoPIP() const final;
+  void DidPlayerMediaPositionStateChange(double playback_rate,
+                                         base::TimeDelta duration,
+                                         base::TimeDelta position,
+                                         bool end_of_media) final;
   void OnPictureInPictureStateChange() final;
   void SetPersistentState(bool persistent) final;
 
