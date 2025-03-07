@@ -1392,6 +1392,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.toolbar") {
     "src/org/chromium/chrome/browser/toolbar/top/TabSwitcherActionMenuRenderTest.java",
     "src/org/chromium/chrome/browser/toolbar/top/ToolbarButtonIphTest.java",
     "src/org/chromium/chrome/browser/toolbar/top/ToolbarPhoneTest.java",
+    "src/org/chromium/chrome/browser/toolbar/top/ToolbarTabletTest.java",
   ]
 
   deps = chrome_test_java_deps
