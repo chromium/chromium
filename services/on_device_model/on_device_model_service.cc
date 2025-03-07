@@ -18,6 +18,7 @@
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/uuid.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/on_device_model/fake/on_device_model_fake.h"
 #include "services/on_device_model/ml/gpu_blocklist.h"
@@ -30,6 +31,10 @@
 
 namespace on_device_model {
 namespace {
+
+const base::FeatureParam<bool> kForceFastestInference{
+    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+    "on_device_model_force_fastest_inference", false};
 
 class ModelWrapper;
 
@@ -368,6 +373,9 @@ void OnDeviceModelService::LoadModel(
     mojom::LoadModelParamsPtr params,
     mojo::PendingReceiver<mojom::OnDeviceModel> model,
     LoadModelCallback callback) {
+  if (kForceFastestInference.Get()) {
+    params->performance_hint = ml::ModelPerformanceHint::kFastestInference;
+  }
   auto start = base::TimeTicks::Now();
   auto model_impl = ml::OnDeviceModelExecutor::CreateWithResult(
       *chrome_ml_, std::move(params),
