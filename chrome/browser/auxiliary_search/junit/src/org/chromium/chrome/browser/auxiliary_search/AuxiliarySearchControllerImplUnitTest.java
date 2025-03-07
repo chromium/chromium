@@ -281,7 +281,7 @@ public class AuxiliarySearchControllerImplUnitTest {
         int timeDelta = 50;
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord("Search.AuxiliarySearch.QueryTime.Tabs", timeDelta)
+                        .expectIntRecord("Search.AuxiliarySearch.QueryTime.History", timeDelta)
                         .build();
 
         // Verifies the case when the entry list is empty.
@@ -291,7 +291,8 @@ public class AuxiliarySearchControllerImplUnitTest {
 
         histogramWatcher.assertExpected();
         verify(mAuxiliarySearchDonor, never())
-                .donateEntries(eq(entries), mDonationCompleteCallbackCaptor.capture());
+                .donateEntries(
+                        eq(entries), any(int[].class), mDonationCompleteCallbackCaptor.capture());
     }
 
     @Test
@@ -337,7 +338,9 @@ public class AuxiliarySearchControllerImplUnitTest {
         mAuxiliarySearchControllerImpl.onNonSensitiveDataAvailable(entries, startTime);
 
         verify(mAuxiliarySearchDonor)
-                .donateEntries(eq(entries), mDonationCompleteCallbackCaptor.capture());
+                .donateEntries(
+                        eq(entries), any(int[].class), mDonationCompleteCallbackCaptor.capture());
+
         verify(mFaviconHelper)
                 .getLocalFaviconImageForURL(
                         eq(mProfile),
@@ -412,7 +415,8 @@ public class AuxiliarySearchControllerImplUnitTest {
         mFakeTime.advanceMillis(timeDelta);
         mCallbackCaptor.getAllValues().get(0).onResult(tabs);
 
-        verify(mAuxiliarySearchDonor, never()).donateEntries(any(List.class), any(Callback.class));
+        verify(mAuxiliarySearchDonor, never())
+                .donateEntries(any(List.class), any(int[].class), any(Callback.class));
     }
 
     @Test
@@ -457,7 +461,8 @@ public class AuxiliarySearchControllerImplUnitTest {
         mFakeTime.advanceMillis(timeDelta);
         mEntryReadyCallbackCaptor.getAllValues().get(0).onResult(entries);
 
-        verify(mAuxiliarySearchDonor, never()).donateEntries(any(List.class), any(Callback.class));
+        verify(mAuxiliarySearchDonor, never())
+                .donateEntries(any(List.class), any(int[].class), any(Callback.class));
     }
 
     @Test
