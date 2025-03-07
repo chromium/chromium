@@ -7,6 +7,9 @@ type EntityInstance = chrome.autofillPrivate.EntityInstance;
 type EntityInstanceWithLabels = chrome.autofillPrivate.EntityInstanceWithLabels;
 type EntityType = chrome.autofillPrivate.EntityType;
 
+export type EntityInstancesChangedListener =
+    (entityInstances: EntityInstanceWithLabels[]) => void;
+
 /**
  * This interface defines the autofill API wrapper that combines entity data
  * manager related methods.
@@ -42,6 +45,18 @@ export interface EntityDataManagerProxy {
    * Returns a list of all possible attributes that can be set on an entity.
    */
   getAllAttributeTypesForEntity(entityType: number): Promise<AttributeType[]>;
+
+  /**
+   * Adds a listener to changes in the entity instances.
+   */
+  addEntityInstancesChangedListener(listener: EntityInstancesChangedListener):
+      void;
+
+  /**
+   * Remove a listener to changes in the entity instances.
+   */
+  removeEntityInstancesChangedListener(
+      listener: EntityInstancesChangedListener): void;
 }
 
 export class EntityDataManagerProxyImpl implements EntityDataManagerProxy {
@@ -67,6 +82,15 @@ export class EntityDataManagerProxyImpl implements EntityDataManagerProxy {
 
   getAllAttributeTypesForEntity(entityType: number) {
     return chrome.autofillPrivate.getAllAttributeTypesForEntity(entityType);
+  }
+
+  addEntityInstancesChangedListener(listener: EntityInstancesChangedListener) {
+    chrome.autofillPrivate.onEntityInstancesChanged.addListener(listener);
+  }
+
+  removeEntityInstancesChangedListener(
+      listener: EntityInstancesChangedListener) {
+    chrome.autofillPrivate.onEntityInstancesChanged.removeListener(listener);
   }
 
   static getInstance() {
