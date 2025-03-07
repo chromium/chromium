@@ -385,9 +385,6 @@ class BocaAppPageHandlerTest : public testing::Test {
     web_ui_ = std::make_unique<content::TestWebUI>();
     web_ui_->set_web_contents(web_contents_.get());
 
-    EXPECT_CALL(*session_manager(), ToggleAppStatus(/*is_app_opened=*/true))
-        .Times(1);
-
     mojo::PendingReceiver<mojom::Page> page_pending_receiver;
     boca_app_handler_ = std::make_unique<BocaAppHandler>(
         remote_.BindNewPipeAndPassReceiver(),
@@ -407,9 +404,6 @@ class BocaAppPageHandlerTest : public testing::Test {
   }
 
   void TearDown() override {
-    EXPECT_CALL(*session_manager(), ToggleAppStatus(/*is_app_opened=*/false))
-        .Times(1);
-
     boca_app_handler_.reset();
     web_ui_.reset();
     web_contents_.reset();

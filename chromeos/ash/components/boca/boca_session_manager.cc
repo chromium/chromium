@@ -266,6 +266,9 @@ void BocaSessionManager::UpdateTabActivity(std::u16string title) {
 
 void BocaSessionManager::ToggleAppStatus(bool is_app_opened) {
   is_app_opened_ = is_app_opened;
+  if (on_app_status_toggled_cb_for_test_) {
+    std::move(on_app_status_toggled_cb_for_test_).Run(is_app_opened_);
+  }
 }
 
 void BocaSessionManager::StartSendingStudentHeartbeatRequests() {
