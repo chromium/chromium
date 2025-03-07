@@ -810,8 +810,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     // either the values of `isSpeechActive` or `isAudioCurrentlyPlaying`
     // change, the previously scheduled callback is canceled and a new callback
     // is scheduled.
-    // TODO (b/339860819) improve debouncer logic so that the spinner disappears
-    // immediately when speech starts playing, or when the pause button is hit.
+    // TODO: crbug.com/339860819 - improve debouncer logic so that the spinner
+    // disappears immediately when speech starts playing, or when the pause
+    // button is hit.
     if (this.spinnerDebouncerCallbackHandle_ !== undefined) {
       clearTimeout(this.spinnerDebouncerCallbackHandle_);
     }
