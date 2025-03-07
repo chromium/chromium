@@ -410,7 +410,7 @@ void SearchResultsPanel::RefreshPanelBounds() {
   gfx::Rect widget_bounds_in_screen(
       widget->GetWindowBoundsInScreen().origin(),
       gfx::Size(capture_mode::kSearchResultsPanelTotalWidth,
-                capture_mode::kSearchResultsPanelHeight));
+                capture_mode::kSearchResultsPanelTotalHeight));
 
   // Adjust the preferred size and bounds based on the current display.
   const display::Display display =
