@@ -3189,12 +3189,6 @@
       name: "OverscrollCustomization",
       status: "experimental",
     },
-    // Support for page margin boxes.
-    // https://www.w3.org/TR/css-page-3/#margin-boxes
-    {
-      name: "PageMarginBoxes",
-      status: "stable",
-    },
     {
       name: "PagePopup",
       // Android does not have support for PagePopup

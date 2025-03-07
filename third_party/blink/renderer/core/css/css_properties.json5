@@ -662,15 +662,6 @@
       valid_type: "bool",
     },
 
-    // Valid @page properties and descriptors when PageMarginBoxes aren't
-    // enabled. This is limited to the set of descriptors and properties
-    // that have an effect when this feature is disabled (essentially page
-    // size, margins and orientation).
-    valid_for_limited_page_context: {
-      default: false,
-      valid_type: "bool",
-    },
-
     // Applicable @page properties and descriptors.
     valid_for_page_context: {
       default: false,
@@ -3829,7 +3820,6 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
       invalidate: ["margin", "out-of-flow", "scroll-anchor"],
       anchor_mode: "height",
@@ -3854,7 +3844,6 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
       invalidate: ["margin", "out-of-flow", "scroll-anchor"],
       anchor_mode: "width",
@@ -3879,7 +3868,6 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
       invalidate: ["margin", "out-of-flow", "scroll-anchor"],
       anchor_mode: "width",
@@ -3904,7 +3892,6 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
       invalidate: ["margin", "out-of-flow", "scroll-anchor"],
       anchor_mode: "height",
@@ -4687,7 +4674,6 @@
       default_value: "PageOrientation::kUpright",
       include_paths: ["third_party/blink/public/common/css/page_orientation.h"],
       computable: false,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
     },
     {
@@ -5407,7 +5393,6 @@
       property_methods: ["ParseSingleValue"],
       style_builder_custom_functions: ["initial", "inherit", "value"],
       computable: false,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
     },
     {
@@ -7340,7 +7325,6 @@
       valid_for_first_letter: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
     },
     {
@@ -7356,7 +7340,6 @@
       valid_for_first_letter: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
     },
     {
@@ -7372,7 +7355,6 @@
       valid_for_first_letter: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
     },
     {
@@ -7388,7 +7370,6 @@
       valid_for_first_letter: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
     },
     {
@@ -8487,7 +8468,6 @@
       layout_dependent: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
     },
     {
@@ -8496,7 +8476,6 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       layout_dependent: true,
       valid_for_position_try: true,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
     },
     {
@@ -8505,7 +8484,6 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       layout_dependent: true,
       valid_for_position_try: true,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
     },
     {
