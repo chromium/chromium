@@ -8516,6 +8516,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_MICROSOFT_FILES_TRENDING_JUSTIFICATION_TEXT" desc="Text shown on the NTP Microsoft files card.">
         Suggested for you
       </message>
+      <message name="IDS_NTP_MODULES_MICROSOFT_FILES_OPENED_TODAY_JUSTIFICATION_TEXT" desc="Text shown on the NTP Microsoft files card.">
+        You opened today
+      </message>
+      <message name="IDS_NTP_MODULES_MICROSOFT_FILES_OPENED_YESTERDAY_JUSTIFICATION_TEXT" desc="Text shown on the NTP Microsoft files card.">
+        You opened yesterday
+      </message>
+      <message name="IDS_NTP_MODULES_MICROSOFT_FILES_OPENED_PAST_WEEK_JUSTIFICATION_TEXT" desc="Text shown on the NTP Microsoft files card.">
+        You opened in the past week
+      </message>
+      <message name="IDS_NTP_MODULES_MICROSOFT_FILES_SHARED_BY_JUSTIFICATION_TEXT" desc="Text shown on the NTP Microsoft files card.">
+        Shared by <ph name="USER_NAME">$1<ex>Megan Bower</ex></ph>
+      </message>
       <message name="IDS_NTP_MODULES_DISMISS_FOR_HOURS_BUTTON_TEXT" desc="Text shown on the dismiss button of an NTP module that specifies length of time in hours.">
         Hide for <ph name="MODULE_TITLE">$1<ex>5</ex></ph> hours
       </message>
