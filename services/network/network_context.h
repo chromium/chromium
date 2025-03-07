@@ -411,6 +411,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
                   const std::string& ocsp_result,
                   const std::string& sct_list,
                   VerifyCertCallback callback) override;
+  void VerifyCertForSignedExchange(
+      const scoped_refptr<net::X509Certificate>& certificate,
+      const net::HostPortPair& host_port,
+      const std::string& ocsp_result,
+      const std::string& sct_list,
+      VerifyCertCallback callback) override;
   void AddHSTS(const std::string& host,
                base::Time expiry,
                bool include_subdomains,
@@ -710,6 +716,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     const raw_ptr<NetworkService> network_service_;
   };
 
+  enum class CTVerificationMode {
+    // Use specific to signed exchange logic
+    // that requires certificate transparency compliance.
+    kSignedExchange,
+    // Use default certificate transparency verification logic
+    // like in TLS.
+    kTlsCertificate
+  };
+
   // To be called back from CookieManager on settings change.
   void OnCookieManagerSettingsChanged();
 
@@ -763,6 +778,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void CanUploadDomainReliability(const url::Origin& origin,
                                   base::OnceCallback<void(bool)> callback);
 
+  void VerifyCertInternal(
+      const scoped_refptr<net::X509Certificate>& certificate,
+      const net::HostPortPair& host_port,
+      const std::string& ocsp_result,
+      const std::string& sct_list,
+      CTVerificationMode ct_verification_mode,
+      VerifyCertCallback callback);
+
   void OnVerifyCertComplete(uint64_t cert_verify_id, int result);
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
@@ -775,7 +798,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // SSLClientSocket and QUIC. Fold this into some CertVerifier-shaped class
   // in //net.
   int CheckCTRequirements(net::CertVerifyResult& cert_verify_result,
-                          const net::HostPortPair& host_port_pair);
+                          const net::HostPortPair& host_port_pair,
+                          CTVerificationMode ct_verification_mode);
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 #if BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
@@ -938,7 +962,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       host_resolvers_;
   std::unique_ptr<net::HostResolver::ProbeRequest> doh_probes_request_;
 
-  // Used for Signed Exchange certificate verification.
+  // Used for certificate verification.
   uint64_t next_cert_verify_id_ = 0;
   struct PendingCertVerify {
     PendingCertVerify();
@@ -953,6 +977,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     net::HostPortPair host_port;
     std::string ocsp_result;
     std::string sct_list;
+    CTVerificationMode ct_verification_mode;
   };
   std::map<uint64_t, std::unique_ptr<PendingCertVerify>>
       cert_verifier_requests_;

@@ -116,9 +116,9 @@ void VerifyCert(const scoped_refptr<net::X509Certificate>& certificate,
                           ->GetNetworkContext();
   }
 
-  network_context->VerifyCert(certificate, net::HostPortPair::FromURL(url),
-                              ocsp_result, sct_list,
-                              std::move(wrapped_callback));
+  network_context->VerifyCertForSignedExchange(
+      certificate, net::HostPortPair::FromURL(url), ocsp_result, sct_list,
+      std::move(wrapped_callback));
 }
 
 std::string OCSPErrorToString(const bssl::OCSPVerifyResult& ocsp_result) {

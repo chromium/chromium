@@ -243,6 +243,12 @@ class TestNetworkContext : public mojom::NetworkContext {
                   const std::string& ocsp_result,
                   const std::string& sct_list,
                   VerifyCertCallback callback) override {}
+  void VerifyCertForSignedExchange(
+      const scoped_refptr<net::X509Certificate>& certificate,
+      const net::HostPortPair& host_port,
+      const std::string& ocsp_result,
+      const std::string& sct_list,
+      VerifyCertCallback callback) override {}
   void IsHSTSActiveForHost(const std::string& host,
                            bool is_top_level_nav,
                            IsHSTSActiveForHostCallback callback) override {}
