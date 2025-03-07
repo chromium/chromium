@@ -145,7 +145,6 @@ class QuietPromptInteractiveUITest : public InteractiveBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_features_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
 };

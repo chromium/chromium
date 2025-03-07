@@ -1066,15 +1066,28 @@ bool ComputedStyle::DiffNeedsNormalPaintInvalidation(
     return true;
   }
 
-  if (field_diff & kBackgroundCurrentColor) {
-    // If the background-image or background-color depends on currentColor
-    // (e.g., background-image: linear-gradient(currentColor, #fff) or
-    // background-color: color-mix(in srgb, currentcolor ...)), and the color
-    // has changed, we need to recompute it even though VisuallyEqual()
-    // thinks the old and new background styles are identical.
+  if (field_diff & kCurrentcolor) {
+    // If a property has a value that contains a <color> that depends on
+    // 'currentcolor', for example:
+    //
+    //   background-image: linear-gradient(currentColor, #fff)
+    //   background-color: color-mix(in srgb, currentcolor ...)
+    //
+    // If the (current)color has changed, we need to recompute it even though
+    // the old and new property values are identical.
+    //
+    // NOTE: This is also handled to some degree by
+    // LayoutObject::AdjustStyleDifference. We should probably re-distribute
+    // the responsibilities between these two locations.
+    //
+    // TODO: There are more properties that contain <color> values than this.
     if ((BackgroundInternal().AnyLayerUsesCurrentColor() ||
          BackgroundColor().IsUnresolvedColorFunction() ||
-         InternalVisitedBackgroundColor().IsUnresolvedColorFunction()) &&
+         InternalVisitedBackgroundColor().IsUnresolvedColorFunction() ||
+         (FillPaint().HasColor() &&
+          FillPaint().GetColor().IsUnresolvedColorFunction()) ||
+         (StrokePaint().HasColor() &&
+          StrokePaint().GetColor().IsUnresolvedColorFunction())) &&
         (GetCurrentColor() != other.GetCurrentColor() ||
          GetInternalVisitedCurrentColor() !=
              other.GetInternalVisitedCurrentColor())) {

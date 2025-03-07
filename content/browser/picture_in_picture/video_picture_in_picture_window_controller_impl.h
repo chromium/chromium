@@ -130,6 +130,8 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
 
   void SetShowPlayPauseButton(bool show_play_pause_button);
 
+  void SetMediaPosition(const media_session::MediaPosition& media_position);
+
   // Called by PictureInPictureServiceImpl when a session request is received.
   // The call should return the |session_remote| and |window_size| as out
   // params. A failure to create the session should be expressed with an empty
@@ -168,6 +170,8 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   // Recompute the playback state and update the window accordingly.
   void UpdatePlaybackState();
 
+  void UpdateMediaPosition();
+
   // Signal to the media player that |this| is leaving Picture-in-Picture mode.
   void OnLeavingPictureInPicture(bool should_pause_video);
 
@@ -188,6 +192,9 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
 
   // Returns true if the player is active after this call.
   bool PauseInternal();
+
+  const std::optional<media_session::MediaPosition>& GetEffectiveMediaPosition()
+      const;
 
   std::unique_ptr<VideoOverlayWindow> window_;
 
@@ -225,7 +232,11 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   std::unique_ptr<PictureInPictureSession> active_session_;
 
   // The media position info as last reported to us by MediaSessionImpl.
-  std::optional<media_session::MediaPosition> media_position_;
+  std::optional<media_session::MediaPosition> media_session_media_position_;
+
+  // The media position info as last reported to us by the
+  // PictureInPictureSession.
+  std::optional<media_session::MediaPosition> pip_session_media_position_;
 
   // The media metadata's source title as last reported to us by
   // MediaSessionImpl.

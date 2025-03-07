@@ -25,6 +25,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
@@ -44,8 +45,9 @@ class BtmShortVisitObserverBrowserTest : public ContentBrowserTest {
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
-    embedded_https_test_server().SetSSLConfig(
-        net::EmbeddedTestServer::CERT_TEST_NAMES);
+    embedded_https_test_server().SetCertHostnames(
+        {"a.test", "*.a.test", "b.test", "*.b.test", "c.test", "*.c.test",
+         "d.test", "*.d.test", "e.test", "*.e.test"});
     embedded_https_test_server().AddDefaultHandlers(GetTestDataFilePath());
     ASSERT_TRUE(embedded_https_test_server().Start());
   }
@@ -445,6 +447,92 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
   ukm_recorder.ExpectEntryMetric(entries[0], "PreviousSiteSame", 0);
   ukm_recorder.ExpectEntryMetric(entries[0], "NextSiteSame", 0);
   ukm_recorder.ExpectEntryMetric(entries[0], "PreviousAndNextSiteSame", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest, ShortVisitNeighbor) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  const GURL url1 =
+      embedded_https_test_server().GetURL("a.test", "/empty.html");
+  const GURL url2 =
+      embedded_https_test_server().GetURL("b.test", "/empty.html");
+  const GURL url3 =
+      embedded_https_test_server().GetURL("c.test", "/empty.html");
+  const GURL url4 =
+      embedded_https_test_server().GetURL("d.test", "/empty.html");
+  const GURL url5 =
+      embedded_https_test_server().GetURL("e.test", "/empty.html");
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), url1));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url2));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url3));
+  // Go back to url2.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url4));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url5));
+
+  UkmEntryVector entries = GetBtmShortVisits(5, ukm_recorder);
+  ASSERT_THAT(EntryURLs(ukm_recorder, entries),
+              testing::ElementsAre(url1, url2, url3, url2, url4));
+  auto get_visit_id = [&](const ukm::mojom::UkmEntry* entry) -> int64_t {
+    return CHECK_DEREF(ukm_recorder.GetEntryMetric(entry, "ShortVisitId"));
+  };
+  const int64_t visit_id1 = get_visit_id(entries[0]),
+                visit_id2 = get_visit_id(entries[1]),
+                visit_id3 = get_visit_id(entries[2]),
+                visit_id4 = get_visit_id(entries[3]),
+                visit_id5 = get_visit_id(entries[4]);
+  ASSERT_THAT((std::set<int64_t>{visit_id1, visit_id2}), testing::SizeIs(2))
+      << "Visit IDs are not unique";
+
+  UkmEntryVector neighbor_entries =
+      ukm_recorder.GetEntriesByName("BTM.ShortVisitNeighbor");
+
+  // 5 visits => 9 neighbors (not 10, because the first visit had no previous
+  // neighbor).
+  ASSERT_THAT(neighbor_entries, testing::SizeIs(9));
+  // url1 had one neighbor, url2.
+  ukm_recorder.ExpectEntrySourceHasUrl(neighbor_entries[0], url2);
+  // The neighbor followed url1.
+  ukm_recorder.ExpectEntryMetric(neighbor_entries[0], "IsPreceding", false);
+  // The visit ids match.
+  ukm_recorder.ExpectEntryMetric(neighbor_entries[0], "ShortVisitId",
+                                 visit_id1);
+  // url2 had two neighbors, url1 and url3. Both visit ids match.
+  ukm_recorder.ExpectEntrySourceHasUrl(neighbor_entries[1], url1);
+  ukm_recorder.ExpectEntryMetric(neighbor_entries[1], "IsPreceding", true);
+  ukm_recorder.ExpectEntryMetric(neighbor_entries[1], "ShortVisitId",
+                                 visit_id2);
+  ukm_recorder.ExpectEntrySourceHasUrl(neighbor_entries[2], url3);
+  ukm_recorder.ExpectEntryMetric(neighbor_entries[2], "IsPreceding", false);
+  ukm_recorder.ExpectEntryMetric(neighbor_entries[2], "ShortVisitId",
+                                 visit_id2);
+  // url3 that two neighbors, url2 and the second visit to url2.
+  ukm_recorder.ExpectEntrySourceHasUrl(neighbor_entries[3], url2);
+  ukm_recorder.ExpectEntryMetric(neighbor_entries[3], "IsPreceding", true);
+  ukm_recorder.ExpectEntryMetric(neighbor_entries[3], "ShortVisitId",
+                                 visit_id3);
+  ukm_recorder.ExpectEntrySourceHasUrl(neighbor_entries[4], url2);
+  ukm_recorder.ExpectEntryMetric(neighbor_entries[4], "IsPreceding", false);
+  ukm_recorder.ExpectEntryMetric(neighbor_entries[4], "ShortVisitId",
+                                 visit_id3);
+  // The second visit to url2 had two neighbors, url3 and url4.
+  ukm_recorder.ExpectEntrySourceHasUrl(neighbor_entries[5], url3);
+  ukm_recorder.ExpectEntryMetric(neighbor_entries[5], "IsPreceding", true);
+  ukm_recorder.ExpectEntryMetric(neighbor_entries[5], "ShortVisitId",
+                                 visit_id4);
+  ukm_recorder.ExpectEntrySourceHasUrl(neighbor_entries[6], url4);
+  ukm_recorder.ExpectEntryMetric(neighbor_entries[6], "IsPreceding", false);
+  ukm_recorder.ExpectEntryMetric(neighbor_entries[6], "ShortVisitId",
+                                 visit_id4);
+  // url4 had two neighbors, url2 and url5.
+  ukm_recorder.ExpectEntrySourceHasUrl(neighbor_entries[7], url2);
+  ukm_recorder.ExpectEntryMetric(neighbor_entries[7], "IsPreceding", true);
+  ukm_recorder.ExpectEntryMetric(neighbor_entries[7], "ShortVisitId",
+                                 visit_id5);
+  ukm_recorder.ExpectEntrySourceHasUrl(neighbor_entries[8], url5);
+  ukm_recorder.ExpectEntryMetric(neighbor_entries[8], "IsPreceding", false);
+  ukm_recorder.ExpectEntryMetric(neighbor_entries[8], "ShortVisitId",
+                                 visit_id5);
 }
 
 }  // namespace

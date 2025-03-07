@@ -15,7 +15,7 @@ class WebState;
 }  // namespace web
 
 /// Delegate for the lens result page mediator.
-@protocol LensResultPageMediatorDelegate <LensOverlayTabChangeResponder>
+@protocol LensResultPageMediatorDelegate <NSObject>
 
 /// Called when the web state gets destroyed.
 - (void)lensResultPageWebStateDestroyed;

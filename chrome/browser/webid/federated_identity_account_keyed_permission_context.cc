@@ -129,9 +129,9 @@ bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
             object->value.FindString(kSharingIdpKey);
 
         return rp_embedder_origin && idp_origin &&
-               net::SchemefulSite(GURL(*rp_embedder_origin)) ==
-                   relying_party_embedder &&
-               net::SchemefulSite(GURL(*idp_origin)) == identity_provider;
+               relying_party_embedder.IsSameSiteWith(
+                   GURL(*rp_embedder_origin)) &&
+               identity_provider.IsSameSiteWith(GURL(*idp_origin));
       });
 }
 
@@ -322,10 +322,10 @@ void FederatedIdentityAccountKeyedPermissionContext::OnSetRequiresUserMediation(
     const url::Origin& relying_party,
     base::OnceClosure callback) {
   net::SchemefulSite relying_party_site(relying_party);
-  if (std::ranges::none_of(
-          storage_access_eligible_connections_, [&](const auto& pair) -> bool {
-            return net::SchemefulSite(pair.first) == relying_party_site;
-          })) {
+  if (std::ranges::none_of(storage_access_eligible_connections_,
+                           [&](const auto& pair) -> bool {
+                             return pair.first == relying_party_site;
+                           })) {
     std::move(callback).Run();
     return;
   }

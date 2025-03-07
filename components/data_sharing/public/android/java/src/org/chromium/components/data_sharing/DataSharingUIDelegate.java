@@ -7,6 +7,8 @@ package org.chromium.components.data_sharing;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
 import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
@@ -16,6 +18,7 @@ import org.chromium.url.GURL;
 
 /** An interface that shows sharing UI screens. */
 @JNINamespace("data_sharing")
+@NullMarked
 public interface DataSharingUIDelegate {
 
     /**
@@ -32,7 +35,7 @@ public interface DataSharingUIDelegate {
      * @param createUiConfig Used to set properties for data sharing create flow.
      * @return A unique identifier for create flow.
      */
-    default String showCreateFlow(DataSharingCreateUiConfig createUiConfig) {
+    default @Nullable String showCreateFlow(DataSharingCreateUiConfig createUiConfig) {
         return null;
     }
 
@@ -42,7 +45,7 @@ public interface DataSharingUIDelegate {
      * @param joinUiConfig Used to set properties for data sharing join flow.
      * @return A unique identifier for join flow.
      */
-    default String showJoinFlow(DataSharingJoinUiConfig joinUiConfig) {
+    default @Nullable String showJoinFlow(DataSharingJoinUiConfig joinUiConfig) {
         return null;
     }
 
@@ -52,7 +55,7 @@ public interface DataSharingUIDelegate {
      * @param manageUiConfig Used to set properties for data sharing manage flow.
      * @return A unique identifier for manage flow.
      */
-    default String showManageFlow(DataSharingManageUiConfig manageUiConfig) {
+    default @Nullable String showManageFlow(DataSharingManageUiConfig manageUiConfig) {
         return null;
     }
 

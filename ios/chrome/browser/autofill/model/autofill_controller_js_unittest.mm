@@ -1328,19 +1328,6 @@ TEST_F(AutofillControllerJsTest, FillFormField) {
   }
 }
 
-TEST_F(AutofillControllerJsTest, IsTextInput) {
-  const ElementByName elements_expecting_true[] = {
-      {"firstname", 0, -1}, {"lastname", 0, -1},
-      {"email", 0, -1},     {"phone", 0, -1},
-      {"blog", 0, -1},      {"expected number of clicks", 0, -1},
-      {"pwd", 0, -1},
-  };
-
-  TestExecutingBooleanJavaScriptOnElement(@"__gCrWeb.fill.isTextInput(%@)",
-                                          elements_expecting_true,
-                                          std::size(elements_expecting_true));
-}
-
 TEST_F(AutofillControllerJsTest, IsSelectElement) {
   const ElementByName elements_expecting_true[] = {
       {"state", 0, -1},

@@ -430,7 +430,6 @@
                 {
                     "name": "Enabled_20240718",
                     "enable_features": [
-                        "AndroidBcivZeroBrowserFrames",
                         "AndroidBrowserControlsInViz"
                     ],
                     "disable_features": [
@@ -3781,6 +3780,27 @@
                     "name": "Enabled",
                     "enable_features": [
                         "BusyLoopOnMainThread"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ButterForPrefsAndThemesAndSearchEngines": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnablePreferencesAccountStorage",
+                        "MoveThemePrefsToSpecifics",
+                        "SeparateLocalAndAccountSearchEngines",
+                        "SeparateLocalAndAccountThemes",
+                        "ThemesBatchUpload"
                     ]
                 }
             ]
@@ -14794,10 +14814,7 @@
     "MoveThemePrefsToSpecifics": [
         {
             "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
+                "chromeos"
             ],
             "experiments": [
                 {

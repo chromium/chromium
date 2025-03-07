@@ -2768,6 +2768,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5910140988253729859">Automatikus kitöltés visszavonása</translation>
 <translation id="5911020115933784199">Események és listák</translation>
 <translation id="5911110632211230665">Megnyitás letiltva</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> hozzáadta ezt a lapot</translation>
 <translation id="5915189366813702112">Rugalmas munkaidő</translation>
 <translation id="59174027418879706">Engedélyezve</translation>
 <translation id="5918373444239520146">Eszközök és hordozható elektronikai cikkek</translation>
@@ -4630,6 +4631,7 @@ További részletek:
 <translation id="9183425211371246419">A(z) <ph name="HOST_NAME" /> egy nem támogatott protokollt használ.</translation>
 <translation id="918454845714257218">Ellenőrizze <ph name="SIDE_OF_CARD" /> található kódot, majd próbálja újra</translation>
 <translation id="9186203289258525843">A Chrome beállítása alapértelmezett böngészőként gomb. Nyomja meg a gombot, ha a Chrome-ot szeretné beállítani a rendszer alapértelmezett böngészőjeként.</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> módosította ezt a lapot</translation>
 <translation id="9189789270972826888">Ha a kártyaadatok nem voltak kitöltve, kattintson az alábbi kártyaadatokra a másoláshoz és beillesztéshez. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">A 4 hétnél régebbi témák automatikusan törlődnek</translation>
 <translation id="9191834167571392248">Lyuk balra lent</translation>

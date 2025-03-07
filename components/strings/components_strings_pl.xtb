@@ -1438,6 +1438,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3536227077203206203">Przyznano jednorazowo</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">Ekran (z podziałem na strony)</translation>
+<translation id="3541016556608204104">Więcej informacji o oprogramowaniu sprzęgającym Chrome Enterprise</translation>
 <translation id="3542628208405253498">Obraz na karcie</translation>
 <translation id="3542768452570884558">Otwórz link w nowym oknie</translation>
 <translation id="3543935938072367282">Płać szybciej dzięki autouzupełnianiu</translation>
@@ -2766,6 +2767,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5910140988253729859">Cofnij autouzupełnianie</translation>
 <translation id="5911020115933784199">Kalendarze imprez</translation>
 <translation id="5911110632211230665">Otwieranie zostało zablokowane</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> dodał(a) tę kartę</translation>
 <translation id="5915189366813702112">Elastyczne zarządzanie pracą</translation>
 <translation id="59174027418879706">Włączony</translation>
 <translation id="5918373444239520146">Gadżety i przenośna elektronika</translation>
@@ -4625,6 +4627,7 @@ Dodatkowe informacje:
 <translation id="9183425211371246419">Serwer <ph name="HOST_NAME" /> używa nieobsługiwanego protokołu.</translation>
 <translation id="918454845714257218">Sprawdź kod <ph name="SIDE_OF_CARD" /> i spróbuj ponownie</translation>
 <translation id="9186203289258525843">Przycisk Ustaw Chrome jako przeglądarkę domyślną; aktywuj, aby ustawić Chrome jako domyślną przeglądarkę w systemie</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> zmienił(a) tę kartę</translation>
 <translation id="9189789270972826888">Jeśli dane karty nie zostały uzupełnione, kliknij je poniżej, aby je skopiować i wkleić. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Tematy starsze niż 4 tygodnie są automatycznie usuwane</translation>
 <translation id="9191834167571392248">Otwór w lewym dolnym rogu</translation>

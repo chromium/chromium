@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
+#include "third_party/skia/include/private/chromium/SkPMColor.h"
 
 namespace blink {
 
@@ -468,9 +469,15 @@ void TestUpdateRequiredPreviousFrameAfterFirstDecode(
   TestUpdateRequiredPreviousFrameAfterFirstDecode(create_decoder, data.get());
 }
 
-static uint32_t PremultiplyColor(uint32_t c) {
-  return SkPremultiplyARGBInline(SkGetPackedA32(c), SkGetPackedR32(c),
-                                 SkGetPackedG32(c), SkGetPackedB32(c));
+// Takes in a pixel encoded as 8888 and returns it as a premultiplied
+// pixel encoded in Skia's N32 format.
+static SkPMColor PremultiplyColor(uint32_t pixel, SkColorType ct) {
+  // If this assumption is false, then SkPreMultiplyARGB will return
+  // a wrongly-encoded pixel.
+  CHECK(ct == SkColorType::kN32_SkColorType);
+
+  return SkPreMultiplyARGB(SkPMColorGetA(pixel), SkPMColorGetR(pixel),
+                           SkPMColorGetG(pixel), SkPMColorGetB(pixel));
 }
 
 static void VerifyFramesMatch(const char* file,
@@ -486,11 +493,11 @@ static void VerifyFramesMatch(const char* file,
     for (int x = 0; x < bitmap_a.width(); ++x) {
       uint32_t color_a = *bitmap_a.getAddr32(x, y);
       if (!a->PremultiplyAlpha()) {
-        color_a = PremultiplyColor(color_a);
+        color_a = PremultiplyColor(color_a, bitmap_a.colorType());
       }
       uint32_t color_b = *bitmap_b.getAddr32(x, y);
       if (!b->PremultiplyAlpha()) {
-        color_b = PremultiplyColor(color_b);
+        color_b = PremultiplyColor(color_b, bitmap_b.colorType());
       }
       uint8_t* pixel_a = reinterpret_cast<uint8_t*>(&color_a);
       uint8_t* pixel_b = reinterpret_cast<uint8_t*>(&color_b);

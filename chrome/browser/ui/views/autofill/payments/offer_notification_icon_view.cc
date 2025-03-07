@@ -84,16 +84,6 @@ void OfferNotificationIconView::OnWidgetDestroying(views::Widget* widget) {
 }
 
 void OfferNotificationIconView::MaybeShowPageActionLabel() {
-  OfferNotificationBubbleController* controller = GetController();
-  if (!controller || !controller->ShouldIconExpand()) {
-    return;
-  }
-  should_extend_label_shown_duration_ = true;
-  SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
-  AnimateIn(IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT);
-  controller->OnIconExpanded();
-  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
 }
 
 void OfferNotificationIconView::HidePageActionLabel() {

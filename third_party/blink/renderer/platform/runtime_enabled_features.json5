@@ -762,7 +762,7 @@
     },
     {
       name: "CapturedSurfaceResolution",
-      status: { "Win": "experimental", "default": ""},
+      status: { "Win": "experimental", "Mac": "experimental", "default": ""},
     },
     {
       name: "CaptureHandle",

@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -254,10 +255,13 @@ TEST_F(ThemeLocalDataBatchUploaderTest,
       std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
           fake_change_processor())));
 
+  base::HistogramTester histogram_tester;
   EXPECT_THAT(GetLocalDataDescription(),
               AllOf(Field(&syncer::LocalDataDescription::type, syncer::THEMES),
                     Field(&syncer::LocalDataDescription::local_data_models,
                           IsEmpty())));
+  histogram_tester.ExpectUniqueSample("Theme.BatchUpload.HasLocalTheme", false,
+                                      1);
 }
 
 TEST_F(ThemeLocalDataBatchUploaderTest,
@@ -299,10 +303,13 @@ TEST_F(ThemeLocalDataBatchUploaderTest,
   ASSERT_FALSE(theme_service()->UsingExtensionTheme());
   EXPECT_EQ(theme_service()->GetThemeID(), ThemeService::kUserColorThemeID);
 
+  base::HistogramTester histogram_tester;
   EXPECT_THAT(GetLocalDataDescription(),
               AllOf(Field(&syncer::LocalDataDescription::type, syncer::THEMES),
                     Field(&syncer::LocalDataDescription::local_data_models,
                           IsEmpty())));
+  histogram_tester.ExpectUniqueSample("Theme.BatchUpload.HasLocalTheme", false,
+                                      1);
 }
 
 TEST_F(ThemeLocalDataBatchUploaderTest, TriggerLocalDataMigrationForNoItem) {
@@ -318,9 +325,12 @@ TEST_F(ThemeLocalDataBatchUploaderTest, TriggerLocalDataMigrationForNoItem) {
 
   StartSyncing(remote_theme_specifics);
 
+  base::HistogramTester histogram_tester;
   syncer::LocalDataDescription desc = GetLocalDataDescription();
   EXPECT_EQ(desc.type, syncer::THEMES);
   EXPECT_THAT(desc.local_data_models, SizeIs(1));
+  histogram_tester.ExpectUniqueSample("Theme.BatchUpload.HasLocalTheme", true,
+                                      1);
 
   ASSERT_NE(theme_service()->GetUserColor(), SK_ColorBLUE);
   EXPECT_THAT(
@@ -332,10 +342,14 @@ TEST_F(ThemeLocalDataBatchUploaderTest, TriggerLocalDataMigrationForNoItem) {
   EXPECT_FALSE(theme_service()->GetUserColor());
   // Nothing is committed.
   EXPECT_THAT(fake_change_processor()->changes(), IsEmpty());
+  histogram_tester.ExpectTotalCount(
+      "Theme.BatchUpload.LocalThemeMigrationTriggered", 0);
 
   theme_sync_service()->StopSyncing(syncer::THEMES);
   EXPECT_EQ(theme_service()->GetThemeID(), ThemeService::kUserColorThemeID);
   EXPECT_EQ(theme_service()->GetUserColor(), SK_ColorBLUE);
+  histogram_tester.ExpectUniqueSample("Theme.RestoredLocalThemeUponSignout",
+                                      true, 1);
 }
 
 TEST_F(ThemeLocalDataBatchUploaderTest,
@@ -352,6 +366,7 @@ TEST_F(ThemeLocalDataBatchUploaderTest,
 
   StartSyncing(remote_theme_specifics);
 
+  base::HistogramTester histogram_tester;
   TriggerLocalDataMigrationForItems(
       /*items=*/{ThemeLocalDataBatchUploader::kThemesLocalDataItemModelId});
   EXPECT_EQ(theme_service()->GetThemeID(), ThemeService::kUserColorThemeID);
@@ -362,15 +377,21 @@ TEST_F(ThemeLocalDataBatchUploaderTest,
   // The local theme is committed.
   EXPECT_THAT(fake_change_processor()->changes(),
               HasThemeSpecifics(local_theme_specifics));
+  histogram_tester.ExpectUniqueSample(
+      "Theme.BatchUpload.LocalThemeMigrationTriggered", true, 1);
 
   // GetLocalDataDescription should now return empty.
   EXPECT_THAT(GetLocalDataDescription(),
               AllOf(Field(&syncer::LocalDataDescription::type, syncer::THEMES),
                     Field(&syncer::LocalDataDescription::local_data_models,
                           IsEmpty())));
+  histogram_tester.ExpectUniqueSample("Theme.BatchUpload.HasLocalTheme", false,
+                                      1);
 
   theme_sync_service()->StopSyncing(syncer::THEMES);
   EXPECT_TRUE(theme_service()->UsingDefaultTheme());
+  histogram_tester.ExpectUniqueSample("Theme.RestoredLocalThemeUponSignout",
+                                      false, 1);
 }
 
 TEST_P(ThemeLocalDataBatchUploaderTest, LocalExtensionTheme) {

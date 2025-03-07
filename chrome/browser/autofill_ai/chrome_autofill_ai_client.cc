@@ -37,7 +37,6 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/accessibility/ax_tree_update.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
@@ -81,23 +80,6 @@ autofill::ContentAutofillClient& ChromeAutofillAiClient::GetAutofillClient() {
   // TODO: crbug.com/371534239 - Make the lifecycle relationships explicit.
   return CHECK_DEREF(
       autofill::ContentAutofillClient::FromWebContents(&*web_contents_));
-}
-
-void ChromeAutofillAiClient::GetAXTree(AXTreeCallback callback) {
-  using ProtoTreeUpdate = optimization_guide::proto::AXTreeUpdate;
-  base::OnceCallback<ProtoTreeUpdate(ui::AXTreeUpdate&)> processing_callback =
-      base::BindOnce([](ui::AXTreeUpdate& ax_tree_update) {
-        ProtoTreeUpdate ax_tree_proto;
-        optimization_guide::PopulateAXTreeUpdateProto(ax_tree_update,
-                                                      &ax_tree_proto);
-        return ax_tree_proto;
-      });
-  web_contents_->RequestAXTreeSnapshot(
-      std::move(processing_callback).Then(std::move(callback)),
-      ui::kAXModeWebContentsOnly,
-      /*max_nodes=*/500,
-      /*timeout=*/{},
-      content::WebContents::AXTreeSnapshotPolicy::kSameOriginDirectDescendants);
 }
 
 autofill_ai::AutofillAiManager& ChromeAutofillAiClient::GetManager() {

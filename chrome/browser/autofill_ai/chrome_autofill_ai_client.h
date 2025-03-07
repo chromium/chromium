@@ -38,7 +38,6 @@ class ChromeAutofillAiClient : public autofill_ai::AutofillAiClient {
 
   // AutofillAiClient:
   autofill::ContentAutofillClient& GetAutofillClient() override;
-  void GetAXTree(AXTreeCallback callback) override;
   autofill_ai::AutofillAiManager& GetManager() override;
   autofill::EntityDataManager* GetEntityDataManager() override;
   bool IsAutofillAiEnabledPref() const override;

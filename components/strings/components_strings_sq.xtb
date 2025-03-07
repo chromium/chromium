@@ -2766,6 +2766,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5910140988253729859">Zhbëje plotësimin automatik</translation>
 <translation id="5911020115933784199">Ngjarje dhe listime</translation>
 <translation id="5911110632211230665">Hapja u bllokua</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> e shtoi këtë skedë</translation>
 <translation id="5915189366813702112">Marrëveshjet e ndryshueshme të punës</translation>
 <translation id="59174027418879706">Aktivizuar</translation>
 <translation id="5918373444239520146">Pajisje elektronike portative</translation>
@@ -4624,6 +4625,7 @@ Detaje shtesë:
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> përdor një protokoll të pambështetur.</translation>
 <translation id="918454845714257218">Kontrollo kodin në <ph name="SIDE_OF_CARD" /> dhe provo përsëri</translation>
 <translation id="9186203289258525843">Butoni "Cakto Chrome si shfletues të parazgjedhur". Aktivizoje për të caktuar Chrome si shfletuesin e parazgjedhur të sistemit</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> e ndryshoi këtë skedë</translation>
 <translation id="9189789270972826888">Kliko te detajet e kartës më poshtë për të kopjuar dhe ngjitur nëse karta nuk është plotësuar. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Temat më të vjetra se 4 javë fshihen automatikisht</translation>
 <translation id="9191834167571392248">Shpim poshtë majtas</translation>

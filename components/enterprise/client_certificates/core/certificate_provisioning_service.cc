@@ -88,8 +88,6 @@ class CertificateProvisioningServiceImpl
       HttpCodeOrClientError upload_code,
       scoped_refptr<net::X509Certificate> certificate);
 
-  void OnKeyUploadResponse(HttpCodeOrClientError upload_code);
-
   void OnCertificateCommitted(scoped_refptr<PrivateKey> private_key,
                               scoped_refptr<net::X509Certificate> certificate,
                               std::optional<StoreError> commit_error);
@@ -247,15 +245,6 @@ void CertificateProvisioningServiceImpl::OnPermanentIdentityLoaded(
       // If the certificate has expired (or is close to), then update it before
       // responding to pending callbacks.
       if (!IsCertExpiringSoon(*permanent_identity_optional->certificate)) {
-        // No need to block on key syncs, the scenario can therefore be
-        // automatically completed.
-        provisioning_context_->scenario = ProvisioningScenario::kPublicKeySync;
-        OnFinishedProvisioning(/*success=*/true);
-        upload_client_->SyncKey(
-            cached_identity_->private_key,
-            base::BindOnce(
-                &CertificateProvisioningServiceImpl::OnKeyUploadResponse,
-                weak_factory_.GetWeakPtr()));
         return;
       }
 
@@ -427,12 +416,6 @@ void CertificateProvisioningServiceImpl::OnCertificateCreatedResponse(
             &CertificateProvisioningServiceImpl::OnCertificateCommitted,
             weak_factory_.GetWeakPtr(), std::move(private_key), certificate));
   }
-}
-
-void CertificateProvisioningServiceImpl::OnKeyUploadResponse(
-    HttpCodeOrClientError upload_code) {
-  last_upload_code_ = upload_code;
-  LogKeySyncResponse(upload_code);
 }
 
 void CertificateProvisioningServiceImpl::OnCertificateCommitted(

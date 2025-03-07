@@ -163,6 +163,26 @@ bool SchemefulSite::IsSameSiteWith(const url::Origin& other) const {
   return same_site;
 }
 
+// TODO(csharrison): Consider augmenting the below SameSite methods to avoid
+// creating intermediate Origins. For now, we sacrifice some performance for
+// simplicity as GURL --> Origin conversion can be quite subtle.
+// We could likely fast-path simple cases (e.g. valid http/https GURLs).
+
+// static
+bool SchemefulSite::IsSameSite(const GURL& a, const GURL& b) {
+  bool same_site = IsSameSiteInternal(
+      url::Origin::Create(a), url::Origin::Create(b), /*a_is_site=*/false);
+  DCHECK_EQ(same_site, SchemefulSite(a) == SchemefulSite(b));
+  return same_site;
+}
+
+bool SchemefulSite::IsSameSiteWith(const GURL& other) const {
+  bool same_site = IsSameSiteInternal(
+      internal_value(), url::Origin::Create(other), /*a_is_site=*/true);
+  DCHECK_EQ(same_site, *this == SchemefulSite(other));
+  return same_site;
+}
+
 // static
 bool SchemefulSite::FromWire(const url::Origin& site_as_origin,
                              SchemefulSite* out) {

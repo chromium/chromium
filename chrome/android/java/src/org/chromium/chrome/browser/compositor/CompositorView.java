@@ -16,6 +16,7 @@ import android.os.Build;
 import android.view.AttachedSurfaceControl;
 import android.view.Surface;
 import android.view.View;
+import android.view.Window;
 import android.widget.FrameLayout;
 import android.window.InputTransferToken;
 
@@ -481,10 +482,12 @@ public class CompositorView extends FrameLayout
         if (mNativeCompositorView == 0) return;
 
         InputTransferToken browserInputToken = null;
-        if (InputUtils.isTransferInputToVizSupported()) {
-            AttachedSurfaceControl rootSurfaceControl =
-                    ((Activity) getContext()).getWindow().getRootSurfaceControl();
-            browserInputToken = rootSurfaceControl.getInputTransferToken();
+        if (InputUtils.isTransferInputToVizSupported() && mWindowAndroid != null) {
+            Window window = mWindowAndroid.getWindow();
+            if (window != null) {
+                AttachedSurfaceControl rootSurfaceControl = window.getRootSurfaceControl();
+                browserInputToken = rootSurfaceControl.getInputTransferToken();
+            }
         }
 
         Integer surfaceId =

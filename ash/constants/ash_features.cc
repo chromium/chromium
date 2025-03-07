@@ -449,12 +449,6 @@ BASE_FEATURE(kCrosPrivacyHub,
              "CrosPrivacyHub",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Adds controls to the OS Apps subpages for managing sensor system access and
-// more.
-BASE_FEATURE(kCrosPrivacyHubAppPermissionsV2,
-             "CrosPrivacyHubAppPermissionsV2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables cros safety service for trust and safety filtering for the text/image
 // output of on-device gen ai models.
 BASE_FEATURE(kCrosSafetyService,
@@ -3439,10 +3433,6 @@ bool IsCryptauthAttestationSyncingEnabled() {
 bool IsCopyClientKeysCertsToChapsEnabled() {
   return !IsNssDbClientCertsRollbackEnabled() &&
          base::FeatureList::IsEnabled(kCopyClientKeysCertsToChaps);
-}
-
-bool IsCrosPrivacyHubAppPermissionsV2Enabled() {
-  return base::FeatureList::IsEnabled(kCrosPrivacyHubAppPermissionsV2);
 }
 
 bool IsCrosPrivacyHubLocationEnabled() {

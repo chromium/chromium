@@ -18,6 +18,7 @@
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_crypter.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
+#include "components/ip_protection/common/ip_protection_telemetry.h"
 
 namespace ip_protection {
 
@@ -40,6 +41,7 @@ void IpProtectionProbabilisticRevealTokenManager::RequestTokens() {
     // manager a null fetcher.
     return;
   }
+  token_fetch_start_time_ = base::TimeTicks::Now();
   fetcher_->TryGetProbabilisticRevealTokens(base::BindOnce(
       &IpProtectionProbabilisticRevealTokenManager::OnTryGetTokens,
       weak_ptr_factory_.GetWeakPtr()));
@@ -49,6 +51,10 @@ void IpProtectionProbabilisticRevealTokenManager::OnTryGetTokens(
     std::optional<TryGetProbabilisticRevealTokensOutcome> outcome,
     TryGetProbabilisticRevealTokensResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  Telemetry().GetProbabilisticRevealTokensComplete(
+      result.status, base::TimeTicks::Now() - token_fetch_start_time_);
+
   if (result.try_again_after.has_value()) {
     // Network error when fetching, re-try at the time fetcher asked. Fetcher
     // implements exponential backoff.
@@ -97,7 +103,6 @@ void IpProtectionProbabilisticRevealTokenManager::OnTryGetTokens(
   refetch_timer_.Start(
       FROM_HERE, next_request_delta, this,
       &IpProtectionProbabilisticRevealTokenManager::RequestTokens);
-  // TODO(crbug.com/391358904): add metrics
 }
 
 bool IpProtectionProbabilisticRevealTokenManager::AreTokensExpired() const {
@@ -127,7 +132,13 @@ IpProtectionProbabilisticRevealTokenManager::GetToken(
     const std::string& top_level,
     const std::string& third_party) {
   ClearTokensIfExpired();
-  if (!IsTokenAvailable()) {
+
+  bool is_token_available = IsTokenAvailable();
+  Telemetry().IsProbabilisticRevealTokenAvailable(is_initial_get_token_call_,
+                                                  is_token_available);
+  is_initial_get_token_call_ = false;
+
+  if (!is_token_available) {
     return std::nullopt;
   }
   // Manager has tokens, crypter_ is not null from here on and

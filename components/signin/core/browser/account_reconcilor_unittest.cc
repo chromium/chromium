@@ -1694,20 +1694,6 @@ TEST_P(AccountReconcilorDiceTestWithUnoDesktop, DeleteCookie) {
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
 
-  // With scoped deletion, only secondary tokens are revoked.
-  {
-    std::unique_ptr<AccountReconcilor::ScopedSyncedDataDeletion> deletion =
-        reconcilor->GetScopedSyncDataDeletion();
-    reconcilor->OnAccountsCookieDeletedByUserAction();
-    EXPECT_TRUE(
-        identity_manager->HasAccountWithRefreshToken(primary_account_id));
-    EXPECT_FALSE(
-        identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-            primary_account_id));
-    EXPECT_FALSE(
-        identity_manager->HasAccountWithRefreshToken(secondary_account_id));
-  }
-
   identity_test_env()->SetRefreshTokenForAccount(secondary_account_id);
   reconcilor->OnAccountsCookieDeletedByUserAction();
 
@@ -3279,14 +3265,6 @@ TEST_F(AccountReconcilorTest, ForcedReconcileTriggerShouldNotResultInNoop) {
       AccountReconcilor::kTriggerNoopHistogramName, 0);
   histogram_tester()->ExpectTotalCount(
       AccountReconcilor::kTriggerMultiloginHistogramName, 1);
-}
-
-TEST_F(AccountReconcilorTest, ScopedSyncedDataDeletionDestructionOrder) {
-  AccountReconcilor* reconcilor = GetMockReconcilor();
-  std::unique_ptr<AccountReconcilor::ScopedSyncedDataDeletion> data_deletion =
-      reconcilor->GetScopedSyncDataDeletion();
-  DeleteReconcilor();
-  // data_deletion is destroyed after the reconcilor, this should not crash.
 }
 
 TEST_F(AccountReconcilorTest, LockDestructionOrder) {

@@ -83,6 +83,8 @@ class NET_EXPORT SchemefulSite {
   // They exactly match the semantics of SchemefulSite(a) == SchemefulSite(b).
   static bool IsSameSite(const url::Origin& a, const url::Origin& b);
   bool IsSameSiteWith(const url::Origin& other) const;
+  static bool IsSameSite(const GURL& a, const GURL& b);
+  bool IsSameSiteWith(const GURL& other) const;
 
   // Tries to construct an instance from a (potentially untrusted) value of the
   // internal `site_as_origin_` that got received over an RPC.

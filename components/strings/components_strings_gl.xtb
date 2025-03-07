@@ -2766,6 +2766,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5910140988253729859">Desfacer autocompletado</translation>
 <translation id="5911020115933784199">Acontecementos e axendas</translation>
 <translation id="5911110632211230665">Non se permite abrir ficheiros</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> engadiu esta pestana</translation>
 <translation id="5915189366813702112">Traballo flexible</translation>
 <translation id="59174027418879706">Activado</translation>
 <translation id="5918373444239520146">Gadgets e dispositivos electrónicos portátiles</translation>
@@ -4625,6 +4626,7 @@ Detalles adicionais:
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> utiliza un protocolo non compatible.</translation>
 <translation id="918454845714257218">Mira o código na <ph name="SIDE_OF_CARD" /> e téntao de novo</translation>
 <translation id="9186203289258525843">Botón para establecer Chrome como navegador predeterminado. Actívao para establecer Chrome como navegador predeterminado do sistema</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> modificou esta pestana</translation>
 <translation id="9189789270972826888">Se non se autocompletou a tarxeta, fai clic nos seus detalles máis abaixo para copialos e pegalos. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Os temas de máis de catro semanas eliminaranse automaticamente</translation>
 <translation id="9191834167571392248">Perforación na parte inferior esquerda</translation>

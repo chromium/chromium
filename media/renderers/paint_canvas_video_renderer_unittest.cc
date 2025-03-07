@@ -40,11 +40,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv/convert.h"
 #include "third_party/libyuv/include/libyuv/scale.h"
-#include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "third_party/skia/include/private/chromium/SkPMColor.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gl/gl_implementation.h"
@@ -832,19 +832,19 @@ TEST_F(PaintCanvasVideoRendererTest, I420WithFilters) {
   int i = 1;
   int j = 1;
   uint32_t color = rgba[i * kImgWidth + j];
-  EXPECT_EQ(SkGetPackedA32(color), 255u);
-  EXPECT_EQ(SkGetPackedR32(color), 249u);
-  EXPECT_EQ(SkGetPackedG32(color), 1u);
-  EXPECT_EQ(SkGetPackedB32(color), 7u);
+  EXPECT_EQ(SkPMColorGetA(color), 255u);
+  EXPECT_EQ(SkPMColorGetR(color), 249u);
+  EXPECT_EQ(SkPMColorGetG(color), 1u);
+  EXPECT_EQ(SkPMColorGetB(color), 7u);
   // The pixel at coordinates (2, 2) will have U = 105 and V = 235 if nearest
   // neighbor is used. (The correct values are U = 101 and V = 239.)
   i = 2;
   j = 2;
   color = rgba[i * kImgWidth + j];
-  EXPECT_EQ(SkGetPackedA32(color), 255u);
-  EXPECT_EQ(SkGetPackedR32(color), 226u);
-  EXPECT_EQ(SkGetPackedG32(color), 7u);
-  EXPECT_EQ(SkGetPackedB32(color), 35u);
+  EXPECT_EQ(SkPMColorGetA(color), 255u);
+  EXPECT_EQ(SkPMColorGetR(color), 226u);
+  EXPECT_EQ(SkPMColorGetG(color), 7u);
+  EXPECT_EQ(SkPMColorGetB(color), 35u);
 
   // Then convert with kFilterBilinear (bilinear interpolation).
   PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
@@ -856,19 +856,19 @@ TEST_F(PaintCanvasVideoRendererTest, I420WithFilters) {
   i = 1;
   j = 1;
   color = rgba[i * kImgWidth + j];
-  EXPECT_EQ(SkGetPackedA32(color), 255u);
-  EXPECT_EQ(SkGetPackedR32(color), 243u);
-  EXPECT_EQ(SkGetPackedG32(color), 2u);
-  EXPECT_EQ(SkGetPackedB32(color), 14u);
+  EXPECT_EQ(SkPMColorGetA(color), 255u);
+  EXPECT_EQ(SkPMColorGetR(color), 243u);
+  EXPECT_EQ(SkPMColorGetG(color), 2u);
+  EXPECT_EQ(SkPMColorGetB(color), 14u);
   // The pixel at coordinates (2, 2) will have the correct values U = 101 and
   // V = 239 if bilinear interpolation is used.
   i = 2;
   j = 2;
   color = rgba[i * kImgWidth + j];
-  EXPECT_EQ(SkGetPackedA32(color), 255u);
-  EXPECT_EQ(SkGetPackedR32(color), 232u);
-  EXPECT_EQ(SkGetPackedG32(color), 5u);
-  EXPECT_EQ(SkGetPackedB32(color), 28u);
+  EXPECT_EQ(SkPMColorGetA(color), 255u);
+  EXPECT_EQ(SkPMColorGetR(color), 232u);
+  EXPECT_EQ(SkPMColorGetG(color), 5u);
+  EXPECT_EQ(SkPMColorGetB(color), 28u);
 }
 
 namespace {

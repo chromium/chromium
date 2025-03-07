@@ -1507,8 +1507,8 @@ void PrefetchService::OnPrefetchRedirect(
              redirect_head->headers->response_code() < 300 ||
              redirect_head->headers->response_code() >= 400) {
     failure = PrefetchRedirectResult::kFailedInvalidResponseCode;
-  } else if (net::SchemefulSite(prefetch_container->GetCurrentURL()) !=
-                 net::SchemefulSite(redirect_info.new_url) &&
+  } else if (!net::SchemefulSite::IsSameSite(
+                 prefetch_container->GetCurrentURL(), redirect_info.new_url) &&
              !IsReferrerPolicySufficientlyStrict(new_referrer_policy)) {
     // The new referrer policy is not sufficiently strict to allow cross-site
     // redirects.

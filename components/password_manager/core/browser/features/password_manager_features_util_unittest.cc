@@ -11,6 +11,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_prefs.h"
@@ -155,6 +156,27 @@ TEST_F(PasswordManagerFeaturesUtilTest,
 #endif
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+TEST_F(PasswordManagerFeaturesUtilTest,
+       ShouldShowAccountStorageSettingToggle_SyncToSigninOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
+
+  EXPECT_TRUE(
+      ShouldShowAccountStorageSettingToggle(&pref_service_, &sync_service_));
+}
+
+TEST_F(PasswordManagerFeaturesUtilTest,
+       ShouldShowAccountStorageSettingToggle_SyncToSigninOn) {
+  base::test::ScopedFeatureList feature_list(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
+
+  EXPECT_FALSE(
+      ShouldShowAccountStorageSettingToggle(&pref_service_, &sync_service_));
+}
+
 TEST_F(PasswordManagerFeaturesUtilTest, MigrateDefaultProfileStorePref) {
   syncer::SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
   pref_service_.registry()->RegisterDictionaryPref(

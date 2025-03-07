@@ -2420,6 +2420,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Android.InputOnViz.Viz.StateProcessingResult"
+    enum="InputOnVizStateProcessingResult" expires_after="2025-06-30">
+  <owner>kartarsingh@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    Records what happened to state received on Viz, upon successful transfer of
+    a touch sequence the Browser process sends over touch transfer state for Viz
+    to handle input sequence.
+  </summary>
+</histogram>
+
 <histogram name="Android.InputStream.TotalRead.SizeKB" units="KB"
     expires_after="2026-03-01">
   <owner>peconn@chromium.org</owner>

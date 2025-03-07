@@ -26,6 +26,9 @@ class AutofillAiModelCache : public KeyedService {
   struct FieldIdentifier {
     FieldSignature signature;
     size_t rank_in_signature_group = 0;
+
+    friend constexpr bool operator==(const FieldIdentifier&,
+                                     const FieldIdentifier&) = default;
   };
 
   // Updates the entry with key `form_signature`. If the `form_signature` is

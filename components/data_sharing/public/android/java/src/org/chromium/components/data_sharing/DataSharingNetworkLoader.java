@@ -5,12 +5,14 @@
 package org.chromium.components.data_sharing;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 /**
  * Class for managing network requests for data sharing service. It represents a native
  * DataSharingNetworkLoader object in Java.
  */
+@NullMarked
 public interface DataSharingNetworkLoader {
 
     /**

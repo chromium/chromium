@@ -84,34 +84,27 @@ class OnDeviceModelServiceTest : public testing::Test {
       ml::ModelBackendType backend_type = ml::ModelBackendType::kGpuBackend,
       ml::ModelPerformanceHint performance_hint =
           ml::ModelPerformanceHint::kHighestQuality) {
-    base::RunLoop run_loop;
     mojo::Remote<mojom::OnDeviceModel> remote;
     auto params = mojom::LoadModelParams::New();
     params->backend_type = backend_type;
     params->performance_hint = performance_hint;
     params->max_tokens = 8000;
-    service()->LoadModel(
-        std::move(params), remote.BindNewPipeAndPassReceiver(),
-        base::BindLambdaForTesting([&](mojom::LoadModelResult result) {
-          EXPECT_EQ(mojom::LoadModelResult::kSuccess, result);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
+    base::test::TestFuture<mojom::LoadModelResult> future;
+    service()->LoadModel(std::move(params), remote.BindNewPipeAndPassReceiver(),
+                         future.GetCallback());
+    EXPECT_EQ(future.Get(), mojom::LoadModelResult::kSuccess);
     return remote;
   }
 
   mojo::Remote<mojom::OnDeviceModel> LoadAdaptationWithParams(
       mojom::OnDeviceModel& model,
       mojom::LoadAdaptationParamsPtr adaptation_params) {
-    base::RunLoop run_loop;
     mojo::Remote<mojom::OnDeviceModel> remote;
-    model.LoadAdaptation(
-        std::move(adaptation_params), remote.BindNewPipeAndPassReceiver(),
-        base::BindLambdaForTesting([&](mojom::LoadModelResult result) {
-          EXPECT_EQ(mojom::LoadModelResult::kSuccess, result);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
+    base::test::TestFuture<mojom::LoadModelResult> future;
+    model.LoadAdaptation(std::move(adaptation_params),
+                         remote.BindNewPipeAndPassReceiver(),
+                         future.GetCallback());
+    EXPECT_EQ(future.Get(), mojom::LoadModelResult::kSuccess);
     return remote;
   }
 

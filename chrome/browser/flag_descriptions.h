@@ -264,6 +264,9 @@ extern const char kDevToolsCSSValueTracingDescription[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kDisableInstanceLimitName[];
 extern const char kDisableInstanceLimitDescription[];
+
+extern const char kClearInstanceInfoWhenClosedIntentionallyName[];
+extern const char kClearInstanceInfoWhenClosedIntentionallyDescription[];
 #endif
 
 extern const char kEnableBenchmarkingName[];
@@ -2192,6 +2195,9 @@ extern const char kBlockTpcsIncognitoDescription[];
 
 extern const char kTrackingProtection3pcdName[];
 extern const char kTrackingProtection3pcdDescription[];
+
+extern const char kRwsV2UiName[];
+extern const char kRwsV2UiDescription[];
 
 extern const char kUnifiedPasswordManagerAndroidReenrollmentName[];
 extern const char kUnifiedPasswordManagerAndroidReenrollmentDescription[];
@@ -4337,9 +4343,6 @@ extern const char kCrosMallUrlDescription[];
 extern const char kCrosPrivacyHubName[];
 extern const char kCrosPrivacyHubDescription[];
 
-extern const char kCrosPrivacyHubAppPermissionsV2Name[];
-extern const char kCrosPrivacyHubAppPermissionsV2Description[];
-
 extern const char kCrOSEnforceSystemAecName[];
 extern const char kCrOSEnforceSystemAecDescription[];
 
@@ -4641,9 +4644,6 @@ extern const char kThirdPartyProfileManagementDescription[];
 
 extern const char kOidcAuthProfileManagementName[];
 extern const char kOidcAuthProfileManagementDescription[];
-
-extern const char kUnoDesktopName[];
-extern const char kUnoDesktopDescription[];
 
 extern const char kExplicitBrowserSigninUIOnDesktopName[];
 extern const char kExplicitBrowserSigninUIOnDesktopDescription[];

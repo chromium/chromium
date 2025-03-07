@@ -421,6 +421,12 @@ const char kTangibleSyncDescription[] =
 const char kDisableInstanceLimitName[] = "Disable Instance Limit";
 const char kDisableInstanceLimitDescription[] =
     "Disable limit on number of app instances allowed (current limit is 5).";
+
+const char kClearInstanceInfoWhenClosedIntentionallyName[] =
+    "Clear Instance Info When Closed Intentionally";
+const char kClearInstanceInfoWhenClosedIntentionallyDescription[] =
+    "When enabled, permanently cleanup and remove the browser instance when a "
+    "window is explicitly closed by the user (eg: via the Close button).";
 #endif
 
 const char kEnableBenchmarkingName[] = "Enable benchmarking";
@@ -3781,6 +3787,9 @@ const char kTrackingProtection3pcdName[] = "Tracking Protection for 3PCD";
 const char kTrackingProtection3pcdDescription[] =
     "Enables the tracking protection UI + prefs that will be used for the 3PCD "
     "1%.";
+
+const char kRwsV2UiName[] = "RWS V2 UI";
+const char kRwsV2UiDescription[] = "Updated RWS UI";
 
 const char kUsernameFirstFlowWithIntermediateValuesPredictionsName[] =
     "Predictions on Username first flow with intermediate values";
@@ -7421,12 +7430,6 @@ const char kCrosMallUrlDescription[] =
 const char kCrosPrivacyHubName[] = "Enable ChromeOS Privacy Hub";
 const char kCrosPrivacyHubDescription[] = "Enables ChromeOS Privacy Hub.";
 
-const char kCrosPrivacyHubAppPermissionsV2Name[] =
-    "Add privacy controls to app specific subpages";
-const char kCrosPrivacyHubAppPermissionsV2Description[] =
-    "When enabled, the user will be able to manage system access of sensors "
-    "from the app specific subpages under the OS Apps section.";
-
 const char kDisableIdleSocketsCloseOnMemoryPressureName[] =
     "Disable closing idle sockets on memory pressure";
 const char kDisableIdleSocketsCloseOnMemoryPressureDescription[] =
@@ -7849,11 +7852,6 @@ const char kThirdPartyProfileManagementDescription[] =
 const char kOidcAuthProfileManagementName[] = "OIDC profile management";
 const char kOidcAuthProfileManagementDescription[] =
     "Enables profile management triggered by OIDC authentications.";
-
-const char kUnoDesktopName[] = "UNO Desktop";
-const char kUnoDesktopDescription[] =
-    "Enables the UNO model on Desktop. This is currently an experiment in a "
-    "prototype stage in order to validate the model.";
 
 const char kExplicitBrowserSigninUIOnDesktopName[] =
     "Explicit Browser Signin UI On Desktop";

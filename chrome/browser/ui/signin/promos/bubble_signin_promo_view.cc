@@ -52,7 +52,6 @@ using signin_util::SignedInState;
 namespace {
 
 constexpr int kTitleMaxWidth = 218;
-constexpr int kExtensionsExplicitSigninTitleMaxWidth = 318;
 
 int GetSubtitleID(bool is_signin_promo,
                   signin::SignInPromoType promo_type,
@@ -98,16 +97,12 @@ int GetSubtitleID(bool is_signin_promo,
 }
 
 std::u16string GetButtonText(bool is_signin_promo,
-                             bool is_extension_signin_promo,
                              SignedInState signed_in_state,
                              const std::string& name) {
   if (is_signin_promo) {
     switch (signed_in_state) {
-      case SignedInState::kSignedOut: {
-        return l10n_util::GetStringUTF16(
-            is_extension_signin_promo ? IDS_EXTENSIONS_EXPLICIT_SIGNIN_BUTTON
-                                      : IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON);
-      }
+      case SignedInState::kSignedOut:
+        return l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON);
       case SignedInState::kWebOnlySignedIn:
         return l10n_util::GetStringFUTF16(
             IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_ACCEPT_TEXT,
@@ -180,15 +175,7 @@ BubbleSignInPromoView::BubbleSignInPromoView(
       signin::GetSignInPromoTypeFromAccessPoint(access_point);
   SignedInState signed_in_state =
       signin_util::GetSignedInState(identity_manager);
-  bool is_autofill_promo = signin::IsAutofillSigninPromo(access_point);
-  bool is_extension_signin_promo =
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-      promo_type == signin::SignInPromoType::kExtension &&
-      switches::IsExtensionsExplicitBrowserSigninEnabled();
-#else
-      false;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-  bool is_signin_promo = is_autofill_promo || is_extension_signin_promo;
+  bool is_signin_promo = signin::IsSignInPromo(access_point);
 
   AccountInfo account;
   // Sync promos can be shown in incognito, they use an empty account list.
@@ -199,7 +186,7 @@ BubbleSignInPromoView::BubbleSignInPromoView(
 
   // Set the layout.
   const views::LayoutOrientation orientation =
-      account.IsEmpty() && !is_autofill_promo
+      account.IsEmpty() && !is_signin_promo
           ? views::LayoutOrientation::kHorizontal
           : views::LayoutOrientation::kVertical;
 
@@ -216,8 +203,7 @@ BubbleSignInPromoView::BubbleSignInPromoView(
   int title_resource_id =
       GetSubtitleID(is_signin_promo, promo_type, signed_in_state);
   std::u16string button_text =
-      GetButtonText(is_signin_promo, is_extension_signin_promo, signed_in_state,
-                    account.given_name);
+      GetButtonText(is_signin_promo, signed_in_state, account.given_name);
   std::u16string accessibility_text =
       GetAccessibilityText(is_signin_promo, signed_in_state, account);
   signin_metrics::PromoAction promo_action =
@@ -231,11 +217,7 @@ BubbleSignInPromoView::BubbleSignInPromoView(
   title->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   title->SetMultiLine(true);
   if (orientation == views::LayoutOrientation::kHorizontal) {
-    int title_max_width =
-        promo_type == signin::SignInPromoType::kExtension && is_signin_promo
-            ? kExtensionsExplicitSigninTitleMaxWidth
-            : kTitleMaxWidth;
-    title->SetMaximumWidth(title_max_width);
+    title->SetMaximumWidth(kTitleMaxWidth);
   } else {
     title->SetProperty(
         views::kMarginsKey,

@@ -554,9 +554,9 @@ bool CookieBase::IsSecure() const {
 
 bool CookieBase::IsFirstPartyPartitioned() const {
   return IsPartitioned() && !CookiePartitionKey::HasNonce(partition_key_) &&
-         SchemefulSite(GURL(
+         partition_key_->site().IsSameSiteWith(GURL(
              base::StrCat({url::kHttpsScheme, url::kStandardSchemeSeparator,
-                           DomainWithoutDot()}))) == partition_key_->site();
+                           DomainWithoutDot()})));
 }
 
 bool CookieBase::IsThirdPartyPartitioned() const {

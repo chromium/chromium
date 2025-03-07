@@ -5,6 +5,7 @@
 package org.chromium.components.data_sharing;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.data_sharing.protocol.AddAccessTokenParams;
 import org.chromium.components.data_sharing.protocol.AddMemberParams;
 import org.chromium.components.data_sharing.protocol.CreateGroupParams;
@@ -17,6 +18,7 @@ import org.chromium.components.data_sharing.protocol.RemoveMemberParams;
 /**
  * Copy of C++ DataSharingSDKDelegate in Java. Used by DataSharingService to provide access to SDK.
  */
+@NullMarked
 public interface DataSharingSDKDelegate {
 
     void initialize(DataSharingNetworkLoader networkLoader);

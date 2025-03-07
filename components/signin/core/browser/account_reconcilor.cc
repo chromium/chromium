@@ -140,22 +140,6 @@ AccountReconcilor::Lock::~Lock() {
   }
 }
 
-AccountReconcilor::ScopedSyncedDataDeletion::ScopedSyncedDataDeletion(
-    AccountReconcilor* reconcilor)
-    : reconcilor_(reconcilor->weak_factory_.GetWeakPtr()) {
-  DCHECK(reconcilor_);
-  ++reconcilor_->synced_data_deletion_in_progress_count_;
-}
-
-AccountReconcilor::ScopedSyncedDataDeletion::~ScopedSyncedDataDeletion() {
-  if (!reconcilor_) {
-    return;  // The reconcilor was destroyed.
-  }
-
-  DCHECK_GT(reconcilor_->synced_data_deletion_in_progress_count_, 0);
-  --reconcilor_->synced_data_deletion_in_progress_count_;
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 AccountReconcilor::AccountReconcilor(
     signin::IdentityManager* identity_manager,
@@ -346,11 +330,6 @@ void AccountReconcilor::UnregisterWithAccountManagerFacade() {
 
 AccountReconcilorState AccountReconcilor::GetState() const {
   return state_;
-}
-
-std::unique_ptr<AccountReconcilor::ScopedSyncedDataDeletion>
-AccountReconcilor::GetScopedSyncDataDeletion() {
-  return base::WrapUnique(new ScopedSyncedDataDeletion(this));
 }
 
 void AccountReconcilor::AddObserver(Observer* observer) {
@@ -687,8 +666,7 @@ void AccountReconcilor::OnAccountsInCookieUpdated(
 }
 
 void AccountReconcilor::OnAccountsCookieDeletedByUserAction() {
-  delegate_->OnAccountsCookieDeletedByUserAction(
-      synced_data_deletion_in_progress_count_ != 0);
+  delegate_->OnAccountsCookieDeletedByUserAction();
 }
 
 std::vector<CoreAccountId>

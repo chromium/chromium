@@ -2767,6 +2767,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5910140988253729859">Deshacer la acción de Autocompletar</translation>
 <translation id="5911020115933784199">Eventos y listados</translation>
 <translation id="5911110632211230665">Se bloqueó la opción para abrir archivos</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> agregó esta pestaña</translation>
 <translation id="5915189366813702112">Acuerdos de trabajo flexible</translation>
 <translation id="59174027418879706">Habilitado</translation>
 <translation id="5918373444239520146">Gadgets y dispositivos electrónicos portátiles</translation>
@@ -4628,6 +4629,7 @@ Detalles adicionales:
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> utiliza un protocolo no compatible.</translation>
 <translation id="918454845714257218">Revisa el código en el <ph name="SIDE_OF_CARD" /> y vuelve a intentarlo</translation>
 <translation id="9186203289258525843">Botón Establecer Chrome como navegador predeterminado: actívalo para establecer Chrome como el navegador predeterminado del sistema</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> cambió esta pestaña</translation>
 <translation id="9189789270972826888">Si no se completaron los datos de la tarjeta, haz clic en los detalles de la tarjeta a continuación para copiarlos y pegarlos. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Se borran automáticamente los temas con más de 4 semanas de antigüedad</translation>
 <translation id="9191834167571392248">Perforación en la esquina inferior izquierda</translation>

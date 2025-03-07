@@ -11,7 +11,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/download_protection/download_item_metadata.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/safe_browsing/buildflags.h"
@@ -303,15 +302,6 @@ void LogDeepScanEvent(download::DownloadItem* item, DeepScanEvent event) {
   }
 }
 
-void LogDeepScanEvent(const DeepScanningMetadata& metadata,
-                      DeepScanEvent event) {
-  base::UmaHistogramEnumeration("SBClientDownload.DeepScanEvent3", event);
-  if (metadata.IsTopLevelEncryptedArchive()) {
-    base::UmaHistogramEnumeration(
-        "SBClientDownload.PasswordProtectedDeepScanEvent3", event);
-  }
-}
-
 void LogLocalDecryptionEvent(DeepScanEvent event) {
   base::UmaHistogramEnumeration("SBClientDownload.LocalDecryptionEvent", event);
 }
@@ -485,9 +475,7 @@ ShouldUploadBinaryForDeepScanning(download::DownloadItem* item) {
   // Deep scanning is not supported on Android.
   return std::nullopt;
 #else
-  // Create temporary metadata wrapper on the stack.
-  DownloadItemMetadata metadata(item);
-  return DeepScanningRequest::ShouldUploadBinary(metadata);
+  return DeepScanningRequest::ShouldUploadBinary(item);
 #endif
 }
 

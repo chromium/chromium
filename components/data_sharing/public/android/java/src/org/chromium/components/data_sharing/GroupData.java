@@ -7,13 +7,17 @@ package org.chromium.components.data_sharing;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.List;
 
 /** Information about a group. */
 @JNINamespace("data_sharing")
+@NullMarked
 public class GroupData {
     public final String displayName;
-    public final List<GroupMember> members;
+    public final @Nullable List<GroupMember> members;
     public final GroupToken groupToken;
 
     public GroupData(

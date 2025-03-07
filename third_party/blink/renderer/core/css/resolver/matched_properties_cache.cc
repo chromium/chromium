@@ -203,11 +203,9 @@ bool CachedMatchedProperties::CorrespondsTo(
 void CachedMatchedProperties::RefreshKey(
     const MatchedPropertiesVector& lookup_properties) {
   DCHECK(CorrespondsTo(lookup_properties));
-  auto lookup_it = lookup_properties.begin();
-  auto cached_it = matched_properties.begin();
-  for (; lookup_it != lookup_properties.end();
-       std::advance(lookup_it, 1), std::advance(cached_it, 1)) {
-    cached_it->first = lookup_it->properties;
+  for (auto [lookup_it, cached_it] :
+       base::zip(lookup_properties, matched_properties)) {
+    cached_it.first = lookup_it.properties;
   }
 }
 

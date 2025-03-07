@@ -138,6 +138,7 @@
 <translation id="1230244617745022071"><ph name="SOURCE" /> (အလိုအလျောက် သိရှိသည်)</translation>
 <translation id="1232569758102978740">ခေါင်းစဉ်မဲ့</translation>
 <translation id="1236081509407217141">VR ကို ခွင့်ပြုမလား။</translation>
+<translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">သင့်စက်၏ အမည်</translation>
 <translation id="124116460088058876">နောက်ထပ် ဘာသာစကားများ</translation>
 <translation id="1243027604378859286">စာရေးသူ-</translation>
@@ -1439,6 +1440,7 @@
 <translation id="3536227077203206203">ဤတစ်ကြိမ်အတွက် ခွင့်ပြုထားသည်</translation>
 <translation id="3537165859691846083">လက်တာဆိုဒ်လွန်</translation>
 <translation id="353816159217417898">မျက်နှာပြင် (စာမျက်နှာ)</translation>
+<translation id="3541016556608204104">Chrome Enterprise Connectors အကြောင်း ပိုမိုသိရှိရန်</translation>
 <translation id="3542628208405253498">ကတ်၏ပုံ</translation>
 <translation id="3542768452570884558">လင့်ခ်ကို ဝင်ဒိုးအသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="3543935938072367282">အော်တိုဖြည့်ဖြင့် မြန်ဆန်စွာ ငွေရှင်းခြင်း</translation>
@@ -1802,6 +1804,7 @@
 <translation id="415440494507469262">နှိုင်းယှဉ်ပြဇယားတွင် တဘ်ထည့်ရန်</translation>
 <translation id="4159784952369912983">ခရမ်း</translation>
 <translation id="4165422751765527461">တဘ်အသစ်တွင် ‘ကူညီရေးဌာန ဆောင်းပါး’ ကို ဖွင့်ပေးသည်</translation>
+<translation id="4165584779486830267">Affirm (သို့) Zip သုံးပြီး ငွေခွဲ၍ပေးချေနိုင်ပါပြီ။</translation>
 <translation id="4165986682804962316">ဝက်ဆိုက် ဆက်တင်များ</translation>
 <translation id="4169535189173047238">ခွင့်မပြုပါ</translation>
 <translation id="4171400957073367226">ဆိုးရွားသည့် အတည်ပြု လက်မှတ်</translation>
@@ -2767,6 +2770,7 @@
 <translation id="5910140988253729859">အော်တိုဖြည့်ကို နောက်ပြန်ရန်</translation>
 <translation id="5911020115933784199">အစီအစဉ်နှင့် ဖော်ပြချက်</translation>
 <translation id="5911110632211230665">ဖွင့်ခွင့် ပိတ်ထားသည်</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> က ဤတဘ်ကို ထည့်လိုက်သည်</translation>
 <translation id="5915189366813702112">လိုက်လျောညီထွေ အလုပ်စီစဉ်ပေးမှု</translation>
 <translation id="59174027418879706">ဖွင့်ထားသည်</translation>
 <translation id="5918373444239520146">ဂက်ဂျက်နှင့် သယ်ဆောင်ရလွယ်ကူသော အီလက်ထရွန်းနစ်ပစ္စည်း</translation>
@@ -4627,6 +4631,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> သည်ထောက်ပံ့မှုမရှိသည့် ပရိုတိုကောကို အသုံးပြုထားသည်။</translation>
 <translation id="918454845714257218"><ph name="SIDE_OF_CARD" /> ရှိ ကုဒ်ကို ကြည့်ပြီး ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="9186203289258525843">Chrome ကို စနစ်၏ မူရင်းဘရောင်ဇာအဖြစ် သတ်မှတ်ရန်အတွက် ‘Chrome ကို မူရင်းဘရောင်ဇာအဖြစ် သတ်မှတ်ရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> က ဤတဘ်ကို ပြောင်းလိုက်သည်</translation>
 <translation id="9189789270972826888">ကတ်ကို ဖြည့်မထားပါက မိတ္တူကူးပြီး ထည့်ရန် အောက်ရှိ ကတ်အသေးစိတ်ကို နှိပ်ပါ။ <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">၄ ပတ်ထက်ပိုကြာသည့် အကြောင်းအရာများကို အလိုအလျောက်ဖျက်သည်</translation>
 <translation id="9191834167571392248">ဘယ်ဘက်အောက်ခြေတွင် ဖောက်ရန်</translation>

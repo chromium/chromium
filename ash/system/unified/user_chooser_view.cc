@@ -366,7 +366,7 @@ UserChooserView::UserChooserView(
           session_manager::kMaximumNumberOfUserSessions)));
       break;
     case AddUserSessionPolicy::ERROR_NO_ELIGIBLE_USERS:
-      AddChildView(CreateAddUserErrorView(
+      AddChildViewRaw(CreateAddUserErrorView(
           l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_MESSAGE_OUT_OF_USERS)));
       break;
     case AddUserSessionPolicy::ERROR_LOCKED_TO_SINGLE_USER:

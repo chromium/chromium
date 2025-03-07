@@ -1438,6 +1438,7 @@
 <translation id="3536227077203206203">Гэтым разам доступ дазволены</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">Экранная форма (з разбіўкай на старонкі)</translation>
+<translation id="3541016556608204104">Падрабязней пра Chrome Enterprise Connectors</translation>
 <translation id="3542628208405253498">Відарыс карткі</translation>
 <translation id="3542768452570884558">Адкрыць спасылку ў новым акне</translation>
 <translation id="3543935938072367282">Аўтазапаўненне дапамагае паскорыць працэс аплаты</translation>
@@ -2765,6 +2766,7 @@
 <translation id="5910140988253729859">Адрабіць аўтазапаўненне</translation>
 <translation id="5911020115933784199">Календары мерапрыемстваў</translation>
 <translation id="5911110632211230665">Магчымасць адкрываць файлы заблакіравана</translation>
+<translation id="5914465277418006379">Карыстальнік (<ph name="MEMBER_FIRST_NAME" />) дадаў гэту ўкладку</translation>
 <translation id="5915189366813702112">Рухомы графік працы</translation>
 <translation id="59174027418879706">Уключана</translation>
 <translation id="5918373444239520146">Гаджэты і партатыўная электроніка</translation>
@@ -3730,6 +3732,7 @@
 <translation id="7569983096843329377">Чорны</translation>
 <translation id="7574998639136359461">Рыштунак для зімовых відаў спорту</translation>
 <translation id="7575207903026901870">Кнопка "Выдаліць прапанову". Каб выдаліць прапанову, націсніце Enter.</translation>
+<translation id="7575800019233204241">"Падключэнне не з’яўляецца прыватным" або "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" або "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" або "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" або "Памылка сертыфіката SSL"</translation>
 <translation id="7575887283389198269">Мабільныя тэлефоны</translation>
 <translation id="7578104083680115302">Хуткая аплата на сайтах і ў праграмах з розных прылад карткамі, захаванымі ў сэрвісах Google.</translation>
 <translation id="7579442726219254162">Невядомая пераменная "<ph name="VARIABLE" />" у кіруемай канфігурацыі праграмы "<ph name="APPLICATION_ID" />".</translation>
@@ -4624,6 +4627,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> выкарыстоўвае пратакол, які не падтрымліваецца.</translation>
 <translation id="918454845714257218">Праверце код на <ph name="SIDE_OF_CARD" /> і паўтарыце спробу</translation>
 <translation id="9186203289258525843">Кнопка "Зрабіць Chrome стандартным браўзерам". Каб зрабіць Chrome стандартным браўзерам сістэмы, націсніце яе.</translation>
+<translation id="9189468832660648522">Карыстальнік (<ph name="MEMBER_FIRST_NAME" />) змяніў гэту ўкладку</translation>
 <translation id="9189789270972826888">Калі даныя карткі не былі запоўнены, націсніце на рэквізіты, паказаныя ніжэй, каб скапіраваць і ўставіць іх. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Тэмы, дададзеныя на падставе наведвання сайтаў больш чым 4 тыдні таму назад, выдаляюцца аўтаматычна</translation>
 <translation id="9191834167571392248">Дзірка знізу злева</translation>

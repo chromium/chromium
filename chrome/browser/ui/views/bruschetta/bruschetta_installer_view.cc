@@ -211,7 +211,7 @@ BruschettaInstallerView::BruschettaInstallerView(Profile* profile,
                        views::style::STYLE_SECONDARY);
   secondary_message_label_->SetMultiLine(true);
   secondary_message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  secondary_message_container_view->AddChildView(
+  secondary_message_container_view->AddChildViewRaw(
       secondary_message_label_.get());
 
   // Add "Learn More" link.

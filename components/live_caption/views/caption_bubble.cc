@@ -850,7 +850,7 @@ void CaptionBubble::Init() {
       views::BoxLayout::MainAxisAlignment::kCenter);
   translate_header_container->SetLayoutManager(
       std::move(translate_header_container_layout));
-  translate_header_container_ = left_header_container->AddChildView(
+  translate_header_container_ = left_header_container->AddChildViewRaw(
       std::move(translate_header_container));
   std::unique_ptr<views::BoxLayout> left_header_container_layout =
       std::make_unique<views::BoxLayout>(

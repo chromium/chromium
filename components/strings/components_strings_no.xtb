@@ -1438,6 +1438,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3536227077203206203">Tillatt denne gangen</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">Skjerm (med sider)</translation>
+<translation id="3541016556608204104">Mer om Chrome Enterprise Connectors</translation>
 <translation id="3542628208405253498">Kortbilde</translation>
 <translation id="3542768452570884558">Åpne linken i et nytt vindu</translation>
 <translation id="3543935938072367282">Betal raskere med autofyll</translation>
@@ -2766,6 +2767,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5910140988253729859">Angre autofyll</translation>
 <translation id="5911020115933784199">Arrangementer og lister</translation>
 <translation id="5911110632211230665">Blokkert åpning</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> la til denne fanen</translation>
 <translation id="5915189366813702112">Fleksibel arbeidshverdag</translation>
 <translation id="59174027418879706">Aktivert</translation>
 <translation id="5918373444239520146">Dingser og bærbar elektronikk</translation>
@@ -4625,6 +4627,7 @@ Mer informasjon:
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> bruker en protokoll som ikke støttes.</translation>
 <translation id="918454845714257218">Sjekk koden på <ph name="SIDE_OF_CARD" />, og prøv igjen</translation>
 <translation id="9186203289258525843">Knappen «Angi Chrome som standardnettleser» – aktiver for å angi Chrome som systemets standardnettleser</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> endret denne fanen</translation>
 <translation id="9189789270972826888">Klikk på kortopplysningene under for å kopiere og lime inn hvis kortet ikke ble fylt ut. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Emner som er eldre enn 4 uker, slettes automatisk</translation>
 <translation id="9191834167571392248">Hull nede til venstre</translation>

@@ -656,9 +656,17 @@ function addAutofillTabs() {
   getRequiredElement('tab-links').style.display = 'block';
 }
 
+interface AutofillAiFieldCacheEntry {
+  signature: string;
+  rank: string;
+  type: string;
+  format?: string;
+}
+
 interface AutofillAiCacheEntry {
   formSignature: string;
   creationTime: string;
+  fields: AutofillAiFieldCacheEntry[];
 }
 
 function displayAutofillAiCache(entries: AutofillAiCacheEntry[]) {
@@ -670,10 +678,33 @@ function displayAutofillAiCache(entries: AutofillAiCacheEntry[]) {
 
   container.innerText = '';
   for (const entry of entries) {
-    const entryDiv = document.createElement('div');
-    entryDiv.innerText = 'Form signature: ' + entry.formSignature +
-        ', creation time: ' + entry.creationTime;
-    container.appendChild(entryDiv);
+    const entryTable = document.createElement('table');
+    entryTable.className = 'cache-entry';
+    const entryHeader = document.createElement('th');
+
+    entryHeader.innerText = `Form signature: ${
+        entry.formSignature}, creation time: ${entry.creationTime}.`;
+    const deleteButton = document.createElement('span');
+    deleteButton.innerText = 'Remove';
+    deleteButton.className = 'fake-button delete-cache-entry-button';
+    deleteButton.addEventListener('click', () => {
+      chrome.send('removeAutofillAiCacheEntry', [entry.formSignature]);
+      chrome.send('getAutofillAiCache');
+    });
+    entryHeader.appendChild(deleteButton);
+    entryTable.appendChild(entryHeader);
+
+    for (const field of entry.fields) {
+      const row = document.createElement('tr');
+      row.innerText = `Signature = ${field.signature}, rank = ${
+          field.rank}, type = ${field.type}`;
+      if (field.format) {
+        row.innerText += `, format = ${field.format}`;
+      }
+      entryTable.appendChild(row);
+    }
+    container.appendChild(entryTable);
+    container.appendChild(document.createElement('hr'));
   }
 }
 

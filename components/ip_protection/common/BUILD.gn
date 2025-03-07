@@ -690,6 +690,7 @@ source_set("ip_protection_probabilistic_reveal_token_manager") {
   deps = [
     ":ip_protection_probabilistic_reveal_token_crypter",
     ":ip_protection_probabilistic_reveal_token_fetcher",
+    ":ip_protection_telemetry",
     "//base",
   ]
 }

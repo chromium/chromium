@@ -2763,6 +2763,7 @@
 <translation id="5910140988253729859">Avtodoldurmanı ləğv edin</translation>
 <translation id="5911020115933784199">Tədbir və elanlar</translation>
 <translation id="5911110632211230665">Açma bloklanıb</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> bu tabı əlavə etdi</translation>
 <translation id="5915189366813702112">Çevik İş Mühiti</translation>
 <translation id="59174027418879706">Aktiv edilib</translation>
 <translation id="5918373444239520146">Qadcet və daşınabilən elektronika</translation>
@@ -4622,6 +4623,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> dəstəklənməyən protokol istifadə edir.</translation>
 <translation id="918454845714257218"><ph name="SIDE_OF_CARD" /> tərəfində kodu yoxlayıb yenidən cəhd edin</translation>
 <translation id="9186203289258525843">"Chrome-u defolt brauzer kimi ayarlayın" düyməsi, aktivləşdirərək Chrome-u sistemin defolt brauzeri kimi ayarlayın</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> bu tabı dəyişdi</translation>
 <translation id="9189789270972826888">Kart doldurulmayıbsa, kopiyalayıb yerləşdirmək üçün aşağıdakı kart detallarına klikləyin. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">4 həftədən əvvələ aid mövzular avtomatik silinir</translation>
 <translation id="9191834167571392248">Aşağı soldan deşik açın</translation>

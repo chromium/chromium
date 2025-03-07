@@ -74,7 +74,7 @@ void alphaBlendPremultiplied(blink::ImageFrame& src,
   for (int x = 0; x < width; ++x) {
     int canvasX = left + x;
     blink::ImageFrame::PixelData* pixel = src.GetAddr(canvasX, canvasY);
-    if (SkGetPackedA32(*pixel) != 0xff) {
+    if (SkPMColorGetA(*pixel) != 0xff) {
       blink::ImageFrame::PixelData prevPixel = *dst.GetAddr(canvasX, canvasY);
       blink::ImageFrame::BlendSrcOverDstPremultiplied(pixel, prevPixel);
     }
@@ -89,7 +89,7 @@ void alphaBlendNonPremultiplied(blink::ImageFrame& src,
   for (int x = 0; x < width; ++x) {
     int canvasX = left + x;
     blink::ImageFrame::PixelData* pixel = src.GetAddr(canvasX, canvasY);
-    if (SkGetPackedA32(*pixel) != 0xff) {
+    if (SkPMColorGetA(*pixel) != 0xff) {
       blink::ImageFrame::PixelData prevPixel = *dst.GetAddr(canvasX, canvasY);
       blink::ImageFrame::BlendSrcOverDstRaw(pixel, prevPixel);
     }
