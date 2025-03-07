@@ -115,8 +115,11 @@ CollaborationMessagingPageActionIconView::GetGroupId() {
 
 void CollaborationMessagingPageActionIconView::OnExecuting(
     PageActionIconView::ExecuteSource source) {
+  auto* tab = tabs::TabInterface::GetFromContents(GetWebContents());
   bubble_coordinator_.ShowForCurrentTab(
       this, GetWebContents(),
+      tab_groups::SavedTabGroupUtils::GetRecentActivity(
+          profile_, GetGroupId(), tab->GetHandle().raw_value()),
       tab_groups::SavedTabGroupUtils::GetRecentActivity(profile_, GetGroupId()),
       profile_);
 }

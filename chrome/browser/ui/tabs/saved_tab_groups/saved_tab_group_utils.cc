@@ -835,7 +835,8 @@ std::optional<data_sharing::GroupId> SavedTabGroupUtils::GetDataSharingGroupId(
 // static
 std::vector<collaboration::messaging::ActivityLogItem>
 SavedTabGroupUtils::GetRecentActivity(Profile* profile,
-                                      LocalTabGroupID group_id) {
+                                      LocalTabGroupID group_id,
+                                      std::optional<LocalTabID> tab_id) {
   auto* messaging_service =
       collaboration::messaging::MessagingBackendServiceFactory::GetForProfile(
           profile);
@@ -849,8 +850,9 @@ SavedTabGroupUtils::GetRecentActivity(Profile* profile,
 
   collaboration::messaging::ActivityLogQueryParams activity_log_params;
   activity_log_params.result_length =
-      RecentActivityBubbleDialogView::kMaxNumberRows;
+      tab_id.has_value() ? 1 : RecentActivityBubbleDialogView::kMaxNumberRows;
   activity_log_params.collaboration_id = collaboration_group_id.value();
+  activity_log_params.local_tab_id = tab_id;
 
   return messaging_service->GetActivityLog(activity_log_params);
 }

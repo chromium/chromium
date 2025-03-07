@@ -226,7 +226,7 @@ class RecentActivityBubbleDialogViewBrowserTest : public DialogBrowserTest {
     bubble_coordinator_ = std::make_unique<RecentActivityBubbleCoordinator>();
     EXPECT_EQ(nullptr, bubble_coordinator_->GetBubble());
     bubble_coordinator_->ShowForCurrentTab(
-        anchor_view, browser()->tab_strip_model()->GetWebContentsAt(0),
+        anchor_view, browser()->tab_strip_model()->GetWebContentsAt(0), {},
         activity_log, browser()->profile());
   }
 

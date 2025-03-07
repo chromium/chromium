@@ -174,9 +174,12 @@ class SavedTabGroupUtils {
       Profile* profile,
       LocalTabGroupID group_id);
 
-  // Returns the Recent Activity Log for this tab group.
+  // Returns the Recent Activity Log for this tab group. Optionally, filter for
+  // the given tab.
   static std::vector<collaboration::messaging::ActivityLogItem>
-  GetRecentActivity(Profile* profile, LocalTabGroupID group_id);
+  GetRecentActivity(Profile* profile,
+                    LocalTabGroupID group_id,
+                    std::optional<LocalTabID> tab_id = std::nullopt);
 
   // Returns the tab with this id if contained in this group. The group
   // must exist.
