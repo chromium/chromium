@@ -332,7 +332,28 @@ bool ManifestParser::Parse() {
   manifest_->display = ParseDisplay(root_object.get());
   if (manifest_->display != mojom::blink::DisplayMode::kUndefined) {
     UseCounter::Count(execution_context_, WebFeature::kWebAppManifestDisplay);
+    switch (manifest_->display) {
+      case blink::mojom::DisplayMode::kBrowser:
+        UseCounter::Count(execution_context_,
+                          WebFeature::kWebAppManifestDisplayBrowser);
+        break;
+      case blink::mojom::DisplayMode::kMinimalUi:
+        UseCounter::Count(execution_context_,
+                          WebFeature::kWebAppManifestDisplayMinimalUI);
+        break;
+      case blink::mojom::DisplayMode::kFullscreen:
+        UseCounter::Count(execution_context_,
+                          WebFeature::kWebAppManifestDisplayFullscreen);
+        break;
+      case blink::mojom::DisplayMode::kStandalone:
+        UseCounter::Count(execution_context_,
+                          WebFeature::kWebAppManifestDisplayStandalone);
+        break;
+      default:
+        break;
+    }
   }
+
   manifest_->display_override = ParseDisplayOverride(root_object.get());
   for (const mojom::blink::DisplayMode& display_override :
        manifest_->display_override) {

@@ -5960,6 +5960,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5356" label="CSPBlockedWorkerCreation"/>
   <int value="5357"
       label="V8Navigator_ClearOriginJoinedAdInterestGroups_Method"/>
+  <int value="5358" label="WebAppManifestDisplayMinimalUI"/>
+  <int value="5359" label="WebAppManifestDisplayBrowser"/>
+  <int value="5360" label="WebAppManifestDisplayFullscreen"/>
+  <int value="5361" label="WebAppManifestDisplayStandalone"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
