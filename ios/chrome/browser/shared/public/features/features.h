@@ -1053,4 +1053,10 @@ extern const char kMediumFullscreenTransitionOffsetParam[];
 // the fullscreen transition or the speed of the transition.
 BASE_DECLARE_FEATURE(kFullscreenTransition);
 
+// Feature that disables all IPH messages.
+BASE_DECLARE_FEATURE(kIPHAblation);
+
+// Returns true if IPH ablation is enabled.
+bool IsIPHAblationEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
