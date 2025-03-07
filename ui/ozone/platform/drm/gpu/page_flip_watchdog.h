@@ -32,6 +32,21 @@ constexpr size_t kPageFlipWatcherHistorySize = 80;
 // upstream that might fill with unflippable plane assignments.
 constexpr uint32_t kPlaneAssignmentFlakeThreshold = 3;
 
+// Number of times the plane assignment can fail and then succeed within
+// |kPageFlipWatcherHistorySize| flip attempts on Flex devices.
+// Exceeding this number will crash the process immediately.
+//
+// For instance, if S is a successful assignment and F is a failure,
+// S-S-F-S-S-F-S would count as two flakes.
+//
+// This number is temporarily used as a upper limit while we are conducting
+// an experiment to see how often page flips flake on Flex. Flakes tend to
+// be more common on Flex as it uses legacy page flips on hardware with
+// little-to-no overlap promotion support.
+// TODO(crbug.com/371609830): finalize this threshold
+// upon experiment completion.
+constexpr uint32_t kFlexPlaneAssignmentFlakeThreshold = 10;
+
 // Number of failures permitted by the watchdog, within
 // |kPageFlipWatcherHistorySize| flip attempts. Exceeding this number will crash
 // the process immediately.
@@ -78,6 +93,7 @@ class PageFlipWatchdog {
   base::OneShotTimer crash_gpu_timer_;
   base::RingBuffer<bool, kPageFlipWatcherHistorySize> page_flip_status_tracker_;
   int16_t failed_page_flip_counter_ = 0;
+  uint32_t plane_assignment_flake_threshold = kPlaneAssignmentFlakeThreshold;
 };
 
 }  // namespace ui
