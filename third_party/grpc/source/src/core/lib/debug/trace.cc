@@ -16,138 +16,93 @@
 //
 //
 
-#include <grpc/support/port_platform.h>
-
 #include "src/core/lib/debug/trace.h"
 
-#include <string.h>
-
-#include <type_traits>
-
 #include <grpc/grpc.h>
-#include <grpc/support/alloc.h>
-#include <grpc/support/log.h>
+#include <grpc/support/port_platform.h>
 
-GPR_GLOBAL_CONFIG_DEFINE_STRING(
-    grpc_trace, "",
-    "A comma separated list of tracers that provide additional insight into "
-    "how gRPC C core is processing requests via debug logs.");
+#include <string>
+#include <type_traits>
+#include <utility>
+
+#include "absl/log/absl_log.h"
+#include "absl/strings/match.h"
+#include "absl/strings/str_cat.h"
+#include "absl/strings/str_split.h"
+#include "absl/strings/string_view.h"
+#include "absl/strings/strip.h"
+#include "src/core/config/config_vars.h"
+#include "src/core/util/glob.h"
 
 int grpc_tracer_set_enabled(const char* name, int enabled);
 
 namespace grpc_core {
-
-TraceFlag* TraceFlagList::root_tracer_ = nullptr;
-
-bool TraceFlagList::Set(const char* name, bool enabled) {
-  TraceFlag* t;
-  if (0 == strcmp(name, "all")) {
-    for (t = root_tracer_; t; t = t->next_tracer_) {
-      t->set_enabled(enabled);
-    }
-  } else if (0 == strcmp(name, "list_tracers")) {
-    LogAllTracers();
-  } else if (0 == strcmp(name, "refcount")) {
-    for (t = root_tracer_; t; t = t->next_tracer_) {
-      if (strstr(t->name_, "refcount") != nullptr) {
-        t->set_enabled(enabled);
-      }
-    }
-  } else {
-    bool found = false;
-    for (t = root_tracer_; t; t = t->next_tracer_) {
-      if (0 == strcmp(name, t->name_)) {
-        t->set_enabled(enabled);
-        found = true;
-      }
-    }
-    // check for unknowns, but ignore "", to allow to GRPC_TRACE=
-    if (!found && 0 != strcmp(name, "")) {
-      gpr_log(GPR_ERROR, "Unknown trace var: '%s'", name);
-      return false;  // early return
-    }
-  }
-  return true;
-}
-
-void TraceFlagList::Add(TraceFlag* flag) {
-  flag->next_tracer_ = root_tracer_;
-  root_tracer_ = flag;
-}
-
-void TraceFlagList::LogAllTracers() {
-  gpr_log(GPR_DEBUG, "available tracers:");
-  TraceFlag* t;
-  for (t = root_tracer_; t != nullptr; t = t->next_tracer_) {
-    gpr_log(GPR_DEBUG, "\t%s", t->name_);
+namespace {
+void LogAllTracers() {
+  ABSL_VLOG(2) << "available tracers:";
+  for (const auto& name : GetAllTraceFlags()) {
+    ABSL_LOG(INFO) << "  " << name.first;
   }
 }
+
+}  // namespace
 
 // Flags register themselves on the list during construction
 TraceFlag::TraceFlag(bool default_enabled, const char* name) : name_(name) {
   static_assert(std::is_trivially_destructible<TraceFlag>::value,
                 "TraceFlag needs to be trivially destructible.");
   set_enabled(default_enabled);
-  TraceFlagList::Add(this);
+}
+
+SavedTraceFlags::SavedTraceFlags() {
+  for (const auto& flag : GetAllTraceFlags()) {
+    values_[flag.first] = {flag.second->enabled(), flag.second};
+  }
+}
+
+void SavedTraceFlags::Restore() {
+  for (const auto& flag : values_) {
+    flag.second.second->set_enabled(flag.second.first);
+  }
+}
+
+bool ParseTracers(absl::string_view tracers) {
+  std::string enabled_tracers;
+  bool some_trace_was_found = false;
+  for (auto trace_glob : absl::StrSplit(tracers, ',', absl::SkipWhitespace())) {
+    if (trace_glob == "list_tracers") {
+      LogAllTracers();
+      continue;
+    }
+    bool enabled = !absl::ConsumePrefix(&trace_glob, "-");
+    if (trace_glob == "all") trace_glob = "*";
+    if (trace_glob == "refcount") trace_glob = "*refcount*";
+    bool found = false;
+    for (const auto& flag : GetAllTraceFlags()) {
+      if (GlobMatch(flag.first, trace_glob)) {
+        flag.second->set_enabled(enabled);
+        if (enabled) absl::StrAppend(&enabled_tracers, flag.first, ", ");
+        found = true;
+        some_trace_was_found = true;
+      }
+    }
+    if (!found) ABSL_LOG(ERROR) << "Unknown tracer: " << trace_glob;
+  }
+  if (!enabled_tracers.empty()) {
+    absl::string_view enabled_tracers_view(enabled_tracers);
+    absl::ConsumeSuffix(&enabled_tracers_view, ", ");
+    ABSL_LOG(INFO) << "gRPC Tracers: " << enabled_tracers_view;
+  }
+  return some_trace_was_found;
 }
 
 }  // namespace grpc_core
 
-static void add(const char* beg, const char* end, char*** ss, size_t* ns) {
-  size_t n = *ns;
-  size_t np = n + 1;
-  char* s;
-  size_t len;
-  GPR_ASSERT(end >= beg);
-  len = static_cast<size_t>(end - beg);
-  s = static_cast<char*>(gpr_malloc(len + 1));
-  memcpy(s, beg, len);
-  s[len] = 0;
-  *ss = static_cast<char**>(gpr_realloc(*ss, sizeof(char**) * np));
-  (*ss)[n] = s;
-  *ns = np;
-}
-
-static void split(const char* s, char*** ss, size_t* ns) {
-  const char* c = strchr(s, ',');
-  if (c == nullptr) {
-    add(s, s + strlen(s), ss, ns);
-  } else {
-    add(s, c, ss, ns);
-    split(c + 1, ss, ns);
-  }
-}
-
-static void parse(const char* s) {
-  char** strings = nullptr;
-  size_t nstrings = 0;
-  size_t i;
-  split(s, &strings, &nstrings);
-
-  for (i = 0; i < nstrings; i++) {
-    if (strings[i][0] == '-') {
-      grpc_core::TraceFlagList::Set(strings[i] + 1, false);
-    } else {
-      grpc_core::TraceFlagList::Set(strings[i], true);
-    }
-  }
-
-  for (i = 0; i < nstrings; i++) {
-    gpr_free(strings[i]);
-  }
-  gpr_free(strings);
-}
-
-void grpc_tracer_init(const char* env_var_name) {
-  (void)env_var_name;  // suppress unused variable error
-  grpc_tracer_init();
-}
-
 void grpc_tracer_init() {
-  grpc_core::UniquePtr<char> value = GPR_GLOBAL_CONFIG_GET(grpc_trace);
-  parse(value.get());
+  grpc_core::ParseTracers(grpc_core::ConfigVars::Get().Trace());
 }
 
 int grpc_tracer_set_enabled(const char* name, int enabled) {
-  return grpc_core::TraceFlagList::Set(name, enabled != 0);
+  if (enabled != 0) return grpc_core::ParseTracers(name);
+  return grpc_core::ParseTracers(absl::StrCat("-", name));
 }

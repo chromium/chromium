@@ -16,14 +16,17 @@
 //
 //
 
+#include <grpc/grpc.h>
 #include <grpc/support/port_platform.h>
 
-#include <grpc/grpc.h>
-
-#include "src/core/lib/config/core_configuration.h"
-#include "src/core/lib/surface/builtins.h"
-#include "src/core/lib/transport/http_connect_handshaker.h"
-#include "src/core/lib/transport/tcp_connect_handshaker.h"
+#include "src/core/config/core_configuration.h"
+#include "src/core/handshaker/endpoint_info/endpoint_info_handshaker.h"
+#include "src/core/handshaker/http_connect/http_connect_handshaker.h"
+#include "src/core/handshaker/tcp_connect/tcp_connect_handshaker.h"
+#include "src/core/lib/surface/channel_stack_type.h"
+#include "src/core/lib/surface/lame_client.h"
+#include "src/core/server/server.h"
+#include "src/core/server/server_call_tracer_filter.h"
 
 namespace grpc_event_engine {
 namespace experimental {
@@ -39,8 +42,8 @@ extern void BuildClientChannelConfiguration(
 extern void SecurityRegisterHandshakerFactories(
     CoreConfiguration::Builder* builder);
 extern void RegisterClientAuthorityFilter(CoreConfiguration::Builder* builder);
-extern void RegisterChannelIdleFilters(CoreConfiguration::Builder* builder);
-extern void RegisterDeadlineFilter(CoreConfiguration::Builder* builder);
+extern void RegisterLegacyChannelIdleFilters(
+    CoreConfiguration::Builder* builder);
 extern void RegisterGrpcLbPolicy(CoreConfiguration::Builder* builder);
 extern void RegisterHttpFilters(CoreConfiguration::Builder* builder);
 extern void RegisterMessageSizeFilter(CoreConfiguration::Builder* builder);
@@ -50,9 +53,8 @@ extern void RegisterServiceConfigChannelArgFilter(
 extern void RegisterExtraFilters(CoreConfiguration::Builder* builder);
 extern void RegisterResourceQuota(CoreConfiguration::Builder* builder);
 extern void FaultInjectionFilterRegister(CoreConfiguration::Builder* builder);
+extern void RegisterDnsResolver(CoreConfiguration::Builder* builder);
 extern void RegisterBackendMetricFilter(CoreConfiguration::Builder* builder);
-extern void RegisterNativeDnsResolver(CoreConfiguration::Builder* builder);
-extern void RegisterAresDnsResolver(CoreConfiguration::Builder* builder);
 extern void RegisterSockaddrResolver(CoreConfiguration::Builder* builder);
 extern void RegisterFakeResolver(CoreConfiguration::Builder* builder);
 extern void RegisterPriorityLbPolicy(CoreConfiguration::Builder* builder);
@@ -63,14 +65,28 @@ extern void RegisterPickFirstLbPolicy(CoreConfiguration::Builder* builder);
 extern void RegisterRoundRobinLbPolicy(CoreConfiguration::Builder* builder);
 extern void RegisterWeightedRoundRobinLbPolicy(
     CoreConfiguration::Builder* builder);
-extern void RegisterRingHashLbPolicy(CoreConfiguration::Builder* builder);
 extern void RegisterHttpProxyMapper(CoreConfiguration::Builder* builder);
+extern void RegisterConnectedChannel(CoreConfiguration::Builder* builder);
+extern void RegisterLoadBalancedCallDestination(
+    CoreConfiguration::Builder* builder);
 #ifndef GRPC_NO_RLS
 extern void RegisterRlsLbPolicy(CoreConfiguration::Builder* builder);
 #endif  // !GRPC_NO_RLS
-#ifdef GPR_SUPPORT_BINDER_TRANSPORT
-extern void RegisterBinderResolver(CoreConfiguration::Builder* builder);
-#endif
+
+namespace {
+
+void RegisterBuiltins(CoreConfiguration::Builder* builder) {
+  RegisterServerCallTracerFilter(builder);
+  builder->channel_init()
+      ->RegisterV2Filter<LameClientFilter>(GRPC_CLIENT_LAME_CHANNEL)
+      .Terminal();
+  builder->channel_init()
+      ->RegisterFilter(GRPC_SERVER_CHANNEL, &Server::kServerTopFilter)
+      .SkipV3()
+      .BeforeAll();
+}
+
+}  // namespace
 
 void BuildCoreConfiguration(CoreConfiguration::Builder* builder) {
   grpc_event_engine::experimental::RegisterEventEngineChannelArgPreconditioning(
@@ -78,6 +94,7 @@ void BuildCoreConfiguration(CoreConfiguration::Builder* builder) {
   // The order of the handshaker registration is crucial here.
   // We want TCP connect handshaker to be registered last so that it is added
   // to the start of the handshaker list.
+  RegisterEndpointInfoHandshaker(builder);
   RegisterHttpConnectHandshaker(builder);
   RegisterTCPConnectHandshaker(builder);
   RegisterPriorityLbPolicy(builder);
@@ -86,26 +103,22 @@ void BuildCoreConfiguration(CoreConfiguration::Builder* builder) {
   RegisterPickFirstLbPolicy(builder);
   RegisterRoundRobinLbPolicy(builder);
   RegisterWeightedRoundRobinLbPolicy(builder);
-  RegisterRingHashLbPolicy(builder);
   BuildClientChannelConfiguration(builder);
   SecurityRegisterHandshakerFactories(builder);
   RegisterClientAuthorityFilter(builder);
-  RegisterChannelIdleFilters(builder);
+  RegisterLegacyChannelIdleFilters(builder);
+  RegisterConnectedChannel(builder);
   RegisterGrpcLbPolicy(builder);
   RegisterHttpFilters(builder);
-  RegisterDeadlineFilter(builder);
   RegisterMessageSizeFilter(builder);
   RegisterServiceConfigChannelArgFilter(builder);
   RegisterResourceQuota(builder);
   FaultInjectionFilterRegister(builder);
-  RegisterAresDnsResolver(builder);
-  RegisterNativeDnsResolver(builder);
+  RegisterDnsResolver(builder);
   RegisterSockaddrResolver(builder);
   RegisterFakeResolver(builder);
   RegisterHttpProxyMapper(builder);
-#ifdef GPR_SUPPORT_BINDER_TRANSPORT
-  RegisterBinderResolver(builder);
-#endif
+  RegisterLoadBalancedCallDestination(builder);
 #ifndef GRPC_NO_RLS
   RegisterRlsLbPolicy(builder);
 #endif  // !GRPC_NO_RLS

@@ -20,14 +20,11 @@
 #define GRPC_SRC_CORE_LIB_IOMGR_POLLSET_H
 
 #include <grpc/support/port_platform.h>
-
 #include <grpc/support/sync.h>
 #include <grpc/support/time.h>
 
 #include "src/core/lib/iomgr/exec_ctx.h"
 #include "src/core/lib/iomgr/iomgr_fwd.h"
-
-extern grpc_core::DebugOnlyTraceFlag grpc_trace_fd_refcount;
 
 // A grpc_pollset is a set of file descriptors that a higher level item is
 // interested in. For example:
@@ -86,14 +83,13 @@ void grpc_pollset_destroy(grpc_pollset* pollset);
 // May call grpc_closure_list_run on grpc_closure_list, without holding the
 // pollset
 // lock
-grpc_error_handle grpc_pollset_work(
-    grpc_pollset* pollset, grpc_pollset_worker** worker,
-    grpc_core::Timestamp deadline) GRPC_MUST_USE_RESULT;
+grpc_error_handle grpc_pollset_work(grpc_pollset* pollset,
+                                    grpc_pollset_worker** worker,
+                                    grpc_core::Timestamp deadline);
 
 // Break one polling thread out of polling work for this pollset.
 // If specific_worker is non-NULL, then kick that worker.
 grpc_error_handle grpc_pollset_kick(grpc_pollset* pollset,
-                                    grpc_pollset_worker* specific_worker)
-    GRPC_MUST_USE_RESULT;
+                                    grpc_pollset_worker* specific_worker);
 
 #endif  // GRPC_SRC_CORE_LIB_IOMGR_POLLSET_H

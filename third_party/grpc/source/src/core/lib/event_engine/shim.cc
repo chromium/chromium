@@ -12,23 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <grpc/support/port_platform.h>
-
 #include "src/core/lib/event_engine/shim.h"
+
+#include <grpc/support/port_platform.h>
 
 #include "src/core/lib/experiments/experiments.h"
 #include "src/core/lib/iomgr/port.h"
 
-namespace grpc_event_engine {
-namespace experimental {
+namespace grpc_event_engine::experimental {
 
 bool UseEventEngineClient() {
 // TODO(hork, eryu): Adjust the ifdefs accordingly when event engines become
 // available for other platforms.
-#if defined(GRPC_POSIX_SOCKET_TCP) && !defined(GRPC_CFSTREAM)
+#if defined(GRPC_POSIX_SOCKET_TCP) && !defined(GRPC_CFSTREAM) && \
+    !defined(GRPC_DO_NOT_INSTANTIATE_POSIX_POLLER)
   return grpc_core::IsEventEngineClientEnabled();
-#elif defined(GPR_WINDOWS)
+#elif defined(GPR_WINDOWS) && !defined(GRPC_DO_NOT_INSTANTIATE_POSIX_POLLER)
   return grpc_core::IsEventEngineClientEnabled();
+#elif GRPC_IOS_EVENT_ENGINE_CLIENT
+  return true;
 #else
   return false;
 #endif
@@ -37,20 +39,12 @@ bool UseEventEngineClient() {
 bool UseEventEngineListener() {
 // TODO(hork, eryu): Adjust the ifdefs accordingly when event engines become
 // available for other platforms.
-#if defined(GRPC_POSIX_SOCKET_TCP) && !defined(GRPC_CFSTREAM)
+#if defined(GRPC_POSIX_SOCKET_TCP) && !defined(GRPC_CFSTREAM) && \
+    !defined(GRPC_DO_NOT_INSTANTIATE_POSIX_POLLER)
   return grpc_core::IsEventEngineListenerEnabled();
 #else
   return false;
 #endif
 }
 
-bool EventEngineSupportsFd() {
-#if defined(GRPC_POSIX_SOCKET_TCP) && !defined(GRPC_CFSTREAM)
-  return true;
-#else
-  return false;
-#endif
-}
-
-}  // namespace experimental
-}  // namespace grpc_event_engine
+}  // namespace grpc_event_engine::experimental

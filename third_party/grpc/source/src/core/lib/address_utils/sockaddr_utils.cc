@@ -16,34 +16,42 @@
 //
 //
 
-#include <grpc/support/port_platform.h>
-
 #include "src/core/lib/address_utils/sockaddr_utils.h"
 
 #include <errno.h>
+#include <grpc/support/port_platform.h>
 #include <inttypes.h>
+
+#include "absl/log/absl_check.h"
+#ifdef GRPC_HAVE_VSOCK
+#include <linux/vm_sockets.h>
+#endif
 #include <string.h>
 
-#include <initializer_list>
 #include <string>
 #include <utility>
 
+#include "absl/log/absl_log.h"
 #include "absl/status/status.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
-
-#include <grpc/support/log.h>
-
-#include "src/core/lib/gprpp/crash.h"
-#include "src/core/lib/gprpp/host_port.h"
 #include "src/core/lib/iomgr/port.h"
 #include "src/core/lib/iomgr/sockaddr.h"
 #include "src/core/lib/iomgr/socket_utils.h"
-#include "src/core/lib/uri/uri_parser.h"
+#include "src/core/util/crash.h"
+#include "src/core/util/host_port.h"
+#include "src/core/util/uri.h"
 
 #ifdef GRPC_HAVE_UNIX_SOCKET
+#ifdef GPR_WINDOWS
+// clang-format off
+#include <ws2def.h>
+#include <afunix.h>
+// clang-format on
+#else
 #include <sys/un.h>
-#endif
+#endif  // GPR_WINDOWS
+#endif  // GRPC_HAVE_UNIX_SOCKET
 
 #ifdef GRPC_HAVE_UNIX_SOCKET
 static absl::StatusOr<std::string> grpc_sockaddr_to_uri_unix_if_possible(
@@ -77,12 +85,31 @@ static absl::StatusOr<std::string> grpc_sockaddr_to_uri_unix_if_possible(
 }
 #endif
 
+#ifdef GRPC_HAVE_VSOCK
+static absl::StatusOr<std::string> grpc_sockaddr_to_uri_vsock_if_possible(
+    const grpc_resolved_address* resolved_addr) {
+  const grpc_sockaddr* addr =
+      reinterpret_cast<const grpc_sockaddr*>(resolved_addr->addr);
+  if (addr->sa_family != AF_VSOCK) {
+    return absl::InvalidArgumentError(
+        absl::StrCat("Socket family is not AF_VSOCK: ", addr->sa_family));
+  }
+  const auto* vsock_addr = reinterpret_cast<const struct sockaddr_vm*>(addr);
+  return absl::StrCat("vsock:", vsock_addr->svm_cid, ":", vsock_addr->svm_port);
+}
+#else
+static absl::StatusOr<std::string> grpc_sockaddr_to_uri_vsock_if_possible(
+    const grpc_resolved_address* /* addr */) {
+  return absl::InvalidArgumentError("VSOCK is not supported.");
+}
+#endif
+
 static const uint8_t kV4MappedPrefix[] = {0, 0, 0, 0, 0,    0,
                                           0, 0, 0, 0, 0xff, 0xff};
 
 int grpc_sockaddr_is_v4mapped(const grpc_resolved_address* resolved_addr,
                               grpc_resolved_address* resolved_addr4_out) {
-  GPR_ASSERT(resolved_addr != resolved_addr4_out);
+  ABSL_CHECK(resolved_addr != resolved_addr4_out);
   const grpc_sockaddr* addr =
       reinterpret_cast<const grpc_sockaddr*>(resolved_addr->addr);
   grpc_sockaddr_in* addr4_out =
@@ -112,7 +139,7 @@ int grpc_sockaddr_is_v4mapped(const grpc_resolved_address* resolved_addr,
 
 int grpc_sockaddr_to_v4mapped(const grpc_resolved_address* resolved_addr,
                               grpc_resolved_address* resolved_addr6_out) {
-  GPR_ASSERT(resolved_addr != resolved_addr6_out);
+  ABSL_CHECK(resolved_addr != resolved_addr6_out);
   const grpc_sockaddr* addr =
       reinterpret_cast<const grpc_sockaddr*>(resolved_addr->addr);
   grpc_sockaddr_in6* addr6_out =
@@ -175,7 +202,8 @@ void grpc_sockaddr_make_wildcard4(int port,
                                   grpc_resolved_address* resolved_wild_out) {
   grpc_sockaddr_in* wild_out =
       reinterpret_cast<grpc_sockaddr_in*>(resolved_wild_out->addr);
-  GPR_ASSERT(port >= 0 && port < 65536);
+  ABSL_CHECK(port >= 0);
+  ABSL_CHECK(port < 65536);
   memset(resolved_wild_out, 0, sizeof(*resolved_wild_out));
   wild_out->sin_family = GRPC_AF_INET;
   wild_out->sin_port = grpc_htons(static_cast<uint16_t>(port));
@@ -186,7 +214,8 @@ void grpc_sockaddr_make_wildcard6(int port,
                                   grpc_resolved_address* resolved_wild_out) {
   grpc_sockaddr_in6* wild_out =
       reinterpret_cast<grpc_sockaddr_in6*>(resolved_wild_out->addr);
-  GPR_ASSERT(port >= 0 && port < 65536);
+  ABSL_CHECK(port >= 0);
+  ABSL_CHECK(port < 65536);
   memset(resolved_wild_out, 0, sizeof(*resolved_wild_out));
   wild_out->sin6_family = GRPC_AF_INET6;
   wild_out->sin6_port = grpc_htons(static_cast<uint16_t>(port));
@@ -220,6 +249,14 @@ absl::StatusOr<std::string> grpc_sockaddr_to_string(
       }
       out = std::string(addr_un->sun_path);
     }
+    return out;
+  }
+#endif
+
+#ifdef GRPC_HAVE_VSOCK
+  if (addr->sa_family == GRPC_AF_VSOCK) {
+    const sockaddr_vm* addr_vm = reinterpret_cast<const sockaddr_vm*>(addr);
+    out = absl::StrCat(addr_vm->svm_cid, ":", addr_vm->svm_port);
     return out;
   }
 #endif
@@ -269,9 +306,16 @@ absl::StatusOr<std::string> grpc_sockaddr_to_uri(
     resolved_addr = &addr_normalized;
   }
   const char* scheme = grpc_sockaddr_get_uri_scheme(resolved_addr);
-  if (scheme == nullptr || strcmp("unix", scheme) == 0) {
+  if (scheme == nullptr) {
+    return absl::InvalidArgumentError("Unknown address type");
+  }
+  if (strcmp("unix", scheme) == 0) {
     return grpc_sockaddr_to_uri_unix_if_possible(resolved_addr);
   }
+  if (strcmp("vsock", scheme) == 0) {
+    return grpc_sockaddr_to_uri_vsock_if_possible(resolved_addr);
+  }
+
   auto path = grpc_sockaddr_to_string(resolved_addr, false /* normalize */);
   if (!path.ok()) return path;
   absl::StatusOr<grpc_core::URI> uri =
@@ -292,6 +336,10 @@ const char* grpc_sockaddr_get_uri_scheme(
       return "ipv6";
     case GRPC_AF_UNIX:
       return "unix";
+#ifdef GRPC_HAVE_VSOCK
+    case GRPC_AF_VSOCK:
+      return "vsock";
+#endif
   }
   return nullptr;
 }
@@ -316,9 +364,13 @@ int grpc_sockaddr_get_port(const grpc_resolved_address* resolved_addr) {
     case AF_UNIX:
       return 1;
 #endif
+#ifdef GRPC_HAVE_VSOCK
+    case AF_VSOCK:
+      return 1;
+#endif
     default:
-      gpr_log(GPR_ERROR, "Unknown socket family %d in grpc_sockaddr_get_port",
-              addr->sa_family);
+      ABSL_LOG(ERROR) << "Unknown socket family " << addr->sa_family
+                 << " in grpc_sockaddr_get_port";
       return 0;
   }
 }
@@ -327,18 +379,20 @@ int grpc_sockaddr_set_port(grpc_resolved_address* resolved_addr, int port) {
   grpc_sockaddr* addr = reinterpret_cast<grpc_sockaddr*>(resolved_addr->addr);
   switch (addr->sa_family) {
     case GRPC_AF_INET:
-      GPR_ASSERT(port >= 0 && port < 65536);
+      ABSL_CHECK(port >= 0);
+      ABSL_CHECK(port < 65536);
       (reinterpret_cast<grpc_sockaddr_in*>(addr))->sin_port =
           grpc_htons(static_cast<uint16_t>(port));
       return 1;
     case GRPC_AF_INET6:
-      GPR_ASSERT(port >= 0 && port < 65536);
+      ABSL_CHECK(port >= 0);
+      ABSL_CHECK(port < 65536);
       (reinterpret_cast<grpc_sockaddr_in6*>(addr))->sin6_port =
           grpc_htons(static_cast<uint16_t>(port));
       return 1;
     default:
-      gpr_log(GPR_ERROR, "Unknown socket family %d in grpc_sockaddr_set_port",
-              addr->sa_family);
+      ABSL_LOG(ERROR) << "Unknown socket family " << addr->sa_family
+                 << " in grpc_sockaddr_set_port";
       return 0;
   }
 }
@@ -386,7 +440,7 @@ void grpc_sockaddr_mask_bits(grpc_resolved_address* address,
     // We cannot use s6_addr32 since it is not defined on all platforms that we
     // need it on.
     uint32_t address_parts[4];
-    GPR_ASSERT(sizeof(addr6->sin6_addr) == sizeof(address_parts));
+    ABSL_CHECK(sizeof(addr6->sin6_addr) == sizeof(address_parts));
     memcpy(address_parts, &addr6->sin6_addr, sizeof(grpc_in6_addr));
     if (mask_bits <= 32) {
       uint32_t mask_ip_addr = (~(uint32_t{0})) << (32 - mask_bits);

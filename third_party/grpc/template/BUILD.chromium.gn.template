@@ -32,12 +32,16 @@
     include_dirs = [
       "source/include",
       "source",
+      "source/src/core/ext/upb-gen",
+      "source/third_party/xxhash",
+      "source/src/core/ext/upbdefs-gen",
       "source/src/core/ext/upb-generated",
       "source/src/core/ext/upbdefs-generated",
       "source/third_party/cares",
       "//third_party/cares/include",
       "source/third_party/upb",
       "//third_party/abseil-cpp",
+      "//third_party/protobuf/third_party/utf8_range",
     ]
 
     defines = [
@@ -90,6 +94,7 @@
       "-Wno-c++98-compat-extra-semi",
       "-Wno-deprecated-copy",
       "-Wno-extra-semi",
+      "-Wno-gnu-flexible-array-initializer",
       "-Wno-implicit-fallthrough",
       "-Wno-shadow",
       "-Wno-sign-compare",
@@ -259,6 +264,14 @@
     for d in target_dict.get("deps", []):
       if d.startswith('libssl'):
         add_boring_ssl = True
+      elif d == "protobuf":
+        deps.add("//third_party/protobuf:protobuf_lite")
+      elif d == "protoc":
+        deps.add("//third_party/protobuf:protoc_lib")
+      elif d == "re2":
+        deps.add("//third_party/re2:re2")
+      elif d == "z":
+        deps.add("//third_party/zlib:zlib")
       elif d.startswith('absl'):
         add_absl = True
       elif d.startswith(("//", ":")):

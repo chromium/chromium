@@ -12,19 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <grpc/support/port_platform.h>
-
 #include "src/core/ext/transport/chttp2/transport/hpack_encoder_table.h"
+
+#include <grpc/support/port_platform.h>
 
 #include <algorithm>
 
-#include <grpc/support/log.h>
+#include "absl/log/absl_check.h"
 
 namespace grpc_core {
 
 uint32_t HPackEncoderTable::AllocateIndex(size_t element_size) {
+  ABSL_DCHECK_GE(element_size, 32u);
+
   uint32_t new_index = tail_remote_index_ + table_elems_ + 1;
-  GPR_DEBUG_ASSERT(element_size <= MaxEntrySize());
+  ABSL_DCHECK(element_size <= MaxEntrySize());
 
   if (element_size > max_table_size_) {
     while (table_size_ > 0) {
@@ -39,7 +41,7 @@ uint32_t HPackEncoderTable::AllocateIndex(size_t element_size) {
   while (table_size_ + element_size > max_table_size_) {
     EvictOne();
   }
-  GPR_ASSERT(table_elems_ < elem_size_.size());
+  ABSL_CHECK(table_elems_ < elem_size_.size());
   elem_size_[new_index % elem_size_.size()] =
       static_cast<uint16_t>(element_size);
   table_size_ += element_size;
@@ -68,17 +70,17 @@ bool HPackEncoderTable::SetMaxSize(uint32_t max_table_size) {
 
 void HPackEncoderTable::EvictOne() {
   tail_remote_index_++;
-  GPR_ASSERT(tail_remote_index_ > 0);
-  GPR_ASSERT(table_elems_ > 0);
+  ABSL_CHECK_GT(tail_remote_index_, 0u);
+  ABSL_CHECK_GT(table_elems_, 0u);
   auto removing_size = elem_size_[tail_remote_index_ % elem_size_.size()];
-  GPR_ASSERT(table_size_ >= removing_size);
+  ABSL_CHECK(table_size_ >= removing_size);
   table_size_ -= removing_size;
   table_elems_--;
 }
 
 void HPackEncoderTable::Rebuild(uint32_t capacity) {
   decltype(elem_size_) new_elem_size(capacity);
-  GPR_ASSERT(table_elems_ <= capacity);
+  ABSL_CHECK_LE(table_elems_, capacity);
   for (uint32_t i = 0; i < table_elems_; i++) {
     uint32_t ofs = tail_remote_index_ + i + 1;
     new_elem_size[ofs % capacity] = elem_size_[ofs % elem_size_.size()];

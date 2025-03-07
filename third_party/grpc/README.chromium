@@ -2,8 +2,8 @@ Name: grpc
 URL: https://github.com/grpc/grpc
 License: BSD-3-Clause, Apache-2.0, MPL-2.0
 License File: source/LICENSE
-Version: v1.54.0-dev
-Revision: a363b6c001139b9c8ffb7cd63f60a72f15349c3b
+Version: v1.71.0-dev
+Revision: ff8d12a129eedc58f9602c9fa9d1c01a2a270d62
 Security Critical: yes
 Shipped: yes
 CPEPrefix: cpe:/a:grpc:grpc:1.49
@@ -16,9 +16,11 @@ Steps to upgrade to a new version of GRPC, all relative to //third_party/grpc:
 1. Update revision and version information in this file. Version file can be
    found in the root BUILD file in gRPC repo.
 2. Run third_party/grpc/update.sh.
-3. Update the BUILD.gn file with ./generate_gn.sh. To use the script,
-  make sure the mako_templates python module is installed ("apt-get
-  install python3-mako").
+3. Update the BUILD.gn file. ./generate_gn.sh is a script that tries to
+   do it but it's half-broken (it gets third_party targets wrong). It
+   might still be useful as a baseline. To run it, make sure the
+   mako_templates python module is installed ("apt-get install
+   python3-mako").
 
 Note: Please also remember to check if `plugin_registry/grpc_plugin_registry.cc`
 needs update! Upstream sometimes introduces new plugins in

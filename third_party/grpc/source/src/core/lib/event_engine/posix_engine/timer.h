@@ -19,27 +19,23 @@
 #ifndef GRPC_SRC_CORE_LIB_EVENT_ENGINE_POSIX_ENGINE_TIMER_H
 #define GRPC_SRC_CORE_LIB_EVENT_ENGINE_POSIX_ENGINE_TIMER_H
 
+#include <grpc/event_engine/event_engine.h>
 #include <grpc/support/port_platform.h>
-
 #include <stddef.h>
 
 #include <atomic>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "absl/base/thread_annotations.h"
-#include "absl/types/optional.h"
-
-#include <grpc/event_engine/event_engine.h>
-
 #include "src/core/lib/event_engine/posix_engine/timer_heap.h"
-#include "src/core/lib/gprpp/sync.h"
-#include "src/core/lib/gprpp/time.h"
-#include "src/core/lib/gprpp/time_averaged_stats.h"
+#include "src/core/util/sync.h"
+#include "src/core/util/time.h"
+#include "src/core/util/time_averaged_stats.h"
 
-namespace grpc_event_engine {
-namespace experimental {
+namespace grpc_event_engine::experimental {
 
 struct Timer {
   int64_t deadline;
@@ -77,46 +73,19 @@ class TimerList {
   TimerList(const TimerList&) = delete;
   TimerList& operator=(const TimerList&) = delete;
 
-  // Initialize *timer. When expired or canceled, closure will be called with
-  // error set to indicate if it expired (absl::OkStatus()) or was canceled
-  //(absl::CancelledError()). *closure is guaranteed to be called exactly once,
-  // and application code should check the error to determine how it was
-  // invoked. The application callback is also responsible for maintaining
-  // information about when to free up any user-level state. Behavior is
-  // undefined for a deadline of grpc_core::Timestamp::InfFuture().
+  // Initialize a Timer.
+  // When expired, the closure will be run. If the timer is canceled, the
+  // closure will not be run. Behavior is undefined for a deadline of
+  // grpc_core::Timestamp::InfFuture().
   void TimerInit(Timer* timer, grpc_core::Timestamp deadline,
                  experimental::EventEngine::Closure* closure);
 
-  // Note that there is no timer destroy function. This is because the
-  // timer is a one-time occurrence with a guarantee that the callback will
-  // be called exactly once, either at expiration or cancellation. Thus, all
-  // the internal timer event management state is destroyed just before
-  // that callback is invoked. If the user has additional state associated with
-  // the timer, the user is responsible for determining when it is safe to
-  // destroy that state.
-
-  // Cancel an *timer.
-  // There are three cases:
-  // 1. We normally cancel the timer
-  // 2. The timer has already run
-  // 3. We can't cancel the timer because it is "in flight".
-
-  // In all of these cases, the cancellation is still considered successful.
-  // They are essentially distinguished in that the timer_cb will be run
-  // exactly once from either the cancellation (with error
-  // absl::CancelledError()) or from the activation (with error
-  // absl::OkStatus()).
-
-  // Note carefully that the callback function MAY occur in the same callstack
-  // as grpc_timer_cancel. It's expected that most timers will be cancelled
-  // (their primary use is to implement deadlines), and so this code is
-  // optimized such that cancellation costs as little as possible. Making
-  // callbacks run inline matches this aim.
-
-  // Requires: cancel() must happen after init() on a given timer
-  bool TimerCancel(Timer* timer) GRPC_MUST_USE_RESULT;
-
-  // iomgr internal api for dealing with timers
+  // Cancel a Timer.
+  // Returns false if the timer cannot be canceled. This will happen if the
+  // timer has already fired, or if its closure is currently running. The
+  // closure is guaranteed to run eventually if this method returns false.
+  // Otherwise, this returns true, and the closure will not be run.
+  GRPC_MUST_USE_RESULT bool TimerCancel(Timer* timer);
 
   // Check for timers to be run, and return them.
   // Return nullopt if timers could not be checked due to contention with
@@ -127,7 +96,7 @@ class TimerList {
   // *next is never guaranteed to be updated on any given execution; however,
   // with high probability at least one thread in the system will see an update
   // at any time slice.
-  absl::optional<std::vector<experimental::EventEngine::Closure*>> TimerCheck(
+  std::optional<std::vector<experimental::EventEngine::Closure*>> TimerCheck(
       grpc_core::Timestamp* next);
 
  private:
@@ -188,7 +157,6 @@ class TimerList {
   const std::unique_ptr<Shard*[]> shard_queue_ ABSL_GUARDED_BY(mu_);
 };
 
-}  // namespace experimental
-}  // namespace grpc_event_engine
+}  // namespace grpc_event_engine::experimental
 
 #endif  // GRPC_SRC_CORE_LIB_EVENT_ENGINE_POSIX_ENGINE_TIMER_H
