@@ -580,5 +580,10 @@ namespace autofillPrivate {
         IbanEntry[] ibans,
         PayOverTimeIssuerEntry[] payOverTimeIssuers,
         optional AccountInfo accountInfo);
+
+    // Fired when the entity instances have changed (additions, updates,
+    // removals).
+    static void onEntityInstancesChanged(
+        EntityInstanceWithLabels[] entityInstancesWithLabels);
   };
 };
