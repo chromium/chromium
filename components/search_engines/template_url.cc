@@ -2023,10 +2023,7 @@ bool TemplateURL::CreatedByRegulatoryProgram() const {
 }
 
 RegulatoryExtensionType TemplateURL::GetRegulatoryExtensionType() const {
-  if (data().created_from_play_api) {
-    return RegulatoryExtensionType::kAndroidEEA;
-  }
-  return RegulatoryExtensionType::kDefault;
+  return data().regulatory_origin;
 }
 
 const TemplateURLData::RegulatoryExtension* TemplateURL::GetRegulatoryExtension(

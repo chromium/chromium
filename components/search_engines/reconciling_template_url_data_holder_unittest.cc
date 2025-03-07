@@ -38,7 +38,7 @@ TEST_F(ReconcilingTemplateURLDataHolderTest, Set_SafeWithEmptyPointer) {
 TEST_F(ReconcilingTemplateURLDataHolderTest,
        GetOrComputeKeyword_Get_NonEligiblePlayKeyword) {
   auto supplied_engine = GenerateDummyTemplateURLData("searchengine.com");
-  supplied_engine->created_from_play_api = true;
+  supplied_engine->regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
   supplied_engine->SetURL("https://de.yahoo.com");
   holder_.SetSearchEngineBypassingReconciliationForTesting(
       std::move(supplied_engine));
@@ -51,7 +51,7 @@ TEST_F(ReconcilingTemplateURLDataHolderTest,
 TEST_F(ReconcilingTemplateURLDataHolderTest,
        GetOrComputeKeyword_Get_NonEligibleNotFromPlay) {
   auto supplied_engine = GenerateDummyTemplateURLData("yahoo.com");
-  supplied_engine->created_from_play_api = false;
+  supplied_engine->regulatory_origin = RegulatoryExtensionType::kDefault;
   supplied_engine->SetURL("https://de.yahoo.com");
   holder_.SetSearchEngineBypassingReconciliationForTesting(
       std::move(supplied_engine));
@@ -64,7 +64,7 @@ TEST_F(ReconcilingTemplateURLDataHolderTest,
 TEST_F(ReconcilingTemplateURLDataHolderTest,
        GetOrComputeKeyword_Computed_EligibleFromPlay_Yahoo) {
   auto supplied_engine = GenerateDummyTemplateURLData("yahoo.com");
-  supplied_engine->created_from_play_api = true;
+  supplied_engine->regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
   supplied_engine->SetURL("https://de.yahoo.com");
   holder_.SetSearchEngineBypassingReconciliationForTesting(
       std::move(supplied_engine));
@@ -80,7 +80,7 @@ TEST_F(ReconcilingTemplateURLDataHolderTest,
 
   for (const auto* variant : variants) {
     auto supplied_engine = GenerateDummyTemplateURLData(variant);
-    supplied_engine->created_from_play_api = true;
+    supplied_engine->regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
     holder_.SetSearchEngineBypassingReconciliationForTesting(
         std::move(supplied_engine));
 

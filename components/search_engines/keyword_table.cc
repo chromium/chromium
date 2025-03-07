@@ -602,7 +602,10 @@ std::optional<TemplateURLData> KeywordTable::GetKeywordDataFromStatement(
   data.last_modified = s.ColumnTime(13);
   data.policy_origin =
       static_cast<TemplateURLData::PolicyOrigin>(s.ColumnInt(12));
-  data.created_from_play_api = s.ColumnBool(22);
+  // TODO(b:322513019): support other regulatory programs.
+  data.regulatory_origin = s.ColumnBool(22)
+                               ? RegulatoryExtensionType::kAndroidEEA
+                               : RegulatoryExtensionType::kDefault;
   data.usage_count = s.ColumnInt(8);
   data.prepopulate_id = s.ColumnInt(11);
   data.sync_guid = s.ColumnString(14);
@@ -701,7 +704,9 @@ void KeywordTable::BindURLToStatement(const TemplateURLData& data,
   s->BindString(starting_column + 18, data.image_url_post_params);
   s->BindString(starting_column + 19, data.new_tab_url);
   s->BindTime(starting_column + 20, data.last_visited);
-  s->BindBool(starting_column + 21, data.created_from_play_api);
+  // TODO(b:322513019): support other regulatory programs.
+  s->BindBool(starting_column + 21,
+              data.regulatory_origin == RegulatoryExtensionType::kAndroidEEA);
   s->BindInt(starting_column + 22, static_cast<int>(data.is_active));
   s->BindInt(starting_column + 23, data.starter_pack_id);
   s->BindBool(starting_column + 24, data.enforced_by_policy);

@@ -1052,7 +1052,7 @@ TemplateURLData TemplateURLService::CreatePlayAPITemplateURLData(
       image_translate_source_language_param_key;
   data.image_translate_target_language_param_key =
       image_translate_target_language_param_key;
-  data.created_from_play_api = true;
+  data.regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
   // Play API engines are created by explicit user gesture, and should not be
   // auto-replaceable by an auto-generated engine as the user browses.
   data.safe_for_autoreplace = false;
@@ -1063,7 +1063,8 @@ TemplateURLData TemplateURLService::CreatePlayAPITemplateURLData(
 bool TemplateURLService::ResetPlayAPISearchEngine(
     const TemplateURLData& new_play_api_turl_data) {
   CHECK(loaded());
-  CHECK(new_play_api_turl_data.created_from_play_api);
+  CHECK(new_play_api_turl_data.regulatory_origin ==
+        RegulatoryExtensionType::kAndroidEEA);
 
   auto new_play_api_turl =
       std::make_unique<TemplateURL>(new_play_api_turl_data);

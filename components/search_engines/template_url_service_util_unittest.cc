@@ -65,11 +65,11 @@ std::unique_ptr<TemplateURL> CreatePrepopulateTemplateURL(
     int prepopulate_id,
     const std::string& keyword,
     TemplateURLID id,
-    bool is_play_api_turl = false) {
+    RegulatoryExtensionType reg_ext_type = RegulatoryExtensionType::kDefault) {
   std::unique_ptr<TemplateURLData> data =
       CreatePrepopulateTemplateURLData(prepopulate_id, keyword);
   data->id = id;
-  data->created_from_play_api = is_play_api_turl;
+  data->regulatory_origin = reg_ext_type;
   return std::make_unique<TemplateURL>(*data);
 }
 
@@ -180,7 +180,8 @@ TEST(TemplateURLServiceUtilTest, MergeEnginesFromPrepopulateData_PlayAPI) {
   TemplateURLService::OwnedTemplateURLVector local_turls;
 
   // Start with single search engine created from Play API data.
-  local_turls.push_back(CreatePrepopulateTemplateURL(0, "play", 1, true));
+  local_turls.push_back(CreatePrepopulateTemplateURL(
+      0, "play", 1, RegulatoryExtensionType::kAndroidEEA));
 
   // Test that prepopulated search engine with matching keyword is merged with
   // Play API search engine. Search URL should come from Play API search engine.

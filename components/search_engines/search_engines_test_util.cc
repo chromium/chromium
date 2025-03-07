@@ -52,7 +52,7 @@ void ExpectSimilar(const TemplateURLData* expected,
   EXPECT_EQ(expected->safe_for_autoreplace, actual->safe_for_autoreplace);
   EXPECT_EQ(expected->input_encodings, actual->input_encodings);
   EXPECT_EQ(expected->alternate_urls, actual->alternate_urls);
-  EXPECT_EQ(expected->created_from_play_api, actual->created_from_play_api);
+  EXPECT_EQ(expected->regulatory_origin, actual->regulatory_origin);
 }
 
 void SetExtensionDefaultSearchInPrefs(
