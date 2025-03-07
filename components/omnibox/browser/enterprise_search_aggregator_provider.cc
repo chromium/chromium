@@ -42,14 +42,23 @@ namespace {
 
 // Limit the number matches created for each type, not total, as a performance
 // guard.
-constexpr size_t kMaxMatchesCreatedPerType = 40;
+size_t kMaxMatchesCreatedPerType() {
+  return omnibox_feature_configs::SearchAggregatorProvider::Get()
+      .scoring_max_matches_created_per_type;
+}
 
 // Limit the number of matches shown for each type, not total. Needed to prevent
 // inputs like 'joe' or 'doc' from flooding the results with `PEOPLE` or
 // `CONTENT` suggestions. More matches may be created in order to ensure the
 // best matches are shown.
-constexpr size_t kMaxScopedMatchesShownPerType = 4;
-constexpr size_t kMaxUnscopedMatchesShownPerType = 2;
+size_t kMaxScopedMatchesShownPerType() {
+  return omnibox_feature_configs::SearchAggregatorProvider::Get()
+      .scoring_max_scoped_matches_shown_per_type;
+}
+size_t kMaxUnscopedMatchesShownPerType() {
+  return omnibox_feature_configs::SearchAggregatorProvider::Get()
+      .scoring_max_unscoped_matches_shown_per_type;
+}
 
 // Score matches based on text similarity of the input and match fields.
 // - Strong matches are input words at least 3 chars long that match the
@@ -60,36 +69,71 @@ constexpr size_t kMaxUnscopedMatchesShownPerType = 2;
 //   won't.
 // - Weak matches are input words shorter than 3 chars or that match elsewhere
 //   in the match fields.
-constexpr size_t kMinCharForStrongTextMatch = 3;
+size_t kMinCharForStrongTextMatch() {
+  return omnibox_feature_configs::SearchAggregatorProvider::Get()
+      .scoring_min_char_for_strong_text_match;
+}
 
 // If a) every input word is a strong match, and b) there are at least 2 such
 // matches, score matches 1000.
-constexpr size_t kMinWordsForFullTextMatchBoost = 2;
-constexpr int kFullTextMatchScore = 1000;
+size_t kMinWordsForFullTextMatchBoost() {
+  return omnibox_feature_configs::SearchAggregatorProvider::Get()
+      .scoring_min_words_for_full_text_match_boost;
+}
+int kFullTextMatchScore() {
+  return omnibox_feature_configs::SearchAggregatorProvider::Get()
+      .scoring_full_text_match_score;
+}
 
 // Otherwise, score using a weighted sum of the # of strong and weak matches.
-constexpr int kScorePerStrongTextMatch = 400;
-constexpr int kScorePerWeakTextMatch = 100;
-constexpr int kMaxTextScore = 800;
+int kScorePerStrongTextMatch() {
+  return omnibox_feature_configs::SearchAggregatorProvider::Get()
+      .scoring_score_per_strong_text_match;
+}
+int kScorePerWeakTextMatch() {
+  return omnibox_feature_configs::SearchAggregatorProvider::Get()
+      .scoring_score_per_weak_text_match;
+}
+int kMaxTextScore() {
+  return omnibox_feature_configs::SearchAggregatorProvider::Get()
+      .scoring_max_text_score;
+}
 
 // Shift people relevances higher than calculated with the above constants. Most
 // people-seeking inputs will have 2 words (firstname, lastname) and scoring
 // these 800 wouldn't reliably allow them to make it to the final results.
-constexpr int kPeopleScoreBoost = 100;
+int kPeopleScoreBoost() {
+  return omnibox_feature_configs::SearchAggregatorProvider::Get()
+      .scoring_people_score_boost;
+}
 
 // When suggestions equally match the input, prefer showing content over query
 // suggestions. This wont affect ranking due to grouping, only which suggestions
 // are shown. This won't affect people suggestions unless `kPeopleScoreBoost` is
 // 0.
-constexpr bool kPreferContentsOverQueries = true;
+bool kPreferContentsOverQueries() {
+  return omnibox_feature_configs::SearchAggregatorProvider::Get()
+      .scoring_prefer_contents_over_queries;
+}
 
 // Always show at least 2 (unscoped) or 6 (scoped) suggestions if available.
 // Only show more if they're scored at least 500; i.e. had at least 1 strong and
 // 1 weak match.
-constexpr size_t kScopedMaxLowQualityMatches = 6;
-constexpr size_t kUnscopedMaxLowQualityMatches = 2;
-constexpr int kLowQualityThreshold =
-    kScorePerStrongTextMatch + kScorePerWeakTextMatch;
+size_t kScopedMaxLowQualityMatches() {
+  return omnibox_feature_configs::SearchAggregatorProvider::Get()
+      .scoring_scoped_max_low_quality_matches;
+}
+size_t kUnscopedMaxLowQualityMatches() {
+  return omnibox_feature_configs::SearchAggregatorProvider::Get()
+      .scoring_unscoped_max_low_quality_matches;
+}
+int kLowQualityThreshold() {
+  // When this is converted back to a `constexpr`, it should be relative to
+  // `scoring_score_per_strong_text_match` & `scoring_score_per_weak_text_match`
+  // instead of an independent int.
+  return omnibox_feature_configs::SearchAggregatorProvider::Get()
+      .scoring_low_quality_threshold;
+}
 
 // Helper for reading possibly null paths from `base::Value::Dict`.
 std::string ptr_to_string(const std::string* ptr) {
@@ -171,7 +215,7 @@ int CalculateRelevance(
             AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE) {
       strong_matches++;
     } else if (strong_match_type != MatchType::NONE) {
-      if (input_word.size() >= kMinCharForStrongTextMatch) {
+      if (input_word.size() >= kMinCharForStrongTextMatch()) {
         strong_matches++;
       } else {
         weak_matches++;
@@ -196,16 +240,16 @@ int CalculateRelevance(
 
   // Compute `relevance` using text similarity. See comments for
   // `kMinWordsForFullTextMatchBoost` & `kScorePerStrongTextMatch`.
-  CHECK_LE(kMaxTextScore, kFullTextMatchScore);
+  CHECK_LE(kMaxTextScore(), kFullTextMatchScore());
   int relevance = 0;
   if (strong_matches == input_words.size() &&
-      strong_matches >= kMinWordsForFullTextMatchBoost) {
-    relevance = kFullTextMatchScore;
+      strong_matches >= kMinWordsForFullTextMatchBoost()) {
+    relevance = kFullTextMatchScore();
   } else {
     relevance =
-        std::min(static_cast<int>(strong_matches) * kScorePerStrongTextMatch +
-                     static_cast<int>(weak_matches) * kScorePerWeakTextMatch,
-                 kMaxTextScore);
+        std::min(static_cast<int>(strong_matches) * kScorePerStrongTextMatch() +
+                     static_cast<int>(weak_matches) * kScorePerWeakTextMatch(),
+                 kMaxTextScore());
   }
 
   // People suggestions must match every input word. Otherwise, they feel bad;
@@ -218,14 +262,14 @@ int CalculateRelevance(
       return 0;
     } else {
       // See comment for `kPeopleScoreBoost`.
-      relevance += kPeopleScoreBoost;
+      relevance += kPeopleScoreBoost();
     }
   }
 
   // See comment for `kPreferContentsOverQueries`.
   if (suggestion_type ==
           AutocompleteMatch::EnterpriseSearchAggregatorType::CONTENT &&
-      kPreferContentsOverQueries) {
+      kPreferContentsOverQueries()) {
     relevance += 1;
   }
 
@@ -462,11 +506,11 @@ void EnterpriseSearchAggregatorProvider::
   std::ranges::sort(matches_, std::ranges::greater{},
                     &AutocompleteMatch::relevance);
   size_t matches_to_keep = adjusted_input_.InKeywordMode()
-                               ? kScopedMaxLowQualityMatches
-                               : kUnscopedMaxLowQualityMatches;
+                               ? kScopedMaxLowQualityMatches()
+                               : kUnscopedMaxLowQualityMatches();
   if (matches_.size() > matches_to_keep) {
     for (; matches_to_keep < matches_.size(); ++matches_to_keep) {
-      if (matches_[matches_to_keep].relevance < kLowQualityThreshold) {
+      if (matches_[matches_to_keep].relevance < kLowQualityThreshold()) {
         break;
       }
     }
@@ -484,7 +528,7 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
   }
 
   // Limit # of matches created. See comment for `kMaxMatchesCreatedPerType`.
-  size_t num_results = std::min(results->size(), kMaxMatchesCreatedPerType);
+  size_t num_results = std::min(results->size(), kMaxMatchesCreatedPerType());
 
   ACMatches matches;
   for (size_t i = 0; i < num_results; i++) {
@@ -541,8 +585,8 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
   // Limit # of matches added. See comment for
   // `kMaxScopedMatchesShownPerType`.
   size_t matches_to_add = adjusted_input_.InKeywordMode()
-                              ? kMaxScopedMatchesShownPerType
-                              : kMaxUnscopedMatchesShownPerType;
+                              ? kMaxScopedMatchesShownPerType()
+                              : kMaxUnscopedMatchesShownPerType();
   if (matches_to_add < matches.size()) {
     std::ranges::partial_sort(matches, matches.begin() + matches_to_add,
                               std::ranges::greater{},
