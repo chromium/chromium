@@ -2603,7 +2603,6 @@
       keywords: ["slice", "clone"],
       default_value: "slice",
       invalidate: ["layout", "paint"],
-      runtime_flag: "BoxDecorationBreak",
     },
     {
       name: "box-shadow",

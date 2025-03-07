@@ -3147,8 +3147,6 @@ TEST_F(StyleCascadeTest, VerticalAlignBaselineSourceReversed) {
 }
 
 TEST_F(StyleCascadeTest, WebkitBoxDecorationBreakOverlap) {
-  ScopedBoxDecorationBreakForTest scoped_feature(true);
-
   TestCascade cascade(GetDocument());
   cascade.Add("-webkit-box-decoration-break", "slice");
   cascade.Add("box-decoration-break", "clone");
@@ -3159,8 +3157,6 @@ TEST_F(StyleCascadeTest, WebkitBoxDecorationBreakOverlap) {
 }
 
 TEST_F(StyleCascadeTest, WebkitBoxDecorationBreakOverlapReverse) {
-  ScopedBoxDecorationBreakForTest scoped_feature(true);
-
   TestCascade cascade(GetDocument());
   cascade.Add("box-decoration-break", "slice");
   cascade.Add("-webkit-box-decoration-break", "clone");
