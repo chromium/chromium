@@ -76,6 +76,7 @@ build_webui("build") {
     "autofill_page/credit_card_list_entry.ts",
     "autofill_page/iban_edit_dialog.ts",
     "autofill_page/iban_list_entry.ts",
+    "autofill_page/pay_over_time_issuer_list_entry.ts",
     "autofill_page/payments_list.ts",
     "autofill_page/payments_section.ts",
     "autofill_page/virtual_card_unenroll_dialog.ts",

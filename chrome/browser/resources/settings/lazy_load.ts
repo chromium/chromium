@@ -135,6 +135,8 @@ export {SettingsIbanListEntryElement} from './autofill_page/iban_list_entry.js';
 export {Passkey, PasskeysBrowserProxy, PasskeysBrowserProxyImpl} from './autofill_page/passkeys_browser_proxy.js';
 export {SettingsPasskeysSubpageElement} from './autofill_page/passkeys_subpage.js';
 // </if>
+export {SettingsPayOverTimeIssuerListEntryElement} from './autofill_page/pay_over_time_issuer_list_entry.js';
+export {SettingsPaymentsListElement} from './autofill_page/payments_list.js';
 export {PaymentsManagerImpl, PaymentsManagerProxy} from './autofill_page/payments_manager_proxy.js';
 export {SettingsPaymentsSectionElement} from './autofill_page/payments_section.js';
 export {SettingsVirtualCardUnenrollDialogElement} from './autofill_page/virtual_card_unenroll_dialog.js';
