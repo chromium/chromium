@@ -25,7 +25,6 @@ include_rules = [
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/policy/login",
   "+chrome/browser/ash/system_web_apps",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/chromeos/policy/dlp",
   "+chrome/browser/enterprise/connectors",
   "+chrome/browser/enterprise/data_controls",
@@ -50,3 +49,9 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  ".*browsertest\.cc": [
+    "+chrome/browser/browser_process.h",
+  ]
+}
