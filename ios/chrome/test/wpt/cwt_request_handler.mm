@@ -207,13 +207,12 @@ std::optional<base::Value> CWTRequestHandler::ProcessCommand(
   }
 
   if (http_method == net::test_server::METHOD_POST) {
-    std::optional<base::Value> content =
-        base::JSONReader::Read(request_content);
-    if (!content || !content->is_dict()) {
+    std::optional<base::Value::Dict> content_dict =
+        base::JSONReader::ReadDict(request_content);
+    if (!content_dict) {
       return CreateErrorValue(kWebDriverInvalidArgumentError,
                               kWebDriverMissingRequestMessage);
     }
-    const base::Value::Dict& content_dict = content->GetDict();
 
     if (command == kWebDriverSessionCommand) {
       return InitializeSession();
@@ -225,38 +224,38 @@ std::optional<base::Value> CWTRequestHandler::ProcessCommand(
     }
 
     if (command == kChromeCrashTestCommand) {
-      return NavigateToUrlForCrashTest(*content);
+      return NavigateToUrlForCrashTest(base::Value(std::move(*content_dict)));
     }
 
     if (command == kWebDriverNavigationCommand) {
-      return NavigateToUrl(content_dict.FindString(kWebDriverURLRequestField));
+      return NavigateToUrl(content_dict->FindString(kWebDriverURLRequestField));
     }
 
     if (command == kWebDriverTimeoutsCommand) {
-      return SetTimeouts(*content);
+      return SetTimeouts(base::Value(std::move(*content_dict)));
     }
 
     if (command == kWebDriverWindowCommand) {
       return SwitchToTabWithId(
-          content_dict.FindString(kWebDriverWindowHandleRequestField));
+          content_dict->FindString(kWebDriverWindowHandleRequestField));
     }
 
     if (command == kWebDriverSyncScriptCommand) {
       return ExecuteScript(
-          content_dict.FindString(kWebDriverScriptRequestField),
+          content_dict->FindString(kWebDriverScriptRequestField),
           /*is_async_function=*/false,
-          content_dict.FindList(kWebDriverArgsRequestField));
+          content_dict->FindList(kWebDriverArgsRequestField));
     }
 
     if (command == kWebDriverAsyncScriptCommand) {
       return ExecuteScript(
-          content_dict.FindString(kWebDriverScriptRequestField),
+          content_dict->FindString(kWebDriverScriptRequestField),
           /*is_async_function=*/true,
-          content_dict.FindList(kWebDriverArgsRequestField));
+          content_dict->FindList(kWebDriverArgsRequestField));
     }
 
     if (command == kWebDriverWindowRectCommand) {
-      return SetWindowRect(*content);
+      return SetWindowRect(base::Value(std::move(*content_dict)));
     }
 
     return std::nullopt;
