@@ -59,7 +59,6 @@ mojom("mojom") {
     "policy_namespace.mojom",
     "policy_service.mojom",
     "print_preview_cros.mojom",
-    "printing_metrics.mojom",
     "probe_service.mojom",
     "remoting.mojom",
     "resource_manager.mojom",

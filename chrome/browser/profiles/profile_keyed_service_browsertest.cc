@@ -34,7 +34,6 @@
 #include "extensions/common/extension_features.h"
 #include "net/base/features.h"
 #include "pdf/buildflags.h"
-#include "printing/buildflags/buildflags.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/public/common/features.h"
@@ -719,9 +718,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "PredictorDatabase",
     "PrefWatcher",
     "PreferenceAPI",
-  #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
-    "PrintingMetricsService",
-  #endif // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
     "PrinterProviderInternal",
     "PrivacySandboxService",
     "PrivacySandboxSettings",

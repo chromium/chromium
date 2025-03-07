@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_CROSAPI_PRINT_JOB_INFO_IDL_CONVERSIONS_H_
-#define CHROME_BROWSER_ASH_CROSAPI_PRINT_JOB_INFO_IDL_CONVERSIONS_H_
+#ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_PRINTING_METRICS_PRINT_JOB_INFO_IDL_CONVERSIONS_H_
+#define CHROME_BROWSER_CHROMEOS_EXTENSIONS_PRINTING_METRICS_PRINT_JOB_INFO_IDL_CONVERSIONS_H_
 
 #include "chrome/browser/ash/printing/history/print_job_info.pb.h"
 #include "chrome/common/extensions/api/printing_metrics.h"
@@ -15,4 +15,4 @@ api::printing_metrics::PrintJobInfo PrintJobInfoProtoToIdl(
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_ASH_CROSAPI_PRINT_JOB_INFO_IDL_CONVERSIONS_H_
+#endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_PRINTING_METRICS_PRINT_JOB_INFO_IDL_CONVERSIONS_H_

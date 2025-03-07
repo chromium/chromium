@@ -1075,13 +1075,15 @@ source_set("extensions") {
         ]
 
         deps += [
-          # TODO(crbug.com/40230380): Find an appropriate spot for printing_metrics.
           "//chrome/browser/chromeos/extensions/printing_metrics",
           "//chrome/browser/chromeos/printing",
           "//chrome/browser/pdf:pdf_pref_names",
           "//chromeos/printing",
           "//printing/backend",
         ]
+
+        allow_circular_includes_from +=
+            [ "//chrome/browser/chromeos/extensions/printing_metrics" ]
       }
 
       deps += [

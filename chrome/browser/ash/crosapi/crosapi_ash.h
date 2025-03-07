@@ -82,9 +82,6 @@ class ParentAccessAsh;
 class PaymentAppInstanceAsh;
 class PolicyServiceAsh;
 class NonclosableAppToastServiceAsh;
-#if BUILDFLAG(USE_CUPS)
-class PrintingMetricsAsh;
-#endif  // BUILDFLAG(USE_CUPS)
 class RemotingAsh;
 class StructuredMetricsServiceAsh;
 class VpnServiceAsh;
@@ -219,8 +216,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindNonclosableAppToastService(
       mojo::PendingReceiver<mojom::NonclosableAppToastService> receiver)
       override;
-  void BindPrintingMetrics(
-      mojo::PendingReceiver<mojom::PrintingMetrics> receiver) override;
   void BindRemoteAppsLacrosBridge(
       mojo::PendingReceiver<
           chromeos::remote_apps::mojom::RemoteAppsLacrosBridge> receiver)
@@ -347,12 +342,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return print_preview_webcontents_adapter_ash_.get();
   }
 
-#if BUILDFLAG(USE_CUPS)
-  PrintingMetricsAsh* printing_metrics_ash() {
-    return printing_metrics_ash_.get();
-  }
-#endif  // BUILDFLAG(USE_CUPS)
-
   ash::ProbeServiceAsh* probe_service_ash() { return probe_service_ash_.get(); }
 
   StructuredMetricsServiceAsh* structured_metrics_service_ash() {
@@ -414,9 +403,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<PolicyServiceAsh> policy_service_ash_;
   std::unique_ptr<NonclosableAppToastServiceAsh>
       nonclosable_app_toast_service_ash_;
-#if BUILDFLAG(USE_CUPS)
-  std::unique_ptr<PrintingMetricsAsh> printing_metrics_ash_;
-#endif  // BUILDFLAG(USE_CUPS)
   std::unique_ptr<ash::TelemetryDiagnosticsRoutineServiceAsh>
       telemetry_diagnostic_routine_service_ash_;
   std::unique_ptr<ash::TelemetryEventServiceAsh> telemetry_event_service_ash_;

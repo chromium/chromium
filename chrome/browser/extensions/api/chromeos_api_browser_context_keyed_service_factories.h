@@ -7,7 +7,7 @@
 
 namespace chromeos_extensions {
 
-// Ensures the existence of any ChromeOS-specific (Ash + Lacros)
+// Ensures the existence of any ChromeOS-specific
 // BrowserContextKeyedServiceFactory provided by the Chrome extensions code.
 // TODO(crbug.com/40230380): Find an appropriate place for this file.
 void EnsureBrowserContextKeyedServiceFactoriesBuilt();

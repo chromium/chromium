@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/crosapi/print_job_info_idl_conversions.h"
+#include "chrome/browser/chromeos/extensions/printing_metrics/print_job_info_idl_conversions.h"
 
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
