@@ -17,6 +17,5 @@ include_rules = [
   "+chrome/browser/ash/ownership",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/settings",
-  "+chrome/browser/browser_process_platform_part.h",
   "+chrome/test/base",
 ]

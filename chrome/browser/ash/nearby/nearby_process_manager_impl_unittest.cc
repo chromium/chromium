@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/nearby/bluetooth_adapter_manager.h"
 #include "chrome/browser/ash/nearby/nearby_dependencies_provider.h"
 #include "chrome/browser/ash/nearby/nearby_process_manager_factory.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
