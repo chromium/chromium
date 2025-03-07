@@ -23,8 +23,6 @@
 
 namespace ip_protection {
 
-// TODO(crbug.com/391357128): implement backoff for failed retrieve.
-// TODO(crbug.com/391358904): add metrics
 
 // Implements IpProtectionProbabilisticRevealTokenFetcher abstract base class.
 // Main functionality is implemented in TryGetProbabilisticRevealTokens method.

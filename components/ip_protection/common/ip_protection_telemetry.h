@@ -15,6 +15,7 @@ namespace ip_protection {
 
 enum class TryGetAuthTokensResult;
 enum class TryGetAuthTokensAndroidResult;
+enum class TryGetProbabilisticRevealTokensStatus;
 enum class ProxyLayer;
 
 // An enumeration of the eligibility finding for use with
@@ -196,6 +197,13 @@ class IpProtectionTelemetry {
 
   // Time taken to for a `MaskedDomainListManager::Matches` call.
   virtual void MdlMatchesTime(base::TimeDelta duration) = 0;
+
+  virtual void GetProbabilisticRevealTokensComplete(
+      TryGetProbabilisticRevealTokensStatus status,
+      base::TimeDelta duration) = 0;
+
+  virtual void IsProbabilisticRevealTokenAvailable(bool is_initial_request,
+                                                   bool is_token_available) = 0;
 };
 
 // Get the singleton instance of this type. This will be implemented by each
