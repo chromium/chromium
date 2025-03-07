@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_support.h"
 
 // clang-format off
@@ -14,6 +9,7 @@
 #include <hb-ot.h>
 // clang-format on
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
@@ -185,7 +181,7 @@ Vector<RecordType> GetHarfBuzzMathRecord(
   if (prepended_record)
     result.push_back(*prepended_record);
   for (unsigned i = 0; i < count; i++) {
-    result.push_back(converter.Run(chunk[i]));
+    result.push_back(converter.Run(UNSAFE_TODO(chunk[i])));
   }
   return result;
 }
