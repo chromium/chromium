@@ -12,6 +12,7 @@
 struct AutocompleteMatch;
 class AutocompleteResult;
 class OmniboxController;
+@class OmniboxTextController;
 @class OmniboxPopupController;
 class OmniboxViewIOS;
 
@@ -22,6 +23,9 @@ class OmniboxViewIOS;
 
 /// Controller of the omnibox popup.
 @property(nonatomic, weak) OmniboxPopupController* omniboxPopupController;
+
+/// Controller of the omnibox text.
+@property(nonatomic, weak) OmniboxTextController* omniboxTextController;
 
 /// Initializes with an OmniboxController.
 - (instancetype)initWithOmniboxController:(OmniboxController*)omniboxController
