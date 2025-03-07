@@ -1538,7 +1538,7 @@ void TemplateURLService::OnWebDataServiceRequestDone(
           updated_keywords_metadata.builtin_keyword_data_version);
       web_data_service_->SetBuiltinKeywordCountry(
           updated_keywords_metadata.builtin_keyword_country->GetRestricted(
-              regional_capabilities::CountryAccessKey<TemplateURLService>(
+              regional_capabilities::CountryAccessKey(
                   regional_capabilities::CountryAccessReason::
                       kTemplateURLServiceDatabaseMetadataCaching)));
 

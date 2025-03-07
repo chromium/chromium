@@ -43,6 +43,8 @@ source_set("country_access_reason") {
   ]
 
   sources = [ "access/country_access_reason.h" ]
+
+  deps = [ "//base" ]
 }
 
 static_library("country_id") {
