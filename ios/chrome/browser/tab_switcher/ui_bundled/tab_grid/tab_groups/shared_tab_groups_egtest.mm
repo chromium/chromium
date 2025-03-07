@@ -707,6 +707,34 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   [ChromeEarlGrey waitForMainTabCount:1];
 }
 
+// Ensures the Recent Activity panel is showing the right information.
+- (void)testRecentActivity {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
+  AddSharedGroup();
+
+  // Open the group view.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Open the Recent Activity.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kTabGroupOverflowMenuButtonIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          chrome_test_util::ContextMenuItemWithAccessibilityLabel(
+              l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_RECENTACTIVITY))]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kTabGroupRecentActivityIdentifier)]
+      assertWithMatcher:grey_not(grey_notVisible())];
+}
+
 @end
 
 // Test Shared Tab Groups feature (with group joining access only.).
