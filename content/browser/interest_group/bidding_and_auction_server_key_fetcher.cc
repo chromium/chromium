@@ -19,6 +19,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
 #include "url/origin.h"
 
 namespace content {
@@ -106,11 +107,52 @@ std::vector<BiddingAndAuctionServerKey> ParseKeysList(
   return keys;
 }
 
+std::vector<BiddingAndAuctionServerKey> KeysFromProto(
+    google::protobuf::RepeatedPtrField<
+        BiddingAndAuctionServerKeysProtos_BiddingAndAuctionServerKeyProto>&
+        keys_proto) {
+  std::vector<BiddingAndAuctionServerKey> keys;
+  keys.reserve(keys_proto.size());
+  for (auto& key_proto : keys_proto) {
+    if (key_proto.id_str().empty()) {
+      std::string id_str;
+      base::AppendHexEncodedByte(key_proto.id(), id_str);
+      keys.emplace_back(std::move(*key_proto.mutable_key()), std::move(id_str));
+    } else {
+      keys.emplace_back(std::move(*key_proto.mutable_key()),
+                        std::move(*key_proto.mutable_id_str()));
+    }
+  }
+  return keys;
+}
+
+void PopulateProtoFromKeys(
+    const std::vector<BiddingAndAuctionServerKey>& keys,
+    google::protobuf::RepeatedPtrField<
+        BiddingAndAuctionServerKeysProtos_BiddingAndAuctionServerKeyProto>&
+        proto_keys_out) {
+  for (const auto& key : keys) {
+    BiddingAndAuctionServerKeysProtos_BiddingAndAuctionServerKeyProto*
+        key_proto = proto_keys_out.Add();
+    uint32_t key_id = 0;
+    bool success =
+        base::HexStringToUInt(std::string_view(key.id).substr(0, 2), &key_id);
+    DCHECK(success);
+    key_proto->set_key(key.key);
+    key_proto->set_id(key_id);
+    key_proto->set_id_str(key.id);
+  }
+}
+
 }  // namespace
 
 BiddingAndAuctionKeySet::BiddingAndAuctionKeySet(
     std::vector<BiddingAndAuctionServerKey> keys)
     : keys_(std::move(keys)) {}
+BiddingAndAuctionKeySet::BiddingAndAuctionKeySet(
+    base::flat_map<url::Origin, std::vector<BiddingAndAuctionServerKey>>
+        origin_scoped_keys)
+    : origin_scoped_keys_(std::move(origin_scoped_keys)) {}
 BiddingAndAuctionKeySet::~BiddingAndAuctionKeySet() = default;
 
 BiddingAndAuctionKeySet::BiddingAndAuctionKeySet(
@@ -119,15 +161,31 @@ BiddingAndAuctionKeySet& BiddingAndAuctionKeySet::operator=(
     BiddingAndAuctionKeySet&& keyset) = default;
 
 bool BiddingAndAuctionKeySet::HasKeys() const {
-  if (!keys_.empty()) {
+  if (!keys_.empty() || !origin_scoped_keys_.empty()) {
     return true;
   }
   return false;
 }
 
+uint8_t BiddingAndAuctionKeySet::SchemaVersion() const {
+  if (!origin_scoped_keys_.empty()) {
+    return 2;
+  }
+  if (!keys_.empty()) {
+    return 1;
+  }
+  return 0;
+}
+
 std::optional<BiddingAndAuctionServerKey> BiddingAndAuctionKeySet::GetRandomKey(
     const url::Origin& scoped_origin) const {
-  if (!keys_.empty()) {
+  if (!origin_scoped_keys_.empty()) {
+    auto it = origin_scoped_keys_.find(scoped_origin);
+    if (it == origin_scoped_keys_.end() || it->second.empty()) {
+      return std::nullopt;
+    }
+    return it->second[base::RandInt(0, it->second.size() - 1)];
+  } else if (!keys_.empty()) {
     return keys_[base::RandInt(0, keys_.size() - 1)];
   }
   return std::nullopt;
@@ -135,16 +193,13 @@ std::optional<BiddingAndAuctionServerKey> BiddingAndAuctionKeySet::GetRandomKey(
 
 std::string BiddingAndAuctionKeySet::AsBinaryProto() const {
   BiddingAndAuctionServerKeysProtos keys_protos;
-  for (const auto& key : keys_) {
-    BiddingAndAuctionServerKeysProtos_BiddingAndAuctionServerKeyProto*
-        key_proto = keys_protos.add_keys();
-    uint32_t key_id = 0;
-    bool success = base::HexStringToUInt(
-        std::string_view(key.id).substr(0, 2), &key_id);
-    DCHECK(success);
-    key_proto->set_key(key.key);
-    key_proto->set_id(key_id);
-    key_proto->set_id_str(key.id);
+  PopulateProtoFromKeys(keys_, *keys_protos.mutable_keys());
+  for (const auto& [origin, keys] : origin_scoped_keys_) {
+    BiddingAndAuctionServerKeysProtos_BiddingAndAuctionServerKeyProtos
+        key_protos;
+    PopulateProtoFromKeys(keys, *key_protos.mutable_keys());
+    keys_protos.mutable_origin_scoped_keys()->insert(
+        {origin.Serialize(), std::move(key_protos)});
   }
   std::string key_protos_str;
   if (!keys_protos.SerializeToString(&key_protos_str)) {
@@ -177,20 +232,32 @@ BiddingAndAuctionKeySet::FromBinaryProto(std::string key_blob) {
       "BiddingAndAuctionServerKeyProtos",
       InterestGroupStorageProtoDeserializationResult::kSucceeded);
 
-  std::vector<BiddingAndAuctionServerKey> keys;
-  keys.reserve(keys_protos.keys_size());
-  for (auto& key_proto : *keys_protos.mutable_keys()) {
-    if (key_proto.id_str().empty()) {
-      std::string id_str;
-      base::AppendHexEncodedByte((key_proto.id() >> 4) & 0x0F, id_str);
-      base::AppendHexEncodedByte(key_proto.id() & 0x0F, id_str);
-      keys.emplace_back(std::move(*key_proto.mutable_key()), id_str);
-    } else {
-      keys.emplace_back(std::move(*key_proto.mutable_key()),
-                        std::move(*key_proto.mutable_id_str()));
+  if (!keys_protos.origin_scoped_keys().empty()) {
+    std::vector<std::pair<url::Origin, std::vector<BiddingAndAuctionServerKey>>>
+        origin_scoped_keys;
+    for (auto& [origin_str, key_protos] :
+         *keys_protos.mutable_origin_scoped_keys()) {
+      url::Origin origin = url::Origin::Create(GURL(origin_str));
+      if (origin.opaque()) {
+        // If we can't recover the key list, just return nullopt so we fetch it
+        // again.
+        return std::nullopt;
+      }
+
+      std::vector<BiddingAndAuctionServerKey> keys =
+          KeysFromProto(*key_protos.mutable_keys());
+      origin_scoped_keys.emplace_back(origin, std::move(keys));
     }
+    return BiddingAndAuctionKeySet(std::move(origin_scoped_keys));
+  } else {
+    if (keys_protos.keys().empty()) {
+      // No keys in this proto. Return nullopt so we fetch it again.
+      return std::nullopt;
+    }
+    std::vector<BiddingAndAuctionServerKey> keys =
+        KeysFromProto(*keys_protos.mutable_keys());
+    return BiddingAndAuctionKeySet(std::move(keys));
   }
-  return BiddingAndAuctionKeySet(std::move(keys));
 }
 
 BiddingAndAuctionServerKeyFetcher::CallbackQueueItem::CallbackQueueItem(
@@ -266,6 +333,33 @@ BiddingAndAuctionServerKeyFetcher::BiddingAndAuctionServerKeyFetcher(
       state.version = 1;
       fetcher_state_map_.insert_or_assign(default_gcp_coordinator_,
                                           std::move(state));
+    }
+  }
+  if (base::FeatureList::IsEnabled(blink::features::kFledgeOriginScopedKeys)) {
+    std::string config = blink::features::kFledgeOriginScopedKeyConfig.Get();
+    if (!config.empty()) {
+      std::optional<base::Value> config_value = base::JSONReader::Read(config);
+      if (config_value && config_value->is_dict()) {
+        for (const auto kv : config_value->GetDict()) {
+          if (!kv.second.is_string()) {
+            continue;
+          }
+          url::Origin coordinator = url::Origin::Create(GURL(kv.first));
+          if (coordinator.scheme() != url::kHttpsScheme) {
+            continue;
+          }
+
+          PerCoordinatorFetcherState state;
+          state.key_url = GURL(kv.second.GetString());
+          state.version = 2;
+          if (!state.key_url.is_valid()) {
+            fetcher_state_map_.erase(coordinator);
+            continue;
+          }
+          fetcher_state_map_.insert_or_assign(std::move(coordinator),
+                                              std::move(state));
+        }
+      }
     }
   }
 }
@@ -363,9 +457,11 @@ void BiddingAndAuctionServerKeyFetcher::OnFetchKeysFromDatabaseComplete(
     FetchKeysFromNetwork(coordinator);
     return;
   }
+
+  PerCoordinatorFetcherState& state = fetcher_state_map_.at(coordinator);
   std::optional<BiddingAndAuctionKeySet> keyset =
       BiddingAndAuctionKeySet::FromBinaryProto(expiration_and_keys.second);
-  if (!keyset) {
+  if (!keyset || keyset->SchemaVersion() != state.version) {
     base::UmaHistogramBoolean(
         "Ads.InterestGroup.ServerAuction.KeyFetch.DBCached", false);
     FetchKeysFromNetwork(coordinator);
@@ -417,11 +513,17 @@ void BiddingAndAuctionServerKeyFetcher::OnFetchKeysFromNetworkComplete(
       base::TimeTicks::Now() - state.network_fetch_start);
   base::UmaHistogramBoolean(
       "Ads.InterestGroup.ServerAuction.KeyFetch.NetworkCached", was_cached);
-  DCHECK_EQ(1u, state.version);
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      *response,
-      base::BindOnce(&BiddingAndAuctionServerKeyFetcher::OnParsedKeys,
-                     weak_ptr_factory_.GetWeakPtr(), coordinator));
+  if (state.version == 1) {
+    data_decoder::DataDecoder::ParseJsonIsolated(
+        *response,
+        base::BindOnce(&BiddingAndAuctionServerKeyFetcher::OnParsedKeys,
+                       weak_ptr_factory_.GetWeakPtr(), coordinator));
+  } else {
+    data_decoder::DataDecoder::ParseJsonIsolated(
+        *response,
+        base::BindOnce(&BiddingAndAuctionServerKeyFetcher::OnParsedKeysV2,
+                       weak_ptr_factory_.GetWeakPtr(), coordinator));
+  }
 }
 
 void BiddingAndAuctionServerKeyFetcher::OnParsedKeys(
@@ -460,11 +562,79 @@ void BiddingAndAuctionServerKeyFetcher::OnParsedKeys(
   CacheKeysAndRunAllCallbacks(coordinator, std::move(keyset), expiration);
 }
 
+void BiddingAndAuctionServerKeyFetcher::OnParsedKeysV2(
+    url::Origin coordinator,
+    data_decoder::DataDecoder::ValueOrError result) {
+  if (!result.has_value()) {
+    FailAllCallbacks(coordinator);
+    return;
+  }
+
+  const base::Value::Dict* response_dict = result->GetIfDict();
+  if (!response_dict) {
+    FailAllCallbacks(coordinator);
+    return;
+  }
+  std::vector<std::pair<url::Origin, std::vector<BiddingAndAuctionServerKey>>>
+      origin_scoped_keys;
+
+  const base::Value::Dict* origin_scoped_keys_dict =
+      response_dict->FindDict("originScopedKeys");
+  if (!origin_scoped_keys_dict) {
+    FailAllCallbacks(coordinator);
+    return;
+  }
+
+  for (const auto [origin_str, per_origin_keys_value] :
+       *origin_scoped_keys_dict) {
+    url::Origin origin = url::Origin::Create(GURL(origin_str));
+
+    if (origin.opaque()) {
+      // Origins should never be opaque. That means parsing failed.
+      FailAllCallbacks(coordinator);
+      return;
+    }
+
+    if (!per_origin_keys_value.is_dict()) {
+      FailAllCallbacks(coordinator);
+      return;
+    }
+    const base::Value::List* keys_list =
+        per_origin_keys_value.GetDict().FindList("keys");
+    if (!keys_list) {
+      FailAllCallbacks(coordinator);
+      return;
+    }
+
+    std::vector<BiddingAndAuctionServerKey> keys = ParseKeysList(keys_list);
+
+    if (keys.empty()) {
+      FailAllCallbacks(coordinator);
+      return;
+    }
+
+    origin_scoped_keys.emplace_back(origin, std::move(keys));
+  }
+  if (origin_scoped_keys.empty()) {
+    FailAllCallbacks(coordinator);
+    return;
+  }
+
+  BiddingAndAuctionKeySet keyset(std::move(origin_scoped_keys));
+  base::Time expiration = base::Time::Now() + kKeyRequestInterval;
+  if (base::FeatureList::IsEnabled(features::kFledgeStoreBandAKeysInDB)) {
+    manager_->SetBiddingAndAuctionServerKeys(
+        coordinator, keyset.AsBinaryProto(), expiration);
+  }
+  CacheKeysAndRunAllCallbacks(coordinator, std::move(keyset), expiration);
+}
+
 void BiddingAndAuctionServerKeyFetcher::CacheKeysAndRunAllCallbacks(
     const url::Origin& coordinator,
     BiddingAndAuctionKeySet keyset,
     base::Time expiration) {
   PerCoordinatorFetcherState& state = fetcher_state_map_.at(coordinator);
+  DCHECK_EQ(keyset.SchemaVersion(), state.version);
   state.keyset = std::move(keyset);
   state.expiration = expiration;
 

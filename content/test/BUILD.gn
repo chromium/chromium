@@ -3146,6 +3146,7 @@ test("content_unittests") {
     "//content/browser/devtools:devtools_background_services_proto",
     "//content/browser/download:proto",
     "//content/browser/indexed_db:unit_tests",
+    "//content/browser/interest_group:interest_group_proto",
     "//content/browser/notifications:notification_proto",
     "//content/browser/private_aggregation:for_content_tests",
     "//content/browser/tpcd_heuristics:unit_tests",
