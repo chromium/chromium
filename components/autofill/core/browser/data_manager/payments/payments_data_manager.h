@@ -684,6 +684,10 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Clears all credit card benefits in `credit_card_benefits_`.
   void ClearAllCreditCardBenefits();
 
+  // Monitors the `kAutofillBnplEnabled` preference for changes and controls the
+  // clearing/loading of payment instruments accordingly.
+  void OnPaymentInstrumentEnabledPrefChange();
+
   // Saves |imported_credit_card| to the WebDB if it exists. Returns the guid of
   // the new or updated card, or the empty string if no card was saved.
   virtual std::string SaveImportedCreditCard(

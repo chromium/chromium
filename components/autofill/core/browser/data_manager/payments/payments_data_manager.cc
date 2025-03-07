@@ -950,6 +950,15 @@ void PaymentsDataManager::SetPrefService(PrefService* pref_service) {
       base::BindRepeating(
           &PaymentsDataManager::OnAutofillPaymentsCardBenefitsPrefChange,
           base::Unretained(this)));
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  pref_registrar_.Add(
+      prefs::kAutofillBnplEnabled,
+      base::BindRepeating(
+          &PaymentsDataManager::OnPaymentInstrumentEnabledPrefChange,
+          base::Unretained(this)));
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 }
 
 void PaymentsDataManager::NotifyObservers() {
@@ -2056,6 +2065,19 @@ void PaymentsDataManager::OnAutofillPaymentsCardBenefitsPrefChange() {
 
 void PaymentsDataManager::ClearAllCreditCardBenefits() {
   credit_card_benefits_.clear();
+}
+
+void PaymentsDataManager::OnPaymentInstrumentEnabledPrefChange() {
+  // On pref change to `false`, clearing BNPL issuers is implicitly handled by
+  // `GetBnplIssuers()`, since it returns an empty vector when
+  // `IsAutofillBnplPrefEnabled()` is `false`. We still need to load payment
+  // instruments to notify the settings page to update the payments list.
+  if (ArePaymentInstrumentsSupported()) {
+    LoadPaymentInstruments();
+  }
+  if (ArePaymentInstrumentCreationOptionsSupported()) {
+    LoadPaymentInstrumentCreationOptions();
+  }
 }
 
 void PaymentsDataManager::OnCardArtImagesFetched(
