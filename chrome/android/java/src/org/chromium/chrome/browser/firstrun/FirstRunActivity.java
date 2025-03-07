@@ -315,7 +315,9 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
             // For consistency with tablets, the status bar should be black on phones with large
             // screen, where the FRE is shown as dialog.
             StatusBarColorController.setStatusBarColor(
-                    getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper(),
+                    (getEdgeToEdgeManager() != null)
+                            ? getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper()
+                            : null,
                     getWindow(),
                     Color.BLACK);
         }
