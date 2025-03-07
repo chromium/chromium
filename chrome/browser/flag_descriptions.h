@@ -163,9 +163,6 @@ extern const char kChangeUnfocusedPriorityDescription[];
 extern const char kClassifyUrlOnProcessResponseEventName[];
 extern const char kClassifyUrlOnProcessResponseEventDescription[];
 
-extern const char kClearUndecryptablePasswordsName[];
-extern const char kClearUndecryptablePasswordsDescription[];
-
 extern const char kClickToCallName[];
 extern const char kClickToCallDescription[];
 

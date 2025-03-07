@@ -10570,12 +10570,6 @@ const FeatureEntry kFeatureEntries[] = {
      PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootGravedigger")},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    {"clear-undecryptable-passwords",
-     flag_descriptions::kClearUndecryptablePasswordsName,
-     flag_descriptions::kClearUndecryptablePasswordsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kClearUndecryptablePasswords)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"replace-sync-promos-with-sign-in-promos",
      flag_descriptions::kReplaceSyncPromosWithSignInPromosName,

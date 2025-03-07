@@ -1418,11 +1418,6 @@
     "expiry_milestone": 133
   },
   {
-    "name": "clear-undecryptable-passwords",
-    "owners": [ "sygiet@google.com", "vasilii@chromium.org" ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "click-to-call",
     "owners": [ "ellyjones@chromium.org" ],
     "expiry_milestone": 115

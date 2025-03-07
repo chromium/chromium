@@ -2108,12 +2108,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillUploadCardRequestTimeout,
          kAutofillUploadCardRequestTimeoutOptions,
          "AutofillUploadCardRequestTimeout")},
-    {"clear-undecryptable-passwords",
-     flag_descriptions::kClearUndecryptablePasswordsName,
-     flag_descriptions::kClearUndecryptablePasswordsDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kClearUndecryptablePasswords)},
     {"autofill-vcn-enroll-request-timeout",
      flag_descriptions::kAutofillVcnEnrollRequestTimeoutName,
      flag_descriptions::kAutofillVcnEnrollRequestTimeoutDescription,

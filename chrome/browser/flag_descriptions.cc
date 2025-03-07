@@ -234,12 +234,6 @@ const char kClassifyUrlOnProcessResponseEventDescription[] =
     "to be rendered, rather than before the request (or any redirect)"
     "is issued.";
 
-const char kClearUndecryptablePasswordsName[] =
-    "Removes passwords that can no longer be decrypted";
-const char kClearUndecryptablePasswordsDescription[] =
-    "If enabled local passwords that current encryption key cannot decrypt, "
-    "will be deleted to restore the full functionality of password manager.";
-
 const char kClickToCallName[] = "Click-To-Call";
 const char kClickToCallDescription[] = "Enable the click-to-call feature.";
 
