@@ -1365,7 +1365,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 // updates the database, and is applied only once.
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ClearTokensOnStartup) {
   client_->SetNetworkCallsDelayed(true);
-  revoke_all_tokens_on_load_ = RevokeAllTokensOnLoad::kDeleteSiteDataOnExit;
+  revoke_all_tokens_on_load_ = RevokeAllTokensOnLoad::kExplicitRevoke;
   InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
   CoreAccountId primary_account =
       CoreAccountId::FromGaiaId(GaiaId("primaryaccount"));
@@ -1379,7 +1379,9 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ClearTokensOnStartup) {
                        "refresh_token");
   AddAuthTokenManually("AccountId-" + secondary_account.ToString(),
                        "refresh_token");
-  // With explicit signin, tokens are only cleared at startup for syncing users.
+
+  // When signed in, tokens are only cleared when using
+  // `RevokeAllTokensOnLoad::kExplicitRevoke`.
   oauth2_service_delegate_->LoadCredentials(primary_account,
                                             /*is_syncing=*/true);
   WaitForRefreshTokensLoaded();
