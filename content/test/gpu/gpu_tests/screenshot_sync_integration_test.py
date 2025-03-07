@@ -74,7 +74,7 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # results in the toolbar hairline # being always drawn. The hariline
     # overlaps with the page's contents and interferes with the tests. Disable
     # it so the hairline isn't drawn.
-    default_args.extend(['--disable-features=AndroidBcivZeroBrowserFrames'])
+    default_args.extend(['--disable-features=AndroidBrowserControlsInViz'])
 
     return default_args
 
