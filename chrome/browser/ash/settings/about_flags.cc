@@ -13,7 +13,6 @@
 #include "base/values.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/site_isolation/about_flags.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"

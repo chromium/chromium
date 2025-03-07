@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/hats_office_trigger.h"
 #include "chrome/common/chrome_content_client.h"

@@ -19,7 +19,6 @@ static_library("kcer") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/kcer/nssdb_migration",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
