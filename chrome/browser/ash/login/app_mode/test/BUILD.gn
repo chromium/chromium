@@ -80,7 +80,6 @@ source_set("browser_tests") {
     "auto_launched_kiosk_browsertest.cc",
     "kiosk_accelerator_browsertest.cc",
     "kiosk_block_tablet_mode_browsertest.cc",
-    "kiosk_enterprise_browsertest.cc",
     "kiosk_enterprise_input_api_browsertest.cc",
     "kiosk_remote_command_browsertest.cc",
     "kiosk_sku_browsertest.cc",
