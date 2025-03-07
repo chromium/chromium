@@ -398,7 +398,7 @@ int IconLabelBubbleView::GetWidthBetween(int min, int max) const {
                                          : slide_animation_.GetCurrentValue();
   // This tween matches the default for SlideAnimation.
   const gfx::Tween::Type kTween = gfx::Tween::EASE_OUT;
-  if (progress < open_state_fraction_) {
+  if (progress <= open_state_fraction_) {
     double state =
         gfx::Tween::CalculateValue(kTween, progress / open_state_fraction_);
     return gfx::Tween::IntValueBetween(state, min, max);
