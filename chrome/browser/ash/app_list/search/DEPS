@@ -30,7 +30,6 @@ include_rules = [
   "+chrome/browser/autocomplete",
   "+chrome/browser/bitmap_fetcher",
   "+chrome/browser/bookmarks",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/chromeos/launcher_search",
   "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/favicon",

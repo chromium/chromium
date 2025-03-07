@@ -10,7 +10,6 @@
 
 #include "base/check.h"
 #include "base/values.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chromeos/crosapi/mojom/device_local_account_extension_service.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
