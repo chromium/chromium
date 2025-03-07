@@ -235,6 +235,7 @@ component("skia") {
     "ext/image_operations.h",
     "ext/legacy_display_globals.h",
     "ext/opacity_filter_canvas.h",
+    "ext/pmcolor_utils.h",
     "ext/recursive_gaussian_convolution.h",
     "ext/rgba_to_yuva.h",
     "ext/skcolorspace_primaries.h",
