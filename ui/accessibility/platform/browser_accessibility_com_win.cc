@@ -1679,7 +1679,6 @@ void BrowserAccessibilityComWin::UpdateStep1ComputeWinAttributes() {
   if (!win_attributes_->ia2_role)
     win_attributes_->ia2_role = win_attributes_->ia_role;
   win_attributes_->ia2_state = ComputeIA2State();
-  win_attributes_->ia2_attributes = ComputeIA2Attributes();
   win_attributes_->name = base::UTF8ToWide(GetOwner()->GetName());
   win_attributes_->description = base::UTF8ToWide(
       GetOwner()->GetStringAttribute(ax::mojom::StringAttribute::kDescription));
