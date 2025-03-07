@@ -7869,7 +7869,7 @@
   {
     "name": "send-tab-ios-push-notifications",
     "owners": ["hiramahmood@google.com", "bling-get-set-up@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 137
   },
   {
     "name": "send-tab-to-self-v2",
