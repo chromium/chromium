@@ -770,7 +770,7 @@ bool IntersectionGeometry::ApplyClip(const LayoutObject* target,
                                      bool root_scrolls_target,
                                      CachedRects* cached_rects) {
   unsigned flags = kDefaultVisualRectFlags | kEdgeInclusive |
-                   kDontApplyMainFrameOverflowClip | kUsePreciseClipPath;
+                   kDontApplyMainFrameOverflowClip;
   if (!ShouldRespectFilters()) {
     flags |= kIgnoreFilters;
   }
