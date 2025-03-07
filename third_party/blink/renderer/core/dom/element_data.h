@@ -32,6 +32,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ELEMENT_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ELEMENT_DATA_H_
 
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/attribute_collection.h"
@@ -183,6 +184,20 @@ class ShareableElementData final : public ElementData {
   }
 
   AttributeCollection Attributes() const;
+
+  base::span<Attribute> AttributesSpan() {
+    // SAFETY: space for bit_field_.get<ArraySize>() Attributes are allocated
+    // after the main object (starting at attribute_array_) by the constructor.
+    return UNSAFE_BUFFERS(
+        base::span(attribute_array_, bit_field_.get<ArraySize>()));
+  }
+
+  base::span<const Attribute> AttributesSpan() const {
+    // SAFETY: space for bit_field_.get<ArraySize>() Attributes are allocated
+    // after the main object (starting at attribute_array_) by the constructor.
+    return UNSAFE_BUFFERS(
+        base::span(attribute_array_, bit_field_.get<ArraySize>()));
+  }
 
   Attribute attribute_array_[0];
 };
