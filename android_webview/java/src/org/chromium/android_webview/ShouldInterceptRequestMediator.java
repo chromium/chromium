@@ -4,27 +4,49 @@
 
 package org.chromium.android_webview;
 
+import androidx.annotation.AnyThread;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.Nullable;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Delegate for handling callbacks. All methods are called on the background thread.
- * "Background" means something that isn't UI or IO.
+ * This class manages the shouldInterceptRequest callback, keeping track of when it's set and taking
+ * care of thread safety.
  */
 @Lifetime.WebView
 @JNINamespace("android_webview")
-public abstract class AwContentsBackgroundThreadClient {
-    private static final String TAG = "AwBgThreadClient";
+public abstract class ShouldInterceptRequestMediator {
+    private static final String TAG = "shouldIntReqMed";
 
+    private final AtomicReference<AsyncShouldInterceptRequestCallback> mAsyncCallback =
+            new AtomicReference<>();
+
+    @AnyThread
+    public void setAsyncCallback(@Nullable AsyncShouldInterceptRequestCallback callback) {
+        mAsyncCallback.set(callback);
+    }
+
+    /**
+     * Allows the implementation to deal with the request. This will happen on a background thread
+     * (meaning it isn't the UI or IO thread).
+     */
+    @AnyThread // @AnyThread implies the method needs to be threadsafe, I'd use @BackgroundThread
+    // if it existed.
     public abstract void shouldInterceptRequest(
-            AwWebResourceRequest request, WebResponseCallback callback);
+            AwWebResourceRequest request,
+            WebResponseCallback responseCallback,
+            AsyncShouldInterceptRequestCallback asyncShouldInterceptRequestCallback);
 
     // Protected methods ---------------------------------------------------------------------------
 
+    @AnyThread
     @CalledByNative
     private void shouldInterceptRequestFromNative(
             String url,
@@ -44,7 +66,7 @@ public abstract class AwContentsBackgroundThreadClient {
                         requestHeaderValues);
         WebResponseCallback callback = new WebResponseCallback(requestId, request);
         try {
-            shouldInterceptRequest(request, callback);
+            shouldInterceptRequest(request, callback, mAsyncCallback.get());
         } catch (Throwable e) {
             Log.e(
                     TAG,
