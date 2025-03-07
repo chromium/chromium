@@ -30,11 +30,17 @@ class FileSystemAccessMetadata : public DeepScanningMetadata {
   bool HasUserGesture() const override;
   bool IsObfuscated() const override;
   bool IsTopLevelEncryptedArchive() const override;
+  bool IsForDownloadItem(download::DownloadItem* download) const override;
   download::DownloadDangerType GetDangerType() const override;
+  enterprise_connectors::EventResult GetPreScanEventResult(
+      download::DownloadDangerType danger_type) const override;
 
   std::unique_ptr<DownloadRequestMaker> CreateDownloadRequestFromMetadata(
       scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor)
       const override;
+
+  std::unique_ptr<DownloadScopedObservation> GetDownloadObservation(
+      download::DownloadItem::Observer* observer) override;
 
  private:
   std::unique_ptr<content::FileSystemAccessWriteItem> item_;

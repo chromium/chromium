@@ -11,6 +11,7 @@
 
 #include "base/callback_list.h"
 #include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/safe_browsing/download_protection/deep_scanning_metadata.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/safe_browsing/buildflags.h"
@@ -109,6 +110,8 @@ enum class DeepScanEvent {
   kMaxValue = kIncorrectPassword,
 };
 void LogDeepScanEvent(download::DownloadItem* item, DeepScanEvent event);
+void LogDeepScanEvent(const DeepScanningMetadata& metadata,
+                      DeepScanEvent event);
 void LogLocalDecryptionEvent(DeepScanEvent event);
 
 // Callback type which is invoked once the download request is done.

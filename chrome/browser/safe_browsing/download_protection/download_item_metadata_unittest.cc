@@ -37,6 +37,7 @@ class DownloadItemMetadataTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     metadata_.reset();
+    mock_item_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -112,6 +113,88 @@ TEST_F(DownloadItemMetadataTest, IsObfuscated) {
       enterprise_obfuscation::DownloadObfuscationData::kUserDataKey,
       std::move(obfuscated_data));
   EXPECT_TRUE(metadata_->IsObfuscated());
+}
+
+TEST_F(DownloadItemMetadataTest, AddScanResultMetadata) {
+  enterprise_connectors::FileMetadata file_metadata("test.txt", "hash",
+                                                    "text/plain", 1000);
+  metadata_->AddScanResultMetadata(file_metadata);
+
+  // Verify file metadata was added to `DownloadItem`.
+  auto* scan_result = static_cast<enterprise_connectors::ScanResult*>(
+      mock_item_->GetUserData(enterprise_connectors::ScanResult::kKey));
+  ASSERT_TRUE(scan_result);
+  ASSERT_EQ(scan_result->file_metadata.size(), 1u);
+  EXPECT_EQ(scan_result->file_metadata[0].filename, "test.txt");
+
+  enterprise_connectors::FileMetadata second_metadata("test2.txt", "hash",
+                                                      "text/plain", 1000);
+  metadata_->AddScanResultMetadata(second_metadata);
+
+  // Verify both metadata entries exist for `DownloadItem`.
+  scan_result = static_cast<enterprise_connectors::ScanResult*>(
+      mock_item_->GetUserData(enterprise_connectors::ScanResult::kKey));
+  ASSERT_TRUE(scan_result);
+  ASSERT_EQ(scan_result->file_metadata.size(), 2u);
+  EXPECT_EQ(scan_result->file_metadata[1].filename, "test2.txt");
+}
+
+// Simple test observer that tracks the number of times `DownloadItem` is
+// updated.
+class TestCountingObserver : public download::DownloadItem::Observer {
+ public:
+  void OnDownloadUpdated(download::DownloadItem* item) override {
+    update_count_++;
+  }
+  void OnDownloadOpened(download::DownloadItem* item) override {}
+  void OnDownloadRemoved(download::DownloadItem* item) override {}
+  void OnDownloadDestroyed(download::DownloadItem* item) override {}
+
+  int update_count() const { return update_count_; }
+
+ private:
+  int update_count_ = 0;
+};
+
+TEST_F(DownloadItemMetadataTest, ObservationLifecycle) {
+  // First test case: Observation is stopped explicitly.
+  TestCountingObserver observer1;
+  auto observation1 = metadata_->GetDownloadObservation(&observer1);
+  mock_item_->NotifyObserversDownloadUpdated();
+
+  // Observer is notified that update happened.
+  EXPECT_EQ(1, observer1.update_count());
+
+  // Observation stops and observer should not be notified.
+  observation1->Stop();
+  mock_item_->NotifyObserversDownloadUpdated();
+  EXPECT_EQ(1, observer1.update_count());
+  observation1.reset();
+
+  // Second test case: Observation stops when out of scope.
+  TestCountingObserver observer2;
+  {
+    auto observation2 = metadata_->GetDownloadObservation(&observer2);
+    mock_item_->NotifyObserversDownloadUpdated();
+    EXPECT_EQ(1, observer2.update_count());
+  }
+
+  // As `observation2` is now out of scope, update count should not increase.
+  mock_item_->NotifyObserversDownloadUpdated();
+  EXPECT_EQ(1, observer2.update_count());
+
+  // Third test case: Observation stops when metadata object is destroyed.
+  TestCountingObserver observer3;
+  auto observation3 = metadata_->GetDownloadObservation(&observer3);
+
+  mock_item_->NotifyObserversDownloadUpdated();
+  EXPECT_EQ(1, observer3.update_count());
+
+  // Observation should stop as metadata is destroyed.
+  observation3.reset();
+  metadata_.reset();
+  mock_item_->NotifyObserversDownloadUpdated();
+  EXPECT_EQ(1, observer3.update_count());
 }
 
 }  // namespace safe_browsing

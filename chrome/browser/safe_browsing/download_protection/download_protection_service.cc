@@ -24,6 +24,7 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request.h"
 #include "chrome/browser/safe_browsing/download_protection/check_file_system_access_write_request.h"
+#include "chrome/browser/safe_browsing/download_protection/download_item_metadata.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/download_protection/download_request_maker.h"
 #include "chrome/browser/safe_browsing/download_protection/download_url_sb_client.h"
@@ -657,8 +658,9 @@ void DownloadProtectionService::UploadForDeepScanning(
     base::optional_ref<const std::string> password) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto request = std::make_unique<DeepScanningRequest>(
-      item, trigger, download_check_result, callback, this,
-      std::move(analysis_settings), password);
+      std::make_unique<DownloadItemMetadata>(item), trigger,
+      download_check_result, callback, this, std::move(analysis_settings),
+      password);
   DeepScanningRequest* request_raw = request.get();
   auto insertion_result = deep_scanning_requests_.insert(
       std::make_pair(request_raw, std::move(request)));
@@ -764,7 +766,8 @@ void DownloadProtectionService::UploadSavePackageForDeepScanning(
     enterprise_connectors::AnalysisSettings analysis_settings) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto request = std::make_unique<DeepScanningRequest>(
-      item, DownloadCheckResult::UNKNOWN, callback, this,
+      std::make_unique<DownloadItemMetadata>(item),
+      DownloadCheckResult::UNKNOWN, callback, this,
       std::move(analysis_settings), std::move(save_package_files));
   DeepScanningRequest* request_raw = request.get();
   auto insertion_result = deep_scanning_requests_.insert(

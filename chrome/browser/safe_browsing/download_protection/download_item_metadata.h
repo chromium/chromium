@@ -13,9 +13,13 @@
 namespace safe_browsing {
 
 // Implementation of DeepScanningMetadata for DownloadItem.
-class DownloadItemMetadata : public DeepScanningMetadata {
+class DownloadItemMetadata : public DeepScanningMetadata,
+                             public download::DownloadItem::Observer {
  public:
   explicit DownloadItemMetadata(download::DownloadItem* item);
+  ~DownloadItemMetadata() override;
+
+  void OnDownloadDestroyed(download::DownloadItem* download) override;
 
   content::BrowserContext* GetBrowserContext() const override;
   const base::FilePath& GetFullPath() const override;
@@ -29,21 +33,33 @@ class DownloadItemMetadata : public DeepScanningMetadata {
   bool IsObfuscated() const override;
   bool IsTopLevelEncryptedArchive() const override;
   download::DownloadDangerType GetDangerType() const override;
+  enterprise_connectors::EventResult GetPreScanEventResult(
+      download::DownloadDangerType danger_type) const override;
 
   std::unique_ptr<DownloadRequestMaker> CreateDownloadRequestFromMetadata(
       scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor)
       const override;
 
-  void AddObserver(download::DownloadItem::Observer* observer) const override;
-  void RemoveObserver(
-      download::DownloadItem::Observer* observer) const override;
+  std::unique_ptr<DownloadScopedObservation> GetDownloadObservation(
+      download::DownloadItem::Observer* observer) override;
+  void RemoveObservation(download::DownloadItem::Observer* observer) override;
   void SetDeepScanTrigger(
       DownloadItemWarningData::DeepScanTrigger trigger) const override;
   void SetHasIncorrectPassword(bool has_incorrect_password) const override;
   void OpenDownload() const override;
+  void PromptForPassword() const override;
+  void AddScanResultMetadata(
+      const enterprise_connectors::FileMetadata& file_metadata) const override;
+  bool IsForDownloadItem(download::DownloadItem* download) const override;
 
  private:
+  // The download item to scan.
   raw_ptr<download::DownloadItem> item_;
+
+  // Map of observers to their observation objects for cleanup.
+  std::unordered_map<download::DownloadItem::Observer*,
+                     raw_ptr<DownloadScopedObservation>>
+      download_observations_;
 };
 
 }  // namespace safe_browsing
