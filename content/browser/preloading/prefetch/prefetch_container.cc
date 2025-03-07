@@ -1868,11 +1868,12 @@ void PrefetchContainer::MakeResourceRequest(
           return net::RequestPriority::IDLE;
       }
     } else {
-      // TODO(crbug.com/40946257): Revisit and update after each embedder
-      // trigger is introduced, as the appropriate value may differ based on its
-      // property and triggering condition. For now, it is set to IDLE as a safe
-      // default value.
-      return net::RequestPriority::IDLE;
+      if (base::FeatureList::IsEnabled(
+              features::kPrefetchNetworkPriorityForEmbedders)) {
+        return net::RequestPriority::MEDIUM;
+      } else {
+        return net::RequestPriority::IDLE;
+      }
     }
   }();
 
