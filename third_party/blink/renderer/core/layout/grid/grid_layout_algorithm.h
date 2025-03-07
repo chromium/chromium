@@ -72,9 +72,10 @@ class CORE_EXPORT GridLayoutAlgorithm
 
   const LayoutResult* LayoutInternal();
 
-  void ComputeGridGeometry(GridSizingTree* grid_sizing_tree,
-                           LayoutUnit* intrinsic_block_size,
-                           HeapVector<Member<LayoutBox>>* oof_children);
+  GridLayoutSubtree ComputeGridGeometry(
+      GridItems* grid_items,
+      LayoutUnit* intrinsic_block_size,
+      HeapVector<Member<LayoutBox>>* oof_children);
 
   LayoutUnit ComputeIntrinsicBlockSizeIgnoringChildren() const;
 
@@ -232,7 +233,8 @@ class CORE_EXPORT GridLayoutAlgorithm
   // This is used for fragmentation which requires us to know the final offset
   // of each item before fragmentation occurs.
   void PlaceGridItems(
-      const GridSizingTree& sizing_tree,
+      const GridItems& grid_items,
+      const GridLayoutSubtree& layout_subtree,
       Vector<EBreakBetween>* out_row_break_between,
       Vector<GridItemPlacementData>* out_grid_items_placement_data = nullptr);
 
@@ -242,7 +244,8 @@ class CORE_EXPORT GridLayoutAlgorithm
   // This will go through all the grid_items and place fragments which belong
   // within this fragmentainer.
   void PlaceGridItemsForFragmentation(
-      const GridSizingTree& sizing_tree,
+      const GridItems& grid_items,
+      const GridLayoutSubtree& layout_subtree,
       const Vector<EBreakBetween>& row_break_between,
       Vector<GridItemPlacementData>* grid_item_placement_data,
       Vector<LayoutUnit>* row_offset_adjustments,
@@ -276,8 +279,8 @@ class CORE_EXPORT GridLayoutAlgorithm
                            const LayoutUnit block_size,
                            HeapVector<Member<LayoutBox>>& oof_children);
 
-  // Set reading flow nodes so they can be accessed by LayoutBox.
-  void SetReadingFlowNodes(const GridSizingTree& sizing_tree);
+  // Set reading flow nodes so they can be accessed by `LayoutBox`.
+  void SetReadingFlowNodes(const GridItems& grid_items);
 
   LogicalSize grid_available_size_;
   LogicalSize grid_min_available_size_;

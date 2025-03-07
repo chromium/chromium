@@ -6,18 +6,6 @@
 
 namespace blink {
 
-GridSizingTree GridSizingTree::CopyForFragmentation() const {
-  GridSizingTree tree_copy;
-  tree_copy.tree_data_.ReserveInitialCapacity(tree_data_.size());
-
-  for (const auto& sizing_data : tree_data_) {
-    DCHECK(sizing_data);
-    tree_copy.tree_data_.emplace_back(
-        MakeGarbageCollected<GridTreeNode>(*sizing_data));
-  }
-  return tree_copy;
-}
-
 GridLayoutTreePtr GridSizingTree::FinalizeTree() const {
   Vector<GridLayoutTree::GridTreeNode, 16> layout_tree_data;
 

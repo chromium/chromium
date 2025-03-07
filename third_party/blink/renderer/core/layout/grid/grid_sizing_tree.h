@@ -77,7 +77,7 @@ inline constexpr SubgriddedItemData kNoSubgriddedItemData;
 // This class represents a grid tree (see `grid_subtree.h`) and contains the
 // necessary data to perform the track sizing algorithm of its nested subgrids.
 class CORE_EXPORT GridSizingTree {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
  public:
   struct GridTreeNode : public GarbageCollected<GridTreeNode> {
@@ -105,6 +105,7 @@ class CORE_EXPORT GridSizingTree {
 
   GridSizingTree() = default;
   GridSizingTree(GridSizingTree&&) = default;
+  GridSizingTree(const GridSizingTree&) = delete;
   GridSizingTree& operator=(GridSizingTree&&) = default;
   GridSizingTree& operator=(const GridSizingTree&) = delete;
 
@@ -118,30 +119,23 @@ class CORE_EXPORT GridSizingTree {
     return *(tree_data_[index]);
   }
 
-  GridSizingTree CopyForFragmentation() const;
-
-  // Creates a copy of the current grid geometry for the entire tree in a new
-  // `GridLayoutTree` instance, which doesn't hold the grid items.
-  GridLayoutTreePtr FinalizeTree() const;
-
+  GridItems& RootGridItems() const { return At(0).GetGridItems(); }
+  GridLayoutData& RootLayoutData() const { return At(0).layout_data; }
   wtf_size_t Size() const { return tree_data_.size(); }
-  GridTreeNode& TreeRootData() const { return At(0); }
 
   wtf_size_t SubtreeSize(wtf_size_t index) const {
     DCHECK_LT(index, tree_data_.size());
     return tree_data_[index]->subtree_size;
   }
 
+  // Creates a copy of the current grid geometry for the entire tree in a new
+  // `GridLayoutTree` instance, which doesn't hold the grid items.
+  GridLayoutTreePtr FinalizeTree() const;
+
   SubgriddedItemData LookupSubgriddedItemData(
       const GridItemData& grid_item) const;
 
   wtf_size_t LookupSubgridIndex(const BlockNode& grid_node) const;
-
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(subgrid_index_lookup_map_);
-    visitor->Trace(subgridded_item_data_lookup_map_);
-    visitor->Trace(tree_data_);
-  }
 
  private:
   struct SubgriddedItemIndices {
