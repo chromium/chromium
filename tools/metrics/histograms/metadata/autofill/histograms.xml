@@ -5694,6 +5694,20 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.SettingsPage.BnplToggled" enum="Boolean"
+    expires_after="2025-07-01">
+  <owner>wilsonlow@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Tracks user enablement of the buy-now-pay-later feature by flipping the
+    pay-over-time toggle in the payment methods settings page. Records true when
+    the user switches on buy-now-pay-later. Records false when the user switches
+    off buy-now-pay-later. Recorded at the time of the user clicking the toggle
+    in the settings page.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.SettingsPage.ButtonClicked.{CardType}.{Button}"
     enum="BooleanAttempted" expires_after="2025-07-01">
   <owner>vishwasuppoor@chromium.org</owner>
