@@ -205,7 +205,7 @@ ci.gpu.linux_builder(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "main_builder_rel_mb",
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
@@ -242,7 +242,7 @@ ci.gpu.linux_builder(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "arm64_builder_rel_mb",
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
@@ -280,7 +280,7 @@ ci.thin_tester(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "main_builder_rel_mb",
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
@@ -321,7 +321,7 @@ ci.thin_tester(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "main_builder_rel_mb",
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
@@ -402,7 +402,7 @@ ci.thin_tester(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "arm64_builder_rel_mb",
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
@@ -651,7 +651,7 @@ ci.gpu.linux_builder(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "main_builder_rel_mb",
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
@@ -689,7 +689,7 @@ ci.gpu.linux_builder(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "arm64_builder_rel_mb",
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
@@ -728,7 +728,7 @@ ci.thin_tester(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "main_builder_rel_mb",
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
@@ -770,7 +770,7 @@ ci.thin_tester(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "main_builder_rel_mb",
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
@@ -852,7 +852,7 @@ ci.thin_tester(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "arm64_builder_rel_mb",
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
@@ -931,7 +931,7 @@ ci.thin_tester(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "arm64_builder_rel_mb",
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
@@ -1020,7 +1020,7 @@ ci.thin_tester(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "arm64_builder_rel_mb",
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(

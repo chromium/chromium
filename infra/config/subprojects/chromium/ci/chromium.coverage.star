@@ -95,7 +95,7 @@ coverage_builder(
             apply_configs = ["android"],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "main_builder",
             apply_configs = [
                 "download_xr_test_apks",
                 "mb",
@@ -160,7 +160,7 @@ coverage_webview_builder(
             apply_configs = ["android"],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "main_builder",
             apply_configs = [
                 "download_xr_test_apks",
                 "mb",
@@ -228,7 +228,7 @@ coverage_builder(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "x86_builder_mb",
             build_config = builder_config.build_config.RELEASE,
             target_bits = 32,
             target_platform = builder_config.target_platform.ANDROID,
@@ -426,7 +426,7 @@ coverage_builder(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "main_builder",
             apply_configs = [
                 "download_xr_test_apks",
                 "mb",
@@ -563,7 +563,7 @@ coverage_webview_builder(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "main_builder",
             apply_configs = [
                 "download_xr_test_apks",
                 "mb",
@@ -645,7 +645,7 @@ coverage_builder(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "x64_builder",
             apply_configs = [
                 "cronet_builder",
                 "mb",
@@ -711,7 +711,7 @@ coverage_builder(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "x64_builder",
             apply_configs = [
                 "cronet_builder",
                 "mb",

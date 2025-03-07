@@ -69,7 +69,7 @@ ci.gpu.linux_builder(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "main_builder",
             apply_configs = [
                 "download_xr_test_apks",
                 "mb",
@@ -134,7 +134,7 @@ ci.gpu.linux_builder(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "main_builder",
             apply_configs = [
                 "download_xr_test_apks",
                 "mb",

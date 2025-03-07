@@ -74,7 +74,7 @@ ci.gpu.linux_builder(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "main_builder_mb",
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
             target_platform = builder_config.target_platform.ANDROID,
@@ -118,7 +118,7 @@ ci.thin_tester(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "main_builder_mb",
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
             target_platform = builder_config.target_platform.ANDROID,
