@@ -2261,8 +2261,7 @@ class InterestGroupAuction::BuyerHelper
           true;
     }
 
-    // TODO(crbug.com/391877228): Set its value based on cookie settings.
-    bool browser_signal_for_debugging_only_sampling = false;
+    bool browser_signal_for_debugging_only_sampling = ShouldSampleDebugReport();
     bid_state->worklet_handle->GetBidderWorklet()->BeginGenerateBid(
         auction_worklet::mojom::BidderWorkletNonSharedParams::New(
             interest_group.name,
@@ -5602,8 +5601,7 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
         cache_handle->compression_group_token(), partition_id);
   }
 
-  // TODO(crbug.com/391877228): Set its value based on cookie settings.
-  bool browser_signal_for_debugging_only_sampling = false;
+  bool browser_signal_for_debugging_only_sampling = ShouldSampleDebugReport();
   seller_worklet_handle_->GetSellerWorklet()->ScoreAd(
       bid->ad_metadata, bid->bid, bid->bid_currency, config_->non_shared_params,
       std::move(cache_key),

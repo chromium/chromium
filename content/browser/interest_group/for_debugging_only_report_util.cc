@@ -7,9 +7,22 @@
 #include <optional>
 
 #include "base/time/time.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
+
+bool ShouldSampleDebugReport() {
+  // TODO(crbug.com/391877228): Set its value based on cookie settings.
+  bool for_debugging_only_sampling = false;
+
+  // Overwrite `for_debugging_only_sampling` to true, for testing purpose.
+  if (base::FeatureList::IsEnabled(
+          features::kFledgeDoSampleDebugReportForTesting)) {
+    for_debugging_only_sampling = true;
+  }
+  return for_debugging_only_sampling;
+}
 
 std::optional<base::Time> GetSampleDebugReportStartingFrom() {
   if (blink::features::kFledgeEnableFilteringDebugReportStartingFrom.Get() !=
