@@ -87,6 +87,47 @@ bool DenyAccessToPath(const FilePath& path,
                       SecurityAccessMode::kDeny);
 }
 
+bool HasAccessToPath(const FilePath& path,
+                     const std::vector<Sid>& sids,
+                     DWORD access_mask,
+                     DWORD inheritance) {
+  DCHECK(!path.empty());
+  if (sids.empty()) {
+    return true;
+  }
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  std::optional<SecurityDescriptor> sd =
+      SecurityDescriptor::FromFile(path, DACL_SECURITY_INFORMATION);
+  if (!sd || !sd->dacl()) {
+    return false;
+  }
+
+  PACL pacl = sd->dacl()->get();
+  // Verify that each SID has the specified access.
+  // Note that this does not check for the presence of a deny ACE.
+  for (const Sid& sid : sids) {
+    bool sid_found = false;
+    for (DWORD ace_index = 0; ace_index < pacl->AceCount; ++ace_index) {
+      PACCESS_ALLOWED_ACE ace = nullptr;
+      if (::GetAce(pacl, ace_index, reinterpret_cast<LPVOID*>(&ace)) &&
+          ace->Header.AceType == ACCESS_ALLOWED_ACE_TYPE &&
+          (ace->Header.AceFlags & inheritance) == inheritance &&
+          (ace->Mask & access_mask) == access_mask &&
+          sid.Equal(&ace->SidStart)) {
+        sid_found = true;
+        break;
+      }
+    }
+
+    if (!sid_found) {
+      return false;
+    }
+  }
+  return true;
+}
+
 std::vector<Sid> CloneSidVector(const std::vector<Sid>& sids) {
   return base::ToVector(sids, &Sid::Clone);
 }
