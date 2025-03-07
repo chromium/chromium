@@ -9,7 +9,7 @@ import './tab_search_page.js';
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -93,14 +93,14 @@ export class TabSearchAppElement extends CrLitElement {
     this.apiProxy_.getProfileData().then(({profileData}) => {
       // In rare cases there is no browser window. I suspect this happens during
       // browser shutdown.
-      if (!profileData.windows) {
+      if (!profileData.windows || profileData.windows.length === 0) {
         return;
       }
       // TODO(crbug.com/40855872): Determine why no active window is reported
       // in some cases on ChromeOS and Linux.
       const activeWindow = profileData.windows.find((t) => t.active);
-      this.availableHeight_ =
-          activeWindow ? activeWindow!.height : profileData.windows[0]!.height;
+      assert(profileData.windows[0]);
+      this.availableHeight_ = (activeWindow ?? profileData.windows[0]).height;
     });
   }
 
