@@ -80,11 +80,9 @@ export class SeaPenIntroductionDialogElement extends I18nMixin
   }
 
   private getIntroDialogContent_() {
-    const substitution = isSeaPenTextInputEnabled() ?
-        this.i18n('seaPenFreeformIntroductionDialogFirstParagraph') :
-        this.i18n('seaPenIntroductionDialogFirstParagraph');
-    return this.i18nAdvanced(
-        'seaPenIntroductionContent', {substitutions: [substitution]});
+    return isSeaPenTextInputEnabled() ?
+        this.i18nAdvanced('seaPenFreeformIntroductionDialogContent') :
+        this.i18nAdvanced('seaPenIntroductionDialogContent');
   }
 }
 
