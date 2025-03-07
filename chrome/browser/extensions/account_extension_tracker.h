@@ -137,8 +137,11 @@ class AccountExtensionTracker : public KeyedService,
   // Removes `extension_id` in `extensions_installed_with_signin_promo_`.
   void RemoveExpiredExtension(const ExtensionId& extension_id);
 
-  // Promotes `extension_id` from a local to an account extension.
-  void PromoteLocalToAccountExtension(const ExtensionId& extension_id);
+  // Promotes `extension_id` from a local to an account extension specified by
+  // `type`. Unlike just calling `SetAccountExtensionType`, this always alerts
+  // observers that the extension's uploadability may have changed.
+  void PromoteLocalToAccountExtension(const ExtensionId& extension_id,
+                                      AccountExtensionType type);
 
   // Notifies observers that the eligibility of multiple extensions to be
   // uploaded to the user's account may have changed.

@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/extensions/sync_helper.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -227,7 +228,8 @@ void AccountExtensionTracker::OnExtensionSyncDataReceived(
   // and thus don't need to be set here.
   AccountExtensionType type = GetAccountExtensionType(extension_id);
   if (type == AccountExtensionType::kLocal) {
-    PromoteLocalToAccountExtension(extension_id);
+    PromoteLocalToAccountExtension(
+        extension_id, AccountExtensionType::kAccountInstalledLocally);
   }
 }
 
@@ -274,8 +276,21 @@ AccountExtensionTracker::GetAccountExtensionType(
 
 void AccountExtensionTracker::OnSignInInitiatedFromExtensionPromo(
     const ExtensionId& extension_id) {
-  extensions_installed_with_signin_promo_.push_back(extension_id);
+  bool already_has_primary_account =
+      IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
+          signin::ConsentLevel::kSignin);
 
+  // Promote the extension right away if the browser already detects a signed in
+  // user by the time this function is called. This happens if clicking "sign
+  // in" from the promo immediately signs the user in rather than opening a
+  // signin tab.
+  if (already_has_primary_account) {
+    PromoteLocalToAccountExtension(
+        extension_id, AccountExtensionType::kAccountInstalledSignedIn);
+    return;
+  }
+
+  extensions_installed_with_signin_promo_.push_back(extension_id);
   // Schedule a task to remove the `extension_id` from
   // `extensions_installed_with_signin_promo_` after
   // `kMaxSigninFromExtensionBubbleDelay`.
@@ -307,7 +322,9 @@ bool AccountExtensionTracker::CanUploadAsAccountExtension(
 
 void AccountExtensionTracker::OnAccountUploadInitiatedForExtension(
     const ExtensionId& extension_id) {
-  PromoteLocalToAccountExtension(extension_id);
+  // The extension likely originated from the current device.
+  PromoteLocalToAccountExtension(
+      extension_id, AccountExtensionType::kAccountInstalledLocally);
 
   // The "local state" of the uploaded extension will be pushed to sync soon,
   // so set NeedsSync to false.
@@ -343,16 +360,14 @@ void AccountExtensionTracker::RemoveExpiredExtension(
 }
 
 void AccountExtensionTracker::PromoteLocalToAccountExtension(
-    const ExtensionId& extension_id) {
-  // Make sure we're actually promoting a local extension!
+    const ExtensionId& extension_id,
+    AccountExtensionType type) {
+  // Make sure we're actually promoting a local extension to an account
+  // extension!
   DCHECK_EQ(GetAccountExtensionType(extension_id),
             AccountExtensionType::kLocal);
-
-  // The previous `AccountExtensionType::kLocal` state implies the extension is
-  // still associated with the current device hence the promotion to
-  // `AccountExtensionType::kAccountInstalledLocally`.
-  SetAccountExtensionType(extension_id,
-                          AccountExtensionType::kAccountInstalledLocally);
+  DCHECK_NE(type, AccountExtensionType::kLocal);
+  SetAccountExtensionType(extension_id, type);
 
   // The extension's uploadability may change when its AccountExtensionType
   // changes.
