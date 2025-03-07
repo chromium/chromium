@@ -195,6 +195,8 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_MINIMAL_UI_LARGE_SCREEN = "AndroidMinimalUiLargeScreen";
     public static final String APP_SPECIFIC_HISTORY = "AppSpecificHistory";
     public static final String ASYNC_NOTIFICATION_MANAGER = "AsyncNotificationManager";
+    public static final String ASYNC_NOTIFICATION_MANAGER_FOR_DOWNLOAD =
+            "AsyncNotificationManagerForDownload";
     public static final String AUTOFILL_ALLOW_NON_HTTP_ACTIVATION =
             "AutofillAllowNonHttpActivation";
     public static final String AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS =
@@ -633,6 +635,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAppSpecificHistory = newCachedFlag(APP_SPECIFIC_HISTORY, true);
     public static final CachedFlag sAsyncNotificationManager =
             newCachedFlag(ASYNC_NOTIFICATION_MANAGER, false, true);
+    public static final CachedFlag sAsyncNotificationManagerForDownload =
+            newCachedFlag(ASYNC_NOTIFICATION_MANAGER_FOR_DOWNLOAD, false);
     public static final CachedFlag sBlockIntentsWhileLocked =
             newCachedFlag(BLOCK_INTENTS_WHILE_LOCKED, false);
     public static final CachedFlag sBookmarkPaneAndroid =
@@ -967,7 +971,8 @@ public abstract class ChromeFeatureList {
                     sUseLibunwindstackNativeUnwinderAndroid,
                     sWebApkMinShellApkVersion);
 
-    public static final List<CachedFlag> sFlagsCachedInMinimalBrowser = List.of();
+    public static final List<CachedFlag> sFlagsCachedInMinimalBrowser =
+            List.of(sAsyncNotificationManagerForDownload);
 
     public static final List<CachedFlag> sTestCachedFlags =
             List.of(sTestDefaultDisabled, sTestDefaultEnabled);

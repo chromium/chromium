@@ -57,6 +57,10 @@ COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kAllowedMixedContentInlinePdf);
 
 // Whether to write filename to the clipboard when copying image downloads.
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kCopyImageFilenameToClipboard);
+
+// Whether to enable async notification manager for downloads.
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
+    kEnableAsyncNotificationManagerForDownload);
 }  // namespace features
 
 }  // namespace download

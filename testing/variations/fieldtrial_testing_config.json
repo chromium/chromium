@@ -1303,6 +1303,9 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AsyncNotificationManager"
+                    ],
+                    "disable_features": [
+                        "AsyncNotificationManagerForDownload"
                     ]
                 }
             ]
