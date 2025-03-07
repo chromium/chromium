@@ -25,7 +25,6 @@
 #include "content/browser/renderer_host/browsing_context_state.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/page_lifecycle_state_manager.h"
-#include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_owner_delegate.h"
 #include "content/browser/site_instance_group.h"
 #include "content/browser/site_instance_impl.h"
@@ -54,6 +53,7 @@ namespace content {
 
 class AgentSchedulingGroupHost;
 class RenderProcessHost;
+class RenderWidgetHostImpl;
 
 // A callback which will be called immediately before EnterBackForwardCache
 // starts.

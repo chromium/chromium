@@ -11,7 +11,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "net/http/http_response_headers.h"
@@ -19,6 +18,9 @@
 #include "url/origin.h"
 
 namespace content {
+
+class FrameTreeNode;
+class RenderFrameHostImpl;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
