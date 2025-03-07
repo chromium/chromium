@@ -42,6 +42,7 @@ IOSChromeMain::IOSChromeMain() {
   // handler early, so prevent a second registration by WebMainRunner.
   main_params.register_exit_manager = false;
   web_main_ = std::make_unique<web::WebMain>(std::move(main_params));
+  web_main_->Startup();
 }
 
 IOSChromeMain::~IOSChromeMain() {}

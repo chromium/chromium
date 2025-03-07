@@ -105,6 +105,7 @@ namespace ios_web_view {
 
 WebViewInttestBase::WebViewInttestBase() {
   // Explicitly start global state machinery before accessing any CWV APIs.
+  [[CWVGlobalState sharedInstance] earlyInit];
   [[CWVGlobalState sharedInstance] start];
 
   web_view_ = test::CreateWebView();

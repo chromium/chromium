@@ -22,7 +22,8 @@ class WebMainRunnerImpl : public WebMainRunner {
   ~WebMainRunnerImpl() override;
 
   // WebMainRunner implementation:
-  int Initialize(WebMainParams params) override;
+  void Initialize(WebMainParams params) override;
+  int Startup() override;
   void ShutDown() override;
 
  protected:
