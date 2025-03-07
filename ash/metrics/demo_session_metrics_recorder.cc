@@ -61,6 +61,8 @@ constexpr char kHelpAppId[] = "nbljnnecbjbmifnoehiemkgefbnpoeak";
 
 constexpr char kDemoModeSignedInShopperDwellTime[] =
     "DemoMode.SignedIn.Shopper.DwellTime";
+constexpr char kDemoModeSignedInMGSFallbackShopperDwellTime[] =
+    "DemoMode.SignedIn.MGSFallback.Shopper.DwellTime";
 
 constexpr char kSetupDemoAccountRequestResult[] =
     "DemoMode.SignedIn.Request.SetupResult";
@@ -659,18 +661,23 @@ void DemoSessionMetricsRecorder::OnTouchEvent(ui::TouchEvent* event) {
 }
 
 void DemoSessionMetricsRecorder::ReportShopperSessionDwellTime() {
-  if (current_session_type == SessionType::kSignedInDemoSession) {
-    if (!shopper_session_first_user_activity_.is_null()) {
-      DCHECK(!last_user_activity_.is_null());
-      DCHECK_LE(shopper_session_first_user_activity_, last_user_activity_);
-
-      base::TimeDelta dwell_time =
-          last_user_activity_ - shopper_session_first_user_activity_;
-      ReportHistogramLongSecondsTimes100(kDemoModeSignedInShopperDwellTime,
-                                         dwell_time);
-    }
-    shopper_session_first_user_activity_ = base::TimeTicks();
+  if (shopper_session_first_user_activity_.is_null()) {
+    return;
   }
+  if (current_session_type == SessionType::kSignedInDemoSession ||
+      current_session_type == SessionType::kFallbackMGS) {
+    DCHECK(!last_user_activity_.is_null());
+    DCHECK_LE(shopper_session_first_user_activity_, last_user_activity_);
+
+    base::TimeDelta dwell_time =
+        last_user_activity_ - shopper_session_first_user_activity_;
+    ReportHistogramLongSecondsTimes100(
+        current_session_type == SessionType::kSignedInDemoSession
+            ? kDemoModeSignedInShopperDwellTime
+            : kDemoModeSignedInMGSFallbackShopperDwellTime,
+        dwell_time);
+  }
+  shopper_session_first_user_activity_ = base::TimeTicks();
 }
 
 void DemoSessionMetricsRecorder::OnAppCreation(
