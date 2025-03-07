@@ -63,7 +63,7 @@ class AX_BASE_EXPORT AXMode {
   // attributes, table cell information, live region properties, range
   // values, and relationship attributes. Note that the HTML tag, ID, class, and
   // display attributes will also be included.
-  static constexpr uint32_t kScreenReader = 1 << 3;
+  static constexpr uint32_t kExtendedProperties = 1 << 3;
 
   // The accessibility tree will contain all the HTML attributes for all
   // accessibility nodes that come from web content. This effectively dumps all
@@ -223,14 +223,14 @@ inline constexpr AXMode kAXModeBasic(AXMode::kNativeAPIs |
 // not present.
 inline constexpr AXMode kAXModeWebContentsOnly(AXMode::kWebContents |
                                                AXMode::kInlineTextBoxes |
-                                               AXMode::kScreenReader);
+                                               AXMode::kExtendedProperties);
 
 // Used when an AT that requires full accessibility access, such as a screen
 // reader, is present.
 inline constexpr AXMode kAXModeComplete(AXMode::kNativeAPIs |
                                         AXMode::kWebContents |
                                         AXMode::kInlineTextBoxes |
-                                        AXMode::kScreenReader);
+                                        AXMode::kExtendedProperties);
 
 // Used when tools that only need autofill functionality are present.
 inline constexpr AXMode kAXModeFormControls(AXMode::kNativeAPIs |

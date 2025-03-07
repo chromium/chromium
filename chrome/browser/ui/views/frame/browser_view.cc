@@ -908,7 +908,7 @@ class BrowserView::AccessibilityModeObserver : public ui::AXModeObserver {
     // asynchronously since AXMode changes can happen while AXTree updates or
     // notifications are in progress, and |MaybeInitializeWebUITabStrip| can
     // destroy things synchronously.
-    if (mode.has_mode(ui::AXMode::kScreenReader)) {
+    if (mode.has_mode(ui::AXMode::kExtendedProperties)) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&BrowserView::MaybeInitializeWebUITabStrip,
                                     browser_view_->GetAsWeakPtr()));

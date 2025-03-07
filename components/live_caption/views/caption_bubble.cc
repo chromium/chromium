@@ -399,7 +399,7 @@ class CaptionBubbleLabel : public views::Label {
   // a tabstop, so it should only be focusable for screen reader users.
   void SetFocusBehaviorForAccessibility() {
     SetFocusBehavior(ui::AXPlatform::GetInstance().GetMode().has_mode(
-                         ui::AXMode::kScreenReader)
+                         ui::AXMode::kExtendedProperties)
                          ? FocusBehavior::ALWAYS
                          : FocusBehavior::NEVER);
   }

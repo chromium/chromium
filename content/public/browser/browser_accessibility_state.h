@@ -85,13 +85,13 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   virtual void ResetAccessibilityMode() = 0;
 
   // Called when an accessibility client is detected, using a heuristic.
-  // These methods indicate the presence of AXMode::kScreenReader, which is
-  // a misnomer because it is used by many clients, and not just screen readers.
-  // Methods with "KnownScreenReader" or KnownAssistiveTech" in the name deal
-  // with actual screen reader or assistive tech usage.
+  // These methods indicate the presence of AXMode::kExtendedProperties, which
+  // is a misnomer because it is used by many clients, and not just screen
+  // readers. Methods with "KnownScreenReader" or KnownAssistiveTech" in the
+  // name deal with actual screen reader or assistive tech usage.
   virtual void OnScreenReaderDetected() = 0;
 
-  // Called when kScreenReader mode should be turned off.
+  // Called when kExtendedProperties mode should be turned off.
   virtual void OnScreenReaderStopped() = 0;
 
   // Some platforms have a strong signal indicating the presence of a

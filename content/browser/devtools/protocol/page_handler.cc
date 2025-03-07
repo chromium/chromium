@@ -2014,7 +2014,7 @@ DisableForRenderFrameHostReasonToProtocol(
         case BackForwardCacheDisable::DisabledReasonId::kMediaSessionService:
           return Page::BackForwardCacheNotRestoredReasonEnum::
               ContentMediaSessionService;
-        case BackForwardCacheDisable::DisabledReasonId::kScreenReader:
+        case BackForwardCacheDisable::DisabledReasonId::kExtendedProperties:
           return Page::BackForwardCacheNotRestoredReasonEnum::
               ContentScreenReader;
         case BackForwardCacheDisable::DisabledReasonId::kDiscarded:

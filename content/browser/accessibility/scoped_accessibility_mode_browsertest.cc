@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(ScopedAccessibilityModeTest, Filtering) {
   wc_mode = accessibility_state().CreateScopedModeForWebContents(
       &web_contents1(), ui::AXMode::kPDFOcr | ui::AXMode::kLabelImages);
 
-  // The WebContents doesn't get kLabelImages until kScreenReader appears.
+  // The WebContents doesn't get kLabelImages until kExtendedProperties appears.
   ASSERT_EQ(web_contents1().GetAccessibilityMode() & ~kIgnoredModeFlags,
             (ui::kAXModeBasic | ui::AXMode::kPDFOcr) & ~kIgnoredModeFlags);
 

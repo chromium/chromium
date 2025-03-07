@@ -348,8 +348,8 @@ void AXPlatformNodeWin::AddAttributeToList(const char* name,
 
 // This also sets kNativeAPIs and kWebContents to ensure we don't have an
 // incorrect combination of AXModes.
-const uint32_t kScreenReaderAccessibilityMode =
-    AXMode::kNativeAPIs | AXMode::kWebContents | AXMode::kScreenReader;
+const uint32_t kExtendedPropertiesAccessibilityMode =
+    AXMode::kNativeAPIs | AXMode::kWebContents | AXMode::kExtendedProperties;
 
 //
 // WinAccessibilityAPIUsageObserver
@@ -1811,7 +1811,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_accDefaultAction(VARIANT var_id,
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_ACC_DEFAULT_ACTION);
   AXPlatformNodeWin* target;
   COM_OBJECT_VALIDATE_VAR_ID_1_ARG_AND_GET_TARGET(var_id, def_action, target);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   int action;
   if (!target->GetIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb,
@@ -2083,7 +2083,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_states(AccessibleStates* states) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_states");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_STATES);
   COM_OBJECT_VALIDATE_1_ARG(states);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   *states = ComputeIA2State();
   return S_OK;
@@ -2195,7 +2195,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_attributes(BSTR* attributes) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_attributes");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_IA2_GET_ATTRIBUTES);
   COM_OBJECT_VALIDATE_1_ARG(attributes);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
   *attributes = nullptr;
 
   std::wstring attributes_str;
@@ -2227,7 +2227,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_nRelations(LONG* n_relations) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_nRelations");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_N_RELATIONS);
   COM_OBJECT_VALIDATE_1_ARG(n_relations);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   int count = AXPlatformRelationWin::EnumerateRelationships(
       this, -1, std::wstring(), nullptr, nullptr);
@@ -2240,7 +2240,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_relation(LONG relation_index,
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_relation");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_RELATION);
   COM_OBJECT_VALIDATE_1_ARG(relation);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   std::wstring relation_type;
   std::vector<AXPlatformNode*> targets;
@@ -2269,7 +2269,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_relations(LONG max_relations,
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_relations");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_RELATIONS);
   COM_OBJECT_VALIDATE_2_ARGS(relations, n_relations);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   LONG count;
   HRESULT hr = get_nRelations(&count);
@@ -2294,7 +2294,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_groupPosition(
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_GROUP_POSITION);
   COM_OBJECT_VALIDATE_3_ARGS(group_level, similar_items_in_group,
                              position_in_group);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   *group_level = GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel);
   *similar_items_in_group = GetSetSize().value_or(0);
@@ -2310,7 +2310,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_localizedExtendedRole(
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_localizedExtendedRole");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_LOCALIZED_EXTENDED_ROLE);
   COM_OBJECT_VALIDATE_1_ARG(localized_extended_role);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   std::u16string role_description =
       GetRoleDescriptionFromImageAnnotationStatusOrFromAttribute();
@@ -2324,7 +2324,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_localizedExtendedRole(
 IFACEMETHODIMP AXPlatformNodeWin::get_attribute(BSTR name, VARIANT* attribute) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_attribute");
   COM_OBJECT_VALIDATE_1_ARG(attribute);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   std::wstring desired_attribute(name);
 
@@ -2463,7 +2463,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_selectionRanges(IA2Range** ranges,
                                                       LONG* nRanges) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_selectionRanges");
   COM_OBJECT_VALIDATE_2_ARGS(ranges, nRanges);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
   AXSelection unignored_selection = GetDelegate()->GetUnignoredSelection();
 
   AXNodeID anchor_id = unignored_selection.anchor_object_id;
@@ -2505,7 +2505,7 @@ IFACEMETHODIMP AXPlatformNodeWin::setSelectionRanges(LONG nRanges,
     return E_INVALIDARG;
   if (!ranges)
     return E_INVALIDARG;
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   if (!ranges->anchor)
     return E_INVALIDARG;
@@ -3568,7 +3568,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_accessibleAt(LONG row,
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_accessibleAt");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_ACCESSIBLE_AT);
   COM_OBJECT_VALIDATE_1_ARG(accessible);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   AXPlatformNodeBase* cell = GetTableCell(int{row}, int{column});
   if (!cell)
@@ -3582,7 +3582,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_caption(IUnknown** accessible) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_caption");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_CAPTION);
   COM_OBJECT_VALIDATE_1_ARG(accessible);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   AXPlatformNodeBase* caption = GetTableCaption();
   if (!caption)
@@ -3598,7 +3598,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_childIndex(LONG row,
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_childIndex");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_CHILD_INDEX);
   COM_OBJECT_VALIDATE_1_ARG(cell_index);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   AXPlatformNodeBase* cell = GetTableCell(int{row}, int{column});
   if (!cell)
@@ -3617,7 +3617,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_columnDescription(LONG column,
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_columnDescription");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_COLUMN_DESCRIPTION);
   COM_OBJECT_VALIDATE_1_ARG(description);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   std::optional<int> columns = GetTableColumnCount();
   if (!columns)
@@ -3657,7 +3657,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_columnExtentAt(LONG row,
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_columnExtentAt");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_COLUMN_EXTENT_AT);
   COM_OBJECT_VALIDATE_1_ARG(n_columns_spanned);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   AXPlatformNodeBase* cell = GetTableCell(int{row}, int{column});
   if (!cell)
@@ -3676,7 +3676,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_columnHeader(
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_columnHeader");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_COLUMN_HEADER);
   COM_OBJECT_VALIDATE_2_ARGS(accessible_table, starting_row_index);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   // Currently unimplemented.
   return E_NOTIMPL;
@@ -3687,7 +3687,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_columnIndex(LONG cell_index,
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_columnIndex");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_COLUMN_INDEX);
   COM_OBJECT_VALIDATE_1_ARG(column_index);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   AXPlatformNodeBase* cell = GetTableCell(cell_index);
   if (!cell)
@@ -3704,7 +3704,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_nColumns(LONG* column_count) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_nColumns");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_N_COLUMNS);
   COM_OBJECT_VALIDATE_1_ARG(column_count);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
   std::optional<int> columns = GetTableColumnCount();
   if (!columns)
     return E_FAIL;
@@ -3716,7 +3716,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_nRows(LONG* row_count) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_nRows");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_N_ROWS);
   COM_OBJECT_VALIDATE_1_ARG(row_count);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
   std::optional<int> rows = GetTableRowCount();
   if (!rows)
     return E_FAIL;
@@ -3728,7 +3728,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_nSelectedChildren(LONG* cell_count) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_nSelectedChildren");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_N_SELECTED_CHILDREN);
   COM_OBJECT_VALIDATE_1_ARG(cell_count);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   std::optional<int> columns = GetTableColumnCount();
   std::optional<int> rows = GetTableRowCount();
@@ -3751,7 +3751,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_nSelectedColumns(LONG* column_count) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_nSelectedColumns");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_N_SELECTED_COLUMNS);
   COM_OBJECT_VALIDATE_1_ARG(column_count);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   std::optional<int> columns = GetTableColumnCount();
   std::optional<int> rows = GetTableRowCount();
@@ -3780,7 +3780,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_nSelectedRows(LONG* row_count) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_nSelectedRows");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_N_SELECTED_ROWS);
   COM_OBJECT_VALIDATE_1_ARG(row_count);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   std::optional<int> columns = GetTableColumnCount();
   std::optional<int> rows = GetTableRowCount();
@@ -3810,7 +3810,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_rowDescription(LONG row,
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_rowDescription");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_ROW_DESCRIPTION);
   COM_OBJECT_VALIDATE_1_ARG(description);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   std::optional<int> rows = GetTableRowCount();
   if (!rows)
@@ -3850,7 +3850,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_rowExtentAt(LONG row,
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_rowExtentAt");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_ROW_EXTENT_AT);
   COM_OBJECT_VALIDATE_1_ARG(n_rows_spanned);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   const AXPlatformNodeBase* cell = GetTableCell(int{row}, int{column});
   if (!cell)
@@ -3869,7 +3869,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_rowHeader(
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_rowHeader");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_ROW_HEADER);
   COM_OBJECT_VALIDATE_2_ARGS(accessible_table, starting_column_index);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   // Currently unimplemented.
   return E_NOTIMPL;
@@ -3879,7 +3879,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_rowIndex(LONG cell_index,
                                                LONG* row_index) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_rowIndex");
   COM_OBJECT_VALIDATE_1_ARG(row_index);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   const AXPlatformNodeBase* cell = GetTableCell(cell_index);
   if (!cell)
@@ -3897,7 +3897,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_selectedChildren(LONG max_children,
                                                        LONG* n_children) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_selectedChildren");
   COM_OBJECT_VALIDATE_2_ARGS(children, n_children);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   if (max_children <= 0)
     return E_INVALIDARG;
@@ -3930,7 +3930,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_selectedColumns(LONG max_columns,
                                                       LONG* n_columns) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_selectedColumns");
   COM_OBJECT_VALIDATE_2_ARGS(columns, n_columns);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   if (max_columns <= 0)
     return E_INVALIDARG;
@@ -3961,7 +3961,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_selectedRows(LONG max_rows,
                                                    LONG* n_rows) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_selectedRows");
   COM_OBJECT_VALIDATE_2_ARGS(rows, n_rows);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   if (max_rows <= 0)
     return E_INVALIDARG;
@@ -3990,7 +3990,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_selectedRows(LONG max_rows,
 IFACEMETHODIMP AXPlatformNodeWin::get_summary(IUnknown** accessible) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_summary");
   COM_OBJECT_VALIDATE_1_ARG(accessible);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   // Current unimplemented.
   return E_NOTIMPL;
@@ -4000,7 +4000,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_isColumnSelected(LONG column,
                                                        boolean* is_selected) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_isColumnSelected");
   COM_OBJECT_VALIDATE_1_ARG(is_selected);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   std::optional<int> columns = GetTableColumnCount();
   std::optional<int> rows = GetTableRowCount();
@@ -4024,7 +4024,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_isRowSelected(LONG row,
                                                     boolean* is_selected) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_isRowSelected");
   COM_OBJECT_VALIDATE_1_ARG(is_selected);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   std::optional<int> columns = GetTableColumnCount();
   std::optional<int> rows = GetTableRowCount();
@@ -4049,7 +4049,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_isSelected(LONG row,
                                                  boolean* is_selected) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_isSelected");
   COM_OBJECT_VALIDATE_1_ARG(is_selected);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   std::optional<int> columns = GetTableColumnCount();
   std::optional<int> rows = GetTableRowCount();
@@ -4076,7 +4076,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_rowColumnExtentsAtIndex(
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_rowColumnExtentsAtIndex");
   COM_OBJECT_VALIDATE_5_ARGS(row, column, row_extents, column_extents,
                              is_selected);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   const AXPlatformNodeBase* cell = GetTableCell(index);
   if (!cell)
@@ -4100,7 +4100,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_rowColumnExtentsAtIndex(
 
 IFACEMETHODIMP AXPlatformNodeWin::selectRow(LONG row) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("selectRow");
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   std::optional<int> rows = GetTableRowCount();
   if (!rows)
@@ -4114,7 +4114,7 @@ IFACEMETHODIMP AXPlatformNodeWin::selectRow(LONG row) {
 
 IFACEMETHODIMP AXPlatformNodeWin::selectColumn(LONG column) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("selectColumn");
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   std::optional<int> columns = GetTableColumnCount();
   if (!columns)
@@ -4128,7 +4128,7 @@ IFACEMETHODIMP AXPlatformNodeWin::selectColumn(LONG column) {
 
 IFACEMETHODIMP AXPlatformNodeWin::unselectRow(LONG row) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("unselectRow");
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   std::optional<int> rows = GetTableRowCount();
   if (!rows)
@@ -4142,7 +4142,7 @@ IFACEMETHODIMP AXPlatformNodeWin::unselectRow(LONG row) {
 
 IFACEMETHODIMP AXPlatformNodeWin::unselectColumn(LONG column) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("unselectColumn");
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   std::optional<int> columns = GetTableColumnCount();
   if (!columns)
@@ -4173,7 +4173,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_cellAt(LONG row,
                                              IUnknown** cell) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_cellAt");
   COM_OBJECT_VALIDATE_1_ARG(cell);
-  NotifyAddAXModeFlagsForIA2(AXMode::kScreenReader);
+  NotifyAddAXModeFlagsForIA2(AXMode::kExtendedProperties);
 
   AXPlatformNodeBase* table_cell = GetTableCell(int{row}, int{column});
   if (!table_cell)
@@ -4194,7 +4194,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_selectedCells(IUnknown*** cells,
                                                     LONG* n_selected_cells) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_selectedCells");
   COM_OBJECT_VALIDATE_2_ARGS(cells, n_selected_cells);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   std::optional<int> columns = GetTableColumnCount();
   std::optional<int> rows = GetTableRowCount();
@@ -4239,7 +4239,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_selectedRows(LONG** rows, LONG* n_rows) {
 IFACEMETHODIMP AXPlatformNodeWin::get_columnExtent(LONG* n_columns_spanned) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_columnExtent");
   COM_OBJECT_VALIDATE_1_ARG(n_columns_spanned);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   std::optional<int> column_span = GetTableColumnSpan();
   if (!column_span)
@@ -4253,7 +4253,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_columnHeaderCells(
     LONG* n_column_header_cells) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_columnHeaderCells");
   COM_OBJECT_VALIDATE_2_ARGS(cell_accessibles, n_column_header_cells);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   std::optional<int> column = GetTableColumn();
   if (!column)
@@ -4280,7 +4280,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_columnHeaderCells(
 IFACEMETHODIMP AXPlatformNodeWin::get_columnIndex(LONG* column_index) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_columnIndex");
   COM_OBJECT_VALIDATE_1_ARG(column_index);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   std::optional<int> column = GetTableColumn();
   if (!column)
@@ -4292,7 +4292,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_columnIndex(LONG* column_index) {
 IFACEMETHODIMP AXPlatformNodeWin::get_rowExtent(LONG* n_rows_spanned) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_rowExtent");
   COM_OBJECT_VALIDATE_1_ARG(n_rows_spanned);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   std::optional<int> row_span = GetTableRowSpan();
   if (!row_span)
@@ -4306,7 +4306,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_rowHeaderCells(
     LONG* n_row_header_cells) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_rowHeaderCells");
   COM_OBJECT_VALIDATE_2_ARGS(cell_accessibles, n_row_header_cells);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   std::optional<int> row = GetTableRow();
   if (!row)
@@ -4333,7 +4333,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_rowHeaderCells(
 IFACEMETHODIMP AXPlatformNodeWin::get_rowIndex(LONG* row_index) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_rowIndex");
   COM_OBJECT_VALIDATE_1_ARG(row_index);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   std::optional<int> row = GetTableRow();
   if (!row)
@@ -4345,7 +4345,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_rowIndex(LONG* row_index) {
 IFACEMETHODIMP AXPlatformNodeWin::get_isSelected(boolean* is_selected) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_isSelected");
   COM_OBJECT_VALIDATE_1_ARG(is_selected);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   if (GetBoolAttribute(ax::mojom::BoolAttribute::kSelected))
     *is_selected = true;
@@ -4360,7 +4360,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_rowColumnExtents(LONG* row_index,
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_rowColumnExtents");
   COM_OBJECT_VALIDATE_5_ARGS(row_index, column_index, row_extents,
                              column_extents, is_selected);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   std::optional<int> row = GetTableRow();
   std::optional<int> column = GetTableColumn();
@@ -4381,7 +4381,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_rowColumnExtents(LONG* row_index,
 IFACEMETHODIMP AXPlatformNodeWin::get_table(IUnknown** table) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_table");
   COM_OBJECT_VALIDATE_1_ARG(table);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   AXPlatformNodeBase* table_node = GetTable();
   if (!table_node)
@@ -4399,7 +4399,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_nCharacters(LONG* n_characters) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_nCharacters");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_N_CHARACTERS);
   COM_OBJECT_VALIDATE_1_ARG(n_characters);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode |
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode |
                              AXMode::kInlineTextBoxes);
 
   std::u16string text = GetHypertext();
@@ -4412,7 +4412,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_caretOffset(LONG* offset) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_caretOffset");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_CARET_OFFSET);
   COM_OBJECT_VALIDATE_1_ARG(offset);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
   *offset = 0;
 
   if (!HasVisibleCaretOrSelection())
@@ -4429,7 +4429,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_nSelections(LONG* n_selections) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_nSelections");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_N_SELECTIONS);
   COM_OBJECT_VALIDATE_1_ARG(n_selections);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   *n_selections = 0;
   int selection_start, selection_end;
@@ -4447,7 +4447,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_selection(LONG selection_index,
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_selection");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_SELECTION);
   COM_OBJECT_VALIDATE_2_ARGS(start_offset, end_offset);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   if (!start_offset || !end_offset || selection_index != 0)
     return E_INVALIDARG;
@@ -4479,7 +4479,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_text(LONG start_offset,
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_text");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_TEXT);
   COM_OBJECT_VALIDATE_1_ARG(text);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
   HandleSpecialTextOffset(&start_offset);
   HandleSpecialTextOffset(&end_offset);
 
@@ -4511,7 +4511,7 @@ HRESULT AXPlatformNodeWin::IAccessibleTextGetTextForOffsetType(
     LONG* end_offset,
     BSTR* text) {
   COM_OBJECT_VALIDATE_3_ARGS(start_offset, end_offset, text);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode |
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode |
                              AXMode::kInlineTextBoxes);
 
   HandleSpecialTextOffset(&offset);
@@ -4675,7 +4675,7 @@ IFACEMETHODIMP AXPlatformNodeWin::addSelection(LONG start_offset,
   WIN_ACCESSIBILITY_API_TRACE_EVENT("addSelection");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_ADD_SELECTION);
   COM_OBJECT_VALIDATE();
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   // We only support one selection.
   return setSelection(0, start_offset, end_offset);
@@ -4685,7 +4685,7 @@ IFACEMETHODIMP AXPlatformNodeWin::removeSelection(LONG selection_index) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("removeSelection");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_REMOVE_SELECTION);
   COM_OBJECT_VALIDATE();
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   if (selection_index != 0)
     return E_INVALIDARG;
@@ -4731,7 +4731,7 @@ IFACEMETHODIMP
 AXPlatformNodeWin::get_selections(IA2TextSelection** selections,
                                   LONG* nSelections) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_selections");
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   COM_OBJECT_VALIDATE_2_ARGS(selections, nSelections);
 
@@ -4819,7 +4819,7 @@ AXPlatformNodeWin::get_selections(IA2TextSelection** selections,
 IFACEMETHODIMP AXPlatformNodeWin::setSelections(LONG nSelections,
                                                 IA2TextSelection* selections) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("setSelections");
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   COM_OBJECT_VALIDATE();
 
@@ -4979,7 +4979,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_currentValue(VARIANT* value) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_currentValue");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_CURRENT_VALUE);
   COM_OBJECT_VALIDATE_1_ARG(value);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   float float_val;
   if (GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange,
@@ -4997,7 +4997,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_minimumValue(VARIANT* value) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_minimumValue");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_MINIMUM_VALUE);
   COM_OBJECT_VALIDATE_1_ARG(value);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   float float_val;
   if (GetFloatAttribute(ax::mojom::FloatAttribute::kMinValueForRange,
@@ -5015,7 +5015,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_maximumValue(VARIANT* value) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_maximumValue");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_MAXIMUM_VALUE);
   COM_OBJECT_VALIDATE_1_ARG(value);
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   float float_val;
   if (GetFloatAttribute(ax::mojom::FloatAttribute::kMaxValueForRange,
@@ -5033,7 +5033,7 @@ IFACEMETHODIMP AXPlatformNodeWin::setCurrentValue(VARIANT new_value) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("setCurrentValue");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_SET_CURRENT_VALUE);
   COM_OBJECT_VALIDATE();
-  NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
+  NotifyAddAXModeFlagsForIA2(kExtendedPropertiesAccessibilityMode);
 
   double double_value = 0.0;
   if (V_VT(&new_value) == VT_R8)
@@ -8577,7 +8577,7 @@ void AXPlatformNodeWin::NotifyAPIObserverForPatternRequest(
       text_pattern_support_needed = true;
       break;
     // These properties require more advanced accessibility features to be
-    // enabled See kScreenReader for details.
+    // enabled See kExtendedProperties for details.
     case UIA_RangeValuePatternId:
     case UIA_TableItemPatternId:
       probable_advanced_client_detected = true;

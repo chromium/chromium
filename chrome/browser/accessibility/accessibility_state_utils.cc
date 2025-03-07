@@ -37,7 +37,7 @@ bool IsScreenReaderEnabled() {
   // an actual screen reader is enabled.
   ui::AXMode mode =
       content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
-  return mode.has_mode(ui::AXMode::kScreenReader);
+  return mode.has_mode(ui::AXMode::kExtendedProperties);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

@@ -104,7 +104,7 @@ class WindowsAccessibilityEnabler
   void OnProbableUIAutomationScreenReaderDetected() override {
     // Same as kAXModeComplete but without kHTML as it is not needed for UIA.
     AddAXModeForUIA(ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents |
-                    ui::AXMode::kScreenReader);
+                    ui::AXMode::kExtendedProperties);
   }
 
   void OnTextPatternRequested() override {
@@ -195,14 +195,14 @@ void BrowserAccessibilityStateImplWin::UpdateKnownAssistiveTechSlow() {
   // UpdateHistogramsOnUIThread instead.
 
   // Old screen reader metric: does not indicate the use of a screen reader,
-  // just kScreenReader mode, which is used by many clients.
+  // just kExtendedProperties mode, which is used by many clients.
   // Instead of this, use specific metrics below, e.g. WinJAWS, WinNVDA.
   // TODO(accessibility) Remove this, which is redundant with
   // PerformanceManager.Experimental.HasAccessibilityModeFlag.
   ui::AXMode mode =
       BrowserAccessibilityStateImpl::GetInstance()->GetAccessibilityMode();
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinScreenReader2",
-                        mode.has_mode(ui::AXMode::kScreenReader));
+                        mode.has_mode(ui::AXMode::kExtendedProperties));
 
   STICKYKEYS sticky_keys = {0};
   sticky_keys.cbSize = sizeof(STICKYKEYS);
@@ -332,7 +332,7 @@ void BrowserAccessibilityStateImplWin::UpdateUniqueUserHistograms() {
 
   ui::AXMode mode = GetAccessibilityMode();
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinScreenReader2.EveryReport",
-                        mode.has_mode(ui::AXMode::kScreenReader));
+                        mode.has_mode(ui::AXMode::kExtendedProperties));
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinJAWS.EveryReport", is_jaws_active_);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNVDA.EveryReport", is_nvda_active_);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinSupernova.EveryReport",

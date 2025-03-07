@@ -146,12 +146,13 @@ const int ModeCollectionForTarget::kUserDataKey;
 
 // Returns a subset of `mode` for delivery to a WebContents.
 ui::AXMode FilterAccessibilityModeInvariants(ui::AXMode mode) {
-  // Strip kLabelImages if kScreenReader is absent.
+  // Strip kLabelImages if kExtendedProperties is absent.
   // TODO(grt): kLabelImages is a feature of //chrome. Find a way to
   // achieve this filtering without teaching //content about it. Perhaps via
   // the delegate interface to be added in support of https://crbug.com/1470199.
-  if (ui::AXMode(mode.flags() ^ ui::AXMode::kScreenReader)
-          .has_mode(ui::AXMode::kLabelImages | ui::AXMode::kScreenReader)) {
+  if (ui::AXMode(mode.flags() ^ ui::AXMode::kExtendedProperties)
+          .has_mode(ui::AXMode::kLabelImages |
+                    ui::AXMode::kExtendedProperties)) {
     mode.set_mode(ui::AXMode::kLabelImages, false);
   }
 
@@ -169,7 +170,7 @@ ui::AXMode FilterAccessibilityModeInvariants(ui::AXMode mode) {
   // screen reader mode is turned on after forms control mode. In that case,
   // forms mode must be removed.
   if (mode.has_mode(ui::AXMode::kInlineTextBoxes) ||
-      mode.has_mode(ui::AXMode::kScreenReader)) {
+      mode.has_mode(ui::AXMode::kExtendedProperties)) {
     return ui::AXMode(mode.flags(), mode.experimental_flags() &
                                         ~ui::AXMode::kExperimentalFormControls);
   }
