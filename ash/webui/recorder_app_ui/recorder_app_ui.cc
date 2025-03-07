@@ -157,8 +157,12 @@ RecorderAppUI::RecorderAppUI(content::WebUI* web_ui,
 
   if (speech::IsOnDeviceSpeechRecognitionSupported()) {
     speech::SodaInstaller::GetInstance()->AddObserver(this);
+    // TODO: b/401440675 - Remove `ConchLargeModel` from the condition after
+    // feature release so that we can use kill-switch to disable features on all
+    // devices.
     if (base::FeatureList::IsEnabled(
-            ash::features::kConchExpandTranscriptionLanguage)) {
+            ash::features::kConchExpandTranscriptionLanguage) ||
+        base::FeatureList::IsEnabled(ash::features::kConchLargeModel)) {
       auto language_list = speech::SodaInstaller::GetInstance()
                                ->GetLiveCaptionEnabledLanguages();
       for (auto language : language_list) {
