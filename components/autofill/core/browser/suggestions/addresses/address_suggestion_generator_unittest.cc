@@ -871,6 +871,33 @@ TEST_F(AddressLabelSuggestionGeneratorTest,
           profile.GetRawInfo(NAME_FULL), Suggestion::Text::IsPrimary(true))));
 }
 
+// Tests that suggestions for alternative name fields have the alternative name
+// as the main text.
+TEST_F(AddressLabelSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_AlternativeNameFieldMainText) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kAutofillImprovedLabels,
+                             features::kAutofillSupportPhoneticNameForJP},
+                            {});
+  AutofillProfile profile(AddressCountryCode("JP"));
+  test::SetProfileInfo(&profile, "firstName", "middleName", "lastName",
+                       "mail@mail.com", "company", "line1", "line2", "city",
+                       "state", "zip", "JP", "phone");
+  profile.SetRawInfo(ALTERNATIVE_GIVEN_NAME, u"あおい");
+  profile.SetRawInfo(ALTERNATIVE_FAMILY_NAME, u"やまもと");
+  profile.FinalizeAfterImport();
+
+  // Suggestions for alternative name fields should have the alternative name
+  // as the main text.
+  EXPECT_THAT(CreateSuggestionsFromProfilesForTest(
+                  {profile}, {ALTERNATIVE_GIVEN_NAME, ALTERNATIVE_FAMILY_NAME},
+                  SuggestionType::kAddressEntry, ALTERNATIVE_GIVEN_NAME,
+                  /*trigger_field_max_length=*/0),
+              SuggestionVectorMainTextsAre(
+                  Suggestion::Text(profile.GetRawInfo(ALTERNATIVE_GIVEN_NAME),
+                                   Suggestion::Text::IsPrimary(true))));
+}
+
 // Suggestions for `ADDRESS_HOME_LINE1` should have `NAME_FULL` as the label.
 // Suggestions for name or address fields which do not include
 // `ADDRESS_HOME_LINE1` should have `ADDRESS_HOME_LINE1` as the label.
