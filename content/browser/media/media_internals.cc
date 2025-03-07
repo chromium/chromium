@@ -78,6 +78,9 @@ std::string EffectsToString(int effects) {
       {media::AudioParameters::ECHO_CANCELLER, "ECHO_CANCELLER"},
       {media::AudioParameters::DUCKING, "DUCKING"},
       {media::AudioParameters::HOTWORD, "HOTWORD"},
+      {media::AudioParameters::NOISE_SUPPRESSION, "NOISE_SUPPRESSION"},
+      {media::AudioParameters::AUTOMATIC_GAIN_CONTROL,
+       "AUTOMATIC_GAIN_CONTROL"},
   });
 
   std::string ret;
@@ -513,6 +516,12 @@ void MediaInternals::SendGeneralAudioInformation() {
       media::IsChromeWideEchoCancellationEnabled() ? "Enabled" : "Disabled";
   audio_info_data.Set(media::kChromeWideEchoCancellation.name,
                       base::Value(chrome_wide_echo_cancellation_value_string));
+#endif
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
+  std::string system_echo_cancellation_value_string =
+      media::IsSystemEchoCancellationEnforced() ? "Enabled" : "Disabled";
+  audio_info_data.Set(media::kEnforceSystemEchoCancellation.name,
+                      base::Value(system_echo_cancellation_value_string));
 #endif
   std::u16string audio_info_update =
       SerializeUpdate("media.updateGeneralAudioInformation", audio_info_data);

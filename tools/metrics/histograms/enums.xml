@@ -731,6 +731,13 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="9" label="kPassthroughDTS"/>
 </enum>
 
+<enum name="AudioEffectType">
+  <int value="0" label="None"/>
+  <int value="1" label="Acoustic Echo Canceller (AEC)"/>
+  <int value="16" label="Noise Suppression (NS)"/>
+  <int value="32" label="Automatic Gain Control (AGC)"/>
+</enum>
+
 <enum name="AudioSampleRate">
   <int value="0" label="8 kHz"/>
   <int value="1" label="16 kHz"/>

@@ -62,7 +62,6 @@
 #include <endpointvolume.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <windows.media.effects.h>
 #include <wrl/client.h>
 
 #include <memory>
@@ -149,6 +148,8 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   void SetOutputDeviceForAec(const std::string& output_device_id) override;
 
   bool started() const { return started_; }
+
+  void SendLogMessage(std::string message);
 
  private:
   class DataDiscontinuityReporter;

@@ -64,8 +64,6 @@ class MEDIA_EXPORT AudioManagerWin : public AudioManagerBase {
   std::string GetCommunicationsInputDeviceID() override;
   std::string GetCommunicationsOutputDeviceID() override;
 
-  bool IsEchoCancellationSupported(const std::string& audio_device_id);
-
  protected:
   void ShutdownOnAudioThread() override;
   AudioParameters GetPreferredOutputStreamParameters(
