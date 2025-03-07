@@ -137,7 +137,15 @@ interface Screen2xMainContentExtractor {
 
   // Receives the accessibility tree as a snapshot, schedules processing, and
   // returns the main node id of the given tree.
+  // DEPRECATED, use IdentifyMainNode method below.
+  // TODO(crbug.com/401052200): Clean up existing calls and delete method.
   ExtractMainNode(ax.mojom.AXTreeUpdate snapshot) => (int32 main_node_id);
+
+  // Receives an AXTreeUpdate and identifies the main node. The AXTreeUpdate
+  // should represent an entire AXTree; not a diff or partial tree, in order
+  // to identify an accurate main node for the entire page.
+  IdentifyMainNode(ax.mojom.AXTreeUpdate ax_tree) =>
+    (ax.mojom.AXTreeID tree_id, int32 node_id);
 };
 
 // Provides an interface to the OCR functionality of the Screen AI service.
