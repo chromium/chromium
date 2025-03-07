@@ -70,6 +70,11 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   // Handles a mouse event prior to it being passed along to the WebContents.
   bool PreHandleMouseEvent(const blink::WebMouseEvent& event);
 
+  // Helper method to execute an arbitrary callback on each visible contents
+  // view. Will execute the callback on the active contents view first.
+  void ExecuteOnEachVisibleContentsView(
+      base::RepeatingCallback<void(ContentsWebView*)> callback);
+
   // views::ResizeAreaDelegate:
   void OnResize(int resize_amount, bool done_resizing) override;
 

@@ -98,6 +98,17 @@ bool MultiContentsView::PreHandleMouseEvent(const blink::WebMouseEvent& event) {
   return false;
 }
 
+void MultiContentsView::ExecuteOnEachVisibleContentsView(
+    base::RepeatingCallback<void(ContentsWebView*)> callback) {
+  ContentsWebView* active_contents_view = GetActiveContentsView();
+  ContentsWebView* inactive_contents_view = GetInactiveContentsView();
+  CHECK(active_contents_view->GetVisible());
+  callback.Run(active_contents_view);
+  if (inactive_contents_view->GetVisible()) {
+    callback.Run(inactive_contents_view);
+  }
+}
+
 void MultiContentsView::OnResize(int resize_amount, bool done_resizing) {
   if (!initial_start_width_on_resize_.has_value()) {
     initial_start_width_on_resize_ =

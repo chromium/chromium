@@ -35,7 +35,6 @@
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
-#include "chrome/browser/ui/views/frame/web_contents_close_handler.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -90,7 +89,6 @@ class TopContainerView;
 class TopControlsSlideController;
 class TopControlsSlideControllerTest;
 class WebAppFrameToolbarView;
-class WebContentsCloseHandler;
 class WebUITabStripContainerView;
 
 namespace gfx {
@@ -1359,8 +1357,6 @@ class BrowserView : public BrowserWindow,
       ui::TouchUiController::Get()->RegisterCallback(
           base::BindRepeating(&BrowserView::TouchModeChanged,
                               base::Unretained(this)));
-
-  std::unique_ptr<WebContentsCloseHandler> web_contents_close_handler_;
 
   // The class that registers for keyboard shortcuts for extension commands.
   std::unique_ptr<ExtensionKeybindingRegistryViews>

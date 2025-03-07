@@ -1087,13 +1087,6 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   contents_separator_ =
       top_container_->AddChildView(std::make_unique<ContentsSeparator>());
 
-  ContentsWebView* active_contents_view =
-      static_cast<ContentsWebView*>(GetContentsWebView());
-  // TODO(crbug.com/393451405): This probably isn't sufficient, we should have
-  // one close handler for each visible WebContents.
-  web_contents_close_handler_ = std::make_unique<WebContentsCloseHandler>(
-      static_cast<ContentsWebView*>(active_contents_view));
-
   contents_container_ = AddChildView(std::move(contents_container));
   set_contents_view(contents_container_);
 
@@ -1996,7 +1989,15 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
       }
     }
 
-    web_contents_close_handler_->ActiveTabChanged();
+    if (multi_contents_view_) {
+      multi_contents_view_->ExecuteOnEachVisibleContentsView(
+          base::BindRepeating([](ContentsWebView* contents_view) {
+            contents_view->GetWebContentsCloseHandler()->ActiveTabChanged();
+          }));
+    } else {
+      contents_web_view_->GetWebContentsCloseHandler()->ActiveTabChanged();
+    }
+
     if (loading_bar_) {
       loading_bar_->SetWebContents(new_contents);
     }
@@ -2066,7 +2067,14 @@ void BrowserView::OnTabDetached(content::WebContents* contents,
   // We need to reset the current tab contents to null before it gets
   // freed. This is because the focus manager performs some operations
   // on the selected WebContents when it is removed.
-  web_contents_close_handler_->ActiveTabChanged();
+  if (multi_contents_view_) {
+    multi_contents_view_->ExecuteOnEachVisibleContentsView(
+        base::BindRepeating([](ContentsWebView* contents_view) {
+          contents_view->GetWebContentsCloseHandler()->ActiveTabChanged();
+        }));
+  } else {
+    contents_web_view_->GetWebContentsCloseHandler()->ActiveTabChanged();
+  }
   if (loading_bar_) {
     loading_bar_->SetWebContents(nullptr);
   }
@@ -3801,7 +3809,14 @@ void BrowserView::OnTabStripModelChanged(
       DCHECK(contents.contents->GetNativeView()->GetRootWindow());
     }
 #endif
-    web_contents_close_handler_->TabInserted();
+    if (multi_contents_view_) {
+      multi_contents_view_->ExecuteOnEachVisibleContentsView(
+          base::BindRepeating([](ContentsWebView* contents_view) {
+            contents_view->GetWebContentsCloseHandler()->TabInserted();
+          }));
+    } else {
+      contents_web_view_->GetWebContentsCloseHandler()->TabInserted();
+    }
   }
 
   UpdateAccessibleNameForRootView();
@@ -3815,13 +3830,28 @@ void BrowserView::TabStripEmpty() {
 }
 
 void BrowserView::WillCloseAllTabs(TabStripModel* tab_strip_model) {
-  web_contents_close_handler_->WillCloseAllTabs();
+  if (multi_contents_view_) {
+    multi_contents_view_->ExecuteOnEachVisibleContentsView(
+        base::BindRepeating([](ContentsWebView* contents_view) {
+          contents_view->GetWebContentsCloseHandler()->WillCloseAllTabs();
+        }));
+  } else {
+    contents_web_view_->GetWebContentsCloseHandler()->WillCloseAllTabs();
+  }
 }
 
 void BrowserView::CloseAllTabsStopped(TabStripModel* tab_strip_model,
                                       CloseAllStoppedReason reason) {
-  if (reason == kCloseAllCanceled) {
-    web_contents_close_handler_->CloseAllTabsCanceled();
+  if (reason != kCloseAllCanceled) {
+    return;
+  }
+  if (multi_contents_view_) {
+    multi_contents_view_->ExecuteOnEachVisibleContentsView(
+        base::BindRepeating([](ContentsWebView* contents_view) {
+          contents_view->GetWebContentsCloseHandler()->CloseAllTabsCanceled();
+        }));
+  } else {
+    contents_web_view_->GetWebContentsCloseHandler()->CloseAllTabsCanceled();
   }
 }
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/frame/web_contents_close_handler.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -31,12 +32,17 @@ ContentsWebView::ContentsWebView(content::BrowserContext* browser_context)
   SetProperty(views::kElementIdentifierKey, kContentsWebViewElementId);
   status_bubble_ = std::make_unique<StatusBubbleViews>(this);
   status_bubble_->Reposition();
+  web_contents_close_handler_ = std::make_unique<WebContentsCloseHandler>(this);
 }
 
 ContentsWebView::~ContentsWebView() = default;
 
 StatusBubbleViews* ContentsWebView::GetStatusBubble() const {
   return status_bubble_.get();
+}
+
+WebContentsCloseHandler* ContentsWebView::GetWebContentsCloseHandler() const {
+  return web_contents_close_handler_.get();
 }
 
 void ContentsWebView::SetBackgroundVisible(bool background_visible) {
