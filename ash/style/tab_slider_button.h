@@ -143,6 +143,10 @@ class ASH_EXPORT IconLabelSliderButton : public TabSliderButton {
   ~IconLabelSliderButton() override;
 
  private:
+  // views::View:
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
+
   // Update label color according to the current button state.
   void UpdateColors();
 
