@@ -1243,6 +1243,10 @@ class CONTENT_EXPORT RenderFrameImpl
   // CommitNavigation() and DidCommitNavigation().
   void ResetMembersUsedForDurationOfCommit();
 
+  // Actual implementation of AbortClientNavigation(), as one may be deferred in
+  // case the page is being instrumented by devtools,
+  void AbortClientNavigationImpl(bool for_new_navigation);
+
   // Stores the WebLocalFrame we are associated with.  This is null from the
   // constructor until BindToFrame() is called, and it is null after
   // FrameDetached() is called until destruction (which is asynchronous in the
