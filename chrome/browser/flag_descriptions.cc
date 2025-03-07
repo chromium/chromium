@@ -6098,21 +6098,6 @@ const char kCrostiniVirtualKeyboardSupportDescription[] =
 const char kConchName[] = "Conch feature";
 const char kConchDescription[] = "Enable Conch on ChromeOS.";
 
-const char kConchExpandTranscriptionLanguageName[] =
-    "Transcription language options for Conch";
-const char kConchExpandTranscriptionLanguageDescription[] =
-    "Expand transcription language options for Conch on ChromeOS.";
-
-const char kConchGenAiName[] = "GenAI features for Conch";
-const char kConchGenAiDescription[] =
-    "Enable this flag to use GenAI for Conch on ChromeOS.";
-
-const char kConchLargeModelName[] = "GenAI models for Conch";
-const char kConchLargeModelDescription[] =
-    "Enable this flag to use large model for Conch on ChromeOS. Note that "
-    "GenAI features may become unusable if models are unavailable on this "
-    "device";
-
 const char kConchSystemAudioFromMicName[] = "System audio capture for Conch";
 const char kConchSystemAudioFromMicDescription[] =
     "Capture system audio from microphone for Conch on ChromeOS.";

@@ -1513,21 +1513,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "conch-expand-transcription-language",
-    "owners": ["hsuanling@google.com"],
-    "expiry_milestone": 140
-  },
-  {
-    "name": "conch-gen-ai",
-    "owners": ["hsuanling@google.com"],
-    "expiry_milestone": 140
-  },
-  {
-    "name": "conch-large-model",
-    "owners": ["hsuanling@google.com"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "conch-system-audio-from-mic",
     "owners": ["hsuanling@google.com"],
     "expiry_milestone": 140
