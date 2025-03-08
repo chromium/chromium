@@ -8124,12 +8124,10 @@ void Document::SetCustomizableSelectMousedownLocation(
 }
 
 const HTMLDialogElement* Document::DialogPointerdownTarget() const {
-  CHECK(RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled());
   return dialog_pointerdown_target_.Get();
 }
 
 void Document::SetDialogPointerdownTarget(const HTMLDialogElement* dialog) {
-  CHECK(RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled());
   DCHECK(!dialog || dialog->IsOpen());
   dialog_pointerdown_target_ = dialog;
 }

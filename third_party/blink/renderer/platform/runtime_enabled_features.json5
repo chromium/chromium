@@ -2345,12 +2345,6 @@
       depends_on: ["HTMLCommandAttributes"],
       status: "experimental",
     },
-    {
-      // TODO(crbug.com/376516550): Enables dialog light dismiss functionality.
-      // This feature shipped in M134, so this flag can be removed in M136.
-      name: "HTMLDialogLightDismiss",
-      status: "stable",
-    },
     // The `<embed>` should follow the specification, layout is not forced
     // when the `type` attribute is set to `image`.
     // https://html.spec.whatwg.org/C/#the-embed-element
