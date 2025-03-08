@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Radio) {
           /* screenshot_height */ 40);
 }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_DarkModeTextSelection DISABLED_DarkModeTextSelection
 #else
 #define MAYBE_DarkModeTextSelection DarkModeTextSelection
