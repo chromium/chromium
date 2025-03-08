@@ -4,6 +4,7 @@
 
 #include "components/enterprise/signin/enterprise_identity_service.h"
 
+#include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -18,10 +19,21 @@
 
 namespace enterprise {
 
+using ::testing::StrictMock;
+
 namespace {
 
 constexpr char kAccessToken1[] = "access_token1";
 constexpr char kAccessToken2[] = "access_token2";
+
+class MockEnterpriseIdentityServiceObserver
+    : public EnterpriseIdentityService::Observer {
+ public:
+  MockEnterpriseIdentityServiceObserver() = default;
+  ~MockEnterpriseIdentityServiceObserver() override = default;
+
+  MOCK_METHOD(void, OnManagedAccountSessionChanged, (), (override));
+};
 
 }  // namespace
 
@@ -238,6 +250,69 @@ TEST_F(EnterpriseIdentityServiceTest,
 
   EXPECT_THAT(test_future.Get(),
               testing::UnorderedElementsAre(kAccessToken1, kAccessToken2));
+}
+
+TEST_F(EnterpriseIdentityServiceTest,
+       Observer_OnManagedAccountSessionChanged_SyncManagedUser) {
+  StrictMock<MockEnterpriseIdentityServiceObserver> observer;
+  EXPECT_CALL(observer, OnManagedAccountSessionChanged).Times(1);
+
+  auto service = CreateService();
+  service->AddObserver(&observer);
+  identity_env_.MakeAccountAvailable("account@google.com");
+
+  service->RemoveObserver(&observer);
+}
+
+TEST_F(EnterpriseIdentityServiceTest,
+       Observer_OnManagedAccountSessionChanged_SyncConsumerUser) {
+  StrictMock<MockEnterpriseIdentityServiceObserver> observer;
+  EXPECT_CALL(observer, OnManagedAccountSessionChanged).Times(0);
+
+  auto service = CreateService();
+  service->AddObserver(&observer);
+  identity_env_.MakeAccountAvailable("account@gmail.com");
+
+  service->RemoveObserver(&observer);
+}
+
+TEST_F(EnterpriseIdentityServiceTest,
+       Observer_OnManagedAccountSessionChanged_AsyncManagedUser) {
+  base::RunLoop run_loop;
+  StrictMock<MockEnterpriseIdentityServiceObserver> observer;
+  EXPECT_CALL(observer, OnManagedAccountSessionChanged)
+      .WillOnce(testing::Invoke([&run_loop]() { run_loop.Quit(); }));
+
+  auto service = CreateService();
+  service->AddObserver(&observer);
+  auto async_enterprise_account =
+      identity_env_.MakeAccountAvailable("account@enterprise.com");
+  identity_env_.SimulateSuccessfulFetchOfAccountInfo(
+      async_enterprise_account.account_id, async_enterprise_account.email,
+      async_enterprise_account.gaia,
+      /*hosted_domain=*/"enterprise.com", "Full Name", "Given Name", "en-US",
+      /*picture_url=*/"");
+
+  run_loop.Run();
+
+  service->RemoveObserver(&observer);
+}
+
+TEST_F(EnterpriseIdentityServiceTest,
+       Observer_OnManagedAccountSessionChanged_ManagedUserRefresh) {
+  auto account = identity_env_.MakeAccountAvailable("account@google.com");
+
+  StrictMock<MockEnterpriseIdentityServiceObserver> observer;
+  auto service = CreateService();
+  service->AddObserver(&observer);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnManagedAccountSessionChanged)
+      .WillOnce(testing::Invoke([&run_loop]() { run_loop.Quit(); }));
+  identity_env_.SetRefreshTokenForAccount(account.account_id);
+  run_loop.Run();
+
+  service->RemoveObserver(&observer);
 }
 
 }  // namespace enterprise
